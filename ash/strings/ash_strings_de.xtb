@@ -136,6 +136,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1420408895951708260">Nachtlicht an/aus. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1435537621343861112">Spracheingabe kann nicht gestartet werden. Das Mikrofon ist aus.</translation>
+<translation id="1445031758921122223">Dateien für die Steuerung mit dem Gesicht heruntergeladen</translation>
 <translation id="1447907279406111651">Jetzt · Ende <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Deine Geräte-Hotspots</translation>
 <translation id="1455242230282523554">Spracheinstellungen anzeigen</translation>
@@ -975,6 +976,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="453661520163887813">Voll geladen in <ph name="TIME" /> h</translation>
 <translation id="4538824937723742295">Screenshot vom ganzen Bildschirm machen</translation>
 <translation id="4539127209940689201">Aktuelle Seite drucken</translation>
+<translation id="4541505619120536051">Immer öffnen</translation>
 <translation id="4541706525461326392">Profil wird entfernt. Das kann einige Minuten dauern.</translation>
 <translation id="4544483149666270818">Fenster für die Aufnahme auswählen</translation>
 <translation id="4545950850562423083">Aktuelle Seite als Lesezeichen speichern</translation>
@@ -1223,6 +1225,7 @@ Keine Geräte verbunden.</translation>
 <translation id="5361524080961918551">Sprachdateien für <ph name="LANGUAGE" /> teilweise heruntergeladen</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Diesen Tab aufrufen</translation>
 <translation id="5364693579536176785">Speicherplatz</translation>
+<translation id="5369573834963677938">Die Steuerung mit dem Gesicht ist dann für andere Nutzer auf dem Gerät verfügbar</translation>
 <translation id="5369717264580061086">Datei in der App „Dateien“ als Vorschau ansehen</translation>
 <translation id="5377367976106153749">Kamerazugriff aktivieren?</translation>
 <translation id="5379115545237091094">Zu viele Versuche</translation>
@@ -1412,6 +1415,7 @@ Keine Geräte verbunden.</translation>
 <translation id="6020147141355393792">Anzeige der Benachrichtigungen und Apps auf deinem Smartphone einrichten</translation>
 <translation id="6022924867608035986">Text im Suchfeld löschen</translation>
 <translation id="602472752137106327">Fenster von allen Desktops werden angezeigt, Optionsfeld ausgewählt</translation>
+<translation id="6024768346262692989">Dateien für die Steuerung mit dem Gesicht konnten nicht heruntergeladen werden</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" />, von deinem Administrator verwaltet</translation>
 <translation id="6027518778343897451">Kein Termin am <ph name="CURRENT_MONTH_DAY" /> vorhanden. Drücke die Eingabetaste, um Google Kalender im Browser zu öffnen.</translation>
 <translation id="6030495522958826102">Menü wurde nach links unten auf dem Bildschirm verschoben.</translation>
@@ -1485,6 +1489,7 @@ Keine Geräte verbunden.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> verwendet gerade deine Kamera und dein Mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Obere Taste</translation>
+<translation id="6240821072888636753">Jedes Mal fragen</translation>
 <translation id="6247728804802644171">Benachrichtigungen öffnen</translation>
 <translation id="6249795363855770621">Aufgabe konnte nicht als erledigt markiert werden. Versuch es noch einmal, wenn du wieder online bist.</translation>
 <translation id="6254629735336163724">Horizontale Ausrichtung aktiv</translation>
@@ -1828,6 +1833,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7557816257942363084"><ph name="APP_NAME" /> verwendet gerade dein Mikrofon</translation>
 <translation id="7561982940498449837">Menü schließen</translation>
 <translation id="7564874036684306347">Das Verschieben von Fenstern auf einen anderen Desktop kann zu unerwartetem Verhalten führen. Nachfolgende Benachrichtigungen, Fenster und Dialogfelder werden unter Umständen zwischen den Desktops aufgeteilt.</translation>
+<translation id="7568790562536448087">Aktualisierung läuft</translation>
 <translation id="7569509451529460200">Braille und ChromeVox sind aktiviert</translation>
 <translation id="7569886975397378678">Anzeige der Benachrichtigungen und Apps auf deinem Smartphone nicht einrichten</translation>
 <translation id="7571361473021531288">Akku <ph name="BATTERY_PERCENTAGE" /> % | Noch <ph name="TIME" /></translation>
@@ -1957,7 +1963,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7963992254934562106">Von <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Ordner auswählen...</translation>
 <translation id="7973756967040444713">Symbolleiste schließen</translation>
-<translation id="797485111629834774">Aufgabe als abgeschlossen markieren: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Vollbildlupe aktivieren oder deaktivieren</translation>
 <translation id="7977927628060636163">Nach Mobilfunknetzen wird gesucht…</translation>
 <translation id="7982789257301363584">Netzwerk</translation>

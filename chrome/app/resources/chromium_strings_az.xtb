@@ -23,6 +23,8 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> ilə Gmail və ya YouTube kimi Google xidmətlərinə daxil olduqda eyni hesab ilə Chromium-a avtomatik daxil ola bilərsiniz</translation>
 <translation id="1290883685122687410">Ayarlama xətası: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Yeni Chromium profilinizi ayarlayın</translation>
+<translation id="1324107359134968521">Chromium Bluetooth cihazlarını araşdırmaq üçün 
+ Bluetooth-a giriş tələb edir. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Datanı Chromium-dan da silin (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Chromium'a daxil oldunuz!</translation>
 <translation id="1478370723027452770">Sınaq üçün Chrome ilə bağlı kömək alın</translation>
@@ -61,6 +63,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="1951406923938785464">Bu fayl növü adətən endirilmədiyi və təhlükəli ola biləcəyi üçün Chromium endirməni blokladı</translation>
 <translation id="1953553007165777902">Endirilir... <ph name="MINUTE" /> dəqiqə qalıb</translation>
 <translation id="1966382378801805537">Chromium defolt brauzeri müəyyən edə və ya ayarlaya bilmir</translation>
+<translation id="1990262977744080398">Chromium-un bəzi faylları bloklama səbəbini öyrənin, yeni tabda açılır</translation>
 <translation id="2008474315282236005">1 element cihazdan silinəcək. Sonradan datanızı bərpa etmək üçün <ph name="USER_EMAIL" /> kimi Chromiuma daxil olun.</translation>
 <translation id="2018879682492276940">Quraşdırma alınmadı. Yenidən sınayın.</translation>
 <translation id="2020032459870799438">Digər parollarınızın data pozuntuları və digər güvənlik məsələlərinə qarşı güvəndə olduğunu yoxlamaq üçün <ph name="BEGIN_LINK" />Chromium'a daxil olun<ph name="END_LINK" />.</translation>

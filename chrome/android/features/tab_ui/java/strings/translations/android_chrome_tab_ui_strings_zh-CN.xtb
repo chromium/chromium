@@ -43,6 +43,7 @@
 <translation id="2977480621796371840">从组中移除</translation>
 <translation id="3008554597174452548">停止跟踪产品</translation>
 <translation id="3026391124054406831">创建分组来整理标签页。</translation>
+<translation id="3051031624272448591">您随时可以从历史记录中重新打开这些标签页</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />降价 <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" />标签页分组颜色图标</translation>
 <translation id="3194464645767632461">评分</translation>
@@ -69,6 +70,7 @@
 <translation id="4371591986692297148">已停用</translation>
 <translation id="4460014764210899310">取消分组</translation>
 <translation id="4590027107044272416">您现在可在此处打开新标签页</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{要关闭 1 个闲置标签页吗？}other{要关闭 <ph name="TAB_COUNT_MANY" /> 个闲置标签页吗？}}</translation>
 <translation id="4648718555153979859">您的标签页会按组列在此处</translation>
 <translation id="4686942373615810936">创建时间：刚刚</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 天后关闭}other{<ph name="DAY_COUNT_MANY" /> 天后关闭}}</translation>
@@ -157,6 +159,7 @@
 <translation id="8398929769197326728">新建文件夹 - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8631711675211020168">所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从所有设备中删除</translation>
+<translation id="8633025649649592204">近期活动</translation>
 <translation id="870736955561925754">要关闭标签页并删除分组吗？</translation>
 <translation id="8714939927607906138">降价了</translation>
 <translation id="8730621377337864115">完成</translation>
@@ -164,6 +167,7 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{创建时间：<ph name="NUM_MONTHS_ONE" /> 个月前}other{创建时间：<ph name="NUM_MONTHS_MANY" /> 个月前}}</translation>
 <translation id="8820741577754260431">查看您打开的标签页上的降价商品</translation>
 <translation id="8887921976452567404">您可以从“最近打开的标签页”部分和“标签页分组”部分重新打开已关闭的标签页和分组。</translation>
+<translation id="8915916167043355778">全部关闭</translation>
 <translation id="8926389886865778422">不再询问</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的标签页分组。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页分组。}}</translation>
 <translation id="9090098097337832354">此商店的相关信息已关闭</translation>

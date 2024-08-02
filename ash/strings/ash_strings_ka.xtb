@@ -976,6 +976,7 @@
 <translation id="453661520163887813">სრულ დატენვამდე დარჩენილია <ph name="TIME" /></translation>
 <translation id="4538824937723742295">ეკრანის სრულად აღბეჭდვა</translation>
 <translation id="4539127209940689201">მიმდინარე გვერდის ბეჭდვა</translation>
+<translation id="4541505619120536051">ყოველთვის გახსნა</translation>
 <translation id="4541706525461326392">მიმდინარეობს პროფილის ამოშლა. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="4544483149666270818">აირჩიეთ ჩასაწერი ფანჯარა</translation>
 <translation id="4545950850562423083">მიმდინარე გვერდის შენახვა სანიშნეს სახით</translation>
@@ -1361,6 +1362,7 @@
 <translation id="5819918159912280082">თქვენი Chromebook მოულოდნელად გადაიტვირთა. გახსენით ბოლო ფანჯრები და აპები.</translation>
 <translation id="5823239091726045201">Google Tasks ვებში</translation>
 <translation id="5825969630400862129">დაკავშირებული მოწყობილობების პარამეტრები</translation>
+<translation id="5830180081891717894"><ph name="WINDOWS" /> სხვა</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" />-ის შეწყვეტა „<ph name="RECEIVER_NAME" />“-ში</translation>
 <translation id="5841296711770970362">მომდევნო ჩანაწერზე გადასვლა</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" />-ის უსადენო ქსელი ჩართულია, მოწყობილობები დაკავშირებული არ არის</translation>
@@ -1488,6 +1490,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ამჟამად იყენებს თქვენს კამერას და მიკროფონს</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">ზედა ღილაკი</translation>
+<translation id="6240821072888636753">შეკითხვა ყოველ ჯერზე</translation>
 <translation id="6247728804802644171">შეტყობინებების გახსნა</translation>
 <translation id="6249795363855770621">დასრულებულად ვერ მოინიშნა. ცადეთ ხელახლა, როცა ონლაინ იქნებით.</translation>
 <translation id="6254629735336163724">ჩაკეტილია ჰორიზონტალურზე</translation>
@@ -1831,6 +1834,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> ამჟამად იყენებს თქვენს მიკროფონს</translation>
 <translation id="7561982940498449837">მენიუს დახურვა</translation>
 <translation id="7564874036684306347">ფანჯრების სხვა დესკტოპზე გადატანამ შეიძლება მოულოდნელი ქცევა გამოიწვიოს. შემდგომი შეტყობინებები, ფანჯრები და დიალოგები შეიძლება გაიყოს დესკტოპებს შორის.</translation>
+<translation id="7568790562536448087">განახლება</translation>
 <translation id="7569509451529460200">ბრაილის შრიფტი და ChromeVox ჩართულია</translation>
 <translation id="7569886975397378678">თქვენი ტელეფონის შეტყობინებებისა და აპების ნახვის დაყენების დახურვა</translation>
 <translation id="7571361473021531288">ბატარეა <ph name="BATTERY_PERCENTAGE" />%-ზეა | დარჩენილია <ph name="TIME" /></translation>
@@ -1960,7 +1964,6 @@
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />-დან</translation>
 <translation id="7968693143708939792">აირჩიეთ საქაღალდე...</translation>
 <translation id="7973756967040444713">ხელსაწყოთა ზოლის დახურვა</translation>
-<translation id="797485111629834774">დასრულებულად მონიშნეთ ამოცანა: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">სრულეკრანიანი ლუპის ჩართვა ან გამორთვა</translation>
 <translation id="7977927628060636163">მიმდინარეობს მობილური ქსელების ძიება…</translation>
 <translation id="7982789257301363584">ქსელი</translation>
@@ -2066,6 +2069,7 @@
 <translation id="8375916635258623388">ეს <ph name="DEVICE_NAME" /> და თქვენი ტელეფონი ავტომატურად დაკავშირდება</translation>
 <translation id="8380784334203145311">ღამე მშვიდობის,</translation>
 <translation id="8382715499079447151">ნახვის დაცვა</translation>
+<translation id="8383614331548401927">მოგესალმებათ Recap</translation>
 <translation id="8388750414311082622">ბოლო სამუშაო მაგიდის ამოშლა ვერ მოხერხდა.</translation>
 <translation id="8394567579869570560">თქვენმა მშობელმა ჩაკეტა ეს მოწყობილობა</translation>
 <translation id="8401850874595457088">ენის მენიუში შესვლა</translation>

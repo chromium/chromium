@@ -43,6 +43,7 @@
 <translation id="2977480621796371840">गटामधून काढून टाका</translation>
 <translation id="3008554597174452548">उत्पादनाचा माग ठेवणे थांबवा</translation>
 <translation id="3026391124054406831">तुमचे टॅब व्यवस्थापित करण्यासाठी गट तयार करा.</translation>
+<translation id="3051031624272448591">तुम्ही कधीही ते इतिहासामध्ये पुन्हा मिळवू शकता</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> पासून किमतीमध्ये <ph name="PRICE_DROP" /> घसरण</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> या टॅब गटाच्या रंगाचा आयकन</translation>
 <translation id="3194464645767632461">रेटिंग</translation>
@@ -69,6 +70,7 @@
 <translation id="4371591986692297148">इनॅक्टिव्ह आहे</translation>
 <translation id="4460014764210899310">गटामधून काढून टाका</translation>
 <translation id="4590027107044272416">तुम्ही आता इथे नवीन टॅब उघडू शकता</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{१ इनॅक्टिव्ह टॅब बंद करायचा आहे का?}other{<ph name="TAB_COUNT_MANY" /> इनॅक्टिव्ह टॅब बंद करायचे आहेत का?}}</translation>
 <translation id="4648718555153979859">तुमचे टॅब येथे एकत्रित केले आहेत</translation>
 <translation id="4686942373615810936">आता तयार केला आहे</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{एका दिवसानंतर बंद करा}other{<ph name="DAY_COUNT_MANY" /> दिवसांनंतर बंद करा}}</translation>
@@ -157,6 +159,7 @@
 <translation id="8398929769197326728">नवीन फोल्डर - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
 <translation id="8631711675211020168">सर्वजण लगेच <ph name="GROUP_NAME" /> या टॅब गटाचा ॲक्सेस गमवतील आणि तो तुमच्या सर्व डिव्हाइसवरून हटवला जाईल</translation>
+<translation id="8633025649649592204">अलीकडील अ‍ॅक्टिव्हिटी</translation>
 <translation id="870736955561925754">टॅब बंद करून गट हटवायचा आहे का?</translation>
 <translation id="8714939927607906138">आणखी कमी किंमत</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
@@ -164,6 +167,7 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> महिन्यापूर्वी तयार केला आहे}other{<ph name="NUM_MONTHS_MANY" /> महिन्यांपूर्वी तयार केला आहे}}</translation>
 <translation id="8820741577754260431">तुमच्या टॅबवर कमी झालेली किंमत पहा</translation>
 <translation id="8887921976452567404">तुमचे बंद केलेले टॅब आणि गट अलीकडील टॅब विभाग व टॅब गट विभागामधून पुन्हा उघडले जाऊ शकतात.</translation>
+<translation id="8915916167043355778">सर्व बंद करा</translation>
 <translation id="8926389886865778422">पुन्हा विचारू नका</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब असलेल्या टॅब गटाचा विस्तार करा.}other{<ph name="TABS_COUNT_MANY" /> टॅब असलेल्या टॅब गटाचा विस्तार करा.}}</translation>
 <translation id="9090098097337832354">या स्टोअरसंबंधित माहिती बंद केली</translation>

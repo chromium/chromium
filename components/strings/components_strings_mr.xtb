@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">पासवर्ड व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये तुमचे पासवर्ड पाहण्यासाठी आणि व्यवस्थापित करण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> ची परवानगी निवडा</translation>
-<translation id="1112238992895762847">सर्व पर्यायांसाठी किमतीची रेंज</translation>
 <translation id="1113869188872983271">&amp;पुनर्क्रमित करा पूर्ववत करा</translation>
 <translation id="1118429183611783760">व्हॅक्यूम आणि फ्लोअरची निगा</translation>
 <translation id="1122714970786750095">इलेक्‍ट्रॉनिक आणि इलेक्‍ट्रिकल</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">आतासाठी लपवा</translation>
 <translation id="121201262018556460">तुम्ही <ph name="DOMAIN" /> वर पोहोचण्याचा प्रयत्न केलात, परंतु सर्व्हरने एक कमकुवत की असलेले सर्टिफिकेट सादर केले. हल्लेखोराने गोपनीय की तोडलेली असू शकते आणि सर्व्हर हे तुम्हाला अपेक्षित असणारे सर्व्हर नसू शकते (तुम्ही कदाचित हल्लेखोराशी संवाद प्रस्थापित करत असाल).</translation>
 <translation id="1212527389003717329">डाउनलोड सुरू झाला आहे. तो पाहण्यासाठी, |<ph name="ACCELERATOR" />| प्रेस करून धरून ठेवा.</translation>
-<translation id="1214970845432250240">किमतीची रेंज</translation>
 <translation id="1219129156119358924">सिस्टम सुरक्षा</translation>
 <translation id="1222060260947439312">उजवा ट्रे</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -353,7 +351,6 @@
 <translation id="1617276713587758852">क्रॉसओव्हर</translation>
 <translation id="1619007254056372606">डिव्‍हाइसवरील साइट डेटा व्यवस्थापित करणे</translation>
 <translation id="1620510694547887537">कॅमेरा</translation>
-<translation id="162285686621567578">ही वेबसाइट तुमच्या पालकांनी ब्लॉक केली आहे.</translation>
 <translation id="1622966923835127638">व्यावसायिक अर्थव्यवहार</translation>
 <translation id="1623104350909869708">या पृष्ठास अतिरिक्त संवाद तयार करण्यापासून प्रतिबंधित करा</translation>
 <translation id="1633137413609266904">{0,plural, =1{ही फाइल उघडणे अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे ब्लॉक केले आहे}other{# फाइल उघडणे अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे ब्लॉक केले आहे}}</translation>
@@ -738,7 +735,6 @@
 <translation id="2328955282645810595">बांधकाम आणि मोटारद्वारे चालवली जाणारी टूल</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> रोजी एक्स्पायर होईल</translation>
 <translation id="2337044517221264923">लिहिणे पुन्हा सुरू करा</translation>
-<translation id="2337776048981813397">सर्व पर्यायांसाठी किमतीची रेंज</translation>
 <translation id="2337852623177822836">सेटिंग तुमच्या ॲडमिनिस्ट्रेटरने नियंत्रित केलेले आहे</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> जोडू इच्छिते</translation>
 <translation id="2346319942568447007">तुम्ही कॉपी केलेली इमेज</translation>
@@ -1030,7 +1026,6 @@
 <translation id="2930577230479659665">प्रत्येक प्रतीनंतर ट्रिम करा</translation>
 <translation id="2933624813161016821">एम्बॉसिंग फॉइल</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> लिंक उघडा</translation>
-<translation id="2941112035454246133">निम्न</translation>
 <translation id="2941878205777356567">एन्व्हलप ९ x १२ इंच</translation>
 <translation id="2941952326391522266">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट <ph name="DOMAIN2" /> वरील आहे. हे कदाचित एका चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
 <translation id="2942492342931589800">अनौपचारिक</translation>
@@ -1212,7 +1207,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> अंकी पडताळणी कोड एंटर करा</translation>
 <translation id="3272643614306383237">१ MB पेक्षा कमी. काही साइट तुमच्या पुढील भेटीच्या वेळी आणखी हळू लोड होऊ शकतात.</translation>
-<translation id="327346289570683313">किमतीची रेंज</translation>
 <translation id="3273738040255912340">तुमचा अ‍ॅडमिनिस्ट्रेटर हा तुमच्या प्रोफाइल आणि ब्राउझरमध्ये रिमोट पद्धतीने बदल करू शकतो, तक्रारीद्वारे ब्राउझरशी संबंधित माहितीचे विश्लेषण करू शकतो व इतर आवश्यक टास्क करू शकतो. या डिव्हाइसवरील अ‍ॅक्टिव्हिटी ही Chromium च्या बाहेरदेखील व्यवस्थापित केली जाऊ शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> मध्ये उघडण्याची शिफारस करत नाही}other{अ‍ॅडमिनिस्ट्रेटर धोरण या फाइल <ph name="DESTINATION_NAME" /> मध्ये उघडण्याची शिफारस करत नाही}}</translation>
 <translation id="3282085321714087552">तुमच्या संस्थेने <ph name="ENROLLMENT_DOMAIN" /> खालील वेबसाइटना सेटिंग्ज किंवा धोरणे यांसारखी काही माहिती पाठवली आहे.</translation>
@@ -1700,6 +1694,7 @@
 <translation id="4177501066905053472">जाहिरातीचे विषय</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">किमतीचा बंद ठेवणे बंद करा</translation>
+<translation id="4190446002599583608">AI द्वारे सक्षम केलेले, इतिहास शोध</translation>
 <translation id="4191334393248735295">लांबी</translation>
 <translation id="4195459680867822611">Chrome शी संबंधित टिपा पहा बटण, Chrome च्या वैशिष्‍ट्यांविषयी जाणून घेण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="4195643157523330669">नवीन टॅबमध्ये उघडा</translation>
@@ -1715,6 +1710,7 @@
 <translation id="421066178035138955">आभासी वास्तविकता डिव्हाइस आणि डेटा वापरा</translation>
 <translation id="4213500579045346575">शरीरसौष्‍ठव</translation>
 <translation id="4214357935346142455">साइन इन करा स्क्रीन प्रोफाइल</translation>
+<translation id="4219596572397833317">तुम्हाला स्मार्टपणे खरेदी करण्यात मदत करण्यासाठी किंमत इतिहास आणि आणखी बरेच काही पहा.</translation>
 <translation id="4220128509585149162">क्रॅश होते</translation>
 <translation id="4221630205957821124">&lt;h4&gt;पायरी १: पोर्टलमध्ये साइन इन करा&lt;/h4&gt;
     &lt;p&gt;कॅफे किंवा एअरपोर्टवर असणाऱ्या वाय-फाय नेटवर्कसाठी तुम्ही साइन इन करणे आवश्यक असते. साइन इन पेज पाहण्यासाठी, &lt;code&gt;http://&lt;/code&gt; वापरत असलेल्या पेजला भेट द्या.&lt;/p&gt;
@@ -3634,6 +3630,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome मधून सूचना फॉर्म काढून टाकायचा?</translation>
 <translation id="781440967107097262">क्लिपबोर्ड शेअर करायचा का?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">पेपर (प्लेन)</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' साठी <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> सापडले</translation>
 <translation id="7822611063308883975">हँडहेल्ड गेम कन्सोल</translation>
@@ -3798,6 +3795,7 @@
 <translation id="8148608574971654810">पीडीएफ आवृत्ती:</translation>
 <translation id="8149426793427495338">तुमचा कॉंप्युटर निष्क्रीय झाला.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> येथील फाइल वाचनीय नाही. ती काढून टाकलेली, हलविलेली असू शकते किंवा फाइल परवानग्या ॲक्सेस प्रतिबंधित करत असू शकतात.</translation>
+<translation id="8151185429379586178">डेव्हलपर टूल</translation>
 <translation id="8153865548451212769">{0,plural, =1{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> वर डाउनलोड करण्याची शिफारस करत नाही}other{अ‍ॅडमिनिस्ट्रेटर धोरण या फाइल <ph name="DESTINATION_NAME" /> वर डाउनलोड करण्याची शिफारस करत नाही}}</translation>
 <translation id="81563721597823545">हॉकीची उपकरणे</translation>
 <translation id="8161095570253161196">ब्राउझिंग पुन्‍हा सुरू करा</translation>

@@ -144,6 +144,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chromium dalam 
 <translation id="5131565040785979529">Organisasi anda, <ph name="DOMAIN" />, mengurus akaun yang anda log masuk dan cara Chromium digunakan.</translation>
 <translation id="5146749061471423558">Tambahkan Penanda Halaman pada Chromium</translation>
 <translation id="5171868502429358653">Log Masuk ke Chromium</translation>
+<translation id="5203483872492817335">Akses Chromium dengan lebih pantas daripada Dok Skrin Utama iPad anda.</translation>
 <translation id="5213683223491576284">Buka Password Manager dalam Chromium.</translation>
 <translation id="5224391634244552924">Tiada kata laluan yang disimpan. Chromium boleh menyemak kata laluan anda yang disimpan.</translation>
 <translation id="5242782538551259282">Sesetengah data Chromium anda belum disimpan dalam Google Account anda.
@@ -225,6 +226,7 @@ Perkara yang perlu dipertimbangkan:
 Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda yang disulitkan. Ungkapan laluan tidak dihantar kepada atau disimpan oleh Google. Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chromium dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Pemberitahuan Chromium dimatikan dalam tetapan peranti anda pada masa ini.</translation>
 <translation id="7222001353246886083">Cari ${searchPhrase} pada Chromium</translation>
+<translation id="7228180817326917122">Petua Chromium: Pilih kedudukan bar alamat anda</translation>
 <translation id="725427773388857052">Chrome dapat membantu untuk memastikan anda selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi.</translation>
 <translation id="7269362888766543920">Beberapa alat tambah menyebabkan Chromium ranap. Sila cuba menyahpasang alat tambah tersebut.</translation>
 <translation id="7285031092584344905">Akses kata laluan Chromium anda dan pelbagai lagi merentas apl lain.</translation>
@@ -247,6 +249,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="7928628054454574139">Buka Chromium pada bila-bila masa anda mengetik pautan dalam apl lain</translation>
 <translation id="7931842119211730154">Kunci Tab Inkognito Apabila Anda Menutup Chromium</translation>
 <translation id="7934404985878918282">Lihat Senarai Bacaan Chromium</translation>
+<translation id="7947765692209663835">Akses Chromium dengan lebih pantas daripada Dok Skrin Utama iPhone anda.</translation>
 <translation id="7971753607796745700">Tambahkan Item Senarai Bacaan pada Chromium</translation>
 <translation id="7980860476903281594">Chromium berkongsi lokasi anda dengan laman yang anda benarkan.</translation>
 <translation id="7994322153108931467">Untuk mendapatkan petua berguna Chromium, hidupkan pemberitahuan pada tetapan iOS anda.</translation>
@@ -265,6 +268,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="8386869251364507178">Tindakan Chromium</translation>
 <translation id="8409374867500149834">Anda mempunyai keselamatan terkuat Chromium terhadap laman web berbahaya</translation>
 <translation id="8458950033462118672">Anda boleh membuka pautan dalam Chromium secara automatik dengan menjadikan Chromium sebagai Apl Penyemak Imbas Lalai anda.</translation>
+<translation id="8473874987831035139">Petua Chromium: Alihkan Chromium kepada Dok</translation>
 <translation id="8502918057530111907">Gunakan Chromium secara Lalai untuk Mendapatkan Cerapan Harga dengan Mudah</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit. Data yang disimpan hanya pada peranti ini semasa anda log masuk akan dipadamkan. Data ini boleh termasuk sejarah dan kata laluan.}other{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit. Data yang disimpan hanya pada peranti ini semasa anda log masuk akan dipadamkan. Data ini boleh termasuk sejarah dan kata laluan.}}</translation>
 <translation id="858114650497379505">Anda boleh menggunakan kata laluan yang anda simpan pada Pengurus Kata Laluan dalam apl lain pada iPhone anda.</translation>

@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Bouton Gérer les mots de passe, activez-le pour afficher et gérer vos mots de passe dans les paramètres de Chrome</translation>
 <translation id="1108464073729874771">A3 x 4</translation>
 <translation id="1110994991967754504">Sélectionner une autorisation pour <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">Gamme de prix pour toutes les options</translation>
 <translation id="1113869188872983271">&amp;Annuler la réorganisation</translation>
 <translation id="1118429183611783760">Aspirateurs et entretien des planchers</translation>
 <translation id="1122714970786750095">Appareils électroniques et électriques</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">Masquer pour l'instant</translation>
 <translation id="121201262018556460">Vous avez tenté d'accéder à <ph name="DOMAIN" />, mais le serveur a présenté un certificat contenant une clé faible. Il est possible qu'un pirate ait compromis la clé privée. Il est donc possible que le serveur auquel vous avez accédé ne soit pas celui que vous croyez, et que vous soyez en train de communiquer avec un pirate informatique.</translation>
 <translation id="1212527389003717329">Le téléchargement a commencé. Pour le voir, maintenez le doigt sur |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">Gamme de prix</translation>
 <translation id="1219129156119358924">Sécurité du système</translation>
 <translation id="1222060260947439312">Plateau de droite</translation>
 <translation id="1224330468394120478">A3 x 6</translation>
@@ -141,6 +139,7 @@
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Vêtements d'extérieur</translation>
 <translation id="1253096324252841344">Payer au moyen de <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
+<translation id="1253846494229886276">Enregistrement de la capture d'écran en cours…</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synchronisés)</translation>
 <translation id="1255086252236620440">Batteurs</translation>
 <translation id="1256368399071562588">&lt;p&gt;Si vous essayez de consulter un site Web et si celui-ci ne s'ouvre pas, essayez de corriger l'erreur à l'aide des étapes de dépannage suivantes :&lt;/p&gt;
@@ -352,7 +351,6 @@
 <translation id="1617276713587758852">Véhicules multisegments</translation>
 <translation id="1619007254056372606">Gérer les données relatives aux sites sur l'appareil</translation>
 <translation id="1620510694547887537">Caméra</translation>
-<translation id="162285686621567578">Ce site Web est bloqué par ton parent.</translation>
 <translation id="1622966923835127638">Finances d'entreprise</translation>
 <translation id="1623104350909869708">Empêcher cette page de générer des boîtes de dialogue supplémentaires</translation>
 <translation id="1633137413609266904">{0,plural, =1{La politique de l'administrateur bloque l'ouverture de ce fichier}one{La politique de l'administrateur bloque l'ouverture de # fichier}other{La politique de l'administrateur bloque l'ouverture de # fichiers}}</translation>
@@ -737,7 +735,6 @@
 <translation id="2328955282645810595">Outils électriques et de construction</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expire le <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Rédaction de CV</translation>
-<translation id="2337776048981813397">Gamme de prix pour toutes les options</translation>
 <translation id="2337852623177822836">Paramètre géré par votre administrateur</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> veut s'associer</translation>
 <translation id="2346319942568447007">L'image que vous avez copiée</translation>
@@ -1029,7 +1026,6 @@
 <translation id="2930577230479659665">Couper après chaque copie</translation>
 <translation id="2933624813161016821">Feuille de gaufrage</translation>
 <translation id="2938225289965773019">Ouvrir des liens <ph name="PROTOCOL" /></translation>
-<translation id="2941112035454246133">Faible</translation>
 <translation id="2941878205777356567">Enveloppe 9 x 12 po</translation>
 <translation id="2941952326391522266">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité provient du domaine <ph name="DOMAIN2" />. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="2942492342931589800">Grand public</translation>
@@ -1211,7 +1207,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Entrez le code de vérification à <ph name="NUMBER_OF_DIGITS" /> chiffres</translation>
 <translation id="3272643614306383237">Moins de 1 Mo. Certains sites peuvent prendre plus de temps à charger lors de votre prochaine visite.</translation>
-<translation id="327346289570683313">Gamme de prix</translation>
 <translation id="3273738040255912340">Votre administrateur peut apporter des modifications à votre profil et à votre navigateur à distance, analyser les informations concernant le navigateur au moyen des rapports et effectuer d'autres tâches nécessaires. L'activité sur cet appareil peut aussi être gérée à l'extérieur de Chromium. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{La politique de l'administrateur ne recommande pas d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}one{La politique de l'administrateur ne recommande pas d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}other{La politique de l'administrateur ne recommande pas d'ouvrir ces fichiers dans <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Votre organisation, <ph name="ENROLLMENT_DOMAIN" />, a envoyé de l'information, comme des paramètres ou des politiques, aux sites Web suivants.</translation>
@@ -1700,6 +1695,7 @@
 <translation id="4177501066905053472">Sujets d'annonces</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Annuler le suivi de prix</translation>
+<translation id="4190446002599583608">Recherche dans l'historique, propulsée par l'IA</translation>
 <translation id="4191334393248735295">Durée</translation>
 <translation id="4195459680867822611">Bouton Afficher les astuces de Chrome, activez-le pour en savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
@@ -2141,6 +2137,7 @@
 <translation id="5019952743397118625">La politique <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> est définie. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ne contrôlera pas la disponibilité du mode Développeur sur la page des extensions.</translation>
 <translation id="5021557570875267742">Suivre les prix avec Chrome</translation>
 <translation id="5023310440958281426">Vérifiez les règles définies par votre administrateur</translation>
+<translation id="5024171724744627792">Payez plus rapidement lorsque votre carte est enregistrée. Les détails de la carte sont chiffrés dans votre compte Google.</translation>
 <translation id="5030338702439866405">Délivré par</translation>
 <translation id="503069730517007720">Un certificat racine pour « <ph name="SOFTWARE_NAME" /> » est requis, mais n'est pas installé. Votre administrateur informatique devrait consulter les instructions de configuration de « <ph name="SOFTWARE_NAME" /> » pour corriger ce problème. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">À propos de Google Traduction</translation>
@@ -3329,6 +3326,7 @@ Détails supplémentaires :
 <translation id="7311244614769792472">Aucun résultat trouvé</translation>
 <translation id="7311837626618954149">Chromium empêche les sites d'utiliser des témoins tiers pour vous suivre pendant votre navigation.</translation>
 <translation id="7313107491291103073">Votre organisation a signalé ce site, car il pourrait enfreindre une politique.</translation>
+<translation id="7316521168101843192">Enregistrement du fichier sur Microsoft OneDrive en cours…</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Aide pour la connexion</translation>
 <translation id="7323804146520582233">Masquer la section « <ph name="SECTION" /> »</translation>
@@ -3632,6 +3630,7 @@ Détails supplémentaires :
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Supprimer la suggestion de formulaire de Chrome?</translation>
 <translation id="781440967107097262">Partager le presse-papiers?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Papier (ordinaire)</translation>
 <translation id="7815407501681723534"><ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> résultat(s) trouvé(s) pour « <ph name="SEARCH_STRING" /> »</translation>
 <translation id="7822611063308883975">Consoles de jeux portables</translation>
@@ -3796,6 +3795,7 @@ Détails supplémentaires :
 <translation id="8148608574971654810">Version PDF :</translation>
 <translation id="8149426793427495338">Votre ordinateur s'est mis en veille.</translation>
 <translation id="8150722005171944719">Le fichier à l'adresse <ph name="URL" /> n'est pas lisible. Il est possible qu'il ait été supprimé ou déplacé, ou que les autorisations associées à ce fichier empêchent d'y accéder.</translation>
+<translation id="8151185429379586178">Outils de développement</translation>
 <translation id="8153865548451212769">{0,plural, =1{La politique de l'administrateur ne recommande pas de télécharger ce fichier sur <ph name="DESTINATION_NAME" />}one{La politique de l'administrateur ne recommande pas de télécharger ce fichier sur <ph name="DESTINATION_NAME" />}other{La politique de l'administrateur ne recommande pas de télécharger ces fichiers sur <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Équipement de hockey</translation>
 <translation id="8161095570253161196">Reprendre la navigation</translation>

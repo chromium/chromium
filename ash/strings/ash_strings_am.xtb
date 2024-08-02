@@ -976,6 +976,7 @@
 <translation id="453661520163887813"><ph name="TIME" /> ሙሉ ለመሆን</translation>
 <translation id="4538824937723742295">የሙሉ ማያ ገፅ ቅጽበታዊ ገፅ ዕይታን ያንሱ</translation>
 <translation id="4539127209940689201">የአሁኑን ገፅ ያትሙ</translation>
+<translation id="4541505619120536051">ሁልጊዜ ክፍት ነው</translation>
 <translation id="4541706525461326392">መገለጫን በማስወገድ ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
 <translation id="4544483149666270818">ለመቅዳት አንድ መስኮት ይምረጡ</translation>
 <translation id="4545950850562423083">የአሁኑን ገጽ እንደ ዕልባት ያስቀምጡ</translation>
@@ -1488,6 +1489,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" /> አሁን ላይ የእርስዎን ካሜራ እና ማይክሮፎን እየተጠቀመ ነው</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">የላየኛው አዝራር</translation>
+<translation id="6240821072888636753">ሁልጊዜ ጠይቅ</translation>
 <translation id="6247728804802644171">ማሳወቂያዎችን ክፈት</translation>
 <translation id="6249795363855770621">እንደተጠናቀቀ ምልክት ማድረግ አልተቻለም። መስመር ላይ ሲሆኑ እንደገና ይሞክሩ።</translation>
 <translation id="6254629735336163724">ወደ አግድም ተቆልፏል</translation>
@@ -1611,7 +1613,7 @@
 <translation id="6696025732084565524">የእርስዎ ተነቃይ የቁልፍ ሰሌዳ ወሳኝ የሆነ ዝማኔ ያስፈልገዋል</translation>
 <translation id="6697913454192220372">አዲስ ዴስክ ያክሉ</translation>
 <translation id="6700713906295497288">የIME ምናሌ አዝራር</translation>
-<translation id="6704375469818246414">AI አመንጪን ሲጠቀሙ ጥራት ሊለያይ ይችላል።</translation>
+<translation id="6704375469818246414">ሰው ሠራሽ አስተውሎት አመንጪን ሲጠቀሙ ጥራት ሊለያይ ይችላል።</translation>
 <translation id="6706742084323792866">ተሰኪ ቁልፍ ሰሌዳ</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
 <translation id="6723839937902243910">ኃይል</translation>
@@ -1832,6 +1834,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> አሁን ላይ ማይክሮፎንዎን እየተጠቀመ ነው</translation>
 <translation id="7561982940498449837">ምናሌን ዝጋ</translation>
 <translation id="7564874036684306347">መስኮትን ወደ ሌላ ዴስክቶፕ መውሰድ ያልተጠበቀ ባህሪን ሊያስከትል ይችላል። ተከትለው የሚመጡ ማሳወቂያዎችን፣ መስኮቶች እና መገናኛዎች በዴስክቶፖች መካከል ሊከፈሉ ይችላሉ።</translation>
+<translation id="7568790562536448087">በማዘመን ላይ</translation>
 <translation id="7569509451529460200">ብሬይል እና ChromeVox ነቅተዋል</translation>
 <translation id="7569886975397378678">የስልክዎን ማሳወቂያዎች እና መተግበሪያዎች ዕይታ ማዋቀርን ያሰናብቱ</translation>
 <translation id="7571361473021531288">ባትሪ <ph name="BATTERY_PERCENTAGE" />% <ph name="TIME" /> ይቀራል</translation>
@@ -1882,7 +1885,7 @@
 <translation id="7726391492136714301">የስልክዎን ማሳወቂያዎች እና መተግበሪያዎች ይመልከቱ</translation>
 <translation id="7727952505535211425">ድር ጣቢያውን በአድራሻ አሞሌው ውስጥ በአዲስ ትር ውስጥ ይክፈቱ</translation>
 <translation id="7742327441377685481">ምንም ማሳወቂያዎች የሉም</translation>
-<translation id="774736258792760908">እንድጽፍ እርዳኝ እና እንዳነብ እርዳኝን ሲያበሩ፣ የመጻፍ ጥቆማዎችን ለማመንጨት፣ ማጠቃለያዎች ለማመንጨት፣ ጥያቄዎችን ለመመለስ፣ እና በ<ph name="LINK_TO_SERVICE_TERMS" /> ተገዥ የሆነውን ምርት ለማሻሻል፣ የግብዓት ጽሑፉ እና የሰነድ ይዘት ወደ Google AI አገልጋዮች ይላካል። ግላዊ፣ አደገኛ ወይም ምሥጢራዊ የሆነ ነገር አያካትቱ።</translation>
+<translation id="774736258792760908">እንድጽፍ እርዳኝ እና እንዳነብ እርዳኝን ሲያበሩ፣ የመጻፍ ጥቆማዎችን ለማመንጨት፣ ማጠቃለያዎች ለማመንጨት፣ ጥያቄዎችን ለመመለስ፣ እና በ<ph name="LINK_TO_SERVICE_TERMS" /> ተገዥ የሆነውን ምርት ለማሻሻል፣ የግብዓት ጽሑፉ እና የሰነድ ይዘት ወደ Google ሰው ሠራሽ አስተውሎት አገልጋዮች ይላካል። ግላዊ፣ አደገኛ ወይም ምሥጢራዊ የሆነ ነገር አያካትቱ።</translation>
 <translation id="7748275671948949022">የማስጀመሪያ አዝራርን በመደርደሪያ ላይ አድምቅ</translation>
 <translation id="7749443890790263709">የተደረሰባቸው የዴስኮች ከፍተኛ ብዛት።</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
@@ -1895,7 +1898,7 @@
 <translation id="7781829728241885113">ትናንት</translation>
 <translation id="7787212146956232129">የግብዓት እና የውጽዓት መሣሪያዎች ተቀናብረዋል። ለመቀየር ወደ ቅንብሮች ይሂዱ።</translation>
 <translation id="7792590255364786396">የሚታይ</translation>
-<translation id="7793389284006812057">AI አመንጪ በሙከራ ደረጃ ላይ ያለ፣ በቅድመ ልማት ላይ ያለ እና በአሁኑ ጊዜ ውስን ተደራሽነት ያለው ነው።</translation>
+<translation id="7793389284006812057">ሰው ሠራሽ አስተውሎት አመንጪ በሙከራ ደረጃ ላይ ያለ፣ በቅድመ ልማት ላይ ያለ እና በአሁኑ ጊዜ ውስን ተደራሽነት ያለው ነው።</translation>
 <translation id="7796735576426975947">አዲስ ማሳወቂያ ተደብቋል</translation>
 <translation id="7798302898096527229">ለመሰረዝ Search ወይም Shift ይጫኑ።</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
@@ -1961,7 +1964,6 @@
 <translation id="7963992254934562106">ከ<ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">አቃፊ ምረጥ...</translation>
 <translation id="7973756967040444713">የመሣሪያ አሞሌን ዝጋ</translation>
-<translation id="797485111629834774">ተግባሩ እንደተጠናቀቀ ምልክት አድርግ <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">ሙሉ ማያ ማጉያን አብራ ወይም አጥፋ</translation>
 <translation id="7977927628060636163">የተንቀሳቃሽ ስልክ አውታረ መረቦችን በመፈለግ ላይ...</translation>
 <translation id="7982789257301363584">አውታረ መረብ</translation>

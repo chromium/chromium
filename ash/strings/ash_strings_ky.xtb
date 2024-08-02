@@ -136,6 +136,7 @@
 <translation id="1420408895951708260">Түнкү жарыкты күйгүзүү же өчүрүү. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ооба</translation>
 <translation id="1435537621343861112">Текстти айтып терүү башталган жок. Микрофонуңуз өчүрүлгөн.</translation>
+<translation id="1445031758921122223">Жүз көзөмөлдөө файлдары жүктөлүп алынды</translation>
 <translation id="1447907279406111651">Азыр · Cаат <ph name="END_TIME" /> аяктайт</translation>
 <translation id="1448963928642384376">Түзмөгүңүздүн хотспоттору</translation>
 <translation id="1455242230282523554">Тил параметрлерин көрсөтүү</translation>
@@ -975,6 +976,7 @@
 <translation id="453661520163887813">Толгончо <ph name="TIME" /> бар</translation>
 <translation id="4538824937723742295">Толук экрандын скриншотун тартып алуу</translation>
 <translation id="4539127209940689201">Учурдагы баракты басып чыгаруу</translation>
+<translation id="4541505619120536051">Ар дайым ачылсын</translation>
 <translation id="4541706525461326392">Профиль өчүрүлүүдө. Бир нече мүнөткө созулушу мүмкүн.</translation>
 <translation id="4544483149666270818">Жаздыруу үчүн терезе тандаңыз</translation>
 <translation id="4545950850562423083">Учурдагы баракты кыстарма катары сактоо</translation>
@@ -1223,6 +1225,7 @@
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> кеп файлдары жарым-жартылай жүктөлүп алынды</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Бул өтмөккө өтүү</translation>
 <translation id="5364693579536176785">сактагыч</translation>
+<translation id="5369573834963677938">Жүз көзөмөлдөө түзмөктөгү башка колдонуучуларга жеткиликтүү болот</translation>
 <translation id="5369717264580061086">Файлды Files колдонмосунда алдын ала көрүү</translation>
 <translation id="5377367976106153749">Камераны колдонууга уруксат бересизби?</translation>
 <translation id="5379115545237091094">Өтө көп аракеттер аткарылды</translation>
@@ -1412,6 +1415,7 @@
 <translation id="6020147141355393792">Телефонуңуздагы билдирмелерди жана колдонмолорду көрүү параметрин тууралоо</translation>
 <translation id="6022924867608035986">Издөө кутучасындагы текстти тазалоо</translation>
 <translation id="602472752137106327">Бардык иш такталардагы терезелерди көрсөтүү, радио баскычы тандалды</translation>
+<translation id="6024768346262692989">Жүз көзөмөлдөө файлдары жүктөлүп алынган жок</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />, Администраторуңуз башкарат</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> эч кандай иш-чара жок. Google Жылнааманы серепчиде ачуу үчүн Enter баскычын басыңыз.</translation>
 <translation id="6030495522958826102">Меню экрандын төмөнкү сол бурчуна жылдырылды.</translation>
@@ -1485,6 +1489,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" /> учурда камера менен микрофонуңузду колдонуп жатат</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Жогорку баскыч</translation>
+<translation id="6240821072888636753">Ар дайым суралсын</translation>
 <translation id="6247728804802644171">Билдирмелерди ачуу</translation>
 <translation id="6249795363855770621">Аткарылды деп белгиленген жок. Интернетке туташканда кайталап көрүңүз.</translation>
 <translation id="6254629735336163724">Тикесинен бекитилген</translation>
@@ -1828,6 +1833,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> учурда микрофонуңузду колдонуп жатат</translation>
 <translation id="7561982940498449837">Менюну жабуу</translation>
 <translation id="7564874036684306347">Терезелер башка иш тактасына жылдырылганда күтүлбөгөн аракеттер орун алышы мүмкүн. Кийинки билдирмелер, терезелер жана диалог кутучалары иш такталардын ортосунда бөлүнүп калышы мүмкүн.</translation>
+<translation id="7568790562536448087">Жаңыртуу</translation>
 <translation id="7569509451529460200">Брайль жана ChromeVox иштетилди</translation>
 <translation id="7569886975397378678">Телефонуңуздагы билдирмелерди жана колдонмолорду көрүү параметрин жабуу</translation>
 <translation id="7571361473021531288">Батареянын кубаты: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> калды</translation>
@@ -1957,7 +1963,6 @@
 <translation id="7963992254934562106">Кайдан: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Папка тандоо…</translation>
 <translation id="7973756967040444713">Куралдар тилкесин жабуу</translation>
-<translation id="797485111629834774">Жасалчу ишти "бүттү" деп белгилөө: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Толук экран лупасын күйгүзүү же өчүрүү</translation>
 <translation id="7977927628060636163">Мобилдик тармактар изделүүдө…</translation>
 <translation id="7982789257301363584">Тармак</translation>

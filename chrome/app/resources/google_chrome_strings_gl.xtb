@@ -215,6 +215,8 @@
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Para usar Chrome, precísase Windows 10 ou unha versión posterior.</translation>
 <translation id="3835168907083856002">Con esta acción crearase un novo perfil de Chrome para <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="383928141529488001">Google Chrome precisa acceso ao Bluetooth para explorar 
+ os dispositivos Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Pecha todas as ventás de Google Chrome e téntao de novo.</translation>
 <translation id="3865754807470779944">Tes instalada a versión <ph name="PRODUCT_VERSION" /> de Chrome</translation>
 <translation id="3873044882194371212">Abrir ligazón nunha ventá do modo de incó&amp;gnito de Chrome</translation>
@@ -425,6 +427,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6938166777909186039">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar Windows 10 ou unha versión posterior. Este ordenador ten instalado Windows 8.1.</translation>
 <translation id="6943584222992551122">Os datos de navegación desta persoa eliminaranse deste dispositivo. Para recuperalos, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regra de entrada para que Google Chrome Beta permita tráfico mDNS.</translation>
+<translation id="6979589607440534284">Descubre por que Chrome bloquea algúns ficheiros (abrirase nunha nova pestana)</translation>
 <translation id="7011190694940573312">Produciuse un erro na instalación porque non se admite esta versión do sistema operativo.</translation>
 <translation id="7024536598735240744">Produciuse un erro na descompresión: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Detívose a instalación.</translation>

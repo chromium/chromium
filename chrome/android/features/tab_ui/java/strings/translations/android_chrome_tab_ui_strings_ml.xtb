@@ -41,6 +41,7 @@
 <translation id="2801787514987684416">സ്റ്റോർ വിവരങ്ങൾ കാണണോ?</translation>
 <translation id="2928243913527329289">Google | ഈ സ്റ്റോറിനെക്കുറിച്ച്</translation>
 <translation id="2977480621796371840">ഗ്രൂപ്പിൽ നിന്ന് നീക്കം ചെയ്യുക</translation>
+<translation id="29919168204617356">നിഷ്ക്രിയമായ ടാബുകൾ സ്വയമേവ അടയ്ക്കും. നിങ്ങൾക്ക് അവ ഏതുസമയത്തും ചരിത്രത്തിൽ കണ്ടെത്താം.</translation>
 <translation id="3008554597174452548">ഉൽപ്പന്നം ട്രാക്ക് ചെയ്യുന്നത് നിർത്തുക</translation>
 <translation id="3026391124054406831">നിങ്ങളുടെ ടാബുകൾ ഓർഗനൈസ് ചെയ്യാൻ ഗ്രൂപ്പുകൾ സൃഷ്ടിക്കുക.</translation>
 <translation id="3051031624272448591">നിങ്ങൾക്ക് അവ എപ്പോൾ വേണമെങ്കിലും ചരിത്രത്തിൽ വീണ്ടും നേടാം</translation>
@@ -51,6 +52,7 @@
 <translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> എന്ന ടാബ് ഗ്രൂപ്പിനുള്ള ടാബ് ഗ്രൂപ്പ് ആക്ഷൻ മെനു തുറക്കുക</translation>
 <translation id="3328308545011660196">നിർദ്ദേശം: <ph name="NUMBER_OF_TABS" /> ടാബുകൾ സമാനമാണെന്ന് തോന്നുന്നു. അവ ഗ്രൂപ്പ് ചെയ്യണോ?</translation>
 <translation id="3547352561153509682">ഇത്, <ph name="USER_EMAIL" /> എന്നതിലേക്ക് സൈൻ ചെയ്‌തിരിക്കുന്ന എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഗ്രൂപ്പ് ഇല്ലാതാക്കും</translation>
+<translation id="3613492231657284463">നിഷ്ക്രിയമായ ടാബുകളുടെ ഡയലോഗ് മറയ്ക്കുക</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ഷെയർഷീറ്റ് പ്രിവ്യൂ തംബ്നൈൽ</translation>
 <translation id="381219490185664296">ടാബ് ഗ്രൂപ്പ് അൺഗ്രൂപ്പ് ചെയ്യണോ?</translation>
@@ -137,6 +139,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google-ൽ നിന്നുള്ള <ph name="REVIEWS_COUNT_ONE" /> റിവ്യൂ}other{Google-ൽ നിന്നുള്ള <ph name="REVIEWS_COUNT_MANY" /> റിവ്യൂകൾ}}</translation>
 <translation id="7559245342362162951">ഗ്രൂപ്പിന്റെ ടാബുകൾ പൂർണ്ണസ്ക്രീൻ ഗ്രിഡിൽ കാണിക്കുക</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
+<translation id="7688386659311034820">നിഷ്ക്രിയമായ ടാബുകളുടെ ഡയലോഗ്</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ് പങ്കിടുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ പങ്കിടുക}}</translation>
 <translation id="7773714564112603605">ടാബ് നീക്കം ചെയ്ത് ഗ്രൂപ്പ് ഇല്ലാതാക്കുക</translation>
 <translation id="7792771145871471484">നിർദ്ദേശങ്ങൾ അവലോകനം ചെയ്യുക.</translation>
@@ -159,6 +162,7 @@
 <translation id="8398929769197326728">പുതിയ ഫോൾഡർ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">ക്രമീകരണം</translation>
 <translation id="8631711675211020168">എല്ലാവർക്കും ഉടൻ തന്നെ <ph name="GROUP_NAME" /> ടാബ് ഗ്രൂപ്പിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകും, അത് എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഇല്ലാതാക്കുകയും ചെയ്യും</translation>
+<translation id="8633025649649592204">സമീപകാല ആക്റ്റിവിറ്റി</translation>
 <translation id="870736955561925754">ടാബ് അടച്ച് ഗ്രൂപ്പ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="8714939927607906138">കുറഞ്ഞ വില</translation>
 <translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>

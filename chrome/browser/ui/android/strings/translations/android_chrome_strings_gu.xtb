@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">આ ડિવાઇસ પરના એકાઉન્ટ મેનેજ કરો</translation>
 <translation id="1129510026454351943">વિગતો: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">છૂપો મોડ, તમારા ડિવાઇસનો ઉપયોગ કરતા અન્ય લોકોથી તમારા બ્રાઉઝિંગને ખાનગી રાખે છે</translation>
+<translation id="1138458427267715730">સમગ્ર વેબ પર કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય ત્યારે અલર્ટ મેળવો</translation>
 <translation id="1142732900304639782">આ સાઇટનો અનુવાદ કરવાનું ઑફર કરશો નહીં</translation>
 <translation id="1145536944570833626">અસ્તિત્વમાંના ડેટાને ડિલીટ કરો.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeમાં ખુલશે. આગળ વધીને, તમે <ph name="BEGIN_LINK1" />Googleની સેવાની શરતો<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Google Chrome તથા ChromeOSની વધારાની સેવાની શરતો<ph name="END_LINK2" /> સાથે સંમત થાઓ છો.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">પ્રવૃત્તિ મેનેજ કરો</translation>
 <translation id="1355088659320425659">ઇતિહાસ અને ટૅબ</translation>
 <translation id="1360432990279830238">સાઇન આઉટ કરી સિંકનો વિકલ્પ બંધ કરવો છે?</translation>
+<translation id="1363028406613469049">ટ્રૅક</translation>
 <translation id="1366525380420346469">જ્યારે ચાલુ હોય</translation>
 <translation id="1373696734384179344">પસંદ કરેલ કન્ટેન્ટ ડાઉનલોડ કરવા માટે મેમરી અપૂરતી છે.</translation>
 <translation id="1376578503827013741">ગણતરી કરી રહ્યાં છે…</translation>
@@ -292,6 +294,7 @@
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" />નો પ્રીવ્યૂ કરો</translation>
 <translation id="2450083983707403292">શું તમે <ph name="FILE_NAME" />ને ફરી ડાઉનલોડ કરવાનું શરૂ કરવા માગો છો?</translation>
+<translation id="2451607499823206582">ટ્રૅક કરી રહ્યાં છીએ</translation>
 <translation id="2453860139492968684">સમાપ્ત</translation>
 <translation id="2461822463642141190">વર્તમાન</translation>
 <translation id="2468444275314013497">તમારા બ્રાઉઝરમાં બધું ઠીક લાગે છે</translation>
@@ -1041,7 +1044,6 @@
 <translation id="6040939430773295212">પુનરાવર્તિત</translation>
 <translation id="604124094241169006">સ્વચલિત</translation>
 <translation id="6042308850641462728">વધુ</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{1 સાઇટ માટેની પરવાનગીઓનો રિવ્યૂ કર્યો}one{{NUM_SITES} સાઇટ માટેની પરવાનગીઓનો રિવ્યૂ કર્યો}other{{NUM_SITES} સાઇટ માટેની પરવાનગીઓનો રિવ્યૂ કર્યો}}</translation>
 <translation id="604996488070107836">કોઇ અજાણી ભૂલને કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">તમારી સ્ટોરી અને પ્રવૃત્તિને અહીં નિયંત્રિત કરો</translation>
@@ -1682,7 +1684,6 @@
 <translation id="8865415417596392024">તમારા એકાઉન્ટમાંનો Chrome ડેટા</translation>
 <translation id="8898822736010347272">વેબ પરના નવા જોખમો શોધી કાઢવા અને દરેક વ્યક્તિની સુરક્ષિતતામાં સહાય કરવા માટે, તમે મુલાકાત લેતા અમુક પેજના URLs, સિસ્ટમની મર્યાદિત માહિતી અને પેજનું અમુક કન્ટેન્ટ Googleને મોકલે છે.</translation>
 <translation id="8909135823018751308">શેર કરો…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{1 સાઇટને નોટિફિકેશનની મંજૂરી નથી}one{{NUM_SITES} સાઇટને નોટિફિકેશનની મંજૂરી નથી}other{{NUM_SITES} સાઇટને નોટિફિકેશનની મંજૂરી નથી}}</translation>
 <translation id="8921980840204105660">તમારા અન્ય ડિવાઇસમાંના તમારા બધા બુકમાર્ક મેળવવા માટે, સિંક કરો</translation>
 <translation id="8922289737868596582">વધુ વિકલ્પો બટનની મદદથી પેજ ડાઉનલોડ કરો, જેથી તમે ઇન્ટરનેટ વિના પણ તેનો ઉપયોગ કરી શકો</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>

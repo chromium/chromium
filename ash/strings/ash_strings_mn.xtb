@@ -136,6 +136,7 @@
 <translation id="1420408895951708260">Шөнийн гэрлийг асаах/унтраах. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Тийм</translation>
 <translation id="1435537621343861112">Дуу хоолойгоор бичихийг эхлүүлэх боломжгүй. Таны микрофон унтраалттай байна.</translation>
+<translation id="1445031758921122223">Царайн хяналтын файлыг татсан</translation>
 <translation id="1447907279406111651">Одоо · <ph name="END_TIME" />-д дуусна</translation>
 <translation id="1448963928642384376">Таны төхөөрөмжийн сүлжээний цэгүүд</translation>
 <translation id="1455242230282523554">Хэлний тохиргоог харуулах</translation>
@@ -976,6 +977,7 @@
 <translation id="453661520163887813">Дүүртэл <ph name="TIME" /> үлдсэн</translation>
 <translation id="4538824937723742295">Бүтэн дэлгэцийн агшныг авах</translation>
 <translation id="4539127209940689201">Одоогийн хуудсыг нээх</translation>
+<translation id="4541505619120536051">Үргэлж нээх</translation>
 <translation id="4541706525461326392">Профайлыг хасаж байна. Үүнд хэдэн минут шаардлагатай байж магадгүй.</translation>
 <translation id="4544483149666270818">Бичих цонхыг сонгоно уу</translation>
 <translation id="4545950850562423083">Одоогийн хуудсыг хавчуургаар хадгалах</translation>
@@ -1224,6 +1226,7 @@
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> дээрх ярианы файлуудыг хэсэгчлэн татсан</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> таб руу очих</translation>
 <translation id="5364693579536176785">хадгалах сангийн зай</translation>
+<translation id="5369573834963677938">Царайн хяналт нь төхөөрөмж дээрх бусад хэрэглэгчид боломжтой болно</translation>
 <translation id="5369717264580061086">Файлс аппад файл урьдчилан үзэх</translation>
 <translation id="5377367976106153749">Камерын хандалтыг асаах уу?</translation>
 <translation id="5379115545237091094">Хэт олон удаа оролдлоо</translation>
@@ -1413,6 +1416,7 @@
 <translation id="6020147141355393792">Утасныхаа мэдэгдэл болон аппуудыг харахыг тохируулах</translation>
 <translation id="6022924867608035986">Хайлтын талбарын текстийг утсгах</translation>
 <translation id="602472752137106327">Бүх дэлгэцээс цонхыг харуулах, радио товчлуурыг сонгосон</translation>
+<translation id="6024768346262692989">Царайн хяналтын файлыг татаж чадсангүй</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" />-д үйл явдал байхгүй байна. Google календарийг хөтчид нээхийн тулд enter дээр дарна уу.</translation>
 <translation id="6030495522958826102">Цэсийг дэлгэцийн зүүн доод булан руу зөөсөн.</translation>
@@ -1486,6 +1490,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" /> одоогоор таны камер болон микрофоныг ашиглаж байна</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Дээд талын товч</translation>
+<translation id="6240821072888636753">Тухай бүрд асуух</translation>
 <translation id="6247728804802644171">Мэдэгдэл нээх</translation>
 <translation id="6249795363855770621">Дууссан гэж тэмдэглэж чадсангүй. Онлайн үед дахин оролдоно уу.</translation>
 <translation id="6254629735336163724">Хэвтээ чиглэлээр түгжсэн</translation>
@@ -1829,6 +1834,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> одоогоор таны микрофоныг ашиглаж байна</translation>
 <translation id="7561982940498449837">Цэсийг хаах</translation>
 <translation id="7564874036684306347">Цонхыг өөр дэлгэцэд зөөснөөр гэнэтийн асуудал үүсэж болзошгүй. Дараагийн мэдэгдэл, цонх болон харилцах цонх нь дэлгэцийн хооронд хуваагдаж болзошгүй.</translation>
+<translation id="7568790562536448087">Шинэчилж байна</translation>
 <translation id="7569509451529460200">Брайль болон ChromeVox-г идэвхжүүлсэн</translation>
 <translation id="7569886975397378678">Утасныхаа мэдэгдэл болон аппуудыг харахыг тохируулахыг үл хэрэгсэх</translation>
 <translation id="7571361473021531288">Батарей <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> үлдсэн</translation>
@@ -1958,7 +1964,6 @@
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />-с</translation>
 <translation id="7968693143708939792">Фолдер сонгох...</translation>
 <translation id="7973756967040444713">Самбарыг хаах</translation>
-<translation id="797485111629834774">Ажлыг дууссан гэж тэмдэглэх: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Бүтэн дэлгэцийн томруулагчийг асаах эсвэл унтраах</translation>
 <translation id="7977927628060636163">Хөдөлгөөнт холбооны сүлжээг хайж байна...</translation>
 <translation id="7982789257301363584">Сүлжээ</translation>

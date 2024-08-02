@@ -211,6 +211,7 @@
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome richiede Windows 10 o versioni successive.</translation>
 <translation id="3835168907083856002">Questa operazione creerà un nuovo profilo Chrome per <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="383928141529488001">Google Chrome richiede l'accesso al Bluetooth per individuare i dispositivi Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Chiudi tutte le finestre di Google Chrome e riprova.</translation>
 <translation id="3865754807470779944">La versione di Chrome <ph name="PRODUCT_VERSION" /> è installata</translation>
 <translation id="3873044882194371212">Apri link in una finestra di navigazione in inco&amp;gnito di Chrome</translation>
@@ -417,6 +418,7 @@
 <translation id="6938166777909186039">Per ricevere gli aggiornamenti futuri di Google Chrome, devi avere Windows 10 o versioni successive. Su questo computer è installato Windows 8.1.</translation>
 <translation id="6943584222992551122">I dati di navigazione di questa persona verranno eliminati dal dispositivo. Per recuperare i dati, accedi a Chromium con il nome utente <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regola inbound per consentire il traffico mDNS in Google Chrome Beta.</translation>
+<translation id="6979589607440534284">Scopri perché Chrome blocca alcuni file (si apre in una nuova scheda)</translation>
 <translation id="7011190694940573312">Installazione non riuscita perché questa versione del sistema operativo non è supportata.</translation>
 <translation id="7024536598735240744">Errore decompressione: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installazione interrotta.</translation>

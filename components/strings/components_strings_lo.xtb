@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">ປຸ່ມຈັດການລະຫັດຜ່ານ, ເປີດນຳໃຊ້ເພື່ອເບິ່ງ ແລະ ຈັດການລະຫັດຜ່ານຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">ເລືອກການອະນຸຍາດສຳລັບ <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">ຊ່ວງລາຄາສຳລັບຕົວເລືອກທັງໝົດ</translation>
 <translation id="1113869188872983271">ປ່ຽນ​ກັບ​ຄືນຄໍາສັ່ງຈັດລໍາດັບຄືນ</translation>
 <translation id="1118429183611783760">ເຄື່ອງດູດຝຸ່ນ ແລະ ເບິ່ງແຍງພື້ນ</translation>
 <translation id="1122714970786750095">ອີເລັກໂທຣນິກ ແລະ ການໄຟຟ້າ</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">ເຊື່ອງສຳລັບຕອນນີ້</translation>
 <translation id="121201262018556460">ທ່ານໄດ້ພະຍາຍາມທີ່ຈະເຂົ້າຫາ <ph name="DOMAIN" />, ແຕ່ເຊີບເວີໄດ້ນໍາສະເໜີໃບຢັ້ງຢືນທີ່ມີລະຫັດອ່ອນ. ຜູ້ໂຈມຕີສາມາດທໍາລາຍລະຫັດສ່ວນຕົວໄດ້, ແລະເຊີບເວີອາດຈະບໍ່ເປັນເຊີບເວີທີ່ທ່ານຄາດໄວ້ (ທ່ານອາດຈະກໍາລັງສື່ສານກັບຜູ້ໂຈມຕີຢູ່).</translation>
 <translation id="1212527389003717329">ເລີ່ມດາວໂຫຼດແລ້ວ. ເພື່ອເບິ່ງມັນ, ໃຫ້ກົດ |<ph name="ACCELERATOR" />| ຄ້າງໄວ້.</translation>
-<translation id="1214970845432250240">ຂອບ​ເຂດລາ​ຄາ</translation>
 <translation id="1219129156119358924">ຄວາມປອດໄພລະບົບ</translation>
 <translation id="1222060260947439312">ຖາດຂວາ</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -353,7 +351,6 @@
 <translation id="1617276713587758852">ຄຣອສໂອເວີ</translation>
 <translation id="1619007254056372606">ຈັດການຂໍ້ມູນເວັບໄຊຢູ່ອຸປະກອນ</translation>
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
-<translation id="162285686621567578">ຜູ້ປົກຄອງຂອງທ່ານບລັອກເວັບໄຊນີ້.</translation>
 <translation id="1622966923835127638">ທຸລະກິດການເງິນ</translation>
 <translation id="1623104350909869708">ປ້ອງກັນບໍ່ໃຫ້ໜ້ານີ້ສ້າງກ່ອງເພີ່ມເຕີມ</translation>
 <translation id="1633137413609266904">{0,plural, =1{ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບບລັອກການເປີດໄຟລ໌ນີ້}other{ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບບລັອກການເປີດໄຟລ໌ # ລາຍການ}}</translation>
@@ -738,7 +735,6 @@
 <translation id="2328955282645810595">ເຄື່ອງມືກໍ່ສ້າງ ແລະ ພະລັງງານ</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, ໝົດອາຍຸໃນວັນທີ <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">ສືບຕໍ່ການຂຽນ</translation>
-<translation id="2337776048981813397">ຊ່ວງລາຄາສຳລັບຕົວເລືອກທັງໝົດ</translation>
 <translation id="2337852623177822836">ການຕັ້ງຄ່າທີ່ຄວບຄຸມໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ຕ້ອງການຈັບຄູ່</translation>
 <translation id="2346319942568447007">ຮູບພາບທີ່ທ່ານສຳເນົາ</translation>
@@ -1030,7 +1026,6 @@
 <translation id="2930577230479659665">ຕັດອອກຫຼັງຈາກສຳເນົາແຕ່ລະສະບັບ</translation>
 <translation id="2933624813161016821">ຟອຍລ໌ລາຍນູນ</translation>
 <translation id="2938225289965773019">ເປີດ​ລິ້ງ <ph name="PROTOCOL" /></translation>
-<translation id="2941112035454246133">ຕໍ່າ</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 ນິ້ວ</translation>
 <translation id="2941952326391522266">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນມາຈາກ <ph name="DOMAIN2" />. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="2942492342931589800">ສະບາຍໆ</translation>
@@ -1212,7 +1207,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">ລະບຸລະຫັດການຢັ້ງຢືນ <ph name="NUMBER_OF_DIGITS" /> ຕົວເລກ</translation>
 <translation id="3272643614306383237">ໜ້ອຍກວ່າ 1 MB. ບາງເວັບໄຊອາດໂຫຼດຊ້າລົງໃນການເຂົ້າເບິ່ງເທື່ອຕໍ່ໄປຂອງທ່ານ.</translation>
-<translation id="327346289570683313">ຂອບ​ເຂດລາ​ຄາ</translation>
 <translation id="3273738040255912340">ຜູ້ເບິ່ງແຍງຂອງທ່ານສາມາດປ່ຽນແປງໂປຣໄຟລ໌ ແລະ ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຈາກທາງໄກ, ວິເຄາະຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມທ່ອງເວັບຜ່ານການລາຍງານ ແລະ ເຮັດໜ້າວຽກທີ່ຈຳເປັນອື່ນໆໄດ້. ການເຄື່ອນໄຫວຢູ່ອຸປະກອນນີ້ອາດຖືກຈັດການຢູ່ນອກ Chromium ໄດ້ນຳ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ເປີດໄຟລ໌ນີ້ໃນ <ph name="DESTINATION_NAME" />}other{ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ເປີດໄຟລ໌ເຫຼົ່ານີ້ໃນ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">ອົງການຂອງທ່ານ, <ph name="ENROLLMENT_DOMAIN" />, ໄດ້ສົ່ງຂໍ້ມູນຈຳນວນໜຶ່ງໄປໃຫ້ເວັບໄຊຕໍ່ໄປນີ້ແລ້ວ ເຊັ່ນ: ການຕັ້ງຄ່າ ຫຼື ນະໂຍບາຍ.</translation>
@@ -1701,6 +1695,7 @@
 <translation id="4177501066905053472">ຫົວຂໍ້ໂຄສະນາ</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ເຊົາຕິດຕາມລາຄາ</translation>
+<translation id="4190446002599583608">ການຊອກຫາປະຫວັດທີ່ຂັບເຄື່ອນໂດຍ AI</translation>
 <translation id="4191334393248735295">ຄວາມຍາວ</translation>
 <translation id="4195459680867822611">ປຸ່ມເບິ່ງເຄັດລັບໃນການໃຊ້ Chrome, ເປີດນຳໃຊ້ເພື່ອສຶກສາກ່ຽວກັບຄຸນສົມບັດຕ່າງໆຂອງ Chrome</translation>
 <translation id="4195643157523330669">ເປີດຢູ່ໃນແຖບໃໝ່</translation>
@@ -1744,6 +1739,7 @@
 <translation id="4235360514405112390">ຖືກຕ້ອງ</translation>
 <translation id="4239799716689808527">ປ້າຍ</translation>
 <translation id="4242380780309416996">ຊອງ (ນ້ຳໜັກຫຼາຍ)</translation>
+<translation id="4242981939686657948">ສຳລັບວິທີທີ່ມີປະສິດທິພາບເພີ່ມຂຶ້ນເພື່ອຊອກຫາປະຫວັດການທ່ອງເວັບຂອງທ່ານ, ໃຫ້ເປີດ</translation>
 <translation id="4244926541863471678">ຟີມ</translation>
 <translation id="4246517972543675653">ການສຶກສາຢູ່ຕ່າງປະເທດ</translation>
 <translation id="4250431568374086873">ການເຊື່ອມຕໍ່ຂອງທ່ານກັບເວັບໄຊນີ້ບໍ່ປອດໄພເຕັມສ່ວນ</translation>
@@ -3635,6 +3631,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">ເອົາ​ການ​ແນະ​ນຳ​ແບບ​ຟອມ​ອອກ​ໄປ​ຈາກ Chrome ບໍ?</translation>
 <translation id="781440967107097262">ແບ່ງປັນຄລິບບອດບໍ?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">ເຈ້ຍ (ທຳມະດາ)</translation>
 <translation id="7815407501681723534">ພົບ <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> ສຳລັບ '<ph name="SEARCH_STRING" />'</translation>
 <translation id="7822611063308883975">ເຄື່ອງຫຼິ້ນເກມມືຖື</translation>
@@ -3799,6 +3796,7 @@
 <translation id="8148608574971654810">ເວີຊັນ PDF:</translation>
 <translation id="8149426793427495338">ຄອມພິວເຕີຂອງທ່ານໄດ້ເຂົ້າສູ່ໂໝດນອນຫຼັບແລ້ວ.</translation>
 <translation id="8150722005171944719">ໄຟລ໌ຢູ່ທີ່ <ph name="URL" /> ບໍ່ສາມາດອ່ານໄດ້. ມັນອາດຈະຖືກເອົາອອກໄປ, ຍ້າຍໜີ,​ຫຼື ການອະນຸຍາດໄຟລ໌ອາດຈະກໍາລັງ​ປ້ອງ​ກັນການການເຂົ້າຫາ.</translation>
+<translation id="8151185429379586178">ເຄື່ອງ​ມື​ຜູ້ພັດ​ທະ​ນາ</translation>
 <translation id="8153865548451212769">{0,plural, =1{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ດາວໂຫຼດໄຟລ໌ນີ້ໃສ່ໃນ <ph name="DESTINATION_NAME" />}other{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ດາວໂຫຼດໄຟລ໌ເຫຼົ່ານີ້ໃສ່ໃນ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">ອຸປະກອນກິລາຮັອກກີ</translation>
 <translation id="8161095570253161196">ສືບຕໍ່ເລືອກເບິ່ງ</translation>

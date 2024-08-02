@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Ушул түзмөктөгү аккаунттарды тескөө</translation>
 <translation id="1129510026454351943">Кененирээк: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Жашыруун режим ушул түзмөктү колдонгон башка кишилерге сиз баш баккан сайттарды көрсөтпөйт</translation>
+<translation id="1138458427267715730">Кандайдыр бир сайтта баасы арзандаганда, билдирүүлөрдү алыңыз</translation>
 <translation id="1142732900304639782">Төмөнкү сайттарды которуу сунушталбасын</translation>
 <translation id="1145536944570833626">Учурдагы дайындарды жок кылуу.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome'до ачылат. Улантуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен ChromeOS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макул болосуз.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Аракеттерди тескөө</translation>
 <translation id="1355088659320425659">Таржымал жана өтмөктөр</translation>
 <translation id="1360432990279830238">Аккаунттан чыгып, шайкештирүүнү өчүрөсүзбү?</translation>
+<translation id="1363028406613469049">Трек</translation>
 <translation id="1366525380420346469">Күйүп турганда</translation>
 <translation id="1373696734384179344">Тандалган мазмунду жүктөп алуу үчүн эстутум жетишсиз.</translation>
 <translation id="1376578503827013741">Эсептелүүдө…</translation>
@@ -292,6 +294,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2435457462613246316">Сырсөздү көрсөтүү</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> алдын ала көрүү</translation>
 <translation id="2450083983707403292"><ph name="FILE_NAME" /> файлын кайрадан жүктөп аласызбы?</translation>
+<translation id="2451607499823206582">Көз салуу</translation>
 <translation id="2453860139492968684">Бүтүрүү</translation>
 <translation id="2461822463642141190">Учурда</translation>
 <translation id="2468444275314013497">Серепчиңиз жайында</translation>
@@ -1041,7 +1044,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6040939430773295212">Кайталанма</translation>
 <translation id="604124094241169006">Автоматтык</translation>
 <translation id="6042308850641462728">Дагы</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{1 сайт үчүн уруксаттар өчүрүлдү}other{{NUM_SITES} сайт үчүн уруксаттар өчүрүлдү}}</translation>
 <translation id="604996488070107836">Белгисиз катадан улам <ph name="FILE_NAME" /> жүктөлүп алынбай калды.</translation>
 <translation id="605721222689873409">ЖЖ</translation>
 <translation id="6059830886158432458">Окуяларыңызды жана аракеттериңизди бул жерден көзөмөлдөңүз</translation>
@@ -1682,7 +1684,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8865415417596392024">Аккаунтуңуздагы Chrome дайын-даректери</translation>
 <translation id="8898822736010347272">Сиз баш баккан айрым барактардын URL даректерин, чектелген тутум маалыматын жана айрым барактардын мазмунун бардык колдонуучулар үчүн мүмкүн болгон коркунучтарды аныктап, бөгөттөө үчүн Google'га жөнөтөт.</translation>
 <translation id="8909135823018751308">Бөлүшүү…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{1 сайттын билдирмелерине тыюу салынды}other{{NUM_SITES} сайттын билдирмелерине тыюу салынды}}</translation>
 <translation id="8921980840204105660">Башка түзмөктөрдөгү кыстармаларды колдонуу үчүн шайкештирүүнү иштетиңиз</translation>
 <translation id="8922289737868596582">"Дагы параметрлер" баскычын басып, оффлайн режиминде иштөө үчүн барактарды жүктөп алуу</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>

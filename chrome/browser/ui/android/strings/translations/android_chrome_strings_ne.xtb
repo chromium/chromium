@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">यो डिभाइसका खाताहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1129510026454351943">विवरणहरू: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">तपाईंले इन्कोग्निटो मोड प्रयोग गर्नुभयो भने तपाईंको डिभाइस प्रयोग गर्ने अन्य मान्छेहरू तपाईंको ब्राउजिङ डेटा हेर्न पाउँदैनन्</translation>
+<translation id="1138458427267715730">इन्टरनेटमा भएको कुनै पनि साइटमा उत्पादनको मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्</translation>
 <translation id="1142732900304639782">यी साइटहरू अनुवाद गर्ने प्रस्ताव नगर्नुहोस्</translation>
 <translation id="1145536944570833626">विद्यमान डेटा मेट्नुहोस्।</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome तथा ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ।</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">क्रियाकलाप व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1355088659320425659">हिस्ट्री र ट्याबहरू</translation>
 <translation id="1360432990279830238">साइन आउट गरी सिंक निष्क्रिय पार्ने हो?</translation>
+<translation id="1363028406613469049">ट्रयाक</translation>
 <translation id="1366525380420346469">अन भएका बेला</translation>
 <translation id="1373696734384179344">चयन गरिएको सामग्री डाउनलोड गर्नको लागि मेमोरी अपर्याप्त।</translation>
 <translation id="1376578503827013741">हिसाब गर्दै…</translation>
@@ -292,6 +294,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> को प्रिभ्यू</translation>
 <translation id="2450083983707403292">तपाईं <ph name="FILE_NAME" /> लाई फेरि डाउनलोड गर्न चाहनुहुन्छ?</translation>
+<translation id="2451607499823206582">ट्र्याक गरिँदै छ</translation>
 <translation id="2453860139492968684">समाप्त</translation>
 <translation id="2461822463642141190">हालको</translation>
 <translation id="2468444275314013497">तपाईंको ब्राउजर सुरक्षित देखिन्छ</translation>
@@ -1040,7 +1043,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6040939430773295212">सामग्री दोहोरिएको थियो</translation>
 <translation id="604124094241169006">स्वचालित</translation>
 <translation id="6042308850641462728">थप</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{एउटा साइटलाई दिइएका अनुमतिहरूको समीक्षा गरिएको छ}other{{NUM_SITES} वटा साइटलाई दिइएका अनुमतिहरूको समीक्षा गरिएको छ}}</translation>
 <translation id="604996488070107836">एक अज्ञात त्रुटिको कारणले गर्दा <ph name="FILE_NAME" /> को डाउनलोड असफल भयो।</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">यहाँ आफ्नो समाचार फिडमा देखिने सामग्री तथा क्रियाकलाप नियन्त्रण गर्नुहोस्</translation>
@@ -1681,7 +1683,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8865415417596392024">तपाईंको खातामा रहेको Chrome को डेटा</translation>
 <translation id="8898822736010347272">नयाँ खतराहरू पत्ता लगाउन र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई सुरक्षित राख्न Google लाई तपाईंले हेर्ने केही पृष्ठका URL, प्रणालीसम्बन्धी निश्चित जानकारी र पृष्ठका केही सामग्रीहरू पठाउँछ।</translation>
 <translation id="8909135823018751308">साझा गर्नुहोस्...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{एउटा साइटलाई नोटिफिकेसन पठाउने अनुमति दिइएको छैन}other{{NUM_SITES} वटा साइटलाई नोटिफिकेसन पठाउने अनुमति दिइएको छैन}}</translation>
 <translation id="8921980840204105660">तपाईं आफूले चलाउने अन्य डिभाइसमार्फत आफ्ना बुकमार्कहरू प्राप्त गर्न चाहनुहुन्छ भने सिंक गर्नुहोस्</translation>
 <translation id="8922289737868596582">पृष्ठहरूलाई अफलाइन हेर्न थप विकल्पहरू नामक बटनबाट तिनीहरूलाई डाउनलोड गर्नुहोस्</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>

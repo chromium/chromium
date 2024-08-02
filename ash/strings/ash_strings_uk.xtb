@@ -413,6 +413,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516416533263263796">Режим концентрації уваги ввімкнено, залишилося 10 хвилин</translation>
 <translation id="2516637483312286228">Змінити елементи керування іграми</translation>
+<translation id="252054055865191167">Інструмент "Маркер"</translation>
 <translation id="2526581474998477112">Розблокувати вікна</translation>
 <translation id="2528111225373402384">Налаштування точки доступу</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -975,6 +976,7 @@
 <translation id="453661520163887813"><ph name="TIME" /> до повного заряду</translation>
 <translation id="4538824937723742295">Зробити знімок усього екрана</translation>
 <translation id="4539127209940689201">Друкувати поточну сторінку</translation>
+<translation id="4541505619120536051">Завжди відкривати</translation>
 <translation id="4541706525461326392">Триває видалення профілю. Це може зайняти кілька хвилин.</translation>
 <translation id="4544483149666270818">Виберіть вікно, яке потрібно записати на відео</translation>
 <translation id="4545950850562423083">Зберегти поточну сторінку як закладку</translation>
@@ -1487,6 +1489,7 @@
 <translation id="6232891689835436217">Додаток <ph name="APP_NAME" /> використовує ваші камеру та мікрофон</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Верхня кнопка</translation>
+<translation id="6240821072888636753">Запитувати щоразу</translation>
 <translation id="6247728804802644171">Відкрити сповіщення</translation>
 <translation id="6249795363855770621">Не вдалося позначити як виконане. Повторіть спробу, коли інтернет-з’єднання відновиться.</translation>
 <translation id="6254629735336163724">Заблоковано в горизонтальному положенні</translation>
@@ -1830,6 +1833,7 @@
 <translation id="7557816257942363084">Додаток <ph name="APP_NAME" /> використовує ваш мікрофон</translation>
 <translation id="7561982940498449837">Закрити меню</translation>
 <translation id="7564874036684306347">Переміщення вікон на інший робочий стіл може спричинити неочікувану поведінку. Нові сповіщення та вікна можуть розділятися між робочими столами.</translation>
+<translation id="7568790562536448087">Оновлення</translation>
 <translation id="7569509451529460200">Шрифт Брайля та ChromeVox увімкнено</translation>
 <translation id="7569886975397378678">Відхилити налаштування перегляду сповіщень і додатків на телефоні</translation>
 <translation id="7571361473021531288">Рівень заряду акумулятора: <ph name="BATTERY_PERCENTAGE" />% | До розрядження залишилося <ph name="TIME" /></translation>
@@ -1959,7 +1963,6 @@
 <translation id="7963992254934562106">З телефона <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Вибрати папку…</translation>
 <translation id="7973756967040444713">Закрити панель інструментів</translation>
-<translation id="797485111629834774">Позначити завдання як виконане: "<ph name="TASK_NAME" />"</translation>
 <translation id="797512352675305461">Увімкнути або вимкнути повноекранну лупу</translation>
 <translation id="7977927628060636163">Пошук мобільних мереж…</translation>
 <translation id="7982789257301363584">Мережа</translation>

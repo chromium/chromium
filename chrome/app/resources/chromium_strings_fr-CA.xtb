@@ -23,6 +23,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="126567311906253476">Lorsque vous vous connectez à des services Google comme Gmail ou YouTube avec <ph name="USER_EMAIL" />, vous pouvez vous connecter automatiquement à Chromium avec le même compte</translation>
 <translation id="1290883685122687410">Erreur de configuration : <ph name="METAINSTALLER_EXIT_CODE" /> <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Configurer votre nouveau profil Chromium</translation>
+<translation id="1324107359134968521">Chromium a besoin d'un accès au Bluetooth pour découvrir les appareils Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Supprimer également les données de Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Vous êtes connecté à Chromium!</translation>
 <translation id="1478370723027452770">Obtenir de l'aide avec Chrome for Testing</translation>
@@ -61,6 +62,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="1951406923938785464">Chromium a bloqué ce téléchargement, car le type de fichier n'est pas souvent téléchargé et pourrait être dangereux</translation>
 <translation id="1953553007165777902">Téléchargement en cours… <ph name="MINUTE" /> minute(s) restante(s)</translation>
 <translation id="1966382378801805537">Chromium ne parvient pas à déterminer quel est le navigateur par défaut ou à le définir</translation>
+<translation id="1990262977744080398">Découvrir pourquoi Chromium bloque certains fichiers, s'ouvre dans un nouvel onglet</translation>
 <translation id="2008474315282236005">Cette action entraînera la suppression d'un élément de cet appareil. Pour récupérer vos données plus tard, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Échec de l'installation. Veuillez réessayer.</translation>
 <translation id="2020032459870799438">Pour vérifier si vos autres mots de passe sont en sécurité contre les violations de données et d'autres risques de sécurité, <ph name="BEGIN_LINK" />connectez-vous à Chromium<ph name="END_LINK" />.</translation>

@@ -977,6 +977,7 @@
 <translation id="453661520163887813">పూర్తి కావడానికి <ph name="TIME" /> పడుతుంది</translation>
 <translation id="4538824937723742295">ఫుల్ స్క్రీన్ స్క్రీన్‌షాట్‌ను తీయండి</translation>
 <translation id="4539127209940689201">ప్రస్తుత పేజీని ప్రింట్ చేయండి</translation>
+<translation id="4541505619120536051">ఎల్లప్పుడూ తెరిచి ఉంటుంది</translation>
 <translation id="4541706525461326392">ప్రొఫైల్‌ను తీసివేస్తోంది. దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
 <translation id="4544483149666270818">రికార్డ్ చేయడానికి విండోను ఎంచుకోండి</translation>
 <translation id="4545950850562423083">ప్రస్తుత పేజీని బుక్‌మార్క్‌గా సేవ్ చేయండి</translation>
@@ -1362,6 +1363,7 @@
 <translation id="5819918159912280082">మీ Chromebook అనుకోకుండా రీస్టార్ట్ అయింది. మీ మునుపటి విండోలను, యాప్‌లను తెరవండి.</translation>
 <translation id="5823239091726045201">వెబ్‌లో Google టాస్క్‌లు</translation>
 <translation id="5825969630400862129">కనెక్ట్ చేయబడిన పరికరాల సెట్టింగ్‌లు</translation>
+<translation id="5830180081891717894">మరో <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />లో <ph name="ROUTE_TITLE" /> ఆపివేయి</translation>
 <translation id="5841296711770970362">తర్వాతి ట్రాక్‌కు వెళ్లండి</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> హాట్‌స్పాట్ ఆన్‌లో ఉంది, పరికరాలేవీ కనెక్ట్ అయి లేవు</translation>
@@ -1489,6 +1491,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ప్రస్తుతం మీ కెమెరా, మైక్రోఫోన్‌ను ఉపయోగిస్తోంది</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">టాప్ బటన్</translation>
+<translation id="6240821072888636753">ప్రతిసారి అడగాలి</translation>
 <translation id="6247728804802644171">నోటిఫికేషన్‌లను తెరవండి</translation>
 <translation id="6249795363855770621">పూర్తయినట్లు గుర్తు పెట్టడం సాధ్యపడలేదు. ఆన్‌లైన్‌లోకి వచ్చినప్పుడు మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6254629735336163724">సమాంతర ప్రదర్శనకు లాక్ చేయబడింది</translation>
@@ -1832,6 +1835,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> ప్రస్తుతం మీ మైక్రోఫోన్‌ను ఉపయోగిస్తోంది</translation>
 <translation id="7561982940498449837">మెనూను మూసివేయండి</translation>
 <translation id="7564874036684306347">విండోలను మరొక డెస్క్‌టాప్‌కు తరలించడం వలన ఊహించని ప్రవర్తన చోటు చేసుకోవచ్చు. తర్వాత చూపబడే నోటిఫికేషన్‌లు, విండోలు మరియు డైలాగ్‌లు డెస్క్‌టాప్‌ల మధ్య విభజించబడవచ్చు.</translation>
+<translation id="7568790562536448087">అప్‌డేట్ చేస్తోంది</translation>
 <translation id="7569509451529460200">బ్రెయిలీ మరియు ChromeVox ప్రారంభించబడ్డాయి</translation>
 <translation id="7569886975397378678">మీ ఫోన్‌లోని నోటిఫికేషన్‌లను, యాప్‌లను చూసే సదుపాయాన్ని సెటప్ చేయడాన్ని విస్మరించండి</translation>
 <translation id="7571361473021531288">బ్యాటరీ <ph name="BATTERY_PERCENTAGE" />% | బ్యాటరీ ఖాళీ కావడానికి <ph name="TIME" /> సమయం మిగిలి ఉంది</translation>
@@ -1961,7 +1965,6 @@
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> నుండి</translation>
 <translation id="7968693143708939792">ఫోల్డర్‌ను ఎంచుకోండి...</translation>
 <translation id="7973756967040444713">టూల్‌బార్‌ను మూసివేయండి</translation>
-<translation id="797485111629834774">టాస్క్ పూర్తయినట్లు మార్క్ చేయండి: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">ఫుల్ స్క్రీన్ మ్యాగ్నిఫైయర్‌ను ఆన్ లేదా ఆఫ్ చేయండి</translation>
 <translation id="7977927628060636163">మొబైల్ నెట్‌వర్క్‌ల కోసం వెతుకుతోంది...</translation>
 <translation id="7982789257301363584">నెట్‌వర్క్</translation>
@@ -2067,6 +2070,7 @@
 <translation id="8375916635258623388">ఈ <ph name="DEVICE_NAME" /> మరియు మీ ఫోన్‌ ఆటోమెటిక్‌గా కనెక్ట్ చేయబడతాయి</translation>
 <translation id="8380784334203145311">శుభరాత్రి,</translation>
 <translation id="8382715499079447151">వీక్షణ ప్రొటెక్షన్</translation>
+<translation id="8383614331548401927">Recapకు స్వాగతం</translation>
 <translation id="8388750414311082622">చివరి డెస్క్‌ను తీసివేయలేరు.</translation>
 <translation id="8394567579869570560">మీ తల్లి/తండ్రి ఈ పరికరాన్ని లాక్ చేసి ఉంచారు</translation>
 <translation id="8401850874595457088">భాష మెనూను తెరవండి</translation>

@@ -885,6 +885,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5396950905475481456">Convide membros da família</translation>
 <translation id="5407969256130905701">Rejeitar alterações</translation>
 <translation id="5414763847370083940">Vai receber um alerta se o preço descer nalgum site.</translation>
+<translation id="5415289094036440596">Não é possível partilhar as chaves de acesso</translation>
 <translation id="5416022985862681400">Últimos 7 dias</translation>
 <translation id="5416455648658732408">Mover para grupo de separadores</translation>
 <translation id="5423269318075950257">Monitorize o preço</translation>
@@ -1293,6 +1294,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="734758817008927353">Opções para guardar o cartão</translation>
 <translation id="7352651011704765696">Algo correu mal</translation>
 <translation id="7353432112255316844">Validar identidade</translation>
+<translation id="736564850024123010">Mude a posição da barra de endereço para ter uma experiência personalizada.</translation>
 <translation id="7367530036083223701">Aceda às suas palavras-passe em segurança a partir do ecrã principal com o widget do Gestor de Palavras-passe.</translation>
 <translation id="7380220816562673297">Por enquanto, só pode partilhar palavras-passe com membros da família. <ph name="BEGIN_LINK" />Crie um grupo familiar<ph name="END_LINK" /> com um máximo de 6 membros e receba mais dos seus produtos e subscrições na rede Google.</translation>
 <translation id="739101637685146669">Que URL quer adicionar aos marcadores?</translation>
@@ -1490,7 +1492,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8237382152611443140">Abra as Definições do preenchimento automático de palavras-passe</translation>
 <translation id="8248969482078657578">Os separadores inativos ajudam a manter a concentração</translation>
 <translation id="8261506727792406068">Eliminar</translation>
-<translation id="8263336784344783289">Dar um nome a este grupo</translation>
 <translation id="8263809106706527890">Pode ter ocorrido uma alteração às predefinições do seu navegador. Pode verificar esta opção nas definições.</translation>
 <translation id="8264966119170358612">Algumas das suas palavras-passe guardadas foram expostas numa violação de dados de terceiros. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Como parte da reposição do iPad, a sua sessão na conta <ph name="USER_NAME" /> foi terminada. Para voltar a iniciar sessão, toque em "Continuar" abaixo.</translation>

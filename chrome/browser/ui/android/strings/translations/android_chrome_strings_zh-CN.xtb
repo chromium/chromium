@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">管理此设备上的账号</translation>
 <translation id="1129510026454351943">错误详情：<ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">无痕模式可实现私密浏览，其他使用此设备的人员无法得知您的浏览信息</translation>
+<translation id="1138458427267715730">当网络中任一网站上的商品降价时，您会收到提醒</translation>
 <translation id="1142732900304639782">不询问是否翻译这些网站</translation>
 <translation id="1145536944570833626">删除现有数据。</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />将在 Chrome 中打开。继续操作即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">管理我的活动记录</translation>
 <translation id="1355088659320425659">历史记录和标签页</translation>
 <translation id="1360432990279830238">退出账号并关闭同步功能？</translation>
+<translation id="1363028406613469049">跟踪</translation>
 <translation id="1366525380420346469">处于开启状态时</translation>
 <translation id="1373696734384179344">内存不足，无法下载所选内容。</translation>
 <translation id="1376578503827013741">正在计算…</translation>
@@ -292,6 +294,7 @@
 <translation id="2435457462613246316">显示密码</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" />预览</translation>
 <translation id="2450083983707403292">要重新开始下载 <ph name="FILE_NAME" /> 吗？</translation>
+<translation id="2451607499823206582">正在跟踪</translation>
 <translation id="2453860139492968684">完成</translation>
 <translation id="2461822463642141190">当前</translation>
 <translation id="2468444275314013497">您的浏览器看起来很安全</translation>
@@ -1041,7 +1044,6 @@
 <translation id="6040939430773295212">重复</translation>
 <translation id="604124094241169006">自动</translation>
 <translation id="6042308850641462728">展开</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{已审核 1 个网站的权限}other{已审核 {NUM_SITES} 个网站的权限}}</translation>
 <translation id="604996488070107836">出现未知错误，未能下载 <ph name="FILE_NAME" />。</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">在此处控制您的报道和活动</translation>
@@ -1680,7 +1682,6 @@
 <translation id="8865415417596392024">您账号中的 Chrome 数据</translation>
 <translation id="8898822736010347272">向 Google 发送您访问的部分网页的网址、有限的系统信息以及部分网页内容，以协助我们发现新威胁并保护网络上的所有用户。</translation>
 <translation id="8909135823018751308">分享…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{1 个网站不得发送通知}other{{NUM_SITES} 个网站不得发送通知}}</translation>
 <translation id="8921980840204105660">同步即可获取您在其他设备上保存的书签</translation>
 <translation id="8922289737868596582">通过“更多选项”按钮下载网页以供离线查看</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>

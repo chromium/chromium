@@ -215,6 +215,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Windows 10 edo sistema berriagoa behar da Google Chrome erabiltzeko.</translation>
 <translation id="3835168907083856002">Chrome-ko beste profil bat sortuko da <ph name="USER_EMAIL_ADDRESS" /> helbiderako</translation>
+<translation id="383928141529488001">Bluetooth bidezko gailuak arakatzeko, Bluetootha erabiltzeko baimena behar du Google Chrome-k. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Itxi Google Chrome leiho guztiak eta saiatu berriro.</translation>
 <translation id="3865754807470779944">Chrome-ren <ph name="PRODUCT_VERSION" /> bertsioa dago instalatuta</translation>
 <translation id="3873044882194371212">Ireki esteka Chrome-ko &amp;ezkutuko moduko leiho batean</translation>
@@ -425,6 +426,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6938166777909186039">Etorkizunean Google Chrome-ren eguneratzeak eskuratzeko, Windows 10 edo berriago bat beharko duzu. Ordenagailu hau Windows 8.1 erabiltzen ari da.</translation>
 <translation id="6943584222992551122">Pertsona honen arakatze-datuak gailutik ezabatuko dira. Datuak berreskuratzeko, hasi saioa Chrome-n <ph name="USER_EMAIL" /> gisa.</translation>
 <translation id="6967962315388095737">Google Chrome Beta-k mDNS trafikoa baimentzeko sarrerako araua.</translation>
+<translation id="6979589607440534284">Ikusi zergatik blokeatzen dituen Chrome-k fitxategi batzuk, beste fitxa batean irekiko da</translation>
 <translation id="7011190694940573312">Instalazioak huts egin du, sistema eragilearen bertsio hau bateragarria ez delako.</translation>
 <translation id="7024536598735240744">Despaketatze-errorea: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Gelditu da instalazioa.</translation>

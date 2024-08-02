@@ -976,6 +976,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="453661520163887813">To‘liq quvvatlanishiga <ph name="TIME" /> qoldi</translation>
 <translation id="4538824937723742295">Butun ekranni suratga olish</translation>
 <translation id="4539127209940689201">Joriy sahifani chop etish</translation>
+<translation id="4541505619120536051">Doim ochilsin</translation>
 <translation id="4541706525461326392">Profil olib tashlanmoqda. Bu bir necha daqiqa vaqt olishi mumkin.</translation>
 <translation id="4544483149666270818">Yozib olish uchun oynani tanlang</translation>
 <translation id="4545950850562423083">Joriy sahifani bukmark shaklida saqlash</translation>
@@ -1488,6 +1489,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> hozir kamera va mikrofondan foydalanmoqda</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Yuqori tugma</translation>
+<translation id="6240821072888636753">Har safar soʻralsin</translation>
 <translation id="6247728804802644171">Bildirishnomalarni ochish</translation>
 <translation id="6249795363855770621">Bajarilgan deb belgilanmadi. Internetga ulanganda qayta urining.</translation>
 <translation id="6254629735336163724">Gorizontal holatda qulflangan</translation>
@@ -1831,6 +1833,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7557816257942363084"><ph name="APP_NAME" /> hozir mikrofondan foydalanmoqda</translation>
 <translation id="7561982940498449837">Menyuni yopish</translation>
 <translation id="7564874036684306347">Oynalarni boshqa ish stoliga ko‘chirish oqibatida kutilmagan xatti-harakatlar sodir bo‘lishi mumkin. Bildirishnomalar va muloqot oynalari turli ekranlarda ko‘rsatiladi.</translation>
+<translation id="7568790562536448087">Yangilanish</translation>
 <translation id="7569509451529460200">Brayl yozuvi va ChromeVox yoqildi</translation>
 <translation id="7569886975397378678">Telefondagi bildirishnoma va ilovalarni koʻrishni sozlash oynasini yopish</translation>
 <translation id="7571361473021531288">Batareya: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> qoldi</translation>
@@ -1960,7 +1963,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> qurilmasidan</translation>
 <translation id="7968693143708939792">Jildni tanlang...</translation>
 <translation id="7973756967040444713">Asboblar panelini yopish</translation>
-<translation id="797485111629834774">Vazifani bajarilgan deb belgilash: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Butun ekran lupasini yoqish yoki oʻchirish</translation>
 <translation id="7977927628060636163">Mobil tarmoqlar qidirilmoqda...</translation>
 <translation id="7982789257301363584">Tarmoq</translation>

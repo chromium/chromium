@@ -413,6 +413,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516416533263263796">ফ’কাছ অন আছে, ১০ মিনিট বাকী আছে</translation>
 <translation id="2516637483312286228">গে’মৰ নিয়ন্ত্ৰণসমূহ সম্পাদনা কৰক</translation>
+<translation id="252054055865191167">মাৰ্কাৰ সঁজুলি</translation>
 <translation id="2526581474998477112">ৱিণ্ড’ আনলক কৰক</translation>
 <translation id="2528111225373402384">হ’টস্প’টৰ ছেটিং</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -975,6 +976,7 @@
 <translation id="453661520163887813">সম্পূর্ণ হ'বলৈ <ph name="TIME" /> বাকী</translation>
 <translation id="4538824937723742295">পূৰ্ণ স্ক্রীনৰ স্ক্ৰীনশ্বট লওক</translation>
 <translation id="4539127209940689201">বৰ্তমানৰ পৃষ্টাটো প্ৰিণ্ট কৰক</translation>
+<translation id="4541505619120536051">সদায় খোলা</translation>
 <translation id="4541706525461326392">প্ৰ’ফাইল আঁতৰাই থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
 <translation id="4544483149666270818">ৰেকৰ্ড কৰিবলৈ এখন ৱিণ্ড’ বাছনি কৰক</translation>
 <translation id="4545950850562423083">বৰ্তমান পৃষ্ঠাটো বুকমাৰ্ক হিচাপে ছেভ কৰক</translation>
@@ -1360,6 +1362,7 @@
 <translation id="5819918159912280082">আপোনাৰ Chromebook অনাকাংক্ষিতভাৱে ৰিষ্টাৰ্ট হৈছিল। আপোনাৰ পূৰ্বৰ ৱিণ্ড’ আৰু এপ্‌সমূহ খোলক।</translation>
 <translation id="5823239091726045201">ৱেবত Google কার্য</translation>
 <translation id="5825969630400862129">সংযুক্ত হৈ থকা ডিভাইচৰ ছেটিংসমূহ</translation>
+<translation id="5830180081891717894">আৰু <ph name="WINDOWS" /> খন</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />ত <ph name="ROUTE_TITLE" /> বন্ধ কৰক</translation>
 <translation id="5841296711770970362">পৰৱৰ্তী ট্ৰেকটোলৈ যাওক</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" />ৰ হ’টস্প’ট অন আছে, কোনো ডিভাইচ সংযোগ কৰা হোৱা নাই</translation>
@@ -1487,6 +1490,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" />এ আপোনাৰ কেমেৰা আৰু মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">শীৰ্ষ বুটাম</translation>
+<translation id="6240821072888636753">প্ৰতিবাৰতে সোধক</translation>
 <translation id="6247728804802644171">জাননী খোলক</translation>
 <translation id="6249795363855770621">সম্পূৰ্ণ হোৱা বুলি চিহ্নিত কৰিব পৰা নগ’ল। অনলাইন হ’লে পুনৰ চেষ্টা কৰক।</translation>
 <translation id="6254629735336163724">আনুভূমিক হিচাপে লক কৰা হৈছে</translation>
@@ -1830,6 +1834,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" />এ বৰ্তমান আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে</translation>
 <translation id="7561982940498449837">মেনু বন্ধ কৰক</translation>
 <translation id="7564874036684306347">ৱিণ্ড’সমূহ অন্য ডেস্কটপলৈ নিয়া কার্যই আচৰণসমূহ অপ্ৰত্যাশিতভাৱে সলনি হ’ব পাৰে। পৰৱর্তী জাননী, ৱিণ্ড’ আৰু ডায়ল’গসমূহ ডেস্কটপৰ মাজত বিভক্ত হৈ পৰিব পাৰে।</translation>
+<translation id="7568790562536448087">আপডে’ট কৰি থকা হৈছে</translation>
 <translation id="7569509451529460200">ব্ৰেল আৰু ChromeVox সক্ষম কৰা আছে</translation>
 <translation id="7569886975397378678">আপোনাৰ ফ’নৰ জাননী আৰু এপ্‌সমূহ চোৱাৰ সুবিধা ছেট আপ কৰাটো বাতিল কৰক</translation>
 <translation id="7571361473021531288">বেটাৰী <ph name="BATTERY_PERCENTAGE" />% | সম্পূৰ্ণ হ'বলৈ <ph name="TIME" /> সময় বাকী আছে</translation>
@@ -1959,7 +1964,6 @@
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />ৰ পৰা</translation>
 <translation id="7968693143708939792">ফ’ল্ডাৰ বাছনি কৰক...</translation>
 <translation id="7973756967040444713">টুলবাৰ বন্ধ কৰক</translation>
-<translation id="797485111629834774">কাৰ্যটো সম্পূৰ্ণ হিচাপে চিহ্নিত কৰক: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">সম্পূৰ্ণ স্ক্ৰীনৰ বিৱৰ্ধক অন অথবা অফ কৰক</translation>
 <translation id="7977927628060636163">ম'বাইল নেটৱৰ্ক বিচাৰি থকা হৈছে...</translation>
 <translation id="7982789257301363584">নেটৱৰ্ক</translation>
@@ -2065,6 +2069,7 @@
 <translation id="8375916635258623388">এই <ph name="DEVICE_NAME" /> আৰু আপোনাৰ ফ’ন স্বয়ংক্ৰিয়ভাৱে সংযোগ হ’ব</translation>
 <translation id="8380784334203145311">শুভৰাত্ৰি,</translation>
 <translation id="8382715499079447151">চোৱাৰ সুৰক্ষা</translation>
+<translation id="8383614331548401927">স্বাগতম ৰিকেপ</translation>
 <translation id="8388750414311082622">আগৰ ডেস্কটো আঁতৰাব নোৱাৰি।</translation>
 <translation id="8394567579869570560">আপোনাৰ অভিভাৱকে এই ডিভাইচটো লক কৰিছে</translation>
 <translation id="8401850874595457088">ভাষাৰ মেনু খোলক</translation>

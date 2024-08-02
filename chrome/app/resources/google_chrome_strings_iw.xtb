@@ -211,6 +211,8 @@
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">‏כדי להשתמש ב-Google Chrome, נדרש Windows מגרסה 10 ואילך.</translation>
 <translation id="3835168907083856002">‏ייווצר פרופיל Chrome חדש בשביל <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="383928141529488001">‏ל-Google Chrome נדרשת גישה ל-Bluetooth כדי למצוא 
+ מכשירי Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">‏יש לסגור את כל החלונות של Google Chrome ולנסות שוב.</translation>
 <translation id="3865754807470779944">‏מותקנת גרסה <ph name="PRODUCT_VERSION" /> של Chrome</translation>
 <translation id="3873044882194371212">‏פתיחת הקישור בחלון &amp;אנונימי של Chrome</translation>
@@ -417,6 +419,7 @@
 <translation id="6938166777909186039">‏כדי לקבל עדכונים של Google Chrome בעתיד, צריך להשתמש ב-Windows מגרסה 10 ואילך. במחשב הזה פועלת מערכת Windows 8.1.</translation>
 <translation id="6943584222992551122">‏נתוני הגלישה של האדם הזה יימחקו מהמכשיר. כדי לשחזר את הנתונים, יש להיכנס ל-Chrome בתור<ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">‏כלל נכנס לגרסת הבטא של Google Chrome כדי לאפשר תנועת mDNS.</translation>
+<translation id="6979589607440534284">‏מידע על חסימה של קבצים מסוימים ב-Chrome, נפתח בכרטיסייה חדשה</translation>
 <translation id="7011190694940573312">ההתקנה נכשלה כי הגרסה הזו של מערכת ההפעלה לא נתמכת.</translation>
 <translation id="7024536598735240744">שגיאה בפתיחה: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">ההתקנה נעצרה.</translation>

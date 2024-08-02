@@ -179,7 +179,6 @@
 <translation id="1827738518074806965">Art gallery</translation>
 <translation id="1836553715834333258">Kulay ng system</translation>
 <translation id="183675228220305365">realist</translation>
-<translation id="1837537071599385610">Gabay sa pag-prompt</translation>
 <translation id="1838374766361614909">I-clear ang paghahanap</translation>
 <translation id="1840474674287087346">Kulay ng desktop</translation>
 <translation id="184095011128924488">creative</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Mga kamakailang background na pinapagana ng Google AI</translation>
 <translation id="2783010256799387990">NAKAPASA</translation>
 <translation id="2786429550992142861">linen</translation>
+<translation id="2787237339470862294">Hindi pa sinusuportahan ang wikang ito sa ngayon</translation>
 <translation id="2787435249130282949">mas maliwanag na keyboard</translation>
 <translation id="2805756323405976993">Mga App</translation>
 <translation id="28232023175184696">Hindi makakonekta sa internet. I-click para subukan ulit.</translation>
@@ -673,6 +673,7 @@ Puwede mo itong i-off sa anumang oras sa Mga Setting.</translation>
 <translation id="458794348635939462">Hindi nalutas ang lahat ng host</translation>
 <translation id="4593212453765072419">Kinakailangan ang pagpapatunay ng proxy</translation>
 <translation id="4594021849294327751">Gumawa ng transcript</translation>
+<translation id="4607282946861182308">Hindi makagawa ng mga larawan nito. Sumubok ng ibang prompt.</translation>
 <translation id="4609350030397390689">Babaan ang liwanag ng keyboard</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sa <ph name="TOTAL_PAGE_NUMBER" />. Pindutin ang enter para kanselahin ang pag-print.</translation>
 <translation id="463791356324567266">Kinakansela ang pag-scan...</translation>

@@ -179,7 +179,6 @@
 <translation id="1827738518074806965">Umjetnička galerija</translation>
 <translation id="1836553715834333258">Boja sustava</translation>
 <translation id="183675228220305365">realističnom</translation>
-<translation id="1837537071599385610">Vodič za postavljanje upita</translation>
 <translation id="1838374766361614909">Brisanje pretraživanja</translation>
 <translation id="1840474674287087346">Boja radne površine</translation>
 <translation id="184095011128924488">kreativno</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Nedavne pozadine omogućuje Googleov AI</translation>
 <translation id="2783010256799387990">USPJEŠNO</translation>
 <translation id="2786429550992142861">lana</translation>
+<translation id="2787237339470862294">Taj jezik trenutačno nije podržan</translation>
 <translation id="2787435249130282949">svjetlija tipkovnica</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="28232023175184696">Povezivanje s internetom nije uspjelo. Kliknite da biste pokušali ponovo.</translation>
@@ -673,6 +673,7 @@ Tu značajku uvijek možete isključiti u postavkama.</translation>
 <translation id="458794348635939462">Razrješavanje svih hostova nije uspjelo</translation>
 <translation id="4593212453765072419">Potrebna je autentifikacija proxy poslužitelja</translation>
 <translation id="4594021849294327751">Izradi prijepis</translation>
+<translation id="4607282946861182308">Ne mogu se izraditi slike tog sadržaja. Isprobajte drugi prompt.</translation>
 <translation id="4609350030397390689">Smanjivanje svjetline tipkovnice</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite tipku Enter da biste otkazali zadatak ispisa.</translation>
 <translation id="463791356324567266">Otkazivanje skeniranja...</translation>

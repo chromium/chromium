@@ -976,6 +976,7 @@
 <translation id="453661520163887813">ອີກ <ph name="TIME" /> ຈຶ່ງຈະເຕັມ</translation>
 <translation id="4538824937723742295">ຖ່າຍຮູບໜ້າຈໍແບບເຕັມຈໍ</translation>
 <translation id="4539127209940689201">ພິມໜ້າປັດຈຸບັນ</translation>
+<translation id="4541505619120536051">ເປີດຕະຫຼອດເວລາ</translation>
 <translation id="4541706525461326392">ກຳລັງລຶບໂປຣໄຟລ໌ອອກ. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="4544483149666270818">ເລືອກໜ້າຈໍເພື່ອບັນທຶກ</translation>
 <translation id="4545950850562423083">ບັນທຶກໜ້າປັດຈຸບັນເປັນບຸກມາກ</translation>
@@ -1488,6 +1489,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ກຳລັງໃຊ້ກ້ອງ ແລະ ໄມໂຄຣໂຟນຂອງທ່ານຢູ່</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">ປຸ່ມເທິງ</translation>
+<translation id="6240821072888636753">ຖາມທຸກເທື່ອ</translation>
 <translation id="6247728804802644171">ເປີດການແຈ້ງເຕືອນ</translation>
 <translation id="6249795363855770621">ບໍ່ສາມາດໝາຍເປັນສຳເລັດໄດ້. ກະລຸນາລອງໃໝ່ເມື່ອອອນລາຍ.</translation>
 <translation id="6254629735336163724">ລັອກເປັນລວງນອນ</translation>
@@ -1831,6 +1833,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> ກຳລັງໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານຢູ່</translation>
 <translation id="7561982940498449837">ປິດເມນູ</translation>
 <translation id="7564874036684306347">ການຍ້າຍໜ້າຈໍໄປຫາເດັສທັອບອື່ນອາດຈະເຮັດໃຫ້ເກີດພຶດຕິກຳທີ່ບໍ່ຄາດຄິດ. ການແຈ້ງເຕືອນ, ໜ້າຈໍ ແລະ ກ່ອງໂຕ້ຕອບຕາມມາອາດຈະຖືກແຍກຈາກກັນລະຫວ່າງເດັສທັອບຕ່າງໆ.</translation>
+<translation id="7568790562536448087">ການອັບເດດ</translation>
 <translation id="7569509451529460200">ເປີດນຳໃຊ້ Braille ແລະ ChromeVox ແລ້ວ</translation>
 <translation id="7569886975397378678">ປີດການຕັ້ງຄ່າການເບິ່ງການແຈ້ງເຕືອນ ແລະ ແອັບຂອງໂທລະສັບທ່ານໄວ້</translation>
 <translation id="7571361473021531288">ແບັດເຕີຣີ <ph name="BATTERY_PERCENTAGE" />% | ໃຊ້ໄດ້ອີກ <ph name="TIME" /></translation>
@@ -1960,7 +1963,6 @@
 <translation id="7963992254934562106">ຈາກ <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">ເລືອກໂຟນເດີ...</translation>
 <translation id="7973756967040444713">ປິດແຖບ​ເຄື່ອງ​ມື</translation>
-<translation id="797485111629834774">ໝາຍໜ້າວຽກວ່າສຳເລັດແລ້ວ: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">ເປີດ ຫຼື ປິດແວ່ນຂະຫຍາຍເຕັມຈໍ</translation>
 <translation id="7977927628060636163">ກຳລັງຊອກຫາເຄືອຂ່າຍມືຖື...</translation>
 <translation id="7982789257301363584">ເຄືອ​ຂ່າຍ</translation>

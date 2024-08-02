@@ -21,6 +21,7 @@
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> ile Gmail veya YouTube gibi Google hizmetlerinde oturum açarken aynı hesapla Chromium'da otomatik olarak oturum açabilirsiniz</translation>
 <translation id="1290883685122687410">Kurulum hatası: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Yeni Chromium profilinizi oluşturun</translation>
+<translation id="1324107359134968521">Chromium'un Bluetooth cihazları keşfedebilmesi için Bluetooth'a erişmesi gerekiyor. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Chromium'daki verileri de sil (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Chromium'da oturum açtınız!</translation>
 <translation id="1478370723027452770">Chrome for Testing ile ilgili yardım alın</translation>
@@ -59,6 +60,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="1951406923938785464">Dosya türü çok indirilmediği ve tehlikeli olabileceği için Chromium bu indirme işlemini engelledi</translation>
 <translation id="1953553007165777902">İndiriliyor... <ph name="MINUTE" /> dakika kaldı</translation>
 <translation id="1966382378801805537">Chromium, varsayılan tarayıcıyı tespit edemiyor veya ayarlayamıyor</translation>
+<translation id="1990262977744080398">Chromium'un bazı dosyaları neden engellediğini öğrenin, yeni sekmede açılır</translation>
 <translation id="2008474315282236005">Bu işlem 1 öğeyi bu cihazdan silecektir. Verilerinizi daha sonra geri almak için Chromium'da <ph name="USER_EMAIL" /> hesabıyla oturum açın.</translation>
 <translation id="2018879682492276940">Yükleme başarısız oldu. Lütfen tekrar deneyin.</translation>
 <translation id="2020032459870799438">Öteki şifrelerinizin veri ihlali ve diğer güvenlik sorunlarına karşı güvende olup olmadığını kontrol etmek için <ph name="BEGIN_LINK" />Chromium'da oturum açın<ph name="END_LINK" />.</translation>

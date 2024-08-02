@@ -377,7 +377,7 @@
 <translation id="2848086008667475748">在「設定」中設為預設…</translation>
 <translation id="2858204748079866344">為保護個人隱私，Chrome 不會將你的密碼自動填入這個欄位。</translation>
 <translation id="285960592395650245">重新嘗試下載</translation>
-<translation id="286382692684806520">{COUNT,plural, =1{1 個網站 (在已同步的裝置上還有更多網站)}other{# 個網站 (在已同步的裝置上還有更多網站)}}</translation>
+<translation id="286382692684806520">{COUNT,plural, =1{1 個網站 (已同步的裝置上還有其他網站)}other{# 個網站 (已同步的裝置上還有其他網站)}}</translation>
 <translation id="2870560284913253234">網站</translation>
 <translation id="2871695793448672541">目前為隱藏狀態的密碼</translation>
 <translation id="2876369937070532032">當網站具有安全性風險時，Chrome 會將你造訪的部分網頁網址傳送給 Google</translation>
@@ -885,6 +885,7 @@
 <translation id="5396950905475481456">邀請家庭成員</translation>
 <translation id="5407969256130905701">捨棄變更</translation>
 <translation id="5414763847370083940">如果產品在任何網站上降價，系統會透過快訊通知你。</translation>
+<translation id="5415289094036440596">無法分享密碼金鑰</translation>
 <translation id="5416022985862681400">過去 7 天</translation>
 <translation id="5416455648658732408">移到分頁群組</translation>
 <translation id="5423269318075950257">追蹤價格</translation>
@@ -1490,7 +1491,6 @@
 <translation id="8237382152611443140">開啟 [自動填入密碼] 設定</translation>
 <translation id="8248969482078657578">將分頁設為閒置狀態，助你保持專注</translation>
 <translation id="8261506727792406068">刪除</translation>
-<translation id="8263336784344783289">為這個群組命名</translation>
 <translation id="8263809106706527890">預設瀏覽器設定可能已有變更，你可以前往「設定」查看。</translation>
 <translation id="8264966119170358612">由於發生第三方 (非 Google) 資料侵害事件，你儲存的某些密碼已外洩。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">你已在重設 iPad 時登出帳戶 (<ph name="USER_NAME" />)，如要重新登入，請輕觸下方的「繼續」。</translation>

@@ -413,6 +413,7 @@ Kuxhunywe amadivayisi angu-<ph name="DEVICECOUNT" /></translation>
 <translation id="2515586267016047495">I-Alt</translation>
 <translation id="2516416533263263796">Ukugxilisa kuvuliwe, kusele imizuzu engu-10</translation>
 <translation id="2516637483312286228">Hlela izilawuli zegeyimu</translation>
+<translation id="252054055865191167">Ithuluzi lokumaka</translation>
 <translation id="2526581474998477112">Vula amawindi</translation>
 <translation id="2528111225373402384">Amasethingi e-hotspot</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -975,6 +976,7 @@ Kuxhunywe idivayisi engu-1.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> ize igcwale</translation>
 <translation id="4538824937723742295">Thatha isithombe-skrini sesikrini esigcwele</translation>
 <translation id="4539127209940689201">Phrinta ikhasi lamanje</translation>
+<translation id="4541505619120536051">Ihlezi ivuliwe</translation>
 <translation id="4541706525461326392">Isusa iphrofayela. Lokhu kungathatha imizuzu embalwa.</translation>
 <translation id="4544483149666270818">Khetha iwindi lokurekhoda</translation>
 <translation id="4545950850562423083">Londoloza ikhasi lamanje njengebhukhimakhi</translation>
@@ -1487,6 +1489,7 @@ Awekho amadivayisi axhunyiwe.</translation>
 <translation id="6232891689835436217">I-<ph name="APP_NAME" /> okwamanje isebenzisa ikhamera nemakrofoni yakho</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Inkinobho Ephezulu</translation>
+<translation id="6240821072888636753">Buza njalo</translation>
 <translation id="6247728804802644171">Vula izaziso</translation>
 <translation id="6249795363855770621">Ayikwazi ukuphawula njengeqediwe. Zama futhi lapho uxhumeke ku-inthanethi.</translation>
 <translation id="6254629735336163724">Kukhiywe ngokuqondile</translation>
@@ -1830,6 +1833,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="7557816257942363084">I-<ph name="APP_NAME" /> okwamanje isebenzisa imakrofoni yakho</translation>
 <translation id="7561982940498449837">Vala imenyu</translation>
 <translation id="7564874036684306347">Ukuhambisa amawindi kwenye ideskithophu kungabangela ekuziphatheni okungalindelekile. Izaziso ezilandelayo, amawindi nezingxoxo zingahlukaniswa phakathi kwamadeskithophu.</translation>
+<translation id="7568790562536448087">Iyabuyekeza</translation>
 <translation id="7569509451529460200">I-Braille ne-ChromeVox inikwe amandla</translation>
 <translation id="7569886975397378678">Yeka ukusetha ukubuka izaziso nama-app efoni yakho akamuva</translation>
 <translation id="7571361473021531288">Ibhethri elisele ngu-<ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /></translation>
@@ -1959,7 +1963,6 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="7963992254934562106">Kusukela ku-<ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Khetha ifolda...</translation>
 <translation id="7973756967040444713">Vala ibha yamathuluzi</translation>
-<translation id="797485111629834774">Maka umsebenzi njengosuqediwe: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Vula noma uvale isikhulisi sesikrini esigcwele</translation>
 <translation id="7977927628060636163">Isesha amanethiwekhi eselula...</translation>
 <translation id="7982789257301363584">Inethiwekhi</translation>

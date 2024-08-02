@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">Stytt vefslóð</translation>
 <translation id="1448064542941920355">Minnka aðdrátt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> vefsvæði}one{<ph name="SITE_COUNT" /> vefsvæði}other{<ph name="SITE_COUNT" /> vefsvæðum}}</translation>
+<translation id="1500473259453106018">Fela spjaldið „Verðlækkun á flipum“</translation>
 <translation id="1510341833810331442">Vefsvæði mega ekki vista gögn í tækinu þínu</translation>
 <translation id="1547123415014299762">Fótspor þriðju aðila eru leyfð</translation>
 <translation id="1568470248891039841">Vefsvæði sem þú heimsækir geta fellt inn efni frá öðrum vefsvæðum, til dæmis myndir, auglýsingar og texta. Hin vefsvæðin kunna að biðja um að fá að nota upplýsingar sem þau hafa vistað um þig þegar þú vafrar um vefsvæðið. <ph name="BEGIN_LINK" />Nánar um innfellt efni<ph name="END_LINK" /></translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">Hljóðnemi</translation>
 <translation id="3232293466644486101">Eyða vefskoðunargögnum…</translation>
 <translation id="3242646949159196181">Þegar kveikt er á þessu geta vefsvæði spilað hljóð. Þegar slökkt er á þessu geta vefsvæði ekki spilað hljóð.</translation>
+<translation id="3273479183583863618">Verðlækkun á flipum</translation>
 <translation id="3277252321222022663">Leyfa vefsvæðum að fá aðgang að skynjurum (ráðlagt)</translation>
 <translation id="3285500645985761267">Leyfa tengdum vefsvæðum að sjá virkni þína í hópnum</translation>
 <translation id="3295019059349372795">11. kafli: Smaragðsborgin dásamlega í Oz</translation>
@@ -359,6 +361,7 @@
 <translation id="6818926723028410516">Veldu atriði</translation>
 <translation id="6840760312327750441">Haltu fingri á flipa til að flokka hann. Dragðu hann svo ofan á annan flipa.</translation>
 <translation id="6864395892908308021">Þetta tæki getur ekki lesið NFC</translation>
+<translation id="6870169401250095575">Fela spjaldið „Öryggisathugun“</translation>
 <translation id="6912998170423641340">Koma í veg fyrir að vefsvæði geti lesið texta og myndir af klippiborðinu</translation>
 <translation id="6945221475159498467">Velja</translation>
 <translation id="6950072572526089586">Vefsvæði sem þú skoðar getur vistað upplýsingar um það sem þú ert að gera svo það virki sem skyldi — svo sem til að viðhalda innskráningu þinni á vefsvæði eða til að vista vörur í innkaupakörfunni þinni. Oft vista vefsvæði þessar upplýsingar í tækinu tímabundið.</translation>
@@ -426,6 +429,7 @@
 <translation id="7986741934819883144">Velja tengilið</translation>
 <translation id="7990211076305263060">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota hljóðnemann þinn. Þegar slökkt er á þessu geta vefsvæði ekki notað hljóðnemann þinn.</translation>
 <translation id="8007176423574883786">Slökkt fyrir þetta tæki</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Fela spjaldið „Halda áfram á þessum flipa“}one{Fela spjaldið „Halda áfram á þessum flipum“}other{Fela spjaldið „Halda áfram á þessum flipum“}}</translation>
 <translation id="802154636333426148">Niðurhal mistókst</translation>
 <translation id="8042586301629853791">Raða eftir:</translation>
 <translation id="8067883171444229417">Spila myndskeið</translation>

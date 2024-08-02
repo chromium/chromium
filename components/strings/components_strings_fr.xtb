@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Bouton "Gérer les mots de passe" à activer pour afficher et gérer vos mots de passe dans les paramètres Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Sélectionnez une autorisation pour <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">Gamme de prix pour toutes les options</translation>
 <translation id="1113869188872983271">&amp;Annuler la réorganisation</translation>
 <translation id="1118429183611783760">Aspirateurs et entretien des sols</translation>
 <translation id="1122714970786750095">Appareils électroniques et électriques</translation>
@@ -122,7 +121,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1209206284964581585">Masquer pour le moment</translation>
 <translation id="121201262018556460">Vous avez tenté d'accéder à <ph name="DOMAIN" />, mais le serveur a présenté un certificat contenant une clé faible. Il est possible qu'un pirate ait compromis la clé privée. Il est donc possible que le serveur auquel vous avez accédé ne soit pas celui que vous croyez, et que vous soyez en train de communiquer avec un pirate informatique.</translation>
 <translation id="1212527389003717329">Le téléchargement a commencé. Pour le voir, appuyez de manière prolongée sur |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">Gamme de prix</translation>
 <translation id="1219129156119358924">Sécurité du système</translation>
 <translation id="1222060260947439312">Bac de droite</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -141,6 +139,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Vêtements d'extérieur</translation>
 <translation id="1253096324252841344">Payer avec <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
+<translation id="1253846494229886276">Enregistrement de la capture d'écran…</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synchronisés)</translation>
 <translation id="1255086252236620440">Batteurs mixeurs</translation>
 <translation id="1256368399071562588">&lt;p&gt;Si vous ne parvenez pas à ouvrir un site Web dans Chrome, essayez d'abord de corriger le problème en suivant ces étapes :&lt;/p&gt;
@@ -352,7 +351,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1617276713587758852">Crossovers</translation>
 <translation id="1619007254056372606">Gérer les données des sites sur l'appareil</translation>
 <translation id="1620510694547887537">Caméra</translation>
-<translation id="162285686621567578">Ce site Web est bloqué par ton parent.</translation>
 <translation id="1622966923835127638">Finance d'entreprise</translation>
 <translation id="1623104350909869708">Empêcher cette page de générer des boîtes de dialogue supplémentaires</translation>
 <translation id="1633137413609266904">{0,plural, =1{Une règle de l'administrateur a bloqué l'ouverture de ce fichier}one{Une règle de l'administrateur a bloqué l'ouverture de # fichier}other{Une règle de l'administrateur a bloqué l'ouverture de # fichiers}}</translation>
@@ -737,7 +735,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2328955282645810595">Outils électriques et de construction</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, arrive à expiration le <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Reprendre l'écriture</translation>
-<translation id="2337776048981813397">Gamme de prix pour toutes les options</translation>
 <translation id="2337852623177822836">Paramètre contrôlé par votre administrateur</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> tente de s'associer</translation>
 <translation id="2346319942568447007">Image copiée</translation>
@@ -1029,7 +1026,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2930577230479659665">Couper après chaque copie</translation>
 <translation id="2933624813161016821">Feuille gaufrée</translation>
 <translation id="2938225289965773019">Ouvrir les liens "<ph name="PROTOCOL" />"</translation>
-<translation id="2941112035454246133">Faible</translation>
 <translation id="2941878205777356567">Enveloppe 230x305</translation>
 <translation id="2941952326391522266">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité provient du domaine <ph name="DOMAIN2" />. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="2942492342931589800">Informel</translation>
@@ -1211,7 +1207,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Saisissez le code de validation à <ph name="NUMBER_OF_DIGITS" /> chiffres</translation>
 <translation id="3272643614306383237">Moins de 1 Mo. Le chargement de certains sites risque d'être plus lent lors de votre prochaine visite.</translation>
-<translation id="327346289570683313">Gamme de prix</translation>
 <translation id="3273738040255912340">Votre administrateur peut modifier à distance votre profil et votre navigateur, analyser les rapports d'informations sur le navigateur et effectuer d'autres tâches nécessaires. Il est aussi possible que l'activité sur cet appareil soit gérée en dehors de Chromium. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Une règle de l'administrateur déconseille d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}one{Une règle de l'administrateur déconseille d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}other{Une règle de l'administrateur déconseille d'ouvrir ces fichiers dans <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Votre organisation, <ph name="ENROLLMENT_DOMAIN" />, a envoyé des infos, comme des paramètres ou des règles, aux sites Web suivants.</translation>
@@ -1700,6 +1695,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4177501066905053472">Thèmes des annonces</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Ne plus suivre le prix</translation>
+<translation id="4190446002599583608">Recherche dans l'historique optimisée par l'IA</translation>
 <translation id="4191334393248735295">Longueur</translation>
 <translation id="4195459680867822611">Bouton "Voir les astuces Chrome" à activer pour en savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
@@ -1715,6 +1711,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="421066178035138955">Utiliser vos données et appareils de réalité virtuelle</translation>
 <translation id="4213500579045346575">Culturisme</translation>
 <translation id="4214357935346142455">profil de l'écran de connexion</translation>
+<translation id="4219596572397833317">Consultez l'historique des prix et plus pour vous aider à faire des achats plus judicieux.</translation>
 <translation id="4220128509585149162">Plantages</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Étape 1 : Connectez-vous au portail&lt;/h4&gt;
     &lt;p&gt;Pour utiliser les réseaux Wi-Fi de lieux publics tels que les cafés ou les aéroports, vous devez vous connecter. Pour afficher la page de connexion, accédez à une page dont l'URL contient &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
@@ -2140,6 +2137,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5019952743397118625">La règle <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> est définie. La règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ne contrôlera plus la disponibilité du mode développeur sur la page des extensions.</translation>
 <translation id="5021557570875267742">Suivre les prix avec Chrome</translation>
 <translation id="5023310440958281426">Vérifiez les règles définies par votre administrateur</translation>
+<translation id="5024171724744627792">Payez plus vite quand votre carte est enregistrée. Les informations relatives à la carte sont chiffrées dans votre compte Google.</translation>
 <translation id="5030338702439866405">Émis par</translation>
 <translation id="503069730517007720">Veuillez installer un certificat racine pour "<ph name="SOFTWARE_NAME" />". Nous recommandons à votre administrateur informatique de lire les instructions de configuration du logiciel "<ph name="SOFTWARE_NAME" />" afin de remédier à la situation. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">À propos de Google Traduction</translation>
@@ -3329,6 +3327,7 @@ Informations supplémentaires :
 <translation id="7311244614769792472">Aucun résultat trouvé</translation>
 <translation id="7311837626618954149">Chromium empêche les sites d'utiliser des cookies tiers pour suivre votre activité lorsque vous naviguez.</translation>
 <translation id="7313107491291103073">Votre organisation a signalé ce site, car il est susceptible d'enfreindre un règlement.</translation>
+<translation id="7316521168101843192">Enregistrement du fichier sur Microsoft OneDrive…</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Aide à la connexion</translation>
 <translation id="7323804146520582233">Masquer la section "<ph name="SECTION" />"</translation>
@@ -3632,6 +3631,7 @@ Informations supplémentaires :
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Supprimer la suggestion de saisie de formulaire de Chrome ?</translation>
 <translation id="781440967107097262">Partager le presse-papiers ?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Papier (ordinaire)</translation>
 <translation id="7815407501681723534"><ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> trouvé(s) pour "<ph name="SEARCH_STRING" />"</translation>
 <translation id="7822611063308883975">Consoles de jeux portables</translation>
@@ -3796,6 +3796,7 @@ Informations supplémentaires :
 <translation id="8148608574971654810">Version PDF :</translation>
 <translation id="8149426793427495338">Votre ordinateur s'est mis en veille.</translation>
 <translation id="8150722005171944719">Le fichier disponible à l'adresse <ph name="URL" /> n'est pas lisible. Il est possible qu'il ait été supprimé ou déplacé, ou que les autorisations associées empêchent d'y accéder.</translation>
+<translation id="8151185429379586178">Outils de développement</translation>
 <translation id="8153865548451212769">{0,plural, =1{Une règle de l'administrateur déconseille de télécharger ce fichier vers <ph name="DESTINATION_NAME" />}one{Une règle de l'administrateur déconseille de télécharger ce fichier vers <ph name="DESTINATION_NAME" />}other{Une règle de l'administrateur déconseille de télécharger ces fichiers vers <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Équipement de hockey</translation>
 <translation id="8161095570253161196">Reprendre la navigation</translation>

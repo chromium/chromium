@@ -976,6 +976,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="453661520163887813">Fuldt opladet om <ph name="TIME" /></translation>
 <translation id="4538824937723742295">Tag screenshot af hele skærmen</translation>
 <translation id="4539127209940689201">Udskriv aktuel side</translation>
+<translation id="4541505619120536051">Åbn altid</translation>
 <translation id="4541706525461326392">Profilen fjernes. Dette kan tage et par minutter.</translation>
 <translation id="4544483149666270818">Vælg et vindue, der skal optages</translation>
 <translation id="4545950850562423083">Gem den aktuelle side som bogmærke</translation>
@@ -1488,6 +1489,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> anvender i øjeblikket dit kamera og din mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Øverste knap</translation>
+<translation id="6240821072888636753">Spørg hver gang</translation>
 <translation id="6247728804802644171">Åbn notifikationer</translation>
 <translation id="6249795363855770621">Opgaven kunne ikke markeres som færdiggjort. Prøv igen, når du er online.</translation>
 <translation id="6254629735336163724">Altid vandret</translation>
@@ -1831,6 +1833,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7557816257942363084"><ph name="APP_NAME" /> anvender i øjeblikket din mikrofon</translation>
 <translation id="7561982940498449837">Luk menu</translation>
 <translation id="7564874036684306347">Hvis du flytter vinduer til et andet skrivebord, kan det resultere i uventet adfærd. Efterfølgende notifikationer, vinduer og dialogbokse kan blive delt mellem skriveborde.</translation>
+<translation id="7568790562536448087">Opdatering</translation>
 <translation id="7569509451529460200">Braille og ChromeVox er aktiveret</translation>
 <translation id="7569886975397378678">Afvis konfiguration af visning af din telefons notifikationer og apps</translation>
 <translation id="7571361473021531288">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> tilbage</translation>
@@ -1960,7 +1963,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7963992254934562106">Fra <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Vælg mappe...</translation>
 <translation id="7973756967040444713">Luk værktøjslinje</translation>
-<translation id="797485111629834774">Markér opgave som fuldført: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Aktivér eller deaktiver forstørrelse af fuld skærm</translation>
 <translation id="7977927628060636163">Søger efter mobilnetværk...</translation>
 <translation id="7982789257301363584">Netværk</translation>

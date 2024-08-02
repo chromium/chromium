@@ -136,6 +136,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1420408895951708260">Alternar Modo noturno. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1435537621343861112">Não foi possível iniciar o ditado. Seu microfone está desativado.</translation>
+<translation id="1445031758921122223">Transferência de arquivos de controle facial concluída</translation>
 <translation id="1447907279406111651">Agora ⋅ Termina às <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Pontos de acesso do dispositivo</translation>
 <translation id="1455242230282523554">Mostrar configurações de idioma</translation>
@@ -412,6 +413,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516416533263263796">Foco ativado, faltam 10 minutos</translation>
 <translation id="2516637483312286228">Editar controles de jogo</translation>
+<translation id="252054055865191167">Ferramenta de marcador</translation>
 <translation id="2526581474998477112">Desbloquear as janelas</translation>
 <translation id="2528111225373402384">Configurações do ponto de acesso</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -974,6 +976,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="453661520163887813"><ph name="TIME" /> até completar</translation>
 <translation id="4538824937723742295">Capturar tela cheia</translation>
 <translation id="4539127209940689201">Imprimir a página atual</translation>
+<translation id="4541505619120536051">Sempre abrir</translation>
 <translation id="4541706525461326392">Removendo o perfil. Pode levar alguns minutos..</translation>
 <translation id="4544483149666270818">Selecione uma janela para a gravação</translation>
 <translation id="4545950850562423083">Salvar a página atual como favorita</translation>
@@ -1222,6 +1225,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5361524080961918551">Arquivos de fala em <ph name="LANGUAGE" /> parcialmente baixados</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ir para essa guia</translation>
 <translation id="5364693579536176785">espaço de armazenamento</translation>
+<translation id="5369573834963677938">O controle facial vai ficar disponível para outros usuários no dispositivo</translation>
 <translation id="5369717264580061086">Visualizar arquivo no app Arquivos</translation>
 <translation id="5377367976106153749">Permitir o acesso à câmera?</translation>
 <translation id="5379115545237091094">Muitas tentativas</translation>
@@ -1411,6 +1415,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="6020147141355393792">Configurar a visualização de notificações e apps do smartphone</translation>
 <translation id="6022924867608035986">Limpar texto da caixa de pesquisa</translation>
 <translation id="602472752137106327">Mostrar janelas de todos os espaços de trabalho, botão de opção selecionado</translation>
+<translation id="6024768346262692989">Não foi possível baixar os arquivos de controle facial</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />, gerenciada pelo seu administrador</translation>
 <translation id="6027518778343897451">Não há nenhum evento em <ph name="CURRENT_MONTH_DAY" />. Toque em "Enter" para abrir o Google Agenda no navegador.</translation>
 <translation id="6030495522958826102">O menu foi movido para o canto inferior esquerdo da tela.</translation>
@@ -1484,6 +1489,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> está usando sua câmera e seu microfone</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Botão da parte de cima</translation>
+<translation id="6240821072888636753">Perguntar sempre</translation>
 <translation id="6247728804802644171">Abrir as notificações</translation>
 <translation id="6249795363855770621">Não foi possível marcar como concluída. Tente de novo quando estiver on-line.</translation>
 <translation id="6254629735336163724">Bloqueado na horizontal</translation>
@@ -1827,6 +1833,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7557816257942363084"><ph name="APP_NAME" /> está usando seu microfone</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
 <translation id="7564874036684306347">A movimentação de janelas para outra área de trabalho pode resultar em comportamentos inesperados. Notificações posteriores, janelas e caixas de diálogo podem ser divididas entre as áreas de trabalho.</translation>
+<translation id="7568790562536448087">Atualização</translation>
 <translation id="7569509451529460200">Braille e ChromeVox estão ativados</translation>
 <translation id="7569886975397378678">Dispensar configuração de visualização de notificações e apps do smartphone</translation>
 <translation id="7571361473021531288">Bateria em <ph name="BATTERY_PERCENTAGE" />% | Tempo restante: <ph name="TIME" /></translation>
@@ -1956,7 +1963,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7963992254934562106">Do <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Selecionar pasta…</translation>
 <translation id="7973756967040444713">Fechar barra de ferramentas</translation>
-<translation id="797485111629834774">Marcar tarefa como concluída: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Ativar ou desativar a lupa de tela cheia</translation>
 <translation id="7977927628060636163">Pesquisando redes móveis…</translation>
 <translation id="7982789257301363584">Rede</translation>

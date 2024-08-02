@@ -4449,7 +4449,6 @@
 <translation id="4163560723127662357">Άγνωστο πληκτρολόγιο</translation>
 <translation id="4165942112764990069">Ο χρήστης <ph name="USER_EMAIL" /> δεν ανήκει σε έγκυρο οργανισμό. Επικοινωνήστε με τον διαχειριστή σας. Εάν είστε διαχειριστής, μπορείτε να ρυθμίσετε τον οργανισμό σας από τη διεύθυνση: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Ρυθμίσεις ιστότοπου</translation>
-<translation id="4166847326079525123">Η τοποθεσία είναι απενεργοποιημένη στις Προτιμήσεις συστήματος Windows</translation>
 <translation id="4167212649627589331">Η εφαρμογή <ph name="APP_NAME" /> προσπαθεί να αποκτήσει πρόσβαση στη συσκευή <ph name="DEVICE_NAME" />. Απενεργοποιήστε τον διακόπτη απορρήτου της συσκευής <ph name="DEVICE_NAME" /> για να επιτρέψετε την πρόσβαση.</translation>
 <translation id="4167393659000039775">Η Google δεν φέρει καμία ευθύνη για τυχόν απώλεια δεδομένων και το <ph name="DEVICE_OS" /> ενδέχεται να μην λειτουργεί σε μη πιστοποιημένα μοντέλα. Μάθετε περισσότερα στη διεύθυνση g.co/flex/InstallGuide.</translation>
 <translation id="4167924027691268367">Περισσότερες ενέργειες για τη συντόμευση <ph name="SHORTCUT_TITLE" /></translation>
@@ -6761,7 +6760,6 @@
 <translation id="5885314688092915589">Ο οργανισμός σας θα διαχειρίζεται αυτό το προφίλ</translation>
 <translation id="5885470467814103868">Έναρξη σάρωσης</translation>
 <translation id="5885631909150054232">Αντιγραφή διακριτικού</translation>
-<translation id="5886000783338788034">Η τοποθεσία είναι απενεργοποιημένη στις ρυθμίσεις του ChromeOS</translation>
 <translation id="5886009770935151472">Δάκτυλο 1</translation>
 <translation id="5886112770923972514">Συνδεθείτε και ρυθμίστε γρήγορα κοντινές συσκευές Γρήγορης σύζευξης</translation>
 <translation id="5886384907280980632">Απενεργοποίηση τώρα</translation>
@@ -8970,7 +8968,6 @@
 <translation id="7529865045818406536">Τα προτιμώμενα δίκτυα θα χρησιμοποιηθούν αν υπάρχουν περισσότερα από ένα προηγούμενα δίκτυα</translation>
 <translation id="7529876053219658589">{0,plural, =1{Κλείσιμο παραθύρου επισκέπτη}other{Κλείσιμο παραθύρων επισκέπτη}}</translation>
 <translation id="7530016656428373557">Ρυθμός αποφόρτισης σε Watt</translation>
-<translation id="7531310913436731628">Η κάμερα έχει απενεργοποιηθεί στις προτιμήσεις συστήματος Mac</translation>
 <translation id="7531771599742723865">Η συσκευή χρησιμοποιείται</translation>
 <translation id="7531779363494549572">Μεταβείτε στις Ρυθμίσεις &gt; Εφαρμογές και ειδοποιήσεις &gt; Ειδοποιήσεις.</translation>
 <translation id="7532009420053991888">Η εφαρμογή <ph name="LINUX_APP_NAME" /> δεν αποκρίνεται. Για να κλείσετε την εφαρμογή, επιλέξτε Αναγκαστικό κλείσιμο.</translation>
@@ -11008,6 +11005,7 @@
 <translation id="8984694057134206124">Η συσκευή σας θα είναι ορατή σε όλους για <ph name="MINUTES" /> λεπτά. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Καλωσορίσατε στο Steam για Chromebook</translation>
 <translation id="8985264973231822211">Ενεργή πριν από <ph name="DEVICE_LAST_ACTIVATED_TIME" /> ημέρα</translation>
+<translation id="8985561265504464578">Όριο ανίχνευσης</translation>
 <translation id="8985661493893822002">Συνδεθείτε στο διαδίκτυο για να συνδεθείτε στη συσκευή σας <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8985661571449404298">Έγινε λήψη μη ασφαλούς αρχείου</translation>
 <translation id="8986362086234534611">Διαγραφή από τη μνήμη</translation>
@@ -11034,6 +11032,7 @@
 <translation id="8999560016882908256">Σφάλμα σύνταξης ενότητας: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Μειωμένη κίνηση στην οθόνη</translation>
 <translation id="9000185763019430629">Αγγίξτε τον αισθητήρα δακτυλικών αποτυπωμάτων στη δεξιά πλευρά της συσκευής <ph name="DEVICE_TYPE" />. Τα δεδομένα δακτυλικών αποτυπωμάτων αποθηκεύονται με ασφάλεια και δεν αποστέλλονται ποτέ εκτός της συσκευής <ph name="DEVICE_TYPE" />.</translation>
+<translation id="9003031149571024583">Εισαγάγετε το <ph name="NUM_DIGIT" /> από τα 6 ψηφία του PIN. Χρησιμοποιήστε το πλήκτρο backspace ή το delete για να καταργήσετε το τελευταίο ψηφίο.</translation>
 <translation id="9003185744423389627">Η σύνδεση στον διακομιστή διαχείρισης συσκευών απέτυχε με κατάσταση <ph name="STATUS_TEXT" /> στις <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Να γίνει αυτόματη σάρωση για διαθέσιμα προφίλ eSIM;</translation>
 <translation id="9003647077635673607">Να επιτρέπεται σε όλους τους ιστότοπους</translation>

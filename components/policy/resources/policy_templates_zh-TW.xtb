@@ -448,11 +448,11 @@
       請注意，這只是一項臨時政策，允許受管理的使用者仍可使用已淘汰的舊版快速鍵。這項政策將在自訂鍵盤快速鍵推出後遭到淘汰。</translation>
 <translation id="1361661842732478894">在工具列上顯示首頁按鈕</translation>
 <translation id="1363275621236827384">允許在 Quirks Server 中查詢硬體設定檔</translation>
-<translation id="1363839375295535439">如果將這項政策設為啟用或不設定，只要系統設定支援，就會啟用 LPAC 沙箱來執行顯示服務。
+<translation id="1363839375295535439">如果將這項政策設為啟用或不設定，只要系統支援，就會啟用 LPAC 沙箱來執行列印程序。
 
-如果將這項政策設為停用，將對 <ph name="PRODUCT_NAME" /> 的安全性造成危害，因為用於顯示的服務可能會在較不安全的沙箱設定下執行。
+如果將這項政策設為停用，將對 <ph name="PRODUCT_NAME" /> 的安全性造成危害，因為可用於列印的服務可能會在較不安全的沙箱設定下執行。
 
-建議只有在第三方軟體發生相容性問題，導致顯示服務無法在 LPAC 沙箱內正常運作時，才停用這項政策。</translation>
+建議只有在第三方軟體發生相容性問題，導致列印服務無法在 LPAC 沙箱內正常運作時，才停用這項政策。</translation>
 <translation id="1369698103169067223">系統不會替使用者啟用 Glanceables。</translation>
 <translation id="1371626834351873151">系統將為所有來源啟用使用者代理程式縮減功能。</translation>
 <translation id="1371851989348083665">允許在網站上使用 <ph name="ASSISTANT_PRODUCT_NAME" /></translation>
@@ -842,7 +842,7 @@
       如果未設定這項政策，系統會使用預設的快取大小，而使用者可以透過 --media-cache-size 旗標變更這項設定。</translation>
 <translation id="1648816843164517573">可略過 HTTP 嚴格傳輸安全性政策檢查的名稱清單</translation>
 <translation id="1651197070942919276">不允許裝置執行虛擬機器</translation>
-<translation id="1651216316133158002">這項政策可允許管理員針對 <ph name="PRODUCT_OS_NAME" /> 上的各個副檔名，指定對應的應用程式做為預設處理常式，但使用者無法變更這項設定。
+<translation id="1651216316133158002">這項政策可允許管理員針對 <ph name="PRODUCT_OS_NAME" /> 上各個副檔名，指定應用程式做為預設處理常式，但使用者無法變更這項設定。
 
 凡是這項政策未指定的副檔名，使用者都能按照一般工作流程自行設定預設處理常式。
 
@@ -1415,7 +1415,7 @@
 <translation id="2082205219176343977">設定裝置的最低 Chrome 版本限制。</translation>
 <translation id="20838788335877967">停用使用者識別資訊報告功能</translation>
 <translation id="208566302163036794">封鎖已停用的功能</translation>
-<translation id="2086040449830622332">啟用 LPAC 沙箱的顯示服務</translation>
+<translation id="2086040449830622332">啟用 LPAC 沙箱的列印服務</translation>
 <translation id="208623333578980446">允許電源管理的螢幕 Wake Lock</translation>
 <translation id="2089541797660774692">啟用受管理瀏覽器的雲端報告功能</translation>
 <translation id="2090712407517297305">chrome://history/grouped 的 Chrome 歷史記錄頁面會依群組顯示內容。</translation>
@@ -1743,7 +1743,7 @@
 <translation id="2290270645214705008">如果將這項政策設為「停用」，將無法開啟遠端存取主機服務，也無法將該服務設為接受外來連線。這項政策不適用於遠端支援情境。
 
           如果設為「啟用」、保留空白或不設定，這項政策就不會生效。</translation>
-<translation id="2292482441027364457">如果設定這項政策，就能修正 <ph name="PRODUCT_OS_NAME" /> 會在啟動器列中將哪些應用程式 ID 顯示為固定的應用程式，而且使用者無法進行變更。
+<translation id="2292482441027364457">如果設定這項政策，就能修正 <ph name="PRODUCT_OS_NAME" /> 會在啟動器列中，將哪些應用程式 ID 顯示為固定應用程式，而且使用者無法變更。
 
 如果要指定的是 Chrome 應用程式，請使用應用程式的 ID，例如 pjkljhegncpnkpknbcohdijeoejaedia；如果要指定的是 Android 應用程式，請使用套件名稱，例如 com.google.android.gm；如果要指定的是網頁應用程式，請使用「<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />」所用的網址，例如 https://google.com/maps；如果要指定的是系統網頁應用程式，請使用蛇形命名式名稱，例如 <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />。
 如果要指定的是隔離網頁應用程式，請使用網頁軟體包 ID (例如 <ph name="PINNED_LAUNCHER_APPS_POLICY_ISOLATED_WEB_APP_EXAMPLE" />)。
@@ -3435,7 +3435,7 @@
       * <ph name="PRINTERS_ALLOW_ALL" /> (值為 2) 會顯示所有印表機
 
       如果不設定這項政策，系統會使用 <ph name="PRINTERS_ALLOW_ALL" />。</translation>
-<translation id="3686607051786495544">停用 LPAC 沙箱執行顯示服務</translation>
+<translation id="3686607051786495544">停用 LPAC 沙箱的列印服務</translation>
 <translation id="3695204334462456702">可支援無須調整設定 (mDNS 和 DNS-SD) 的通訊協定目的地 (已淘汰)</translation>
 <translation id="3695706037816556327">在 <ph name="PRODUCT_OS_NAME" />上移除安全性權杖 (例如智慧型卡片) 時，系統要執行的動作。</translation>
 <translation id="3696134803170884851">停用充電音效</translation>
@@ -5068,7 +5068,7 @@
 <translation id="504116558738617678">只有在裝置未受管理或只有一位使用者時，才顯示磁碟空間不足的警告</translation>
 <translation id="5041315457555330432">除非開啟 CastAllowAllIPs 功能，否則僅允許 <ph name="PRODUCT_NAME" /> 透過私人 IP 位址連線到裝置。</translation>
 <translation id="504689994545234073">允許使用者在本機儲存檔案</translation>
-<translation id="5048890362473520096">啟用 LPAC 沙箱執行顯示服務</translation>
+<translation id="5048890362473520096">啟用 LPAC 沙箱執行列印服務</translation>
 <translation id="5055474681190962362">每月應重新啟動的日期 [1-31] (根據裝置當地時區)，僅適用於「frequency」設為「MONTHLY」的情況。如果這個值大於指定月份的天數上限，系統會選擇當月的最後一天。</translation>
 <translation id="5056708224511062314">已停用螢幕放大鏡</translation>
 <translation id="5058573563327660283">選取自動清理時用來釋出磁碟空間的策略 (已不適用)</translation>
@@ -5483,7 +5483,7 @@
       如果在 <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> 要求中定義了 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 屬性，系統會自動擷取所有螢幕的畫面，不必獲得使用者明確授權。
       如果不設定這項政策，則 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 不適用於任何網頁應用程式。
 為進一步保護隱私權，自 <ph name="PRODUCT_NAME" /> 116 版起，這項政策不再支援動態重新整理。因此，使用者可以確定如果在工作階段開始時沒有獲得許可，則在登入後也沒有其他網頁能擷取畫面。</translation>
-<translation id="5351946114524094311">如果設定這項政策，所有指定的資料類型都會從同步處理作業 (包含 <ph name="CHROME_SYNC_NAME" />和漫遊設定檔的同步處理作業) 中排除。這有助於縮減漫遊設定檔的大小，或限制上傳到 <ph name="CHROME_SYNC_NAME" />伺服器的資料類型。
+<translation id="5351946114524094311">如果設定這項政策，所有的指定資料類型都會從同步處理作業中排除 (包含 <ph name="CHROME_SYNC_NAME" />和漫遊設定檔的同步處理作業)。這有助於縮減漫遊設定檔的大小，或限制上傳到 <ph name="CHROME_SYNC_NAME" />伺服器的資料類型。
 
       這項政策目前的資料類型為：「apps」、「autofill」、「bookmarks」、「extensions」、「preferences」、「passwords」、「payments」、「productComparison」、「readingList」、「savedTabGroups」、「tabs」、「themes」、「typedUrls」和「wifiConfigurations」。這些名稱有大小寫之分！
 

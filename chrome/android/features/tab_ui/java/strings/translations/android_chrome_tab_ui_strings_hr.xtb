@@ -41,6 +41,7 @@
 <translation id="2801787514987684416">Pogledati podatke o trgovini?</translation>
 <translation id="2928243913527329289">Google | O ovoj trgovini</translation>
 <translation id="2977480621796371840">Ukloni iz grupe</translation>
+<translation id="29919168204617356">Neaktivne kartice automatski će se zatvoriti. Uvijek ih možete pronaći u povijesti.</translation>
 <translation id="3008554597174452548">Zaustavi praćenje proizvoda</translation>
 <translation id="3026391124054406831">Izradite grupe da biste organizirali kartice.</translation>
 <translation id="3051031624272448591">Uvijek ih možete vratiti iz povijesti</translation>
@@ -51,6 +52,7 @@
 <translation id="3322827343001922122">Otvorite izbornik aktivnosti grupe kartica za grupu kartica <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Prijedlog: čini se da su neke kartice povezane (njih<ph name="NUMBER_OF_TABS" />). Želite li ih grupirati?</translation>
 <translation id="3547352561153509682">Time će se grupa izbrisati sa svih uređaja na kojima ste prijavljeni na <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">Sakrivanje dijaloškog okvira neaktivnih kartica</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Minijatura za pregled lista za dijeljenje.</translation>
 <translation id="381219490185664296">Želite li poništiti grupiranje kartica?</translation>
@@ -137,6 +139,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> recenzija s Googlea}one{<ph name="REVIEWS_COUNT_MANY" /> recenzija s Googlea}few{<ph name="REVIEWS_COUNT_MANY" /> recenzije s Googlea}other{<ph name="REVIEWS_COUNT_MANY" /> recenzija s Googlea}}</translation>
 <translation id="7559245342362162951">Prikaži kartice grupe u rešetki na cijelom zaslonu</translation>
 <translation id="7658239707568436148">Odustani</translation>
+<translation id="7688386659311034820">Dijaloški okvir neaktivnih kartica</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Podijelite <ph name="TABS_COUNT_ONE" /> odabranu karticu}one{Podijelite <ph name="TABS_COUNT_MANY" /> odabranu karticu}few{Podijelite <ph name="TABS_COUNT_MANY" /> odabrane kartice}other{Podijelite <ph name="TABS_COUNT_MANY" /> odabranih kartica}}</translation>
 <translation id="7773714564112603605">Ukloni karticu i izbriši grupu</translation>
 <translation id="7792771145871471484">Pregledajte prijedloge.</translation>
@@ -159,6 +162,7 @@
 <translation id="8398929769197326728">Nova mapa – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8631711675211020168">Svi će odmah izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i izbrisat će se sa svih uređaja</translation>
+<translation id="8633025649649592204">Nedavna aktivnost</translation>
 <translation id="870736955561925754">Želite li zatvoriti karticu i izbrisati grupu?</translation>
 <translation id="8714939927607906138">Niža cijena</translation>
 <translation id="8730621377337864115">Gotovo</translation>

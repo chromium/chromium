@@ -976,6 +976,7 @@ Jedan uređaj je povezan.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do potpune napunjenosti</translation>
 <translation id="4538824937723742295">Snimite cijeli zaslon</translation>
 <translation id="4539127209940689201">Ispis trenutačne stranice</translation>
+<translation id="4541505619120536051">Uvijek otvoreno</translation>
 <translation id="4541706525461326392">Profil se uklanja. To može potrajati nekoliko minuta.</translation>
 <translation id="4544483149666270818">Odaberite prozor za snimanje</translation>
 <translation id="4545950850562423083">Spremanje trenutačne stranice kao oznaku</translation>
@@ -1488,6 +1489,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6232891689835436217">Aplikacija <ph name="APP_NAME" /> trenutačno koristi vaš fotoaparat i mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Gornji gumb</translation>
+<translation id="6240821072888636753">Pitaj svaki put</translation>
 <translation id="6247728804802644171">Otvaranje obavijesti</translation>
 <translation id="6249795363855770621">Ne može se označiti kao dovršeno. Pokušajte ponovo kad budete online.</translation>
 <translation id="6254629735336163724">Zaključan vodoravni prikaz</translation>
@@ -1831,6 +1833,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7557816257942363084">Aplikacija <ph name="APP_NAME" /> trenutačno koristi vaš mikrofon</translation>
 <translation id="7561982940498449837">Zatvori izbornik</translation>
 <translation id="7564874036684306347">Premještanje prozora na drugu radnu površinu može dovesti do neočekivanog ponašanja. Daljnje obavijesti, prozori i dijaloški okviri mogu se podijeliti između radnih površina.</translation>
+<translation id="7568790562536448087">Ažuriranje stavke</translation>
 <translation id="7569509451529460200">Brajica i ChromeVox omogućeni</translation>
 <translation id="7569886975397378678">Odbacite postavljanje prikaza obavijesti i aplikacija telefona</translation>
 <translation id="7571361473021531288">Baterija <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> preostalo</translation>
@@ -1960,7 +1963,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7963992254934562106">Izvor: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Odabir mape...</translation>
 <translation id="7973756967040444713">Zatvorite alatnu traku</translation>
-<translation id="797485111629834774">Označite zadatak kao izvršen: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Uključivanje ili isključivanje povećala za cijeli zaslon</translation>
 <translation id="7977927628060636163">Traženje mobilnih mreža...</translation>
 <translation id="7982789257301363584">Mreža</translation>

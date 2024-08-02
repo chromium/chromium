@@ -4452,7 +4452,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4163560723127662357">Nežinoma klaviatūra</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> nepriklauso tinkamai organizacijai. Susisiekite su administratoriumi. Jei esate administratorius, galite nustatyti savo organizaciją apsilankę adresu šiuo adresu: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Svetainės nustatymai</translation>
-<translation id="4166847326079525123">Vietovė išjungta „Mac“ sistemos nuostatose</translation>
 <translation id="4167212649627589331">Programa „<ph name="APP_NAME" />“ bando pasiekti įrenginį (<ph name="DEVICE_NAME" />). Išjunkite įrenginio (<ph name="DEVICE_NAME" />) privatumo jungiklį, kad leistumėte pasiekti.</translation>
 <translation id="4167393659000039775">„Google“ neatsako už prarastus duomenis ir „<ph name="DEVICE_OS" />“ gali neveikti nesertifikuotuose modeliuose. Sužinokite daugiau adresu g.co/flex/InstallGuide.</translation>
 <translation id="4167924027691268367">Daugiau veiksmų pagal „<ph name="SHORTCUT_TITLE" />“ spartųjį klavišą</translation>
@@ -6764,7 +6763,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5885314688092915589">Šį profilį tvarkys jūsų organizacija</translation>
 <translation id="5885470467814103868">Pradėti nuskaitymą</translation>
 <translation id="5885631909150054232">Kopijuoti prieigos raktą</translation>
-<translation id="5886000783338788034">Vietovės informacija išjungta „ChromeOS“ nustatymuose</translation>
 <translation id="5886009770935151472">Pirmas pirštas</translation>
 <translation id="5886112770923972514">Prisijunkite ir greitai nustatykite sparčiojo susiejimo įrenginius netoliese</translation>
 <translation id="5886384907280980632">Išjungti dabar</translation>
@@ -8979,7 +8977,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7529865045818406536">Pageidaujami tinklai bus naudojami, jei bus pasiekiamas daugiau nei vienas ankstesnis tinklas</translation>
 <translation id="7529876053219658589">{0,plural, =1{Uždaryti svečio langus}one{Uždaryti svečio langus}few{Uždaryti svečio langus}many{Uždaryti svečio langus}other{Uždaryti svečio langus}}</translation>
 <translation id="7530016656428373557">Iškrovos koeficientas vatais</translation>
-<translation id="7531310913436731628">Vietovė išjungta „Mac“ sistemos nuostatose</translation>
 <translation id="7531771599742723865">Įrenginys naudojamas</translation>
 <translation id="7531779363494549572">Eikite į skiltį „Nustatymai“ &gt; „Programos ir pranešimai“ &gt; „Pranešimai“.</translation>
 <translation id="7532009420053991888">„<ph name="LINUX_APP_NAME" />“ nereaguoja. Pasirinkite „Priverstinai uždaryti“, kad uždarytumėte programą.</translation>
@@ -11048,6 +11045,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8999560016882908256">Skilties sintaksės klaida: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Sumažintas judėjimas ekrane</translation>
 <translation id="9000185763019430629">Palieskite piršto atspaudo jutiklį dešinėje „<ph name="DEVICE_TYPE" />“ pusėje. Piršto atspaudo duomenys patikimai saugomi ir niekada nepatenka už „<ph name="DEVICE_TYPE" />“ ribų.</translation>
+<translation id="9003031149571024583">Įveskite <ph name="NUM_DIGIT" /> PIN kodo skaitmenį iš 6. Naudokite naikinimo arba ištrynimo klavišą ir pašalinkite paskutinį skaitmenį.</translation>
 <translation id="9003185744423389627">Nepavyko prisijungti prie įrenginio tvarkymo serverio; <ph name="FAILURE_TIME" /> pateikta būsena „<ph name="STATUS_TEXT" />“</translation>
 <translation id="90033698482696970">Automatiškai nuskaityti, ar yra pasiekiamų „eSIM“ kortelės profilių?</translation>
 <translation id="9003647077635673607">Leisti visose svetainėse</translation>

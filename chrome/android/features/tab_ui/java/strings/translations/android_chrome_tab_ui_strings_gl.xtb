@@ -106,6 +106,7 @@
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6051432659151380973">Os teus grupos de pestanas gárdanse automaticamente</translation>
 <translation id="6054741997831917303">O prezo deste artigo baixou recentemente de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
+<translation id="6082313992897617440">Perderás inmediatamente o acceso ao grupo de pestanas <ph name="GROUP_NAME" /></translation>
 <translation id="6193448654517602979">Selecciona pestanas</translation>
 <translation id="6228793724645064692">(valoración da tenda)</translation>
 <translation id="6271513594716432922">Pechar todas as pestanas inactivas</translation>
@@ -129,6 +130,7 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" />, opción seleccionada</translation>
 <translation id="7326879924029668159">Consulta a política de devolución e outra información</translation>
 <translation id="7352298686197644113">Descubre que artigo baixou de prezo nunha das pestanas que tes abertas</translation>
+<translation id="7421293530411019405">Queres saír do grupo de pestanas?</translation>
 <translation id="7452985128687107478">Os grupos de pestanas gárdanse e actualízanse automaticamente en todos os dispositivos</translation>
 <translation id="747459581954555080">Restablecer todo</translation>
 <translation id="753732157349120914">Selector de pestanas</translation>
@@ -156,6 +158,8 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Pechar <ph name="TABS_COUNT_ONE" /> pestana seleccionada}other{Pechar <ph name="TABS_COUNT_MANY" /> pestanas seleccionadas}}</translation>
 <translation id="8398929769197326728">Cartafol novo: <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Configuración</translation>
+<translation id="8631711675211020168">Todas as persoas perderán inmediatamente o acceso ao grupo de pestanas <ph name="GROUP_NAME" />, que se eliminará de todos os dispositivos</translation>
+<translation id="8633025649649592204">Actividade recente</translation>
 <translation id="870736955561925754">Queres pechar a pestana e eliminar o grupo?</translation>
 <translation id="8714939927607906138">Prezo máis baixo</translation>
 <translation id="8730621377337864115">Feito</translation>

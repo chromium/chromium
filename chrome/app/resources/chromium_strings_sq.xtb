@@ -23,6 +23,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="126567311906253476">Kur identifikohesh me <ph name="USER_EMAIL" /> në shërbimet e Google, si p.sh. Gmail ose YouTube, mund të identifikohesh automatikisht në Chromium me të njëjtën llogari</translation>
 <translation id="1290883685122687410">Gabim në konfigurim: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Konfiguro profilin tënd të ri të Chromium</translation>
+<translation id="1324107359134968521">Chromium ka nevojë për qasje te Bluetooth-i për të eksploruar pajisjet me Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Fshi po ashtu të dhënat nga Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Je i identifikuar në Chromium!</translation>
 <translation id="1478370723027452770">Merr ndihmë për Chrome for Testing</translation>
@@ -61,6 +62,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="1951406923938785464">Chromium e bllokoi këtë shkarkim sepse lloji i skedarit nuk është shkarkuar zakonisht dhe mund të jetë i rrezikshëm</translation>
 <translation id="1953553007165777902">Po shkarkohet... Kanë mbetur edhe <ph name="MINUTE" /> minuta</translation>
 <translation id="1966382378801805537">Chromium nuk mund të përcaktojë ose caktojë shfletuesin e parazgjedhur</translation>
+<translation id="1990262977744080398">Mëso se pse Chromium i bllokon disa skedarë, hapet në një skedë të re</translation>
 <translation id="2008474315282236005">Kjo do të fshijë 1 artikull nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chromium si <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Instalimi nuk u krye. Provo përsëri.</translation>
 <translation id="2020032459870799438">Për të kontrolluar nëse fjalëkalimet e tjera janë të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe probleme të tjera të sigurisë, <ph name="BEGIN_LINK" />identifikohu në Chromium<ph name="END_LINK" />.</translation>

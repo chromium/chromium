@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Butonul Gestionează parolele, activează pentru a vedea și a gestiona parolele în setările Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Selectează permisiunea pentru <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">Interval de preț pentru toate opțiunile</translation>
 <translation id="1113869188872983271">&amp;Anulați reordonarea</translation>
 <translation id="1118429183611783760">Aspiratoare și produse de îngrijire a podelelor</translation>
 <translation id="1122714970786750095">Electronice și electrice</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">Ascunde momentan</translation>
 <translation id="121201262018556460">Ați încercat să accesați <ph name="DOMAIN" />, dar serverul a furnizat un certificat care conține o cheie slabă. Un atacator ar fi putut sparge cheia privată și este posibil ca serverul să nu fie cel așteptat de dvs. (este posibil să comunicați cu un atacator).</translation>
 <translation id="1212527389003717329">A început descărcarea. Apasă lung |<ph name="ACCELERATOR" />| ca să o vezi.</translation>
-<translation id="1214970845432250240">Interval de preț</translation>
 <translation id="1219129156119358924">Securitatea sistemului</translation>
 <translation id="1222060260947439312">Tava din dreapta</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -353,7 +351,6 @@
 <translation id="1617276713587758852">Crossovere</translation>
 <translation id="1619007254056372606">Gestionează datele privind site-urile pe dispozitiv</translation>
 <translation id="1620510694547887537">Cameră</translation>
-<translation id="162285686621567578">Site-ul este blocat de părintele tău.</translation>
 <translation id="1622966923835127638">Finanțe comerciale</translation>
 <translation id="1623104350909869708">Restricționați capacitatea acestei pagini de a crea casete de dialog suplimentare</translation>
 <translation id="1633137413609266904">{0,plural, =1{Deschiderea acestui fișier este blocată de politica implementată de administrator}few{Deschiderea a # fișiere este blocată de politica implementată de administrator}other{Deschiderea a # de fișiere este blocată de politica implementată de administrator}}</translation>
@@ -738,7 +735,6 @@
 <translation id="2328955282645810595">Instrumente pentru construcții și instrumente electrice</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expiră pe <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Redactarea CV-ului</translation>
-<translation id="2337776048981813397">Interval de preț pentru toate opțiunile</translation>
 <translation id="2337852623177822836">Setare controlată de administrator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> dorește să se asocieze</translation>
 <translation id="2346319942568447007">Imaginea copiată de tine</translation>
@@ -1030,7 +1026,6 @@
 <translation id="2930577230479659665">Decupare după fiecare exemplar</translation>
 <translation id="2933624813161016821">Folie pentru embosare</translation>
 <translation id="2938225289965773019">Deschide linkurile <ph name="PROTOCOL" /></translation>
-<translation id="2941112035454246133">Redusă</translation>
 <translation id="2941878205777356567">Plic de 9 x 12 inchi</translation>
 <translation id="2941952326391522266">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; certificatul său de securitate provine de la <ph name="DOMAIN2" />. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
 <translation id="2942492342931589800">Informal</translation>
@@ -1212,7 +1207,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Introdu codul de verificare din <ph name="NUMBER_OF_DIGITS" /> cifre</translation>
 <translation id="3272643614306383237">Mai puțin de 1 MB. Este posibil ca unele site-uri să se încarce mai lent la următoarea vizită.</translation>
-<translation id="327346289570683313">Interval de preț</translation>
 <translation id="3273738040255912340">Administratorul poate să modifice profilul și browserul de la distanță, să analizeze informațiile despre browser cu ajutorul rapoartelor și să finalizeze alte activități necesare. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată și din afara Chromium. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Politica implementată de administrator nu recomandă să deschizi acest fișier în <ph name="DESTINATION_NAME" />}few{Politica implementată de administrator nu recomandă să deschizi aceste fișiere în <ph name="DESTINATION_NAME" />}other{Politica implementată de administrator nu recomandă să deschizi aceste fișiere în <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organizația ta, <ph name="ENROLLMENT_DOMAIN" />, a trimis câteva informații următoarelor site-uri, cum ar fi setări sau politici.</translation>
@@ -1701,6 +1695,7 @@
 <translation id="4177501066905053472">Subiectele anunțurilor</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Anulează urmărirea prețului</translation>
+<translation id="4190446002599583608">Căutarea în istoric, bazată pe AI</translation>
 <translation id="4191334393248735295">Lungime</translation>
 <translation id="4195459680867822611">Butonul Vezi sfaturile privind Chrome, activează pentru a afla despre funcțiile Chrome</translation>
 <translation id="4195643157523330669">Deschide în filă nouă</translation>
@@ -3635,6 +3630,7 @@ Detalii suplimentare:
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Elimini sugestia pentru formular din Chrome?</translation>
 <translation id="781440967107097262">Permiți accesul la clipboard?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Hârtie (simplă)</translation>
 <translation id="7815407501681723534">S-au găsit <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> pentru „<ph name="SEARCH_STRING" />”</translation>
 <translation id="7822611063308883975">Console mobile pentru jocuri</translation>
@@ -3799,6 +3795,7 @@ Detalii suplimentare:
 <translation id="8148608574971654810">Versiune PDF:</translation>
 <translation id="8149426793427495338">Computerul este inactiv.</translation>
 <translation id="8150722005171944719">Fișierul de la <ph name="URL" /> nu poate fi citit.  Este posibil să fi fost eliminat ori mutat sau ca permisiunile pentru fișiere să împiedice accesarea acestuia.</translation>
+<translation id="8151185429379586178">Instrumente dezvoltator</translation>
 <translation id="8153865548451212769">{0,plural, =1{Politica implementată de administrator nu recomandă să descarci acest fișier în <ph name="DESTINATION_NAME" />}few{Politica implementată de administrator nu recomandă să descarci aceste fișiere în <ph name="DESTINATION_NAME" />}other{Politica implementată de administrator nu recomandă să descarci aceste fișiere în <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Echipament pentru hochei</translation>
 <translation id="8161095570253161196">Reia navigarea</translation>

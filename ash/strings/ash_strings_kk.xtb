@@ -976,6 +976,7 @@
 <translation id="453661520163887813">Зарядтау аяқталғанға дейін <ph name="TIME" /> қалды</translation>
 <translation id="4538824937723742295">Толық экранның скриншотын жасау</translation>
 <translation id="4539127209940689201">Ағымдағы бетті басып шығару</translation>
+<translation id="4541505619120536051">Әрдайым ашу</translation>
 <translation id="4541706525461326392">Профиль өшірілуде. Бұл бірнеше минутқа созылуы мүмкін.</translation>
 <translation id="4544483149666270818">Жазу үшін терезені таңдаңыз.</translation>
 <translation id="4545950850562423083">Ағымдағы бетті бетбелгі ретінде сақтау</translation>
@@ -1488,6 +1489,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" /> қолданбасы камера мен микрофонды пайдаланып жатыр.</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Үстіңгі түйме</translation>
+<translation id="6240821072888636753">Әрдайым сұрау</translation>
 <translation id="6247728804802644171">Хабарландыруларды ашу</translation>
 <translation id="6249795363855770621">Аяқталған деп белгілеу мүмкін емес. Онлайн болғанда қайталап көріңіз.</translation>
 <translation id="6254629735336163724">Көлденең күйде құлыптаулы</translation>
@@ -1831,6 +1833,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> қолданбасы микрофонды камераны пайдаланып жатыр.</translation>
 <translation id="7561982940498449837">Мәзірді жабу</translation>
 <translation id="7564874036684306347">Терезелерді басқа жұмыс үстеліне ауыстырғанда, күтпеген қате шығуы мүмкін. Хабарландырулар, терезелер мен диалогтік терезелер түрлі жұмыс үстелдерінде көрсетілуі ықтимал.</translation>
+<translation id="7568790562536448087">Жаңарту</translation>
 <translation id="7569509451529460200">Брайль және ChromeVox қосулы</translation>
 <translation id="7569886975397378678">Телефондағы хабарландыруларды және қолданбаларды көру мүмкіндігін реттеуден бас тарту</translation>
 <translation id="7571361473021531288">Батарея <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> қалды</translation>
@@ -1960,7 +1963,6 @@
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> компаниясынан</translation>
 <translation id="7968693143708939792">Қалта таңдау…</translation>
 <translation id="7973756967040444713">Құралдар тақтасын жабу</translation>
-<translation id="797485111629834774">Тапсырманы аяқталды деп белгілеу: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Толық экран ұлғайтқышын қосу немесе өшіру</translation>
 <translation id="7977927628060636163">Мобильдік желілер ізделуде…</translation>
 <translation id="7982789257301363584">Желі</translation>

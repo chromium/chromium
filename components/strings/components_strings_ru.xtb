@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Кнопка "Управление паролями". Нажмите ее, чтобы перейти к управлению паролями в настройках Chrome.</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />: выберите разрешение</translation>
-<translation id="1112238992895762847">Диапазон цен для всех вариантов</translation>
 <translation id="1113869188872983271">&amp;Отменить изменение порядка</translation>
 <translation id="1118429183611783760">Пылесосы и уборка полов</translation>
 <translation id="1122714970786750095">Электроника и электротехника</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">Скрыть</translation>
 <translation id="121201262018556460">Вы попытались перейти на сайт <ph name="DOMAIN" />, но сервер предоставил сертификат с ненадежным ключом. Возможно, частный ключ был взломан злоумышленником, а сервер выдает себя за другой (вероятно, это атака).</translation>
 <translation id="1212527389003717329">Скачивание началось. Чтобы посмотреть скачанные файлы, нажмите и удерживайте клавишу |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">Диапазон цен</translation>
 <translation id="1219129156119358924">Безопасность системы</translation>
 <translation id="1222060260947439312">Правый лоток</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -234,6 +232,7 @@
 <translation id="139305205187523129">Сайт <ph name="HOST_NAME" /> не отправил данных.</translation>
 <translation id="1405567553485452995">Светло-зеленый</translation>
 <translation id="1406812885827747674">Разрешить в этот раз</translation>
+<translation id="14070772729708640">Файлы загружены в папку "<ph name="FOLDER_NAME" />" сервиса "<ph name="CLOUD_PROVIDER" />"</translation>
 <translation id="1407135791313364759">Открыть все</translation>
 <translation id="1408787208417187241">Три скобы сверху</translation>
 <translation id="1410365862999780287">Информация о ваших действиях в браузере будет недоступна другим пользователям этого устройства. Сайты, которые вы посещаете, и используемые ими сервисы, в том числе продукты Google, продолжат собирать данные как прежде. Закладки, скачанные файлы и объекты из списка для чтения сохранятся.</translation>
@@ -269,6 +268,7 @@
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Использование шрифтов на компьютере для создания высококачественного контента.</translation>
 <translation id="1463793142714244641">Таймшер и недвижимость для отдыха</translation>
+<translation id="1465457928007067810">Код IBAN сохранен в аккаунте Google.</translation>
 <translation id="1467432559032391204">Слева</translation>
 <translation id="1468653229182955856">Чтобы продолжить работу на сайте <ph name="TOP_ORIGIN" />, введите код <ph name="ONE_TIME_CODE" /> для фрейма <ph name="EMBEDDED_ORIGIN" />.</translation>
 <translation id="1472675084647422956">Показать больше...</translation>
@@ -353,7 +353,6 @@
 <translation id="1617276713587758852">Кроссоверы</translation>
 <translation id="1619007254056372606">Управлять данными сайтов на устройстве</translation>
 <translation id="1620510694547887537">Камера</translation>
-<translation id="162285686621567578">Этот сайт заблокирован одним из родителей.</translation>
 <translation id="1622966923835127638">Корпоративные финансы</translation>
 <translation id="1623104350909869708">Запретить создание дополнительных диалоговых окон на этой странице</translation>
 <translation id="1633137413609266904">{0,plural, =1{Администратор запретил открывать этот файл.}one{Администратор запретил открывать # файл.}few{Администратор запретил открывать # файла.}many{Администратор запретил открывать # файлов.}other{Администратор запретил открывать # файла.}}</translation>
@@ -738,7 +737,6 @@
 <translation id="2328955282645810595">Строительные и механические инструменты</translation>
 <translation id="2330137317877982892">Карта <ph name="CREDIT_CARD" />, действует до <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Возобновить ввод текста</translation>
-<translation id="2337776048981813397">Диапазон цен для всех вариантов</translation>
 <translation id="2337852623177822836">Эта настройка управляется администратором</translation>
 <translation id="2340263603246777781">Сайт <ph name="ORIGIN" /> запрашивает подключение</translation>
 <translation id="2346319942568447007">Скопированное изображение</translation>
@@ -1030,7 +1028,6 @@
 <translation id="2930577230479659665">Подрезать после каждого экземпляра</translation>
 <translation id="2933624813161016821">Фольга для тиснения</translation>
 <translation id="2938225289965773019">переход по ссылкам <ph name="PROTOCOL" /></translation>
-<translation id="2941112035454246133">Низкий</translation>
 <translation id="2941878205777356567">Конверт 229 x 305 мм</translation>
 <translation id="2941952326391522266">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности относится к <ph name="DOMAIN2" />. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="2942492342931589800">Неформальнее</translation>
@@ -1196,6 +1193,7 @@
 <translation id="3240791268468473923">Экран несоответствия учетных данных для защищенных платежей открыт</translation>
 <translation id="324180406144491771">Ссылки "<ph name="HOST_NAME" />" заблокированы</translation>
 <translation id="3248329428895535435">Не показывать на этом сайте</translation>
+<translation id="3249102948665905108">При загрузке файлов в сервис "<ph name="CLOUD_PROVIDER" />" возникла ошибка</translation>
 <translation id="3252772880526154546">Архитектура</translation>
 <translation id="3254301855501243548">18 x 22 дюйма</translation>
 <translation id="3255926992597692024">Chromium пытается изменить настройки заполнения способов оплаты.</translation>
@@ -1211,7 +1209,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Введите код подтверждения из <ph name="NUMBER_OF_DIGITS" /> цифр</translation>
 <translation id="3272643614306383237">Менее 1 МБ. Возможно, некоторые сайты будут загружаться медленнее, когда вы откроете их в следующий раз.</translation>
-<translation id="327346289570683313">Диапазон цен</translation>
 <translation id="3273738040255912340">Администратор может удаленно изменять настройки вашего профиля и браузера, анализировать отчеты с информацией о браузере и выполнять другие задачи, а также управлять действиями на этом устройстве вне браузера Chromium. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Администратор не рекомендует открывать этот файл в месте назначения "<ph name="DESTINATION_NAME" />".}one{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}few{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}many{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}other{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}}</translation>
 <translation id="3282085321714087552">Ваша организация (<ph name="ENROLLMENT_DOMAIN" />) отправила на следующие веб-сайты некоторые данные, такие как настройки и правила.</translation>
@@ -1366,6 +1363,7 @@
 <translation id="3552155506104542239">Внимание! Это правило противоречит правилу <ph name="POLICY_NAME" /> и не влияет на приложения Android. В остальном оно работает, как задумано.</translation>
 <translation id="3552297013052089404">Шрифт без засечек</translation>
 <translation id="3558573058928565255">До дня</translation>
+<translation id="3559897352860026926">Попросите администратора проверить конфигурацию сервиса "<ph name="CLOUD_PROVIDER" />".</translation>
 <translation id="355995771319966853">Отменить автозаполнение</translation>
 <translation id="3560408312959371419">Параметры Защиты от слежения и управление данными сайтов на устройстве</translation>
 <translation id="3560824484345057728">Показать связанные сайты</translation>
@@ -1700,6 +1698,7 @@
 <translation id="4177501066905053472">Темы рекламы</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Перестать отслеживать цену</translation>
+<translation id="4190446002599583608">Поиск в истории браузера с помощью ИИ</translation>
 <translation id="4191334393248735295">Длина</translation>
 <translation id="4195459680867822611">Кнопка "Посмотреть советы по работе с Chrome". Нажмите ее, чтобы узнать больше о функциях Chrome.</translation>
 <translation id="4195643157523330669">Открыть в новой вкладке</translation>
@@ -1715,6 +1714,7 @@
 <translation id="421066178035138955">Использование устройств и данных виртуальной реальности.</translation>
 <translation id="4213500579045346575">Бодибилдинг</translation>
 <translation id="4214357935346142455">профиль экрана входа</translation>
+<translation id="4219596572397833317">Покупайте выгоднее с помощью истории изменения цен и другой информации.</translation>
 <translation id="4220128509585149162">Сбои в работе Chrome</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Шаг 1. Войдите на портал&lt;/h4&gt;
     &lt;p&gt;Чтобы воспользоваться общедоступной сетью Wi-Fi (например, в кафе или аэропорту), сначала подключитесь к ней, открыв любую веб-страницу с префиксом &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
@@ -2029,6 +2029,7 @@
 <translation id="4816492930507672669">По размеру страницы</translation>
 <translation id="4819347708020428563">Изменить заметки в режиме по умолчанию?</translation>
 <translation id="4822493756793346865">Информация о средних ценах основана на данных из магазинов в интернете за последние 90 дней.</translation>
+<translation id="4822922322149719535">Открыть журнал ошибок</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать таблицу Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="4826588772550366629">"Камера" и "Микрофон"</translation>
 <translation id="4827283332383516812">Удаление карты</translation>
@@ -2687,6 +2688,7 @@
 <translation id="6061154937977953833">Борьба</translation>
 <translation id="6062937464449575061">Перестать отслеживать цену</translation>
 <translation id="6063415549109819824">Ипотечное кредитование</translation>
+<translation id="6070432475334343308">Не удалось загрузить один или несколько файлов в папку "<ph name="FOLDER_NAME" />" сервиса "<ph name="CLOUD_PROVIDER" />".</translation>
 <translation id="6080696365213338172">Вы используете сертификат, предоставленный администратором, поэтому он может заблокировать передачу данных на сайт <ph name="DOMAIN" />.</translation>
 <translation id="6085149458302186532">Этикетки (цветные)</translation>
 <translation id="6087312102907839798">Связанные запросы</translation>
@@ -2809,6 +2811,7 @@
 <translation id="6307968763353904914">Ваш банк не создает для физической карты "<ph name="CARD_LABEL" />" виртуальные, но вы можете платить ею онлайн.</translation>
 <translation id="6311410654831092784">Кардсток</translation>
 <translation id="6312113039770857350">Не удалось открыть веб-страницу</translation>
+<translation id="6316110367871394043">Загрузка файлов в сервис "<ph name="CLOUD_PROVIDER" />" приостановлена</translation>
 <translation id="6316723751983724988">Внимание! На этом сайте действуют ограничения Family Link для Chrome</translation>
 <translation id="63172326633386613">Открыть настройки специальных возможностей</translation>
 <translation id="6321917430147971392">Проверьте настройки DNS</translation>
@@ -3007,6 +3010,7 @@
 <translation id="6687335167692595844">Размер шрифта запрошен</translation>
 <translation id="6688743156324860098">Изменить</translation>
 <translation id="6688775486821967877">Виртуальная карта недоступна. Повторите попытку позже.</translation>
+<translation id="6688851075017682769">Тестовые адреса по странам</translation>
 <translation id="6689249931105087298">Относительный со сжатием точки черного цвета</translation>
 <translation id="6689271823431384964">Chrome предлагает вам сохранить карты в аккаунте Google, поскольку вы вошли в систему. Этот параметр можно изменить в разделе настроек. Имя владельца карты взято из вашего аккаунта.</translation>
 <translation id="6691397311652656001">На диске должно быть более <ph name="REQUIRED_FREE_DISK_SPACE" /> свободного места</translation>
@@ -3163,6 +3167,7 @@
 <translation id="6979440798594660689">Без звука (по умолчанию)</translation>
 <translation id="6984270784814146224">Изображение без описания. Извлекаем текст с помощью технологий ИИ от Google…</translation>
 <translation id="6987806006823772670">Конверт (с покрытием)</translation>
+<translation id="6989256887001961296">Этот контент заблокирован.</translation>
 <translation id="6989763994942163495">Показать дополнительные настройки</translation>
 <translation id="6996312675313362352">Всегда переводить <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6997288673234694149">Инвентарь для бейсбола и софтбола</translation>
@@ -3194,6 +3199,7 @@
 <translation id="7050187094878475250">Вы попытались перейти на сайт <ph name="DOMAIN" />, но сервер предоставил не заслуживающий доверия сертификат со слишком долгим сроком действия.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Сейчас сохранить эту карту нельзя.}one{Сейчас сохранить эти карты нельзя.}few{Сейчас сохранить эти карты нельзя.}many{Сейчас сохранить эти карты нельзя.}other{Сейчас сохранить эти карты нельзя.}}</translation>
 <translation id="7053983685419859001">Блокировать</translation>
+<translation id="7054717457611655239">Теперь сохраняйте файлы в сервисе "<ph name="CLOUD_PROVIDER" />".</translation>
 <translation id="7058163556978339998">Данные браузера <ph name="BROWSER" /> подтверждают, что сертификат сайта выпущен компанией <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Сервис синтаксического анализа паролей в файлах CSV</translation>
 <translation id="7062635574500127092">Бирюзовый</translation>
@@ -3633,6 +3639,7 @@
 <translation id="7812922009395017822">Мир</translation>
 <translation id="7813600968533626083">Удалить подсказку из Chrome?</translation>
 <translation id="781440967107097262">Предоставить доступ к буферу обмена?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Бумага (обычная)</translation>
 <translation id="7815407501681723534"><ph name="SEARCH_RESULTS" /> по запросу "<ph name="SEARCH_STRING" />" (<ph name="NUMBER_OF_RESULTS" />)</translation>
 <translation id="7822611063308883975">Портативные игровые консоли</translation>
@@ -3797,6 +3804,7 @@
 <translation id="8148608574971654810">Версия PDF:</translation>
 <translation id="8149426793427495338">Ваш компьютер перешел в спящий режим.</translation>
 <translation id="8150722005171944719">Файл по адресу <ph name="URL" /> недоступен. Возможно, он был удален или перемещен либо права доступа к нему ограничены.</translation>
+<translation id="8151185429379586178">Инструменты разработчика</translation>
 <translation id="8153865548451212769">{0,plural, =1{Администратор не рекомендует скачивать этот файл в место назначения "<ph name="DESTINATION_NAME" />".}one{Администратор не рекомендует скачивать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}few{Администратор не рекомендует скачивать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}many{Администратор не рекомендует скачивать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}other{Администратор не рекомендует скачивать эти файлы в место назначения "<ph name="DESTINATION_NAME" />".}}</translation>
 <translation id="81563721597823545">Хоккейный инвентарь</translation>
 <translation id="8161095570253161196">Продолжить просмотр</translation>
@@ -3922,6 +3930,7 @@
 <translation id="8371841335382565017">Показать список устройств для трансляции</translation>
 <translation id="8371889962595521444">Пользовательские корневые сертификаты</translation>
 <translation id="8374636051559112948">разный</translation>
+<translation id="837840316697671463">Если вы не можете найти какой-либо из них на устройстве, посмотрите в сервисе "<ph name="CLOUD_PROVIDER" />".</translation>
 <translation id="8378714024927312812">Управляется вашей организацией</translation>
 <translation id="8380941800586852976">Опасно</translation>
 <translation id="8381674639488873545">Списание может быть разовым или повторяющимся без каких-либо уведомлений. <ph name="BEGIN_LINK" />Все равно продолжить<ph name="END_LINK" /></translation>
@@ -4070,6 +4079,7 @@
 <translation id="8671519637524426245">Значение правила <ph name="SECURE_DNS_SALT" /> не соответствует требованиям по длине.</translation>
 <translation id="867224526087042813">Подпись</translation>
 <translation id="8672535691554698269">Компьютерные сети</translation>
+<translation id="8675446170353411473">Файлы загружаются в сервис "<ph name="CLOUD_PROVIDER" />"</translation>
 <translation id="8676424191133491403">Без задержки</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, ответ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">При загрузке веб-страницы <ph name="PAGE" /> произошла ошибка по следующим причинам:</translation>
@@ -4151,6 +4161,7 @@
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="882338992931677877">Слот для ручной подачи</translation>
 <translation id="8830320733681313421">Hagaki (открытка)</translation>
+<translation id="8830565333350631528">Посмотреть файлы в сервисе "<ph name="CLOUD_PROVIDER" />"</translation>
 <translation id="8833007469711500369">Стиральные и сушильные машины</translation>
 <translation id="8834962751196791179">Вы видите это предупреждение, потому что сайт не поддерживает HTTPS и у вас включен режим инкогнито. Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом предупреждении<ph name="END_LEARN_MORE_LINK" />…</translation>
 <translation id="8837398923270275776">Научно-фантастические и фэнтезийные сериалы</translation>

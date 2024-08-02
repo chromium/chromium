@@ -4449,7 +4449,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4163560723127662357">Papan kekunci yang tidak diketahui.</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> bukan milik organisasi yang sah. Hubungi pentadbir anda. Jika anda seorang pentadbir, anda boleh menyediakan organisasi anda dengan melawati: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Tetapan tapak</translation>
-<translation id="4166847326079525123">Lokasi dimatikan dalam Pilihan Sistem Windows</translation>
 <translation id="4167212649627589331"><ph name="APP_NAME" /> sedang cuba untuk mengakses <ph name="DEVICE_NAME" />. Matikan suis privasi <ph name="DEVICE_NAME" /> untuk membenarkan akses.</translation>
 <translation id="4167393659000039775">Google tidak bertanggungjawab atas sebarang kehilangan data dan <ph name="DEVICE_OS" /> mungkin tidak berfungsi pada model yang tidak diperakui. Ketahui lebih lanjut di g.co/flex/InstallGuide.</translation>
 <translation id="4167924027691268367">Lagi tindakan untuk pintasan <ph name="SHORTCUT_TITLE" /></translation>
@@ -5432,6 +5431,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4893336867552636863">Tindakan ini akan memadamkan data penyemakan imbas anda daripada peranti ini selama-lamanya.</translation>
 <translation id="4893454800196085005">Baik - DVD</translation>
 <translation id="4893522937062257019">Pada skrin kunci</translation>
+<translation id="4894055916816649664">Hanya selama 10 minit</translation>
 <translation id="4895799941222633551">Buat &amp;pintasan...</translation>
 <translation id="4898011734382862273">Sijil "<ph name="CERTIFICATE_NAME" />" mewakili Pihak Berkuasa Pensijilan</translation>
 <translation id="4898913189644355814">Laman mungkin menyimpan bahasa pilihan anda atau item yang mahu anda beli. Maklumat ini tersedia kepada laman dan subdomain laman tersebut.</translation>
@@ -6069,6 +6069,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5380526436444479273">Tunggu beberapa minit, kemudian cuba lagi</translation>
 <translation id="5382591305415226340">Urus pautan yang disokong</translation>
 <translation id="5383740867328871413">Kumpulan tidak bernama - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5384401776498845256">Orang yang boleh berkongsi dengan anda</translation>
 <translation id="5385628342687007304">Kata laluan ini disimpan untuk peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan dalam Google Account anda.</translation>
 <translation id="5387116558048951800">Edit <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="5387496897058645038">Spesifikasi produk</translation>
@@ -6760,7 +6761,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5885314688092915589">Organisasi anda akan mengurus profil ini</translation>
 <translation id="5885470467814103868">Mulakan pengimbasan</translation>
 <translation id="5885631909150054232">Salin token</translation>
-<translation id="5886000783338788034">Lokasi dimatikan dalam Tetapan ChromeOS</translation>
 <translation id="5886009770935151472">Jari 1</translation>
 <translation id="5886112770923972514">Sambungkan dan sediakan peranti Ganding Pantas berdekatan dengan cepat</translation>
 <translation id="5886384907280980632">Matikan sekarang</translation>
@@ -6936,6 +6936,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6015776718598175635">Bintang</translation>
 <translation id="6015796118275082299">Tahun</translation>
 <translation id="6016178549409952427">Navigasi kepada kandungan tambahan <ph name="CURRENT_ELEMENT" /> daripada <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="6016462059150340136">Sesiapa sahaja yang berada berdekatan</translation>
 <translation id="6016551720757758985">Sahkan Powerwash dengan kembali ke versi terdahulu</translation>
 <translation id="6016972670657536680">Pilih bahasa dan butang papan kekunci. Bahasa yang dipilih pada masa ini ialah <ph name="LANGUAGE" />.</translation>
 <translation id="6017514345406065928">Hijau</translation>
@@ -7385,6 +7386,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6345878117466430440">Tandai sebagai dibaca</translation>
 <translation id="6346952829206698721">Tampal daripada papan keratan</translation>
 <translation id="6347010704471250799">Tunjukkan pemberitahuan</translation>
+<translation id="634792071306410644">Tiada sesiapa boleh berkongsi dengan anda sehingga anda menjadikan diri anda boleh dilihat</translation>
 <translation id="6348252528297699679">Anda boleh mematikan lokasi dalam Tetapan &gt; Privasi dan keselamatan &gt; Kawalan privasi &gt; Akses lokasi. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6348805481186204412">Storan luar talian</translation>
 <translation id="6349101878882523185">Pasang <ph name="APP_NAME" /></translation>
@@ -7988,6 +7990,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="680572642341004180">Dayakan pengesan RLZ pada <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6806089545527108739">Jangan benarkan tetapi tanya kemudian</translation>
 <translation id="680644983456221885">Perlindungan masa nyata dan proaktif terhadap laman, muat turun dan sambungan berbahaya yang berdasarkan data semakan imbas anda yang dihantar kepada Google</translation>
+<translation id="6806781719264274042">Hanya kenalan anda yang mempunyai Google Account. <ph name="LINK_BEGIN" />Lihat kenalan<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">Untuk meneruskan, masukkan dan sentuh kunci keselamatan anda</translation>
 <translation id="6808166974213191158">Penulis Imej Sistem Chrome OS Flex</translation>
 <translation id="6808193438228982088">Rubah</translation>
@@ -8054,6 +8057,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6840214587087739194">Alamat dipadamkan</translation>
 <translation id="6841143363521180029">Disulitkan</translation>
 <translation id="6841186874966388268">Ralat</translation>
+<translation id="6842135459748401207">Hanya peranti yang log masuk ke <ph name="USER_EMAIL" /></translation>
 <translation id="6842136130964845393">Untuk memastikan anda dapat mengakses kata laluan anda yang disimpan pada bila-bila masa, sahkan itu anda</translation>
 <translation id="6842749380892715807">Senarai laman XML terakhir dimuat turun pada <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">Lazimnya, laman mengesan waktu anda aktif menggunakan peranti untuk menetapkan ketersediaan anda pada apl sembang</translation>
@@ -8969,7 +8973,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7529865045818406536">Rangkaian pilihan akan digunakan jika lebih daripada satu rangkaian terdahulu tersedia</translation>
 <translation id="7529876053219658589">{0,plural, =1{Tutup Tetamu}other{Tutup Tetamu}}</translation>
 <translation id="7530016656428373557">Kadar Nyahcas dalam Watt</translation>
-<translation id="7531310913436731628">Lokasi dimatikan dalam Pilihan Sistem Mac</translation>
 <translation id="7531771599742723865">Peranti sedang digunakan</translation>
 <translation id="7531779363494549572">Pergi ke Tetapan &gt; Apl &amp; pemberitahuan &gt; Pemberitahuan.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> tiada respons. Pilih "Paksa tutup" untuk menutup apl.</translation>
@@ -10710,6 +10713,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Paparkan semua carian untuk <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Kemas kini Chrome untuk semua pengguna secara automatik</translation>
+<translation id="8768049274922835860">Semua orang</translation>
 <translation id="876956356450740926">Jalankan alatan pembangun, IDE dan editor. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Direktori akar sambungan</translation>
 <translation id="8771300903067484968">Latar belakang halaman mula telah ditetapkan semula kepada latar belakang lalai.</translation>
@@ -11010,6 +11014,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8984694057134206124">Anda akan kelihatan kepada semua orang selama <ph name="MINUTES" /> minit. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Selamat datang ke Stim untuk Chromebook</translation>
 <translation id="8985264973231822211">Aktif <ph name="DEVICE_LAST_ACTIVATED_TIME" /> hari yang lalu</translation>
+<translation id="8985561265504464578">Ambang pengesanan</translation>
 <translation id="8985661493893822002">Sila sambung kepada Internet untuk log masuk ke <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="8985661571449404298">Fail tidak selamat dimuat turun</translation>
 <translation id="8986362086234534611">Lupa</translation>

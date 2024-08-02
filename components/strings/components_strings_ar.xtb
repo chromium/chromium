@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">‏زر إدارة كلمات المرور: انقر على هذا الزر لعرض كلمات المرور وإدارتها في إعدادات Chrome.</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">اختيار إذن لـ <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">نطاق السعر لكل المنتجات</translation>
 <translation id="1113869188872983271">تراجع عن إعادة الت&amp;رتيب</translation>
 <translation id="1118429183611783760">مكانس وأدوات للعناية بالأرضيّات</translation>
 <translation id="1122714970786750095">أجهزة إلكترونية وكهربائية</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">إخفاء الآن</translation>
 <translation id="121201262018556460">لقد حاولت الوصول إلى <ph name="DOMAIN" />، ولكن الخادم قدّم شهادة تحتوي على مفتاح ضعيف. ربما قام أحد المهاجمين باختراق المفتاح الخاص، ولا يكون الخادم هو الخادم الذي تتوقعه (قد تكون على اتصال بأحد المهاجمين).</translation>
 <translation id="1212527389003717329">بدأت عملية التنزيل. للاطّلاع عليها، اضغط مع الاستمرار على |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">نطاق السعر</translation>
 <translation id="1219129156119358924">أمان النظام</translation>
 <translation id="1222060260947439312">الدُرج الأيمن</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -353,7 +351,6 @@
 <translation id="1617276713587758852">مركبات كروس أوفر</translation>
 <translation id="1619007254056372606">إدارة بيانات الموقع الإلكتروني على الجهاز فقط</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
-<translation id="162285686621567578">حَظَر أحد والدَيك هذا الموقع الإلكتروني.</translation>
 <translation id="1622966923835127638">تمويل نشاطات تجارية</translation>
 <translation id="1623104350909869708">منع هذه الصفحة من إنشاء مربعات حوار إضافية.</translation>
 <translation id="1633137413609266904">{0,plural, =1{تحظر سياسة المشرف إمكانية فتح هذا الملف.}zero{تحظر سياسة المشرف إمكانية فتح # ملف.}two{تحظر سياسة المشرف إمكانية فتح ملفَّين.}few{تحظر سياسة المشرف إمكانية فتح # ملفات.}many{تحظر سياسة المشرف إمكانية فتح # ملفًا.}other{تحظر سياسة المشرف إمكانية فتح # ملف.}}</translation>
@@ -738,7 +735,6 @@
 <translation id="2328955282645810595">أعمال إنشاء وأدوات تعمل بالطاقة</translation>
 <translation id="2330137317877982892">تنتهي صلاحية <ph name="CREDIT_CARD" /> في <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">استئناف الكتابة</translation>
-<translation id="2337776048981813397">نطاق السعر لكل المنتجات</translation>
 <translation id="2337852623177822836">يتم التحكّم في الإعداد من قبل المشرف</translation>
 <translation id="2340263603246777781">يريد <ph name="ORIGIN" /> الاقتران</translation>
 <translation id="2346319942568447007">الصورة التي نسختها</translation>
@@ -1031,7 +1027,6 @@
 <translation id="2930577230479659665">القطع بعد كل نسخة</translation>
 <translation id="2933624813161016821">قصدير مزخرف</translation>
 <translation id="2938225289965773019">فتح روابط <ph name="PROTOCOL" /></translation>
-<translation id="2941112035454246133">منخفضة</translation>
 <translation id="2941878205777356567">ظرف مقاس 23 × 30 سم</translation>
 <translation id="2941952326391522266">هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان من <ph name="DOMAIN2" />. وربما سبب ذلك خطأ في التكوين أو مهاجمًا يعترض اتصالك.</translation>
 <translation id="2942492342931589800">نص غير رسمي</translation>
@@ -1213,7 +1208,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">أدخِل رمز التحقّق المكوَّن من <ph name="NUMBER_OF_DIGITS" /> أرقام.</translation>
 <translation id="3272643614306383237">أقل من ميغابايت واحد. قد يتم تحميل بعض المواقع بشكل أبطأ عند زيارتها في المرة القادمة.</translation>
-<translation id="327346289570683313">نطاق السعر</translation>
 <translation id="3273738040255912340">‏يمكن للمشرف إجراء تغييرات على ملفك الشخصي والمتصفّح عن بُعد، وتحليل المعلومات عن المتصفّح من خلال إعداد التقارير وتنفيذ المهام الضرورية الأخرى. وقد تتم أيضًا إدارة النشاط على هذا الجهاز خارج Chromium. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{لا تنصح سياسة المشرف بفتح هذا الملف في <ph name="DESTINATION_NAME" />.}zero{لا تنصح سياسة المشرف بفتح هذه الملفات في <ph name="DESTINATION_NAME" />.}two{لا تنصح سياسة المشرف بفتح هذين الملفَّين في <ph name="DESTINATION_NAME" />.}few{لا تنصح سياسة المشرف بفتح هذه الملفات في <ph name="DESTINATION_NAME" />.}many{لا تنصح سياسة المشرف بفتح هذه الملفات في <ph name="DESTINATION_NAME" />.}other{لا تنصح سياسة المشرف بفتح هذه الملفات في <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="3282085321714087552">أرسلت مؤسستك التي تمتلك النطاق <ph name="ENROLLMENT_DOMAIN" /> بعض المعلومات، مثل الإعدادات أو السياسات، إلى المواقع الإلكترونية التالية.</translation>
@@ -1703,6 +1697,7 @@
 <translation id="4177501066905053472">مواضيع الإعلانات</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">إيقاف تتبُّع السعر</translation>
+<translation id="4190446002599583608">البحث في السجلّ باستخدام الذكاء الاصطناعي</translation>
 <translation id="4191334393248735295">الطول</translation>
 <translation id="4195459680867822611">‏زر الاطّلاع على معلومات بشأن استخدام متصفّح Chrome: انقر على هذا الزر للتعرّف على ميزات Chrome.</translation>
 <translation id="4195643157523330669">الفتح في علامة تبويب جديدة</translation>
@@ -3638,6 +3633,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">‏هل تريد إزالة اقتراح النموذج من Chrome؟</translation>
 <translation id="781440967107097262">هل تريد مشاركة الحافظة؟</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">ورق (عادي)</translation>
 <translation id="7815407501681723534">تم العثور على <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> لـ "<ph name="SEARCH_STRING" />"</translation>
 <translation id="7822611063308883975">أجهزة الألعاب المحمولة</translation>
@@ -3802,6 +3798,7 @@
 <translation id="8148608574971654810">‏نسخة PDF:</translation>
 <translation id="8149426793427495338">خضع جهاز الكمبيوتر إلى وضع السكون.</translation>
 <translation id="8150722005171944719">الملف الموجود على <ph name="URL" /> غير قابل للقراءة. ربما تمت إزالته، أو ربما تكون أذونات الملف هي التي تمنع الدخول.</translation>
+<translation id="8151185429379586178">أدوات مطوري البرامج</translation>
 <translation id="8153865548451212769">{0,plural, =1{لا تنصح سياسة المشرف بتنزيل هذا الملف على <ph name="DESTINATION_NAME" />.}zero{لا تنصح سياسة المشرف بتنزيل هذه الملفات على <ph name="DESTINATION_NAME" />.}two{لا تنصح سياسة المشرف بتنزيل هذين الملفَّين على <ph name="DESTINATION_NAME" />.}few{لا تنصح سياسة المشرف بتنزيل هذه الملفات على <ph name="DESTINATION_NAME" />.}many{لا تنصح سياسة المشرف بتنزيل هذه الملفات على <ph name="DESTINATION_NAME" />.}other{لا تنصح سياسة المشرف بتنزيل هذه الملفات على <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="81563721597823545">معدّات هوكي</translation>
 <translation id="8161095570253161196">استئناف التصفُّح</translation>

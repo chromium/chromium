@@ -21,6 +21,8 @@
 <translation id="126567311906253476">Gmail বা YouTube-এর মতো Google পরিষেবায় <ph name="USER_EMAIL" /> দিয়ে সাইন-ইন করার সময় আপনি একই অ্যাকাউন্ট দিয়ে Chromium-এ অটোমেটিক সাইন-ইন করতে পারবেন</translation>
 <translation id="1290883685122687410">সেট-আপ সংক্রান্ত সমস্যা: <ph name="METAINSTALLER_EXIT_CODE" />। <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">আপনার নতুন Chromium প্রোফাইল সেট আপ করুন</translation>
+<translation id="1324107359134968521">ব্লুটুথ ডিভাইসগুলি এক্সপ্লোর করতে 
+ Chromium-কে ব্লুটুথের অ্যাক্সেস দিতে হবে। <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">এছাড়া, Chromium থেকেও ডেটা মুছে দিন (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">আপনি Chromium এ প্রবেশ করেছেন!</translation>
 <translation id="1478370723027452770">Chrome for Testing ব্যবহার করে সহায়তা পান</translation>
@@ -59,6 +61,7 @@
 <translation id="1951406923938785464">এই ধরনের ফাইল সাধারণত ডাউনলোড করা হয় না এবং এটি বিপজ্জনক হতে পারে, তাই Chromium এই ডাউনলোডটি ব্লক করে দিয়েছে</translation>
 <translation id="1953553007165777902">ডাউনলোড হচ্ছে... <ph name="MINUTE" /> মিনিট বাকি আছে</translation>
 <translation id="1966382378801805537">Chromium ডিফল্ট ব্রাউজার নির্ধারণ বা সেট করতে পারছে না</translation>
+<translation id="1990262977744080398">Chromium কিছু ফাইল কেন ব্লক করে, নতুন ট্যাবে খোলে সেই সম্পর্কে জানুন</translation>
 <translation id="2008474315282236005">এটি এই ডিভাইস থেকে ১টি আইটেম মুছে দেবে। আপনার ডেটা পরে পুনরুদ্ধার করার জন্য, Chromium-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
 <translation id="2018879682492276940">ইনস্টল করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="2020032459870799438">আপনার অন্যান্য পাসওয়ার্ড ডেটার নিরাপত্তা লঙ্ঘন এবং অন্যান্য নিরাপত্তা সংক্রান্ত সমস্যা থেকে সুরক্ষিত কিনা তা চেক করতে <ph name="BEGIN_LINK" />Chromium-এ সাইন-ইন করুন<ph name="END_LINK" />।</translation>

@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">'ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ' ବଟନ, Chrome ସେଟିଂସରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଭ୍ୟୁ କରି ପରିଚାଳନା କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />ପାଇଁ ଅନୁମତି ଚୟନ କରନ୍ତୁ</translation>
-<translation id="1112238992895762847">ସମସ୍ତ ବିକଳ୍ପ ପାଇଁ ମୂଲ୍ୟ ରେଞ୍ଜ</translation>
 <translation id="1113869188872983271">&amp;ପୁନଃକ୍ରମକୁ ପୂର୍ବବତ୍‌ କରନ୍ତୁ</translation>
 <translation id="1118429183611783760">ଭେକ୍ୟୁମ ଏବଂ ଫ୍ଲୋର କେୟାର</translation>
 <translation id="1122714970786750095">ଇଲେକ୍ଟ୍ରୋନିକ୍ସ ଏବଂ ଇଲେକ୍ଟ୍ରିକାଲ</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">ବର୍ତ୍ତମାନ ପାଇଁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="121201262018556460">ଆପଣ <ph name="DOMAIN" />ରେ ପହଞ୍ଚିବାକୁ ଚେଷ୍ଟା କରିଛନ୍ତି କିନ୍ତୁ ସର୍ଭର୍ ଏକ ଦୁର୍ବଳ କୀ ଧାରଣ କରିଥିବା ସାର୍ଟିଫିକେଟ୍ ଉପସ୍ଥାପନ କରିଛି। ଜଣେ ଆକ୍ରମଣକାରୀ ବ୍ୟକ୍ତିଗତ କୀ'ପାଖରେ ପହଞ୍ଚିପାରେ ଏବଂ ସର୍ଭର୍‌ଟି ହୁଏତ ଆପଣଙ୍କର ପ୍ରତ୍ୟାଶିତ ସର୍ଭର୍ ନ ହୋଇଥାଇପାରେ (ଆପଣ ହୁଏତ ଜଣେ ଆକ୍ରମଣକାରୀଙ୍କ ସହିତ ଯୋଗାଯୋଗ କରୁଥାଇପାରନ୍ତି)।</translation>
 <translation id="1212527389003717329">ଡାଉନଲୋଡ ଆରମ୍ଭ ହୋଇଛି। ଏହାକୁ ଦେଖିବା ପାଇଁ |<ph name="ACCELERATOR" />|କୁ ଦବାଇ ଧରନ୍ତୁ।</translation>
-<translation id="1214970845432250240">ମୂଲ୍ୟ ରେଞ୍ଜ</translation>
 <translation id="1219129156119358924">ସିଷ୍ଟମ୍ ସୁରକ୍ଷା</translation>
 <translation id="1222060260947439312">ଡାହାଣପଟ ଟ୍ରେ</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -141,6 +139,7 @@
 <translation id="1247030632403369975">ଆଲୁମିନିୟମ</translation>
 <translation id="1252209483516427155">ଆଉଟୱେର</translation>
 <translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> ମାଧ୍ୟମରେ ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
+<translation id="1253846494229886276">ସ୍କ୍ରିନସଟ ସେଭ କରାଯାଉଛି</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (ସିଙ୍କ୍ କରାଯାଇଛି)</translation>
 <translation id="1255086252236620440">ଖାଦ୍ୟ ମିକ୍ସର</translation>
 <translation id="1256368399071562588">&lt;p&gt;ଯଦି ଆପଣ କୌଣସି ୱେବ୍‌ସାଇଟ୍‌କୁ ଖୋଲିବାକୁ ଚାହୁଁଛନ୍ତି ଏବଂ ଏହା ଖୋଲୁନାହିଁ, ତେବେ ପ୍ରଥମେ ନିମ୍ନରେ ଦିଆଯାଇଥିବା ସମସ୍ୟା ନିବାରଣ ସୋପାନ ସାହାଯ୍ୟରେ ତ୍ରୁଟିର ସମାଧାନ କରନ୍ତୁ:&lt;/p&gt;
@@ -352,7 +351,6 @@
 <translation id="1617276713587758852">କ୍ରସଓଭରଗୁଡ଼ିକ</translation>
 <translation id="1619007254056372606">ଡିଭାଇସରେ ସାଇଟ ଡାଟାକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="1620510694547887537">କ୍ୟାମେରା</translation>
-<translation id="162285686621567578">ତୁମ ବାପାମା ଏହି ୱେବସାଇଟକୁ ବ୍ଲକ କରିଛନ୍ତି।</translation>
 <translation id="1622966923835127638">ବିଜିନେସ ଫାଇନାନ୍ସ</translation>
 <translation id="1623104350909869708">ଅତିରିକ୍ତ ସଂଳାପଗୁଡିକ ସୃଷ୍ଟି କରିବା କାର୍ଯ୍ୟରୁ ଏହି ପୃଷ୍ଠାକୁ ପ୍ରତିରୋଧ କରନ୍ତୁ</translation>
 <translation id="1633137413609266904">{0,plural, =1{ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ ଏହି ଫାଇଲକୁ ଖୋଲିବା ବ୍ଲକ କରାଯାଇଛି}other{ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ #ଟି ଫାଇଲକୁ ଖୋଲିବା ବ୍ଲକ କରାଯାଇଛି}}</translation>
@@ -737,7 +735,6 @@
 <translation id="2328955282645810595">ନିର୍ମାଣକାର୍ଯ୍ୟ ଏବଂ ପାୱାର ଟୁଲ</translation>
 <translation id="2330137317877982892"><ph name="EXPIRATION_DATE_ABBR" />ରେ <ph name="CREDIT_CARD" />ର ମିଆଦ ସମାପ୍ତ ହେଉଛି</translation>
 <translation id="2337044517221264923">ଲେଖିବା ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
-<translation id="2337776048981813397">ସମସ୍ତ ବିକଳ୍ପ ପାଇଁ ମୂଲ୍ୟ ରେଞ୍ଜ</translation>
 <translation id="2337852623177822836">ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ବାରା ସେଟିଂ ନିୟନ୍ତ୍ରଣ କରାଯାଇଛି</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ପେୟାର୍ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="2346319942568447007">ଆପଣ ଯେଉଁ ଛବି କପି କରିଥିଲେ</translation>
@@ -1029,7 +1026,6 @@
 <translation id="2930577230479659665">ପ୍ରତ୍ୟେକ କପି ପରେ ଟ୍ରିମ୍ କରନ୍ତୁ</translation>
 <translation id="2933624813161016821">ଏମ୍ବସିଂ ଫଏଲ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> ଲିଙ୍କ୍‌ ଖୋଲନ୍ତୁ</translation>
-<translation id="2941112035454246133">କମ୍</translation>
 <translation id="2941878205777356567">ଏନଭେଲପ 9 x 12 in</translation>
 <translation id="2941952326391522266">ଏହା <ph name="DOMAIN" /> ଅଟେ ବୋଲି ଏହି ସର୍ଭର୍ ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍ <ph name="DOMAIN2" /> ତରଫରୁ ଅଟେ। ଏହା ଏକ ଭୁଲ କନଫିଗ୍‌ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା ଯୋଗୁଁ ହୋଇଥାଇପାରେ।</translation>
 <translation id="2942492342931589800">କାଜୁଆଲ</translation>
@@ -1209,7 +1205,6 @@
 <translation id="3272091146646336650">ସୁପର B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" />-ଅଙ୍କ ବିଶିଷ୍ଟ ଯାଞ୍ଚକରଣ କୋଡ ଲେଖନ୍ତୁ</translation>
 <translation id="3272643614306383237">1 MBରୁ କମ। କିଛି ସାଇଟ ଆପଣଙ୍କର ପରବର୍ତ୍ତୀ ଭିଜିଟରେ ଆହୁରି ଧୀରେ ଲୋଡ ହୋଇପାରେ।</translation>
-<translation id="327346289570683313">ମୂଲ୍ୟ ରେଞ୍ଜ</translation>
 <translation id="3273738040255912340">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ରିମୋଟ ଭାବେ ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ ଏବଂ ବ୍ରାଉଜରରେ ପରିବର୍ତ୍ତନ କରିପାରିବେ, ରିପୋର୍ଟିଂ ମାଧ୍ୟମରେ ବ୍ରାଉଜର ବିଷୟରେ ସୂଚନାକୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ଏବଂ ଅନ୍ୟ ଜରୁରୀ ଟାସ୍କଗୁଡ଼ିକୁ କରିପାରିବେ। ଏହି ଡିଭାଇସରେ କରାଯାଉଥିବା କାର୍ଯ୍ୟକଳାପ Chromium ବାହାରେ ମଧ୍ୟ ପରିଚାଳନା କରାଯାଇପାରେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{<ph name="DESTINATION_NAME" />ରେ ଏହି ଫାଇଲକୁ ଖୋଲିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}other{<ph name="DESTINATION_NAME" />ରେ ଏହି ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}}</translation>
 <translation id="3282085321714087552">ଆପଣଙ୍କ ସଂସ୍ଥା, <ph name="ENROLLMENT_DOMAIN" />, ନିମ୍ନୋକ୍ତ ୱେବସାଇଟଗୁଡ଼ିକୁ ସେଟିଂସ୍ କିମ୍ବା ନୀତିଗୁଡ଼ିକ ପରି କିଛି ସୂଚନା ପଠାଇଛି।</translation>
@@ -1697,6 +1692,7 @@
 <translation id="4177501066905053472">ବିଜ୍ଞାପନ ବିଷୟ</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /><ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ମୂଲ୍ୟ ଅନଟ୍ରାକ କରନ୍ତୁ</translation>
+<translation id="4190446002599583608">AI ଦ୍ୱାରା ପରିଚାଳିତ ଇତିହାସ ସର୍ଚ୍ଚ</translation>
 <translation id="4191334393248735295">ଲମ୍ବ</translation>
 <translation id="4195459680867822611">'Chrome ଟିପ୍ସ ଦେଖନ୍ତୁ' ବଟନ, Chromeର ଫିଚରଗୁଡ଼ିକ ବିଷୟରେ ଜାଣିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="4195643157523330669">ନୂତନ ଟ୍ୟାବରେ ଖୋଲନ୍ତୁ</translation>
@@ -1712,6 +1708,7 @@
 <translation id="421066178035138955">ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ ଡିଭାଇସ୍ ଏବଂ ଡାଟାକୁ ବ୍ୟବହାର କରିବା</translation>
 <translation id="4213500579045346575">ବଡିବିଲ୍ଡିଂ</translation>
 <translation id="4214357935346142455">ସାଇନ୍-ଇନ୍ ସ୍କ୍ରିନ୍ ପ୍ରୋଫାଇଲ୍</translation>
+<translation id="4219596572397833317">ଅଧିକ ସ୍ମାର୍ଟ ଭାବେ ସପିଂ କରିବାରେ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିବା ପାଇଁ ମୂଲ୍ୟ ଇତିହାସ ଏବଂ ଆହୁରି ଅନେକ କିଛି ଦେଖନ୍ତୁ।</translation>
 <translation id="4220128509585149162">କ୍ରାସ୍</translation>
 <translation id="4221630205957821124">&lt;h4&gt;ଷ୍ଟେପ୍‌ 1: ପୋର୍ଟଲ୍‌ରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ&lt;/h4&gt;
     &lt;p&gt;କେଫେ କିମ୍ୱା ଏୟାର୍‌ପୋର୍ଟ ଭଳି ସ୍ଥାନଗୁଡ଼ିକରେ ଥିବା ୱାଇ-ଫାଇ ନେଟ୍‌ୱର୍କରେ ଆପଣଙ୍କୁ ସାଇନ୍ ଇନ୍ କରିବା ଆବଶ୍ୟକ। ସାଇନ୍ ଇନ୍ ପୃଷ୍ଠା ଦେଖିବା ପାଇଁ &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt; ବ୍ୟବହାର କରୁଥିବା ଗୋଟିଏ ପୃଷ୍ଠାକୁ ଯାଆନ୍ତୁ।
@@ -2137,6 +2134,7 @@
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> ନୀତି ସେଟ କରାଯାଇଛି। <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ଏକ୍ସଟେନସନ ପୃଷ୍ଠାରେ ଡେଭେଲପର ମୋଡର ଉପଲବ୍ଧତାକୁ ନିୟନ୍ତ୍ରଣ କରିବ ନାହିଁ।</translation>
 <translation id="5021557570875267742">Chrome ମାଧ୍ୟମରେ ମୂଲ୍ୟଗୁଡ଼ିକୁ ଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="5023310440958281426">ଆପଣଙ୍କର ବ୍ଯବସ୍ଥାପକଙ୍କ ନୀତି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
+<translation id="5024171724744627792">ଆପଣଙ୍କ କାର୍ଡକୁ ସେଭ କରାଗଲେ ଶୀଘ୍ର ପେମେଣ୍ଟ କରନ୍ତୁ। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ କାର୍ଡ ବିବରଣୀକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="5030338702439866405">ଏହାଙ୍କ ଦ୍ୱାରା ଜାରି କରାଯାଇଛି</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" ପାଇଁ ଏକ ମୂଳ ସାର୍ଟିଫିକେଟ୍ ଆବଶ୍ୟକ କିନ୍ତୁ ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇ ନାହିଁ। ଆପଣଙ୍କର IT ବ୍ୟବସ୍ଥାପକ ଏହି ସମସ୍ୟାକୁ ଠିକ୍ କରିବା ପାଇଁ "<ph name="SOFTWARE_NAME" />"ର କନଫିଗ୍‍‍ରେସନ୍ ନିର୍ଦ୍ଦେଶାବଳୀ ଦେଖିବା ଉଚିତ। <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google ଅନୁବାଦ ବିଷୟରେ</translation>
@@ -3324,6 +3322,7 @@
 <translation id="7311244614769792472">କୌଣସି ଫଳାଫଳ ମିଳିଲା ନାହିଁ</translation>
 <translation id="7311837626618954149">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ଆପଣଙ୍କୁ ଟ୍ରାକ କରିବା ପାଇଁ Chromium ସାଇଟଗୁଡ଼ିକୁ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାଠାରୁ ବ୍ଲକ କରେ।</translation>
 <translation id="7313107491291103073">ଏହି ସାଇଟ ଏକ ନୀତିର ଉଲ୍ଲଙ୍ଘନ କରିଥିବା ଯୋଗୁଁ ଆପଣଙ୍କ ସଂସ୍ଥା ଏହାର ଫ୍ଲାଗ କରିଛି</translation>
+<translation id="7316521168101843192">Microsoft OneDriveରେ ଫାଇଲ ସେଭ କରାଯାଉଛି</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ସଂଯୋଗ ସହାୟତା</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" ବିଭାଗ ଲୁଚାନ୍ତୁ</translation>
@@ -3627,6 +3626,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chromeରୁ ଫର୍ମ ସମ୍ବନ୍ଧିତ ପରାମର୍ଶ କାଢ଼ିବେ?</translation>
 <translation id="781440967107097262">କ୍ଲିପବୋର୍ଡ ସେୟାର୍ କରିବେ?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">କାଗଜ (ପ୍ଲେନ)</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' ପାଇଁ <ph name="NUMBER_OF_RESULTS" />ଟି <ph name="SEARCH_RESULTS" /> ମିଳିଲା</translation>
 <translation id="7822611063308883975">ହେଣ୍ଡହେଲ୍ଡ ଗେମ କନସୋଲ</translation>
@@ -3791,6 +3791,7 @@
 <translation id="8148608574971654810">PDF ସଂସ୍କରଣ:</translation>
 <translation id="8149426793427495338">ଆପଣଙ୍କର କମ୍ପୁଟର୍‌ ନିଷ୍କ୍ରିୟ ହୋ‍ଇଯାଇଛି।</translation>
 <translation id="8150722005171944719"><ph name="URL" />ରେ ଫାଇଲ୍‍ଟି ପଠନଯୋଗ୍ୟ ନୁହେଁ।  ହୁଏତ ଏହା କାଢ଼ି ଦିଆଯାଇଛି, ଘୁଞ୍ଚାଯାଇଛି କିମ୍ବା ଫାଇଲ୍ ଅନୁମତିର ଆକ୍ସେସ୍‍କୁ ପ୍ରତିବନ୍ଧିତ କରାଯାଇଛି।</translation>
+<translation id="8151185429379586178">ଡେଭେଲପର ଟୁଲଗୁଡ଼ିକ</translation>
 <translation id="8153865548451212769">{0,plural, =1{<ph name="DESTINATION_NAME" />କୁ ଏହି ଫାଇଲ ଡାଉନଲୋଡ କରିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}other{<ph name="DESTINATION_NAME" />କୁ ଏହି ଫାଇଲଗୁଡ଼ିକ ଡାଉନଲୋଡ କରିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}}</translation>
 <translation id="81563721597823545">ହକି ଇକ୍ୟୁପମେଣ୍ଟ</translation>
 <translation id="8161095570253161196">ବ୍ରାଉଜ କରିବା ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>

@@ -179,7 +179,6 @@
 <translation id="1827738518074806965">Мастацкая галерэя</translation>
 <translation id="1836553715834333258">Колер сістэмы</translation>
 <translation id="183675228220305365">рэалізм</translation>
-<translation id="1837537071599385610">Дапаможнік па запытах</translation>
 <translation id="1838374766361614909">Ачысціць поле пошуку</translation>
 <translation id="1840474674287087346">Колер працоўнага стала</translation>
 <translation id="184095011128924488">крэатыўны</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Нядаўнія фоны, створаныя з дапамогай AI ад Google</translation>
 <translation id="2783010256799387990">ПРОЙДЗЕНА</translation>
 <translation id="2786429550992142861">лён</translation>
+<translation id="2787237339470862294">Гэта мова пакуль што не падтрымліваецца</translation>
 <translation id="2787435249130282949">большая яркасць клавіятуры</translation>
 <translation id="2805756323405976993">Праграмы</translation>
 <translation id="28232023175184696">Няма падключэння да інтэрнэту. Націсніце, каб паўтарыць спробу.</translation>
@@ -673,6 +673,7 @@
 <translation id="458794348635939462">Не ўдалося супаставіць усе хосты</translation>
 <translation id="4593212453765072419">Патрабуецца аўтэнтыфікацыя проксі-сервера</translation>
 <translation id="4594021849294327751">Ствараць расшыфроўку</translation>
+<translation id="4607282946861182308">Не ўдалося стварыць патрэбныя відарысы. Паспрабуйце выкарыстаць іншы запыт.</translation>
 <translation id="4609350030397390689">Паменшыць яркасць клавіятуры</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Каб скасаваць заданне друку, націсніце Enter.</translation>
 <translation id="463791356324567266">Сканіраванне скасоўваецца…</translation>

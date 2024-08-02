@@ -136,6 +136,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1420408895951708260">Zapnout nebo vypnout noční režim. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ano</translation>
 <translation id="1435537621343861112">Diktování nelze spustit. Máte vypnutý mikrofon.</translation>
+<translation id="1445031758921122223">Soubory ovládání obličejem byly staženy</translation>
 <translation id="1447907279406111651">Teď ⋅ Končí <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Hotspoty vašich zařízení</translation>
 <translation id="1455242230282523554">Zobrazit jazykové nastavení</translation>
@@ -412,6 +413,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516416533263263796">Soustředění je zapnuté, zbývá 10 minut</translation>
 <translation id="2516637483312286228">Upravit herní ovládací prvky</translation>
+<translation id="252054055865191167">Fixa</translation>
 <translation id="2526581474998477112">Odemknout okna</translation>
 <translation id="2528111225373402384">Nastavení hotspotu</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -974,6 +976,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do úplného nabití</translation>
 <translation id="4538824937723742295">Pořídit snímek celé obrazovky</translation>
 <translation id="4539127209940689201">Vytisknout aktuální stránku</translation>
+<translation id="4541505619120536051">Vždy otevřeno</translation>
 <translation id="4541706525461326392">Odstraňování profilu. Může to trvat několik minut.</translation>
 <translation id="4544483149666270818">Vyberte okno, které chcete zaznamenat</translation>
 <translation id="4545950850562423083">Uložit aktuální stránku jako záložku</translation>
@@ -1222,6 +1225,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5361524080961918551">Řečové soubory jazyka <ph name="LANGUAGE" /> byly částečně staženy</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Přejít na tuto kartu</translation>
 <translation id="5364693579536176785">úložný prostor</translation>
+<translation id="5369573834963677938">Ovládání obličejem bude na zařízení dostupné ostatním uživatelům</translation>
 <translation id="5369717264580061086">Zobrazit náhled souboru v aplikaci Soubory</translation>
 <translation id="5377367976106153749">Zapnout přístup k fotoaparátu?</translation>
 <translation id="5379115545237091094">Příliš mnoho pokusů</translation>
@@ -1411,6 +1415,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6020147141355393792">Nastavit zobrazování oznámení a aplikací z telefonu</translation>
 <translation id="6022924867608035986">Vymazat text z vyhledávacího pole</translation>
 <translation id="602472752137106327">Zobrazit okna ze všech ploch, je vybrán přepínač</translation>
+<translation id="6024768346262692989">Soubory ovládání obličejem se nepodařilo stáhnout</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno administrátorem</translation>
 <translation id="6027518778343897451">Na den <ph name="CURRENT_MONTH_DAY" /> není naplánována žádná událost. Stisknutím klávesy Enter otevřete Kalendář Google v prohlížeči.</translation>
 <translation id="6030495522958826102">Nabídka byla přesunuta do levého dolního rohu obrazovky.</translation>
@@ -1484,6 +1489,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6232891689835436217">Aplikace <ph name="APP_NAME" /> používá vaši kameru a mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Horní tlačítko</translation>
+<translation id="6240821072888636753">Pokaždé se zeptat</translation>
 <translation id="6247728804802644171">Otevřít oznámení</translation>
 <translation id="6249795363855770621">Nelze označit jako dokončené. Zkuste to, až budete online.</translation>
 <translation id="6254629735336163724">Uzamknuto na šířku</translation>
@@ -1826,6 +1832,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7557816257942363084">Aplikace <ph name="APP_NAME" /> používá váš mikrofon</translation>
 <translation id="7561982940498449837">Zavřít nabídku</translation>
 <translation id="7564874036684306347">Přesunutí oken na jinou plochu může vést k neočekávanému chování. Následná oznámení, okna a dialogy mohou být rozděleny mezi plochy.</translation>
+<translation id="7568790562536448087">Aktualizace</translation>
 <translation id="7569509451529460200">Jsou zapnuty funkce Braille a ChromeVox</translation>
 <translation id="7569886975397378678">Zavřít nastavení zobrazování oznámení a aplikací z telefonu</translation>
 <translation id="7571361473021531288">Baterie: <ph name="BATTERY_PERCENTAGE" /> % | zbývá: <ph name="TIME" /></translation>
@@ -1955,7 +1962,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7963992254934562106">Zdroj: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Vybrat složku…</translation>
 <translation id="7973756967040444713">Zavřít panel nástrojů</translation>
-<translation id="797485111629834774">Označit úkol jako hotový: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Zapnout nebo vypnout lupu celé obrazovky</translation>
 <translation id="7977927628060636163">Vyhledávání mobilních sítí...</translation>
 <translation id="7982789257301363584">Síť</translation>

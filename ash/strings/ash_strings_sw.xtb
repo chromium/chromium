@@ -136,6 +136,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1420408895951708260">Swichi ya Mwanga wa Usiku. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ndiyo</translation>
 <translation id="1435537621343861112">Imeshindwa kuanza kuandika kwa kutamka. Maikrofoni yako imezimwa.</translation>
+<translation id="1445031758921122223">Imepakua faili za udhibiti wa uso</translation>
 <translation id="1447907279406111651">Sasa ⋅ Itaisha <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Mitandao pepe ya kifaa chako</translation>
 <translation id="1455242230282523554">Onyesha mipangilio ya lugha</translation>
@@ -975,6 +976,7 @@ Kifaa 1 kimeunganishwa.</translation>
 <translation id="453661520163887813">Zimesalia <ph name="TIME" /> ili ijae</translation>
 <translation id="4538824937723742295">Piga picha ya skrini nzima</translation>
 <translation id="4539127209940689201">Chapisha ukurasa wa sasa</translation>
+<translation id="4541505619120536051">Fungua kila wakati</translation>
 <translation id="4541706525461326392">Inaondoa wasifu. Hatua hii inaweza kuchukua dakika kadhaa.</translation>
 <translation id="4544483149666270818">Chagua dirisha ili urekodi</translation>
 <translation id="4545950850562423083">Hifadhi ukurasa wa sasa uwe alamisho</translation>
@@ -1223,6 +1225,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="5361524080961918551">Faili za matamshi ya <ph name="LANGUAGE" /> zimepakuliwa kiasi fulani</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Nenda kwenye kichupo hiki</translation>
 <translation id="5364693579536176785">nafasi ya kuhifadhi</translation>
+<translation id="5369573834963677938">Kipengele cha udhibiti wa uso kitapatikana kwa watumiaji wengine kwenye kifaa hiki</translation>
 <translation id="5369717264580061086">Kagua kwanza faili kwenye programu ya Faili</translation>
 <translation id="5377367976106153749">Ungependa kuwasha ufikiaji wa kamera?</translation>
 <translation id="5379115545237091094">Umejaribu mara nyingi mno</translation>
@@ -1412,6 +1415,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="6020147141355393792">Weka mipangilio ya kuangalia arifa na programu za simu yako</translation>
 <translation id="6022924867608035986">Futa maandishi ya kisanduku cha utafutaji</translation>
 <translation id="602472752137106327">Onyesha madirisha yaliyo kwenye maeneokazi yote, umechagua kitufe cha mviringo</translation>
+<translation id="6024768346262692989">Imeshindwa kupakua faili za udhibiti wa uso</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />, Unadhibitiwa na Msimamizi wako</translation>
 <translation id="6027518778343897451">Hakuna tukio <ph name="CURRENT_MONTH_DAY" />. Bonyeza ingia ili ufungue kalenda ya Google katika kivinjari.</translation>
 <translation id="6030495522958826102">Menyu imehamishiwa kwenye kona ya chini kushoto mwa skrini.</translation>
@@ -1485,6 +1489,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> inatumia kamera na maikrofoni yako kwa sasa</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Kitufe cha Juu</translation>
+<translation id="6240821072888636753">Uliza kila wakati</translation>
 <translation id="6247728804802644171">Fungua arifa</translation>
 <translation id="6249795363855770621">Imeshindwa kutia alama kuwa limekamilika. Jaribu tena ukiwa mtandaoni.</translation>
 <translation id="6254629735336163724">Inatumia skrini ya mlalo pekee</translation>
@@ -1829,6 +1834,7 @@ Ili uzime kifaa, bonyeza na ushikilie kitufe cha kuwasha/kuzima kwenye kifaa ten
 <translation id="7561982940498449837">Funga menyu</translation>
 <translation id="7564874036684306347">Hatua ya kuhamishia madirisha kwenye eneo-kazi lingine inaweza kusababisha utendaji usiotarajiwa. 
 Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</translation>
+<translation id="7568790562536448087">Inasasisha</translation>
 <translation id="7569509451529460200">Breli na ChromeVox zimewashwa</translation>
 <translation id="7569886975397378678">Ondoa kidokezo cha kuweka mipangilio ya kuangalia arifa na programu za simu yako</translation>
 <translation id="7571361473021531288">Chaji ya betri ni asilimia <ph name="BATTERY_PERCENTAGE" /> | zimesalia <ph name="TIME" /> chaji iishe</translation>
@@ -1958,7 +1964,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7963992254934562106">Kutoka <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Chagua folda...</translation>
 <translation id="7973756967040444713">Funga upau wa vidhibiti</translation>
-<translation id="797485111629834774">Weka alama kuonyesha kuwa umekamilisha jukumu: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Zima au washa kikuzaji cha skrini nzima</translation>
 <translation id="7977927628060636163">Inatafuta mitandao ya simu...</translation>
 <translation id="7982789257301363584">Mtandao</translation>

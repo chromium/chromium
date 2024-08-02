@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Հաշիվների կառավարում այս սարքում</translation>
 <translation id="1129510026454351943">Մանրամասներ՝ <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Ինկոգնիտո ռեժիմը թույլ է տալիս գաղտնի պահել ձեր դիտարկումները այս սարքի մյուս օգտագործողներից</translation>
+<translation id="1138458427267715730">Ստացեք ծանուցում, երբ որևէ կայքում գնիջեցում լինի</translation>
 <translation id="1142732900304639782">Չառաջարկել թարգմանել այս կայքերը</translation>
 <translation id="1145536944570833626">Առկա տվյալների ջնջում։</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> հավելվածը կբացվի Chrome-ում։ Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Կառավարել պատմությունը</translation>
 <translation id="1355088659320425659">Պատմություն և ներդիրներ</translation>
 <translation id="1360432990279830238">Դուրս գրվե՞լ և անջատել համաժամացումը</translation>
+<translation id="1363028406613469049">Կատարում</translation>
 <translation id="1366525380420346469">Երբ գործառույթը միացված է</translation>
 <translation id="1373696734384179344">Ընտրված բովանդակությունը ներբեռնելու համար բավարար հիշողություն չկա:</translation>
 <translation id="1376578503827013741">Հաշվարկ...</translation>
@@ -292,6 +294,7 @@
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> կայքի նախադիտում</translation>
 <translation id="2450083983707403292">Ուզո՞ւմ եք նորից ներբեռնել <ph name="FILE_NAME" /> ֆայլը:</translation>
+<translation id="2451607499823206582">Հետագծում</translation>
 <translation id="2453860139492968684">Ավարտել</translation>
 <translation id="2461822463642141190">Ընթացիկ</translation>
 <translation id="2468444275314013497">Ձեր դիտարկիչն ապահով է</translation>
@@ -1041,7 +1044,6 @@
 <translation id="6040939430773295212">Կրկնվող</translation>
 <translation id="604124094241169006">Ավտոմատ</translation>
 <translation id="6042308850641462728">Ավելին</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{1 կայքի թույլտվությունները ստուգվել են}one{{NUM_SITES} կայքի թույլտվությունները ստուգվել են}other{{NUM_SITES} կայքի թույլտվությունները ստուգվել են}}</translation>
 <translation id="604996488070107836"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ անհայտ սխալի պատճառով:</translation>
 <translation id="605721222689873409">տարի</translation>
 <translation id="6059830886158432458">Կառավարեք ձեր պատմություններն ու գործողություններն այստեղ</translation>
@@ -1682,7 +1684,6 @@
 <translation id="8865415417596392024">Chrome-ի տվյալները ձեր հաշվում</translation>
 <translation id="8898822736010347272">Ուղարկում է Google-ին ձեր այցելած որոշ էջերի URL-ներն ու դրանց բովանդակությունը և համակարգի մասին որոշակի տեղեկություններ, որոնք օգնում են հայտնաբերել համացանցում օգտատերերին սպառնացող նոր վտանգներ։</translation>
 <translation id="8909135823018751308">Կիսվել…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Ծանուցումները թույլատրված չեն 1 կայքի համար}one{Ծանուցումները թույլատրված չեն {NUM_SITES} կայքի համար}other{Ծանուցումները թույլատրված չեն {NUM_SITES} կայքի համար}}</translation>
 <translation id="8921980840204105660">Կատարեք համաժամացում, որպեսզի ձեր մյուս սարքերի էջանիշները հասանելի դառնան։</translation>
 <translation id="8922289737868596582">«Այլ տարբերակներ» կոճակի օգնությամբ ներբեռնեք էջերը՝ անցանց ռեժիմում օգտագործելու համար</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>

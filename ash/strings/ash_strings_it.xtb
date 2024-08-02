@@ -136,6 +136,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1420408895951708260">Attiva/disattiva luminosità notturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Sì</translation>
 <translation id="1435537621343861112">Impossibile avviare la dettatura. Il microfono è disattivato.</translation>
+<translation id="1445031758921122223">File di controllo del volto scaricati</translation>
 <translation id="1447907279406111651">Adesso ⋅ Termina alle ore <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Hotspot del dispositivo</translation>
 <translation id="1455242230282523554">Mostra impostazioni lingua</translation>
@@ -972,6 +973,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="453661520163887813"><ph name="TIME" /> alla ricarica completa</translation>
 <translation id="4538824937723742295">Acquisisci screenshot a schermo intero</translation>
 <translation id="4539127209940689201">Stampa pagina corrente</translation>
+<translation id="4541505619120536051">Sempre aperta</translation>
 <translation id="4541706525461326392">Rimozione del profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="4544483149666270818">Seleziona una finestra da registrare</translation>
 <translation id="4545950850562423083">Salva la pagina corrente come preferito</translation>
@@ -1220,6 +1222,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> file vocali scaricati parzialmente</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Vai a questa scheda</translation>
 <translation id="5364693579536176785">spazio di archiviazione</translation>
+<translation id="5369573834963677938">Il controllo del volto sarà disponibile per gli altri utenti sul dispositivo</translation>
 <translation id="5369717264580061086">Visualizza l'anteprima del file nell'app File</translation>
 <translation id="5377367976106153749">Attivare l'accesso alla fotocamera?</translation>
 <translation id="5379115545237091094">Troppi tentativi</translation>
@@ -1356,6 +1359,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5819918159912280082">Chromebook si è riavviato in modo imprevisto. Apri le finestre e le app precedenti.</translation>
 <translation id="5823239091726045201">Google Tasks sul web</translation>
 <translation id="5825969630400862129">Impostazioni dispositivi connessi</translation>
+<translation id="5830180081891717894">Altre <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Interrompi <ph name="ROUTE_TITLE" /> su <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Vai alla traccia successiva</translation>
 <translation id="5842553299352339114">Hotspot di <ph name="DEVICE_NAME" /> attivo, nessun dispositivo connesso</translation>
@@ -1409,6 +1413,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6020147141355393792">Configura la visualizzazione di app e notifiche dello smartphone</translation>
 <translation id="6022924867608035986">Cancella testo dalla casella di ricerca</translation>
 <translation id="602472752137106327">Mostra finestre di tutte le scrivanie, pulsante di opzione selezionato</translation>
+<translation id="6024768346262692989">Impossibile scaricare i file di controllo del volto</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />, gestita dall'amministratore</translation>
 <translation id="6027518778343897451">Nessun evento per il <ph name="CURRENT_MONTH_DAY" />. Premi Invio per aprire Google Calendar nel browser.</translation>
 <translation id="6030495522958826102">Menu spostato nell'angolo in basso a sinistra dello schermo.</translation>
@@ -1482,6 +1487,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sta usando la fotocamera e il microfono</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Pulsante in alto</translation>
+<translation id="6240821072888636753">Chiedi ogni volta</translation>
 <translation id="6247728804802644171">Apri le notifiche</translation>
 <translation id="6249795363855770621">Impossibile contrassegnare come completata. Riprova quando sei online.</translation>
 <translation id="6254629735336163724">Bloccata in orizzontale</translation>
@@ -1825,6 +1831,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7557816257942363084"><ph name="APP_NAME" /> sta usando il microfono</translation>
 <translation id="7561982940498449837">Chiudi menu</translation>
 <translation id="7564874036684306347">Lo spostamento delle finestre su un altro desktop potrebbe causare comportamenti imprevisti. Le finestre, le notifiche e le finestre di dialogo successive potrebbero essere divise tra i desktop.</translation>
+<translation id="7568790562536448087">Aggiornamento</translation>
 <translation id="7569509451529460200">Braille e ChromeVox attivati</translation>
 <translation id="7569886975397378678">Chiudi la configurazione della visualizzazione di app e notifiche dello smartphone</translation>
 <translation id="7571361473021531288">Batteria: <ph name="BATTERY_PERCENTAGE" />% | Tempo rimanente: <ph name="TIME" /></translation>
@@ -1954,7 +1961,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7963992254934562106">Da <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Seleziona cartella…</translation>
 <translation id="7973756967040444713">Chiudi barra degli strumenti</translation>
-<translation id="797485111629834774">Contrassegna l'attività come completata: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Attiva o disattiva l'ingrandimento a schermo intero</translation>
 <translation id="7977927628060636163">Ricerca di reti mobili...</translation>
 <translation id="7982789257301363584">Rete</translation>
@@ -2060,6 +2066,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8375916635258623388">Questo dispositivo <ph name="DEVICE_NAME" /> e il telefono si connetteranno automaticamente</translation>
 <translation id="8380784334203145311">Buonanotte,</translation>
 <translation id="8382715499079447151">Visualizzazione protetta</translation>
+<translation id="8383614331548401927">Riepilogo di benvenuto</translation>
 <translation id="8388750414311082622">Impossibile rimuovere l'ultima scrivania.</translation>
 <translation id="8394567579869570560">Uno dei tuoi genitori ha bloccato questo dispositivo</translation>
 <translation id="8401850874595457088">Menu per impostare la lingua</translation>

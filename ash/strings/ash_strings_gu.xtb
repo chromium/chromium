@@ -413,6 +413,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516416533263263796">ફોકસ ચાલુ છે, 10 મિનિટ બાકી</translation>
 <translation id="2516637483312286228">ગેમના નિયંત્રણોમાં ફેરફાર કરો</translation>
+<translation id="252054055865191167">માર્કર ટૂલ</translation>
 <translation id="2526581474998477112">વિન્ડો અનલૉક કરો</translation>
 <translation id="2528111225373402384">હૉટસ્પૉટના સેટિંગ</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -975,6 +976,7 @@
 <translation id="453661520163887813">પૂર્ણપણે ચાર્જ થવામાં <ph name="TIME" /></translation>
 <translation id="4538824937723742295">પૂર્ણ સ્ક્રીનનો સ્ક્રીનશૉટ લો</translation>
 <translation id="4539127209940689201">વર્તમાન પેજ પ્રિન્ટ કરો</translation>
+<translation id="4541505619120536051">હંમેશાં ખોલો</translation>
 <translation id="4541706525461326392">પ્રોફાઇલ કાઢી નાખી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="4544483149666270818">રેકોર્ડ કરવા માટે વિન્ડો પસંદ કરો</translation>
 <translation id="4545950850562423083">વર્તમાન પેજને બુકમાર્ક તરીકે સાચવો</translation>
@@ -1487,6 +1489,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" /> દ્વારા હાલમાં તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરવામાં આવી રહ્યો છે</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">'સૌથી ઉપર' બટન</translation>
+<translation id="6240821072888636753">દર વખતે પૂછો</translation>
 <translation id="6247728804802644171">નોટિફિકેશન ખોલો</translation>
 <translation id="6249795363855770621">પૂર્ણ તરીકે માર્ક કરી શક્યા નથી. જ્યારે ઑનલાઇન થાઓ, ત્યારે ફરી પ્રયાસ કરો.</translation>
 <translation id="6254629735336163724">આડા પર લૉક કરેલું છે</translation>
@@ -1830,6 +1833,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> હાલમાં તમારા માઇક્રોફોનનો ઉપયોગ કરી રહી છે</translation>
 <translation id="7561982940498449837">મેનૂ બંધ કરો</translation>
 <translation id="7564874036684306347">વિંડોને બીજા ડેસ્કટૉપમાં ખસેડવું તે અનપેક્ષિત વર્તણૂકનું કારણ બની શકે છે. અનુગામી નોટિફિકેશન, વિંડો અને સંવાદો ડેસ્કટૉપ વચ્ચે વિભાજિત થઈ શકે છે.</translation>
+<translation id="7568790562536448087">અપડેટ થઈ રહ્યું છે</translation>
 <translation id="7569509451529460200">બ્રેઇલ અને ChromeVox સક્ષમ કર્યાં</translation>
 <translation id="7569886975397378678">તમારા ફોનના નોટિફિકેશન અને ઍપ જોવાની સુવિધાનું સેટઅપ કરવાની પ્રક્રિયા છોડી દો</translation>
 <translation id="7571361473021531288">બૅટરી <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> બાકી છે</translation>
@@ -1959,7 +1963,6 @@
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> તરફથી</translation>
 <translation id="7968693143708939792">ફોલ્ડર પસંદ કરો...</translation>
 <translation id="7973756967040444713">ટૂલબાર બંધ કરો</translation>
-<translation id="797485111629834774">કાર્યને પૂર્ણ થયેલા તરીકે ચિહ્નિત કરો: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">પૂર્ણસ્ક્રીનનું મેગ્નિફાયર ચાલુ કે બંધ કરો</translation>
 <translation id="7977927628060636163">મોબાઇલ નેટવર્કની શોધ કરી રહ્યું છે...</translation>
 <translation id="7982789257301363584">નેટવર્ક</translation>
@@ -2302,7 +2305,7 @@
 <translation id="974545358917229949"><ph name="QUERY" /> માટે <ph name="RESULT_COUNT" /> પરિણામ બતાવી રહ્યાં છીએ</translation>
 <translation id="981011780479609956">નિયત તારીખ વગરના</translation>
 <translation id="98120814841227350">દસ્તાવેજના અંતે જાઓ</translation>
-<translation id="98515147261107953">લેન્ડસ્કૅપ</translation>
+<translation id="98515147261107953">લૅન્ડસ્કેપ</translation>
 <translation id="987589956647469042">મોબાઇલ ડેટા ચાલુ કરેલો છે</translation>
 <translation id="989374776391122812">કૅમેરા અને ઑડિયો નિયંત્રણો</translation>
 <translation id="990277280839877440">વિંડો <ph name="WINDOW_TITILE" /> બંધ કરેલી છે.</translation>

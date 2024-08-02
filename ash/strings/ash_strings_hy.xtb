@@ -976,6 +976,7 @@
 <translation id="453661520163887813">Լրիվ կլիցքավորվի <ph name="TIME" />-ից</translation>
 <translation id="4538824937723742295">Լիաէկրան սքրինշոթ անել</translation>
 <translation id="4539127209940689201">Տպել ընթացիկ էջը</translation>
+<translation id="4541505619120536051">Միշտ բացել</translation>
 <translation id="4541706525461326392">Պրոֆիլը հեռացվում է։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="4544483149666270818">Ընտրեք պատուհանը՝ տեսագրելու համար</translation>
 <translation id="4545950850562423083">Պահել ընթացիկ էջը որպես էջանիշ</translation>
@@ -1488,6 +1489,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" /> հավելվածը ներկայումս օգտագործում է ձեր տեսախցիկն ու խոսափողը</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Վերևի կոճակ</translation>
+<translation id="6240821072888636753">Հարցնել ամեն անգամ</translation>
 <translation id="6247728804802644171">Բացել ծանուցումները</translation>
 <translation id="6249795363855770621">Չհաջողվեց նշել որպես կատարված։ Միացեք ինտերնետին և նորից փորձեք։</translation>
 <translation id="6254629735336163724">Միայն հորիզոնական</translation>
@@ -1831,6 +1833,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> հավելվածը ներկայումս օգտագործում է ձեր խոսափողը</translation>
 <translation id="7561982940498449837">Փակել ընտրացանկը</translation>
 <translation id="7564874036684306347">Պատուհանների տեղափոխումն այլ աշխատասեղան կարող է անսպասելի արդյունքներ ունենալ: Հետագա ծանուցումները, պատուհանները և երկխոսությունները կարող են տրոհվել աշխատասեղանների միջև:</translation>
+<translation id="7568790562536448087">Թարմացում</translation>
 <translation id="7569509451529460200">Բրայլյան գրատիպն ու ChromeVox-ը միացված են</translation>
 <translation id="7569886975397378678">Բաց թողնել հեռախոսի ծանուցումների և հավելվածների դիտման կարգավորումը</translation>
 <translation id="7571361473021531288">Մարտկոցի լիցքը՝ <ph name="BATTERY_PERCENTAGE" />% | Մնացել է <ph name="TIME" /></translation>
@@ -1960,7 +1963,6 @@
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />-ից</translation>
 <translation id="7968693143708939792">Ընտրել պանակ</translation>
 <translation id="7973756967040444713">Փակել գործիքագոտին</translation>
-<translation id="797485111629834774"><ph name="TASK_NAME" /> առաջադրանքը նշել որպես կատարված</translation>
 <translation id="797512352675305461">Միացնել կամ անջատել լիաէկրան խոշորացույցը</translation>
 <translation id="7977927628060636163">Բջջային ցանցերի որոնում...</translation>
 <translation id="7982789257301363584">Ցանց</translation>

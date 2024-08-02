@@ -324,7 +324,7 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="2635918910848538771">Automatsko popunjavanje CVC-a</translation>
 <translation id="2637313651144986786">Pretraživanje kartica...</translation>
 <translation id="2640733327287333451">Nema korisničkog imena ••••••</translation>
-<translation id="264215785133931186">Provjera je upravo izvršena</translation>
+<translation id="264215785133931186">Upravo je provjereno</translation>
 <translation id="2648721026697078500">Nikad ne premještaj</translation>
 <translation id="2648803196158606475">Izbriši pročitano</translation>
 <translation id="2664621323652615289">Zaustavljanje</translation>
@@ -798,7 +798,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4937410517508563815">Sačuvajte lozinke na račun</translation>
 <translation id="4938338714234463591">To će vam omogućiti da koristite glas s određenim funkcijama na web lokacijama.</translation>
 <translation id="4941089862236492464">Žao nam je, došlo je do problema prilikom dijeljenja vaše stavke.</translation>
-<translation id="4942382218961352935">Provjera je upravo izvršena</translation>
+<translation id="4942382218961352935">Upravo je provjereno</translation>
 <translation id="4944543191714094452">Pronađi na stranici…</translation>
 <translation id="4945756290001680296">Pristupite postavkama lozinke</translation>
 <translation id="4958444002117714549">Proširi listu</translation>
@@ -885,6 +885,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="5396950905475481456">Pozovite članove porodice</translation>
 <translation id="5407969256130905701">Odbaci promjene</translation>
 <translation id="5414763847370083940">Dobit ćete obavještenje ako cijena padne na bilo kojoj web lokaciji.</translation>
+<translation id="5415289094036440596">Pristupni ključevi ne mogu se dijeliti</translation>
 <translation id="5416022985862681400">Posljednjih 7 dana</translation>
 <translation id="5416455648658732408">Premjestite u grupu kartica</translation>
 <translation id="5423269318075950257">Praćenje cijena</translation>
@@ -1490,7 +1491,6 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8237382152611443140">Otvorite postavke za automatsko popunjavanje lozinki</translation>
 <translation id="8248969482078657578">Neaktivne kartice vam pomažu da se fokusirate</translation>
 <translation id="8261506727792406068">Izbriši</translation>
-<translation id="8263336784344783289">Dajte naziv ovoj grupi</translation>
 <translation id="8263809106706527890">Možda je došlo do promjene postavki zadanog preglednika. Možete provjeriti ovo u postavkama.</translation>
 <translation id="8264966119170358612">Neke vaše sačuvane lozinke su bile izložene prilikom narušavanja podataka koji nisu Googleovi. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Bili ste odjavljeni s računa <ph name="USER_NAME" /> tokom vraćanja iPada na zadano. Da se prijavite ponovo, dodirnite "Nastavi" u nastavku.</translation>

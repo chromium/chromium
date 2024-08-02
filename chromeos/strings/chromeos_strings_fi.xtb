@@ -179,7 +179,6 @@
 <translation id="1827738518074806965">Taidegalleria</translation>
 <translation id="1836553715834333258">Järjestelmän väri</translation>
 <translation id="183675228220305365">realismi</translation>
-<translation id="1837537071599385610">Kehoteopas</translation>
 <translation id="1838374766361614909">Tyhjennä haku</translation>
 <translation id="1840474674287087346">Työpöydän väri</translation>
 <translation id="184095011128924488">luova</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Viimeaikaisia Googlen tekoälyn luomia taustoja</translation>
 <translation id="2783010256799387990">ONNISTUI</translation>
 <translation id="2786429550992142861">pellava</translation>
+<translation id="2787237339470862294">Tätä kieltä ei tueta tällä hetkellä</translation>
 <translation id="2787435249130282949">kirkkaampi näppäimistö</translation>
 <translation id="2805756323405976993">Sovellukset</translation>
 <translation id="28232023175184696">Ei internetyhteyttä. Yritä uudelleen klikkaamalla.</translation>
@@ -673,6 +673,7 @@ Voit milloin tahansa laittaa tämän pois päältä asetuksista.</translation>
 <translation id="458794348635939462">Kaikkien isäntien selvittäminen epäonnistui</translation>
 <translation id="4593212453765072419">Välityspalvelimen todennus vaaditaan</translation>
 <translation id="4594021849294327751">Luo transkriptio</translation>
+<translation id="4607282946861182308">Tästä ei voi luoda kuvia. Kokeile toista kehotetta.</translation>
 <translation id="4609350030397390689">Vähennä näppäimistön kirkkautta</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Peru tulostustyö painamalla Enter.</translation>
 <translation id="463791356324567266">Perutaan skannausta…</translation>

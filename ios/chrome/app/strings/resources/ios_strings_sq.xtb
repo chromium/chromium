@@ -324,6 +324,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2635918910848538771">Plotëso automatikisht kodin CVC</translation>
 <translation id="2637313651144986786">Kërko skedat...</translation>
 <translation id="2640733327287333451">Nuk ka emër përdoruesi ••••••</translation>
+<translation id="264215785133931186">Kontrolluar pikërisht tani</translation>
 <translation id="2648721026697078500">Mos zhvendos asnjëherë</translation>
 <translation id="2648803196158606475">Fshi të lexuarat</translation>
 <translation id="2664621323652615289">Ndalo</translation>
@@ -797,6 +798,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4937410517508563815">Ruaj fjalëkalimet në llogari</translation>
 <translation id="4938338714234463591">Kjo do të të lejojë të përdorësh zërin tënd me veçori të caktuara në uebsajte.</translation>
 <translation id="4941089862236492464">Na vjen keq, kishte një problem në ndarjen e artikullit tënd.</translation>
+<translation id="4942382218961352935">Kontrolluar pikërisht tani</translation>
 <translation id="4944543191714094452">Gjej në faqe…</translation>
 <translation id="4945756290001680296">Qasu te cilësimet e fjalëkalimit</translation>
 <translation id="4958444002117714549">Zgjero listën</translation>
@@ -1488,7 +1490,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8237382152611443140">Hap "Cilësimet e plotësimit automatik të fjalëkalimit"</translation>
 <translation id="8248969482078657578">Skedat joaktive të ndihmojnë të ruash përqendrimin</translation>
 <translation id="8261506727792406068">Fshi</translation>
-<translation id="8263336784344783289">Emërtoje këtë grup</translation>
 <translation id="8263809106706527890">Mund të ketë pasur një ndryshim në cilësimet e shfletuesit të parazgjedhur. Mund ta kontrollosh këtë te cilësimet.</translation>
 <translation id="8264966119170358612">Disa nga fjalëkalimet e tua të ruajtura janë ekspozuar në një nxjerrje të paautorizuar të të dhënave nga një palë që nuk është Google. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Ke dalë nga llogaria jote, <ph name="USER_NAME" />, si pjesë e rivendosjes së pajisjes iPad. Për t'u identifikuar përsëri, trokit te "Vazhdo" më poshtë.</translation>

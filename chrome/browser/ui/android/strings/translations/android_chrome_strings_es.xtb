@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Gestionar las cuentas de este dispositivo</translation>
 <translation id="1129510026454351943">Detalles: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">El modo Incógnito protege la privacidad de tu navegación frente a otros usuarios que usan tu dispositivo</translation>
+<translation id="1138458427267715730">Recibe alertas cuando el precio baje en cualquier sitio de la Web</translation>
 <translation id="1142732900304639782">No ofrecer que se traduzcan estos sitios</translation>
 <translation id="1145536944570833626">Elimina los datos actuales.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> se abrirá en Chrome. Al continuar, aceptas los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Google Chrome y ChromeOS<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Gestionar actividad</translation>
 <translation id="1355088659320425659">Historial y pestañas</translation>
 <translation id="1360432990279830238">¿Cerrar sesión y detener sincronización?</translation>
+<translation id="1363028406613469049">Seguir</translation>
 <translation id="1366525380420346469">Cuando está activada</translation>
 <translation id="1373696734384179344">No hay memoria suficiente para descargar el contenido seleccionado.</translation>
 <translation id="1376578503827013741">Calculando…</translation>
@@ -292,6 +294,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="2439153523196674349">Vista previa de <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">¿Quieres empezar a descargar <ph name="FILE_NAME" /> de nuevo?</translation>
+<translation id="2451607499823206582">Seguimiento</translation>
 <translation id="2453860139492968684">Finalizar</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2468444275314013497">Parece que todo está correcto en tu navegador</translation>
@@ -1041,7 +1044,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="6040939430773295212">Repetitivo</translation>
 <translation id="604124094241169006">Automático</translation>
 <translation id="6042308850641462728">Más</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Permisos revisados de 1 sitio}other{Permisos revisados de {NUM_SITES} sitios}}</translation>
 <translation id="604996488070107836">No ha sido posible descargar el archivo <ph name="FILE_NAME" /> debido a un error desconocido.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla tus noticias y tu actividad aquí</translation>
@@ -1682,7 +1684,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8865415417596392024">Datos de Chrome en tu cuenta</translation>
 <translation id="8898822736010347272">Envía a Google las URL de las páginas que visitas, información limitada del sistema y contenido de las páginas para ayudar a descubrir nuevas amenazas y proteger a los usuarios de la Web.</translation>
 <translation id="8909135823018751308">Compartir…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Notificaciones no permitidas en 1 sitio}other{Notificaciones no permitidas en {NUM_SITES} sitios}}</translation>
 <translation id="8921980840204105660">Activa la sincronización para recibir los marcadores de tus otros dispositivos</translation>
 <translation id="8922289737868596582">Descarga páginas con el botón con el botón Más opciones para usarlas sin conexión</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>

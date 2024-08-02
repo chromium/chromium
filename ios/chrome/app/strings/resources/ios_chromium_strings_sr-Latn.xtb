@@ -144,6 +144,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium
 <translation id="5131565040785979529">Vaša organizacija, <ph name="DOMAIN" />, upravlja nalogom na koji ste prijavljeni i načinom na koji se Chromium koristi.</translation>
 <translation id="5146749061471423558">Dodaj obeleživače u Chromium</translation>
 <translation id="5171868502429358653">Prijavite se u Chromium</translation>
+<translation id="5203483872492817335">Brže pristupajte Chromium-u sa trake s aplikacijama na početnom ekranu iPad-a.</translation>
 <translation id="5213683223491576284">Otvara Menadžer lozinki u Chromium-u.</translation>
 <translation id="5224391634244552924">Nema sačuvanih lozinki. Chromium može da proverava lozinke kada ih sačuvate.</translation>
 <translation id="5242782538551259282">Neki Chromium podaci još nisu sačuvani na Google nalogu.
@@ -225,6 +226,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium
 Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti se čuva na Google-u. Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium podatke na nalogu<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromium obaveštenja su trenutno isključena u podešavanjima uređaja.</translation>
 <translation id="7222001353246886083">Pretraži frazu ${searchphrase} u Chromium-u</translation>
+<translation id="7228180817326917122">Savet za Chromium: Odaberite položaj trake za adresu</translation>
 <translation id="725427773388857052">Chromium može da vas štiti od upada u podatke, nebezbednih veb-sajtova i drugih stvari.</translation>
 <translation id="7269362888766543920">Neki programski dodaci izazivaju otkazivanje Chromium-a. Probajte da ih deinstalirate.</translation>
 <translation id="7285031092584344905">Pristupajte Chromium lozinkama i ostalim funkcijama u drugim aplikacijama.</translation>
@@ -247,6 +249,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="7928628054454574139">Otvara Chromium svaki put kada dodirnete linkove u drugim aplikacijama</translation>
 <translation id="7931842119211730154">Zaključajte kartice bez arhiviranja posle zatvaranja Chromium-a</translation>
 <translation id="7934404985878918282">Prikaži Chromium listu za čitanje</translation>
+<translation id="7947765692209663835">Brže pristupajte Chromium-u sa trake s aplikacijama na početnom ekranu iPhone-a.</translation>
 <translation id="7971753607796745700">Dodaj stavku liste za čitanje u Chromium</translation>
 <translation id="7980860476903281594">Chromium deli lokaciju sa sajtovima koje dozvolite.</translation>
 <translation id="7994322153108931467">Da biste dobijali korisne savete za Chromium, uključite obaveštenja u podešavanjima iOS-a.</translation>
@@ -265,6 +268,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="8386869251364507178">Chromium radnje</translation>
 <translation id="8409374867500149834">Imate najjaču Chromium zaštitu od štetnih veb-sajtova</translation>
 <translation id="8458950033462118672">Možete da automatski otvarate linkove u Chromium-u tako što ćete ga podesiti kao podrazumevanu aplikaciju za pregledanje.</translation>
+<translation id="8473874987831035139">Savet za Chromium: Premestite Chromium na traku s aplikacijama</translation>
 <translation id="8502918057530111907">Podrazumevano koristite Chromium da biste lako dobijali uvid u cene</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{To se dešava kada se Chromium ne koristi {THRESHOLD} minut. Izbrisaće se podaci koji su sačuvani samo na ovom uređaju dok ste bili prijavljeni. To može da obuhvata istoriju i lozinke.}one{To se dešava kada se Chromium ne koristi {THRESHOLD} minut. Izbrisaće se podaci koji su sačuvani samo na ovom uređaju dok ste bili prijavljeni. To može da obuhvata istoriju i lozinke.}few{To se dešava kada se Chromium ne koristi {THRESHOLD} minuta. Izbrisaće se podaci koji su sačuvani samo na ovom uređaju dok ste bili prijavljeni. To može da obuhvata istoriju i lozinke.}other{To se dešava kada se Chromium ne koristi {THRESHOLD} minuta. Izbrisaće se podaci koji su sačuvani samo na ovom uređaju dok ste bili prijavljeni. To može da obuhvata istoriju i lozinke.}}</translation>
 <translation id="858114650497379505">Možete da koristite lozinke koje ste sačuvali u Menadžeru lozinki u drugim aplikacijama na iPhone-u.</translation>

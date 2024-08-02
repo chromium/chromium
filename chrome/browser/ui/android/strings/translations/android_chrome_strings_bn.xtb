@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">এই ডিভাইসে থাকা অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="1129510026454351943">বিবরণ: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">আপনার ডিভাইস যারা ব্যবহার করেন, 'ছদ্মবেশী' মোড আপনার করা ব্রাউজিং অ্যাক্টিভিটি তাদের কাছে গোপন রাখে</translation>
+<translation id="1138458427267715730">ওয়েব জুড়ে কোনও সাইটের দাম কমে গেলে সতর্কতা পান</translation>
 <translation id="1142732900304639782">এইসব সাইট অনুবাদ হবে না</translation>
 <translation id="1145536944570833626">বিদ্যমান ডেটা মুছুন।</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome-এ খুলবে। চালিয়ে যাওয়ার মাধ্যমে, আপনি <ph name="BEGIN_LINK1" />Google-এর পরিষেবার শর্তাবলী<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />Google Chrome ও ChromeOS-এর পরিষেবার অতিরিক্ত শর্তাবলী<ph name="END_LINK2" /> মেনে নিচ্ছেন।</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">অ্যাক্টিভিটি ম্যানেজ করুন</translation>
 <translation id="1355088659320425659">ইতিহাস ও ট্যাব</translation>
 <translation id="1360432990279830238">সাইন-আউট করে সিঙ্ক বন্ধ করবেন?</translation>
+<translation id="1363028406613469049">ট্র্যাক</translation>
 <translation id="1366525380420346469">চালু থাকার সময়</translation>
 <translation id="1373696734384179344">নির্বাচিত কন্টেন্ট ডাউনলোড করার জন্য যথেষ্ট মেমরি নেই৷</translation>
 <translation id="1376578503827013741">গণনা করছে...</translation>
@@ -292,6 +294,7 @@
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> প্রিভিউ</translation>
 <translation id="2450083983707403292">আপনি কি আবার <ph name="FILE_NAME" /> ডাউনলোড করা শুরু করতে চান?</translation>
+<translation id="2451607499823206582">ট্র্যাক করা হচ্ছে</translation>
 <translation id="2453860139492968684">সমাপ্ত করুন</translation>
 <translation id="2461822463642141190">বর্তমান</translation>
 <translation id="2468444275314013497">আপনার ব্রাউজার সঠিক বলে মনে হচ্ছে</translation>
@@ -1041,7 +1044,6 @@
 <translation id="6040939430773295212">বার বার দেখানো হয়েছে</translation>
 <translation id="604124094241169006">স্বয়ংক্রিয়</translation>
 <translation id="6042308850641462728">আরও</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{১টি সাইটের জন্য অনুমতি পর্যালোচনা করা হয়েছে}one{{NUM_SITES}টি সাইটের জন্য অনুমতি পর্যালোচনা করা হয়েছে}other{{NUM_SITES}টি সাইটের জন্য অনুমতি পর্যালোচনা করা হয়েছে}}</translation>
 <translation id="604996488070107836">একটি অজানা ত্রুটির কারনে <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">আপনার খবর ও গতিবিধি এখানে নিয়ন্ত্রণ করুন</translation>
@@ -1682,7 +1684,6 @@
 <translation id="8865415417596392024">আপনার অ্যাকাউন্টের Chrome ডেটা</translation>
 <translation id="8898822736010347272">আপনার দেখা কিছু পৃষ্ঠার ইউআরএল, সীমিত সিস্টেম সম্পর্কিত তথ্য এবং কিছু পৃষ্ঠার কন্টেন্ট Google-এর কাছে পাঠান যাতে নতুন ঝুঁকি চিহ্নিত করে ওয়েব ব্যবহারকারীর প্রত্যেককে সুরক্ষিত রাখা যায়।</translation>
 <translation id="8909135823018751308">শেয়ার করুন...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{১টি সাইটের বিজ্ঞপ্তি পাঠানোর অনুমতি নেই}one{{NUM_SITES}টি সাইটের বিজ্ঞপ্তি পাঠানোর অনুমতি নেই}other{{NUM_SITES}টি সাইটের বিজ্ঞপ্তি পাঠানোর অনুমতি নেই}}</translation>
 <translation id="8921980840204105660">আপনার অন্যান্য ডিভাইস থেকে বুকমার্ক পেতে সিঙ্ক করুন</translation>
 <translation id="8922289737868596582">পৃষ্ঠাগুলি অফলাইনে ব্যবহার করতে সেগুলি আরও বিকল্প বোতাম থেকে ডাউনলোড করুন</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>

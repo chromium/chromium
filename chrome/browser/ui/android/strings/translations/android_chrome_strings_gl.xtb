@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Xestionar contas deste dispositivo</translation>
 <translation id="1129510026454351943">Detalles: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">O modo de incógnito mantén a túa navegación privada para que outros usuarios que utilicen o teu dispositivo non a poidan ver</translation>
+<translation id="1138458427267715730">Recibe alertas cando baixe o prezo en calquera sitio da Web</translation>
 <translation id="1142732900304639782">Non ofrecer a opción de traducir estes sitios</translation>
 <translation id="1145536944570833626">Elimina os datos existentes.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> abrirase en Chrome. Ao continuar, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" />, así como as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Xestionar actividade</translation>
 <translation id="1355088659320425659">Historial e pestanas</translation>
 <translation id="1360432990279830238">Queres pechar sesión?</translation>
+<translation id="1363028406613469049">Número de seguimento</translation>
 <translation id="1366525380420346469">Se a función está activada</translation>
 <translation id="1373696734384179344">Memoria insuficiente para descargar o contido seleccionado.</translation>
 <translation id="1376578503827013741">Calculando...</translation>
@@ -292,6 +294,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2435457462613246316">Mostrar contrasinal</translation>
 <translation id="2439153523196674349">Vista previa de <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Queres empezar a descargar <ph name="FILE_NAME" /> de novo?</translation>
+<translation id="2451607499823206582">Estase facendo un seguimento</translation>
 <translation id="2453860139492968684">Finalizar</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2468444275314013497">Todo en orde co navegador</translation>
@@ -1041,7 +1044,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="6040939430773295212">Contido repetitivo</translation>
 <translation id="604124094241169006">Automático</translation>
 <translation id="6042308850641462728">Máis</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Revisáronse os permisos de 1 sitio}other{Revisáronse os permisos de {NUM_SITES} sitios}}</translation>
 <translation id="604996488070107836">Produciuse un problema coa descarga de <ph name="FILE_NAME" /> debido a un erro descoñecido.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla as túas historias e a túa actividade aquí</translation>
@@ -1682,7 +1684,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8865415417596392024">Datos de Chrome na túa conta</translation>
 <translation id="8898822736010347272">Envía os URL dalgunhas páxinas que visites, información limitada do sistema e certo contido das páxinas a Google para axudar a descubrir novas ameazas e protexer todos os usuarios da Web.</translation>
 <translation id="8909135823018751308">Compartir...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Non se permiten as notificacións de 1 sitio}other{Non se permiten as notificacións de {NUM_SITES} sitios}}</translation>
 <translation id="8921980840204105660">Sincroniza os datos para obter os marcadores dos teus outros dispositivos</translation>
 <translation id="8922289737868596582">Para ver as páxinas cando non teñas conexión, descárgaas a través do botón Máis opcións</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>

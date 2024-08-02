@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Kelola akun di perangkat ini</translation>
 <translation id="1129510026454351943">Detail: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Mode Samaran membuat penjelajahan Anda tetap bersifat pribadi dari orang lain yang menggunakan perangkat Anda</translation>
+<translation id="1138458427267715730">Dapatkan notifikasi saat ada penurunan harga di situs mana pun di seluruh web</translation>
 <translation id="1142732900304639782">Jangan tawarkan penerjemahan situs ini</translation>
 <translation id="1145536944570833626">Hapus data yang sudah ada.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> akan dibuka di Chrome. Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" /> serta <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Google Chrome dan ChromeOS<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Kelola aktivitas</translation>
 <translation id="1355088659320425659">Histori dan tab</translation>
 <translation id="1360432990279830238">Logout dan nonaktifkan sinkronisasi?</translation>
+<translation id="1363028406613469049">Lacak</translation>
 <translation id="1366525380420346469">Saat aktif</translation>
 <translation id="1373696734384179344">Memori tidak cukup untuk mendownload konten yang dipilih.</translation>
 <translation id="1376578503827013741">Menghitung…</translation>
@@ -292,6 +294,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2435457462613246316">Tampilkan sandi</translation>
 <translation id="2439153523196674349">Pratinjau <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Ingin mulai mendownload <ph name="FILE_NAME" /> lagi?</translation>
+<translation id="2451607499823206582">Pemantauan</translation>
 <translation id="2453860139492968684">Selesai</translation>
 <translation id="2461822463642141190">Arus</translation>
 <translation id="2468444275314013497">Browser Anda aman</translation>
@@ -1041,7 +1044,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="6040939430773295212">Repetitif</translation>
 <translation id="604124094241169006">Otomatis</translation>
 <translation id="6042308850641462728">Lainnya</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Izin ditinjau untuk 1 situs}other{Izin ditinjau untuk {NUM_SITES} situs}}</translation>
 <translation id="604996488070107836">Download <ph name="FILE_NAME" /> gagal karena kesalahan tak dikenal.</translation>
 <translation id="605721222689873409">TT</translation>
 <translation id="6059830886158432458">Kontrol artikel dan aktivitas Anda di sini</translation>
@@ -1682,7 +1684,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8865415417596392024">Data Chrome di akun Anda</translation>
 <translation id="8898822736010347272">Kirim URL beberapa halaman yang Anda kunjungi, informasi sistem terbatas, dan beberapa konten halaman ke Google untuk membantu menemukan ancaman baru dan melindungi semua orang di web.</translation>
 <translation id="8909135823018751308">Bagikan...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Notifikasi tidak diizinkan untuk 1 situs}other{Notifikasi tidak diizinkan untuk {NUM_SITES} situs}}</translation>
 <translation id="8921980840204105660">Sinkronkan untuk mendapatkan bookmark Anda dari perangkat lainnya</translation>
 <translation id="8922289737868596582">Download halaman dari tombol opsi Lainnya untuk menggunakannya secara offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>

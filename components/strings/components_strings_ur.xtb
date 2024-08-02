@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">‏پاس ورڈز کا نظم کریں بٹن، Chrome کی ترتیبات میں اپنے پاس ورڈز کو دیکھنے اور ان کا نظم کرنے کے لیے فعال کریں</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> کے لیے اجازت منتخب کریں</translation>
-<translation id="1112238992895762847">تمام اختیارات کے لیے قیمت کی حد</translation>
 <translation id="1113869188872983271">دوبارہ ترتیب &amp;کالعدم کریں</translation>
 <translation id="1118429183611783760">ویکیومز اور فرش کی نگہداشت</translation>
 <translation id="1122714970786750095">الیکٹرانکس اور الیکٹریکل</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">ابھی کیلئے چھپائیں</translation>
 <translation id="121201262018556460">آپ نے <ph name="DOMAIN" /> تک پہنچنے کی کوشش کی لیکن سرور نے ایک کمزور کلید پر مشتمل سرٹیفکیٹ پیش کیا۔ ہو سکتا ہے کہ کسی حملہ آور نے نجی کلید توڑ دی ہو اور ممکن ہے سرور آپ کا متوقع سرور نہ ہو (ممکن ہے آپ کسی حملہ آور کے ساتھ مواصلت کر رہے ہوں)۔</translation>
 <translation id="1212527389003717329">ڈاؤن لوڈ شروع ہو گیا۔ اسے دیکھنے کیلئے چھوئیں اور دبائے رکھیں |<ph name="ACCELERATOR" />|۔</translation>
-<translation id="1214970845432250240">قیمت کی حد</translation>
 <translation id="1219129156119358924">سسٹم سیکیورٹی</translation>
 <translation id="1222060260947439312">دایاں ٹرے</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -353,7 +351,6 @@
 <translation id="1617276713587758852">کراس اوورز</translation>
 <translation id="1619007254056372606">'آلے پر' سائٹ ڈیٹا کا نظم کریں</translation>
 <translation id="1620510694547887537">کیمرا</translation>
-<translation id="162285686621567578">یہ ویب سائٹ آپ کے والدین نے مسدود کر دی ہے</translation>
 <translation id="1622966923835127638">کاروباری فائنانس</translation>
 <translation id="1623104350909869708">اس صفحہ کو اضافی ڈائیلاگز بنانے سے روکیں</translation>
 <translation id="1633137413609266904">{0,plural, =1{منتظم کی پالیسی کے تحت اس فائل کا کھولنا مسدود ہے}other{منتظم کی پالیسی کے تحت # فائلز کا کھولنا مسدود ہے}}</translation>
@@ -738,7 +735,6 @@
 <translation id="2328955282645810595">تعمیر اور پاور ٹولز</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> کی میعاد <ph name="EXPIRATION_DATE_ABBR" /> کو ختم ہو جائے گی</translation>
 <translation id="2337044517221264923">لکھنا دوبارہ شروع کریں</translation>
-<translation id="2337776048981813397">تمام اختیارات کے لیے قیمت کی حد</translation>
 <translation id="2337852623177822836">ترتیب آپ کے منتظم کی جانب سے کنٹرول کی جاتی ہے</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> جوڑا بنانا چاہتی ہے</translation>
 <translation id="2346319942568447007">آپ کی کاپی کردہ تصویر</translation>
@@ -1030,7 +1026,6 @@
 <translation id="2930577230479659665">ہر ایک کاپی کے بعد تراشیں</translation>
 <translation id="2933624813161016821">ایمبوسنگ فوئل</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> لنکس کھولیں</translation>
-<translation id="2941112035454246133">کم</translation>
 <translation id="2941878205777356567">‏‎9 x 12 انچ لفافہ</translation>
 <translation id="2941952326391522266">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کا سیکیورٹی سرٹیفکیٹ <ph name="DOMAIN2" /> کی جانب سے ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="2942492342931589800">عمومی</translation>
@@ -1213,7 +1208,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> عددی توثیقی کوڈ درج کریں</translation>
 <translation id="3272643614306383237">‏1 MB سے کم۔ آپ کے اگلے ملاحظہ پر کچھ سائٹس مزید آہستہ سے لوڈ ہو سکتی ہیں۔</translation>
-<translation id="327346289570683313">قیمت کی حد</translation>
 <translation id="3273738040255912340">‏آپ کا منتظم آپ کی پروفائل اور براؤزر میں دور سے تبدیلیاں کر سکتا ہے، رپورٹنگ کے ذریعے براؤزر کے بارے میں معلومات کا تجزیہ کر سکتا ہے اور دیگر ضروری ٹاسکس انجام دے سکتا ہے۔ اس آلے پر ہونے والی سرگرمی کا نظم Chromium سے باہر بھی کیا جا سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں کھولنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں کھولنے کی تجویز نہیں کرتی ہے}}</translation>
 <translation id="3282085321714087552">آپ کی تنظیم، <ph name="ENROLLMENT_DOMAIN" />، نے کچھ معلومات، جیسے ترتیبات یا پالیسیاں درج ذیل ویب سائٹس پر بھیجی ہیں۔</translation>
@@ -1702,6 +1696,7 @@
 <translation id="4177501066905053472">اشتہار کے موضوعات</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">قیمت کے ٹریک کو کالعدم کریں</translation>
+<translation id="4190446002599583608">‏‫AI کی جانب سے تقویت یافتہ تلاش کی سرگزشت</translation>
 <translation id="4191334393248735295">لمبائی</translation>
 <translation id="4195459680867822611">‏Chrome کی تجاویز دیکھیں بٹن، Chrome کی خصوصیات کے بارے میں فعال کریں</translation>
 <translation id="4195643157523330669">نئے ٹیب میں کھولیں</translation>
@@ -1717,6 +1712,7 @@
 <translation id="421066178035138955">ورچوئل رئیلٹی آلات اور ڈیٹا کا استعمال کریں</translation>
 <translation id="4213500579045346575">جسم سازی</translation>
 <translation id="4214357935346142455">اسکرین کی پروفائل میں سائن ان کریں</translation>
+<translation id="4219596572397833317">اسمارٹ خریداری میں آپ کی مدد کے لیے قیمت کی سرگزشت اور مزید دیکھیں۔</translation>
 <translation id="4220128509585149162">کریشز</translation>
 <translation id="4221630205957821124">‏&lt;h4&gt;مرحلہ 1: پورٹل میں سائن ان کریں&lt;/h4&gt;
     &lt;p&gt;کیفیز یا ایئرپورٹس جیسے مقامات پر دستیاب Wi-Fi نیٹ ورکس کیلئے آپ کو سائن ان کرنے کی ضرورت پڑتی ہے۔ سائن ان صفحہ دیکھنے کیلئے، کسی ایسے صفحے پر جائیں جو&lt;code&gt;http://&lt;/code&gt; کا استعمال کرتا ہے۔&lt;/p&gt;
@@ -3636,6 +3632,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">‏Chrome سے فارم کی تجویز ہٹائیں؟</translation>
 <translation id="781440967107097262">کلپ بورڈ کا اشتراک کریں؟</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">کاغذ (پلین)</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' کیلئے <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> ملے۔</translation>
 <translation id="7822611063308883975">ہاتھ میں سما جانے والے گیم کونسولز</translation>
@@ -3800,6 +3797,7 @@
 <translation id="8148608574971654810">‏PDF ورژن:</translation>
 <translation id="8149426793427495338">آپ کا کمپیوٹر سلیپ وضع میں چلا گیا۔</translation>
 <translation id="8150722005171944719"><ph name="URL" /> پر موجود فائل پڑھنے لائق نہیں ہے۔ ممکن ہے اسے ہٹا دیا گیا ہو، منتقل کر دیا گیا ہو یا ممکن ہے فائل کی اجازتیں رسائی روک رہی ہوں۔</translation>
+<translation id="8151185429379586178">ڈویلپر ٹولز</translation>
 <translation id="8153865548451212769">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں ڈاؤن لوڈ کرنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں ڈاؤن لوڈ کرنے کی تجویز نہیں کرتی ہے}}</translation>
 <translation id="81563721597823545">ہاکی کے ساز و سامان</translation>
 <translation id="8161095570253161196">براؤزنگ دوبارہ شروع کریں</translation>
@@ -3972,6 +3970,7 @@
 <translation id="84561192812921051">‏آپ کا منتظم آپ کی پروفائل اور براؤزر میں دور سے تبدیلیاں کر سکتا ہے، رپورٹنگ کے ذریعے براؤزر کے بارے میں معلومات کا تجزیہ کر سکتا ہے اور دیگر ضروری ٹاسکس انجام دے سکتا ہے۔ اس آلے پر ہونے والی سرگرمی کا نظم Chrome سے باہر بھی کیا جا سکتا ہے۔  <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">غیر معین</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8458605637341729751">‏جاری رکھ کر، آپ دھوکہ دہی سے بچاؤ کے مقاصد کے لیے اپنے آلہ کے قطعی مقام کو جمع کرنے اور اپنے اکاؤنٹ ہولڈر کے ساتھ اس کا اشتراک کرنے سے اتفاق کرتے ہیں۔ ‫Chrome میں Pix کو آف کرنے کے لیے، اپنی <ph name="BEGIN_LINK1" />ادائیگی کی ترتیبات<ph name="END_LINK1" /> پر جائیں</translation>
 <translation id="8460854335417802511">اسے آن کریں</translation>
 <translation id="8461694314515752532">اپنے ذاتی مطابقت پذیر پاس فریز کے ساتھ مطابقت پذیر کردہ ڈیٹا کی مرموزکاری کریں</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 کریڈٹ کارڈ}other{# کریڈٹ کارڈز}}</translation>

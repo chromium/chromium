@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">‏دکمه «مدیریت گذرواژه‌ها»، برای مشاهده و مدیریت گذرواژه‌ها در تنظیمات Chrome، آن را فعال کنید</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">مجوز <ph name="PERMISSION_NAME" /> را انتخاب کنید</translation>
-<translation id="1112238992895762847">محدوده قیمت برای همه گزینه‌ها</translation>
 <translation id="1113869188872983271">&amp;واگرد ترتیب‌بندی مجدد</translation>
 <translation id="1118429183611783760">جاروبرقی و مراقبت از کف</translation>
 <translation id="1122714970786750095">دستگاه‌های الکترونیکی و برقی</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">فعلاً پنهان شود</translation>
 <translation id="121201262018556460">شما می‌خواستید به <ph name="DOMAIN" /> دسترسی یابید، اما سرور یک گواهی دارای کلید ضعیف ارائه داد. یک مهاجم ممکن است کلید خصوصی را تخریب کرده باشد و سرور، همان سروری نباشد که شما انتظار داشتید (ممکن است در حال ارتباط با یک مهاجم باشید).</translation>
 <translation id="1212527389003717329">بارگیری شروع شد. برای دیدن آن، |<ph name="ACCELERATOR" />| را فشار دهید و نگه دارید.</translation>
-<translation id="1214970845432250240">محدوده قیمت</translation>
 <translation id="1219129156119358924">سیستم امنیتی</translation>
 <translation id="1222060260947439312">سینی راست</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -353,7 +351,6 @@
 <translation id="1617276713587758852">کراس‌اوور</translation>
 <translation id="1619007254056372606">مدیریت داده‌های درون‌دستگاهی سایت</translation>
 <translation id="1620510694547887537">دوربین</translation>
-<translation id="162285686621567578">این وب‌سایت را ولی‌تان مسدود کرده است.</translation>
 <translation id="1622966923835127638">تأمین مالی کسب‌وکار</translation>
 <translation id="1623104350909869708">جلوگیری از ایجاد پنجره‌های اضافی توسط این صفحه</translation>
 <translation id="1633137413609266904">{0,plural, =1{خط‌مشی سرپرست باز کردن این فایل را مسدود کرده است}one{خط‌مشی سرپرست باز کردن # فایل را مسدود کرده است}other{خط‌مشی سرپرست باز کردن # فایل را مسدود کرده است}}</translation>
@@ -738,7 +735,6 @@
 <translation id="2328955282645810595">ابزارهای ساختمانی و برقی</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />، در <ph name="EXPIRATION_DATE_ABBR" /> منقضی می‌شود</translation>
 <translation id="2337044517221264923">ازسرگیری نوشتن</translation>
-<translation id="2337776048981813397">محدوده قیمت برای همه گزینه‌ها</translation>
 <translation id="2337852623177822836">تنظیم توسط سرپرست کنترل می‌شود</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> می‌خواهد مرتبط شود</translation>
 <translation id="2346319942568447007">تصویری که کپی کرده‌اید</translation>
@@ -1030,7 +1026,6 @@
 <translation id="2930577230479659665">برش زدن بعد از چاپ هر کپی</translation>
 <translation id="2933624813161016821">فویل حکاکی</translation>
 <translation id="2938225289965773019">باز کردن پیوندهای <ph name="PROTOCOL" /></translation>
-<translation id="2941112035454246133">کم</translation>
 <translation id="2941878205777356567">پاکت ۱۲×۹ اینچی</translation>
 <translation id="2941952326391522266">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ گواهی امنیتی آن از <ph name="DOMAIN2" /> است. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجی اتصال شما را قطع کرده است.</translation>
 <translation id="2942492342931589800">راحت</translation>
@@ -1212,7 +1207,6 @@
 <translation id="3272091146646336650">‏B سوپر</translation>
 <translation id="3272112314896217187">کد درستی‌سنجی <ph name="NUMBER_OF_DIGITS" /> رقمی را وارد کنید</translation>
 <translation id="3272643614306383237">کمتر از ۱ مگابایت. ممکن است برخی سایت‌ها در بازدید بعدی‌تان کندتر بار شوند.</translation>
-<translation id="327346289570683313">محدوده قیمت</translation>
 <translation id="3273738040255912340">‏سرپرست شما می‌تواند تنظیمات نمایه و مرورگرتان را از دور تغییر دهد، اطلاعات مربوط به مرورگر را ازطریق گزارش گرفتن تجزیه‌وتحلیل کند، و دیگر اقدامات ضروری را انجام دهد. ممکن است فعالیت‌های انجام‌شده در این دستگاه از خارج از Chromium هم مدیریت شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> باز کنید}one{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> باز کنید}other{خط‌مشی سرپرست توصیه نمی‌کند این فایل‌ها را در <ph name="DESTINATION_NAME" /> باز کنید}}</translation>
 <translation id="3282085321714087552">سازمان شما، <ph name="ENROLLMENT_DOMAIN" />، اطلاعاتی (مثل تنظیمات یا خط‌مشی‌ها) را به وب‌سایت‌های زیر ارسال کرده است.</translation>
@@ -1701,6 +1695,7 @@
 <translation id="4177501066905053472">موضوع‌های آگهی</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">لغو پیگیری قیمت</translation>
+<translation id="4190446002599583608">جستجوی سابقه، با بهره‌گیری از هوش مصنوعی</translation>
 <translation id="4191334393248735295">طول</translation>
 <translation id="4195459680867822611">‏دکمه نکته‌های Chrome؛ برای اطلاع از ویژگی‌های جدید Chrome، آن را فعال کنید</translation>
 <translation id="4195643157523330669">باز کردن در برگهٔ جدید</translation>
@@ -3635,6 +3630,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">‏پیشنهاد فرم از Chrome پاک شود؟</translation>
 <translation id="781440967107097262">بریده‌دان هم‌رسانی شود؟</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">کاغذ (ساده)</translation>
 <translation id="7815407501681723534"><ph name="NUMBER_OF_RESULTS" /><ph name="SEARCH_RESULTS" /> برای «<ph name="SEARCH_STRING" />» پیدا شد</translation>
 <translation id="7822611063308883975">کنسول‌های بازی دستی</translation>
@@ -3799,6 +3795,7 @@
 <translation id="8148608574971654810">‏نسخه PDF:</translation>
 <translation id="8149426793427495338">رایانه‌تان به خواب رفته است.</translation>
 <translation id="8150722005171944719">این فایل در <ph name="URL" /> قابل خواندن نیست. ممکن است حذف شده، جابجا شده باشد و یا مجوزهای فایل از دسترسی جلوگیری می‌کنند.</translation>
+<translation id="8151185429379586178">ابزارهای برنامه‌نویس</translation>
 <translation id="8153865548451212769">{0,plural, =1{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگیری کنید}one{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگیری کنید}other{خط‌مشی سرپرست توصیه نمی‌کند این فایل‌ها را در <ph name="DESTINATION_NAME" /> بارگیری کنید}}</translation>
 <translation id="81563721597823545">تجهیزات هاکی</translation>
 <translation id="8161095570253161196">ازسر گرفتن مرور</translation>

@@ -136,6 +136,7 @@
 <translation id="1420408895951708260">Уключыць або выключыць Начную падсветку. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="1435537621343861112">Не ўдаецца пачаць галасавы ўвод. Мікрафон выключаны.</translation>
+<translation id="1445031758921122223">Файлы для кіравання данымі твару спампаваны</translation>
 <translation id="1447907279406111651">Цяпер · Скончыцца ў <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Хот-споты вашай прылады</translation>
 <translation id="1455242230282523554">Паказаць моўныя налады</translation>
@@ -412,6 +413,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516416533263263796">Канцэнтрацыя ўвагі ўключана, засталося 10 хвілін</translation>
 <translation id="2516637483312286228">Змяніць гульнявы кантролер</translation>
+<translation id="252054055865191167">Маркер</translation>
 <translation id="2526581474998477112">Разблакіраваць вокны</translation>
 <translation id="2528111225373402384">Налады хот-спота</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -974,6 +976,7 @@
 <translation id="453661520163887813"><ph name="TIME" /> да поўнай зарадкі</translation>
 <translation id="4538824937723742295">Зрабіць здымак усяго экрана</translation>
 <translation id="4539127209940689201">Надрукаваць бягучую старонку</translation>
+<translation id="4541505619120536051">Адкрываць заўсёды</translation>
 <translation id="4541706525461326392">Ідзе выдаленне профілю. Гэта можа заняць некалькі хвілін.</translation>
 <translation id="4544483149666270818">Выберыце акно для запісу</translation>
 <translation id="4545950850562423083">Захаваць бягучую старонку ў закладках</translation>
@@ -1222,6 +1225,7 @@
 <translation id="5361524080961918551"><ph name="LANGUAGE" />: файлы для распазнавання маўлення часткова спампаваны</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Перайсці на гэту ўкладку</translation>
 <translation id="5364693579536176785">месца ў сховішчы</translation>
+<translation id="5369573834963677938">Кіраванне данымі твару будзе даступна іншым карыстальнікам прылады</translation>
 <translation id="5369717264580061086">Перадпрагляд файла ў праграме "Файлы"</translation>
 <translation id="5377367976106153749">Дазволіць доступ да камеры?</translation>
 <translation id="5379115545237091094">Занадта шмат спроб</translation>
@@ -1358,6 +1362,7 @@
 <translation id="5819918159912280082">Прылада Chromebook нечакана перазапусцілася. Адкрыйце вокны і праграмы з апошняга сеанса.</translation>
 <translation id="5823239091726045201">Google Задачы (вэб-версія)</translation>
 <translation id="5825969630400862129">Налады падключаных прылад</translation>
+<translation id="5830180081891717894">Яшчэ <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Спыніць трансляцыю <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Перайсці да наступнага трэка</translation>
 <translation id="5842553299352339114">Хот-спот прылады <ph name="DEVICE_NAME" /> уключаны, няма падключаных прылад</translation>
@@ -1411,6 +1416,7 @@
 <translation id="6020147141355393792">Наладзіць прагляд апавяшчэнняў і праграм з тэлефона</translation>
 <translation id="6022924867608035986">Ачысціць поле пошуку</translation>
 <translation id="602472752137106327">Паказ вокнаў усіх працоўных сталоў, выбраны пераключальнік</translation>
+<translation id="6024768346262692989">Не ўдалося спампаваць файлы для кіравання данымі твару</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />, знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> падзей няма. Каб адкрыць Google Каляндар, націсніце Увод.</translation>
 <translation id="6030495522958826102">Меню перамешчана ў левы ніжні вугал экрана.</translation>
@@ -1484,6 +1490,7 @@
 <translation id="6232891689835436217">Зараз <ph name="APP_NAME" /> выкарыстоўвае камеру і мікрафон</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Верхняя кнопка</translation>
+<translation id="6240821072888636753">Заўсёды пытацца</translation>
 <translation id="6247728804802644171">Адкрыць апавяшчэнні</translation>
 <translation id="6249795363855770621">Не ўдалося пазначыць задачу як выкананую. Паўтарыце спробу, калі падключэнне да інтэрнэту будзе адноўлена.</translation>
 <translation id="6254629735336163724">Зафіксаваны гарызантальны фармат</translation>
@@ -1827,6 +1834,7 @@
 <translation id="7557816257942363084">Зараз <ph name="APP_NAME" /> выкарыстоўвае мікрафон</translation>
 <translation id="7561982940498449837">Закрыць меню</translation>
 <translation id="7564874036684306347">Перамяшчэнне акна на іншы працоўны стол можа прывесці да непрадказальных паводзін. Пасля гэтага паведамленні і вокны могуць раздзяліцца паміж працоўнымі сталамі.</translation>
+<translation id="7568790562536448087">Ідзе абнаўленне</translation>
 <translation id="7569509451529460200">Сістэма Брайля і ChromeVox уключаны</translation>
 <translation id="7569886975397378678">Не наладжваць прагляд апавяшчэнняў і праграм з тэлефона</translation>
 <translation id="7571361473021531288">Акумулятар зараджаны на <ph name="BATTERY_PERCENTAGE" />% | Застаецца <ph name="TIME" /></translation>
@@ -1956,7 +1964,6 @@
 <translation id="7963992254934562106">Крыніца: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Выбраць папку...</translation>
 <translation id="7973756967040444713">Закрыць панэль інструментаў</translation>
-<translation id="797485111629834774">Пазначыць задачу як выкананую: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Уключыць або выключыць поўнаэкранную лупу</translation>
 <translation id="7977927628060636163">Ідзе пошук мабільных сетак...</translation>
 <translation id="7982789257301363584">Сетка</translation>
@@ -2062,6 +2069,7 @@
 <translation id="8375916635258623388">Гэта прылада <ph name="DEVICE_NAME" /> і ваш тэлефон будуць падключацца аўтаматычна</translation>
 <translation id="8380784334203145311">Добрай ночы,</translation>
 <translation id="8382715499079447151">Абаронены прагляд</translation>
+<translation id="8383614331548401927">Кароткі агляд</translation>
 <translation id="8388750414311082622">Нельга выдаліць віртуальны стол, які з'яўляецца апошнім.</translation>
 <translation id="8394567579869570560">Бацькі заблакіравалі гэту прыладу</translation>
 <translation id="8401850874595457088">Адкрыць меню выбару мовы</translation>

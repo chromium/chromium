@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Bestuur rekeninge op hierdie toestel</translation>
 <translation id="1129510026454351943">Besonderhede: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Incognitomodus hou jou blaai privaat van ander mense wat jou toestel gebruik</translation>
+<translation id="1138458427267715730">Kry opletberigte wanneer die prys op enige werf op die web daal</translation>
 <translation id="1142732900304639782">Moenie aanbied om hierdie werwe te vertaal nie</translation>
 <translation id="1145536944570833626">Vee bestaande data uit.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> sal in Chrome oopmaak. Deur voort te gaan, stem jy in tot <ph name="BEGIN_LINK1" />Google se diensbepalings<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Google Chrome en Chrome-bedryfstelsel se bykomende diensbepalings<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Bestuur aktiwiteit</translation>
 <translation id="1355088659320425659">Geskiedenis en oortjies</translation>
 <translation id="1360432990279830238">Meld af en skakel sinkronisasie af?</translation>
+<translation id="1363028406613469049">Snit</translation>
 <translation id="1366525380420346469">Wanneer dit aan is</translation>
 <translation id="1373696734384179344">Onvoldoende berging om die geselekteerde inhoud af te laai.</translation>
 <translation id="1376578503827013741">Bereken tans …</translation>
@@ -292,6 +294,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2435457462613246316">Wys wagwoord</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" />-voorskou</translation>
 <translation id="2450083983707403292">Wil jy <ph name="FILE_NAME" /> weer begin aflaai?</translation>
+<translation id="2451607499823206582">Spoor tans na</translation>
 <translation id="2453860139492968684">Voltooi</translation>
 <translation id="2461822463642141190">Huidig</translation>
 <translation id="2468444275314013497">Jou blaaier lyk goed</translation>
@@ -1041,7 +1044,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="6040939430773295212">Herhalend</translation>
 <translation id="604124094241169006">Outomaties</translation>
 <translation id="6042308850641462728">Meer</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Toestemmings is vir 1 werf gekontroleer}other{Toestemmings is vir {NUM_SITES} werwe gekontroleer}}</translation>
 <translation id="604996488070107836">Kon <ph name="FILE_NAME" /> weens 'n onbekende fout nie aflaai nie.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Beheer jou stories en aktiwiteit hier</translation>
@@ -1682,7 +1684,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8865415417596392024">Chrome-data in jou rekening</translation>
 <translation id="8898822736010347272">Stuur URL'e van sommige bladsye wat jy besoek, beperkte stelselinligting en sekere bladsyinhoud na Google toe om te help om nuwe bedreigings te ontdek en almal op die web te beskerm.</translation>
 <translation id="8909135823018751308">Deel …</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Kennisgewings vir 1 werf word nie toegelaat nie}other{Kennisgewings vir {NUM_SITES} werwe word nie toegelaat nie}}</translation>
 <translation id="8921980840204105660">Sinkroniseer om jou boekmerke van jou ander toestelle af te kry</translation>
 <translation id="8922289737868596582">Laai bladsye vanaf die Meer Opsies-knoppie af om hulle vanlyn te gebruik</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>

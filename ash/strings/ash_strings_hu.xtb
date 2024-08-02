@@ -136,6 +136,7 @@
 <translation id="1420408895951708260">Éjszakai fény be-/kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Igen</translation>
 <translation id="1435537621343861112">Nem sikerült elindítani a diktálást. A mikrofon ki van kapcsolva.</translation>
+<translation id="1445031758921122223">Arcvezérlési fájlok letöltve</translation>
 <translation id="1447907279406111651">Most ⋅ Ekkor ér véget: <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Eszközhotspotok</translation>
 <translation id="1455242230282523554">Nyelvi beállítások megjelenítése</translation>
@@ -976,6 +977,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="453661520163887813"><ph name="TIME" /> a teljes feltöltésig</translation>
 <translation id="4538824937723742295">Teljes képernyős képernyőkép készítése</translation>
 <translation id="4539127209940689201">Aktuális oldal nyomtatása</translation>
+<translation id="4541505619120536051">Mindig nyitva</translation>
 <translation id="4541706525461326392">Profil eltávolítása. Ez eltarthat néhány percig.</translation>
 <translation id="4544483149666270818">Jelölje ki a felvenni kívánt ablakot</translation>
 <translation id="4545950850562423083">Az aktuális oldal mentése könyvjelzőként</translation>
@@ -1224,6 +1226,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> nyelvű beszédfájlok részlegesen letöltve</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ugrás erre a lapra</translation>
 <translation id="5364693579536176785">tárhely</translation>
+<translation id="5369573834963677938">Az arcvezérlés az eszköz más felhasználói számára is rendelkezésre áll</translation>
 <translation id="5369717264580061086">Egy fájl előnézete a Fájlok alkalmazásban</translation>
 <translation id="5377367976106153749">Bekapcsolja a kamerához való hozzáférést?</translation>
 <translation id="5379115545237091094">Túl sok próbálkozás</translation>
@@ -1413,6 +1416,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6020147141355393792">A telefonértesítések és az alkalmazások megtekintésének beállítása</translation>
 <translation id="6022924867608035986">A keresőmezőben lévő szöveg törlése</translation>
 <translation id="602472752137106327">Az összes asztal ablakainak megjelenítésére vonatkozó kapcsológomb van kiválasztva</translation>
+<translation id="6024768346262692989">Nem sikerült letölteni az arcvezérlési fájlokat</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>
 <translation id="6027518778343897451">Nincs esemény ezen a napon: <ph name="CURRENT_MONTH_DAY" /> Az Enter billentyűt lenyomva megnyithatja a Google Naptárt a böngészőben.</translation>
 <translation id="6030495522958826102">A menü a képernyő bal alsó sarkába került.</translation>
@@ -1486,6 +1490,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6232891689835436217">A(z) <ph name="APP_NAME" /> jelenleg használja a kamerát és a mikrofont</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Felső gomb</translation>
+<translation id="6240821072888636753">Mindig kérdezzen rá</translation>
 <translation id="6247728804802644171">Értesítések megnyitása</translation>
 <translation id="6249795363855770621">Nem sikerült készként megjelölni. Próbálja újra, amikor online lesz.</translation>
 <translation id="6254629735336163724">Vízszintes helyzetben zárolva</translation>
@@ -1829,6 +1834,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7557816257942363084">A(z) <ph name="APP_NAME" /> jelenleg használja a mikrofont</translation>
 <translation id="7561982940498449837">Menü bezárása</translation>
 <translation id="7564874036684306347">Az ablakok másik asztalra történő áthelyezése váratlan viselkedést eredményezhet. Az ezt követő értesítéseket, ablakokat és párbeszédpaneleket a rendszer megoszthatja az asztalok között.</translation>
+<translation id="7568790562536448087"> frissítése</translation>
 <translation id="7569509451529460200">Braille és ChromeVox bekapcsolva</translation>
 <translation id="7569886975397378678">A telefon értesítéseinek és alkalmazásainak megtekintésére vonatkozó beállítás elvetése</translation>
 <translation id="7571361473021531288">Akkumulátor <ph name="BATTERY_PERCENTAGE" />%-on | <ph name="TIME" /> van hátra</translation>
@@ -1958,7 +1964,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7963992254934562106">Innen: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Mappa választása…</translation>
 <translation id="7973756967040444713">Eszköztár bezárása</translation>
-<translation id="797485111629834774">Feladat megjelölése teljesítettként: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Teljes képernyős nagyító be- vagy kikapcsolása</translation>
 <translation id="7977927628060636163">Mobilhálózatok keresése…</translation>
 <translation id="7982789257301363584">Hálózat</translation>

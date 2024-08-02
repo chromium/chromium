@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Knappen Hantera lösenord: aktivera om du vill visa och hantera lösenord i inställningarna för Chrome</translation>
 <translation id="1108464073729874771">A3 x 4</translation>
 <translation id="1110994991967754504">Välj behörighet för <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">Prisintervall för alla alternativ</translation>
 <translation id="1113869188872983271">&amp;Ångra Ändra ordning</translation>
 <translation id="1118429183611783760">Dammsugare och golvstäd</translation>
 <translation id="1122714970786750095">El och elektronik</translation>
@@ -122,7 +121,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1209206284964581585">Dölj för tillfället</translation>
 <translation id="121201262018556460">Du försökte öppna <ph name="DOMAIN" />, men servern visade ett certifikat som signerats med en svag nyckel. Det innebär att den privata nyckeln som servern visar kan vara en förfalskning och att servern kanske inte är den server du tror (du kanske kommunicerar med en skadlig server).</translation>
 <translation id="1212527389003717329">Nedladdning har påbörjats. Visa den genom att trycka länge på |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">Prisintervall</translation>
 <translation id="1219129156119358924">Systemsäkerhet</translation>
 <translation id="1222060260947439312">Höger fack</translation>
 <translation id="1224330468394120478">A3 x 6</translation>
@@ -141,6 +139,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Ytterkläder</translation>
 <translation id="1253096324252841344">Betala med <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
+<translation id="1253846494229886276">Skärmbilden sparas</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synkroniserade)</translation>
 <translation id="1255086252236620440">Matmixers</translation>
 <translation id="1256368399071562588">&lt;p&gt;Om det inte går att öppna en webbplats testar du först att åtgärda felet med hjälp av dessa felsökningssteg:&lt;/p&gt;
@@ -352,7 +351,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1617276713587758852">Crossover</translation>
 <translation id="1619007254056372606">Hantera webbplatsdata på enheten</translation>
 <translation id="1620510694547887537">Kamera</translation>
-<translation id="162285686621567578">Den här webbplatsen blockeras av din förälder.</translation>
 <translation id="1622966923835127638">Företagsekonomi</translation>
 <translation id="1623104350909869708">Hindra sidan från att skapa fler dialogrutor</translation>
 <translation id="1633137413609266904">{0,plural, =1{Möjligheten att öppna den här filen blockeras av administratörspolicyn}other{Möjligheten att öppna # filer blockeras av administratörspolicyn}}</translation>
@@ -737,7 +735,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2328955282645810595">Bygg- och elverktyg</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> upphör att gälla den <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Återuppta skrivande</translation>
-<translation id="2337776048981813397">Prisintervall för alla alternativ</translation>
 <translation id="2337852623177822836">Inställningen styrs av administratören</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> vill kopplas</translation>
 <translation id="2346319942568447007">Bilden som du kopierade</translation>
@@ -1029,7 +1026,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2930577230479659665">Beskär efter varje exemplar</translation>
 <translation id="2933624813161016821">Präglingsfolie</translation>
 <translation id="2938225289965773019">Öppna <ph name="PROTOCOL" />-länkar</translation>
-<translation id="2941112035454246133">Låg</translation>
 <translation id="2941878205777356567">Kuvert, 9 x 12 tum</translation>
 <translation id="2941952326391522266">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat kommer från <ph name="DOMAIN2" />. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
 <translation id="2942492342931589800">Informellt</translation>
@@ -1211,7 +1207,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Ange verifieringskoden på <ph name="NUMBER_OF_DIGITS" /> siffror</translation>
 <translation id="3272643614306383237">Mindre än 1 MB. Vissa webbplatser kan läsas in långsammare nästa gång du besöker dem.</translation>
-<translation id="327346289570683313">Prisintervall</translation>
 <translation id="3273738040255912340">Administratören kan göra ändringar i din profil och webbläsare på distans, analysera information om webbläsaren genom rapportering och utföra andra nödvändiga uppgifter. Aktivitet på den här enheten kan även hanteras utanför Chromium. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Enligt administratörspolicyn är det inte rekommenderat att öppna filen i <ph name="DESTINATION_NAME" />}other{Enligt administratörspolicyn är det inte rekommenderat att öppna filerna i <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organisationen <ph name="ENROLLMENT_DOMAIN" /> har skickat en del information, t.ex. inställningar eller principer, till följande webbplatser.</translation>
@@ -1700,6 +1695,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4177501066905053472">Annonsämnen</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Ta bort prisbevakning</translation>
+<translation id="4190446002599583608">Historiksökning med hjälp av AI</translation>
 <translation id="4191334393248735295">Längd</translation>
 <translation id="4195459680867822611">Knappen Visa tips om Chrome: aktivera om du vill läsa mer om funktioner i Chrome</translation>
 <translation id="4195643157523330669">Öppna i ny flik</translation>
@@ -1715,6 +1711,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="421066178035138955">använda VR-enheter och data</translation>
 <translation id="4213500579045346575">Bodybuilding</translation>
 <translation id="4214357935346142455">profil på inloggningsskärmen</translation>
+<translation id="4219596572397833317">Se prishistorik med mera för att handla smartare.</translation>
 <translation id="4220128509585149162">Kraschar</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Steg 1: Logga in på portalen&lt;/h4&gt;
     &lt;p&gt;När du använder wifi-nätverk på exempelvis kaféer eller flygplatser behöver du logga in. Inloggningssidan visas om du försöker öppna en sida som använder &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
@@ -2140,6 +2137,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5019952743397118625">Principen <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> har ställts in. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> styr inte tillgängligheten för utvecklarläget på sidan för tillägg.</translation>
 <translation id="5021557570875267742">Bevaka priser med Chrome</translation>
 <translation id="5023310440958281426">Kontrollera administratörsprinciperna</translation>
+<translation id="5024171724744627792">Betala snabbare med ett sparat kort. Kortuppgifterna krypteras i ditt Google-konto.</translation>
 <translation id="5030338702439866405">Utfärdat av</translation>
 <translation id="503069730517007720">Ett rotcertifikat för <ph name="SOFTWARE_NAME" /> krävs men har inte installerats. IT-administratören bör granska konfigurationsanvisningarna för <ph name="SOFTWARE_NAME" /> och åtgärda problemet. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Om Google Översätt</translation>
@@ -3328,6 +3326,7 @@ Mer information.
 <translation id="7311244614769792472">Inga resultat hittades</translation>
 <translation id="7311837626618954149">Chromium blockerar webbplatser från att spåra dig med hjälp av tredjepartscookies när du surfar.</translation>
 <translation id="7313107491291103073">Organisationen har flaggat den här webbplatsen eftersom den kan bryta mot en policy.</translation>
+<translation id="7316521168101843192">Sparar filen i Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Anslutningshjälp</translation>
 <translation id="7323804146520582233">Dölj avsnittet <ph name="SECTION" /></translation>
@@ -3631,6 +3630,7 @@ Mer information.
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Vill du ta bort formulärförslaget från Chrome?</translation>
 <translation id="781440967107097262">Vill du dela urklipp?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Papper (normalt)</translation>
 <translation id="7815407501681723534">Hittade <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> för <ph name="SEARCH_STRING" /></translation>
 <translation id="7822611063308883975">Handhållna spelkonsoler</translation>
@@ -3795,6 +3795,7 @@ Mer information.
 <translation id="8148608574971654810">PDF-version:</translation>
 <translation id="8149426793427495338">Datorn gick i viloläge.</translation>
 <translation id="8150722005171944719">Det går inte att läsa filen på <ph name="URL" />. Den kan ha tagits bort eller flyttats, eller så krävs behörighet för att få åtkomst till den.</translation>
+<translation id="8151185429379586178">Verktyg för utvecklare</translation>
 <translation id="8153865548451212769">{0,plural, =1{Enligt administratörspolicyn är det inte rekommenderat att ladda ned den här filen till <ph name="DESTINATION_NAME" />}other{Enligt administratörspolicyn är det inte rekommenderat att ladda ned dessa filer till <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Hockeyutrustning</translation>
 <translation id="8161095570253161196">Fortsätt surfa</translation>

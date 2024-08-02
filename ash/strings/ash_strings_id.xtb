@@ -976,6 +976,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> sampai penuh</translation>
 <translation id="4538824937723742295">Ambil screenshot dalam layar penuh</translation>
 <translation id="4539127209940689201">Cetak halaman saat ini</translation>
+<translation id="4541505619120536051">Selalu buka</translation>
 <translation id="4541706525461326392">Menghapus profil. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="4544483149666270818">Pilih jendela yang akan direkam</translation>
 <translation id="4545950850562423083">Simpan halaman saat ini sebagai bookmark</translation>
@@ -1488,6 +1489,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sedang menggunakan kamera dan mikrofon Anda</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Tombol Atas</translation>
+<translation id="6240821072888636753">Selalu tanya</translation>
 <translation id="6247728804802644171">Buka notifikasi</translation>
 <translation id="6249795363855770621">Tidak dapat menandai sebagai selesai. Coba lagi saat online.</translation>
 <translation id="6254629735336163724">Terkunci ke horizontal</translation>
@@ -1831,6 +1833,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7557816257942363084"><ph name="APP_NAME" /> sedang menggunakan mikrofon Anda</translation>
 <translation id="7561982940498449837">Tutup menu</translation>
 <translation id="7564874036684306347">Memindahkan jendela ke desktop lain dapat mengakibatkan perilaku tak terduga. Notifikasi, jendela, dan dialog berikutnya dapat terpisah antardesktop.</translation>
+<translation id="7568790562536448087">Memperbarui</translation>
 <translation id="7569509451529460200">Braille dan ChromeVox diaktifkan</translation>
 <translation id="7569886975397378678">Tutup penyiapan untuk melihat notifikasi dan aplikasi ponsel Anda</translation>
 <translation id="7571361473021531288">Baterai <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> lagi</translation>
@@ -1960,7 +1963,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7963992254934562106">Dari <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Pilih folder ...</translation>
 <translation id="7973756967040444713">Tutup toolbar</translation>
-<translation id="797485111629834774">Tandai tugas sebagai selesai: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Aktifkan atau nonaktifkan kaca pembesar layar penuh</translation>
 <translation id="7977927628060636163">Menelusuri jaringan seluler...</translation>
 <translation id="7982789257301363584">Jaringan</translation>

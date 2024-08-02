@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Butoni "Menaxho fjalëkalimet". Aktivizoje për të parë dhe menaxhuar fjalëkalimet e tua te cilësimet e Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Përzgjidh autorizimin për <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">Gama e çmimeve për të gjitha opsionet</translation>
 <translation id="1113869188872983271">&amp;Zhbëj rirenditjen</translation>
 <translation id="1118429183611783760">Fshesa me korrent dhe kujdesi për dyshemenë</translation>
 <translation id="1122714970786750095">Pajisje elektrike dhe elektronike</translation>
@@ -122,7 +121,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1209206284964581585">Fshih për momentin</translation>
 <translation id="121201262018556460">Tentove të hapje <ph name="DOMAIN" />, por serveri paraqiti një certifikatë që përmban një çelës të dobët. Një sulmues mund ta ketë prishur çelësin privat dhe serveri mund të mos jetë ai që prisje (mund të jesh duke komunikuar me një sulmues).</translation>
 <translation id="1212527389003717329">Shkarkimi filloi. Për ta parë atë, shtyp dhe mbaj shtypur |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">Gama e çmimeve</translation>
 <translation id="1219129156119358924">Siguria e sistemit</translation>
 <translation id="1222060260947439312">Tabakaja e djathtë</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -141,6 +139,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1247030632403369975">Alumin</translation>
 <translation id="1252209483516427155">Xhaketa</translation>
 <translation id="1253096324252841344">Paguaj me <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
+<translation id="1253846494229886276">Po ruhet pamja e ekranit</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinkronizuar)</translation>
 <translation id="1255086252236620440">Mikserë</translation>
 <translation id="1256368399071562588">&lt;p&gt;Nëse përpiqesh të vizitosh një uebsajt dhe ai nuk hapet, provo në fillim të rregullosh gabimin me këto hapa për zgjidhjen e problemeve:&lt;/p&gt;
@@ -352,7 +351,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1617276713587758852">Automjete Crossover</translation>
 <translation id="1619007254056372606">Menaxho të dhënat e sajtit në pajisje</translation>
 <translation id="1620510694547887537">Kamera</translation>
-<translation id="162285686621567578">Ky uebsajt është bllokuar nga prindi yt.</translation>
 <translation id="1622966923835127638">Financë biznesi</translation>
 <translation id="1623104350909869708">Parandalo krijimin e dialogëve shtesë nga kjo faqe</translation>
 <translation id="1633137413609266904">{0,plural, =1{Hapja e këtij skedari është bllokuar nga politika e administratorit}other{Hapja e # skedarëve është bllokuar nga politika e administratorit}}</translation>
@@ -737,7 +735,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2328955282645810595">Vegla elektrike dhe ndërtimi</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, skadon më <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Vazhdo të shkruash</translation>
-<translation id="2337776048981813397">Gama e çmimeve për të gjitha opsionet</translation>
 <translation id="2337852623177822836">Cilësim i kontrolluar nga administratori yt</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> dëshiron të çiftohet</translation>
 <translation id="2346319942568447007">Imazhi që kopjove</translation>
@@ -1029,7 +1026,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2930577230479659665">Prerje pas çdo kopjeje</translation>
 <translation id="2933624813161016821">Letër alumini me stampim</translation>
 <translation id="2938225289965773019">Hap lidhjet e <ph name="PROTOCOL" /></translation>
-<translation id="2941112035454246133">E ulët</translation>
 <translation id="2941878205777356567">Zarf 9 x 12 inç</translation>
 <translation id="2941952326391522266">Ky server nuk mund të dëshmonte se është <ph name="DOMAIN" />; certifikata e tij e sigurisë është nga <ph name="DOMAIN2" />. Kjo mund të shkaktohet nga një konfigurim i pasaktë ose nga ndërhyrja e një sulmuesi në lidhjen tënde.</translation>
 <translation id="2942492342931589800">Joformal</translation>
@@ -1211,7 +1207,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Fut kodin e verifikimit <ph name="NUMBER_OF_DIGITS" />-shifror</translation>
 <translation id="3272643614306383237">Më pak se 1 MB. Disa sajte mund të ngarkohen më ngadalë në vizitën tënde të radhës.</translation>
-<translation id="327346289570683313">Gama e çmimeve</translation>
 <translation id="3273738040255912340">Administratori yt mund të bëjë ndryshime në profilin dhe shfletuesin tënd në distancë, mund të analizojë informacionet rreth shfletuesit nëpërmjet raportimit dhe mund të kryejë detyra të tjera të nevojshme. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chromium. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Politika e administratorit nuk rekomandon hapjen e këtij skedari te: <ph name="DESTINATION_NAME" />}other{Politika e administratorit nuk rekomandon hapjen e këtyre skedarëve te: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organizata jote, <ph name="ENROLLMENT_DOMAIN" />, ka dërguar disa informacione te sajtet e mëposhtme të uebit, si p.sh. cilësime ose politika.</translation>
@@ -1700,6 +1695,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4177501066905053472">Temat e reklamave</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Anulo monitorimin e çmimeve</translation>
+<translation id="4190446002599583608">Kërkimi te historiku, mundësuar nga IA-ja</translation>
 <translation id="4191334393248735295">Gjatësia</translation>
 <translation id="4195459680867822611">Butoni "Shiko këshilla për Chrome". Aktivizoje për të mësuar për veçoritë e Chrome</translation>
 <translation id="4195643157523330669">Hape në një skedë të re</translation>
@@ -1715,6 +1711,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="421066178035138955">Përdor pajisjet dhe të dhënat e "Realitetit virtual"</translation>
 <translation id="4213500579045346575">Zhvillimi i muskujve</translation>
 <translation id="4214357935346142455">profili i ekranit të identifikimit</translation>
+<translation id="4219596572397833317">Shiko historikun e çmimit dhe më shumë për të të ndihmuar të kryesh blerje më të zgjuara.</translation>
 <translation id="4220128509585149162">Ndërprerjet aksidentale</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Hapi 1: Identifikohu në portal&lt;/h4&gt;
     &lt;p&gt;Rrjetet Wi-Fi në vende të tilla si kafenetë apo aeroportet kërkojnë që të identifikohesh. Për të parë faqen e identifikimit, vizito një faqe që përdor &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
@@ -2140,6 +2137,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5019952743397118625">Politika <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> është caktuar. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> nuk do të kontrollojë disponueshmërinë e modalitetit "si zhvillues" në faqen e shtesave.</translation>
 <translation id="5021557570875267742">Monitoro çmimet me Chrome</translation>
 <translation id="5023310440958281426">Kontrollo politikat e administratorit tënd</translation>
+<translation id="5024171724744627792">Paguaj më shpejt me kartën tënde të ruajtur. Detajet e kartës janë të enkriptuara në "Llogarinë tënde të Google".</translation>
 <translation id="5030338702439866405">Lëshuar nga</translation>
 <translation id="503069730517007720">Për "<ph name="SOFTWARE_NAME" />" kërkohet një certifikatë rrënjë, por ajo nuk është instaluar. Administratori i TI-së duhet të shikojë udhëzimet e konfigurimit për "<ph name="SOFTWARE_NAME" />" për të rregulluar këtë problem. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Rreth "Përkthe me Google"</translation>
@@ -3327,6 +3325,7 @@ Detaje shtesë:
 <translation id="7311244614769792472">Nuk u gjet asnjë rezultat</translation>
 <translation id="7311837626618954149">Chromium i bllokon sajtet që të mos përdorin kukit e palëve të treta për të të gjurmuar kur ti shfleton.</translation>
 <translation id="7313107491291103073">Organizata jote e ka raportuar këtë sajt pasi ai mund të shkelë një politikë.</translation>
+<translation id="7316521168101843192">Skedari po ruhet te Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Ndihma e lidhjes</translation>
 <translation id="7323804146520582233">Fshihe seksionin "<ph name="SECTION" />"</translation>
@@ -3630,6 +3629,7 @@ Detaje shtesë:
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Të hiqet sugjerimi i formularit nga Chrome?</translation>
 <translation id="781440967107097262">Të ndahet kujtesa e fragmenteve?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Letër (e thjeshtë)</translation>
 <translation id="7815407501681723534">U gjetën <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> për "<ph name="SEARCH_STRING" />"</translation>
 <translation id="7822611063308883975">Konsola lojërash portative</translation>
@@ -3794,6 +3794,7 @@ Detaje shtesë:
 <translation id="8148608574971654810">Versioni i PDF-së:</translation>
 <translation id="8149426793427495338">Kompjuteri yt kaloi në gjumë.</translation>
 <translation id="8150722005171944719">Skedari në <ph name="URL" /> nuk është i lexueshëm: mund të jetë hequr, lëvizur ose lejet e tij mund të pengojnë qasjen.</translation>
+<translation id="8151185429379586178">Mjetet e zhvilluesit</translation>
 <translation id="8153865548451212769">{0,plural, =1{Politika e administratorit nuk rekomandon shkarkimin e këtij skedari te: <ph name="DESTINATION_NAME" />}other{Politika e administratorit nuk rekomandon shkarkimin e këtyre skedarëve te: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Pajisje për hokej</translation>
 <translation id="8161095570253161196">Vazhdo të shfletosh</translation>

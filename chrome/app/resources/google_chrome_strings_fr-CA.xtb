@@ -215,6 +215,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Google Chrome requiert Windows 10 ou une version ultérieure.</translation>
 <translation id="3835168907083856002">Cette action créera un profil Chrome associé au compte <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="383928141529488001">Google Chrome a besoin d'un accès au Bluetooth pour découvrir les appareils Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Veuillez fermer toutes les fenêtres de Google Chrome et réessayer.</translation>
 <translation id="3865754807470779944">La version <ph name="PRODUCT_VERSION" /> de Chrome est installée</translation>
 <translation id="3873044882194371212">Ouvrir le lien dans une fenêtre de navi&amp;gation privée Chrome</translation>
@@ -425,6 +426,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6938166777909186039">Pour recevoir les futures mises à jour de Google Chrome, vous devrez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur fonctionne sous Windows 8.1.</translation>
 <translation id="6943584222992551122">Les données de navigation de cette personne seront supprimées de cet appareil. Pour les récupérer, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Règle de trafic entrant pour Google Chrome bêta autorisant le trafic mDNS.</translation>
+<translation id="6979589607440534284">Découvrir pourquoi Chrome bloque certains fichiers, s'ouvre dans un nouvel onglet</translation>
 <translation id="7011190694940573312">L'installation a échoué, car cette version du système d'exploitation n'est pas prise en charge.</translation>
 <translation id="7024536598735240744">Erreur de décompression : <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">L'installation s'est arrêtée.</translation>

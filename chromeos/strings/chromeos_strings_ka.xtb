@@ -179,7 +179,6 @@
 <translation id="1827738518074806965">ხელოვნების გალერეა</translation>
 <translation id="1836553715834333258">სისტემის ფერი</translation>
 <translation id="183675228220305365">რეალისტური</translation>
-<translation id="1837537071599385610">მოთხოვნების შექმნის სახელმძღვანელო</translation>
 <translation id="1838374766361614909">ძიების გასუფთავება</translation>
 <translation id="1840474674287087346">დესკტოპის ფერი</translation>
 <translation id="184095011128924488">შემოქმედებითი</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">ბოლო ფონები უზრუნველყოფილია Google-ის ხელოვნური ინტელექტის მიერ</translation>
 <translation id="2783010256799387990">გავლილია</translation>
 <translation id="2786429550992142861">სელის ქსოვილი</translation>
+<translation id="2787237339470862294">ეს ენა ამჟამად არ არის მხარდაჭერილი</translation>
 <translation id="2787435249130282949">კლავიატურის უფრო განათება</translation>
 <translation id="2805756323405976993">პროგრამები</translation>
 <translation id="28232023175184696">ინტერნეტთან დაკავშირება ვერ მოხერხდა. დააწკაპუნეთ ხელახლა საცდელად.</translation>
@@ -673,6 +673,7 @@
 <translation id="458794348635939462">ჰოსტების გარდაქმნა ვერ მოხერხდა</translation>
 <translation id="4593212453765072419">საჭიროა პროქსი-სერვერის ავტორიზაცია</translation>
 <translation id="4594021849294327751">ტრანსკრიპტის შექმნა</translation>
+<translation id="4607282946861182308">ამის სურათების შექმნა ვერ მოხერხდება. ცადეთ სხვა მოთხოვნა.</translation>
 <translation id="4609350030397390689">კლავიატურის სიკაშკაშის დაკლება</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> / <ph name="TOTAL_PAGE_NUMBER" />. გთხოვთ დააჭიროთ შეყვანის ღილაკს ამ ბეჭდვის დავალების გასაუქმებლად.</translation>
 <translation id="463791356324567266">მიმდინარეობს სკანირების გაუქმება...</translation>

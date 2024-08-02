@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Administrer konti på denne enhed</translation>
 <translation id="1129510026454351943">Info: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Inkognitotilstand sørger for, at din internetaktivitet er privat, så andre, der bruger din enhed, ikke kan se den</translation>
+<translation id="1138458427267715730">Få underretninger, når prisen falder på produktet på et hvilket som helst website på nettet</translation>
 <translation id="1142732900304639782">Tilbyd ikke at oversætte disse websites</translation>
 <translation id="1145536944570833626">Slet eksisterende data.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> åbnes i Chrome. Når du fortsætter, accepterer du <ph name="BEGIN_LINK1" />Googles servicevilkår<ph name="END_LINK1" /> og de <ph name="BEGIN_LINK2" />yderligere servicevilkår for Google Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Administrer aktivitet</translation>
 <translation id="1355088659320425659">Historik og faner</translation>
 <translation id="1360432990279830238">Log ud, og deaktiver synkronisering?</translation>
+<translation id="1363028406613469049">Spor</translation>
 <translation id="1366525380420346469">Når funktionen er aktiveret</translation>
 <translation id="1373696734384179344">Der er ikke nok hukommelse til at downloade det valgte indhold.</translation>
 <translation id="1376578503827013741">Beregner…</translation>
@@ -292,6 +294,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2435457462613246316">Vis adgangskode</translation>
 <translation id="2439153523196674349">Forhåndsvisning af <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Vil du begynde at downloade <ph name="FILE_NAME" /> igen?</translation>
+<translation id="2451607499823206582">Overvågning</translation>
 <translation id="2453860139492968684">Udfør</translation>
 <translation id="2461822463642141190">Aktuel</translation>
 <translation id="2468444275314013497">Din browser ser sikker ud</translation>
@@ -1041,7 +1044,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="6040939430773295212">Gentagende oplysninger</translation>
 <translation id="604124094241169006">Automatisk</translation>
 <translation id="6042308850641462728">Mere</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Tilladelserne er gennemgået for 1 website}one{Tilladelserne er gennemgået for {NUM_SITES} website}other{Tilladelserne er gennemgået for {NUM_SITES} websites}}</translation>
 <translation id="604996488070107836"><ph name="FILE_NAME" /> kunne ikke downloades, da der opstod en ukendt fejl.</translation>
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Administrer dine historier og din aktivitet her</translation>
@@ -1682,7 +1684,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8865415417596392024">Chrome-data på din konto</translation>
 <translation id="8898822736010347272">Sender webadresser på visse sider, du besøger, begrænsede systemoplysninger og indhold fra visse sider til Google med henblik på at opdage nye trusler og beskytte brugerne på nettet.</translation>
 <translation id="8909135823018751308">Del…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Notifikationer er ikke tilladt for 1 website}one{Notifikationer er ikke tilladt for {NUM_SITES} website}other{Notifikationer er ikke tilladt for {NUM_SITES} websites}}</translation>
 <translation id="8921980840204105660">Synkroniser for at få dine bogmærker fra dine andre enheder</translation>
 <translation id="8922289737868596582">Download sider via knappen Flere valgmuligheder for at bruge dem, når du er offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>

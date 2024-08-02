@@ -3800,6 +3800,7 @@ Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT
 Si cette règle est désactivée, la fonctionnalité d'encodage de contenu <ph name="ZSTANDARD_SHORTNAME" /> l'est également.
 
 Cette règle est provisoire et sera supprimée prochainement.</translation>
+<translation id="3935592079035695061">Millisecondes depuis minuit.</translation>
 <translation id="3941289958028934630">Désactiver les commentaires audio sur l'écran de connexion</translation>
 <translation id="3943930334592166130">Cette règle détermine si l'utilisateur est invité ou non à sélectionner un certificat client quand la règle <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> établit une correspondance avec plus d'un certificat.
       Si cette règle est activée, l'utilisateur est invité à sélectionner un certificat client chaque fois que la règle de sélection automatique établit une correspondance avec plusieurs certificats.
@@ -7567,6 +7568,7 @@ Jusqu'à Chrome 114, cette règle exigeait que la règle <ph name="SYNC_DISABLE
 <translation id="6770454900105963262">Envoyer des rapports sur les sessions Kiosque actives</translation>
 <translation id="6774132787348495175">Ne pas autoriser les utilisateurs à se servir des machines virtuelles nécessaires pour faire fonctionner les applis Linux</translation>
 <translation id="6782331708811245959">Activer les rapports sur le mode de démarrage de l'appareil</translation>
+<translation id="6783578496154221347">Utiliser WeeklyTimeIntervalChecked dans le nouveau code.</translation>
 <translation id="6785201942412171878">Contrôle le raccourci utilisé pour déclencher les touches Page précédente et Page suivante du groupe de six touches</translation>
 <translation id="6786666051053129545">Activer la procédure Voice Match pour l'Assistant Google</translation>
 <translation id="6786747875388722282">Extensions</translation>
@@ -8664,6 +8666,7 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
       Si cette règle n'est pas définie, le grand curseur est désactivé sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment. Dans ce cas, il reste activé d'un utilisateur à l'autre.
 
           Remarque : <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" /> remplace cette règle si l'ancienne est définie.</translation>
+<translation id="7630403270894231662">Utiliser WeeklyTimeChecked dans le nouveau code.</translation>
 <translation id="7632147323011514740">Intervalles pour le démarrage du processus de mise à jour de l'instantané des données ARC, pour les sessions Invité gérées</translation>
 <translation id="7632724434767231364">Nom de la bibliothèque GSSAPI</translation>
 <translation id="7635106595080609261">Si cette règle est activée ou qu'elle n'est pas configurée, Chrome est autorisé à afficher des boîtes de dialogue de sélection de fichiers, et l'utilisateur peut ouvrir ces boîtes de dialogue normalement.

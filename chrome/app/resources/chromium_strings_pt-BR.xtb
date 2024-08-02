@@ -21,6 +21,8 @@
 <translation id="126567311906253476">Ao fazer login nos Serviços do Google (como o Gmail ou o YouTube) com <ph name="USER_EMAIL" />, você pode se conectar automaticamente ao Chromium com a mesma conta</translation>
 <translation id="1290883685122687410">Erro de configuração: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Configure seu novo perfil do Chromium</translation>
+<translation id="1324107359134968521">O Chromium precisa acessar o Bluetooth para buscar 
+ dispositivos Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Também excluir dados do Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Você está conectado ao Chromium.</translation>
 <translation id="1478370723027452770">Receber ajuda com o Chrome for Testing</translation>
@@ -59,6 +61,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="1951406923938785464">O Chromium bloqueou o download porque o tipo de arquivo não é transferido com frequência e pode ser perigoso</translation>
 <translation id="1953553007165777902">Fazendo o download… <ph name="MINUTE" /> minuto(s) restante(s)</translation>
 <translation id="1966382378801805537">O Chromium não pode determinar ou definir o navegador padrão</translation>
+<translation id="1990262977744080398">Saiba por que o Chromium bloqueia alguns arquivos (abre em uma nova guia)</translation>
 <translation id="2008474315282236005">Essa ação excluirá 1 item deste dispositivo. Para recuperar seus dados mais tarde, faça login no Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Falha na instalação. Tente novamente.</translation>
 <translation id="2020032459870799438">Para verificar se suas outras senhas estão protegidas contra violações de dados e outros problemas de segurança, <ph name="BEGIN_LINK" />faça login no Chromium<ph name="END_LINK" />.</translation>

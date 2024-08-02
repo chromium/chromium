@@ -241,7 +241,7 @@
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> የዴስክ <ph name="DESK_TITLE" /> ነው</translation>
 <translation id="1167262726334064738">አዲስ የይለፍ ቃል ይሞክሩ</translation>
 <translation id="1168020859489941584">ለመከፈት የቀረው ጊዜ <ph name="TIME_REMAINING" />...</translation>
-<translation id="1168704243733734901">የቅርብ ጊዜ የ<ph name="SUBJECT" /> AI ገጽታ <ph name="INDEX" />፣ በ<ph name="STYLE" /> ቅጥ፣ በ<ph name="MOOD" /> ስሜት።</translation>
+<translation id="1168704243733734901">የቅርብ ጊዜ የ<ph name="SUBJECT" /> ሰው ሠራሽ አስተውሎት ገጽታ <ph name="INDEX" />፣ በ<ph name="STYLE" /> ቅጥ፣ በ<ph name="MOOD" /> ስሜት።</translation>
 <translation id="116896278675803795">የተመረጠውን ይዘት እንዲመሳሰል በራስ-ሰር ቋንቋን ይለውጡ</translation>
 <translation id="1169266963600477608">የጨዋታ መቆጣጠሪያዎች</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> ሚስጥራዊነት ያለው ወይም አደገኛ ውሂብ አለው። የእርስዎ አስተዳዳሪ «<ph name="CUSTOM_MESSAGE" />» ይላል</translation>
@@ -861,7 +861,7 @@
 <translation id="1606566847233779212">እርስዎ ያከሏቸው የተወሰኑ ጣቢያዎች ይወገዱ?</translation>
 <translation id="1607139524282324606">ግቤትን አጽዳ</translation>
 <translation id="1607499585984539560">ተጠቃሚው ከጎራ ጋር አጋር አልሆነም</translation>
-<translation id="1607540893439314147"><ph name="BEGIN_PARAGRAPH1" />በGoogle AI መጻፍ፣ ማቀድ፣ መማር እና ሌሎችንም ለመጀመር ከGemini ጋር ይወያዩ።<ph name="END_PARAGRAPH1" />
+<translation id="1607540893439314147"><ph name="BEGIN_PARAGRAPH1" />በGoogle ሰው ሠራሽ አስተውሎት መጻፍ፣ ማቀድ፣ መማር እና ሌሎችንም ለመጀመር ከGemini ጋር ይወያዩ።<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ከተዋቀረ በኋላ በመደርደሪያዎ ላይ ያለውን የGemini መተግበሪያ በመምረጥ በማያ ገጽዎ የታችኛው ክፍል ላይ Geminiን መጠቀም ይጀምሩ።<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1608668830839595724">ለተመረጡ ንጥሎች ተጨማሪ እርምጃዎች</translation>
 <translation id="1610272688494140697">የመተግበሪያ ቅንብሮች</translation>
@@ -1434,7 +1434,7 @@
 <translation id="1997616988432401742">የእርስዎ እውቅና ማረጋገጫዎች</translation>
 <translation id="1999115740519098545">በሚነሳበት ጊዜ</translation>
 <translation id="2002109485265116295">እውነተኛ ጊዜ</translation>
-<translation id="2002160221914907025">የሙከራ AI</translation>
+<translation id="2002160221914907025">የሙከራ ሰው ሠራሽ አስተውሎት</translation>
 <translation id="2003130567827682533">የ«<ph name="NAME" />» ውሂብን ለማግበር መጀመሪያ ከWi-Fi አውታረ መረብ ጋር ይገናኙ</translation>
 <translation id="2004413981947727241">የይለፍ ቃልዎን በማንኛውም መሣሪያ ላይ ይጠቀሙ</translation>
 <translation id="2004697686368036666">በአንዳንድ ጣቢያዎች ላይ ያሉ ባህሪያት ላይሰሩ ይችላሉ</translation>
@@ -2903,7 +2903,7 @@
 <translation id="3031544881009594539">አዲስ የይለፍ ቁልፍ ለመፍጠር ወደዚህ ጣቢያ ይግቡ። የድሮው ከGoogle የይለፍ ቃል አስተዳዳሪ ተሰርዟል።</translation>
 <translation id="3031557471081358569">ከውጪ ለማስመጣት ንጥሎችን ምረጥ፦</translation>
 <translation id="3032204772252313646">ራስ-ሰር መግለጫ ፅሁፎች</translation>
-<translation id="3032272345862007156">የቅርብ ጊዜ AI ገጽታ <ph name="INDEX" /></translation>
+<translation id="3032272345862007156">የቅርብ ጊዜ ሰው ሠራሽ አስተውሎት ገጽታ <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">አትረብሽ ነቅቷል</translation>
 <translation id="3033348223765101500">ውሂብዎን ይቆጣጠሩ</translation>
 <translation id="3036327949511794916">ይህን <ph name="DEVICE_TYPE" /> የሚመልሱበት ቀነገደብ አልፏል።</translation>
@@ -4442,7 +4442,6 @@
 <translation id="4163560723127662357">ያልታወቀ የቁልፍ ሰሌዳ</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ትክክለኛ የሆነ ድርጅት አካል አይደለም። የእርስዎን አስተዳዳሪ ያነጋግሩ። አስተዳዳሪ ከሆኑ የሚከተለውን በመጎብኘት ድርጅትዎን ማዋቀር ይችላሉ፦ g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">የጣቢያ ቅንብሮች</translation>
-<translation id="4166847326079525123">በWindows የሥርዓት ምርጫዎች ውስጥ አካባቢ ጠፍቷል</translation>
 <translation id="4167212649627589331"><ph name="APP_NAME" /> <ph name="DEVICE_NAME" />ን ለመድረስ እየሞከረ ነው። መዳረሻን ለመፍቀድ የ<ph name="DEVICE_NAME" /> የግላዊነት መቀያየሪያን ያጥፉ።</translation>
 <translation id="4167393659000039775">Google ለማንኛውም የውሂብ መጥፋት ተጠያቂ አይደለም፣ እና <ph name="DEVICE_OS" /> የእውቅና ማረጋገጫ በሌላቸው ሞዴሎች ላይ ላይሰራ ይችላል። g.co/flex/InstallGuide ላይ የበለጠ ይወቁ።</translation>
 <translation id="4167924027691268367">ለ<ph name="SHORTCUT_TITLE" /> አቋራጭ ተጨማሪ እርምጃዎች</translation>
@@ -4470,7 +4469,7 @@
 <translation id="4191892134568599822">በ<ph name="FEATURE_NAME" /> ይቀበሉ?</translation>
 <translation id="4192024474038595073">{NUM_SITES,plural, =1{ለ1 ጥቅም ላይ ያልዋለ ጣቢያ ፈቃዶች ተወግደዋል}one{ለ{NUM_SITES} ጥቅም ላይ ያልዋለ ጣቢያ ፈቃዶች ተወግደዋል}other{ለ{NUM_SITES} ጥቅም ላይ ያልዋሉ ጣቢያዎች ፈቃዶች ተወግደዋል}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />ለ<ph name="DEVICE_TYPE" /> ብቻ የተወሰነ።<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />AI አመንጪ የሙከራ ደረጃ ላይ ያለ፣ በቅድመ ግንባታ ላይ ያለ እና በአሁኑ ጊዜ ውስን ተደራሽነት ያለው ነው።<ph name="END_PARAGRAPH2" /></translation>
+    <ph name="BEGIN_PARAGRAPH2" />ሰው ሠራሽ አስተውሎት አመንጪ የሙከራ ደረጃ ላይ ያለ፣ በቅድመ ግንባታ ላይ ያለ እና በአሁኑ ጊዜ ውስን ተደራሽነት ያለው ነው።<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">የታመነ CA</translation>
 <translation id="4193575319002689239">ካርዶችን አሳይ</translation>
 <translation id="4193836101014293726">ይህን መገለጫ መሰረዝ አልተቻለም</translation>
@@ -4947,7 +4946,7 @@
 <translation id="4549791035683739768">የእርስዎ የደህንነት ቁልፍ ምንም የተቀመጡ የጣት አሻራዎች የሉትም</translation>
 <translation id="4550737096585299960">እባክዎ በጥቂት ደቂቃዎች ውስጥ እንደገና ይሞክሩ።</translation>
 <translation id="4550926046134589611">አንዳንድ የሚደገፉ አገናኞች አሁንም በ<ph name="APP_NAME" /> ውስጥ ይከፈታሉ።</translation>
-<translation id="4551379727767354516">የእርስዎ የቅርብ ጊዜ AI ገጽታዎች</translation>
+<translation id="4551379727767354516">የእርስዎ የቅርብ ጊዜ ሰው ሠራሽ አስተውሎት ገጽታዎች</translation>
 <translation id="4551763574344810652">ለመቀልበስ <ph name="MODIFIER_KEY_DESCRIPTION" />ን ይጫኑ</translation>
 <translation id="4553526521109675518">የመሣሪያውን ቋንቋ ለመቀየር የእርስዎን Chromebook እንደገና ማስጀመር ይኖርብዎታል። <ph name="BEGIN_LINK_LEARN_MORE" />የበለጠ ለመረዳት<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554591392113183336">ውጫዊ ቅጥያው ከነባሩ ጋር ተመሳሳይ ወይም ያነሰ ስሪት ነው።</translation>
@@ -5960,7 +5959,7 @@
 <translation id="5297005732522718715">የእንደ ሞደም መሰካት ውቅረትን አድስ</translation>
 <translation id="5297082477358294722">የይለፍ ቃል ተቀምጧል። የተቀመጡ የይለፍ ቃላትን በእርስዎ <ph name="SAVED_PASSWORDS_STORE" /> ይመልከቱ እና ያስተዳድሩ።</translation>
 <translation id="5297946558563358707">ሌላ ሰው የእርስዎን ማያ ገጽን ሲመለከት የግላዊነት ዓይን አዶ በማያ ገጽዎ ታችኛው ክፍል በስተቀኝ በኩል ያሳዩ</translation>
-<translation id="5297984209202974345">የቅርብ ጊዜ የ<ph name="SUBJECT" /> AI ገጽታ <ph name="INDEX" />፣ በ<ph name="STYLE" /> ቅጥ</translation>
+<translation id="5297984209202974345">የቅርብ ጊዜ የ<ph name="SUBJECT" /> ሰው ሠራሽ አስተውሎት ገጽታ <ph name="INDEX" />፣ በ<ph name="STYLE" /> ቅጥ</translation>
 <translation id="5298219193514155779">ገጽታ የተፈጠረው በ</translation>
 <translation id="5298315677001348398">መቀጠል እና ይህ ሶፍትዌር በመሳሪያዎ ላይ ለውጦችን እንዲያደርግ መፍቀድ ይፈልጋሉ?</translation>
 <translation id="5299109548848736476">አትከታተል</translation>
@@ -6404,7 +6403,7 @@
 <translation id="5620568081365989559">DevTools የ<ph name="FOLDER_PATH" /> ሙሉ መዳረሻን ይጠይቃል። ማንኛውም ሚስጥራዊነት ያለው መረጃ አጋልጠው እንዳልሰጡ ያረጋግጡ።</translation>
 <translation id="5620612546311710611">የአጠቃቀም ስታትስቲክስ</translation>
 <translation id="5621272825308610394">ምንም የማሳያ ስም የለም</translation>
-<translation id="5621350029086078628">ይህ የሙከራ AI ባህሪ ነው።</translation>
+<translation id="5621350029086078628">ይህ የሙከራ ሰው ሠራሽ አስተውሎት ባህሪ ነው።</translation>
 <translation id="562250930904332809">&amp;Disable የቀጥታ መግለጫ ጽሁፍ</translation>
 <translation id="5623282979409330487">ይህ ጥጣቢያ የእንቅስቃሴ ዳሳሾችዎን እየደረሰ ነውው።</translation>
 <translation id="5623842676595125836">ምዝግብ ማስታወሻ</translation>
@@ -6484,7 +6483,7 @@
 <translation id="5679785611070310751">በ<ph name="MONTH_AND_YEAR" /> ውስጥ ለዚህ Chromebook የደህንነት ዝማኔዎችን ማግኘት ያቆማሉ። ወደ የቅርብ ጊዜ ደህንነት እና ሶፍትዌር የማላቅ ጊዜ ነው። የቅናሽ ደንቦች ተፈጻሚ ናቸው።</translation>
 <translation id="5680050361008726776">«<ph name="ESIM_PROFILE_NAME" />» ይወገድ?</translation>
 <translation id="5681586175480958839">ፋይሉ አስቀድሞውኑ እየተከፈተ ነው</translation>
-<translation id="5682010570533120226">Chrome ውስጥ ውሂብ ሰርዘዋል። Chromeን ለማሻሻል ስለ እርስዎ ተሞክሮ ለማስማት እንወዳለን።</translation>
+<translation id="5682010570533120226">Chrome ውስጥ ውሂብ ሰርዘዋል። Chromeን ለማሻሻል ስለ እርስዎ ተሞክሮ ለመስማት እንወዳለን።</translation>
 <translation id="5684181005476681636">የWi-Fi ዝርዝሮች</translation>
 <translation id="5684661240348539843">የእሴት ለይቶ ማወቂያ</translation>
 <translation id="5684950556880280580">የይለፍ ቃልዎ ተዘምኗል</translation>
@@ -6753,7 +6752,6 @@
 <translation id="5885314688092915589">የእርስዎ ድርጅት ይህን መገለጫ ያስተዳድራል</translation>
 <translation id="5885470467814103868">መቃኘት ጀምር</translation>
 <translation id="5885631909150054232">ማስመሰያን ቅዳ</translation>
-<translation id="5886000783338788034">በChromeOS ቅንብሮች ውስጥ አካባቢ ጠፍቷል</translation>
 <translation id="5886009770935151472">ጣት 1</translation>
 <translation id="5886112770923972514">በአቅራቢያ ያሉ የፈጣን ጥምረት መሣሪያዎችን ያገናኙ እና በፍጥነት ያዋቅሩ</translation>
 <translation id="5886384907280980632">አሁን አጥፋ</translation>
@@ -7886,7 +7884,7 @@
 <translation id="6738430949033571771">የመለያ ትክክለኛነትን በማረጋገጥ ላይ</translation>
 <translation id="6739266861259291931">ወደ የመሣሪያ ቋንቋ ዳግም አስጀምር</translation>
 <translation id="6739923123728562974">የዴስክቶፕ አቋራጭን አሳይ</translation>
-<translation id="6739943577740687354">ይህ ባህሪ AI ይጠቀማል እና ሁልጊዜ ትክክል አይሆንም</translation>
+<translation id="6739943577740687354">ይህ ባህሪ ሰው ሠራሽ አስተውሎት ይጠቀማል እና ሁልጊዜ ትክክል አይሆንም</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> ለአፍታ ቆሟል</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />የእርስዎ አስተዳዳሪ<ph name="END_LINK" /> የጥንቃቄ አሰሳን አጥፍቷል</translation>
 <translation id="6742629250739345159">በChrome አሳሽ ውስጥ ለሚዲያ የመግለጫ ጽሑፎችን በራስ-ሰር ይፈጥራል። ኦዲዮ እና መግለጫ ጽሑፎች በአካባቢ ውስጥ የሚስተናገዱ ሲሆኑ መሣሪያውን በጭራሽ አይተዉት።</translation>
@@ -7978,7 +7976,7 @@
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="6803766346203101854">ይህ ጣቢያ በመሣሪያዎ ላይ ውሂብን እንዲያስቀምጥ ተፈቅዶለታል።</translation>
 <translation id="680488281839478944">VM «<ph name="DEFAULT_VM_NAME" />» አለ</translation>
-<translation id="6805478749741295868">ይህ የሙከራ AI ባህሪ ነው እናም ሁልጊዜ ትክክል አይሆንም።</translation>
+<translation id="6805478749741295868">ይህ የሙከራ ሰው ሠራሽ አስተውሎት ባህሪ ነው እናም ሁልጊዜ ትክክል አይሆንም።</translation>
 <translation id="6805647936811177813">የደንበኛ እውቅና ማረጋገጫ ከ<ph name="HOST_NAME" /> ለማስመጣት እባክዎ <ph name="TOKEN_NAME" /> ውስጥ ይግቡ።</translation>
 <translation id="680572642341004180">የRLZ መከታተል በ<ph name="SHORT_PRODUCT_OS_NAME" /> ላይ አንቃ።</translation>
 <translation id="6806089545527108739">አትፍቀድ ነገር ግን በኋላ ጠይቅ</translation>
@@ -8627,7 +8625,7 @@
 <translation id="7287143125007575591">መዳረሻ ተክልክሏል።</translation>
 <translation id="7287411021188441799">ወደነበረበት ነባሪ ዳራ መልስ</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
-<translation id="7288761372977133974">የቅርብ ጊዜ የ<ph name="SUBJECT" /> AI ገጽታ <ph name="INDEX" /></translation>
+<translation id="7288761372977133974">የቅርብ ጊዜ የ<ph name="SUBJECT" /> ሰው ሠራሽ አስተውሎት ገጽታ <ph name="INDEX" /></translation>
 <translation id="7289049772085228972">የChrome ከሁሉም የበለጠ ጠንካራ ደህንነት አለዎት</translation>
 <translation id="7289303553784750393">በመስመር ላይ ከሆኑ ነገር ግን ይህ ችግር መከስቱን ከቀጠለ፣ በ<ph name="SITE_ETLD_PLUS_ONE" /> ላይ ለመቀጠል ሌሎች መንገዶችን መሞከር ይችላሉ።</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - ፈቃድ ተጠይቋል፣ ምላሽ ለመስጠት F6 ይጫኑ</translation>
@@ -8919,7 +8917,7 @@
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">የAndroid መተግበሪያ</translation>
 <translation id="7495217365392072364">ተመሳሳይ ትሮችን ያደራጁ</translation>
-<translation id="7497322070873193353">Google AI</translation>
+<translation id="7497322070873193353">Google ሰው ሠራሽ አስተውሎት</translation>
 <translation id="7497981768003291373">ምንም በቅርብ ጊዜ የተቀረጹ WebRTC የጽሑፍ ምዝግብ ማስታወሻዎች የለዎትም።</translation>
 <translation id="7501957181231305652">ወይም</translation>
 <translation id="7502220299952823578">ወደ «እነዚህን ጣቢያዎች ሁልጊዜ ገቢር አድርገህ አቆይ» ዝርዝሩ ያክሉ</translation>
@@ -8964,7 +8962,6 @@
 <translation id="7529865045818406536">ከአንድ በላይ የቀድሞ አውታረ መረብ የሚገኝ ከሆነ ተመራጭ አውታረ መረቦች ጥቅም ላይ ይውላሉ</translation>
 <translation id="7529876053219658589">{0,plural, =1{እንግዳን ዝጋ}one{እንግዳን ዝጋ}other{እንግዳን ዝጋ}}</translation>
 <translation id="7530016656428373557">የትፋት ፍጥነት በዋት</translation>
-<translation id="7531310913436731628">ካሜራ በMac System Preferences ውስጥ ጠፍቷል</translation>
 <translation id="7531771599742723865">መሣሪያ በስራ ላይ ነው</translation>
 <translation id="7531779363494549572">ወደ ቅንብሮች &gt; መተግበሪያዎች እና ማሳወቂያዎች &gt; ማሳወቂያዎች ይሂዱ።</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ምላሽ እየሰጠ አይደለም። መተግበሪያውን ለመዝጋት «በግዳጅ ዝጋ»ን ይምረጡ።</translation>
@@ -9379,7 +9376,7 @@
 <translation id="7825289983414309119">ተራራ</translation>
 <translation id="782590969421016895">የአሁኑ ገጾችን ይጠቀሙ</translation>
 <translation id="7825973332242257878">የትር ቡድኖች</translation>
-<translation id="7826039927887234077">የቅርብ ጊዜ የ<ph name="SUBJECT" /> AI ገጽታ <ph name="INDEX" />፣ በ<ph name="MOOD" /> ስሜት።</translation>
+<translation id="7826039927887234077">የቅርብ ጊዜ የ<ph name="SUBJECT" /> ሰው ሠራሽ አስተውሎት ገጽታ <ph name="INDEX" />፣ በ<ph name="MOOD" /> ስሜት።</translation>
 <translation id="7826174860695147464">የቆየ የአሳሽ ድጋፍ (ኤልቢኤስ) - የውስጥ</translation>
 <translation id="7826249772873145665">የADB ስህተት ማረሚያ ተሰናክሏል</translation>
 <translation id="7826254698725248775">የሚጋጭ የመሣሪያ ለዪ።</translation>
@@ -9729,7 +9726,7 @@ nil</translation>
 <translation id="8063535366119089408">ፋይል ይመልከቱ</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">ቡድን <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
-<translation id="8065144531309810062">የበለጠ ፈጠራ እና ውጤታማ ለመሆን Google AI ይጠቀሙ</translation>
+<translation id="8065144531309810062">የበለጠ ፈጠራ እና ውጤታማ ለመሆን Google ሰው ሠራሽ አስተውሎት ይጠቀሙ</translation>
 <translation id="8066444921260601116">የግንኙነት መገናኛ</translation>
 <translation id="8070572887926783747">የ<ph name="APP_NAME" /> የአካባቢ ፈቃድ</translation>
 <translation id="8070662218171013510">በመንካት የሚገለጽ ግብረmels</translation>
@@ -10228,7 +10225,7 @@ nil</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">ትሪ ይጎድላል</translation>
 <translation id="8424250197845498070">በላቀ ጥበቃ ታግዷል</translation>
-<translation id="842501938276307467">የሙከራ AI ባህሪያትን ይሞክሩ</translation>
+<translation id="842501938276307467">የሙከራ ሰው ሠራሽ አስተውሎት ባህሪያትን ይሞክሩ</translation>
 <translation id="8425213833346101688">ለውጥ</translation>
 <translation id="8425492902634685834">ከተግባር አሞሌ ጋር አጣብቅ</translation>
 <translation id="8425768983279799676">መሣሪያዎን ለመክፈት የእርስዎን ፒን መጠቀም ይችላሉ።</translation>
@@ -10267,7 +10264,7 @@ nil</translation>
 <translation id="8452105022015742247">ከAndroid ስልክዎ የGoogle መለያ መረጃን በማስተላለፍ ላይ</translation>
 <translation id="8455775311562941553">ከ<ph name="HOST_DEVICE_NAME" /> ጋር ተገናኝቷል</translation>
 <translation id="8456067150616457342">ነባሪ አሳሽዎን ያቀናብሩ</translation>
-<translation id="8456200178779628126">ለማንበብ እና ለመጻፍ እገዛን ለማግኘት Google AI ይጠቀሙ</translation>
+<translation id="8456200178779628126">ለማንበብ እና ለመጻፍ እገዛን ለማግኘት Google ሰው ሠራሽ አስተውሎት ይጠቀሙ</translation>
 <translation id="845702320058262034">ማገናኘት አይቻልም። የእርስዎ ስልክ ብሉቱዝ እንደበራ ያረጋግጡ።</translation>
 <translation id="8457251154056341970">በዚህ ገጽ ላይ <ph name="MODULE_NAME" />ን እንደገና አያዩም</translation>
 <translation id="8457451314607652708">ዕልባቶችን አስመጣ</translation>

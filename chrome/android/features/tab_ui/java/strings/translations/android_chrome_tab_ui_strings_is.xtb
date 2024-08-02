@@ -43,6 +43,7 @@
 <translation id="2977480621796371840">Fjarlægja úr hópi</translation>
 <translation id="3008554597174452548">Hætta að fylgjast með vöru</translation>
 <translation id="3026391124054406831">Búðu til hópa til að flokka flipana þína.</translation>
+<translation id="3051031624272448591">Þú getur alltaf nálgast þá aftur í ferlinum</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> verðlækkun á <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> litatákn flipahóps</translation>
 <translation id="3194464645767632461">einkunn</translation>
@@ -69,6 +70,7 @@
 <translation id="4371591986692297148">Óvirkt</translation>
 <translation id="4460014764210899310">Sundra hópi</translation>
 <translation id="4590027107044272416">Nú geturðu opnað nýjan flipa hér</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{Loka einum óvirkum flipa?}one{Loka <ph name="TAB_COUNT_MANY" /> óvirkum flipa?}other{Loka <ph name="TAB_COUNT_MANY" /> óvirkum flipum?}}</translation>
 <translation id="4648718555153979859">Fliparnir þínir eru flokkaðir saman hér</translation>
 <translation id="4686942373615810936">Búinn til rétt í þessu</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Loka eftir 1 dag}one{Loka eftir <ph name="DAY_COUNT_MANY" /> dag}other{Loka eftir <ph name="DAY_COUNT_MANY" /> daga}}</translation>
@@ -104,6 +106,7 @@
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6051432659151380973">Flipahóparnir þínir vistast sjálfkrafa</translation>
 <translation id="6054741997831917303">Verð á þessari vöru lækkaði nýlega úr <ph name="PREVIOUS_PRICE" /> í <ph name="NEW_PRICE" /></translation>
+<translation id="6082313992897617440">Þú munt umsvifalaust missa aðgang að flipahópnum „<ph name="GROUP_NAME" />“</translation>
 <translation id="6193448654517602979">Velja flipa</translation>
 <translation id="6228793724645064692">(einkunn verslunar)</translation>
 <translation id="6271513594716432922">Loka öllum óvirkum flipum</translation>
@@ -127,6 +130,7 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> er valinn</translation>
 <translation id="7326879924029668159">Sjá skilareglur og fleira</translation>
 <translation id="7352298686197644113">Sjáðu hvaða vara á opnum flipum er ódýrust</translation>
+<translation id="7421293530411019405">Yfirgefa flipahóp?</translation>
 <translation id="7452985128687107478">Flipahópar vistast og uppfærast sjálfkrafa í öllum tækjunum þínum</translation>
 <translation id="747459581954555080">Endurheimta allt</translation>
 <translation id="753732157349120914">Flipaval</translation>
@@ -154,6 +158,8 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Loka <ph name="TABS_COUNT_ONE" /> völdum flipa}one{Loka <ph name="TABS_COUNT_MANY" /> völdum flipa}other{Loka <ph name="TABS_COUNT_MANY" /> völdum flipum}}</translation>
 <translation id="8398929769197326728">Ný mappa – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Stillingar</translation>
+<translation id="8631711675211020168">Allir notendur munu umsvifalaust missa aðgang að flipahópnum „<ph name="GROUP_NAME" />“ og honum verður eytt úr öllum tækjum</translation>
+<translation id="8633025649649592204">Nýleg virkni</translation>
 <translation id="870736955561925754">Loka flipa og eyða hóp?</translation>
 <translation id="8714939927607906138">Lægra verð</translation>
 <translation id="8730621377337864115">Lokið</translation>
@@ -161,6 +167,7 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Búinn til fyrir <ph name="NUM_MONTHS_ONE" /> mánuði}one{Búinn til fyrir <ph name="NUM_MONTHS_MANY" /> mánuði}other{Búinn til fyrir <ph name="NUM_MONTHS_MANY" /> mánuðum}}</translation>
 <translation id="8820741577754260431">Sjá verðlækkanir á flipum</translation>
 <translation id="8887921976452567404">Þú getur opnað lokuðu flipana og hópana þína aftur með því að fara í hlutann „Nýlegir flipar“ eða „Flipahópar“.</translation>
+<translation id="8915916167043355778">Loka öllu</translation>
 <translation id="8926389886865778422">Ekki spyrja aftur</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Stækka flipahóp með <ph name="TABS_COUNT_ONE" /> flipa.}one{Stækka flipahóp með <ph name="TABS_COUNT_MANY" /> flipa.}other{Stækka flipahóp með <ph name="TABS_COUNT_MANY" /> flipum.}}</translation>
 <translation id="9090098097337832354">Upplýsingum um þessa verslun lokað</translation>

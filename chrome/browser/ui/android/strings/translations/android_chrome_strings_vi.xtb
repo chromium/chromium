@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Quản lý các tài khoản trên thiết bị này</translation>
 <translation id="1129510026454351943">Chi tiết: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Chế độ ẩn danh giúp ẩn hoạt động duyệt web của bạn với người dùng thiết bị của bạn</translation>
+<translation id="1138458427267715730">Nhận thông báo khi có chương trình giảm giá tại bất cứ trang nào trên web</translation>
 <translation id="1142732900304639782">Không đề xuất dịch những trang web này</translation>
 <translation id="1145536944570833626">Xóa dữ liệu hiện có.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> sẽ mở trong Chrome. Bằng việc tiếp tục, bạn đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và ChromeOS<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Quản lý hoạt động</translation>
 <translation id="1355088659320425659">Nhật ký và thẻ</translation>
 <translation id="1360432990279830238">Đăng xuất và tắt tính năng đồng bộ hóa?</translation>
+<translation id="1363028406613469049">Theo dõi</translation>
 <translation id="1366525380420346469">Khi bật</translation>
 <translation id="1373696734384179344">Không đủ bộ nhớ để tải xuống nội dung được chọn.</translation>
 <translation id="1376578503827013741">Đang tính toán...</translation>
@@ -292,6 +294,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2435457462613246316">Hiện mật khẩu</translation>
 <translation id="2439153523196674349">Xem trước <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Bạn có muốn bắt đầu tải xuống <ph name="FILE_NAME" /> lần nữa không?</translation>
+<translation id="2451607499823206582">Theo dõi</translation>
 <translation id="2453860139492968684">Kết thúc</translation>
 <translation id="2461822463642141190">Hiện tại</translation>
 <translation id="2468444275314013497">Trình duyệt của bạn có vẻ an toàn</translation>
@@ -387,11 +390,13 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2871733351037274014">Tải trước các trang</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> muốn bạn phê duyệt trang web này:</translation>
 <translation id="2876628302275096482">Tìm hiểu thêm về <ph name="BEGIN_LINK" />cách Chrome bảo mật dữ liệu của bạn<ph name="END_LINK" /></translation>
+<translation id="2883644600102358131">Các mật khẩu sắp ngừng hoạt động trên thiết bị này. Hãy cập nhật Dịch vụ Google Play để tiếp tục sử dụng mật khẩu.</translation>
 <translation id="2888126860611144412">Giới thiệu về Chrome</translation>
 <translation id="2891154217021530873">Ngừng tải trang</translation>
 <translation id="2893180576842394309">Google có thể sử dụng nhật ký hoạt động của bạn để điều chỉnh tính năng Tìm kiếm và các dịch vụ khác của Google cho phù hợp hơn với bạn</translation>
 <translation id="2894821468041866720">Gần như không ảnh hưởng đến tốc độ của trình duyệt hoặc thiết bị.</translation>
 <translation id="2895521649038438824">Bạn có thể nghe trang này</translation>
+<translation id="2899252057552912621">Các mật khẩu sắp ngừng hoạt động vì không có Dịch vụ Google Play. Bạn có thể tạo bản sao cho các mật khẩu đã lưu trước khi các mật khẩu này ngừng hoạt động.</translation>
 <translation id="2900528713135656174">Tạo sự kiện</translation>
 <translation id="2901411048554510387">Hiển thị nội dung đề xuất cho <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904300462646366554">Các tệp PDF đã tải xuống sẽ tự động mở bằng một trong các trình xem PDF trên thiết bị của bạn</translation>
@@ -444,6 +449,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3070005020161560471">Tự động dịch</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> sẽ mở trong Chrome. Bằng việc tiếp tục, bạn đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và ChromeOS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Chính sách quyền riêng tư<ph name="END_LINK3" /> cũng được áp dụng.</translation>
 <translation id="3080525922482950719">Bạn có thể lưu các trang để đọc vào lúc khác hoặc khi không có kết nối mạng</translation>
+<translation id="3087218211037573995">Một số mật khẩu chỉ được lưu trên thiết bị này sắp ngừng hoạt động. Bạn có thể di chuyển các mật khẩu này sang Trình quản lý mật khẩu của Google.</translation>
 <translation id="3091010850649238832">Hiện các nội dung của bảng nhớ tạm</translation>
 <translation id="3093004810561729002">Một người dùng</translation>
 <translation id="3098745985164956033">Một số hình ảnh được gửi đến Google để cải thiện nội dung mô tả cho bạn</translation>
@@ -572,6 +578,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3771694256347217732">Điều khoản dịch vụ của Google</translation>
 <translation id="3775705724665058594">Gửi đến thiết bị của bạn</translation>
 <translation id="3777796259512476958">Bạn sẽ bị đăng xuất khỏi hầu hết các trang web</translation>
+<translation id="379035798868314833">Trình quản lý mật khẩu của Google sẽ ngừng hoạt động trên thiết bị này</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 thẻ}other{# thẻ}}</translation>
 <translation id="3795154175078851242">Sao chép hình ảnh bằng đường liên kết</translation>
 <translation id="3810838688059735925">Video</translation>
@@ -1041,7 +1048,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6040939430773295212">Trùng lặp</translation>
 <translation id="604124094241169006">Tự động</translation>
 <translation id="6042308850641462728">Xem thêm</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Đã xem xét các quyền của 1 trang web}other{Đã xem xét các quyền của {NUM_SITES} trang web}}</translation>
 <translation id="604996488070107836">Không tải xuống được <ph name="FILE_NAME" /> do lỗi không xác định.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Kiểm soát tin bài và hoạt động của bạn tại đây</translation>
@@ -1682,7 +1688,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8865415417596392024">Dữ liệu Chrome trong tài khoản của bạn</translation>
 <translation id="8898822736010347272">Gửi URL của một số trang bạn truy cập, thông tin về hệ thống (có giới hạn) và một số nội dung trang cho Google, nhằm phát hiện các mối đe dọa mới và bảo vệ mọi người khi dùng web.</translation>
 <translation id="8909135823018751308">Chia sẻ...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Không cho phép 1 trang web gửi thông báo}other{Không cho phép {NUM_SITES} trang web gửi thông báo}}</translation>
 <translation id="8921980840204105660">Đồng bộ hoá để lấy dấu trang từ thiết bị khác</translation>
 <translation id="8922289737868596582">Tải trang xuống từ nút Thêm tùy chọn để sử dụng ngoại tuyến</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -1704,6 +1709,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8998729206196772491">Bạn đang đăng nhập bằng tài khoản do <ph name="MANAGED_DOMAIN" /> quản lý và cấp cho quản trị viên quyền kiểm soát dữ liệu Chrome của bạn. Dữ liệu của bạn sẽ được liên kết vĩnh viễn với tài khoản này. Việc đăng xuất khỏi Chrome sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu sẽ vẫn được lưu trữ trong Tài khoản Google.</translation>
 <translation id="8998837250940831980">Không thể thu nhỏ thẻ. Hãy thử lại sau.</translation>
 <translation id="9001604755921395912">Mở trong thẻ Chrome ẩn danh</translation>
+<translation id="9007002441981613214">Khắc phục vấn đề với các mật khẩu đã lưu</translation>
 <translation id="9012585441087414258">Bảo vệ bạn khỏi các trang web, nội dung tải xuống và tiện ích được xác định là nguy hiểm. Nếu một trang có hoạt động đáng ngờ, thì URL và một phần nội dung của trang sẽ được gửi tới dịch vụ Duyệt web An toàn của Google.</translation>
 <translation id="9019199799064251516">Tiếp tục mà không cần khoá hồ sơ ô tô?</translation>
 <translation id="9022774213089566801">Truy cập thường xuyên</translation>

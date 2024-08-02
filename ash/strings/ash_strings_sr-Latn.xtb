@@ -977,6 +977,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="453661520163887813"><ph name="TIME" /> do kraja punjenja</translation>
 <translation id="4538824937723742295">Snimi ceo ekran</translation>
 <translation id="4539127209940689201">Štampaj aktuelnu stranicu</translation>
+<translation id="4541505619120536051">Uvek otvoreno</translation>
 <translation id="4541706525461326392">Profil se uklanja. To može da potraje nekoliko minuta.</translation>
 <translation id="4544483149666270818">Izaberite prozor za snimanje</translation>
 <translation id="4545950850562423083">Sačuvaj aktuelnu stranicu kao obeleživač</translation>
@@ -1085,6 +1086,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4890408602550914571">Uverite se da je telefon u blizini i da je Bluetooth uključen.</translation>
 <translation id="4892981359753171125">Kontrola licem</translation>
 <translation id="4895488851634969361">Baterija je puna.</translation>
+<translation id="4902797682482387055">Predloženi zadatak na koji treba da se fokusirate</translation>
 <translation id="490375751687810070">Vertikalno</translation>
 <translation id="490788395437447240">Nivo baterije je <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="491504982845934899">Aktivirajte mrežu <ph name="NETWORK_NAME" /> posle podešavanja uređaja</translation>
@@ -1362,6 +1364,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="5819918159912280082">Chromebook se neočekivano restartovao. Otvorite prethodne prozore i aplikacije.</translation>
 <translation id="5823239091726045201">Google zadaci na vebu</translation>
 <translation id="5825969630400862129">Podešavanja povezanih uređaja</translation>
+<translation id="5830180081891717894">Još <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Zaustavi <ph name="ROUTE_TITLE" /> na uređaju <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Idi na sledeću pesmu</translation>
 <translation id="5842553299352339114">Uključen je <ph name="DEVICE_NAME" /> hotspot, nije povezan nijedan uređaj</translation>
@@ -1489,6 +1492,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> trenutno koristi kameru i mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Gornje dugme</translation>
+<translation id="6240821072888636753">Uvek pitaj</translation>
 <translation id="6247728804802644171">Otvorite obaveštenja</translation>
 <translation id="6249795363855770621">Označavanje stavke kao da je dovršena nije uspelo. Probajte ponovo kada budete onlajn.</translation>
 <translation id="6254629735336163724">Horizontalni prikaz je zaključan</translation>
@@ -1833,6 +1837,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7557816257942363084"><ph name="APP_NAME" /> trenutno koristi mikrofon</translation>
 <translation id="7561982940498449837">Zatvori meni</translation>
 <translation id="7564874036684306347">Premeštanje prozora na drugi računar može da dovede do neočekivanog ponašanja. Naknadna obaveštenja, prozori i dijalozi će možda biti podeljeni između računara.</translation>
+<translation id="7568790562536448087">Ažuriranje</translation>
 <translation id="7569509451529460200">Brajeva azbuka i ChromeVox su omogućeni</translation>
 <translation id="7569886975397378678">Odbacite podešavanje pregleda obaveštenja i aplikacija na telefonu</translation>
 <translation id="7571361473021531288">Baterija <ph name="BATTERY_PERCENTAGE" />% | preostalo <ph name="TIME" /></translation>
@@ -1962,7 +1967,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7963992254934562106">Izvor: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Izaberite folder…</translation>
 <translation id="7973756967040444713">Zatvorite traku s alatkama</translation>
-<translation id="797485111629834774">Označite zadatak kao dovršen: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Uključite ili isključite lupu za ceo ekran</translation>
 <translation id="7977927628060636163">Traže se mobilne mreže…</translation>
 <translation id="7982789257301363584">Mreža</translation>
@@ -2068,6 +2072,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8375916635258623388">Ovaj <ph name="DEVICE_NAME" /> i telefon će se automatski povezati</translation>
 <translation id="8380784334203145311">Laku noć,</translation>
 <translation id="8382715499079447151">Zaštita od pregleda</translation>
+<translation id="8383614331548401927">Rezime dobrodošlice</translation>
 <translation id="8388750414311082622">Ne možemo da uklonimo poslednju radnu površinu.</translation>
 <translation id="8394567579869570560">Roditelj je zaključao ovaj uređaj</translation>
 <translation id="8401850874595457088">Uđite u meni za jezike</translation>

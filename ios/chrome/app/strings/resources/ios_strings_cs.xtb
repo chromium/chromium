@@ -324,6 +324,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2635918910848538771">Automaticky vyplnit kód CVC</translation>
 <translation id="2637313651144986786">Hledat karty…</translation>
 <translation id="2640733327287333451">Bez uživatelského jména ••••••</translation>
+<translation id="264215785133931186">Zkontrolováno právě teď</translation>
 <translation id="2648721026697078500">Nikdy nepřesouvat</translation>
 <translation id="2648803196158606475">Smazat přečtené</translation>
 <translation id="2664621323652615289">Ukončit</translation>
@@ -797,6 +798,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4937410517508563815">Uložení hesel do účtu</translation>
 <translation id="4938338714234463591">S určitými funkcemi na webech budete moci používat hlas.</translation>
 <translation id="4941089862236492464">Litujeme, ale při sdílení položky došlo k potížím.</translation>
+<translation id="4942382218961352935">Zkontrolováno právě teď</translation>
 <translation id="4944543191714094452">Najít na stránce…</translation>
 <translation id="4945756290001680296">Otevřít nastavení hesla</translation>
 <translation id="4958444002117714549">Rozbalit seznam</translation>
@@ -1488,7 +1490,6 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8237382152611443140">Otevřete nastavení automatického vyplňování hesel.</translation>
 <translation id="8248969482078657578">Neaktivní karty vám pomohou soustředit se</translation>
 <translation id="8261506727792406068">Smazat</translation>
-<translation id="8263336784344783289">Pojmenujte tuto skupinu</translation>
 <translation id="8263809106706527890">Mohlo dojít ke změně nastavení výchozího prohlížeče. Můžete to zkontrolovat v nastavení.</translation>
 <translation id="8264966119170358612">Při porušení zabezpečení údajů třetí strany byla vyzrazena některá vaše uložená hesla. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">V rámci resetování iPadu jste byli odhlášeni z účtu <ph name="USER_NAME" />. Pokud se chcete znovu přihlásit, klepněte níže na Pokračovat.</translation>

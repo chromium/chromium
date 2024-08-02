@@ -179,7 +179,6 @@
 <translation id="1827738518074806965">ആര്‍ട്ട് ഗ്യാലറി</translation>
 <translation id="1836553715834333258">സിസ്റ്റം നിറം</translation>
 <translation id="183675228220305365">റിയലിസ്റ്റ്</translation>
-<translation id="1837537071599385610">പ്രോംപ്റ്റ് നൽകുന്നതിനുള്ള ഗൈഡ്</translation>
 <translation id="1838374766361614909">തിരയൽ മായ്ക്കുക</translation>
 <translation id="1840474674287087346">ഡെസ്ക്ടോപ്പ് നിറം</translation>
 <translation id="184095011128924488">ക്രിയേറ്റീവ്</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന, അടുത്തിടെയുള്ള പശ്ചാത്തലങ്ങൾ</translation>
 <translation id="2783010256799387990">വിജയിച്ചു</translation>
 <translation id="2786429550992142861">ലിനൻ</translation>
+<translation id="2787237339470862294">ഈ ഭാഷ ഇപ്പോൾ പിന്തുണയ്ക്കുന്നില്ല</translation>
 <translation id="2787435249130282949">തെളിച്ചമുള്ള കീബോർഡ്</translation>
 <translation id="2805756323405976993">ആപ്പുകൾ</translation>
 <translation id="28232023175184696">ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല. വീണ്ടും ശ്രമിക്കാൻ ക്ലിക്ക് ചെയ്യുക.</translation>
@@ -673,6 +673,7 @@
 <translation id="458794348635939462">എല്ലാ ഹോസ്‌റ്റുകളും പരിഹരിക്കാനായില്ല</translation>
 <translation id="4593212453765072419">പ്രോക്‌സി പ്രാമാണീകരണം ആവശ്യമാണ്</translation>
 <translation id="4594021849294327751">ട്രാൻസ്‌ക്രിപ്റ്റ് സൃഷ്ടിക്കുക</translation>
+<translation id="4607282946861182308">ഇതിന്റെ ചിത്രങ്ങൾ സൃഷ്ടിക്കാനാകില്ല. മറ്റൊരു പ്രോംപ്റ്റ് പരീക്ഷിക്കൂ.</translation>
 <translation id="4609350030397390689">കീബോർഡ് തെളിച്ചം കുറയ്‌ക്കുക</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, ആകെയുള്ള <ph name="TOTAL_PAGE_NUMBER" /> എണ്ണത്തിൽ <ph name="PRINTED_PAGE_NUMBER" /> എണ്ണം. പ്രിന്റ് ജോലി റദ്ദാക്കാൻ എന്റർ അമർത്തുക.</translation>
 <translation id="463791356324567266">സ്‌കാൻ ചെയ്യൽ റദ്ദാക്കുന്നു...</translation>

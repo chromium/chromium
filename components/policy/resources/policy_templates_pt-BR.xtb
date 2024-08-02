@@ -3950,6 +3950,7 @@ Se ela for desativada, o
 recurso de codificação de conteúdo <ph name="ZSTANDARD_SHORTNAME" /> será desativado.
 
 Essa política é temporária e será removida.</translation>
+<translation id="3935592079035695061">Milissegundos desde a meia-noite.</translation>
 <translation id="3941289958028934630">Desativar a resposta falada na tela de login</translation>
 <translation id="3943930334592166130">Esta política controla se o usuário receberá uma solicitação para selecionar um certificado de cliente quando a <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> corresponder a mais de um certificado.
       Se esta política for definida como "Ativada", o usuário receberá uma solicitação para selecionar um certificado de cliente sempre que a política de seleção automática corresponder a vários certificados.
@@ -7899,6 +7900,7 @@ Até o Chrome 114, esta política exigia que a <ph name="SYNC_DISABLED_POLICY_NA
 <translation id="6770454900105963262">Denunciar informações sobre sessões de quiosque ativas</translation>
 <translation id="6774132787348495175">Não permitir o uso de máquinas virtuais necessárias para apps Linux</translation>
 <translation id="6782331708811245959">Ativar relatórios sobre o modo de inicialização do dispositivo</translation>
+<translation id="6783578496154221347">Use WeeklyTimeIntervalChecked no novo código.</translation>
 <translation id="6785201942412171878">Controla o atalho usado para acionar as teclas PageUp/PageDown</translation>
 <translation id="6786666051053129545">Ativar o fluxo do Voice Match do Google Assistente</translation>
 <translation id="6786747875388722282">Extensões</translation>
@@ -9021,6 +9023,7 @@ Se a política não for definida, nenhuma exceção a <ph name="FLOATING_SSO_DOM
       Se a política não for definida, o cursor grande será desativado na tela de login. Os usuários podem ativá-lo sempre que quiserem, e o estado na tela de login irá persistir para todos os usuários.
 
           Observação: se <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" /> for especificada, ela substituirá esta política.</translation>
+<translation id="7630403270894231662">Use WeeklyTimeChecked no novo código.</translation>
 <translation id="7632147323011514740">Intervalos em que o processo de atualização do resumo de dados ARC pode ser iniciado em sessões de visitante gerenciadas</translation>
 <translation id="7632724434767231364">Nome da biblioteca GSSAPI</translation>
 <translation id="7635106595080609261">Se a política for definida como "Ativada" ou não for definida, o Chrome poderá exibir caixas de diálogo para seleção de arquivos e os usuários poderão abri-las.

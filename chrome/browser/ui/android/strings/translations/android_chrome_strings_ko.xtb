@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">이 기기에서 계정 관리</translation>
 <translation id="1129510026454351943">세부정보: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">시크릿 모드를 사용하면 내 기기를 사용하는 다른 사용자에게 내 탐색 기록을 비공개로 유지할 수 있습니다</translation>
+<translation id="1138458427267715730">웹에 가격이 인하된 사이트가 있으면 알림이 전송됩니다.</translation>
 <translation id="1142732900304639782">이 사이트 번역 옵션 제공 안 함</translation>
 <translation id="1145536944570833626">기존 데이터 삭제</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">활동 관리</translation>
 <translation id="1355088659320425659">방문 기록 및 탭</translation>
 <translation id="1360432990279830238">로그아웃하고 동기화를 사용 중지하시겠습니까?</translation>
+<translation id="1363028406613469049">추적</translation>
 <translation id="1366525380420346469">켜졌을 때</translation>
 <translation id="1373696734384179344">선택한 콘텐츠를 다운로드할 공간이 부족합니다.</translation>
 <translation id="1376578503827013741">계산 중...</translation>
@@ -292,6 +294,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2435457462613246316">비밀번호 표시</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> 미리보기</translation>
 <translation id="2450083983707403292"><ph name="FILE_NAME" />의 다운로드를 다시 시작하시겠습니까?</translation>
+<translation id="2451607499823206582">추적</translation>
 <translation id="2453860139492968684">완료</translation>
 <translation id="2461822463642141190">현재</translation>
 <translation id="2468444275314013497">브라우저 문제 없음</translation>
@@ -1041,7 +1044,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6040939430773295212">내용이 반복됨</translation>
 <translation id="604124094241169006">자동</translation>
 <translation id="6042308850641462728">자세히</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{사이트 1개의 권한이 검토됨}other{사이트 {NUM_SITES}개의 권한이 검토됨}}</translation>
 <translation id="604996488070107836">알 수 없는 오류로 인해 <ph name="FILE_NAME" /> 다운로드에 실패했습니다.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">여기에서 스토리 및 활동을 관리하세요.</translation>
@@ -1682,7 +1684,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8865415417596392024">계정의 Chrome 데이터</translation>
 <translation id="8898822736010347272">모든 웹 사용자에게 영향을 주는 새로운 위협을 발견하고 사용자를 보호하는 데 도움을 주기 위해 방문한 일부 페이지의 URL, 제한된 시스템 정보, 일부 페이지 콘텐츠를 Google로 전송합니다.</translation>
 <translation id="8909135823018751308">공유…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{사이트 1개에 알림이 허용되지 않음}other{사이트 {NUM_SITES}개에 알림이 허용되지 않음}}</translation>
 <translation id="8921980840204105660">동기화하여 다른 기기에서 북마크를 가져오세요.</translation>
 <translation id="8922289737868596582">옵션 더보기 버튼을 눌러 페이지를 다운로드하여 오프라인에서 사용하세요.</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>

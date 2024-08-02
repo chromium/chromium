@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL tronquée</translation>
 <translation id="1448064542941920355">Réduire le zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
+<translation id="1500473259453106018">Masquer la fiche "Baisses de prix dans les onglets"</translation>
 <translation id="1510341833810331442">Les sites ne sont pas autorisés à enregistrer des données sur votre appareil</translation>
 <translation id="1547123415014299762">Les cookies tiers sont autorisés</translation>
 <translation id="1568470248891039841">Les sites que vous consultez peuvent intégrer des contenus provenant d'autres sites (par exemple, des images, des annonces et du texte). Ces autres sites peuvent demander l'autorisation d'utiliser les informations qu'ils ont enregistrées vous concernant lorsque vous les parcourez. <ph name="BEGIN_LINK" />En savoir plus sur le contenu intégré<ph name="END_LINK" /></translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">Micro</translation>
 <translation id="3232293466644486101">Supprimer les données de navigation…</translation>
 <translation id="3242646949159196181">Lorsque cette option est activée, le son des sites est activé. Lorsqu'elle est désactivée, le son des sites est désactivé.</translation>
+<translation id="3273479183583863618">Baisses de prix dans les onglets</translation>
 <translation id="3277252321222022663">Autoriser les sites à accéder à vos capteurs (recommandé)</translation>
 <translation id="3285500645985761267">Autoriser les sites associés à voir votre activité dans le groupe</translation>
 <translation id="3295019059349372795">Chapitre 11 : La merveilleuse cité d'émeraude</translation>
@@ -359,6 +361,7 @@
 <translation id="6818926723028410516">Sélectionner des éléments</translation>
 <translation id="6840760312327750441">Pour regrouper des onglets, appuyez de manière prolongée sur un onglet, puis faites-le glisser vers un autre.</translation>
 <translation id="6864395892908308021">Lecture NFC impossible sur cet appareil</translation>
+<translation id="6870169401250095575">Masquer la fiche "Contrôle de sécurité"</translation>
 <translation id="6912998170423641340">Interdire aux sites d'accéder en lecture au texte et aux images du presse-papiers</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6950072572526089586">Un site que vous consultez peut enregistrer des informations sur ce que vous êtes en train de faire afin de fonctionner comme prévu, par exemple pour vous permettre de rester connecté ou pour enregistrer des articles dans votre panier. Les sites enregistrent souvent ces informations temporairement sur votre appareil.</translation>
@@ -426,6 +429,7 @@
 <translation id="7986741934819883144">Sélectionner un contact</translation>
 <translation id="7990211076305263060">Lorsque cette option est activée, les sites peuvent demander à utiliser votre micro. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser votre micro.</translation>
 <translation id="8007176423574883786">Désactivée pour cet appareil</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Masquer la fiche "Continuer avec cet onglet"}one{Masquer la fiche "Continuer avec cet onglet"}other{Masquer la fiche "Continuer avec ces onglets"}}</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
 <translation id="8042586301629853791">Trier par :</translation>
 <translation id="8067883171444229417">Lire la vidéo</translation>

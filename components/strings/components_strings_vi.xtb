@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Nút Quản lý mật khẩu, hãy nhấn nút này để xem và quản lý các mật khẩu của bạn trong phần cài đặt của Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Chọn quyền cho <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">Khoảng giá cho tất cả các lựa chọn</translation>
 <translation id="1113869188872983271">&amp;Hoàn tác sắp xếp lại</translation>
 <translation id="1118429183611783760">Máy hút bụi và vệ sinh sàn nhà</translation>
 <translation id="1122714970786750095">Điện và điện tử</translation>
@@ -122,7 +121,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1209206284964581585">Ẩn ngay bây giờ</translation>
 <translation id="121201262018556460">Bạn đã cố truy cập vào <ph name="DOMAIN" /> nhưng máy chủ xuất trình chứng chỉ chứa khóa yếu. Kẻ tấn công có thể đã phá khóa cá nhân và máy chủ đó có thể không phải là máy chủ bạn mong đợi (bạn có thể đang giao tiếp với một kẻ tấn công).</translation>
 <translation id="1212527389003717329">Quá trình tải xuống đã bắt đầu. Để xem tệp đã tải xuống, hãy nhấn và giữ |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">Khoảng giá</translation>
 <translation id="1219129156119358924">Bảo mật hệ thống</translation>
 <translation id="1222060260947439312">Khay bên phải</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -353,7 +351,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1617276713587758852">Xe lai đa dụng</translation>
 <translation id="1619007254056372606">Quản lý dữ liệu trang web trên thiết bị</translation>
 <translation id="1620510694547887537">Camera</translation>
-<translation id="162285686621567578">Cha mẹ bạn đã chặn trang web này.</translation>
 <translation id="1622966923835127638">Tài chính doanh nghiệp</translation>
 <translation id="1623104350909869708">Ngăn trang này tạo hộp thoại bổ sung</translation>
 <translation id="1633137413609266904">{0,plural, =1{Chính sách của quản trị viên không cho phép mở tệp này}other{Chính sách của quản trị viên không cho phép mở # tệp}}</translation>
@@ -738,7 +735,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2328955282645810595">Dụng cụ điện và xây dựng</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, hết hạn vào <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Tiếp tục viết</translation>
-<translation id="2337776048981813397">Khoảng giá cho tất cả các lựa chọn</translation>
 <translation id="2337852623177822836">Cài đặt do quản trị viên kiểm soát</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> muốn ghép nối</translation>
 <translation id="2346319942568447007">Hình ảnh bạn đã sao chép</translation>
@@ -1030,7 +1026,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2930577230479659665">Cắt bỏ sau mỗi bản sao chép</translation>
 <translation id="2933624813161016821">Nhũ nổi</translation>
 <translation id="2938225289965773019">Mở đường liên kết <ph name="PROTOCOL" /></translation>
-<translation id="2941112035454246133">Thấp</translation>
 <translation id="2941878205777356567">Phong bì 9 x 12 inch</translation>
 <translation id="2941952326391522266">Máy chủ này không chứng minh được rằng đó là <ph name="DOMAIN" />; chứng chỉ bảo mật của máy chủ này là từ <ph name="DOMAIN2" />. Điều này có thể do định cấu hình sai hoặc có kẻ tấn công chặn kết nối của bạn.</translation>
 <translation id="2942492342931589800">Thông thường</translation>
@@ -1212,7 +1207,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Nhập mã xác minh gồm <ph name="NUMBER_OF_DIGITS" /> chữ số</translation>
 <translation id="3272643614306383237">Dưới 1 MB. Một số trang web có thể tải chậm hơn vào lần tới bạn truy cập.</translation>
-<translation id="327346289570683313">Khoảng giá</translation>
 <translation id="3273738040255912340">Quản trị viên có thể thay đổi hồ sơ và trình duyệt của bạn từ xa, phân tích thông tin về trình duyệt thông qua báo cáo và thực hiện những nhiệm vụ cần thiết khác. Hoạt động trên thiết bị này cũng có thể được quản lý bên ngoài Chromium. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Theo chính sách của quản trị viên, bạn không nên mở tệp này trong <ph name="DESTINATION_NAME" />}other{Theo chính sách của quản trị viên, bạn không nên mở các tệp này trong <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Tổ chức <ph name="ENROLLMENT_DOMAIN" /> của bạn đã gửi một số thông tin (chẳng hạn như chế độ cài đặt hoặc chính sách) đến các trang web sau đây.</translation>
@@ -1701,6 +1695,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4177501066905053472">Chủ đề quảng cáo</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Bỏ theo dõi giá</translation>
+<translation id="4190446002599583608">Tính năng tìm thông tin trong nhật ký, do AI hỗ trợ</translation>
 <translation id="4191334393248735295">Độ dài</translation>
 <translation id="4195459680867822611">Nút Xem các mẹo khi dùng Chrome, hãy nhấn nút này để tìm hiểu về các tính năng của Chrome</translation>
 <translation id="4195643157523330669">Mở trong thẻ mới</translation>
@@ -3635,6 +3630,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Xóa đề xuất biểu mẫu khỏi Chrome?</translation>
 <translation id="781440967107097262">Chia sẻ bảng nhớ tạm?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Giấy (Giấy thường)</translation>
 <translation id="7815407501681723534">Đã tìm thấy <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> cho '<ph name="SEARCH_STRING" />'</translation>
 <translation id="7822611063308883975">Máy chơi trò chơi cầm tay</translation>
@@ -3799,6 +3795,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8148608574971654810">Phiên bản PDF:</translation>
 <translation id="8149426793427495338">Máy tính của bạn đã chuyển sang chế độ ngủ.</translation>
 <translation id="8150722005171944719">Không thể đọc được tệp tại <ph name="URL" />.  Tệp này có thể đã bị xóa, di chuyển hoặc quyền tệp có thể đang chặn truy cập.</translation>
+<translation id="8151185429379586178">Công cụ dành cho nhà phát triển</translation>
 <translation id="8153865548451212769">{0,plural, =1{Theo chính sách của quản trị viên, bạn không nên tải tệp này xuống <ph name="DESTINATION_NAME" />}other{Theo chính sách của quản trị viên, bạn không nên tải các tệp này xuống <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Thiết bị dành cho môn khúc côn cầu</translation>
 <translation id="8161095570253161196">Tiếp tục duyệt xem</translation>
@@ -3971,6 +3968,7 @@ Thông tin chi tiết bổ sung:
 <translation id="84561192812921051">Quản trị viên có thể thay đổi hồ sơ và trình duyệt của bạn từ xa, phân tích thông tin về trình duyệt thông qua báo cáo và thực hiện những nhiệm vụ cần thiết khác. Hoạt động trên thiết bị này cũng có thể được quản lý bên ngoài Chrome.  <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Vô thời hạn</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8458605637341729751">Bằng việc tiếp tục, bạn đồng ý cho hệ thống thu thập và chia sẻ vị trí chính xác của thiết bị với chủ tài khoản nhằm ngăn chặn hành vi gian lận. Để tắt Pix trong Chrome, hãy chuyển đến phần <ph name="BEGIN_LINK1" />cài đặt thông tin thanh toán<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Bật</translation>
 <translation id="8461694314515752532">Mã hóa dữ liệu đã đồng bộ hóa bằng cụm mật khẩu đồng bộ hóa của riêng bạn</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 thẻ tín dụng}other{# thẻ tín dụng}}</translation>

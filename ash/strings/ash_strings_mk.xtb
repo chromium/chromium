@@ -136,6 +136,7 @@
 <translation id="1420408895951708260">Вклучи/исклучи „Ноќно светло“: <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1435537621343861112">Не може да започне „Диктирање“. Микрофонот е исклучен.</translation>
+<translation id="1445031758921122223">Датотеките за контролирање лице се преземени</translation>
 <translation id="1447907279406111651">Сега · Завршува во <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Точки на пристап на вашиот уред</translation>
 <translation id="1455242230282523554">Прикажи ги поставките за јазикот</translation>
@@ -412,6 +413,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516416533263263796">„Режимот за концентрација“ е вклучен, преостанато време: 10 минути</translation>
 <translation id="2516637483312286228">Изменете ги контролите за игри</translation>
+<translation id="252054055865191167">Алатка „Маркер“</translation>
 <translation id="2526581474998477112">Отклучи ги прозорците</translation>
 <translation id="2528111225373402384">Поставки за точка на пристап</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -975,6 +977,7 @@
 <translation id="453661520163887813"><ph name="TIME" /> додека да се наполни</translation>
 <translation id="4538824937723742295">Слика од целиот екран</translation>
 <translation id="4539127209940689201">Ја отпечатува тековната страница</translation>
+<translation id="4541505619120536051">Секогаш отворај</translation>
 <translation id="4541706525461326392">Се отстранува профилот. Може да потрае неколку минути.</translation>
 <translation id="4544483149666270818">Изберете прозорец за снимање</translation>
 <translation id="4545950850562423083">Зачувајте ја тековната картичка како обележувач</translation>
@@ -1223,6 +1226,7 @@
 <translation id="5361524080961918551">Говорните датотеки на <ph name="LANGUAGE" /> јазик се делумно преземени</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Одете на оваа картичка</translation>
 <translation id="5364693579536176785">простор за складирање</translation>
+<translation id="5369573834963677938">Контролирањето лице ќе биде достапно за другите корисници на уредот</translation>
 <translation id="5369717264580061086">Прегледајте датотека во апликацијата „Датотеки“</translation>
 <translation id="5377367976106153749">Да се вклучи пристапот до камерата?</translation>
 <translation id="5379115545237091094">Премногу обиди</translation>
@@ -1412,6 +1416,7 @@
 <translation id="6020147141355393792">Поставете прегледување на известувањата и апликациите на телефонот</translation>
 <translation id="6022924867608035986">Избриши го текстот во полето за пребарување</translation>
 <translation id="602472752137106327">Прикажувај прозорци од сите работни површини, избрано е тркалезно копче</translation>
+<translation id="6024768346262692989">Не можеше да се преземат датотеки за контролирање лице</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
 <translation id="6027518778343897451">Нема настан на <ph name="CURRENT_MONTH_DAY" />. Притиснете Enter за да го отворите „Календарот на Google“ во прелистувачот.</translation>
 <translation id="6030495522958826102">Менито е преместено во долниот лев агол на екранот.</translation>
@@ -1485,6 +1490,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ги користи камерата и микрофонот во моментов</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Горно копче</translation>
+<translation id="6240821072888636753">Прашувај секогаш</translation>
 <translation id="6247728804802644171">Отворете ги известувањата</translation>
 <translation id="6249795363855770621">Не можеше да се означи како завршено. Обидете се повторно кога ќе бидете онлајн.</translation>
 <translation id="6254629735336163724">Заклучен хоризонтално</translation>
@@ -1625,7 +1631,7 @@
 <translation id="6753390234084146956">картички</translation>
 <translation id="6757237461819837179">Нема пуштени аудиовизуелни содржини</translation>
 <translation id="6760438044935091345">Контролна табла за игри</translation>
-<translation id="6768043681523654438">капацитет</translation>
+<translation id="6768043681523654438">простор</translation>
 <translation id="6777216307882431711">Се напојуваат поврзани USB-C уреди</translation>
 <translation id="6781002679438061620">Работна површина 9</translation>
 <translation id="6782182743534150858">Работна површина 13</translation>
@@ -1828,6 +1834,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> го користи микрофонот во моментов</translation>
 <translation id="7561982940498449837">Затвори го менито</translation>
 <translation id="7564874036684306347">Преместувањето на прозорците на друга работна површина може да доведе до неочекувано однесување. Следните известувања, прозорци и дијалози може да се поделат помеѓу работните површини.</translation>
+<translation id="7568790562536448087">Се ажурира</translation>
 <translation id="7569509451529460200">Брајовото писмо и ChromeVox се овозможени</translation>
 <translation id="7569886975397378678">Отфрлете го поставувањето прегледување на известувањата и апликациите на телефонот</translation>
 <translation id="7571361473021531288">Батерија: <ph name="BATTERY_PERCENTAGE" /> % | преостанато време: <ph name="TIME" /></translation>
@@ -1957,7 +1964,6 @@
 <translation id="7963992254934562106">Од <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Изберете папка…</translation>
 <translation id="7973756967040444713">Затворете го алатникот</translation>
-<translation id="797485111629834774">Означете ја задачата како завршена: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Вклучете/исклучете ја лупата на цел екран</translation>
 <translation id="7977927628060636163">Се пребаруваат мобилни мрежи…</translation>
 <translation id="7982789257301363584">Мрежа</translation>

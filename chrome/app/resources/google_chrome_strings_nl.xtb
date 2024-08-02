@@ -215,6 +215,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Voor Google Chrome is Windows 10 of hoger vereist.</translation>
 <translation id="3835168907083856002">Hiermee maak je een nieuw Chrome-profiel voor <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="383928141529488001">Google Chrome heeft bluetooth-toegang nodig om bluetooth-apparaten te verkennen. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Sluit alle Google Chrome-vensters en probeer het opnieuw.</translation>
 <translation id="3865754807470779944">Chrome-versie <ph name="PRODUCT_VERSION" /> is geïnstalleerd</translation>
 <translation id="3873044882194371212">Link openen in een Chrome-inco&amp;gnitovenster</translation>
@@ -423,6 +424,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6938166777909186039">Als je toekomstige Google Chrome-updates wilt krijgen, heb je Windows 10 of hoger nodig. Deze computer gebruikt Windows 8.1.</translation>
 <translation id="6943584222992551122">De browsegegevens van deze persoon worden verwijderd van dit apparaat. Als je de gegevens wilt herstellen, log je in bij Chrome als <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Inkomende regel zodat Google Chrome Bèta mDNS-verkeer toestaat.</translation>
+<translation id="6979589607440534284">Meer informatie over waarom Chrome bepaalde bestanden blokkeert, wordt geopend in een nieuw tabblad</translation>
 <translation id="7011190694940573312">De installatie is mislukt omdat deze versie van het besturingssysteem niet wordt ondersteund.</translation>
 <translation id="7024536598735240744">Fout bij uitpakken: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installatie gestopt.</translation>

@@ -213,6 +213,8 @@
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome-এর Windows 10 বা আরও উন্নত ভার্সন প্রয়োজন।</translation>
 <translation id="3835168907083856002"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য এটি একটি নতুন Chrome প্রোফাইল তৈরি করবে</translation>
+<translation id="383928141529488001">ব্লুটুথ ডিভাইসগুলি এক্সপ্লোর করতে 
+ Google Chrome-কে ব্লুটুথের অ্যাক্সেস দিতে হবে। <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">দয়া করে সকল Google Chrome উইন্ডো বন্ধ করুন ও আবার চেষ্টা করুন৷</translation>
 <translation id="3865754807470779944">Chrome ভার্সন <ph name="PRODUCT_VERSION" /> ইনস্টল করা আছে</translation>
 <translation id="3873044882194371212">Chrome-এ ছদ্মবেশী উইন্ডোতে লিঙ্ক খুলুন</translation>
@@ -421,6 +423,7 @@
 <translation id="6938166777909186039">ভবিষ্যতে Google Chrome আপডেট পেতে হলে, আপনার কম্পিউটারে Windows 10 বা এর পরবর্তী যেকোনও ভার্সন থাকতে হবে। এই কম্পিউটারে Windows 8.1 ভার্সন ব্যবহার করা হচ্ছে।</translation>
 <translation id="6943584222992551122">ডিভাইসটি থেকে এই ব্যক্তির ব্রাউজিং ডেটা মুছে ফেলা হবে। ডেটা ফিরিয়ে আনতে Chrome-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
 <translation id="6967962315388095737">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome বিটার জন্য ইনবাউন্ড নিয়ম।</translation>
+<translation id="6979589607440534284">Chrome কিছু ফাইল কেন ব্লক করে, নতুন ট্যাবে খোলে সেই সম্পর্কে জানুন</translation>
 <translation id="7011190694940573312">ইনস্টলেশন করা যায়নি কারণ অপারেটিং সিস্টেমের এই ভার্সন কাজ করে না।</translation>
 <translation id="7024536598735240744">আনপ্যাক করার সময় সমস্যা হয়েছে: <ph name="UNPACK_ERROR" />।</translation>
 <translation id="7025789849649390912">ইনস্টলেশন বন্ধ হয়ে গেছে।</translation>

@@ -179,7 +179,6 @@
 <translation id="1827738518074806965">Galeri seni</translation>
 <translation id="1836553715834333258">Warna sistem</translation>
 <translation id="183675228220305365">realis</translation>
-<translation id="1837537071599385610">Panduan membuat gesaan</translation>
 <translation id="1838374766361614909">Kosongkan carian</translation>
 <translation id="1840474674287087346">Warna desktop</translation>
 <translation id="184095011128924488">kreatif</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Latar terbaharu dikuasakan oleh Google AI</translation>
 <translation id="2783010256799387990">LULUS</translation>
 <translation id="2786429550992142861">linen</translation>
+<translation id="2787237339470862294">Bahasa ini tidak disokong pada masa ini</translation>
 <translation id="2787435249130282949">semakin cerah papan kekunci</translation>
 <translation id="2805756323405976993">Apl</translation>
 <translation id="28232023175184696">Tidak dapat menyambung kepada Internet. Klik untuk mencuba lagi.</translation>
@@ -673,6 +673,7 @@ Anda boleh mematikan tetapan ini pada bila-bila masa dalam Tetapan.</translation
 <translation id="458794348635939462">Gagal untuk menyelesaikan semua hos</translation>
 <translation id="4593212453765072419">Pengesahan proksi diperlukan</translation>
 <translation id="4594021849294327751">Buat transkrip</translation>
+<translation id="4607282946861182308">Tidak dapat membuat imej ini. Cuba gesaan lain.</translation>
 <translation id="4609350030397390689">Mengurangkan kecerahan papan kekunci</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> daripada <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas cetak.</translation>
 <translation id="463791356324567266">Membatalkan pengimbasan...</translation>

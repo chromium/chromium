@@ -976,6 +976,7 @@ One device connected.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> until full</translation>
 <translation id="4538824937723742295">Take full-screen screenshot</translation>
 <translation id="4539127209940689201">Print current page</translation>
+<translation id="4541505619120536051">Always open</translation>
 <translation id="4541706525461326392">Removing profile. This may take a few minutes.</translation>
 <translation id="4544483149666270818">Select a window to record</translation>
 <translation id="4545950850562423083">Save current page as bookmark</translation>
@@ -1488,6 +1489,7 @@ No devices connected.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> is currently using your camera and microphone</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Top button</translation>
+<translation id="6240821072888636753">Ask every time</translation>
 <translation id="6247728804802644171">Open notifications</translation>
 <translation id="6249795363855770621">Couldn't mark as complete. Please try again when online.</translation>
 <translation id="6254629735336163724">Locked to horizontal</translation>
@@ -1831,6 +1833,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7557816257942363084"><ph name="APP_NAME" /> is currently using your microphone</translation>
 <translation id="7561982940498449837">Close menu</translation>
 <translation id="7564874036684306347">Moving windows to another desktop may result in unexpected behaviour. Subsequent notifications, windows and dialogues may be split between desktops.</translation>
+<translation id="7568790562536448087">Updating</translation>
 <translation id="7569509451529460200">Braille and ChromeVox are enabled</translation>
 <translation id="7569886975397378678">Dismiss setting up viewing your phone's notifications and apps</translation>
 <translation id="7571361473021531288">Battery <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> left</translation>
@@ -1960,7 +1963,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7963992254934562106">From <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Select folder…</translation>
 <translation id="7973756967040444713">Close toolbar</translation>
-<translation id="797485111629834774">Mark task as completed: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Turn fullscreen magnifier on or off</translation>
 <translation id="7977927628060636163">Searching for mobile networks...</translation>
 <translation id="7982789257301363584">Network</translation>

@@ -21,6 +21,8 @@
 <translation id="126567311906253476">Amikor <ph name="USER_EMAIL" /> fiókjával bejelentkezik a Google-szolgáltatásokba (például a Gmailbe vagy a YouTube-ba), ugyanazzal a fiókkal automatikusan bejelentkezhet a Chromiumba is.</translation>
 <translation id="1290883685122687410">Beállítási hiba: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" />.</translation>
 <translation id="1315551408014407711">Új Chromium-profil beállítása</translation>
+<translation id="1324107359134968521">A Chromiumnak Bluetooth-hozzáférésre van szüksége a 
+ Bluetooth-eszközök felfedezéséhez. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Az adatok a Chromiumból is legyenek törölve (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Bejelentkezett a Chromiumba.</translation>
 <translation id="1478370723027452770">Segítség kérése a Chrome for Testing verzióval kapcsolatban</translation>
@@ -59,6 +61,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="1951406923938785464">A Chromium letiltotta ezt a letöltést, mert ezt a fájltípust nem töltik le gyakran, és veszélyes lehet</translation>
 <translation id="1953553007165777902">Letöltés… <ph name="MINUTE" /> perc van hátra</translation>
 <translation id="1966382378801805537">A Chromium problémába ütközött az alapértelmezett böngésző megállapításakor vagy beállításakor</translation>
+<translation id="1990262977744080398">További információ arról, hogy miért tilt le bizonyos fájlokat a Chromium (új lapon nyílik meg)</translation>
 <translation id="2008474315282236005">Ezzel egyetlen elemet töröl erről az eszközről. Az adatok későbbi lekéréséhez jelentkezzen be a Chromiumba a következő e-mail-címmel: <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Sikertelen telepítés. Próbálja újra.</translation>
 <translation id="2020032459870799438">Ha ellenőrizni szeretné, hogy a többi jelszava biztonságban van-e az adatvédelmi incidensektől és más biztonsági problémáktól, <ph name="BEGIN_LINK" />jelentkezzen be a Chromiumba<ph name="END_LINK" />.</translation>

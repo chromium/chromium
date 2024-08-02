@@ -885,6 +885,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5396950905475481456">Undang Ahli Keluarga</translation>
 <translation id="5407969256130905701">Buang Perubahan</translation>
 <translation id="5414763847370083940">Anda akan menerima makluman jika harga turun pada mana-mana laman.</translation>
+<translation id="5415289094036440596">Kunci laluan tidak boleh dikongsi</translation>
 <translation id="5416022985862681400">7 Hari Lalu</translation>
 <translation id="5416455648658732408">Beralih kepada Kumpulan Tab</translation>
 <translation id="5423269318075950257">Jejaki Harga</translation>
@@ -1293,6 +1294,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="734758817008927353">Pilihan untuk Simpan Kad</translation>
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
 <translation id="7353432112255316844">Sahkan Orang Itu Ialah Anda</translation>
+<translation id="736564850024123010">Tukar kedudukan bar alamat anda untuk mendapatkan pengalaman yang disesuaikan.</translation>
 <translation id="7367530036083223701">Akses kata laluan anda dengan selamat daripada skrin utama dengan widget Password Manager.</translation>
 <translation id="7380220816562673297">Pada masa ini, anda hanya boleh berkongsi kata laluan dengan ahli keluarga. <ph name="BEGIN_LINK" />Buat kumpulan keluarga<ph name="END_LINK" /> dengan maksimum 6 ahli dan peroleh banyak manfaat daripada produk dan langganan anda merentas Google.</translation>
 <translation id="739101637685146669">Apakah URL yang mahu ditambahkan pada penanda halaman?</translation>
@@ -1490,7 +1492,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8237382152611443140">Buka Tetapan Kata Laluan Autolengkap</translation>
 <translation id="8248969482078657578">Tab Tidak Aktif Membantu Anda Sentiasa Fokus</translation>
 <translation id="8261506727792406068">Padam</translation>
-<translation id="8263336784344783289">Namakan Kumpulan Ini</translation>
 <translation id="8263809106706527890">Mungkin terdapat perubahan pada tetapan penyemak imbas lalai anda. Anda boleh menyemak perubahan ini dalam tetapan.</translation>
 <translation id="8264966119170358612">Sesetengah kata laluan anda yang disimpan telah terdedah dalam pelanggaran data bukan Google. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Anda telah dilog keluar daripada akaun anda, <ph name="USER_NAME" />, sebagai sebahagian daripada tetapan semula iPad anda. Untuk log masuk semula, ketik "Teruskan" di bawah.</translation>

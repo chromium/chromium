@@ -413,6 +413,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516416533263263796">فوکس آن ہے، 10 منٹ باقی ہے</translation>
 <translation id="2516637483312286228">گیم کنٹرولز میں ترمیم کریں</translation>
+<translation id="252054055865191167">مارکر ٹول</translation>
 <translation id="2526581474998477112">ونڈوز غیر مقفل کریں</translation>
 <translation id="2528111225373402384">ہاٹ اسپاٹ کی ترتیبات</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -975,6 +976,7 @@
 <translation id="453661520163887813">مکمل ہونے میں <ph name="TIME" /> باقی</translation>
 <translation id="4538824937723742295">فُل اسکرین کا اسکرین شاٹ لیں</translation>
 <translation id="4539127209940689201">موجودہ صفحہ پرنٹ کریں</translation>
+<translation id="4541505619120536051">ہمیشہ کھولیں</translation>
 <translation id="4541706525461326392">پروفائل ہٹائی جا رہی ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="4544483149666270818">ریکارڈ کرنے کیلئے ایک ونڈو منتخب کریں</translation>
 <translation id="4545950850562423083">موجودہ صفحہ کو بُک مارک کے طور پر محفوظ کریں</translation>
@@ -1487,6 +1489,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" /> فی الحال آپ کا کیمرا اور مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">اوپری بٹن</translation>
+<translation id="6240821072888636753">ہر بار پوچھیں</translation>
 <translation id="6247728804802644171">اطلاعات کھولیں</translation>
 <translation id="6249795363855770621">مکمل کے طور پر نشان زد نہیں کیا جا سکتا۔ آن لائن ہونے پر دوبارہ کوشش کریں۔</translation>
 <translation id="6254629735336163724">افقی پر مقفل ہے</translation>
@@ -1829,6 +1832,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> فی الحال آپ کا مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="7561982940498449837">مینیو بند کریں</translation>
 <translation id="7564874036684306347">ونڈوز کو کسی دوسرے ڈیسک ٹاپ پر منتقل کرنا غیر متوقع برتاؤ کا سبب بن سکتا ہے۔ بعد کی اطلاعات، ونڈوز اور ڈائیلاگز ڈیسک ٹاپ کے بیچ منقسم ہو سکتے ہیں۔</translation>
+<translation id="7568790562536448087">اپ ڈیٹنگ</translation>
 <translation id="7569509451529460200">‏بریل اور ChromeVox فعال ہیں</translation>
 <translation id="7569886975397378678">اپنے فون کی اطلاعات اور ایپس دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
 <translation id="7571361473021531288">بیٹری %<ph name="BATTERY_PERCENTAGE" /> | <ph name="TIME" /> باقی ہے</translation>
@@ -1958,7 +1962,6 @@
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> سے</translation>
 <translation id="7968693143708939792">فولڈر منتخب کریں...</translation>
 <translation id="7973756967040444713">ٹول بار بند کریں</translation>
-<translation id="797485111629834774">ٹاسک کو مکمل کے طور پر نشان زد کریں: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">مکمل اسکرین کے میگنیفائر کو آن یا آف کریں</translation>
 <translation id="7977927628060636163">موبائل نیٹ ورکس کو تلاش کیا جا رہا ہے…</translation>
 <translation id="7982789257301363584">نیٹ ورک</translation>

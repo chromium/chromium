@@ -976,6 +976,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do úplného nabitia</translation>
 <translation id="4538824937723742295">Nasnímať celú obrazovku</translation>
 <translation id="4539127209940689201">Vytlačenie aktuálnej stránky</translation>
+<translation id="4541505619120536051">Vždy otvorené</translation>
 <translation id="4541706525461326392">Odstraňuje sa profil. Môže to trvať niekoľko minút.</translation>
 <translation id="4544483149666270818">Vyberte okno, ktoré chcete nahrať</translation>
 <translation id="4545950850562423083">Uloženie aktuálnej stránky ako záložky</translation>
@@ -1488,6 +1489,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> momentálne používa kameru a mikrofón</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Vrchné tlačidlo</translation>
+<translation id="6240821072888636753">Vždy sa opýtať</translation>
 <translation id="6247728804802644171">Otvorenie upozornení</translation>
 <translation id="6249795363855770621">Nepodarilo sa označiť ako dokončenú. Skúste to znova, keď budete online.</translation>
 <translation id="6254629735336163724">Uzamknuté vodorovne</translation>
@@ -1831,6 +1833,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> momentálne používa mikrofón</translation>
 <translation id="7561982940498449837">Zavrieť ponuku</translation>
 <translation id="7564874036684306347">Presunutie okien na inú obrazovku môže spôsobiť neočakávané správanie. Nasledujúce upozornenia, okná a dialógové okná sa môžu zobraziť rozdelené na viacerých pracovných plochách.</translation>
+<translation id="7568790562536448087">Prebieha aktualizácia</translation>
 <translation id="7569509451529460200">Funkcie Braille a ChromeVox sú povolené</translation>
 <translation id="7569886975397378678">Zrušiť nastavovanie zobrazovania upozornení a aplikácií z telefónu</translation>
 <translation id="7571361473021531288">Zostávajúca batéria: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /></translation>
@@ -1960,7 +1963,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7963992254934562106">Zdroj: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Vybrať priečinok…</translation>
 <translation id="7973756967040444713">Zavrieť panel s nástrojmi</translation>
-<translation id="797485111629834774">Označiť úlohu ako dokončenú: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Zapnutie alebo vypnutie zväčšenia celej obrazovky</translation>
 <translation id="7977927628060636163">Hľadajú sa mobilné siete...</translation>
 <translation id="7982789257301363584">Sieť</translation>

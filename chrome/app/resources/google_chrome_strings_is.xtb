@@ -215,6 +215,8 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome krefst Windows 10 eða nýrri útgáfu.</translation>
 <translation id="3835168907083856002">Þetta býr til nýjan Chrome prófíl fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="383928141529488001">Google Chrome þarf aðgang að Bluetooth til að kanna 
+ Bluetooth-tæki. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Lokaðu öllum Google Chrome gluggum og reyndu aftur.</translation>
 <translation id="3865754807470779944">Chrome útgáfa <ph name="PRODUCT_VERSION" /> er uppsett</translation>
 <translation id="3873044882194371212">Opna tengil í h&amp;uliðsglugga í Chrome</translation>
@@ -425,6 +427,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6938166777909186039">Til að fá frekari uppfærslur á Google Chrome þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 8.1.</translation>
 <translation id="6943584222992551122">Vefskoðunargögnum þessa aðila verður eytt úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögn.</translation>
 <translation id="6967962315388095737">Innleiðarregla til að láta Google Chrome Beta leyfa mDNS-umferð.</translation>
+<translation id="6979589607440534284">Kynntu þér hvers vegna Chrome lokar fyrir vissar skrár (opnast í nýjum flipa)</translation>
 <translation id="7011190694940573312">Uppsetning mistókst vegna þess að þessi útgáfa af stýrikerfinu er ekki studd.</translation>
 <translation id="7024536598735240744">Villa við afpökkun: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Uppsetning var stöðvuð.</translation>

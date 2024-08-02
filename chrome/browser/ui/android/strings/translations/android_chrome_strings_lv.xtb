@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Pārvaldīt kontus šajā ierīcē</translation>
 <translation id="1129510026454351943">Informācija: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Inkognito režīmā jūsu pārlūkošana ir privāta un nav redzama citiem ierīces lietotājiem.</translation>
+<translation id="1138458427267715730">Saņemiet brīdinājumus, kad kādā tīmekļa vietnē tiek konstatēts cenas kritums.</translation>
 <translation id="1142732900304639782">Nepiedāvāt tulkot šīs vietnes</translation>
 <translation id="1145536944570833626">Dzēst esošos datus.</translation>
 <translation id="1150263420752757504">Lietotne <ph name="APP_NAME" /> tiks atvērta pārlūkā Chrome. Turpinot jūs piekrītat <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumiem<ph name="END_LINK1" />, kā arī <ph name="BEGIN_LINK2" />Google Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumiem<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Pārvaldīt darbības</translation>
 <translation id="1355088659320425659">Vēsture un cilnes</translation>
 <translation id="1360432990279830238">Izrakstīties un izslēgt sinhronizēšanu?</translation>
+<translation id="1363028406613469049">Izsekošana</translation>
 <translation id="1366525380420346469">Ja ieslēgta</translation>
 <translation id="1373696734384179344">Nepietiek vietas, lai lejupielādētu atlasīto saturu.</translation>
 <translation id="1376578503827013741">Notiek aprēķināšana...</translation>
@@ -292,6 +294,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2435457462613246316">Rādīt paroli</translation>
 <translation id="2439153523196674349">Vietnes <ph name="SITE_NAME" /> priekšskatījums</translation>
 <translation id="2450083983707403292">Vai vēlaties vēlreiz sākt faila <ph name="FILE_NAME" /> lejupielādi?</translation>
+<translation id="2451607499823206582">Izsekošana</translation>
 <translation id="2453860139492968684">Pabeigt</translation>
 <translation id="2461822463642141190">Šobrīd</translation>
 <translation id="2468444275314013497">Jūsu pārlūks izskatās drošs</translation>
@@ -1041,7 +1044,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="6040939430773295212">Atkārtojas</translation>
 <translation id="604124094241169006">Automātiski</translation>
 <translation id="6042308850641462728">Vairāk</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Vienai vietnei ir pārskatītas atļaujas.}zero{{NUM_SITES} vietnēm ir pārskatītas atļaujas.}one{{NUM_SITES} vietnei ir pārskatītas atļaujas.}other{{NUM_SITES} vietnēm ir pārskatītas atļaujas.}}</translation>
 <translation id="604996488070107836">Neizdevās lejupielādēt failu <ph name="FILE_NAME" />, jo radās nezināma kļūda.</translation>
 <translation id="605721222689873409">GG</translation>
 <translation id="6059830886158432458">Šeit varat kontrolēt jums rādītos rakstus un darbības.</translation>
@@ -1682,7 +1684,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8865415417596392024">Chrome dati jūsu kontā</translation>
 <translation id="8898822736010347272">Tiek nosūtīti dažu apmeklēto lapu vietrāži URL, ierobežota sistēmas informācija un noteiktu lapu saturs Google serveriem, lai palīdzētu atklāt jaunus apdraudējumus un aizsargāt visus tīmekļa lietotājus.</translation>
 <translation id="8909135823018751308">Kopīgot...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Vienā vietnē nav atļauti paziņojumi.}zero{{NUM_SITES} vietnēs nav atļauti paziņojumi.}one{{NUM_SITES} vietnē nav atļauti paziņojumi.}other{{NUM_SITES} vietnēs nav atļauti paziņojumi.}}</translation>
 <translation id="8921980840204105660">Veiciet sinhronizāciju, lai iegūtu grāmatzīmes no savām pārējām ierīcēm</translation>
 <translation id="8922289737868596582">Izmantojiet pogu Vairāk opciju, lai lejupielādētu lapas un piekļūtu tām bezsaistē</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>

@@ -1293,6 +1293,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="734758817008927353">Opzioni per salvare la carta</translation>
 <translation id="7352651011704765696">Si è verificato un problema</translation>
 <translation id="7353432112255316844">Verifica la tua identità</translation>
+<translation id="736564850024123010">Cambia la posizione della barra degli indirizzi per un'esperienza personalizzata.</translation>
 <translation id="7367530036083223701">Accedi in sicurezza alle tue password dalla schermata Home con il widget Gestore delle password.</translation>
 <translation id="7380220816562673297">Al momento puoi condividere le password solo con i membri del gruppo Famiglia. <ph name="BEGIN_LINK" />Crea un gruppo Famiglia<ph name="END_LINK" /> formato da un massimo di 6 membri e usa al meglio i tuoi prodotti e abbonamenti su Google.</translation>
 <translation id="739101637685146669">Quale URL vuoi aggiungere ai preferiti?</translation>
@@ -1490,7 +1491,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8237382152611443140">Apri le Impostazioni Riempimento automatico password</translation>
 <translation id="8248969482078657578">La funzionalità Schede non attive ti aiuta a mantenere la concentrazione</translation>
 <translation id="8261506727792406068">Elimina</translation>
-<translation id="8263336784344783289">Assegna un nome a questo gruppo</translation>
 <translation id="8263809106706527890">Le impostazioni del browser predefinito potrebbero essere state modificate. Puoi verificarlo nelle impostazioni.</translation>
 <translation id="8264966119170358612">Alcune delle password che hai salvato sono state compromesse nell'ambito di una violazione dei dati non di Google. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Il tuo account <ph name="USER_NAME" /> è stato disconnesso durante il ripristino dell'iPad. Per accedere di nuovo, tocca "Continua" di seguito.</translation>

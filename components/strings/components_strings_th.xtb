@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">ปุ่มจัดการรหัสผ่าน เปิดใช้งานเพื่อดูและจัดการรหัสผ่านในการตั้งค่า Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">เลือกสิทธิ์สำหรับ<ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">ช่วงราคาสำหรับตัวเลือกทั้งหมด</translation>
 <translation id="1113869188872983271">&amp;เลิกทำการจัดลำดับใหม่</translation>
 <translation id="1118429183611783760">เครื่องดูดฝุ่นและอุปกรณ์ทำความสะอาดพื้น</translation>
 <translation id="1122714970786750095">อุปกรณ์อิเล็กทรอนิกส์และเครื่องใช้ไฟฟ้า</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">ซ่อนไปก่อน</translation>
 <translation id="121201262018556460">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่เซิร์ฟเวอร์แสดงใบรับรองที่มีคีย์ที่ไม่รัดกุม ผู้โจมตีอาจทำให้คีย์ส่วนตัวเสียหายไปแล้วและเซิร์ฟเวอร์นี้อาจไม่ใช่เซิร์ฟเวอร์ที่คุณคิด (คุณอาจกำลังติดต่อกับผู้โจมตี)</translation>
 <translation id="1212527389003717329">เริ่มดาวน์โหลดแล้ว หากต้องการดู ให้กด |<ph name="ACCELERATOR" />| ค้างไว้</translation>
-<translation id="1214970845432250240">ช่วงราคา</translation>
 <translation id="1219129156119358924">การรักษาความปลอดภัยของระบบ</translation>
 <translation id="1222060260947439312">ถาดขวา</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -353,7 +351,6 @@
 <translation id="1617276713587758852">ครอสโอเวอร์</translation>
 <translation id="1619007254056372606">จัดการข้อมูลเว็บไซต์ในอุปกรณ์</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
-<translation id="162285686621567578">ผู้ปกครองบล็อกเว็บไซต์นี้</translation>
 <translation id="1622966923835127638">การเงินธุรกิจ</translation>
 <translation id="1623104350909869708">ป้องกันหน้าเว็บนี้จากการสร้างการโต้ตอบเพิ่มเติม</translation>
 <translation id="1633137413609266904">{0,plural, =1{นโยบายของผู้ดูแลระบบบล็อกการเปิดไฟล์นี้}other{นโยบายของผู้ดูแลระบบบล็อกการเปิดไฟล์ # รายการ}}</translation>
@@ -738,7 +735,6 @@
 <translation id="2328955282645810595">การก่อสร้างและเครื่องมือไฟฟ้า</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> หมดอายุ <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">กลับไปเขียนต่อ</translation>
-<translation id="2337776048981813397">ช่วงราคาสำหรับตัวเลือกทั้งหมด</translation>
 <translation id="2337852623177822836">ผู้ดูแลระบบเป็นผู้ควบคุมการตั้งค่า</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ต้องการจับคู่</translation>
 <translation id="2346319942568447007">รูปภาพที่คุณคัดลอก</translation>
@@ -1030,7 +1026,6 @@
 <translation id="2930577230479659665">ตัดออกหลังสำเนาแต่ละฉบับ</translation>
 <translation id="2933624813161016821">ฟอยล์ลายนูน</translation>
 <translation id="2938225289965773019">เปิดลิงก์ <ph name="PROTOCOL" /></translation>
-<translation id="2941112035454246133">ต่ำ</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 นิ้ว</translation>
 <translation id="2941952326391522266">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะใบรับรองความปลอดภัยมาจาก <ph name="DOMAIN2" /> โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="2942492342931589800">สบายๆ</translation>
@@ -1212,7 +1207,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">ป้อนรหัสยืนยัน <ph name="NUMBER_OF_DIGITS" /> หลัก</translation>
 <translation id="3272643614306383237">ไม่ถึง 1 MB บางเว็บไซต์อาจโหลดช้ากว่าเดิมเมื่อคุณเข้าชมครั้งถัดไป</translation>
-<translation id="327346289570683313">ช่วงราคา</translation>
 <translation id="3273738040255912340">ผู้ดูแลระบบสามารถเปลี่ยนแปลงโปรไฟล์และเบราว์เซอร์จากระยะไกล วิเคราะห์ข้อมูลเกี่ยวกับเบราว์เซอร์ผ่านการรายงาน รวมถึงดำเนินการอื่นๆ ที่จำเป็นได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chromium ได้ด้วย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้เปิดไฟล์นี้ใน <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้เปิดไฟล์เหล่านี้ใน <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">องค์กรของคุณ <ph name="ENROLLMENT_DOMAIN" /> ได้ส่งข้อมูลบางอย่าง เช่น การตั้งค่าหรือนโยบายไปยังเว็บไซต์ต่อไปนี้</translation>
@@ -1700,6 +1694,7 @@
 <translation id="4177501066905053472">หัวข้อโฆษณา</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ยกเลิกการติดตามราคา</translation>
+<translation id="4190446002599583608">การค้นหาประวัติการเข้าชม ซึ่งทำงานด้วย AI</translation>
 <translation id="4191334393248735295">ความยาว</translation>
 <translation id="4195459680867822611">ปุ่มดูเคล็ดลับในการใช้ Chrome เปิดใช้งานเพื่อดูข้อมูลเกี่ยวกับฟีเจอร์ต่างๆ ของ Chrome</translation>
 <translation id="4195643157523330669">เปิดในแท็บใหม่</translation>
@@ -1743,6 +1738,7 @@
 <translation id="4235360514405112390">ถูกต้อง</translation>
 <translation id="4239799716689808527">ป้าย</translation>
 <translation id="4242380780309416996">ซอง (น้ำหนักมาก)</translation>
+<translation id="4242981939686657948">หากต้องการค้นหาประวัติการท่องเว็บด้วยวิธีที่มีประสิทธิภาพมากขึ้น ให้เปิด</translation>
 <translation id="4244926541863471678">ภาพยนตร์</translation>
 <translation id="4246517972543675653">การศึกษาต่อต่างประเทศ</translation>
 <translation id="4250431568374086873">การเชื่อมต่อกับเว็บไซต์นี้ไม่ปลอดภัยโดยสมบูรณ์</translation>
@@ -3634,6 +3630,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">นำคำแนะนำสำหรับแบบฟอร์มออกจาก Chrome ไหม</translation>
 <translation id="781440967107097262">แชร์คลิปบอร์ดไหม</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">กระดาษ (ธรรมดา)</translation>
 <translation id="7815407501681723534">พบ<ph name="SEARCH_RESULTS" /> <ph name="NUMBER_OF_RESULTS" /> รายการสำหรับ "<ph name="SEARCH_STRING" />"</translation>
 <translation id="7822611063308883975">คอนโซลเกมมือถือ</translation>
@@ -3798,6 +3795,7 @@
 <translation id="8148608574971654810">เวอร์ชัน PDF:</translation>
 <translation id="8149426793427495338">คอมพิวเตอร์ของคุณเข้าสู่โหมดสลีปแล้ว</translation>
 <translation id="8150722005171944719">ไฟล์ที่ <ph name="URL" /> ไม่สามารถอ่านได้ เนื่องจากอาจถูกลบ ย้ายไปแล้ว หรือการอนุญาตของไฟล์อาจป้องกันการเข้าถึง</translation>
+<translation id="8151185429379586178">เครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="8153865548451212769">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้ดาวน์โหลดไฟล์นี้ไปยัง <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้ดาวน์โหลดไฟล์เหล่านี้ไปยัง <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">อุปกรณ์ฮ็อกกี้</translation>
 <translation id="8161095570253161196">เรียกดูต่อ</translation>
@@ -3970,6 +3968,7 @@
 <translation id="84561192812921051">ผู้ดูแลระบบสามารถเปลี่ยนแปลงโปรไฟล์และเบราว์เซอร์จากระยะไกล วิเคราะห์ข้อมูลเกี่ยวกับเบราว์เซอร์ผ่านการรายงาน รวมถึงดำเนินการอื่นๆ ที่จำเป็นได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chrome ได้ด้วย  <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">ไม่จำกัด</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8458605637341729751">การดำเนินการต่อหมายความว่าคุณยินยอมให้เก็บรวบรวมและแชร์ตำแหน่งที่แน่นอนของอุปกรณ์กับเจ้าของบัญชีเพื่อวัตถุประสงค์ในการป้องกันการประพฤติมิชอบ หากต้องการปิด Pix ใน Chrome ให้ไปที่<ph name="BEGIN_LINK1" />การตั้งค่าการชำระเงิน<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">เปิด</translation>
 <translation id="8461694314515752532">เข้ารหัสข้อมูลที่ซิงค์ด้วยรหัสผ่านการซิงค์ของคุณเอง</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{บัตรเครดิต 1 ใบ}other{บัตรเครดิต # ใบ}}</translation>

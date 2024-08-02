@@ -136,6 +136,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1420408895951708260">Preklop Nočne svetlobe. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1435537621343861112">Nareka ni mogoče začeti. Mikrofon je izklopljen.</translation>
+<translation id="1445031758921122223">Datoteke za upravljanje obraza so bile prenesene</translation>
 <translation id="1447907279406111651">Zdaj ⋅ Konča se ob <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Dostopne točke naprav</translation>
 <translation id="1455242230282523554">Pokaži jezikovne nastavitve</translation>
@@ -975,6 +976,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="453661520163887813"><ph name="TIME" /> do napolnjenosti</translation>
 <translation id="4538824937723742295">Snemanje celozaslonskega posnetka zaslona</translation>
 <translation id="4539127209940689201">Tiskanje trenutne strani</translation>
+<translation id="4541505619120536051">Vedno odpri</translation>
 <translation id="4541706525461326392">Odstranjevanje profila. To lahko traja nekaj minut.</translation>
 <translation id="4544483149666270818">Izberite okno za snemanje</translation>
 <translation id="4545950850562423083">Shranjevanje trenutne strani kot zaznamek</translation>
@@ -1223,6 +1225,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="5361524080961918551">Datoteke za govor v jeziku <ph name="LANGUAGE" /> so delno prenesene</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Pomik na ta zavihek</translation>
 <translation id="5364693579536176785">prostor za shranjevanje</translation>
+<translation id="5369573834963677938">Upravljanje obraza bo na voljo tudi drugim uporabnikom v napravi</translation>
 <translation id="5369717264580061086">Predogled datoteke v aplikaciji Datoteke</translation>
 <translation id="5377367976106153749">Želite vklopiti dostop do kamere?</translation>
 <translation id="5379115545237091094">Preveč poskusov</translation>
@@ -1412,6 +1415,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6020147141355393792">Nastavitev ogleda obvestil in aplikacij telefona</translation>
 <translation id="6022924867608035986">Izbris besedila v iskalnem polju</translation>
 <translation id="602472752137106327">Prikaz oken na vseh namizjih, izbran je izbirni gumb</translation>
+<translation id="6024768346262692989">Datotek za upravljanje obraza ni bilo mogoče prenesti</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" />, upravlja ga vaš skrbnik</translation>
 <translation id="6027518778343897451">Na ta dan ni dogodkov: <ph name="CURRENT_MONTH_DAY" />. Pritisnite Enter, če želite odpreti Google Koledar v brskalniku.</translation>
 <translation id="6030495522958826102">Meni je bil premaknjen v spodnji levi kot zaslona.</translation>
@@ -1485,6 +1489,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> trenutno uporablja vašo kamero in mikrofon.</translation>
 <translation id="6237231532760393653">1x</translation>
 <translation id="6240603910551255087">Zgornji gumb</translation>
+<translation id="6240821072888636753">Vedno vprašaj</translation>
 <translation id="6247728804802644171">Odpiranje obvestil</translation>
 <translation id="6249795363855770621">Ni bilo mogoče označiti kot dokončano. Poskusite znova z vzpostavljeno povezavo.</translation>
 <translation id="6254629735336163724">Zaklenjeno na ležeče</translation>
@@ -1828,6 +1833,7 @@ Nova namestitev</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> trenutno uporablja vaš mikrofon.</translation>
 <translation id="7561982940498449837">Zapri meni</translation>
 <translation id="7564874036684306347">Če okna premaknete na drugo namizje, lahko pride do nepričakovanega delovanja. Nadaljnja obvestila, okna in pogovorna okna so lahko razdeljena med namizji.</translation>
+<translation id="7568790562536448087">Posodabljanje</translation>
 <translation id="7569509451529460200">Omogočena sta braillova pisava in ChromeVox</translation>
 <translation id="7569886975397378678">Opustitev nastavitve ogleda obvestil in aplikacij telefona</translation>
 <translation id="7571361473021531288"><ph name="BATTERY_PERCENTAGE" /> % baterije | še <ph name="TIME" /></translation>
@@ -1957,7 +1963,6 @@ Nova namestitev</translation>
 <translation id="7963992254934562106">Iz: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Izberite mapo …</translation>
 <translation id="7973756967040444713">Zapri orodno vrstico</translation>
-<translation id="797485111629834774">Označevanje opravila kot dokončanega: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Vklop ali izklop celozaslonske lupe</translation>
 <translation id="7977927628060636163">Iskanje mobilnih omrežij ...</translation>
 <translation id="7982789257301363584">Omrežje</translation>

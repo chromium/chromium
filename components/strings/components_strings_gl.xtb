@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Botón para xestionar os contrasinais. Actívao para ver e xestionar os teus contrasinais na configuración de Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Seleccionar permiso para <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">Intervalo de prezos para todas as opcións</translation>
 <translation id="1113869188872983271">&amp;Desfacer o cambio de orde</translation>
 <translation id="1118429183611783760">Aspiradores e coidado do chan</translation>
 <translation id="1122714970786750095">Electrónica e electricidade</translation>
@@ -122,7 +121,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1209206284964581585">Ocultar por agora</translation>
 <translation id="121201262018556460">Tentaches acceder a <ph name="DOMAIN" />, pero o servidor presentou un certificado que contén unha clave non segura. É posible que un atacante descifrase a túa clave privada e quizais o servidor non sexa o que esperas. É probable que te comuniques cun atacante.</translation>
 <translation id="1212527389003717329">Iniciouse a descarga. Para vela, mantén premida a tecla |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">Intervalo de prezos</translation>
 <translation id="1219129156119358924">Seguranza do sistema</translation>
 <translation id="1222060260947439312">Bandexa dereita</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -141,6 +139,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1247030632403369975">Aluminio</translation>
 <translation id="1252209483516427155">Roupa exterior</translation>
 <translation id="1253096324252841344">Pagar con <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
+<translation id="1253846494229886276">Gardando captura de pantalla</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" /> e <ph name="TYPE_2" /> (sincronizado)</translation>
 <translation id="1255086252236620440">Batedores</translation>
 <translation id="1256368399071562588">&lt;p&gt;Se tentas visitar un sitio web e non abre, proba estes pasos para solucionar problemas:&lt;/p&gt;
@@ -352,7 +351,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1617276713587758852">Vehículos crossover</translation>
 <translation id="1619007254056372606">Xestionar datos dos sitios no dispositivo</translation>
 <translation id="1620510694547887537">Cámara</translation>
-<translation id="162285686621567578">O teu pai ou nai bloqueou este sitio web.</translation>
 <translation id="1622966923835127638">Finanzas empresariais</translation>
 <translation id="1623104350909869708">Evitar que esta páxina cree caixas de diálogo adicionais</translation>
 <translation id="1633137413609266904">{0,plural, =1{A política do administrador non permite abrir este ficheiro}other{A política do administrador non permite abrir # ficheiros}}</translation>
@@ -737,7 +735,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2328955282645810595">Ferramentas de construción e eléctricas</translation>
 <translation id="2330137317877982892">A tarxeta <ph name="CREDIT_CARD" /> caduca o <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Retoma a escritura</translation>
-<translation id="2337776048981813397">Intervalo de prezos para todas as opcións</translation>
 <translation id="2337852623177822836">Opción de configuración controlada polo administrador</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> quere sincronizarse</translation>
 <translation id="2346319942568447007">Imaxe que copiaches</translation>
@@ -1029,7 +1026,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2930577230479659665">Recorte despois de cada copia</translation>
 <translation id="2933624813161016821">Lámina en relevo</translation>
 <translation id="2938225289965773019">Abrir <ph name="PROTOCOL" /> ligazóns</translation>
-<translation id="2941112035454246133">Baixa</translation>
 <translation id="2941878205777356567">Sobre 9 x 12 polgadas</translation>
 <translation id="2941952326391522266">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza é de <ph name="DOMAIN2" />. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="2942492342931589800">Usar rexistro informal</translation>
@@ -1211,7 +1207,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3272091146646336650">Súper B</translation>
 <translation id="3272112314896217187">Escribe o código de verificación de <ph name="NUMBER_OF_DIGITS" /> díxitos</translation>
 <translation id="3272643614306383237">Menos de 1 MB. Algúns sitios pode que carguen máis lentamente a próxima vez que os visites.</translation>
-<translation id="327346289570683313">Intervalo de prezos</translation>
 <translation id="3273738040255912340">A persoa administradora pode facer cambios no teu perfil e no teu navegador de forma remota, analizar información sobre o navegador mediante informes e realizar outras tarefas necesarias. A actividade deste dispositivo tamén se pode xestionar fóra de Chromium. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{A política do administrador non recomenda abrir este ficheiro neste destino: <ph name="DESTINATION_NAME" />}other{A política do administrador non recomenda abrir estes ficheiros neste destino: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">A túa organización, <ph name="ENROLLMENT_DOMAIN" />, enviou algúns datos (por exemplo, opcións de configuración ou políticas) aos seguintes sitios web.</translation>
@@ -1700,6 +1695,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4177501066905053472">Temas dos anuncios</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Deixar de facer seguimento de prezos</translation>
+<translation id="4190446002599583608">Buscas no historial con tecnoloxía de IA</translation>
 <translation id="4191334393248735295">Lonxitude</translation>
 <translation id="4195459680867822611">Botón para ver consellos de Chrome. Actívao para obter máis información sobre as funcións de Chrome</translation>
 <translation id="4195643157523330669">Abrir en pestana nova</translation>
@@ -2141,6 +2137,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5019952743397118625">Definiuse a política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> non controlará a dispoñibilidade do modo de programador na páxina de extensións.</translation>
 <translation id="5021557570875267742">Facer un seguimento dos prezos con Chrome</translation>
 <translation id="5023310440958281426">Comproba as túas políticas de administrador</translation>
+<translation id="5024171724744627792">Garda a tarxeta para pagar máis rápido. Os detalles da tarxeta encríptanse na túa Conta de Google.</translation>
 <translation id="5030338702439866405">Emitido por</translation>
 <translation id="503069730517007720">Precísase un certificado raíz para <ph name="SOFTWARE_NAME" />, pero non está instalado. O teu administrador de TI debe comprobar as instrucións de configuración de <ph name="SOFTWARE_NAME" /> para solucionar este problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Acerca do Tradutor de Google</translation>
@@ -3329,6 +3326,7 @@ Detalles adicionais:
 <translation id="7311244614769792472">Non se encontraron resultados</translation>
 <translation id="7311837626618954149">Chromium evita que os sitios usen cookies de terceiros para facer un seguimento da túa actividade mentres navegas.</translation>
 <translation id="7313107491291103073">A túa organización marcou este sitio porque podería infrinxir algunha política.</translation>
+<translation id="7316521168101843192">Gardando ficheiro en Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Axuda de conexión</translation>
 <translation id="7323804146520582233">Ocultar a sección <ph name="SECTION" /></translation>
@@ -3632,6 +3630,7 @@ Detalles adicionais:
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Queres eliminar a suxestión de Chrome?</translation>
 <translation id="781440967107097262">Queres compartir o portapapeis?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Papel (normal)</translation>
 <translation id="7815407501681723534">Encontráronse <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> para "<ph name="SEARCH_STRING" />"</translation>
 <translation id="7822611063308883975">Videoconsolas portátiles</translation>
@@ -3796,6 +3795,7 @@ Detalles adicionais:
 <translation id="8148608574971654810">Versión do PDF:</translation>
 <translation id="8149426793427495338">O teu ordenador entrou no modo de suspensión.</translation>
 <translation id="8150722005171944719">Non se pode ler o ficheiro que se encontra en <ph name="URL" />. É posible que se eliminase, movese ou que os permisos do ficheiro estean impedindo o acceso.</translation>
+<translation id="8151185429379586178">Ferramentas para programadores</translation>
 <translation id="8153865548451212769">{0,plural, =1{A política do administrador non recomenda descargar este ficheiro no destino: <ph name="DESTINATION_NAME" />}other{A política do administrador non recomenda descargar estes ficheiros no destino: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Equipamento de hóckey</translation>
 <translation id="8161095570253161196">Retomar navegación</translation>

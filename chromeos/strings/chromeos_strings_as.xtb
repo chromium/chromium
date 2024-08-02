@@ -179,7 +179,6 @@
 <translation id="1827738518074806965">আর্ট গেলাৰী</translation>
 <translation id="1836553715834333258">ছিষ্টেমৰ ৰং</translation>
 <translation id="183675228220305365">বাস্তৱবাদী</translation>
-<translation id="1837537071599385610">প্ৰম্প্‌টিঙৰ গাইড</translation>
 <translation id="1838374766361614909">সন্ধান কৰা বস্তুবোৰ মচক</translation>
 <translation id="1840474674287087346">ডেস্কটপৰ ৰং</translation>
 <translation id="184095011128924488">সৃষ্টিশীল</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Google AIএ সঞ্চালন কৰা শেহতীয়া পৃষ্ঠভূমি</translation>
 <translation id="2783010256799387990">পাছ কৰিছে</translation>
 <translation id="2786429550992142861">লিনেন</translation>
+<translation id="2787237339470862294">এই মুহূৰ্তত এই ভাষাটো সমৰ্থিত নহয়</translation>
 <translation id="2787435249130282949">কীব’ৰ্ড অধিক উজ্জ্বল কৰি তোলা</translation>
 <translation id="2805756323405976993">এপ্</translation>
 <translation id="28232023175184696">ইণ্টাৰনেটৰ সৈতে সংযোগ কৰিব নোৱাৰি। পুনৰ চেষ্টা কৰিবলৈ ক্লিক কৰক।</translation>
@@ -673,6 +673,7 @@
 <translation id="458794348635939462">হ’ষ্ট সম্পৰ্কীয় সকলো সমস্যা সমাধান কৰাত বিফল হ'ল</translation>
 <translation id="4593212453765072419">প্ৰ’ক্সী বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণৰ আৱশ্যক</translation>
 <translation id="4594021849294327751">ট্ৰেন্সক্ৰিপ্ট সৃষ্টি কৰক</translation>
+<translation id="4607282946861182308">ইয়াৰ প্ৰতিচ্ছবি সৃষ্টি কৰিব নোৱাৰি। আন এটা প্ৰম্প্‌ট ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="4609350030397390689">কীব’ৰ্ডৰ উজ্জ্বলতা ডাউন</translation>
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />ৰ ভিতৰত <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />। প্ৰিণ্টৰ কাৰ্যটো বাতিল কৰিবলৈ এণ্টাৰ টিপক।</translation>
 <translation id="463791356324567266">স্কেন বাতিল কৰি থকা হৈছে…</translation>

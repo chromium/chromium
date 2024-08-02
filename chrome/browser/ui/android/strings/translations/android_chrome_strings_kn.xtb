@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">ಈ ಸಾಧನದಲ್ಲಿ ಖಾತೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1129510026454351943">ವಿವರಗಳು: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">ಅಜ್ಞಾತ ಮೋಡ್ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಬಳಸುವ ಇತರರಿಂದ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಖಾಸಗಿಯಾಗಿರಿಸುತ್ತದೆ</translation>
+<translation id="1138458427267715730">ವೆಬ್‌ನಾದ್ಯಂತ ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಾದಾಗ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="1142732900304639782">ಈ ಸೈಟ್‌ಗಳನ್ನು ಅನುವಾದಿಸುವ ಪ್ರಸ್ತಾಪ ಮಾಡಬೇಡಿ</translation>
 <translation id="1145536944570833626">ಪ್ರಸ್ತುತ ಡೇಟಾ ಅಳಿಸಿ.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />, Chrome ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ. ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, ಹಾಗೂ <ph name="BEGIN_LINK2" />Google Chrome ಮತ್ತು ChromeOS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK2" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">ಚಟುವಟಿಕೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1355088659320425659">ಇತಿಹಾಸ ಮತ್ತು ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="1360432990279830238">ಸೈನ್ ಔಟ್ ಮಾಡಿ, ಸಿಂಕ್ ಆಫ್ ಮಾಡಬೇಕೆ?</translation>
+<translation id="1363028406613469049">ಟ್ರ್ಯಾಕ್</translation>
 <translation id="1366525380420346469">ಆನ್ ಆಗಿರುವಾಗ</translation>
 <translation id="1373696734384179344">ಆಯ್ಕೆಮಾಡಲಾದ ವಿಷಯವನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲು ಮೆಮೊರಿಯು ಸಾಕಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="1376578503827013741">ಲೆಕ್ಕ ಮಾಡುತ್ತಿದೆ...</translation>
@@ -292,6 +294,7 @@
 <translation id="2435457462613246316">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="2450083983707403292">ನೀವು <ph name="FILE_NAME" /> ಅನ್ನು ಪುನಃ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಬಯಸುತ್ತೀರಾ?</translation>
+<translation id="2451607499823206582">ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2453860139492968684">ಪೂರ್ಣಗೊಳಿಸು</translation>
 <translation id="2461822463642141190">ಪ್ರಸ್ತುತ</translation>
 <translation id="2468444275314013497">ಬ್ರೌಸರ್‌ಗಳ ಸೆಟ್ಟಿಂಗ್ ಸರಿಯಾಗಿದೆ</translation>
@@ -1040,7 +1043,6 @@
 <translation id="6040939430773295212">ಪುನರಾವರ್ತಿತವಾಗಿದೆ</translation>
 <translation id="604124094241169006">ಸ್ವಯಂಚಾಲಿತ</translation>
 <translation id="6042308850641462728">ಇನ್ನಷ್ಟು</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{1 ಸೈಟ್‌ಗಾಗಿ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ}one{{NUM_SITES} ಸೈಟ್‌ಗಳಿಗಾಗಿ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ}other{{NUM_SITES} ಸೈಟ್‌ಗಳಿಗಾಗಿ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ}}</translation>
 <translation id="604996488070107836">ಅಪರಿಚಿತ ದೋಷದ ಕಾರಣದಿಂದ <ph name="FILE_NAME" /> ಡೌನ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">ನಿಮ್ಮ ಕತೆಗಳು ಮತ್ತು ಚಟುವಟಿಕೆಯನ್ನು ಇಲ್ಲಿ ನಿರ್ವಹಿಸಿ</translation>
@@ -1681,7 +1683,6 @@
 <translation id="8865415417596392024">ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿರುವ Chrome ಡೇಟಾ</translation>
 <translation id="8898822736010347272">ಹೊಸ ಅಪಾಯಗಳನ್ನು ಕಂಡುಹಿಡಿಯಲು ಮತ್ತು ವೆಬ್‌ನಲ್ಲಿರುವ ಪ್ರತಿಯೊಬ್ಬರನ್ನು ರಕ್ಷಿಸುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು, ನೀವು ಭೇಟಿ ನೀಡುವ ಕೆಲವು ಪುಟಗಳ URL ಗಳು, ಸೀಮಿತ ಸಿಸ್ಟಂ ಮಾಹಿತಿ ಮತ್ತು ಪುಟಗಳಲ್ಲಿನ ಕೆಲವು ಕಂಟೆಂಟ್ ಅನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ.</translation>
 <translation id="8909135823018751308">ಹಂಚಿಕೊಳ್ಳು...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{1 ಸೈಟ್‌ಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ}one{{NUM_SITES} ಸೈಟ್‌ಗಳಿಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ}other{{NUM_SITES} ಸೈಟ್‌ಗಳಿಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ}}</translation>
 <translation id="8921980840204105660">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಿಂದ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಪಡೆಯಲು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="8922289737868596582">ಪುಟಗಳನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಬಳಸಲು ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳ ಬಟನ್ ಮೂಲಕ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಿ</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>

@@ -324,6 +324,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2635918910848538771">CVC automaatne täitmine</translation>
 <translation id="2637313651144986786">Otsige vahelehtedelt …</translation>
 <translation id="2640733327287333451">Kasutajanimi puudub ••••••</translation>
+<translation id="264215785133931186">Kontrolliti just praegu</translation>
 <translation id="2648721026697078500">Ära teisalda kunagi</translation>
 <translation id="2648803196158606475">Kustuta loetud</translation>
 <translation id="2664621323652615289">Peatamine</translation>
@@ -797,6 +798,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4937410517508563815">Salvestage kontole paroole</translation>
 <translation id="4938338714234463591">See võimaldab teil veebisaitidel teatud funktsioonide puhul oma häält kasutada.</translation>
 <translation id="4941089862236492464">Kahjuks ilmnes teie üksuse jagamisel probleem.</translation>
+<translation id="4942382218961352935">Kontrolliti just praegu</translation>
 <translation id="4944543191714094452">Otsi lehelt …</translation>
 <translation id="4945756290001680296">Juurdepääs parooliseadetele</translation>
 <translation id="4958444002117714549">Laienda loendit</translation>
@@ -1488,7 +1490,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8237382152611443140">Avage funktsiooni AutoFill Password menüü Settings</translation>
 <translation id="8248969482078657578">Inaktiivsed vahelehed aitavad teil keskenduda</translation>
 <translation id="8261506727792406068">Kustuta</translation>
-<translation id="8263336784344783289">Määrake sellele grupile nimi</translation>
 <translation id="8263809106706527890">Võimalik, et teie brauseri vaikeseadeid on muudetud. Saate seda seadetes kontrollida.</translation>
 <translation id="8264966119170358612">Mõned teie salvestatud paroolid avalikustati Google'i-välise andmetega seotud rikkumise käigus. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Teid logiti iPadi lähtestamise raames teie kontolt <ph name="USER_NAME" /> välja. Uuesti sisselogimiseks puudutage allpool nuppu „Jätka”.</translation>

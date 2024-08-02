@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">'পাসওয়ার্ড ম্যানেজ করুন' বোতাম, Chrome সেটিংসে আপনার পাসওয়ার্ড দেখতে ও ম্যানেজ করতে এটি চালু করুন</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> এর জন্য অনুমতি বেছে নিন</translation>
-<translation id="1112238992895762847">সব বিকল্পের জন্য দামের রেঞ্জ</translation>
 <translation id="1113869188872983271">&amp;পুনর্বিন্যাসকে পূর্বাবস্থায় ফেরান</translation>
 <translation id="1118429183611783760">ভ্যাকুম ও ক্লিনার</translation>
 <translation id="1122714970786750095">ইলেকট্রনিক্স ও বৈদ্যুতিক</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">এখনকার মতো লুকান</translation>
 <translation id="121201262018556460">আপনি <ph name="DOMAIN" /> অ্যাক্সেস করার চেষ্টা করেছেন, কিন্তু সার্ভার একটি দুর্বল কী সম্বলিত সার্টিফিকেট উপস্থাপন করেছে৷ কোনও আক্রমণকারী ব্যক্তিগত কী অ্যাক্সেস করে থাকতে পারে এবং সার্ভারটি আপনার প্রত্যাশিত সার্ভার নাও হতে পারে (হতে পারে আপনি একজন আক্রমণকারীর সাথে যোগাযোগ করছেন)৷</translation>
 <translation id="1212527389003717329">ডাউনলোড শুরু হয়েছে। সেটি দেখতে, |<ph name="ACCELERATOR" />| বোতাম প্রেস করে ধরে রাখুন।</translation>
-<translation id="1214970845432250240">দামের রেঞ্জ</translation>
 <translation id="1219129156119358924">সিস্টেম নিরাপত্তা</translation>
 <translation id="1222060260947439312">ডানদিকের ট্রে</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -141,6 +139,7 @@
 <translation id="1247030632403369975">অ্যালুমিনিয়াম</translation>
 <translation id="1252209483516427155">বাইরের পোশাক</translation>
 <translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" />-এর মাধ্যমে পেমেন্ট করুন</translation>
+<translation id="1253846494229886276">স্ক্রিনশট সেভ করা হচ্ছে</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (সিঙ্ক হয়েছে)</translation>
 <translation id="1255086252236620440">ফুড মিক্সার</translation>
 <translation id="1256368399071562588">&lt;p&gt;আপনি যে ওয়েবসাইটে যেতে চান সেটি যদি না খোলে তাহলে প্রথমে এই ধাপগুলি অনুসরণ করে সমস্যাটির সমাধান করার চেষ্টা করুন:&lt;/p&gt;
@@ -352,7 +351,6 @@
 <translation id="1617276713587758852">ক্রসওভার</translation>
 <translation id="1619007254056372606">অন-ডিভাইস সাইট ডেটা ম্যানেজ করুন</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
-<translation id="162285686621567578">আপনার অভিভাবক এই ওয়েবসাইটটি ব্লক করে দিয়েছেন।</translation>
 <translation id="1622966923835127638">ব্যবসায় ফাইন্যান্স</translation>
 <translation id="1623104350909869708">এই পৃষ্ঠাটিকে অতিরিক্ত কথোপকথন তৈরি করা থেকে বাধা দিন</translation>
 <translation id="1633137413609266904">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই ফাইল খোলার সুবিধা ব্লক করা হয়েছে}one{অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই #টি ফাইল খোলার সুবিধা ব্লক করা হয়েছে}other{অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই #টি ফাইল খোলার সুবিধা ব্লক করা হয়েছে}}</translation>
@@ -738,7 +736,6 @@
 <translation id="2328955282645810595">নির্মাণ ও পাওয়ার টুল</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />-এর মেয়াদ, <ph name="EXPIRATION_DATE_ABBR" /> তারিখে শেষ হবে</translation>
 <translation id="2337044517221264923">লেখা আবার চালু করুন</translation>
-<translation id="2337776048981813397">সব বিকল্পের জন্য দামের রেঞ্জ</translation>
 <translation id="2337852623177822836">সেটিংস আপনার প্রশাসক নিয়ন্ত্রণ করে</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> এদের সঙ্গে যুক্ত হতে চাচ্ছে</translation>
 <translation id="2346319942568447007">আপনার কপি করা ছবি</translation>
@@ -1030,7 +1027,6 @@
 <translation id="2930577230479659665">প্রতিটি কপির পর ট্রিম করুন</translation>
 <translation id="2933624813161016821">এমবসিং ফয়েল</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> লিঙ্কগুলি খুলুন</translation>
-<translation id="2941112035454246133">নিম্ন</translation>
 <translation id="2941878205777356567">এনভেলপ ৯ x ১২ ইঞ্চি</translation>
 <translation id="2941952326391522266">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট <ph name="DOMAIN2" /> থেকে পাওয়া। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
 <translation id="2942492342931589800">ক্যাজুয়াল</translation>
@@ -1212,7 +1208,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" />-সংখ্যার যাচাইকরণ কোড লিখুন</translation>
 <translation id="3272643614306383237">১ এমবির কম। পরের বার ভিজিট করার সময় কিছু সাইট লোড হতে দেরি হতে পারে।</translation>
-<translation id="327346289570683313">দামের রেঞ্জ</translation>
 <translation id="3273738040255912340">আপনার অ্যাডমিনিস্ট্রেটর রিমোট লোকেশন থেকে আপনার প্রোফাইল সেটিংসে পরিবর্তন করতে পারবেন। একই সাথে রিপোর্টিংয়ের সাহায্যে ব্রাউজার সম্পর্কিত তথ্য বিশ্লেষণ ও অন্যান্য প্রয়োজনীয় কাজ করতে পারবে। এই ডিভাইসের অ্যাক্টিভিটি Chromium-এর বাইরে থেকেও ম্যানেজ করা যেতে পারে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল খোলা যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল খোলা যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল খোলা যাবে না}}</translation>
 <translation id="3282085321714087552">আপনার সংস্থা, <ph name="ENROLLMENT_DOMAIN" />, নিম্নলিখিত ওয়েবসাইটগুলিকে সেটিংস বা নীতির মতো কিছু তথ্য পাঠিয়েছে।</translation>
@@ -1701,6 +1696,7 @@
 <translation id="4177501066905053472">বিজ্ঞাপনের বিষয়</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">দাম ট্র্যাক করার বিকল্প বন্ধ করুন</translation>
+<translation id="4190446002599583608">AI-এর সাহায্যে ইতিহাস সার্চ করা</translation>
 <translation id="4191334393248735295">দৈর্ঘ্য</translation>
 <translation id="4195459680867822611">'Chrome সংক্রান্ত পরামর্শ দেখুন' বোতাম, Chrome ফিচার সম্পর্কে আরও জানতে এটি চালু করুন</translation>
 <translation id="4195643157523330669">নতুন ট্যাবে খুলুন</translation>
@@ -2142,6 +2138,7 @@
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> নীতি স্থির করা হয়েছে। <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> এক্সটেনশন পৃষ্ঠায় ডেভেলপার মোডের উপলভ্যতা নিয়ন্ত্রণ করবে না।</translation>
 <translation id="5021557570875267742">Chrome ব্যবহার করে দাম ট্র্যাক করুন</translation>
 <translation id="5023310440958281426">আপনার প্রশাসকের নীতিগুলি দেখুন</translation>
+<translation id="5024171724744627792">কার্ড সেভ করে আরও দ্রুত পেমেন্ট করুন। আপনার Google অ্যাকাউন্টে কার্ডের তথ্য এনক্রিপ্ট করা থাকে।</translation>
 <translation id="5030338702439866405">দ্বারা ইস্যু করা</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" এর জন্য একটি রুট সার্টিফিকেট প্রয়োজন কিন্তু সেটি ইনস্টল করা নেই। এই সমস্যাটি সমাধান করতে আপনার IT প্রশাসককে "<ph name="SOFTWARE_NAME" />" এর কনফিগারেশন নির্দেশ ভাল করে দেখে নিতে হবে। <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google অনুবাদ সম্বন্ধে</translation>
@@ -3329,6 +3326,7 @@
 <translation id="7311244614769792472">কোনও ফলাফল পাওয়া যায়নি</translation>
 <translation id="7311837626618954149">ব্রাউজ করার সময় আপনার অ্যাক্টিভিটি ট্র্যাক করতে সাইট যেসব থার্ড-পার্টি কুকি ব্যবহার করে, Chromium তা ব্লক করে দেয়।</translation>
 <translation id="7313107491291103073">আপনার সংস্থা এই সাইটকে ফ্ল্যাগ করেছে কারণ এটি কোনও নীতি লঙ্ঘন করতে পারে।</translation>
+<translation id="7316521168101843192">Microsoft OneDrive-এ ফাইল সেভ করা হচ্ছে</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">কানেকশন সহায়তা</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" বিভাগ লুকান</translation>
@@ -3632,6 +3630,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome থেকে ফর্ম প্রস্তাবনা সরাবেন?</translation>
 <translation id="781440967107097262">ক্লিপবোর্ড শেয়ার করবেন?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">পেপার (প্লেইন)</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' এর জন্য <ph name="NUMBER_OF_RESULTS" />টি <ph name="SEARCH_RESULTS" /> খুঁজে পাওয়া গেছে</translation>
 <translation id="7822611063308883975">হ্যান্ডহেল্ড গেম কনসোল</translation>
@@ -3796,6 +3795,7 @@
 <translation id="8148608574971654810">PDF ভার্সন:</translation>
 <translation id="8149426793427495338">আপনার কম্পিউটারটি নিদ্রা মোডে গিয়েছে।</translation>
 <translation id="8150722005171944719"><ph name="URL" />এ ফাইলটি পাঠযোগ্য নয়৷ এটা মুছে ফেলা হয়েছে পারে, সরিয়ে দেওয়া হয়েছে, অথবা ফাইল অনুমতি প্রবেশাধিকার প্রতিরোধ করতে পারে৷</translation>
+<translation id="8151185429379586178">ডেভেলপার টুল</translation>
 <translation id="8153865548451212769">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ডাউনলোড করা যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ডাউনলোড করা যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ডাউনলোড করা যাবে না}}</translation>
 <translation id="81563721597823545">হকির সরঞ্জাম</translation>
 <translation id="8161095570253161196">ব্রাউজিং চালু করুন</translation>

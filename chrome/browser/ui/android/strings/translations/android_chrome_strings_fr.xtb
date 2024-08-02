@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Gérer les comptes sur cet appareil</translation>
 <translation id="1129510026454351943">Détails°: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Le mode navigation privée maintient votre navigation privée vis-à-vis des autres utilisateurs de votre appareil</translation>
+<translation id="1138458427267715730">Recevez des alertes en cas de baisse de prix sur n'importe quel site Web</translation>
 <translation id="1142732900304639782">Ne pas proposer de traduire ces sites</translation>
 <translation id="1145536944570833626">Supprimez les données existantes</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> va s'ouvrir dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Gérer l'activité</translation>
 <translation id="1355088659320425659">Historique et onglets</translation>
 <translation id="1360432990279830238">Se déconnecter et arrêter la synchronisation ?</translation>
+<translation id="1363028406613469049">Suivre</translation>
 <translation id="1366525380420346469">Lorsque la fonctionnalité est activée</translation>
 <translation id="1373696734384179344">Mémoire insuffisante pour télécharger le contenu sélectionné.</translation>
 <translation id="1376578503827013741">Calcul…</translation>
@@ -292,6 +294,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
 <translation id="2439153523196674349">Aperçu de <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Souhaitez-vous relancer le téléchargement du fichier <ph name="FILE_NAME" /> ?</translation>
+<translation id="2451607499823206582">Suivi</translation>
 <translation id="2453860139492968684">Terminer</translation>
 <translation id="2461822463642141190">Actuelle</translation>
 <translation id="2468444275314013497">Votre navigateur semble sûr</translation>
@@ -1041,7 +1044,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="6040939430773295212">Répétitif</translation>
 <translation id="604124094241169006">Automatique</translation>
 <translation id="6042308850641462728">Plus</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Autorisations examinées pour 1 site}one{Autorisations examinées pour {NUM_SITES} site}other{Autorisations examinées pour {NUM_SITES} sites}}</translation>
 <translation id="604996488070107836">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison d'une erreur inconnue.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Contrôlez vos articles et votre activité via ce menu</translation>
@@ -1682,7 +1684,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8865415417596392024">Données Chrome de votre compte</translation>
 <translation id="8898822736010347272">Les URL de certaines pages que vous consultez, ainsi que des informations système limitées et une partie du contenu de certaines pages sont envoyées à Google, à la fois pour identifier les nouvelles menaces et pour protéger tous les utilisateurs sur le Web.</translation>
 <translation id="8909135823018751308">Partager…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Notifications non autorisées pour 1 site}one{Notifications non autorisées pour {NUM_SITES} site}other{Notifications non autorisées pour {NUM_SITES} sites}}</translation>
 <translation id="8921980840204105660">Activez la synchronisation pour récupérer vos favoris depuis d'autres appareils</translation>
 <translation id="8922289737868596582">Téléchargez des pages pour y accéder hors connexion, à partir du bouton "Plus d'options"</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>

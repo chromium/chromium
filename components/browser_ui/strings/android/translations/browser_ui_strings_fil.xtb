@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">Naputol ang URL</translation>
 <translation id="1448064542941920355">Bawasan ang pag-zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> na site}}</translation>
+<translation id="1500473259453106018">I-hide ang card tungkol sa mga pagbaba ng presyo sa mga tab</translation>
 <translation id="1510341833810331442">Hindi pinapayagan ang mga site na mag-save ng data sa iyong device</translation>
 <translation id="1547123415014299762">Pinapayagan ang third-party na cookies</translation>
 <translation id="1568470248891039841">Puwedeng mag-embed ng content mula sa iba pang site ang mga site na binibisita mo, halimbawa, mga larawan, ad, at text. Puwedeng humingi ang iba pang site na ito ng pahintulot na gamitin ang impormasyong na-save ng mga ito tungkol sa iyo habang nagba-browse ka sa site. <ph name="BEGIN_LINK" />Matuto pa tungkol sa naka-embed na content<ph name="END_LINK" /></translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">Mikropono</translation>
 <translation id="3232293466644486101">I-delete ang data mula sa pag-browse…</translation>
 <translation id="3242646949159196181">Kapag naka-on, makakapag-play ng tunog ang mga site. Kapag naka-off, hindi makakapag-play ng tunog ang mga site.</translation>
+<translation id="3273479183583863618">Mga pagbaba ng presyo sa mga tab</translation>
 <translation id="3277252321222022663">Payagan ang mga site na i-access ang mga sensor (inirerekomenda)</translation>
 <translation id="3285500645985761267">Payagan ang mga kaugnay na site na makita ang iyong aktibidad sa grupo</translation>
 <translation id="3295019059349372795">Kabanata 11: The Wonderful Emerald City of Oz</translation>
@@ -359,6 +361,7 @@
 <translation id="6818926723028410516">Pumili ng mga item</translation>
 <translation id="6840760312327750441">Sa mga tab ng grupo, pindutin nang matagal ang isang tab. Pagkatapos, i-drag ito sa isa pang tab.</translation>
 <translation id="6864395892908308021">Hindi nababasa ng device na ito ang NFC</translation>
+<translation id="6870169401250095575">I-hide ang card na Pag-check sa Kaligtasan</translation>
 <translation id="6912998170423641340">I-block ang mga site sa pag-read ng text at mga larawan mula sa clipboard</translation>
 <translation id="6945221475159498467">Pumili</translation>
 <translation id="6950072572526089586">Puwedeng mag-save ang site na binibisita mo ng impormasyon tungkol sa kung ano ang ginagawa mo para gumana ito na gaya ng inaasahan — halimbawa, para panatilihin kang naka-sign in sa isang site o para mag-save ng mga item sa iyong shopping cart. Kadalasang pansamantalang sine-save ng mga site ang impormasyong ito sa iyong device.</translation>
@@ -426,6 +429,7 @@
 <translation id="7986741934819883144">Pumili ng contact</translation>
 <translation id="7990211076305263060">Kapag naka-on, puwedeng hilingin ng mga site na gamitin ang iyong mikropono. Kapag naka-off, hindi magagamit ng mga site ang iyong mikropono.</translation>
 <translation id="8007176423574883786">Naka-off para sa device na ito</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{I-hide ang card na magpatuloy sa tab na ito}one{I-hide ang card na magpatuloy sa mga tab na ito}other{I-hide ang card na magpatuloy sa mga tab na ito}}</translation>
 <translation id="802154636333426148">Hindi na-download</translation>
 <translation id="8042586301629853791">Pagbukud-bukurin ayon sa:</translation>
 <translation id="8067883171444229417">I-play ang video</translation>

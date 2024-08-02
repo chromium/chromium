@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">ຈັດການບັນຊີໃນອຸປະກອນນີ້</translation>
 <translation id="1129510026454351943">ລາຍລະອຽດ: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນຈະຮັກສາການທ່ອງເວັບຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວຈາກຄົນອື່ນທີ່ໃຊ້ອຸປະກອນຂອງທ່ານ</translation>
+<translation id="1138458427267715730">ຮັບການແຈ້ງເຕືອນເມື່ອລາຄາຫຼຸດລົງໃນທຸກເວັບໄຊທົ່ວເວັບ</translation>
 <translation id="1142732900304639782">ບໍ່ສະເໜີແປເວັບໄຊເຫຼົ່ານີ້</translation>
 <translation id="1145536944570833626">ລຶບຂໍ້ມູນທີ່ມີຢູ່.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ຈະເປີດໃນ Chrome. ໂດຍການສືບຕໍ່, ແມ່ນຖືວ່າທ່ານຍອມຮັບ <ph name="BEGIN_LINK1" />ຂໍ້ກຳນົດບໍລິການ Google<ph name="END_LINK1" /> ແລະ <ph name="BEGIN_LINK2" />ຂໍ້ກຳນົດບໍລິການເພີ່ມເຕີມ Google Chrome ແລະ ChromeOS<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">ຈັດການການເຄື່ອນໄຫວ</translation>
 <translation id="1355088659320425659">ປະຫວັດ ແລະ ແຖບ</translation>
 <translation id="1360432990279830238">ອອກຈາກະລະບົບ ແລະ ປິດການຊິ້ງຂໍ້ມູນບໍ?</translation>
+<translation id="1363028406613469049">ແທຣັກ</translation>
 <translation id="1366525380420346469">ເມື່ອເປີດໃຊ້</translation>
 <translation id="1373696734384179344">ຄວາມ​ຈຳ​ບໍ່​ພຽງ​ພໍ ເພື່ອ​ດາວ​ໂຫຼດ​ເນື້ອ​ໃນ​ເລືອກ​ໄວ້.</translation>
 <translation id="1376578503827013741">ກຳລັງຄຳນວນ...</translation>
@@ -292,6 +294,7 @@
 <translation id="2435457462613246316">ສະ​ແດງ​ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="2439153523196674349">ຕົວຢ່າງ <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">ທ່ານຕ້ອງການເລີ່ມການດາວໂຫຼດ <ph name="FILE_NAME" /> ອີກຄັ້ງບໍ່?</translation>
+<translation id="2451607499823206582">ກຳລັງຕິດຕາມ</translation>
 <translation id="2453860139492968684">ສໍາ​ເລັດ​</translation>
 <translation id="2461822463642141190">ປັດຈຸບັນ</translation>
 <translation id="2468444275314013497">ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານປອດໄພແລ້ວ</translation>
@@ -1041,7 +1044,6 @@
 <translation id="6040939430773295212">ສະແດງຊໍ້າໆ</translation>
 <translation id="604124094241169006">ອັດ​ຕະ​ໂນ​ມັດ</translation>
 <translation id="6042308850641462728">ເພີ່ມເຕີມ</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{ກວດສອບການອະນຸຍາດສຳລັບ 1 ເວັບໄຊແລ້ວ}other{ກວດສອບການອະນຸຍາດສຳລັບ {NUM_SITES} ເວັບໄຊແລ້ວ}}</translation>
 <translation id="604996488070107836">ການດາວໂຫຼດ <ph name="FILE_NAME" /> ບໍ່ສຳເລັດເນື່ອງຈາກເກີດຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ.</translation>
 <translation id="605721222689873409">ປ​ປ</translation>
 <translation id="6059830886158432458">ຄວບຄຸມເລື່ອງລາວ ແລະ ການເຄື່ອນໄຫວຢູ່ບ່ອນນີ້</translation>
@@ -1682,7 +1684,6 @@
 <translation id="8865415417596392024">ຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ</translation>
 <translation id="8898822736010347272">ສົ່ງ URL ຂອງບາງໜ້າທີ່ທ່ານເຂົ້າເບິ່ງ, ຂໍ້ມູນລະບົບທີ່ຈຳກັດ ແລະ ບາງເນື້ອຫາໃນໜ້າໃຫ້ Google ເພື່ອຊ່ວຍຄົ້ນພົບອັນຕະລາຍໃໝ່ ແລະ ປົກປ້ອງທຸກຄົນໃນເວັບ.</translation>
 <translation id="8909135823018751308">ແຊຣ໌...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{ບໍ່ອະນຸຍາດໃຫ້ມີການແຈ້ງເຕືອນສຳລັບ 1 ເວັບໄຊ}other{ບໍ່ອະນຸຍາດໃຫ້ມີການແຈ້ງເຕືອນສຳລັບ {NUM_SITES} ເວັບໄຊ}}</translation>
 <translation id="8921980840204105660">ຊິ້ງຂໍ້ມູນເພື່ອໃຊ້ບຸກມາກຂອງທ່ານຈາກອຸປະກອນອື່ນຂອງທ່ານ</translation>
 <translation id="8922289737868596582">ດາວໂຫຼດໜ້າເວັບຕ່າງໆຈາກປຸ່ມຕົວເລືອກເພີ່ມເຕີມເພື່ອໃຊ້ພວກມັນແບບອອບລາຍ</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>

@@ -215,6 +215,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome vyžaduje systém Windows 10 nebo vyšší.</translation>
 <translation id="3835168907083856002">Tímto vytvoříte nový profil Chrome pro uživatele <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="383928141529488001">K prozkoumání zařízení Bluetooth potřebuje Google Chrome přístup k rozhraní Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Zavřete prosím všechna okna prohlížeče Google Chrome a zkuste to znovu.</translation>
 <translation id="3865754807470779944">Je nainstalována tato verze Chromu: <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Otevřít odkaz v &amp;anonymním okně Chrome</translation>
@@ -425,6 +426,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6938166777909186039">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Google Chrome, budete potřebovat systém Windows 10 nebo novější. Tento počítač používá Windows 8.1.</translation>
 <translation id="6943584222992551122">Ze zařízení budou smazány údaje této osoby o prohlížení. Budete-li je chtít znovu získat, přihlaste se do Chromu jako <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Pravidlo příchozího provozu pro aplikaci Google Chrome Beta, které povolí provoz mDNS.</translation>
+<translation id="6979589607440534284">Proč Chrome některé soubory blokuje, otevře se na nové kartě</translation>
 <translation id="7011190694940573312">Instalace se nezdařila, protože tato verze operačního systému není podporována.</translation>
 <translation id="7024536598735240744">Chyba rozbalení: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalace byla zastavena.</translation>

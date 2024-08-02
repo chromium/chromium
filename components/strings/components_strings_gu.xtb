@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">'પાસવર્ડ મેનેજ કરો' બટન, Chrome સેટિંગમાં તમારા પાસવર્ડ જોવા અને તેમને મેનેજ કરવા માટે સક્રિય કરો</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> માટે પરવાનગી પસંદ કરો</translation>
-<translation id="1112238992895762847">બધા વિકલ્પો માટે કિંમતની શ્રેણી</translation>
 <translation id="1113869188872983271">&amp;પુનઃક્રમાંકિત કરવું પૂર્વવત્ કરો</translation>
 <translation id="1118429183611783760">વેક્યૂમ ક્લિનર અને ફ્લોરની સંભાળ</translation>
 <translation id="1122714970786750095">ઇલેક્ટ્રોનિક અને ઇલેક્ટ્રિકલ</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">હમણાં માટે છુપાવો</translation>
 <translation id="121201262018556460">તમે <ph name="DOMAIN" /> સુધી પહોંચવાનો પ્રયાસ કર્યો, પણ પ્રમાણપત્ર રજૂ કરતા સર્વર પાસે નબળી કી છે. હુમલાખોરે ખાનગી કી તોડી હોઈ શકે છે, અને બને કે સર્વર તમારું અપેક્ષિત સર્વર ન હોય (તમે કોઈ હુમલાખોર સાથે વાર્તાલાપ કરી રહ્યાં હોઈ શકો છો).</translation>
 <translation id="1212527389003717329">ડાઉનલોડ શરૂ થયું. તેને જોવા માટે |<ph name="ACCELERATOR" />| દબાવી રાખો.</translation>
-<translation id="1214970845432250240">કિંમતની રેંજ</translation>
 <translation id="1219129156119358924">સિસ્ટમ સુરક્ષા</translation>
 <translation id="1222060260947439312">જમણી બાજુની ટ્રે</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -353,7 +351,6 @@
 <translation id="1617276713587758852">ક્રૉસઓવર</translation>
 <translation id="1619007254056372606">ડિવાઇસ પર સાઇટનો ડેટા મેનેજ કરો</translation>
 <translation id="1620510694547887537">કૅમેરા</translation>
-<translation id="162285686621567578">આ વેબસાઇટને તમારા માતાપિતા દ્વારા બ્લૉક કરવામાં આવી છે.</translation>
 <translation id="1622966923835127638">વ્યવસાય સંબંધિત ફાઇનાન્સ</translation>
 <translation id="1623104350909869708">આ પેજને વધારાના સંવાદો બનાવતા અટકાવો</translation>
 <translation id="1633137413609266904">{0,plural, =1{ઍડમિનિસ્ટ્રેટર પૉલિસી અનુસાર આ ફાઇલ ખોલવાનું બ્લૉક કરેલું છે}one{ઍડમિનિસ્ટ્રેટર પૉલિસી અનુસાર # ફાઇલ ખોલવાનું બ્લૉક કરેલું છે}other{ઍડમિનિસ્ટ્રેટર પૉલિસી અનુસાર # ફાઇલ ખોલવાનું બ્લૉક કરેલું છે}}</translation>
@@ -738,7 +735,6 @@
 <translation id="2328955282645810595">બાંધકામ અને પાવર ટૂલ</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" />ના રોજ સમાપ્ત થાય છે</translation>
 <translation id="2337044517221264923">લખવાનું ફરી શરૂ કરો</translation>
-<translation id="2337776048981813397">બધા વિકલ્પો માટે કિંમતની શ્રેણી</translation>
 <translation id="2337852623177822836">તમારા વ્યવસ્થાપકે નિયંત્રિત કરેલ સેટિંગ</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" />, જોડી કરવા માગે છે</translation>
 <translation id="2346319942568447007">તમે કૉપિ કરેલી છબી</translation>
@@ -1030,7 +1026,6 @@
 <translation id="2930577230479659665">પ્રત્યેક કૉપિ પછી ટ્રિમ કરો</translation>
 <translation id="2933624813161016821">એમ્બોસિંગ ફૉઇલ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> લિંક્સ ખોલો</translation>
-<translation id="2941112035454246133">નીચું</translation>
 <translation id="2941878205777356567">એન્વલપ 9 x 12 ઇંચ</translation>
 <translation id="2941952326391522266">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર <ph name="DOMAIN2" /> નું છે. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
 <translation id="2942492342931589800">કૅઝુઅલ</translation>
@@ -1212,7 +1207,6 @@
 <translation id="3272091146646336650">સુપર B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" />-અંકનો ચકાસણી કોડ દાખલ કરો</translation>
 <translation id="3272643614306383237">1 MB કરતાં ઓછું. તમારી આગલી મુલાકાત વખતે કેટલીક સાઇટ વધુ ધીમે લોડ થાય એમ બની શકે છે.</translation>
-<translation id="327346289570683313">કિંમતની રેંજ</translation>
 <translation id="3273738040255912340">તમારા ઍડમિનિસ્ટ્રેટર તમારી પ્રોફાઇલ અને બ્રાઉઝરમાં રિમોટલી ફેરફાર કરી શકે, રિપોર્ટિંગ મારફતે બ્રાઉઝર વિશેની માહિતીનું વિશ્લેષણ કરી શકે અને અન્ય જરૂરી કાર્યો કરી શકે. આ ડિવાઇસ પરની ઍક્ટિવિટી Chromiumની બહારથી પણ મેનેજ કરી શકાય છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" />માં ખોલવાનો સુઝાવ આપતી નથી}one{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" />માં ખોલવાનો સુઝાવ આપતી નથી}other{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલોને <ph name="DESTINATION_NAME" />માં ખોલવાનો સુઝાવ આપતી નથી}}</translation>
 <translation id="3282085321714087552">તમારી સંસ્થા, <ph name="ENROLLMENT_DOMAIN" />એ સેટિંગ અથવા પૉલિસી જેવી અમુક માહિતી નીચેની વેબસાઇટને મોકલી છે.</translation>
@@ -1701,6 +1695,7 @@
 <translation id="4177501066905053472">જાહેરાતના વિષયો</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">કિંમત ટ્રૅક કરવાનું બંધ કરો</translation>
+<translation id="4190446002599583608">AI દ્વારા સંચાલિત ઇતિહાસમાં શોધ સુવિધા</translation>
 <translation id="4191334393248735295">લંબાઈ</translation>
 <translation id="4195459680867822611">'Chrome ટિપ જુઓ' બટન, Chromeની સુવિધાઓ વિશે જાણવા માટે સક્રિય કરો</translation>
 <translation id="4195643157523330669">નવા ટૅબમાં ખોલો</translation>
@@ -1716,6 +1711,7 @@
 <translation id="421066178035138955">વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ અને ડેટાનો ઉપયોગ કરો</translation>
 <translation id="4213500579045346575">બૉડીબિલ્ડિંગ</translation>
 <translation id="4214357935346142455">સાઇન-ઇન સ્ક્રીન પ્રોફાઇલ</translation>
+<translation id="4219596572397833317">વધુ સ્માર્ટ રીતે ખરીદી કરવામાં તમારી સહાય માટે કિંમતનો ઇતિહાસ અને તેને સંબંધિત બીજી ઘણી બાબતો જુઓ.</translation>
 <translation id="4220128509585149162">ક્રેશેસ</translation>
 <translation id="4221630205957821124">&lt;h4&gt;પગલું 1: પોર્ટલમાં સાઇન ઇન કરો&lt;/h4&gt;
     &lt;p&gt;કૅફે અથવા એરપોર્ટ જેવા સ્થાન પરના વાઇ-ફાઇ નેટવર્કમાં તમારે સાઇન ઇન કરવું જરૂરી હોય છે. સાઇન ઇન પેજ જોવા માટે, &lt;code&gt;http://&lt;/code&gt;નો ઉપયોગ કરતા પેજની મુલાકાત લો.&lt;/p&gt;
@@ -3634,6 +3630,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome માંથી ફોર્મ સૂચનો દૂર કરીએ?</translation>
 <translation id="781440967107097262">ક્લિપબોર્ડ શેર કરીએ?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">પેપર (સાદું)</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' માટે <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> મળ્યાં</translation>
 <translation id="7822611063308883975">હાથમાં પકડી શકાય તેવા ગેમ કન્સોલ</translation>
@@ -3798,6 +3795,7 @@
 <translation id="8148608574971654810">PDF વર્ઝન:</translation>
 <translation id="8149426793427495338">તમારું કમ્પ્યુટર નિષ્ક્રિય થઈ ગયું હતું.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> પરની ફાઇલ વાંચનયોગ્ય નથી. તે દૂર કરવામાં, ખસેડવામાં આવી હોઈ શકે છે અથવા ફાઇલ પરવાનગીઓ ઍક્સેસ કરવાથી અટકાવતી હોઈ શકે છે.</translation>
+<translation id="8151185429379586178">વિકાસકર્તા સાધનો</translation>
 <translation id="8153865548451212769">{0,plural, =1{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" /> પર ડાઉનલોડ કરવાનો સુઝાવ આપતી નથી}one{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" /> પર ડાઉનલોડ કરવાનો સુઝાવ આપતી નથી}other{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલોને <ph name="DESTINATION_NAME" /> પર ડાઉનલોડ કરવાનો સુઝાવ આપતી નથી}}</translation>
 <translation id="81563721597823545">હૉકીનું સાધન</translation>
 <translation id="8161095570253161196">બ્રાઉઝ કરવાનું ફરી શરૂ કરો</translation>

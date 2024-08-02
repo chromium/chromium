@@ -976,6 +976,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="453661520163887813"><ph name="TIME" /> até estar totalmente carregada</translation>
 <translation id="4538824937723742295">Faça uma captura de ecrã inteiro</translation>
 <translation id="4539127209940689201">Imprimir a página atual</translation>
+<translation id="4541505619120536051">Abrir sempre</translation>
 <translation id="4541706525461326392">A remover o perfil. Esta ação pode demorar alguns minutos.</translation>
 <translation id="4544483149666270818">Selecione uma janela para gravar.</translation>
 <translation id="4545950850562423083">Guardar a página atual como marcador</translation>
@@ -1361,6 +1362,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5819918159912280082">O Chromebook reiniciou inesperadamente. Abra as janelas e as apps anteriores.</translation>
 <translation id="5823239091726045201">Google Tasks na Web</translation>
 <translation id="5825969630400862129">Definições de dispositivos associados</translation>
+<translation id="5830180081891717894">Mais <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Parar o <ph name="ROUTE_TITLE" /> no recetor <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Ir para a faixa seguinte</translation>
 <translation id="5842553299352339114">A zona Wi-Fi do dispositivo <ph name="DEVICE_NAME" /> está ativada, sem dispositivos ligados</translation>
@@ -1488,6 +1490,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6232891689835436217">A app <ph name="APP_NAME" /> está a usar a câmara e o microfone neste momento</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Botão superior</translation>
+<translation id="6240821072888636753">Perguntar sempre</translation>
 <translation id="6247728804802644171">Abrir as notificações</translation>
 <translation id="6249795363855770621">Não foi possível marcá-la como concluída. Tente novamente quando estiver online.</translation>
 <translation id="6254629735336163724">Bloqueado na horizontal</translation>
@@ -1831,6 +1834,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7557816257942363084">A app <ph name="APP_NAME" /> está a usar o microfone neste momento</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
 <translation id="7564874036684306347">A movimentação de janelas para outro ambiente de trabalho pode provocar um comportamento inesperado. É possível dividir as notificações, as janelas e as caixas de diálogo subsequentes entre ambientes de trabalho.</translation>
+<translation id="7568790562536448087">A atualizar</translation>
 <translation id="7569509451529460200">O braille e o ChromeVox estão ativados</translation>
 <translation id="7569886975397378678">Ignorar configuração da visualização das notificações e das apps do telemóvel</translation>
 <translation id="7571361473021531288">Bateria: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> restante(s)</translation>
@@ -1960,7 +1964,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7963992254934562106">De <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Selecionar pasta…</translation>
 <translation id="7973756967040444713">Fechar barra de ferramentas</translation>
-<translation id="797485111629834774">Marcar tarefa como concluída: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Ativar ou desativar a lupa de ecrã inteiro</translation>
 <translation id="7977927628060636163">A pesquisar redes móveis...</translation>
 <translation id="7982789257301363584">Rede</translation>
@@ -2066,6 +2069,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> e o telemóvel serão associados automaticamente.</translation>
 <translation id="8380784334203145311">Boa noite,</translation>
 <translation id="8382715499079447151">Proteção da visualização</translation>
+<translation id="8383614331548401927">Recapitulação de boas-vindas</translation>
 <translation id="8388750414311082622">Não é possível remover o último espaço de trabalho.</translation>
 <translation id="8394567579869570560">Os teus pais bloquearam este dispositivo</translation>
 <translation id="8401850874595457088">Aceder ao menu de idioma</translation>

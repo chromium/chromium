@@ -23,6 +23,8 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="126567311906253476">Kapag nagsa-sign in sa mga serbisyo ng Google tulad ng Gmail o YouTube gamit ang <ph name="USER_EMAIL" />, puwede kang awtomatikong mag-sign in sa Chromium gamit ang parehong account</translation>
 <translation id="1290883685122687410">Error sa pag-set up: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">I-set up ang iyong bagong profile sa Chromium</translation>
+<translation id="1324107359134968521">Kailangan ng Chromium ng access sa Bluetooth para i-explore ang 
+ mga Bluetooth device. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">I-delete din ang data mula sa Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Naka-sign in ka sa Chromium!</translation>
 <translation id="1478370723027452770">Humingi ng tulong para sa Chrome na Pang-test</translation>
@@ -61,6 +63,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1951406923938785464">Na-block ng Chromium ang pag-download na ito dahil hindi karaniwang dina-download ang uri ng file at posibleng mapanganib ito</translation>
 <translation id="1953553007165777902">Nagda-download... <ph name="MINUTE" /> (na) minuto na lang ang natitira</translation>
 <translation id="1966382378801805537">Hindi matukoy o maitakda ng Chromium ang default na browser</translation>
+<translation id="1990262977744080398">Alamin kung bakit bina-block ng Chromium ang ilang file, magbubukas sa bagong tab</translation>
 <translation id="2008474315282236005">Magde-delete ito ng 1 item sa device na ito. Upang makuha ang iyong data sa ibang pagkakataon, mag-sign in sa Chromium bilang <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Hindi na-install. Pakisubukan ulit.</translation>
 <translation id="2020032459870799438">Para makita kung ligtas ang iyong iba pang password mula sa mga paglabag sa data at iba pang isyu sa seguridad, <ph name="BEGIN_LINK" />mag-sign in sa Chromium<ph name="END_LINK" />.</translation>

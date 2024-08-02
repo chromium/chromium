@@ -973,6 +973,7 @@
 <translation id="453661520163887813"><ph name="TIME" /> 後充飽</translation>
 <translation id="4538824937723742295">擷取全螢幕畫面</translation>
 <translation id="4539127209940689201">列印目前的網頁</translation>
+<translation id="4541505619120536051">一律開啟</translation>
 <translation id="4541706525461326392">正在移除設定檔。請稍候片刻。</translation>
 <translation id="4544483149666270818">選取要錄影的視窗</translation>
 <translation id="4545950850562423083">將目前網頁儲存為書籤</translation>
@@ -1398,7 +1399,7 @@
 <translation id="5982119059638483922">按下 Fn + 搜尋鍵或 Shift 鍵即可取消。</translation>
 <translation id="5983567367406220847">由於閒置過久，無線基地台已關閉。</translation>
 <translation id="598407983968395253">使用範本</translation>
-<translation id="5986723678596105470">使用 Google Meet 加入會議</translation>
+<translation id="5986723678596105470">加入 Google Meet 會議</translation>
 <translation id="598882571027504733">如要更新，請連接鍵盤並重新啟動 Chromebook。</translation>
 <translation id="5998374579424866922">關閉遊戲控制選項</translation>
 <translation id="6000279412553873020">按鍵、按鈕等等</translation>
@@ -1485,6 +1486,7 @@
 <translation id="6232891689835436217">「<ph name="APP_NAME" />」正在使用你的攝影機和麥克風</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">頂端按鈕</translation>
+<translation id="6240821072888636753">每次都詢問</translation>
 <translation id="6247728804802644171">開啟通知</translation>
 <translation id="6249795363855770621">無法標示為完成，請連上網路後再試一次。</translation>
 <translation id="6254629735336163724">已鎖定為水平畫面</translation>
@@ -1827,6 +1829,7 @@
 <translation id="7557816257942363084">「<ph name="APP_NAME" />」正在使用你的麥克風</translation>
 <translation id="7561982940498449837">關閉選單</translation>
 <translation id="7564874036684306347">將視窗移至其他桌面可能會導致未預期的行為。後續的通知、視窗和對話方塊可能會分開顯示在不同桌面上。</translation>
+<translation id="7568790562536448087">更新</translation>
 <translation id="7569509451529460200">點字模式和 ChromeVox 已啟用</translation>
 <translation id="7569886975397378678">取消以下設定：查看手機的通知和應用程式</translation>
 <translation id="7571361473021531288">電池電量：<ph name="BATTERY_PERCENTAGE" />% | 還可使用 <ph name="TIME" /></translation>
@@ -1956,7 +1959,6 @@
 <translation id="7963992254934562106">來自「<ph name="PHONE_NAME" />」</translation>
 <translation id="7968693143708939792">選取資料夾…</translation>
 <translation id="7973756967040444713">關閉工具列</translation>
-<translation id="797485111629834774">將工作標示為完成：<ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">開啟或關閉全螢幕放大鏡</translation>
 <translation id="7977927628060636163">正在搜尋行動網路...</translation>
 <translation id="7982789257301363584">網路</translation>

@@ -41,6 +41,7 @@
 <translation id="2801787514987684416">Ungependa kuangalia maelezo ya duka?</translation>
 <translation id="2928243913527329289">Google | Kuhusu duka hili</translation>
 <translation id="2977480621796371840">Ondoa kwenye kikundi</translation>
+<translation id="29919168204617356">Vichupo visivyotumika vitafungwa kiotomatiki. Unaweza kuvipata wakati wowote katika Historia.</translation>
 <translation id="3008554597174452548">Acha kufuatilia bidhaa</translation>
 <translation id="3026391124054406831">Unda vikundi ili upange vichupo vyako.</translation>
 <translation id="3051031624272448591">Unaweza kuvipata kwenye historia wakati wowote</translation>
@@ -51,6 +52,7 @@
 <translation id="3322827343001922122">Fungua menyu ya vitendo ya kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Pendekezo: Vichupo <ph name="NUMBER_OF_TABS" /> vinaonekana kuwa vinahusiana. Ungependa kuvipanga pamoja?</translation>
 <translation id="3547352561153509682">Hatua hii itafuta kikundi kwenye vifaa vyote ulivyotumia kuingia katika akaunti ya <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">Ficha kidirisha cha vichupo visivyotumika</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Kijipicha cha kushiriki onyesho la kukagua laha</translation>
 <translation id="381219490185664296">Ungependa kuondoa vichupo katika kikundi?</translation>
@@ -106,6 +108,7 @@
 <translation id="6040143037577758943">Funga</translation>
 <translation id="6051432659151380973">Vikundi vyako vya vichupo huhifadhiwa kiotomatiki</translation>
 <translation id="6054741997831917303">Hivi majuzi, bei ya kipengee hiki ilipunguzwa kutoka <ph name="PREVIOUS_PRICE" /> ikawa <ph name="NEW_PRICE" /></translation>
+<translation id="6082313992897617440">Papo hapo, hutaweza tena kufikia kikundi cha vichupo cha <ph name="GROUP_NAME" /></translation>
 <translation id="6193448654517602979">Chagua vichupo</translation>
 <translation id="6228793724645064692">(ukadiriaji wa duka)</translation>
 <translation id="6271513594716432922">Funga vichupo vyote visivyotumika</translation>
@@ -129,12 +132,14 @@
 <translation id="731648547091221002">Umechagua <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Angalia sera ya kurejesha bidhaa na mengine</translation>
 <translation id="7352298686197644113">Angalia bidhaa iliyo na bei nafuu katika vichupo ulivyovifungua</translation>
+<translation id="7421293530411019405">Ungependa kuondoka kwenye kikundi cha vichupo?</translation>
 <translation id="7452985128687107478">Vikundi vya vichupo huhifadhiwa na kusasishwa kiotomatiki kwenye vifaa vyako vyote</translation>
 <translation id="747459581954555080">Rejesha zote</translation>
 <translation id="753732157349120914">Kibadilishaji cha Vichupo</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Maoni <ph name="REVIEWS_COUNT_ONE" /> kutoka Google}other{Maoni <ph name="REVIEWS_COUNT_MANY" /> kutoka Google}}</translation>
 <translation id="7559245342362162951">Onyesha vichupo vya kikundi katika gridi ya skrini nzima</translation>
 <translation id="7658239707568436148">Ghairi</translation>
+<translation id="7688386659311034820">Kidirisha cha vichupo visivyotumika</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Shiriki kichupo <ph name="TABS_COUNT_ONE" /> kilichochaguliwa}other{Shiriki vichupo <ph name="TABS_COUNT_MANY" /> vilivyochaguliwa}}</translation>
 <translation id="7773714564112603605">Ondoa vichupo na ufute kikundi</translation>
 <translation id="7792771145871471484">Soma mapendekezo.</translation>
@@ -156,6 +161,8 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Funga kichupo <ph name="TABS_COUNT_ONE" /> ulichochagua}other{Funga vichupo <ph name="TABS_COUNT_MANY" /> ulivyochagua}}</translation>
 <translation id="8398929769197326728">Folda Mpya - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Mipangilio</translation>
+<translation id="8631711675211020168">Papo hapo, kila mtu hataweza tena kufikia kikundi cha vichupo cha <ph name="GROUP_NAME" /> na kitafutwa kwenye vifaa vyote</translation>
+<translation id="8633025649649592204">Shughuli za hivi majuzi</translation>
 <translation id="870736955561925754">Ungependa kufunga kichupo na ufute kikundi?</translation>
 <translation id="8714939927607906138">Bei nafuu</translation>
 <translation id="8730621377337864115">Nimemaliza</translation>

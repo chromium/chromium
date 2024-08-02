@@ -23,6 +23,8 @@
 <translation id="126567311906253476">При најавување на услуги на Google како Gmail или YouTube со <ph name="USER_EMAIL" />, може да се најавувате на Chromium автоматски со истата сметка</translation>
 <translation id="1290883685122687410">Грешка при поставувањето: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Поставете нов профил на Chromium</translation>
+<translation id="1324107359134968521">Chromium бара пристап до Bluetooth за да открива 
+ уреди со Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Избриши ги и податоците од Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Најавени сте на Chromium!</translation>
 <translation id="1478370723027452770">Добијте помош со „Chrome за тестирање“</translation>
@@ -61,6 +63,7 @@
 <translation id="1951406923938785464">Chromium го блокираше преземањево затоа што видот датотека не се презема често и можеби е опасен</translation>
 <translation id="1953553007165777902">Се презема… Уште <ph name="MINUTE" /> мин.</translation>
 <translation id="1966382378801805537">Chromium не може да го одреди или постави стандардниот прелистувач</translation>
+<translation id="1990262977744080398">Дознајте зошто Chromium блокира некои датотеки, се отвора во нова картичка</translation>
 <translation id="2008474315282236005">Ова ќе избрише една ставка од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chromium како <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Инсталирањето не успеа. Обидете се повторно.</translation>
 <translation id="2020032459870799438">За да проверите дали другите ваши лозинки се заштитени од упад во податоците и други проблеми со безбедноста, <ph name="BEGIN_LINK" />најавете се на Chromium<ph name="END_LINK" />.</translation>

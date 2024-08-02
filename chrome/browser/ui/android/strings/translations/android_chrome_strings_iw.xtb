@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">ניהול החשבונות במכשיר הזה</translation>
 <translation id="1129510026454351943">פרטים: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">'מצב פרטי' מאפשר לך לגלוש באופן פרטי שלא יהיה גלוי למשתמשים אחרים במכשיר</translation>
+<translation id="1138458427267715730">קבלת התראות כשיש הנחות באתרים באינטרנט</translation>
 <translation id="1142732900304639782">אין להציג את ההצעה לתרגם את האתרים האלה</translation>
 <translation id="1145536944570833626">מחיקת נתונים קיימים.</translation>
 <translation id="1150263420752757504">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך הפעולה מבטא הסכמה <ph name="BEGIN_LINK1" />לתנאים ולהגבלות של Google<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />לתנאים ולהגבלות הנוספים של Google Chrome ו-ChromeOS<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">ניהול פעילות</translation>
 <translation id="1355088659320425659">היסטוריה וכרטיסיות</translation>
 <translation id="1360432990279830238">לצאת ולהשבית את הסנכרון?</translation>
+<translation id="1363028406613469049">רצועה</translation>
 <translation id="1366525380420346469">במצב מופעל</translation>
 <translation id="1373696734384179344">אין מספיק זיכרון להורדת התוכן הנבחר.</translation>
 <translation id="1376578503827013741">מחשב...</translation>
@@ -292,6 +294,7 @@
 <translation id="2435457462613246316">הצגת סיסמה</translation>
 <translation id="2439153523196674349">תצוגה מקדימה של <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">להתחיל שוב את ההורדה של <ph name="FILE_NAME" />?</translation>
+<translation id="2451607499823206582">במעקב</translation>
 <translation id="2453860139492968684">סיום</translation>
 <translation id="2461822463642141190">כרגע</translation>
 <translation id="2468444275314013497">נראה שהכול בסדר בדפדפן שלך</translation>
@@ -1041,7 +1044,6 @@
 <translation id="6040939430773295212">חוזר על עצמו</translation>
 <translation id="604124094241169006">אוטומטי</translation>
 <translation id="6042308850641462728">עוד</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{ההרשאות של אתר אחד נבדקו}one{ההרשאות של {NUM_SITES} אתרים נבדקו}two{ההרשאות של {NUM_SITES} אתרים נבדקו}other{ההרשאות של {NUM_SITES} אתרים נבדקו}}</translation>
 <translation id="604996488070107836">הורדת <ph name="FILE_NAME" /> נכשלה עקב שגיאה לא ידועה.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">כאן אפשר לנהל את הסטוריז והפעילות שלך</translation>
@@ -1682,7 +1684,6 @@
 <translation id="8865415417596392024">‏נתוני Chrome בחשבון שלך</translation>
 <translation id="8898822736010347272">‏שולח ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, פרטים מוגבלים לגבי המערכת וחלק מתוכן הדפים. פעולה זו עוזרת לזהות איומים חדשים ולהגן על כל המשתמשים באינטרנט.</translation>
 <translation id="8909135823018751308">שיתוף…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{לאתר אחד אין הרשאה לשליחת התראות}one{ל-{NUM_SITES} אתרים אין הרשאה לשליחת התראות}two{ל-{NUM_SITES} אתרים אין הרשאה לשליחת התראות}other{ל-{NUM_SITES} אתרים אין הרשאה לשליחת התראות}}</translation>
 <translation id="8921980840204105660">אפשר לבצע סנכרון כדי להוסיף את הסימניות מהמכשירים האחרים שלך</translation>
 <translation id="8922289737868596582">כדי להשתמש בדפים במצב אופליין, אפשר להוריד אותם דרך הלחצן 'אפשרויות נוספות'</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>

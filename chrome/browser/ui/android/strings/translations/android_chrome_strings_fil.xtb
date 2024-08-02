@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Pamahalaan ang mga account sa device na ito</translation>
 <translation id="1129510026454351943">Mga Detalye: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Pinapanatiling pribado ng Incognito mode ang pag-browse mo sa ibang taong gumagamit ng iyong device</translation>
+<translation id="1138458427267715730">Makatanggap ng mga alerto kapag bumaba ang presyo sa anumang site sa buong web</translation>
 <translation id="1142732900304639782">Huwag mag-alok na isalin ang mga site na ito</translation>
 <translation id="1145536944570833626">I-delete ang kasalukuyang data.</translation>
 <translation id="1150263420752757504">Bubukas ang <ph name="APP_NAME" /> sa Chrome. Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_LINK1" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_LINK1" />, at sa <ph name="BEGIN_LINK2" />Mga Karagdagang Tuntunin ng Serbisyo ng Google Chrome at ChromeOS<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Pamahalaan ang aktibidad</translation>
 <translation id="1355088659320425659">History at mga tab</translation>
 <translation id="1360432990279830238">Mag-sign out at i-off ang pag-sync?</translation>
+<translation id="1363028406613469049">Track</translation>
 <translation id="1366525380420346469">Kapag naka-on</translation>
 <translation id="1373696734384179344">Hindi sapat ang memory upang ma-download ang napiling content.</translation>
 <translation id="1376578503827013741">Kino-compute…</translation>
@@ -292,6 +294,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2435457462613246316">Ipakita ang password</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> Preview</translation>
 <translation id="2450083983707403292">Gusto mo bang simulang muli ang pag-download sa <ph name="FILE_NAME" />?</translation>
+<translation id="2451607499823206582">Pagsubaybay</translation>
 <translation id="2453860139492968684">Tapos na</translation>
 <translation id="2461822463642141190">Kasalukuyan</translation>
 <translation id="2468444275314013497">Mukhang ligtas ang iyong browser</translation>
@@ -387,11 +390,13 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2871733351037274014">Mag-preload ng mga page</translation>
 <translation id="2876136027428473467">Gusto ni <ph name="CHILD_NAME" /> na aprubahan mo ang website na ito:</translation>
 <translation id="2876628302275096482">Matuto pa tungkol sa kung <ph name="BEGIN_LINK" />paano pinapanatiling pribado ng Chrome ang iyong data<ph name="END_LINK" /></translation>
+<translation id="2883644600102358131">Malapit nang hindi gumana ang mga password sa device na ito. Para patuloy na magamit ang iyong mga password, i-update ang mga serbisyo ng Google Play.</translation>
 <translation id="2888126860611144412">Tungkol sa Chrome</translation>
 <translation id="2891154217021530873">Ihinto ang pag-load ng page</translation>
 <translation id="2893180576842394309">Maaaring gamitin ng Google ang iyong history para i-personalize ang Search at iba pang serbisyo ng Google</translation>
 <translation id="2894821468041866720">Hindi kapansin-pansing pababagalin ang iyong browser o device.</translation>
 <translation id="2895521649038438824">Puwede mong pakinggan ang page na ito</translation>
+<translation id="2899252057552912621">Malapit nang hindi gumana ang mga password dahil hindi available ang mga serbisyo ng Google Play. Puwede kang gumawa ng kopya ng iyong mga naka-save na password bago huminto sa paggana ang mga ito.</translation>
 <translation id="2900528713135656174">Gumawa ng event</translation>
 <translation id="2901411048554510387">Ipinapakita ang mga suhestyon para sa <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904300462646366554">Awtomatikong magbubukas ang mga PDF gamit ang isa sa mga PDF viewer sa iyong device</translation>
@@ -444,6 +449,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3070005020161560471">Awtomatikong isalin</translation>
 <translation id="3072980200212375806">Bubukas ang <ph name="APP_NAME" /> sa Chrome. Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_LINK1" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_LINK1" />, at sa <ph name="BEGIN_LINK2" />Mga Karagdagang Tuntunin ng Serbisyo ng Google Chrome at ChromeOS<ph name="END_LINK2" />. Nalalapat din ang <ph name="BEGIN_LINK3" />Patakaran sa Privacy<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Puwede kang mag-save ng mga page para basahin sa ibang pagkakataon o nang offline</translation>
+<translation id="3087218211037573995">Malapit nang hindi gumana ang ilang password na naka-save lang sa device na ito. Puwede mong ilipat sa Google Password Manager ang mga password na ito.</translation>
 <translation id="3091010850649238832">Ipakita ang mga content ng clipboard</translation>
 <translation id="3093004810561729002">Isang Tao</translation>
 <translation id="3098745985164956033">Ipinapadala sa Google ang ilang larawan para mapahusay ang mga paglalarawan para sa iyo</translation>
@@ -572,6 +578,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3771694256347217732">Mga Tuntunin ng Serbisyo ng Google</translation>
 <translation id="3775705724665058594">Ipadala sa iyong mga device</translation>
 <translation id="3777796259512476958">Isa-sign out ka sa karamihan ng site</translation>
+<translation id="379035798868314833">Hindi na gagana ang Google Password Manager sa device na ito</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}one{# tab}other{# na tab}}</translation>
 <translation id="3795154175078851242">Kopyahin ang larawan nang may link</translation>
 <translation id="3810838688059735925">Video</translation>
@@ -1041,7 +1048,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="6040939430773295212">Paulit-ulit</translation>
 <translation id="604124094241169006">Awtomatiko</translation>
 <translation id="6042308850641462728">Marami pang iba</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Sinuri ang mga pahintulot para sa 1 site}one{Sinuri ang mga pahintulot para sa {NUM_SITES} site}other{Sinuri ang mga pahintulot para sa {NUM_SITES} na site}}</translation>
 <translation id="604996488070107836">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa isang hindi alam na error.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Kontrolin ang iyong mga kuwento at aktibidad dito</translation>
@@ -1682,7 +1688,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8865415417596392024">Data ng Chrome sa iyong account</translation>
 <translation id="8898822736010347272">Nagpapadala ng mga URL ng ilang page na binibisita mo, limitadong impormasyon ng system, at ilang content ng page sa Google, para makatulong na tumuklas ng mga bagong banta at protektahan ang lahat ng nasa web.</translation>
 <translation id="8909135823018751308">Ibahagi…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Hindi pinapayagan ang mga notification para sa 1 site}one{Hindi pinapayagan ang mga notification para sa {NUM_SITES} site}other{Hindi pinapayagan ang mga notification para sa {NUM_SITES} na site}}</translation>
 <translation id="8921980840204105660">Mag-sync para makuha ang iyong mga bookmark mula sa iba pang device mo</translation>
 <translation id="8922289737868596582">I-download ang mga page mula sa button na Higit pang opsyon para magamit ang mga ito offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
@@ -1704,6 +1709,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8998729206196772491">Nagsa-sign in ka gamit ang isang account na pinamamahalaan ng <ph name="MANAGED_DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chrome. Permanenteng mauugnay ang iyong data sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chrome, ngunit mananatili itong naka-store sa iyong Google Account.</translation>
 <translation id="8998837250940831980">Hindi ma-minimize ang tab. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="9001604755921395912">Buksan sa Incognito Chrome tab</translation>
+<translation id="9007002441981613214">Ayusin ang problema sa mga naka-save na password</translation>
 <translation id="9012585441087414258">Nagpoprotekta laban sa mga site, download, at extension na kilalang mapanganib. Kung may kahina-hinalang ginagawa ang isang page, ipinapadala sa Ligtas na Pag-browse sa Google ang mga URL at bit ng content ng page.</translation>
 <translation id="9019199799064251516">Magpatuloy nang walang lock ng profile ng kotse?</translation>
 <translation id="9022774213089566801">Madalas na binibisita</translation>

@@ -179,7 +179,6 @@
 <translation id="1827738518074806965">Өнер галереясы</translation>
 <translation id="1836553715834333258">Жүйе түсі</translation>
 <translation id="183675228220305365">реализм</translation>
-<translation id="1837537071599385610">Нұсқау жазу нұсқаулығы</translation>
 <translation id="1838374766361614909">Іздеуді тазарту</translation>
 <translation id="1840474674287087346">Жұмыс үстелінің түсі</translation>
 <translation id="184095011128924488">креативті</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Google AI технологиясымен жасалған соңғы фондар</translation>
 <translation id="2783010256799387990">ӨТТІ</translation>
 <translation id="2786429550992142861">зығыр</translation>
+<translation id="2787237339470862294">Қазіргі уақытта бұл тілге қолдау көрсетілмейді.</translation>
 <translation id="2787435249130282949">пернетақтаны жарықтау</translation>
 <translation id="2805756323405976993">Қолданбалар</translation>
 <translation id="28232023175184696">Интернетке қосыла алмай жатыр. Әрекетті қайталау үшін түртіңіз.</translation>
@@ -673,6 +673,7 @@
 <translation id="458794348635939462">Барлық хост атаулары түрлендірілмеді.</translation>
 <translation id="4593212453765072419">Прокси растауы талап етіледі.</translation>
 <translation id="4594021849294327751">Транскрипция жасау</translation>
+<translation id="4607282946861182308">Мұндай сурет жасау мүмкін емес. Басқа нұсқау жазып көріңіз.</translation>
 <translation id="4609350030397390689">Пернетақта жарықтығын азайту</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Басып шығарудан бас тарту үшін "Enter" пернесін басыңыз.</translation>
 <translation id="463791356324567266">Сканерлеу тоқтатылуда…</translation>

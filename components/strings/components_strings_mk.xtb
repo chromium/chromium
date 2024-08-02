@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Копче за управување со лозинките, активирајте го за да ги прегледате и управувате со вашите лозинки во поставките за Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Изберете дозвола за <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">Опсег на цени за сите опции</translation>
 <translation id="1113869188872983271">&amp;Врати преуредување</translation>
 <translation id="1118429183611783760">Правосмукалки и нега на подови</translation>
 <translation id="1122714970786750095">Електронски и електрични уреди</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">Скриј засега</translation>
 <translation id="121201262018556460">Се обидовте да стигнете до <ph name="DOMAIN" />, но серверот прикажа сертификат што содржи слаб клуч. Напаѓач може го расипал приватниот клуч, па серверот може не е серверот што го очекувавте (можеби комуницирате со напаѓач).</translation>
 <translation id="1212527389003717329">Започна преземање. За да го видите, притиснете и задржете |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">Опсег на цени</translation>
 <translation id="1219129156119358924">Безбедност на системот</translation>
 <translation id="1222060260947439312">Десна фиока</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -141,6 +139,7 @@
 <translation id="1247030632403369975">Алуминиум</translation>
 <translation id="1252209483516427155">Горна облека</translation>
 <translation id="1253096324252841344">Платете со <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
+<translation id="1253846494229886276">Сликата од екранот се зачувува</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" /> и <ph name="TYPE_2" /> (синхронизирани)</translation>
 <translation id="1255086252236620440">Миксери за храна</translation>
 <translation id="1256368399071562588">&lt;p&gt;Ако се обидувате да посетите веб-сајт, а тој не се отвора, прво обидете се да ја поправите грешката со овие чекори за отстранување грешки:&lt;/p&gt;
@@ -352,7 +351,6 @@
 <translation id="1617276713587758852">Кросовери</translation>
 <translation id="1619007254056372606">Управувајте со податоци од сајт на уредот</translation>
 <translation id="1620510694547887537">Камера</translation>
-<translation id="162285686621567578">Родителот го блокирал веб-сајтов.</translation>
 <translation id="1622966923835127638">Бизнис финансии</translation>
 <translation id="1623104350909869708">Спречете ја страницата да направи дополнителни дијалози</translation>
 <translation id="1633137413609266904">{0,plural, =1{Отворањето на датотекава е блокирано со правило на администраторот}one{Отворањето на # датотека е блокирано со правило на администраторот}other{Отворањето на # датотеки е блокирано со правило на администраторот}}</translation>
@@ -737,7 +735,6 @@
 <translation id="2328955282645810595">Алати за градежништво и електрични алати</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, истекува на <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Продолжете со пишување</translation>
-<translation id="2337776048981813397">Опсег на цени за сите опции</translation>
 <translation id="2337852623177822836">Поставка што ја контролира администраторот</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> сака да се спари</translation>
 <translation id="2346319942568447007">Сликата што ја копиравте</translation>
@@ -1029,7 +1026,6 @@
 <translation id="2930577230479659665">Кратење по секој примерок</translation>
 <translation id="2933624813161016821">Фолија за гравирање</translation>
 <translation id="2938225289965773019">Отвори <ph name="PROTOCOL" /> врски</translation>
-<translation id="2941112035454246133">Низок</translation>
 <translation id="2941878205777356567">Плик 9 x 12 in</translation>
 <translation id="2941952326391522266">Серверот не може да докаже дека е <ph name="DOMAIN" />; неговиот сертификат е од <ph name="DOMAIN2" />. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="2942492342931589800">Обично</translation>
@@ -1211,7 +1207,6 @@
 <translation id="3272091146646336650">Супер Б</translation>
 <translation id="3272112314896217187">Внесете го <ph name="NUMBER_OF_DIGITS" />-цифрениот код за потврда</translation>
 <translation id="3272643614306383237">Помалку од 1 MB. Некои сајтови можеби ќе се вчитуваат побавно при вашата следна посета.</translation>
-<translation id="327346289570683313">Опсег на цени</translation>
 <translation id="3273738040255912340">Администраторот може да врши промени во вашиот профил и прелистувач далечински, да ги анализира информациите за прелистувачот преку извештаите и да извршува други неопходни задачи. Со активноста на уредов може да се управува и надвор од Chromium. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Администраторското правило не препорачува да се отвори датотекава во <ph name="DESTINATION_NAME" />}one{Администраторското правило не препорачува да се отворат датотекиве во <ph name="DESTINATION_NAME" />}other{Администраторското правило не препорачува да се отворат датотекиве во <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Вашата организација, <ph name="ENROLLMENT_DOMAIN" />, испратила одредени информации на следниве веб-сајтови, како поставки или правила.</translation>
@@ -1700,6 +1695,7 @@
 <translation id="4177501066905053472">Теми на реклами</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Отследи ја цената</translation>
+<translation id="4190446002599583608">Пребарување на историјата, овозможено од AI</translation>
 <translation id="4191334393248735295">Должина</translation>
 <translation id="4195459680867822611">Копче за гледање совети за Chrome, активирајте го за да дознаете за функциите на Chrome</translation>
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
@@ -1715,6 +1711,7 @@
 <translation id="421066178035138955">да ги користи уредите и податоците за виртуелна реалност</translation>
 <translation id="4213500579045346575">Бодибилдинг</translation>
 <translation id="4214357935346142455">профил на екранот за најавување</translation>
+<translation id="4219596572397833317">За да купувате попаметно, погледнете ја историјата на цените и друго.</translation>
 <translation id="4220128509585149162">Падови</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Чекор 1: најавете се на порталот&lt;/h4&gt;
     &lt;p&gt;Ќе треба да се најавите на Wi-Fi мрежи во места како кафулиња или аеродроми. За да ја видите страницата за најавување, посетете страница што користи &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
@@ -2140,6 +2137,7 @@
 <translation id="5019952743397118625">Правилото за <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> е поставено. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> нема да ја контролира достапноста на „Режим на програмер“ на страницата со екстензии.</translation>
 <translation id="5021557570875267742">Следете ги цените со Chrome</translation>
 <translation id="5023310440958281426">Проверете ги правилата на вашиот администратор</translation>
+<translation id="5024171724744627792">Плаќајте побрзо кога вашата картичка е зачувана. Деталите за картичката се шифрирани во вашата сметка на Google.</translation>
 <translation id="5030338702439866405">Издадено од</translation>
 <translation id="503069730517007720">Потребен е основен сертификат за „<ph name="SOFTWARE_NAME" />“, но не е инсталиран. Вашиот IT-администратор треба да погледне во упатствата за конфигурација за „<ph name="SOFTWARE_NAME" />“ за да го реши проблемот. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">За Google Translate</translation>
@@ -3328,6 +3326,7 @@
 <translation id="7311244614769792472">Не се најдени резултати</translation>
 <translation id="7311837626618954149">Chromium блокира сајтовите да користат колачиња од трети страни за да ве следат додека прелистувате.</translation>
 <translation id="7313107491291103073">Вашата организација го означи сајтов бидејќи можеби прекршува правило.</translation>
+<translation id="7316521168101843192">Датотеката се зачувува во Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Помош за поврзување</translation>
 <translation id="7323804146520582233">Скриј го делот „<ph name="SECTION" />“</translation>
@@ -3631,6 +3630,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Отстрани ги предлозите за формулари од Chrome?</translation>
 <translation id="781440967107097262">Да се сподели привремената меморија?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Хартија (обична)</translation>
 <translation id="7815407501681723534">Пронајдени се <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> за „<ph name="SEARCH_STRING" />“</translation>
 <translation id="7822611063308883975">Преносливи конзоли за игри</translation>
@@ -3795,6 +3795,7 @@
 <translation id="8148608574971654810">PDF-верзија:</translation>
 <translation id="8149426793427495338">Компјутерот е во режим на спиење.</translation>
 <translation id="8150722005171944719">Датотеката на <ph name="URL" /> не може да се прочита. Можно е да е отстранета, преместена или дозволите на датотеката да го спречуваат пристапот.</translation>
+<translation id="8151185429379586178">Програмерски алатки</translation>
 <translation id="8153865548451212769">{0,plural, =1{Правилото на администраторот не препорачува да се презема датотекава во <ph name="DESTINATION_NAME" />}one{Правилото на администраторот не препорачува да се преземаат датотекиве во <ph name="DESTINATION_NAME" />}other{Правилото на администраторот не препорачува да се преземаат датотекиве во <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Опрема за хокеј</translation>
 <translation id="8161095570253161196">Продолжи со прелистување</translation>

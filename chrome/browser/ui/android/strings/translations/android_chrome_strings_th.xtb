@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">จัดการบัญชีในอุปกรณ์เครื่องนี้</translation>
 <translation id="1129510026454351943">รายละเอียด: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">โหมดไม่ระบุตัวตนทำให้การท่องเว็บของคุณเป็นแบบส่วนตัวจากผู้อื่นที่ใช้อุปกรณ์ของคุณ</translation>
+<translation id="1138458427267715730">รับการแจ้งเตือนเมื่อราคาต่ำลงในเว็บไซต์ใดก็ตามทั่วทั้งอินเทอร์เน็ต</translation>
 <translation id="1142732900304639782">ไม่ต้องเสนอการแปลเว็บไซต์เหล่านี้</translation>
 <translation id="1145536944570833626">ลบข้อมูลที่มีอยู่</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> จะเปิดใน Chrome การดำเนินการต่อหมายความว่า คุณยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK1" /> และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Google Chrome และ Chrome OS<ph name="END_LINK2" /></translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">จัดการกิจกรรม</translation>
 <translation id="1355088659320425659">ประวัติการเข้าชมและแท็บ</translation>
 <translation id="1360432990279830238">ออกจากระบบและปิดการซิงค์ไหม</translation>
+<translation id="1363028406613469049">ติดตาม</translation>
 <translation id="1366525380420346469">เมื่อเปิด</translation>
 <translation id="1373696734384179344">หน่วยความจำไม่เพียงพอที่จะดาวน์โหลดเนื้อหาที่เลือก</translation>
 <translation id="1376578503827013741">กำลังประมวลผล…</translation>
@@ -292,6 +294,7 @@
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
 <translation id="2439153523196674349">ตัวอย่าง <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">คุณต้องการเริ่มดาวน์โหลด <ph name="FILE_NAME" /> อีกครั้งไหม</translation>
+<translation id="2451607499823206582">การติดตาม</translation>
 <translation id="2453860139492968684">เสร็จสิ้น</translation>
 <translation id="2461822463642141190">ปัจจุบัน</translation>
 <translation id="2468444275314013497">เบราว์เซอร์ของคุณไม่มีปัญหา</translation>
@@ -387,11 +390,13 @@
 <translation id="2871733351037274014">โหลดหน้าเว็บล่วงหน้า</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> อยากให้คุณอนุมัติเว็บไซต์นี้</translation>
 <translation id="2876628302275096482">ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK" />วิธีที่ Chrome ช่วยรักษาข้อมูลของคุณให้เป็นส่วนตัว<ph name="END_LINK" /></translation>
+<translation id="2883644600102358131">รหัสผ่านจะหยุดทำงานในอุปกรณ์เครื่องนี้เร็วๆ นี้ อัปเดตบริการ Google Play เพื่อใช้รหัสผ่านต่อไป</translation>
 <translation id="2888126860611144412">เกี่ยวกับ Chrome</translation>
 <translation id="2891154217021530873">หยุดการโหลดหน้า</translation>
 <translation id="2893180576842394309">Google อาจใช้ประวัติการเข้าชมเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ของ Google ให้เข้ากับคุณ</translation>
 <translation id="2894821468041866720">ไม่ทำให้เบราว์เซอร์หรืออุปกรณ์ของคุณทำงานช้าลงอย่างเห็นได้ชัด</translation>
 <translation id="2895521649038438824">คุณฟังหน้านี้ได้</translation>
+<translation id="2899252057552912621">รหัสผ่านจะหยุดทำงานเร็วๆ นี้เนื่องจากบริการ Google Play ไม่พร้อมใช้งาน คุณสามารถทำสำเนารหัสผ่านที่บันทึกไว้ก่อนที่รหัสผ่านจะหยุดทำงานได้</translation>
 <translation id="2900528713135656174">สร้างกิจกรรม</translation>
 <translation id="2901411048554510387">กำลังแสดงคำแนะนำสำหรับ <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904300462646366554">PDF ที่ดาวน์โหลดจะเปิดด้วยโปรแกรมอ่าน PDF ตัวใดตัวหนึ่งในอุปกรณ์ของคุณโดยอัตโนมัติ</translation>
@@ -444,6 +449,7 @@
 <translation id="3070005020161560471">แปลโดยอัตโนมัติ</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> จะเปิดใน Chrome การดำเนินการต่อหมายความว่า คุณยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK1" /> และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Google Chrome และ Chrome OS<ph name="END_LINK2" /> <ph name="BEGIN_LINK3" />นโยบายความเป็นส่วนตัว<ph name="END_LINK3" />จะมีผลด้วย</translation>
 <translation id="3080525922482950719">คุณบันทึกหน้าเว็บไว้อ่านภายหลังหรืออ่านขณะออฟไลน์ได้</translation>
+<translation id="3087218211037573995">รหัสผ่านบางรายการที่บันทึกไว้ในอุปกรณ์เครื่องนี้เท่านั้นที่จะหยุดทำงานเร็วๆ นี้ คุณย้ายรหัสผ่านดังกล่าวไปยังเครื่องมือจัดการรหัสผ่านบน Google ได้</translation>
 <translation id="3091010850649238832">แสดงเนื้อหาในคลิปบอร์ด</translation>
 <translation id="3093004810561729002">ใครคนหนึ่ง</translation>
 <translation id="3098745985164956033">ระบบจะส่งรูปภาพบางส่วนไปยัง Google เพื่อปรับปรุงคำอธิบายสำหรับคุณ</translation>
@@ -572,6 +578,7 @@
 <translation id="3771694256347217732">ข้อกำหนดในการให้บริการของ Google</translation>
 <translation id="3775705724665058594">ส่งไปยังอุปกรณ์</translation>
 <translation id="3777796259512476958">นำคุณออกจากระบบของเว็บไซต์ส่วนใหญ่</translation>
+<translation id="379035798868314833">เครื่องมือจัดการรหัสผ่านบน Google จะหยุดทำงานในอุปกรณ์เครื่องนี้</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 แท็บ}other{# แท็บ}}</translation>
 <translation id="3795154175078851242">คัดลอกรูปภาพพร้อมลิงก์</translation>
 <translation id="3810838688059735925">วิดีโอ</translation>
@@ -1041,7 +1048,6 @@
 <translation id="6040939430773295212">ซ้ำซ้อน</translation>
 <translation id="604124094241169006">อัตโนมัติ</translation>
 <translation id="6042308850641462728">แสดงเพิ่ม</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{ตรวจสอบสิทธิ์สำหรับ 1 เว็บไซต์แล้ว}other{ตรวจสอบสิทธิ์สำหรับ {NUM_SITES} เว็บไซต์แล้ว}}</translation>
 <translation id="604996488070107836">การดาวน์โหลด <ph name="FILE_NAME" /> ล้มเหลวเนื่องจากข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="605721222689873409">ปป</translation>
 <translation id="6059830886158432458">ควบคุมเรื่องราวและกิจกรรมของคุณได้ที่นี่</translation>
@@ -1682,7 +1688,6 @@
 <translation id="8865415417596392024">ข้อมูล Chrome ในบัญชี</translation>
 <translation id="8898822736010347272">ส่ง URL ของหน้าบางหน้าที่คุณเข้าชม ข้อมูลระบบที่จำกัด และเนื้อหาบางส่วนของหน้าไปให้ Google เพื่อช่วยตรวจหาภัยคุกคามใหม่ๆ และปกป้องทุกคนที่ใช้อินเทอร์เน็ต</translation>
 <translation id="8909135823018751308">แชร์…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{ไม่อนุญาตให้มีการแจ้งเตือนสำหรับ 1 เว็บไซต์}other{ไม่อนุญาตให้มีการแจ้งเตือนสำหรับ {NUM_SITES} เว็บไซต์}}</translation>
 <translation id="8921980840204105660">ซิงค์เพื่อรับบุ๊กมาร์กจากอุปกรณ์อื่นๆ</translation>
 <translation id="8922289737868596582">ดาวน์โหลดหน้าจากปุ่มตัวเลือกเพิ่มเติมเพื่อใช้งานแบบออฟไลน์</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -1704,6 +1709,7 @@
 <translation id="8998729206196772491">คุณกำลังลงชื่อเข้าใช้ด้วยบัญชีที่จัดการโดย <ph name="MANAGED_DOMAIN" /> และทำให้ผู้ดูแลระบบของโดเมนควบคุมข้อมูล Chrome ของคุณได้ ข้อมูลดังกล่าวจะโยงกับบัญชีนี้อย่างถาวร การออกจากระบบ Chrome จะลบข้อมูลของคุณออกจากอุปกรณ์เครื่องนี้ แต่ข้อมูลจะยังจัดเก็บอยู่ในบัญชี Google</translation>
 <translation id="8998837250940831980">ย่อแท็บไม่ได้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="9001604755921395912">เปิดในแท็บที่ไม่ระบุตัวตนของ Chrome</translation>
+<translation id="9007002441981613214">แก้ไขปัญหาเกี่ยวกับรหัสผ่านที่บันทึกไว้</translation>
 <translation id="9012585441087414258">ปกป้องจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่ทราบแล้วว่าเป็นอันตราย หากหน้าเว็บทำสิ่งที่น่าสงสัย ระบบจะส่ง URL และเนื้อหาของหน้าเว็บบางส่วนไปยัง Google Safe Browsing</translation>
 <translation id="9019199799064251516">ดำเนินการต่อโดยไม่ล็อกโปรไฟล์รถยนต์ใช่ไหม</translation>
 <translation id="9022774213089566801">เข้าชมบ่อย</translation>

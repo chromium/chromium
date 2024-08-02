@@ -976,6 +976,7 @@
 <translation id="453661520163887813"><ph name="TIME" /> مانده تا کامل شود</translation>
 <translation id="4538824937723742295">گرفتن نماگرفت تمام‌صفحه</translation>
 <translation id="4539127209940689201">چاپ کردن صفحه کنونی</translation>
+<translation id="4541505619120536051">همیشه باز شود</translation>
 <translation id="4541706525461326392">درحال برداشتن نمایه. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="4544483149666270818">پنجره‌ای را برای ضبط انتخاب کنید</translation>
 <translation id="4545950850562423083">ذخیره صفحه فعلی به‌عنوان نشانک</translation>
@@ -1488,6 +1489,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" /> درحال استفاده از دوربین و میکروفون است</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">دکمه بالایی</translation>
+<translation id="6240821072888636753">هربار پرسیده شود</translation>
 <translation id="6247728804802644171">باز کردن اعلان‌ها</translation>
 <translation id="6249795363855770621">به‌عنوان تکمیل‌شده علامت زده نشد. وقتی آنلاین شدید دوباره امتحان کنید.</translation>
 <translation id="6254629735336163724">قفل درحالت افقی</translation>
@@ -1831,6 +1833,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> درحال استفاده از میکروفون است</translation>
 <translation id="7561982940498449837">بستن منو</translation>
 <translation id="7564874036684306347">انتقال پنجره‌ها به میز کار دیگر می‌تواند به رفتار غیرمنتظره منجر شود. اعلان‌ها، پنجره‌ها و کادرهای گفتگوی بعدی ممکن است بین میز کارها تقسیم شوند.</translation>
+<translation id="7568790562536448087">در حال به‌روزرسانی</translation>
 <translation id="7569509451529460200">‏بریل و ChromeVox فعال هستند</translation>
 <translation id="7569886975397378678">بستن راه‌اندازی مشاهده اعلان‌ها و برنامه‌های تلفن</translation>
 <translation id="7571361473021531288">شارژ <ph name="BATTERY_PERCENTAGE" />٪ | <ph name="TIME" /> باقی مانده است</translation>
@@ -1960,7 +1963,6 @@
 <translation id="7963992254934562106">از <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">انتخاب پوشه…</translation>
 <translation id="7973756967040444713">بستن نوارابزار</translation>
-<translation id="797485111629834774">علامت‌گذاری تکلیف به‌عنوان تکمیل‌شده: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">روشن یا خاموش کردن ذره‌بین تمام‌صفحه</translation>
 <translation id="7977927628060636163">درحال جستجوی شبکه‌های تلفن همراه…</translation>
 <translation id="7982789257301363584">شبکه</translation>

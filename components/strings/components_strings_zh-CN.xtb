@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">“管理密码”按钮，激活它即可在 Chrome 设置中查看和管理您的密码</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">选择对<ph name="PERMISSION_NAME" />的权限</translation>
-<translation id="1112238992895762847">所有选项的价格范围</translation>
 <translation id="1113869188872983271">撤消顺序调整(&amp;U)</translation>
 <translation id="1118429183611783760">吸尘器与地板护理</translation>
 <translation id="1122714970786750095">电子与电气</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">暂时隐藏</translation>
 <translation id="121201262018556460">您尝试访问的是 <ph name="DOMAIN" />，但是服务器出示的证书包含弱密钥。攻击者可能已经破解了私钥，因此这可能并不是您想要访问的服务器（您可能正在与攻击者进行通信）。</translation>
 <translation id="1212527389003717329">已开始下载。若要查看，请按住 |<ph name="ACCELERATOR" />|。</translation>
-<translation id="1214970845432250240">价格范围</translation>
 <translation id="1219129156119358924">系统安全</translation>
 <translation id="1222060260947439312">右侧纸匣</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -353,7 +351,6 @@
 <translation id="1617276713587758852">跨界车</translation>
 <translation id="1619007254056372606">管理设备端网站数据</translation>
 <translation id="1620510694547887537">摄像头</translation>
-<translation id="162285686621567578">此网站已被您的家长屏蔽。</translation>
 <translation id="1622966923835127638">企业财务</translation>
 <translation id="1623104350909869708">阻止此页创建其他对话框</translation>
 <translation id="1633137413609266904">{0,plural, =1{管理员政策禁止打开这个文件}other{管理员政策禁止打开 # 个文件}}</translation>
@@ -738,7 +735,6 @@
 <translation id="2328955282645810595">施工与电动工具</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期时间：<ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">继续撰写</translation>
-<translation id="2337776048981813397">所有选项的价格范围</translation>
 <translation id="2337852623177822836">设置由管理员控制</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> 希望与以下所选设备配对：</translation>
 <translation id="2346319942568447007">您复制的图片</translation>
@@ -1030,7 +1026,6 @@
 <translation id="2930577230479659665">完成每个副本后裁切</translation>
 <translation id="2933624813161016821">压纹箔</translation>
 <translation id="2938225289965773019">打开<ph name="PROTOCOL" />链接</translation>
-<translation id="2941112035454246133">低</translation>
 <translation id="2941878205777356567">9 x 12 英寸信封</translation>
 <translation id="2941952326391522266">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书来自<ph name="DOMAIN2" />。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="2942492342931589800">随意</translation>
@@ -1210,7 +1205,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">输入 <ph name="NUMBER_OF_DIGITS" /> 位数的验证码</translation>
 <translation id="3272643614306383237">小于 1 MB。当您下次访问时，某些网站的加载速度可能会更慢。</translation>
-<translation id="327346289570683313">价格范围</translation>
 <translation id="3273738040255912340">您的管理员可以远程更改您的个人资料和浏览器设置，通过报告分析浏览器的相关信息，以及执行其他必要的任务。此设备上的活动可能也在接受 Chromium 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{管理员政策不建议在<ph name="DESTINATION_NAME" />中打开这个文件}other{管理员政策不建议在<ph name="DESTINATION_NAME" />中打开这些文件}}</translation>
 <translation id="3282085321714087552">贵组织 <ph name="ENROLLMENT_DOMAIN" /> 已将某些信息（例如设置或政策）发送给下列网站。</translation>
@@ -1697,6 +1691,7 @@
 <translation id="4177501066905053472">广告主题</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> - <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">取消跟踪价格</translation>
+<translation id="4190446002599583608">利用 AI 搜索历史记录</translation>
 <translation id="4191334393248735295">长度</translation>
 <translation id="4195459680867822611">“查看 Chrome 提示”按钮，激活它即可了解各项 Chrome 功能</translation>
 <translation id="4195643157523330669">在新标签页中打开</translation>
@@ -1712,6 +1707,7 @@
 <translation id="421066178035138955">使用虚拟现实设备和数据</translation>
 <translation id="4213500579045346575">健美</translation>
 <translation id="4214357935346142455">登录屏幕个人资料</translation>
+<translation id="4219596572397833317">查看价格历史记录和其他信息，做出更明智的购物决策。</translation>
 <translation id="4220128509585149162">崩溃</translation>
 <translation id="4221630205957821124">&lt;h4&gt;第 1 步：登录门户网站&lt;/h4&gt;
     &lt;p&gt;咖啡馆或机场等地方的 Wi-Fi 网络会要求用户进行登录。您只需随意访问一个以 &lt;code&gt;http://&lt;/code&gt; 开头的网页，即可看到登录页面。&lt;/p&gt;
@@ -3629,6 +3625,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">从 Chrome 中移除表单建议？</translation>
 <translation id="781440967107097262">分享剪贴板？</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">纸（普通）</translation>
 <translation id="7815407501681723534">找到了 <ph name="NUMBER_OF_RESULTS" /> 个与“<ph name="SEARCH_STRING" />”相符的<ph name="SEARCH_RESULTS" /></translation>
 <translation id="7822611063308883975">掌上游戏机</translation>
@@ -3793,6 +3790,7 @@
 <translation id="8148608574971654810">PDF 版本：</translation>
 <translation id="8149426793427495338">您的计算机已进入休眠模式。</translation>
 <translation id="8150722005171944719">无法读取 <ph name="URL" /> 上的文件。该文件可能已遭到删除、移动，或者文件权限不允许进行访问。</translation>
+<translation id="8151185429379586178">开发者工具</translation>
 <translation id="8153865548451212769">{0,plural, =1{管理员政策不建议将此文件下载到<ph name="DESTINATION_NAME" />}other{管理员政策不建议将这些文件下载到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">曲棍球装备</translation>
 <translation id="8161095570253161196">继续浏览</translation>

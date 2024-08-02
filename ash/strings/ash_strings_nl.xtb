@@ -136,6 +136,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1420408895951708260">Nachtverlichting aan- of uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1435537621343861112">Kan dicteren niet starten. Je microfoon staat uit.</translation>
+<translation id="1445031758921122223">Bestanden voor gezichtsherkenning gedownload</translation>
 <translation id="1447907279406111651">Nu · Eindigt om <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Je apparaathotspots</translation>
 <translation id="1455242230282523554">Taalinstellingen bekijken</translation>
@@ -975,6 +976,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> tot volledig opgeladen</translation>
 <translation id="4538824937723742295">Screenshot van volledig scherm maken</translation>
 <translation id="4539127209940689201">Huidige pagina afdrukken</translation>
+<translation id="4541505619120536051">Altijd openen</translation>
 <translation id="4541706525461326392">Profiel verwijderen. Dit kan een paar minuten duren.</translation>
 <translation id="4544483149666270818">Selecteer een venster om op te nemen</translation>
 <translation id="4545950850562423083">Huidige pagina opslaan als bookmark</translation>
@@ -1223,6 +1225,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5361524080961918551">Spraakbestanden voor <ph name="LANGUAGE" /> gedeeltelijk gedownload</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Naar dit tabblad gaan</translation>
 <translation id="5364693579536176785">opslagruimte</translation>
+<translation id="5369573834963677938">Gezichtsbediening is beschikbaar voor andere gebruikers op het apparaat</translation>
 <translation id="5369717264580061086">Voorbeeld van bestand bekijken in de app Bestanden</translation>
 <translation id="5377367976106153749">Cameratoegang aanzetten?</translation>
 <translation id="5379115545237091094">Te veel pogingen</translation>
@@ -1359,6 +1362,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5819918159912280082">Je Chromebook is onverwacht opnieuw opgestart. Open je vorige vensters en apps.</translation>
 <translation id="5823239091726045201">Google Tasks op het web</translation>
 <translation id="5825969630400862129">Instellingen voor verbonden apparaten</translation>
+<translation id="5830180081891717894">Nog <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> in <ph name="RECEIVER_NAME" /> stopzetten</translation>
 <translation id="5841296711770970362">Naar de volgende track gaan</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" />-hotspot staat aan, geen apparaten verbonden</translation>
@@ -1412,6 +1416,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6020147141355393792">De weergave van meldingen en apps van je telefoon instellen</translation>
 <translation id="6022924867608035986">Tekst in zoekvak wissen</translation>
 <translation id="602472752137106327">Vensters van alle bureaus bekijken, keuzerondje geselecteerd</translation>
+<translation id="6024768346262692989">Kan bestanden voor gezichtsbediening niet downloaden</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, beheerd door je beheerder</translation>
 <translation id="6027518778343897451">Er staat geen afspraak op <ph name="CURRENT_MONTH_DAY" />. Druk op Enter om Google Agenda te openen in de browser.</translation>
 <translation id="6030495522958826102">Menu verplaatst naar linksonder in het scherm.</translation>
@@ -1485,6 +1490,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> gebruikt momenteel je camera en microfoon</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Knop bovenaan</translation>
+<translation id="6240821072888636753">Altijd vragen</translation>
 <translation id="6247728804802644171">Meldingen openen</translation>
 <translation id="6249795363855770621">Kan niet markeren als afgerond. Probeer het opnieuw als je online bent.</translation>
 <translation id="6254629735336163724">Vergrendeld in horizontale stand</translation>
@@ -1828,6 +1834,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7557816257942363084"><ph name="APP_NAME" /> gebruikt momenteel je microfoon</translation>
 <translation id="7561982940498449837">Menu sluiten</translation>
 <translation id="7564874036684306347">Verplaatsing van vensters naar een ander bureaublad kan leiden tot onverwacht gedrag. Verdere meldingen, vensters en dialoogvensters worden mogelijk verdeeld over de bureaubladen.</translation>
+<translation id="7568790562536448087">Bijwerken</translation>
 <translation id="7569509451529460200">Braille en ChromeVox staan aan</translation>
 <translation id="7569886975397378678">Instellen van de weergave van meldingen en apps van je telefoon sluiten</translation>
 <translation id="7571361473021531288">Batterij <ph name="BATTERY_PERCENTAGE" />% | Nog <ph name="TIME" /> over</translation>
@@ -1957,7 +1964,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7963992254934562106">Van <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Map selecteren...</translation>
 <translation id="7973756967040444713">Werkbalk sluiten</translation>
-<translation id="797485111629834774">Taak als voltooid markeren: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Vergrootglas op volledig scherm aan- of uitzetten</translation>
 <translation id="7977927628060636163">Mobiele netwerken zoeken…</translation>
 <translation id="7982789257301363584">Netwerk</translation>
@@ -2063,6 +2069,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8375916635258623388">Deze <ph name="DEVICE_NAME" /> en je telefoon maken automatisch verbinding</translation>
 <translation id="8380784334203145311">Goedenacht,</translation>
 <translation id="8382715499079447151">Weergavebeveiliging</translation>
+<translation id="8383614331548401927">Welkomstsamenvatting</translation>
 <translation id="8388750414311082622">Het laatste bureaublad kan niet worden verwijderd.</translation>
 <translation id="8394567579869570560">Je ouder heeft dit apparaat vergrendeld</translation>
 <translation id="8401850874595457088">Taalmenu openen</translation>

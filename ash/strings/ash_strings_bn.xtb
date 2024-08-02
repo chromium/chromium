@@ -136,6 +136,7 @@
 <translation id="1420408895951708260">নাইট লাইট ফিচারটি টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">হ্যাঁ</translation>
 <translation id="1435537621343861112">ডিকটেশন শুরু করা যায়নি। মাইক বন্ধ আছে।</translation>
+<translation id="1445031758921122223">ফেস কন্ট্রোল সংক্রান্ত ফাইল ডাউনলোড করা হয়েছে</translation>
 <translation id="1447907279406111651">এখন · <ph name="END_TIME" />-এ শেষ হবে</translation>
 <translation id="1448963928642384376">আপনার ডিভাইসের হটস্পট</translation>
 <translation id="1455242230282523554">ভাষার সেটিংস দেখুন</translation>
@@ -975,6 +976,7 @@
 <translation id="453661520163887813">সম্পূর্ণ হতে <ph name="TIME" /> বাকি</translation>
 <translation id="4538824937723742295">ফুল স্ক্রিনের স্ক্রিনশট নিন</translation>
 <translation id="4539127209940689201">বর্তমান পৃষ্ঠা প্রিন্ট করুন</translation>
+<translation id="4541505619120536051">সব সময় খুলবে</translation>
 <translation id="4541706525461326392">প্রোফাইল সরানো হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="4544483149666270818">রেকর্ড করতে একটি উইন্ডো বেছে নিন</translation>
 <translation id="4545950850562423083">বর্তমান পৃষ্ঠাটি বুকমার্ক হিসেবে সেভ করুন</translation>
@@ -1223,6 +1225,7 @@
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> স্পিচ ফাইল আংশিক ডাউনলোড করা হয়েছে</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> এই ট্যাবে যান</translation>
 <translation id="5364693579536176785">স্টোরেজের জায়গা</translation>
+<translation id="5369573834963677938">ডিভাইসটিতে ফেস কন্ট্রোল অন্যান্য ব্যবহারকারীদের জন্য উপলভ্য হবে</translation>
 <translation id="5369717264580061086">Files অ্যাপে ফাইলের প্রিভিউ দেখুন</translation>
 <translation id="5377367976106153749">ক্যামেরা সম্পর্কিত অ্যাক্সেস চালু করবেন?</translation>
 <translation id="5379115545237091094">অনেক বেশি চেষ্টা করেছেন</translation>
@@ -1412,6 +1415,7 @@
 <translation id="6020147141355393792">আপনার ফোনের বিজ্ঞপ্তি ও অ্যাপ দেখা সংক্রান্ত পদ্ধতি সেট-আপ করুন</translation>
 <translation id="6022924867608035986">সার্চ বক্সের টেক্সট সাফ করুন</translation>
 <translation id="602472752137106327">সব ডেস্ক থেকে উইন্ডো দেখুন, রেডিও বোতাম বেছে নেওয়া হয়েছে</translation>
+<translation id="6024768346262692989">ফেস কন্ট্রোল সংক্রান্ত ফাইল ডাউনলোড করা যায়নি</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" />-এ কোনও ইভেন্ট নেই। ব্রাউজারে Google Calendar খোলার জন্য Enter প্রেস করুন।</translation>
 <translation id="6030495522958826102">স্ক্রিনের নিচে বাঁদিকের কোণায় মেনু সরে গেছে।</translation>
@@ -1485,6 +1489,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" /> এখন আপনার ক্যামেরা এবং মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">উপরের বোতাম</translation>
+<translation id="6240821072888636753">প্রত্যেকবার জিজ্ঞাসা করো</translation>
 <translation id="6247728804802644171">বিজ্ঞপ্তি খুলুন</translation>
 <translation id="6249795363855770621">'সম্পূর্ণ হয়েছে' হিসেবে মার্ক করা যায়নি। অনলাইন থাকাকালীন আবার চেষ্টা করে দেখুন।</translation>
 <translation id="6254629735336163724">স্ক্রিনটি ল্যান্ডস্কেপ মোডে লক করা আছে</translation>
@@ -1829,6 +1834,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> এখন আপনার মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="7561982940498449837">মেনু বন্ধ করুন</translation>
 <translation id="7564874036684306347">কোনও উইন্ডো অন্য ডেস্কটপে সরানো হলে সেটির আচরণে অপ্রত্যাশিত পরিবর্তন হতে পারে। পরবর্তী বিজ্ঞপ্তি, উইন্ডো এবং ডায়ালগ দুটি ডেস্কটপ মিলিয়ে দেখানো হতে পারে।</translation>
+<translation id="7568790562536448087">আপডেট হচ্ছে</translation>
 <translation id="7569509451529460200">ব্রেল এবং ChromeVox সক্ষম করেছেন</translation>
 <translation id="7569886975397378678">আপনার ফোনের বিজ্ঞপ্তি ও অ্যাপ দেখা সংক্রান্ত সেট-আপের পদ্ধতি বাতিল করুন</translation>
 <translation id="7571361473021531288">ব্যাটারিতে আর <ph name="BATTERY_PERCENTAGE" />% চার্জ | <ph name="TIME" /> বাকি আছে</translation>
@@ -1958,7 +1964,6 @@
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> থেকে</translation>
 <translation id="7968693143708939792">ফোল্ডার বেছে নিন...</translation>
 <translation id="7973756967040444713">টুলবার বন্ধ করুন</translation>
-<translation id="797485111629834774">টাস্ক সম্পূর্ণ হয়ে গেছে বলে চিহ্নিত করুন: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">ফুলস্ক্রিন ম্যাগনিফার চালু বা বন্ধ করুন</translation>
 <translation id="7977927628060636163">মোবাইল নেটওয়ার্কগুলির জন্য সার্চ করছে...</translation>
 <translation id="7982789257301363584">নেটওয়ার্ক</translation>

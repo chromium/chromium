@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL abgeschnitten</translation>
 <translation id="1448064542941920355">Herauszoomen</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> Website}other{<ph name="SITE_COUNT" /> Websites}}</translation>
+<translation id="1500473259453106018">Karte „Preissenkungen auf Tabs“ ausblenden</translation>
 <translation id="1510341833810331442">Websites dürfen keine Daten auf deinem Gerät speichern</translation>
 <translation id="1547123415014299762">Drittanbieter-Cookies werden zugelassen</translation>
 <translation id="1568470248891039841">Auf Websites, die du besuchst, können von anderen Websites stammende Inhalte eingebettet sein, z. B. Bilder, Werbung und Text. Diese anderen Websites dürfen die Berechtigung anfordern, Informationen zu nutzen, die sie zu deiner Person gespeichert haben, wenn du auf der Website surfst. <ph name="BEGIN_LINK" />Weitere Informationen zu eingebetteten Inhalten<ph name="END_LINK" /></translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3232293466644486101">Browserdaten löschen…</translation>
 <translation id="3242646949159196181">Wenn dieser Schalter aktiviert ist, können Websites Ton wiedergeben. Wenn er deaktiviert ist, können Websites keinen Ton wiedergeben.</translation>
+<translation id="3273479183583863618">Preissenkungen auf Tabs</translation>
 <translation id="3277252321222022663">Websites den Zugriff auf Sensoren erlauben (empfohlen)</translation>
 <translation id="3285500645985761267">Ähnliche Websites dürfen meine Aktivitäten in der Gruppe sehen</translation>
 <translation id="3295019059349372795">Kapitel 11: Die wundervolle Smaragdstadt von Oz</translation>
@@ -359,6 +361,7 @@
 <translation id="6818926723028410516">Einträge auswählen</translation>
 <translation id="6840760312327750441">Wenn du Tabs gruppieren möchtest, halte einen Tab gedrückt. Ziehe ihn dann auf einen anderen Tab.</translation>
 <translation id="6864395892908308021">NFC wird von diesem Gerät nicht unterstützt</translation>
+<translation id="6870169401250095575">Karte „Sicherheitscheck“ ausblenden</translation>
 <translation id="6912998170423641340">Websites dürfen keine Texte oder Bilder aus der Zwischenablage abrufen</translation>
 <translation id="6945221475159498467">Auswählen</translation>
 <translation id="6950072572526089586">Websites, die du besuchst, können Informationen zu deinen Aktivitäten speichern, um erwartungsgemäß zu funktionieren – beispielsweise um dafür zu sorgen, dass du angemeldet bleibst oder um Artikel in deinem Einkaufswagen zu speichern. Oft speichern Websites diese Informationen vorübergehend auf deinem Gerät.</translation>
@@ -426,6 +429,7 @@
 <translation id="7986741934819883144">Kontakt auswählen</translation>
 <translation id="7990211076305263060">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie dein Mikrofon verwenden dürfen. Wenn er deaktiviert ist, können Websites dein Mikrofon nicht verwenden.</translation>
 <translation id="8007176423574883786">Für dieses Gerät deaktiviert</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Karte „Mit diesem Tab fortfahren“ ausblenden}other{Karte „Mit diesen Tabs fortfahren“ ausblenden}}</translation>
 <translation id="802154636333426148">Downloadfehler</translation>
 <translation id="8042586301629853791">Sortieren nach:</translation>
 <translation id="8067883171444229417">Video ansehen</translation>

@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Управление на профилите на това устройство</translation>
 <translation id="1129510026454351943">Подробности: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Режим „инкогнито“ скрива сърфирането ви от другите хора, които използват устройството ви</translation>
+<translation id="1138458427267715730">Получавайте сигнали при понижение на цената в който и да е сайт в мрежата</translation>
 <translation id="1142732900304639782">Да не се предлага превод на тези сайтове</translation>
 <translation id="1145536944570833626">Изтриване на съществуващите данни.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Управление на активността</translation>
 <translation id="1355088659320425659">История и раздели</translation>
 <translation id="1360432990279830238">Изход и изключване на синхронизирането?</translation>
+<translation id="1363028406613469049">Запис</translation>
 <translation id="1366525380420346469">Когато е включено</translation>
 <translation id="1373696734384179344">Недостатъчно памет за изтегляне на избраното съдържание.</translation>
 <translation id="1376578503827013741">Изчислява се…</translation>
@@ -292,6 +294,7 @@
 <translation id="2435457462613246316">Показване на паролата</translation>
 <translation id="2439153523196674349">Предварителен преглед на <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Искате ли да започнете да изтегляте „<ph name="FILE_NAME" />“ още веднъж?</translation>
+<translation id="2451607499823206582">Проследяване</translation>
 <translation id="2453860139492968684">Край</translation>
 <translation id="2461822463642141190">Ток</translation>
 <translation id="2468444275314013497">Всичко е наред с браузъра ви</translation>
@@ -1041,7 +1044,6 @@
 <translation id="6040939430773295212">Повтарящо се съдържание</translation>
 <translation id="604124094241169006">Автоматично</translation>
 <translation id="6042308850641462728">Още</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Прегледани са разрешенията за 1 сайт}other{Прегледани са разрешенията за {NUM_SITES} сайта}}</translation>
 <translation id="604996488070107836">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради неизвестна грешка.</translation>
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Управлявайте материалите и активността си тук</translation>
@@ -1682,7 +1684,6 @@
 <translation id="8865415417596392024">Данни в Chrome в профила ви</translation>
 <translation id="8898822736010347272">Изпраща до Google URL адресите на някои от посетените от вас страници, ограничена системна информация и част от съдържанието на страниците, за да помага за откриването на нови заплахи и да защитава всички потребители на мрежата.</translation>
 <translation id="8909135823018751308">Споделяне…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Известията не са разрешени за 1 сайт}other{Известията не са разрешени за {NUM_SITES} сайта}}</translation>
 <translation id="8921980840204105660">Включете синхронизирането, за да получите отметките от другите си устройства</translation>
 <translation id="8922289737868596582">Изтеглете страниците чрез бутона „Още опции“, за да ги използвате офлайн</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>

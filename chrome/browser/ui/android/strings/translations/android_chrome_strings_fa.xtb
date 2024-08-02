@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">مدیریت حساب‌ها در این دستگاه</translation>
 <translation id="1129510026454351943">جزئیات: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">اگر افراد دیگری هم از دستگاهتان استفاده می‌کنند، «حالت ناشناس» مرورتان را از دید این افراد محفوظ نگه می‌دارد</translation>
+<translation id="1138458427267715730">وقتی قیمت در هر سایتی در وب کاهش پیدا کند، هشدار دریافت می‌کنید</translation>
 <translation id="1142732900304639782">ترجمه این سایت‌ها پیشنهاد نشود</translation>
 <translation id="1145536944570833626">حذف داده‌های موجود.</translation>
 <translation id="1150263420752757504">‏<ph name="APP_NAME" /> در Chrome باز می‌شود. درصورت ادامه دادن، با <ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Google Chrome و ChromeOS<ph name="END_LINK2" /> موافقت می‌کنید.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">مدیریت فعالیت</translation>
 <translation id="1355088659320425659">سابقه و برگه‌ها</translation>
 <translation id="1360432990279830238">از سیستم خارج و همگام‌سازی خاموش شود؟</translation>
+<translation id="1363028406613469049">تراک</translation>
 <translation id="1366525380420346469">وقتی روشن است</translation>
 <translation id="1373696734384179344">حافظه برای بارگیری محتوای انتخابی کافی نیست.</translation>
 <translation id="1376578503827013741">درحال محاسبه…</translation>
@@ -262,7 +264,7 @@
 <translation id="2259659629660284697">درحال صادر کردن گذرواژه‌ها…</translation>
 <translation id="2276696007612801991">‏برای بررسی گذرواژه‌هایتان، به سیستم حساب Google وارد شوید</translation>
 <translation id="2278052315791335171">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="SITE" /> نخواهد شد</translation>
-<translation id="2286841657746966508">آدرس ارسال صورتحساب</translation>
+<translation id="2286841657746966508">آدرس صورت‌حساب</translation>
 <translation id="228704530595896923">فهرست گزینه‌های هم‌رسانی.</translation>
 <translation id="2297822946037605517">اشتراک‌گذاری این صفحه</translation>
 <translation id="22981027763501686">برای دریافت نشانک‌ها، سابقه، و موارد دیگر در دستگاه‌های دیگرتان، همگام‌سازی کنید</translation>
@@ -292,6 +294,7 @@
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
 <translation id="2439153523196674349">پیش‌نمای <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">می‌خواهید بارگیری <ph name="FILE_NAME" /> را دوباره شروع کنید؟</translation>
+<translation id="2451607499823206582">پیگیری</translation>
 <translation id="2453860139492968684">پایان</translation>
 <translation id="2461822463642141190">فعلی</translation>
 <translation id="2468444275314013497">مرورگرتان مشکلی ندارد</translation>
@@ -1041,7 +1044,6 @@
 <translation id="6040939430773295212">تکراری</translation>
 <translation id="604124094241169006">خودکار</translation>
 <translation id="6042308850641462728">بیشتر</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{اجازه‌های ۱ سایت بررسی شد}one{اجازه‌های {NUM_SITES} سایت بررسی شد}other{اجازه‌های {NUM_SITES} سایت بررسی شد}}</translation>
 <translation id="604996488070107836">به‌دلیل خطایی ناشناس، بارگیری <ph name="FILE_NAME" /> انجام نشد.</translation>
 <translation id="605721222689873409">سال</translation>
 <translation id="6059830886158432458">داستان‌ها و فعالیت خود را اینجا کنترل کنید</translation>
@@ -1682,7 +1684,6 @@
 <translation id="8865415417596392024">‏داده‌های Chrome در حساب شما</translation>
 <translation id="8898822736010347272">‏نشانی‌های وب بعضی از صفحه‌هایی که بازدید می‌کنید، اطلاعات محدودی از سیستم، و برخی از محتوای صفحه را به Google ارسال می‌کند تا به کشف تهدیدهای جدید و محافظت از همه افراد در وب کمک کند.</translation>
 <translation id="8909135823018751308">اشتراک‌گذاری‌...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{اعلان‌های ۱ سایت مجاز نیست}one{اعلان‌های {NUM_SITES} سایت مجاز نیست}other{اعلان‌های {NUM_SITES} سایت مجاز نیست}}</translation>
 <translation id="8921980840204105660">برای دریافت نشانک‌هایتان از دستگاه‌های دیگر، همگام‌سازی کنید</translation>
 <translation id="8922289737868596582">برای استفاده از صفحه‌ها در حالت آفلاین، آن‌ها را با دکمه «گزینه‌های بیشتر» بارگیری کنید</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>

@@ -136,6 +136,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1420408895951708260">Pārslēgt nakts režīmu. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Jā</translation>
 <translation id="1435537621343861112">Nevar sākt diktēšanu. Jūsu mikrofons ir izslēgts.</translation>
+<translation id="1445031758921122223">Sejas vadības faili tika lejupielādēti</translation>
 <translation id="1447907279406111651">Pašlaik notiek · Beigsies: <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Jūsu ierīču tīklāji</translation>
 <translation id="1455242230282523554">Rādīt valodas iestatījumus</translation>
@@ -412,6 +413,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516416533263263796">Fokusa režīms ir ieslēgts, atlikušas 10 minūtes</translation>
 <translation id="2516637483312286228">Rediģēt spēļu vadīklas</translation>
+<translation id="252054055865191167">Atzīmēšanas rīks</translation>
 <translation id="2526581474998477112">Atbloķēt logus</translation>
 <translation id="2528111225373402384">Tīklāja iestatījumi</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -974,6 +976,7 @@ Pievienota viena ierīce.</translation>
 <translation id="453661520163887813">Līdz pilnai uzlādei: <ph name="TIME" /></translation>
 <translation id="4538824937723742295">Izveidot visa ekrāna uzņēmumu</translation>
 <translation id="4539127209940689201">Drukāt pašreizējo lapu</translation>
+<translation id="4541505619120536051">Vienmēr atvērt</translation>
 <translation id="4541706525461326392">Notiek profila noņemšana. Tas var ilgt dažas minūtes.</translation>
 <translation id="4544483149666270818">Atlasiet logu, kura saturs jāieraksta</translation>
 <translation id="4545950850562423083">Saglabāt pašreizējo lapu kā grāmatzīmi</translation>
@@ -1222,6 +1225,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5361524080961918551">Runas faili (<ph name="LANGUAGE" />) ir daļēji lejupielādēti</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Pāriet uz šo cilni</translation>
 <translation id="5364693579536176785">krātuves vieta</translation>
+<translation id="5369573834963677938">Sejas vadības funkcija būs pieejama citiem ierīces lietotājiem.</translation>
 <translation id="5369717264580061086">Priekšskatīt failu lietotnē Faili</translation>
 <translation id="5377367976106153749">Vai ieslēgt piekļuvi kamerai?</translation>
 <translation id="5379115545237091094">Pārāk daudz mēģinājumu</translation>
@@ -1411,6 +1415,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6020147141355393792">Iestatīt tālruņa paziņojumu un lietotņu skatīšanu</translation>
 <translation id="6022924867608035986">Notīrīt meklēšanas lodziņa tekstu</translation>
 <translation id="602472752137106327">Atlasīta poga “Rādīt visu darbvirsmu logus”</translation>
+<translation id="6024768346262692989">Nevarēja lejupielādēt sejas vadības failus.</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />, pārvalda jūsu administrators</translation>
 <translation id="6027518778343897451">Šajā datumā nav neviena pasākuma: <ph name="CURRENT_MONTH_DAY" />. Nospiediet taustiņu Enter, lai atvērtu Google kalendāru pārlūkā.</translation>
 <translation id="6030495522958826102">Izvēlne pārvietota uz ekrāna apakšējo labo malu.</translation>
@@ -1484,6 +1489,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> pašlaik izmanto jūsu kameru un mikrofonu.</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Augšējā poga</translation>
+<translation id="6240821072888636753">Vaicāt katru reizi</translation>
 <translation id="6247728804802644171">Atvērt paziņojumus</translation>
 <translation id="6249795363855770621">Nevarēja atzīmēt kā pabeigtu. Mēģiniet vēlreiz, kad būsiet tiešsaistē.</translation>
 <translation id="6254629735336163724">Bloķēts horizontāli</translation>
@@ -1827,6 +1833,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7557816257942363084"><ph name="APP_NAME" /> pašlaik izmanto jūsu mikrofonu.</translation>
 <translation id="7561982940498449837">Aizvērt izvēlni</translation>
 <translation id="7564874036684306347">Logu pārvietošana uz citu darbvirsmu var izraisīt neparedzētu darbību. Turpmākie paziņojumi, logi un dialoglodziņi var tikt sadalīti pa darbvirsmām.</translation>
+<translation id="7568790562536448087">Notiek atjaunināšana</translation>
 <translation id="7569509451529460200">Braila raksts un ChromeVox ir iespējoti</translation>
 <translation id="7569886975397378678">Nerādīt iespēju iestatīt tālruņa paziņojumu un lietotņu skatīšanu</translation>
 <translation id="7571361473021531288">Akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />% | Atlikušais darbības laiks: <ph name="TIME" /></translation>
@@ -1956,7 +1963,6 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7963992254934562106">No <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Atlasīt mapi…</translation>
 <translation id="7973756967040444713">Aizvērt rīkjoslu</translation>
-<translation id="797485111629834774">Atzīmēt, ka šis uzdevums ir pabeigts: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Ieslēgt vai izslēgt pilnekrāna lupu</translation>
 <translation id="7977927628060636163">Notiek mobilo tīklu meklēšana...</translation>
 <translation id="7982789257301363584">Tīkls</translation>

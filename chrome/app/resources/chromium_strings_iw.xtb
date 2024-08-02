@@ -21,6 +21,8 @@
 <translation id="126567311906253476">‏כשנכנסים לשירותי Google כמו Gmail או YouTube עם <ph name="USER_EMAIL" />, אפשר להיכנס אוטומטית ל-Chromium עם אותו חשבון</translation>
 <translation id="1290883685122687410">שגיאה בהגדרה: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">‏הגדרת הפרופיל החדש שלך ב-Chromium</translation>
+<translation id="1324107359134968521">‏ל-Chromium נדרשת גישה ל-Bluetooth כדי למצוא 
+ מכשירי Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">‏אני רוצה למחוק את הנתונים גם מ-Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">‏נכנסת ל-Chromium!</translation>
 <translation id="1478370723027452770">‏קבלת עזרה לגבי Chrome for Testing</translation>
@@ -59,6 +61,7 @@
 <translation id="1951406923938785464">‏Chromium חסם את ההורדה הזאת כי לרוב לא מתבצעת הורדה של קבצים מהסוג הזה ויכול להיות שהקובץ מסוכן</translation>
 <translation id="1953553007165777902">מתבצעת הורדה… יש עוד <ph name="MINUTE" /> דק'</translation>
 <translation id="1966382378801805537">‏ב-Chromium לא ניתן לקבוע או להגדיר את דפדפן ברירת המחדל</translation>
+<translation id="1990262977744080398">‏מידע על חסימה של קבצים מסוימים ב-Chromium, נפתח בכרטיסייה חדשה</translation>
 <translation id="2008474315282236005">‏הפעולה הזו תמחק פריט אחד מהמכשיר. כדי לשחזר את הנתונים מאוחר יותר, היכנס אל Chromium עם <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">ההתקנה נכשלה. יש לנסות שוב.</translation>
 <translation id="2020032459870799438">‏כדי לבדוק אם שאר הסיסמאות מוגנות מפני פרצות באבטחת מידע ובעיות אבטחה אחרות, <ph name="BEGIN_LINK" />יש להיכנס ל-Chromium<ph name="END_LINK" />.</translation>

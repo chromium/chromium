@@ -136,6 +136,7 @@
 <translation id="1420408895951708260">Превключване на функцията за нощно осветление. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1435537621343861112">Функцията за диктуване не може да стартира. Микрофонът ви е изключен.</translation>
+<translation id="1445031758921122223">Файловете за контролиране с лице бяха изтеглени</translation>
 <translation id="1447907279406111651">В момента ⋅ Приключва в <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Точките за достъп на устройството ви</translation>
 <translation id="1455242230282523554">Показване на езиковите настройки</translation>
@@ -975,6 +976,7 @@
 <translation id="453661520163887813"><ph name="TIME" /> до пълно зареждане</translation>
 <translation id="4538824937723742295">Правене на екранна снимка на целия екран</translation>
 <translation id="4539127209940689201">Отпечатване на текущата страница</translation>
+<translation id="4541505619120536051">Да, винаги</translation>
 <translation id="4541706525461326392">Профилът за мобилна мрежа се премахва. Това може да отнеме няколко минути.</translation>
 <translation id="4544483149666270818">Изберете прозореца, който да бъде записан</translation>
 <translation id="4545950850562423083">Запазване на текущата страница като отметка</translation>
@@ -1223,6 +1225,7 @@
 <translation id="5361524080961918551">Файловете за говор на <ph name="LANGUAGE" /> са изтеглени частично</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Към този раздел</translation>
 <translation id="5364693579536176785">място в хранилището</translation>
+<translation id="5369573834963677938">Функцията за контролиране с лице ще е достъпна за другите потребители на устройството</translation>
 <translation id="5369717264580061086">Визуализиране на файл в приложението „Файлове“</translation>
 <translation id="5377367976106153749">Да се включи ли достъпът до камерата?</translation>
 <translation id="5379115545237091094">Твърде много опити</translation>
@@ -1412,6 +1415,7 @@
 <translation id="6020147141355393792">Настройване на прегледа на известията и приложенията на телефона ви</translation>
 <translation id="6022924867608035986">Изчистване на текста от полето за търсене</translation>
 <translation id="602472752137106327">Показват се прозорците от всички работни кътове, активиран е бутон за избор</translation>
+<translation id="6024768346262692989">Файловете за контролиране с лице не бяха изтеглени</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />, управлява се от администратора ви</translation>
 <translation id="6027518778343897451">Няма събития на <ph name="CURRENT_MONTH_DAY" />. Натиснете Enter, за да отворите Google Календар в браузъра.</translation>
 <translation id="6030495522958826102">Менюто е преместено в долния ляв ъгъл на екрана.</translation>
@@ -1485,6 +1489,7 @@
 <translation id="6232891689835436217">Понастоящем <ph name="APP_NAME" /> използва камерата и микрофона ви</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Горен бутон</translation>
+<translation id="6240821072888636753">Запитване всеки път</translation>
 <translation id="6247728804802644171">Отваряне на известията</translation>
 <translation id="6249795363855770621">Задачата не бе означена като завършена. Опитайте отново, когато сте онлайн.</translation>
 <translation id="6254629735336163724">Заключено в хоризонтална ориентация</translation>
@@ -1828,6 +1833,7 @@
 <translation id="7557816257942363084">Понастоящем <ph name="APP_NAME" /> използва микрофона ви</translation>
 <translation id="7561982940498449837">Затваряне на менюто</translation>
 <translation id="7564874036684306347">Преместването на прозорци към друг работен плот може да предизвика неочаквано поведение. Последващите известия, прозорци и диалогови прозорци може да бъдат разделени между работните плотове.</translation>
+<translation id="7568790562536448087">Актуализира се</translation>
 <translation id="7569509451529460200">Активирахте функцията за брайлово писмо и ChromeVox</translation>
 <translation id="7569886975397378678">Отхвърляне на настройването на прегледа на известията и приложенията на телефона ви</translation>
 <translation id="7571361473021531288">Батерия: <ph name="BATTERY_PERCENTAGE" />% | оставащо време: <ph name="TIME" /></translation>
@@ -1957,7 +1963,6 @@
 <translation id="7963992254934562106">От <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Избор на папка...</translation>
 <translation id="7973756967040444713">Затваряне на лентата с инструменти</translation>
-<translation id="797485111629834774">Означаване на задачата като завършена: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Включване или изключване на лупата на цял екран</translation>
 <translation id="7977927628060636163">Търсят се мобилни мрежи...</translation>
 <translation id="7982789257301363584">Мрежа</translation>

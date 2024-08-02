@@ -43,6 +43,7 @@
 <translation id="2977480621796371840">Retirer du groupe</translation>
 <translation id="3008554597174452548">Arrêter de suivre le produit</translation>
 <translation id="3026391124054406831">Créez des groupes pour organiser vos onglets.</translation>
+<translation id="3051031624272448591">Vous pouvez toujours les récupérer dans l'historique</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> : prix en baisse (-<ph name="PRICE_DROP" />)</translation>
 <translation id="3078350928901129212">Icône <ph name="COLOR_NAME" /> du groupe d'onglets</translation>
 <translation id="3194464645767632461">note</translation>
@@ -69,6 +70,7 @@
 <translation id="4371591986692297148">Inactive</translation>
 <translation id="4460014764210899310">Dégrouper</translation>
 <translation id="4590027107044272416">Vous pouvez désormais ouvrir un nouvel onglet ici</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{Fermer 1 onglet inactif ?}one{Fermer <ph name="TAB_COUNT_MANY" /> onglet inactif ?}other{Fermer <ph name="TAB_COUNT_MANY" /> onglets inactifs ?}}</translation>
 <translation id="4648718555153979859">Vos onglets sont regroupés ici</translation>
 <translation id="4686942373615810936">Créé à l'instant</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Fermer après 1 jour}one{Fermer après <ph name="DAY_COUNT_MANY" /> jour}other{Fermer après <ph name="DAY_COUNT_MANY" /> jours}}</translation>
@@ -104,6 +106,7 @@
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6051432659151380973">Vos groupes d'onglets sont enregistrés automatiquement</translation>
 <translation id="6054741997831917303">Le prix de cet article est récemment passé de <ph name="PREVIOUS_PRICE" /> à <ph name="NEW_PRICE" /></translation>
+<translation id="6082313992897617440">Vous perdrez immédiatement l'accès au groupe d'onglets <ph name="GROUP_NAME" /></translation>
 <translation id="6193448654517602979">Sélectionner des onglets</translation>
 <translation id="6228793724645064692">(note du magasin)</translation>
 <translation id="6271513594716432922">Fermer tous les onglets inactifs</translation>
@@ -127,6 +130,7 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> sélectionné</translation>
 <translation id="7326879924029668159">Voir les conditions de retour et plus</translation>
 <translation id="7352298686197644113">Affichez l'article le moins cher parmi ceux présentés dans les onglets ouverts</translation>
+<translation id="7421293530411019405">Quitter le groupe d'onglets ?</translation>
 <translation id="7452985128687107478">Les groupes d'onglets sont automatiquement enregistrés et mis à jour sur tous vos appareils</translation>
 <translation id="747459581954555080">Tout restaurer</translation>
 <translation id="753732157349120914">Sélecteur d'onglets</translation>
@@ -154,6 +158,8 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fermer l'onglet sélectionné (<ph name="TABS_COUNT_ONE" />)}one{Fermer l'onglet sélectionné (<ph name="TABS_COUNT_MANY" />)}other{Fermer les onglets sélectionnés (<ph name="TABS_COUNT_MANY" />)}}</translation>
 <translation id="8398929769197326728">Nouveau dossier – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Paramètres</translation>
+<translation id="8631711675211020168">Tout le monde perdra immédiatement l'accès au groupe d'onglets <ph name="GROUP_NAME" />, qui sera supprimé de tous les appareils</translation>
+<translation id="8633025649649592204">Activité récente</translation>
 <translation id="870736955561925754">Fermer l'onglet et supprimer le groupe ?</translation>
 <translation id="8714939927607906138">Prix inférieur</translation>
 <translation id="8730621377337864115">OK</translation>
@@ -161,6 +167,7 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Créé il y a <ph name="NUM_MONTHS_ONE" /> mois}one{Créé il y a <ph name="NUM_MONTHS_MANY" /> mois}other{Créé il y a <ph name="NUM_MONTHS_MANY" /> mois}}</translation>
 <translation id="8820741577754260431">Consultez les baisses de prix dans les onglets</translation>
 <translation id="8887921976452567404">Vous pouvez rouvrir vos onglets et groupes fermés depuis les sections "Onglets récents" et "Groupes d'onglets".</translation>
+<translation id="8915916167043355778">Tout fermer</translation>
 <translation id="8926389886865778422">Ne plus afficher ce message</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="9090098097337832354">Fiche d'infos sur ce magasin fermée</translation>

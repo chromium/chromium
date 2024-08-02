@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">اس آلے پر اکاؤنٹس کا نظم کریں</translation>
 <translation id="1129510026454351943">تفصیلات: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">پوشیدگی وضع آپ کا آلہ استعمال کرنے والے دوسرے لوگوں سے آپ کے براؤزنگ ڈیٹا کو نجی رکھتی ہے</translation>
+<translation id="1138458427267715730">ویب پر کسی بھی سائٹ پر قیمت کم ہونے پر الرٹس حاصل کریں</translation>
 <translation id="1142732900304639782">ان سائٹس کو ترجمہ کرنے کی پیشکش نہ کریں</translation>
 <translation id="1145536944570833626">موجودہ ڈیٹا کو حذف کریں۔</translation>
 <translation id="1150263420752757504">‏<ph name="APP_NAME" /> Chrome میں کھلے گی۔ جاری رکھ کر آپ، <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />Google Chrome اور ChromeOS کی اضافی سروس کی شرائط سے اتفاق کرتے ہیں<ph name="END_LINK2" />۔</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">سرگرمی کا نظم کریں</translation>
 <translation id="1355088659320425659">سرگزشت اور ٹیبز</translation>
 <translation id="1360432990279830238">سائن آؤٹ کریں اور مطابقت پذیری آف کریں؟</translation>
+<translation id="1363028406613469049">ٹریک</translation>
 <translation id="1366525380420346469">آن ہونے پر</translation>
 <translation id="1373696734384179344">منتخب مواد ڈاؤن لوڈ کرنے کیلئے ناکافی میموری۔</translation>
 <translation id="1376578503827013741">شمار کیا جا رہا ہے…</translation>
@@ -292,6 +294,7 @@
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> کا پیش منظر</translation>
 <translation id="2450083983707403292">کیا آپ <ph name="FILE_NAME" /> کو دوبارہ ڈاؤن لوڈ کرنا شروع کرنا چاہتے ہیں؟</translation>
+<translation id="2451607499823206582">ٹریکنگ</translation>
 <translation id="2453860139492968684">مکمل کریں</translation>
 <translation id="2461822463642141190">حالیہ</translation>
 <translation id="2468444275314013497">آپ کا براؤزر صحیح لگ رہا ہے</translation>
@@ -387,11 +390,13 @@
 <translation id="2871733351037274014">پیشگی لوڈ والے صفحات</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> آپ سے اس ویب سائٹ کی منظوری چاہتی ہے:</translation>
 <translation id="2876628302275096482">‏اس بارے میں مزید جانیں کہ <ph name="BEGIN_LINK" />Chrome آپ کے ڈیٹا کو کس طرح نجی رکھتا ہے<ph name="END_LINK" /></translation>
+<translation id="2883644600102358131">‏پاس ورڈز جلد ہی اس آلہ پر کام کرنا بند کر دیں گے۔ اپنے پاس ورڈز کا استعمال جاری رکھنے کے لیے، Google Play سروسز کو اپ ڈیٹ کریں۔</translation>
 <translation id="2888126860611144412">‏Chrome کے بارے میں</translation>
 <translation id="2891154217021530873">صفحہ لوڈ کرنا بند کریں</translation>
 <translation id="2893180576842394309">‏تلاش اور Google کی دیگر سروسز کو ذاتی نوعیت کا بنانے کے لیے Google آپ کی سرگزشت کا استعمال کر سکتا ہے</translation>
 <translation id="2894821468041866720">آپ کے براؤزر یا آلے کو واضح طور پر سست نہیں کرتا ہے۔</translation>
 <translation id="2895521649038438824">آپ اس صفحے کو سن سکتے ہیں</translation>
+<translation id="2899252057552912621">‏پاس ورڈز جلد ہی کام کرنا بند کر دیں گے کیونکہ Google Play سروسز دستیاب نہیں ہیں۔ آپ اپنے محفوظ کردہ پاس ورڈز کے کام بند کرنے سے پہلے ان کی ایک کاپی بنا سکتے ہیں۔</translation>
 <translation id="2900528713135656174">ایونٹ تخلیق کریں</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> کیلئے تجاویز دکھائی جا رہی ہیں</translation>
 <translation id="2904300462646366554">‏ڈاؤن لوڈ کردہ PDFs آپ کے آلے پر PDF ویورز میں سے ایک ساتھ خودکار طور پر کھلتے ہیں</translation>
@@ -444,6 +449,7 @@
 <translation id="3070005020161560471">خودکار طور پر ترجمہ کریں</translation>
 <translation id="3072980200212375806">‏<ph name="APP_NAME" /> Chrome میں کھلے گی۔ جاری رکھ کر آپ، <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />Google Chrome اور ChromeOS کی اضافی سروس کی شرائط سے اتفاق کرتے ہیں<ph name="END_LINK2" />۔ <ph name="BEGIN_LINK3" />رازداری کی پالیسی<ph name="END_LINK3" /> بھی لاگو ہوتی ہے۔</translation>
 <translation id="3080525922482950719">آپ بعد میں یا آف لائن پڑھنے کے لیے صفحات کو محفوظ کر سکتے ہیں</translation>
+<translation id="3087218211037573995">‏صرف اس آلہ پر محفوظ کردہ کچھ پاس ورڈز جلد ہی کام کرنا بند کر دیں گے۔ آپ ان پاس ورڈز کو Google پاس ورڈ مینیجر میں منتقل کر سکتے ہیں۔</translation>
 <translation id="3091010850649238832">کلپ بورڈ مواد دکھائیں</translation>
 <translation id="3093004810561729002">کسی نے</translation>
 <translation id="3098745985164956033">‏آپ کے لیے تفصیلات میں بہتری لانے کے لیے Google کو کچھ تصاویر بھیجی جاتی ہیں</translation>
@@ -572,6 +578,7 @@
 <translation id="3771694256347217732">‏Google کی سروس کی شرائط</translation>
 <translation id="3775705724665058594">اپنے آلات پر بھیجیں</translation>
 <translation id="3777796259512476958">اکثر سائٹس سے آپ کو سائن آؤٹ کرتا ہے</translation>
+<translation id="379035798868314833">‏‫Google پاس ورڈ مینیجر اس آلہ پر کام کرنا بند کر دے گا</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ٹیب}other{# ٹیبز}}</translation>
 <translation id="3795154175078851242">لنک کے ساتھ تصویر کاپی کریں</translation>
 <translation id="3810838688059735925">ویڈیو</translation>
@@ -1041,7 +1048,6 @@
 <translation id="6040939430773295212">مکرر</translation>
 <translation id="604124094241169006">خود کار</translation>
 <translation id="6042308850641462728">مزید</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{1 سائٹ کے لیے اجازتوں کا جائزہ لیا گیا}other{{NUM_SITES} سائٹس کے لیے اجازتوں کا جائزہ لیا گیا}}</translation>
 <translation id="604996488070107836">ایک نامعلوم خرابی کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">اپنی کہانیوں اور سرگرمی کو یہاں کنٹرول کریں</translation>
@@ -1682,7 +1688,6 @@
 <translation id="8865415417596392024">‏آپ کے اکاؤنٹ میں Chrome کا ڈیٹا</translation>
 <translation id="8898822736010347272">‏آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs، سسٹم کی محدود معلومات اور صفحے کا کچھ مواد Google کو بھیجتا ہے تاکہ نئے خطرات کا پتا لگانے اور ویب پر موجود سبھی کی حفاظت میں مدد مل سکے۔</translation>
 <translation id="8909135823018751308">اشتراک کریں…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{1 سائٹ کے لیے اطلاعات کی اجازت نہیں ہے}other{{NUM_SITES} سائٹس کے لیے اطلاعات کی اجازت نہیں ہے}}</translation>
 <translation id="8921980840204105660">اپنے دیگر آلات سے اپنے بُک مارکس حاصل کرنے کے لیے مطابقت پذیری کریں</translation>
 <translation id="8922289737868596582">آف لائن صفحات استعمال کرنے کے لیے انہیں مزید اختیارات بٹن سے ڈاؤن لوڈ کریں</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -1704,6 +1709,7 @@
 <translation id="8998729206196772491">‏آپ <ph name="MANAGED_DOMAIN" /> کے زیر انتظام اکاؤنٹ کے ساتھ سائن ان کر رہے ہیں اور اس کے منتظم کو اپنے Chrome ڈیٹا پر کنٹرول دے رہے ہیں۔ آپ کا ڈیٹا اس اکاؤنٹ سے مستقل طور پر مربوط ہو جائے گا۔ Chrome سے سائن آؤٹ کرنے سے آپ کا ڈیٹا اس آلہ سے حذف ہو جائے گا، لیکن یہ آپ کے Google اکاؤنٹ میں اسٹور رہے گا۔</translation>
 <translation id="8998837250940831980">ٹیب کو چھوٹا نہیں کیا جا سکا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="9001604755921395912">‏پوشیدگی Chrome ٹیب میں کھولیں</translation>
+<translation id="9007002441981613214">محفوظ کردہ پاس ورڈز کے ساتھ مسئلہ حل کریں</translation>
 <translation id="9012585441087414258">‏خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے حفاظت کریں۔ صفحے میں کچھ مشکوک لگنے پر، صفحے کے مواد کے کچھ حصے اور URLs کو Google محفوظ براؤزنگ پر بھیجا جاتا ہے۔</translation>
 <translation id="9019199799064251516">کار پروفائل لاک کے بغیر جاری رکھیں؟</translation>
 <translation id="9022774213089566801">اکثر ملاحظہ کردہ</translation>

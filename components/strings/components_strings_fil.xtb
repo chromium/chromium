@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Button na Pamahalaan ang mga password, i-activate para matingnan at mapamahalaan ang iyong mga password sa mga setting ng Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Pumili ng pahintulot para sa <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">Hanay ng Presyo para sa Lahat ng Opsyon</translation>
 <translation id="1113869188872983271">&amp;I-undo ang pagbabago sa ayos</translation>
 <translation id="1118429183611783760">Mga Vacuum at Pangangalaga sa Sahig</translation>
 <translation id="1122714970786750095">Electronics at Electrical</translation>
@@ -122,7 +121,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1209206284964581585">Itago sa ngayon</translation>
 <translation id="121201262018556460">Tinangka mong maabot ang <ph name="DOMAIN" />, ngunit nagpakita ang server ng isang certificate na naglalaman ng isang mahinang key. Maaaring sinira ng isang nang-aatake ang pribadong key, at ang server ay maaaring hindi ang server na iyong inaasahan (maaaring nakikipag-ugnay ka sa isang nang-aatake).</translation>
 <translation id="1212527389003717329">Nagsimula na ang pag-download. Para makita ito, pindutin nang matagal ang |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">Hanay ng presyo</translation>
 <translation id="1219129156119358924">Seguridad ng System</translation>
 <translation id="1222060260947439312">Kanang Tray</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -141,6 +139,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1247030632403369975">Aluminum</translation>
 <translation id="1252209483516427155">Panlabas na Kasuotan</translation>
 <translation id="1253096324252841344">Magbayad gamit ang <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
+<translation id="1253846494229886276">Sine-save ang screenshot</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (naka-sync)</translation>
 <translation id="1255086252236620440">Mga Food Mixer</translation>
 <translation id="1256368399071562588">&lt;p&gt;Kung sinubukan mong bisitahin ang isang website at hindi ito bumukas, subukan munang ayusin ang error gamit ang mga hakbang sa pag-troubleshoot na ito:&lt;/p&gt;
@@ -352,7 +351,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1617276713587758852">Mga crossover</translation>
 <translation id="1619007254056372606">Pamahalaan ang on-device na data ng site</translation>
 <translation id="1620510694547887537">Camera</translation>
-<translation id="162285686621567578">Na-block ng iyong magulang ang website na ito.</translation>
 <translation id="1622966923835127638">Pananalapi ng Negosyo</translation>
 <translation id="1623104350909869708">Pigilan ang pahinang ito sa paggawa ng mga karagdagang dialog</translation>
 <translation id="1633137413609266904">{0,plural, =1{Na-block ng patakaran ng administrator ang pagbubukas ng file na ito}one{Na-block ng patakaran ng administrator ang pagbubukas ng # file}other{Na-block ng patakaran ng administrator ang pagbubukas ng # na file}}</translation>
@@ -737,7 +735,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2328955282645810595">Konstruksyon at Mga Power Tool</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, mag-e-expire sa <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Ipagpatuloy ang pagsusulat</translation>
-<translation id="2337776048981813397">Hanay ng presyo para sa lahat ng opsyon</translation>
 <translation id="2337852623177822836">Kinokontrol ng iyong administrator ang setting</translation>
 <translation id="2340263603246777781">Gustong makipagpares ng <ph name="ORIGIN" /></translation>
 <translation id="2346319942568447007">Larawang kinopya mo</translation>
@@ -1029,7 +1026,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2930577230479659665">Paikliin pagkatapos ng bawat pagkopya</translation>
 <translation id="2933624813161016821">Embossing Foil</translation>
 <translation id="2938225289965773019">Buksan ang mga link ng <ph name="PROTOCOL" /></translation>
-<translation id="2941112035454246133">Mababa</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
 <translation id="2941952326391522266">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; mula sa <ph name="DOMAIN2" /> ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
 <translation id="2942492342931589800">Casual</translation>
@@ -1211,7 +1207,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Ilagay ang code sa pag-verify na may <ph name="NUMBER_OF_DIGITS" /> (na) digit</translation>
 <translation id="3272643614306383237">Wala pang 1 MB. Posibleng mas mabagal na mag-load ang ilang site sa iyong susunod na pagbisita.</translation>
-<translation id="327346289570683313">Hanay ng Presyo</translation>
 <translation id="3273738040255912340">Puwedeng remote na gumawa ng mga pagbabago sa profile at browser mo, magsuri ng impormasyon tungkol sa browser sa pamamagitan ng pag-uulat, at gumawa ng iba pang kinakailangang gawain ang iyong administrator. Puwede ring pamahalaan sa labas ng Chromium ang aktibidad sa device na ito. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Hindi inirerekomenda ng patakaran ng administrator na buksan ang file na ito sa <ph name="DESTINATION_NAME" />}one{Hindi inirerekomenda ng patakaran ng administrator na buksan ang mga file na ito sa <ph name="DESTINATION_NAME" />}other{Hindi inirerekomenda ng patakaran ng administrator na buksan ang mga file na ito sa <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Nagpadala ang iyong organisasyon, ang <ph name="ENROLLMENT_DOMAIN" />, ng ilang impormasyon sa mga sumusunod na website, tulad ng mga setting o patakaran.</translation>
@@ -1700,6 +1695,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4177501066905053472">Mga paksa ng ad</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Huwag subaybayan ang presyo</translation>
+<translation id="4190446002599583608">Paghahanap sa history, na pinapagana ng AI</translation>
 <translation id="4191334393248735295">Haba</translation>
 <translation id="4195459680867822611">Button na Tingnan ang mga tip sa Chrome, i-activate para matuto tungkol sa mga feature ng Chrome</translation>
 <translation id="4195643157523330669">Buksan sa bagong tab</translation>
@@ -2141,6 +2137,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5019952743397118625">Nakatakda ang patakarang <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. Hindi kokontrolin ng <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ang availability ng developer mode sa page ng mga extension.</translation>
 <translation id="5021557570875267742">I-track ang mga presyo gamit ang Chrome</translation>
 <translation id="5023310440958281426">Suriin ang mga patakaran ng iyong administrator</translation>
+<translation id="5024171724744627792">Mas mabilis na magbayad kapag naka-save ang iyong card. Naka-encrypt sa iyong Google Account ang mga detalye ng card.</translation>
 <translation id="5030338702439866405">Ibinigay Ni</translation>
 <translation id="503069730517007720">Kinakailangan ang root certificate para sa "<ph name="SOFTWARE_NAME" />" ngunit hindi ito naka-install. Dapat tingnan ng IT administrator ang mga tagubilin sa pag-configure para sa "<ph name="SOFTWARE_NAME" />" upang maayos ang problemang ito. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Tungkol sa Google Translate</translation>
@@ -3329,6 +3326,7 @@ Mga karagdagang detalye:
 <translation id="7311244614769792472">Walang nakitang resulta</translation>
 <translation id="7311837626618954149">Bina-block ng Chromium ang mga site para hindi makagamit ng third-party na cookies para ma-track ka habang nagba-browse ka.</translation>
 <translation id="7313107491291103073">Na-flag ng iyong organisasyon ang site na ito dahil posibleng lumalabag ito sa isang patakaran.</translation>
+<translation id="7316521168101843192">Sine-save ang file sa Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Tulong sa Koneksyon</translation>
 <translation id="7323804146520582233">Itago ang seksyong "<ph name="SECTION" />"</translation>
@@ -3632,6 +3630,7 @@ Mga karagdagang detalye:
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Alisin ang suhestyon sa Chrome?</translation>
 <translation id="781440967107097262">Ibahagi ang clipboard?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Papel (Plain)</translation>
 <translation id="7815407501681723534">Nakakita ng <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> para sa '<ph name="SEARCH_STRING" />'</translation>
 <translation id="7822611063308883975">Mga Handheld na Game Console</translation>
@@ -3796,6 +3795,7 @@ Mga karagdagang detalye:
 <translation id="8148608574971654810">Bersyon ng PDF:</translation>
 <translation id="8149426793427495338">Nag-sleep ang iyong computer.</translation>
 <translation id="8150722005171944719">Hindi nababasa ang file sa <ph name="URL" />. Maaaring ito ay naalis, nalipat, o maaaring pinipigilan ng mga pagpapahintulot ng file ang access.</translation>
+<translation id="8151185429379586178">Mga tool ng developer</translation>
 <translation id="8153865548451212769">{0,plural, =1{Hindi inirerekomenda ng patakaran ng administrator na i-download ang file na ito sa <ph name="DESTINATION_NAME" />}one{Hindi inirerekomenda ng patakaran ng administrator na i-download ang mga file na ito sa <ph name="DESTINATION_NAME" />}other{Hindi inirerekomenda ng patakaran ng administrator na i-download ang mga file na ito sa <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Kagamitan sa Hockey</translation>
 <translation id="8161095570253161196">Ipagpatuloy ang pag-browse</translation>
@@ -3968,6 +3968,7 @@ Mga karagdagang detalye:
 <translation id="84561192812921051">Puwedeng remote na gumawa ng mga pagbabago sa profile at browser mo, magsuri ng impormasyon tungkol sa browser sa pamamagitan ng pag-uulat, at gumawa ng iba pang kinakailangang gawain ang iyong administrator. Puwede ring pamahalaan sa labas ng Chrome ang aktibidad sa device na ito.  <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Walang katiyakan</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8458605637341729751">Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa pagkuha ng eksaktong lokasyon ng iyong device at pag-share nito sa may-ari ng account mo para sa mga layunin ng pagpigil sa panloloko. Para i-off ang Pix sa Chrome, pumunta sa iyong <ph name="BEGIN_LINK1" />mga setting ng pagbabayad<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">I-on ito</translation>
 <translation id="8461694314515752532">I-encrypt ang naka-sync na data gamit ang iyong sariling passphrase sa pag-sync</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 credit card}one{# credit card}other{# na credit card}}</translation>

@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Tombol Kelola sandi, aktifkan untuk melihat dan mengelola sandi Anda di setelan Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Pilih izin untuk <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">Rentang Harga untuk Semua Opsi</translation>
 <translation id="1113869188872983271">&amp;Urungkan pengaturan ulang</translation>
 <translation id="1118429183611783760">Penyedot Debu &amp; Pembersih Lantai</translation>
 <translation id="1122714970786750095">Elektronik &amp; Listrik</translation>
@@ -122,7 +121,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1209206284964581585">Sembunyikan untuk saat ini</translation>
 <translation id="121201262018556460">Anda bermaksud membuka <ph name="DOMAIN" />, namun server menyajikan sertifikat yang berisi kunci yang lemah. Penyerang mungkin telah merusak kunci pribadi, dan server mungkin bukan yang diharapkan (Anda mungkin sedang berkomunikasi dengan penyerang).</translation>
 <translation id="1212527389003717329">Download dimulai. Untuk melihatnya, tekan dan tahan |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">Rentang harga</translation>
 <translation id="1219129156119358924">Keamanan Sistem</translation>
 <translation id="1222060260947439312">Baki Kanan</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -353,7 +351,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1617276713587758852">Mobil crossover</translation>
 <translation id="1619007254056372606">Kelola data situs di perangkat</translation>
 <translation id="1620510694547887537">Kamera</translation>
-<translation id="162285686621567578">Situs ini diblokir oleh orang tuamu.</translation>
 <translation id="1622966923835127638">Keuangan Bisnis</translation>
 <translation id="1623104350909869708">Cegah dialog lain dari halaman ini.</translation>
 <translation id="1633137413609266904">{0,plural, =1{Pembukaan file ini diblokir oleh kebijakan administrator}other{Pembukaan # file diblokir oleh kebijakan administrator}}</translation>
@@ -739,7 +736,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2328955282645810595">Alat Konstruksi &amp; Renovasi</translation>
 <translation id="2330137317877982892">Masa berlaku <ph name="CREDIT_CARD" /> habis pada <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Lanjutkan menulis</translation>
-<translation id="2337776048981813397">Rentang harga untuk semua opsi</translation>
 <translation id="2337852623177822836">Setelan dikontrol oleh administrator Anda</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ingin menyandingkan</translation>
 <translation id="2346319942568447007">Gambar yang Anda salin</translation>
@@ -1031,7 +1027,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2930577230479659665">Trim setelah setiap set tercetak</translation>
 <translation id="2933624813161016821">Foil Emboss</translation>
 <translation id="2938225289965773019">Membuka link <ph name="PROTOCOL" /></translation>
-<translation id="2941112035454246133">Rendah</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 inci</translation>
 <translation id="2941952326391522266">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya dari <ph name="DOMAIN2" />. Hal ini disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
 <translation id="2942492342931589800">Kasual</translation>
@@ -1213,7 +1208,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Masukkan kode verifikasi <ph name="NUMBER_OF_DIGITS" /> digit</translation>
 <translation id="3272643614306383237">Kurang dari 1 MB. Beberapa situs mungkin dimuat lebih lambat pada kunjungan Anda berikutnya.</translation>
-<translation id="327346289570683313">Rentang Harga</translation>
 <translation id="3273738040255912340">Administrator dapat melakukan perubahan pada profil dan browser Anda dari jarak jauh, menganalisis informasi tentang browser melalui pelaporan, dan melakukan tugas lain yang diperlukan. Aktivitas di perangkat ini mungkin juga dikelola di luar Chromium. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Kebijakan administrator tidak merekomendasikan untuk membuka file ini di <ph name="DESTINATION_NAME" />}other{Kebijakan administrator tidak merekomendasikan untuk membuka file ini di <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organisasi Anda, <ph name="ENROLLMENT_DOMAIN" />, telah mengirim beberapa info ke situs berikut, seperti setelan atau kebijakan.</translation>
@@ -1701,6 +1695,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4177501066905053472">Topik iklan</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Batalkan pemantauan harga</translation>
+<translation id="4190446002599583608">Penelusuran histori, didukung teknologi AI</translation>
 <translation id="4191334393248735295">Panjang</translation>
 <translation id="4195459680867822611">Tombol Lihat tips Chrome, aktifkan untuk mempelajari fitur-fitur Chrome</translation>
 <translation id="4195643157523330669">Buka di tab baru</translation>
@@ -3633,6 +3628,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Hapus sebagai saran dari Chrome?</translation>
 <translation id="781440967107097262">Bagikan papan klip?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Kertas (Polos)</translation>
 <translation id="7815407501681723534">Ditemukan <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> hasil untuk '<ph name="SEARCH_STRING" />'</translation>
 <translation id="7822611063308883975">Konsol Game Genggam</translation>
@@ -3797,6 +3793,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8148608574971654810">Versi PDF:</translation>
 <translation id="8149426793427495338">Komputer Anda sedang dalam mode tidur.</translation>
 <translation id="8150722005171944719">File pada <ph name="URL" /> tidak dapat dibaca.  File mungkin telah dihapus, dipindahkan, atau izin file mungkin mencegah akses.</translation>
+<translation id="8151185429379586178">Developer Tools</translation>
 <translation id="8153865548451212769">{0,plural, =1{Kebijakan administrator tidak merekomendasikan untuk mendownload file ini ke <ph name="DESTINATION_NAME" />}other{Kebijakan administrator tidak merekomendasikan untuk mendownload file ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Peralatan Hoki</translation>
 <translation id="8161095570253161196">Lanjutkan menjelajah</translation>

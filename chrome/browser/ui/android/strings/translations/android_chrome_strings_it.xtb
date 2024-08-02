@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Gestisci gli account su questo dispositivo</translation>
 <translation id="1129510026454351943">Dettagli: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">La modalità di navigazione in incognito mantiene la navigazione nascosta agli altri utenti che utilizzano il tuo dispositivo</translation>
+<translation id="1138458427267715730">Ricevi avvisi quando il prezzo cala su qualsiasi sito del web</translation>
 <translation id="1142732900304639782">Non proporre di tradurre questi siti</translation>
 <translation id="1145536944570833626">Elimina i dati esistenti.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> si aprirà in Chrome. Se continui, accetti i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Google Chrome e ChromeOS<ph name="END_LINK2" />.</translation>
@@ -41,6 +42,7 @@
 <translation id="1177863135347784049">Personalizzati</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1183189057400844278">Verifica la tua identità per assicurarti di poter usare sempre le password nel tuo Account Google</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{Notifiche non consentite per 1 sito}other{Notifiche non consentite per # siti}}</translation>
 <translation id="1187810343066461819">Elimina anche preferiti, cronologia e altri dati da questa auto</translation>
 <translation id="1193729455103054076">Vuoi usare una password efficace?</translation>
 <translation id="1197267115302279827">Sposta i Preferiti</translation>
@@ -81,6 +83,7 @@
 <translation id="1347468774581902829">Gestisci attività</translation>
 <translation id="1355088659320425659">Cronologia e schede</translation>
 <translation id="1360432990279830238">Uscire e disattivare la sincronizzazione?</translation>
+<translation id="1363028406613469049">Traccia</translation>
 <translation id="1366525380420346469">Quando la funzionalità è attiva</translation>
 <translation id="1373696734384179344">Memoria non sufficiente per scaricare i contenuti selezionati.</translation>
 <translation id="1376578503827013741">Elaborazione...</translation>
@@ -292,6 +295,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2435457462613246316">Mostra password</translation>
 <translation id="2439153523196674349">Anteprima di <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Vuoi avviare di nuovo il download di <ph name="FILE_NAME" />?</translation>
+<translation id="2451607499823206582">Monitoraggio</translation>
 <translation id="2453860139492968684">Termina</translation>
 <translation id="2461822463642141190">Attuale</translation>
 <translation id="2468444275314013497">Il tuo browser sembra protetto</translation>
@@ -303,6 +307,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2497852260688568942">La sincronizzazione è stata disattivata dall'amministratore</translation>
 <translation id="250020030759455918">Troverai lo stato di accesso a <ph name="SITE_NAME" />, i dati di navigazione e i dati relativi al sito in Chrome</translation>
 <translation id="2510106555128151389">Installazione di <ph name="WEBAPK_NAME" /> in corso…</translation>
+<translation id="2512234228327349533">Cerca opzioni di acquisto</translation>
 <translation id="2513403576141822879">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, consulta la sezione <ph name="BEGIN_LINK" />Sincronizzazione e servizi Google<ph name="END_LINK" /></translation>
 <translation id="2515921719039583189">Eliminare i dati di Chrome dal dispositivo?</translation>
 <translation id="2517113738956581680">Riquadro a dimensioni intere</translation>
@@ -1041,7 +1046,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="6040939430773295212">Contenuti ripetitivi</translation>
 <translation id="604124094241169006">Automatico</translation>
 <translation id="6042308850641462728">Altro</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Autorizzazioni esaminate per 1 sito}other{Autorizzazioni esaminate per {NUM_SITES} siti}}</translation>
 <translation id="604996488070107836">Download del file <ph name="FILE_NAME" /> non riuscito a causa di un errore sconosciuto.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controlla notizie e attività qui</translation>
@@ -1262,6 +1266,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6964300328304469089">Selezione attuale: <ph name="NAME" />, <ph name="EMAIL" />. Scegli un account.</translation>
 <translation id="696447261358045621">Esci dalla modalità di navigazione in incognito</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6966660124354134532">Tocca per monitorare un prodotto o interromperne il monitoraggio.</translation>
 <translation id="6971862865055170158">Non approvare</translation>
 <translation id="6978717888677691380">Siti che hai bloccato</translation>
 <translation id="6979737339423435258">Dall'inizio</translation>
@@ -1290,6 +1295,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7105047059074518658">Accedi per navigare più facilmente su più dispositivi</translation>
 <translation id="7106762743910369165">Il tuo browser è gestito dalla tua organizzazione</translation>
 <translation id="7111394291981742152">Chrome ti offre maggiore controllo sugli annunci che ti vengono mostrati e limita ciò che i siti possono imparare su di te quando ti mostrano annunci personalizzati.</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{Autorizzazioni esaminate per 1 sito}other{Autorizzazioni esaminate per # siti}}</translation>
 <translation id="7138678301420049075">Altro</translation>
 <translation id="7140829094791862589">Ordina manualmente</translation>
 <translation id="7146622961999026732">Questi siti e app sembrano importanti per te:</translation>
@@ -1659,6 +1665,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8773160212632396039">Elaborazione della richiesta in corso…</translation>
 <translation id="8788265440806329501">La cronologia di navigazione è chiusa</translation>
 <translation id="8788968922598763114">Riapri l'ultima scheda chiusa</translation>
+<translation id="8790193082819560975">Tocca per cercare le opzioni di acquisto del prodotto in una nuova scheda.</translation>
 <translation id="879027982257117598">Ad esempio, se visiti un sito che vende scarpe da corsa per lunghe distanze, il sito potrebbe decidere che ti interessa partecipare a maratone. Se in un secondo momento visiti un altro sito, quest'ultimo può mostrarti un annuncio relativo a scarpe da corsa suggerito dal primo sito.</translation>
 <translation id="8798449543960971550">Leggi</translation>
 <translation id="8803526663383843427">Quando attiva</translation>
@@ -1682,7 +1689,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8865415417596392024">Dati di Chrome nel tuo account</translation>
 <translation id="8898822736010347272">Invia a Google gli URL di alcune pagine visitate, informazioni limitate sul sistema e alcuni contenuti delle pagine per contribuire a scoprire le nuove minacce e proteggere tutti gli utenti del Web.</translation>
 <translation id="8909135823018751308">Condividi…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Notifiche non consentite per 1 sito}other{Notifiche non consentite per {NUM_SITES} siti}}</translation>
 <translation id="8921980840204105660">Attiva la sincronizzazione per recuperare i preferiti dagli altri tuoi dispositivi</translation>
 <translation id="8922289737868596582">Usa il pulsante Altre opzioni per scaricare le pagine da usare offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>

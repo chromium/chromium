@@ -21,6 +21,7 @@
 <translation id="126567311906253476">Ja pierakstāties Google pakalpojumos, piemēram, Gmail vai YouTube, ar kontu <ph name="USER_EMAIL" />, varat automātiski pierakstīties pārlūkā Chromium ar to pašu kontu.</translation>
 <translation id="1290883685122687410">Iestatīšanas kļūda: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Jaunā Chromium profila iestatīšana</translation>
+<translation id="1324107359134968521">Pārlūkam Chromium ir nepieciešama Bluetooth piekļuve, lai atrastu Bluetooth ierīces. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Dzēst arī datus no pārlūka Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Esat pierakstījies operētājsistēmā Chromium!</translation>
 <translation id="1478370723027452770">Saņemt palīdzību saistībā ar Chrome for Testing</translation>
@@ -59,6 +60,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="1951406923938785464">Pārlūkā Chromium šī lejupielāde tika bloķēta, jo šī tipa faili parasti netiek lejupielādēti un var būt bīstami.</translation>
 <translation id="1953553007165777902">Notiek lejupielāde... Atlikušais laiks: <ph name="MINUTE" /> minūte(-es).</translation>
 <translation id="1966382378801805537">Chromium nevar noteikt vai iestatīt noklusējuma pārlūku.</translation>
+<translation id="1990262977744080398">Uzzināt, kāpēc pārlūkā Chromium daži faili tiek bloķēti (saite tiks atvērta jaunā cilnē)</translation>
 <translation id="2008474315282236005">Veicot šo darbību, no šīs ierīces tiks dzēsts 1 vienums. Lai vēlāk izgūtu datus, pierakstieties pārlūkā Chromium kā <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Instalēšana neizdevās. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="2020032459870799438">Lai pārbaudītu, vai jūsu pārējās paroles ir aizsargātas pret datu pārkāpumiem un citām drošības problēmām, <ph name="BEGIN_LINK" />pierakstieties pārlūkā Chromium<ph name="END_LINK" />.</translation>

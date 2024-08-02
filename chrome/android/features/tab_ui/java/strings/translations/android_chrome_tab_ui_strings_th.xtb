@@ -41,6 +41,7 @@
 <translation id="2801787514987684416">ดูข้อมูลร้านค้าไหม</translation>
 <translation id="2928243913527329289">Google | เกี่ยวกับร้านนี้</translation>
 <translation id="2977480621796371840">นำออกจากกลุ่ม</translation>
+<translation id="29919168204617356">แท็บที่ไม่ได้ใช้งานจะปิดโดยอัตโนมัติ คุณดูแท็บเหล่านี้ได้ในประวัติการเข้าชมเสมอ</translation>
 <translation id="3008554597174452548">หยุดติดตามผลิตภัณฑ์</translation>
 <translation id="3026391124054406831">สร้างกลุ่มเพื่อจัดระเบียบแท็บ</translation>
 <translation id="3051031624272448591">คุณกู้คืนแท็บเหล่านี้ได้เสมอในประวัติการเข้าชม</translation>
@@ -51,6 +52,7 @@
 <translation id="3322827343001922122">เปิดเมนูการทำงานกลุ่มแท็บสำหรับกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">คำแนะนำ: ดูเหมือนว่ามีแท็บที่เกี่ยวข้อง <ph name="NUMBER_OF_TABS" /> แท็บ ต้องการจัดกลุ่มแท็บไหม</translation>
 <translation id="3547352561153509682">การดำเนินการนี้จะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">กล่องโต้ตอบ "ซ่อนแท็บที่ไม่ได้ใช้งาน"</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ภาพแบบย่อตัวอย่างชีตที่แชร์</translation>
 <translation id="381219490185664296">เลิกจัดกลุ่มแท็บใช่ไหม</translation>
@@ -137,6 +139,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{รีวิวจาก Google <ph name="REVIEWS_COUNT_ONE" /> รายการ}other{รีวิวจาก Google <ph name="REVIEWS_COUNT_MANY" /> รายการ}}</translation>
 <translation id="7559245342362162951">แสดงแท็บของกลุ่มในตารางกริดแบบเต็มหน้าจอ</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
+<translation id="7688386659311034820">กล่องโต้ตอบ "แท็บที่ไม่ได้ใช้งาน"</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{แชร์แท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{แชร์แท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="7773714564112603605">นำแท็บออกและลบกลุ่ม</translation>
 <translation id="7792771145871471484">ดูคำแนะนำ</translation>
@@ -159,6 +162,7 @@
 <translation id="8398929769197326728">โฟลเดอร์ใหม่ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8631711675211020168">ทุกคนจะสูญเสียสิทธิ์เข้าถึงกลุ่มแท็บ <ph name="GROUP_NAME" /> ทันที และระบบจะลบกลุ่มนี้ออกจากอุปกรณ์ทุกเครื่อง</translation>
+<translation id="8633025649649592204">กิจกรรมล่าสุด</translation>
 <translation id="870736955561925754">ปิดแท็บและลบกลุ่มใช่ไหม</translation>
 <translation id="8714939927607906138">ราคาต่ำกว่า</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>

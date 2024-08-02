@@ -324,6 +324,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2635918910848538771">Awtolenwi'r CVC</translation>
 <translation id="2637313651144986786">Chwilio Tabiau...</translation>
 <translation id="2640733327287333451">Dim Enw Defnyddiwr ••••••</translation>
+<translation id="264215785133931186">Newydd ei wirio</translation>
 <translation id="2648721026697078500">Peidio Byth â Symud</translation>
 <translation id="2648803196158606475">Clirio'r Rhestr Ddarllen</translation>
 <translation id="2664621323652615289">Stopio</translation>
@@ -797,6 +798,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4937410517508563815">Cadw cyfrineiriau yn y cyfrif</translation>
 <translation id="4938338714234463591">Bydd hyn yn caniatáu i chi ddefnyddio'ch llais gyda nodweddion penodol ar wefannau.</translation>
 <translation id="4941089862236492464">Mae'n ddrwg gennym, bu problem wrth rannu eich eitem.</translation>
+<translation id="4942382218961352935">Newydd Ei Wirio</translation>
 <translation id="4944543191714094452">Chwilio'r Dudalen…</translation>
 <translation id="4945756290001680296">Cyrchu gosodiadau cyfrinair</translation>
 <translation id="4958444002117714549">Ehangu'r rhestr</translation>
@@ -1488,7 +1490,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8237382152611443140">Agorwch y Gosodiadau Awtolenwi Cyfrinair</translation>
 <translation id="8248969482078657578">Mae Tabiau Anweithredol yn Eich Helpu i Ganolbwyntio</translation>
 <translation id="8261506727792406068">Dileu</translation>
-<translation id="8263336784344783289">Enwi'r Grŵp Hwn</translation>
 <translation id="8263809106706527890">Mae'n bosib y bu newid i osodiadau eich porwr diofyn. Gallwch wirio hyn yn y gosodiadau.</translation>
 <translation id="8264966119170358612">Cafodd rhai o'ch cyfrineiriau a gadwyd eu datgelu mewn achos o dor diogelwch data y tu allan i Google. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Cawsoch eich allgofnodi o'ch cyfrif, <ph name="USER_NAME" />, fel rhan o'ch ailosodiad iPad. I fewngofnodi eto, tapiwch "Parhau" isod.</translation>

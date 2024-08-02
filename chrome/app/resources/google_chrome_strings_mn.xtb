@@ -215,6 +215,8 @@
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome нь Windows 10 эсвэл түүнээс дээших хувилбарыг шаарддаг.</translation>
 <translation id="3835168907083856002">Энэ нь <ph name="USER_EMAIL_ADDRESS" />-д Chrome-н шинэ профайл үүсгэнэ</translation>
+<translation id="383928141529488001">Google Chrome-д Bluetooth төхөөрөмжүүдийг судлахад 
+ Bluetooth-н хандалт шаардлагатай. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Бүх Google Chrome-ын цонхнуудыг хааж дахин оролдоно уу.</translation>
 <translation id="3865754807470779944">Chrome <ph name="PRODUCT_VERSION" /> хувилбарыг суулгасан</translation>
 <translation id="3873044882194371212">Холбоосыг Chrome-н нууцлалтай цонхонд нээх</translation>
@@ -425,6 +427,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6938166777909186039">Google Chrome-н цаашдын шинэчлэлтийг авахын тулд танд Windows 10 эсвэл түүнээс хойших хувилбар хэрэгтэй болно. Энэ компьютер Windows 8.1-г ашиглаж байна.</translation>
 <translation id="6943584222992551122">Энэ хэрэглэгчийн хөтчийн өгөгдлийг энэ төхөөрөмжөөс устгана. Өгөгдлийг сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="6967962315388095737">mDNS урсгалыг зөвшөөрөх Google Chrome Бета-н дотоод дүрэм.</translation>
+<translation id="6979589607440534284">Chrome зарим файлыг яагаад блоклодог болохыг мэдэж авна уу, шинэ табд нээгдэнэ</translation>
 <translation id="7011190694940573312">Үйлдлийн системийн энэ хувилбарыг дэмждэггүй тул суулгалт амжилтгүй боллоо.</translation>
 <translation id="7024536598735240744">Задлахад алдаа гарлаа: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Суулгахыг зогсоосон.</translation>

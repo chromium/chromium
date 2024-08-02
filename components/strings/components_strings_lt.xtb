@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Mygtukas „Tvarkyti slaptažodžius“; suaktyvinkite, jei norite peržiūrėti ir tvarkyti slaptažodžius „Chrome“ nustatymuose</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />: pasirinkite leidimą</translation>
-<translation id="1112238992895762847">Visų parinkčių kainų diapazonas</translation>
 <translation id="1113869188872983271">&amp;Anuliuoti pertvarkymą</translation>
 <translation id="1118429183611783760">Dulkių siurbliai ir grindų priežiūra</translation>
 <translation id="1122714970786750095">Elektronikos ir elektros prekės</translation>
@@ -122,7 +121,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1209206284964581585">Slėpti dabar</translation>
 <translation id="121201262018556460">Bandėte pasiekti <ph name="DOMAIN" />, bet serveris pateikė nesudėtingą raktą turintį sertifikatą. Užpuolikas galėjo nulaužti privatųjį raktą, o šis serveris gali būti ne tas, kurio tikėjotės (gali būti, kad bendraujate su užpuoliku).</translation>
 <translation id="1212527389003717329">Atsisiuntimas pradėtas. Jei norite jį peržiūrėti, paspauskite ir palaikykite |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">Kainų diapazonas</translation>
 <translation id="1219129156119358924">Sistemos sauga</translation>
 <translation id="1222060260947439312">Dešinysis dėklas</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -353,7 +351,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1617276713587758852">Krosoveriai</translation>
 <translation id="1619007254056372606">Įrenginyje esančių svetainių duomenų tvarkymas</translation>
 <translation id="1620510694547887537">Kamera</translation>
-<translation id="162285686621567578">Šią svetainę užblokavo vienas iš tėvų.</translation>
 <translation id="1622966923835127638">Verslas / finansai</translation>
 <translation id="1623104350909869708">Neleisti šiam puslapiui kurti papildomų dialogo langų</translation>
 <translation id="1633137413609266904">{0,plural, =1{Pagal administratoriaus politiką neleidžiama atidaryti šio failo}one{Pagal administratoriaus politiką neleidžiama atidaryti # failo}few{Pagal administratoriaus politiką neleidžiama atidaryti # failų}many{Pagal administratoriaus politiką neleidžiama atidaryti # failo}other{Pagal administratoriaus politiką neleidžiama atidaryti # failų}}</translation>
@@ -738,7 +735,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2328955282645810595">Statyba ir elektriniai įrankiai</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, baigia galioti <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Toliau rašyti</translation>
-<translation id="2337776048981813397">Visų parinkčių kainų diapazonas</translation>
 <translation id="2337852623177822836">Nustatymą valdo administratorius</translation>
 <translation id="2340263603246777781">Svetainė <ph name="ORIGIN" /> nori būti susieta su</translation>
 <translation id="2346319942568447007">Nukopijuotas vaizdas</translation>
@@ -1030,7 +1026,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2930577230479659665">Apkarpymas po kiekvienos kopijos</translation>
 <translation id="2933624813161016821">Įspausta folija</translation>
 <translation id="2938225289965773019">Atidaryti „<ph name="PROTOCOL" />“ nuorodas</translation>
-<translation id="2941112035454246133">Žema</translation>
 <translation id="2941878205777356567">9 x 12 col. vokas</translation>
 <translation id="2941952326391522266">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas yra iš <ph name="DOMAIN2" />. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="2942492342931589800">Paprastas</translation>
@@ -1213,7 +1208,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Įveskite <ph name="NUMBER_OF_DIGITS" /> skaitm. patvirtinimo kodą</translation>
 <translation id="3272643614306383237">Mažiau nei 1 MB. Per kitą apsilankymą kai kurios svetainės gali būti įkeltos gerokai lėčiau.</translation>
-<translation id="327346289570683313">Kainų diapazonas</translation>
 <translation id="3273738040255912340">Administratorius gali nuotoliniu būdu atlikti profilio ir naršyklės pakeitimų, analizuoti informaciją apie naršyklę pateikdamas ataskaitas ir atlikti kitas reikiamas užduotis. Veiklą šiame įrenginyje taip pat galima tvarkyti ne naršyklėje „Chromium“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šio failo naudojant <ph name="DESTINATION_NAME" />}one{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šių failų naudojant <ph name="DESTINATION_NAME" />}few{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šių failų naudojant <ph name="DESTINATION_NAME" />}many{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šių failų naudojant <ph name="DESTINATION_NAME" />}other{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šių failų naudojant <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Jūsų organizacija (<ph name="ENROLLMENT_DOMAIN" />) nusiuntė tam tikros informacijos, pvz., informacijos apie nustatymus ar politikos nuostatas, toliau nurodytoms svetainėms.</translation>
@@ -1702,6 +1696,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4177501066905053472">Skelbimų temos</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Nebestebėti kainų</translation>
+<translation id="4190446002599583608">Istorijos paieška, kurią teikia DI</translation>
 <translation id="4191334393248735295">Ilgis</translation>
 <translation id="4195459680867822611">Mygtukas „Žr. „Chrome“ patarimus“; suaktyvinkite, jei norite sužinoti apie „Chrome“ funkcijas</translation>
 <translation id="4195643157523330669">Atidaryti naujame skirtuke</translation>
@@ -1745,6 +1740,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4235360514405112390">Tinkamas</translation>
 <translation id="4239799716689808527">Etiketės</translation>
 <translation id="4242380780309416996">Vokas (sunkus)</translation>
+<translation id="4242981939686657948">Kad galėtumėte efektyviau ieškoti naršymo istorijoje, įjunkite</translation>
 <translation id="4244926541863471678">Juosta</translation>
 <translation id="4246517972543675653">Studijos užsienyje</translation>
 <translation id="4250431568374086873">Ryšys su šia svetaine nėra visiškai saugus</translation>
@@ -3636,6 +3632,7 @@ Papildoma išsami informacija:
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Pašalinti formos pasiūlymą iš „Chrome“?</translation>
 <translation id="781440967107097262">Bendrinti iškarpinę?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Popierius (paprastas)</translation>
 <translation id="7815407501681723534">Pagal terminą „<ph name="SEARCH_STRING" />“ surasta tiek <ph name="SEARCH_RESULTS" />: <ph name="NUMBER_OF_RESULTS" /></translation>
 <translation id="7822611063308883975">Kišeninės žaidimų konsolės</translation>
@@ -3800,6 +3797,7 @@ Papildoma išsami informacija:
 <translation id="8148608574971654810">PDF versija:</translation>
 <translation id="8149426793427495338">Įjungta kompiuterio miego būsena.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> nurodyto failo negalima skaityti. Gali būti, kad jis pašalintas, perkeltas arba neleidžiama prieiga prie jo dėl failo leidimų.</translation>
+<translation id="8151185429379586178">Kūrėjo įrankiai</translation>
 <translation id="8153865548451212769">{0,plural, =1{Pagal administratoriaus politikos nuostatas nerekomenduojama atsisiųsti šio failo į „<ph name="DESTINATION_NAME" />“}one{Pagal administratoriaus politikos nuostatas nerekomenduojama atsisiųsti šių failų į „<ph name="DESTINATION_NAME" />“}few{Pagal administratoriaus politikos nuostatas nerekomenduojama atsisiųsti šių failų į „<ph name="DESTINATION_NAME" />“}many{Pagal administratoriaus politikos nuostatas nerekomenduojama atsisiųsti šių failų į „<ph name="DESTINATION_NAME" />“}other{Pagal administratoriaus politikos nuostatas nerekomenduojama atsisiųsti šių failų į „<ph name="DESTINATION_NAME" />“}}</translation>
 <translation id="81563721597823545">Ledo ritulio įranga</translation>
 <translation id="8161095570253161196">Tęsti naršymą</translation>

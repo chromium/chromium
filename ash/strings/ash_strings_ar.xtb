@@ -978,6 +978,7 @@
 <translation id="453661520163887813"><ph name="TIME" /> حتى اكتمال الشحن</translation>
 <translation id="4538824937723742295">الحصول على لقطة شاشة في وضع ملء الشاشة</translation>
 <translation id="4539127209940689201">طباعة الصفحة الحالية</translation>
+<translation id="4541505619120536051">مفتوح دائمًا</translation>
 <translation id="4541706525461326392">جارٍ إزالة الملف الشخصي. قد تستغرق هذه العملية بضع دقائق.</translation>
 <translation id="4544483149666270818">يُرجى اختيار نافذة لتسجيل فيديو لها.</translation>
 <translation id="4545950850562423083">حفظ الصفحة الحالية كإشارة مرجعية</translation>
@@ -1490,6 +1491,7 @@
 <translation id="6232891689835436217">يستخدم "<ph name="APP_NAME" />" الكاميرا والميكروفون حاليًا.</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">الزر الأعلى</translation>
+<translation id="6240821072888636753">السؤال في كل مرة</translation>
 <translation id="6247728804802644171">فتح الإشعارات</translation>
 <translation id="6249795363855770621">تعذَّر وضع علامة "مكتمل". يُرجى إعادة المحاولة عند الاتصال بالإنترنت.</translation>
 <translation id="6254629735336163724">تم القفل على الوضع الأفقي</translation>
@@ -1834,6 +1836,7 @@
 <translation id="7557816257942363084">يستخدم "<ph name="APP_NAME" />" الميكروفون حاليًا.</translation>
 <translation id="7561982940498449837">إغلاق القائمة</translation>
 <translation id="7564874036684306347">قد ينتج عن نقل النوافذ إلى سطح مكتب آخر سلوك غير متوقع. من الممكن أن يتم تقسيم مربعات الحوار والنوافذ والإشعارات المتتالية بين سطحَي المكتب.</translation>
+<translation id="7568790562536448087">تحديث</translation>
 <translation id="7569509451529460200">‏تم تفعيل Braille وChromeVox</translation>
 <translation id="7569886975397378678">عدم إعداد ميزة عرض الإشعارات والتطبيقات في هاتفك</translation>
 <translation id="7571361473021531288">مستوى شحن البطارية: %<ph name="BATTERY_PERCENTAGE" /> | الوقت المتبقي: <ph name="TIME" /></translation>
@@ -1963,7 +1966,6 @@
 <translation id="7963992254934562106">من <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">اختيار مجلد...</translation>
 <translation id="7973756967040444713">إغلاق شريط الأدوات</translation>
-<translation id="797485111629834774">تحديد المهمة على أنها مكتملة: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">تفعيل المكبِّر بملء الشاشة أو إيقافه</translation>
 <translation id="7977927628060636163">جارٍ البحث عن شبكات الجوّال...</translation>
 <translation id="7982789257301363584">الشبكة</translation>

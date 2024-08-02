@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Бутон „Управление на паролите“. Активирайте, за да прегледате и управлявате паролите в настройките на Chrome</translation>
 <translation id="1108464073729874771">A3 x 4</translation>
 <translation id="1110994991967754504">Избиране на разрешението за <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">Ценови диапазон за всички опции</translation>
 <translation id="1113869188872983271">&amp;Отмяна на пренареждането</translation>
 <translation id="1118429183611783760">Прахосмукачки и поддържане на подове</translation>
 <translation id="1122714970786750095">Електроника и електрически уреди</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">Скриване засега</translation>
 <translation id="121201262018556460">Направихте опит да се свържете с/ъс <ph name="DOMAIN" />, но сървърът предостави сертификат, съдържащ слаб ключ. Възможно е извършител на атака да е пробил личния ключ и сървърът да не е този, който очаквате (възможно е да сте се свързали с извършител на атака).</translation>
 <translation id="1212527389003717329">Изтеглянето започна. За да го видите, натиснете и задръжте |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">Ценови диапазон</translation>
 <translation id="1219129156119358924">Сигурност на системата</translation>
 <translation id="1222060260947439312">Дясна тава</translation>
 <translation id="1224330468394120478">A3 x 6</translation>
@@ -141,6 +139,7 @@
 <translation id="1247030632403369975">Алуминий</translation>
 <translation id="1252209483516427155">Горни дрехи</translation>
 <translation id="1253096324252841344">Плащане чрез <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
+<translation id="1253846494229886276">Екранната снимка се запазва</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (синхронизирани)</translation>
 <translation id="1255086252236620440">Миксери за храна</translation>
 <translation id="1256368399071562588">&lt;p&gt;Ако опитате да посетите уебсайт и той не се отваря, първо, пробвайте да изпълните следните стъпки за отстраняване на неизправности:&lt;/p&gt;
@@ -352,7 +351,6 @@
 <translation id="1617276713587758852">Кросоувъри</translation>
 <translation id="1619007254056372606">Управление на локалните данни за сайтовете</translation>
 <translation id="1620510694547887537">Камера</translation>
-<translation id="162285686621567578">Този уебсайт е блокиран от родителя ви.</translation>
 <translation id="1622966923835127638">Бизнес и финанси</translation>
 <translation id="1623104350909869708">Да не се създават допълнителни диалогови прозорци от тази страница</translation>
 <translation id="1633137413609266904">{0,plural, =1{Отварянето на този файл е блокирано чрез администраторско правило}other{Отварянето на # файла е блокирано чрез администраторско правило}}</translation>
@@ -737,7 +735,6 @@
 <translation id="2328955282645810595">Ръчни и електрически строителни инструменти</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, изтича на <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Възобновяване на писането</translation>
-<translation id="2337776048981813397">Ценови диапазон за всички опции</translation>
 <translation id="2337852623177822836">Настройката се контролира от администратора ви</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> иска да се сдвои</translation>
 <translation id="2346319942568447007">Копирано от вас изображение</translation>
@@ -1029,7 +1026,6 @@
 <translation id="2930577230479659665">Отрязване след всяко копие</translation>
 <translation id="2933624813161016821">Фолио за гравиране</translation>
 <translation id="2938225289965773019">Да отваря връзки от типа „<ph name="PROTOCOL" />“.</translation>
-<translation id="2941112035454246133">Нисък</translation>
 <translation id="2941878205777356567">Плик 9 x 12 инча</translation>
 <translation id="2941952326391522266">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; сертификатът му за сигурност е от <ph name="DOMAIN2" />. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
 <translation id="2942492342931589800">Неформален</translation>
@@ -1211,7 +1207,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Въведете <ph name="NUMBER_OF_DIGITS" />-цифрения код за потвърждение</translation>
 <translation id="3272643614306383237">По-малко от 1 MB. При следващото ви посещение някои сайтове може да се зареждат по-бавно.</translation>
-<translation id="327346289570683313">Ценови диапазон</translation>
 <translation id="3273738040255912340">Администраторът ви може да извършва промени в потребителския профил и браузъра ви отдалечено, да анализира информацията за браузъра чрез отчитане и да изпълнява други необходими задачи. Възможно е активността на това устройство да се управлява и извън Chromium. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Според администраторско правило отварянето на този файл в(ъв) <ph name="DESTINATION_NAME" /> не се препоръчва}other{Според администраторско правило отварянето на тези файлове в(ъв) <ph name="DESTINATION_NAME" /> не се препоръчва}}</translation>
 <translation id="3282085321714087552">Организацията ви (<ph name="ENROLLMENT_DOMAIN" />) изпрати известна информация, като например настройки или правила, до долупосочените уебсайтове.</translation>
@@ -1700,6 +1695,7 @@
 <translation id="4177501066905053472">Рекламни теми</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> – <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Спиране на проследяването на цената</translation>
+<translation id="4190446002599583608">Търсене в историята, базирано на AI</translation>
 <translation id="4191334393248735295">Продължителност</translation>
 <translation id="4195459680867822611">Бутон за преглед на съветите за Chrome. Активирайте, за да научите повече за функциите на браузъра</translation>
 <translation id="4195643157523330669">Отваряне в нов раздел</translation>
@@ -1743,6 +1739,7 @@
 <translation id="4235360514405112390">Валиден сертификат</translation>
 <translation id="4239799716689808527">Етикети</translation>
 <translation id="4242380780309416996">Плик (тежка хартия)</translation>
+<translation id="4242981939686657948">За по-мощен начин за търсене в историята на сърфирането включете</translation>
 <translation id="4244926541863471678">Филмово покритие</translation>
 <translation id="4246517972543675653">Образование в чужбина</translation>
 <translation id="4250431568374086873">Връзката ви с този сайт не е напълно защитена</translation>
@@ -2141,6 +2138,7 @@
 <translation id="5019952743397118625">Правилото <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> е зададено. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> няма да контролира наличността на режима за програмисти на страницата с разширения.</translation>
 <translation id="5021557570875267742">Проследяване на цените с Chrome</translation>
 <translation id="5023310440958281426">Проверете правилата на администратора</translation>
+<translation id="5024171724744627792">Плащайте по-бързо, когато картата ви е запазена. Данните за нея се шифроват в профила ви в Google.</translation>
 <translation id="5030338702439866405">Издаден от</translation>
 <translation id="503069730517007720">За <ph name="SOFTWARE_NAME" /> се изисква основен сертификат, но такъв не е инсталиран. Системният ви администратор трябва да прегледа инструкциите за конфигуриране на <ph name="SOFTWARE_NAME" />, за да отстрани проблема. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Всичко за Google Преводач</translation>
@@ -3329,6 +3327,7 @@
 <translation id="7311244614769792472">Няма намерени резултати</translation>
 <translation id="7311837626618954149">Chromium блокира използването на „бисквитки“ на трети страни от сайтовете с цел проследяването ви, докато сърфирате.</translation>
 <translation id="7313107491291103073">Организацията ви е подала сигнал за този сайт, защото може да нарушава дадено правило.</translation>
+<translation id="7316521168101843192">Файлът се запазва в Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Помощ при проблеми с връзката</translation>
 <translation id="7323804146520582233">Скриване на секцията „<ph name="SECTION" />“</translation>
@@ -3632,6 +3631,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Предложението за формуляри да се премахне ли от Chrome?</translation>
 <translation id="781440967107097262">Да се сподели ли буферната памет?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Хартия (обикновена)</translation>
 <translation id="7815407501681723534"><ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> за „<ph name="SEARCH_STRING" />“</translation>
 <translation id="7822611063308883975">Ръчни игрови конзоли</translation>
@@ -3796,6 +3796,7 @@
 <translation id="8148608574971654810">PDF версия:</translation>
 <translation id="8149426793427495338">Компютърът ви премина в спящ режим.</translation>
 <translation id="8150722005171944719">Файлът на адрес <ph name="URL" /> не може да бъде прочетен.  Възможно е да е премахнат, преместен или разрешенията му да предотвратяват достъпа.</translation>
+<translation id="8151185429379586178">Инстр. за програмисти</translation>
 <translation id="8153865548451212769">{0,plural, =1{Според администраторско правило изтеглянето на този файл на <ph name="DESTINATION_NAME" /> не се препоръчва}other{Според администраторско правило изтеглянето на тези файлове на <ph name="DESTINATION_NAME" /> не се препоръчва}}</translation>
 <translation id="81563721597823545">Екипировка за хокей</translation>
 <translation id="8161095570253161196">Възобновяване на сърфирането</translation>

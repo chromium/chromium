@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Gestiona els comptes en aquest dispositiu</translation>
 <translation id="1129510026454351943">Detalls: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">El mode d'incògnit manté la navegació privada perquè altres persones que utilitzin el teu dispositiu no la puguin veure</translation>
+<translation id="1138458427267715730">Rep alertes quan el preu baixi en qualsevol lloc web d'Internet</translation>
 <translation id="1142732900304639782">No proposis traduir aquests llocs web</translation>
 <translation id="1145536944570833626">Suprimeix les dades existents.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> s'obrirà a Chrome. En continuar, acceptes les <ph name="BEGIN_LINK1" />condicions del servei de Google<ph name="END_LINK1" /> i les <ph name="BEGIN_LINK2" />condicions del servei addicionals de Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Gestiona l'activitat</translation>
 <translation id="1355088659320425659">Historial i pestanyes</translation>
 <translation id="1360432990279830238">Vols tancar la sessió i desactivar la sincronització?</translation>
+<translation id="1363028406613469049">Pista</translation>
 <translation id="1366525380420346469">Quan aquesta opció està activada</translation>
 <translation id="1373696734384179344">No hi ha prou memòria per baixar el contingut seleccionat.</translation>
 <translation id="1376578503827013741">S'està calculant…</translation>
@@ -292,6 +294,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
 <translation id="2439153523196674349">Previsualització de <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Vols tornar a baixar el fitxer <ph name="FILE_NAME" />?</translation>
+<translation id="2451607499823206582">Seguiment</translation>
 <translation id="2453860139492968684">Finalitza</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2468444275314013497">Tot correcte al teu navegador</translation>
@@ -1041,7 +1044,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="6040939430773295212">És repetitiu</translation>
 <translation id="604124094241169006">Automàtic</translation>
 <translation id="6042308850641462728">Més</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{S'han revisat els permisos d'1 lloc web}other{S'han revisat els permisos de {NUM_SITES} llocs web}}</translation>
 <translation id="604996488070107836">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa d'un error desconegut.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla les teves històries i la teva activitat aquí</translation>
@@ -1682,7 +1684,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8865415417596392024">Dades de Chrome al teu compte</translation>
 <translation id="8898822736010347272">Envia a Google els URL d'algunes pàgines que visites, informació limitada del sistema i part del contingut de les pàgines per ajudar a detectar amenaces noves i protegir tothom al web.</translation>
 <translation id="8909135823018751308">Comparteix...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{No es permeten les notificacions per a 1 lloc web}other{No es permeten les notificacions per a {NUM_SITES} llocs web}}</translation>
 <translation id="8921980840204105660">Sincronitza per obtenir les adreces d'interès dels teus altres dispositius</translation>
 <translation id="8922289737868596582">Baixa pàgines amb el botó Més opcions per utilitzar-les sense connexió</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>

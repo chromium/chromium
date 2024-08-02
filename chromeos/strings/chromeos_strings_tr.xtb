@@ -179,7 +179,6 @@
 <translation id="1827738518074806965">Sanat galerisi</translation>
 <translation id="1836553715834333258">Sistem rengi</translation>
 <translation id="183675228220305365">realist</translation>
-<translation id="1837537071599385610">İstem yazma kılavuzu</translation>
 <translation id="1838374766361614909">Aramayı temizle</translation>
 <translation id="1840474674287087346">Masaüstü rengi</translation>
 <translation id="184095011128924488">yaratıcı</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Google Yapay Zeka destekli son arka planlar</translation>
 <translation id="2783010256799387990">BAŞARILI OLDU</translation>
 <translation id="2786429550992142861">keten</translation>
+<translation id="2787237339470862294">Bu dil şu anda desteklenmiyor</translation>
 <translation id="2787435249130282949">klavye parlaklığını artır</translation>
 <translation id="2805756323405976993">Uygulamalar</translation>
 <translation id="28232023175184696">İnternete bağlanamıyor. Tekrar denemek için tıklayın.</translation>
@@ -673,6 +673,7 @@ Bu özelliği dilediğiniz zaman Ayarlar'da kapatabilirsiniz.</translation>
 <translation id="458794348635939462">Tüm ana makineler çözümlenemedi</translation>
 <translation id="4593212453765072419">Proxy kimlik doğrulaması gerekli</translation>
 <translation id="4594021849294327751">Transkript oluştur</translation>
+<translation id="4607282946861182308">Bu istemle ilgili resim üretilemiyor. Başka bir istem deneyin.</translation>
 <translation id="4609350030397390689">Klavye parlaklığını azalt</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Yazdırma işini iptal etmek için enter tuşuna basın.</translation>
 <translation id="463791356324567266">Tarama iptal ediliyor...</translation>

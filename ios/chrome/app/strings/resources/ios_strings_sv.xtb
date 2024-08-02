@@ -324,6 +324,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2635918910848538771">Autofyll CVC-koden</translation>
 <translation id="2637313651144986786">Sök bland flikar …</translation>
 <translation id="2640733327287333451">Inget användarnamn ••••••</translation>
+<translation id="264215785133931186">Kontrollerades alldeles nyss</translation>
 <translation id="2648721026697078500">Flytta aldrig</translation>
 <translation id="2648803196158606475">Radera lästa</translation>
 <translation id="2664621323652615289">Stopp</translation>
@@ -797,6 +798,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4937410517508563815">Spara lösenord i kontot</translation>
 <translation id="4938338714234463591">Detta gör att du kan använda rösten med vissa funktioner på webbplatser.</translation>
 <translation id="4941089862236492464">Det gick inte att dela objektet.</translation>
+<translation id="4942382218961352935">Kontrollerades alldeles nyss</translation>
 <translation id="4944543191714094452">Hitta på sida …</translation>
 <translation id="4945756290001680296">Åtkomst till lösenordsinställningar</translation>
 <translation id="4958444002117714549">Expandera lista</translation>
@@ -1488,7 +1490,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8237382152611443140">Öppna inställningarna för autofyllning av lösenord</translation>
 <translation id="8248969482078657578">Behåll koncentrationen med Inaktiva flikar</translation>
 <translation id="8261506727792406068">Radera</translation>
-<translation id="8263336784344783289">Namnge den här gruppen</translation>
 <translation id="8263809106706527890">Inställningarna av standardwebbläsare kan ha ändrats. Du kan kontrollera detta i inställningarna.</translation>
 <translation id="8264966119170358612">Vissa av dina lösenord har läckts i samband med ett dataintrång utanför Google. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Du har loggats ut från ditt konto, <ph name="USER_NAME" />, som en del av återställningen av din iPad. Tryck på Fortsätt nedan om du vill logga in igen.</translation>

@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Керувати обліковими записами на цьому пристрої</translation>
 <translation id="1129510026454351943">Деталі. <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Режим анонімного перегляду забезпечує приватний перегляд вебсторінок, щоб їх не бачили інші користувачі, які мають доступ до вашого пристрою.</translation>
+<translation id="1138458427267715730">Отримуйте сповіщення про зниження ціни на будь-якому вебсайті</translation>
 <translation id="1142732900304639782">Не пропонувати перекладати ці сайти</translation>
 <translation id="1145536944570833626">Видалити наявні дані.</translation>
 <translation id="1150263420752757504">Додаток <ph name="APP_NAME" /> відкриється в Chrome. Продовжуючи, ви приймаєте <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додаткові умови використання Google Chrome та ОС Chrome<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Керувати діями</translation>
 <translation id="1355088659320425659">Історія і вкладки</translation>
 <translation id="1360432990279830238">Вийти й вимкнути синхронізацію?</translation>
+<translation id="1363028406613469049">Композиція</translation>
 <translation id="1366525380420346469">Коли функцію ввімкнено</translation>
 <translation id="1373696734384179344">Недостатньо пам’яті, щоб завантажити вибраний вміст.</translation>
 <translation id="1376578503827013741">Обчислення…</translation>
@@ -292,6 +294,7 @@
 <translation id="2435457462613246316">Показати пароль</translation>
 <translation id="2439153523196674349">Перегляд стрічки із сайту "<ph name="SITE_NAME" />"</translation>
 <translation id="2450083983707403292">Завантажити файл <ph name="FILE_NAME" /> ще раз?</translation>
+<translation id="2451607499823206582">Відстеження</translation>
 <translation id="2453860139492968684">Готово</translation>
 <translation id="2461822463642141190">Зараз</translation>
 <translation id="2468444275314013497">Ваш вебпереглядач у безпеці</translation>
@@ -1041,7 +1044,6 @@
 <translation id="6040939430773295212">Повторюваний контент</translation>
 <translation id="604124094241169006">Автоматично</translation>
 <translation id="6042308850641462728">Більше</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Дозволи перевірено для 1 сайту}one{Дозволи перевірено для {NUM_SITES} сайту}few{Дозволи перевірено для {NUM_SITES} сайтів}many{Дозволи перевірено для {NUM_SITES} сайтів}other{Дозволи перевірено для {NUM_SITES} сайту}}</translation>
 <translation id="604996488070107836">Не вдалося завантажити файл <ph name="FILE_NAME" />. Сталася невідома помилка.</translation>
 <translation id="605721222689873409">РР</translation>
 <translation id="6059830886158432458">Керуйте новинами й діями тут</translation>
@@ -1682,7 +1684,6 @@
 <translation id="8865415417596392024">Дані Chrome у вашому обліковому записі</translation>
 <translation id="8898822736010347272">Надсилає в Google URL-адреси відвіданих сторінок, обмежену системну інформацію та вміст деяких сторінок, щоб виявляти нові загрози та захищати всіх користувачів в Інтернеті.</translation>
 <translation id="8909135823018751308">Надіслати…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Сповіщення заборонено для 1 сайту}one{Сповіщення заборонено для {NUM_SITES} сайту}few{Сповіщення заборонено для {NUM_SITES} сайтів}many{Сповіщення заборонено для {NUM_SITES} сайтів}other{Сповіщення заборонено для {NUM_SITES} сайту}}</translation>
 <translation id="8921980840204105660">Увімкніть синхронізацію, щоб переглядати закладки на інших пристроях</translation>
 <translation id="8922289737868596582">Щоб переглядати сторінки офлайн, завантажуйте їх, натиснувши кнопку "Більше опцій"</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>

@@ -136,6 +136,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1420408895951708260">Ndrysho "Dritën e natës". <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Po</translation>
 <translation id="1435537621343861112">Diktimi nuk mund të fillojë. Mikrofoni yt është joaktiv.</translation>
+<translation id="1445031758921122223">Skedarët e kontrollit me anë të fytyrës u shkarkuan</translation>
 <translation id="1447907279406111651">Tani ⋅ Përfundon në <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Zonat e qasjes për internet të pajisjes sate</translation>
 <translation id="1455242230282523554">Shfaq cilësimet e gjuhës</translation>
@@ -412,6 +413,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516416533263263796">"Fokusi është aktiv". Koha e mbetur: 10 minuta</translation>
 <translation id="2516637483312286228">Modifiko kontrollet e lojës</translation>
+<translation id="252054055865191167">Vegla e shënuesit</translation>
 <translation id="2526581474998477112">Shkyç dritaret</translation>
 <translation id="2528111225373402384">Cilësimet e zonës së qasjes për internet</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -974,6 +976,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="453661520163887813"><ph name="TIME" /> derisa të mbushet</translation>
 <translation id="4538824937723742295">Shkrep një pamje ekrani të plotë</translation>
 <translation id="4539127209940689201">Printo faqen aktuale</translation>
+<translation id="4541505619120536051">Hap gjithmonë</translation>
 <translation id="4541706525461326392">Profili po hiqet. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="4544483149666270818">Zgjidh një dritare për të regjistruar</translation>
 <translation id="4545950850562423083">Ruaj faqen aktuale si faqeshënues</translation>
@@ -1222,6 +1225,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5361524080961918551">Skedarët e ligjërimit në <ph name="LANGUAGE" /> janë shkarkuar pjesërisht</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Shko te kjo skedë</translation>
 <translation id="5364693579536176785">hapësira ruajtëse</translation>
+<translation id="5369573834963677938">Kontrolli me anë të fytyrës do të ofrohet për përdoruesit e tjerë në pajisje</translation>
 <translation id="5369717264580061086">Shiko paraprakisht skedarët në aplikacionin "Skedarët"</translation>
 <translation id="5377367976106153749">Të aktivizohet qasja te kamera?</translation>
 <translation id="5379115545237091094">Shumë përpjekje</translation>
@@ -1411,6 +1415,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6020147141355393792">Konfiguro shikimin e njoftimeve dhe aplikacioneve të telefonit tënd</translation>
 <translation id="6022924867608035986">Pastro testin e kutisë së kërkimit</translation>
 <translation id="602472752137106327">Shfaq dritaret nga të gjitha tavolinat e punës, butoni i radios i zgjedhur</translation>
+<translation id="6024768346262692989">Skedarët e kontrollit me anë të fytyrës nuk mund të shkarkoheshin</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="6027518778343897451">Nuk ka asnjë ngjarje në <ph name="CURRENT_MONTH_DAY" />. Shtyp tastin Enter për të hapur kalendarin e Google në shfletues.</translation>
 <translation id="6030495522958826102">Menyja u zhvendos në këndin poshtë majtas të ekranit.</translation>
@@ -1484,6 +1489,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> po përdor aktualisht kamerën dhe mikrofonin tënd</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Butoni në krye</translation>
+<translation id="6240821072888636753">Pyet çdo herë</translation>
 <translation id="6247728804802644171">Hap njoftimet</translation>
 <translation id="6249795363855770621">Nuk mund të shënohej si e përfunduar. Provo përsëri kur të jesh online.</translation>
 <translation id="6254629735336163724">Kyçur horizontalisht</translation>
@@ -1827,6 +1833,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7557816257942363084"><ph name="APP_NAME" /> po përdor aktualisht mikrofonin tënd</translation>
 <translation id="7561982940498449837">Mbyll menynë</translation>
 <translation id="7564874036684306347">Zhvendosja e dritareve te një desktop tjetër mund të shkaktojë një sjellje të papritur. Njoftimet pasuese, dritarja dhe dialogët mund të ndahen mes desktopëve.</translation>
+<translation id="7568790562536448087">Po përditësohet</translation>
 <translation id="7569509451529460200">Braille dhe ChromeVox janë aktivizuar</translation>
 <translation id="7569886975397378678">Hiq konfigurimin e shikimit të njoftimeve dhe aplikacioneve të telefonit tënd</translation>
 <translation id="7571361473021531288">Bateria <ph name="BATTERY_PERCENTAGE" />% | Koha e mbetur: <ph name="TIME" /></translation>
@@ -1956,7 +1963,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7963992254934562106">Nga <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Zgjidh dosje...</translation>
 <translation id="7973756967040444713">Mbyll shiritin e veglave</translation>
-<translation id="797485111629834774">Shëno detyrën si të përfunduar: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Aktivizo ose çaktivizo zmadhuesin në ekran të plotë</translation>
 <translation id="7977927628060636163">Po kërkon për rrjete celulare...</translation>
 <translation id="7982789257301363584">Rrjeti</translation>

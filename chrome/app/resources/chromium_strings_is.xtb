@@ -23,6 +23,8 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="126567311906253476">Þegar þú skráir þig inn í Google-þjónustu á borð við Gmail eða YouTube með <ph name="USER_EMAIL" /> geturðu skráð þig sjálfkrafa inn í Chromium með sama reikningi</translation>
 <translation id="1290883685122687410">Villa við uppsetningu: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Settu upp nýja Chromium prófílinn þinn</translation>
+<translation id="1324107359134968521">Chromium þarf aðgang að Bluetooth til að kanna 
+ Bluetooth-tæki. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Eyða einnig gögnum úr Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Þú ert skráð(ur) inn á Chromium!</translation>
 <translation id="1478370723027452770">Fá hjálp með Chrome for Testing</translation>
@@ -61,6 +63,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="1951406923938785464">Chromium lokaði á þetta niðurhal vegna þess að skráargerðin er ekki sótt oft og gæti verið hættuleg</translation>
 <translation id="1953553007165777902">Sækir... <ph name="MINUTE" /> mín. eftir</translation>
 <translation id="1966382378801805537">Chromium getur ekki ákvarðað eða stillt sjálfgefinn vafra</translation>
+<translation id="1990262977744080398">Kynntu þér hvers vegna Chromium lokar fyrir vissar skrár (opnast í nýjum flipa)</translation>
 <translation id="2008474315282236005">Þetta mun eyða einu atriði úr þessu tæki. Skráðu þig inn í Chromium sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
 <translation id="2018879682492276940">Uppsetning mistókst. Reyndu aftur.</translation>
 <translation id="2020032459870799438"><ph name="BEGIN_LINK" />Skráðu þig inn á Chromium<ph name="END_LINK" /> til að athuga hvort hin aðgangsorðin þín séu óhult fyrir öryggisbrotum og öðrum öryggisvandamálum.</translation>

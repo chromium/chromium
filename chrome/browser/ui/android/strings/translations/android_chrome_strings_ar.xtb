@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">إدارة الحسابات على هذا الجهاز</translation>
 <translation id="1129510026454351943">التفاصيل: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">يحافظ وضع التصفّح المتخفي على خصوصية تصفّحك لكي لا تظهر بيانات التصفّح للأشخاص الآخرين الذين يستخدمون جهازك</translation>
+<translation id="1138458427267715730">تلقَّ تنبيهات عند انخفاض السعر على أي موقع إلكتروني على الويب</translation>
 <translation id="1142732900304639782">عدم اقتراح ترجمة لهذه المواقع الإلكترونية</translation>
 <translation id="1145536944570833626">سيتم حذف البيانات الحالية.</translation>
 <translation id="1150263420752757504">‏سيتم فتح تطبيق "<ph name="APP_NAME" />" في Chrome. تعني المتابعة موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">إدارة النشاط</translation>
 <translation id="1355088659320425659">السجلّ وعلامات التبويب</translation>
 <translation id="1360432990279830238">هل تريد تسجيل الخروج وإيقاف المزامنة؟</translation>
+<translation id="1363028406613469049">تتبّع</translation>
 <translation id="1366525380420346469">عندما يكون الإعداد مفعَّلاً</translation>
 <translation id="1373696734384179344">لا توجد ذاكرة كافية لتنزيل المحتوى المحدد.</translation>
 <translation id="1376578503827013741">جارٍ الحوسبة...</translation>
@@ -292,6 +294,7 @@
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
 <translation id="2439153523196674349">معاينة "<ph name="SITE_NAME" />"</translation>
 <translation id="2450083983707403292">هل ترغب في بدء تنزيل <ph name="FILE_NAME" /> مرة أخرى؟</translation>
+<translation id="2451607499823206582">التتبُّع</translation>
 <translation id="2453860139492968684">اكتمل</translation>
 <translation id="2461822463642141190">حاليًا</translation>
 <translation id="2468444275314013497">متصفّحك يبدو آمنًا</translation>
@@ -1043,7 +1046,6 @@
 <translation id="6040939430773295212">محتوى متكرّر</translation>
 <translation id="604124094241169006">تلقائي</translation>
 <translation id="6042308850641462728">عرض المزيد</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{تمت مراجعة الأذونات لموقع إلكتروني واحد}zero{تمت مراجعة أذونات {NUM_SITES} موقع إلكتروني}two{تمت مراجعة أذونات موقعَين إلكترونيَّين ({NUM_SITES})}few{تمت مراجعة أذونات {NUM_SITES} مواقع إلكترونية}many{تمت مراجعة أذونات {NUM_SITES} موقعًا إلكترونيًّا}other{تمت مراجعة أذونات {NUM_SITES} موقع إلكتروني}}</translation>
 <translation id="604996488070107836">تعذّر تنزيل الملف <ph name="FILE_NAME" /> بسبب خطأ غير معلوم.</translation>
 <translation id="605721222689873409">العام</translation>
 <translation id="6059830886158432458">يمكنك التحكُّم بقصصك ونشاطك هنا.</translation>
@@ -1686,7 +1688,6 @@
 <translation id="8865415417596392024">‏بيانات Chrome في حسابك</translation>
 <translation id="8898822736010347272">‏إرسال عناوين URL الخاصّة ببعض الصفحات التي تزورها، وعدد محدود من معلومات النظام، وبعض أنواع محتوى الصفحات إلى Google، وذلك للمساعدة على اكتشاف التهديدات الجديدة وتوفير الحماية لجميع المستخدمين على الويب</translation>
 <translation id="8909135823018751308">مشاركة…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{تم إيقاف تلقّي الإشعارات من موقع إلكتروني واحد}zero{تم إيقاف تلقّي الإشعارات من {NUM_SITES} موقع إلكتروني}two{تم إيقاف تلقّي الإشعارات من موقعَين إلكترونيَّين ({NUM_SITES})}few{تم إيقاف تلقّي الإشعارات من {NUM_SITES} مواقع إلكترونية}many{تم إيقاف تلقّي الإشعارات من {NUM_SITES} موقعًا إلكترونيًا}other{تم إيقاف تلقّي الإشعارات من {NUM_SITES} موقع إلكتروني}}</translation>
 <translation id="8921980840204105660">يمكنك تفعيل المزامنة للحصول على الإشارات المرجعية من أجهزتك الأخرى.</translation>
 <translation id="8922289737868596582">تنزيل الصفحات من الزر "مزيد من الخيارات" لاستخدامها بلا اتصال بالإنترنت</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>

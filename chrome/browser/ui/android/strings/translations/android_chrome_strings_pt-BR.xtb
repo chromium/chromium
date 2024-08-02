@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Gerenciar contas neste dispositivo</translation>
 <translation id="1129510026454351943">Detalhes: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">O modo de navegação anônima protege sua navegação de outras pessoas que usam o mesmo dispositivo</translation>
+<translation id="1138458427267715730">Receba alertas quando houver uma redução no preço em qualquer site</translation>
 <translation id="1142732900304639782">Não oferecer a opção de traduzir estes sites</translation>
 <translation id="1145536944570833626">Excluir os dados atuais.</translation>
 <translation id="1150263420752757504">O app <ph name="APP_NAME" /> será aberto no Chrome. Ao continuar, você concorda com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço adicionais do Google Chrome e do ChromeOS<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Gerenciar atividade</translation>
 <translation id="1355088659320425659">Histórico e guias</translation>
 <translation id="1360432990279830238">Sair e desativar a sincronização?</translation>
+<translation id="1363028406613469049">Rastrear</translation>
 <translation id="1366525380420346469">Quando ativado</translation>
 <translation id="1373696734384179344">Memória insuficiente para fazer o download do conteúdo selecionado.</translation>
 <translation id="1376578503827013741">Calculando…</translation>
@@ -292,6 +294,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2435457462613246316">Mostrar senha</translation>
 <translation id="2439153523196674349">Visualização do <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Quer recomeçar o download de <ph name="FILE_NAME" />?</translation>
+<translation id="2451607499823206582">Monitoramento</translation>
 <translation id="2453860139492968684">Concluir</translation>
 <translation id="2461822463642141190">Atual</translation>
 <translation id="2468444275314013497">Parece que está tudo certo com seu navegador</translation>
@@ -1042,7 +1045,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="6040939430773295212">Repetitivo</translation>
 <translation id="604124094241169006">Automático</translation>
 <translation id="6042308850641462728">Mais</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Permissões revisadas para 1 site}one{Permissões revisadas para {NUM_SITES} site}other{Permissões revisadas para {NUM_SITES} sites}}</translation>
 <translation id="604996488070107836">Falha no download do arquivo <ph name="FILE_NAME" /> devido a um erro desconhecido.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controle suas matérias e atividade aqui</translation>
@@ -1683,7 +1685,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8865415417596392024">Dados do Chrome na sua conta</translation>
 <translation id="8898822736010347272">Envia ao Google URLs de algumas páginas que você visita, informações do sistema limitadas e parte do conteúdo das páginas para ajudar a descobrir novas ameaças e proteger todos os usuários na Web.</translation>
 <translation id="8909135823018751308">Compartilhar...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{As notificações de 1 site foram bloqueadas}one{As notificações de {NUM_SITES} site foram bloqueadas}other{As notificações de {NUM_SITES} sites foram bloqueadas}}</translation>
 <translation id="8921980840204105660">Sincronize para acessar seus favoritos de outros dispositivos</translation>
 <translation id="8922289737868596582">Use o botão Mais opções para baixar páginas e acessá-las off-line</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>

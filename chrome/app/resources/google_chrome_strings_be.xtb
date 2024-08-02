@@ -215,6 +215,7 @@
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Для браўзера Google Chrome патрабуецца Windows 10 або навейшая версія.</translation>
 <translation id="3835168907083856002">Будзе створаны новы профіль Chrome для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="383928141529488001">Браўзеру Google Chrome неабходны доступ да Bluetooth для пошуку прылад з Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Закрыйце ўсе вокны Google Chrome і паўтарыце спробу.</translation>
 <translation id="3865754807470779944">Усталявана версія Chrome <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Адкрыць спасылку ў акне &amp;інкогніта Chrome</translation>
@@ -425,6 +426,7 @@
 <translation id="6938166777909186039">Каб атрымліваць наступныя абнаўленні Google Chrome, вам патрэбная версія Windows 10 ці пазнейшая. На гэтым камп'ютары выкарыстоўваецца Windows 8.1.</translation>
 <translation id="6943584222992551122">Даныя аб прагледжаных гэтым карыстальнікам старонках будуць выдалены з прылады. Каб аднавіць гэтыя даныя, увайдзіце ў Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Уваходнае правіла для бэта-версіі Google Chrome, якое дазваляе трафік mDNS.</translation>
+<translation id="6979589607440534284">Даведацца, чаму Chrome блакіруе некаторыя файлы, інфармацыя адкрыецца ў новай укладцы</translation>
 <translation id="7011190694940573312">Усталяваць праграму не ўдалося, бо гэта версія аперацыйнай сістэмы не падтрымліваецца.</translation>
 <translation id="7024536598735240744">Памылка распакоўкі: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Усталяванне спынена.</translation>

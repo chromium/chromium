@@ -976,6 +976,7 @@
 <translation id="453661520163887813"><ph name="TIME" /> για να ολοκληρωθεί η φόρτιση</translation>
 <translation id="4538824937723742295">Λήψη στιγμιότυπου ολόκληρης της οθόνης</translation>
 <translation id="4539127209940689201">Εκτύπωση τρέχουσας σελίδας</translation>
+<translation id="4541505619120536051">Να ανοίγει πάντα</translation>
 <translation id="4541706525461326392">Η κατάργηση του προφίλ βρίσκεται σε εξέλιξη. Ενδέχεται να χρειαστούν μερικά λεπτά.</translation>
 <translation id="4544483149666270818">Επιλέξτε ένα παράθυρο για εγγραφή</translation>
 <translation id="4545950850562423083">Αποθήκευση τρέχουσας σελίδας ως σελιδοδείκτη</translation>
@@ -1361,6 +1362,7 @@
 <translation id="5819918159912280082">Έγινε μη αναμενόμενη επανεκκίνηση του Chromebook. Ανοίξτε τα προηγούμενα παράθυρα και τις εφαρμογές σας.</translation>
 <translation id="5823239091726045201">Google Tasks στον ιστό</translation>
 <translation id="5825969630400862129">Ρυθμίσεις συνδεδεμένων συσκευών</translation>
+<translation id="5830180081891717894"><ph name="WINDOWS" /> ακόμη</translation>
 <translation id="5837036133683224804">Διακοπή <ph name="ROUTE_TITLE" /> σε <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Μετάβαση στο επόμενο κομμάτι</translation>
 <translation id="5842553299352339114">Το σημείο πρόσβασης Wi-Fi της συσκευής <ph name="DEVICE_NAME" /> είναι ενεργό, δεν υπάρχουν συνδεδεμένες συσκευές</translation>
@@ -1488,6 +1490,7 @@
 <translation id="6232891689835436217">Η εφαρμογή <ph name="APP_NAME" /> χρησιμοποιεί την κάμερα και το μικρόφωνό σας αυτήν τη στιγμή.</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Επάνω κουμπί</translation>
+<translation id="6240821072888636753">Ερώτηση κάθε φορά</translation>
 <translation id="6247728804802644171">Άνοιγμα ειδοποιήσεων</translation>
 <translation id="6249795363855770621">Δεν ήταν δυνατό να επισημανθεί ως ολοκληρωμένη. Δοκιμάστε ξανά μόλις συνδεθείτε στο διαδίκτυο.</translation>
 <translation id="6254629735336163724">Κλειδωμένη σε οριζόντια</translation>
@@ -1831,6 +1834,7 @@
 <translation id="7557816257942363084">Η εφαρμογή <ph name="APP_NAME" /> χρησιμοποιεί το μικρόφωνό σας αυτήν τη στιγμή.</translation>
 <translation id="7561982940498449837">Κλείσιμο μενού</translation>
 <translation id="7564874036684306347">Η μετακίνηση των παραθύρων σε άλλη επιφάνεια εργασίας ενδέχεται να οδηγήσει σε μη αναμενόμενη συμπεριφορά. Ενδέχεται να γίνει διαχωρισμός μεταγενέστερων ειδοποιήσεων, παραθύρων και παραθύρων διαλόγου μεταξύ των επιφανειών εργασίας.</translation>
+<translation id="7568790562536448087">Ενημέρωση</translation>
 <translation id="7569509451529460200">Το Braille και το ChromeVox ενεργοποιήθηκαν</translation>
 <translation id="7569886975397378678">Παράβλεψη ρύθμισης προβολής των ειδοποιήσεων και εφαρμογών του τηλεφώνου σας</translation>
 <translation id="7571361473021531288">Μπαταρία <ph name="BATTERY_PERCENTAGE" />% | Χρόνος που απομένει: <ph name="TIME" /></translation>
@@ -1960,7 +1964,6 @@
 <translation id="7963992254934562106">Από <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Επιλογή φακέλου…</translation>
 <translation id="7973756967040444713">Κλείσιμο γραμμής εργαλείων</translation>
-<translation id="797485111629834774">Επισήμανση εργασίας ως ολοκληρωμένης: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Ενεργοποίηση ή απενεργοποίηση μεγεθυντικού φακού πλήρους οθόνης</translation>
 <translation id="7977927628060636163">Αναζήτηση για δίκτυα κινητής τηλεφωνίας…</translation>
 <translation id="7982789257301363584">Δίκτυο</translation>
@@ -2066,6 +2069,7 @@
 <translation id="8375916635258623388">Η συσκευή <ph name="DEVICE_NAME" /> και το τηλέφωνό σας θα συνδεθούν αυτόματα</translation>
 <translation id="8380784334203145311">Καληνύχτα,</translation>
 <translation id="8382715499079447151">Προστασία προβολής</translation>
+<translation id="8383614331548401927">Καλωσόρισμα Recap</translation>
 <translation id="8388750414311082622">Δεν είναι δυνατή η κατάργηση του τελευταίου γραφείου.</translation>
 <translation id="8394567579869570560">Ο γονέας σας κλείδωσε αυτήν τη συσκευή</translation>
 <translation id="8401850874595457088">Άνοιγμα του μενού γλωσσών</translation>

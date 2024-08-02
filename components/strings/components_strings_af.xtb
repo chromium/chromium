@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Knoppie om wagwoorde te bestuur; aktiveer om jou wagwoorde in Chrome-instellings te bekyk en te bestuur</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Kies toestemming vir <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">Prysreeks vir alle opsies</translation>
 <translation id="1113869188872983271">Ontdoen herrangskikking</translation>
 <translation id="1118429183611783760">Stofsuiers en vloersorg</translation>
 <translation id="1122714970786750095">Elektronika en elektriese toestelle</translation>
@@ -122,7 +121,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1209206284964581585">Versteek vir eers</translation>
 <translation id="121201262018556460">Jy het probeer om <ph name="DOMAIN" /> te bereik, maar die bediener het 'n sertifikaat wat 'n swak sleutel bevat, voorgehou. 'n Aanvaller kon die private sleutel gebreek het en die bediener is dalk nie die bediener wat jy verwag het nie (jy kommunikeer dalk met 'n aanvaller).</translation>
 <translation id="1212527389003717329">Aflaai het begin. Druk en hou |<ph name="ACCELERATOR" />| om dit te sien.</translation>
-<translation id="1214970845432250240">Prysomvang</translation>
 <translation id="1219129156119358924">Stelselsekuriteit</translation>
 <translation id="1222060260947439312">Regterlaai</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -353,7 +351,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1617276713587758852">Oorkruisvoertuie</translation>
 <translation id="1619007254056372606">Bestuur optoestelwerfdata</translation>
 <translation id="1620510694547887537">Kamera</translation>
-<translation id="162285686621567578">Hierdie webwerf word deur jou ouer geblokkeer.</translation>
 <translation id="1622966923835127638">Besigheidsfinansies</translation>
 <translation id="1623104350909869708">Verhoed hierdie bladsy om bykomende dialoë te skep</translation>
 <translation id="1633137413609266904">{0,plural, =1{Administrateursbeleid verhoed dat hierdie lêer oopgemaak kan word}other{Administrateursbeleid verhoed dat # lêers oopgemaak word}}</translation>
@@ -738,7 +735,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2328955282645810595">Konstruksie- en kraggereedskap</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, verval op <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Skryf van CV</translation>
-<translation id="2337776048981813397">Prysreeks vir alle opsies</translation>
 <translation id="2337852623177822836">Instelling word deur jou administrateur gekontroleer</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> wil saambind</translation>
 <translation id="2346319942568447007">Prent wat jy gekopieer het</translation>
@@ -1030,7 +1026,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2930577230479659665">Knip ná elke kopie</translation>
 <translation id="2933624813161016821">Reliëffoelie</translation>
 <translation id="2938225289965773019">Maak <ph name="PROTOCOL" />-skakels oop</translation>
-<translation id="2941112035454246133">Laag</translation>
 <translation id="2941878205777356567">Koevert 9x12 dm.</translation>
 <translation id="2941952326391522266">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat is van <ph name="DOMAIN2" /> af. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
 <translation id="2942492342931589800">Gemaklik</translation>
@@ -1212,7 +1207,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Voer <ph name="NUMBER_OF_DIGITS" />-syferverifikasiekode in</translation>
 <translation id="3272643614306383237">Minder as 1 MB. Sommige werwe sal dalk met jou volgende besoek stadiger laai.</translation>
-<translation id="327346289570683313">Prysomvang</translation>
 <translation id="3273738040255912340">Jou administrateur kan oor ’n afstand veranderinge aan jou profiel en blaaier maak, inligting oor die blaaier ontleed deur middel van verslagdoening, en ander nodige take uitvoer. Aktiwiteit op hierdie toestel kan ook buite Chromium bestuur word. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Adminbeleid beveel aan dat jy nie hierdie lêer in <ph name="DESTINATION_NAME" /> oopmaak nie}other{Adminbeleid beveel aan dat jy nie hierdie lêers in<ph name="DESTINATION_NAME" /> oopmaak nie}}</translation>
 <translation id="3282085321714087552">Jou organisasie, <ph name="ENROLLMENT_DOMAIN" />, het sommige inligting, soos instellings of beleide, na die volgende webwerwe gestuur.</translation>
@@ -1701,6 +1695,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4177501066905053472">Advertensie-onderwerpe</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Stop prysnasporing</translation>
+<translation id="4190446002599583608">Geskiedenissoektog, aangedryf deur AI</translation>
 <translation id="4191334393248735295">Lengte</translation>
 <translation id="4195459680867822611">Knoppie om Chrome-wenke te sien; aktiveer om meer oor Chrome-kenmerke te wete te kom</translation>
 <translation id="4195643157523330669">Maak in nuwe oortjie oop</translation>
@@ -3635,6 +3630,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Verwyder vormvoorstel uit Chrome?</translation>
 <translation id="781440967107097262">Deel knipbord?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Papier (gewoon)</translation>
 <translation id="7815407501681723534">Het <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> vir "<ph name="SEARCH_STRING" />" gevind</translation>
 <translation id="7822611063308883975">Handspeletjiekonsoles</translation>
@@ -3799,6 +3795,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8148608574971654810">PDF-weergawe:</translation>
 <translation id="8149426793427495338">Jou rekenaar het gaan slaap.</translation>
 <translation id="8150722005171944719">Die lêer by <ph name="URL" /> is nie leesbaar nie. Dit is dalk verwyder, geskuif of lêertoestemmings kan dalk toegang verhinder.</translation>
+<translation id="8151185429379586178">Ontwikkelaarnutsgoed</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administrateursbeleid beveel aan dat jy nie hierdie lêer na <ph name="DESTINATION_NAME" /> toe aflaai nie}other{Administrateursbeleid beveel aan dat jy nie hierdie lêers na <ph name="DESTINATION_NAME" /> toe aflaai nie}}</translation>
 <translation id="81563721597823545">Hokkietoerusting</translation>
 <translation id="8161095570253161196">Hervat blaai</translation>

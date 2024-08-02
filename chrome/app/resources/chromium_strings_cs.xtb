@@ -23,6 +23,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="126567311906253476">Když se pomocí účtu <ph name="USER_EMAIL" /> přihlásíte do služeb Google, jako je Gmail nebo YouTube, můžete se pomocí něj automaticky přihlásit i do prohlížeče Chromium</translation>
 <translation id="1290883685122687410">Chyba nastavení: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Nastavení nového profilu Chromium</translation>
+<translation id="1324107359134968521">K prozkoumání zařízení Bluetooth potřebuje Chromium přístup k rozhraní Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Smazat také data z prohlížeče Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Jste přihlášeni do prohlížeče Chromium.</translation>
 <translation id="1478370723027452770">Nápověda k Chrome for Testing</translation>
@@ -61,6 +62,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="1951406923938785464">Prohlížeč Chromium toto stahování zablokoval, protože tento typ souboru se běžně nestahuje a může být nebezpečný</translation>
 <translation id="1953553007165777902">Stahování… Počet zbývajících minut: <ph name="MINUTE" /></translation>
 <translation id="1966382378801805537">Chromium nemůže určit ani nastavit výchozí prohlížeč</translation>
+<translation id="1990262977744080398">Proč Chromium některé soubory blokuje, otevře se na nové kartě</translation>
 <translation id="2008474315282236005">Z tohoto zařízení bude smazána 1 položka. Budete-li chtít své údaje později načíst, přihlaste se do prohlížeče Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Instalace se nezdařila. Zkuste to znovu.</translation>
 <translation id="2020032459870799438">Chcete-li zkontrolovat, zda jsou ostatní hesla v bezpečí před porušením zabezpečení údajů a ostatními bezpečnostními hrozbami, <ph name="BEGIN_LINK" />přihlaste se do prohlížeče Chromium<ph name="END_LINK" />.</translation>

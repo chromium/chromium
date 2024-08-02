@@ -41,6 +41,7 @@
 <translation id="2801787514987684416">Дүкен туралы ақпаратты көресіз бе?</translation>
 <translation id="2928243913527329289">Google | Дүкен туралы ақпарат</translation>
 <translation id="2977480621796371840">Топтан өшіру</translation>
+<translation id="29919168204617356">Әрекетсіз қойындылар автоматты түрде жабылады. Оларды тарихтан табуға болады.</translation>
 <translation id="3008554597174452548">Өнімді бақылауды тоқтату</translation>
 <translation id="3026391124054406831">Қойындыларды реттеу үшін топтар жасаңыз.</translation>
 <translation id="3051031624272448591">Оларды тарихтан кез келген уақытта қайтаруға болады.</translation>
@@ -51,6 +52,7 @@
 <translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> қойындылар тобының әрекеттер мәзірін ашу</translation>
 <translation id="3328308545011660196">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды өзара қатысты сияқты. Олар топтастырылсын ба?</translation>
 <translation id="3547352561153509682">Бұл жағдайда топ <ph name="USER_EMAIL" /> аккаунтына кірген барлық құрылғыдан жойылады.</translation>
+<translation id="3613492231657284463">"Әрекетсіз қойындылар" диалогтік терезесін жасыру</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Алғы көрінісі бар нобай.</translation>
 <translation id="381219490185664296">Қойындылар тобын тарату қажет пе?</translation>
@@ -137,6 +139,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google-дан <ph name="REVIEWS_COUNT_ONE" /> пікір}other{Google-дан <ph name="REVIEWS_COUNT_MANY" /> пікір}}</translation>
 <translation id="7559245342362162951">Топ қойындыларын толық экранда тор түрінде көрсету</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
+<translation id="7688386659311034820">"Әрекетсіз қойындылар" диалогтік терезесі</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Таңдалған <ph name="TABS_COUNT_ONE" /> қойындыны бөлісу}other{Таңдалған <ph name="TABS_COUNT_MANY" /> қойындыны бөлісу}}</translation>
 <translation id="7773714564112603605">Қойындыны өшіру және топты жою</translation>
 <translation id="7792771145871471484">Ұсыныстарды көріңіз.</translation>
@@ -159,6 +162,7 @@
 <translation id="8398929769197326728">Жаңа қалта – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Параметрлер</translation>
 <translation id="8631711675211020168">Барлығы <ph name="GROUP_NAME" /> қойындылар тобын пайдалану рұқсатынан бірден айырылып қалады. Бұл топ барлық құрылғыдан жойылады.</translation>
+<translation id="8633025649649592204">Соңғы іс-әрекеттер</translation>
 <translation id="870736955561925754">Қойындыны жауып, топты жою қажет пе?</translation>
 <translation id="8714939927607906138">Арзанырақ</translation>
 <translation id="8730621377337864115">Дайын</translation>

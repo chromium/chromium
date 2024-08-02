@@ -179,7 +179,6 @@
 <translation id="1827738518074806965">Likovna galerija</translation>
 <translation id="1836553715834333258">Boja sistema</translation>
 <translation id="183675228220305365">realizam</translation>
-<translation id="1837537071599385610">Vodič za upit</translation>
 <translation id="1838374766361614909">Obrišite pretragu</translation>
 <translation id="1840474674287087346">Boja radne površine</translation>
 <translation id="184095011128924488">kreativna</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Nedavne pozadine koje omogućava Google veštačka inteligencija</translation>
 <translation id="2783010256799387990">PROŠLO</translation>
 <translation id="2786429550992142861">lana</translation>
+<translation id="2787237339470862294">Ovaj jezik trenutno nije podržan</translation>
 <translation id="2787435249130282949">svetlija tastatura</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="28232023175184696">Povezivanje na internet nije uspelo. Kliknite da biste probali ponovo.</translation>
@@ -673,6 +673,7 @@ To uvek možete da isključite u Podešavanjima.</translation>
 <translation id="458794348635939462">Razrešenje svih hostova nije uspelo</translation>
 <translation id="4593212453765072419">Potrebna je potvrda autentičnosti proksija</translation>
 <translation id="4594021849294327751">Napravi transkript</translation>
+<translation id="4607282946861182308">Ne možemo da napravimo slike na kojima je ovo. Probajte sa drugim upitom.</translation>
 <translation id="4609350030397390689">Smanjite osvetljenost tastature</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite taster Enter da biste otkazali zadatak štampanja.</translation>
 <translation id="463791356324567266">Otkazuje se skeniranje...</translation>
@@ -1365,6 +1366,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="8208861521865154048">Pogodnosti</translation>
 <translation id="8226628635270268143">Odaberite omiljene slike i albume</translation>
 <translation id="8227119283605456246">Priloži datoteku</translation>
+<translation id="8227488649450500937">Probajte neki od ovih upita ili pogledajte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />vodič za upite<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Pingovanje podrazumevanog mrežnog prolaza nije uspelo</translation>
 <translation id="8238771987802558562">Odaberite naziv pristupne tačke</translation>
 <translation id="8246209727385807362">Nepoznat mobilni operater</translation>

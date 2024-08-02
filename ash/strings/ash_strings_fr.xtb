@@ -136,6 +136,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1420408895951708260">Activer/Désactiver l'éclairage nocturne. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Oui</translation>
 <translation id="1435537621343861112">Impossible de commencer la dictée. Votre micro est désactivé.</translation>
+<translation id="1445031758921122223">Fichiers de contrôle du visage téléchargés</translation>
 <translation id="1447907279406111651">Maintenant · Finit à <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Points d'accès de votre appareil</translation>
 <translation id="1455242230282523554">Afficher les paramètres de langue</translation>
@@ -412,6 +413,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516416533263263796">Le mode Sans distractions est activé. Il reste 10 minutes.</translation>
 <translation id="2516637483312286228">Modifier les commandes de jeu</translation>
+<translation id="252054055865191167">Outil Marqueur</translation>
 <translation id="2526581474998477112">Déverrouiller les fenêtres</translation>
 <translation id="2528111225373402384">Paramètres de point d'accès</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -974,6 +976,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="453661520163887813"><ph name="TIME" /> avant charge complète</translation>
 <translation id="4538824937723742295">Prendre une capture en plein écran</translation>
 <translation id="4539127209940689201">Imprimer la page active</translation>
+<translation id="4541505619120536051">Toujours ouvrir</translation>
 <translation id="4541706525461326392">Suppression du profil… Cela peut prendre quelques minutes.</translation>
 <translation id="4544483149666270818">Sélectionner une fenêtre à enregistrer</translation>
 <translation id="4545950850562423083">Enregistrer la page active dans les favoris</translation>
@@ -1222,6 +1225,7 @@ Aucun appareil connecté.</translation>
 <translation id="5361524080961918551">Fichiers vocaux partiellement téléchargés : <ph name="LANGUAGE" /></translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Accéder à cet onglet</translation>
 <translation id="5364693579536176785">espace de stockage</translation>
+<translation id="5369573834963677938">Le contrôle du visage sera disponible pour les autres utilisateurs de l'appareil</translation>
 <translation id="5369717264580061086">Prévisualiser le fichier dans l'appli Fichiers</translation>
 <translation id="5377367976106153749">Activer l'accès à l'appareil photo ?</translation>
 <translation id="5379115545237091094">Trop de tentatives</translation>
@@ -1411,6 +1415,7 @@ Aucun appareil connecté.</translation>
 <translation id="6020147141355393792">Configurer l'affichage des notifications et des applis de votre téléphone</translation>
 <translation id="6022924867608035986">Effacer le texte de la zone de recherche</translation>
 <translation id="602472752137106327">Afficher toutes les fenêtres du bureau, case d'option cochée</translation>
+<translation id="6024768346262692989">Impossible de télécharger les fichiers de contrôle du visage</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="6027518778343897451">Aucun événement le <ph name="CURRENT_MONTH_DAY" />. Appuyez sur Entrée pour ouvrir Google Agenda dans le navigateur.</translation>
 <translation id="6030495522958826102">Le menu a été déplacé dans l'angle inférieur gauche de l'écran.</translation>
@@ -1484,6 +1489,7 @@ Aucun appareil connecté.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> utilise actuellement votre caméra et votre micro</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Bouton du haut</translation>
+<translation id="6240821072888636753">Toujours demander</translation>
 <translation id="6247728804802644171">Ouvrir les notifications</translation>
 <translation id="6249795363855770621">Impossible de marquer la tâche comme terminée. Réessayez une fois en ligne.</translation>
 <translation id="6254629735336163724">Verrouillée en position horizontale</translation>
@@ -1828,6 +1834,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7557816257942363084"><ph name="APP_NAME" /> utilise actuellement votre micro</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="7564874036684306347">Le déplacement de fenêtres vers un autre écran peut entraîner un comportement inattendu. Par exemple, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
+<translation id="7568790562536448087">Mise à jour en cours</translation>
 <translation id="7569509451529460200">Braille et ChromeVox activés</translation>
 <translation id="7569886975397378678">Ignorer la configuration concernant l'affichage des notifications et applis de votre téléphone</translation>
 <translation id="7571361473021531288"><ph name="BATTERY_PERCENTAGE" /> % de batterie | Temps restant : <ph name="TIME" /></translation>
@@ -1957,7 +1964,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7963992254934562106">À partir du <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Sélectionner un dossier…</translation>
 <translation id="7973756967040444713">Fermer la barre d'outils</translation>
-<translation id="797485111629834774">Marquer comme terminée la tâche <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Activer ou désactiver la loupe plein écran</translation>
 <translation id="7977927628060636163">Recherche de réseaux mobiles…</translation>
 <translation id="7982789257301363584">Réseau</translation>

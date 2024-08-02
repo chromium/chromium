@@ -977,6 +977,7 @@
 <translation id="453661520163887813"><ph name="TIME" /> до краја пуњења</translation>
 <translation id="4538824937723742295">Сними цео екран</translation>
 <translation id="4539127209940689201">Штампај актуелну страницу</translation>
+<translation id="4541505619120536051">Увек отворено</translation>
 <translation id="4541706525461326392">Профил се уклања. То може да потраје неколико минута.</translation>
 <translation id="4544483149666270818">Изаберите прозор за снимање</translation>
 <translation id="4545950850562423083">Сачувај актуелну страницу као обележивач</translation>
@@ -1085,6 +1086,7 @@
 <translation id="4890408602550914571">Уверите се да је телефон у близини и да је Bluetooth укључен.</translation>
 <translation id="4892981359753171125">Контрола лицем</translation>
 <translation id="4895488851634969361">Батерија је пуна.</translation>
+<translation id="4902797682482387055">Предложени задатак на који треба да се фокусирате</translation>
 <translation id="490375751687810070">Вертикално</translation>
 <translation id="490788395437447240">Ниво батерије је <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="491504982845934899">Активирајте мрежу <ph name="NETWORK_NAME" /> после подешавања уређаја</translation>
@@ -1362,6 +1364,7 @@
 <translation id="5819918159912280082">Chromebook се неочекивано рестартовао. Отворите претходне прозоре и апликације.</translation>
 <translation id="5823239091726045201">Google задаци на вебу</translation>
 <translation id="5825969630400862129">Подешавања повезаних уређаја</translation>
+<translation id="5830180081891717894">Још <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Заустави <ph name="ROUTE_TITLE" /> на уређају <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Иди на следећу песму</translation>
 <translation id="5842553299352339114">Укључен је <ph name="DEVICE_NAME" /> хотспот, није повезан ниједан уређај</translation>
@@ -1489,6 +1492,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" /> тренутно користи камеру и микрофон</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Горње дугме</translation>
+<translation id="6240821072888636753">Увек питај</translation>
 <translation id="6247728804802644171">Отворите обавештења</translation>
 <translation id="6249795363855770621">Означавање ставке као да је довршена није успело. Пробајте поново када будете онлајн.</translation>
 <translation id="6254629735336163724">Хоризонтални приказ је закључан</translation>
@@ -1833,6 +1837,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> тренутно користи микрофон</translation>
 <translation id="7561982940498449837">Затвори мени</translation>
 <translation id="7564874036684306347">Премештање прозора на други рачунар може да доведе до неочекиваног понашања. Накнадна обавештења, прозори и дијалози ће можда бити подељени између рачунара.</translation>
+<translation id="7568790562536448087">Ажурирање</translation>
 <translation id="7569509451529460200">Брајева азбука и ChromeVox су омогућени</translation>
 <translation id="7569886975397378678">Одбаците подешавање прегледа обавештења и апликација на телефону</translation>
 <translation id="7571361473021531288">Батерија <ph name="BATTERY_PERCENTAGE" />% | преостало <ph name="TIME" /></translation>
@@ -1962,7 +1967,6 @@
 <translation id="7963992254934562106">Извор: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Изаберите фолдер…</translation>
 <translation id="7973756967040444713">Затворите траку с алаткама</translation>
-<translation id="797485111629834774">Означите задатак као довршен: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Укључите или искључите лупу за цео екран</translation>
 <translation id="7977927628060636163">Траже се мобилне мреже…</translation>
 <translation id="7982789257301363584">Мрежа</translation>
@@ -2068,6 +2072,7 @@
 <translation id="8375916635258623388">Овај <ph name="DEVICE_NAME" /> и телефон ће се аутоматски повезати</translation>
 <translation id="8380784334203145311">Лаку ноћ,</translation>
 <translation id="8382715499079447151">Заштита од прегледа</translation>
+<translation id="8383614331548401927">Резиме добродошлице</translation>
 <translation id="8388750414311082622">Не можемо да уклонимо последњу радну површину.</translation>
 <translation id="8394567579869570560">Родитељ је закључао овај уређај</translation>
 <translation id="8401850874595457088">Уђите у мени за језике</translation>

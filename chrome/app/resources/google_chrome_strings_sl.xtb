@@ -215,6 +215,8 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Za Google Chrome potrebujete Windows 10 ali novejšega.</translation>
 <translation id="3835168907083856002">S tem bo ustvarjen novi profil v Chromu za uporabnika <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="383928141529488001">Google Chrome potrebuje dostop do Bluetootha za raziskovanje 
+ naprav Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Zaprite vsa okna brskalnika Google Chrome in poskusite znova.</translation>
 <translation id="3865754807470779944">Nameščen je Chrome različice <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Odpiranje povezave v Chromovem oknu brez belež&amp;enja zgodovine</translation>
@@ -425,6 +427,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6938166777909186039">Če želite prejemati prihodnje posodobitve Google Chroma, potrebujete Windows 10 ali novejšega. V tem računalniku je nameščen Windows 8.1.</translation>
 <translation id="6943584222992551122">Podatki brskanja te osebe bodo izbrisani iz te naprave. Če želite podatke obnoviti, se prijavite v Chrome kot <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Pravilo za dohodni promet za Google Chrome Beta, ki dovoli promet mDNS.</translation>
+<translation id="6979589607440534284">Preberite, zakaj Chrome blokira nekatere datoteke, odpre se na novem zavihku</translation>
 <translation id="7011190694940573312">Namestitev ni uspela, ker ta različica operacijskega sistema ni podprta.</translation>
 <translation id="7024536598735240744">Napaka pri odpakiranju: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Namestitev je prekinjena.</translation>

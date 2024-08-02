@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">'पासवर्ड मैनेज करें' बटन, Chrome की सेटिंग में पासवर्ड देखने और उन्हें मैनेज करने के लिए इसे चालू करें</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> के लिए अनुमति चुनें</translation>
-<translation id="1112238992895762847">सभी विकल्पों के लिए कीमत सीमा</translation>
 <translation id="1113869188872983271">&amp;पुन: क्रमित करना वापस लाएं</translation>
 <translation id="1118429183611783760">वैक्यूम क्लीनर और फ़्लोर की देखभाल का अन्य सामान</translation>
 <translation id="1122714970786750095">इलेक्ट्रॉनिक्स और इलेक्ट्रिकल</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">अभी छिपाएं</translation>
 <translation id="121201262018556460">आपने <ph name="DOMAIN" /> तक पहुंचने का प्रयास किया, लेकिन लेकिन सर्वर ने कमज़ोर कुंजी वाला प्रमाणपत्र प्रस्‍तुत किया. संभवत: हमलावर ने निजी कुंजी का पता लगा लिया है, और हो सकता है कि सर्वर आपका अपेक्षित सर्वर न हो (हो सकता है कि आप किसी हमलावर से बातचीत कर रहे हों).</translation>
 <translation id="1212527389003717329">डाउनलोड शुरू हो गया है. इसे देखने के लिए, |<ph name="ACCELERATOR" />| दबाकर रखें.</translation>
-<translation id="1214970845432250240">कीमत की सीमा</translation>
 <translation id="1219129156119358924">सिस्‍टम सुरक्षा</translation>
 <translation id="1222060260947439312">दाईं ट्रे</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -141,6 +139,7 @@
 <translation id="1247030632403369975">एल्युमिनियम</translation>
 <translation id="1252209483516427155">जैकेट, कोट, रेनकोट वगैरह</translation>
 <translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> से पेमेंट करें</translation>
+<translation id="1253846494229886276">स्क्रीनशॉट सेव किया जा रहा है</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (सिंक किए गए)</translation>
 <translation id="1255086252236620440">फ़ूड मिक्सर</translation>
 <translation id="1256368399071562588">&lt;p&gt;अगर आप किसी वेबसाइट पर जाने की कोशिश करते हैं और वह नहीं खुलती है तो, कृपया गड़बड़ी ठीक करने संबंधी इन कदमों के ज़रिए समस्या का हल करने की कोशिश करें:&lt;/p&gt;
@@ -233,6 +232,7 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ने कोई डेटा नहीं भेजा.</translation>
 <translation id="1405567553485452995">हल्का हरा</translation>
 <translation id="1406812885827747674">अभी के लिए अनुमति दें</translation>
+<translation id="14070772729708640"><ph name="CLOUD_PROVIDER" /> पर मौजूद <ph name="FOLDER_NAME" /> में फ़ाइलें अपलोड हो गई हैं</translation>
 <translation id="1407135791313364759">सभी बुकमार्क खोलें</translation>
 <translation id="1408787208417187241">सबसे ऊपर ट्रिपल स्टेपल</translation>
 <translation id="1410365862999780287">इस डिवाइस का इस्तेमाल करने वाले अन्य लोगों को आपकी गतिविधि नहीं दिखेगी. इसलिए, ज़्यादा निजी तौर पर ब्राउज़ किया जा सकता है इससे, आपकी विज़िट की गई वेबसाइटों और इस्तेमाल की जाने वाली सेवाओं का डेटा इकट्ठा करने के तरीके पर कोई असर नहीं पड़ेगा. इनमें Google भी शामिल है. आपके डाउनलोड, बुकमार्क, और रीडिंग लिस्ट के आइटम सेव होंगे.</translation>
@@ -268,6 +268,7 @@
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">अपने कंप्यूटर पर मौजूद फ़ॉन्ट इस्तेमाल करें, ताकि आप हाई फ़िडेलिटी कॉन्टेंट बना सकें</translation>
 <translation id="1463793142714244641">टाइमशेयर और वेकेशन प्रॉपर्टी</translation>
+<translation id="1465457928007067810">IBAN को आपके Google खाते में सेव किया गया है</translation>
 <translation id="1467432559032391204">बाएं</translation>
 <translation id="1468653229182955856"><ph name="TOP_ORIGIN" /> पर जारी रखने के लिए, <ph name="EMBEDDED_ORIGIN" /> के लिए आपका कोड <ph name="ONE_TIME_CODE" /> है.</translation>
 <translation id="1472675084647422956">और दिखाएं</translation>
@@ -352,7 +353,6 @@
 <translation id="1617276713587758852">क्रॉसओवर</translation>
 <translation id="1619007254056372606">उपयोगकर्ता के डिवाइस पर साइट डेटा को मैनेज करें</translation>
 <translation id="1620510694547887537">कैमरा</translation>
-<translation id="162285686621567578">यह वेबसाइट आपके माता-पिता ने ब्लॉक की है.</translation>
 <translation id="1622966923835127638">कारोबारी फ़ाइनेंस</translation>
 <translation id="1623104350909869708">इस पेज को अतिरिक्त डॉयलॉग बनाने से रोकें</translation>
 <translation id="1633137413609266904">{0,plural, =1{एडमिन नीति के तहत, इस फ़ाइल को खोलने की अनुमति नहीं है}one{एडमिन नीति के तहत, # फ़ाइल को खोलने की अनुमति नहीं है}other{एडमिन नीति के तहत, # फ़ाइलों को खोलने की अनुमति नहीं है}}</translation>
@@ -738,7 +738,6 @@
 <translation id="2328955282645810595">निर्माण और पावर टूल</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> को खत्म होने वाला है</translation>
 <translation id="2337044517221264923">फिर से लिखना शुरू करें</translation>
-<translation id="2337776048981813397">सभी विकल्पों के लिए कीमत सीमा</translation>
 <translation id="2337852623177822836">वह सेटिंग जिसे आपका व्यवस्थापक नियंत्रित करता है</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> युग्मित करना चाहता है</translation>
 <translation id="2346319942568447007">आपकी कॉपी की हुई इमेज</translation>
@@ -1030,7 +1029,6 @@
 <translation id="2930577230479659665">हर कॉपी के बाद ट्रिम करें</translation>
 <translation id="2933624813161016821">एंबॉसिंग फ़ॉयल</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> लिंक खोलें</translation>
-<translation id="2941112035454246133">कम</translation>
 <translation id="2941878205777356567">9 x 12 इंच का लिफ़ाफ़ा</translation>
 <translation id="2941952326391522266">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र <ph name="DOMAIN2" /> की ओर से है. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="2942492342931589800">कैज़ुअल</translation>
@@ -1196,6 +1194,7 @@
 <translation id="3240791268468473923">मेल नहीं खाने वाले पेमेंट क्रेडेंशियल की शीट खुली है</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” के लिंक ब्लॉक किए गए हैं</translation>
 <translation id="3248329428895535435">इस साइट पर न दिखाएं</translation>
+<translation id="3249102948665905108"><ph name="CLOUD_PROVIDER" /> में फ़ाइल अपलोड हो गई है. हालांकि, इसमें कुछ गड़बड़ियां हुई हैं</translation>
 <translation id="3252772880526154546">आर्किटेक्चर</translation>
 <translation id="3254301855501243548">18 x 22 इंच</translation>
 <translation id="3255926992597692024">Chromium, पेमेंट के तरीके की जानकारी भरने के लिए, सेटिंग में बदलाव करने की कोशिश कर रहा है.</translation>
@@ -1211,7 +1210,6 @@
 <translation id="3272091146646336650">सुपर बी</translation>
 <translation id="3272112314896217187">पुष्टि करने के लिए <ph name="NUMBER_OF_DIGITS" /> अंकों वाला कोड डालें</translation>
 <translation id="3272643614306383237">1 एमबी से कम. अगली बार जब आप कुछ साइटों पर जाएं, तो हो सकता है कि उन्हें लोड होने में थोड़ा ज़्यादा समय लगे.</translation>
-<translation id="327346289570683313">कीमत की सीमा</translation>
 <translation id="3273738040255912340">प्रोफ़ाइल का एडमिन, दूर से आपकी प्रोफ़ाइल और ब्राउज़र में बदलाव कर सकता है. साथ ही, रिपोर्टिंग के ज़रिए ब्राउज़र से जुड़ी जानकारी का विश्लेषण और दूसरे ज़रूरी काम कर सकता है. इस डिवाइस में की गई गतिविधि को Chromium से बाहर भी मैनेज किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}}</translation>
 <translation id="3282085321714087552">आपके संगठन <ph name="ENROLLMENT_DOMAIN" /> ने नीचे दी गई वेबसाइटों को सेटिंग या नीतियों वगैरह के बारे में कुछ जानकारी भेजी है.</translation>
@@ -1366,6 +1364,7 @@
 <translation id="3552155506104542239">चेतावनी: यह नीति, <ph name="POLICY_NAME" /> से अलग है और इसका Android ऐप्लिकेशन पर कोई असर नहीं पड़ेगा. बाकी जगहों पर यह नीति उम्मीद के मुताबिक काम करती रहेगी.</translation>
 <translation id="3552297013052089404">Sans-serif फ़ॉन्ट</translation>
 <translation id="3558573058928565255">दिन के समय</translation>
+<translation id="3559897352860026926">अपने एडमिन से कहें कि वह <ph name="CLOUD_PROVIDER" /> की कॉन्फ़िगरेशन सेटिंग की पुष्टि करे.</translation>
 <translation id="355995771319966853">ऑटोमैटिक भरने की सुविधा को पहले जैसा करें</translation>
 <translation id="3560408312959371419">ट्रैकिंग सुरक्षा और उपयोगकर्ता के डिवाइस पर साइट डेटा के विकल्प</translation>
 <translation id="3560824484345057728">मिलती-जुलती साइटें देखें</translation>
@@ -1700,6 +1699,7 @@
 <translation id="4177501066905053472">विज्ञापन के विषय</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">कीमत ट्रैक न करें</translation>
+<translation id="4190446002599583608">एआई की मदद से, इतिहास खोजने की सुविधा</translation>
 <translation id="4191334393248735295">अवधि</translation>
 <translation id="4195459680867822611">'Chrome से जुड़ी सलाह देखें' बटन, Chrome की सुविधाओं के बारे में जानने के लिए इसे चालू करें</translation>
 <translation id="4195643157523330669">नए टैब में खोलें</translation>
@@ -1743,6 +1743,7 @@
 <translation id="4235360514405112390">मान्य</translation>
 <translation id="4239799716689808527">लेबल</translation>
 <translation id="4242380780309416996">एन्वेलप (हेवीवेट)</translation>
+<translation id="4242981939686657948">अपना ब्राउज़िंग इतिहास बेहतर तरीके से खोजने के लिए, इसे चालू करें</translation>
 <translation id="4244926541863471678">फ़िल्म</translation>
 <translation id="4246517972543675653">विदेश में पढ़ाई</translation>
 <translation id="4250431568374086873">इस साइट से आपका कनेक्शन पूरी तरह से सुरक्षित नहीं है</translation>
@@ -2030,6 +2031,7 @@
 <translation id="4816492930507672669">पेज में फ़िट करें</translation>
 <translation id="4819347708020428563">क्या आप डिफ़ॉल्ट व्यू में वीडियो के ऊपर टेक्स्ट, लिंक वगैरह में बदलाव करना चाहते हैं?</translation>
 <translation id="4822493756793346865">आम कीमतों की जानकारी, वेब पर मौजूद सभी स्टोर से ली गई है. यह पिछले 90 दिनों की कीमतों के हिसाब से है.</translation>
+<translation id="4822922322149719535">गड़बड़ियों की जानकारी देखें</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, जल्दी से नई Google शीट बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="4826588772550366629">कैमरा और माइक्रोफ़ोन</translation>
 <translation id="4827283332383516812">कार्ड मिटाएं</translation>
@@ -2141,6 +2143,7 @@
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> नीति सेट है. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, एक्सटेंशन पेज पर डेवलपर मोड की उपलब्धता को कंट्रोल नहीं करेगी.</translation>
 <translation id="5021557570875267742">Chrome की मदद से कीमतों को ट्रैक करें</translation>
 <translation id="5023310440958281426">अपने एडमिन की नीतियां देखें</translation>
+<translation id="5024171724744627792">कार्ड की जानकारी सेव होने पर तेज़ी से पेमेंट किया जा सकता है. यह जानकारी आपके Google खाते में एन्क्रिप्ट (सुरक्षित) की जाती है.</translation>
 <translation id="5030338702439866405">जारीकर्ता</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" के रूट प्रमाणपत्र की ज़रूरत है लेकिन वह इंस्टॉल नहीं है. यह समस्या ठीक करने के लिए आपके आईटी व्यवस्थापक को "<ph name="SOFTWARE_NAME" />" के कॉन्फ़िगरेशन से जुड़े निर्देशों पर नज़र डालनी चाहिए. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google अनुवाद के बारे में</translation>
@@ -2687,6 +2690,7 @@
 <translation id="6061154937977953833">कुश्ती</translation>
 <translation id="6062937464449575061">कीमत ट्रैक न करें</translation>
 <translation id="6063415549109819824">होम फ़ाइनेंसिंग</translation>
+<translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" /> पर मौजूद <ph name="FOLDER_NAME" /> में एक या उससे ज़्यादा फ़ाइलें अपलोड नहीं हो पाईं</translation>
 <translation id="6080696365213338172">आपने व्यवस्थापक द्वारा दिए गए प्रमाणपत्र के उपयोग से सामग्री ऐक्सेस की है.   <ph name="DOMAIN" /> को दिया गया डेटा आपके व्यवस्थापक द्वारा बीच में रोका जा सकता है.</translation>
 <translation id="6085149458302186532">लेबल (कलर्ड)</translation>
 <translation id="6087312102907839798">मिलती-जुलती खोजें</translation>
@@ -2809,6 +2813,7 @@
 <translation id="6307968763353904914">पैसे चुकाने के इस तरीके के लिए आपके बैंक में वर्चुअल कार्ड की सुविधा नहीं है. हालांकि, <ph name="CARD_LABEL" /> से ऑनलाइन पेमेंट किया जा सकता है.</translation>
 <translation id="6311410654831092784">कार्ड स्टॉक</translation>
 <translation id="6312113039770857350">वेबपेज उपलब्ध नहीं है</translation>
+<translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" /> में फ़ाइल अपलोड करने की प्रोसेस को रोक दिया गया है</translation>
 <translation id="6316723751983724988">नई सुविधा: Chrome के लिए Family Link के विकल्प यहां लागू होते हैं</translation>
 <translation id="63172326633386613">सुलभता सेटिंग मैनेज करें</translation>
 <translation id="6321917430147971392">अपनी DNS सेटिंग जांचे</translation>
@@ -3007,6 +3012,7 @@
 <translation id="6687335167692595844">फ़ॉन्ट साइज़ का अनुरोध किया गया</translation>
 <translation id="6688743156324860098">अपडेट करें…</translation>
 <translation id="6688775486821967877">इस समय वर्चुअल कार्ड उपलब्ध नहीं है, कृपया बाद में कोशिश करें</translation>
+<translation id="6688851075017682769">देश के हिसाब से, टेस्टिंग के लिए तय किया गया पता</translation>
 <translation id="6689249931105087298">ब्लैक पॉइंट कंप्रेशन से मिलता-जुलता</translation>
 <translation id="6689271823431384964">आपके साइन इन किए होने की वजह से, Chrome आपको Google खाते में कार्ड सेव करने की सुविधा देता है. आप 'सेटिंग' में जाकर इसे बदल सकते हैं. कार्डधारक का नाम आपके खाते से लिया जाता है.</translation>
 <translation id="6691397311652656001"><ph name="REQUIRED_FREE_DISK_SPACE" /> से ज़्यादा स्टोरेज खाली करें</translation>
@@ -3163,6 +3169,7 @@
 <translation id="6979440798594660689">म्यूट करें (डिफ़ॉल्ट)</translation>
 <translation id="6984270784814146224">बिना लेबल वाली इमेज. Google के एआई की मदद से टेक्स्ट निकाला जा रहा है</translation>
 <translation id="6987806006823772670">एन्वेलप (कोटेड)</translation>
+<translation id="6989256887001961296">इस कॉन्टेंट को ब्लॉक कर दिया गया है.</translation>
 <translation id="6989763994942163495">अतिरिक्त सेटिंग दिखाएं...</translation>
 <translation id="6996312675313362352"><ph name="ORIGINAL_LANGUAGE" /> का हमेशा अनुवाद करें</translation>
 <translation id="6997288673234694149">बेसबॉल और सॉफ़्टबॉल इक्विपमेंट</translation>
@@ -3194,6 +3201,7 @@
 <translation id="7050187094878475250">आपने <ph name="DOMAIN" /> तक पहुंचने का प्रयास किया था, लेकिन सर्वर ने ऐसा प्रमाणपत्र प्रस्‍तुत किया जिसकी मान्‍यता अवधि विश्‍वसनीय होने के लिए बहुत लंबी है.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{यह कार्ड इस समय सेव नहीं किया जा सकता}one{ये कार्ड इस समय सेव नहीं किए जा सकते}other{ये कार्ड इस समय सेव नहीं किए जा सकते}}</translation>
 <translation id="7053983685419859001">ब्लॉक करें</translation>
+<translation id="7054717457611655239">अब से, अपनी फ़ाइलों को <ph name="CLOUD_PROVIDER" /> में सेव करें.</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ने पुष्टि की है कि <ph name="ISSUER" /> ने इस वेबसाइट को सर्टिफ़िकेट दिया है.</translation>
 <translation id="7058774143982824355">CSV पासवर्ड वाली फ़ाइल के लिए पार्सर सेवा</translation>
 <translation id="7062635574500127092">हरा-नीला</translation>
@@ -3329,6 +3337,7 @@
 <translation id="7311244614769792472">कोई नतीजा नहीं मिला</translation>
 <translation id="7311837626618954149">Chromium, साइटों को तीसरे पक्ष की कुकी इस्तेमाल करने से रोकता है, ताकि वे आपको ब्राउज़ करते समय ट्रैक न कर सकें.</translation>
 <translation id="7313107491291103073">आपके संगठन ने इस साइट को फ़्लैग किया है, क्योंकि यह किसी नीति का उल्लंघन कर सकती है.</translation>
+<translation id="7316521168101843192">फ़ाइल को Microsoft OneDrive में सेव किया जा रहा है</translation>
 <translation id="7319430975418800333">ए3</translation>
 <translation id="7320336641823683070">कनेक्शन से जुड़ी सहायता</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" सेक्शन को छिपाएं</translation>
@@ -3632,6 +3641,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome से फ़ॉर्म सुझाव को निकालें?</translation>
 <translation id="781440967107097262">क्या आप क्लिपबोर्ड को शेयर करना चाहते हैं?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">पेपर (प्लेन)</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' के लिए <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> मिले</translation>
 <translation id="7822611063308883975">हैंडहेल्ड गेम कंसोल</translation>
@@ -3796,6 +3806,7 @@
 <translation id="8148608574971654810">पीडीएफ़ का वर्शन:</translation>
 <translation id="8149426793427495338">आपका कंप्यूटर निष्क्रिय हो गया है.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> पर मौजूद फ़ाइल पढ़ने के लायक नहीं है.  हो सकता है कि इसे हटा दिया गया हो, कहीं ले जाया गया हो, या फ़ाइल की अनुमतियां एक्सेस को रोक रही हों.</translation>
+<translation id="8151185429379586178">डेवलपर टूल</translation>
 <translation id="8153865548451212769">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर डाउनलोड करने का सुझाव नहीं देती है}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर डाउनलोड करने का सुझाव नहीं देती है}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> पर डाउनलोड करने का सुझाव नहीं देती है}}</translation>
 <translation id="81563721597823545">हॉकी इक्विपमेंट</translation>
 <translation id="8161095570253161196">ब्राउज़ करना फिर से शुरू करें</translation>
@@ -3921,6 +3932,7 @@
 <translation id="8371841335382565017">कास्ट करने के लिए, डिवाइस की सूची दिखाएं</translation>
 <translation id="8371889962595521444">कस्टम रूट सर्टिफ़िकेट</translation>
 <translation id="8374636051559112948">बदलता रहता है</translation>
+<translation id="837840316697671463">अगर आपको अपने डिवाइस पर कोई फ़ाइल नहीं मिलती है, तो उसे <ph name="CLOUD_PROVIDER" /> पर खोजें.</translation>
 <translation id="8378714024927312812">आपके संगठन की ओर से प्रबंधित</translation>
 <translation id="8380941800586852976">खतरनाक</translation>
 <translation id="8381674639488873545">ये शुल्क एक बार लगने वाले या बार-बार लगने वाले हो सकते हैं और हो सकता है कि इनके बारे में साफ़ तौर पर न बताया जाए. <ph name="BEGIN_LINK" />फिर भी दिखाएं<ph name="END_LINK" /></translation>
@@ -3968,6 +3980,7 @@
 <translation id="84561192812921051">प्रोफ़ाइल का एडमिन, दूर से आपकी प्रोफ़ाइल और ब्राउज़र में बदलाव कर सकता है. साथ ही, रिपोर्टिंग के ज़रिए ब्राउज़र से जुड़ी जानकारी का विश्लेषण और दूसरे ज़रूरी काम कर सकता है. इस डिवाइस में की गई गतिविधि को Chrome से बाहर भी मैनेज किया जा सकता है.  <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">कोई तय अवधि नहीं</translation>
 <translation id="8458202188076138974">लेटर एक्स्ट्रा</translation>
+<translation id="8458605637341729751">जारी रखने का मतलब है कि आपने अपने डिवाइस की जगह की सटीक जानकारी इकट्ठा करने और उसे खाता मालिक के साथ शेयर करने की अनुमति दी है. इस जानकारी का इस्तेमाल धोखाधड़ी रोकने के लिए किया जाता है. Chrome में Pix की सुविधा बंद करने के लिए, अपनी <ph name="BEGIN_LINK1" />पेमेंट सेटिंग<ph name="END_LINK1" /> पर जाएं</translation>
 <translation id="8460854335417802511">इसे चालू करें</translation>
 <translation id="8461694314515752532">सिंक किए गए डेटा को अपने सिंक किए गए लंबे पासवर्ड से सुरक्षित करें</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 क्रेडिट कार्ड}one{# क्रेडिट कार्ड}other{# क्रेडिट कार्ड}}</translation>
@@ -4070,6 +4083,7 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> वैल्यू, साइज़ की ज़रूरी शर्तों को पूरा नहीं करती.</translation>
 <translation id="867224526087042813">हस्ताक्षर</translation>
 <translation id="8672535691554698269">कंप्यूटर नेटवर्क</translation>
+<translation id="8675446170353411473">आपकी फ़ाइलें <ph name="CLOUD_PROVIDER" /> में अपलोड की जा रही हैं</translation>
 <translation id="8676424191133491403">बिना देरी के</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, उत्तर, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> पर वेबपेज को लोड नहीं किया जा सका क्योंकि:</translation>
@@ -4151,6 +4165,7 @@
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="882338992931677877">मैन्युअल स्लॉट</translation>
 <translation id="8830320733681313421">Hagaki पोस्टकार्ड</translation>
+<translation id="8830565333350631528"><ph name="CLOUD_PROVIDER" /> में फ़ाइलें देखें</translation>
 <translation id="8833007469711500369">वॉशर और ड्रायर</translation>
 <translation id="8834962751196791179">आपको यह चेतावनी इसलिए दिख रही है, क्योंकि यह साइट एचटीटीपीएस के साथ काम नहीं करती. साथ ही, आपके डिवाइस पर गुप्त मोड चालू है. <ph name="BEGIN_LEARN_MORE_LINK" />इस चेतावनी के बारे में ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">साइंस-फ़िक्शन पर आधारित टीवी शो और फ़ैंटसी शो</translation>

@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Hantera konton på den här enheten</translation>
 <translation id="1129510026454351943">Mer information: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Med inkognitoläget skyddas ditt surfande från andra som använder din enhet</translation>
+<translation id="1138458427267715730">Få aviseringar när priset sänks på någon webbplats på webben</translation>
 <translation id="1142732900304639782">Erbjud inte att översätta dessa webbplatser</translation>
 <translation id="1145536944570833626">Radera befintlig data.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> öppnas i Chrome. Genom att fortsätta godkänner du <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och ChromeOS<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Hantera aktivitet</translation>
 <translation id="1355088659320425659">Historik och flikar</translation>
 <translation id="1360432990279830238">Logga ut och inaktivera synkronisering?</translation>
+<translation id="1363028406613469049">Spår</translation>
 <translation id="1366525380420346469">När funktionen är aktiverad</translation>
 <translation id="1373696734384179344">Det finns inte tillräckligt med minne för att ladda ned det valda innehållet.</translation>
 <translation id="1376578503827013741">Beräknar …</translation>
@@ -292,6 +294,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2435457462613246316">Visa lösenord</translation>
 <translation id="2439153523196674349">Förhandsgranskning av <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Vill du börja ladda ned <ph name="FILE_NAME" /> igen?</translation>
+<translation id="2451607499823206582">Spårning</translation>
 <translation id="2453860139492968684">Slutför</translation>
 <translation id="2461822463642141190">Nuvarande</translation>
 <translation id="2468444275314013497">Din webbläsare ser bra ut</translation>
@@ -1042,7 +1045,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6040939430773295212">Repetitiv</translation>
 <translation id="604124094241169006">Automatisk</translation>
 <translation id="6042308850641462728">Mer</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Behörigheter har granskats för 1 webbplats}other{Behörigheter har granskats för {NUM_SITES} webbplatser}}</translation>
 <translation id="604996488070107836">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av ett okänt fel.</translation>
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Styr dina berättelser och din aktivitet här</translation>
@@ -1683,7 +1685,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8865415417596392024">Chrome-data i ditt konto</translation>
 <translation id="8898822736010347272">Skickar webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google för att upptäcka och blockera nya hot och skydda alla användare på internet.</translation>
 <translation id="8909135823018751308">Dela …</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Aviseringar tillåts inte för 1 webbplats}other{Aviseringar tillåts inte för {NUM_SITES} webbplatser}}</translation>
 <translation id="8921980840204105660">Synkronisera om du vill få tillgång till bokmärken från dina andra enheter</translation>
 <translation id="8922289737868596582">Ladda ned sidor via knappen Fler alternativ så att du kan använda dem offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>

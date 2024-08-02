@@ -214,6 +214,8 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Google Chrome requiert Windows 10 ou version ultérieure.</translation>
 <translation id="3835168907083856002">Cela va créer un profil Chrome pour <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="383928141529488001">Google Chrome a besoin d'accéder au Bluetooth pour explorer 
+ les appareils Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Veuillez fermer toutes les fenêtres de Google Chrome et réessayer.</translation>
 <translation id="3865754807470779944">La version <ph name="PRODUCT_VERSION" /> de Chrome est installée</translation>
 <translation id="3873044882194371212">Ouvrir le lien dans la fenêtre de navi&amp;gation privée Chrome</translation>
@@ -424,6 +426,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6938166777909186039">Pour recevoir les futures mises à jour de Google Chrome, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 8.1.</translation>
 <translation id="6943584222992551122">Les données de navigation de cet utilisateur vont être supprimées de cet appareil. Pour les récupérer, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Règle de trafic entrant pour la version bêta de Google Chrome autorisant le trafic mDNS.</translation>
+<translation id="6979589607440534284">Découvrir pourquoi Chrome bloque certains fichiers, s'ouvre dans un nouvel onglet</translation>
 <translation id="7011190694940573312">L'installation a échoué, car cette version du système d'exploitation n'est pas compatible.</translation>
 <translation id="7024536598735240744">Erreur de décompression : <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installation interrompue.</translation>

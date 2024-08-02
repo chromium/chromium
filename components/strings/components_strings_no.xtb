@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Knappen «Administrer passord» – aktiver for å se og administrere passord i Chrome-innstillingene</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Velg tillatelse for <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">Prisklasse for alle alternativer</translation>
 <translation id="1113869188872983271">&amp;Angre omorganiseringen</translation>
 <translation id="1118429183611783760">Støvsugere og gulvpleie</translation>
 <translation id="1122714970786750095">Elektronikk og elektrisk utstyr</translation>
@@ -122,7 +121,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1209206284964581585">Skjul for øyeblikket</translation>
 <translation id="121201262018556460">Du forsøkte å gå til <ph name="DOMAIN" />, men tjeneren presenterte et sertifikat som inneholder en svak nøkkel. En angriper kan ha løst den private nøkkelen, og tjeneren er kanskje ikke den tjeneren du forventet (det kan hende at du kommuniserer med en angriper).</translation>
 <translation id="1212527389003717329">Nedlastingen er startet. For å se den, trykk på og hold inne |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">Prisklasse</translation>
 <translation id="1219129156119358924">Systemsikkerhet</translation>
 <translation id="1222060260947439312">Høyre skuff</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -353,7 +351,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1617276713587758852">Crossover-biler</translation>
 <translation id="1619007254056372606">Administrer nettstedsdata på enheten</translation>
 <translation id="1620510694547887537">Kamera</translation>
-<translation id="162285686621567578">Forelderen din har blokkert dette nettstedet.</translation>
 <translation id="1622966923835127638">Handel og finans</translation>
 <translation id="1623104350909869708">Hindre denne siden i å opprette flere dialogruter</translation>
 <translation id="1633137413609266904">{0,plural, =1{Åpning av denne filen er blokkert på grunn av en administratorregel}other{Åpning av # filer er blokkert på grunn av en administratorregel}}</translation>
@@ -738,7 +735,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2328955282645810595">Bygg- og elektroverktøy</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> – utløper <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Gjenoppta skriving</translation>
-<translation id="2337776048981813397">Prisklasse for alle alternativer</translation>
 <translation id="2337852623177822836">Innstillingen kontrolleres av administratoren din</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> vil koble til</translation>
 <translation id="2346319942568447007">Bildet du kopierte</translation>
@@ -1030,7 +1026,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2930577230479659665">Beskjær etter hver kopi</translation>
 <translation id="2933624813161016821">Pregfolie</translation>
 <translation id="2938225289965773019">åpne linker til <ph name="PROTOCOL" /></translation>
-<translation id="2941112035454246133">Lav</translation>
 <translation id="2941878205777356567">Konvolutt 9 x 12 tommer</translation>
 <translation id="2941952326391522266">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Tjenerens sikkerhetssertifikat er fra <ph name="DOMAIN2" />. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="2942492342931589800">Casual</translation>
@@ -1212,7 +1207,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Skriv inn den <ph name="NUMBER_OF_DIGITS" />-sifrede bekreftelseskoden</translation>
 <translation id="3272643614306383237">Mindre enn 1 MB. Det kan hende at enkelte nettsteder lastes inn tregere neste gang du besøker dem.</translation>
-<translation id="327346289570683313">Prisklasse</translation>
 <translation id="3273738040255912340">Administratoren din kan gjøre endringer i profilen og nettleseren eksternt, analysere informasjon om nettleseren gjennom rapportering og utføre andre nødvendige oppgaver. Aktiviteten på denne enheten kan også administreres utenfor Chromium. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Administratorreglene anbefaler ikke at du åpner denne filen i <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du åpner disse filene i <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organisasjonen din, <ph name="ENROLLMENT_DOMAIN" />, har sendt noe informasjon til de følgende nettstedene, for eksempel innstillinger eller retningslinjer.</translation>
@@ -1701,6 +1695,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4177501066905053472">Annonseemner</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Slutt å spore prisen</translation>
+<translation id="4190446002599583608">AI-basert loggsøk</translation>
 <translation id="4191334393248735295">Lengde</translation>
 <translation id="4195459680867822611">Knappen «Se Chrome-tips» – aktiver for å lære om Chrome-funksjoner</translation>
 <translation id="4195643157523330669">Åpne i ny fane</translation>
@@ -3634,6 +3629,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Vil du fjerne skjemaforslaget fra Chrome?</translation>
 <translation id="781440967107097262">Vil du dele utklippstavlen din?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Papir (vanlig)</translation>
 <translation id="7815407501681723534">Fant <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> for «<ph name="SEARCH_STRING" />»</translation>
 <translation id="7822611063308883975">Håndholdte spillkonsoller</translation>
@@ -3798,6 +3794,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8148608574971654810">PDF-versjon:</translation>
 <translation id="8149426793427495338">Datamaskinen din gikk inn i hvilemodus.</translation>
 <translation id="8150722005171944719">Kunne ikke lese filen på <ph name="URL" /> Den kan ha blitt fjernet eller flyttet. Det kan også være filtillatelser som forhindrer tilgang.</translation>
+<translation id="8151185429379586178">Utviklerverktøy</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administratorreglene anbefaler ikke at du laster ned denne filen til <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du laster ned disse filene til <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Hockeyutstyr</translation>
 <translation id="8161095570253161196">Gjenoppta surfingen</translation>

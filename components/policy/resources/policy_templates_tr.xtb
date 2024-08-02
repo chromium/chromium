@@ -3884,6 +3884,7 @@ Politika, Devre dışı değerine ayarlanırsa
 <ph name="ZSTANDARD_SHORTNAME" /> içerik kodlaması özelliği kapatılır.
 
 Bu politika, geçici olarak tasarlanmıştır ve gelecekte kaldırılacaktır.</translation>
+<translation id="3935592079035695061">Gece yarısından bu yana milisaniye.</translation>
 <translation id="3941289958028934630">Giriş ekranında sözlü geri bildirimi devre dışı bırak</translation>
 <translation id="3943930334592166130">Bu politika, <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> ile eşleşen birden fazla sertifika olduğunda kullanıcıdan bir istemci sertifikası seçmesinin istenip istenmeyeceğini kontrol eder.
       Bu politika Etkin değerine ayarlanırsa, otomatik seçim politikası birden fazla sertifikayla eşleştiğinde kullanıcıdan bir istemci sertifikası seçmesi istenir.
@@ -7710,6 +7711,7 @@ Bu politika, Chrome 114 sürümüne kadar <ph name="SYNC_DISABLED_POLICY_NAME" /
 <translation id="6770454900105963262">Aktif kiosk oturumlarıyla ilgili bilgileri raporla</translation>
 <translation id="6774132787348495175">Kullanıcıların, Linux uygulamalarını desteklemek için gerekli olan sanal makineleri kullanmasına izin verme</translation>
 <translation id="6782331708811245959">Cihaz başlatma modu raporlamasını etkinleştir</translation>
+<translation id="6783578496154221347">Yeni kodda WeeklyTimeIntervalChecked kullanın.</translation>
 <translation id="6785201942412171878">PageUp/PageDown "altılı paket" tuşlarını tetiklemek için kullanılan kısayolu kontrol et</translation>
 <translation id="6786666051053129545">Google Asistan Voice Match akışını etkinleştirin</translation>
 <translation id="6786747875388722282">Uzantılar</translation>
@@ -8832,6 +8834,7 @@ Politika ayarlanmadan bırakılırsa <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_POL
       Ayarlanmazsa oturum açma ekranında büyük imleç kapalıdır. Kullanıcılar, özelliği istedikleri zaman açabilir ve özelliğin oturum açma ekranındaki durumu tüm kullanıcılar için aynı kalır.
 
           Not: <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" /> belirtilmişse bu politikayı geçersiz kılar.</translation>
+<translation id="7630403270894231662">Yeni kodda WeeklyTimeChecked kullanın.</translation>
 <translation id="7632147323011514740">Yönetilen Misafir Oturumları için ARC verilerinin anlık görüntüsünü güncelleme işleminin başlatılabileceği aralıklar</translation>
 <translation id="7632724434767231364">GSSAPI kitaplığı adı</translation>
 <translation id="7635106595080609261">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa dosya seçimi iletişim kutuları Chrome tarafından görüntülenebilir ve kullanıcılar tarafından açılabilir.

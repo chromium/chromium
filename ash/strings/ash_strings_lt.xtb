@@ -976,6 +976,7 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="453661520163887813">Liko <ph name="TIME" />, kol bus visiškai įkrautas</translation>
 <translation id="4538824937723742295">Kurti ekrano kopiją viso ekrano režimu</translation>
 <translation id="4539127209940689201">Spausdinti dabartinį puslapį</translation>
+<translation id="4541505619120536051">Visada atviras</translation>
 <translation id="4541706525461326392">Pašalinamas profilis. Tai gali užtrukti kelias minutes.</translation>
 <translation id="4544483149666270818">Pasirinkite norimą įrašyti langą</translation>
 <translation id="4545950850562423083">Išsaugoti dabartinį puslapį kaip žymę</translation>
@@ -1488,6 +1489,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6232891689835436217">Programa „<ph name="APP_NAME" />“ šiuo metu naudoja fotoaparatą ir mikrofoną</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Viršutinis mygtukas</translation>
+<translation id="6240821072888636753">Klausti kaskart</translation>
 <translation id="6247728804802644171">Atidaryti pranešimus</translation>
 <translation id="6249795363855770621">Nepavyko pažymėti kaip baigtos. Bandykite dar kartą, kai prisijungsite.</translation>
 <translation id="6254629735336163724">Užrakinta horizontali padėtis</translation>
@@ -1831,6 +1833,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7557816257942363084">Programa „<ph name="APP_NAME" />“ šiuo metu naudoja mikrofoną</translation>
 <translation id="7561982940498449837">Uždaryti meniu</translation>
 <translation id="7564874036684306347">Perkėlus langus į kitą darbalaukį gali pasireikšti nenumatyta elgsena. Vėlesni pranešimai, langai ir dialogų langai gali būti padalyti keliuose darbalaukiuose.</translation>
+<translation id="7568790562536448087">Atnaujinama</translation>
 <translation id="7569509451529460200">Brailio rašmenys ir „ChromeVox“ įgalinti</translation>
 <translation id="7569886975397378678">Atsisakyti nustatyti telefono pranešimų ir programų peržiūrą</translation>
 <translation id="7571361473021531288">Akumuliatoriaus įkrovimo lygis: <ph name="BATTERY_PERCENTAGE" /> % | liko <ph name="TIME" /></translation>
@@ -1960,7 +1963,6 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7963992254934562106">Iš „<ph name="PHONE_NAME" />“</translation>
 <translation id="7968693143708939792">Pasirinkti aplanką...</translation>
 <translation id="7973756967040444713">Uždaryti įrankių juostą</translation>
-<translation id="797485111629834774">Žymėti užduotį „<ph name="TASK_NAME" />“ kaip baigtą</translation>
 <translation id="797512352675305461">Įjungti arba išjungti viso ekrano didintuvą</translation>
 <translation id="7977927628060636163">Ieškoma mobiliojo ryšio tinklų...</translation>
 <translation id="7982789257301363584">Tinklas</translation>

@@ -43,6 +43,7 @@
 <translation id="2977480621796371840">Susa kusukela kuqembu</translation>
 <translation id="3008554597174452548">Yeka ukulandelela umkhiqizo</translation>
 <translation id="3026391124054406831">Sungula amaqembu ukuhlela amathebhu akho.</translation>
+<translation id="3051031624272448591">Ungakwazi ukuphinda uwathole njalo emlandweni</translation>
 <translation id="3052964831964880138">Ukwehla kwentengo engu-<ph name="PRICE_DROP" /> ku-<ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Isithonjana sombala wethebhu leqembu esi-<ph name="COLOR_NAME" /></translation>
 <translation id="3194464645767632461">isilinganisela</translation>
@@ -69,6 +70,7 @@
 <translation id="4371591986692297148">Akusebenzi</translation>
 <translation id="4460014764210899310">Khipha ukubuthana</translation>
 <translation id="4590027107044272416">Manje ungavula ithebhu entsha lapha</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{Vala ithebhu e-1 engasebenzi?}one{Vala amathebhu angu-<ph name="TAB_COUNT_MANY" /> angasebenzi?}other{Vala amathebhu angu-<ph name="TAB_COUNT_MANY" /> angasebenzi?}}</translation>
 <translation id="4648718555153979859">Amathebhu akho afakwa kuqembu ndawonye lapha</translation>
 <translation id="4686942373615810936">Kusanda kusungulwa</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Vala ngemva kosuku olu-1}one{Vala ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" />}other{Vala ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" />}}</translation>
@@ -157,6 +159,7 @@
 <translation id="8398929769197326728">Ifolda Entsha - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Izilungiselelo</translation>
 <translation id="8631711675211020168">Wonke umuntu uzolahlekelwa ukufinyelela ngokushesha iqembu lethebhu ye-<ph name="GROUP_NAME" /> futhi lizosuswa kuwo wonke amadivayisi</translation>
+<translation id="8633025649649592204">Umsebenzi wakamuva</translation>
 <translation id="870736955561925754">Vala ithebhu futhi usule iqembu?</translation>
 <translation id="8714939927607906138">Intengo ephansi</translation>
 <translation id="8730621377337864115">Kwenziwe</translation>
@@ -164,6 +167,7 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Kusungulwe enyangeni engu-<ph name="NUM_MONTHS_ONE" /> edlule}one{Kusungulwe ezinyangeni ezingu-<ph name="NUM_MONTHS_MANY" /> ezedlule}other{Kusungulwe ezinyangeni ezingu-<ph name="NUM_MONTHS_MANY" /> ezedlule}}</translation>
 <translation id="8820741577754260431">Bona ukwehla kwentengo kumathebhu wakho</translation>
 <translation id="8887921976452567404">Amathebhu wakho avaliwe namaqembu angaphinda avulwe esigabeni Samathebhu akamuva kanye nesigaba Samaqembu amathebhu.</translation>
+<translation id="8915916167043355778">Vala konke</translation>
 <translation id="8926389886865778422">Ungaphindi ubuze futhi</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Nweba iqembu lethebhu ngethubhu eli-<ph name="TABS_COUNT_ONE" />.}one{Nweba iqembu lethebhu ngethebhu elingu-<ph name="TABS_COUNT_MANY" />.}other{Nweba iqembu lethebhu ngethebhu elingu-<ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="9090098097337832354">Ulwazi olumayelana nalesi sitolo esivaliwe</translation>

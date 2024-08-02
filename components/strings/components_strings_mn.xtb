@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Нууц үгнүүд удирдах товчлуур, Chrome-н тохиргоонд нууц үгнүүдээ харах болон удирдахын тулд идэвхжүүлнэ үү</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />-д зөвшөөрөл сонгох</translation>
-<translation id="1112238992895762847">Бүх сонголтын үнийн хүрээ</translation>
 <translation id="1113869188872983271">&amp; Дахин эрэмбэлэх үйлдлийг буцаах</translation>
 <translation id="1118429183611783760">Тоос сорогч болон шалны арчилгаа</translation>
 <translation id="1122714970786750095">Электрон болон цахилгаан төхөөрөмж</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">Одоо нуух</translation>
 <translation id="121201262018556460">Та <ph name="DOMAIN" />-д хандах оролдлого хийсэн боловч сервер нь сул кодлол ашигласан сертификаттай байна. Халдагч системийн хувийн кодлолыг гэмтээсэн байж болзошгүй бөгөөд энэхүү сервер нь таны хандахыг хүссэн сервер (та халдагчтай харилцаж байж болно) биш байж болох юм.</translation>
 <translation id="1212527389003717329">Татаж эхэллээ. Үүнийг харахын тулд |<ph name="ACCELERATOR" />|-г удаан дарна уу.</translation>
-<translation id="1214970845432250240">Үнийн хязгаар</translation>
 <translation id="1219129156119358924">Системийн аюулгүй байдал</translation>
 <translation id="1222060260947439312">Баруун талын тавиур</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -141,6 +139,7 @@
 <translation id="1247030632403369975">Хөнгөн цагаан</translation>
 <translation id="1252209483516427155">Гадуур хувцас</translation>
 <translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" />-р төлөх</translation>
+<translation id="1253846494229886276">Дэлгэцийн агшныг хадгалж байна</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (синк хийсэн)</translation>
 <translation id="1255086252236620440">Хүнсний холигчид</translation>
 <translation id="1256368399071562588">&lt;p&gt;Хэрэв та вебсайтад зочлохоор оролдох үед нээгдэхгүй байвал эдгээр асуудал шийдэх алхмыг дагаж алдааг засахаар оролдоно уу:&lt;/p&gt;
@@ -352,7 +351,6 @@
 <translation id="1617276713587758852">Кроссовер</translation>
 <translation id="1619007254056372606">Төхөөрөмж дээрх сайтын өгөгдлийг удирдах</translation>
 <translation id="1620510694547887537">Камер</translation>
-<translation id="162285686621567578">Энэ вебсайтыг таны эцэг эх блоклосон.</translation>
 <translation id="1622966923835127638">Бизнесийн санхүү</translation>
 <translation id="1623104350909869708">Энэ хуудсыг нэмэлт хэлэлцүүлэг үүсгэхээс нь урьдчилан сэргийлэх</translation>
 <translation id="1633137413609266904">{0,plural, =1{Энэ файлыг нээхийг администраторын бодлогоор блоклосон}other{# файлыг нээхийг администраторын бодлогоор блоклосон}}</translation>
@@ -737,7 +735,6 @@
 <translation id="2328955282645810595">Барилга болон цахилгааны багажууд</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" />-д дуусна</translation>
 <translation id="2337044517221264923">Үргэлжлүүлэн бичих</translation>
-<translation id="2337776048981813397">Бүх сонголтын үнийн хүрээ</translation>
 <translation id="2337852623177822836">Тохируулгыг таны администратор хянадаг</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> холбогдох хүсэлтэй байна</translation>
 <translation id="2346319942568447007">Таны хуулсан зураг</translation>
@@ -1029,7 +1026,6 @@
 <translation id="2930577230479659665">Хуулбар бүрийн дараа тайрах</translation>
 <translation id="2933624813161016821">Товгор тугалган цаас</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> холбоосуудыг нээх</translation>
-<translation id="2941112035454246133">Бага</translation>
 <translation id="2941878205777356567">Дугтуй 9 x 12 инч</translation>
 <translation id="2941952326391522266">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; <ph name="DOMAIN2" />-ээс хамгаалалтын сертификатаа авсан байна. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтонд саад учруулж байж болох юм.</translation>
 <translation id="2942492342931589800">Энгийн</translation>
@@ -1212,7 +1208,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> оронтой баталгаажуулах код оруулна уу</translation>
 <translation id="3272643614306383237">1 МБ-аас бага. Таныг дараагийн удаа зочлоход зарим сайт илүү удаан ачаалж магадгүй.</translation>
-<translation id="327346289570683313">Үнийн хязгаар</translation>
 <translation id="3273738040255912340">Танай администратор профайл, хөтчид тань зайнаас өөрчлөлт хийх, тайлангаар дамжуулан хөтчийн талаарх мэдээллийг задлан шинжлэх, бусад шаардлагатай ажлыг гүйцэтгэх боломжтой. Энэ төхөөрөмж дээрх үйл ажиллагааг мөн Chromium-с гадуур удирдаж болно. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Администраторын бодлого энэ файлыг <ph name="DESTINATION_NAME" />-д нээхийг санал болгодоггүй}other{Администраторын бодлого эдгээр файлыг <ph name="DESTINATION_NAME" />-д нээхийг санал болгодоггүй}}</translation>
 <translation id="3282085321714087552">Танай байгууллага, <ph name="ENROLLMENT_DOMAIN" /> дараах вебсайтууд руу тохиргоо эсвэл бодлого зэрэг зарим мэдээллийг илгээсэн.</translation>
@@ -1701,6 +1696,7 @@
 <translation id="4177501066905053472">Зарын сэдвүүд</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Үнэ хянахаа болих</translation>
+<translation id="4190446002599583608">ХОУ-аар дэмжсэн түүхийн хайлт</translation>
 <translation id="4191334393248735295">Урт</translation>
 <translation id="4195459680867822611">Chrome-н зөвлөгөө харах товчлуур, Chrome-н онцлогуудын талаар мэдэж авахын тулд идэвхжүүлнэ үү</translation>
 <translation id="4195643157523330669">Шинэ таб дээр нээх</translation>
@@ -2142,6 +2138,7 @@
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> бодлогыг тохируулсан. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> өргөтгөлийн хуудсан дээрх хөгжүүлэгч горимын боломжтой байдлыг хянахгүй.</translation>
 <translation id="5021557570875267742">Chrome-р үнэ хянах</translation>
 <translation id="5023310440958281426">Админимтраторын журмыг шалгах</translation>
+<translation id="5024171724744627792">Картаа хадгалсан үед илүү хурдан төлөөрэй. Картын дэлгэрэнгүйг таны Google Бүртгэлд шифрлэдэг.</translation>
 <translation id="5030338702439866405">Гаргасан</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />"-н үндсэн сертификат шаардлагатай боловч үүнийг суулгаагүй байна. Таны IT админ энэ алдааг засахын тулд "<ph name="SOFTWARE_NAME" />"-н тохируулгын зааварчилгаатай танилцах шаардлагатай. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google Translate-ын тухай</translation>
@@ -3329,6 +3326,7 @@
 <translation id="7311244614769792472">Илэрц олдсонгүй</translation>
 <translation id="7311837626618954149">Chromium сайтуудыг таныг үзэхэд хянах гуравдагч талын күүкинүүдийг ашиглахыг блоклоно.</translation>
 <translation id="7313107491291103073">Энэ сайт бодлогыг зөрчиж магадгүй тул танай байгууллага үүнийг дарцагласан.</translation>
+<translation id="7316521168101843192">Microsoft OneDrive-т файл хадгалж байна</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Холболтын тусламж</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" хэсгийг нуух</translation>
@@ -3632,6 +3630,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome-оос санал болгож буй зүйлийг устгах уу?</translation>
 <translation id="781440967107097262">Түр санах ойг хуваалцах уу?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Цаас (энгийн)</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />'-н <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> олдсон</translation>
 <translation id="7822611063308883975">Гартаа барьдаг видео тоглоомын консолууд</translation>
@@ -3796,6 +3795,7 @@
 <translation id="8148608574971654810">PDF хувилбар:</translation>
 <translation id="8149426793427495338">Таны компьютер идэвхгүй болсон байна.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> дахь файлыг унших боломжгүй байна. Энэ файл нь устгагдсан, шилжигдсэн, эсвэл хандалтыг хазгаарласан байж болно.</translation>
+<translation id="8151185429379586178">Хөгжүүлэгчийн багажнууд</translation>
 <translation id="8153865548451212769">{0,plural, =1{Администраторын бодлого нь энэ файлыг <ph name="DESTINATION_NAME" /> руу татахыг санал болгодоггүй}other{Администраторын бодлого нь эдгээр файлыг <ph name="DESTINATION_NAME" /> руу татахыг санал болгодоггүй}}</translation>
 <translation id="81563721597823545">Хоккейн хэрэгсэл</translation>
 <translation id="8161095570253161196">Үргэлжлүүлж үзэх</translation>

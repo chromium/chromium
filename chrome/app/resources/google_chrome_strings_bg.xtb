@@ -213,6 +213,8 @@
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">За Google Chrome се изисква Windows 10 или по-нова версия.</translation>
 <translation id="3835168907083856002">Това ще създаде нов потребителски профил в Chrome за <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="383928141529488001">Google Chrome се нуждае от достъп до Bluetooth, за да преглежда
+устройствата с Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Моля, затворете всички прозорци на Google Chrome и опитайте отново.</translation>
 <translation id="3865754807470779944">Инсталирана е версия <ph name="PRODUCT_VERSION" /> на Chrome</translation>
 <translation id="3873044882194371212">Отваряне на връзката в прозорец в режим „инко&amp;гнито“ на Chrome</translation>
@@ -419,6 +421,7 @@
 <translation id="6938166777909186039">За да получавате бъдещи актуализации на Google Chrome, трябва да използвате Windows 10 или по-нова версия. Компютърът ви работи с Windows 8.1.</translation>
 <translation id="6943584222992551122">Данните за сърфирането на този човек ще бъдат изтрити от устройството. За да ги възстановите, влезте в Chrome като <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Правило за Google Chrome бета за допускане на входящия трафик за mDNS.</translation>
+<translation id="6979589607440534284">Научете защо Chrome блокира някои файлове (отваря се в нов раздел)</translation>
 <translation id="7011190694940573312">Инсталирането не бе успешно, защото тази версия на операционната система не се поддържа.</translation>
 <translation id="7024536598735240744">Грешка при разпакетирането: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Инсталирането спря.</translation>

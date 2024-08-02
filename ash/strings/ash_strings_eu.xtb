@@ -136,6 +136,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1420408895951708260">Aktibatu/Desaktibatu Gaueko argia. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Bai</translation>
 <translation id="1435537621343861112">Ezin da hasi diktaketa. Mikrofonoa desaktibatuta daukazu.</translation>
+<translation id="1445031758921122223">Deskargatu dira aurpegi bidezko kontrolaren fitxategiak</translation>
 <translation id="1447907279406111651">Orain ⋅ Amaiera: <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Gailuaren wifi-guneak</translation>
 <translation id="1455242230282523554">Erakutsi hizkuntza-ezarpenak</translation>
@@ -412,6 +413,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516416533263263796">Kontzentratzeko modua aktibatuta dago. 10 minutu geratzen dira.</translation>
 <translation id="2516637483312286228">Editatu jokoak kontrolatzeko aukerak</translation>
+<translation id="252054055865191167">Markatzailea</translation>
 <translation id="2526581474998477112">Desblokeatu leihoak</translation>
 <translation id="2528111225373402384">Wifi-gunearen ezarpenak</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -975,6 +977,7 @@ Gailu bat dago konektatuta.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> guztiz kargatu arte</translation>
 <translation id="4538824937723742295">Atera pantaila osoaren argazkia</translation>
 <translation id="4539127209940689201">Inprimatu oraingo orria</translation>
+<translation id="4541505619120536051">Ireki beti</translation>
 <translation id="4541706525461326392">Profila kentzen. Agian minutu batzuk beharko dira.</translation>
 <translation id="4544483149666270818">Hautatu grabatu nahi duzun leihoa</translation>
 <translation id="4545950850562423083">Gorde oraingo orria laster-marka gisa</translation>
@@ -1223,6 +1226,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> hizkuntzako hizketa-fitxategiak erdi deskargatuta daude</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Joan fitxa honetara</translation>
 <translation id="5364693579536176785">biltegiratzeko tokia</translation>
+<translation id="5369573834963677938">Gailuaren beste erabiltzaileek aurpegi bidezko kontrola erabili ahal izango dute</translation>
 <translation id="5369717264580061086">Aurreikusi fitxategia Fitxategiak aplikazioan</translation>
 <translation id="5377367976106153749">Kamera erabiltzeko baimena aktibatu nahi duzu?</translation>
 <translation id="5379115545237091094">Saiakera gehiegi egin dira</translation>
@@ -1412,6 +1416,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="6020147141355393792">Konfiguratu telefonoko jakinarazpenak eta aplikazioak ikusteko aukera</translation>
 <translation id="6022924867608035986">Garbitu bilaketa-koadroko testua</translation>
 <translation id="602472752137106327">Erakutsi lan-eremu guztietan dauden leihoak, aukera-botoia hautatuta dago</translation>
+<translation id="6024768346262692989">Ezin izan dira deskargatu aurpegi bidezko kontrolaren fitxategiak</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />. <ph name="CONNECTION_STATUS" />. Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua.</translation>
 <translation id="6027518778343897451">Egun honetan ez dago gertaerarik: <ph name="CURRENT_MONTH_DAY" />. Arakatzailean Google Calendar irekitzeko, sakatu Sartu.</translation>
 <translation id="6030495522958826102">Pantailaren beheko ezkerreko izkinara eraman da menua.</translation>
@@ -1485,6 +1490,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> kamera eta mikrofonoa erabiltzen ari da une honetan</translation>
 <translation id="6237231532760393653">1×</translation>
 <translation id="6240603910551255087">Goiko botoia</translation>
+<translation id="6240821072888636753">Galdetu beti</translation>
 <translation id="6247728804802644171">Ireki jakinarazpenak</translation>
 <translation id="6249795363855770621">Ezin izan da markatu osatutako gisa. Saiatu berriro konektatuta zaudenean.</translation>
 <translation id="6254629735336163724">Modu horizontalean blokeatuta</translation>
@@ -1828,6 +1834,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> mikrofonoa erabiltzen ari da une honetan</translation>
 <translation id="7561982940498449837">Itxi menua</translation>
 <translation id="7564874036684306347">Leihoak beste mahaigain batera eramaten badira, baliteke ustekabeko portaerak izatea. Aurrerantzeko jakinarazpenak, baliteke leihoak eta elkarrizketa-koadroak bi mahaigainen artean banatuta agertzea.</translation>
+<translation id="7568790562536448087">Eguneratzen</translation>
 <translation id="7569509451529460200">Braillea eta ChromeVox gaituta daude</translation>
 <translation id="7569886975397378678">Baztertu telefonoko jakinarazpenak eta aplikazioak ikusteko aukera konfiguratzeko prozesua</translation>
 <translation id="7571361473021531288">Bateria: % <ph name="BATTERY_PERCENTAGE" /> | <ph name="TIME" /> gelditzen zaio</translation>
@@ -1957,7 +1964,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7963992254934562106">Iturburua: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Hautatu karpeta bat…</translation>
 <translation id="7973756967040444713">Itxi tresna-barra</translation>
-<translation id="797485111629834774">Markatu zeregina osatutako gisa: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Aktibatu edo desaktibatu pantaila osoko lupa</translation>
 <translation id="7977927628060636163">Sare mugikorren bila…</translation>
 <translation id="7982789257301363584">Sarea</translation>

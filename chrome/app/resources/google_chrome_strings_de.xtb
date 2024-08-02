@@ -211,6 +211,7 @@
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Für Google Chrome ist Windows 10 oder höher erforderlich.</translation>
 <translation id="3835168907083856002">Dadurch wird ein neues Chrome-Profil für <ph name="USER_EMAIL_ADDRESS" /> erstellt</translation>
+<translation id="383928141529488001">Google Chrome benötigt Bluetooth-Zugriff, um Bluetooth-Geräte zu suchen. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Schließe alle Google Chrome-Fenster und versuche es erneut.</translation>
 <translation id="3865754807470779944">Chrome-Version <ph name="PRODUCT_VERSION" /> ist installiert</translation>
 <translation id="3873044882194371212">Link in Chrome-Inkognitofenster öffnen</translation>
@@ -417,6 +418,7 @@
 <translation id="6938166777909186039">Du benötigst Windows 10 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Dieser Computer verwendet Windows 8.1.</translation>
 <translation id="6943584222992551122">Die Browserdaten dieser Person werden von diesem Gerät gelöscht. Um die Daten wiederherzustellen, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
 <translation id="6967962315388095737">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Beta.</translation>
+<translation id="6979589607440534284">Gründe, warum Chrome einige Dateien blockiert, wird in neuem Tab geöffnet</translation>
 <translation id="7011190694940573312">Die Installation ist fehlgeschlagen, da diese Version des Betriebssystems nicht unterstützt wird.</translation>
 <translation id="7024536598735240744">Fehler beim Entpacken: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installation angehalten.</translation>

@@ -3786,6 +3786,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 如果此政策已停用，系统会关闭 <ph name="ZSTANDARD_SHORTNAME" /> 内容编码功能。
 
 此政策只是暂时性措施，日后会被移除。</translation>
+<translation id="3935592079035695061">自午夜起的毫秒数。</translation>
 <translation id="3941289958028934630">为登录屏幕停用语音反馈</translation>
 <translation id="3943930334592166130">此政策旨在控制是否让系统在有多个证书与 <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> 匹配时提示用户选择客户端证书。
       如果此政策已启用，每当自动选择政策与多个证书匹配时，系统都会提示用户选择客户端证书。
@@ -7524,6 +7525,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6770454900105963262">报告自助服务终端的相关信息</translation>
 <translation id="6774132787348495175">不允许用户使用所需的虚拟机来支持 Linux 应用</translation>
 <translation id="6782331708811245959">启用设备启动模式报告功能</translation>
+<translation id="6783578496154221347">在新代码中使用 WeeklyTimeIntervalChecked。</translation>
 <translation id="6785201942412171878">控制用于触发 PageUp/PageDown 等六个按键的快捷键</translation>
 <translation id="6786666051053129545">启用 Google 助理 Voice Match 流程</translation>
 <translation id="6786747875388722282">扩展程序</translation>
@@ -8618,6 +8620,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果您未设置此政策，大号光标会在登录屏幕上处于关闭状态。用户可以随时开启该功能，并且它在登录屏幕上的状态对所有用户都一致。
 
           注意：<ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" />（若已指定）会覆盖此政策。</translation>
+<translation id="7630403270894231662">在新代码中使用 WeeklyTimeChecked。</translation>
 <translation id="7632147323011514740">可按照指定的时间间隔为受管理访客会话启动 ARC 数据快照更新过程</translation>
 <translation id="7632724434767231364">GSSAPI 库名称</translation>
 <translation id="7635106595080609261">如果此政策已启用或未设置，Chrome 便可显示文件选择对话框，而且用户可以打开这些对话框。

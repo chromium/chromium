@@ -324,6 +324,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2635918910848538771">CVC məlumatını avtomatik doldurun</translation>
 <translation id="2637313651144986786">Tabları axtarın...</translation>
 <translation id="2640733327287333451">İstifadəçi adı yoxdur ••••••</translation>
+<translation id="264215785133931186">İndicə yoxlanılıb</translation>
 <translation id="2648721026697078500">Heç vaxt köçürməyin</translation>
 <translation id="2648803196158606475">Oxunmuşları Silin</translation>
 <translation id="2664621323652615289">Dayandırın</translation>
@@ -797,6 +798,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4937410517508563815">Parolları hesabda yadda saxlayın</translation>
 <translation id="4938338714234463591">Bu, səsinizi vebsaytlarda müəyyən funksiyalarla istifadə etməyə imkan verəcək.</translation>
 <translation id="4941089862236492464">Üzr istəyirik, elementi paylaşarkən problem baş verdi.</translation>
+<translation id="4942382218961352935">İndicə yoxlanılıb</translation>
 <translation id="4944543191714094452">Səhifədə tapın…</translation>
 <translation id="4945756290001680296">Parol ayarlarına daxil olun</translation>
 <translation id="4958444002117714549">Siyahını genişləndirin</translation>
@@ -1488,7 +1490,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8237382152611443140">Parolların Avtomatik Doldurulması Ayarlarını açın</translation>
 <translation id="8248969482078657578">Deaktiv tablar fokuslanmağa kömək edir</translation>
 <translation id="8261506727792406068">Silin</translation>
-<translation id="8263336784344783289">Bu Qrupu Adlandırın</translation>
 <translation id="8263809106706527890">Defolt brauzer ayarlarında dəyişiklik ola bilər. Bunu ayarlarda yoxlaya bilərsiniz.</translation>
 <translation id="8264966119170358612">Yadda saxlanılmış parollarınızdan bəziləri Google-a aid olmayan data pozulması nəticəsində ələ keçirilib. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">iPad-i sıfırlayarkən <ph name="USER_NAME" /> hesabından çıxdınız. Yenidən daxil olmaq üçün aşağıda "Davam edin" üzərinə toxunun.</translation>

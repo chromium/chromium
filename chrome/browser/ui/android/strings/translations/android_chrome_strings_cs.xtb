@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Spravovat účty v tomto zařízení</translation>
 <translation id="1129510026454351943">Podrobnosti: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Anonymní režim chrání soukromí vašeho prohlížení před ostatními uživateli vašeho zařízení</translation>
+<translation id="1138458427267715730">Nechte si zaslat upozornění, když na kterémkoli webu klesne cena</translation>
 <translation id="1142732900304639782">Nenabízet překlad těchto webů</translation>
 <translation id="1145536944570833626">Smazat existující data.</translation>
 <translation id="1150263420752757504">Aplikace <ph name="APP_NAME" /> se otevře v Chromu. Pokračováním vyjadřujete souhlas se <ph name="BEGIN_LINK1" />smluvními podmínkami společnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />dodatečnými smluvními podmínkami prohlížeče Chrome a systému ChromeOS<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Spravovat aktivitu</translation>
 <translation id="1355088659320425659">Historie a karty</translation>
 <translation id="1360432990279830238">Odhlásit a vypnout synchronizaci?</translation>
+<translation id="1363028406613469049">Stopa</translation>
 <translation id="1366525380420346469">Když je tato funkce zapnutá</translation>
 <translation id="1373696734384179344">Ke stažení vybraného obsahu není k dispozici dostatek paměti.</translation>
 <translation id="1376578503827013741">Probíhá výpočet…</translation>
@@ -292,6 +294,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2435457462613246316">Zobrazit heslo</translation>
 <translation id="2439153523196674349">Náhled webu <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Chcete soubor <ph name="FILE_NAME" /> začít stahovat znovu?</translation>
+<translation id="2451607499823206582">Sledování</translation>
 <translation id="2453860139492968684">Dokončit</translation>
 <translation id="2461822463642141190">Aktuální</translation>
 <translation id="2468444275314013497">Váš prohlížeč vypadá v pořádku</translation>
@@ -1041,7 +1044,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="6040939430773295212">Repetitivní</translation>
 <translation id="604124094241169006">Automaticky</translation>
 <translation id="6042308850641462728">Více</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Byla zkontrolována oprávnění 1 webu}few{Byla zkontrolována oprávnění {NUM_SITES} webů}many{Byla zkontrolována oprávnění {NUM_SITES} webu}other{Byla zkontrolována oprávnění {NUM_SITES} webů}}</translation>
 <translation id="604996488070107836">Stažení souboru <ph name="FILE_NAME" /> se nezdařilo z důvodu neznámé chyby.</translation>
 <translation id="605721222689873409">RR</translation>
 <translation id="6059830886158432458">Zde můžete ovládat své příběhy a aktivity</translation>
@@ -1682,7 +1684,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8865415417596392024">Data Chromu ve vašem účtu</translation>
 <translation id="8898822736010347272">Odesílá adresy URL některých navštívených stránek, omezené informace o systému a část obsahu stránek do Googlu a pomáhá tak objevovat nové hrozby a chránit všechny uživatele internetu.</translation>
 <translation id="8909135823018751308">Sdílet…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{1 web nemá povoleno zobrazovat oznámení}few{{NUM_SITES} weby nemají povoleno zobrazovat oznámení}many{{NUM_SITES} webu nemá povoleno zobrazovat oznámení}other{{NUM_SITES} webů nemá povoleno zobrazovat oznámení}}</translation>
 <translation id="8921980840204105660">Pokud chcete získat záložky ze svých ostatních zařízení, zapněte synchronizaci</translation>
 <translation id="8922289737868596582">Stáhněte si stránky k použití offline pomocí tlačítka Další možnosti</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>

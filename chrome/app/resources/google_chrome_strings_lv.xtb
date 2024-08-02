@@ -213,6 +213,7 @@
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Pārlūka Google Chrome izmantošanai nepieciešama operētājsistēma Windows 10 vai jaunāka versija.</translation>
 <translation id="3835168907083856002">Tādējādi tiks izveidots jauns Chrome profils lietotājam <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="383928141529488001">Pārlūkam Google Chrome ir nepieciešama Bluetooth piekļuve, lai atrastu Bluetooth ierīces. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Lūdzu, aizveriet visus Google Chrome logus un mēģiniet vēlreiz.</translation>
 <translation id="3865754807470779944">Ir instalēta Chrome versija <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Atvērt saiti Chrome inko&amp;gnito režīma logā</translation>
@@ -421,6 +422,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6938166777909186039">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma Windows 10 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma Windows 8.1.</translation>
 <translation id="6943584222992551122">Šī lietotāja pārlūkošanas dati tiks dzēsti no šīs ierīces. Lai atkoptu datus, pierakstieties pārlūkprogrammā Chrome kā lietotājs <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Ienākošo savienojumu kārtula pārlūkam Google Chrome Beta, lai atļautu mDNS datplūsmu.</translation>
+<translation id="6979589607440534284">Uzzināt, kāpēc pārlūkā Chrome daži faili tiek bloķēti (saite tiks atvērta jaunā cilnē)</translation>
 <translation id="7011190694940573312">Instalēšana neizdevās, jo šī operētājsistēmas versija netiek atbalstīta.</translation>
 <translation id="7024536598735240744">Atpakošanas kļūda: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalēšana apturēta.</translation>

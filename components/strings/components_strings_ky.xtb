@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">"Сырсөздөрдү башкаруу" баскычы. Chrome'дун жөндөөлөрүнө өтүп, сырсөздөрдү көрүү жана башкаруу үчүн иштетиңиз</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> уруксатын тандоо</translation>
-<translation id="1112238992895762847">Бардык варианттар үчүн баалар диапазону</translation>
 <translation id="1113869188872983271">Иреттештирүүнү &amp;жасабоо</translation>
 <translation id="1118429183611783760">Чаң соргучтар жана полго кам көрүү</translation>
 <translation id="1122714970786750095">Электроника жана электр</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">Азырынча жашыруу</translation>
 <translation id="121201262018556460"><ph name="DOMAIN" /> доменин ачканга аракет кылдыңыз, бирок сервер чабал ачкычты камтыган тастыктаманы сунуштады. Башкача айтканда, зыянкеч чабуулчу жеке ачкычты бузгандыктан, сервер сиз күтүп жаткан сервер болбой калышы мүмкүн (балким, чабуулчу менен байланышып жатасыз).</translation>
 <translation id="1212527389003717329">Жүктөлүп алына баштады. Көрүү үчүн |<ph name="ACCELERATOR" />| баскычын коё бербей басып туруңуз.</translation>
-<translation id="1214970845432250240">Баалар диапазону</translation>
 <translation id="1219129156119358924">Системанын коопсуздугу</translation>
 <translation id="1222060260947439312">Оң жактагы түпкүч</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -141,6 +139,7 @@
 <translation id="1247030632403369975">Алюминий</translation>
 <translation id="1252209483516427155">Сырт кийим</translation>
 <translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> менен төлөө</translation>
+<translation id="1253846494229886276">Скриншот сакталууда</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (шайкештирилген)</translation>
 <translation id="1255086252236620440">Тамак-аш чалгычы</translation>
 <translation id="1256368399071562588">&lt;p&gt;Эгер вебсайтты ачууга аракет кылганда ал ачылбай жатса, каталарды оңдоо боюнча төмөнкүдөй аракеттерди аткарып көрүңүз:&lt;/p&gt;
@@ -352,7 +351,6 @@
 <translation id="1617276713587758852">Кроссоверлер</translation>
 <translation id="1619007254056372606">Түзмөктөгү сайттын маалыматын башкаруу</translation>
 <translation id="1620510694547887537">Камера</translation>
-<translation id="162285686621567578">Бул вебсайтты ата-энең бөгөттөдү.</translation>
 <translation id="1622966923835127638">Бизнести каржылоо</translation>
 <translation id="1623104350909869708">Бул бет кошумча диалогдорду түзбөсүн</translation>
 <translation id="1633137413609266904">{0,plural, =1{Бул файлды ачуу аракети администраторуңуздун саясаты менен бөгөттөлгөн}other{# файлды ачуу аракети администраторуңуздун саясаты менен бөгөттөлгөн}}</translation>
@@ -737,7 +735,6 @@
 <translation id="2328955282645810595">Курулуш жана электр куралдары</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, мөөнөтү <ph name="EXPIRATION_DATE_ABBR" /> бүтөт</translation>
 <translation id="2337044517221264923">Жазууну улантуу</translation>
-<translation id="2337776048981813397">Бардык варианттар үчүн баалар диапазону</translation>
 <translation id="2337852623177822836">Жөндөөнү администраторуңуз башкарат</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> жупташканы жатат</translation>
 <translation id="2346319942568447007">Сиз көчүргөн сүрөт</translation>
@@ -1029,7 +1026,6 @@
 <translation id="2930577230479659665">Ар бир көчүрүүдөн кийин кыркуу</translation>
 <translation id="2933624813161016821">Эмбоссовка фольгасы</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> шилтемелерин ачуу</translation>
-<translation id="2941112035454246133">Төмөн</translation>
 <translation id="2941878205777356567">Конверт 9 x 12 дюйм</translation>
 <translation id="2941952326391522266">Бул сервер <ph name="DOMAIN" /> экендигин далилдей алган жок; себеби анын коопсуздук тастыктамасы бул жерден <ph name="DOMAIN2" /> алынган. Мындай көйгөй туура эмес конфигурация менен шартталышы мүмкүн же туташууңузга чабуулчу кийлигишип жатат.</translation>
 <translation id="2942492342931589800">Күнүмдүк</translation>
@@ -1211,7 +1207,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> орундуу текшерүү кодун киргизиңиз</translation>
 <translation id="3272643614306383237">1 Мб азыраак. Кийинки жолу киргениңизде, айрым сайттар жайыраак жүктөлүшү мүмкүн.</translation>
-<translation id="327346289570683313">Баалар диапазону</translation>
 <translation id="3273738040255912340">Администратор профилиңизге жана серепчиге алыстан өзгөртүүлөрдү киргизип, отчёттор аркылуу серепчи тууралуу маалыматты талдап жана башка тапшырмаларды аткара алат. Бул түзмөктө аткарылган аракеттер Chromium'дан тышкары да башкарылышы мүмкүн. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Администратордун саясатында бул файлды төмөнкү жерде ачуу сунушталбайт: <ph name="DESTINATION_NAME" />}other{Администратордун саясатында бул файлдарды төмөнкү жерде ачуу сунушталбайт: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552"><ph name="ENROLLMENT_DOMAIN" /> уюмуңуз жөндөөлөр же саясаттар сыяктуу айрым маалыматты төмөндөгү вебсайттарга жөнөттү.</translation>
@@ -1699,6 +1694,7 @@
 <translation id="4177501066905053472">Жарнамалардын темалары</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Баага көз салууну токтотуу</translation>
+<translation id="4190446002599583608">ЖИ менен таржымалдан издөө</translation>
 <translation id="4191334393248735295">Узундук</translation>
 <translation id="4195459680867822611">"Chrome'догу кеңештерди көрүү" баскычы. Chrome'догу функциялар жөнүндө толук маалымат алуу үчүн иштетиңиз</translation>
 <translation id="4195643157523330669">Жаңы өтмөктө ачуу</translation>
@@ -2140,6 +2136,7 @@
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> саясаты туураланды. Кеңейтүүлөр бетинде <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> иштеп чыгуучу режиминин жеткиликтүүлүгүн башкарбайт.</translation>
 <translation id="5021557570875267742">Бааларга Chrome менен көз салуу</translation>
 <translation id="5023310440958281426">Администраторуңуздун эрежелерин текшериңиз</translation>
+<translation id="5024171724744627792">Картаңыз сакталганда тезирээк төлөңүз. Картанын чоо-жайы Google аккаунтуңузда шифрленген.</translation>
 <translation id="5030338702439866405">Ким берген</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" программасынын түпкү тастыктамасы талап кылынат, бирок ал орнотулган эмес. Көйгөйдү чечүү үчүн IT администраторуңуз "<ph name="SOFTWARE_NAME" />" программасынын конфигурациясында берилген нускамаларды карап чыгышы керек. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google Котормо жөнүндө</translation>
@@ -3328,6 +3325,7 @@
 <translation id="7311244614769792472">Эч нерсе табылган жок</translation>
 <translation id="7311837626618954149">Chromium сайттардын Интернеттеги аракеттериңизге көз салуу мүмкүнчүлүгүн берген үчүнчү тараптын cookie файлдарын колдонуу мүмкүнчүлүгүн бөгөттөйт.</translation>
 <translation id="7313107491291103073">Уюмуңуз бул сайт эрежелерди бузуп жатканы тууралуу кабарлады.</translation>
+<translation id="7316521168101843192">Файлды Microsoft OneDrive'га сактоо</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Туташуу боюнча жардам алуу</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" бөлүгүн жашыруу</translation>
@@ -3631,6 +3629,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Форма сунушу Chrome'дон алынып салынсынбы?</translation>
 <translation id="781440967107097262">Буфер бөлүшүлсүнбү?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Кагаз (жөнөкөй)</translation>
 <translation id="7815407501681723534">"<ph name="SEARCH_STRING" />" боюнча <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> табылды.</translation>
 <translation id="7822611063308883975">Ташыма оюн консолдору</translation>
@@ -3795,6 +3794,7 @@
 <translation id="8148608574971654810">PDF версиясы:</translation>
 <translation id="8149426793427495338">Компьютериңиз уктап калды.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> дарегиндеги файл окулбайт. Ал чыгарылып салынган, жылдырылган же файл уруксаттарынан улам аны окуу мүмкүн эмес.</translation>
+<translation id="8151185429379586178">Иштеп чыгуучунун куралдары</translation>
 <translation id="8153865548451212769">{0,plural, =1{Администратордун саясаты бул файлды төмөнкүгө жүктөп алууну сунуштабайт: <ph name="DESTINATION_NAME" />}other{Администратордун саясаты бул файлдарды төмөнкүгө жүктөп алууну сунуштабайт: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Хоккей жабдуулары</translation>
 <translation id="8161095570253161196">Карай берүү</translation>

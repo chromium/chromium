@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਖਾਤਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1129510026454351943">ਵੇਰਵੇ: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲੇ ਹੋਰ ਲੋਕਾਂ ਤੋਂ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਦਾ ਡਾਟਾ ਨਿੱਜੀ ਰੱਖਦਾ ਹੈ</translation>
+<translation id="1138458427267715730">ਵੈੱਬ 'ਤੇ ਕਿਸੇ ਵੀ ਸਾਈਟ 'ਤੇ ਕੀਮਤ ਘਟਣ 'ਤੇ ਅਲਰਟ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="1142732900304639782">ਇਹਨਾਂ ਸਾਈਟਾਂ ਦਾ ਅਨੁਵਾਦ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਨਾ ਕਰੋ</translation>
 <translation id="1145536944570833626">ਮੌਜੂਦਾ ਡਾਟਾ ਮਿਟਾਓ।</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ਨੂੰ Chrome ਵਿੱਚ ਖੋਲ੍ਹਿਆ ਜਾਵੇਗਾ। ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_LINK1" />Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK1" /> ਅਤੇ <ph name="BEGIN_LINK2" />Google Chrome ਅਤੇ ChromeOS ਦੇ ਵਧੀਕ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK2" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ।</translation>
@@ -41,6 +42,7 @@
 <translation id="1177863135347784049">ਵਿਉਂਂਤੀ</translation>
 <translation id="1181037720776840403">ਹਟਾਓ</translation>
 <translation id="1183189057400844278">ਇਹ ਪੱਕਾ ਕਰਨ ਲਈ ਕਿ ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਪਾਸਵਰਡਾਂ ਨੂੰ ਕਦੇ ਵੀ ਵਰਤ ਸਕੋ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{1 ਸਾਈਟ ਲਈ ਸੂਚਨਾਵਾਂ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ}one{# ਸਾਈਟ ਲਈ ਸੂਚਨਾਵਾਂ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ}other{# ਸਾਈਟਾਂ ਲਈ ਸੂਚਨਾਵਾਂ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ}}</translation>
 <translation id="1187810343066461819">ਇਸਦੇ ਨਾਲ ਹੀ ਇਸ ਕਾਰ ਤੋਂ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਮਿਟਾਓ</translation>
 <translation id="1193729455103054076">ਕੀ ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰਨੀ ਹੈ?</translation>
 <translation id="1197267115302279827">ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਮੂਵ ਕਰੋ</translation>
@@ -81,6 +83,7 @@
 <translation id="1347468774581902829">ਸਰਗਰਮੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1355088659320425659">ਇਤਿਹਾਸ ਅਤੇ ਟੈਬਾਂ</translation>
 <translation id="1360432990279830238">ਕੀ ਸਾਈਨ-ਆਊਟ ਕਰਕੇ ਸਿੰਕ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
+<translation id="1363028406613469049">ਟਰੈਕ</translation>
 <translation id="1366525380420346469">ਚਾਲੂ ਹੋਣ 'ਤੇ</translation>
 <translation id="1373696734384179344">ਚੁਣੀ ਗਈ ਸਮੱਗਰੀ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਲੋੜੀਂਦੀ ਮੈਮੋਰੀ ਨਹੀਂ।</translation>
 <translation id="1376578503827013741">ਗਣਨਾ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ…</translation>
@@ -292,6 +295,7 @@
 <translation id="2435457462613246316">ਪਾਸਵਰਡ ਵੇਖੋ</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> ਦੀ ਪੂਰਵ-ਝਲਕ</translation>
 <translation id="2450083983707403292">ਕੀ ਤੁਸੀਂ <ph name="FILE_NAME" /> ਨੂੰ ਦੁਬਾਰਾ ਡਾਊਨਲੋਡ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
+<translation id="2451607499823206582">ਨਜ਼ਰ ਰੱਖੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="2453860139492968684">ਖ਼ਤਮ</translation>
 <translation id="2461822463642141190">ਮੌਜੂਦਾ</translation>
 <translation id="2468444275314013497">ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਰ ਸੁਰੱਖਿਅਤ ਹੈ</translation>
@@ -303,6 +307,7 @@
 <translation id="2497852260688568942">ਸਿੰਕ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਦੁਆਰਾ ਅਯੋਗ ਬਣਾਇਆ ਗਿਆ ਹੈ।</translation>
 <translation id="250020030759455918">ਤੁਸੀਂ Chrome ਵਿੱਚ ਆਪਣੀ <ph name="SITE_NAME" /> ਸਾਈਨ-ਇਨ ਸਥਿਤੀ, ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਅਤੇ ਸਾਈਟ ਡਾਟਾ ਦੇਖੋਗੇ</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> ਨੂੰ ਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
+<translation id="2512234228327349533">ਖਰੀਦਦਾਰੀ ਦੇ ਵਿਕਲਪ ਖੋਜੋ</translation>
 <translation id="2513403576141822879">ਪਰਦੇਦਾਰੀ, ਸੁਰੱਖਿਆ ਅਤੇ ਡਾਟਾ ਇਕੱਤਰ ਕਰਨ ਸੰਬੰਧੀ ਹੋਰ ਸੈਟਿੰਗਾਂ ਲਈ, <ph name="BEGIN_LINK" />ਸਿੰਕ ਅਤੇ Google ਸੇਵਾਵਾਂ<ph name="END_LINK" /> ਦੇਖੋ</translation>
 <translation id="2515921719039583189">ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਤੁਹਾਡਾ Chrome ਡਾਟਾ ਮਿਟਾਈਏ?</translation>
 <translation id="2517113738956581680">ਪੂਰੇ-ਆਕਾਰ ਦੀ ਸ਼ੀਟ</translation>
@@ -1041,7 +1046,6 @@
 <translation id="6040939430773295212">ਦੁਹਰਾਇਆ ਜਾਣ ਵਾਲਾ</translation>
 <translation id="604124094241169006">ਆਟੋਮੈਟਿਕ</translation>
 <translation id="6042308850641462728">ਹੋਰ</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{1 ਸਾਈਟ ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}one{{NUM_SITES} ਸਾਈਟ ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}other{{NUM_SITES} ਸਾਈਟਾਂ ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}}</translation>
 <translation id="604996488070107836">ਇੱਕ ਅਗਿਆਤ ਗੜਬੜ ਕਾਰਨ <ph name="FILE_NAME" /> ਡਾਊਨਲੋਡ ਅਸਫ਼ਲ ਰਿਹਾ।</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">ਆਪਣੀਆਂ ਕਹਾਣੀਆਂ ਅਤੇ ਸਰਗਰਮੀ ਨੂੰ ਇੱਥੇ ਕੰਟਰੋਲ ਕਰੋ</translation>
@@ -1262,6 +1266,7 @@
 <translation id="6964300328304469089">ਫ਼ਿਲਹਾਲ <ph name="NAME" />, <ph name="EMAIL" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ ਹੈ। ਕੋਈ ਖਾਤਾ ਚੁਣੋ।</translation>
 <translation id="696447261358045621">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਛੱਡੋ</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
+<translation id="6966660124354134532">ਉਤਪਾਦ ਨੂੰ ਟਰੈਕ ਕਰਨ ਜਾਂ ਉਸਦੀ ਟਰੈਕਿੰਗ ਬੰਦ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ।</translation>
 <translation id="6971862865055170158">ਮਨਜ਼ੂਰੀ ਨਾ ਦਿਓ</translation>
 <translation id="6978717888677691380">ਤੁਹਾਡੇ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ</translation>
 <translation id="6979737339423435258">ਸਾਰੇ ਸਮੇਂ</translation>
@@ -1290,6 +1295,7 @@
 <translation id="7105047059074518658">ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਧੇਰੇ ਆਸਾਨੀ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="7106762743910369165">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="7111394291981742152">Chrome ਤੁਹਾਨੂੰ ਦਿਖਣ ਵਾਲੇ ਵਿਗਿਆਪਨਾਂ 'ਤੇ ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾ ਕੰਟਰੋਲ ਦਿੰਦਾ ਹੈ ਅਤੇ ਇਹ ਸੀਮਤ ਕਰਦਾ ਹੈ ਕਿ ਤੁਹਾਨੂੰ ਵਿਅਕਤੀਗਤ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਵੇਲੇ ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਬਾਰੇ ਕੀ ਜਾਣ ਸਕਦੀਆਂ ਹਨ।</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{1 ਸਾਈਟ ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}one{# ਸਾਈਟ ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}other{# ਸਾਈਟਾਂ ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}}</translation>
 <translation id="7138678301420049075">ਹੋਰ</translation>
 <translation id="7140829094791862589">ਹੱਥੀਂ ਆਰਡਰ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ</translation>
 <translation id="7146622961999026732">ਇਹ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਤੁਹਾਡੇ ਲਈ ਮਹੱਤਵਪੂਰਨ ਲੱਗ ਰਹੀਆਂ ਹਨ:</translation>
@@ -1659,6 +1665,7 @@
 <translation id="8773160212632396039">ਬੇਨਤੀ 'ਤੇ ਪ੍ਰਕਿਰਿਆ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="8788265440806329501">ਨੈਵੀਗੇਸ਼ਨ ਇਤਿਹਾਸ ਬੰਦ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="8788968922598763114">ਆਖਰੀ ਬੰਦ ਕੀਤੀ ਟੈਬ ਦੁਬਾਰਾ ਖੋਲ੍ਹੋ</translation>
+<translation id="8790193082819560975">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਉਤਪਾਦ ਲਈ ਖਰੀਦਦਾਰੀ ਦੇ ਵਿਕਲਪ ਖੋਜਣ ਲਈ ਟੈਪ ਕਰੋ।</translation>
 <translation id="879027982257117598">ਉਦਾਹਰਨ ਲਈ, ਜੇ ਤੁਸੀਂ ਕਿਸੇ ਅਜਿਹੀ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ ਜੋ ਲੰਮੀ ਦੂਰੀ ਦੇ ਦੌੜਨ ਵਾਲੇ ਜੁੱਤੇ ਵੇਚਦੀ ਹੈ, ਤਾਂ ਉਹ ਸਾਈਟ ਇਹ ਫ਼ੈਸਲਾ ਕਰ ਸਕਦੀ ਹੈ ਕਿ ਤੁਸੀਂ ਮੈਰਾਥਨ ਦੌੜਨ ਵਿੱਚ ਦਿਲਚਸਪੀ ਰੱਖਦੇ ਹੋ। ਬਾਅਦ ਵਿੱਚ, ਜੇ ਤੁਸੀਂ ਕਿਸੇ ਵੱਖਰੀ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ, ਤਾਂ ਉਹ ਸਾਈਟ ਪਹਿਲੀ ਵਾਲੀ ਸਾਈਟ ਵੱਲੋਂ ਸੁਝਾਏ ਗਏ ਦੌੜਨ ਵਾਲੇ ਜੁੱਤਿਆਂ ਦਾ ਵਿਗਿਆਪਨ ਦਿਖਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="8798449543960971550">ਪੜ੍ਹ ਲਿਆ</translation>
 <translation id="8803526663383843427">ਚਾਲੂ ਹੋਣ 'ਤੇ</translation>
@@ -1682,7 +1689,6 @@
 <translation id="8865415417596392024">ਤੁਹਾਡੇ ਖਾਤੇ ਵਿਚਲਾ Chrome ਡਾਟਾ</translation>
 <translation id="8898822736010347272">ਵੈੱਬ 'ਤੇ ਨਵੇਂ ਖਤਰਿਆਂ ਨੂੰ ਲੱਭ ਕੇ ਹਰੇਕ ਦੀ ਸੁਰੱਖਿਆ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਕੁਝ ਪੰਨਿਆਂ ਦੇ URL, ਸੀਮਤ ਸਿਸਟਮ ਜਾਣਕਾਰੀ ਅਤੇ ਕੁਝ ਨਵੀਂ ਪੰਨਾ ਸਮੱਗਰੀ Google ਨੂੰ ਭੇਜੇ ਜਾਂਦੇ ਹਨ।</translation>
 <translation id="8909135823018751308">ਸ਼ੇਅਰ ਕਰੋ…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{1 ਸਾਈਟ ਲਈ ਸੂਚਨਾਵਾਂ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ}one{{NUM_SITES} ਸਾਈਟ ਲਈ ਸੂਚਨਾਵਾਂ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ}other{{NUM_SITES} ਸਾਈਟਾਂ ਲਈ ਸੂਚਨਾਵਾਂ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ}}</translation>
 <translation id="8921980840204105660">ਆਪਣੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੋਂ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="8922289737868596582">ਪੰਨਿਆਂ ਨੂੰ ਆਫ਼ਲਾਈਨ ਵਰਤਣ ਲਈ ਉਹਨਾਂ ਨੂੰ 'ਹੋਰ ਵਿਕਲਪ' ਬਟਨ ਰਾਹੀਂ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>

@@ -2896,6 +2896,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3030967311408872958">Loojangust päikesetõusuni</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Paremklõpsamine puuteplaadi ja klaviatuuri abil</translation>
+<translation id="3031544881009594539">Uue pääsuvõtme loomiseks logige sisse sellele saidile. Vana on Google'i paroolihaldurist kustutatud.</translation>
 <translation id="3031557471081358569">Valige imporditavad üksused:</translation>
 <translation id="3032204772252313646">Automaatsed subtiitrid</translation>
 <translation id="3032272345862007156">Hiljutine AI loodud teema <ph name="INDEX" /></translation>
@@ -3786,6 +3787,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="370665806235115550">Laadimine...</translation>
 <translation id="3707034683772193706">Külastatav sait võib Chrome’iga salvestada väikese hulga teavet, peamiselt kinnitamaks, et te pole robot.</translation>
 <translation id="3707163604290651814">Olete praegu sisse logitud kasutajana <ph name="NAME" /></translation>
+<translation id="3707242400882068741">Vajalik on pääsuvõtme värskendamine</translation>
 <translation id="3707348585109246684">Ava link rakenduse <ph name="APP" /> uuel vahelehel</translation>
 <translation id="3708295717182051206">Subtiitrid</translation>
 <translation id="3708684582558000260">Ära luba suletud saitidel viia andmete saatmist või vastuvõtmist lõpule</translation>
@@ -4438,7 +4440,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4163560723127662357">Tundmatu klaviatuur</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ei kuulu kehtivale organisatsioonile. Võtke ühendust administraatoriga. Kui olete administraator, saate oma organisatsiooni seadistada, kui külastate saiti g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Saidi seaded</translation>
-<translation id="4166847326079525123">Asukoht on Windowsi süsteemieelistustes välja lülitatud</translation>
 <translation id="4167212649627589331"><ph name="APP_NAME" /> üritab seadmele <ph name="DEVICE_NAME" /> juurde pääseda. Juurdepääsu lubamiseks lülitage seadme <ph name="DEVICE_NAME" /> privaatsuse lüliti välja.</translation>
 <translation id="4167393659000039775">Google ei vastuta andmekao eest ja <ph name="DEVICE_OS" /> ei pruugi sertifitseerimata mudelitel toimida. Lisateave: g.co/flex/InstallGuide.</translation>
 <translation id="4167924027691268367">Muud teenuse <ph name="SHORTCUT_TITLE" /> otsetee toimingud</translation>
@@ -6749,7 +6750,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5885314688092915589">Teie organisatsioon haldab seda profiili</translation>
 <translation id="5885470467814103868">Alusta skannimist</translation>
 <translation id="5885631909150054232">Kopeeri toemärk</translation>
-<translation id="5886000783338788034">Asukoht on ChromeOS-i seadetes välja lülitatud</translation>
 <translation id="5886009770935151472">1. sõrm</translation>
 <translation id="5886112770923972514">Läheduses olevate kiirsidumise funktsiooniga seadmete ühendamine ja kiirelt seadistamine</translation>
 <translation id="5886384907280980632">Lülita kohe välja</translation>
@@ -8958,7 +8958,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7529865045818406536">Eelistatud võrke kasutatakse, kui saadaval on mitu eelmist võrku</translation>
 <translation id="7529876053219658589">{0,plural, =1{Sule külalise aknad}other{Sule külalise aknad}}</translation>
 <translation id="7530016656428373557">Tühjenemise määr vattides</translation>
-<translation id="7531310913436731628">Asukoht on Maci süsteemieelistustes välja lülitatud</translation>
 <translation id="7531771599742723865">Seade on kasutuses</translation>
 <translation id="7531779363494549572">Avage jaotis Seaded &gt; Rakendused ja märguanded &gt; Märguanded.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ei reageeri. Rakenduse sulgemiseks valige käsk „Sundpeata”.</translation>

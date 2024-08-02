@@ -21,6 +21,7 @@
 <translation id="126567311906253476">Quando accedi a servizi Google come Gmail o YouTube con <ph name="USER_EMAIL" />, puoi accedere automaticamente a Chromium con lo stesso account</translation>
 <translation id="1290883685122687410">Errore di configurazione: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Configura il tuo nuovo profilo di Chromium</translation>
+<translation id="1324107359134968521">Chromium richiede l'accesso al Bluetooth per individuare i dispositivi Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Elimina i dati anche da Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Hai eseguito l'accesso a Chromium.</translation>
 <translation id="1478370723027452770">Richiedi assistenza per Chrome for Testing</translation>
@@ -59,6 +60,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="1951406923938785464">Chromium ha bloccato questo download perché il tipo di file non viene scaricato comunemente e potrebbe essere pericoloso</translation>
 <translation id="1953553007165777902">Download in corso… Minuti rimanenti: <ph name="MINUTE" /></translation>
 <translation id="1966382378801805537">Chromium non è in grado di determinare o impostare il browser predefinito</translation>
+<translation id="1990262977744080398">Scopri perché Chromium blocca alcuni file (si apre in una nuova scheda)</translation>
 <translation id="2008474315282236005">Verrà eliminato 1 elemento da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chromium come <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Installazione non riuscita. Riprova.</translation>
 <translation id="2020032459870799438">Per controllare che le tue altre password siano protette da violazioni dei dati e altri problemi di sicurezza, <ph name="BEGIN_LINK" />accedi a Chromium<ph name="END_LINK" />.</translation>

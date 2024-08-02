@@ -324,6 +324,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2635918910848538771">Täytä CVC automaattisesti</translation>
 <translation id="2637313651144986786">Hae välilehtiä…</translation>
 <translation id="2640733327287333451">Ei käyttäjätunnusta ••••••</translation>
+<translation id="264215785133931186">Tarkistettu juuri äsken</translation>
 <translation id="2648721026697078500">Älä koskaan siirrä</translation>
 <translation id="2648803196158606475">Poista luetut</translation>
 <translation id="2664621323652615289">Lopeta</translation>
@@ -797,6 +798,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4937410517508563815">Tallenna tilin salasanat</translation>
 <translation id="4938338714234463591">Tämän avulla voit käyttää ääntäsi tietyille ominaisuuksille verkkosivustoilla.</translation>
 <translation id="4941089862236492464">Virhe jaettaessa kohdetta.</translation>
+<translation id="4942382218961352935">Tarkistettu juuri äsken</translation>
 <translation id="4944543191714094452">Hae sivulta…</translation>
 <translation id="4945756290001680296">Siirry salasana-asetuksiin</translation>
 <translation id="4958444002117714549">Laajenna luettelo</translation>
@@ -883,6 +885,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5396950905475481456">Perheenjäsenten kutsuminen</translation>
 <translation id="5407969256130905701">Hylkää muutokset</translation>
 <translation id="5414763847370083940">Saat ilmoituksen, jos hinta laskee jollakin sivustolla.</translation>
+<translation id="5415289094036440596">Avainkoodeja ei voi jakaa</translation>
 <translation id="5416022985862681400">Viimeiset 7 päivää</translation>
 <translation id="5416455648658732408">Siirrä välilehtiryhmään</translation>
 <translation id="5423269318075950257">Hintaseuranta</translation>
@@ -1488,7 +1491,6 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8237382152611443140">Avaa automaattisen täytön salasana-asetukset</translation>
 <translation id="8248969482078657578">Ei-aktiiviset välilehdet auttavat keskittymään</translation>
 <translation id="8261506727792406068">Poista</translation>
-<translation id="8263336784344783289">Anna ryhmälle nimi</translation>
 <translation id="8263809106706527890">Oletusselaimen asetukset ovat saattaneet muuttua. Voit tarkistaa tämän asetuksista.</translation>
 <translation id="8264966119170358612">Osa tallennetuista salasanoistasi on paljastunut Googlen ulkopuolisen tietosuojaloukkauksen yhteydessä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Sinut kirjattiin ulos tililtä <ph name="USER_NAME" />, kun iPad nollattiin. Kirjaudu takaisin sisään valitsemalla Jatka.</translation>

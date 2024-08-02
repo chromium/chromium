@@ -179,7 +179,6 @@
 <translation id="1827738518074806965">แกลเลอรีศิลปะ</translation>
 <translation id="1836553715834333258">สีของระบบ</translation>
 <translation id="183675228220305365">สมจริง</translation>
-<translation id="1837537071599385610">คำแนะนำในการเขียนพรอมต์</translation>
 <translation id="1838374766361614909">ล้างการค้นหา</translation>
 <translation id="1840474674287087346">สีของเดสก์ท็อป</translation>
 <translation id="184095011128924488">สร้างสรรค์</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">พื้นหลังล่าสุดที่ทำงานด้วยระบบ AI ของ Google</translation>
 <translation id="2783010256799387990">ผ่าน</translation>
 <translation id="2786429550992142861">ลินิน</translation>
+<translation id="2787237339470862294">ขณะนี้ระบบยังไม่รองรับภาษานี้</translation>
 <translation id="2787435249130282949">แป้นพิมพ์สว่างขึ้น</translation>
 <translation id="2805756323405976993">แอป</translation>
 <translation id="28232023175184696">เชื่อมต่ออินเทอร์เน็ตไม่ได้ คลิกเพื่อลองอีกครั้ง</translation>
@@ -673,6 +673,7 @@
 <translation id="458794348635939462">แก้ไขทุกโฮสต์ไม่สำเร็จ</translation>
 <translation id="4593212453765072419">จำเป็นต้องมีการตรวจสอบสิทธิ์พร็อกซี</translation>
 <translation id="4594021849294327751">สร้างข้อความถอดเสียง</translation>
+<translation id="4607282946861182308">สร้างรูปภาพจากพรอมต์นี้ไม่ได้ โปรดลองใช้พรอมต์อื่น</translation>
 <translation id="4609350030397390689">ลดความสว่างของแป้นพิมพ์</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> จาก <ph name="TOTAL_PAGE_NUMBER" /> หน้า กด Enter เพื่อยกเลิกงานพิมพ์</translation>
 <translation id="463791356324567266">กำลังยกเลิกการสแกน...</translation>

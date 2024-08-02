@@ -43,6 +43,7 @@
 <translation id="2977480621796371840">Hiq nga grupi</translation>
 <translation id="3008554597174452548">Ndalo monitorimin e produktit</translation>
 <translation id="3026391124054406831">Krijo grupe për të organizuar skedat e tua.</translation>
+<translation id="3051031624272448591">Mund t'i rimarrësh ato gjithmonë te historiku</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> ulje çmimi në <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Ikona e ngjyrës së grupit të skedave: <ph name="COLOR_NAME" /></translation>
 <translation id="3194464645767632461">vlerësimi</translation>
@@ -69,6 +70,7 @@
 <translation id="4371591986692297148">Joaktiv</translation>
 <translation id="4460014764210899310">Mos grupo</translation>
 <translation id="4590027107044272416">Tani mund të hapësh një skedë të re këtu.</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{Të mbyllet 1 skedë joaktive?}other{Të mbyllen <ph name="TAB_COUNT_MANY" /> skeda joaktive?}}</translation>
 <translation id="4648718555153979859">Skedat e tua grupohen së bashku këtu</translation>
 <translation id="4686942373615810936">Krijuar pikërisht tani</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Mbyll pas 1 dite}other{Mbyll pas <ph name="DAY_COUNT_MANY" /> ditësh}}</translation>
@@ -104,6 +106,7 @@
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6051432659151380973">Grupet e tua të skedave do të ruhen automatikisht</translation>
 <translation id="6054741997831917303">Çmimi i artikullit ra së fundi nga <ph name="PREVIOUS_PRICE" /> në <ph name="NEW_PRICE" /></translation>
+<translation id="6082313992897617440">Do të humbasësh menjëherë qasjen në grupin e skedave "<ph name="GROUP_NAME" />"</translation>
 <translation id="6193448654517602979">Zgjidh skedat</translation>
 <translation id="6228793724645064692">(vlerësimi i dyqanit)</translation>
 <translation id="6271513594716432922">Mbyll të gjitha skedat joaktive</translation>
@@ -127,6 +130,7 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> - është zgjedhur</translation>
 <translation id="7326879924029668159">Shiko politikën e kthimit etj.</translation>
 <translation id="7352298686197644113">Shiko se cili artikull në skedat e tua të hapura ka çmim më të ulët</translation>
+<translation id="7421293530411019405">Dëshiron të largohesh nga grupi i skedave?</translation>
 <translation id="7452985128687107478">Grupet e skedave ruhen dhe përditësohen automatikisht në të gjitha pajisjet e tua</translation>
 <translation id="747459581954555080">Restauroji të gjitha</translation>
 <translation id="753732157349120914">Ndërruesi i skedave</translation>
@@ -154,6 +158,8 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Mbyll <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Mbyll <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
 <translation id="8398929769197326728">Dosje e re - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Cilësimet</translation>
+<translation id="8631711675211020168">Të gjithë do të humbasin menjëherë qasjen në grupin e skedave "<ph name="GROUP_NAME" />" dhe ai do të fshihet nga të gjitha pajisjet</translation>
+<translation id="8633025649649592204">Aktiviteti i fundit</translation>
 <translation id="870736955561925754">Të mbyllet skeda dhe të fshihet grupi?</translation>
 <translation id="8714939927607906138">Çmim më i ulët</translation>
 <translation id="8730621377337864115">U krye</translation>
@@ -161,6 +167,7 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Krijuar <ph name="NUM_MONTHS_ONE" /> muaj më parë}other{Krijuar <ph name="NUM_MONTHS_MANY" /> muaj më parë}}</translation>
 <translation id="8820741577754260431">Shiko rëniet e çmimeve në skeda</translation>
 <translation id="8887921976452567404">Skedat dhe grupet e tua të mbyllura mund të hapen përsëri nga seksioni "Skedat e fundit" dhe seksioni "Grupet e skedave".</translation>
+<translation id="8915916167043355778">Mbylli të gjitha</translation>
 <translation id="8926389886865778422">Mos pyet përsëri</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Zgjero grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë.}other{Zgjero grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda.}}</translation>
 <translation id="9090098097337832354">Informacioni për këtë dyqan është mbyllur</translation>

@@ -265,6 +265,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="8386869251364507178">Ações do Chromium</translation>
 <translation id="8409374867500149834">Você tem a segurança reforçada do Chromium contra sites perigosos</translation>
 <translation id="8458950033462118672">Defina o Chromium como seu navegador padrão para abrir links nele automaticamente.</translation>
+<translation id="8502918057530111907">Use o Chromium por padrão para receber informações de preço com facilidade</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos. Isso pode incluir histórico e senhas.}one{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos. Isso pode incluir histórico e senhas.}other{Isso acontece quando o Chromium não é usado por {THRESHOLD} minutos. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos. Isso pode incluir histórico e senhas.}}</translation>
 <translation id="858114650497379505">Você pode usar as senhas armazenadas no Gerenciador de senhas em outros apps do iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autores do Chromium. Todos os direitos reservados.</translation>

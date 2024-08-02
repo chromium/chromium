@@ -106,6 +106,7 @@
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6051432659151380973">Vos groupes d'onglets sont automatiquement enregistrés</translation>
 <translation id="6054741997831917303">Le prix de cet article est récemment passé de <ph name="PREVIOUS_PRICE" /> à <ph name="NEW_PRICE" /></translation>
+<translation id="6082313992897617440">Vous perdrez immédiatement l'accès au groupe d'onglets <ph name="GROUP_NAME" /></translation>
 <translation id="6193448654517602979">Sélectionnez des onglets</translation>
 <translation id="6228793724645064692">(note du magasin)</translation>
 <translation id="6271513594716432922">Fermer tous les onglets inactifs</translation>
@@ -129,6 +130,7 @@
 <translation id="731648547091221002">Couleur sélectionnée : <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Consultez la politique de retour et plus</translation>
 <translation id="7352298686197644113">Voir quel article dans vos onglets ouverts est offert à meilleur prix</translation>
+<translation id="7421293530411019405">Quitter le groupe d'onglets?</translation>
 <translation id="7452985128687107478">Les groupes d'onglets sont automatiquement enregistrés et mis à jour sur tous vos appareils</translation>
 <translation id="747459581954555080">Tout restaurer</translation>
 <translation id="753732157349120914">Gestionnaire d'onglets</translation>
@@ -156,6 +158,8 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fermer <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Fermer <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Fermer <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="8398929769197326728">Nouveau dossier - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Paramètres</translation>
+<translation id="8631711675211020168">Tous les utilisateurs perdront immédiatement l'accès au groupe d'onglets <ph name="GROUP_NAME" />, et celui-ci sera supprimé de tous les appareils</translation>
+<translation id="8633025649649592204">Activité récente</translation>
 <translation id="870736955561925754">Fermer l'onglet et supprimer le groupe?</translation>
 <translation id="8714939927607906138">Prix inférieur</translation>
 <translation id="8730621377337864115">Terminé</translation>

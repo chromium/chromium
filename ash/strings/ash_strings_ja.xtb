@@ -976,6 +976,7 @@
 <translation id="453661520163887813">あと <ph name="TIME" /> で充電完了</translation>
 <translation id="4538824937723742295">全画面のスクリーンショットを撮影</translation>
 <translation id="4539127209940689201">現在のページを印刷する</translation>
+<translation id="4541505619120536051">常に開く</translation>
 <translation id="4541706525461326392">プロファイルを削除しています。この処理には数分かかることがあります。</translation>
 <translation id="4544483149666270818">録画するウィンドウを選択してください</translation>
 <translation id="4545950850562423083">現在のページをブックマークとして保存する</translation>
@@ -1488,6 +1489,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" /> がカメラとマイクを使用しています</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">上部ボタン</translation>
+<translation id="6240821072888636753">毎回確認</translation>
 <translation id="6247728804802644171">通知を開きます</translation>
 <translation id="6249795363855770621">完了としてマークできませんでした。オンラインになったらもう一度お試しください。</translation>
 <translation id="6254629735336163724">横に固定</translation>
@@ -1832,6 +1834,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> がマイクを使用しています</translation>
 <translation id="7561982940498449837">メニューを閉じる</translation>
 <translation id="7564874036684306347">ウィンドウを別のデスクトップに移動すると、予期しない動作が起こることがあります。以降の通知、ウィンドウ、ダイアログは、複数のデスクトップに分かれて表示される可能性があります。</translation>
+<translation id="7568790562536448087">更新中:</translation>
 <translation id="7569509451529460200">Braille と ChromeVox が有効になっています</translation>
 <translation id="7569886975397378678">スマートフォンの通知とアプリの表示の設定を行わない</translation>
 <translation id="7571361473021531288">バッテリー残量 <ph name="BATTERY_PERCENTAGE" />% | 残り使用時間 <ph name="TIME" /></translation>
@@ -1961,7 +1964,6 @@
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> から</translation>
 <translation id="7968693143708939792">フォルダを選択...</translation>
 <translation id="7973756967040444713">ツールバーを閉じる</translation>
-<translation id="797485111629834774">タスクを完了としてマーク: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">全画面拡大鏡をオンまたはオフにします</translation>
 <translation id="7977927628060636163">モバイル ネットワークを検索しています...</translation>
 <translation id="7982789257301363584">ネットワーク</translation>

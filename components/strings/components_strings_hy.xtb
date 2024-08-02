@@ -69,7 +69,6 @@
 <translation id="1104860668737945357">«Կառավարել գաղտնաբառերը» կոճակ․ ակտիվացրեք՝ Chrome-ի կարգավորումներում գաղտնաբառերը դիտելու և կառավարելու համար</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />՝ ընտրեք թույլտվություն</translation>
-<translation id="1112238992895762847">Գների միջակայքը բոլոր տարբերակների համար</translation>
 <translation id="1113869188872983271">&amp;Հետարկել վերադասավորումը</translation>
 <translation id="1118429183611783760">Փոշեկուլներ և հատակի խնամք</translation>
 <translation id="1122714970786750095">Էլեկտրոնիկա և էլեկտրական սարքեր</translation>
@@ -126,7 +125,6 @@
 <translation id="1209206284964581585">Առայժմ թաքցնել</translation>
 <translation id="121201262018556460">Դուք փորձում էիք մտնել <ph name="DOMAIN" />, սակայն սերվերի կողմից ներկայացված վկայագրի բանալին թույլ էր: Հնարավոր է, ինչ-որ հարձակվող կոտրել է մասնավոր բանալին, և սերվերը ձեր ուզած սերվերը չէ (հնարավոր է, դուք կապ եք հաստատել հարձակվողի հետ):</translation>
 <translation id="1212527389003717329">Ներբեռնումը սկսված է։ Տեսնելու համար սեղմեք և պահեք |<ph name="ACCELERATOR" />|։</translation>
-<translation id="1214970845432250240">Գների միջակայք</translation>
 <translation id="1219129156119358924">Համակարգի անվտանգություն</translation>
 <translation id="1222060260947439312">Աջ կողմի դարակ</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -357,7 +355,6 @@
 <translation id="1617276713587758852">Քրոսովերներ</translation>
 <translation id="1619007254056372606">Կառավարել սարքում կայքերի տվյալները</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
-<translation id="162285686621567578">Այս կայքն արգելափակվել է ձեր ծնողի կողմից։</translation>
 <translation id="1622966923835127638">Բիզնես ֆինանսներ</translation>
 <translation id="1623104350909869708">Թույլ չտալ այս էջին ստեղծել լրացուցիչ երկխոսություններ</translation>
 <translation id="1633137413609266904">{0,plural, =1{Ադմինիստրատորն արգելել է բացել այս ֆայլը}one{Ադմինիստրատորն արգելել է բացել # ֆայլ}other{Ադմինիստրատորն արգելել է բացել # ֆայլ}}</translation>
@@ -742,7 +739,6 @@
 <translation id="2328955282645810595">Շինարարական և էլեկտրական գործիքներ</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, վավեր է մինչև <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Վերսկսել տեքստի գրումը</translation>
-<translation id="2337776048981813397">Գների միջակայքը բոլոր տարբերակների համար</translation>
 <translation id="2337852623177822836">Կարգավորումը վերահսկվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> կայքն ուզում է զուգակցվել</translation>
 <translation id="2346319942568447007">Ձեր պատճենած պատկերը</translation>
@@ -1036,7 +1032,6 @@
 <translation id="2930577230479659665">Կտրել յուրաքանչյուր օրինակից հետո</translation>
 <translation id="2933624813161016821">Դաջման թաղանթ</translation>
 <translation id="2938225289965773019">Բացել <ph name="PROTOCOL" /> հղումները</translation>
-<translation id="2941112035454246133">Ցածր</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 դյմ</translation>
 <translation id="2941952326391522266">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Դրա անվտանգության վկայականը <ph name="DOMAIN2" />-ից է: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
 <translation id="2942492342931589800">Ոչ պաշտոնական</translation>
@@ -1218,7 +1213,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Մուտքագրեք <ph name="NUMBER_OF_DIGITS" /> թվանշանից բաղկացած հաստատման կոդը</translation>
 <translation id="3272643614306383237">1 ՄԲ-ից պակաս։ Որոշ կայքեր կարող են ավելի դանդաղ բեռնվել հաջորդ այցելության ժամանակ։</translation>
-<translation id="327346289570683313">Գների միջակայք</translation>
 <translation id="3273738040255912340">Ձեր ադմինիստրատորը կարող է հեռակա կարգով փոխել ձեր պրոֆիլի և դիտարկիչի կարգավորումները, վերլուծել դիտարկիչի մասին տեղեկությունները հաշվետվությունների միջոցով և կատարել այլ անհրաժեշտ առաջադրանքներ։ Սարքում արվող գործողությունները նույնպես կարող են կառավարվել Chromium-ից դուրս։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը բացել այստեղ՝ <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը բացել այստեղ՝ <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը բացել այստեղ՝ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Ձեր կազմակերպությունը (<ph name="ENROLLMENT_DOMAIN" />) հետևյալ կայքերին ուղարկել է որոշ տեղեկություններ, օրինակ՝ կարգավորումներ և կանոններ։</translation>
@@ -1709,6 +1703,7 @@
 <translation id="4177501066905053472">Գովազդի թեմաներ</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Այլևս չհետագծել գինը</translation>
+<translation id="4190446002599583608">ԱԲ-ի միջոցով որոնում այցելությունների պատմությունում</translation>
 <translation id="4191334393248735295">Երկարություն</translation>
 <translation id="4195459680867822611">«Տեսնել Chrome-ին առնչվող խորհուրդներ» կոճակ․ ակտիվացրեք՝ Chrome-ի գործառույթների մասին տեղեկանալու համար</translation>
 <translation id="4195643157523330669">Բացել նոր ներդիրով</translation>
@@ -3646,6 +3641,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Հեռացնե՞լ Chrome-ի առաջարկներից:</translation>
 <translation id="781440967107097262">Կիսվե՞լ սեղմատախտակով</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Թուղթ (սովորական)</translation>
 <translation id="7815407501681723534">«<ph name="SEARCH_STRING" />» հարցումով որոնման արդյունքում գտնվել է <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /></translation>
 <translation id="7822611063308883975">Դյուրակիր խաղային բարձակներ</translation>
@@ -3810,6 +3806,7 @@
 <translation id="8148608574971654810">PDF-ի տարբեակը՝</translation>
 <translation id="8149426793427495338">Ձեր համակարգիչը մտել է քնի ռեժիմ:</translation>
 <translation id="8150722005171944719"><ph name="URL" />-ում գտնվող ֆայլը ընթեռնելի չէ: Հնարավոր է, այն հեռացվել է, տեղափոխվել կամ ֆայլի թույլտվությունները կանխում են մուտքը:</translation>
+<translation id="8151185429379586178">Ծրագրավորողի գործիքներ</translation>
 <translation id="8153865548451212769">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը ներբեռնել <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը ներբեռնել <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը ներբեռնել <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Հոկեյի հանդերձանք</translation>
 <translation id="8161095570253161196">Շարունակել դիտարկումը</translation>

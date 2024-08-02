@@ -106,6 +106,7 @@
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6051432659151380973">Skupine zavihkov se samodejno shranjujejo</translation>
 <translation id="6054741997831917303">Cena tega izdelka je bila nedavno <ph name="PREVIOUS_PRICE" />, zdaj je <ph name="NEW_PRICE" /></translation>
+<translation id="6082313992897617440">Takoj boste izgubili dostop do skupine zavihkov <ph name="GROUP_NAME" /></translation>
 <translation id="6193448654517602979">Izberite zavihke</translation>
 <translation id="6228793724645064692">(ocena trgovine)</translation>
 <translation id="6271513594716432922">Zapiranje vseh neaktivnih zavihkov</translation>
@@ -129,6 +130,7 @@
 <translation id="731648547091221002">Izbrano: <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">Oglejte si pravilnik o vračilih in drugo.</translation>
 <translation id="7352298686197644113">Oglejte si, kateri izdelek na odprtih zavihkih ima nižjo ceno.</translation>
+<translation id="7421293530411019405">Želite zapustiti skupino zavihkov?</translation>
 <translation id="7452985128687107478">Skupine zavihkov se samodejno shranjujejo in posodabljajo v vseh napravah</translation>
 <translation id="747459581954555080">Obnovi vse</translation>
 <translation id="753732157349120914">Preklop med zavihki</translation>
@@ -156,6 +158,8 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zapiranje <ph name="TABS_COUNT_ONE" /> izbranega zavihka}one{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranega zavihka}two{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}few{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}other{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}}</translation>
 <translation id="8398929769197326728">Nova mapa – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Nastavitve</translation>
+<translation id="8631711675211020168">Vsi bodo takoj izgubili dostop do skupine zavihkov <ph name="GROUP_NAME" /> in izbrisana bo iz vseh naprav</translation>
+<translation id="8633025649649592204">Nedavna dejavnost</translation>
 <translation id="870736955561925754">Želite zapreti zavihek in izbrisati skupino?</translation>
 <translation id="8714939927607906138">Nižja cena</translation>
 <translation id="8730621377337864115">Končano</translation>

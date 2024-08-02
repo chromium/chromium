@@ -23,6 +23,7 @@
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> ମାଧ୍ୟମରେ Gmail କିମ୍ବା YouTube ପରି Google ସେବାଗୁଡ଼ିକରେ ସାଇନ ଇନ କରିବା ସମୟରେ, ଆପଣ ସମାନ ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସ୍ୱତଃ Chromiumରେ ସାଇନ ଇନ କରିପାରିବେ</translation>
 <translation id="1290883685122687410">ସେଟଅପ ତ୍ରୁଟି: <ph name="METAINSTALLER_EXIT_CODE" />। <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">ଆପଣଙ୍କର ନୂଆ Chromium ପ୍ରୋଫାଇଲ୍ ସେଟ୍ ଅପ୍ କରନ୍ତୁ</translation>
+<translation id="1324107359134968521">ବ୍ଲୁଟୁଥ ଡିଭାଇସଗୁଡ଼ିକୁ ଏକ୍ସପ୍ଲୋର କରିବା ପାଇଁ Chromium ବ୍ଲୁଟୁଥ ଆକ୍ସେସ ଆବଶ୍ୟକ କରେ। <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Chromium (<ph name="URL" />)ରୁ ମଧ୍ୟ ଡାଟା ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="1414495520565016063">ଆପଣ Chromium‍ରେ ସାଇନ୍-ଇନ୍ କରିଛନ୍ତି!</translation>
 <translation id="1478370723027452770">Chrome for Testing ସହ ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
@@ -61,6 +62,7 @@
 <translation id="1951406923938785464">Chromium ଏହି ଡାଉନଲୋଡକୁ ବ୍ଲକ କରିଛି କାରଣ ଏହି ଫାଇଲ ପ୍ରକାରକୁ ସାଧାରଣତଃ ଡାଉନଲୋଡ କରାଯାଇନଥାଏ ଏବଂ ଏହା ବିପଦଜନକ ହୋଇପାରେ</translation>
 <translation id="1953553007165777902">ଡାଉନଲୋଡ ହେଉଛି… <ph name="MINUTE" /> ମିନିଟ ବାକି ଅଛି</translation>
 <translation id="1966382378801805537">Chromium ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ନିର୍ଦ୍ଧାରଣ କିମ୍ବା ସେଟ୍ କରିପାରିବ ନାହିଁ</translation>
+<translation id="1990262977744080398">Chromium କାହିଁକି କିଛି ଫାଇଲକୁ ବ୍ଲକ କରେ ତାହା ଜାଣନ୍ତୁ, ନୂଆ ଟାବରେ ଖୋଲେ</translation>
 <translation id="2008474315282236005">ଏହାଦ୍ବାରା ଏହି ଡିଭାଇସ୍‌ରୁ 1ଟି ଆଇଟମ୍ ଡିଲିଟ୍ ହୋଇଯିବ। ପରେ ଆପଣଙ୍କ ଡାଟାକୁ ପୁନଃପ୍ରାପ୍ତ କରିବାକୁ, Chromiumକୁ <ph name="USER_EMAIL" />ରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
 <translation id="2018879682492276940">ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2020032459870799438">ଆପଣଙ୍କ ଅନ୍ୟ ପାସୱାର୍ଡଗୁଡ଼ିକ ଡାଟା ଚୋରି ଏବଂ ଅନ୍ୟ ସୁରକ୍ଷା ସମସ୍ୟାଗୁଡ଼ିକରୁ ସୁରକ୍ଷିତ ଅଛି ନା ନାହିଁ ତାହା ଯାଞ୍ଚ କରିବାକୁ, <ph name="BEGIN_LINK" />Chromiumରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ<ph name="END_LINK" />।</translation>

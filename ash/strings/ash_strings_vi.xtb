@@ -976,6 +976,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="453661520163887813"><ph name="TIME" /> cho đến khi đầy</translation>
 <translation id="4538824937723742295">Chụp ảnh toàn màn hình</translation>
 <translation id="4539127209940689201">In trang hiện tại</translation>
+<translation id="4541505619120536051">Luôn mở</translation>
 <translation id="4541706525461326392">Đang xóa hồ sơ. Quá trình này có thể mất vài phút.</translation>
 <translation id="4544483149666270818">Chọn một cửa sổ để ghi hình</translation>
 <translation id="4545950850562423083">Lưu trang hiện tại làm dấu trang</translation>
@@ -1488,6 +1489,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> hiện đang sử dụng máy ảnh và micrô của bạn</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Nút trên cùng</translation>
+<translation id="6240821072888636753">Luôn hỏi</translation>
 <translation id="6247728804802644171">Mở thông báo</translation>
 <translation id="6249795363855770621">Không thể đánh dấu là hoàn thành. Hãy thử lại khi có kết nối mạng.</translation>
 <translation id="6254629735336163724">Đã khóa theo chiều ngang</translation>
@@ -1831,6 +1833,7 @@ Mới cài đặt</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> hiện đang sử dụng micrô của bạn</translation>
 <translation id="7561982940498449837">Đóng trình đơn</translation>
 <translation id="7564874036684306347">Di chuyển cửa sổ sang màn hình khác có thể gây ra hoạt động không mong muốn. Các thông báo, cửa sổ và hộp thoại tiếp theo có thể bị phân tách giữa các màn hình.</translation>
+<translation id="7568790562536448087">Đang cập nhật</translation>
 <translation id="7569509451529460200">Đã bật chữ nổi Braille và ChromeVox</translation>
 <translation id="7569886975397378678">Loại bỏ việc thiết lập tính năng xem thông báo và ứng dụng có trên điện thoại</translation>
 <translation id="7571361473021531288"><ph name="BATTERY_PERCENTAGE" />% pin | Còn <ph name="TIME" /></translation>
@@ -1960,7 +1963,6 @@ Mới cài đặt</translation>
 <translation id="7963992254934562106">Từ <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Chọn thư mục...</translation>
 <translation id="7973756967040444713">Đóng thanh công cụ</translation>
-<translation id="797485111629834774">Đánh dấu việc cần làm là đã hoàn thành: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Bật hoặc tắt chế độ phóng to toàn màn hình</translation>
 <translation id="7977927628060636163">Đang tìm kiếm mạng di động...</translation>
 <translation id="7982789257301363584">Mạng</translation>

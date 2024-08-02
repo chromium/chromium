@@ -179,7 +179,6 @@
 <translation id="1827738518074806965">آرٹ گیلری</translation>
 <translation id="1836553715834333258">سسٹم کا رنگ</translation>
 <translation id="183675228220305365">حقیقت پسند</translation>
-<translation id="1837537071599385610">پرامپٹنگ گائیڈ</translation>
 <translation id="1838374766361614909">تلاش صاف کریں</translation>
 <translation id="1840474674287087346">ڈیسک ٹاپ کا رنگ</translation>
 <translation id="184095011128924488">تخلیقی</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">‏Google AI سے تقویت یافتہ حالیہ پس منظر</translation>
 <translation id="2783010256799387990">پاس ہو گیا</translation>
 <translation id="2786429550992142861">لینن</translation>
+<translation id="2787237339470862294">اس وقت یہ زبان تعاون یافتہ نہیں ہے</translation>
 <translation id="2787435249130282949">زیادہ روشن کی بورڈ</translation>
 <translation id="2805756323405976993">اطلاقات</translation>
 <translation id="28232023175184696">انٹرنیٹ سے منسلک نہیں کر سکتے۔ دوبارہ کوشش کرنے کے لیے کلک کریں۔</translation>
@@ -673,6 +673,7 @@
 <translation id="458794348635939462">تمام میزبانوں کو حل کرنے میں ناکام</translation>
 <translation id="4593212453765072419">پراکسی کی تصدیق درکار ہے</translation>
 <translation id="4594021849294327751">ٹرانسکرپٹ بنائیں</translation>
+<translation id="4607282946861182308">اس کی تصاویر نہیں بنا سکتے۔ کوئی اور پرامپٹ آزمائیں۔</translation>
 <translation id="4609350030397390689">کی بورڈ کی چمک کم کرنے کی کلید</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="TOTAL_PAGE_NUMBER" /> میں سے <ph name="PRINTED_PAGE_NUMBER" />۔ براہ کرم پرنٹ جاب منسوخ کرنے کے لیے enter دبائیں۔</translation>
 <translation id="463791356324567266">اسکین کا عمل منسوخ کیا جا رہا ہے...</translation>

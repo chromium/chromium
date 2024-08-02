@@ -977,6 +977,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="453661520163887813"><ph name="TIME" /> para completar la carga</translation>
 <translation id="4538824937723742295">Hacer captura de pantalla completa</translation>
 <translation id="4539127209940689201">Imprimir la página actual</translation>
+<translation id="4541505619120536051">Abrir siempre</translation>
 <translation id="4541706525461326392">Quitando perfil. Este proceso puede durar unos minutos.</translation>
 <translation id="4544483149666270818">Selecciona una ventana para grabar</translation>
 <translation id="4545950850562423083">Guardar página actual como marcador</translation>
@@ -1489,6 +1490,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> está usando tu cámara y tu micrófono</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Botón superior</translation>
+<translation id="6240821072888636753">Preguntar siempre</translation>
 <translation id="6247728804802644171">Abrir notificaciones</translation>
 <translation id="6249795363855770621">No se ha podido marcar como completada. Vuelve a intentarlo cuando tengas conexión a Internet.</translation>
 <translation id="6254629735336163724">Bloqueada en horizontal</translation>
@@ -1832,6 +1834,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7557816257942363084"><ph name="APP_NAME" /> está usando tu micrófono</translation>
 <translation id="7561982940498449837">Cerrar menú</translation>
 <translation id="7564874036684306347">Si mueves ventanas a otro escritorio, es posible que se produzca un comportamiento inesperado. Puede que las notificaciones, las ventanas y los cuadros de diálogo que aparezcan después de realizar esta acción se dividan entre los escritorios.</translation>
+<translation id="7568790562536448087">Actualización</translation>
 <translation id="7569509451529460200">Braille y ChromeVox están habilitados</translation>
 <translation id="7569886975397378678">Cerrar la configuración de la visualización de las notificaciones y las aplicaciones de tu teléfono</translation>
 <translation id="7571361473021531288">Batería: <ph name="BATTERY_PERCENTAGE" /> % | Tiempo restante: <ph name="TIME" /></translation>
@@ -1961,7 +1964,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7963992254934562106">Desde <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Seleccionar carpeta...</translation>
 <translation id="7973756967040444713">Cerrar barra de herramientas</translation>
-<translation id="797485111629834774">Marcar tarea como completada: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Activar o desactivar lupa a pantalla completa</translation>
 <translation id="7977927628060636163">Buscando redes móviles…</translation>
 <translation id="7982789257301363584">Red</translation>

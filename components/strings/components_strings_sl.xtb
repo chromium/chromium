@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Gumb za upravljanje gesel, aktivirajte, če si želite ogledati in upravljati gesla v Chromovih nastavitvah</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Izbira dovoljenja za: <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">Cenovni okvir za vse možnosti</translation>
 <translation id="1113869188872983271">&amp;Razveljavi razvrstitev</translation>
 <translation id="1118429183611783760">Sesalci in naprave za nego tal</translation>
 <translation id="1122714970786750095">Elektronske in električne naprave</translation>
@@ -122,7 +121,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1209206284964581585">Zaenkrat skrij</translation>
 <translation id="121201262018556460">Poskusili ste dostopati do domene <ph name="DOMAIN" />, vendar ima strežnik potrdilo s šibkim ključem. Napadalec je morda dešifriral zasebni ključ in strežnik morda ni tisti, ki ste ga pričakovali (morda komunicirate z napadalcem).</translation>
 <translation id="1212527389003717329">Prenos se je začel. Če si ga želite ogledati, pridržite |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">Cenovni okvir</translation>
 <translation id="1219129156119358924">Varnost sistema</translation>
 <translation id="1222060260947439312">Desni pladenj</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -141,6 +139,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1247030632403369975">Aluminum</translation>
 <translation id="1252209483516427155">Zunanja oblačila</translation>
 <translation id="1253096324252841344">Plačajte s storitvijo <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
+<translation id="1253846494229886276">Shranjevanje posnetka zaslona</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinhronizirano)</translation>
 <translation id="1255086252236620440">Mešalniki hrane</translation>
 <translation id="1256368399071562588">&lt;p&gt;Če poskušate obiskati spletno mesto in se ne odpre, napako najprej poskusite odpraviti s tem postopkom za odpravljanje težav:&lt;/p&gt;
@@ -352,7 +351,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1617276713587758852">Križanci (CUV)</translation>
 <translation id="1619007254056372606">Upravljanje podatkov spletnih mest v napravi</translation>
 <translation id="1620510694547887537">Kamera</translation>
-<translation id="162285686621567578">To spletno mesto je blokiral starš</translation>
 <translation id="1622966923835127638">Poslovne finance</translation>
 <translation id="1623104350909869708">Tej strani prepreči, da bi ustvarila dodatna pogovorna okna</translation>
 <translation id="1633137413609266904">{0,plural, =1{Odpiranje te datoteke blokira skrbniški pravilnik.}one{Odpiranje # datoteke blokira skrbniški pravilnik.}two{Odpiranje # datotek blokira skrbniški pravilnik.}few{Odpiranje # datotek blokira skrbniški pravilnik.}other{Odpiranje # datotek blokira skrbniški pravilnik.}}</translation>
@@ -737,7 +735,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2328955282645810595">Gradbena in električna orodja</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, poteče <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Pisanje življenjepisov</translation>
-<translation id="2337776048981813397">Cenovni okvir za vse možnosti</translation>
 <translation id="2337852623177822836">Nastavitev nadzira vaš skrbnik</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> želi izvesti seznanitev</translation>
 <translation id="2346319942568447007">Slika, ki ste jo kopirali</translation>
@@ -1029,7 +1026,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2930577230479659665">Obrezovanje po vsakem izvodu</translation>
 <translation id="2933624813161016821">Embossing Foil</translation>
 <translation id="2938225289965773019">Odpiranje povezav za <ph name="PROTOCOL" /></translation>
-<translation id="2941112035454246133">Nizka</translation>
 <translation id="2941878205777356567">Kuverta 9 x 12 palcev</translation>
 <translation id="2941952326391522266">Strežniku ni uspelo dokazati, da je res <ph name="DOMAIN" />; njegovo varnostno potrdilo je od <ph name="DOMAIN2" />. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="2942492342931589800">Neformalno</translation>
@@ -1211,7 +1207,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Vnesite <ph name="NUMBER_OF_DIGITS" />-mestno kodo za preverjanje</translation>
 <translation id="3272643614306383237">Manj kot 1 MB. Nekatera spletna mesta se bodo ob naslednjem obisku morda počasneje naložila.</translation>
-<translation id="327346289570683313">Cenovni okvir</translation>
 <translation id="3273738040255912340">Skrbnik lahko na daljavo spreminja vaš profil in brskalnik, analizira podatke o brskalniku prek poročanja in izvaja druga potrebna opravila. Dejavnost v tej napravi morda tudi upravljajo zunaj Chromiuma. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Pravilnik skrbnika ne priporoča odpiranja te datoteke tukaj: <ph name="DESTINATION_NAME" />.}one{Pravilnik skrbnika ne priporoča odpiranja teh datotek tukaj: <ph name="DESTINATION_NAME" />.}two{Pravilnik skrbnika ne priporoča odpiranja teh datotek tukaj: <ph name="DESTINATION_NAME" />.}few{Pravilnik skrbnika ne priporoča odpiranja teh datotek tukaj: <ph name="DESTINATION_NAME" />.}other{Pravilnik skrbnika ne priporoča odpiranja teh datotek tukaj: <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="3282085321714087552">Vaša organizacija, <ph name="ENROLLMENT_DOMAIN" />, je poslala nekatere podatke, kot so nastavitve ali pravilniki, na ta spletna mesta.</translation>
@@ -1700,6 +1695,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4177501066905053472">Teme oglasov</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Prekliči spremljanje cene</translation>
+<translation id="4190446002599583608">Iskanje po zgodovini, ki uporablja umetno inteligenco</translation>
 <translation id="4191334393248735295">Dolžina</translation>
 <translation id="4195459680867822611">Gumb za ogled nasvetov za Chrome, aktivirajte, če želite izvedeti več o funkcijah Chroma</translation>
 <translation id="4195643157523330669">Odpri v novem zavihku</translation>
@@ -2141,6 +2137,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5019952743397118625">Pravilnik <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> je nastavljen. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ne bo nadziral razpoložljivosti razvijalskega načina na strani z razširitvami.</translation>
 <translation id="5021557570875267742">Spremljanje cen v Chromu</translation>
 <translation id="5023310440958281426">Preverite skrbnikove pravilnike</translation>
+<translation id="5024171724744627792">Plačujte hitreje, če je kartica shranjena. Podatki o kartici so šifrirani v računu Google.</translation>
 <translation id="5030338702439866405">Izdajatelj</translation>
 <translation id="503069730517007720">Korensko potrdilo za programsko opremo »<ph name="SOFTWARE_NAME" />« je obvezno, vendar ni nameščeno. Skrbnik za IT lahko za odpravo te težave upošteva navodila za konfiguracijo za programsko opremo »<ph name="SOFTWARE_NAME" />«. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google Prevajalnik – vizitka</translation>
@@ -3329,6 +3326,7 @@ Dodatne podrobnosti:
 <translation id="7311244614769792472">Ni rezultatov</translation>
 <translation id="7311837626618954149">Chromium spletnim mestom onemogoči uporabo piškotkov tretjih oseb za vaše sledenje med brskanjem.</translation>
 <translation id="7313107491291103073">Vaša organizacija je označila to spletno mesto, ker morda krši pravilnik.</translation>
+<translation id="7316521168101843192">Shranjevanje datoteke v storitvi Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Pomoč pri povezavi</translation>
 <translation id="7323804146520582233">Skrij razdelek »<ph name="SECTION" />«</translation>
@@ -3632,6 +3630,7 @@ Dodatne podrobnosti:
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Želite odstraniti predlog obrazca iz Chroma?</translation>
 <translation id="781440967107097262">Želite odložišče deliti z drugimi?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Paper (Plain)</translation>
 <translation id="7815407501681723534">Za »<ph name="SEARCH_STRING" />« je bilo najdenih toliko <ph name="SEARCH_RESULTS" />: <ph name="NUMBER_OF_RESULTS" />.</translation>
 <translation id="7822611063308883975">Prenosne konzole</translation>
@@ -3796,6 +3795,7 @@ Dodatne podrobnosti:
 <translation id="8148608574971654810">Različica dokumenta PDF:</translation>
 <translation id="8149426793427495338">Računalnik je preklopil v stanje pripravljenosti.</translation>
 <translation id="8150722005171944719">Datoteke na <ph name="URL" /> ni mogoče prebrati. Morda je odstranjena, premaknjena ali pa dostop preprečujejo dovoljenja za datoteke.</translation>
+<translation id="8151185429379586178">Orodja za razvijalce</translation>
 <translation id="8153865548451212769">{0,plural, =1{Pravilnik skrbnika ne priporoča prenosa te datoteke sem: <ph name="DESTINATION_NAME" />.}one{Pravilnik skrbnika ne priporoča prenosa teh datotek sem: <ph name="DESTINATION_NAME" />.}two{Pravilnik skrbnika ne priporoča prenosa teh datotek sem: <ph name="DESTINATION_NAME" />.}few{Pravilnik skrbnika ne priporoča prenosa teh datotek sem: <ph name="DESTINATION_NAME" />.}other{Pravilnik skrbnika ne priporoča prenosa teh datotek sem: <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="81563721597823545">Oprema za hokej</translation>
 <translation id="8161095570253161196">Nadaljuj brskanje</translation>

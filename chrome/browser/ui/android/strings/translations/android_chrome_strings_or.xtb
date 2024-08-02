@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">ଏହି ଡିଭାଇସରେ ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="1129510026454351943">ବିବରଣୀ: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">ଇନକଗ୍ନିଟୋ ମୋଡ ଆପଣଙ୍କ ଡିଭାଇସ ବ୍ୟବହାର କରୁଥିବା ଅନ୍ୟମାନଙ୍କଠାରୁ ଆପଣଙ୍କ ବ୍ରାଉଜିଂକୁ ପ୍ରାଇଭେଟ ରଖେ</translation>
+<translation id="1138458427267715730">ସମଗ୍ର ୱେବରେ ଯେ କୌଣସି ସାଇଟରେ ମୂଲ୍ୟ ହ୍ରାସ ହେଲେ ଆଲର୍ଟ ପାଆନ୍ତୁ</translation>
 <translation id="1142732900304639782">ଏହି ସାଇଟଗୁଡ଼ିକର ଅନୁବାଦ କରିବାକୁ ଅଫର୍ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="1145536944570833626">ବିଦ୍ୟମାନ ଥିବା ଡାଟାକୁ ଡିଲିଟ୍ କରନ୍ତୁ।</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeରେ ଖୋଲିବ। ଜାରି ରଖି, ଆପଣ <ph name="BEGIN_LINK1" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />Google Chrome ଏବଂ ChromeOSର ଅତିରିକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK2" />ରେ ସମ୍ମତ ହୁଅନ୍ତି।</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">କାର୍ଯ୍ୟକଳାପ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="1355088659320425659">ଇତିହାସ ଏବଂ ଟାବଗୁଡ଼ିକ</translation>
 <translation id="1360432990279830238">ସିଙ୍କ ସାଇନ୍‌ ଆଉଟ୍‍ ଏବଂ ବନ୍ଦ କରିବେ?</translation>
+<translation id="1363028406613469049">ଟ୍ରାକ୍‌ କରନ୍ତୁ</translation>
 <translation id="1366525380420346469">ଯେତେବେଳେ ଏହା ଚାଲୁ ଥାଏ</translation>
 <translation id="1373696734384179344">ଚୟନ କରାଯାଇଥିବା ବିଷୟବସ୍ତୁ ଡାଉନ୍‌ଲୋଡ୍ କରିବା ପାଇଁ ପର୍ଯ୍ୟାପ୍ତ ମେମୋରୀ ନାହିଁ।</translation>
 <translation id="1376578503827013741">ଗଣନା ହେଉଛି…</translation>
@@ -292,6 +294,7 @@
 <translation id="2435457462613246316">ପାସୱାର୍ଡ ଦେଖାନ୍ତୁ</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" />ର ପ୍ରିଭ୍ୟୁ</translation>
 <translation id="2450083983707403292">ଆପଣ କ’ଣ ପୁଣି <ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍‌ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
+<translation id="2451607499823206582">ଟ୍ରାକ କରାଯାଉଛି</translation>
 <translation id="2453860139492968684">ସମାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="2461822463642141190">ବର୍ତ୍ତମାନର</translation>
 <translation id="2468444275314013497">ଆପଣଙ୍କ ବ୍ରାଉଜର ଠିକ ଲାଗୁଛି</translation>
@@ -1041,7 +1044,6 @@
 <translation id="6040939430773295212">ପୁନରାବୃତ୍ତି ହେଉଛି</translation>
 <translation id="604124094241169006">ସ୍ୱଚାଳିତ</translation>
 <translation id="6042308850641462728">ଅଧିକ</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{1 ସାଇଟ ପାଇଁ ଅନୁମତିଗୁଡ଼ିକର ସମୀକ୍ଷା କରାଯାଇଛି}other{{NUM_SITES} ସାଇଟ ପାଇଁ ଅନୁମତିଗୁଡ଼ିକର ସମୀକ୍ଷା କରାଯାଇଛି}}</translation>
 <translation id="604996488070107836">ଏକ ଅଜଣା ତ୍ରୁଟି ଯୋଗୁଁ <ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍ ହୋଇପାରିଲା ନାହିଁ।</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">ଏଠାରେ ଆପଣଙ୍କ ଷ୍ଟୋରୀ ଏବଂ କାର୍ଯ୍ୟକଳାପ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
@@ -1682,7 +1684,6 @@
 <translation id="8865415417596392024">ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chrome ଡାଟା</translation>
 <translation id="8898822736010347272">ନୂଆ ବିପଦଗୁଡ଼ିକୁ ଖୋଜି ପାଇବାରେ ଏବଂ ୱେବରେ ସମସ୍ତଙ୍କୁ ସୁରକ୍ଷା ଦେବାରେ ସାହାଯ୍ୟ କରିବାକୁ, ଆପଣ ଭିଜିଟ୍ କରୁଥିବା କିଛି ୱେବପୃଷ୍ଠାର URLଗୁଡ଼ିକ, ସୀମିତ ସିଷ୍ଟମ୍ ସୂଚନା ଏବଂ କିଛି ୱେବପୃଷ୍ଠାର ବିଷୟବସ୍ତୁ Googleକୁ ପଠାଏ।</translation>
 <translation id="8909135823018751308">ସେୟାର୍ କରନ୍ତୁ…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{1 ସାଇଟ ପାଇଁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ}other{{NUM_SITES} ସାଇଟ ପାଇଁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ}}</translation>
 <translation id="8921980840204105660">ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରୁ ଆପଣଙ୍କର ବୁକମାର୍କଗୁଡ଼ିକ ପାଇବାକୁ ସିଙ୍କ କରନ୍ତୁ</translation>
 <translation id="8922289737868596582">ସେଗୁଡ଼ିକୁ ଅଫ୍‌ଲାଇନ୍‌ରେ ବ୍ୟବହାର କରିବାକୁ ’ଅଧିକ ବିକଳ୍ପଗୁଡ଼ିକ’ ବଟନ୍‌ରୁ ପୃଷ୍ଠାଗୁଡ଼ିକ ଡାଉନ୍‌ଲୋଡ୍‌ କରନ୍ତୁ</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>

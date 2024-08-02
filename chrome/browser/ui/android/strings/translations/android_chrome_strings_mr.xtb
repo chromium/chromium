@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">या डिव्हाइसवरील खाती व्यवस्थापित करा</translation>
 <translation id="1129510026454351943">तपशील: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">गुप्त मोड हा तुमचे डिव्हाइस वापरणाऱ्या इतरांपासून तुमचे ब्राउझिंग खाजगी ठेवतो</translation>
+<translation id="1138458427267715730">संपूर्ण वेबवरील कोणत्याही साइटवर किंमत कमी झाल्यावर सूचना मिळवा</translation>
 <translation id="1142732900304639782">या साइटचे भाषांतर करणे ऑफर करू नका</translation>
 <translation id="1145536944570833626">विद्यमान डेटा हटवा.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> हे Chrome मध्ये उघडेल. पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व ChromeOS च्या अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">अ‍ॅक्टिव्हिटी व्यवस्थापित करा</translation>
 <translation id="1355088659320425659">इतिहास आणि टॅब</translation>
 <translation id="1360432990279830238">साइन आउट करून सिंक बंद करायचे आहे का?</translation>
+<translation id="1363028406613469049">ट्रॅक</translation>
 <translation id="1366525380420346469">सुरू असताना</translation>
 <translation id="1373696734384179344">निवडलेला आशय डाउनलोड करण्यासाठी अपुरी मेमरी.</translation>
 <translation id="1376578503827013741">गणना करत आहे...</translation>
@@ -292,6 +294,7 @@
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> चे पूर्वावलोकन</translation>
 <translation id="2450083983707403292">तुम्हाला <ph name="FILE_NAME" /> चे डाउनलोड पुन्हा सुरू करायचे आहे का?</translation>
+<translation id="2451607499823206582">ट्रॅक करणे</translation>
 <translation id="2453860139492968684">समाप्त</translation>
 <translation id="2461822463642141190">सद्य</translation>
 <translation id="2468444275314013497">तुमचा ब्राउझर सुरक्षित आहे</translation>
@@ -1041,7 +1044,6 @@
 <translation id="6040939430773295212">पुनरावृत्ती</translation>
 <translation id="604124094241169006">स्वयंचलित</translation>
 <translation id="6042308850641462728">अधिक</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{१ साइटसाठी परवानग्यांचे पुनरावलोकन केले}other{{NUM_SITES} साइटसाठी परवानग्यांचे पुनरावलोकन केले}}</translation>
 <translation id="604996488070107836">अज्ञात एररमुळे <ph name="FILE_NAME" /> डाउनलोड करणे अयशस्वी झाले.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">तुमच्या स्टोरी आणि अ‍ॅक्टिव्हिटी येथे नियंत्रित करा</translation>
@@ -1682,7 +1684,6 @@
 <translation id="8865415417596392024">तुमच्या खात्यामधील Chrome डेटा</translation>
 <translation id="8898822736010347272">नवीन धोके शोधण्यात आणि वेबवरील प्रत्येकाचे संरक्षण करण्यात मदत करण्यासाठी, तुम्ही भेट देत असलेल्या काही पेजच्या URL, मर्यादित सिस्टम माहिती आणि काही पेज आशय Google ला पाठवते.</translation>
 <translation id="8909135823018751308">शेअर करा...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{१ साइटसाठी सूचनांना अनुमती नाही}other{{NUM_SITES} साइटसाठी सूचनांना अनुमती नाही}}</translation>
 <translation id="8921980840204105660">तुमच्या इतर डिव्हाइसवरून तुमचे बुकमार्क मिळवण्यासाठी सिंक करा</translation>
 <translation id="8922289737868596582">पेज ऑफलाइन वापरता येण्यासाठी ती अधिक पर्यायांमधून डाउनलोड करा</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>

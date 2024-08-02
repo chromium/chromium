@@ -179,7 +179,6 @@
 <translation id="1827738518074806965">చిత్రకళా గ్యాలరీ</translation>
 <translation id="1836553715834333258">సిస్టమ్ రంగు</translation>
 <translation id="183675228220305365">రియలిస్ట్</translation>
-<translation id="1837537071599385610">ప్రాంప్టింగ్ గైడ్</translation>
 <translation id="1838374766361614909">శోధనను తీసివేయండి</translation>
 <translation id="1840474674287087346">డెస్క్‌టాప్ రంగు</translation>
 <translation id="184095011128924488">సృజనాత్మకంగా ఉంది</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Googleకు చెందిన AI టెక్నాలజీలు ఇటీవల క్రియేట్ చేసిన బ్యాక్‌గ్రౌండ్‌లు</translation>
 <translation id="2783010256799387990">ఉత్తీర్ణత సాధించాయి</translation>
 <translation id="2786429550992142861">లినెన్</translation>
+<translation id="2787237339470862294">ఈ సమయంలో ఈ భాషకు సపోర్ట్ లేదు</translation>
 <translation id="2787435249130282949">కీబోర్డ్ బ్రైట్‌నెస్ మెరుగ్గా ఉంది</translation>
 <translation id="2805756323405976993">యాప్స్</translation>
 <translation id="28232023175184696">నెట్‌వర్క్‌కు కనెక్ట్ చేయడం సాధ్యపడదు. మళ్లీ ట్రై చేయడానికి క్లిక్ చేయండి.</translation>
@@ -673,6 +673,7 @@
 <translation id="458794348635939462">హోస్ట్‌లను పరిష్కరించడంలో విఫలమైంది</translation>
 <translation id="4593212453765072419">ప్రాక్సీ ప్రామాణీకరణ అవసరం</translation>
 <translation id="4594021849294327751">టైప్ చేసిన మాటల ఫైల్‌ను క్రియేట్ చేయండి</translation>
+<translation id="4607282946861182308">దీని ఇమేజ్‌లను క్రియేట్ చేయడం సాధ్యం కాదు. మరొక ప్రాంప్ట్‌ను ట్రై చేయండి.</translation>
 <translation id="4609350030397390689">కీబోర్డ్ బ్రైట్‌నెస్‌ను తగ్గించండి</translation>
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />లో <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />. ప్రింట్ టాస్క్‌ను రద్దు చేయడానికి ఎంటర్ నొక్కండి.</translation>
 <translation id="463791356324567266">స్కానింగ్ రద్దు అవుతోంది...</translation>

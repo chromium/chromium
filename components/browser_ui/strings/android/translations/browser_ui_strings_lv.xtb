@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL ir saīsināts</translation>
 <translation id="1448064542941920355">Tuvināt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> vietne}zero{<ph name="SITE_COUNT" /> vietņu}one{<ph name="SITE_COUNT" /> vietne}other{<ph name="SITE_COUNT" /> vietnes}}</translation>
+<translation id="1500473259453106018">Paslēpt kartīti “Cenu kritums cilnēs”</translation>
 <translation id="1510341833810331442">Vietnēm nav atļauts saglabāt datus jūsu ierīcē</translation>
 <translation id="1547123415014299762">Trešo pušu sīkfaili ir atļauti</translation>
 <translation id="1568470248891039841">Jūsu apmeklētajās vietnēs var būt iegults citu vietņu saturs, piemēram, attēli, reklāmas un teksts. Šīs citas vietnes var lūgt atļauju izmantot par jums saglabāto informāciju, kamēr pārlūkojat vietni. <ph name="BEGIN_LINK" />Uzziniet vairāk par iegultu saturu<ph name="END_LINK" />.</translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">Mikrofons</translation>
 <translation id="3232293466644486101">Dzēst pārlūkošanas datus…</translation>
 <translation id="3242646949159196181">Kad šis slēdzis ir ieslēgts, vietnēs var atskaņot skaņu. Kad šis slēdzis ir izslēgts, vietnēs nevar atskaņot skaņu.</translation>
+<translation id="3273479183583863618">Cenu kritums cilnēs</translation>
 <translation id="3277252321222022663">Atļaut vietnēm piekļūt sensoriem (ieteicams)</translation>
 <translation id="3285500645985761267">Atļaut saistīto vietņu īpašniekiem skatīt jūsu darbības grupā</translation>
 <translation id="3295019059349372795">11. nodaļa: Oza zemes brīnumainā Smaragda pilsēta</translation>
@@ -359,6 +361,7 @@
 <translation id="6818926723028410516">Vienumu atlase</translation>
 <translation id="6840760312327750441">Lai sagrupētu cilnes, pieskarieties cilnei un turiet to. Pēc tam velciet to uz citas cilnes.</translation>
 <translation id="6864395892908308021">Šī ierīce nevar lasīt NFC</translation>
+<translation id="6870169401250095575">Paslēpt drošības pārbaudes kartīti</translation>
 <translation id="6912998170423641340">Bloķēt vietņu piekļuvi teksta un attēlu lasīšanai no starpliktuves</translation>
 <translation id="6945221475159498467">Atlasīt</translation>
 <translation id="6950072572526089586">Apmeklētā vietne var saglabāt informāciju par jūsu veiktajām darbībām, lai nodrošinātu pienācīgu tās darbību, piemēram, pierakstīšanos vietnē vai iepirkumu grozā ievietoto preču saglabāšanu. Bieži vien vietnes šo informāciju jūsu ierīcē saglabā īslaicīgi.</translation>
@@ -426,6 +429,7 @@
 <translation id="7986741934819883144">Kontaktpersonas atlase</translation>
 <translation id="7990211076305263060">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izmantot jūsu mikrofonu. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot mikrofonu.</translation>
 <translation id="8007176423574883786">Izslēgts šai ierīcei</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Paslēpt kartīti “Turpināt šajā cilnē”}zero{Paslēpt kartīti “Turpināt šajās cilnēs”}one{Paslēpt kartīti “Turpināt šajās cilnēs”}other{Paslēpt kartīti “Turpināt šajās cilnēs”}}</translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
 <translation id="8042586301629853791">Kārtot pēc:</translation>
 <translation id="8067883171444229417">Atskaņot videoklipu</translation>

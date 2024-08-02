@@ -976,6 +976,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> sehingga penuh</translation>
 <translation id="4538824937723742295">Ambil tangkapan skrin bagi skrin penuh</translation>
 <translation id="4539127209940689201">Cetak halaman semasa</translation>
+<translation id="4541505619120536051">Sentiasa dibuka</translation>
 <translation id="4541706525461326392">Mengalih keluar profil. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="4544483149666270818">Pilih tetingkap untuk dirakam</translation>
 <translation id="4545950850562423083">Simpan halaman semasa sebagai penanda halaman</translation>
@@ -1361,6 +1362,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5819918159912280082">Chromebook anda dimulakan semula secara tiba-tiba. Buka tetingkap dan apl anda sebelum ini.</translation>
 <translation id="5823239091726045201">Google Task pada web</translation>
 <translation id="5825969630400862129">Tetapan peranti yang bersambung</translation>
+<translation id="5830180081891717894"><ph name="WINDOWS" /> lagi</translation>
 <translation id="5837036133683224804">Hentikan <ph name="ROUTE_TITLE" /> pada <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Akses runut seterusnya</translation>
 <translation id="5842553299352339114">Tempat liputan <ph name="DEVICE_NAME" /> dihidupkan, tiada peranti disambungkan</translation>
@@ -1488,6 +1490,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sedang menggunakan kamera dan mikrofon anda pada masa ini</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Butang Atas</translation>
+<translation id="6240821072888636753">Tanya setiap kali</translation>
 <translation id="6247728804802644171">Buka pemberitahuan</translation>
 <translation id="6249795363855770621">Tidak dapat ditandai sebagai selesai. Cuba lagi apabila anda kembali dalam talian.</translation>
 <translation id="6254629735336163724">Dikunci mendatar</translation>
@@ -1831,6 +1834,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7557816257942363084"><ph name="APP_NAME" /> sedang menggunakan Mikrofon anda pada masa ini</translation>
 <translation id="7561982940498449837">Tutup menu</translation>
 <translation id="7564874036684306347">Tindakan memindahkan tetingkap ke desktop lain boleh menyebabkan gelagat yang tidak dijangka. Pemberitahuan, tetingkap dan dialog yang seterusnya mungkin dipisahkan antara desktop.</translation>
+<translation id="7568790562536448087">Mengemas kini</translation>
 <translation id="7569509451529460200">Braille dan ChromeVox didayakan</translation>
 <translation id="7569886975397378678">Menolak penyediaan pemaparan pemberitahuan dan apl terbaharu telefon anda</translation>
 <translation id="7571361473021531288">Bateri <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> baki</translation>
@@ -1960,7 +1964,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7963992254934562106">Daripada <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Pilih folder...</translation>
 <translation id="7973756967040444713">Tutup bar alat</translation>
-<translation id="797485111629834774">Tandai tugasan sebagai selesai: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Hidupkan atau matikan penggadang skrin penuh</translation>
 <translation id="7977927628060636163">Mencari rangkaian mudah alih...</translation>
 <translation id="7982789257301363584">Rangkaian</translation>
@@ -2066,6 +2069,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> ini dan telefon anda akan disambungkan secara automatik</translation>
 <translation id="8380784334203145311">Selamat malam,</translation>
 <translation id="8382715499079447151">Perlindungan paparan</translation>
+<translation id="8383614331548401927">Ringkasan Alu-aluan</translation>
 <translation id="8388750414311082622">Meja terakhir tidak boleh dialih keluar.</translation>
 <translation id="8394567579869570560">Ibu/bapa anda mengunci peranti ini</translation>
 <translation id="8401850874595457088">Masukkan menu bahasa</translation>

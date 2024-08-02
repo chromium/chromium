@@ -21,6 +21,8 @@
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> கணக்கின் மூலம் Gmail, YouTube போன்ற Google சேவைகளில் உள்நுழையும்போது Chromiumமிலும் அதே கணக்கின் மூலம் தானாக நீங்கள் உள்நுழையலாம்.</translation>
 <translation id="1290883685122687410">அமைவுப் பிழை: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">உங்கள் புதிய Chromium சுயவிவரத்தை அமைத்திடுங்கள்</translation>
+<translation id="1324107359134968521">புளூடூத் சாதனங்களைக் கண்டறிய 
+ Chromiumமிற்கு புளூடூத் அணுகல் தேவை. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Chromium தரவையும் நீக்கு (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Chromium இல் உள்நுழைந்துள்ளீர்கள்!</translation>
 <translation id="1478370723027452770">Chrome for Testing தொடர்பான உதவியைப் பெறுங்கள்</translation>
@@ -59,6 +61,7 @@
 <translation id="1951406923938785464">இந்த ஃபைல் வகை பொதுவாகப் பதிவிறக்கப்படுவதில்லை என்பதுடன் ஆபத்தானதாகவும் இருக்கலாம் என்பதால் இந்தப் பதிவிறக்கத்தை Chromium தடுத்துள்ளது</translation>
 <translation id="1953553007165777902">பதிவிறக்குகிறது... <ph name="MINUTE" /> நிமிடங்கள் மீதமுள்ளன</translation>
 <translation id="1966382378801805537">இயல்புநிலை உலாவியைக் கண்டறியவோ அமைக்கவோ Chromium ஆல் முடியவில்லை</translation>
+<translation id="1990262977744080398">சில ஃபைல்களைத் தடுத்து, புதிய பக்கத்தில் Chromium ஏன் திறக்கிறது என்று தெரிந்துகொள்ளுங்கள்.</translation>
 <translation id="2008474315282236005">வெளியேறினால், இந்தச் சாதனத்திலிருந்து ஓர் உருப்படி நீக்கப்படும். பின்னர் தரவை மீட்டமைக்க, Chromium இல் <ph name="USER_EMAIL" /> எனும் முகவரியின் மூலம் உள்நுழையவும்.</translation>
 <translation id="2018879682492276940">நிறுவ முடியவில்லை. மீண்டும் முயலவும்.</translation>
 <translation id="2020032459870799438">தரவு மீறல்கள் மற்றும் பிற பாதுகாப்புச் சிக்கல்களிலிருந்து உங்கள் மற்ற கடவுச்சொற்கள் பாதுகாப்பாக இருக்கின்றனவா என்பதைச் சரிபார்க்க <ph name="BEGIN_LINK" />Chromiumமில் உள்நுழையுங்கள்<ph name="END_LINK" />.</translation>

@@ -23,6 +23,7 @@
 <translation id="126567311906253476">Калі вы ўваходзіце ў сэрвісы Google (напрыклад, Gmail ці YouTube) праз уліковы запіс <ph name="USER_EMAIL" />, то можаце аўтаматычна ўвайсці ў Chromium пад тым жа ўліковым запісам</translation>
 <translation id="1290883685122687410">Памылка наладжвання: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Наладзьце свой профіль Chromium</translation>
+<translation id="1324107359134968521">Браўзеру Chromium неабходны доступ да Bluetooth для пошуку прылад з Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Выдаліць таксама даныя з Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Вы ўвайшлі ў Chromium!</translation>
 <translation id="1478370723027452770">Атрымаць даведку па Chrome for Testing</translation>
@@ -61,6 +62,7 @@
 <translation id="1951406923938785464">Браўзер Chromium заблакіраваў спампоўку, бо гэты тып файлаў спампоўваюць рэдка і ён можа быць небяспечным</translation>
 <translation id="1953553007165777902">Ідзе спампоўванне… Застаецца <ph name="MINUTE" /> хв</translation>
 <translation id="1966382378801805537">Chromium не можа вызначыць або задаць стандартны браўзер</translation>
+<translation id="1990262977744080398">Даведацца, чаму Chromium блакіруе некаторыя файлы, інфармацыя адкрыецца ў новай укладцы</translation>
 <translation id="2008474315282236005">Будзе выдалены 1 элемент з гэтай прылады. Каб потым атрымаць свае даныя, увайдзіце ва ўліковы запіс Chromium як <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Збой усталявання. Паўтарыце спробу.</translation>
 <translation id="2020032459870799438">Каб праверыць, ці не пагражае вашым іншым паролям раскрыццё ў выніку ўцечкі даных або іншых праблем з бяспекай, <ph name="BEGIN_LINK" />увайдзіце ў Chromium<ph name="END_LINK" />.</translation>

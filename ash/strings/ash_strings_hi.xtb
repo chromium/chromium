@@ -114,7 +114,7 @@
 <translation id="1346748346194534595">दाएं</translation>
 <translation id="1350494136075914725">कॉल जारी है · टैब पर स्विच करें</translation>
 <translation id="1351937230027495976">मेन्यू छोटा करें</translation>
-<translation id="1352537790882153971">तार वाले हेडफ़ोन से, माइक्रोफ़ोन की आवाज़ मॉनिटर की जा सकती है. रोकने के लिए पैनल बंद करें.</translation>
+<translation id="1352537790882153971">तार वाले हेडफ़ोन से, माइक्रोफ़ोन की आवाज़ मॉनिटर की जा सकती है. मॉनिटरिंग रोकने के लिए पैनल बंद करे.</translation>
 <translation id="1360220746312242196">किसी पेज को खोजते समय, खोज के लिए पिछले मिलान पर जाएं</translation>
 <translation id="1360788414852622716">प्रोफ़ाइल बंद की जा रही है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="1364382257761975320">Chromebook अनलॉक करने के लिए, अपना फ़िंगरप्रिंट इस्तेमाल करें</translation>
@@ -136,6 +136,7 @@
 <translation id="1420408895951708260">नाइट लाइट को टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">हां</translation>
 <translation id="1435537621343861112">बोलकर लिखवाने की सुविधा शुरू नहीं की जा सकती. आपका माइक बंद है.</translation>
+<translation id="1445031758921122223">फ़ेस कंट्रोल से जुड़ी फ़ाइलें डाउनलोड हो गईं</translation>
 <translation id="1447907279406111651">इवेंट चल रहा है · <ph name="END_TIME" /> बजे खत्म होगा</translation>
 <translation id="1448963928642384376">आपके डिवाइस के हॉटस्पॉट</translation>
 <translation id="1455242230282523554">भाषा सेटिंग दिखाएं</translation>
@@ -976,6 +977,7 @@
 <translation id="453661520163887813">पूरी तरह चार्ज होने में <ph name="TIME" /></translation>
 <translation id="4538824937723742295">फ़ुल स्क्रीन का स्क्रीनशॉट लें</translation>
 <translation id="4539127209940689201">मौजूदा पेज को प्रिंट करें</translation>
+<translation id="4541505619120536051">हमेशा खोलें</translation>
 <translation id="4541706525461326392">प्रोफ़ाइल हटाई जा रही है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="4544483149666270818">रिकॉर्ड करने के लिए विंडो चुनें</translation>
 <translation id="4545950850562423083">मौजूदा पेज को बुकमार्क के तौर पर सेव करें</translation>
@@ -1224,6 +1226,7 @@
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> की बोली पहचानने वाली फ़ाइलों का कुछ हिस्सा डाउनलोड हो गया है</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> इस टैब पर जाएं</translation>
 <translation id="5364693579536176785">स्टोरेज के लिए बची जगह</translation>
+<translation id="5369573834963677938">फ़ेस कंट्रोल की सुविधा, इस डिवाइस का इस्तेमाल करने वाले अन्य लोगों के लिए उपलब्ध होगी</translation>
 <translation id="5369717264580061086">Files ऐप्लिकेशन में फ़ाइल की झलक देखने के लिए</translation>
 <translation id="5377367976106153749">क्या आपको कैमरे का ऐक्सेस देना है?</translation>
 <translation id="5379115545237091094">कई बार कोशिश की जा चुकी है</translation>
@@ -1360,6 +1363,7 @@
 <translation id="5819918159912280082">आपका Chromebook अनचाहे तरीके से रीस्टार्ट हो गया था. अपनी पिछली विंडो और ऐप्लिकेशन खोलें.</translation>
 <translation id="5823239091726045201">वेब पर Google Tasks</translation>
 <translation id="5825969630400862129">जुड़े हुए डिवाइस की सेटिंग</translation>
+<translation id="5830180081891717894"><ph name="WINDOWS" /> और</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> पर <ph name="ROUTE_TITLE" /> बंद करें</translation>
 <translation id="5841296711770970362">अगले ट्रैक पर जाएं</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> का हॉटस्पॉट चालू है, लेकिन कोई डिवाइस कनेक्ट नहीं है</translation>
@@ -1413,6 +1417,7 @@
 <translation id="6020147141355393792">अपने फ़ोन की सूचनाओं और ऐप्लिकेशन को देखने की सुविधा सेट अप करें</translation>
 <translation id="6022924867608035986">खोज बॉक्स का लेख मिटाएं</translation>
 <translation id="602472752137106327">सभी डेस्क से विंडो देखें, रेडियो बटन चुना गया</translation>
+<translation id="6024768346262692989">फ़ेस कंट्रोल से जुड़ी फ़ाइलें डाउनलोड नहीं की जा सकीं</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, आपका एडमिन प्रबंधित करता है</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> को कोई इवेंट नहीं है. ब्राउज़र में Google Calendar खोलने के लिए, Enter दबाएं.</translation>
 <translation id="6030495522958826102">मेन्यू, स्क्रीन के सबसे नीचे बाएं कोने में चला गया है.</translation>
@@ -1486,6 +1491,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" />, फ़िलहाल आपके कैमरे और माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">टॉप बटन</translation>
+<translation id="6240821072888636753">हर बार पूछें</translation>
 <translation id="6247728804802644171">सूचनाएं खोलने के लिए</translation>
 <translation id="6249795363855770621">'पूरा हो गया' के तौर पर मार्क नहीं किया जा सका. ऑनलाइन होने पर फिर से कोशिश करें.</translation>
 <translation id="6254629735336163724">क्षैतिज पर लॉक किया गया</translation>
@@ -1829,6 +1835,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" />, फ़िलहाल आपके माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
 <translation id="7561982940498449837">मेन्यू बंद करें</translation>
 <translation id="7564874036684306347">विंडो को किसी दूसरे डेस्कटॉप पर ले जाने से अनचाहा बर्ताव हो सकता है. इसके बाद की सूचनाएं, विंडो और संवाद डेस्कटॉप के बीच बंट सकती हैं.</translation>
+<translation id="7568790562536448087">अपडेट कर रहा है</translation>
 <translation id="7569509451529460200">ब्रेल और ChromeVox सक्षम हैं</translation>
 <translation id="7569886975397378678">अपने फ़ोन की सूचनाओं और ऐप्लिकेशन को देखने की सुविधा सेट अप करने की प्रक्रिया रद्द करें</translation>
 <translation id="7571361473021531288"><ph name="BATTERY_PERCENTAGE" />% बैटरी बची है | <ph name="TIME" /> तक चलेगी</translation>
@@ -1958,7 +1965,6 @@
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> से</translation>
 <translation id="7968693143708939792">फ़ोल्डर को चुनें...</translation>
 <translation id="7973756967040444713">टूलबार बंद करें</translation>
-<translation id="797485111629834774">टास्क को 'पूरा हुआ' के तौर पर मार्क करें: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">फ़ुलस्क्रीन मोड में ज़ूम करने की सुविधा को चालू या बंद करने के लिए</translation>
 <translation id="7977927628060636163">मोबाइल नेटवर्क खोजे जा रहे हैं...</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
@@ -2064,6 +2070,7 @@
 <translation id="8375916635258623388">यह <ph name="DEVICE_NAME" /> और आपका फ़ोन, अपने आप कनेक्ट हो जाएंगे</translation>
 <translation id="8380784334203145311">गुड नाइट,</translation>
 <translation id="8382715499079447151">व्यूइंग प्रोटेक्शन</translation>
+<translation id="8383614331548401927">वेलकम रीकैप</translation>
 <translation id="8388750414311082622">आखिरी डेस्क को हटाया नहीं जा सकता.</translation>
 <translation id="8394567579869570560">आपके अभिभावक ने यह डिवाइस लॉक कर दिया है</translation>
 <translation id="8401850874595457088">भाषा का विकल्प चुनें</translation>

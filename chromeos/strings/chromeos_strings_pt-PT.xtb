@@ -179,7 +179,6 @@
 <translation id="1827738518074806965">Galeria de arte</translation>
 <translation id="1836553715834333258">Cor do sistema</translation>
 <translation id="183675228220305365">realista</translation>
-<translation id="1837537071599385610">Guia de comandos</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="1840474674287087346">Cor do ambiente de trabalho</translation>
 <translation id="184095011128924488">criativo</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Fundos recentes com tecnologia de IA da Google</translation>
 <translation id="2783010256799387990">APROVADO</translation>
 <translation id="2786429550992142861">linho</translation>
+<translation id="2787237339470862294">De momento, este idioma não é suportado</translation>
 <translation id="2787435249130282949">teclado mais claro</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Não é possível estabelecer ligação à Internet. Clique para tentar novamente.</translation>
@@ -673,6 +673,7 @@ Pode desativar esta funcionalidade em qualquer altura nas Definições.</transla
 <translation id="458794348635939462">Falha ao resolver todos os anfitriões.</translation>
 <translation id="4593212453765072419">Autenticação proxy necessária</translation>
 <translation id="4594021849294327751">Criar transcrição</translation>
+<translation id="4607282946861182308">Não é possível criar imagens disto. Experimente outro comando.</translation>
 <translation id="4609350030397390689">Diminuir o brilho do teclado</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prima Enter para cancelar a tarefa de impressão.</translation>
 <translation id="463791356324567266">A cancelar a digitalização…</translation>

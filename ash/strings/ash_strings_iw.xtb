@@ -136,6 +136,7 @@
 <translation id="1420408895951708260">הפעלה או כיבוי של תאורת הלילה. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">כן</translation>
 <translation id="1435537621343861112">לא ניתן להתחיל את ההכתבה. המיקרופון כבוי.</translation>
+<translation id="1445031758921122223">הורדת הקבצים של שליטה באמצעות תנועות הפנים הסתיימה</translation>
 <translation id="1447907279406111651">עכשיו ⋅ יסתיים בשעה <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">‏הנקודות לשיתוף אינטרנט (Hotspot) במכשיר שלך</translation>
 <translation id="1455242230282523554">הצגת הגדרות השפה</translation>
@@ -975,6 +976,7 @@
 <translation id="453661520163887813"><ph name="TIME" /> עד למילוי</translation>
 <translation id="4538824937723742295">לצילום מסך מלא</translation>
 <translation id="4539127209940689201">הדפסת הדף הנוכחי</translation>
+<translation id="4541505619120536051">תמיד לפתוח</translation>
 <translation id="4541706525461326392">הסרת הפרופיל מתבצעת. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="4544483149666270818">יש לבחור חלון להקלטה</translation>
 <translation id="4545950850562423083">שמירת הדף הנוכחי כסימנייה</translation>
@@ -1223,6 +1225,7 @@
 <translation id="5361524080961918551">קובצי הדיבור ב<ph name="LANGUAGE" /> הורדו חלקית</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> מעבר לכרטיסייה הזו</translation>
 <translation id="5364693579536176785">שטח אחסון</translation>
+<translation id="5369573834963677938">התכונה 'שליטה באמצעות תנועות הפנים' תהיה זמינה למשתמשים אחרים במכשיר</translation>
 <translation id="5369717264580061086">תצוגה מקדימה של קובץ באפליקציה 'קבצים'</translation>
 <translation id="5377367976106153749">להפעיל את הגישה למצלמה?</translation>
 <translation id="5379115545237091094">יותר מדי ניסיונות</translation>
@@ -1412,6 +1415,7 @@
 <translation id="6020147141355393792">הגדרת ההצגה של ההתראות והאפליקציות שבטלפון</translation>
 <translation id="6022924867608035986">ניקוי הטקסט בתיבת החיפוש</translation>
 <translation id="602472752137106327">הצגת חלונות מכל שולחנות העבודה הווירטואליים, לחצן הבחירה נבחר</translation>
+<translation id="6024768346262692989">אי אפשר להוריד את הקבצים של שליטה באמצעות תנועות הפנים</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
 <translation id="6027518778343897451">‏אין אירועים בתאריך <ph name="CURRENT_MONTH_DAY" />. צריך להקיש על Enter כדי לפתוח את יומן Google בדפדפן.</translation>
 <translation id="6030495522958826102">התפריט הועבר לפינה הימנית התחתונה של המסך.</translation>
@@ -1485,6 +1489,7 @@
 <translation id="6232891689835436217">המצלמה והמיקרופון בשימוש כרגע על ידי <ph name="APP_NAME" /></translation>
 <translation id="6237231532760393653">‎1X‎</translation>
 <translation id="6240603910551255087">הלחצן העליון</translation>
+<translation id="6240821072888636753">יש לשאול בכל פעם</translation>
 <translation id="6247728804802644171">פתיחת ההתראות</translation>
 <translation id="6249795363855770621">לא ניתן לסמן כ'הושלמה'. אפשר לנסות שוב כשיהיה חיבור לאינטרנט.</translation>
 <translation id="6254629735336163724">נעול במצב אופקי</translation>
@@ -1830,6 +1835,7 @@
 <translation id="7564874036684306347">העברת חלונות לשולחן עבודה אחר עלולה לגרום להתנהגות בלתי צפויה.
 
 ייתכן שהודעות, חלונות ותיבות דו-שיח יתפצלו בהמשך בין שולחנות עבודה.</translation>
+<translation id="7568790562536448087">העדכון מתבצע</translation>
 <translation id="7569509451529460200">‏כתב ברייל ו-ChromeVox מופעלים</translation>
 <translation id="7569886975397378678">ביטול ההגדרה של הצגת ההתראות והאפליקציות שבטלפון</translation>
 <translation id="7571361473021531288">סוללה: %<ph name="BATTERY_PERCENTAGE" /> | הזמן שנותר לשימוש: <ph name="TIME" /></translation>
@@ -1933,7 +1939,7 @@
 <translation id="7899977217122813285">במצב ריכוז, ההתראות מושתקות עד <ph name="TIME" /></translation>
 <translation id="7901190436359881020">החלפה בין החלונות</translation>
 <translation id="7901405293566323524">מרכז טלפוני</translation>
-<translation id="7902625623987030061">יש לגעת בחיישן טביעות האצבע</translation>
+<translation id="7902625623987030061">צריך לגעת בחיישן טביעות האצבע</translation>
 <translation id="7904094684485781019">מנהל החשבון הזה אסר על כניסה עם מספר חשבונות.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> מכשירים מחוברים</translation>
@@ -1959,7 +1965,6 @@
 <translation id="7963992254934562106">מ-<ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">בחירת תיקייה…</translation>
 <translation id="7973756967040444713">סגירה של סרגל הכלים</translation>
-<translation id="797485111629834774">סימון כמשימה שבוצעה: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">הפעלה או השבתה של הזכוכית המגדלת במסך מלא</translation>
 <translation id="7977927628060636163">המערכת מחפשת רשתות סלולריות...</translation>
 <translation id="7982789257301363584">רשת</translation>

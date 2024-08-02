@@ -41,6 +41,7 @@
 <translation id="2801787514987684416">要查看商店資訊嗎？</translation>
 <translation id="2928243913527329289">Google | 關於這間商店</translation>
 <translation id="2977480621796371840">從群組中移除</translation>
+<translation id="29919168204617356">閒置分頁將自動關閉。你隨時可以前往「歷史記錄」查看這些分頁。</translation>
 <translation id="3008554597174452548">停止追蹤產品</translation>
 <translation id="3026391124054406831">建立群組，方便整理分頁。</translation>
 <translation id="3051031624272448591">你隨時可以從歷史記錄重新開啟這些分頁</translation>
@@ -51,6 +52,7 @@
 <translation id="3322827343001922122">開啟分頁群組「<ph name="TITLE_OF_GROUP" />」的動作選單</translation>
 <translation id="3328308545011660196">建議：似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要將這些分頁加入群組嗎？</translation>
 <translation id="3547352561153509682">這項操作會將群組從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除</translation>
+<translation id="3613492231657284463">隱藏「閒置分頁」對話方塊</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">分享功能表預覽畫面縮圖。</translation>
 <translation id="381219490185664296">要將所有分頁移出群組嗎？</translation>
@@ -137,6 +139,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> 則來自 Google 的評論}other{<ph name="REVIEWS_COUNT_MANY" /> 則來自 Google 的評論}}</translation>
 <translation id="7559245342362162951">以全螢幕格狀檢視顯示群組的分頁</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7688386659311034820">「閒置分頁」對話方塊</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{分享 <ph name="TABS_COUNT_ONE" /> 個選取的分頁}other{分享 <ph name="TABS_COUNT_MANY" /> 個選取的分頁}}</translation>
 <translation id="7773714564112603605">移除分頁並刪除群組</translation>
 <translation id="7792771145871471484">查看建議項目。</translation>
@@ -159,6 +162,7 @@
 <translation id="8398929769197326728">新資料夾 - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8631711675211020168">所有使用者的「<ph name="GROUP_NAME" />」分頁群組存取權會立即遭到撤銷，且該群組將從所有裝置中刪除</translation>
+<translation id="8633025649649592204">近期活動</translation>
 <translation id="870736955561925754">要關閉分頁並刪除群組嗎？</translation>
 <translation id="8714939927607906138">較低價格</translation>
 <translation id="8730621377337864115">完成</translation>

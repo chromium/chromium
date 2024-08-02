@@ -21,6 +21,7 @@
 <translation id="126567311906253476">Gmail या YouTube जैसी Google की सेवाओं में <ph name="USER_EMAIL" /> से साइन इन करने पर, Chromium में इसी खाते से अपने-आप साइन इन किया जा सकता है</translation>
 <translation id="1290883685122687410">सेटअप करने में गड़बड़ी हुई: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">क्रोमियम पर अपनी नई प्रोफ़ाइल सेट अप करें</translation>
+<translation id="1324107359134968521">Chromium को ब्लूटूथ का ऐक्सेस चाहिए, ताकि वह ब्लूटूथ डिवाइस ढूंढ पाए. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Chromium (<ph name="URL" />) से भी डेटा मिटाएं</translation>
 <translation id="1414495520565016063">आप क्रोमियम में प्रवेश हैं!</translation>
 <translation id="1478370723027452770">Chrome for Testing से जुड़ी सहायता पाएं</translation>
@@ -59,6 +60,7 @@
 <translation id="1951406923938785464">Chromium ने इस डाउनलोड को ब्लॉक किया है, क्योंकि इस तरह की फ़ाइल आम तौर पर डाउनलोड नहीं की जाती और यह खतरनाक हो सकती है</translation>
 <translation id="1953553007165777902">डाउनलोड हो रहा है... <ph name="MINUTE" /> मिनट बचे हैं</translation>
 <translation id="1966382378801805537">क्रोमियम, डिफ़ॉल्ट ब्राउज़र को तय या सेट नहीं कर सकता</translation>
+<translation id="1990262977744080398">जानें कि Chromium कुछ फ़ाइलों को ब्लॉक क्यों करता है, यह जानकारी नए टैब में खुलती है</translation>
 <translation id="2008474315282236005">ऐसा करने से इस डिवाइस से 1 आइटम मिट जाएगा. बाद में अपना डेटा पाने के लिए, Chromium में <ph name="USER_EMAIL" /> के रूप में साइन इन करें.</translation>
 <translation id="2018879682492276940">इंस्टॉल नहीं हो सका. कृपया फिर से कोशिश करें.</translation>
 <translation id="2020032459870799438">डेटा के गलत इस्तेमाल और सुरक्षा की अन्य समस्याओं से आपके दूसरे पासवर्ड सुरक्षित हैं या नहीं, इसकी जांच करने के लिए, <ph name="BEGIN_LINK" />क्रोमियम में साइन इन करें<ph name="END_LINK" />.</translation>

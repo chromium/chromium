@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">‏הלחצן לניהול סיסמאות, מפעילים אותו כדי להציג ולנהל את הסיסמאות בהגדרות Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">צריך לבחור את ההרשאה של <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">טווח מחירים לכל האפשרויות</translation>
 <translation id="1113869188872983271">&amp;ביטול של שינוי סדר</translation>
 <translation id="1118429183611783760">שואבי אבק וחומרי ניקיון לרצפות</translation>
 <translation id="1122714970786750095">אלקטרוניקה וחשמל</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">להסתיר בינתיים</translation>
 <translation id="121201262018556460">ניסית להגיע אל <ph name="DOMAIN" />, אך השרת הציג אישור המכיל מפתח חלש. ייתכן שתוקף פרץ את המפתח הפרטי, והשרת אינו השרת שרצית (ייתכן שניסית לתקשר עם תוקף).</translation>
 <translation id="1212527389003717329">ההורדה התחילה. כדי לראות אותה, יש ללחוץ לחיצה ארוכה על |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">טווח מחירים</translation>
 <translation id="1219129156119358924">אבטחת מערכת</translation>
 <translation id="1222060260947439312">המגש הימני</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -141,6 +139,7 @@
 <translation id="1247030632403369975">Aluminum</translation>
 <translation id="1252209483516427155">ביגוד עליון</translation>
 <translation id="1253096324252841344">תשלום באמצעות <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
+<translation id="1253846494229886276">צילום המסך נשמר</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (מסונכרנים)</translation>
 <translation id="1255086252236620440">מיקסרים</translation>
 <translation id="1256368399071562588">‏&lt;p&gt;אם ניסית להיכנס לאתר והוא לא נפתח, קודם יש לנסות לפתור את הבעיה בעזרת השלבים הבאים:&lt;/p&gt;
@@ -352,7 +351,6 @@
 <translation id="1617276713587758852">רכבי קרוסאובר</translation>
 <translation id="1619007254056372606">ניהול נתונים מאתרים במכשיר</translation>
 <translation id="1620510694547887537">מצלמה</translation>
-<translation id="162285686621567578">האתר הזה נחסם על ידי ההורה שלך.</translation>
 <translation id="1622966923835127638">פיננסים עסקיים</translation>
 <translation id="1623104350909869708">אני רוצה למנוע מהדף זה ליצור תיבות דו-שיח נוספות</translation>
 <translation id="1633137413609266904">{0,plural, =1{בהתאם למדיניות האדמין, פתיחת הקובץ הזה נחסמה}one{בהתאם למדיניות האדמין, הפתיחה של # קבצים נחסמה}two{בהתאם למדיניות האדמין, הפתיחה של # קבצים נחסמה}other{בהתאם למדיניות האדמין, הפתיחה של # קבצים נחסמה}}</translation>
@@ -737,7 +735,6 @@
 <translation id="2328955282645810595">כלי בנייה וכלי עבודה ממונעים</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, בתוקף עד <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">חזרה לכתיבה</translation>
-<translation id="2337776048981813397">טווח מחירים לכל האפשרויות</translation>
 <translation id="2337852623177822836">ההגדרה נשלטת על-ידי מנהל המערכת</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> רוצה לבצע התאמה עם</translation>
 <translation id="2346319942568447007">תמונה שהעתקת</translation>
@@ -1029,7 +1026,6 @@
 <translation id="2930577230479659665">חיתוך אחרי כל עותק</translation>
 <translation id="2933624813161016821">Embossing Foil</translation>
 <translation id="2938225289965773019">לפתוח קישורי <ph name="PROTOCOL" /></translation>
-<translation id="2941112035454246133">נמוכה</translation>
 <translation id="2941878205777356567">‏מעטפה – 9x12 אינץ'</translation>
 <translation id="2941952326391522266">השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. אישור האבטחה שלו הוא מ-<ph name="DOMAIN2" />. ייתכן שהסיבה לכך היא תצורה שגויה או תוקף המיירט את החיבור שלך.</translation>
 <translation id="2942492342931589800">לא רשמי</translation>
@@ -1211,7 +1207,6 @@
 <translation id="3272091146646336650">‏12x19.2 אינץ' (Super B)</translation>
 <translation id="3272112314896217187">כאן מזינים את קוד האימות (<ph name="NUMBER_OF_DIGITS" /> ספרות)</translation>
 <translation id="3272643614306383237">‏פחות מ-1MB. בביקור הבא שלך, יכול להיות שאתרים מסוימים ייטענו לאט יותר.</translation>
-<translation id="327346289570683313">טווח מחירים</translation>
 <translation id="3273738040255912340">‏לאדמין יש אפשרות לבצע מרחוק שינויים בפרופיל ובדפדפן, לנתח מידע על הדפדפן באמצעות דוחות ולבצע משימות חשובות אחרות. אפשר לנהל את הפעילות במכשיר הזה גם מחוץ ל-Chromium. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ לפתוח את הקובץ הזה ב<ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ לפתוח את הקבצים האלה ב<ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ לפתוח את הקבצים האלה ב<ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ לפתוח את הקבצים האלה ב<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">הארגון שלך, <ph name="ENROLLMENT_DOMAIN" />, שלח מספר פרטים, כמו הגדרות ומדיניות, לאתרים הבאים.</translation>
@@ -1700,6 +1695,7 @@
 <translation id="4177501066905053472">נושאים של מודעות</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ביטול המעקב אחר המחירים</translation>
+<translation id="4190446002599583608">‏חיפוש בהיסטוריה, באמצעות AI</translation>
 <translation id="4191334393248735295">אורך</translation>
 <translation id="4195459680867822611">‏הלחצן להצגת טיפים ל-Chrome, מפעילים אותו כדי לקבל מידע על התכונות של Chrome</translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
@@ -2145,6 +2141,7 @@ Del</translation>
 <translation id="5019952743397118625">המדיניות <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> הוגדרה. ל-<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> לא תהיה שליטה על הזמינות של מצב הפיתוח בדף התוספים.</translation>
 <translation id="5021557570875267742">‏מעקב אחר מחירים באמצעות Chrome</translation>
 <translation id="5023310440958281426">יש לבדוק את תקנון מנהל המערכת שלך</translation>
+<translation id="5024171724744627792">‏אפשר לשלם מהר יותר עם כרטיס שנשמר. פרטי הכרטיס מוצפנים בחשבון שלך ב-Google.</translation>
 <translation id="5030338702439866405">הונפק על ידי</translation>
 <translation id="503069730517007720">‏יש צורך באישור שורש בשביל "<ph name="SOFTWARE_NAME" />", אבל לא מותקן אישור כזה. על מנהל ה-IT לבדוק את הוראות התצורה של "<ph name="SOFTWARE_NAME" />" כדי לפתור את הבעיה. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">‏מידע על Google Translate</translation>
@@ -3334,6 +3331,7 @@ Del</translation>
 <translation id="7311244614769792472">לא נמצאו תוצאות</translation>
 <translation id="7311837626618954149">‏Chromium מונע מאתרים לעשות שימוש בקובצי Cookie של צד שלישי כדי לעקוב אחריך במהלך הגלישה.</translation>
 <translation id="7313107491291103073">הארגון שלך סימן את האתר הזה כי הוא עלול להפר מדיניות.</translation>
+<translation id="7316521168101843192">‏הקובץ נשמר ב-OneDrive של מיקרוסופט</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">עזרה בחיבור</translation>
 <translation id="7323804146520582233">הסתרת הקטע "<ph name="SECTION" />"</translation>
@@ -3637,6 +3635,7 @@ Del</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">‏האם להסיר מ-Chrome הצעות בשביל טפסים?</translation>
 <translation id="781440967107097262">לשתף את הלוח?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Paper (Plain)</translation>
 <translation id="7815407501681723534">נמצאו <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> בנושא '<ph name="SEARCH_STRING" />'</translation>
 <translation id="7822611063308883975">קונסולות משחקים ניידות</translation>
@@ -3801,6 +3800,7 @@ Del</translation>
 <translation id="8148608574971654810">‏גרסת PDF:</translation>
 <translation id="8149426793427495338">המחשב עבר למצב שינה.</translation>
 <translation id="8150722005171944719">הקובץ הנמצא ב-<ph name="URL" /> לא ניתן לקריאה. ייתכן שהקובץ הוסר או הועבר, או שהרשאות הקובץ מונעות גישה אליו.</translation>
+<translation id="8151185429379586178">כלים למפתחים</translation>
 <translation id="8153865548451212769">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ להוריד את הקובץ הזה אל <ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ להוריד את הקבצים האלה אל <ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ להוריד את הקבצים האלה אל <ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ להוריד את הקבצים האלה אל <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">ציוד להוקי</translation>
 <translation id="8161095570253161196">המשך הגלישה</translation>

@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Управувајте со сметките на уредов</translation>
 <translation id="1129510026454351943">Детали: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Режимот „Инкогнито“ ја штити приватноста на вашето прелистување од другите што го користат уредот</translation>
+<translation id="1138458427267715730">Добивајте известувања кога ќе се намали цената на кој било сајт на интернет</translation>
 <translation id="1142732900304639782">Не нуди превод за овие сајтови</translation>
 <translation id="1145536944570833626">Избришете ги постоечките податоци.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ќе се отвори во Chrome. Ако продолжите, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Управувајте со активноста</translation>
 <translation id="1355088659320425659">Картички и историја</translation>
 <translation id="1360432990279830238">Одјавете се и исклучете синхронизација?</translation>
+<translation id="1363028406613469049">Песна</translation>
 <translation id="1366525380420346469">Кога е вклучено</translation>
 <translation id="1373696734384179344">Недоволно меморија за да се преземе избраната содржина.</translation>
 <translation id="1376578503827013741">Се пресметува…</translation>
@@ -292,6 +294,7 @@
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
 <translation id="2439153523196674349">Преглед на <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Дали сакате да започнете со преземање на <ph name="FILE_NAME" /> одново?</translation>
+<translation id="2451607499823206582">Се следи</translation>
 <translation id="2453860139492968684">Заврши</translation>
 <translation id="2461822463642141190">Моментално</translation>
 <translation id="2468444275314013497">Вашиот прелистувач изгледа безбедно</translation>
@@ -1041,7 +1044,6 @@
 <translation id="6040939430773295212">Повторливо</translation>
 <translation id="604124094241169006">Автоматски</translation>
 <translation id="6042308850641462728">Повеќе</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Прегледани се дозволите за 1 сајт}one{Прегледани се дозволите за {NUM_SITES} сајт}other{Прегледани се дозволите за {NUM_SITES} сајта}}</translation>
 <translation id="604996488070107836">Преземањето на <ph name="FILE_NAME" /> не успеа поради непозната грешка.</translation>
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Контролирајте ги сториите и активноста тука</translation>
@@ -1682,7 +1684,6 @@
 <translation id="8865415417596392024">Податоци од Chrome во вашата сметка</translation>
 <translation id="8898822736010347272">Испраќа URL-адреси до Google од некои страници што ги посетувате, како и ограничени податоци за системот и некои содржини од страниците за да помогне да се откријат нови закани и да се заштитат сите на интернет.</translation>
 <translation id="8909135823018751308">Сподели…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Известувањата не се дозволени за 1 сајт}one{Известувањата не се дозволени за {NUM_SITES} сајт}other{Известувањата не се дозволени за {NUM_SITES} сајта}}</translation>
 <translation id="8921980840204105660">Синхронизирајте за да ги преземете обележувачите од вашите други уреди</translation>
 <translation id="8922289737868596582">Преземете ги страниците преку копчето „Повеќе опции“ за да ги користите офлајн</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>

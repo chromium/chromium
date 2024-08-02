@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">"Құпия сөздерді басқару" түймесі, Chrome параметрлерінде құпия сөздеріңізді көру және басқару үшін белсендіріңіз</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> үшін рұқсатты таңдаңыз</translation>
-<translation id="1112238992895762847">Барлық опцияға арналған бағалар ауқымы</translation>
 <translation id="1113869188872983271">&amp;Қайта ретке келтіру әрекетін болдырмау</translation>
 <translation id="1118429183611783760">Шаңсорғыштар және еденге күтім жасау</translation>
 <translation id="1122714970786750095">Электроника және электр</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">Әзірге жасыру</translation>
 <translation id="121201262018556460"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер кілті әлсіз сертификатты ұсынды. Қаскүнем жеке кілтті бұзып, басқа серверге кіріп жатқан болуыңыз мүмкін (қаскүнеммен байланысып жатқан болуыңыз мүмкін).</translation>
 <translation id="1212527389003717329">Жүктеп алу басталды. Оны көру үшін |<ph name="ACCELERATOR" />| түймесін басып тұрыңыз.</translation>
-<translation id="1214970845432250240">Бағалар ауқымы</translation>
 <translation id="1219129156119358924">Жүйе қауіпсіздігі</translation>
 <translation id="1222060260947439312">Оң жақ науа</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -353,7 +351,6 @@
 <translation id="1617276713587758852">Кроссоверлер</translation>
 <translation id="1619007254056372606">Құрылғыдағы сайт деректерін реттеу</translation>
 <translation id="1620510694547887537">Камера</translation>
-<translation id="162285686621567578">Бұл веб-сайтты сіздің ата-анаңыз блоктады.</translation>
 <translation id="1622966923835127638">Бизнесті қаржыландыру</translation>
 <translation id="1623104350909869708">Бұл беттің қосымша диалогтік терезелерді жасауына жол бермеу</translation>
 <translation id="1633137413609266904">{0,plural, =1{Әкімші саясатында бұл файлды ашуға тыйым салынған}other{Әкімші саясатында # файлды ашуға тыйым салынған}}</translation>
@@ -738,7 +735,6 @@
 <translation id="2328955282645810595">Құрылыс және электр құралдары</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, жарамдылық мерзімі: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Жазуды жалғастыру</translation>
-<translation id="2337776048981813397">Барлық опцияға арналған бағалар ауқымы</translation>
 <translation id="2337852623177822836">Әкімші басқаратын параметр</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> сайты жұптасқысы келеді</translation>
 <translation id="2346319942568447007">Көшірілген сурет</translation>
@@ -1030,7 +1026,6 @@
 <translation id="2930577230479659665">Әр көшірмеден кейін кесу</translation>
 <translation id="2933624813161016821">Бедерлі фольга</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> сілтемелерін ашу</translation>
-<translation id="2941112035454246133">Төмен</translation>
 <translation id="2941878205777356567">229 x 305 мм хатқалта</translation>
 <translation id="2941952326391522266">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификаты <ph name="DOMAIN2" /> доменінен алынған. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
 <translation id="2942492342931589800">Қарапайым</translation>
@@ -1211,7 +1206,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> цифрлық растау кодын енгізіңіз</translation>
 <translation id="3272643614306383237">1 МБ-тан аз. Келесі жолы кейбір сайттар баяу жүктелуі мүмкін.</translation>
-<translation id="327346289570683313">Бағалар ауқымы</translation>
 <translation id="3273738040255912340">Әкімші профиль мен браузерге қашықтан өзгеріс енгізе алады, есеп беру арқылы браузер туралы ақпаратты талдай алады және басқа қажетті тапсырмаларды орындай алады. Бұл құрылғыдағы әрекеттерді Chromium браузерінен тыс та басқаруға болады. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Әкімші саясаты бойынша бұл файлды <ph name="DESTINATION_NAME" /> ішінде ашпаған дұрыс.}other{Әкімші саясаты бойынша бұл файлдарды <ph name="DESTINATION_NAME" /> ішінде ашпаған дұрыс.}}</translation>
 <translation id="3282085321714087552">Ұйымыңыз (<ph name="ENROLLMENT_DOMAIN" />) келесі веб-сайттарға бірқатар ақпарат (мысалы, параметрлер немесе саясаттар) жіберді.</translation>
@@ -1700,6 +1694,7 @@
 <translation id="4177501066905053472">Жарнама тақырыптары</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Баға бақылауды тоқтату</translation>
+<translation id="4190446002599583608">Тарихтан жасанды интеллектінің көмегімен іздеу</translation>
 <translation id="4191334393248735295">Ұзындық</translation>
 <translation id="4195459680867822611">"Chrome кеңестерін көру" түймесі, Chrome функциялары туралы білу үшін белсендіріңіз</translation>
 <translation id="4195643157523330669">Жаңа қойындыда ашу</translation>
@@ -3634,6 +3629,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome браузерінен форма ұсынысын өшіру қажет пе?</translation>
 <translation id="781440967107097262">Буфер бөлісілсін бе?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Қағаз (қарапайым)</translation>
 <translation id="7815407501681723534">"<ph name="SEARCH_STRING" />" үшін <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> табылды</translation>
 <translation id="7822611063308883975">Тасымалданатын ойын консольдері</translation>
@@ -3798,6 +3794,7 @@
 <translation id="8148608574971654810">PDF нұсқасы:</translation>
 <translation id="8149426793427495338">Компьютеріңіз ұйқы күйіне өтті.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> сілтемесіндегі файл оқылмайды. Ол жойылған, көшірілген болуы немесе файл рұқсаттары кедергі болуы мүмкін.</translation>
+<translation id="8151185429379586178">Әзірлеуші құралдары</translation>
 <translation id="8153865548451212769">{0,plural, =1{Әкімші саясатына сәйкес бұл файлды <ph name="DESTINATION_NAME" /> қалтасына жүктеп алу ұсынылмайды.}other{Әкімші саясатына сәйкес бұл файлдарды <ph name="DESTINATION_NAME" /> қалтасына жүктеп алу ұсынылмайды.}}</translation>
 <translation id="81563721597823545">Хоккей жабдығы</translation>
 <translation id="8161095570253161196">Шолуды жалғастыру</translation>
@@ -3970,6 +3967,7 @@
 <translation id="84561192812921051">Әкімші профиль мен браузерге қашықтан өзгеріс енгізе алады, есеп беру арқылы браузер туралы ақпаратты талдай алады және басқа қажетті тапсырмаларды орындай алады. Бұл құрылғыдағы әрекеттерді Chrome браузерінен тыс та басқаруға болады.  <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Белгісіз</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8458605637341729751">Жалғастырсаңыз, алаяқтықтың алдын алу мақсатында құрылғыңыздың нақты орны жиналып, шот иесіне жіберілетініне келісесіз. Chrome-дағы Pix қызметін өшіру үшін <ph name="BEGIN_LINK1" />төлем параметрлеріне<ph name="END_LINK1" /> өтіңіз.</translation>
 <translation id="8460854335417802511">Қосу</translation>
 <translation id="8461694314515752532">Синхрондалған деректерді өзіңіздің синхрондау құпия фразаңызбен шифрлау</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 несие картасы}other{# несие картасы}}</translation>

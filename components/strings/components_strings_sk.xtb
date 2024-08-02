@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Tlačidlo Spravovať heslá, ktorého aktivovaním môžete zobraziť a spravovať heslá v nastaveniach Chromu</translation>
 <translation id="1108464073729874771">A3×4</translation>
 <translation id="1110994991967754504">Vyberte povolenie pre <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">Cenový rozsah pre všetky možnosti</translation>
 <translation id="1113869188872983271">&amp;Vrátiť späť zmenu poradia</translation>
 <translation id="1118429183611783760">Vysávanie a čistenie podláh</translation>
 <translation id="1122714970786750095">Elektronika a elektrotechnika</translation>
@@ -122,7 +121,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1209206284964581585">Skryť</translation>
 <translation id="121201262018556460">Pokúsili ste sa o prístup na stránky <ph name="DOMAIN" />, server však predložil certifikát obsahujúci slabý kľúč. Útočník mohol tento súkromný kľúč prelomiť a môže ísť o iný server, než ste očakávali (môžete komunikovať s útočníkom).</translation>
 <translation id="1212527389003717329">Sťahovanie sa začalo. Ak ho chcete zobraziť, pridržte |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">Cenový rozsah</translation>
 <translation id="1219129156119358924">Zabezpečenie systému</translation>
 <translation id="1222060260947439312">Pravý zásobník</translation>
 <translation id="1224330468394120478">A3×6</translation>
@@ -353,7 +351,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1617276713587758852">Autá typu crossover</translation>
 <translation id="1619007254056372606">Spravovať dáta webov v zariadení</translation>
 <translation id="1620510694547887537">Kamera</translation>
-<translation id="162285686621567578">Tento web zablokoval tvoj rodič.</translation>
 <translation id="1622966923835127638">Obchodné financie</translation>
 <translation id="1623104350909869708">Zakázať tejto stránke otvárať ďalšie dialógové okná</translation>
 <translation id="1633137413609266904">{0,plural, =1{Otvorenie tohto súboru je blokované pravidlami správcu}few{Otvorenie # súborov je blokované pravidlami správcu}many{Opening # files is blocked by administrator policy}other{Otvorenie # súborov je blokované pravidlami správcu}}</translation>
@@ -738,7 +735,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2328955282645810595">Stavebné a elektrické náradie</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, platí do <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Pokračujte v písaní</translation>
-<translation id="2337776048981813397">Cenový rozsah pre všetky možnosti</translation>
 <translation id="2337852623177822836">Nastavenie ovládané správcom</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> žiada o spárovanie</translation>
 <translation id="2346319942568447007">Skopírovaný obrázok</translation>
@@ -1030,7 +1026,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2930577230479659665">Orezať po každej kópii</translation>
 <translation id="2933624813161016821">Razbová fólia</translation>
 <translation id="2938225289965773019">Otvárať odkazy protokolu <ph name="PROTOCOL" /></translation>
-<translation id="2941112035454246133">Nízka</translation>
 <translation id="2941878205777356567">Obálka 228,6 mm × 304,8 mm</translation>
 <translation id="2941952326391522266">Server nedokáže overiť, či ide o doménu <ph name="DOMAIN" />, jej bezpečnostný certifikát pochádza z domény <ph name="DOMAIN2" />. Môže to byť spôsobené nesprávnou konfiguráciou alebo tým, že vaše pripojenie zachytil útočník.</translation>
 <translation id="2942492342931589800">Jednoduché</translation>
@@ -1209,7 +1204,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Zadajte <ph name="NUMBER_OF_DIGITS" />‑miestny overovací kód</translation>
 <translation id="3272643614306383237">Menej ako 1 MB. Pri vašej ďalšej návšteve sa môžu niektoré weby načítať pomalšie.</translation>
-<translation id="327346289570683313">Cenový rozsah</translation>
 <translation id="3273738040255912340">Správca môže vzdialene vykonávať zmeny v profile a prehliadači, analyzovať informácie o prehliadači na základe reportov a vykonávať ďalšie potrebné úlohy. Aktivita v tomto zariadení môže byť spravovaná aj mimo prehliadača Chromium. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Pravidlá správcu otvorenie tohto súboru v službe <ph name="DESTINATION_NAME" /> neodporúčajú}few{Pravidlá správcu otvorenie týchto súborov v službe <ph name="DESTINATION_NAME" /> neodporúčajú}many{Administrator policy doesn’t recommend opening these files in <ph name="DESTINATION_NAME" />}other{Pravidlá správcu otvorenie týchto súborov v službe <ph name="DESTINATION_NAME" /> neodporúčajú}}</translation>
 <translation id="3282085321714087552">Vaša organizácia, <ph name="ENROLLMENT_DOMAIN" />, odoslala na nasledujúce weby nejaké informácie, napríklad nastavenia alebo pravidlá.</translation>
@@ -1697,6 +1691,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4177501066905053472">Témy reklám</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Prestať sledovať cenu</translation>
+<translation id="4190446002599583608">Vyhľadávanie v histórii používajúce umelú inteligenciu</translation>
 <translation id="4191334393248735295">Dĺžka</translation>
 <translation id="4195459680867822611">Tlačidlo Zobraziť tipy Chromu, ktorého aktivovaním zobrazíte informácie o funkciách Chromu</translation>
 <translation id="4195643157523330669">Otvoriť na novej karte</translation>
@@ -3630,6 +3625,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chcete návrh odstrániť z prehliadača Chrome?</translation>
 <translation id="781440967107097262">Chcete zdieľať schránku?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Papier (kancelársky)</translation>
 <translation id="7815407501681723534">Nájdené výsledky (počet: <ph name="NUMBER_OF_RESULTS" />) pre dopyt „<ph name="SEARCH_STRING" />“: <ph name="SEARCH_RESULTS" /></translation>
 <translation id="7822611063308883975">Prenosné herné konzoly</translation>
@@ -3794,6 +3790,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8148608574971654810">Verzia PDF:</translation>
 <translation id="8149426793427495338">Váš počítač prešiel do režimu spánku.</translation>
 <translation id="8150722005171944719">Súbor na adrese <ph name="URL" /> nie je možné prečítať. Je možné, že bol odstránený, presunutý alebo môžu v prístupe brániť povolenia súboru.</translation>
+<translation id="8151185429379586178">Nástroje pre vývojárov</translation>
 <translation id="8153865548451212769">{0,plural, =1{Pravidlá správcu stiahnutie tohto súboru do úložiska <ph name="DESTINATION_NAME" /> neodporúčajú}few{Pravidlá správcu stiahnutie týchto súborov do úložiska <ph name="DESTINATION_NAME" /> neodporúčajú}many{Administrator policy doesn’t recommend downloading these files to <ph name="DESTINATION_NAME" />}other{Pravidlá správcu stiahnutie týchto súborov do úložiska <ph name="DESTINATION_NAME" /> neodporúčajú}}</translation>
 <translation id="81563721597823545">Hokejové vybavenie</translation>
 <translation id="8161095570253161196">Pokračovať v prehliadaní</translation>

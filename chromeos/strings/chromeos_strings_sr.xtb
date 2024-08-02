@@ -179,7 +179,6 @@
 <translation id="1827738518074806965">Ликовна галерија</translation>
 <translation id="1836553715834333258">Боја система</translation>
 <translation id="183675228220305365">реализам</translation>
-<translation id="1837537071599385610">Водич за упит</translation>
 <translation id="1838374766361614909">Обришите претрагу</translation>
 <translation id="1840474674287087346">Боја радне површине</translation>
 <translation id="184095011128924488">креативна</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Недавне позадине које омогућава Google вештачка интелигенција</translation>
 <translation id="2783010256799387990">ПРОШЛО</translation>
 <translation id="2786429550992142861">лана</translation>
+<translation id="2787237339470862294">Овај језик тренутно није подржан</translation>
 <translation id="2787435249130282949">светлија тастатура</translation>
 <translation id="2805756323405976993">Апликације</translation>
 <translation id="28232023175184696">Повезивање на интернет није успело. Кликните да бисте пробали поново.</translation>
@@ -673,6 +673,7 @@
 <translation id="458794348635939462">Разрешење свих хостова није успело</translation>
 <translation id="4593212453765072419">Потребна је потврда аутентичности проксија</translation>
 <translation id="4594021849294327751">Направи транскрипт</translation>
+<translation id="4607282946861182308">Не можемо да направимо слике на којима је ово. Пробајте са другим упитом.</translation>
 <translation id="4609350030397390689">Смањите осветљеност тастатуре</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> од <ph name="TOTAL_PAGE_NUMBER" />. Притисните тастер Enter да бисте отказали задатак штампања.</translation>
 <translation id="463791356324567266">Отказује се скенирање...</translation>
@@ -1365,6 +1366,7 @@
 <translation id="8208861521865154048">Погодности</translation>
 <translation id="8226628635270268143">Одаберите омиљене слике и албуме</translation>
 <translation id="8227119283605456246">Приложи датотеку</translation>
+<translation id="8227488649450500937">Пробајте неки од ових упита или погледајте <ph name="BEGIN_LINK_PROMPTING_GUIDE" />водич за упите<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Пинговање подразумеваног мрежног пролаза није успело</translation>
 <translation id="8238771987802558562">Одаберите назив приступне тачке</translation>
 <translation id="8246209727385807362">Непознат мобилни оператер</translation>

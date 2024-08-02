@@ -413,6 +413,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516416533263263796">फोकस सुरू आहे, १० मिनिटे शिल्लक आहेत</translation>
 <translation id="2516637483312286228">गेम नियंत्रणे संपादित करा</translation>
+<translation id="252054055865191167">मार्कर टूल</translation>
 <translation id="2526581474998477112">विंडो अनलॉक करा</translation>
 <translation id="2528111225373402384">हॉटस्पॉट सेटिंग्ज</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -975,6 +976,7 @@
 <translation id="453661520163887813">पूर्ण होण्यात <ph name="TIME" /></translation>
 <translation id="4538824937723742295">फुल स्क्रीन स्क्रीनशॉट घ्या</translation>
 <translation id="4539127209940689201">सध्याचे पेज प्रिंट करा</translation>
+<translation id="4541505619120536051">नेहमी उघडे</translation>
 <translation id="4541706525461326392">प्रोफाइल काढून टाकत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="4544483149666270818">रेकॉर्ड करण्यासाठी विंडो निवडा</translation>
 <translation id="4545950850562423083">सद्य पेज बुकमार्क म्हणून सेव्ह करा</translation>
@@ -1487,6 +1489,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" /> हे सध्या तुमचा कॅमेरा आणि मायक्रोफोन वापरत आहे</translation>
 <translation id="6237231532760393653">१X</translation>
 <translation id="6240603910551255087">सर्वात वरील बटण</translation>
+<translation id="6240821072888636753">प्रत्येक वेळी विचारा</translation>
 <translation id="6247728804802644171">सूचना उघडा</translation>
 <translation id="6249795363855770621">पूर्ण झाले म्हणून मार्क करता आले नाही. ऑनलाइन असताना पुन्हा प्रयत्न करा.</translation>
 <translation id="6254629735336163724">आडव्या दिशेने लॉक केले</translation>
@@ -1830,6 +1833,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> हे सध्या तुमचा मायक्रोफोन वापरत आहे</translation>
 <translation id="7561982940498449837">मेनू बंद करा</translation>
 <translation id="7564874036684306347">दुसऱ्या डेस्कटॉपवर विंडो हलवण्याने अनपेक्षित वर्तन घडू शकते. नंतर येणाऱ्या सूचना, विंडो आणि डायलॉग हे डेस्कटॉपच्या दरम्यान विभाजित केले जाऊ शकतात.</translation>
+<translation id="7568790562536448087">अपडेट करीत आहे</translation>
 <translation id="7569509451529460200">ब्रेल आणि ChromeVox सुरू केलेले आहेत</translation>
 <translation id="7569886975397378678">तुमच्या फोनमधील सूचना आणि अ‍ॅप्स पाहण्याचे सेट करणे डिसमिस करा</translation>
 <translation id="7571361473021531288">बॅटरी <ph name="BATTERY_PERCENTAGE" />% | बॅटरी शिल्लक आहे <ph name="TIME" /></translation>
@@ -1959,7 +1963,6 @@
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> कडून</translation>
 <translation id="7968693143708939792">फोल्डर निवडा…</translation>
 <translation id="7973756967040444713">टूलबार बंद करा</translation>
-<translation id="797485111629834774">टास्क पूर्ण झाली म्हणून मार्क करा: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">फुलस्क्रीन मॅग्निफायर सुरू किंवा बंद करा</translation>
 <translation id="7977927628060636163">मोबाइल नेटवर्क शोधत आहे...</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>

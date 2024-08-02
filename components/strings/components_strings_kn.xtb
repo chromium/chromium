@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ ಬಟನ್, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಮತ್ತು ನಿರ್ವಹಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> ಗಾಗಿ ಅನುಮತಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
-<translation id="1112238992895762847">ಎಲ್ಲಾ ಆಯ್ಕೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಬೆಲೆಯ ಶ್ರೇಣಿ</translation>
 <translation id="1113869188872983271">&amp;ಮರುಕ್ರಮಗೊಳಿಸುವುದನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="1118429183611783760">ವ್ಯಾಕ್ಯೂಮ್‌ಗಳು ಮತ್ತು ನೆಲದ ಆರೈಕೆ</translation>
 <translation id="1122714970786750095">ಎಲೆಕ್ಟ್ರಾನಿಕ್ಸ್ ಮತ್ತು ಎಲೆಕ್ಟ್ರಿಕಲ್</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">ಸದ್ಯಕ್ಕೆ ಮರೆಮಾಡಿ</translation>
 <translation id="121201262018556460">ನೀವು <ph name="DOMAIN" /> ಅನ್ನು ತಲುಪಲು ಪ್ರಯತ್ನಿಸಿದ್ದೀರಿ, ಆದರೆ ದುರ್ಬಲ ಕೀಲಿಯನ್ನು ಹೊಂದಿರುವ ಸರ್ವರ್ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಒದಗಿಸಿದೆ. ಆಕ್ರಮಣಕಾರರು ಖಾಸಗಿ ಕೀಲಿಯನ್ನು ಮುರಿದುಹಾಕಿರಬಹುದು, ಮತ್ತು ನೀವು ನಿರೀಕ್ಷಿಸಿದ ಸರ್ವರ್ ಅದಾಗಿರದೇ ಇರಬಹುದು. (ನೀವು ದಾಳಿಕೋರರೊಂದಿಗೆ ಸಂವಹನ ಮಾಡುತ್ತಿರಬಹುದು)</translation>
 <translation id="1212527389003717329">ಡೌನ್‌ಲೋಡ್ ಪ್ರಾರಂಭವಾಗಿದೆ. ಅದನ್ನು ನೋಡಲು, |<ph name="ACCELERATOR" />| ಅನ್ನು ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಿ.</translation>
-<translation id="1214970845432250240">ದರ ಶ್ರೇಣಿ</translation>
 <translation id="1219129156119358924">ಸಿಸ್ಟಂ ಭದ್ರತೆ</translation>
 <translation id="1222060260947439312">ಬಲಭಾಗದ ಟ್ರೇ</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -352,7 +350,6 @@
 <translation id="1617276713587758852">ಕ್ರಾಸ್‌ಓವರ್‌ಗಳು</translation>
 <translation id="1619007254056372606">ಸಾಧನದಲ್ಲಿರುವ ಸೈಟ್ ಡೇಟಾವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1620510694547887537">ಕ್ಯಾಮರಾ</translation>
-<translation id="162285686621567578">ಈ ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ನಿಮ್ಮ ಪೋಷಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ.</translation>
 <translation id="1622966923835127638">ವ್ಯವಹಾರ ಹಣಕಾಸು</translation>
 <translation id="1623104350909869708">ಹೆಚ್ಚುವರಿ ಸಂವಾದಗಳನ್ನು ರಚಿಸದಂತೆ ಈ ಪುಟವನ್ನು ತಡೆಯಿರಿ</translation>
 <translation id="1633137413609266904">{0,plural, =1{ನಿರ್ವಾಹಕರ ಕಾರ್ಯನೀತಿಯ ಪ್ರಕಾರ ಈ ಫೈಲ್ ಅನ್ನು ತೆರೆಯುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{ನಿರ್ವಾಹಕರ ಕಾರ್ಯನೀತಿಯ ಪ್ರಕಾರ # ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{ನಿರ್ವಾಹಕರ ಕಾರ್ಯನೀತಿಯ ಪ್ರಕಾರ # ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
@@ -737,7 +734,6 @@
 <translation id="2328955282645810595">ನಿರ್ಮಾಣ ಮತ್ತು ವಿದ್ಯುತ್ ಟೂಲ್‌ಗಳು</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> ದಿನಾಂಕದಂದು ಅವಧಿ ಮೀರುತ್ತದೆ</translation>
 <translation id="2337044517221264923">ಬರೆಯುವುದನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
-<translation id="2337776048981813397">ಎಲ್ಲಾ ಆಯ್ಕೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಬೆಲೆಯ ಶ್ರೇಣಿ</translation>
 <translation id="2337852623177822836">ನಿಮ್ಮ ನಿರ್ವಾಹಕದಿಂದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿಯಂತ್ರಿಸಲಾಗಿದೆ</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ಜೋಡಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="2346319942568447007">ನೀವು ನಕಲಿಸಿದ ಚಿತ್ರ</translation>
@@ -1030,7 +1026,6 @@
 <translation id="2930577230479659665">ಪ್ರತಿ ಮುದ್ರಣಪ್ರತಿಯ ನಂತರ ಟ್ರಿಮ್ ಮಾಡಿ</translation>
 <translation id="2933624813161016821">ಎಂಬಾಸಿಂಗ್ ಫಾಯಿಲ್</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
-<translation id="2941112035454246133">ಕಡಿಮೆ</translation>
 <translation id="2941878205777356567">ಎನ್ವಲಪ್ 9 x 12 ಇಂಚು</translation>
 <translation id="2941952326391522266">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವು <ph name="DOMAIN2" /> ದಿಂದ ಆಗಿದೆ. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
 <translation id="2942492342931589800">ಕ್ಯಾಶುವಲ್</translation>
@@ -1210,7 +1205,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" />-ಅಂಕಿಯ ಪರಿಶೀಲನೆ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="3272643614306383237">1 MB ಗಿಂತ ಕಡಿಮೆ. ನೀವು ಮುಂದಿನ ಬಾರಿ ಭೇಟಿ ನೀಡಿದಾಗ ಕೆಲವು ಸೈಟ್‌ಗಳು ನಿಧಾನವಾಗಿ ಲೋಡ್ ಆಗಬಹುದು.</translation>
-<translation id="327346289570683313">ದರ ಶ್ರೇಣಿ</translation>
 <translation id="3273738040255912340">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ದೂರದಿಂದಲೇ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಮತ್ತು ಬ್ರೌಸರ್‌ಗೆ ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡಬಹುದು, ವರದಿ ಮಾಡುವ ಮೂಲಕ ಬ್ರೌಸರ್ ಕುರಿತು ಮಾಹಿತಿಯನ್ನು ವಿಶ್ಲೇಷಿಸಬಹುದು ಮತ್ತು ಇತರ ಅಗತ್ಯ ಕಾರ್ಯಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು. ಈ ಸಾಧನದಲ್ಲಿನ ಚಟುವಟಿಕೆಯನ್ನು Chromium ನ ಹೊರಗೆ ಸಹ ನಿರ್ವಹಿಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{ನಿರ್ವಾಹಕರ ಕಾರ್ಯನೀತಿಯು <ph name="DESTINATION_NAME" /> ನಲ್ಲಿರುವ ಈ ಫೈಲ್ ಅನ್ನು ತೆರೆಯಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}one{ನಿರ್ವಾಹಕರ ಕಾರ್ಯನೀತಿಯು <ph name="DESTINATION_NAME" /> ನಲ್ಲಿರುವ ಈ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}other{ನಿರ್ವಾಹಕರ ಕಾರ್ಯನೀತಿಯು <ph name="DESTINATION_NAME" /> ನಲ್ಲಿರುವ ಈ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}}</translation>
 <translation id="3282085321714087552">ನಿಮ್ಮ ಸಂಸ್ಥೆ <ph name="ENROLLMENT_DOMAIN" />, ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಅಥವಾ ಕಾರ್ಯನೀತಿಗಳಂತಹ ಕೆಲವು ಮಾಹಿತಿಯನ್ನು ಈ ಕೆಳಗಿನ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಕಳುಹಿಸಿದೆ.</translation>
@@ -1698,6 +1692,7 @@
 <translation id="4177501066905053472">ಜಾಹೀರಾತು ವಿಷಯಗಳು</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">ಬೆಲೆ ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
+<translation id="4190446002599583608">ಇತಿಹಾಸ ಹುಡುಕಾಟ, AI ನಿಂದ ಚಾಲಿತವಾಗಿದೆ</translation>
 <translation id="4191334393248735295">ಉದ್ದ</translation>
 <translation id="4195459680867822611">Chrome ಸಲಹೆಗಳನ್ನು ನೋಡಿ ಬಟನ್, Chrome ಫೀಚರ್‌ಗಳ ಕುರಿತು ತಿಳಿಯಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4195643157523330669">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
@@ -3631,6 +3626,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome ನಿಂದ ಫಾರ್ಮ್ ಸಲಹೆಯನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?</translation>
 <translation id="781440967107097262">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುವುದೇ?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">ಕಾಗದ (ಖಾಲಿ)</translation>
 <translation id="7815407501681723534"><ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> ಗೆ '<ph name="SEARCH_STRING" />' ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="7822611063308883975">ಹ್ಯಾಂಡ್‌ ಹೆಲ್ಡ್ ಗೇಮ್ ಕನ್ಸೋಲ್‌ಗಳು</translation>
@@ -3795,6 +3791,7 @@
 <translation id="8148608574971654810">PDF ಆವೃತ್ತಿ:</translation>
 <translation id="8149426793427495338">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ನಿದ್ರಾವಸ್ಥೆಗೆ ಹೋಗಿದೆ.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> ನಲ್ಲಿನ ಫೈಲ್ ಓದುವಂತಿರುವುದಿಲ್ಲ. ಇದನ್ನು ತೆಗೆದುಹಾಕಬಹುದು, ಚಲಿಸಬಹುದು, ಅಥವಾ ಫೈಲ್ ಅನುಮತಿಗಳು ಪ್ರವೇಶವನ್ನು ತಡೆಗಟ್ಟುತ್ತಿರಬಹುದು.</translation>
+<translation id="8151185429379586178">ಡೆವಲಪರ್ ಟೂಲ್‌ಗಳು</translation>
 <translation id="8153865548451212769">{0,plural, =1{ನಿರ್ವಾಹಕರ ನೀತಿಯು ಈ ಫೈಲ್ ಅನ್ನು <ph name="DESTINATION_NAME" /> ಗೆ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}one{ನಿರ್ವಾಹಕರ ನೀತಿಯು ಈ ಫೈಲ್‌ಗಳನ್ನು <ph name="DESTINATION_NAME" /> ಗೆ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}other{ನಿರ್ವಾಹಕರ ನೀತಿಯು ಈ ಫೈಲ್‌ಗಳನ್ನು <ph name="DESTINATION_NAME" /> ಗೆ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ}}</translation>
 <translation id="81563721597823545">ಹಾಕಿ ಉಪಕರಣ</translation>
 <translation id="8161095570253161196">ಬ್ರೌಸ್ ಮಾಡುವಿಕೆಯನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>

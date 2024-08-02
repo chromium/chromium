@@ -976,6 +976,7 @@
 <translation id="453661520163887813"><ph name="TIME" /> 후 충전 완료</translation>
 <translation id="4538824937723742295">화면 전체 스크린샷 촬영</translation>
 <translation id="4539127209940689201">현재 페이지 인쇄</translation>
+<translation id="4541505619120536051">항상 열기</translation>
 <translation id="4541706525461326392">프로필을 삭제하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="4544483149666270818">녹화할 창을 선택하세요.</translation>
 <translation id="4545950850562423083">현재 페이지를 북마크로 저장</translation>
@@ -1488,6 +1489,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" />에서 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">상단 버튼</translation>
+<translation id="6240821072888636753">시작할 때마다 묻기</translation>
 <translation id="6247728804802644171">알림 열기</translation>
 <translation id="6249795363855770621">완료로 표시할 수 없습니다. 온라인 상태일 때 다시 시도해 보세요.</translation>
 <translation id="6254629735336163724">가로로 잠김</translation>
@@ -1831,6 +1833,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" />에서 마이크를 사용 중입니다.</translation>
 <translation id="7561982940498449837">메뉴 닫기</translation>
 <translation id="7564874036684306347">창을 다른 데스크톱으로 이동하면 예기치 못한 동작이 나타날 수 있습니다. 이후의 알림, 창, 대화상자가 데스크톱 간에 분할될 수 있습니다.</translation>
+<translation id="7568790562536448087">업데이트</translation>
 <translation id="7569509451529460200">점자와 ChromeVox가 사용 설정되었습니다.</translation>
 <translation id="7569886975397378678">휴대전화 알림 및 앱 보기 설정 닫기</translation>
 <translation id="7571361473021531288">배터리 <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> 남음</translation>
@@ -1960,7 +1963,6 @@
 <translation id="7963992254934562106">출처: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">폴더 선택...</translation>
 <translation id="7973756967040444713">툴바 닫기</translation>
-<translation id="797485111629834774">할 일을 완료됨으로 표시: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">전체 화면 돋보기 사용 설정 또는 사용 중지</translation>
 <translation id="7977927628060636163">모바일 네트워크 검색 중...</translation>
 <translation id="7982789257301363584">네트워크</translation>

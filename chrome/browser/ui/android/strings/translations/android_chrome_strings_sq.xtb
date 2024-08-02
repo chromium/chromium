@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Menaxho llogaritë në këtë pajisje</translation>
 <translation id="1129510026454351943">Detajet: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Modaliteti "I fshehtë" ruan privatësinë e shfletimit tënd nga personat e tjerë që përdorin pajisjen tënde</translation>
+<translation id="1138458427267715730">Merr sinjalizime kur çmimi ulet në çdo sajt në ueb</translation>
 <translation id="1142732900304639782">Mos ofro t'i përkthesh këto sajte</translation>
 <translation id="1145536944570833626">Fshi të dhënat ekzistuese.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> do të hapet në Chrome. Duke vazhduar, ti pranon <ph name="BEGIN_LINK1" />"Kushtet e shërbimit" të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />"Kushtet shtesë të shërbimit" të Google Chrome dhe të ChromeOS<ph name="END_LINK2" />.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Menaxho aktivitetin</translation>
 <translation id="1355088659320425659">Historiku dhe skedat</translation>
 <translation id="1360432990279830238">Do të dalësh dhe çaktivizosh sinkronizimin?</translation>
+<translation id="1363028406613469049">Pjesa muzikore</translation>
 <translation id="1366525380420346469">Kur është aktive</translation>
 <translation id="1373696734384179344">Memorie e pamjaftueshme për të shkarkuar përmbajtjen e përzgjedhur.</translation>
 <translation id="1376578503827013741">Po llogarit...</translation>
@@ -292,6 +294,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
 <translation id="2439153523196674349">Pamje paraprake e <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Dëshiron që të fillosh ta shkarkosh <ph name="FILE_NAME" /> përsëri?</translation>
+<translation id="2451607499823206582">Po monitorohet</translation>
 <translation id="2453860139492968684">Përfundo</translation>
 <translation id="2461822463642141190">Rryma</translation>
 <translation id="2468444275314013497">Shfletuesi yt duket në rregull</translation>
@@ -1041,7 +1044,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="6040939430773295212">E përsëritur</translation>
 <translation id="604124094241169006">Automatike</translation>
 <translation id="6042308850641462728">Më shumë</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Lejet u rishikuan për 1 sajt}other{Lejet u rishikuan për {NUM_SITES} sajte}}</translation>
 <translation id="604996488070107836">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të një gabimi të panjohur.</translation>
 <translation id="605721222689873409">VV</translation>
 <translation id="6059830886158432458">Kontrollo historitë dhe aktivitetin tënd këtu</translation>
@@ -1682,7 +1684,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8865415417596392024">Të dhënat e Chrome në llogarinë tënde</translation>
 <translation id="8898822736010347272">Dërgon te Google URL-të e disa faqeve që viziton, informacione të kufizuara të sistemit, si dhe disa përmbajtje faqeje për të ndihmuar në zbulimin e kërcënimeve të reja dhe për t'i mbrojtur të gjithë në ueb.</translation>
 <translation id="8909135823018751308">Ndaj…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Njoftimet nuk lejohen për 1 sajt}other{Njoftimet nuk lejohen për {NUM_SITES} sajte}}</translation>
 <translation id="8921980840204105660">Sinkronizoje për të marrë faqeshënuesit nga pajisjet e tua të tjera</translation>
 <translation id="8922289737868596582">Shkarko faqet nga butoni "Më shumë opsione" për t'i përdorur ato offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>

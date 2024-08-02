@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">管理密碼按鈕，啟動之後就可以喺 Chrome 設定度睇同管理密碼</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">選擇對<ph name="PERMISSION_NAME" />的權限</translation>
-<translation id="1112238992895762847">所有選項的價格範圍</translation>
 <translation id="1113869188872983271">復原重新排序(&amp;U)</translation>
 <translation id="1118429183611783760">吸塵機和地板護理</translation>
 <translation id="1122714970786750095">電子及電機產品</translation>
@@ -122,7 +121,6 @@
 <translation id="1209206284964581585">暫時隱藏</translation>
 <translation id="121201262018556460">您嘗試前往 <ph name="DOMAIN" />，但伺服器所提供的憑證含有防護力薄弱的金鑰。攻擊者可能已破壞私密金鑰，而這個伺服器可能並非您的目標伺服器 (您的連線對象可能是攻擊者的電腦)。</translation>
 <translation id="1212527389003717329">已開始下載。如要查看，請按住 |<ph name="ACCELERATOR" />|。</translation>
-<translation id="1214970845432250240">價格範圍</translation>
 <translation id="1219129156119358924">系統安全性</translation>
 <translation id="1222060260947439312">右匣</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -353,7 +351,6 @@
 <translation id="1617276713587758852">跨界休旅車</translation>
 <translation id="1619007254056372606">管理裝置上的網站資料</translation>
 <translation id="1620510694547887537">相機</translation>
-<translation id="162285686621567578">家長已封鎖此網站。</translation>
 <translation id="1622966923835127638">公司融資</translation>
 <translation id="1623104350909869708">防止這個網頁產生其他對話方塊</translation>
 <translation id="1633137413609266904">{0,plural, =1{管理員政策已禁止開啟此檔案}other{管理員政策已禁止開啟 # 個檔案}}</translation>
@@ -738,7 +735,6 @@
 <translation id="2328955282645810595">建築和電動工具</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期日：<ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">撰寫履歷表</translation>
-<translation id="2337776048981813397">所有選項的價格範圍</translation>
 <translation id="2337852623177822836">由管理員控制的設定</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> 要求與下列藍牙裝置配對</translation>
 <translation id="2346319942568447007">您複製的圖片</translation>
@@ -1030,7 +1026,6 @@
 <translation id="2930577230479659665">完成每次複印後修剪</translation>
 <translation id="2933624813161016821">燙金浮雕壓印</translation>
 <translation id="2938225289965773019">開放<ph name="PROTOCOL" />連結</translation>
-<translation id="2941112035454246133">低</translation>
 <translation id="2941878205777356567">9 x 12 吋信封</translation>
 <translation id="2941952326391522266">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證來自 <ph name="DOMAIN2" /> 網域。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="2942492342931589800">非正式</translation>
@@ -1212,7 +1207,6 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">請輸入 <ph name="NUMBER_OF_DIGITS" /> 位數驗證碼</translation>
 <translation id="3272643614306383237">小於 1 MB。下次瀏覽部分網站時，載入速度可能會變慢。</translation>
-<translation id="327346289570683313">價格範圍</translation>
 <translation id="3273738040255912340">管理員可遠端變更你的設定檔和瀏覽器、透過報告分析瀏覽器相關資料，以及執行其他必要工作。此裝置上的活動亦可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這個檔案}other{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這些檔案}}</translation>
 <translation id="3282085321714087552">機構 (<ph name="ENROLLMENT_DOMAIN" />) 已將一些資訊 (例如設定或政策) 傳送到以下網站。</translation>
@@ -1700,6 +1694,7 @@
 <translation id="4177501066905053472">廣告主題</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">取消追蹤價格</translation>
+<translation id="4190446002599583608">利用 AI 技術搜尋記錄</translation>
 <translation id="4191334393248735295">長度</translation>
 <translation id="4195459680867822611">睇 Chrome 提示按鈕，啟用之後就可以了解解各項 Chrome 功能</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
@@ -3634,6 +3629,7 @@
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">要從 Chrome 中移除表格建議嗎？</translation>
 <translation id="781440967107097262">要分享剪貼簿嗎？</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">紙 (普通)</translation>
 <translation id="7815407501681723534">找到 <ph name="NUMBER_OF_RESULTS" /> 個與「<ph name="SEARCH_STRING" />」相符的<ph name="SEARCH_RESULTS" /></translation>
 <translation id="7822611063308883975">掌上遊戲機</translation>
@@ -3798,6 +3794,7 @@
 <translation id="8148608574971654810">PDF 版本：</translation>
 <translation id="8149426793427495338">您的電腦已進入休眠狀態。</translation>
 <translation id="8150722005171944719">無法讀取位於 <ph name="URL" /> 的檔案。這個檔案可能已被移除或移動位置，或者檔案權限為禁止存取。</translation>
+<translation id="8151185429379586178">開發人員工具</translation>
 <translation id="8153865548451212769">{0,plural, =1{管理員政策不建議下載此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議下載這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">曲棍球用品</translation>
 <translation id="8161095570253161196">繼續瀏覽</translation>
@@ -3970,6 +3967,7 @@
 <translation id="84561192812921051">管理員可遠端變更你的設定檔和瀏覽器、透過報告分析瀏覽器相關資料，以及執行其他必要工作。此裝置上的活動亦可透過 Chrome 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">無限期</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8458605637341729751">選擇繼續即表示您同意我們蒐集裝置精確位置資訊，並將這些資訊提供給帳戶持有人，用於防範詐欺。如要在 Chrome 中關閉 Pix，請前往<ph name="BEGIN_LINK1" />付款設定<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">開啟</translation>
 <translation id="8461694314515752532">使用您的同步密碼短語，加密已同步的資料</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 張信用卡}other{# 張信用卡}}</translation>

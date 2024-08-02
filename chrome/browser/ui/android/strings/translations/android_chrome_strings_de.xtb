@@ -31,6 +31,7 @@
 <translation id="1126696498560056882">Konten auf diesem Gerät verwalten</translation>
 <translation id="1129510026454351943">Details: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Im Inkognitomodus kannst du auf gemeinsam verwendeten Geräten privat surfen</translation>
+<translation id="1138458427267715730">Du kannst dich benachrichtigen lassen, wenn der Preis auf einer Website sinkt</translation>
 <translation id="1142732900304639782">Übersetzen dieser Websites nicht anbieten</translation>
 <translation id="1145536944570833626">Vorhandene Daten werden gelöscht.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> wird in Chrome geöffnet. Wenn du fortfährst, stimmst du den <ph name="BEGIN_LINK1" />Google-Nutzungsbedingungen<ph name="END_LINK1" /> und den <ph name="BEGIN_LINK2" />zusätzlichen Nutzungsbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> zu.</translation>
@@ -81,6 +82,7 @@
 <translation id="1347468774581902829">Aktivitäten verwalten</translation>
 <translation id="1355088659320425659">Verlauf und Tabs</translation>
 <translation id="1360432990279830238">Abmelden &amp; Synchronisierung deaktivieren?</translation>
+<translation id="1363028406613469049">Verfolgen</translation>
 <translation id="1366525380420346469">Wenn aktiviert</translation>
 <translation id="1373696734384179344">Der Speicher reicht nicht aus, um den ausgewählten Inhalt herunterzuladen.</translation>
 <translation id="1376578503827013741">Berechnung läuft...</translation>
@@ -292,6 +294,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2439153523196674349">Vorschau von <ph name="SITE_NAME" /></translation>
 <translation id="2450083983707403292">Möchtest du den Download von <ph name="FILE_NAME" /> noch einmal starten?</translation>
+<translation id="2451607499823206582">Tracking</translation>
 <translation id="2453860139492968684">Fertig</translation>
 <translation id="2461822463642141190">Aktuell</translation>
 <translation id="2468444275314013497">Dein Browser sieht sicher aus</translation>
@@ -1041,7 +1044,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="6040939430773295212">Wiederholt sich</translation>
 <translation id="604124094241169006">Automatisch</translation>
 <translation id="6042308850641462728">Mehr</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{Berechtigungen für 1 Website überprüft}other{Berechtigungen für {NUM_SITES} Websites überprüft}}</translation>
 <translation id="604996488070107836"><ph name="FILE_NAME" /> konnte aufgrund eines unbekannten Fehlers nicht heruntergeladen werden.</translation>
 <translation id="605721222689873409">JJ</translation>
 <translation id="6059830886158432458">Hier kannst du festlegen, welche Meldungen und Aktivitäten dir angezeigt werden</translation>
@@ -1682,7 +1684,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8865415417596392024">Chrome-Daten in meinem Konto</translation>
 <translation id="8898822736010347272">URLs einiger von dir besuchter Seiten, eingeschränkte Systemdaten und manche Seiteninhalte werden an Google gesendet, um die Erkennung neuer Bedrohungen zu verbessern und Nutzer im Internet zu schützen.</translation>
 <translation id="8909135823018751308">Teilen...</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{Benachrichtigungen für 1 Website nicht zugelassen}other{Benachrichtigungen für {NUM_SITES} Websites nicht zugelassen}}</translation>
 <translation id="8921980840204105660">Synchronisieren, um die Lesezeichen von deinen anderen Geräten abzurufen</translation>
 <translation id="8922289737868596582">Seiten über die Schaltfläche "Weitere Optionen" zur Offline-Ansicht herunterladen</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>

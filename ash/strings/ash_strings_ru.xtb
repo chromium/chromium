@@ -413,6 +413,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516416533263263796">Режим концентрации внимания включен. Осталось 10 минут.</translation>
 <translation id="2516637483312286228">Настроить элементы управления</translation>
+<translation id="252054055865191167">Фломастер</translation>
 <translation id="2526581474998477112">Открепить окна</translation>
 <translation id="2528111225373402384">Настройки точки доступа</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -975,6 +976,7 @@
 <translation id="453661520163887813">До полной зарядки <ph name="TIME" /></translation>
 <translation id="4538824937723742295">Сделать снимок всего экрана</translation>
 <translation id="4539127209940689201">Распечатать текущую страницу</translation>
+<translation id="4541505619120536051">Открывать всегда</translation>
 <translation id="4541706525461326392">Профиль удаляется. Это может занять несколько минут.</translation>
 <translation id="4544483149666270818">Выберите окно для записи</translation>
 <translation id="4545950850562423083">Добавить текущую страницу в закладки</translation>
@@ -1360,6 +1362,7 @@
 <translation id="5819918159912280082">Устройство Chromebook было перезагружено. Откройте предыдущие окна и приложения.</translation>
 <translation id="5823239091726045201">Google Задачи (веб-версия)</translation>
 <translation id="5825969630400862129">Настройки подключенных устройств</translation>
+<translation id="5830180081891717894">ещё <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Остановить трансляцию <ph name="ROUTE_TITLE" /> на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="5841296711770970362">Перейти к следующему треку</translation>
 <translation id="5842553299352339114">Точка доступа <ph name="DEVICE_NAME" /> сейчас работает. К ней не подключено ни одно устройство.</translation>
@@ -1487,6 +1490,7 @@
 <translation id="6232891689835436217">Сейчас использует камеру и микрофон: <ph name="APP_NAME" />.</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Верхняя кнопка</translation>
+<translation id="6240821072888636753">Спрашивать каждый раз</translation>
 <translation id="6247728804802644171">Открыть уведомления</translation>
 <translation id="6249795363855770621">Не удалось отметить как завершенную. Восстановите связь и повторите попытку.</translation>
 <translation id="6254629735336163724">Заблокировано в горизонтальном положении</translation>
@@ -1830,6 +1834,7 @@
 <translation id="7557816257942363084">Сейчас использует микрофон: <ph name="APP_NAME" />.</translation>
 <translation id="7561982940498449837">Закрыть меню</translation>
 <translation id="7564874036684306347">При переносе окон на другой рабочий стол иногда возникают ошибки. Уведомления и диалоговые окна могут появляться на разных рабочих столах.</translation>
+<translation id="7568790562536448087">Обновление</translation>
 <translation id="7569509451529460200">Шрифт Брайля и функция ChromeVox включены</translation>
 <translation id="7569886975397378678">Не настраивать просмотр уведомлений и приложений с телефона</translation>
 <translation id="7571361473021531288">Батарея: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> до полного заряда</translation>
@@ -1959,7 +1964,6 @@
 <translation id="7963992254934562106">С <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Выбрать папку</translation>
 <translation id="7973756967040444713">Закрыть панель инструментов</translation>
-<translation id="797485111629834774">Отметить задачу "<ph name="TASK_NAME" />" как выполненную</translation>
 <translation id="797512352675305461">Включить или отключить полноэкранную лупу</translation>
 <translation id="7977927628060636163">Поиск мобильных сетей...</translation>
 <translation id="7982789257301363584">Сеть</translation>
@@ -2065,6 +2069,7 @@
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> и телефон будут подключены друг к другу автоматически</translation>
 <translation id="8380784334203145311">Доброй ночи!</translation>
 <translation id="8382715499079447151">Защита от чужих взглядов</translation>
+<translation id="8383614331548401927">С возвращением!</translation>
 <translation id="8388750414311082622">Удалить единственный рабочий стол нельзя.</translation>
 <translation id="8394567579869570560">Ваш родитель заблокировал это устройство.</translation>
 <translation id="8401850874595457088">Открыть языковое меню</translation>

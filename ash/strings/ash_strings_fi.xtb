@@ -413,6 +413,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516416533263263796">Keskittymistila on päällä, 10 minuuttia jäljellä</translation>
 <translation id="2516637483312286228">Muokkaa peliohjaimia</translation>
+<translation id="252054055865191167">Piirtotyökalu</translation>
 <translation id="2526581474998477112">Avaa ikkunoiden lukitus</translation>
 <translation id="2528111225373402384">Hotspot-asetukset</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -975,6 +976,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> täyteen lataukseen</translation>
 <translation id="4538824937723742295">Ota kuvakaappaus koko näytöstä</translation>
 <translation id="4539127209940689201">Tulosta nykyinen sivu</translation>
+<translation id="4541505619120536051">Aina auki</translation>
 <translation id="4541706525461326392">Poistetaan profiilia. Tämä voi kestää muutaman minuutin.</translation>
 <translation id="4544483149666270818">Valitse ikkuna tallennusta varten</translation>
 <translation id="4545950850562423083">Tallenna nykyinen sivu kirjanmerkkinä</translation>
@@ -1487,6 +1489,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> käyttää tällä hetkellä kameraa ja mikrofonia</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Ylin painike</translation>
+<translation id="6240821072888636753">Kysy aina</translation>
 <translation id="6247728804802644171">Avaa ilmoitukset</translation>
 <translation id="6249795363855770621">Valmiiksi merkitseminen epäonnistui. Yritä uudelleen, kun olet yhteydessä verkkoon.</translation>
 <translation id="6254629735336163724">Lukittu vaakasuuntaiseksi</translation>
@@ -1830,6 +1833,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> käyttää tällä hetkellä mikrofonia</translation>
 <translation id="7561982940498449837">Sulje valikko</translation>
 <translation id="7564874036684306347">Ikkunan siirtämisellä toiselle työpöydälle voi olla odottamattomia seurauksia. Myöhemmät ilmoitukset, ikkunat ja valintaikkunat voidaan jakaa työpöytien välillä.</translation>
+<translation id="7568790562536448087">Päivitetään</translation>
 <translation id="7569509451529460200">Pistekirjoitus ja ChromeVox käytössä</translation>
 <translation id="7569886975397378678">Hylkää puhelimen ilmoitusten ja sovellusten katselun käyttöönotto</translation>
 <translation id="7571361473021531288">Akku <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> left</translation>
@@ -1959,7 +1963,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7963992254934562106">Lähde: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Valitse kansio…</translation>
 <translation id="7973756967040444713">Sulje yläpalkki</translation>
-<translation id="797485111629834774">Merkitse tehtävä suoritetuksi: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Laita koko näytön suurennus päälle tai pois päältä</translation>
 <translation id="7977927628060636163">Haetaan mobiiliverkkoja…</translation>
 <translation id="7982789257301363584">Verkko</translation>

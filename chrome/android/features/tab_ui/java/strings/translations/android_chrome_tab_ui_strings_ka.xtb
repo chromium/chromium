@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">ნარინჯისფერი</translation>
 <translation id="125153950246128346">შეეხეთ სხვა ჩანართის სანახავად</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" />-ის ჩანართის ჯგუფის ვარიანტები</translation>
+<translation id="1340839264183302272">ჯგუფიდან გასვლა</translation>
 <translation id="1419023007528516122">ამ მოქმედებით თქვენი მოწყობილობა სამუდამოდ ამოიშლება ჯგუფიდან</translation>
 <translation id="1486715732399361704">ჩანართების ყველა ჯგუფს აქ ნახავთ</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{შეიქმნა <ph name="NUM_MINS_ONE" /> წუთის წინ}other{შეიქმნა <ph name="NUM_MINS_MANY" /> წუთის წინ}}</translation>
@@ -41,6 +42,7 @@
 <translation id="2801787514987684416">გსურთ მაღაზიის ინფორმაციის ნახვა?</translation>
 <translation id="2928243913527329289">Google | ამ მაღაზიის შესახებ</translation>
 <translation id="2977480621796371840">ჯგუფიდან ამოშლა</translation>
+<translation id="29919168204617356">არააქტიური ჩანართები ავტომატურად დაიხურება. მათი პოვნა ნებისმიერ დროს შეგიძლიათ ისტორიაში.</translation>
 <translation id="3008554597174452548">პროდუქტისთვის თვალის მიდევნების შეწყვეტა</translation>
 <translation id="3026391124054406831">შექმენით ჯგუფები ჩანართების ორგანიზებისთვის.</translation>
 <translation id="3051031624272448591">მათზე დაბრუნებას ნებისმიერ დროს შეძლებთ ისტორიიდან</translation>
@@ -51,6 +53,7 @@
 <translation id="3322827343001922122">გახსენით ჩანართების ჯგუფზე მოქმედებების მენიუ ჩანართების ჯგუფისთვის „<ph name="TITLE_OF_GROUP" />“</translation>
 <translation id="3328308545011660196">შემოთავაზება: როგორც ჩანს, <ph name="NUMBER_OF_TABS" /> ჩანართი დაკავშირებულია. გსურთ მათი დაჯგუფება?</translation>
 <translation id="3547352561153509682">ამ მოქმედებით წაიშლება ჯგუფი ყველა მოწყობილობიდან, რომელიც შესულია ანგარიშში: <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">არააქტიური ჩანართების დიალოგის დამალვა</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ესკიზი ფურცლის გაზიარების გადახედვისთვის.</translation>
 <translation id="381219490185664296">გააუქმებთ ჩანართების დაჯგუფებას?</translation>
@@ -120,6 +123,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ჩანართის მარცხნივ გადატანა</translation>
 <translation id="6615455863669487791">მაჩვენე</translation>
+<translation id="6694634756612002311">გაზიარების მართვა</translation>
 <translation id="6744956528665271406">ჯგუფის ფერის რედაქტირება</translation>
 <translation id="6856809498882026482">რამდენიმეარჩევანიანი რეჟიმის დამალვა</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ჩანართის გაზიარება}other{ჩანართების გაზიარება}}</translation>
@@ -137,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> მიმოხილვა Google-იდან}other{<ph name="REVIEWS_COUNT_MANY" /> მიმოხილვა Google-იდან}}</translation>
 <translation id="7559245342362162951">ჯგუფის ჩანართების სრულეკრანიან ბადეში ჩვენება</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
+<translation id="7688386659311034820">არააქტიური ჩანართების დიალოგი</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის გაზიარება}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის გაზიარება}}</translation>
 <translation id="7773714564112603605">ჩანართის ამოშლა და ჯგუფის წაშლა</translation>
 <translation id="7792771145871471484">შემოთავაზებების გადახედვა.</translation>
@@ -159,6 +164,7 @@
 <translation id="8398929769197326728">ახალი საქაღალდე — <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">პარამეტრები</translation>
 <translation id="8631711675211020168">ყველა მყისიერად დაკარგავს წვდომას ჩანართების ჯგუფზე „<ph name="GROUP_NAME" />“, ხოლო ის ამოიშლება ყველა მოწყობილობიდან.</translation>
+<translation id="8633025649649592204">ბოლოდროინდელი აქტივობა</translation>
 <translation id="870736955561925754">დაიხუროს ჩანართი და წაიშალოს ჯგუფი?</translation>
 <translation id="8714939927607906138">უფრო დაბალი ფასი</translation>
 <translation id="8730621377337864115">მზადაა</translation>
@@ -170,6 +176,7 @@
 <translation id="8926389886865778422">აღარ მკითხო</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი ჯგუფის გაფართოება.}other{ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი ჯგუფის გაფართოება.}}</translation>
 <translation id="9090098097337832354">ამ მაღაზიის შესახებ ინფორმაცია დახურულია</translation>
+<translation id="9111228330448174435">ახალი ჩანართების ჯგუფის შექმნის დიალოგის ჩვენება</translation>
 <translation id="9150694013019234766">გადაერთეთ ჩანართებს შორის თქვენს ჩანართების ჯგუფში, ეკრანის ქვედა ნაწილში</translation>
 <translation id="9169594135889675189">ჯგუფში ახალი ჩანართის დამატება</translation>
 <translation id="9216898458513705996">ჩანართები დარჩება გახსნილი ამ მოწყობილობაზე, მაგრამ ჯგუფი წაიშლება ყველა მოწყობილობიდან, რომელიც შესულია ანგარიშში: <ph name="USER_EMAIL" /></translation>

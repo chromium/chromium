@@ -35,6 +35,7 @@
 <translation id="1554731936187952550">Вы выкарыстоўваеце самую моцную абарону Chrome ад шкодных вэб-сайтаў</translation>
 <translation id="1615715390546812898">Галасавы пошук у Chrome.</translation>
 <translation id="1657395063736185342">Выканай візуальны пошук у Chrome</translation>
+<translation id="1670609221633730681">Парада Chrome: выберыце пазіцыю адраснага радка</translation>
 <translation id="1675955119303651351">Некаторыя вашы даныя Chrome яшчэ не былі захаваны ва Уліковым запісе Google.
         Пачакайце некалькі хвілін, перш чым выйсці. Калі вы выйдзеце зараз, гэтыя даныя будуць выдалены.</translation>
 <translation id="1682483655351012182">Сінхранізацыя даных Chrome</translation>
@@ -43,6 +44,7 @@
 <translation id="1799920918471566157">Парады адносна Chrome</translation>
 <translation id="1830634592642484976">Гэты адрас зараз захаваны ў Chrome. Каб выкарыстоўваць яго ў іншых прадуктах Google, захавайце гэты адрас у сваім Уліковым запісе Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="1910975740091000991">Chrome для iOS</translation>
+<translation id="1917288746637765175">Зрабіце Chrome стандартным браўзерам для зручнага прагляду статыстыкі цэн</translation>
 <translation id="1917964099031477364">Гэты ўліковы запіс і ўсе незахаваныя даныя будуць выдалены з браўзера Chromium і іншых праграм Google на гэтай прыладзе.</translation>
 <translation id="1965935827552890526">Скончыце тое, што вы пачалі рабіць у іншым адкрытым акне Chrome.</translation>
 <translation id="1987779152850321833">Каб карыстацца ўсімі магчымасцямі ад Chrome, выканайце гэтыя дзеянні.</translation>
@@ -112,12 +114,14 @@
 <translation id="3984746313391923992">Палітыка вашай арганізацыі забараняе вам уваходзіць у Chrome.</translation>
 <translation id="3988789688219830639">У браўзера Google Chrome няма доступу да фота і відэа. Уключыце доступ у меню iOS: "Налады &gt; Прыватнасць &gt; Фота".</translation>
 <translation id="4064699917955374540">Каб выкарыстоўваць і захоўваць даныя Chrome ва Уліковым запісе Google, пацвердзіце сваю асобу.</translation>
+<translation id="4066411101507716142">Адкрывайце Chrome хутчэй, выкарыстоўваючы панэль Dock галоўнага экрана iPad.</translation>
 <translation id="4067858366537947361">Адкрыць у Chrome укладку ў рэжыме інкогніта</translation>
 <translation id="4093042601582616698">Зрабіць Chrome стандартным браўзерам?</translation>
 <translation id="417201473131094001">Не падтрымліваецца ў Chrome Canary</translation>
 <translation id="424864128008805179">Выйсці з Chrome?</translation>
 <translation id="4251174643044751591">Адкрывае старонку для наладжвання спосабаў аплаты ў Chrome.</translation>
 <translation id="4286914711740227883">Выдаліць даныя пра работу ў браўзеры Chrome</translation>
+<translation id="430839890088895017">Парада Chrome: перамясціце Chrome на панэль Dock</translation>
 <translation id="4453284704333523777">Кіраванне наладамі Chrome</translation>
 <translation id="4523886039239821078">Некаторыя дадатковыя кампаненты выклікаюць збой у Chrome. Калі ласка, выдаліце:</translation>
 <translation id="4633328489441962921">Браўзеру Chrome не ўдаецца праверыць наяўнасць абнаўленняў</translation>
@@ -235,6 +239,7 @@
 <translation id="7581063337314642333">Перайсці да сеткі ўкладак у Chrome</translation>
 <translation id="7662994914830945754">Каб мець доступ да сваіх укладак з усіх прылад, на якіх вы выкарыстоўваеце Chrome, увайдзіце на іх ва ўліковы запіс і ўключыце сінхранізацыю</translation>
 <translation id="7669869107155339016">Перайдзіце ў налады Chrome.</translation>
+<translation id="7683540977001394271">Адкрывайце Chrome хутчэй, выкарыстоўваючы панэль Dock галоўнага экрана iPhone.</translation>
 <translation id="769104993356536261">Выкарыстанне дзеянняў у Chrome у iOS</translation>
 <translation id="7693590760643069321">Цяпер вы можаце выкарыстоўваць Chrome кожны раз, калі адкрываеце спасылкі ў паведамленнях, дакументах або іншых праграмах.</translation>
 <translation id="7698568245838009292">Chrome запытвае доступ да камеры</translation>

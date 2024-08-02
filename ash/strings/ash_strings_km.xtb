@@ -976,6 +976,7 @@
 <translation id="453661520163887813"><ph name="TIME" /> ទៀតទើបពេញ</translation>
 <translation id="4538824937723742295">ថតរូប​អេក្រង់​ពេញអេក្រង់</translation>
 <translation id="4539127209940689201">បោះពុម្ព​ទំព័រ​បច្ចុប្បន្ន</translation>
+<translation id="4541505619120536051">បើក​ជានិច្ច</translation>
 <translation id="4541706525461326392">កំពុងលុប​កម្រងព័ត៌មាន។ ដំណើរការនេះ​អាចចំណាយ​ពេលពីរបីនាទី។</translation>
 <translation id="4544483149666270818">ជ្រើសរើសវិនដូណាមួយ ដើម្បីថតវីដេអូ</translation>
 <translation id="4545950850562423083">រក្សាទុក​ទំព័របច្ចុប្បន្ន​ជា​ចំណាំ</translation>
@@ -1361,6 +1362,7 @@
 <translation id="5819918159912280082">Chromebook របស់អ្នកបានចាប់ផ្ដើម​ឡើងវិញដោយ​មិនបាន​រំពឹងទុក។ បើកវិនដូ និងកម្មវិធីមុនៗរបស់អ្នក។</translation>
 <translation id="5823239091726045201">Google កិច្ចការ​នៅលើ​បណ្ដាញ</translation>
 <translation id="5825969630400862129">ការកំណត់​ឧបករណ៍ដែល​បានភ្ជាប់</translation>
+<translation id="5830180081891717894"><ph name="WINDOWS" /> ទៀត</translation>
 <translation id="5837036133683224804">បញ្ឈប់ <ph name="ROUTE_TITLE" /> នៅលើ <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">ទៅកាន់​​ភ្លេង​បន្ទាប់</translation>
 <translation id="5842553299352339114">ហតស្ប៉តរបស់ <ph name="DEVICE_NAME" /> ត្រូវបានបើក, មិនបាន​ភ្ជាប់ជាមួយ​ឧបករណ៍​ណាមួយទេ</translation>
@@ -1488,6 +1490,7 @@
 <translation id="6232891689835436217">បច្ចុប្បន្ន <ph name="APP_NAME" /> កំពុងប្រើ​កាមេរ៉ា និងមីក្រូហ្វូន​របស់អ្នក</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">ប៊ូតុង​ខាងលើ</translation>
+<translation id="6240821072888636753">សួរគ្រប់ពេល</translation>
 <translation id="6247728804802644171">បើក​ការ​ជូន​ដំណឹង</translation>
 <translation id="6249795363855770621">មិនអាច​សម្គាល់ថា​បានបញ្ចប់​បានទេ។ សូមព្យាយាម​ម្ដងទៀត នៅពេលមាន​អ៊ីនធឺណិត។</translation>
 <translation id="6254629735336163724">បាន​ចាក់សោ​ឱ្យ​ស្ថិត​ក្នុងទិសដៅផ្ដេក</translation>
@@ -1830,6 +1833,7 @@
 <translation id="7557816257942363084">បច្ចុប្បន្ន <ph name="APP_NAME" /> កំពុងប្រើ​មីក្រូហ្វូន​របស់អ្នក</translation>
 <translation id="7561982940498449837">បិទ​ម៉ឺនុយ</translation>
 <translation id="7564874036684306347">ការផ្លាស់ទីវិនដូទៅកុំព្យូទ័រ​ផ្សេងទៀតអាចបណ្តាលឱ្យមានសកម្មភាពខុសប្រក្រតី។ ការជូនដំណឹងបន្តបន្ទាប់ វិនដូ និងប្រអប់បញ្ចូលអាចត្រូវបានបំបែកពីកុំព្យូទ័រនីមួយៗ។</translation>
+<translation id="7568790562536448087">ការធ្វើបច្ចុប្បន្នភាព</translation>
 <translation id="7569509451529460200">បានបើកប្រ៊ែល និង ChromeVox</translation>
 <translation id="7569886975397378678">ច្រានចោល​ការរៀបចំ​ការមើល​ការជូនដំណឹង និង​កម្មវិធី​លើ​ទូរសព្ទ​របស់​អ្នក</translation>
 <translation id="7571361473021531288">ថ្ម <ph name="BATTERY_PERCENTAGE" />% | ប្រើបាន <ph name="TIME" />ទៀត</translation>
@@ -1959,7 +1963,6 @@
 <translation id="7963992254934562106">ពី <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">ជ្រើសរើស​ថត...</translation>
 <translation id="7973756967040444713">បិទ​របារ​ឧបករណ៍</translation>
-<translation id="797485111629834774">សម្គាល់ថាបានបញ្ចប់កិច្ចការ៖ <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">បិទ ឬ​បើក​កែវពង្រីកពេញអេក្រង់</translation>
 <translation id="7977927628060636163">កំពុង​ស្វែងរក​បណ្ដាញ​ទូរសព្ទ​ចល័ត...</translation>
 <translation id="7982789257301363584">បណ្តាញ</translation>
@@ -2065,6 +2068,7 @@
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> នេះ និងទូរសព្ទរបស់អ្នក​នឹងភ្ជាប់ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="8380784334203145311">រាត្រីសួស្ដី</translation>
 <translation id="8382715499079447151">ការការពារ​ការមើល</translation>
+<translation id="8383614331548401927">សូមស្វាគមន៍មកកាន់ការសង្ខេប</translation>
 <translation id="8388750414311082622">មិនអាច​លុបតុចុងក្រោយ​បានទេ។</translation>
 <translation id="8394567579869570560">មាតា​បិតា​របស់អ្នក​បាន​ចាក់​សោ​ឧបករណ៍​នេះ</translation>
 <translation id="8401850874595457088">បញ្ចូល​ម៉ឺនុយភាសា</translation>

@@ -106,6 +106,7 @@
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6051432659151380973">Таны табын бүлгүүдийг автоматаар хадгалдаг</translation>
 <translation id="6054741997831917303">Энэ зүйлийн үнэ саяхан <ph name="PREVIOUS_PRICE" />-с <ph name="NEW_PRICE" /> болж буурсан</translation>
+<translation id="6082313992897617440">Та <ph name="GROUP_NAME" /> табын бүлэгт хандах эрхээ тэр даруй алдана</translation>
 <translation id="6193448654517602979">Таб сонгох</translation>
 <translation id="6228793724645064692">(дэлгүүрийн үнэлгээ)</translation>
 <translation id="6271513594716432922">Бүх идэвхгүй табыг хаах</translation>
@@ -129,6 +130,7 @@
 <translation id="731648547091221002"><ph name="COLOR_NAME" />-г сонгосон</translation>
 <translation id="7326879924029668159">Буцаалтын бодлого болон илүү ихийг хараарай</translation>
 <translation id="7352298686197644113">Таны нээлттэй табд аль зүйл илүү хямд үнэтэй байгааг хараарай</translation>
+<translation id="7421293530411019405">Табын бүлгийг орхих уу?</translation>
 <translation id="7452985128687107478">Табын бүлгийг таны бүх төхөөрөмж дээр автоматаар хадгалж, шинэчилдэг</translation>
 <translation id="747459581954555080">Бүгдийг сэргээх</translation>
 <translation id="753732157349120914">Таб хооронд шилжүүлэгч</translation>
@@ -156,6 +158,8 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг хаах}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг хаах}}</translation>
 <translation id="8398929769197326728">Шинэ фолдер - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
+<translation id="8631711675211020168">Хүн бүр <ph name="GROUP_NAME" /> табын бүлэгт хандах эрхээ тэр даруй алдах бөгөөд тус бүлгийг бүх төхөөрөмжөөс устгана</translation>
+<translation id="8633025649649592204">Саяхны үйл ажиллагаа</translation>
 <translation id="870736955561925754">Табыг хааж, бүлгийг устгах уу?</translation>
 <translation id="8714939927607906138">Илүү хямд үнэ</translation>
 <translation id="8730621377337864115">хийсэн</translation>

@@ -65,7 +65,6 @@
 <translation id="1104860668737945357">Botón Administrar contraseñas: actívalo para ver y administrar tus contraseñas en la configuración de Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Selecciona el permiso para <ph name="PERMISSION_NAME" /></translation>
-<translation id="1112238992895762847">Rango de precios para todas las opciones</translation>
 <translation id="1113869188872983271">&amp;Deshacer Reorganizar</translation>
 <translation id="1118429183611783760">Aspiradoras y cuidado de pisos</translation>
 <translation id="1122714970786750095">Electrónica y electricidad</translation>
@@ -122,7 +121,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1209206284964581585">Ocultar por el momento</translation>
 <translation id="121201262018556460">Intentaste acceder a <ph name="DOMAIN" />, pero el servidor  presentó un certificado que contiene una clave no segura. Es posible que un atacante haya descifrado la clave privada y que este no sea el servidor esperado (es posible que hayas establecido comunicación con un atacante).</translation>
 <translation id="1212527389003717329">Comenzó la descarga. Para verla, mantén presionado |<ph name="ACCELERATOR" />|.</translation>
-<translation id="1214970845432250240">Intervalo de precios</translation>
 <translation id="1219129156119358924">Seguridad del sistema</translation>
 <translation id="1222060260947439312">Bandeja derecha</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -353,7 +351,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1617276713587758852">Vehículos mixtos</translation>
 <translation id="1619007254056372606">Administrar los datos de sitios integrados en el dispositivo</translation>
 <translation id="1620510694547887537">Cámara</translation>
-<translation id="162285686621567578">Tu madre o padre bloqueó este sitio web.</translation>
 <translation id="1622966923835127638">Negocios y finanzas</translation>
 <translation id="1623104350909869708">Evitar que esta página cree cuadros de diálogo adicionales</translation>
 <translation id="1633137413609266904">{0,plural, =1{La política del administrador no permite abrir este archivo}other{La política del administrador no permite abrir # archivos}}</translation>
@@ -738,7 +735,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2328955282645810595">Herramientas eléctricas y de construcción</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, fecha de vencimiento: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337044517221264923">Reanudar escritura</translation>
-<translation id="2337776048981813397">Rango de precios para todas las opciones</translation>
 <translation id="2337852623177822836">Configuración controlada por tu administrador</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> desea sincronizarse</translation>
 <translation id="2346319942568447007">Imagen que copiaste</translation>
@@ -1030,7 +1026,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2930577230479659665">Cortar después de cada copia</translation>
 <translation id="2933624813161016821">Lámina con relieve</translation>
 <translation id="2938225289965773019">Abrir vínculos de <ph name="PROTOCOL" /></translation>
-<translation id="2941112035454246133">Baja</translation>
 <translation id="2941878205777356567">Sobre de 22.8 × 30.4 cm</translation>
 <translation id="2941952326391522266">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; el certificado de seguridad proviene de <ph name="DOMAIN2" />. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="2942492342931589800">Casual</translation>
@@ -1213,7 +1208,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3272091146646336650">B súper</translation>
 <translation id="3272112314896217187">Ingresa el código de verificación de <ph name="NUMBER_OF_DIGITS" /> dígitos</translation>
 <translation id="3272643614306383237">Menos de 1 MB. Es posible que algunos sitios tarden más en cargar cuando vuelvas a visitarlos.</translation>
-<translation id="327346289570683313">Intervalo de precios</translation>
 <translation id="3273738040255912340">El administrador puede realizar cambios en tu perfil y navegador de forma remota, analizar información sobre el navegador a través de informes y realizar otras tareas necesarias. Es posible que la actividad correspondiente a este dispositivo también se administre fuera de Chromium. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{La política del administrador no recomienda abrir este archivo en <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda abrir estos archivos en <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Tu organización, <ph name="ENROLLMENT_DOMAIN" />, envió parte de la información, como la configuración o las políticas, a los siguientes sitios web.</translation>
@@ -1702,6 +1696,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4177501066905053472">Temas de los anuncios</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Dejar de realizar el seguimiento de precios</translation>
+<translation id="4190446002599583608">History search, con la tecnología de IA</translation>
 <translation id="4191334393248735295">Longitud</translation>
 <translation id="4195459680867822611">Botón Ver sugerencias para Chrome: actívalo para conocer las funciones de Chrome</translation>
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
@@ -3636,6 +3631,7 @@ Detalles adicionales:
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">¿Confirmas que quieres quitar la sugerencia de formulario de Chrome?</translation>
 <translation id="781440967107097262">¿Quieres compartir el portapapeles?</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Papel (liso)</translation>
 <translation id="7815407501681723534">Se encontraron <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> para "<ph name="SEARCH_STRING" />"</translation>
 <translation id="7822611063308883975">Consolas de juegos portátiles</translation>
@@ -3800,6 +3796,7 @@ Detalles adicionales:
 <translation id="8148608574971654810">Versión de PDF:</translation>
 <translation id="8149426793427495338">La computadora se suspendió.</translation>
 <translation id="8150722005171944719">El archivo de <ph name="URL" /> no se puede leer. Es posible que se haya eliminado o movido o que se impida el acceso a los permisos del archivo.</translation>
+<translation id="8151185429379586178">Herramientas del programador</translation>
 <translation id="8153865548451212769">{0,plural, =1{La política del administrador no recomienda descargar este archivo en <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda descargar estos archivos en <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Equipo para hockey</translation>
 <translation id="8161095570253161196">Reanudar la navegación</translation>

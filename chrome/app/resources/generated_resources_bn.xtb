@@ -438,6 +438,7 @@
 <translation id="1307165550267142340">আপনার পিন তৈরি করা হয়েছে</translation>
 <translation id="1307431692088049276">আমাকে আর জিজ্ঞাসা করবেন না</translation>
 <translation id="1307559529304613120">ওহো! সিস্টেমটি এই ডিভাইসের জন্য দীর্ঘমেয়াদি এপিআই অ্যাক্সেস টোকেন সঞ্চয় করতে ব্যর্থ হয়েছে৷</translation>
+<translation id="1308548450293664112">আমি এই ফাইলটি তৈরি করেছি, রেডিও বাটন গ্রুপ, উপলভ্য তিনটি বিকল্পের মধ্যে প্রথমটি</translation>
 <translation id="1308876641060960899">আপনি Google Lens ব্যবহার করার সময়, পৃষ্ঠার স্ক্রিনশট Google-এ পাঠানো হয়। <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">পছন্দমতো বিজ্ঞাপন সাজানোর বিষয়টিকে প্রভাবিত করে এমন ডেটা মুছে দেওয়া হয়</translation>
 <translation id="1311294419381837540">আপনি একটি ট্যাব কাস্ট করছেন। আপনি যেকোনও সময় কাস্টিং পজ অথবা বন্ধ করতে পারবেন।</translation>
@@ -682,6 +683,7 @@
 <translation id="1485197926103629489">Microsoft 365-এর জন্য ফাইল OneDrive-এ সেভ করতে হবে। স্থানীয় ফাইল সরানো এবং অন্য লোকেশনের ফাইল কপি করা হবে। আপনার ফাইল Files অ্যাপের মধ্যে Microsoft OneDrive ফোল্ডারে খুঁজে পাওয়া যেতে পারে।</translation>
 <translation id="1486012259353794050">আপনি কোনও প্রশ্ন জিজ্ঞাসা করলে, আপনার স্ক্রিনের ভিত্তিতে Google Assistant আরও ভালোভাবে উত্তর দেয়</translation>
 <translation id="1486096554574027028">পাসওয়ার্ড খুঁজুন</translation>
+<translation id="1486458761710757218">কীবোর্ড ব্যাকলাইটের উজ্জ্বলতা অটোমেটিক অ্যাডজাস্ট করুন</translation>
 <translation id="1486486872607808064">আপনি যে <ph name="APP_NAME" />-এর জন্য একটি পাসকি তৈরি করতে চান সেই ডিভাইসে একটি ক্যামেরা দিয়ে এই QR কোডটি স্ক্যান করুন।</translation>
 <translation id="1486616492435615702">ড্রাফ্ট তৈরি করুন বা আগে থাকা কাজ রিফাইন করুন।</translation>
 <translation id="1487335504823219454">চালু - কাস্টম সেটিংস</translation>
@@ -906,6 +908,7 @@
 <translation id="1633947793238301227">Google Assistant অ্যাপ বন্ধ করুন</translation>
 <translation id="1634224622052500893">ওয়াই-ফাই নেটওয়ার্ক পাওয়া গেছে</translation>
 <translation id="1634783886312010422">আপনি কি <ph name="WEBSITE" />-এ আগে থেকেই এই পাসওয়ার্ড পরিবর্তন করেছেন?</translation>
+<translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{ট্যাব সরিয়ে গ্রুপ মুছে দেবেন?}=1{ট্যাব সরিয়ে গ্রুপ মুছে দেবেন?}one{ট্যাব সরিয়ে গ্রুপ মুছে দেবেন?}other{ট্যাব সরিয়ে গ্রুপগুলি মুছে দেবেন?}}</translation>
 <translation id="1636212173818785548">ঠিক আছে</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />অ্যাপের সেভ করা (ডেভেলপার সেটিংসের উপর নির্ভর করে) পরিচিতি, মেসেজ ও ফটোর মতো যেকোনও ডেটাকে অ্যাপ ডেটা বলা হয়। আপনার Drive স্টোরেজ কোটার মধ্যে ব্যাক-আপ ডেটা ধরা হবে না।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />আপনি সেটিংস থেকে এই পরিষেবা বন্ধ করে দিতে পারেন।<ph name="END_PARAGRAPH2" /></translation>
@@ -982,6 +985,7 @@
 <translation id="168991973552362966">আশেপাশের একটি প্রিন্টার যোগ করুন</translation>
 <translation id="1689945336726856614">ওইউআরএল কপি করুন</translation>
 <translation id="1690068335127678634">স্প্লিট স্ক্রিনের সুবিধা সেট আপ</translation>
+<translation id="1690443285859726589">শনাক্তকরণ থ্রেশহোল্ড অ্যাডজাস্ট করুন যাতে আপনি স্বাচ্ছন্দ্যে জেসচার ট্রিগার করতে পারেন</translation>
 <translation id="1692115862433274081">অন্য অ্যাকাউন্ট ব্যবহার করুন</translation>
 <translation id="1692118695553449118">সিঙ্ক চালু রয়েছে</translation>
 <translation id="1692210323591458290">গাঢ় বেগুনি</translation>
@@ -2578,6 +2582,7 @@
 <translation id="2801134910297796778"><ph name="EMAIL" />-এ সাইন-ইন করেছে</translation>
 <translation id="2801954693771979815">স্ক্রিন সাইজ</translation>
 <translation id="2802557211515765772">কোনও ম্যানেজ করা প্রিন্টার নেই।</translation>
+<translation id="2802911274872454492">জেসচার সেটিং: <ph name="SELECTED_GESTURE" /></translation>
 <translation id="2803313416453193357">ফোল্ডার খুলুন</translation>
 <translation id="2803719750464280163">কনফার্ম করুন যে <ph name="PASSKEY" /> হল ব্লুটুথ ডিভাইসে <ph name="DEVICE" /> দেখানো পাসকী।</translation>
 <translation id="2804043232879091219">অন্য ব্রাউজারটি খোলা যায়নি</translation>
@@ -4445,7 +4450,6 @@
 <translation id="4163560723127662357">অজানা কীবোর্ড</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" />-এর কোনও সঠিক সংস্থার সাথে সম্পর্ক নেই। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। আপনি অ্যাডমিনিস্ট্রেটর হলে এই ইউআরএলে গিয়ে আপনার সংস্থা সেট আপ করতে পারবেন: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">সাইটের সেটিংস</translation>
-<translation id="4166847326079525123">Windows সিস্টেম প্রেফারেন্সে লোকেশন বন্ধ করা আছে</translation>
 <translation id="4167212649627589331"><ph name="APP_NAME" /> <ph name="DEVICE_NAME" /> অ্যাক্সেস করার চেষ্টা করছে। অ্যাক্সেস করার অনুমতি দিতে, <ph name="DEVICE_NAME" />-এর প্রাইভেসি সুইচ বন্ধ করে দিন।</translation>
 <translation id="4167393659000039775">কোনও ডেটা হারিয়ে যাওয়ার ক্ষেত্রে Google দায়বদ্ধ নয় এবং <ph name="DEVICE_OS" /> সার্টিফায়েড নয় এমন মডেলে কাজ নাও করতে পারে। g.co/flex/InstallGuide থেকে আরও জানুন।</translation>
 <translation id="4167924027691268367"><ph name="SHORTCUT_TITLE" />-এর জন্য আরও শর্টকার্ট</translation>
@@ -5209,6 +5213,7 @@
 <translation id="4742970037960872810">হাইলাইট সরিয়ে দিন</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />অ্যাপ্লিকেশন কীভাবে আপডেট করতে হয় তা জানুন<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">ব্যবহারের অনুমতি দেওয়া হয়েছে – <ph name="PERMISSION_DETAILS" />। <ph name="LINK_BEGIN" />সিস্টেম মাইক্রোফোনের অ্যাক্সেস<ph name="LINK_END" /> চালু করুন।</translation>
+<translation id="4744260496658845719">কীবোর্ড ব্যাকলাইটের উজ্জ্বলতা</translation>
 <translation id="4744268813103118742">সাইটে যান</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{সাইট আনমিউট করুন}one{সাইট আনমিউট করুন}other{সাইট আনমিউট করুন}}</translation>
@@ -5991,6 +5996,7 @@
 <translation id="5320261549977878764">গ্রুপ সেভ করা হয়নি</translation>
 <translation id="5321325624576443340">Google Lens উপলভ্য নেই। পরে আবার চেষ্টা করুন।</translation>
 <translation id="532247166573571973">সার্ভারে সংযোগ নাও হতে পারে। পরে আবার চেষ্টা করুন।</translation>
+<translation id="5322961556184463700">'আপনি কেন এই ফাইলটি ডাউনলোড করেছেন তা আমাদের বলুন' সমীক্ষা</translation>
 <translation id="5323328004379641163">Chrome ও এই পৃষ্ঠা কেমন দেখাবে তা কাস্টমাইজ করুন</translation>
 <translation id="5324300749339591280">অ্যাপ তালিকা</translation>
 <translation id="5324780743567488672">আপনার লোকেশন ব্যবহার করে স্বয়ংক্রিয়ভাবে সময় অঞ্চল সেট করুন</translation>
@@ -6159,6 +6165,7 @@
 <translation id="5449551289610225147">ভুল পাসওয়ার্ড</translation>
 <translation id="5449588825071916739">সবকটি ট্যাব বুকমার্ক করুন...</translation>
 <translation id="5449716055534515760">Close Win&amp;dow</translation>
+<translation id="5449932659532574495">ব্লুটুথ ডিভাইসগুলি এক্সপ্লোর করতে <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="5450469615146335984">প্রতিটি অ্যাকশনের শর্টকাট বেছে নিন</translation>
 <translation id="545133051331995777">কোনও নেটওয়ার্ক কানেকশন নেই</translation>
 <translation id="5452446625764825792">আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া এবং অ্যাপ দেখতে পারেন</translation>
@@ -6754,7 +6761,6 @@
 <translation id="5885314688092915589">আপনার প্রতিষ্ঠান এই প্রোফাইল ম্যানেজ করবে</translation>
 <translation id="5885470467814103868">স্ক্যান চালু করুন</translation>
 <translation id="5885631909150054232">টোকেন কপি করুন</translation>
-<translation id="5886000783338788034">ChromeOS সেটিংসে লোকেশন অ্যাক্সেস করার সুবিধা বন্ধ করা আছে</translation>
 <translation id="5886009770935151472">আঙুল ১</translation>
 <translation id="5886112770923972514">আশেপাশের ডিভাইসে কানেক্ট করে দ্রুত পেয়ার সেট-আপ করুন</translation>
 <translation id="5886384907280980632">এখনই বন্ধ করুন</translation>
@@ -7202,6 +7208,7 @@
 <translation id="6216696360484424239">অটোমেটিক সাইন-ইন হয়ে যাবে</translation>
 <translation id="6217806119082621377">শেয়ার করা ফোল্ডার, <ph name="SPECIFIC_NAME" />-এর মধ্যে <ph name="BASE_DIR" />-এ পাওয়া যাবে।</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> অফলাইন আছে৷ ইন্টারনেটে কানেক্ট করে আবার চেষ্টা করুন৷</translation>
+<translation id="6219595088203793892">আমি ঝুঁকি নিতে রাজি আছি, রেডিও বাটন গ্রুপ, উপলভ্য তিনটি বিকল্পের মধ্যে তৃতীয়টি</translation>
 <translation id="6220413761270491930">এক্সটেনশন লোড হওয়ার সময় সমস্যা</translation>
 <translation id="622125358038862905">{NUM_OF_FILES,plural, =1{ফাইল <ph name="CLOUD_PROVIDER" />-এ কপি করা যাচ্ছে না}one{ফাইল <ph name="CLOUD_PROVIDER" />-এ কপি করা যাচ্ছে না}other{ফাইল <ph name="CLOUD_PROVIDER" />-এ কপি করা যাচ্ছে না}}</translation>
 <translation id="6224481128663248237">বিন্যাসন সফলভাবে সম্পূর্ণ</translation>
@@ -7740,6 +7747,7 @@
 <translation id="6628328486509726751"><ph name="WEBRTC_LOG_UPLOAD_TIME" /> এ আপলোড করা হয়েছে</translation>
 <translation id="6630117778953264026">শক্তিশালী সুরক্ষা</translation>
 <translation id="6630752851777525409">আপনার পক্ষ থেকে একটি সার্টিফিকেট প্রমাণীকৃত করতে <ph name="EXTENSION_NAME" /> সেটিতে স্থায়ী অ্যাক্সেস চায়।</translation>
+<translation id="6634220840123396409">আমার মনে হয় সাইটটি বিশ্বাসযোগ্য, রেডিও বাটন গ্রুপ, উপলভ্য তিনটি বিকল্পের মধ্যে দ্বিতীয়টি</translation>
 <translation id="6635362468090274700">ডিভাইস দেখতে না পাওয়া পর্যন্ত কেউই আপনার সাথে শেয়ার করতে পারবে না।<ph name="BR" /><ph name="BR" />সাময়িকভাবে নিজের ডিভাইস দেখাতে, 'স্ট্যাটাস এরিয়া' বিকল্প খুলুন, তারপরে 'নিয়ারবাই দৃশ্যমানতা' ফিচার চালু করুন।</translation>
 <translation id="6635674640674343739">নেটওয়ার্ক কানেকশন সেট-আপ করা যাচ্ছে না। আপনার নেটওয়ার্ক কানেকশন চেক করে আবার চেষ্টা করুন।</translation>
 <translation id="663569763553406962">কোন কোন এক্সটেনশন, একটি সাইট দেখতে বা পরিবর্তন করতে পারবে তা দেখুন</translation>
@@ -8035,6 +8043,7 @@
         আপনি কার্ড মেনু থেকে সেটিংস ম্যানেজ করতে বা কাস্টমাইজ Chrome থেকে আরও বিকল্প দেখতে পারবেন।</translation>
 <translation id="6831043979455480757">অনুবাদ</translation>
 <translation id="6832218595502288407">বাঁদিকে সারিবদ্ধ করুন</translation>
+<translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{ট্যাব সরিয়ে গ্রুপ মুছে দেবেন?}=1{ট্যাব সরিয়ে গ্রুপ মুছে দেবেন?}one{ট্যাব সরিয়ে গ্রুপ মুছে দেবেন?}other{ট্যাব সরিয়ে গ্রুপগুলি মুছে দেবেন?}}</translation>
 <translation id="6833479554815567477">এই গ্রুপ থেকে ট্যাব সরানো হয়েছে: <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">ব্য়ালেন্স (সাজেস্ট করা হয়েছে)</translation>
 <translation id="6835762382653651563">আপনার <ph name="DEVICE_TYPE" /> আপডেট করার জন্য দয়া করে ইন্টারনেটে সংযুক্ত হোন।</translation>
@@ -8658,6 +8667,7 @@
 <translation id="7311244614769792472">কোনও ফলাফল পাওয়া যায়নি</translation>
 <translation id="7312040805247765153">অ্যাপ ইনস্টল করা যাচ্ছে না</translation>
 <translation id="7312210124139670355">আপনার অ্যাডমিনিস্ট্রেটর আপনার ই-সিম রিসেট করছেন। এতে কয়েক মিনিট সময় লাগতে পারে।</translation>
+<translation id="7313539585802573958">কীবোর্ড ব্যাকলাইটের রঙ</translation>
 <translation id="7314989823816739632">রোম্যান্টিক</translation>
 <translation id="7317831949569936035">স্কুলে নথিভুক্ত করা</translation>
 <translation id="7319320447721994672">কুকি ব্যবহার করে এমন কোনও সাইট আপনি ভিজিট করলে, সাইটের সব ফিচার যাতে কাজ করে সেইজন্য সাময়িকভাবে আপনাকে কুকি চালু করতে হতে পারে।</translation>
@@ -8916,6 +8926,7 @@
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495149565104413027">Android অ্যাপ</translation>
 <translation id="7495217365392072364">একই ধরনের ট্যাব সাজান</translation>
+<translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">আপনার সাম্প্রতিক কোনও ক্যাপচার করা WebRTC টেক্সট লগ নেই।</translation>
 <translation id="7501957181231305652">অথবা</translation>
 <translation id="7502220299952823578">"এইসব সাইট সব সময় অ্যাক্টিভ রাখুন" তালিকায় যোগ করুন</translation>
@@ -8931,6 +8942,7 @@
 <translation id="7506242536428928412">নতুন নিরাপত্তা কী ব্যবহার করতে, নতুন পিন সেট করুন</translation>
 <translation id="7506541170099744506">আপনার <ph name="DEVICE_TYPE" /> এন্টারপ্রাইজ পরিচালনার জন্য সফলভাবে নথিভুক্ত হয়েছে।</translation>
 <translation id="7507207699631365376">এই পরিষেবা প্রদানকারীর <ph name="BEGIN_LINK" />গোপনীয়তা নীতি<ph name="END_LINK" /> দেখুন</translation>
+<translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{ট্যাব বন্ধ করে গ্রুপ মুছে দেবেন?}=1{ট্যাব বন্ধ করে গ্রুপ মুছে দেবেন?}one{ট্যাব বন্ধ করে গ্রুপ মুছে দেবেন?}other{ট্যাব বন্ধ করে গ্রুপগুলি মুছে দেবেন?}}</translation>
 <translation id="7509097596023256288">ম্যানেজমেন্ট সেট আপ করা হচ্ছে</translation>
 <translation id="7509246181739783082">আপনার পরিচয় যাচাই করুন</translation>
 <translation id="7509539379068593709">অ্যাপ আনইনস্টল করুন</translation>
@@ -8959,7 +8971,6 @@
 <translation id="7529865045818406536">একাধিক নেটওয়ার্ক উপলভ্য থাকলে বেছে নেওয়া নেটওয়ার্ক ব্যবহার করা হবে</translation>
 <translation id="7529876053219658589">{0,plural, =1{'গেস্ট' উইন্ডো বন্ধ করুন}one{'গেস্ট' উইন্ডো বন্ধ করুন}other{'গেস্ট' উইন্ডো বন্ধ করুন}}</translation>
 <translation id="7530016656428373557">ওয়াটে ডিসচার্জের হার</translation>
-<translation id="7531310913436731628">Mac-এর পছন্দসই সিস্টেম সেটিংয়ে লোকেশন ব্যবহার করার সুবিধা বন্ধ করা আছে</translation>
 <translation id="7531771599742723865">ডিভাইসটি ব্যবহার করা হচ্ছে</translation>
 <translation id="7531779363494549572">সেটিংস &gt; অ্যাপ এবং বিজ্ঞপ্তি &gt; বিজ্ঞপ্তিতে যান।</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> উত্তর দিচ্ছে না। অ্যাপটি বন্ধ করতে "জোর করে বন্ধ করুন" বিকল্পটি বেছে নিন।</translation>
@@ -9008,6 +9019,7 @@
 <translation id="756876171895853918">অবতার কাস্টমাইজ করুন</translation>
 <translation id="7568790562536448087">আপডেট হচ্ছে</translation>
 <translation id="7569983096843329377">কালো</translation>
+<translation id="7570548610653957960">আমাকে পড়তে সাহায্য করো</translation>
 <translation id="7571643774869182231">আপডেটের জন্য যথেষ্ট জায়গা নেই</translation>
 <translation id="7573172247376861652">ব্যাটারি চার্জ</translation>
 <translation id="7573594921350120855">ভিডিও চ্যাটের মতো যোগাযোগ ফিচারের জন্য সাইট সাধারণত আপনার ভিডিও ক্যামেরা ব্যবহার করে</translation>
@@ -10859,6 +10871,7 @@
 <translation id="888256071122006425">মাউস ও টাচপ্যাড সেটিংস</translation>
 <translation id="8883273463630735858">টাচপ্যাড অ্যাক্সিলারেশন বিকল্পটি চালু করুন</translation>
 <translation id="8883478023074930307">ব্যবহার এবং ডায়াগনস্টিক সম্পর্কিত ডেটা পাঠান। এই ডিভাইস বর্তমানে Google-কে ডায়াগনস্টিক, ডিভাইস এবং অ্যাপ ব্যবহারের ডেটা অটোমেটিক পাঠাচ্ছে। এটি সিস্টেম ও অ্যাপের স্থায়িত্ব বাড়াতে এবং অন্যান্য উন্নতিতে সাহায্য করবে। কিছু পরিমাণ মোট ডেটা Android ডেভেলপারের মতো Google অ্যাপ এবং পার্টনারদেরও সাহায্য করবে। এই <ph name="BEGIN_LINK1" />সেটিং<ph name="END_LINK1" /> মালিকের নিয়ন্ত্রণে রয়েছে। আপনার অতিরিক্ত ওয়েব ও অ্যাপ অ্যাক্টিভিটি সেটিং চালু থাকলে, এই ডেটা আপনার Google অ্যাকাউন্টে সেভ করা হতে পারে। <ph name="BEGIN_LINK2" />মেট্রিক সম্পর্কে আরও জানুন<ph name="BEGIN_LINK2_END" />আরও জানুন<ph name="END_LINK2" /></translation>
+<translation id="8883722590720107848">আমার মনে হয় সাইটটি বিশ্বাসযোগ্য (<ph name="SITE_URL" />), রেডিও বাটন গ্রুপ, উপলভ্য তিনটি বিকল্পের মধ্যে দ্বিতীয়টি</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />আপনি কীভাবে ডেটা ম্যানেজ করতে পারেন:<ph name="END_BOLD" /> আপনার গোপনীয়তা রক্ষা করতে, আমরা ৪ সপ্তাহের বেশি পুরনো সাইট তালিকা থেকে অটোমেটিক মুছে ফেলি। আপনি আবার ভিজিট করেছেন এমন সাইট তালিকায় আবার দেখা যেতে পারে। অথবা যদি আপনি না চান যে কোনও সাইট আপনার আগ্রহকে ব্যাখ্যা করুক তাহলে সেই সাইটটি আপনি সরিয়ে দিতে পারবেন।</translation>
 <translation id="8884570509232205463">তোমার ডিভাইস এখন <ph name="UNLOCK_TIME" />-এ লক হয়ে যায়।</translation>
 <translation id="8885449336974696155"><ph name="BEGIN_LINK" />বর্তমান সেটিংস<ph name="END_LINK" /> সম্পর্কে মতামত দিয়ে ChromeOS-কে আরও উন্নত করে তুলতে সাহায্য করুন</translation>
@@ -11209,6 +11222,7 @@
     <ph name="BEGIN_PARAGRAPH2" />ইনস্টল করার জন্য প্রস্তুত না থাকলে, এটা করে দেখতে, ইউএসবি ব্যবহার করে চালিয়ে দেখতে পারেন। এটি আপনার বর্তমান OS ও ডেটা রাখবে তবে হয়ত দেখবেন যে, স্টোরেজ ও পারফর্ম্যান্সের সীমা কমে গেছে।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9120761757252614786">টুলবার কাস্টমাইজ করুন</translation>
 <translation id="9121814364785106365">পিন করা ট্যাব হিসেবে খুলুন</translation>
+<translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{ট্যাব বন্ধ করে গ্রুপ মুছে দেবেন?}=1{ট্যাব বন্ধ করে গ্রুপ মুছে দেবেন?}one{ট্যাব বন্ধ করে গ্রুপ মুছে দেবেন?}other{ট্যাব বন্ধ করে গ্রুপগুলি মুছে দেবেন?}}</translation>
 <translation id="9122788874051694311">ছদ্মবেশী মোডের বাইরে এই পাসকী সেভ করতে চান?</translation>
 <translation id="9123287046453017203">আপনার ডিভাইস আপ-টু-ডেট নেই</translation>
 <translation id="9125910124977405374">অটোমেটিক অনুবাদ হওয়া ভাষা থেকে <ph name="LANGUAGE_NAME" /> সরান</translation>

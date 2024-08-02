@@ -976,6 +976,7 @@ Povezan je 1 uređaj.</translation>
 <translation id="453661520163887813">Do potpune napunjenosti je preostalo <ph name="TIME" /></translation>
 <translation id="4538824937723742295">Snimanje cijelog ekrana</translation>
 <translation id="4539127209940689201">Štampanje trenutne stranice</translation>
+<translation id="4541505619120536051">Otvori uvijek</translation>
 <translation id="4541706525461326392">Uklanjanje profila. To može potrajati nekoliko minuta.</translation>
 <translation id="4544483149666270818">Odaberite prozor za snimanje</translation>
 <translation id="4545950850562423083">Sačuvajte trenutnu stranicu kao oznaku</translation>
@@ -1488,6 +1489,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6232891689835436217">Aplikacija <ph name="APP_NAME" /> trenutno koristi vašu kameru i mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Gornje dugme</translation>
+<translation id="6240821072888636753">Pitaj svaki put</translation>
 <translation id="6247728804802644171">Otvorite obavještenja</translation>
 <translation id="6249795363855770621">Označavanje zadatka kao završenog nije uspjelo. Pokušajte ponovo kada budete online.</translation>
 <translation id="6254629735336163724">Zaključano na horizontalnom prikazu</translation>
@@ -1831,6 +1833,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7557816257942363084">Aplikacija <ph name="APP_NAME" /> trenutno koristi vaš mikrofon</translation>
 <translation id="7561982940498449837">Zatvori meni</translation>
 <translation id="7564874036684306347">Pomjeranje prozora na drugu radnu površinu može uzrokovati neočekivano ponašanje. Naknadna obavještenja, prozori i dijalozi mogu biti podijeljeni između ekrana.</translation>
+<translation id="7568790562536448087">Ažuriranje</translation>
 <translation id="7569509451529460200">Braillevo pismo i ChromeVox su omogućeni</translation>
 <translation id="7569886975397378678">Odbacivanje postavljanja pregledanja obavještenja i aplikacija telefona</translation>
 <translation id="7571361473021531288">Preostalo je <ph name="BATTERY_PERCENTAGE" />% baterije | još <ph name="TIME" /></translation>
@@ -1960,7 +1963,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7963992254934562106">S telefona <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Odaberite folder...</translation>
 <translation id="7973756967040444713">Zatvaranje alatne trake</translation>
-<translation id="797485111629834774">Označavanje zadatka kao završenog: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Uključite ili isključite povećalo preko cijelog ekrana</translation>
 <translation id="7977927628060636163">Traženje mobilnih mreža...</translation>
 <translation id="7982789257301363584">Mreža</translation>

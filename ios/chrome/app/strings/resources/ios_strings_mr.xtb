@@ -324,6 +324,7 @@
 <translation id="2635918910848538771">CVC ऑटोफिल करा</translation>
 <translation id="2637313651144986786">टॅब शोधा...</translation>
 <translation id="2640733327287333451">वापरकर्ता नाव नाही ••••••</translation>
+<translation id="264215785133931186">नुकताच तपासला</translation>
 <translation id="2648721026697078500">कधीच हलवू नका</translation>
 <translation id="2648803196158606475">वाचलेले हटवा</translation>
 <translation id="2664621323652615289">थांबवा</translation>
@@ -797,6 +798,7 @@
 <translation id="4937410517508563815">पासवर्ड खात्यामध्ये सेव्ह करा</translation>
 <translation id="4938338714234463591">हे तुम्हाला वेबसाइटवर विशिष्ट वैशिष्ट्यांसह तुमचा आवाज वापरू देईल.</translation>
 <translation id="4941089862236492464">क्षमस्व, तुमचा आयटम शेअर करताना समस्या आली.</translation>
+<translation id="4942382218961352935">नुकताच तपासला</translation>
 <translation id="4944543191714094452">या पेजमध्ये शोधा…</translation>
 <translation id="4945756290001680296">पासवर्ड सेटिंग्ज अ‍ॅक्सेस करा</translation>
 <translation id="4958444002117714549">सूची विस्तार करा</translation>
@@ -1489,7 +1491,6 @@
 <translation id="8237382152611443140">AutoFill पासवर्ड सेटिंग्ज उघडा</translation>
 <translation id="8248969482078657578">इनॅक्टिव्ह टॅब तुम्हाला लक्ष केंद्रित करण्यात मदत करतात</translation>
 <translation id="8261506727792406068">हटवा</translation>
-<translation id="8263336784344783289">या गटाला नाव द्या</translation>
 <translation id="8263809106706527890">तुमच्या डीफॉल्ट ब्राउझर सेटिंग्जमध्ये बदल झाल्याची शक्यता आहे. तुम्ही सेटिंग्जमध्ये हे तपासू शकता.</translation>
 <translation id="8264966119170358612">तुमचे सेव्ह केलेले काही पासवर्ड हे Google ऐवजी तृतीय पक्षाच्या डेटा भंगामध्ये उघड झाले होते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">तुमच्या iPad रीसेटचा भाग म्हणून तुम्हाला <ph name="USER_NAME" /> खात्यामधून साइन आउट केले गेले होते. पुन्हा साइन इन करण्यासाठी, खाली "पुढे सुरू ठेवा" वर टॅप करा.</translation>

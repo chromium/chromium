@@ -144,6 +144,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="5131565040785979529">La tua organizzazione, <ph name="DOMAIN" />, gestisce l'account a cui hai eseguito l'accesso e la modalità di utilizzo di Chromium.</translation>
 <translation id="5146749061471423558">Aggiungi preferiti a Chromium</translation>
 <translation id="5171868502429358653">Accedi a Chromium</translation>
+<translation id="5203483872492817335">Accedi più velocemente a Chromium dal dock della schermata Home del tuo iPad.</translation>
 <translation id="5213683223491576284">Apre Gestore delle password in Chromium.</translation>
 <translation id="5224391634244552924">Nessuna password salvata. Chromium può controllare le password quando le salvi.</translation>
 <translation id="5242782538551259282">Alcuni dati di Chromium non sono ancora stati salvati nel tuo Account Google.
@@ -225,6 +226,7 @@ Aspetti da considerare:
 Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google o memorizzata da Google. Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Chromium nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Le notifiche di Chromium sono attualmente disattivate nelle impostazioni del dispositivo.</translation>
 <translation id="7222001353246886083">Cerca ${searchPhrase} in Chromium</translation>
+<translation id="7228180817326917122">Suggerimento per Chromium: scegli la posizione della barra degli indirizzi</translation>
 <translation id="725427773388857052">Chromium può contribuire a proteggerti da violazioni dei dati, siti web non sicuri e non solo.</translation>
 <translation id="7269362888766543920">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chromium. Prova a disinstallarli.</translation>
 <translation id="7285031092584344905">Accedi alle tue password di Chromium e ad altri dati in altre app.</translation>
@@ -247,6 +249,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="7928628054454574139">Apri Chromium ogni volta che tocchi link in altre app</translation>
 <translation id="7931842119211730154">Blocca le schede di navigazione in incognito quando chiudi Chromium</translation>
 <translation id="7934404985878918282">Visualizza l'elenco di lettura di Chromium</translation>
+<translation id="7947765692209663835">Accedi più velocemente a Chromium dal dock della schermata Home del tuo iPhone.</translation>
 <translation id="7971753607796745700">Aggiungi l'elemento dell'elenco di lettura a Chromium</translation>
 <translation id="7980860476903281594">Chromium condivide la tua posizione con i siti autorizzati da te.</translation>
 <translation id="7994322153108931467">Per ricevere suggerimenti utili su Chromium, attiva le notifiche nelle impostazioni di iOS.</translation>
@@ -265,6 +268,8 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="8386869251364507178">Azioni di Chromium</translation>
 <translation id="8409374867500149834">Disponi della misura di sicurezza più efficace di Chromium contro siti web pericolosi</translation>
 <translation id="8458950033462118672">Puoi aprire automaticamente i link in Chromium impostandolo come app browser predefinita.</translation>
+<translation id="8473874987831035139">Suggerimento per Chromium: sposta Chromium nel dock</translation>
+<translation id="8502918057530111907">Usa Chromium per impostazione predefinita per ottenere facilmente approfondimenti sul prezzo</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuto. I dati salvati solo su questo dispositivo mentre avevi eseguito l'accesso verranno eliminati. Potrebbero essere incluse cronologia e password.}other{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuti. I dati salvati solo su questo dispositivo mentre avevi eseguito l'accesso verranno eliminati. Potrebbero essere incluse cronologia e password.}}</translation>
 <translation id="858114650497379505">Puoi utilizzare le password salvate con Gestore delle password in altre app sull'iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Tutti i diritti riservati.</translation>

@@ -413,6 +413,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516416533263263796">已开启专注模式，还剩 10 分钟</translation>
 <translation id="2516637483312286228">修改游戏控件</translation>
+<translation id="252054055865191167">标记工具</translation>
 <translation id="2526581474998477112">解锁窗口</translation>
 <translation id="2528111225373402384">热点设置</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -974,6 +975,7 @@
 <translation id="453661520163887813"><ph name="TIME" /> 后充满</translation>
 <translation id="4538824937723742295">截取整个屏幕</translation>
 <translation id="4539127209940689201">打印当前网页</translation>
+<translation id="4541505619120536051">一律打开</translation>
 <translation id="4541706525461326392">正在移除配置文件。这可能需要几分钟的时间。</translation>
 <translation id="4544483149666270818">选择一个窗口即可录制</translation>
 <translation id="4545950850562423083">将当前网页保存为书签</translation>
@@ -1485,6 +1487,7 @@
 <translation id="6232891689835436217"><ph name="APP_NAME" />正在使用您的摄像头和麦克风</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">顶部按钮</translation>
+<translation id="6240821072888636753">每次都询问</translation>
 <translation id="6247728804802644171">打开通知</translation>
 <translation id="6249795363855770621">无法标记为完成。请在联网后重试。</translation>
 <translation id="6254629735336163724">已锁定为横向</translation>
@@ -1828,6 +1831,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" />正在使用您的麦克风</translation>
 <translation id="7561982940498449837">关闭菜单</translation>
 <translation id="7564874036684306347">将窗口移至另一桌面可能会导致出现意外行为 - 后续的通知、窗口和对话框可能会被拆分到不同的桌面中。</translation>
+<translation id="7568790562536448087">更新</translation>
 <translation id="7569509451529460200">已启用盲文和 ChromeVox</translation>
 <translation id="7569886975397378678">取消设置查看手机中的通知和应用</translation>
 <translation id="7571361473021531288">电池电量为 <ph name="BATTERY_PERCENTAGE" />% | 还需 <ph name="TIME" />才能充满</translation>
@@ -1957,7 +1961,6 @@
 <translation id="7963992254934562106">来自 <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">选择文件夹…</translation>
 <translation id="7973756967040444713">关闭工具栏</translation>
-<translation id="797485111629834774">将以下任务标记为已完成：<ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">开启或关闭全屏放大镜</translation>
 <translation id="7977927628060636163">正在搜索移动网络…</translation>
 <translation id="7982789257301363584">网络</translation>

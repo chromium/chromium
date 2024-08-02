@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL afgekapt</translation>
 <translation id="1448064542941920355">Zoomniveau verkleinen</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
+<translation id="1500473259453106018">Kaart Prijsdalingen op tabbladen verbergen</translation>
 <translation id="1510341833810331442">Sites mogen geen gegevens opslaan op je apparaat</translation>
 <translation id="1547123415014299762">Cookies van derden zijn toegestaan</translation>
 <translation id="1568470248891039841">Sites die je bezoekt, kunnen content van andere sites insluiten, zoals afbeeldingen, advertenties en tekst. Deze andere sites kunnen toestemming vragen om informatie te gebruiken die ze over jou hebben opgeslagen terwijl je browst op de site. <ph name="BEGIN_LINK" />Meer informatie over ingesloten content<ph name="END_LINK" /></translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">Microfoon</translation>
 <translation id="3232293466644486101">Browsegegevens verwijderen…</translation>
 <translation id="3242646949159196181">Als deze optie aanstaat, kunnen sites geluid afspelen. Staat de optie uit, dan kunnen sites geen geluid afspelen.</translation>
+<translation id="3273479183583863618">Prijsdalingen op tabbladen</translation>
 <translation id="3277252321222022663">Sites toegang geven tot sensoren (aanbevolen)</translation>
 <translation id="3285500645985761267">Toestaan dat gerelateerde sites je activiteit in de groep zien</translation>
 <translation id="3295019059349372795">Hoofdstuk 11: De prachtige Smaragden Stad van Oz</translation>
@@ -359,6 +361,7 @@
 <translation id="6818926723028410516">Items selecteren</translation>
 <translation id="6840760312327750441">Groepeer tabbladen door ze vast te houden en naar andere tabbladen te slepen.</translation>
 <translation id="6864395892908308021">Dit apparaat kan NFC niet lezen</translation>
+<translation id="6870169401250095575">Kaart Veiligheidscheck verbergen</translation>
 <translation id="6912998170423641340">Voorkomen dat sites tekst en afbeeldingen vanaf het klembord kunnen lezen</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6950072572526089586">Een site die je bezoekt, kan informatie over je activiteiten opslaan zodat deze werkt zoals verwacht, bijvoorbeeld om je ingelogd te houden op een site of artikelen in je winkelwagen op te slaan. Sites slaan deze informatie vaak tijdelijk op je apparaat op.</translation>
@@ -426,6 +429,7 @@
 <translation id="7986741934819883144">Een contact selecteren</translation>
 <translation id="7990211076305263060">Als deze optie aanstaat, kunnen sites om toegang tot je microfoon vragen. Staat de optie uit, dan kunnen sites je microfoon niet gebruiken.</translation>
 <translation id="8007176423574883786">Uitgezet voor dit apparaat</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Kaart Doorgaan met dit tabblad verbergen}other{Kaart Doorgaan met deze tabbladen verbergen}}</translation>
 <translation id="802154636333426148">Downloaden mislukt</translation>
 <translation id="8042586301629853791">Sorteren op:</translation>
 <translation id="8067883171444229417">Video afspelen</translation>

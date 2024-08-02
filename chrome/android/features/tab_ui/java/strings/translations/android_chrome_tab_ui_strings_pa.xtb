@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">ਸੰਤਰੀ</translation>
 <translation id="125153950246128346">ਕਿਸੇ ਹੋਰ ਟੈਬ ਨੂੰ ਦੇਖਣ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ਟੈਬ ਗਰੁੱਪ ਦੇ ਵਿਕਲਪ</translation>
+<translation id="1340839264183302272">ਗਰੁੱਪ ਛੱਡੋ</translation>
 <translation id="1419023007528516122">ਇਸ ਨਾਲ ਗਰੁੱਪ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਤੋਂ ਪੱਕੇ ਤੌਰ 'ਤੇ ਮਿਟ ਜਾਵੇਗਾ</translation>
 <translation id="1486715732399361704">ਤੁਸੀਂ ਇੱਥੇ ਆਪਣੇ ਸਾਰੇ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> ਮਿੰਟ ਪਹਿਲਾਂ ਬਣਾਇਆ ਗਿਆ}one{<ph name="NUM_MINS_MANY" /> ਮਿੰਟ ਪਹਿਲਾਂ ਬਣਾਇਆ ਗਿਆ}other{<ph name="NUM_MINS_MANY" /> ਮਿੰਟ ਪਹਿਲਾਂ ਬਣਾਇਆ ਗਿਆ}}</translation>
@@ -120,6 +121,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ਟੈਬ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਲਿਜਾਓ</translation>
 <translation id="6615455863669487791">ਮੈਨੂੰ ਦਿਖਾਓ</translation>
+<translation id="6694634756612002311">ਸਾਂਝਾਕਰਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6744956528665271406">ਗਰੁੱਪ ਦੇ ਰੰਗ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="6856809498882026482">ਬਹੁ-ਚੋਣ ਮੋਡ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰੋ}one{ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰੋ}other{ਟੈਬਾਂ ਨੂੰ ਸਾਂਝਾ ਕਰੋ}}</translation>
@@ -159,6 +161,7 @@
 <translation id="8398929769197326728">ਨਵਾਂ ਫੋਲਡਰ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8631711675211020168">ਹਰ ਕੋਈ <ph name="GROUP_NAME" /> ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ ਗੁਆ ਦੇਵੇਗਾ ਅਤੇ ਇਸਨੂੰ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
+<translation id="8633025649649592204">ਹਾਲੀਆ ਸਰਗਰਮੀ</translation>
 <translation id="870736955561925754">ਕੀ ਟੈਬ ਬੰਦ ਕਰ ਕੇ ਗਰੁੱਪ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="8714939927607906138">ਘੱਟ ਕੀਮਤ</translation>
 <translation id="8730621377337864115">ਹੋ ਗਿਆ</translation>
@@ -170,6 +173,7 @@
 <translation id="8926389886865778422">ਦੁਬਾਰਾ ਨਾ ਪੁੱਛੋ</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ਟੈਬ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।}one{<ph name="TABS_COUNT_MANY" /> ਟੈਬ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।}other{<ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਵਾਲੇ ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।}}</translation>
 <translation id="9090098097337832354">ਇਸ ਸਟੋਰ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਵਾਲੀ ਸਕ੍ਰੀਨ ਬੰਦ ਹੋ ਗਈ ਹੈ</translation>
+<translation id="9111228330448174435">ਨਵਾਂ ਟੈਬ ਗਰੁੱਪ ਬਣਾਉਣ 'ਤੇ ਵਿੰਡੋ ਦਿਖਾਓ</translation>
 <translation id="9150694013019234766">ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਲੇ ਪਾਸੇ ਆਪਣੇ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਟੈਬਾਂ ਦੀ ਅਦਲਾ-ਬਦਲੀ ਕਰੋ</translation>
 <translation id="9169594135889675189">ਗਰੁੱਪ ਵਿੱਚ ਨਵੀਂ ਟੈਬ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="9216898458513705996">ਟੈਬਾਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਖੁੱਲ੍ਹੀਆਂ ਰਹਿਣਗੀਆਂ ਪਰ <ph name="USER_EMAIL" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਗਰੁੱਪ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>

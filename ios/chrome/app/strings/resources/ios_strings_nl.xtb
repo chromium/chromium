@@ -885,6 +885,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5396950905475481456">Gezinsleden uitnodigen</translation>
 <translation id="5407969256130905701">Wijzigingen niet opslaan</translation>
 <translation id="5414763847370083940">Je krijgt een melding als de prijs op een site daalt.</translation>
+<translation id="5415289094036440596">Toegangssleutels kunnen niet worden gedeeld</translation>
 <translation id="5416022985862681400">Afgelopen 7 dagen</translation>
 <translation id="5416455648658732408">Verplaatsen naar tabbladgroep</translation>
 <translation id="5423269318075950257">Prijs volgen</translation>
@@ -1293,6 +1294,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="734758817008927353">Opties om een kaart op te slaan</translation>
 <translation id="7352651011704765696">Er is iets misgegaan</translation>
 <translation id="7353432112255316844">Bevestigen dat jij het bent</translation>
+<translation id="736564850024123010">Wijzig de positie van de adresbalk voor een aangepaste functionaliteit.</translation>
 <translation id="7367530036083223701">Krijg beveiligd toegang tot je wachtwoorden vanaf het startscherm met de widget Wachtwoordmanager.</translation>
 <translation id="7380220816562673297">Voorlopig kun je alleen wachtwoorden delen met gezinsleden. <ph name="BEGIN_LINK" />Maak een gezinsgroep<ph name="END_LINK" /> met maximaal 6 leden en haal meer uit je producten en abonnementen op Google.</translation>
 <translation id="739101637685146669">Welke URL wil je bookmarken?</translation>
@@ -1490,7 +1492,6 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8237382152611443140">Open de instellingen voor het automatisch invullen van wachtwoorden</translation>
 <translation id="8248969482078657578">Met Inactieve tabbladen blijf je gefocust</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
-<translation id="8263336784344783289">Deze groep een naam geven</translation>
 <translation id="8263809106706527890">Je standaard browserinstellingen zijn misschien gewijzigd. Je kunt dit nagaan in de instellingen.</translation>
 <translation id="8264966119170358612">Sommige van je opgeslagen wachtwoorden zijn openbaar gemaakt bij een gegevenslek van derden. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Je bent uitgelogd van je account <ph name="USER_NAME" /> omdat je iPad wordt gereset. Tik hieronder op Doorgaan om weer in te loggen.</translation>

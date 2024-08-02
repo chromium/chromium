@@ -23,6 +23,8 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="126567311906253476">Unapoingia katika akaunti za huduma za Google kama Gmail au YouTube ukitumia <ph name="USER_EMAIL" />, unaweza kuingia katika akaunti kiotomatiki kwenye Chromium ukitumia akaunti ile ile</translation>
 <translation id="1290883685122687410">Hitilafu ya kuweka mipangilio: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Weka mipangilio ya wasifu wako mpya wa Chromium</translation>
+<translation id="1324107359134968521">Chromium inahitaji ruhusa ya kufikia Bluetooth ili kugundua 
+ vifaa vyenye Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Futa pia data kutoka Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Umeingia kwenye Chromium!</translation>
 <translation id="1478370723027452770">Pata usaidizi kuhusu Chrome ya Majaribio</translation>
@@ -61,6 +63,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="1951406923938785464">Chromium imezuia upakuaji huu kwa sababu aina hii ya faili kwa kawaida haipakuliwi na huenda si salama</translation>
 <translation id="1953553007165777902">Inapakua... Zimesalia dakika <ph name="MINUTE" /></translation>
 <translation id="1966382378801805537">Chromium haijafaulu kubainisha wala kuweka kivinjari chaguomsingi</translation>
+<translation id="1990262977744080398">Fahamu kwa nini Chromium huzuia baadhi ya faili, huzifungua kwenye kichupo kipya</translation>
 <translation id="2008474315282236005">Hatua hii itafuta kipengee 1 kwenye kifaa hiki. Ili urejeshe data yako baadaye, ingia katika Chromium ukitumia <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Imeshindwa kusakinisha. Tafadhali jaribu tena.</translation>
 <translation id="2020032459870799438">Ili uangalie kama manenosiri yako mengine ni salama dhidi ya ufichuzi haramu wa data na matatizo mengine ya usalama, <ph name="BEGIN_LINK" />ingia katika akaunti kwenye Chromium<ph name="END_LINK" />.</translation>
