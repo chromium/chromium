@@ -33,6 +33,17 @@ source_set("parsing") {
   ]
 }
 
+source_set("prefs") {
+  sources = [
+    "plus_address_prefs.cc",
+    "plus_address_prefs.h",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+  ]
+}
+
 source_set("plus_addresses") {
   sources = [
     "affiliations/plus_address_affiliation_match_helper.cc",
