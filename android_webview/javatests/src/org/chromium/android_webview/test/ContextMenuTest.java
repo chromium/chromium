@@ -105,6 +105,9 @@ public class ContextMenuTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(
+        reason = "This test uses DOMUtils.longPressNode() which is known"
+        + " to be flaky under modified scaling factor, see crbug.com/40840940")
     public void testCopyLinkText() throws Throwable {
         int item = Item.COPY_LINK_TEXT;
 
@@ -122,6 +125,9 @@ public class ContextMenuTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(
+        reason = "This test uses DOMUtils.longPressNode() which is known"
+        + " to be flaky under modified scaling factor, see crbug.com/40840940")
     public void testCopyLinkURL() throws Throwable {
         int item = Item.COPY_LINK_ADDRESS;
 
@@ -139,6 +145,9 @@ public class ContextMenuTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(
+        reason = "This test uses DOMUtils.longPressNode() which is known"
+        + " to be flaky under modified scaling factor, see crbug.com/40840940")
     public void testOpenInBrowser() throws Throwable {
         try {
             Intents.init();
@@ -166,6 +175,9 @@ public class ContextMenuTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(
+        reason = "This test uses DOMUtils.longPressNode() which is known"
+        + " to be flaky under modified scaling factor, see crbug.com/40840940")
     public void testDismissContextMenuOnBack() throws Throwable {
         final String url = mWebServer.setResponse(FILE, DATA, null);
         loadUrlSync(url);
@@ -190,6 +202,9 @@ public class ContextMenuTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(
+        reason = "This test uses DOMUtils.longPressNode() which is known"
+        + " to be flaky under modified scaling factor, see crbug.com/40840940")
     public void testDismissContextMenuOnClick() throws Throwable {
         final String url = mWebServer.setResponse(FILE, DATA, null);
         loadUrlSync(url);
