@@ -79,6 +79,10 @@ class ManagePasswordsBubbleControllerTest : public ::testing::Test {
         std::make_unique<testing::NiceMock<PasswordsModelDelegateMock>>();
     ON_CALL(*mock_delegate_, GetPasswordFormMetricsRecorder())
         .WillByDefault(Return(nullptr));
+    ON_CALL(*mock_delegate_,
+            GetManagePasswordsSingleCredentialDetailsModeCredential)
+        .WillByDefault(::testing::ReturnRef(
+            default_single_credential_details_mode_credential_));
   }
 
   ~ManagePasswordsBubbleControllerTest() override = default;
@@ -114,6 +118,8 @@ class ManagePasswordsBubbleControllerTest : public ::testing::Test {
   std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
   std::unique_ptr<ManagePasswordsBubbleController> controller_;
+  std::optional<password_manager::PasswordForm>
+      default_single_credential_details_mode_credential_;
 };
 
 void ManagePasswordsBubbleControllerTest::Init() {

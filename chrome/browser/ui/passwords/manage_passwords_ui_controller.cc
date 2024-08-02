@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -672,6 +673,15 @@ ManagePasswordsUIController::GetUnsyncedCredentials() const {
 const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
 ManagePasswordsUIController::GetCurrentForms() const {
   return passwords_data_.GetCurrentForms();
+}
+
+const std::optional<password_manager::PasswordForm>&
+ManagePasswordsUIController::
+    GetManagePasswordsSingleCredentialDetailsModeCredential() const {
+  // TODO(crbug.com/324242001): Remove and use credential from passwords_data_.
+  static base::NoDestructor<std::optional<password_manager::PasswordForm>>
+      tmp_single_credential_mode_credential;
+  return *tmp_single_credential_mode_credential;
 }
 
 const password_manager::InteractionsStats*

@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -161,6 +162,8 @@ class ManagePasswordsUIController
       const override;
   const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
   GetCurrentForms() const override;
+  const std::optional<password_manager::PasswordForm>&
+  GetManagePasswordsSingleCredentialDetailsModeCredential() const override;
   const password_manager::InteractionsStats* GetCurrentInteractionStats()
       const override;
   size_t GetTotalNumberCompromisedPasswords() const override;

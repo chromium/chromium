@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/manage_passwords_bubble_controller.h"
 
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -67,7 +68,13 @@ ManagePasswordsBubbleController::ManagePasswordsBubbleController(
     base::WeakPtr<PasswordsModelDelegate> delegate)
     : PasswordBubbleControllerBase(
           std::move(delegate),
-          /*display_disposition=*/metrics_util::MANUAL_MANAGE_PASSWORDS) {}
+          /*display_disposition=*/metrics_util::MANUAL_MANAGE_PASSWORDS),
+      bubble_mode_(
+          delegate_ &&
+                  delegate_
+                      ->GetManagePasswordsSingleCredentialDetailsModeCredential()
+              ? BubbleMode::kSingleCredentialDetails
+              : BubbleMode::kCredentialList) {}
 
 ManagePasswordsBubbleController::~ManagePasswordsBubbleController() {
   OnBubbleClosing();
@@ -183,6 +190,13 @@ ManagePasswordsBubbleController::GetCredentials() const {
     return base::span<std::unique_ptr<password_manager::PasswordForm> const>();
   }
   return base::make_span(delegate_->GetCurrentForms());
+}
+
+const password_manager::PasswordForm&
+ManagePasswordsBubbleController::GetSingleCredentialDetailsModeCredential()
+    const {
+  CHECK_EQ(bubble_mode_, BubbleMode::kSingleCredentialDetails);
+  return *delegate_->GetManagePasswordsSingleCredentialDetailsModeCredential();
 }
 
 void ManagePasswordsBubbleController::

@@ -35,6 +35,13 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
     kActiveWithAccountPasswords,
   };
 
+  // This bubble is used to display either:
+  // 1. List of credentials stored in the password store for the current origin.
+  // 2. Details of a specific credential.
+  // This is decided by the value returned by `PasswordsModelDelegate`s
+  // `GetManagePasswordSingleCredentialModeCredential()`.
+  enum class BubbleMode { kCredentialList, kSingleCredentialDetails };
+
   explicit ManagePasswordsBubbleController(
       base::WeakPtr<PasswordsModelDelegate> delegate);
   ~ManagePasswordsBubbleController() override;
@@ -74,6 +81,11 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
   base::span<std::unique_ptr<password_manager::PasswordForm> const>
   GetCredentials() const;
 
+  // Returns the credential for the single credential details mode. It must
+  // be called when `bubble_mode()` returns `kSingleCredentialDetails` only.
+  const password_manager::PasswordForm&
+  GetSingleCredentialDetailsModeCredential() const;
+
   // Calls the password store backend to update the current details bubble
   // credential to `updated_form`.
   void UpdateDetailsBubbleCredentialInPasswordStore(
@@ -103,6 +115,8 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
     return details_bubble_credential_;
   }
 
+  BubbleMode bubble_mode() const { return bubble_mode_; }
+
  private:
   // Called when the favicon was retrieved. It invokes |favicon_ready_callback|
   // passing the retrieved favicon.
@@ -124,6 +138,8 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
       password_manager::PasswordForm password_form,
       base::OnceCallback<void(bool)> completion,
       bool authentication_result);
+
+  const BubbleMode bubble_mode_;
 
   // Used to track a requested favicon.
   base::CancelableTaskTracker favicon_tracker_;
