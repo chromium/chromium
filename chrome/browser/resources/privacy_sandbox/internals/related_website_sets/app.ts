@@ -70,9 +70,9 @@ export class RelatedWebsiteSetsAppElement extends CrLitElement {
 
     this.apiProxy_.handler.getRelatedWebsiteSets().then(
         ({relatedWebsiteSetsInfo}) => {
-          if (relatedWebsiteSetsInfo.errorMessage !== undefined) {
+          if (relatedWebsiteSetsInfo.errorMessage) {
             this.errorMessage_ = relatedWebsiteSetsInfo.errorMessage;
-          } else if (relatedWebsiteSetsInfo.relatedWebsiteSets !== undefined) {
+          } else if (relatedWebsiteSetsInfo.relatedWebsiteSets) {
             this.relatedWebsiteSets_ =
                 relatedWebsiteSetsInfo.relatedWebsiteSets;
           }

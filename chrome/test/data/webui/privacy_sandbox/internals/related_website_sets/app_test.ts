@@ -10,6 +10,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestRelatedWebsiteSetsApiBrowserProxy} from './test_api_proxy.js';
+import {GetRelatedWebsiteSetsResponseForTest} from './test_data.js';
 
 suite('AppTest', () => {
   let app: RelatedWebsiteSetsAppElement;
@@ -18,7 +19,8 @@ suite('AppTest', () => {
   setup(async () => {
     testProxy = new TestRelatedWebsiteSetsApiBrowserProxy();
     RelatedWebsiteSetsApiBrowserProxyImpl.setInstance(testProxy);
-
+    testProxy.handler.relatedWebsiteSetsInfo =
+        GetRelatedWebsiteSetsResponseForTest;
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('related-website-sets-app');
     document.body.appendChild(app);

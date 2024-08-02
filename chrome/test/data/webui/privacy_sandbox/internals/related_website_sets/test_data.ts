@@ -4,7 +4,7 @@
 
 import 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
 
-import type {RelatedWebsiteSet} from 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
+import type {GetRelatedWebsiteSetsResponse, RelatedWebsiteSet} from 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
 import {SiteType} from 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
 
 export const SAMPLE_RELATED_WEBSITE_SET: RelatedWebsiteSet = {
@@ -93,3 +93,8 @@ export const SAMPLE_RELATED_WEBSITE_SETS = [
   SAMPLE_RELATED_WEBSITE_SET2,
   SAMPLE_RELATED_WEBSITE_SET3,
 ];
+
+export const GetRelatedWebsiteSetsResponseForTest:
+    GetRelatedWebsiteSetsResponse = {
+      relatedWebsiteSets: SAMPLE_RELATED_WEBSITE_SETS,
+    };
