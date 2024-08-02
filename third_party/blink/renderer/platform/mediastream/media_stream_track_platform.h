@@ -95,9 +95,9 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     void Absorb(AudioFrameStats& from);
 
     // Implementations of the getters in the API.
-    size_t DeliveredFrames() const;
+    uint64_t DeliveredFrames() const;
     base::TimeDelta DeliveredFramesDuration() const;
-    size_t TotalFrames() const;
+    uint64_t TotalFrames() const;
     base::TimeDelta TotalFramesDuration() const;
     base::TimeDelta Latency() const;
     base::TimeDelta AverageLatency() const;

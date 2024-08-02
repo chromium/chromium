@@ -16,9 +16,9 @@ namespace blink {
 namespace {
 
 void VerifyAccumulator(const AudioFrameStatsAccumulator& accumulator,
-                       size_t observed_frames,
+                       uint64_t observed_frames,
                        base::TimeDelta observed_frames_duration,
-                       size_t glitch_frames,
+                       uint64_t glitch_frames,
                        base::TimeDelta latency,
                        base::TimeDelta min_latency,
                        base::TimeDelta average_latency,
@@ -68,7 +68,7 @@ TEST(AudioFrameStatsAccumulatorTest, Update) {
   AudioFrameStatsAccumulator accumulator;
 
   const int sample_rate = 48000;
-  size_t total_frames = 0u;
+  uint64_t total_frames = 0u;
   media::AudioGlitchInfo total_glitch_info;
 
   int frames[] = {480, 520, 400};
@@ -140,7 +140,7 @@ TEST(AudioFrameStatsAccumulatorTest, Absorb) {
   AudioFrameStatsAccumulator absorbing_accumulator;
 
   const int sample_rate = 48000;
-  size_t total_frames = 0u;
+  uint64_t total_frames = 0u;
   media::AudioGlitchInfo total_glitch_info;
 
   int frames[] = {480, 520, 400};
@@ -257,7 +257,7 @@ TEST(AudioFrameStatsAccumulatorTest, Absorb) {
 TEST(AudioFrameStatsAccumulatorTest, UpdateDifferentSampleRates) {
   AudioFrameStatsAccumulator accumulator;
 
-  size_t total_frames = 0u;
+  uint64_t total_frames = 0u;
   media::AudioGlitchInfo total_glitch_info;
 
   int sample_rate[] = {16000, 48000};

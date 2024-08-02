@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 
+#include "base/numerics/clamped_math.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 
 namespace blink {
@@ -40,7 +41,7 @@ void MediaStreamTrackPlatform::AudioFrameStats::Absorb(AudioFrameStats& from) {
   accumulator_.Absorb(from.accumulator_);
 }
 
-size_t MediaStreamTrackPlatform::AudioFrameStats::DeliveredFrames() const {
+uint64_t MediaStreamTrackPlatform::AudioFrameStats::DeliveredFrames() const {
   return accumulator_.observed_frames();
 }
 
@@ -49,8 +50,9 @@ MediaStreamTrackPlatform::AudioFrameStats::DeliveredFramesDuration() const {
   return accumulator_.observed_frames_duration();
 }
 
-size_t MediaStreamTrackPlatform::AudioFrameStats::TotalFrames() const {
-  return accumulator_.observed_frames() + accumulator_.glitch_frames();
+uint64_t MediaStreamTrackPlatform::AudioFrameStats::TotalFrames() const {
+  return base::MakeClampedNum(accumulator_.observed_frames()) +
+         base::MakeClampedNum(accumulator_.glitch_frames());
 }
 
 base::TimeDelta MediaStreamTrackPlatform::AudioFrameStats::TotalFramesDuration()
