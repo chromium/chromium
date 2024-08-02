@@ -681,7 +681,11 @@ BASE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport,
 // only input elements and maybe textarea elements send text change events.
 BASE_FEATURE(kAutofillContentEditableChangeEvents,
              "AutofillContentEditableChangeEvents",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
              base::FEATURE_ENABLED_BY_DEFAULT
+#endif
 );
 
 // Causes Autofill to announce the Compose popup less assertively.
