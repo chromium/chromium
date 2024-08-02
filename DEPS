@@ -1791,6 +1791,9 @@ deps = {
   'src/third_party/farmhash/src':
     Var('chromium_git') + '/external/github.com/google/farmhash.git' + '@' + '816a4ae622e964763ca0862d9dbd19324a1eaf45',
 
+  'src/third_party/fast_float/src':
+    Var('chromium_git') + '/external/github.com/fastfloat/fast_float.git' + '@' + 'd7417618f93d2c47e9bbde561510f9fc8bafe003',
+
   'src/third_party/ffmpeg':
     Var('chromium_git') + '/chromium/third_party/ffmpeg.git' + '@' + Var('ffmpeg_revision'),
 

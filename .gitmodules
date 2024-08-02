@@ -226,6 +226,9 @@
 [submodule "third_party/farmhash/src"]
 	path = third_party/farmhash/src
 	url = https://chromium.googlesource.com/external/github.com/google/farmhash
+[submodule "third_party/fast_float/src"]
+	path = third_party/fast_float/src
+	url = https://chromium.googlesource.com/external/github.com/fastfloat/fast_float
 [submodule "third_party/ffmpeg"]
 	path = third_party/ffmpeg
 	url = https://chromium.googlesource.com/chromium/third_party/ffmpeg
