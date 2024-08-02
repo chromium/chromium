@@ -28,6 +28,7 @@ static_library("device") {
     "//base",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/system",
+    "//chrome/browser/ui/webui/ash/settings/pages/power",
     "//chromeos/crosapi/mojom",
     "//components/prefs",
     "//mojo/public/cpp/bindings",

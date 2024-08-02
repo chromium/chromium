@@ -292,6 +292,7 @@ source_set("app_service") {
       "//chrome/browser/ui/webui/ash/settings/pages/apps",
       "//chrome/browser/ui/webui/ash/settings/pages/device",
       "//chrome/browser/ui/webui/ash/settings/pages/internet",
+      "//chrome/browser/ui/webui/ash/settings/pages/people",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/login/login_state",
       "//chromeos/components/kiosk:kiosk",
@@ -360,6 +361,7 @@ source_set("app_service") {
       "//chrome/browser/ui/webui/ash/settings/pages/apps",
       "//chrome/browser/ui/webui/ash/settings/pages/device",
       "//chrome/browser/ui/webui/ash/settings/pages/internet",
+      "//chrome/browser/ui/webui/ash/settings/pages/people",
     ]
   }
 

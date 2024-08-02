@@ -38,6 +38,13 @@ static_library("pages") {
     "//chrome/browser/ui/webui/ash/settings/pages/files",
     "//chrome/browser/ui/webui/ash/settings/pages/internet",
     "//chrome/browser/ui/webui/ash/settings/pages/kerberos",
+    "//chrome/browser/ui/webui/ash/settings/pages/languages",
+    "//chrome/browser/ui/webui/ash/settings/pages/main",
+    "//chrome/browser/ui/webui/ash/settings/pages/multidevice",
+    "//chrome/browser/ui/webui/ash/settings/pages/multitasking",
+    "//chrome/browser/ui/webui/ash/settings/pages/people",
+    "//chrome/browser/ui/webui/ash/settings/pages/personalization",
+    "//chrome/browser/ui/webui/ash/settings/pages/power",
     "//chromeos/ash/components/phonehub",
     "//ui/base",
   ]
@@ -53,6 +60,13 @@ static_library("pages") {
     "//chrome/browser/ui/webui/ash/settings/pages/files",
     "//chrome/browser/ui/webui/ash/settings/pages/internet",
     "//chrome/browser/ui/webui/ash/settings/pages/kerberos",
+    "//chrome/browser/ui/webui/ash/settings/pages/languages",
+    "//chrome/browser/ui/webui/ash/settings/pages/main",
+    "//chrome/browser/ui/webui/ash/settings/pages/multidevice",
+    "//chrome/browser/ui/webui/ash/settings/pages/multitasking",
+    "//chrome/browser/ui/webui/ash/settings/pages/people",
+    "//chrome/browser/ui/webui/ash/settings/pages/personalization",
+    "//chrome/browser/ui/webui/ash/settings/pages/power",
     "//chrome/browser/ui/webui/ash/settings/search",
   ]
 }

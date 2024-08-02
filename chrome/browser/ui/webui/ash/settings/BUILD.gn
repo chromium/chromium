@@ -77,6 +77,11 @@ static_library("settings") {
     "//chrome/browser/ui/webui/ash/settings/pages/apps",
     "//chrome/browser/ui/webui/ash/settings/pages/date_time",
     "//chrome/browser/ui/webui/ash/settings/pages/device",
+    "//chrome/browser/ui/webui/ash/settings/pages/languages",
+    "//chrome/browser/ui/webui/ash/settings/pages/main",
+    "//chrome/browser/ui/webui/ash/settings/pages/multitasking",
+    "//chrome/browser/ui/webui/ash/settings/pages/people",
+    "//chrome/browser/ui/webui/ash/settings/pages/personalization",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/services/auth_factor_config",
@@ -93,6 +98,11 @@ static_library("settings") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ui/webui/ash/settings/pages/device",
+    "//chrome/browser/ui/webui/ash/settings/pages/languages",
+    "//chrome/browser/ui/webui/ash/settings/pages/main",
+    "//chrome/browser/ui/webui/ash/settings/pages/multitasking",
+    "//chrome/browser/ui/webui/ash/settings/pages/people",
+    "//chrome/browser/ui/webui/ash/settings/pages/personalization",
     "//chrome/browser/ui/webui/ash/settings/search",
   ]
 

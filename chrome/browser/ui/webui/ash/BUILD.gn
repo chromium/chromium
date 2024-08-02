@@ -259,6 +259,10 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/settings/pages/device/display_settings:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/pages/internet:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/main:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/multidevice:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/people:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/personalization:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/search:unit_tests",
   ]
 }
@@ -305,6 +309,8 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/ash/settings/pages/a11y:browser_tests",
     "//chrome/browser/ui/webui/ash/settings/pages/apps:browser_tests",
     "//chrome/browser/ui/webui/ash/settings/pages/files:browser_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/people:browser_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/power:browser_tests",
     "//chrome/browser/ui/webui/ash/skyvault:browser_tests",
     "//chrome/browser/ui/webui/ash/smb_shares:browser_tests",
   ]
