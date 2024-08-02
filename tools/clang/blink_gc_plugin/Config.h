@@ -28,8 +28,6 @@ extern const char kHeapAllocatorName[];
 extern const char kTraceIfNeededName[];
 extern const char kVisitorDispatcherName[];
 extern const char kVisitorVarName[];
-extern const char kAdjustAndMarkName[];
-extern const char kIsHeapObjectAliveName[];
 extern const char kConstIteratorName[];
 extern const char kIteratorName[];
 extern const char kConstReverseIteratorName[];
@@ -135,7 +133,8 @@ class Config {
   static bool IsGCCollection(llvm::StringRef name) {
     return name == "HeapVector" || name == "HeapDeque" ||
            name == "HeapHashSet" || name == "HeapLinkedHashSet" ||
-           name == "HeapHashCountedSet" || name == "HeapHashMap";
+           name == "HeapHashCountedSet" || name == "HeapHashMap" ||
+           name == "HeapLinkedStack";
   }
 
   static bool IsHashMap(llvm::StringRef name) {

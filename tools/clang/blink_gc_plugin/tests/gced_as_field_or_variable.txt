@@ -1,0 +1,20 @@
+In file included from gced_as_field_or_variable.cpp:5:
+./gced_as_field_or_variable.h:22:1: warning: [blink-gc] Class 'OtherGCed' contains invalid fields.
+class OtherGCed : public GarbageCollected<OtherGCed> {
+^
+./gced_as_field_or_variable.h:32:3: note: [blink-gc] Part-object field 'gced_' to a GC derived class declared here:
+  GCed gced_;
+  ^
+./gced_as_field_or_variable.h:32:3: warning: [blink-gc] Using GC managed class 'GCed' as field 'gced_' is not allowed (Allocate with MakeGarbageCollected and use Member or Persistent instead):
+  GCed gced_;
+  ^~~~~~~~~~
+./gced_as_field_or_variable.h:33:3: warning: [blink-gc] Using GC managed class 'Mixin' as field 'mixin_' is not allowed (Allocate with MakeGarbageCollected and use Member or Persistent instead):
+  Mixin mixin_;
+  ^~~~~~~~~~~~
+gced_as_field_or_variable.cpp:10:3: warning: [blink-gc] Using GC managed class 'GCed' as variable 'gced' is not allowed (Allocate with MakeGarbageCollected and use raw pointer instead):
+  GCed gced;
+  ^~~~~~~~~
+gced_as_field_or_variable.cpp:12:3: warning: [blink-gc] Using GC managed class 'Mixin' as variable 'mixin' is not allowed (Allocate with MakeGarbageCollected and use raw pointer instead):
+  Mixin mixin;
+  ^~~~~~~~~~~
+5 warnings generated.
