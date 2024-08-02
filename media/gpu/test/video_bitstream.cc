@@ -187,17 +187,16 @@ std::unique_ptr<VideoBitstream> VideoBitstream::Create(
     return nullptr;
   }
   // We set |has_keyframeless_resolution_change| by looking at the file name.
-  base::FilePath kKeyFrameLessResolutionChangeFiles[] = {
-      base::FilePath::FromASCII("frm_resize"),
-      base::FilePath::FromASCII("sub8x8_sf"),
+  const char* kKeyFrameLessResolutionChangeFiles[] = {
+      "frm_resize",
+      "sub8x8_sf",
   };
-  metadata.has_keyframeless_resolution_change =
-      std::find_if(std::cbegin(kKeyFrameLessResolutionChangeFiles),
-                   std::cend(kKeyFrameLessResolutionChangeFiles),
-                   [filepath = data_file_path.value()](base::FilePath substr) {
-                     return base::Contains(base::ToLowerASCII(filepath),
-                                           base::ToLowerASCII(substr.value()));
-                   });
+  metadata.has_keyframeless_resolution_change = std::find_if(
+      std::cbegin(kKeyFrameLessResolutionChangeFiles),
+      std::cend(kKeyFrameLessResolutionChangeFiles),
+      [filepath = data_file_path.value()](const char* substr) {
+        return base::Contains(base::ToLowerASCII(filepath), substr);
+      });
   return base::WrapUnique(
       new VideoBitstream(std::move(memory_mapped_file), metadata));
 }

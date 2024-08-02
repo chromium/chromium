@@ -9,6 +9,8 @@
 
 #include "media/gpu/test/video_frame_validator.h"
 
+#include <sys/mman.h>
+
 #include <string_view>
 
 #include "base/containers/span.h"
@@ -32,10 +34,6 @@
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/gpu_memory_buffer.h"
-
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#include <sys/mman.h>
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 #include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"

@@ -188,16 +188,12 @@ class VideoEncoderTest : public ::testing::Test {
                      spatial_layer_resolutions.size() > 1
                  ? FILE_PATH_LITERAL("S")
                  : FILE_PATH_LITERAL("L")) +
-            base::FilePath::FromASCII(
-                base::NumberToString(*spatial_layer_index_to_decode))
-                .value();
+            base::NumberToString(*spatial_layer_index_to_decode);
       }
       if (temporal_layer_index_to_decode) {
         output_file_prefix +=
             FILE_PATH_LITERAL("T") +
-            base::FilePath::FromASCII(
-                base::NumberToString(*temporal_layer_index_to_decode))
-                .value();
+            base::NumberToString(*temporal_layer_index_to_decode);
       }
 
       image_writer = VideoFrameFileWriter::Create(
@@ -562,9 +558,6 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
 
-// TODO(https://crbugs.com/350994517): NV12 DMABuf test does not apply to
-// Windows. There should be similar test for this with NV12 DXGI buffers added.
-#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
   RawVideo* nv12_video = g_env->GenerateNV12Video();
   VideoEncoderClientConfig config(
@@ -582,12 +575,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
   EXPECT_EQ(encoder->GetFrameReleasedCount(), nv12_video->NumFrames());
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-// TODO(https://crbugs.com/350994517): These are for scaling and cropping,
-// which requires GMB support. Enable these tests when GMB is supported
-// for VEA tests on Windows.
-#if BUILDFLAG(IS_CHROMEOS)
 // Downscaling is required in VideoEncodeAccelerator when zero-copy video
 // capture is enabled. One example is simulcast, camera produces 360p VideoFrame
 // and there are two VideoEncodeAccelerator for 360p and 180p. VideoEncoder for
@@ -731,7 +719,6 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingRightAndLeft) {
   EXPECT_EQ(encoder->GetFrameReleasedCount(), nv12_expanded_video->NumFrames());
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // This tests deactivate and activating spatial layers during encoding.
 TEST_F(VideoEncoderTest, DeactivateAndActivateSpatialLayers) {
@@ -739,13 +726,7 @@ TEST_F(VideoEncoderTest, DeactivateAndActivateSpatialLayers) {
   if (spatial_layers.size() <= 1)
     GTEST_SKIP() << "Skip (de)activate spatial layers test for simple encoding";
 
-#if BUILDFLAG(IS_CHROMEOS)
-  RawVideo* video = g_env->GenerateNV12Video();
-#else
-  // TODO(b/211783271): Add support for I420 SHM input.
-  RawVideo* video = g_env->Video();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
+  RawVideo* nv12_video = g_env->GenerateNV12Video();
   const size_t bottom_spatial_idx = 0;
   const size_t top_spatial_idx = spatial_layers.size() - 1;
   auto deactivate_spatial_layer =
@@ -783,26 +764,18 @@ TEST_F(VideoEncoderTest, DeactivateAndActivateSpatialLayers) {
   bitrate_allocations.emplace_back(bitrate_allocation);
 
   VideoEncoderClientConfig config(
-      video, g_env->Profile(), g_env->SpatialLayers(),
+      nv12_video, g_env->Profile(), g_env->SpatialLayers(),
       g_env->InterLayerPredMode(), g_env->ContentType(),
       g_env->BitrateAllocation(), g_env->Reverse());
-
-#if BUILDFLAG(IS_CHROMEOS)
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
-#else
-  // TODO(https://crbugs.com/350994517): Enable GMB for Windows.
-  config.input_storage_type =
-      VideoEncodeAccelerator::Config::StorageType::kShmem;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   std::vector<size_t> num_frames_to_encode(bitrate_allocations.size());
   for (size_t i = 0; i < num_frames_to_encode.size(); ++i)
     num_frames_to_encode[i] = config.num_frames_to_encode * (i + 1);
   config.num_frames_to_encode =
       num_frames_to_encode.back() + config.num_frames_to_encode;
 
-  auto encoder = CreateVideoEncoder(video, config);
+  auto encoder = CreateVideoEncoder(nv12_video, config);
 
   for (size_t i = 0; i < bitrate_allocations.size(); ++i) {
     encoder->EncodeUntil(VideoEncoder::kFrameReleased, num_frames_to_encode[i]);
@@ -905,15 +878,14 @@ int main(int argc, char** argv) {
     }
 
     if (it->first == "codec") {
-      codec = cmd_line->GetSwitchValueASCII("codec");
+      codec = it->second;
     } else if (it->first == "svc_mode") {
-      svc_mode = cmd_line->GetSwitchValueASCII("svc_mode");
+      svc_mode = it->second;
     } else if (it->first == "bitrate_mode") {
-      auto brc_mode_str = cmd_line->GetSwitchValueASCII("bitrate_mode");
-      if (brc_mode_str == "vbr") {
+      if (it->second == "vbr") {
         bitrate_mode = media::Bitrate::Mode::kVariable;
-      } else if (brc_mode_str != "cbr") {
-        std::cout << "unknown bitrate mode \"" << brc_mode_str
+      } else if (it->second != "cbr") {
+        std::cout << "unknown bitrate mode \"" << it->second
                   << "\", possible values are \"cbr|vbr\"\n";
         return EXIT_FAILURE;
       }
@@ -937,27 +909,25 @@ int main(int argc, char** argv) {
     } else if (it->first == "reverse") {
       reverse = true;
     } else if (it->first == "output_images") {
-      auto output_mode_str = cmd_line->GetSwitchValueASCII("output_images");
-      if (output_mode_str == "all") {
+      if (it->second == "all") {
         frame_output_config.output_mode = media::test::FrameOutputMode::kAll;
-      } else if (output_mode_str == "corrupt") {
+      } else if (it->second == "corrupt") {
         frame_output_config.output_mode =
             media::test::FrameOutputMode::kCorrupt;
       } else {
-        std::cout << "unknown image output mode \"" << output_mode_str
+        std::cout << "unknown image output mode \"" << it->second
                   << "\", possible values are \"all|corrupt\"\n";
         return EXIT_FAILURE;
       }
     } else if (it->first == "output_format") {
-      auto output_format_str = cmd_line->GetSwitchValueASCII("output_format");
-      if (output_format_str == "png") {
+      if (it->second == "png") {
         frame_output_config.output_format =
             media::test::VideoFrameFileWriter::OutputFormat::kPNG;
-      } else if (output_format_str == "yuv") {
+      } else if (it->second == "yuv") {
         frame_output_config.output_format =
             media::test::VideoFrameFileWriter::OutputFormat::kYUV;
       } else {
-        std::cout << "unknown frame output format \"" << output_format_str
+        std::cout << "unknown frame output format \"" << it->second
                   << "\", possible values are \"png|yuv\"\n";
         return EXIT_FAILURE;
       }

@@ -596,13 +596,10 @@ void BitstreamQualityMetrics::WriteToFile(
   std::string metrics_str;
   ASSERT_TRUE(base::JSONWriter::WriteWithOptions(
       metrics, base::JSONWriter::OPTIONS_PRETTY_PRINT, &metrics_str));
-  constexpr const base::FilePath::CharType* kMetrixFileSuffix =
-      FILE_PATH_LITERAL(".json");
-  const std::string svc_text_ext = svc_text.empty() ? "" : "." + svc_text;
   base::FilePath metrics_file_path = output_folder_path.Append(
       g_env->GetTestOutputFilePath()
-          .Append(base::FilePath::FromASCII(svc_text_ext))
-          .AddExtension(kMetrixFileSuffix));
+          .AddExtension(svc_text.empty() ? "" : "." + svc_text)
+          .AddExtension(FILE_PATH_LITERAL(".json")));
   // Make sure that the directory into which json is saved is created.
   LOG_ASSERT(base::CreateDirectory(metrics_file_path.DirName()));
   base::File metrics_output_file(
@@ -628,12 +625,7 @@ class VideoEncoderTest : public ::testing::Test {
       std::optional<uint32_t> encode_rate = std::nullopt,
       bool measure_quality = false,
       size_t num_encode_frames = kNumEncodeFramesForSpeedPerformance) {
-#if BUILDFLAG(IS_CHROMEOS)
     RawVideo* video = g_env->GenerateNV12Video();
-#else
-    // TODO(b/211783271): Add support for I420 SHM input.
-    RawVideo* video = g_env->Video();
-#endif  // BUILDFLAG(IS_CHROMEOS)
     VideoCodecProfile profile = g_env->Profile();
     const media::VideoBitrateAllocation& bitrate = g_env->BitrateAllocation();
     const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
@@ -655,15 +647,8 @@ class VideoEncoderTest : public ::testing::Test {
     VideoEncoderClientConfig config(
         video, profile, spatial_layers, g_env->InterLayerPredMode(),
         g_env->ContentType(), bitrate, g_env->Reverse());
-#if BUILDFLAG(IS_CHROMEOS)
     config.input_storage_type =
         VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
-#else
-    // TODO(https://crbugs.com/350994517, b/211783271): Enable GMB for
-    // Windows/Linux.
-    config.input_storage_type =
-        VideoEncodeAccelerator::Config::StorageType::kShmem;
-#endif
     config.num_frames_to_encode = num_encode_frames;
     if (encode_rate) {
       config.encode_interval = base::Seconds(1u) / encode_rate.value();
@@ -1017,24 +1002,22 @@ int main(int argc, char** argv) {
     } else if (it->first == "output_bitstream") {
       output_bitstream = true;
     } else if (it->first == "codec") {
-      codec = cmd_line->GetSwitchValueASCII("codec");
+      codec = it->second;
     } else if (it->first == "svc_mode") {
-      svc_mode = cmd_line->GetSwitchValueASCII("svc_mode");
+      svc_mode = it->second;
     } else if (it->first == "content_type") {
-      auto content_type_str = cmd_line->GetSwitchValueASCII("content_type");
-      if (content_type_str == "display") {
+      if (it->second == "display") {
         content_type =
             media::VideoEncodeAccelerator::Config::ContentType::kDisplay;
-      } else if (content_type_str != "camera") {
+      } else if (it->second != "camera") {
         std::cout << "unknown content type \"" << it->second
                   << "\", possible values are \"camera|display\"\n";
         return EXIT_FAILURE;
       }
     } else if (it->first == "bitrate_mode") {
-      auto brc_mode_str = cmd_line->GetSwitchValueASCII("bitrate_mode");
-      if (brc_mode_str == "vbr") {
+      if (it->second == "vbr") {
         bitrate_mode = media::Bitrate::Mode::kVariable;
-      } else if (brc_mode_str != "cbr") {
+      } else if (it->second != "cbr") {
         std::cout << "unknown bitrate mode \"" << it->second
                   << "\", possible values are \"cbr|vbr\"\n";
         return EXIT_FAILURE;

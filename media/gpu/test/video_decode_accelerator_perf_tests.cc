@@ -21,11 +21,8 @@
 #include "media/gpu/test/video_player/decoder_wrapper.h"
 #include "media/gpu/test/video_player/frame_renderer_dummy.h"
 #include "media/gpu/test/video_player/video_player_test_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
 #include "sandbox/linux/services/resource_limits.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
 namespace test {
@@ -409,13 +406,11 @@ TEST_F(VideoDecoderTest, MeasureCappedPerformance) {
 // then decide how to aggregate/report those metrics.
 // Play multiple videos simultaneously from start to finish.
 TEST_F(VideoDecoderTest, MeasureUncappedPerformance_TenConcurrentDecoders) {
-#if BUILDFLAG(IS_CHROMEOS)
   // Set RLIMIT_NOFILE soft limit to its hard limit value.
   if (sandbox::ResourceLimits::AdjustCurrent(
           RLIMIT_NOFILE, std::numeric_limits<long long int>::max())) {
     DPLOG(ERROR) << "Unable to increase soft limit of RLIMIT_NOFILE";
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   constexpr size_t kNumConcurrentDecoders = 10;
 
