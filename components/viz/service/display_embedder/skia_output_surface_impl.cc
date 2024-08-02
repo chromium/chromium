@@ -1466,7 +1466,7 @@ SkiaOutputSurfaceImpl::CreateGrSurfaceCharacterizationCurrentFrame(
 #if BUILDFLAG(ENABLE_VULKAN)
   VkFormat vk_format = VK_FORMAT_UNDEFINED;
 #endif
-  LOG_IF(DFATAL, !characterization.isValid())
+  LOG_IF(FATAL, !characterization.isValid())
       << "\n  surface_size=" << surface_size.ToString()
       << "\n  format=" << static_cast<int>(color_type)
       << "\n  color_type=" << static_cast<int>(color_type)
