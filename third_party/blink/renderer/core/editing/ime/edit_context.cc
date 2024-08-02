@@ -796,7 +796,7 @@ bool EditContext::FirstRectForCharacterRange(uint32_t location,
   // If we couldn't get a result from the composition bounds then we'll fall
   // back to using the selection bounds, since these will generally be close to
   // where the composition is happening.
-  if (!selection_bounds_.IsEmpty()) {
+  if (selection_bounds_ != gfx::Rect()) {
     rect_in_viewport = selection_bounds_;
     return true;
   }
@@ -805,7 +805,7 @@ bool EditContext::FirstRectForCharacterRange(uint32_t location,
   // to using the control bounds. In this case the IME might not be drawn
   // exactly in the right spot, but will at least be adjacent to the editable
   // region rather than in the corner of the screen.
-  if (!control_bounds_.IsEmpty()) {
+  if (control_bounds_ != gfx::Rect()) {
     rect_in_viewport = control_bounds_;
     return true;
   }
