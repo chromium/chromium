@@ -308,6 +308,9 @@ rust_static_library("np_adv") {
     "//third_party/rust/serde_json/v1:lib",
   ]
   features = [ "alloc" ]
+
+  # TODO(https://crbug.com/357101056): fix and remove
+  rustflags = [ "-Adead-code" ]
 }
 
 rust_unit_test("np_adv_examples_v0") {
