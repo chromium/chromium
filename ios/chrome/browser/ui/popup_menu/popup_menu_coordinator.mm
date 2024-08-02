@@ -14,7 +14,6 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
-#import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/follow/model/follow_action_state.h"
@@ -142,7 +141,6 @@ using base::UserMetricsAction;
 @synthesize mediator = _mediator;
 @synthesize presenter = _presenter;
 @synthesize UIUpdater = _UIUpdater;
-@synthesize bubblePresenter = _bubblePresenter;
 @synthesize viewController = _viewController;
 @synthesize baseViewController = _baseViewController;
 
@@ -229,11 +227,6 @@ using base::UserMetricsAction;
       kPopupMenuToolsMenuTableViewId;
 
   self.viewController = tableViewController;
-
-  BOOL triggerNewIncognitoTabTip =
-      self.bubblePresenter.incognitoTabTipBubblePresenter.triggerFollowUpAction;
-  self.bubblePresenter.incognitoTabTipBubblePresenter.triggerFollowUpAction =
-      NO;
 
   OverlayPresenter* overlayPresenter = OverlayPresenter::FromBrowser(
       self.browser, OverlayModality::kWebContentArea);
@@ -405,7 +398,6 @@ using base::UserMetricsAction;
                                     ->IsOffTheRecord()
                readingListModel:ReadingListModelFactory::GetForBrowserState(
                                     self.browser->GetBrowserState())
-      triggerNewIncognitoTabTip:triggerNewIncognitoTabTip
          browserPolicyConnector:GetApplicationContext()
                                     ->GetBrowserPolicyConnector()];
   self.mediator.engagementTracker =

@@ -26498,15 +26498,6 @@ should be able to be added at any place in this file.
   <description>The user opened a Guest window.</description>
 </action>
 
-<action name="NewIncognitoTabTipTargetSelected">
-  <obsolete>Deprecated 8/2023. Unused since a while ago.</obsolete>
-  <owner>gambard@chromium.org</owner>
-  <description>
-    The user opened the tools menu while the 'New Incognito Tab' in-product help
-    is displayed.
-  </description>
-</action>
-
 <action name="NewIncognitoWindow">
   <owner>rhalavati@chromium.org</owner>
   <description>
@@ -44251,7 +44242,6 @@ should be able to be added at any place in this file.
       label="For LowUserEngagementDetector feature."/>
   <suffix name="MediaDownload" label="For MediaDownload feature."/>
   <suffix name="MicToolbar" label="In product help for toolbar mic."/>
-  <suffix name="NewIncognitoTabTip" label="For NewIncognitoTabTip feature."/>
   <suffix name="NewTab" label="For NewTab feature."/>
   <suffix name="NewTabPageButton" label="Deprecated in M79-."/>
   <suffix name="NewTabPageHomeButton"

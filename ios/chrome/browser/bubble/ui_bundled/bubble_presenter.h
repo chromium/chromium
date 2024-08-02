@@ -50,10 +50,6 @@ class DeviceSwitcherResultDispatcher;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Used to display the new incognito tab tip in-product help promotion bubble.
-@property(nonatomic, strong, readonly)
-    BubbleViewControllerPresenter* incognitoTabTipBubblePresenter;
-
 @property(nonatomic, weak) id<BubblePresenterDelegate> delegate;
 @property(nonatomic, weak) UIViewController* rootViewController;
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;

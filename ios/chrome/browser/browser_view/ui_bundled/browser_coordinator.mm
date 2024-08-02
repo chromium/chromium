@@ -1087,7 +1087,6 @@ enum class ToolbarKind {
 
   self.popupMenuCoordinator =
       [[PopupMenuCoordinator alloc] initWithBrowser:self.browser];
-  self.popupMenuCoordinator.bubblePresenter = _bubblePresenter;
   self.popupMenuCoordinator.UIUpdater = _toolbarCoordinator;
   // Coordinator `start` is executed before setting it's `baseViewController`.
   // It is done intentionally, since this does not affecting the coordinator's

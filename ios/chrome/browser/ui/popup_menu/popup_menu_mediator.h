@@ -37,12 +37,10 @@ class WebStateList;
     : NSObject <BrowserContainerConsumer, PopupMenuActionHandlerDelegate>
 
 // Initializes the mediator with whether it `isIncognito`, a `readingListModel`
-// used to display the badge for the reading list entry, whether the mediator
-// should `triggerNewIncognitoTabTip`, and a `browserPolicyConnector` used to
-// check if the browser is managed by policy.
+// used to display the badge for the reading list entry, and a
+// `browserPolicyConnector` used to check if the browser is managed by policy.
 - (instancetype)initWithIsIncognito:(BOOL)isIncognito
                    readingListModel:(ReadingListModel*)readingListModel
-          triggerNewIncognitoTabTip:(BOOL)triggerNewIncognitoTabTip
              browserPolicyConnector:
                  (BrowserPolicyConnectorIOS*)browserPolicyConnector
     NS_DESIGNATED_INITIALIZER;

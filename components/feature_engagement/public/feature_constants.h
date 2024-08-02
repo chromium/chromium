@@ -193,7 +193,6 @@ BASE_DECLARE_FEATURE(kIPHRtlGestureNavigationFeature);
 #if BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kIPHBottomToolbarTipFeature);
 BASE_DECLARE_FEATURE(kIPHLongPressToolbarTipFeature);
-BASE_DECLARE_FEATURE(kIPHNewIncognitoTabTipFeature);
 BASE_DECLARE_FEATURE(kIPHBadgedReadingListFeature);
 BASE_DECLARE_FEATURE(kIPHWhatsNewFeature);
 BASE_DECLARE_FEATURE(kIPHWhatsNewUpdatedFeature);
