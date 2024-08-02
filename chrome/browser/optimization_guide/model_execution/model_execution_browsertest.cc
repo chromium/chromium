@@ -729,6 +729,31 @@ IN_PROC_BROWSER_TEST_F(
       0);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin,
+    PRE_HistorySearchRecordsSyntheticFieldTrial) {
+  EnableSignin();
+  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
+
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kHistorySearch),
+      static_cast<int>(prefs::FeatureOptInState::kEnabled));
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
+      "SyntheticModelExecutionFeatureHistorySearch", "Disabled"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin,
+    HistorySearchRecordsSyntheticFieldTrial) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(IsSignedIn());
+#endif
+  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
+      UserVisibleFeatureKey::kHistorySearch));
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
+      "SyntheticModelExecutionFeatureHistorySearch", "Enabled"));
+}
+
 class ModelExecutionComposeLoggingDisabledTest
     : public ModelExecutionEnabledBrowserTest {
  public:
