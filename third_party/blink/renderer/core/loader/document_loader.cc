@@ -751,8 +751,16 @@ LocalFrameClient& DocumentLoader::GetLocalFrameClient() const {
 DocumentLoader::~DocumentLoader() {
   TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::~DocumentLoader",
                          TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
-  DCHECK(!frame_);
   DCHECK_EQ(state_, kSentDidFinishLoad);
+
+  // Before being collected by the GC, it is expected the DocumentLoader to be
+  // detached from the frame, and it should have stopped loading.
+  //
+  // Note that the WebNavigationBodyLoader implementation is not a GCed class
+  // and it could call `this` back. It is important it gets removed before
+  // collecting `this`.
+  DCHECK(!frame_);
+  DCHECK(!body_loader_);
 }
 
 void DocumentLoader::Trace(Visitor* visitor) const {
@@ -1822,6 +1830,8 @@ void DocumentLoader::SetDefersLoading(LoaderFreezeMode mode) {
 void DocumentLoader::DetachFromFrame(bool flush_microtask_queue) {
   DCHECK(frame_);
   StopLoading();
+  DCHECK(!body_loader_);
+
   // `frame_` may become null because this method can get re-entered. If it
   // is null we've already run the code below so just return early.
   if (!frame_)
