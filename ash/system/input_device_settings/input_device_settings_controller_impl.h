@@ -257,6 +257,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void RefreshCompanionAppInfoForConnectedDevices();
   void OnCompanionAppInfoReceived(
       DeviceId id,
+      const std::string& device_key,
       const std::optional<mojom::CompanionAppInfo>& info);
 
   void DispatchMouseCompanionAppInfoChanged(const mojom::Mouse& mouse);

@@ -2547,21 +2547,31 @@ void InputDeviceSettingsControllerImpl::OnAppUpdate(
                    ? mojom::CompanionAppState::kInstalled
                    : mojom::CompanionAppState::kAvailable;
 
+  const bool is_installed = state == mojom::CompanionAppState::kInstalled;
   auto id = it->second;
   if (auto* mouse = FindMouse(id); mouse != nullptr) {
     mouse->app_info->state = state;
+    if (is_installed) {
+      metrics_manager_->RecordCompanionAppInstalled(mouse->device_key);
+    }
     DispatchMouseCompanionAppInfoChanged(*mouse);
     return;
   }
 
   if (auto* keyboard = FindKeyboard(id); keyboard != nullptr) {
     keyboard->app_info->state = state;
+    if (is_installed) {
+      metrics_manager_->RecordCompanionAppInstalled(keyboard->device_key);
+    }
     DispatchKeyboardCompanionAppInfoChanged(*keyboard);
     return;
   }
 
   if (auto* touchpad = FindTouchpad(id); touchpad != nullptr) {
     touchpad->app_info->state = state;
+    if (is_installed) {
+      metrics_manager_->RecordCompanionAppInstalled(touchpad->device_key);
+    }
     DispatchTouchpadCompanionAppInfoChanged(*touchpad);
     return;
   }
@@ -2569,6 +2579,10 @@ void InputDeviceSettingsControllerImpl::OnAppUpdate(
   if (auto* graphics_tablet = FindGraphicsTablet(id);
       graphics_tablet != nullptr) {
     graphics_tablet->app_info->state = state;
+    if (is_installed) {
+      metrics_manager_->RecordCompanionAppInstalled(
+          graphics_tablet->device_key);
+    }
     DispatchGraphicsTabletCompanionAppInfoChanged(*graphics_tablet);
     return;
   }
@@ -2930,10 +2944,13 @@ void InputDeviceSettingsControllerImpl::SetPeripheralsAppDelegate(
 
 void InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived(
     DeviceId id,
+    const std::string& device_key,
     const std::optional<mojom::CompanionAppInfo>& info) {
   if (!info) {
     return;
   }
+
+  metrics_manager_->RecordCompanionAppAvailable(device_key);
 
   if (auto* mouse = FindMouse(id); mouse != nullptr) {
     mouse->app_info = info->Clone();
@@ -2979,7 +2996,7 @@ void InputDeviceSettingsControllerImpl::
         mouse->device_key,
         base::BindOnce(
             &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
-            weak_ptr_factory_.GetWeakPtr(), id));
+            weak_ptr_factory_.GetWeakPtr(), id, mouse->device_key));
   }
 
   for (const auto& [id, touchpad] : touchpads_) {
@@ -2990,7 +3007,7 @@ void InputDeviceSettingsControllerImpl::
         touchpad->device_key,
         base::BindOnce(
             &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
-            weak_ptr_factory_.GetWeakPtr(), id));
+            weak_ptr_factory_.GetWeakPtr(), id, touchpad->device_key));
   }
 
   for (const auto& [id, keyboard] : keyboards_) {
@@ -3001,7 +3018,7 @@ void InputDeviceSettingsControllerImpl::
         keyboard->device_key,
         base::BindOnce(
             &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
-            weak_ptr_factory_.GetWeakPtr(), id));
+            weak_ptr_factory_.GetWeakPtr(), id, keyboard->device_key));
   }
 
   for (const auto& [id, graphics_tablet] : graphics_tablets_) {
@@ -3009,7 +3026,7 @@ void InputDeviceSettingsControllerImpl::
         graphics_tablet->device_key,
         base::BindOnce(
             &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
-            weak_ptr_factory_.GetWeakPtr(), id));
+            weak_ptr_factory_.GetWeakPtr(), id, graphics_tablet->device_key));
   }
 }
 

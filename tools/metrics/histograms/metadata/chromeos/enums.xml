@@ -784,6 +784,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="UnknownClassification"/>
 </enum>
 
+<enum name="CompanionAppState">
+  <int value="0" label="Available"/>
+  <int value="1" label="Installed"/>
+</enum>
+
 <enum name="CrashSeverityProductType">
   <int value="0" label="Unspecified"/>
   <int value="1" label="UI"/>

@@ -1314,4 +1314,38 @@ void InputDeviceSettingsMetricsManager::RecordNewButtonRegisteredMetrics(
   RecordButtonMetrics(button, &metric_name_prefix);
 }
 
+void InputDeviceSettingsMetricsManager::RecordCompanionAppAvailable(
+    const std::string& device_key) {
+  // Only record the metrics once per device.
+  const auto account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+  auto iter = recorded_companion_app_available_device_keys_.find(account_id);
+  if (iter != recorded_companion_app_available_device_keys_.end() &&
+      base::Contains(iter->second, device_key)) {
+    return;
+  }
+
+  recorded_companion_app_available_device_keys_[account_id].insert(device_key);
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceCompanionAppState",
+      InputDeviceSettingsMetricsManager::CompanionAppState::kAvailable);
+}
+
+void InputDeviceSettingsMetricsManager::RecordCompanionAppInstalled(
+    const std::string& device_key) {
+  // Only record the metrics once per device.
+  const auto account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+  auto iter = recorded_companion_app_installed_device_keys_.find(account_id);
+  if (iter != recorded_companion_app_installed_device_keys_.end() &&
+      base::Contains(iter->second, device_key)) {
+    return;
+  }
+
+  recorded_companion_app_installed_device_keys_[account_id].insert(device_key);
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceCompanionAppState",
+      InputDeviceSettingsMetricsManager::CompanionAppState::kInstalled);
+}
+
 }  // namespace ash
