@@ -836,7 +836,6 @@ void OnListFamilyMembersResponse(
     self.settingsNavigationController =
         [SettingsNavigationController safetyCheckControllerForBrowser:browser
                                                              delegate:self
-                                                   displayAsHalfSheet:NO
                                                              referrer:referrer];
   }
 
@@ -2446,19 +2445,14 @@ using UserFeedbackDataCallback =
                                  completion:nil];
 }
 
-// Displays the Safety Check (via Settings) for `referrer`. `showHalfSheet`
-// determines whether the Safety Check will be displayed as a half-sheet, or
-// full-page modal.
-- (void)showAndStartSafetyCheckInHalfSheet:(BOOL)showHalfSheet
-                                  referrer:
-                                      (password_manager::PasswordCheckReferrer)
-                                          referrer {
+// Displays the Safety Check (via Settings) for `referrer`.
+- (void)showAndStartSafetyCheckForReferrer:
+    (password_manager::PasswordCheckReferrer)referrer {
   UIViewController* baseViewController = self.currentInterface.viewController;
 
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
-        showAndStartSafetyCheckInHalfSheet:showHalfSheet
-                                  referrer:referrer];
+        showAndStartSafetyCheckForReferrer:referrer];
     return;
   }
 
@@ -2467,7 +2461,6 @@ using UserFeedbackDataCallback =
   self.settingsNavigationController = [SettingsNavigationController
       safetyCheckControllerForBrowser:browser
                              delegate:self
-                   displayAsHalfSheet:showHalfSheet
                              referrer:referrer];
 
   [baseViewController presentViewController:self.settingsNavigationController
@@ -2718,11 +2711,9 @@ using UserFeedbackDataCallback =
       };
     case RUN_SAFETY_CHECK:
       return ^{
-        [weakSelf
-            showAndStartSafetyCheckInHalfSheet:NO
-                                      referrer:password_manager::
-                                                   PasswordCheckReferrer::
-                                                       kSafetyCheckMagicStack];
+        [weakSelf showAndStartSafetyCheckForReferrer:
+                      password_manager::PasswordCheckReferrer::
+                          kSafetyCheckMagicStack];
       };
     case MANAGE_PASSWORDS:
       return ^{

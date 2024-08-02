@@ -214,11 +214,9 @@ const CGFloat kSymbolSize = 18;
                      action:^{
                        [omniboxHandler cancelOmniboxEdit];
                        [settingsHandler
-                           showAndStartSafetyCheckInHalfSheet:NO
-                                                     referrer:
-                                                         password_manager::
-                                                             PasswordCheckReferrer::
-                                                                 kSafetyCheck];
+                           showAndStartSafetyCheckForReferrer:
+                               password_manager::PasswordCheckReferrer::
+                                   kSafetyCheck];
                      }];
     }
     case OmniboxPedalId::MANAGE_CHROME_SETTINGS: {

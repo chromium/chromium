@@ -721,8 +721,7 @@
     case SafetyCheckItemType::kDefault:
       password_manager::PasswordCheckReferrer referrer =
           password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack;
-      [settingsHandler showAndStartSafetyCheckInHalfSheet:YES
-                                                 referrer:referrer];
+      [settingsHandler showAndStartSafetyCheckForReferrer:referrer];
       break;
   }
 }
