@@ -64,10 +64,11 @@ class ASH_EXPORT PickerViewDelegate {
   virtual void StartEmojiSearch(std::u16string_view query,
                                 EmojiSearchResultsCallback callback) = 0;
 
-  // Inserts `result` into the next focused input field.
+  // Closes the Widget and inserts `result` into the next focused input field.
   // If there's no focus event within some timeout after the widget is closed,
   // the result is dropped silently.
-  virtual void InsertResultOnNextFocus(const PickerSearchResult& result) = 0;
+  virtual void CloseWidgetThenInsertResultOnNextFocus(
+      const PickerSearchResult& result) = 0;
 
   // Opens `result`. The exact behavior varies on the type of result.
   virtual void OpenResult(const PickerSearchResult& result) = 0;

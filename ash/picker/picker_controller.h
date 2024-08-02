@@ -105,7 +105,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   void StopSearch() override;
   void StartEmojiSearch(std::u16string_view,
                         EmojiSearchResultsCallback callback) override;
-  void InsertResultOnNextFocus(const PickerSearchResult& result) override;
+  void CloseWidgetThenInsertResultOnNextFocus(
+      const PickerSearchResult& result) override;
   void OpenResult(const PickerSearchResult& result) override;
   void ShowEmojiPicker(ui::EmojiPickerCategory category,
                        std::u16string_view query) override;
@@ -137,6 +138,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   void OnFeatureTourCompleted(bool had_focus_before_feature_tour);
   void ShowWidgetPostFeatureTour();
   void CloseCapsLockStateView();
+  void InsertResultOnNextFocus(const PickerSearchResult& result);
   void OnInsertCompleted(const PickerRichMedia& media,
                          PickerInsertMediaRequest::Result result);
 

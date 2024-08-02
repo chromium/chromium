@@ -389,7 +389,8 @@ TEST_F(PickerControllerTest, InsertResultDoesNothingWhenWidgetIsClosed) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
 
-  controller.InsertResultOnNextFocus(PickerSearchResult::Text(u"abc"));
+  controller.CloseWidgetThenInsertResultOnNextFocus(
+      PickerSearchResult::Text(u"abc"));
   ui::FakeTextInputClient input_field(ui::TEXT_INPUT_TYPE_TEXT);
   input_method->SetFocusedTextInputClient(&input_field);
   absl::Cleanup focused_input_field_reset = [input_method] {
@@ -407,8 +408,10 @@ TEST_F(PickerControllerTest, InsertTextResultInsertsIntoInputFieldAfterFocus) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
 
-  controller.InsertResultOnNextFocus(PickerSearchResult::Text(u"abc"));
-  controller.widget_for_testing()->CloseNow();
+  controller.CloseWidgetThenInsertResultOnNextFocus(
+      PickerSearchResult::Text(u"abc"));
+  views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
+      controller.widget_for_testing());
   ui::FakeTextInputClient input_field(ui::TEXT_INPUT_TYPE_TEXT);
   input_method->SetFocusedTextInputClient(&input_field);
   absl::Cleanup focused_input_field_reset = [input_method] {
@@ -429,11 +432,13 @@ TEST_F(PickerControllerTest,
       GetFirstClipboardItemId();
   ASSERT_TRUE(clipboard_item_id.has_value());
 
-  controller.InsertResultOnNextFocus(PickerSearchResult::Clipboard(
-      *clipboard_item_id,
-      PickerSearchResult::ClipboardData::DisplayFormat::kText,
-      /*display_text=*/u"", /*display_image=*/{}, /*is_recent=*/false));
-  controller.widget_for_testing()->CloseNow();
+  controller.CloseWidgetThenInsertResultOnNextFocus(
+      PickerSearchResult::Clipboard(
+          *clipboard_item_id,
+          PickerSearchResult::ClipboardData::DisplayFormat::kText,
+          /*display_text=*/u"", /*display_image=*/{}, /*is_recent=*/false));
+  views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
+      controller.widget_for_testing());
   ClipboardPasteWaiter waiter;
   // Create a new to focus on.
   auto new_widget = CreateFramelessTestWidget();
@@ -449,9 +454,11 @@ TEST_F(PickerControllerTest,
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
 
-  controller.InsertResultOnNextFocus(PickerSearchResult::BrowsingHistory(
-      GURL("http://foo.com"), u"Foo", ui::ImageModel{}));
-  controller.widget_for_testing()->CloseNow();
+  controller.CloseWidgetThenInsertResultOnNextFocus(
+      PickerSearchResult::BrowsingHistory(GURL("http://foo.com"), u"Foo",
+                                          ui::ImageModel{}));
+  views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
+      controller.widget_for_testing());
   ui::FakeTextInputClient input_field(input_method,
                                       {.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_method->SetFocusedTextInputClient(&input_field);
@@ -734,7 +741,8 @@ TEST_F(PickerControllerTest, AddsNewRecentEmoji) {
   update->Set("emoji", std::move(history_value));
 
   controller.ToggleWidget();
-  controller.InsertResultOnNextFocus(PickerSearchResult::Emoji(u"def"));
+  controller.CloseWidgetThenInsertResultOnNextFocus(
+      PickerSearchResult::Emoji(u"def"));
 
   EXPECT_THAT(
       controller.GetSuggestedEmoji(),
@@ -754,7 +762,8 @@ TEST_F(PickerControllerTest, AddsExistingRecentEmoji) {
   update->Set("emoji", std::move(history_value));
 
   controller.ToggleWidget();
-  controller.InsertResultOnNextFocus(PickerSearchResult::Emoji(u"xyz"));
+  controller.CloseWidgetThenInsertResultOnNextFocus(
+      PickerSearchResult::Emoji(u"xyz"));
 
   EXPECT_THAT(
       controller.GetSuggestedEmoji(),
@@ -769,7 +778,8 @@ TEST_F(PickerControllerTest, AddsRecentEmojiEmptyHistory) {
   NiceMock<TestPickerClient> client(&controller);
 
   controller.ToggleWidget();
-  controller.InsertResultOnNextFocus(PickerSearchResult::Emoji(u"abc"));
+  controller.CloseWidgetThenInsertResultOnNextFocus(
+      PickerSearchResult::Emoji(u"abc"));
 
   EXPECT_THAT(
       controller.GetSuggestedEmoji(),

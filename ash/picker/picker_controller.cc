@@ -415,55 +415,12 @@ void PickerController::StartEmojiSearch(std::u16string_view query,
   search_controller_->StartEmojiSearch(query, std::move(callback));
 }
 
-void PickerController::InsertResultOnNextFocus(
+void PickerController::CloseWidgetThenInsertResultOnNextFocus(
     const PickerSearchResult& result) {
-  if (!widget_) {
-    return;
+  InsertResultOnNextFocus(result);
+  if (widget_) {
+    widget_->Close();
   }
-
-  // Update emoji history in prefs the result is an emoji/symbol/emoticon.
-  std::visit(base::Overloaded{[&](const PickerSearchResult::EmojiData& data) {
-                                emoji_history_model_->UpdateRecentEmoji(
-                                    EmojiResultTypeToCategory(data.type),
-                                    base::UTF16ToUTF8(data.text));
-                              },
-                              [](const auto& data) {}},
-             result.data());
-
-  std::visit(
-      base::Overloaded{
-          [&](PickerRichMedia media) {
-            ui::InputMethod* input_method = widget_->GetInputMethod();
-            if (input_method == nullptr) {
-              return;
-            }
-
-            // This cancels the previous request if there was one.
-            insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
-                input_method, media, kInsertMediaTimeout,
-                base::BindOnce(
-                    [](base::WeakPtr<PickerController> weak_controller) {
-                      return weak_controller
-                                 ? weak_controller->GetWebPasteTarget()
-                                 : std::nullopt;
-                    },
-                    weak_ptr_factory_.GetWeakPtr()),
-                base::BindOnce(&PickerController::OnInsertCompleted,
-                               weak_ptr_factory_.GetWeakPtr(), media));
-          },
-          [&](PickerSearchResult::ClipboardData data) {
-            // This cancels the previous request if there was one.
-            paste_request_ = std::make_unique<PickerPasteRequest>(
-                ClipboardHistoryController::Get(),
-                aura::client::GetFocusClient(widget_->GetNativeView()),
-                data.item_id);
-          },
-          [](std::monostate) { NOTREACHED_NORETURN(); },
-      },
-      GetInsertionContentForResult(result));
-
-  session_metrics_->SetOutcome(
-      PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
 }
 
 void PickerController::OpenResult(const PickerSearchResult& result) {
@@ -719,6 +676,57 @@ void PickerController::ShowWidgetPostFeatureTour() {
 
 std::optional<PickerWebPasteTarget> PickerController::GetWebPasteTarget() {
   return client_ ? client_->GetWebPasteTarget() : std::nullopt;
+}
+
+void PickerController::InsertResultOnNextFocus(
+    const PickerSearchResult& result) {
+  if (!widget_) {
+    return;
+  }
+
+  // Update emoji history in prefs the result is an emoji/symbol/emoticon.
+  std::visit(base::Overloaded{[&](const PickerSearchResult::EmojiData& data) {
+                                emoji_history_model_->UpdateRecentEmoji(
+                                    EmojiResultTypeToCategory(data.type),
+                                    base::UTF16ToUTF8(data.text));
+                              },
+                              [](const auto& data) {}},
+             result.data());
+
+  std::visit(
+      base::Overloaded{
+          [&](PickerRichMedia media) {
+            ui::InputMethod* input_method = widget_->GetInputMethod();
+            if (input_method == nullptr) {
+              return;
+            }
+
+            // This cancels the previous request if there was one.
+            insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
+                input_method, media, kInsertMediaTimeout,
+                base::BindOnce(
+                    [](base::WeakPtr<PickerController> weak_controller) {
+                      return weak_controller
+                                 ? weak_controller->GetWebPasteTarget()
+                                 : std::nullopt;
+                    },
+                    weak_ptr_factory_.GetWeakPtr()),
+                base::BindOnce(&PickerController::OnInsertCompleted,
+                               weak_ptr_factory_.GetWeakPtr(), media));
+          },
+          [&](PickerSearchResult::ClipboardData data) {
+            // This cancels the previous request if there was one.
+            paste_request_ = std::make_unique<PickerPasteRequest>(
+                ClipboardHistoryController::Get(),
+                aura::client::GetFocusClient(widget_->GetNativeView()),
+                data.item_id);
+          },
+          [](std::monostate) { NOTREACHED_NORETURN(); },
+      },
+      GetInsertionContentForResult(result));
+
+  session_metrics_->SetOutcome(
+      PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
 }
 
 void PickerController::OnInsertCompleted(

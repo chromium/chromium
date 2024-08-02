@@ -371,8 +371,7 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
         result, search_results_view_->GetIndex(result));
     switch (delegate_->GetActionForResult(result)) {
       case PickerActionType::kInsert:
-        delegate_->InsertResultOnNextFocus(result);
-        GetWidget()->Close();
+        delegate_->CloseWidgetThenInsertResultOnNextFocus(result);
         break;
       case PickerActionType::kOpen:
       case PickerActionType::kDo:

@@ -213,7 +213,8 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     std::move(callback).Run(options_.emoji_results);
   }
 
-  void InsertResultOnNextFocus(const PickerSearchResult& result) override {
+  void CloseWidgetThenInsertResultOnNextFocus(
+      const PickerSearchResult& result) override {
     last_inserted_result_ = result;
   }
   void OpenResult(const PickerSearchResult& result) override {
