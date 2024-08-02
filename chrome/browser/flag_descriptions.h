@@ -1003,6 +1003,9 @@ extern const char kWebAuthFlowInBrowserTabDescription[];
 extern const char kCWSInfoFastCheckName[];
 extern const char kCWSInfoFastCheckDescription[];
 
+extern const char kExtensionTelemetryForEnterpriseName[];
+extern const char kExtensionTelemetryForEnterpriseDescription[];
+
 extern const char kSafetyCheckExtensionsName[];
 extern const char kSafetyCheckExtensionsDescription[];
 
