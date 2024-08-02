@@ -7,17 +7,20 @@ found in the LICENSE file.
 
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/facilitated_payments_progress_screen_height">
 
-    <!-- TODO: b/348142430 - Make the progress spinner thinner. -->
-    <ProgressBar
-        android:layout_width="@dimen/facilitated_payments_progress_bar_size"
-        android:layout_height="@dimen/facilitated_payments_progress_bar_size"
+    <!-- TODO: b/348142430 - Make the track for the progress spinner visible. -->
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:indeterminate="true"
-        android:indeterminateTint="@macro/default_icon_color_accent1" />
+        app:indicatorSize="@dimen/facilitated_payments_progress_bar_size"
+        app:indicatorColor="@macro/default_icon_color_accent1"
+        app:trackThickness="@dimen/facilitated_payments_progress_bar_track_thickness" />
 
     <ImageView
         android:layout_width="@dimen/facilitated_payments_progress_screen_lock_size"
