@@ -17,6 +17,7 @@
 class Profile;
 
 namespace tab_groups {
+class SavedTabGroupModelObserver;
 class SavedTabGroupKeyedService;
 
 // This class serves to hold pointers to and utilize the TabGroupSyncService and
@@ -98,6 +99,13 @@ class TabGroupServiceWrapper : public TabGroupSyncService {
   CreateScopedLocalObserverPauser() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+
+  void AddWrapperObserver(
+      Observer* tab_group_sync_observer,
+      SavedTabGroupModelObserver* saved_tab_group_model_observer);
+  void RemoveWrapperObserver(
+      Observer* tab_group_sync_observer,
+      SavedTabGroupModelObserver* saved_tab_group_model_observer);
 
   // These functions are only called for the SavedTabGroupKeyedService to log
   // metrics that the TabGroupSyncService is already recording.

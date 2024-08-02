@@ -353,11 +353,36 @@ TabGroupServiceWrapper::CreateScopedLocalObserverPauser() {
 }
 
 void TabGroupServiceWrapper::AddObserver(Observer* observer) {
-  NOTIMPLEMENTED();
+  if (ShouldUseSyncService()) {
+    sync_service_->AddObserver(observer);
+  }
 }
 
 void TabGroupServiceWrapper::RemoveObserver(Observer* observer) {
-  NOTIMPLEMENTED();
+  if (ShouldUseSyncService()) {
+    sync_service_->RemoveObserver(observer);
+  }
+}
+
+void TabGroupServiceWrapper::AddWrapperObserver(
+    Observer* tab_group_sync_observer,
+    SavedTabGroupModelObserver* saved_tab_group_model_observer) {
+  if (ShouldUseSyncService()) {
+    AddObserver(tab_group_sync_observer);
+  } else {
+    saved_keyed_service_->model()->AddObserver(saved_tab_group_model_observer);
+  }
+}
+
+void TabGroupServiceWrapper::RemoveWrapperObserver(
+    Observer* tab_group_sync_observer,
+    SavedTabGroupModelObserver* saved_tab_group_model_observer) {
+  if (ShouldUseSyncService()) {
+    RemoveObserver(tab_group_sync_observer);
+  } else {
+    saved_keyed_service_->model()->RemoveObserver(
+        saved_tab_group_model_observer);
+  }
 }
 
 void TabGroupServiceWrapper::OnTabAddedToGroupLocally(
