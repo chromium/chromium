@@ -16,6 +16,7 @@ import time
 
 from google.protobuf import text_format  # pylint: disable=import-error
 
+from devil import base_error
 from devil.android import apk_helper
 from devil.android import device_utils
 from devil.android.sdk import adb_wrapper
@@ -89,6 +90,10 @@ class AvdException(Exception):
     # avd.py is executed with python2.
     # pylint: disable=R1725
     super(AvdException, self).__init__('\n'.join(message_parts))
+
+
+class AvdStartException(AvdException):
+  """Exception for AVD start failures."""
 
 
 def _Load(avd_proto_path):
@@ -1114,23 +1119,26 @@ class _AvdInstance:
             retries=retries,
             args=[sock])
         logging.info('%s started', self._emulator_serial)
-      except Exception:
+      except base_error.BaseError as e:
         self.Stop(force=True)
-        raise
+        raise AvdStartException(str(e)) from e
 
-    # Set the system settings in "Start" here instead of setting in "Create"
-    # because "Create" is used during AVD creation, and we want to avoid extra
-    # turn-around on rolling AVD.
-    if ensure_system_settings:
-      assert self.device is not None, '`instance.device` not initialized.'
-      logging.info('Waiting for device to be fully booted.')
-      self.device.WaitUntilFullyBooted(timeout=360 if is_slow_start else 90,
-                                       retries=retries)
-      logging.info('Device fully booted, verifying system settings.')
-      _EnsureSystemSettings(self.device)
+    try:
+      # Set the system settings in "Start" here instead of setting in "Create"
+      # because "Create" is used during AVD creation, and we want to avoid extra
+      # turn-around on rolling AVD.
+      if ensure_system_settings:
+        assert self.device is not None, '`instance.device` not initialized.'
+        logging.info('Waiting for device to be fully booted.')
+        self.device.WaitUntilFullyBooted(timeout=360 if is_slow_start else 90,
+                                         retries=retries)
+        logging.info('Device fully booted, verifying system settings.')
+        _EnsureSystemSettings(self.device)
 
-    if enable_network:
-      _EnableNetwork(self.device)
+      if enable_network:
+        _EnableNetwork(self.device)
+    except base_error.BaseError as e:
+      raise AvdStartException(str(e)) from e
 
   def Stop(self, force=False):
     """Stops the emulator process.
