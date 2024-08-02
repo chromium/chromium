@@ -352,6 +352,9 @@
       'fuchsia-fyi-arm64-dbg',
       # TODO: crbug.com/346921029 - fix broken tests.
       'linux-win-cross-rel',
+      # TODO(crbug.com/349968686): Missing dll on win11-23h2, which is the only
+      # available win11 version on arm64 in swarming.
+      'win11-arm64-rel-tests',
       'Win10 Tests x64 (dbg)',
       'win11-arm64-dbg-tests',
     ],
@@ -619,14 +622,6 @@
             'os': 'Windows-11-22621',
           },
           'hard_timeout': 2400,
-        },
-      },
-      'win11-arm64-rel-tests': {
-        'swarming': {
-          'dimensions': {
-            # TODO(crbug.com/349968686): Workaround missing dll on win11-23h2.
-            'os': 'Windows-11-22621',
-          },
         },
       },
       'win11-blink-rel': {
