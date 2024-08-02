@@ -11690,6 +11690,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP" desc="The label of the tab group header context menu item for ungrouping the current group.">
           Ungroup
         </message>
+        <message name="IDS_TAB_GROUP_HEADER_CXMENU_SHARE_GROUP" desc="The label of the tab group header context menu item for sharing the current group.">
+          Share group
+        </message>
+        <message name="IDS_TAB_GROUP_HEADER_CXMENU_MANAGE_GROUP" desc="The label of the tab group header context menu item for managing the shared group.">
+          Manage sharing
+        </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP" desc="The label of the tab group header context menu item for closing all tabs in the current group.">
           Close group
         </message>
@@ -11730,6 +11736,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP" desc="In Title Case: The label of the tab group header context menu item for ungrouping the current group.">
           Ungroup
+        </message>
+        <message name="IDS_TAB_GROUP_HEADER_CXMENU_SHARE_GROUP" desc="The label of the tab group header context menu item for sharing the current group.">
+          Share Group
+        </message>
+        <message name="IDS_TAB_GROUP_HEADER_CXMENU_MANAGE_GROUP" desc="The label of the tab group header context menu item for managing the shared group.">
+          Manage Sharing
         </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP" desc="In Title Case: The label of the tab group header context menu item for closing all tabs in the current group.">
           Close Group

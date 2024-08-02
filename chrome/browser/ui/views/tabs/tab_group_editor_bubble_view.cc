@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -24,8 +25,10 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_group_sync/feature_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -46,12 +49,14 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/tabs/color_picker_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/user_education/tutorial_identifiers.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/data_sharing/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
@@ -314,6 +319,26 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
                           base::Unretained(this)),
       ui::ImageModel::FromVectorIcon(kUngroupRefreshIcon))));
 
+  tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser_->profile());
+
+  if (ShouldAddShareManageButton()) {
+    const tab_groups::SavedTabGroup* saved_group =
+        saved_tab_group_service->model()->Get(group_);
+    if (saved_group) {
+      menu_items_.push_back(AddChildView(CreateMenuItem(
+          TAB_GROUP_HEADER_CXMENU_SHARE_OR_MANAGE,
+          l10n_util::GetStringUTF16(
+              saved_group->is_shared_tab_group()
+                  ? IDS_TAB_GROUP_HEADER_CXMENU_MANAGE_GROUP
+                  : IDS_TAB_GROUP_HEADER_CXMENU_SHARE_GROUP),
+          base::BindRepeating(&TabGroupEditorBubbleView::ShareOrManagePressed,
+                              base::Unretained(this)),
+          ui::ImageModel::FromVectorIcon(kTabGroupSharingIcon))));
+    }
+  }
+
   views::LabelButton* close_group_menu_item = AddChildView(CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP, GetTextForCloseButton(),
       base::BindRepeating(&TabGroupEditorBubbleView::CloseGroupPressed,
@@ -349,10 +374,6 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     menu_items_.push_back(std::move(delete_group_menu_item));
 
     PrefService* pref_service = browser_->profile()->GetPrefs();
-    tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
-        tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-            browser_->profile());
-
     if (saved_tab_group_service && pref_service &&
         saved_tab_group_prefs::GetLearnMoreFooterShownCount(pref_service) <
             kFooterDisplayLimit) {
@@ -419,6 +440,16 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
 }
 
 TabGroupEditorBubbleView::~TabGroupEditorBubbleView() = default;
+
+bool TabGroupEditorBubbleView::ShouldAddShareManageButton() {
+  auto* profile = browser_->profile();
+  return base::FeatureList::IsEnabled(
+             data_sharing::features::kDataSharingFeature) &&
+         tab_groups::IsTabGroupsSaveUIUpdateEnabled() &&
+         tab_groups::IsTabGroupsSaveV2Enabled() &&
+         profile->IsRegularProfile() &&
+         tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile);
+}
 
 tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
   const tab_groups::ColorLabelMap& color_map =
@@ -559,6 +590,14 @@ void TabGroupEditorBubbleView::UngroupPressed() {
     Ungroup(browser_, group_);
   }
   GetWidget()->Close();
+}
+
+void TabGroupEditorBubbleView::ShareOrManagePressed() {
+  // TODO(b/353577560): Placeholder impl for ease of testing. Add real impl
+  // later.
+  DataSharingBubbleController::GetOrCreateForBrowser(
+      const_cast<Browser*>(browser_.get()))
+      ->Show();
 }
 
 // static

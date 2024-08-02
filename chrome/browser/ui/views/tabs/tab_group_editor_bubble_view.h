@@ -41,8 +41,9 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   static constexpr int TAB_GROUP_HEADER_CXMENU_SAVE_GROUP = 13;
   static constexpr int TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP = 14;
   static constexpr int TAB_GROUP_HEADER_CXMENU_UNGROUP = 15;
-  static constexpr int TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP = 16;
-  static constexpr int TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW = 17;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_SHARE_OR_MANAGE = 16;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP = 17;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW = 18;
 
   using Colors =
       std::vector<std::pair<tab_groups::TabGroupColorId, std::u16string>>;
@@ -80,9 +81,14 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   void OnSaveTogglePressed();
   void NewTabInGroupPressed();
   void UngroupPressed();
+  void ShareOrManagePressed();
   void CloseGroupPressed();
   void DeleteGroupPressed();
   void MoveGroupToNewWindowPressed();
+
+  // True if the "Share group" / "Manage sharing" button should be added to
+  // the editor bubble.
+  bool ShouldAddShareManageButton();
 
   // The action for moving a group to a new window is only enabled when the
   // tabstrip contains more than just the tabs in the current group.
