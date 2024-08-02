@@ -85,9 +85,6 @@ class TipsNotificationClient : public PushNotificationClient {
   // Returns true if a Docking promo notification should be sent.
   bool ShouldSendDocking();
 
-  // Returns true if an Omnibox Position promo notification should be sent.
-  bool ShouldSendOmniboxPosition();
-
   // Returns `true` if there is foreground active browser.
   bool IsSceneLevelForegroundActive();
 
@@ -99,7 +96,6 @@ class TipsNotificationClient : public PushNotificationClient {
   void ShowSignin();
   void ShowSetUpListContinuation();
   void ShowDocking();
-  void ShowOmniboxPosition();
 
   // Helpers to store state in local state prefs.
   void MarkNotificationTypeSent(TipsNotificationType type);

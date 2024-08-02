@@ -5,7 +5,6 @@
 #import "base/strings/stringprintf.h"
 #import "base/test/ios/wait_util.h"
 #import "base/threading/platform_thread.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -185,7 +184,6 @@ void MaybeDismissNotification() {
 
   [self optInToTipsNotifications:{
                                      TipsNotificationType::kWhatsNew,
-                                     TipsNotificationType::kOmniboxPosition,
                                      TipsNotificationType::kDefaultBrowser,
                                      TipsNotificationType::kDocking,
                                      TipsNotificationType::kSignin,
@@ -203,22 +201,6 @@ void MaybeDismissNotification() {
       grey_accessibilityID(@"kWhatsNewTableViewNavigationDismissButtonId");
   [[EarlGrey selectElementWithMatcher:whatsNewDoneButton]
       performAction:grey_tap()];
-
-  // OmniboxPositionChoice is only available on phones.
-  if ([ChromeEarlGrey isIPhoneIdiom]) {
-    // Wait for and tap the Omnibox Position notification.
-    TapNotification();
-
-    // Verify that the Omnibox Position view is showing.
-    id<GREYMatcher> omniboxPositionView = grey_accessibilityID(
-        first_run::kFirstRunOmniboxPositionChoiceScreenAccessibilityIdentifier);
-    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:omniboxPositionView];
-
-    // Dismiss the Omnibox Position view.
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::PromoStyleSecondaryActionButtonMatcher()]
-        performAction:grey_tap()];
-  }
 
   // Wait for and tap the Default Browser Notification.
   TapNotification();

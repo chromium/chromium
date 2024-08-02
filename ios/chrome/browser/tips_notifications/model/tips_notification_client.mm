@@ -26,13 +26,11 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -41,7 +39,6 @@
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
-#import "ui/base/device_form_factor.h"
 
 namespace {
 
@@ -258,7 +255,6 @@ void TipsNotificationClient::MaybeRequestNotification(
   static const TipsNotificationType kTypes[] = {
       TipsNotificationType::kSetUpListContinuation,
       TipsNotificationType::kWhatsNew,
-      TipsNotificationType::kOmniboxPosition,
       TipsNotificationType::kDefaultBrowser,
       TipsNotificationType::kDocking,
       TipsNotificationType::kSignin,
@@ -323,7 +319,6 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
     case TipsNotificationType::kDocking:
       return ShouldSendDocking();
     case TipsNotificationType::kOmniboxPosition:
-      return ShouldSendOmniboxPosition();
     case TipsNotificationType::kError:
       NOTREACHED_NORETURN();
   }
@@ -390,15 +385,6 @@ bool TipsNotificationClient::ShouldSendDocking() {
              feature_engagement::kIPHiOSDockingPromoRemindMeLaterFeature);
 }
 
-bool TipsNotificationClient::ShouldSendOmniboxPosition() {
-  // OmniboxPositionChoice is only available on phones.
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
-    return false;
-  }
-  return !GetApplicationContext()->GetLocalState()->GetUserPrefValue(
-      prefs::kBottomOmnibox);
-}
-
 bool TipsNotificationClient::IsSceneLevelForegroundActive() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetSceneLevelForegroundActiveBrowser() != nullptr;
@@ -429,8 +415,6 @@ void TipsNotificationClient::ShowUIForNotificationType(
       ShowDocking();
       break;
     case TipsNotificationType::kOmniboxPosition:
-      ShowOmniboxPosition();
-      break;
     case TipsNotificationType::kError:
       NOTREACHED();
   }
@@ -483,12 +467,6 @@ void TipsNotificationClient::ShowSetUpListContinuation() {
 void TipsNotificationClient::ShowDocking() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [HandlerForProtocol(Dispatcher(), DockingPromoCommands) showDockingPromo:YES];
-}
-
-void TipsNotificationClient::ShowOmniboxPosition() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [HandlerForProtocol(Dispatcher(), BrowserCoordinatorCommands)
-      showOmniboxPositionChoice];
 }
 
 void TipsNotificationClient::MarkNotificationTypeSent(
