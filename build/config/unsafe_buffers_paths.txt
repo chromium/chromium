@@ -139,6 +139,11 @@
 -url/third_party
 -v8/
 
+# Before clearing this directory, make sure to run against a bot running
+# with the build flag: use_internal_isolated_origins. There are none on the CQ
+# by default. See file components/site_isolation/preloaded_isolated_origins.cc
+-components/site_isolation/
+
 # TODO(crbug.com/41497066#comment22) The Win SDK headers don't get categorized
 # as system headers when building with DEPOT_TOOLS_WIN_TOOLCHAIN=0 ?
 -Program Files (x86)/Windows Kits/
