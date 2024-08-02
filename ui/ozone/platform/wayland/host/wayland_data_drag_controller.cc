@@ -571,6 +571,10 @@ void WaylandDataDragController::OnWindowRemoved(WaylandWindow* window) {
   }
 
   if (window == origin_window_) {
+    // See the declaration of TakeWaylandSurface() for why this is needed.
+    if (IsWindowDragSessionRunning()) {
+      origin_surface_ = origin_window_->TakeWaylandSurface();
+    }
     origin_window_ = nullptr;
   }
 
@@ -699,6 +703,8 @@ void WaylandDataDragController::Reset() {
 
   data_source_.reset();
   data_offer_.reset();
+  origin_window_ = nullptr;
+  origin_surface_.reset();
   icon_buffer_.reset();
   icon_surface_.reset();
   icon_surface_buffer_scale_ = 1.0f;

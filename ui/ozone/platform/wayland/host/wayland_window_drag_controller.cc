@@ -548,6 +548,7 @@ void WaylandWindowDragController::OnWindowRemoved(WaylandWindow* window) {
   }
 
   if (window == origin_window_) {
+    // See the declaration of TakeWaylandSurface() for why this is needed.
     origin_surface_ = origin_window_->TakeWaylandSurface();
     origin_window_ = nullptr;
   }

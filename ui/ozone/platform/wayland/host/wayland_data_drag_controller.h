@@ -279,6 +279,8 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // has been started by an external Wayland client.
   raw_ptr<WaylandWindow> origin_window_ = nullptr;
 
+  std::unique_ptr<WaylandSurface> origin_surface_;
+
   // Current window under pointer.
   raw_ptr<WaylandWindow, DanglingUntriaged> window_ = nullptr;
 
