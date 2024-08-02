@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/prefetch/prefetch_headers.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
@@ -106,6 +107,27 @@ const char* SearchPrefetchStatusToString(SearchPrefetchStatus status) {
       return "kPrefetchServedForRealNavigation";
   }
 }
+
+void MaybeRecordTraceFromSearchPrefetchRequestStartToNavigationIntercepted(
+    SearchPrefetchRequest* search_prefetch_request,
+    base::TimeTicks time_start_prefetch_request) {
+  if (time_start_prefetch_request.is_null()) {
+    return;
+  }
+
+  const char kSearchPrefetchRequestStartToNavigationIntercepted[] =
+      "SearchPrefetchRequestStartToNavigationIntercepted";
+  const auto trace_id =
+      TRACE_ID_WITH_SCOPE(kSearchPrefetchRequestStartToNavigationIntercepted,
+                          TRACE_ID_LOCAL(search_prefetch_request));
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      "navigation", kSearchPrefetchRequestStartToNavigationIntercepted,
+      trace_id, time_start_prefetch_request);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "navigation", kSearchPrefetchRequestStartToNavigationIntercepted,
+      trace_id, base::TimeTicks::Now());
+}
+
 }  // namespace
 
 SearchPrefetchRequest::SearchPrefetchRequest(
@@ -177,6 +199,7 @@ SearchPrefetchRequest::NetworkAnnotationForPrefetch() {
 
 bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   TRACE_EVENT0("loading", "SearchPrefetchRequest::StartPrefetchRequest");
+  time_start_prefetch_request_ = base::TimeTicks::Now();
 
   url::Origin prefetch_origin = url::Origin::Create(prefetch_url_);
 
@@ -397,6 +420,9 @@ void SearchPrefetchRequest::RecordClickTime() {
 
 scoped_refptr<StreamingSearchPrefetchURLLoader>
 SearchPrefetchRequest::TakeSearchPrefetchURLLoader() {
+  TRACE_EVENT0("loading", "SearchPrefetchRequest::TakeSearchPrefetchURLLoader");
+  MaybeRecordTraceFromSearchPrefetchRequestStartToNavigationIntercepted(
+      this, time_start_prefetch_request_);
   DCHECK(streaming_url_loader_);
   // This method should be called upon serving, so the service does not want to
   // keep the request.
@@ -414,6 +440,9 @@ SearchPrefetchRequest::CreateResponseReader() {
     // unexpectedly trigger prerendering due to https://crbug.com/1484914.
     return {};
   }
+  TRACE_EVENT0("loading", "SearchPrefetchRequest::CreateResponseReader");
+  MaybeRecordTraceFromSearchPrefetchRequestStartToNavigationIntercepted(
+      this, time_start_prefetch_request_);
   return StreamingSearchPrefetchURLLoader::
       GetCallbackForReadingViaResponseReader(streaming_url_loader_);
 }
