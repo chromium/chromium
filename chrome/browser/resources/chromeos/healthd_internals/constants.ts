@@ -34,9 +34,8 @@ export enum PagePath {
   // Only used when menu tabs are not displayed. No page should be displayed.
   NONE = '/',
   TELEMETRY = '/telemetry',
-  BATTERY = '/battery',
   CPU_FREQUENCY = '/cpu_frequency',
   CPU_USAGE = '/cpu_usage',
-  MEMORY = '/memory',
+  BATTERY = '/battery',
   THERMAL = '/thermal',
 }
