@@ -21,6 +21,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
@@ -408,11 +409,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
       FidoAuthenticator* platform_authenticator);
 
   // OnHavePlatformCredentialStatus is called by subclasses (after
-  // |GetPlatformCredentialStatus| has been called) to report on whether the
+  // `GetPlatformCredentialStatus` has been called) to report on whether the
   // platform authenticator whether it has responsive discoverable credentials
   // and whether it has responsive credentials at all.
+  // `timer` allows recording metrics with the wait time for this callback.
   void OnHavePlatformCredentialStatus(
       AuthenticatorType authenticator_type,
+      std::optional<base::ElapsedTimer> timer,
       std::vector<DiscoverableCredentialMetadata> user_entities,
       RecognizedCredential has_credentials);
 

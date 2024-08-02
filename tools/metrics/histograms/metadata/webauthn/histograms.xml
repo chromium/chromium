@@ -196,6 +196,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.CredentialFetchDuration.{ApiUsed}"
+    units="ms" expires_after="2024-12-31">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    The duration of a request to obtain a list of credentials for a WebAuthn
+    conditional UI Get Assertion request, when using the {ApiUsed}. This is only
+    recorded when at least one credential is available in the results. This
+    complements the duration recorded by
+    WebAuthentication.Android.CredManPrepareRequestDuration, which only applies
+    to the CredMan API but emits on all requests including when there are no
+    results present.
+  </summary>
+  <token key="ApiUsed">
+    <variant name="ChromeOS" summary="ChromeOS platform API"/>
+    <variant name="CredMan" summary="Credential Manager API on Android"/>
+    <variant name="GmsCore" summary="GMS Core API on Android"/>
+    <variant name="ICloudKeychain" summary="ICloud Keychain API"/>
+    <variant name="TouchId" summary="Chrome-native Touch ID authenticator"/>
+    <variant name="WinHello" summary="Windows Hello API"/>
+  </token>
+</histogram>
+
 <histogram name="WebAuthentication.Enclave.ChangePinEvents"
     enum="ChangePinEvent" expires_after="2024-12-31">
   <owner>derinel@google.com</owner>

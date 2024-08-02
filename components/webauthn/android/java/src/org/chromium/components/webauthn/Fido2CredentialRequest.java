@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcel;
 import android.os.ResultReceiver;
+import android.os.SystemClock;
 import android.util.Pair;
 
 import androidx.annotation.Nullable;
@@ -29,6 +30,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.AuthenticatorTransport;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
@@ -514,6 +516,7 @@ public class Fido2CredentialRequest
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.ONLY_FIDO_2_API);
             }
             mConditionalUiState = ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST;
+            long conditionalUiCredentialListInitialTimeMs = SystemClock.elapsedRealtime();
             Fido2ApiCallHelper.getInstance()
                     .invokeFido2GetCredentials(
                             mAuthenticationContextProvider,
@@ -525,7 +528,8 @@ public class Fido2CredentialRequest
                                                             options,
                                                             callerOriginString,
                                                             finalClientDataHash,
-                                                            credentials)),
+                                                            credentials,
+                                                            conditionalUiCredentialListInitialTimeMs)),
                             (e) ->
                                     mBarrier.onFido2ApiFailed(
                                             AuthenticatorStatus.NOT_ALLOWED_ERROR));
@@ -684,7 +688,8 @@ public class Fido2CredentialRequest
             PublicKeyCredentialRequestOptions options,
             String callerOriginString,
             byte[] clientDataHash,
-            List<WebauthnCredentialDetails> credentials) {
+            List<WebauthnCredentialDetails> credentials,
+            long conditionalUiCredentialListInitialTimeMs) {
         assert mConditionalUiState == ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST
                 || mConditionalUiState == ConditionalUiState.CANCEL_PENDING;
 
@@ -692,6 +697,12 @@ public class Fido2CredentialRequest
                 options.allowCredentials != null && options.allowCredentials.length != 0;
         boolean isConditionalRequest = options.isConditional;
         assert isConditionalRequest || !hasAllowCredentials;
+
+        if (!credentials.isEmpty()) {
+            RecordHistogram.recordTimesHistogram(
+                    "WebAuthentication.CredentialFetchDuration.GmsCore",
+                    SystemClock.elapsedRealtime() - conditionalUiCredentialListInitialTimeMs);
+        }
 
         if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
             // The request was completed synchronously when the cancellation was received,

@@ -235,7 +235,7 @@ class FakeFidoRequestHandler : public FidoRequestHandlerBase {
 
   void GetPlatformCredentialStatus(
       FidoAuthenticator* platform_authenticator) override {
-    OnHavePlatformCredentialStatus(AuthenticatorType::kOther,
+    OnHavePlatformCredentialStatus(AuthenticatorType::kOther, std::nullopt,
                                    /*user_entities=*/{},
                                    has_platform_credential_);
   }
