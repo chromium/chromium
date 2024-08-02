@@ -674,7 +674,7 @@ class ChromiumDepGraph {
         }
 
         if (skipLicenses) {
-            dep.licenses.clear()
+            dep.licenses = []
             if (dep.id?.endsWith('license')) {
                 dep.exclude = true
             }
