@@ -402,10 +402,6 @@ std::string GetAPIKey() {
   return g_api_key_cache.Get().api_key();
 }
 
-std::string GetNonStableAPIKey() {
-  return g_api_key_cache.Get().api_key_non_stable();
-}
-
 std::string GetRemotingAPIKey() {
   return g_api_key_cache.Get().api_key_remoting();
 }
