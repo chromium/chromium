@@ -60,6 +60,7 @@ _ANDROID_VULKAN_DEVICES = {
     # Pixel 6 phones map to multiple GPU models.
     "oriole": _gpu_device(vendor = "13b5", device = "92020010,92020000"),
     "dm1q": _gpu_device(vendor = "5143", device = "43050a01"),
+    "a23": _gpu_device(vendor = "5143", device = "6010001"),
 }
 
 def _get_dimensions(spec_value):

@@ -5224,9 +5224,9 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--expected-vendor-id",
-          "0",
+          "5143",
           "--expected-device-id",
-          "0",
+          "6010001",
           "--jobs=1",
           "--compatibility-mode=dont-require-rooted-device",
           "--initial-find-device-attempts=3"
