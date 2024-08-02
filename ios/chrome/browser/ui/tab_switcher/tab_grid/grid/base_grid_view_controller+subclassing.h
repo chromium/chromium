@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_VIEW_CONTROLLER_SUBCLASSING_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_VIEW_CONTROLLER_SUBCLASSING_H_
 
+#import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
@@ -72,6 +73,9 @@ typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
 // Provides an opportunity to update `snapshot` after an update of the grid's
 // mode.
 - (void)updateSnapshotForModeUpdate:(GridSnapshot*)snapshot;
+
+// Returns the scenario histogram to be used to display a context menu.
+- (MenuScenarioHistogram)scenarioForContextMenu;
 
 @end
 

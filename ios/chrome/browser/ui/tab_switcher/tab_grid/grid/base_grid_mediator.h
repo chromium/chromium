@@ -27,6 +27,7 @@ class Browser;
 @protocol TabGridToolbarsMainTabGridDelegate;
 @protocol TabGridToolbarCommands;
 @protocol TabGroupsCommands;
+@class TabGroupInfo;
 @protocol TabPresentationDelegate;
 class WebStateList;
 
@@ -134,6 +135,12 @@ class WebState;
 
 // Ungroups all tabs in `group`. The tabs in the group remain open.
 - (void)ungroupTabGroup:(const TabGroup*)group;
+
+// Returns whether this mediator can handle the drop of `tabGroupInfo`.
+- (BOOL)canHandleTabGroupDrop:(TabGroupInfo*)tabGroupInfo;
+
+// Records in UMA that a URL has been dropped from outside of the app.
+- (void)recordExternalURLDropped;
 
 @end
 

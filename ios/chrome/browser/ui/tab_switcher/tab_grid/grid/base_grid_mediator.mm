@@ -495,6 +495,14 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   groupWebStateList->DeleteGroup(group);
 }
 
+- (BOOL)canHandleTabGroupDrop:(TabGroupInfo*)tabGroupInfo {
+  return self.browserState->IsOffTheRecord() == tabGroupInfo.incognito;
+}
+
+- (void)recordExternalURLDropped {
+  base::UmaHistogramEnumeration(kUmaGridViewDragOrigin, DragItemOrigin::kOther);
+}
+
 #pragma mark - WebStateListObserving
 
 - (void)willChangeWebStateList:(WebStateList*)webStateList
@@ -1296,15 +1304,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
       // Tabs from different profiles cannot be dropped.
       return UIDropOperationForbidden;
     }
-    if (self.browserState->IsOffTheRecord() == tabGroupInfo.incognito) {
-      if (self.currentMode == TabGridModeGroup) {
-        // Can't drop a group in a group.
-        return UIDropOperationForbidden;
-      }
-      return UIDropOperationMove;
-    }
-    // Tabs of different profiles (regular/incognito) cannot be dropped.
-    return UIDropOperationForbidden;
+    return [self canHandleTabGroupDrop:tabGroupInfo] ? UIDropOperationMove
+                                                     : UIDropOperationForbidden;
   }
 
   // All URLs originating from Chrome create a new tab (as opposed to moving a
@@ -1419,13 +1420,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
     return;
   }
 
-  if (_currentMode == TabGridModeGroup) {
-    base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
-                                  DragItemOrigin::kOther);
-  } else {
-    base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
-                                  DragItemOrigin::kOther);
-  }
+  [self recordExternalURLDropped];
 
   __weak BaseGridMediator* weakSelf = self;
   auto loadHandler =

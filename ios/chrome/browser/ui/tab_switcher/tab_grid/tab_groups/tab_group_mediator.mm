@@ -62,7 +62,6 @@
     [_groupConsumer setGroupTitle:tabGroup->GetTitle()];
     [_groupConsumer setGroupColor:tabGroup->GetColor()];
 
-    [self switchToMode:TabGridModeGroup];
     [self populateConsumerItems];
   }
   return self;
@@ -216,6 +215,15 @@
   webState->GetNavigationManager()->LoadURLWithParams(loadParams);
 
   self.webStateList->InsertWebState(std::move(webState), insertionParams);
+}
+
+- (BOOL)canHandleTabGroupDrop:(TabGroupInfo*)tabGroupInfo {
+  return NO;
+}
+
+- (void)recordExternalURLDropped {
+  base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
+                                DragItemOrigin::kOther);
 }
 
 #pragma mark - TabCollectionDragDropHandler override

@@ -80,7 +80,7 @@ class WebStateID;
 
 // Tells the delegate that the inactive tabs settings link was tapped in
 // `gridViewController`, i.e., there was an intention to show inactive tabs
-// settings (in TabGridModeInactive).
+// settings (in the Inactive grid).
 - (void)didTapInactiveTabsSettingsLinkInGridViewController:
     (BaseGridViewController*)gridViewController;
 

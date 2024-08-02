@@ -13,13 +13,11 @@ typedef NS_ENUM(NSUInteger, TabGridPage) {
   TabGridPageTabGroups = 3,
 };
 
-// Page enumerates the modes of the tab grid.
+// Modes of the tab grid and of the grids.
 typedef NS_ENUM(NSUInteger, TabGridMode) {
   TabGridModeNormal = 0,
   TabGridModeSelection = 1,
   TabGridModeSearch = 2,
-  TabGridModeInactive = 3,
-  TabGridModeGroup = 4,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GRID_PAGING_H_

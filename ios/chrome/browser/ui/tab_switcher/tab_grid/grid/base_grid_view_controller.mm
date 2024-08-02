@@ -180,7 +180,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 - (void)loadView {
   self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
 
-  GridLayout* gridLayout = [[GridLayout alloc] initWithTabGridMode:_mode];
+  GridLayout* gridLayout = [[GridLayout alloc] init];
   self.gridLayout = gridLayout;
 
   UICollectionView* collectionView =
@@ -346,7 +346,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   TabGridMode previousMode = _mode;
   _mode = mode;
-  self.gridLayout.mode = _mode;
 
   self.collectionView.dragInteractionEnabled =
       [self shouldEnableDrapAndDropInteraction];
@@ -656,22 +655,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   // GridCell case.
   GridCell* cell = ObjCCastStrict<GridCell>(collectionViewCell);
 
-  MenuScenarioHistogram scenario;
-  switch (_mode) {
-    case TabGridModeInactive:
-      scenario = kMenuScenarioHistogramInactiveTabsEntry;
-      break;
-    case TabGridModeGroup:
-      scenario = kMenuScenarioHistogramTabGroupViewTabEntry;
-      break;
-    case TabGridModeSearch:
-      scenario = kMenuScenarioHistogramTabGridSearchResult;
-      break;
-    case TabGridModeNormal:
-    case TabGridModeSelection:
-      scenario = kMenuScenarioHistogramTabGridEntry;
-      break;
-  }
+  MenuScenarioHistogram scenario = [self scenarioForContextMenu];
 
   return [self.menuProvider contextMenuConfigurationForTabCell:cell
                                                   menuScenario:scenario];
@@ -1497,9 +1481,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       } else {
         NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
       }
-    case TabGridModeGroup:
-    case TabGridModeInactive:
-      NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
     case TabGridModeSelection:
       NOTREACHED_NORETURN() << "Should not happen.";
     case TabGridModeSearch:
@@ -1588,13 +1569,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
         return TabsSectionHeaderType::kNone;
       }
       return TabsSectionHeaderType::kSearch;
-    case TabGridModeInactive:
-      if (!IsInactiveTabsEnabled()) {
-        return TabsSectionHeaderType::kNone;
-      }
-      return TabsSectionHeaderType::kInactiveTabs;
-    case TabGridModeGroup:
-      return TabsSectionHeaderType::kTabGroup;
   }
 }
 
@@ -1604,6 +1578,16 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)updateSnapshotForModeUpdate:(GridSnapshot*)snapshot {
   // Base class implementation is doing nothing.
+}
+
+- (MenuScenarioHistogram)scenarioForContextMenu {
+  switch (_mode) {
+    case TabGridModeSearch:
+      return kMenuScenarioHistogramTabGridSearchResult;
+    case TabGridModeNormal:
+    case TabGridModeSelection:
+      return kMenuScenarioHistogramTabGridEntry;
+  }
 }
 
 #pragma mark - Private
@@ -1627,7 +1611,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
          // devices that don't support multiple windows.
          && ((self.mode == TabGridModeSelection &&
               base::ios::IsMultipleScenesSupported()) ||
-             self.mode == TabGridModeNormal || self.mode == TabGridModeGroup);
+             self.mode == TabGridModeNormal);
 }
 
 // Configures `groupCell`'s identifier and title synchronously, and pass the

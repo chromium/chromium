@@ -61,6 +61,14 @@
   [super createRegistrations];
 }
 
+- (TabsSectionHeaderType)tabsSectionHeaderTypeForMode:(TabGridMode)mode {
+  return TabsSectionHeaderType::kTabGroup;
+}
+
+- (MenuScenarioHistogram)scenarioForContextMenu {
+  return kMenuScenarioHistogramTabGroupViewTabEntry;
+}
+
 #pragma mark - Private
 
 // Configures the tab group header according to the current state.

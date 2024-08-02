@@ -59,6 +59,14 @@
   [super createRegistrations];
 }
 
+- (TabsSectionHeaderType)tabsSectionHeaderTypeForMode:(TabGridMode)mode {
+  return TabsSectionHeaderType::kInactiveTabs;
+}
+
+- (MenuScenarioHistogram)scenarioForContextMenu {
+  return kMenuScenarioHistogramInactiveTabsEntry;
+}
+
 #pragma mark - InactiveTabsInfoConsumer
 
 - (void)updateInactiveTabsCount:(NSInteger)count {
