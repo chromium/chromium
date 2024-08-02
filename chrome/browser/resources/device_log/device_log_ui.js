@@ -127,11 +127,33 @@ const clearLog = function() {
   requestLog();
 };
 
-const clearLogTypes = function() {
-  const checkboxes = document.querySelectorAll(
+const getCheckboxes = function() {
+  return document.querySelectorAll(
       '#log-checkbox-container input[type="checkbox"]');
+};
+
+const clearLogTypes = function() {
+  const checkboxes = getCheckboxes();
   for (let i = 0; i < checkboxes.length; ++i) {
     checkboxes[i].checked = false;
+  }
+};
+
+/**
+ * Sets the checked logging types from the URL parameters.
+ */
+const setCheckedTypes = function() {
+  const checkedTypesInput = new URL(window.location).searchParams.get('types');
+  if (!checkedTypesInput) {
+    return;
+  }
+  clearLogTypes();
+  const checkedTypes = checkedTypesInput.toLowerCase().split(',');
+  for (let i = 0; i < checkedTypes.length; ++i) {
+    const checkbox = document.getElementById('log-type-' + checkedTypes[i]);
+    if (checkbox) {
+      checkbox.checked = true;
+    }
   }
 };
 
@@ -193,6 +215,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   setRefresh();
+  setCheckedTypes();
   requestLog();
   // <if expr="chromeos_ash">
   updateOsLink();

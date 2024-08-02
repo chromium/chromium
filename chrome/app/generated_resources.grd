@@ -15423,6 +15423,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DEVICE_AUTO_REFRESH" desc="Instructions for how to auto-refresh the page">
         Add a query param in URL to auto-refresh the page: chrome://device-log/?refresh=&lt;sec&gt;
       </message>
+      <message name="IDS_DEVICE_SELECT_TYPES" desc="Instructions for how to select types for the page on page load">
+        Add a query param in the URL to select types on page load. Example: chrome://device-log/?types=Bluetooth,USB
+      </message>
       <message name="IDS_DEVICE_LOG_REFRESH" desc="Button to refresh device log entries">
         Refresh
       </message>

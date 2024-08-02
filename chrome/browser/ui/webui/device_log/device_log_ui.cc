@@ -116,6 +116,7 @@ DeviceLogUI::DeviceLogUI(content::WebUI* web_ui)
   static constexpr webui::LocalizedString kStrings[] = {
       {"titleText", IDS_DEVICE_LOG_TITLE},
       {"autoRefreshText", IDS_DEVICE_AUTO_REFRESH},
+      {"autoSelectTypes", IDS_DEVICE_SELECT_TYPES},
       {"logRefreshText", IDS_DEVICE_LOG_REFRESH},
       {"logClearText", IDS_DEVICE_LOG_CLEAR},
       {"logClearTypesText", IDS_DEVICE_LOG_CLEAR_TYPES},
