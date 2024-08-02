@@ -9,7 +9,7 @@ rootWebArea
 ++++++++++gridCell name='Cell'
 ++++++++++++staticText name='Cell'
 ++++++++++++++inlineTextBox name='Cell'
-++++++table name='Real data table'
+++++++table name='Real data table' nameFrom=caption
 ++++++++caption
 ++++++++++staticText name='Real data table'
 ++++++++++++inlineTextBox name='Real '

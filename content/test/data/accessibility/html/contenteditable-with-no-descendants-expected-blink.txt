@@ -3,7 +3,7 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer editable multiline richlyEditable name='label'
 ++++++genericContainer editable multiline richlyEditable description='description' descriptionFrom=relatedElement
-++++++genericContainer editable multiline richlyEditable name='title'
+++++++genericContainer editable multiline richlyEditable name='title' nameFrom=title
 ++++++paragraph
 ++++++++staticText name='description'
 ++++++++++inlineTextBox name='description'

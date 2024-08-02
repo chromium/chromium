@@ -14,7 +14,7 @@ rootWebArea
 ++++++++genericContainer
 ++++++++++staticText name='Named ARIA region#2 gets the region role.'
 ++++++++++++inlineTextBox name='Named ARIA region#2 gets the region role.'
-++++++region name='Named region'
+++++++region name='Named region' nameFrom=title
 ++++++++staticText name='Named ARIA region#3 gets the region role.'
 ++++++++++inlineTextBox name='Named ARIA region#3 gets the region role.'
 ++++++region roleDescription='Regioneque region'

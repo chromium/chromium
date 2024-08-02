@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++group name='Names a group'
+++++++group name='Names a group' nameFrom=title
 ++++++++staticText name='abc'
 ++++++++++inlineTextBox name='abc'
 ++++++group description='Moved to description' name='Has a name' descriptionFrom=title

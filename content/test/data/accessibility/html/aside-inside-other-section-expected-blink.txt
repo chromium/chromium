@@ -6,7 +6,7 @@ rootWebArea
 ++++++++++paragraph
 ++++++++++++staticText name='Unnamed aside inside article.'
 ++++++++++++++inlineTextBox name='Unnamed aside inside article.'
-++++++++complementary name='aside'
+++++++++complementary name='aside' nameFrom=title
 ++++++++++paragraph
 ++++++++++++staticText name='Named aside inside article.'
 ++++++++++++++inlineTextBox name='Named aside inside article.'
@@ -15,7 +15,7 @@ rootWebArea
 ++++++++++paragraph
 ++++++++++++staticText name='Unnamed aside inside section.'
 ++++++++++++++inlineTextBox name='Unnamed aside inside section.'
-++++++++complementary name='aside'
+++++++++complementary name='aside' nameFrom=title
 ++++++++++paragraph
 ++++++++++++staticText name='Named aside inside section.'
 ++++++++++++++inlineTextBox name='Named aside inside section.'

@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++checkBox name='Title0' checkedState=false
+++++++checkBox name='Title0' nameFrom=title checkedState=false
 ++++++checkBox description='Title1' name='Label1' descriptionFrom=title checkedState=false
 ++++++checkBox description='Title2' name='AriaLabel2' descriptionFrom=title checkedState=false
 ++++++checkBox description='Title3' name='LabelledBy3' descriptionFrom=title checkedState=false

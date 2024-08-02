@@ -11,6 +11,6 @@ rootWebArea
 ++++++++genericContainer
 ++++++++++staticText name='Named section element #2 gets the region role'
 ++++++++++++inlineTextBox name='Named section element #2 gets the region role'
-++++++region name='name'
+++++++region name='name' nameFrom=title
 ++++++++staticText name='Named section element #3 gets the region role'
 ++++++++++inlineTextBox name='Named section element #3 gets the region role'

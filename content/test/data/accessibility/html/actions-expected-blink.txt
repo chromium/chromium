@@ -2,6 +2,6 @@ rootWebArea name='Actions' actions=scrollBackward,scrollDown,scrollForward,scrol
 ++genericContainer ignored
 ++++genericContainer
 ++++++slider horizontal valueForRange=50.00 minValueForRange=1.00 maxValueForRange=100.00 actions=decrement,increment,setValue
-++++++textField name='Test textfield' actions=setValue
+++++++textField name='Test textfield' nameFrom=placeholder actions=setValue
 ++++++++genericContainer ignored
 ++++++++genericContainer

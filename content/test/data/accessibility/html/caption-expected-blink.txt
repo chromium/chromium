@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++table name='Browser and Engine'
+++++++table name='Browser and Engine' nameFrom=caption
 ++++++++caption
 ++++++++++staticText name='Browser and Engine'
 ++++++++++++inlineTextBox name='Browser and '
