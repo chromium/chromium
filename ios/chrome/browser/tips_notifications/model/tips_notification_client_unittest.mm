@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -36,6 +37,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/device_form_factor.h"
 
 using startup_metric_utils::FirstRunSentinelCreationResult;
 
@@ -264,6 +266,7 @@ TEST_F(TipsNotificationClientTest, DefaultBrowserRequest) {
   ClearDefaultBrowserPromoLastAction();
   StubGetPendingRequests(nil);
   SetSentNotifications({TipsNotificationType::kWhatsNew,
+                        TipsNotificationType::kOmniboxPosition,
                         TipsNotificationType::kSignin,
                         TipsNotificationType::kSetUpListContinuation,
                         TipsNotificationType::kDocking});
@@ -387,6 +390,7 @@ TEST_F(TipsNotificationClientTest, DockingRequest) {
   WriteFirstRunSentinel();
   SetSentNotifications({TipsNotificationType::kSetUpListContinuation,
                         TipsNotificationType::kWhatsNew,
+                        TipsNotificationType::kOmniboxPosition,
                         TipsNotificationType::kDefaultBrowser});
   StubGetPendingRequests(nil);
   ExpectNotificationRequest(TipsNotificationType::kDocking);
@@ -412,4 +416,48 @@ TEST_F(TipsNotificationClientTest, DockingHandle) {
   EXPECT_OCMOCK_VERIFY(mock_handler);
   histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
                                        TipsNotificationType::kDocking, 1);
+}
+
+// Tests that the client can register an Omnibox Position promo notification.
+TEST_F(TipsNotificationClientTest, OmniboxPositionRequest) {
+  // OmniboxPositionChoice is only available on phones.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+    return;
+  }
+
+  WriteFirstRunSentinel();
+  SetSentNotifications({TipsNotificationType::kSetUpListContinuation,
+                        TipsNotificationType::kWhatsNew});
+  StubGetPendingRequests(nil);
+  ExpectNotificationRequest(TipsNotificationType::kOmniboxPosition);
+
+  base::RunLoop run_loop;
+  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.Notifications.Tips.Sent", TipsNotificationType::kOmniboxPosition, 1);
+}
+
+// Tests that the client handles an Omnibox Position promo notification
+// response.
+TEST_F(TipsNotificationClientTest, OmniboxPositionHandle) {
+  // OmniboxPositionChoice is only available on phones.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+    return;
+  }
+
+  StubPrepareToPresentModal();
+  id mock_handler = MockHandler(@protocol(BrowserCoordinatorCommands));
+  OCMExpect([mock_handler showOmniboxPositionChoice]);
+
+  id mock_response =
+      MockRequestResponse(TipsNotificationType::kOmniboxPosition);
+  client_->HandleNotificationInteraction(mock_response);
+
+  EXPECT_OCMOCK_VERIFY(mock_handler);
+  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
+                                       TipsNotificationType::kOmniboxPosition,
+                                       1);
 }
