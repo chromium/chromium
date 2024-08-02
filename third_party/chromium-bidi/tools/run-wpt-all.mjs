@@ -40,16 +40,15 @@ function runWpt(options) {
   console.log(`Running WPT with options:\n${JSON.stringify(options, null, 2)}`);
 
   const cwd = packageDirectorySync();
-  const env = {
-    UPDATE_EXPECTATIONS: 'true',
-    LOG_FILE: `${join(cwd, 'logs')}/run-all.log`,
-    ...process.env,
-    ...options,
-  };
   spawnSync('npm', getNpmArgs(), {
     stdio: 'inherit',
     shell: true,
-    env,
+    env: {
+      UPDATE_EXPECTATIONS: 'true',
+      LOG_FILE: `${join(cwd, 'logs')}/run-all.log`,
+      ...process.env,
+      ...options,
+    },
     cwd,
     ...options,
   });

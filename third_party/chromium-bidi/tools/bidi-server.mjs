@@ -126,7 +126,6 @@ export function createBiDiServerProcess() {
       options: {
         stdio: ['inherit', 'pipe', 'pipe'],
         env: {
-          ...process.env,
           // keep-sorted start
           BROWSER_BIN,
           DEBUG,
@@ -152,5 +151,15 @@ export function createBiDiServerProcess() {
     );
   }
 
-  return child_process.spawn(runParams.file, runParams.args, runParams.options);
+  const options = CHROMEDRIVER
+    ? runParams.options
+    : {
+        ...runParams.options,
+        env: {
+          ...process.env,
+          ...runParams.options.env,
+        },
+      };
+
+  return child_process.spawn(runParams.file, runParams.args, options);
 }
