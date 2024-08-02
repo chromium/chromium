@@ -16,31 +16,33 @@ namespace segmentation_platform {
 
 namespace test {
 
-// Fake DeviceSwitcherResultDispatcher with overridden getter for
-// ClassificationResult.
-class FakeDeviceSwitcherResultDispatcher
-    : public segmentation_platform::DeviceSwitcherResultDispatcher {
+// TODO(crbug.com/1418395): Rename this file to
+// mock_device_switcher_result_dispatcher.h
+class MockDeviceSwitcherResultDispatcher
+    : public DeviceSwitcherResultDispatcher {
  public:
-  FakeDeviceSwitcherResultDispatcher(
-      segmentation_platform::SegmentationPlatformService* segmentation_service,
+  MockDeviceSwitcherResultDispatcher(
+      SegmentationPlatformService* segmentation_service,
       syncer::DeviceInfoTracker* device_info_tracker,
       PrefService* prefs,
-      segmentation_platform::FieldTrialRegister* field_trial_register);
+      FieldTrialRegister* field_trial_register);
 
-  ~FakeDeviceSwitcherResultDispatcher() override;
+  ~MockDeviceSwitcherResultDispatcher() override;
 
-  void WaitForClassificationResult(
-      base::TimeDelta timeout,
-      segmentation_platform::ClassificationResultCallback callback) override;
+  MOCK_METHOD(void,
+              WaitForClassificationResult,
+              (base::TimeDelta, ClassificationResultCallback));
 
-  void SetSegmentLabel(segmentation_platform::DefaultBrowserUserSegment label);
-
-  void SetPredictionStatus(segmentation_platform::PredictionStatus status);
-
- protected:
-  segmentation_platform::ClassificationResult classification_result_;
-  segmentation_platform::DefaultBrowserUserSegment segment_label_;
+  MOCK_METHOD(ClassificationResult, GetCachedClassificationResult, ());
 };
+
+// Helper function for testing that sets classification result labels according
+// to a user segmentation classification. The labels are set in the parameters
+// `device_switcher_labels` and `shopper_labels`.
+void SetOrderedLabelsForTesting(
+    DefaultBrowserUserSegment segment,
+    std::vector<std::string>* device_switcher_labels,
+    std::vector<std::string>* shopper_labels);
 
 }  // namespace test
 

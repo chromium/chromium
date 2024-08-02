@@ -70,6 +70,7 @@ source_set("unit_tests") {
   sources = [ "default_browser_screen_mediator_unittest.mm" ]
   deps = [
     ":default_browser_mediator",
+    "//base/test:test_support",
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public:test_support",
     "//ios/chrome/app/strings",

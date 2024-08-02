@@ -13,59 +13,43 @@ namespace segmentation_platform {
 
 namespace test {
 
-FakeDeviceSwitcherResultDispatcher::FakeDeviceSwitcherResultDispatcher(
-    segmentation_platform::SegmentationPlatformService* segmentation_service,
+MockDeviceSwitcherResultDispatcher::MockDeviceSwitcherResultDispatcher(
+    SegmentationPlatformService* segmentation_service,
     syncer::DeviceInfoTracker* device_info_tracker,
     PrefService* prefs,
-    segmentation_platform::FieldTrialRegister* field_trial_register)
-    : segmentation_platform::DeviceSwitcherResultDispatcher(
-          segmentation_service,
-          device_info_tracker,
-          prefs,
-          field_trial_register),
-      classification_result_(
-          segmentation_platform::PredictionStatus::kNotReady) {}
-
-FakeDeviceSwitcherResultDispatcher::~FakeDeviceSwitcherResultDispatcher() =
+    FieldTrialRegister* field_trial_register)
+    : DeviceSwitcherResultDispatcher(segmentation_service,
+                                     device_info_tracker,
+                                     prefs,
+                                     field_trial_register) {}
+MockDeviceSwitcherResultDispatcher::~MockDeviceSwitcherResultDispatcher() =
     default;
 
-void FakeDeviceSwitcherResultDispatcher::WaitForClassificationResult(
-    base::TimeDelta timeout,
-    segmentation_platform::ClassificationResultCallback callback) {
-  std::vector<std::string> ordered_labels;
-  if (segment_label_ ==
-      segmentation_platform::DefaultBrowserUserSegment::kDesktopUser) {
-    ordered_labels = {
-        segmentation_platform::DeviceSwitcherModel::kOtherLabel,
-        segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel,
-        segmentation_platform::DeviceSwitcherModel::kDesktopLabel,
-    };
-  } else if (segment_label_ ==
-             segmentation_platform::DefaultBrowserUserSegment::
-                 kAndroidSwitcher) {
-    ordered_labels = {
-        segmentation_platform::DeviceSwitcherModel::kOtherLabel,
-        segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel,
-    };
-  } else {
-    ordered_labels = {segmentation_platform::DeviceSwitcherModel::kOtherLabel};
+void SetOrderedLabelsForTesting(
+    DefaultBrowserUserSegment segment,
+    std::vector<std::string>* device_switcher_labels,
+    std::vector<std::string>* shopper_labels) {
+  if (shopper_labels) {
+    *shopper_labels = {kShoppingUserUmaName};
   }
-
-  segmentation_platform::ClassificationResult modified_result(
-      classification_result_.status);
-  modified_result.ordered_labels = ordered_labels;
-
-  std::move(callback).Run(std::move(modified_result));
-}
-
-void FakeDeviceSwitcherResultDispatcher::SetSegmentLabel(
-    segmentation_platform::DefaultBrowserUserSegment label) {
-  segment_label_ = label;
-}
-
-void FakeDeviceSwitcherResultDispatcher::SetPredictionStatus(
-    segmentation_platform::PredictionStatus status) {
-  classification_result_.status = status;
+  if (device_switcher_labels) {
+    switch (segment) {
+      case DefaultBrowserUserSegment::kDesktopUser:
+        *device_switcher_labels = {DeviceSwitcherModel::kOtherLabel,
+                                   DeviceSwitcherModel::kDesktopLabel,
+                                   DeviceSwitcherModel::kAndroidPhoneLabel};
+        return;
+      case DefaultBrowserUserSegment::kAndroidSwitcher:
+        *device_switcher_labels = {DeviceSwitcherModel::kOtherLabel,
+                                   DeviceSwitcherModel::kAndroidPhoneLabel};
+        return;
+      case DefaultBrowserUserSegment::kShopper:
+      case DefaultBrowserUserSegment::kDefault:
+        *device_switcher_labels = {DeviceSwitcherModel::kOtherLabel};
+        return;
+    }
+    NOTREACHED_NORETURN();
+  }
 }
 
 }  // namespace test
