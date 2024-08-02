@@ -126,16 +126,6 @@ class ChromeBrowserStateManagerImplTest : public PlatformTest {
     application_context->GetIOSChromeIOThread()->NetworkTearDown();
     application_context->SetChromeBrowserStateManager(nullptr);
     application_context->SetIOSChromeIOThread(nullptr);
-
-    // Creating a ChromeBrowserState with ChromeBrowserStateManagerImpl will
-    // create and initialize some KeyedService. Some of those services start
-    // background task that hops between IO and UI threads. Post a task on
-    // the IO thread and wait for the reply on UI thread to give time for
-    // the services to complete their initialisation on IO thread.
-    base::RunLoop run_loop;
-    web::GetIOThreadTaskRunner({})->PostTaskAndReply(
-        FROM_HERE, base::DoNothing(), run_loop.QuitClosure());
-    run_loop.Run();
   }
 
   ChromeBrowserStateManagerImpl& browser_state_manager() {
