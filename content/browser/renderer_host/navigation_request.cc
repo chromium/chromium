@@ -1980,8 +1980,11 @@ NavigationRequest::NavigationRequest(
       // sent back to the renderer in the CommitNavigation IPC. The renderer
       // will then send it back with the post body so that we can access it
       // along with the body in FrameNavigationEntry::page_state_.
-      headers.GetHeader(net::HttpRequestHeaders::kContentType,
-                        &commit_params_->post_content_type);
+      if (std::optional<std::string> content_type =
+              headers.GetHeader(net::HttpRequestHeaders::kContentType);
+          content_type) {
+        commit_params_->post_content_type = std::move(content_type).value();
+      }
     }
 
     TopicsHeaderValueResult topics_header_value_result =

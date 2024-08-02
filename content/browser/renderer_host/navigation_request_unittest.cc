@@ -965,9 +965,9 @@ class CSPEmbeddedEnforcementUnitTest : public NavigationRequestTest {
     navigation->Start();
     NavigationRequest* request =
         NavigationRequest::From(navigation->GetNavigationHandle());
-    std::string sec_required_csp;
-    request->GetRequestHeaders().GetHeader("sec-required-csp",
-                                           &sec_required_csp);
+    std::string sec_required_csp = request->GetRequestHeaders()
+                                       .GetHeader("sec-required-csp")
+                                       .value_or(std::string());
 
     // Complete the navigation so that the required csp is stored in the
     // RenderFrameHost, so that when we will add children to this document they
