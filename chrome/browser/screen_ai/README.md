@@ -7,7 +7,6 @@ The service is created per profile and will stay alive as long as the profile
 lives.\
 See `services/screen_ai/README.md` for more.
 
-
 ## How to Use for OCR
 Depending on your use case restrictions, choose one of the following
 approaches.
@@ -45,5 +44,16 @@ Once you know the service is ready, trigger connection to it in your process by
 connecting to `screen_ai:mojom:Screen2xMainContentExtractor` interface.\
 For an example see `chrome/renderer/accessibility/ax_tree_distiller.cc`.
 
-## Bugs Component:
+## Caution
+ScreenAI service has a large memory footprint and should be purged from memory
+when it's not needed. To do so, it monitors connections to itself and if all
+clients have disconnected, it shuts down.\
+To help with this process, please close your connections to the service as soon
+as you don't need them and reconnect again when needed.\
+Have support code for possible disconnecting form the service and reconnect if
+needed. This can happen due to a service crash, and also to ensure clients are
+disconnecting when they don't need the service, the service may in future shut
+down when it's idle without considering open connections.
+
+## Bugs Component
   Chromium > UI > Accessibility > MachineIntelligence (component id: 1457124)

@@ -13,6 +13,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -129,6 +131,18 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
       bool a11y_tree_request);
 
   void ReceiverDisconnected();
+
+  // Last time the feature is used. A null value means never, it is set when the
+  // feature is initialized, and each time it is used.
+  base::TimeTicks ocr_last_used_;
+  base::TimeTicks main_content_extraction_last_used_;
+
+  // Whether idle state for each feature is reported or not. Idle state is
+  // reported only once per feature during the lifetime of the service.
+  bool ocr_idle_reported_ = false;
+  bool main_content_extraction_idle_reported_ = false;
+
+  std::unique_ptr<base::RepeatingTimer> idle_checking_timer_;
 
   mojo::Receiver<mojom::ScreenAIServiceFactory> factory_receiver_;
   mojo::Receiver<mojom::OCRService> ocr_receiver_;
