@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/dns_names_util.h"
 
 #include <cstddef>
@@ -55,65 +50,39 @@ std::optional<std::vector<uint8_t>> DottedNameToNetwork(
       !IsCanonicalizedHostCompliant(dotted_form_name))
     return std::nullopt;
 
-  const char* buf = dotted_form_name.data();
-  size_t n = dotted_form_name.size();
-  uint8_t label[dns_protocol::kMaxLabelLength];
-  size_t labellen = 0; /* <= sizeof label */
-  std::vector<uint8_t> name(dns_protocol::kMaxNameLength, 0);
-  size_t namelen = 0; /* <= sizeof name */
-  char ch;
+  std::vector<uint8_t> name;
+  name.reserve(dns_protocol::kMaxNameLength);
 
-  for (;;) {
-    if (!n)
+  auto iter = dotted_form_name.begin();
+  while (iter != dotted_form_name.end()) {
+    auto pos = std::find(iter, dotted_form_name.end(), '.');
+    size_t labellen = std::distance(iter, pos);
+    // Don't allow empty labels per http://crbug.com/456391.
+    if (!labellen) {
+      DCHECK(!require_valid_internet_hostname);
+      return std::nullopt;
+    }
+    // `2` includes the length byte and the terminating '\0' byte.
+    if (name.size() + labellen + 2 > dns_protocol::kMaxNameLength ||
+        labellen > dns_protocol::kMaxLabelLength) {
+      DCHECK(!require_valid_internet_hostname);
+      return std::nullopt;
+    }
+    // This cast is safe because kMaxLabelLength < 255.
+    name.push_back(static_cast<uint8_t>(labellen));
+    name.insert(name.end(), iter, pos);
+    if (pos == dotted_form_name.end()) {
       break;
-    ch = *buf++;
-    --n;
-    if (ch == '.') {
-      // Don't allow empty labels per http://crbug.com/456391.
-      if (!labellen) {
-        DCHECK(!require_valid_internet_hostname);
-        return std::nullopt;
-      }
-      if (namelen + labellen + 1 > name.size()) {
-        DCHECK(!require_valid_internet_hostname);
-        return std::nullopt;
-      }
-      name[namelen++] = static_cast<uint8_t>(labellen);
-      memcpy(name.data() + namelen, label, labellen);
-      namelen += labellen;
-      labellen = 0;
-      continue;
     }
-    if (labellen >= sizeof(label)) {
-      DCHECK(!require_valid_internet_hostname);
-      return std::nullopt;
-    }
-    label[labellen++] = ch;
+    iter = pos + 1;
   }
 
-  // Allow empty label at end of name to disable suffix search.
-  if (labellen) {
-    if (namelen + labellen + 1 > name.size()) {
-      DCHECK(!require_valid_internet_hostname);
-      return std::nullopt;
-    }
-    name[namelen++] = static_cast<uint8_t>(labellen);
-    memcpy(name.data() + namelen, label, labellen);
-    namelen += labellen;
-    labellen = 0;
-  }
-
-  if (namelen + 1 > name.size()) {
+  if (name.empty()) {  // Empty names e.g. "", "." are not valid.
     DCHECK(!require_valid_internet_hostname);
     return std::nullopt;
   }
-  if (namelen == 0) {  // Empty names e.g. "", "." are not valid.
-    DCHECK(!require_valid_internet_hostname);
-    return std::nullopt;
-  }
-  name[namelen++] = 0;  // This is the root label (of length 0).
+  name.push_back(0);  // This is the root label (of length 0).
 
-  name.resize(namelen);
   return name;
 }
 
