@@ -248,6 +248,10 @@ class GraphBuilderCoreml {
   AddOperationForInstanceNormalization(
       const mojom::InstanceNormalization& operation,
       CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddOperationForLayerNormalization(
+      const mojom::LayerNormalization& operation,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForLeakyRelu(
       const mojom::LeakyRelu& operation,
       CoreML::Specification::MILSpec::Block& block);

@@ -125,6 +125,7 @@ constexpr char kOpExpandTypeName[] = "tile";
 constexpr char kOpGatherTypeName[] = "gather_along_axis";
 constexpr char kOpHardSigmoidTypeName[] = "sigmoid_hard";
 constexpr char kOpInstanceNormalizationTypeName[] = "instance_norm";
+constexpr char kOpLayerNormalizationTypeName[] = "layer_norm";
 constexpr char kOpLeakyReluTypeName[] = "leaky_relu";
 constexpr char kOpMatmulTypeName[] = "matmul";
 constexpr char kOpPadTypeName[] = "pad";
@@ -187,10 +188,12 @@ constexpr char kOpUpsampleNearestNeighborTypeName[] =
     "upsample_nearest_neighbor";
 // General op params that are shared across multiple ops.
 constexpr char kOpParamAlpha[] = "alpha";
+constexpr char kOpParamAxes[] = "axes";
 constexpr char kOpParamAxis[] = "axis";
 constexpr char kOpParamBeta[] = "beta";
 constexpr char kOpParamDataTypeName[] = "dtype";
 constexpr char kOpParamEpsilon[] = "epsilon";
+constexpr char kOpParamGamma[] = "gamma";
 constexpr char kOpParamKeepDims[] = "keep_dims";
 constexpr char kOpParamPad[] = "pad";
 constexpr char kOpParamX[] = "x";
@@ -832,6 +835,11 @@ GraphBuilderCoreml::BuildCoreMLModel() {
             *operation->get_instance_normalization(), block));
         break;
       }
+      case mojom::Operation::Tag::kLayerNormalization: {
+        RETURN_IF_ERROR(AddOperationForLayerNormalization(
+            *operation->get_layer_normalization(), block));
+        break;
+      }
       case mojom::Operation::Tag::kLeakyRelu: {
         RETURN_IF_ERROR(
             AddOperationForLeakyRelu(*operation->get_leaky_relu(), block));
@@ -930,7 +938,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
       case mojom::Operation::Tag::kGelu:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
-      case mojom::Operation::Tag::kLayerNormalization:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kPrelu:
@@ -1331,7 +1338,6 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
 
   static constexpr char kParamMean[] = "mean";
   static constexpr char kParamVariance[] = "variance";
-  static constexpr char kParamGamma[] = "gamma";
 
   // TODO(crbug.com/338529226): These params must all be constant tensors.
   SetInputWithName(*op->mutable_inputs(), kParamMean,
@@ -1339,7 +1345,7 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
   SetInputWithName(*op->mutable_inputs(), kParamVariance,
                    GetOperandInfo(operation.variance_operand_id).coreml_name);
   if (operation.scale_operand_id.has_value()) {
-    SetInputWithName(*op->mutable_inputs(), kParamGamma,
+    SetInputWithName(*op->mutable_inputs(), kOpParamGamma,
                      GetOperandInfo(*operation.scale_operand_id).coreml_name);
   }
   if (operation.bias_operand_id.has_value()) {
@@ -2061,11 +2067,9 @@ GraphBuilderCoreml::AddOperationForInstanceNormalization(
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    input_operand_info.coreml_name);
 
-  static constexpr char kParamGamma[] = "gamma";
-
   // TODO(crbug.com/338529226): These params must all be constant tensors.
   if (operation.scale_operand_id.has_value()) {
-    SetInputWithName(*op->mutable_inputs(), kParamGamma,
+    SetInputWithName(*op->mutable_inputs(), kOpParamGamma,
                      GetOperandInfo(*operation.scale_operand_id).coreml_name);
   }
   if (operation.bias_operand_id.has_value()) {
@@ -2079,6 +2083,50 @@ GraphBuilderCoreml::AddOperationForInstanceNormalization(
 
   CoreML::Specification::MILSpec::NamedValueType& output = *op->add_outputs();
   PopulateNamedValueType(operation.output_operand_id, output);
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForLayerNormalization(
+    const mojom::LayerNormalization& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+
+  // TODO: crbug.com/356905058: Figure out if unordered axes should be allowed.
+  if (!base::ranges::is_sorted(operation.axes)) {
+    return NewNotSupportedError("Axes must be ordered for layerNormalization.");
+  }
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpLayerNormalizationTypeName);
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+  std::vector<int32_t> axes;
+  base::ranges::transform(
+      operation.axes, std::back_inserter(axes),
+      [](uint32_t val) { return base::checked_cast<int32_t>(val); });
+
+  // TODO: crbug.com/338529226: These params must all be constant tensors.
+  if (operation.scale_operand_id.has_value()) {
+    SetInputWithName(
+        *op->mutable_inputs(), kOpParamGamma,
+        GetOperandInfo(operation.scale_operand_id.value()).coreml_name);
+  }
+  if (operation.bias_operand_id.has_value()) {
+    SetInputWithName(
+        *op->mutable_inputs(), kOpParamBeta,
+        GetOperandInfo(operation.bias_operand_id.value()).coreml_name);
+  }
+
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {{kOpParamAxes, Create1DTensorImmediateValue<int32_t>(axes)},
+       {kOpParamEpsilon, CreateFloatValue(input_operand_info.mil_data_type,
+                                          operation.epsilon)}});
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   return base::ok();
 }
 
@@ -2426,8 +2474,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
         MILDataTypeToOperandType(input_operand_info.mil_data_type)));
   }
 
-  static constexpr char kParamAxes[] = "axes";
-
   std::vector<int32_t> axes;
 
   base::ranges::transform(
@@ -2435,7 +2481,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
       [](uint32_t val) { return base::checked_cast<int32_t>(val); });
   SetInputsWithValues(
       *op->mutable_inputs(),
-      {{kParamAxes, Create1DTensorImmediateValue<int32_t>(axes)},
+      {{kOpParamAxes, Create1DTensorImmediateValue<int32_t>(axes)},
        {kOpParamKeepDims,
         CreateScalarImmediateValue(operation.keep_dimensions)}});
 
