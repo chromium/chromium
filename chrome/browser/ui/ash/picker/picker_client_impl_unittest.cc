@@ -51,8 +51,6 @@
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/test_screen.h"
-#include "ui/views/accessibility/ax_event_manager.h"
-#include "ui/views/test/ax_event_counter.h"
 
 namespace {
 
@@ -681,17 +679,6 @@ TEST_F(PickerClientImplEditorTest,
   client.GetSuggestedEditorResults(future.GetCallback());
 
   EXPECT_THAT(future.Get(), IsEmpty());
-}
-
-TEST_F(PickerClientImplEditorTest, AnnounceSendsLiveRegionChanges) {
-  base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
-  ash::PickerController controller;
-  PickerClientImpl client(&controller, user_manager());
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
-
-  client.Announce(u"hello");
-
-  counter.WaitForEvent(ax::mojom::Event::kLiveRegionChanged);
 }
 
 // TODO: b/325540366 - Add PickerClientImpl tests.

@@ -22,15 +22,13 @@ class EditorAnnouncer {
 
 class EditorLiveRegionAnnouncer : public EditorAnnouncer {
  public:
-  explicit EditorLiveRegionAnnouncer(std::u16string_view name);
-
   // EditorAnnouncer overrides
   void Announce(const std::u16string& message) override;
 
  private:
   class LiveRegion : public views::WidgetObserver {
    public:
-    explicit LiveRegion(std::u16string_view name);
+    LiveRegion();
     ~LiveRegion() override;
 
     // Triggers a ChromeVox announcement via the live region view.
@@ -41,8 +39,6 @@ class EditorLiveRegionAnnouncer : public EditorAnnouncer {
 
    private:
     void CreateAnnouncementView();
-
-    std::u16string announcement_view_name_;
 
     // Holds the view used to trigger announcements with ChromeVox. This is
     // a raw_ptr due to the lifetime of the instance being handled by the

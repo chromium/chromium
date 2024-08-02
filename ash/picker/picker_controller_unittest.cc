@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "ash/accessibility/accessibility_controller.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
@@ -466,32 +465,6 @@ TEST_F(PickerControllerTest,
   input_method->SetFocusedTextInputClient(&input_field);
 
   EXPECT_EQ(input_field.text(), u"http://foo.com/");
-}
-
-TEST_F(PickerControllerTest, InsertResultClosesWidgetImmediately) {
-  PickerController controller;
-  NiceMock<TestPickerClient> client(&controller);
-  controller.ToggleWidget();
-
-  controller.CloseWidgetThenInsertResultOnNextFocus(
-      PickerSearchResult::Text(u"abc"));
-
-  EXPECT_TRUE(controller.widget_for_testing()->IsClosed());
-}
-
-TEST_F(PickerControllerTest, InsertResultDelaysWidgetCloseForAccessibility) {
-  PickerController controller;
-  NiceMock<TestPickerClient> client(&controller);
-  controller.ToggleWidget();
-  Shell::Get()->accessibility_controller()->SetSpokenFeedbackEnabled(
-      true, A11Y_NOTIFICATION_NONE);
-
-  controller.CloseWidgetThenInsertResultOnNextFocus(
-      PickerSearchResult::Text(u"abc"));
-
-  EXPECT_FALSE(controller.widget_for_testing()->IsClosed());
-  views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
-      controller.widget_for_testing());
 }
 
 TEST_F(PickerControllerTest, OpenBrowsingHistoryResult) {

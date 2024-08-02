@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -81,9 +80,6 @@ class ASH_PUBLIC_EXPORT PickerClient {
   // SAFETY: The returned `do_paste` MUST be called synchronously. Calling it
   // after a delay, such as in a different task, may result in use-after-frees.
   virtual std::optional<PickerWebPasteTarget> GetWebPasteTarget() = 0;
-
-  // Make an announcement via an offscreen live region.
-  virtual void Announce(std::u16string_view message) = 0;
 
  protected:
   PickerClient();
