@@ -66,7 +66,7 @@ ParseRoutineArgumentSupportResult(
 
 bool IsPendingApprovalRoutine(
     const crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr& arg) {
-  return arg && arg->is_camera_frame_analysis();
+  return false;
 }
 
 }  // namespace
