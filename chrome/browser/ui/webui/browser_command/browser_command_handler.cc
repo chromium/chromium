@@ -125,6 +125,9 @@ void BrowserCommandHandler::CanExecuteCommand(
     case Command::kOpenSafetyCheckFromWhatsNew:
       can_execute = true;
       break;
+    case Command::kOpenPaymentsSettings:
+      can_execute = true;
+      break;
   }
   std::move(callback).Run(can_execute);
 }
@@ -203,6 +206,10 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
       break;
     case Command::kOpenSafetyCheckFromWhatsNew:
       NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kSafetyCheckSubPage)),
+                    disposition);
+      break;
+    case Command::kOpenPaymentsSettings:
+      NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kPaymentsSubPage)),
                     disposition);
       break;
     default:

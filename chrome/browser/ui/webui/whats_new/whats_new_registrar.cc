@@ -4,12 +4,16 @@
 
 #include "chrome/browser/ui/webui/whats_new/whats_new_registrar.h"
 
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_storage_service_impl.h"
+#include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 
 namespace whats_new {
+using BrowserCommand = browser_command::mojom::Command;
 void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   // Register modules here.
+  // 129
+  registry->RegisterModule(WhatsNewModule(
+      "vinnypersky@google.com", BrowserCommand::kOpenPaymentsSettings));
 }
 
 void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {
