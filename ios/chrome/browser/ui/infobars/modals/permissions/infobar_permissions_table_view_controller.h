@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_PERMISSIONS_INFOBAR_PERMISSIONS_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_PERMISSIONS_INFOBAR_PERMISSIONS_TABLE_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/permissions/ui_bundled/permissions_consumer.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
-#import "ios/chrome/browser/ui/permissions/permissions_consumer.h"
 
 @protocol InfobarModalDelegate;
 @protocol InfobarModalPresentationHandler;

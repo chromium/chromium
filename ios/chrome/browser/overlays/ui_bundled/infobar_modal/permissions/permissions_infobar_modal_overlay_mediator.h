@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_INFOBAR_MODAL_PERMISSIONS_PERMISSIONS_INFOBAR_MODAL_OVERLAY_MEDIATOR_H_
 
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_mediator.h"
-#import "ios/chrome/browser/ui/permissions/permissions_delegate.h"
+#import "ios/chrome/browser/permissions/ui_bundled/permissions_delegate.h"
 
 @protocol InfobarModalDelegate;
 @protocol PermissionsConsumer;

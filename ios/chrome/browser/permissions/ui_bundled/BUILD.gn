@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("permissions") {
+source_set("ui_bundled") {
   sources = [
     "permission_metrics_util.h",
     "permission_metrics_util.mm",
@@ -84,8 +84,8 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/infobars:eg_test_support+eg2",
     "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/browser/ui/infobars/modals:public",
-    "//ios/chrome/browser/ui/permissions:constants",
-    "//ios/chrome/browser/ui/permissions:permission_info",
+    "//ios/chrome/browser/permissions/ui_bundled:constants",
+    "//ios/chrome/browser/permissions/ui_bundled:permission_info",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

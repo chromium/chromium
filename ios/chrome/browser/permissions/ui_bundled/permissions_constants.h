@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_PERMISSIONS_PERMISSIONS_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_UI_PERMISSIONS_PERMISSIONS_CONSTANTS_H_
+#ifndef IOS_CHROME_BROWSER_PERMISSIONS_UI_BUNDLED_PERMISSIONS_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_PERMISSIONS_UI_BUNDLED_PERMISSIONS_CONSTANTS_H_
 
 #import <Foundation/Foundation.h>
 
@@ -29,4 +29,4 @@ extern const char kOriginInfoPermissionChangedHistogram[];
 // platforms.
 extern const char kOriginInfoPermissionChangedBlockedHistogram[];
 
-#endif  // IOS_CHROME_BROWSER_UI_PERMISSIONS_PERMISSIONS_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_PERMISSIONS_UI_BUNDLED_PERMISSIONS_CONSTANTS_H_

@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_PAGE_INFO_PAGE_INFO_PERMISSIONS_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_UI_PAGE_INFO_PAGE_INFO_PERMISSIONS_MEDIATOR_H_
 
-#import "ios/chrome/browser/ui/permissions/permissions_delegate.h"
+#import "ios/chrome/browser/permissions/ui_bundled/permissions_delegate.h"
 
 @protocol PermissionsConsumer;
 

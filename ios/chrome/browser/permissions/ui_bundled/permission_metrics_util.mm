@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/permissions/permission_metrics_util.h"
+#import "ios/chrome/browser/permissions/ui_bundled/permission_metrics_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/content_settings/core/browser/content_settings_uma_util.h"
 #import "components/content_settings/core/common/content_settings_types.h"
 #import "components/page_info/core/page_info_action.h"
-#import "ios/chrome/browser/ui/permissions/permission_info.h"
-#import "ios/chrome/browser/ui/permissions/permissions_constants.h"
+#import "ios/chrome/browser/permissions/ui_bundled/permission_info.h"
+#import "ios/chrome/browser/permissions/ui_bundled/permissions_constants.h"
 #import "ios/web/public/permissions/permissions.h"
 
 // Histogram names.

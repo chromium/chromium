@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/permissions/permissions_constants.h"
+#import "ios/chrome/browser/permissions/ui_bundled/permissions_constants.h"
 
 NSString* const kInfobarModalCameraSwitchAccessibilityIdentifier =
     @"kInfobarModalCameraSwitchAccessibilityIdentifier";
