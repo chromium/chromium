@@ -651,6 +651,16 @@ inline constexpr char kHomeCustomizationMagicStackEnabled[] =
 inline constexpr char kHomeCustomizationDiscoverEnabled[] =
     "ios.home_customization.discover.enabled";
 
+// Prefs indicating whether Magic Stack cards are enabled.
+inline constexpr char kHomeCustomizationMagicStackSetUpListEnabled[] =
+    "ios.home_customization.magic_stack.set_up_list.enabled";
+inline constexpr char kHomeCustomizationMagicStackSafetyCheckEnabled[] =
+    "ios.home_customization.magic_stack.safety_check.enabled";
+inline constexpr char kHomeCustomizationMagicStackTabResumptionEnabled[] =
+    "ios.home_customization.magic_stack.tab_resumption.enabled";
+inline constexpr char kHomeCustomizationMagicStackParcelTrackingEnabled[] =
+    "ios.home_customization.magic_stack.parcel_tracking.enabled";
+
 // A time object storing when the last the identity confirmation snackbar was
 // prompted. Used to limit the frequency of this snackbar.
 inline constexpr char kIdentityConfirmationSnackbarLastPromptTime[] =

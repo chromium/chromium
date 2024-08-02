@@ -12,7 +12,9 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
+#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "url/gurl.h"
 
 @implementation HomeCustomizationMediator {
@@ -53,9 +55,23 @@
 }
 
 - (void)configureMagicStackPageData {
-  std::map<CustomizationToggleType, BOOL> toggleMap = {
-      // TODO(crbug.com/350990359): Populate data.
-  };
+  std::map<CustomizationToggleType, BOOL> toggleMap = {};
+  if (set_up_list_utils::IsSetUpListActive(_prefService, false)) {
+    toggleMap.insert({CustomizationToggleType::kSetUpList,
+                      [self isMagicStackCardEnabledForType:
+                                CustomizationToggleType::kSetUpList]});
+  }
+  toggleMap.insert({CustomizationToggleType::kSafetyCheck,
+                    [self isMagicStackCardEnabledForType:
+                              CustomizationToggleType::kSafetyCheck]});
+  toggleMap.insert({CustomizationToggleType::kTapResumption,
+                    [self isMagicStackCardEnabledForType:
+                              CustomizationToggleType::kTapResumption]});
+  if (IsIOSParcelTrackingEnabled()) {
+    toggleMap.insert({CustomizationToggleType::kParcelTracking,
+                      [self isMagicStackCardEnabledForType:
+                                CustomizationToggleType::kParcelTracking]});
+  }
   [self.magicStackPageConsumer populateToggles:toggleMap];
 }
 
@@ -72,6 +88,29 @@
           prefs::kHomeCustomizationMagicStackEnabled);
     case CustomizationToggleType::kDiscover:
       return _prefService->GetBoolean(prefs::kHomeCustomizationDiscoverEnabled);
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+// Returns whether the Magic Stack card with `type` is enabled in the
+// preferences.
+- (BOOL)isMagicStackCardEnabledForType:(CustomizationToggleType)type {
+  switch (type) {
+    case CustomizationToggleType::kSetUpList:
+      return _prefService->GetBoolean(
+          prefs::kHomeCustomizationMagicStackSetUpListEnabled);
+    case CustomizationToggleType::kSafetyCheck:
+      return _prefService->GetBoolean(
+          prefs::kHomeCustomizationMagicStackSafetyCheckEnabled);
+    case CustomizationToggleType::kTapResumption:
+      return _prefService->GetBoolean(
+          prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
+    case CustomizationToggleType::kParcelTracking:
+      return _prefService->GetBoolean(
+          prefs::kHomeCustomizationMagicStackParcelTrackingEnabled);
+    default:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -80,6 +119,7 @@
 - (void)toggleModuleVisibilityForType:(CustomizationToggleType)type
                               enabled:(BOOL)enabled {
   switch (type) {
+    // Main page toggles.
     case CustomizationToggleType::kMostVisited:
       _prefService->SetBoolean(prefs::kHomeCustomizationMostVisitedEnabled,
                                enabled);
@@ -91,6 +131,24 @@
     case CustomizationToggleType::kDiscover:
       _prefService->SetBoolean(prefs::kHomeCustomizationDiscoverEnabled,
                                enabled);
+      break;
+
+    // Magic Stack page toggles.
+    case CustomizationToggleType::kSetUpList:
+      _prefService->SetBoolean(
+          prefs::kHomeCustomizationMagicStackSetUpListEnabled, enabled);
+      break;
+    case CustomizationToggleType::kSafetyCheck:
+      _prefService->SetBoolean(
+          prefs::kHomeCustomizationMagicStackSafetyCheckEnabled, enabled);
+      break;
+    case CustomizationToggleType::kTapResumption:
+      _prefService->SetBoolean(
+          prefs::kHomeCustomizationMagicStackTabResumptionEnabled, enabled);
+      break;
+    case CustomizationToggleType::kParcelTracking:
+      _prefService->SetBoolean(
+          prefs::kHomeCustomizationMagicStackParcelTrackingEnabled, enabled);
       break;
   }
 }

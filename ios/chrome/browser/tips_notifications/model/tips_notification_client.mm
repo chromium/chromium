@@ -359,8 +359,12 @@ bool TipsNotificationClient::ShouldSendSignin() {
 }
 
 bool TipsNotificationClient::ShouldSendSetUpListContinuation() {
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  if (!set_up_list_utils::IsSetUpListActive(local_state)) {
+  PrefService* pref_service = IsHomeCustomizationEnabled()
+                                  ? GetSceneLevelForegroundActiveBrowser()
+                                        ->GetBrowserState()
+                                        ->GetPrefs()
+                                  : GetApplicationContext()->GetLocalState();
+  if (!set_up_list_utils::IsSetUpListActive(pref_service)) {
     return false;
   }
 
@@ -370,7 +374,7 @@ bool TipsNotificationClient::ShouldSendSetUpListContinuation() {
   if (!IsFirstRunRecent(base::Days(14) - TipsNotificationTriggerDelta())) {
     return false;
   }
-  return !set_up_list_prefs::AllItemsComplete(local_state);
+  return !set_up_list_prefs::AllItemsComplete(pref_service);
 }
 
 bool TipsNotificationClient::ShouldSendDocking() {

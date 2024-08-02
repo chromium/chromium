@@ -422,7 +422,7 @@
       case ContentSuggestionsModuleType::kSafetyCheck:
         if (!IsSafetyCheckMagicStackEnabled() ||
             safety_check_prefs::IsSafetyCheckInMagicStackDisabled(
-                _localState)) {
+                IsHomeCustomizationEnabled() ? _prefService : _localState)) {
           break;
         }
         // If ShouldHideIrrelevantModules() is enabled and it is not the first

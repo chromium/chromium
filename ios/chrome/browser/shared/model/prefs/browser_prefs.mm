@@ -976,6 +976,16 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 true);
   registry->RegisterBooleanPref(prefs::kHomeCustomizationDiscoverEnabled, true);
 
+  // Registers the Magic Stack module visibility prefs.
+  registry->RegisterBooleanPref(
+      prefs::kHomeCustomizationMagicStackSetUpListEnabled, true);
+  registry->RegisterBooleanPref(
+      prefs::kHomeCustomizationMagicStackSafetyCheckEnabled, true);
+  registry->RegisterBooleanPref(
+      prefs::kHomeCustomizationMagicStackTabResumptionEnabled, true);
+  registry->RegisterBooleanPref(
+      prefs::kHomeCustomizationMagicStackParcelTrackingEnabled, true);
+
   // Deprecated 05/2024.
   registry->RegisterBooleanPref(kAutologinEnabled, true);
   registry->RegisterListPref(kReverseAutologinRejectedEmailList);

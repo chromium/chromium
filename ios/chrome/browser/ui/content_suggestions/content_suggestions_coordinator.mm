@@ -290,7 +290,8 @@
   self.contentSuggestionsMediator.shortcutsMediator = _shortcutsMediator;
 
   BOOL isSetupListEnabled = set_up_list_utils::IsSetUpListActive(
-      GetApplicationContext()->GetLocalState());
+      IsHomeCustomizationEnabled() ? prefs
+                                   : GetApplicationContext()->GetLocalState());
   if (isSetupListEnabled) {
     const TemplateURL* defaultSearchURLTemplate =
         ios::TemplateURLServiceFactory::GetForBrowserState(
@@ -341,6 +342,7 @@
     _safetyCheckMediator = [[SafetyCheckMagicStackMediator alloc]
         initWithSafetyCheckManager:safetyCheckManager
                         localState:GetApplicationContext()->GetLocalState()
+                         userState:prefs
                           appState:self.browser->GetSceneState().appState];
     _safetyCheckMediator.presentationAudience = self;
     [moduleMediators addObject:_safetyCheckMediator];

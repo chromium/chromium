@@ -44,6 +44,7 @@ class PrefService;
 - (instancetype)initWithSafetyCheckManager:
                     (IOSChromeSafetyCheckManager*)safetyCheckManager
                                 localState:(PrefService*)localState
+                                 userState:(PrefService*)userState
                                   appState:(AppState*)appState
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

@@ -13,28 +13,53 @@
 
 + (NSString*)titleForToggleType:(CustomizationToggleType)type {
   switch (type) {
+      // Main page toggles.
     case CustomizationToggleType::kMostVisited:
       return @"Test title 1 (Most visited)";
     case CustomizationToggleType::kMagicStack:
       return @"Test title 2 (Magic Stack)";
     case CustomizationToggleType::kDiscover:
       return @"Test title 3 (Discover)";
+
+      // Magic Stack page toggles.
+      // TODO
+    case CustomizationToggleType::kSetUpList:
+      return @"Set Up List (Placeholder)";
+    case CustomizationToggleType::kSafetyCheck:
+      return @"Safety Check (Placeholder)";
+    case CustomizationToggleType::kTapResumption:
+      return @"Tab Resumption (Placeholder)";
+    case CustomizationToggleType::kParcelTracking:
+      return @"Parcel Tracking (Placeholder)";
   }
 }
 
 + (NSString*)subtitleForToggleType:(CustomizationToggleType)type {
   switch (type) {
+      // Main page toggles.
     case CustomizationToggleType::kMostVisited:
       return @"Test subtitle 1";
     case CustomizationToggleType::kMagicStack:
       return @"Test subtitle 2";
     case CustomizationToggleType::kDiscover:
       return @"Test subtitle 3";
+
+      // Magic Stack page toggles.
+      // TODO
+    case CustomizationToggleType::kSetUpList:
+      return @"Lorem ipsum dolor sit amet, consectetur adipiscing elit";
+    case CustomizationToggleType::kSafetyCheck:
+      return @"Lorem ipsum dolor sit amet, consectetur adipiscing elit";
+    case CustomizationToggleType::kTapResumption:
+      return @"Lorem ipsum dolor sit amet, consectetur adipiscing elit";
+    case CustomizationToggleType::kParcelTracking:
+      return @"Lorem ipsum dolor sit amet, consectetur adipiscing elit";
   }
 }
 
 + (UIImage*)iconForToggleType:(CustomizationToggleType)type {
   switch (type) {
+      // Main page toggles.
     case CustomizationToggleType::kMostVisited:
       return DefaultSymbolWithPointSize(kHistorySymbol, kToggleIconPointSize);
     case CustomizationToggleType::kMagicStack:
@@ -43,30 +68,69 @@
     case CustomizationToggleType::kDiscover:
       return DefaultSymbolWithPointSize(kDiscoverFeedSymbol,
                                         kToggleIconPointSize);
+
+      // Magic Stack page toggles.
+      // TODO
+    case CustomizationToggleType::kSetUpList:
+      return DefaultSymbolWithPointSize(kListBulletClipboardSymbol,
+                                        kToggleIconPointSize);
+    case CustomizationToggleType::kSafetyCheck:
+      return DefaultSymbolWithPointSize(kCheckmarkShieldSymbol,
+                                        kToggleIconPointSize);
+    case CustomizationToggleType::kTapResumption:
+      return DefaultSymbolWithPointSize(kMacbookAndIPhoneSymbol,
+                                        kToggleIconPointSize);
+    case CustomizationToggleType::kParcelTracking:
+      return DefaultSymbolWithPointSize(kShippingBoxSymbol,
+                                        kToggleIconPointSize);
   }
 }
 
 + (NSString*)accessibilityIdentifierForToggleType:
     (CustomizationToggleType)type {
   switch (type) {
+      // Main page toggles.
     case CustomizationToggleType::kMostVisited:
       return kCustomizationToggleMostVisitedIdentifier;
     case CustomizationToggleType::kMagicStack:
       return kCustomizationToggleMagicStackIdentifier;
     case CustomizationToggleType::kDiscover:
       return kCustomizationToggleDiscoverIdentifier;
+
+      // Magic Stack page toggles.
+      // TODO
+    case CustomizationToggleType::kSetUpList:
+      return nil;
+    case CustomizationToggleType::kSafetyCheck:
+      return nil;
+    case CustomizationToggleType::kTapResumption:
+      return nil;
+    case CustomizationToggleType::kParcelTracking:
+      return nil;
   }
 }
 
 + (NSString*)navigableAccessibilityIdentifierForToggleType:
     (CustomizationToggleType)type {
   switch (type) {
+      // Main page toggles.
     case CustomizationToggleType::kMostVisited:
       return kCustomizationToggleMostVisitedNavigableIdentifier;
     case CustomizationToggleType::kMagicStack:
       return kCustomizationToggleMagicStackNavigableIdentifier;
     case CustomizationToggleType::kDiscover:
       return kCustomizationToggleDiscoverNavigableIdentifier;
+
+      // Magic Stack page toggles.
+      // TODO
+    case CustomizationToggleType::kSetUpList:
+      return nil;
+    case CustomizationToggleType::kSafetyCheck:
+      return nil;
+    case CustomizationToggleType::kTapResumption:
+      return nil;
+    case CustomizationToggleType::kParcelTracking:
+      return nil;
   }
 }
 

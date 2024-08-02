@@ -5,16 +5,25 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 
 #import "base/time/time.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace set_up_list_utils {
 
-bool IsSetUpListActive(PrefService* local_state, bool include_disable_pref) {
-  if (include_disable_pref &&
-      set_up_list_prefs::IsSetUpListDisabled(local_state)) {
-    return false;
+bool IsSetUpListActive(PrefService* pref_service, bool include_disable_pref) {
+  if (IsHomeCustomizationEnabled()) {
+    if (!pref_service->GetBoolean(
+            prefs::kHomeCustomizationMagicStackSetUpListEnabled)) {
+      return false;
+    }
+  } else {
+    if (include_disable_pref &&
+        set_up_list_prefs::IsSetUpListDisabled(pref_service)) {
+      return false;
+    }
   }
   // Check if we are within 14 days of FRE.
   if (IsFirstRun()) {
@@ -26,7 +35,7 @@ bool IsSetUpListActive(PrefService* local_state, bool include_disable_pref) {
     // It has been 14+ days since FRE, but if user has interacted in the last
     // day the time will be extended.
     base::Time last_interaction =
-        set_up_list_prefs::GetLastInteraction(local_state);
+        set_up_list_prefs::GetLastInteraction(pref_service);
     if (base::Time::Now() > last_interaction + base::Days(1)) {
       return false;
     }

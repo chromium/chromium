@@ -314,6 +314,7 @@ class MagicStackRankingModelTest : public PlatformTest {
         initWithSafetyCheckManager:IOSChromeSafetyCheckManagerFactory::
                                        GetForBrowserState(GetBrowserState())
                         localState:GetLocalState()
+                         userState:GetBrowserState()->GetPrefs()
                           appState:mockAppState];
 
     _magicStackRankingModel = [[MagicStackRankingModel alloc]
