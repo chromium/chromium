@@ -38,8 +38,10 @@ class VIZ_COMMON_EXPORT ViewTransitionElementResourceId {
 
   bool IsValid() const;
   std::string ToString() const;
+  void set_debug_label(std::string label) { debug_label_ = label; }
 
   uint32_t local_id() const { return local_id_; }
+  const std::string& debug_label() const { return debug_label_; }
   const blink::ViewTransitionToken& transition_token() const {
     CHECK(transition_token_);
     return *transition_token_;
@@ -52,6 +54,8 @@ class VIZ_COMMON_EXPORT ViewTransitionElementResourceId {
   // Refers to a specific snapshot resource within a specific transition
   // Unique only with respect to a given `transition_token_`.
   uint32_t local_id_ = kInvalidLocalId;
+
+  std::string debug_label_;
 };
 
 }  // namespace viz

@@ -27,10 +27,17 @@ struct StructTraits<viz::mojom::ViewTransitionElementResourceIdDataView,
     return std::nullopt;
   }
 
+  static const std::string& debug_label(
+      const viz::ViewTransitionElementResourceId& resource_id) {
+    return resource_id.debug_label();
+  }
+
   static bool Read(viz::mojom::ViewTransitionElementResourceIdDataView data,
                    viz::ViewTransitionElementResourceId* out) {
     std::optional<blink::ViewTransitionToken> transition_token;
-    if (!data.ReadTransitionToken(&transition_token)) {
+    std::string debug_label;
+    if (!data.ReadTransitionToken(&transition_token) ||
+        !data.ReadDebugLabel(&debug_label)) {
       return false;
     }
     if (transition_token) {
@@ -39,6 +46,7 @@ struct StructTraits<viz::mojom::ViewTransitionElementResourceIdDataView,
     } else {
       *out = viz::ViewTransitionElementResourceId();
     }
+    out->set_debug_label(debug_label);
     return true;
   }
 };
