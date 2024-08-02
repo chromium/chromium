@@ -52,6 +52,7 @@ source_set("lens") {
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/searchbox",
     "//chrome/browser/ui/webui/top_chrome",
+    "//chrome/browser/ui/webui/util",
     "//chrome/common",
     "//chrome/common:constants",
     "//components/find_in_page",
