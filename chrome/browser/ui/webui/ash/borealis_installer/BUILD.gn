@@ -26,6 +26,7 @@ static_library("borealis_installer") {
   public_deps = [
     ":mojo_bindings",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
     "//chrome/browser/profiles:profile",
@@ -43,7 +44,6 @@ static_library("borealis_installer") {
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
     "//chrome/app/theme:chrome_unscaled_resources",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/resources/chromeos/borealis_installer:resources",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui",

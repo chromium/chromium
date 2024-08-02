@@ -18,6 +18,7 @@ static_library("arc_power_control") {
     "//ash/components/arc",
     "//ash/components/arc/mojom",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash",
     "//chrome/common",
     "//content/public/browser",
@@ -30,7 +31,6 @@ static_library("arc_power_control") {
   deps = [
     "//ash/components/arc/session",
     "//chrome/browser:browser_process",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:resources",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/instance_throttle",
