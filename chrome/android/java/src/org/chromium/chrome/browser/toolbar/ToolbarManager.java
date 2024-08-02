@@ -971,6 +971,7 @@ public class ToolbarManager
                         if (!toDifferentDocument) return;
                         updateTabLoadingState(true);
                         mLocationBarModel.onPageLoadStopped();
+                        mToolbar.onPageLoadStopped();
                     }
 
                     @Override

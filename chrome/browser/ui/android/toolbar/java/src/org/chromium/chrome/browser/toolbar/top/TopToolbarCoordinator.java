@@ -709,6 +709,10 @@ public class TopToolbarCoordinator implements Toolbar {
         mToolbarLayout.onNavigatedToDifferentPage();
     }
 
+    public void onPageLoadStopped() {
+        mControlContainer.onPageLoadStopped();
+    }
+
     /** Finish any toolbar animations. */
     public void finishAnimations() {
         mToolbarLayout.finishAnimations();
