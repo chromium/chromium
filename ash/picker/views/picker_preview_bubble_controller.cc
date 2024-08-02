@@ -11,15 +11,12 @@
 
 #include "ash/picker/views/picker_preview_bubble.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
-#include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/i18n/time_formatting.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -31,43 +28,6 @@ constexpr std::u16string_view kEyebrowText = u"Last action";
 
 // Duration to wait before showing the preview bubble when it is requested.
 constexpr base::TimeDelta kShowBubbleDelay = base::Milliseconds(600);
-
-// Taken from //chrome/browser/ash/app_list/search/files/justifications.cc.
-// Time limits for how last accessed or modified time maps to each justification
-// string.
-constexpr base::TimeDelta kJustNow = base::Minutes(15);
-
-std::u16string GetTimeString(base::Time timestamp) {
-  const base::Time now = base::Time::Now();
-  const base::Time midnight = now.LocalMidnight();
-  if ((now - timestamp).magnitude() <= kJustNow) {
-    return l10n_util::GetStringUTF16(
-        IDS_FILE_SUGGESTION_JUSTIFICATION_TIME_NOW);
-  }
-
-  if (timestamp >= midnight && timestamp < midnight + base::Days(1)) {
-    return base::TimeFormatTimeOfDay(timestamp);
-  }
-
-  return base::LocalizedTimeFormatWithPattern(timestamp, "MMMd");
-}
-
-std::u16string GetJustificationString(base::Time viewed, base::Time modified) {
-  // Prefer "modified" over "viewed" if they are the same.
-  if (modified >= viewed) {
-    return l10n_util::GetStringFUTF16(
-        IDS_FILE_SUGGESTION_JUSTIFICATION,
-        l10n_util::GetStringUTF16(
-            IDS_FILE_SUGGESTION_JUSTIFICATION_GENERIC_MODIFIED_ACTION),
-        GetTimeString(modified));
-  } else {
-    return l10n_util::GetStringFUTF16(
-        IDS_FILE_SUGGESTION_JUSTIFICATION,
-        l10n_util::GetStringUTF16(
-            IDS_FILE_SUGGESTION_JUSTIFICATION_YOU_VIEWED_ACTION),
-        GetTimeString(viewed));
-  }
-}
 
 }  // namespace
 
@@ -113,21 +73,17 @@ void PickerPreviewBubbleController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void PickerPreviewBubbleController::UpdateBubbleMetadata(
-    std::optional<base::File::Info> info) {
+void PickerPreviewBubbleController::SetBubbleMainText(
+    const std::u16string& text) {
   if (bubble_view_ == nullptr) {
     return;
   }
-  if (!info.has_value()) {
-    return;
-  }
-  if (info->last_modified.is_null() && info->last_accessed.is_null()) {
-    return;
-  }
 
-  bubble_view_->SetText(
-      std::u16string(kEyebrowText),
-      GetJustificationString(info->last_accessed, info->last_modified));
+  if (text.empty()) {
+    bubble_view_->ClearText();
+  } else {
+    bubble_view_->SetText(std::u16string(kEyebrowText), text);
+  }
 }
 
 void PickerPreviewBubbleController::OnWidgetDestroying(views::Widget* widget) {

@@ -15,6 +15,7 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_preview_bubble.h"
 #include "ash/picker/views/picker_preview_bubble_controller.h"
+#include "ash/picker/views/picker_preview_metadata.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
@@ -367,17 +368,19 @@ void PickerListItemView::OnFileInfoResolved(
   file_info_ = std::move(info);
 
   if (preview_bubble_controller_ != nullptr) {
-    // Update the bubble metadata if it's open.
-    preview_bubble_controller_->UpdateBubbleMetadata(file_info_);
+    // Update the bubble main text if it's open.
+    preview_bubble_controller_->SetBubbleMainText(
+        PickerGetFilePreviewDescription(file_info_));
   }
 }
 
 void PickerListItemView::ShowPreview() {
   if (preview_bubble_controller_ != nullptr) {
-    // Update the bubble metadata before showing it.
+    // Update the bubble main text before it becomes visible.
     preview_bubble_controller_->ShowBubbleAfterDelay(async_preview_image_.get(),
                                                      file_path_, this);
-    preview_bubble_controller_->UpdateBubbleMetadata(file_info_);
+    preview_bubble_controller_->SetBubbleMainText(
+        PickerGetFilePreviewDescription(file_info_));
   }
 }
 

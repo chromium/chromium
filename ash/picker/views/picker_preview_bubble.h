@@ -44,6 +44,7 @@ class ASH_EXPORT PickerPreviewBubbleView
   // Sets the text of the labels and makes them visible.
   void SetText(const std::u16string& eyebrow_text,
                const std::u16string& main_text);
+  void ClearText();
 
   // BubbleDialogDelegateView overrides
   void OnThemeChanged() override;

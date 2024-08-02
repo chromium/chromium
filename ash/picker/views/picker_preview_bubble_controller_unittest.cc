@@ -242,8 +242,7 @@ TEST_F(PickerPreviewBubbleControllerTest,
             SK_ColorBLUE);
 }
 
-TEST_F(PickerPreviewBubbleControllerTest,
-       ShowBubbleHidesLabelsBeforeFileInfoResolves) {
+TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleHidesLabelsByDefault) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   PickerPreviewBubbleController controller;
@@ -259,7 +258,7 @@ TEST_F(PickerPreviewBubbleControllerTest,
 }
 
 TEST_F(PickerPreviewBubbleControllerTest,
-       ShowBubbleHidesLabelsAfterFileInfoResolvesWithNullopt) {
+       SetBubbleMainTextHidesLabelsWithEmptyText) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   PickerPreviewBubbleController controller;
@@ -268,15 +267,14 @@ TEST_F(PickerPreviewBubbleControllerTest,
   controller.ShowBubbleImmediatelyForTesting(
       &async_preview_image,
       anchor_widget->GetContentsView());
-  controller.UpdateBubbleMetadata(std::nullopt);
+  controller.SetBubbleMainText(u"");
   PickerPreviewBubbleView* bubble_view = controller.bubble_view_for_testing();
   ViewDrawnWaiter().Wait(bubble_view);
 
   EXPECT_FALSE(bubble_view->GetLabelsVisibleForTesting());
 }
 
-TEST_F(PickerPreviewBubbleControllerTest,
-       ShowBubbleHidesLabelsAfterFileInfoResolvesWithNullFileInfo) {
+TEST_F(PickerPreviewBubbleControllerTest, SetBubbleMainTextUpdatesBubbleText) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   PickerPreviewBubbleController controller;
@@ -285,123 +283,13 @@ TEST_F(PickerPreviewBubbleControllerTest,
   controller.ShowBubbleImmediatelyForTesting(
       &async_preview_image,
       anchor_widget->GetContentsView());
-  controller.UpdateBubbleMetadata(base::File::Info());
-  PickerPreviewBubbleView* bubble_view = controller.bubble_view_for_testing();
-  ViewDrawnWaiter().Wait(bubble_view);
-
-  EXPECT_FALSE(bubble_view->GetLabelsVisibleForTesting());
-}
-
-TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsModifiedTitle) {
-  std::unique_ptr<views::Widget> anchor_widget =
-      CreateAnchorWidget(GetContext());
-  PickerPreviewBubbleController controller;
-  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
-
-  base::File::Info only_modified;
-  EXPECT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00",
-                                     &only_modified.last_modified));
-  controller.ShowBubbleImmediatelyForTesting(
-      &async_preview_image,
-      anchor_widget->GetContentsView());
-  controller.UpdateBubbleMetadata(only_modified);
+  controller.SetBubbleMainText(u"Edited Dec 23");
   PickerPreviewBubbleView* bubble_view = controller.bubble_view_for_testing();
   ViewDrawnWaiter().Wait(bubble_view);
 
   EXPECT_TRUE(bubble_view->GetLabelsVisibleForTesting());
   EXPECT_EQ(bubble_view->GetEyebrowTextForTesting(), u"Last action");
-  EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"Edited · Dec 23");
-}
-
-TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsAccessedTitle) {
-  std::unique_ptr<views::Widget> anchor_widget =
-      CreateAnchorWidget(GetContext());
-  PickerPreviewBubbleController controller;
-  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
-
-  base::File::Info only_accessed;
-  EXPECT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00",
-                                     &only_accessed.last_accessed));
-  controller.ShowBubbleImmediatelyForTesting(
-      &async_preview_image,
-      anchor_widget->GetContentsView());
-  controller.UpdateBubbleMetadata(only_accessed);
-  PickerPreviewBubbleView* bubble_view = controller.bubble_view_for_testing();
-  ViewDrawnWaiter().Wait(bubble_view);
-
-  EXPECT_TRUE(bubble_view->GetLabelsVisibleForTesting());
-  EXPECT_EQ(bubble_view->GetEyebrowTextForTesting(), u"Last action");
-  EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"You opened · Dec 23");
-}
-
-TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsModifiedTitleIfNewer) {
-  std::unique_ptr<views::Widget> anchor_widget =
-      CreateAnchorWidget(GetContext());
-  PickerPreviewBubbleController controller;
-  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
-
-  base::File::Info modified_newer;
-  EXPECT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00",
-                                     &modified_newer.last_modified));
-  EXPECT_TRUE(base::Time::FromString("23 Dec 2021 09:00:00",
-                                     &modified_newer.last_accessed));
-  controller.ShowBubbleImmediatelyForTesting(
-      &async_preview_image,
-      anchor_widget->GetContentsView());
-  controller.UpdateBubbleMetadata(modified_newer);
-  PickerPreviewBubbleView* bubble_view = controller.bubble_view_for_testing();
-  ViewDrawnWaiter().Wait(bubble_view);
-
-  EXPECT_TRUE(bubble_view->GetLabelsVisibleForTesting());
-  EXPECT_EQ(bubble_view->GetEyebrowTextForTesting(), u"Last action");
-  EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"Edited · Dec 23");
-}
-
-TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsAccessedTitleIfNewer) {
-  std::unique_ptr<views::Widget> anchor_widget =
-      CreateAnchorWidget(GetContext());
-  PickerPreviewBubbleController controller;
-  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
-
-  base::File::Info accessed_newer;
-  EXPECT_TRUE(base::Time::FromString("23 Dec 2021 09:00:00",
-                                     &accessed_newer.last_modified));
-  EXPECT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00",
-                                     &accessed_newer.last_accessed));
-  controller.ShowBubbleImmediatelyForTesting(
-      &async_preview_image,
-      anchor_widget->GetContentsView());
-  controller.UpdateBubbleMetadata(accessed_newer);
-  PickerPreviewBubbleView* bubble_view = controller.bubble_view_for_testing();
-  ViewDrawnWaiter().Wait(bubble_view);
-
-  EXPECT_TRUE(bubble_view->GetLabelsVisibleForTesting());
-  EXPECT_EQ(bubble_view->GetEyebrowTextForTesting(), u"Last action");
-  EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"You opened · Dec 23");
-}
-
-TEST_F(PickerPreviewBubbleControllerTest,
-       ShowBubbleShowsModifiedTitleIfSameAsAccessed) {
-  std::unique_ptr<views::Widget> anchor_widget =
-      CreateAnchorWidget(GetContext());
-  PickerPreviewBubbleController controller;
-  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
-
-  base::File::Info modified_newer;
-  EXPECT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00",
-                                     &modified_newer.last_modified));
-  EXPECT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00",
-                                     &modified_newer.last_accessed));
-  controller.ShowBubbleImmediatelyForTesting(
-      &async_preview_image,
-      anchor_widget->GetContentsView());
-  controller.UpdateBubbleMetadata(modified_newer);
-  PickerPreviewBubbleView* bubble_view = controller.bubble_view_for_testing();
-  ViewDrawnWaiter().Wait(bubble_view);
-
-  EXPECT_TRUE(bubble_view->GetLabelsVisibleForTesting());
-  EXPECT_EQ(bubble_view->GetEyebrowTextForTesting(), u"Last action");
-  EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"Edited · Dec 23");
+  EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"Edited Dec 23");
 }
 
 }  // namespace

@@ -64,10 +64,10 @@ class ASH_EXPORT PickerPreviewBubbleController : public views::WidgetObserver {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Updates the bubble view metadata for the currently open bubble.
+  // Updates the bubble view labels for the currently open bubble.
   // If the bubble is not shown, this does nothing.
-  // If `info` is std::nullopt, then this clears the bubble view metadata.
-  void UpdateBubbleMetadata(std::optional<base::File::Info> info);
+  // If `text` is empty, then the bubble view labels are hidden.
+  void SetBubbleMainText(const std::u16string& text);
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

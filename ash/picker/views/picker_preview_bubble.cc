@@ -140,6 +140,12 @@ void PickerPreviewBubbleView::SetText(const std::u16string& eyebrow_text,
   box_layout_view_->SetVisible(true);
 }
 
+void PickerPreviewBubbleView::ClearText() {
+  eyebrow_label_->SetText(u"");
+  main_label_->SetText(u"");
+  box_layout_view_->SetVisible(false);
+}
+
 void PickerPreviewBubbleView::OnThemeChanged() {
   BubbleDialogDelegateView::OnThemeChanged();
   set_color(GetColorProvider()->GetColor(kBackgroundColor));
