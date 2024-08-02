@@ -415,7 +415,7 @@ void ProactiveNudgeTracker::BeginSegmentation() {
       segmentation_platform::kComposePromotionKey, options,
       PopulateInputContextForField(state_->signals),
       base::BindOnce(&ProactiveNudgeTracker::GotClassificationResult,
-                     weak_ptr_factory_.GetWeakPtr(), state_->AsWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ProactiveNudgeTracker::BeginWaitingForProactiveNudgeRequest() {
@@ -484,9 +484,8 @@ void ProactiveNudgeTracker::ShowTimerElapsed() {
 
 
 void ProactiveNudgeTracker::GotClassificationResult(
-    base::WeakPtr<State> state,
     const segmentation_platform::ClassificationResult& result) {
-  if (!state || state->show_state != ShowState::kWaitingForSegmentation) {
+  if (!state_ || state_->show_state != ShowState::kWaitingForSegmentation) {
     return;
   }
 
