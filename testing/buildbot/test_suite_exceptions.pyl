@@ -489,12 +489,6 @@
           'shards': 1,
         },
       },
-      # Save some overhead loads of starting up emulator.
-      'fuchsia-x64-cast-receiver-rel': {
-        'swarming': {
-          'shards': 1,
-        },
-      },
       'linux-blink-rel': {
         'swarming': {
           'hard_timeout': 2400,
@@ -763,12 +757,6 @@
       },
       # Save some overhead loads of starting up emulator.
       'fuchsia-x64-cast-receiver-dbg': {
-        'swarming': {
-          'shards': 1,
-        },
-      },
-      # Save some overhead loads of starting up emulator.
-      'fuchsia-x64-cast-receiver-rel': {
         'swarming': {
           'shards': 1,
         },
@@ -1994,11 +1982,6 @@
         'swarming': {
           'shards': 41,
         },
-      },
-      'fuchsia-x64-cast-receiver-rel': {
-        # Temporarily only run this on CI due to resource requirements.
-        # TODO(crbug.com/40872145): Remove this once resources are available.
-        'ci_only': True,
       },
       'linux-chromeos-code-coverage': {
         'swarming': {

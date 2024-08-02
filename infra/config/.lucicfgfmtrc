@@ -1,3 +1,4 @@
+# schema: https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/buildifier/lucicfgfmtrc.proto
 rules {
     path: "subprojects"
     path: "dev/subprojects"
@@ -107,6 +108,9 @@ rules {
         # bundles
         arg: "additional_compile_targets"
         arg: "targets"
+        # Specially handle the ordering for mixins in bundles so that it doesn't
+        # impact the order in tests
+        arg: "targets.bundle.mixins"
         arg: "per_test_modifications"
 
         # mixin/variant/test common fields

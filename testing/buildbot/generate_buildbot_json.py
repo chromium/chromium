@@ -899,6 +899,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         substitutions['gpu_device_id'] = gpu[1]
     return [string.Template(arg).safe_substitute(substitutions) for arg in args]
 
+  # LINT.IfChange(gpu_telemetry_test)
+
   def generate_gpu_telemetry_test(self, waterfall, tester_name, tester_config,
                                   test_name, test_config, is_android_webview,
                                   is_cast_streaming, is_skylab):
@@ -983,6 +985,10 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     result['args'] = self.maybe_fixup_args_array(
         self.substitute_gpu_args(tester_config, result, args))
     return result
+
+  # pylint: disable=line-too-long
+  # LINT.ThenChange(//infra/config/lib/targets-internal/test-types/gpu_telemetry_test.star)
+  # pylint: enable=line-too-long
 
   def get_default_isolate_name(self, tester_config, is_android_webview):
     if self.is_android(tester_config):

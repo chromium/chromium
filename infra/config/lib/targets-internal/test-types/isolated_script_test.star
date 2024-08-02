@@ -8,8 +8,8 @@ load("@stdlib//internal/graph.star", "graph")
 load("../common.star", _targets_common = "common")
 load("../nodes.star", _targets_nodes = "nodes")
 
-def _isolated_script_test_spec_init(node, settings):
-    return _targets_common.spec_init(node, settings)
+def _isolated_script_test_spec_init(node, settings, **kwargs):
+    return _targets_common.spec_init(node, settings, **kwargs)
 
 def _isolated_script_test_spec_finalize(name, settings, spec_value):
     default_merge_script = "standard_isolated_script_merge"
@@ -32,9 +32,10 @@ def create_isolated_script_test_spec_handler(type_name):
         finalize = _isolated_script_test_spec_finalize,
     )
 
-def isolated_script_test_details(args = None):
+def isolated_script_test_details(*, args = None, additional_fields = {}):
     return struct(
         args = args,
+        **additional_fields
     )
 
 _isolated_script_test_spec_handler = create_isolated_script_test_spec_handler("isolated script")

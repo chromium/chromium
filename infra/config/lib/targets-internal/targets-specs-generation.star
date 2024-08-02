@@ -16,7 +16,7 @@ targets spec files for the builder.
 """
 
 load("@stdlib//internal/graph.star", "graph")
-load("//lib/args.star", "args")
+load("//lib/args.star", args_lib = "args")
 load("//lib/chrome_settings.star", "targets_config")
 load("//lib/structs.star", "structs")
 load("./common.star", _targets_common = "common")
@@ -45,7 +45,7 @@ def register_targets(*, parent_key, builder_group, builder_name, name, targets, 
         name = name,
         builder_group = builder_group,
         builder_name = builder_name,
-        targets = args.listify(targets),
+        targets = args_lib.listify(targets),
         mixins = _targets_common.builder_defaults.mixins.get(),
         settings = settings or _targets_common.settings(),
     )
@@ -54,6 +54,8 @@ def register_targets(*, parent_key, builder_group, builder_name, name, targets, 
 
 _OS_SPECIFIC_ARGS = set([
     "android_args",
+    "chromeos_args",
+    "lacros_args",
 ])
 
 _OS_SPECIFIC_SWARMING = set([
@@ -80,7 +82,7 @@ def _apply_mixin(spec, mixin_values):
 
     args_mixin = mixin_values.pop("args", None)
     if args_mixin:
-        spec_value["args"] = args.listify(spec_value["args"], args_mixin) or None
+        spec_value["args"] = args_lib.listify(spec_value["args"], args_mixin) or None
 
     swarming_mixin = mixin_values.pop("swarming", None)
     if swarming_mixin:
@@ -146,9 +148,11 @@ def _get_bundle_resolver():
                             ))
                     test_spec_and_source_by_name[name] = (spec, source)
 
-            def update_spec_with_mixin(test_name, spec, mixin):
+            def update_spec_with_mixin(test_name, spec, mixin, *, ignore_error = False):
                 new_spec, error = _apply_mixin(spec, mixin.props.mixin_values)
                 if error:
+                    if ignore_error:
+                        return
                     fail(
                         "modifying {} {} with {} failed: {}"
                             .format(spec.handler.type_name, test_name, mixin, error),
@@ -170,7 +174,9 @@ def _get_bundle_resolver():
             # from the parent to the child
             for mixin in graph.children(n.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER):
                 for name, (spec, _) in test_spec_and_source_by_name.items():
-                    update_spec_with_mixin(name, spec, mixin)
+                    # We don't care if a mixin applied at bundle level doesn't
+                    # apply to every test, so ignore errors
+                    update_spec_with_mixin(name, spec, mixin, ignore_error = True)
             for per_test_modification in graph.children(n.key, kind = _targets_nodes.PER_TEST_MODIFICATION.kind):
                 name = per_test_modification.key.id
                 if name not in test_spec_and_source_by_name:
@@ -198,6 +204,50 @@ def _get_bundle_resolver():
         )
 
     return resolve
+
+def _resolve_magic_args(builder_name, settings, spec_value):
+    new_args = []
+    for arg in spec_value["args"]:
+        if type(arg) == type(struct()):
+            new_args.extend(arg.function(builder_name, settings, spec_value))
+        else:
+            new_args.append(arg)
+    spec_value["args"] = new_args
+
+# flag to merge -> inter-value separator
+_FLAGS_TO_MERGE = {
+    "--enable-features=": ",",
+    "--extra-browser-args=": " ",
+    "--test-launcher-filter-file=": ";",
+    "--extra-app-args=": ",",
+}
+
+def _merge_args(spec_value):
+    new_args = []
+    merged = {}
+    for arg in spec_value["args"]:
+        found_flag = False
+        for flag in _FLAGS_TO_MERGE:
+            # Add a placeholder, recording the index and the flag's value. Later
+            # instances of the flag will add their value to the list without
+            # updating new_args. After all arguments have been examined, the
+            # placeholders will be replaced with the flag with combined values.
+            if arg.startswith(flag):
+                value = arg.removeprefix(flag)
+                if flag not in merged:
+                    merged[flag] = len(new_args), [value]
+                    new_args.append(None)
+                else:
+                    _, values = merged[flag]
+                    values.append(value)
+                found_flag = True
+                break
+        if not found_flag:
+            new_args.append(arg)
+    for flag, (idx, values) in merged.items():
+        separator = _FLAGS_TO_MERGE[flag]
+        new_args[idx] = flag + separator.join(values)
+    spec_value["args"] = new_args
 
 def get_targets_spec_generator():
     """Get a generator for builders' targets specs.
@@ -237,9 +287,15 @@ def get_targets_spec_generator():
         for name, spec in test_spec_by_name.items():
             spec_value = dict(spec.value)
             type_key, sort_key, spec_value = spec.handler.finalize(name, settings, spec_value)
-            finalized_spec = {k: v for k, v in spec_value.items() if v not in ([], None)}
+            if "args" in spec_value:
+                _resolve_magic_args(builder_name, settings, spec_value)
+
+                # Merge args after resolving magic args since that could produce
+                # additional args that should be merged
+                _merge_args(spec_value)
             if name in current_autoshard_exceptions:
                 spec_value["swarming"]["shards"] = current_autoshard_exceptions[name]
+            finalized_spec = {k: v for k, v in spec_value.items() if v not in ([], None)}
             sort_key_and_specs_by_type_key.setdefault(type_key, []).append((sort_key, finalized_spec))
 
         specs_by_type_key = {}
