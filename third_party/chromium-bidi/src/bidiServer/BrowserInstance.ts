@@ -98,7 +98,10 @@ export class BrowserInstance {
       env: process.env,
     };
 
-    debugInternal(`Launching browser`, launchArguments);
+    debugInternal(`Launching browser`, {
+      executablePath,
+      args: chromeArguments,
+    });
 
     const browserProcess = launch(launchArguments);
 
