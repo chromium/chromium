@@ -313,6 +313,10 @@ data/accessibility/accname/name-text-dynamic-labelledby-expected-blink.txt
 data/accessibility/accname/name-text-dynamic-labelledby.html
 data/accessibility/accname/name-text-input-in-label-expected-blink.txt
 data/accessibility/accname/name-text-input-in-label.html
+data/accessibility/accname/name-text-input-in-own-label-expected-blink.txt
+data/accessibility/accname/name-text-input-in-own-label.html
+data/accessibility/accname/name-text-input-labelledby-div-expected-blink.txt
+data/accessibility/accname/name-text-input-labelledby-div.html
 data/accessibility/accname/name-text-inside-label-with-generated-content-expected-blink.txt
 data/accessibility/accname/name-text-inside-label-with-generated-content.html
 data/accessibility/accname/name-text-label-embedded-combobox-expected-blink.txt

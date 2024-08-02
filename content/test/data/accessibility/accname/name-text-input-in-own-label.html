@@ -1,0 +1,17 @@
+<!--
+@BLINK-DENY:descri*
+-->
+<!doctype html>
+<html>
+<body>
+<!--
+Do not include the input's value in the input's name because that would cause
+screen readers to read the value repeatedly as the user types in the input.
+Related test for the div/labelledby version: name-text-input-labelledby-div.html.
+
+See name-text-input-in-label.html for the case where an input's value should be
+included in an input's name.
+-->
+<label for="test">color<input id="test" type="text" value="red"/></label>
+</body>
+</html>

@@ -4613,11 +4613,13 @@ String AXNodeObject::TextAlternative(
   DCHECK(!name_sources || related_objects);
 
   bool found_text_alternative = false;
+  Node* node = GetNode();
 
-  if (!GetNode() && !GetLayoutObject())
+  if (!node && !GetLayoutObject()) {
     return String();
+  }
 
-  if (IsA<HTMLSlotElement>(GetNode()) && GetNode()->IsInUserAgentShadowRoot()) {
+  if (IsA<HTMLSlotElement>(node) && node->IsInUserAgentShadowRoot()) {
     // User agent slots do not have a name.
     return String();
   }
@@ -4718,31 +4720,29 @@ String AXNodeObject::TextAlternative(
   }
 
   // Step 2F / 2G from: http://www.w3.org/TR/accname-aam-1.1 -- from content.
-  if (aria_label_or_description_root || SupportsNameFromContents(recursive)) {
-    Node* node = GetNode();
-    if (!IsA<HTMLSelectElement>(node)) {  // Avoid option descendant text
-      name_from = ax::mojom::blink::NameFrom::kContents;
+  if (ShouldIncludeContentInTextAlternative(
+          recursive, aria_label_or_description_root, visited)) {
+    name_from = ax::mojom::blink::NameFrom::kContents;
+    if (name_sources) {
+      name_sources->push_back(NameSource(found_text_alternative));
+      name_sources->back().type = name_from;
+    }
+
+    if (auto* text_node = DynamicTo<Text>(node)) {
+      text_alternative = text_node->data();
+    } else if (IsA<HTMLBRElement>(node)) {
+      text_alternative = String("\n");
+    } else {
+      text_alternative =
+          TextFromDescendants(visited, aria_label_or_description_root, false);
+    }
+
+    if (!text_alternative.empty()) {
       if (name_sources) {
-        name_sources->push_back(NameSource(found_text_alternative));
-        name_sources->back().type = name_from;
-      }
-
-      if (auto* text_node = DynamicTo<Text>(node)) {
-        text_alternative = text_node->data();
-      } else if (IsA<HTMLBRElement>(node)) {
-        text_alternative = String("\n");
+        found_text_alternative = true;
+        name_sources->back().text = text_alternative;
       } else {
-        text_alternative =
-            TextFromDescendants(visited, aria_label_or_description_root, false);
-      }
-
-      if (!text_alternative.empty()) {
-        if (name_sources) {
-          found_text_alternative = true;
-          name_sources->back().text = text_alternative;
-        } else {
-          return MaybeAppendFileDescriptionToName(text_alternative);
-        }
+        return MaybeAppendFileDescriptionToName(text_alternative);
       }
     }
   }
@@ -6966,6 +6966,38 @@ String AXNodeObject::MaybeAppendFileDescriptionToName(
       return name + ": " + displayed_file_path;
   }
   return name;
+}
+
+bool AXNodeObject::ShouldIncludeContentInTextAlternative(
+    bool recursive,
+    const AXObject* aria_label_or_description_root,
+    AXObjectSet& visited) const {
+  if (!aria_label_or_description_root && !SupportsNameFromContents(recursive)) {
+    return false;
+  }
+
+  // Avoid option descendent text.
+  if (IsA<HTMLSelectElement>(GetNode())) {
+    return false;
+  }
+
+  // A textfield's name should not include its value (see crbug.com/352665697),
+  // unless aria-labelledby explicitly references its own content.
+  //
+  // Example from aria-labelledby-on-input.html:
+  //   <input id="time" value="10" aria-labelledby="message time unit"/>
+  //
+  // When determining the name for the <input>, we parse the list of IDs in
+  // aria-labelledby. When "time" is reached, aria_label_or_description_root
+  // points to the element we are naming (the <input>) and 'this' refers to the
+  // element we are currently traversing, which is the element with id="time"
+  // (so, aria_label_or_description_root == this). In this case, since the
+  // author explicitly included the input id, the value of the input should be
+  // included in the name.
+  if (IsTextField() && aria_label_or_description_root != this) {
+    return false;
+  }
+  return true;
 }
 
 String AXNodeObject::Description(
