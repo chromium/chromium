@@ -160,7 +160,9 @@ class PLATFORM_EXPORT WidgetBase
       override;
   void CancelSuccessfulPresentationTimeRequest() override;
   void SetupRenderInputRouterConnections(
-      mojo::PendingReceiver<mojom::blink::RenderInputRouterClient> request)
+      mojo::PendingReceiver<mojom::blink::RenderInputRouterClient>
+          browser_request,
+      mojo::PendingReceiver<mojom::blink::RenderInputRouterClient> viz_request)
       override;
 
   // LayerTreeViewDelegate overrides:
@@ -473,7 +475,10 @@ class PLATFORM_EXPORT WidgetBase
   mojo::AssociatedRemote<mojom::blink::WidgetHost> widget_host_;
   mojo::AssociatedReceiver<mojom::blink::Widget> receiver_;
 
-  mojo::Receiver<mojom::blink::RenderInputRouterClient> input_receiver_{this};
+  mojo::Receiver<mojom::blink::RenderInputRouterClient> browser_input_receiver_{
+      this};
+  mojo::Receiver<mojom::blink::RenderInputRouterClient> viz_input_receiver_{
+      this};
 
   std::unique_ptr<LayerTreeView> layer_tree_view_;
   scoped_refptr<WidgetInputHandlerManager> widget_input_handler_manager_;

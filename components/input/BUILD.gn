@@ -14,6 +14,8 @@ component("input") {
     "cursor_manager.cc",
     "cursor_manager.h",
     "event_with_latency_info.h",
+    "features.cc",
+    "features.h",
     "fling_controller.cc",
     "fling_controller.h",
     "fling_scheduler_base.h",
@@ -72,6 +74,8 @@ component("input") {
     "touchpad_tap_suppression_controller.h",
     "touchscreen_tap_suppression_controller.cc",
     "touchscreen_tap_suppression_controller.h",
+    "utils.cc",
+    "utils.h",
     "web_touch_event_traits.cc",
     "web_touch_event_traits.h",
   ]
@@ -168,5 +172,20 @@ source_set("test_support") {
     "//base",
     "//cc",
     "//third_party/blink/public/common:headers",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "test/input_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//base",
+    "//components/input",
+    "//content/shell:content_shell_lib",
+    "//content/test:browsertest_support",
+    "//content/test:test_support",
   ]
 }

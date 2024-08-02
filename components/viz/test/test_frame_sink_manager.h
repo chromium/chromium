@@ -48,7 +48,9 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
       const FrameSinkId& frame_sink_id,
       const std::optional<FrameSinkBundleId>& bundle_id,
       mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
-      mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) override {}
+      mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
+      mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client)
+      override {}
   void DestroyCompositorFrameSink(
       const FrameSinkId& frame_sink_id,
       DestroyCompositorFrameSinkCallback callback) override {}

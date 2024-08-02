@@ -27,10 +27,15 @@ mojom("compositing") {
     "//mojo/public/mojom/base",
     "//services/viz/public/mojom",
     "//skia/public/mojom",
+    "//third_party/blink/public/mojom:mojom_platform",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
     "//ui/latency/mojom",
   ]
+
+  overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+
+  component_deps = [ "//third_party/blink/public/common" ]
 
   traits_public_deps = [
     "//components/viz/common",

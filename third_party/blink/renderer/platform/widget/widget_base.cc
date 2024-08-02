@@ -575,13 +575,18 @@ void WidgetBase::CancelSuccessfulPresentationTimeRequest() {
 }
 
 void WidgetBase::SetupRenderInputRouterConnections(
-    mojo::PendingReceiver<mojom::blink::RenderInputRouterClient> request) {
+    mojo::PendingReceiver<mojom::blink::RenderInputRouterClient>
+        browser_request,
+    mojo::PendingReceiver<mojom::blink::RenderInputRouterClient> viz_request) {
   TRACE_EVENT("renderer", "WidgetBase::SetupRenderInputRouterConnections");
 
-  // TODO(b/322833330): Investigate binding |input_receiver_| on
+  // TODO(b/322833330): Investigate binding |browser_input_receiver_| on
   // RendererCompositor to break dependency on CrRendererMain and avoiding
   // contention with javascript during method calls.
-  input_receiver_.Bind(std::move(request), task_runner_);
+  browser_input_receiver_.Bind(std::move(browser_request), task_runner_);
+  if (viz_request) {
+    viz_input_receiver_.Bind(std::move(viz_request), task_runner_);
+  }
 }
 
 void WidgetBase::ApplyViewportChanges(

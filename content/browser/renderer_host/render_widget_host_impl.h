@@ -1563,6 +1563,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   std::unique_ptr<CompositorMetricRecorder> compositor_metric_recorder_;
 
+  std::optional<mojo::PendingRemote<blink::mojom::RenderInputRouterClient>>
+      viz_rir_client_remote_;
+
   base::WeakPtrFactory<RenderWidgetHostImpl> weak_factory_{this};
 };
 

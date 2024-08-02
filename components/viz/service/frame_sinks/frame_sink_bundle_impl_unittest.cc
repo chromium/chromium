@@ -136,7 +136,8 @@ struct TestFrameSink {
     }
     manager_->CreateCompositorFrameSink(
         id, bundle_id, frame_sink.BindNewPipeAndPassReceiver(),
-        client_receiver_.BindNewPipeAndPassRemote());
+        client_receiver_.BindNewPipeAndPassRemote(),
+        /* rir_client= */ mojo::NullRemote());
     manager_->GetFrameSinkForId(id)->SetNeedsBeginFrame(true);
   }
 

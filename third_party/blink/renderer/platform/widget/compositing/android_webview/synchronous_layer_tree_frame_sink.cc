@@ -154,7 +154,7 @@ SynchronousLayerTreeFrameSink::SynchronousLayerTreeFrameSink(
       unbound_client_(std::move(client_receiver)),
       synthetic_begin_frame_source_(std::move(synthetic_begin_frame_source)),
       viz_frame_submission_enabled_(
-          features::IsUsingVizFrameSubmissionForWebView()),
+          ::features::IsUsingVizFrameSubmissionForWebView()),
       use_zero_copy_sw_draw_(
           Platform::Current()
               ->IsZeroCopySynchronousSwDrawEnabledForAndroidWebView()) {
@@ -592,7 +592,7 @@ void SynchronousLayerTreeFrameSink::OnBeginFrame(
     bool frame_ack,
     Vector<viz::ReturnedResource> resources) {
   DCHECK(viz_frame_submission_enabled_);
-  if (features::IsOnBeginFrameAcksEnabled()) {
+  if (::features::IsOnBeginFrameAcksEnabled()) {
     if (frame_ack) {
       DidReceiveCompositorFrameAck(std::move(resources));
     } else if (!resources.empty()) {

@@ -123,7 +123,9 @@ RenderInputRouter::RenderInputRouter(
           std::make_unique<RenderInputRouterLatencyTracker>(delegate)),
       render_input_router_client_(host),
       delegate_(delegate),
-      task_runner_(std::move(task_runner)) {}
+      task_runner_(std::move(task_runner)) {
+  TRACE_EVENT("input", "RenderInputRouter::RenderInputRouter");
+}
 
 void RenderInputRouter::SetupInputRouter(float device_scale_factor) {
   TRACE_EVENT("input", "RenderInputRouter::SetupInputRouter");

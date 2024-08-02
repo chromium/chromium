@@ -155,7 +155,8 @@ TEST_F(FrameSinkManagerTest, CreateCompositorFrameSink) {
   manager_.CreateCompositorFrameSink(
       kFrameSinkIdA, /*bundle_id=*/std::nullopt,
       compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote());
+      compositor_frame_sink_client.BindInterfaceRemote(),
+      /* rir_client= */ mojo::NullRemote());
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
   // Invalidating should destroy the CompositorFrameSinkImpl.
@@ -172,7 +173,8 @@ TEST_F(FrameSinkManagerTest, CompositorFrameSinkConnectionLost) {
   manager_.CreateCompositorFrameSink(
       kFrameSinkIdA, /*bundle_id=*/std::nullopt,
       compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote());
+      compositor_frame_sink_client.BindInterfaceRemote(),
+      /* rir_client= */ mojo::NullRemote());
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
   // Close the connection from the renderer.
@@ -778,7 +780,8 @@ TEST_F(FrameSinkManagerTest,
   manager_.CreateCompositorFrameSink(
       kFrameSinkIdA, /*bundle_id=*/std::nullopt,
       compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote());
+      compositor_frame_sink_client.BindInterfaceRemote(),
+      /* rir_client= */ mojo::NullRemote());
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
   ParentLocalSurfaceIdAllocator allocator;
@@ -826,7 +829,8 @@ TEST_F(FrameSinkManagerTest, ExactCopyOutputRequestTakenBySurfaceRightAway) {
   manager_.CreateCompositorFrameSink(
       kFrameSinkIdA, /*bundle_id=*/std::nullopt,
       compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote());
+      compositor_frame_sink_client.BindInterfaceRemote(),
+      /* rir_client= */ mojo::NullRemote());
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
   ParentLocalSurfaceIdAllocator allocator;
@@ -878,7 +882,8 @@ TEST_F(FrameSinkManagerTest,
   manager_.CreateCompositorFrameSink(
       kFrameSinkIdA, /*bundle_id=*/std::nullopt,
       compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote());
+      compositor_frame_sink_client.BindInterfaceRemote(),
+      /* rir_client= */ mojo::NullRemote());
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
   ParentLocalSurfaceIdAllocator allocator;

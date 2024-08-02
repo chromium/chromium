@@ -37,6 +37,7 @@
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
+#include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 
 namespace viz {
 
@@ -237,7 +238,8 @@ void FrameSinkManagerImpl::CreateCompositorFrameSink(
     const FrameSinkId& frame_sink_id,
     const std::optional<FrameSinkBundleId>& bundle_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
-    mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) {
+    mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
+    mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (base::Contains(sink_map_, frame_sink_id)) {
     receiver_.ReportBadMessage("Duplicate FrameSinkId");
@@ -247,8 +249,14 @@ void FrameSinkManagerImpl::CreateCompositorFrameSink(
     VLOG(1) << "Terminating sink established with non-existent bundle";
     return;
   }
+  std::optional<mojo::PendingRemote<blink::mojom::RenderInputRouterClient>>
+      optional_rir_client;
+  if (rir_client) {
+    optional_rir_client = std::move(rir_client);
+  }
   sink_map_[frame_sink_id] = std::make_unique<CompositorFrameSinkImpl>(
-      this, frame_sink_id, bundle_id, std::move(receiver), std::move(client));
+      this, frame_sink_id, bundle_id, std::move(receiver), std::move(client),
+      std::move(optional_rir_client));
 }
 
 void FrameSinkManagerImpl::DestroyCompositorFrameSink(

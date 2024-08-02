@@ -133,7 +133,8 @@ blink::mojom::WidgetInputHandler*
 FakeRenderWidgetHost::GetWidgetInputHandler() {
   if (!widget_input_handler_) {
     widget_remote_->SetupRenderInputRouterConnections(
-        client_remote_.BindNewPipeAndPassReceiver());
+        client_remote_.BindNewPipeAndPassReceiver(),
+        /* viz_request= */ mojo::NullReceiver());
 
     client_remote_->GetWidgetInputHandler(
         widget_input_handler_.BindNewPipeAndPassReceiver(),
