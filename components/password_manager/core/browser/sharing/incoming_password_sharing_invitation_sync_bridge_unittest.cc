@@ -51,7 +51,7 @@ class MockPasswordReceiverService : public PasswordReceiverService {
   MOCK_METHOD(void,
               ProcessIncomingSharingInvitation,
               (sync_pb::IncomingPasswordSharingInvitationSpecifics));
-  MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
+  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
               GetControllerDelegate,
               ());
   MOCK_METHOD(void, OnSyncServiceInitialized, (syncer::SyncService*));

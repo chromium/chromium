@@ -123,12 +123,12 @@ void ConsentAuditorImpl::RecordAccountPasswordsConsent(
   consent_sync_bridge_->RecordConsent(std::move(specifics));
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 ConsentAuditorImpl::GetControllerDelegate() {
   if (consent_sync_bridge_) {
     return consent_sync_bridge_->GetControllerDelegate();
   }
-  return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
+  return base::WeakPtr<syncer::DataTypeControllerDelegate>();
 }
 
 }  // namespace consent_auditor

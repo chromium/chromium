@@ -458,7 +458,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldInvokeSyncStartCallback) {
   request.error_handler = base::DoNothing();
   request.cache_guid = kCacheGuid;
 
-  base::MockCallback<ModelTypeControllerDelegate::StartCallback> start_callback;
+  base::MockCallback<DataTypeControllerDelegate::StartCallback> start_callback;
   std::unique_ptr<DataTypeActivationResponse> captured_response;
   EXPECT_CALL(start_callback, Run)
       .WillOnce(testing::Invoke(

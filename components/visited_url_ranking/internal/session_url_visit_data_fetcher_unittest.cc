@@ -137,7 +137,7 @@ class MockSessionSyncService : public SessionSyncService {
   }
 
   MOCK_METHOD0(GetControllerDelegate,
-               base::WeakPtr<syncer::ModelTypeControllerDelegate>());
+               base::WeakPtr<syncer::DataTypeControllerDelegate>());
 
  private:
   base::RepeatingClosureList subscriber_list_;

@@ -323,12 +323,12 @@ void TabGroupServiceWrapper::RecordTabGroupEvent(
   NOTIMPLEMENTED();
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 TabGroupServiceWrapper::GetSavedTabGroupControllerDelegate() {
   return sync_service_->GetSavedTabGroupControllerDelegate();
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 TabGroupServiceWrapper::GetSharedTabGroupControllerDelegate() {
   return sync_service_->GetSharedTabGroupControllerDelegate();
 }

@@ -409,7 +409,7 @@ void NigoriModelTypeProcessor::ReportError(const ModelError& error) {
   }
 }
 
-base::WeakPtr<ModelTypeControllerDelegate>
+base::WeakPtr<DataTypeControllerDelegate>
 NigoriModelTypeProcessor::GetControllerDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_ptr_factory_for_controller_.GetWeakPtr();

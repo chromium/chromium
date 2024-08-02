@@ -30,10 +30,10 @@
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_engine_host.h"
+#include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/data_type_manager.h"
 #include "components/sync/service/data_type_manager_observer.h"
 #include "components/sync/service/data_type_status_table.h"
-#include "components/sync/service/model_type_controller.h"
 #include "components/sync/service/sync_client.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service.h"
@@ -104,7 +104,7 @@ class SyncServiceImpl : public SyncService,
   // Initializes the object. This must be called at most once, and immediately
   // after an object of this class is constructed. `controllers` determines all
   // supported types and their controllers.
-  void Initialize(ModelTypeController::TypeVector controllers);
+  void Initialize(DataTypeController::TypeVector controllers);
 
   // SyncService implementation
 #if BUILDFLAG(IS_ANDROID)

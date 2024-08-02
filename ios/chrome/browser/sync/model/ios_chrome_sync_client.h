@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/sync/service/model_type_controller.h"
+#include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/sync_client.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 
@@ -38,7 +38,7 @@ class IOSChromeSyncClient : public syncer::SyncClient {
   ~IOSChromeSyncClient() override;
 
   // TODO(crbug.com/335688372): Inline this in the sync_service_factory.mm.
-  syncer::ModelTypeController::TypeVector CreateModelTypeControllers(
+  syncer::DataTypeController::TypeVector CreateDataTypeControllers(
       syncer::SyncService* sync_service);
 
   // SyncClient implementation.

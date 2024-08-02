@@ -46,7 +46,7 @@ class DataTypeManagerMock : public DataTypeManager {
               (),
               (const override));
   MOCK_METHOD(State, state, (), (const override));
-  MOCK_METHOD(const ModelTypeController::TypeMap&,
+  MOCK_METHOD(const DataTypeController::TypeMap&,
               GetControllerMap,
               (),
               (const override));

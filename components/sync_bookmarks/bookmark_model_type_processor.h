@@ -17,7 +17,7 @@
 #include "base/time/time.h"
 #include "components/sync/engine/model_type_processor.h"
 #include "components/sync/model/data_type_activation_request.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 
@@ -33,7 +33,7 @@ class BookmarkModelObserverImpl;
 class BookmarkModelView;
 
 class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
-                                   public syncer::ModelTypeControllerDelegate {
+                                   public syncer::DataTypeControllerDelegate {
  public:
   // `bookmark_undo_service` must not be nullptr and must outlive this object.
   BookmarkModelTypeProcessor(BookmarkUndoService* bookmark_undo_service,
@@ -63,7 +63,7 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
       std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
       override;
 
-  // ModelTypeControllerDelegate implementation.
+  // DataTypeControllerDelegate implementation.
   void OnSyncStarting(const syncer::DataTypeActivationRequest& request,
                       StartCallback start_callback) override;
   void OnSyncStopping(syncer::SyncStopMetadataFate metadata_fate) override;
@@ -107,7 +107,7 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // Reset max bookmarks till which sync is enabled.
   void SetMaxBookmarksTillSyncEnabledForTest(size_t limit);
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetWeakPtr();
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetWeakPtr();
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -220,7 +220,7 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // ClearMetadataIfStopped() is called before ModelReadyToSync().
   bool pending_clear_metadata_ = false;
 
-  // WeakPtrFactory for this processor for ModelTypeController.
+  // WeakPtrFactory for this processor for DataTypeController.
   base::WeakPtrFactory<BookmarkModelTypeProcessor>
       weak_ptr_factory_for_controller_{this};
 

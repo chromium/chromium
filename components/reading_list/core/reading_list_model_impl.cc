@@ -738,12 +738,12 @@ void ReadingListModelImpl::EndBatchUpdates() {
   }
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 ReadingListModelImpl::GetSyncControllerDelegate() {
   return sync_bridge_.change_processor()->GetControllerDelegate();
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 ReadingListModelImpl::GetSyncControllerDelegateForTransportMode() {
   // ReadingListModelImpl doesn't directly implement account storage. Upper
   // layers are responsible for maintaining two instances of

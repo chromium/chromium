@@ -30,7 +30,7 @@ class SharingMessageBridgeImpl : public SharingMessageBridge,
   void SendSharingMessage(
       std::unique_ptr<sync_pb::SharingMessageSpecifics> specifics,
       CommitFinishedCallback on_commit_callback) override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
   // ModelTypeSyncBridge implementation.

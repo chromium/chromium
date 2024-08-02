@@ -34,7 +34,7 @@
 #import "components/sync/base/features.h"
 #import "components/sync/base/report_unrecoverable_error.h"
 #import "components/sync/base/sync_util.h"
-#import "components/sync/model/forwarding_model_type_controller_delegate.h"
+#import "components/sync/model/forwarding_data_type_controller_delegate.h"
 #import "components/sync/model/model_type_store_service.h"
 #import "components/sync/service/sync_engine_factory.h"
 #import "components/sync/service/sync_service.h"
@@ -124,8 +124,8 @@ base::FilePath IOSChromeSyncClient::GetLocalSyncBackendFolder() {
   return base::FilePath();
 }
 
-syncer::ModelTypeController::TypeVector
-IOSChromeSyncClient::CreateModelTypeControllers(
+syncer::DataTypeController::TypeVector
+IOSChromeSyncClient::CreateDataTypeControllers(
     syncer::SyncService* sync_service) {
   scoped_refptr<autofill::AutofillWebDataService> profile_web_data_service =
       ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
@@ -199,23 +199,23 @@ IOSChromeSyncClient::CreateModelTypeControllers(
   builder.SetUserEventService(
       IOSUserEventServiceFactory::GetForBrowserState(browser_state_));
 
-  syncer::ModelTypeController::TypeVector controllers = builder.Build(
+  syncer::DataTypeController::TypeVector controllers = builder.Build(
       /*disabled_types=*/{}, sync_service, ::GetChannel());
 
   if (IsTabGroupSyncEnabled()) {
-    syncer::ModelTypeControllerDelegate* delegate =
+    syncer::DataTypeControllerDelegate* delegate =
         tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
             browser_state_)
             ->GetSavedTabGroupControllerDelegate()
             .get();
     // TODO(crbug.com/344893270): Move this controller to
-    // CreateCommonModelTypeControllers().
-    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+    // CreateCommonDataTypeControllers().
+    controllers.push_back(std::make_unique<syncer::DataTypeController>(
         syncer::SAVED_TAB_GROUP, /*delegate_for_full_sync_mode=*/
-        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
             delegate),
         /*delegate_for_transport_mode=*/
-        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
             delegate)));
   }
 

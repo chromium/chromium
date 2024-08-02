@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
 #include "google_apis/gaia/core_account_id.h"
 
@@ -88,7 +88,7 @@ class ConsentAuditor : public KeyedService {
       const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent) = 0;
 
   // Returns the underlying Sync integration point.
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetControllerDelegate() = 0;
 };
 

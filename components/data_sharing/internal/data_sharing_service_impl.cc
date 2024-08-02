@@ -129,7 +129,7 @@ DataSharingServiceImpl::GetDataSharingNetworkLoader() {
   return data_sharing_network_loader_.get();
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 DataSharingServiceImpl::GetCollaborationGroupControllerDelegate() {
   return collaboration_group_sync_bridge_->change_processor()
       ->GetControllerDelegate();

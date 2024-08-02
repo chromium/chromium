@@ -16,7 +16,7 @@
 
 namespace syncer {
 
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 class NigoriSyncBridge;
 struct EntityData;
 
@@ -71,8 +71,7 @@ class NigoriLocalChangeProcessor {
   virtual void ReportError(const ModelError& error) = 0;
 
   // Returns the delegate for the controller.
-  virtual base::WeakPtr<ModelTypeControllerDelegate>
-  GetControllerDelegate() = 0;
+  virtual base::WeakPtr<DataTypeControllerDelegate> GetControllerDelegate() = 0;
 
   // Returns a boolean representing whether the processor's metadata is
   // currently up to date and accurately tracking the model type's data. If

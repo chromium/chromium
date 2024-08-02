@@ -13,7 +13,7 @@
 
 namespace syncer {
 
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 
 class UserEventService : public KeyedService {
  public:
@@ -33,7 +33,7 @@ class UserEventService : public KeyedService {
       const sync_pb::UserEventSpecifics& specifics) = 0;
 
   // Returns the underlying Sync integration point.
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetControllerDelegate() = 0;
 };
 

@@ -94,8 +94,8 @@ class SessionSyncService;
 
 namespace syncer {
 class DeviceInfoSyncService;
-class ModelTypeController;
-class ModelTypeControllerDelegate;
+class DataTypeController;
+class DataTypeControllerDelegate;
 class ModelTypeStoreService;
 class SyncService;
 class UserEventService;
@@ -111,7 +111,7 @@ class PasskeyModel;
 
 namespace browser_sync {
 
-// Class responsible for instantiating sync controllers (ModelTypeController)
+// Class responsible for instantiating sync controllers (DataTypeController)
 // for most sync datatypes / features. This includes datatypes that are
 // supported or planned on all major platforms. Users of this class need to
 // inject dependencies by invoking all setters (more on this below) and finally
@@ -188,7 +188,7 @@ class CommonControllerBuilder {
 
   // Actually builds the controllers. All setters above must have been called
   // beforehand (null may or may not be allowed).
-  std::vector<std::unique_ptr<syncer::ModelTypeController>> Build(
+  std::vector<std::unique_ptr<syncer::DataTypeController>> Build(
       syncer::ModelTypeSet disabled_types,
       syncer::SyncService* sync_service,
       version_info::Channel channel);
@@ -217,16 +217,16 @@ class CommonControllerBuilder {
     std::optional<Ptr> ptr_;
   };
 
-  // Factory function for ModelTypeController instances for wallet-related
+  // Factory function for DataTypeController instances for wallet-related
   // datatypes, which live in `db_thread_` and have a delegate accessible via
   // AutofillWebDataService.
   // If `with_transport_mode_support` is true, the controller will support
   // transport mode, implemented via an independent AutofillWebDataService,
   // namely `web_data_service_in_memory_`.
-  std::unique_ptr<syncer::ModelTypeController> CreateWalletModelTypeController(
+  std::unique_ptr<syncer::DataTypeController> CreateWalletDataTypeController(
       syncer::ModelType type,
       const base::RepeatingCallback<
-          base::WeakPtr<syncer::ModelTypeControllerDelegate>(
+          base::WeakPtr<syncer::DataTypeControllerDelegate>(
               autofill::AutofillWebDataService*)>& delegate_from_web_data,
       syncer::SyncService* sync_service,
       bool with_transport_mode_support);

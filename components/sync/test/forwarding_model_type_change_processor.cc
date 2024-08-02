@@ -99,7 +99,7 @@ std::optional<ModelError> ForwardingModelTypeChangeProcessor::GetError() const {
   return other_->GetError();
 }
 
-base::WeakPtr<ModelTypeControllerDelegate>
+base::WeakPtr<DataTypeControllerDelegate>
 ForwardingModelTypeChangeProcessor::GetControllerDelegate() {
   return other_->GetControllerDelegate();
 }

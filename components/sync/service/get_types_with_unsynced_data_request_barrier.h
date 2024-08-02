@@ -14,7 +14,7 @@ namespace syncer {
 
 // A helper class for SyncServiceImpl's implementation of
 // GetTypesWithUnsyncedData. It accumulates the responses from each type's
-// ModelTypeController, and runs the supplied callback once they're all done.
+// DataTypeController, and runs the supplied callback once they're all done.
 class GetTypesWithUnsyncedDataRequestBarrier
     : public base::RefCounted<GetTypesWithUnsyncedDataRequestBarrier> {
  public:

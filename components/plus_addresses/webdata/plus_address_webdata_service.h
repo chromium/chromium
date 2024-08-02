@@ -20,7 +20,7 @@
 class WebDatabaseService;
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }
 
 namespace plus_addresses {
@@ -69,7 +69,7 @@ class PlusAddressWebDataService : public WebDataServiceBase {
   void ClearPlusProfiles();
 
   // Returns a controller delegate for the `sync_bridge` owned this service.
-  std::unique_ptr<syncer::ModelTypeControllerDelegate>
+  std::unique_ptr<syncer::DataTypeControllerDelegate>
   GetSyncControllerDelegate();
 
  protected:

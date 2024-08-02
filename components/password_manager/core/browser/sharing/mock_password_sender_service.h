@@ -20,7 +20,7 @@ class MockPasswordSenderService : public PasswordSenderService {
                const PasswordRecipient& recipient),
               (override));
 
-  MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
+  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
               GetControllerDelegate,
               (),
               (override));

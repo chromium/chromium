@@ -28,7 +28,7 @@ class SecurityEventRecorderImpl : public SecurityEventRecorder {
   void RecordGaiaPasswordReuse(
       const sync_pb::GaiaPasswordReuse& event) override;
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
   // KeyedService (through SecurityEventRecorder) implementation.

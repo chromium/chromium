@@ -98,7 +98,7 @@ std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
   auto sync_service =
       std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
   sync_service->Initialize(
-      client_ptr->CreateModelTypeControllers(sync_service.get()));
+      client_ptr->CreateDataTypeControllers(sync_service.get()));
 
   // TODO(crbug.com/40250371): Remove the workaround below once
   // PrivacySandboxSettingsFactory correctly declares its KeyedServices

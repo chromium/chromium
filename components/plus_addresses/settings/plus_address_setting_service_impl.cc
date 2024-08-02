@@ -14,8 +14,8 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
-#include "components/sync/model/forwarding_model_type_controller_delegate.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
+#include "components/sync/model/forwarding_data_type_controller_delegate.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/plus_address_setting_specifics.pb.h"
 
@@ -53,10 +53,10 @@ void PlusAddressSettingServiceImpl::SetHasAcceptedNotice() {
   }
 }
 
-std::unique_ptr<syncer::ModelTypeControllerDelegate>
+std::unique_ptr<syncer::DataTypeControllerDelegate>
 PlusAddressSettingServiceImpl::GetSyncControllerDelegate() {
   CHECK(base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting));
-  return std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+  return std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
       sync_bridge_->change_processor()->GetControllerDelegate().get());
 }
 

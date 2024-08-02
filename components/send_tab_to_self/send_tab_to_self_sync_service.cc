@@ -63,7 +63,7 @@ SendTabToSelfModel* SendTabToSelfSyncService::GetSendTabToSelfModel() {
   return bridge_.get();
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 SendTabToSelfSyncService::GetControllerDelegate() {
   return bridge_->change_processor()->GetControllerDelegate();
 }

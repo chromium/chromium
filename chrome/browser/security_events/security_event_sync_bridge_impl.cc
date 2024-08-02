@@ -85,7 +85,7 @@ void SecurityEventSyncBridgeImpl::RecordSecurityEvent(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 SecurityEventSyncBridgeImpl::GetControllerDelegate() {
   return change_processor()->GetControllerDelegate();
 }

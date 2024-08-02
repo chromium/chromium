@@ -165,12 +165,12 @@ syncer::OnceModelTypeStoreFactory SavedTabGroupKeyedService::GetStoreFactory() {
       ->GetStoreFactory();
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 SavedTabGroupKeyedService::GetSavedTabGroupControllerDelegate() {
   return sync_bridge_mediator_.GetSavedTabGroupControllerDelegate();
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 SavedTabGroupKeyedService::GetSharedTabGroupControllerDelegate() {
   return sync_bridge_mediator_.GetSharedTabGroupControllerDelegate();
 }

@@ -81,7 +81,7 @@ class MockModelTypeChangeProcessor : public ModelTypeChangeProcessor {
   MOCK_METHOD(std::string, TrackedCacheGuid, (), (const override));
   MOCK_METHOD(void, ReportError, (const ModelError& error), (override));
   MOCK_METHOD(std::optional<ModelError>, GetError, (), (const override));
-  MOCK_METHOD(base::WeakPtr<ModelTypeControllerDelegate>,
+  MOCK_METHOD(base::WeakPtr<DataTypeControllerDelegate>,
               GetControllerDelegate,
               (),
               (override));

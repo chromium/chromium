@@ -12,7 +12,7 @@ namespace syncer {
 
 class DeviceInfoTracker;
 class LocalDeviceInfoProvider;
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 
 // Abstract interface for a keyed service responsible for implementing sync
 // datatype DEVICE_INFO and exposes information about the local device (as
@@ -27,9 +27,8 @@ class DeviceInfoSyncService : public KeyedService {
   // Interface to get information about all syncing devices.
   virtual DeviceInfoTracker* GetDeviceInfoTracker() = 0;
 
-  // Returns the ModelTypeControllerDelegate for DEVICE_INFO.
-  virtual base::WeakPtr<ModelTypeControllerDelegate>
-  GetControllerDelegate() = 0;
+  // Returns the DataTypeControllerDelegate for DEVICE_INFO.
+  virtual base::WeakPtr<DataTypeControllerDelegate> GetControllerDelegate() = 0;
 
   // Interface to refresh local copy of device info in memory, and informs sync
   // of the change. Used when the caller knows a property of local device info

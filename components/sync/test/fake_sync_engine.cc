@@ -10,7 +10,7 @@
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_engine_host.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 
 namespace syncer {
 

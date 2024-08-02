@@ -1,7 +1,7 @@
 source_set("sync_utils") {
   sources = [
-    "plus_address_model_type_controller.cc",
-    "plus_address_model_type_controller.h",
+    "plus_address_data_type_controller.cc",
+    "plus_address_data_type_controller.h",
   ]
   deps = [
     "//components/plus_addresses:features",

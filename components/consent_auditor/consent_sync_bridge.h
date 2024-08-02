@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }
 
 namespace sync_pb {
@@ -32,7 +32,7 @@ class ConsentSyncBridge {
       std::unique_ptr<sync_pb::UserConsentSpecifics> specifics) = 0;
 
   // Returns the delegate for the controller, i.e. sync integration point.
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetControllerDelegate() = 0;
 };
 

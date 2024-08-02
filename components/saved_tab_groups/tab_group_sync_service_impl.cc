@@ -28,7 +28,7 @@
 #include "components/saved_tab_groups/utils.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 
 namespace tab_groups {
 namespace {
@@ -90,12 +90,12 @@ void TabGroupSyncServiceImpl::Shutdown() {
   metrics_logger_.reset();
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 TabGroupSyncServiceImpl::GetSavedTabGroupControllerDelegate() {
   return sync_bridge_mediator_.GetSavedTabGroupControllerDelegate();
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 TabGroupSyncServiceImpl::GetSharedTabGroupControllerDelegate() {
   return sync_bridge_mediator_.GetSharedTabGroupControllerDelegate();
 }

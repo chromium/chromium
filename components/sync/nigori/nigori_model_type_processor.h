@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/sync/engine/model_type_processor.h"
 #include "components/sync/model/data_type_activation_request.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/nigori/nigori_local_change_processor.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 
@@ -22,7 +22,7 @@ class NigoriSyncBridge;
 class ProcessorEntity;
 
 class NigoriModelTypeProcessor : public ModelTypeProcessor,
-                                 public ModelTypeControllerDelegate,
+                                 public DataTypeControllerDelegate,
                                  public NigoriLocalChangeProcessor {
  public:
   NigoriModelTypeProcessor();
@@ -49,7 +49,7 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
       std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
       override;
 
-  // ModelTypeControllerDelegate implementation.
+  // DataTypeControllerDelegate implementation.
   void OnSyncStarting(const DataTypeActivationRequest& request,
                       StartCallback callback) override;
   void OnSyncStopping(SyncStopMetadataFate metadata_fate) override;
@@ -69,7 +69,7 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
   bool IsEntityUnsynced() override;
   NigoriMetadataBatch GetMetadata() override;
   void ReportError(const ModelError& error) override;
-  base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override;
+  base::WeakPtr<DataTypeControllerDelegate> GetControllerDelegate() override;
   bool IsTrackingMetadata() override;
 
   bool IsConnectedForTest() const;
@@ -121,9 +121,9 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // WeakPtrFactory for this processor for ModelTypeController (only gets
+  // WeakPtrFactory for this processor for DataTypeController (only gets
   // invalidated during destruction).
-  base::WeakPtrFactory<ModelTypeControllerDelegate>
+  base::WeakPtrFactory<DataTypeControllerDelegate>
       weak_ptr_factory_for_controller_{this};
 };
 

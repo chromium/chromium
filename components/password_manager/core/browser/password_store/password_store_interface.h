@@ -19,7 +19,7 @@ class Location;
 }  // namespace base
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 class SyncService;
 }  // namespace syncer
 
@@ -186,7 +186,7 @@ class PasswordStoreInterface : public RefcountedKeyedService {
 
   // For sync codebase only: instantiates a proxy controller delegate to
   // interact with PasswordSyncBridge. Must be called from the UI thread.
-  virtual std::unique_ptr<syncer::ModelTypeControllerDelegate>
+  virtual std::unique_ptr<syncer::DataTypeControllerDelegate>
   CreateSyncControllerDelegate() = 0;
 
   // Propagates successful initialization of SyncService to reolve circular

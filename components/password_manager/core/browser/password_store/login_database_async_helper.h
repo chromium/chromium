@@ -20,7 +20,7 @@ class Location;
 }  // namespace base
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
 
 namespace os_crypt_async {
@@ -88,8 +88,7 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
       base::Time delete_end);
 
   // Instantiates a proxy controller delegate to react to sync events.
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetSyncControllerDelegate();
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate();
 
   // `clearing_undecryptable_passwords`is called to signal whether user
   // interacted with the kClearUndecryptablePasswords experiment. It is needed

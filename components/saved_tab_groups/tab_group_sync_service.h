@@ -165,9 +165,9 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   virtual void RecordTabGroupEvent(const EventDetails& event_details) = 0;
 
   // For connecting to sync engine.
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSavedTabGroupControllerDelegate() = 0;
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSharedTabGroupControllerDelegate() = 0;
 
   // Helper method to pause / resume local observer.

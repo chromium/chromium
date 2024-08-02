@@ -14,7 +14,7 @@
 
 namespace syncer {
 
-// The state passed from ModelTypeController to the delegate during DataType
+// The state passed from DataTypeController to the delegate during DataType
 // activation.
 struct DataTypeActivationRequest {
   DataTypeActivationRequest();

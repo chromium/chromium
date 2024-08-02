@@ -28,7 +28,7 @@ class ModelTypeProcessor {
   // Connect this processor to the sync engine via |commit_queue|. Once called,
   // the processor will send any pending and future commits via this channel.
   // This can only be called multiple times if the processor is disconnected
-  // (via the ModelTypeController) in between.
+  // (via the DataTypeController) in between.
   virtual void ConnectSync(std::unique_ptr<CommitQueue> commit_queue) = 0;
 
   // Disconnect this processor from the sync engine. Change metadata will

@@ -105,8 +105,8 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
 
   const Registry& GetRegistryForTesting() const;
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetModelTypeControllerDelegate();
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetDataTypeControllerDelegate();
 
  private:
   // These values are persisted to logs. Entries should not be renumbered and

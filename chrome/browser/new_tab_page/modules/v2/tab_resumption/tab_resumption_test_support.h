@@ -60,7 +60,7 @@ class MockSessionSyncService : public sync_sessions::SessionSyncService {
   base::CallbackListSubscription SubscribeToForeignSessionsChanged(
       const base::RepeatingClosure& cb) override;
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
  private:

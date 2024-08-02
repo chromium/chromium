@@ -98,8 +98,8 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   // Returns the network loader for fetching data.
   virtual DataSharingNetworkLoader* GetDataSharingNetworkLoader() = 0;
 
-  // Returns ModelTypeControllerDelegate for the collaboration group datatype.
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  // Returns DataTypeControllerDelegate for the collaboration group datatype.
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetCollaborationGroupControllerDelegate() = 0;
 
   // People Group API.

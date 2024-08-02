@@ -30,7 +30,7 @@ class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
 
   void RecordSecurityEvent(sync_pb::SecurityEventSpecifics specifics) override;
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
   // ModelTypeSyncBridge implementation.

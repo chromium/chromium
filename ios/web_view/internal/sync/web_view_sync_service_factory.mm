@@ -21,7 +21,7 @@
 #import "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #import "components/sync/base/model_type.h"
 #import "components/sync/base/sync_util.h"
-#import "components/sync/service/model_type_controller.h"
+#import "components/sync/service/data_type_controller.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_impl.h"
 #import "components/version_info/version_info.h"
@@ -57,7 +57,7 @@ syncer::ModelTypeSet GetDisabledTypes() {
 
 }  // namespace
 
-syncer::ModelTypeController::TypeVector CreateControllers(
+syncer::DataTypeController::TypeVector CreateControllers(
     WebViewBrowserState* browser_state,
     syncer::SyncService* sync_service) {
   scoped_refptr<autofill::AutofillWebDataService>

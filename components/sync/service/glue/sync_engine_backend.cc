@@ -25,14 +25,14 @@
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_manager.h"
 #include "components/sync/engine/sync_manager_factory.h"
-#include "components/sync/model/forwarding_model_type_controller_delegate.h"
+#include "components/sync/model/forwarding_data_type_controller_delegate.h"
 #include "components/sync/nigori/nigori_model_type_processor.h"
 #include "components/sync/nigori/nigori_storage_impl.h"
 #include "components/sync/nigori/nigori_sync_bridge_impl.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
 #include "components/sync/service/configure_context.h"
+#include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/glue/sync_engine_impl.h"
-#include "components/sync/service/model_type_controller.h"
 
 // Helper macros to log with the syncer thread name; useful when there
 // are multiple syncers involved.
@@ -149,9 +149,9 @@ void SyncEngineBackend::DoInitialize(
   // Note: NIGORI always runs in SyncMode::kFull (see
   // `LoadAndConnectNigoriController`), so there's no need to create a
   // `delegate_for_transport_mode`.
-  nigori_controller_ = std::make_unique<ModelTypeController>(
+  nigori_controller_ = std::make_unique<DataTypeController>(
       NIGORI,
-      std::make_unique<ForwardingModelTypeControllerDelegate>(
+      std::make_unique<ForwardingDataTypeControllerDelegate>(
           nigori_processor->GetControllerDelegate().get()),
       /*delegate_for_transport_mode=*/nullptr);
   sync_encryption_handler_ = std::make_unique<NigoriSyncBridgeImpl>(
@@ -492,7 +492,7 @@ void SyncEngineBackend::LoadAndConnectNigoriController() {
       .sync_mode = SyncMode::kFull,
       .configuration_start_time = base::Time::Now()};
   nigori_controller_->LoadModels(configure_context, base::DoNothing());
-  DCHECK_EQ(nigori_controller_->state(), ModelTypeController::MODEL_LOADED);
+  DCHECK_EQ(nigori_controller_->state(), DataTypeController::MODEL_LOADED);
   sync_manager_->GetModelTypeConnector()->ConnectDataType(
       NIGORI, nigori_controller_->Connect());
 }

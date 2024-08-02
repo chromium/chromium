@@ -35,8 +35,8 @@ class WebApkSyncService : public KeyedService {
 
   const Registry& GetRegistryForTesting() const;
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetModelTypeControllerDelegate();
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetDataTypeControllerDelegate();
 
   void OnWebApkUsed(std::unique_ptr<sync_pb::WebApkSpecifics> app_specifics,
                     bool is_install);

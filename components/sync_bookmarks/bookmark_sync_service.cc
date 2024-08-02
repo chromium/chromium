@@ -33,7 +33,7 @@ void BookmarkSyncService::DecodeBookmarkSyncMetadata(
       metadata_str, schedule_save_closure, bookmark_model_view_.get());
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 BookmarkSyncService::GetBookmarkSyncControllerDelegate(
     favicon::FaviconService* favicon_service) {
   DCHECK(favicon_service);

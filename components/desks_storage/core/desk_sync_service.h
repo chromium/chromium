@@ -14,7 +14,7 @@
 #include "components/version_info/channel.h"
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
 
 namespace desks_storage {
@@ -34,7 +34,7 @@ class DeskSyncService : public KeyedService {
 
   virtual DeskModel* GetDeskModel();
 
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetControllerDelegate();
 
  private:

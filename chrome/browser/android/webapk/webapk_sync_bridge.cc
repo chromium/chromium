@@ -607,8 +607,8 @@ const Registry& WebApkSyncBridge::GetRegistryForTesting() const {
   return registry_;
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
-WebApkSyncBridge::GetModelTypeControllerDelegate() {
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+WebApkSyncBridge::GetDataTypeControllerDelegate() {
   return change_processor()->GetControllerDelegate();
 }
 

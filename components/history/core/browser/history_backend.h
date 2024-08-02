@@ -57,7 +57,7 @@ class Transaction;
 }
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }
 
 namespace history {
@@ -735,7 +735,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Returns the sync controller delegate for syncing history. The returned
   // delegate is owned by `this` object.
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetHistorySyncControllerDelegate();
 
   // Sends the SyncService's TransportState `state` to the HistorySyncBridge.

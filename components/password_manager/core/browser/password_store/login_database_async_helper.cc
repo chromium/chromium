@@ -16,7 +16,7 @@
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -372,7 +372,7 @@ void LoginDatabaseAsyncHelper::RemoveStatisticsByOriginAndTime(
   }
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 LoginDatabaseAsyncHelper::GetSyncControllerDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(password_sync_bridge_);

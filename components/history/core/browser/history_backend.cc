@@ -2015,7 +2015,7 @@ std::vector<QueryURLResult> HistoryBackend::QueryURLs(
   return results;
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 HistoryBackend::GetHistorySyncControllerDelegate() {
   if (history_sync_bridge_) {
     return history_sync_bridge_->change_processor()->GetControllerDelegate();

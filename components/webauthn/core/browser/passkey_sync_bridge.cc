@@ -24,9 +24,9 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
@@ -256,8 +256,8 @@ void PasskeySyncBridge::ApplyDisableSyncChanges(
   NotifyPasskeysChanged(std::move(changes));
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
-PasskeySyncBridge::GetModelTypeControllerDelegate() {
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+PasskeySyncBridge::GetDataTypeControllerDelegate() {
   return change_processor()->GetControllerDelegate();
 }
 

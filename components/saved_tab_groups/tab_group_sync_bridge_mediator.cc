@@ -66,12 +66,12 @@ void TabGroupSyncBridgeMediator::InitializeModelIfReady() {
   observation_.Observe(model_);
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 TabGroupSyncBridgeMediator::GetSavedTabGroupControllerDelegate() {
   return saved_bridge_->change_processor()->GetControllerDelegate();
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 TabGroupSyncBridgeMediator::GetSharedTabGroupControllerDelegate() {
   CHECK(shared_bridge_);
   return shared_bridge_->change_processor()->GetControllerDelegate();

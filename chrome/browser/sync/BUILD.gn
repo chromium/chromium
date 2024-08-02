@@ -144,10 +144,10 @@ source_set("sync") {
     ]
   } else {
     sources += [
-      "glue/extension_model_type_controller.cc",
-      "glue/extension_model_type_controller.h",
-      "glue/extension_setting_model_type_controller.cc",
-      "glue/extension_setting_model_type_controller.h",
+      "glue/extension_data_type_controller.cc",
+      "glue/extension_data_type_controller.h",
+      "glue/extension_setting_data_type_controller.cc",
+      "glue/extension_setting_data_type_controller.h",
       "sessions/browser_list_router_helper.cc",
       "sessions/browser_list_router_helper.h",
       "sync_ui_util.cc",

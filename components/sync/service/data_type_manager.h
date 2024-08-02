@@ -12,8 +12,8 @@
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/model/sync_error.h"
+#include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/data_type_status_table.h"
-#include "components/sync/service/model_type_controller.h"
 
 namespace syncer {
 
@@ -128,7 +128,7 @@ class DataTypeManager {
   // Exposes direct access to underlying controllers. Avoid using if possible,
   // as DataTypeManager usually offers higher-level APIs.
   // TODO(crbug.com/40901755): Remove this getter.
-  virtual const ModelTypeController::TypeMap& GetControllerMap() const = 0;
+  virtual const DataTypeController::TypeMap& GetControllerMap() const = 0;
 };
 
 }  // namespace syncer

@@ -46,7 +46,7 @@ class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService,
   // DeviceInfoSyncService implementation.
   LocalDeviceInfoProvider* GetLocalDeviceInfoProvider() override;
   DeviceInfoTracker* GetDeviceInfoTracker() override;
-  base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override;
+  base::WeakPtr<DataTypeControllerDelegate> GetControllerDelegate() override;
   void RefreshLocalDeviceInfo() override;
 
   // FCMRegistrationTokenObserver implementation.

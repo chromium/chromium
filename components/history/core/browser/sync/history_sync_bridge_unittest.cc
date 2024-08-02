@@ -232,7 +232,7 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
     return std::nullopt;
   }
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override {
     NOTREACHED_IN_MIGRATION();
     return nullptr;

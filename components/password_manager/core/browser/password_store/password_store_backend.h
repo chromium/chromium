@@ -19,7 +19,7 @@ class Location;
 }  // namespace base
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 class SyncService;
 }  // namespace syncer
 
@@ -158,7 +158,7 @@ class PasswordStoreBackend {
 
   // For sync codebase only: instantiates a proxy controller delegate to
   // react to sync events.
-  virtual std::unique_ptr<syncer::ModelTypeControllerDelegate>
+  virtual std::unique_ptr<syncer::DataTypeControllerDelegate>
   CreateSyncControllerDelegate() = 0;
 
   // Propagates sync initialization event.

@@ -57,7 +57,7 @@ WifiConfigurationSyncService::WifiConfigurationSyncService(
 
 WifiConfigurationSyncService::~WifiConfigurationSyncService() = default;
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 WifiConfigurationSyncService::GetControllerDelegate() {
   return bridge_->change_processor()->GetControllerDelegate();
 }

@@ -73,7 +73,7 @@ class MockSessionSyncService : public sync_sessions::SessionSyncService {
               SubscribeToForeignSessionsChanged,
               (const base::RepeatingClosure& cb),
               (override));
-  MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
+  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
               GetControllerDelegate,
               ());
 };

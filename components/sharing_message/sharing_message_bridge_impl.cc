@@ -107,7 +107,7 @@ void SharingMessageBridgeImpl::SendSharingMessage(
                           metadata_change_list.get());
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 SharingMessageBridgeImpl::GetControllerDelegate() {
   return change_processor()->GetControllerDelegate();
 }

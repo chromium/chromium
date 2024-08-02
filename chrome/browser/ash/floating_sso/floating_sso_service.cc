@@ -179,7 +179,7 @@ void FloatingSsoService::OnConnectionError() {
   MaybeStartListening();
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 FloatingSsoService::GetControllerDelegate() {
   return bridge_.change_processor()->GetControllerDelegate();
 }

@@ -21,7 +21,7 @@ EmptyDataSharingService::GetDataSharingNetworkLoader() {
   return nullptr;
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 EmptyDataSharingService::GetCollaborationGroupControllerDelegate() {
   return nullptr;
 }

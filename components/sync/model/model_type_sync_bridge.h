@@ -58,7 +58,7 @@ class ModelTypeSyncBridge {
   virtual ~ModelTypeSyncBridge();
 
   // Called by the processor as a notification that sync has been started by the
-  // ModelTypeController.
+  // DataTypeController.
   virtual void OnSyncStarting(const DataTypeActivationRequest& request);
 
   // Creates an object used to communicate changes in the sync metadata to the

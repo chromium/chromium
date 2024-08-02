@@ -59,7 +59,7 @@ class FaviconServiceImpl;
 }
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 class SyncableService;
 }  // namespace syncer
 
@@ -836,7 +836,7 @@ class HistoryService : public KeyedService,
 
   // For sync codebase only: instantiates a controller delegate to interact with
   // HistorySyncBridge. Must be called from the UI thread.
-  std::unique_ptr<syncer::ModelTypeControllerDelegate>
+  std::unique_ptr<syncer::DataTypeControllerDelegate>
   GetHistorySyncControllerDelegate();
 
   // Sends the SyncService's TransportState `state` to the backend, which will

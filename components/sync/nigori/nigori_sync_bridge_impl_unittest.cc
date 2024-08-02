@@ -199,7 +199,7 @@ class MockNigoriLocalChangeProcessor : public NigoriLocalChangeProcessor {
   MOCK_METHOD(bool, IsEntityUnsynced, (), (override));
   MOCK_METHOD(NigoriMetadataBatch, GetMetadata, (), (override));
   MOCK_METHOD(void, ReportError, (const ModelError&), (override));
-  MOCK_METHOD(base::WeakPtr<ModelTypeControllerDelegate>,
+  MOCK_METHOD(base::WeakPtr<DataTypeControllerDelegate>,
               GetControllerDelegate,
               (),
               (override));
@@ -234,7 +234,7 @@ class ForwardingNigoriLocalChangeProcessor : public NigoriLocalChangeProcessor {
     processor_->ReportError(error);
   }
 
-  base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override {
+  base::WeakPtr<DataTypeControllerDelegate> GetControllerDelegate() override {
     return processor_->GetControllerDelegate();
   }
 

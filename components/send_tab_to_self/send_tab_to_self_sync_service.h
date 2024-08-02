@@ -25,7 +25,7 @@ class HistoryService;
 
 namespace syncer {
 class DeviceInfoTracker;
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 class SyncService;
 }  // namespace syncer
 
@@ -59,7 +59,7 @@ class SendTabToSelfSyncService : public KeyedService,
   // Never returns null.
   virtual SendTabToSelfModel* GetSendTabToSelfModel();
 
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetControllerDelegate();
 
  protected:

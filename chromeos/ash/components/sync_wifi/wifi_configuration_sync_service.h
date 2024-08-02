@@ -18,7 +18,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
 
 namespace ash::timer_factory {
@@ -51,7 +51,7 @@ class WifiConfigurationSyncService : public KeyedService {
 
   ~WifiConfigurationSyncService() override;
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate();
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate();
   void SetNetworkMetadataStore(
       base::WeakPtr<NetworkMetadataStore> network_metadata_store);
 

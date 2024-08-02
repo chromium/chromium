@@ -17,7 +17,7 @@
 #include "base/uuid.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
-#include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "components/sync/model/proxy_data_type_controller_delegate.h"
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
 
 namespace {
@@ -150,7 +150,7 @@ ProductSpecificationsService::ProductSpecificationsService(
 
 ProductSpecificationsService::~ProductSpecificationsService() = default;
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 ProductSpecificationsService::GetSyncControllerDelegate() {
   CHECK(bridge_);
   return bridge_->change_processor()->GetControllerDelegate();

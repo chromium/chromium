@@ -54,7 +54,7 @@ void FakeSharingMessageBridge::SendSharingMessage(
   std::move(on_commit_callback).Run(commit_error);
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 FakeSharingMessageBridge::GetControllerDelegate() {
   return nullptr;
 }

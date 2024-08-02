@@ -24,7 +24,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/sync_protocol_error.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"
@@ -57,10 +57,10 @@ syncer::ModelTypeSet GetThrottledDataTypes(
 }
 
 size_t GetTypeNonTombstoneEntitiesCount(
-    syncer::ModelTypeControllerDelegate* model_type_controller_delegate) {
+    syncer::DataTypeControllerDelegate* data_type_controller_delegate) {
   base::RunLoop loop;
   size_t result = 0;
-  model_type_controller_delegate->GetTypeEntitiesCountForDebugging(
+  data_type_controller_delegate->GetTypeEntitiesCountForDebugging(
       base::BindLambdaForTesting(
           [&result, &loop](const syncer::TypeEntitiesCount& count) {
             result = count.non_tombstone_entities;

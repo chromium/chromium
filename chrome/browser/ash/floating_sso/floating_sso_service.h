@@ -17,7 +17,7 @@
 
 namespace syncer {
 class ModelTypeChangeProcessor;
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
 
 class PrefService;
@@ -43,7 +43,7 @@ class FloatingSsoService : public KeyedService,
   // network::mojom::CookieChangeListener:
   void OnCookieChange(const net::CookieChangeInfo& change) override;
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate();
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate();
 
   FloatingSsoSyncBridge* GetBridgeForTesting() { return &bridge_; }
 

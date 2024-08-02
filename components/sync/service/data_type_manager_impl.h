@@ -13,9 +13,9 @@
 #include "base/time/time.h"
 #include "components/sync/engine/model_type_configurer.h"
 #include "components/sync/service/configure_context.h"
+#include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/data_type_manager.h"
 #include "components/sync/service/model_load_manager.h"
-#include "components/sync/service/model_type_controller.h"
 
 namespace syncer {
 
@@ -25,7 +25,7 @@ class DataTypeManagerObserver;
 class DataTypeManagerImpl : public DataTypeManager,
                             public ModelLoadManagerDelegate {
  public:
-  DataTypeManagerImpl(ModelTypeController::TypeVector controllers,
+  DataTypeManagerImpl(DataTypeController::TypeVector controllers,
                       const DataTypeEncryptionHandler* encryption_handler,
                       DataTypeManagerObserver* observer);
 
@@ -56,7 +56,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   ModelTypeSet GetDataTypesWithPermanentErrors() const override;
 
   State state() const override;
-  const ModelTypeController::TypeMap& GetControllerMap() const override;
+  const DataTypeController::TypeMap& GetControllerMap() const override;
 
   // `ModelLoadManagerDelegate` implementation.
   void OnAllDataTypesReadyForConfigure() override;
@@ -93,11 +93,11 @@ class DataTypeManagerImpl : public DataTypeManager,
   ModelTypeConfigurer::ConfigureParams PrepareConfigureParams();
 
   // Update precondition state of types in `data_type_status_table_` to match
-  // value of ModelTypeController::GetPreconditionState().
+  // value of DataTypeController::GetPreconditionState().
   void UpdatePreconditionErrors();
 
   // Update precondition state for `type`, such that `data_type_status_table_`
-  // matches ModelTypeController::GetPreconditionState(). Returns true if there
+  // matches DataTypeController::GetPreconditionState(). Returns true if there
   // was an actual change.
   bool UpdatePreconditionError(ModelType type);
 
@@ -131,7 +131,7 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // Map of all data type controllers that are available for sync.
   // This list is determined at startup by various command line flags.
-  const ModelTypeController::TypeMap controllers_;
+  const DataTypeController::TypeMap controllers_;
 
   // DataTypeManager must have only one observer -- the SyncServiceImpl that
   // created it and manages its lifetime.

@@ -10,7 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/service/model_type_controller.h"
+#include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 
@@ -32,7 +32,7 @@ class ContactInfoPreconditionChecker
       base::RepeatingClosure on_precondition_changed);
   ~ContactInfoPreconditionChecker() override;
 
-  syncer::ModelTypeController::PreconditionState GetPreconditionState() const;
+  syncer::DataTypeController::PreconditionState GetPreconditionState() const;
 
   // IdentityManager::Observer overrides.
   void OnRefreshTokensLoaded() override;

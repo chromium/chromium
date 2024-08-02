@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
-#include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "components/sync/model/proxy_data_type_controller_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -95,7 +95,7 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
                base::OnceClosure),
               (override));
   MOCK_METHOD(SmartBubbleStatsStore*, GetSmartBubbleStatsStore, (), (override));
-  MOCK_METHOD(std::unique_ptr<syncer::ModelTypeControllerDelegate>,
+  MOCK_METHOD(std::unique_ptr<syncer::DataTypeControllerDelegate>,
               CreateSyncControllerDelegate,
               (),
               (override));

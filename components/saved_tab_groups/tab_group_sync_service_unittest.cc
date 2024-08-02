@@ -20,8 +20,8 @@
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/tab_group_sync_service_impl.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model/model_type_controller_delegate.h"
-#include "components/sync/test/fake_model_type_controller.h"
+#include "components/sync/model/data_type_controller_delegate.h"
+#include "components/sync/test/fake_data_type_controller.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "components/sync/test/test_matchers.h"
@@ -210,7 +210,7 @@ class TabGroupSyncServiceTest : public testing::Test {
   syncer::FakeDeviceInfoTracker device_info_tracker_;
   raw_ptr<MockTabGroupSyncCoordinator> coordinator_;
   std::unique_ptr<TabGroupSyncServiceImpl> tab_group_sync_service_;
-  syncer::FakeModelTypeControllerDelegate fake_controller_delegate_;
+  syncer::FakeDataTypeControllerDelegate fake_controller_delegate_;
 
   SavedTabGroup group_1_;
   SavedTabGroup group_2_;

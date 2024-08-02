@@ -71,7 +71,7 @@ using DeviceCountMap = std::map<DeviceInfo::FormFactor, int>;
 using DeviceInfoList = std::vector<std::unique_ptr<DeviceInfo>>;
 using StorageKeyList = ModelTypeSyncBridge::StorageKeyList;
 using RecordList = ModelTypeStore::RecordList;
-using StartCallback = ModelTypeControllerDelegate::StartCallback;
+using StartCallback = DataTypeControllerDelegate::StartCallback;
 using WriteBatch = ModelTypeStore::WriteBatch;
 
 const int kLocalSuffix = 0;

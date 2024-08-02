@@ -33,7 +33,7 @@ MockSessionSyncService::SubscribeToForeignSessionsChanged(
   return subscriber_list_.Add(cb);
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 MockSessionSyncService::GetControllerDelegate() {
   return nullptr;
 }

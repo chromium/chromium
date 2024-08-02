@@ -82,7 +82,7 @@ class TestSendTabToSelfSyncService
     return model_.get();
   }
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override {
     return nullptr;
   }

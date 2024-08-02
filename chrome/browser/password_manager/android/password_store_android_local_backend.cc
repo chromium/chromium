@@ -145,7 +145,7 @@ void PasswordStoreAndroidLocalBackend::DisableAutoSignInForOriginsAsync(
                                       std::move(completion));
 }
 
-std::unique_ptr<syncer::ModelTypeControllerDelegate>
+std::unique_ptr<syncer::DataTypeControllerDelegate>
 PasswordStoreAndroidLocalBackend::CreateSyncControllerDelegate() {
   return nullptr;
 }

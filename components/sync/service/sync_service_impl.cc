@@ -332,7 +332,7 @@ SyncServiceImpl::~SyncServiceImpl() {
   DCHECK(!engine_);
 }
 
-void SyncServiceImpl::Initialize(ModelTypeController::TypeVector controllers) {
+void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   data_type_manager_ = std::make_unique<DataTypeManagerImpl>(
@@ -1804,23 +1804,23 @@ base::Value::List SyncServiceImpl::GetTypeStatusMapForDebugging() const {
 
       // Determine the row color based on the controller's state.
       switch (controller->state()) {
-        case ModelTypeController::NOT_RUNNING:
+        case DataTypeController::NOT_RUNNING:
           // One common case is that the sync was just disabled by the user,
           // which is not very different to certain SYNC_ERROR_SEVERITY_INFO
           // cases like preconditions not having been met due to user
           // configuration.
           type_status.Set("status", "severity_info");
           break;
-        case ModelTypeController::MODEL_STARTING:
-        case ModelTypeController::MODEL_LOADED:
-        case ModelTypeController::STOPPING:
+        case DataTypeController::MODEL_STARTING:
+        case DataTypeController::MODEL_LOADED:
+        case DataTypeController::STOPPING:
           // These are all transitional states that should be rare to observe.
           type_status.Set("status", "transitioning");
           break;
-        case ModelTypeController::RUNNING:
+        case DataTypeController::RUNNING:
           type_status.Set("status", "ok");
           break;
-        case ModelTypeController::FAILED:
+        case DataTypeController::FAILED:
           // Note that most of the errors (possibly all) should have been
           // handled earlier via |data_type_error_map_|.
           type_status.Set("status", "severity_error");
@@ -1829,7 +1829,7 @@ base::Value::List SyncServiceImpl::GetTypeStatusMapForDebugging() const {
     }
 
     type_status.Set("state",
-                    ModelTypeController::StateToString(controller->state()));
+                    DataTypeController::StateToString(controller->state()));
 
     result.Append(std::move(type_status));
   }
@@ -2046,13 +2046,13 @@ void SyncServiceImpl::GetAllNodesForDebugging(
       continue;
     }
 
-    ModelTypeController* controller = dtc_iter->second.get();
-    if (controller->state() == ModelTypeController::NOT_RUNNING) {
+    DataTypeController* controller = dtc_iter->second.get();
+    if (controller->state() == DataTypeController::NOT_RUNNING) {
       // In the NOT_RUNNING state it's not allowed to call GetAllNodes on the
-      // ModelTypeController, so just return an empty result.
+      // DataTypeController, so just return an empty result.
       // This can happen e.g. if we're waiting for a custom passphrase to be
       // entered - the data types are already considered active in this case,
-      // but their ModelTypeControllers are still NOT_RUNNING.
+      // but their DataTypeControllers are still NOT_RUNNING.
       helper->OnReceivedNodesForType(type, base::Value::List());
     } else {
       controller->GetAllNodes(base::BindOnce(
@@ -2462,7 +2462,7 @@ void SyncServiceImpl::GetTypesWithUnsyncedData(
       helper->OnReceivedResultForType(type, /*has_unsynced_data=*/false);
       continue;
     }
-    ModelTypeController* controller = it->second.get();
+    DataTypeController* controller = it->second.get();
     controller->HasUnsyncedData(base::BindOnce(
         &GetTypesWithUnsyncedDataRequestBarrier::OnReceivedResultForType,
         helper, type));

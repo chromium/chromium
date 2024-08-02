@@ -26,7 +26,7 @@
 namespace syncer {
 
 class KeyDerivationParams;
-class ModelTypeController;
+class DataTypeController;
 class Nigori;
 class SyncEngineImpl;
 
@@ -218,7 +218,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   CoreAccountId authenticated_account_id_;
 
   // Initialized in Init().
-  std::unique_ptr<ModelTypeController> nigori_controller_;
+  std::unique_ptr<DataTypeController> nigori_controller_;
 
   // This signal allows us to send requests to shut down the
   // ServerConnectionManager without having to wait for it to finish

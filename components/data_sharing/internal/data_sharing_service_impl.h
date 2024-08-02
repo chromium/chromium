@@ -12,7 +12,7 @@
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/data_sharing_ui_delegate.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
@@ -61,7 +61,7 @@ class DataSharingServiceImpl : public DataSharingService,
   void AddObserver(DataSharingService::Observer* observer) override;
   void RemoveObserver(DataSharingService::Observer* observer) override;
   DataSharingNetworkLoader* GetDataSharingNetworkLoader() override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetCollaborationGroupControllerDelegate() override;
   void ReadAllGroups(
       base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback)

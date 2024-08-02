@@ -56,13 +56,13 @@ bool DualReadingListModel::loaded() const {
   return local_or_syncable_model_->loaded() && account_model_->loaded();
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 DualReadingListModel::GetSyncControllerDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return local_or_syncable_model_->GetSyncControllerDelegate();
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 DualReadingListModel::GetSyncControllerDelegateForTransportMode() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/40251098): This logic should be moved to a controller and

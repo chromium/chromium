@@ -231,7 +231,7 @@ void ConsentSyncBridgeImpl::RecordConsentImpl(
                                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 ConsentSyncBridgeImpl::GetControllerDelegate() {
   return change_processor()->GetControllerDelegate();
 }

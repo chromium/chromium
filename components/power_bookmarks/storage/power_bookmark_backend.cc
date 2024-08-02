@@ -63,7 +63,7 @@ void PowerBookmarkBackend::Init(bool use_database) {
   }
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 PowerBookmarkBackend::GetSyncControllerDelegate() {
   // When the current method is called, the bridge is expected to exist
   // (`use_database` in the Init() method is set iff the PowerBookmarkBackend

@@ -45,7 +45,7 @@ SessionSyncServiceImpl::SubscribeToForeignSessionsChanged(
   return foreign_sessions_changed_closure_list_.Add(cb);
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 SessionSyncServiceImpl::GetControllerDelegate() {
   return bridge_->change_processor()->GetControllerDelegate();
 }

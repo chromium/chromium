@@ -52,7 +52,7 @@
 #include "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/test/fake_model_type_controller_delegate.h"
+#include "components/sync/test/fake_data_type_controller_delegate.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -132,7 +132,7 @@ class MockSessionSyncService : public sync_sessions::SessionSyncService {
       const base::RepeatingClosure& cb) override {
     return subscriber_list_.Add(cb);
   }
-  MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
+  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
               GetControllerDelegate,
               ());
 
@@ -313,13 +313,13 @@ class TestSendTabToSelfSyncService
     return &model_mock_;
   }
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override {
     return fake_delegate_.GetWeakPtr();
   }
 
  protected:
-  syncer::FakeModelTypeControllerDelegate fake_delegate_;
+  syncer::FakeDataTypeControllerDelegate fake_delegate_;
   SendTabToSelfModelMock model_mock_;
 };
 

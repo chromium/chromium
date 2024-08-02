@@ -45,7 +45,7 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "components/sync/model/proxy_data_type_controller_delegate.h"
 #include "components/sync/service/sync_service.h"
 
 namespace password_manager {

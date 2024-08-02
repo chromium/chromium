@@ -67,7 +67,7 @@ DeviceInfoTracker* DeviceInfoSyncServiceImpl::GetDeviceInfoTracker() {
   return bridge_.get();
 }
 
-base::WeakPtr<ModelTypeControllerDelegate>
+base::WeakPtr<DataTypeControllerDelegate>
 DeviceInfoSyncServiceImpl::GetControllerDelegate() {
   return bridge_->change_processor()->GetControllerDelegate();
 }

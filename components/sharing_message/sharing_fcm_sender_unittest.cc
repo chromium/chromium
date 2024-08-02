@@ -20,7 +20,7 @@
 #include "components/sharing_message/sharing_utils.h"
 #include "components/sharing_message/vapid_key_manager.h"
 #include "components/sharing_message/web_push/web_push_sender.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
@@ -130,7 +130,7 @@ class FakeSharingMessageBridge : public SharingMessageBridge {
   }
 
   // SharingMessageBridge:
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override {
     return nullptr;
   }

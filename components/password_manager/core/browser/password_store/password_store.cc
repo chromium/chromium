@@ -38,7 +38,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "components/sync/model/proxy_data_type_controller_delegate.h"
 
 namespace password_manager {
 
@@ -363,7 +363,7 @@ void PasswordStore::ShutdownOnUIThread() {
   prefs_ = nullptr;
 }
 
-std::unique_ptr<syncer::ModelTypeControllerDelegate>
+std::unique_ptr<syncer::DataTypeControllerDelegate>
 PasswordStore::CreateSyncControllerDelegate() {
   return backend_ ? backend_->CreateSyncControllerDelegate() : nullptr;
 }

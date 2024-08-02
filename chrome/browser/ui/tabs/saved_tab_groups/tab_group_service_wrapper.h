@@ -88,9 +88,9 @@ class TabGroupServiceWrapper : public TabGroupSyncService {
   bool IsRemoteDevice(
       const std::optional<std::string>& cache_guid) const override;
   void RecordTabGroupEvent(const EventDetails& event_details) override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSavedTabGroupControllerDelegate() override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSharedTabGroupControllerDelegate() override;
   std::unique_ptr<ScopedLocalObservationPauser>
   CreateScopedLocalObserverPauser() override;

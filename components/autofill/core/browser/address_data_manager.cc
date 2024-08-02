@@ -316,7 +316,7 @@ bool AddressDataManager::IsEligibleForAddressAccountStorage() const {
   }
 
   // The CONTACT_INFO data type is only running for eligible users. See
-  // ContactInfoModelTypeController.
+  // ContactInfoDataTypeController.
   return sync_service_->GetActiveDataTypes().Has(syncer::CONTACT_INFO);
 }
 
@@ -641,7 +641,7 @@ bool AddressDataManager::IsAutofillSyncToggleAvailable() const {
 
   return contact_info_precondition_checker_ &&
          contact_info_precondition_checker_->GetPreconditionState() ==
-             syncer::ModelTypeController::PreconditionState::kPreconditionsMet;
+             syncer::DataTypeController::PreconditionState::kPreconditionsMet;
 }
 
 void AddressDataManager::SetAutofillSelectableTypeEnabled(bool enabled) {

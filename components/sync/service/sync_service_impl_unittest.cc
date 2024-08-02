@@ -40,7 +40,7 @@
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync/service/sync_token_status.h"
 #include "components/sync/service/trusted_vault_synthetic_field_trial.h"
-#include "components/sync/test/fake_model_type_controller.h"
+#include "components/sync/test/fake_data_type_controller.h"
 #include "components/sync/test/fake_sync_engine.h"
 #include "components/sync/test/fake_sync_engine_factory.h"
 #include "components/sync/test/mock_model_type_local_data_batch_uploader.h"
@@ -70,7 +70,7 @@ namespace {
 
 constexpr char kTestUser[] = "test_user@gmail.com";
 
-// Construction parameters for FakeModelTypeController.
+// Construction parameters for FakeDataTypeController.
 struct FakeControllerInitParams {
   ModelType model_type;
   bool enable_transport_mode = false;
@@ -176,9 +176,9 @@ class SyncServiceImplTest : public ::testing::Test {
     DCHECK(!service_);
 
     // Default includes a regular controller and a transport-mode controller.
-    ModelTypeController::TypeVector controllers;
+    DataTypeController::TypeVector controllers;
     for (auto& params : registered_types_controller_params) {
-      auto controller = std::make_unique<FakeModelTypeController>(
+      auto controller = std::make_unique<FakeDataTypeController>(
           params.model_type, params.enable_transport_mode,
           std::move(params.batch_uploader));
       // Hold a raw pointer to directly interact with the controller.
@@ -203,9 +203,9 @@ class SyncServiceImplTest : public ::testing::Test {
     DCHECK(!service_);
 
     // Include a regular controller and a transport-mode controller.
-    ModelTypeController::TypeVector controllers;
-    controllers.push_back(std::make_unique<FakeModelTypeController>(BOOKMARKS));
-    controllers.push_back(std::make_unique<FakeModelTypeController>(
+    DataTypeController::TypeVector controllers;
+    controllers.push_back(std::make_unique<FakeDataTypeController>(BOOKMARKS));
+    controllers.push_back(std::make_unique<FakeDataTypeController>(
         DEVICE_INFO, /*enable_transport_only_modle=*/true));
 
     std::unique_ptr<SyncClientMock> sync_client =
@@ -288,7 +288,7 @@ class SyncServiceImplTest : public ::testing::Test {
     return sync_service_impl_bundle_.trusted_vault_client();
   }
 
-  FakeModelTypeController* get_controller(ModelType type) {
+  FakeDataTypeController* get_controller(ModelType type) {
     return controller_map_[type];
   }
 
@@ -299,7 +299,7 @@ class SyncServiceImplTest : public ::testing::Test {
   raw_ptr<SyncClientMock, DanglingUntriaged> sync_client_ =
       nullptr;  // Owned by |service_|.
   // The controllers are owned by |service_|.
-  std::map<ModelType, FakeModelTypeController*> controller_map_;
+  std::map<ModelType, FakeDataTypeController*> controller_map_;
 };
 
 // Verify that the server URLs are sane.
@@ -1691,7 +1691,7 @@ TEST_F(SyncServiceImplTest, ShouldNotSubscribeToStopAndClearDataTypes) {
   params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
   InitializeService(std::move(params));
   get_controller(BOOKMARKS)->SetPreconditionState(
-      ModelTypeController::PreconditionState::kMustStopAndClearData);
+      DataTypeController::PreconditionState::kMustStopAndClearData);
 
   EXPECT_CALL(*sync_invalidations_service(),
               SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
@@ -1703,7 +1703,7 @@ TEST_F(SyncServiceImplTest, ShouldNotSubscribeToStopAndClearDataTypes) {
               SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
                                            ContainsDataType(BOOKMARKS))));
   get_controller(BOOKMARKS)->SetPreconditionState(
-      ModelTypeController::PreconditionState::kPreconditionsMet);
+      DataTypeController::PreconditionState::kPreconditionsMet);
   service()->DataTypePreconditionChanged(BOOKMARKS);
   base::RunLoop().RunUntilIdle();
 }
@@ -1716,7 +1716,7 @@ TEST_F(SyncServiceImplTest, ShouldSubscribeToStopAndKeepDataTypes) {
   params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);
   InitializeService(std::move(params));
   get_controller(BOOKMARKS)->SetPreconditionState(
-      ModelTypeController::PreconditionState::kMustStopAndKeepData);
+      DataTypeController::PreconditionState::kMustStopAndKeepData);
 
   EXPECT_CALL(*sync_invalidations_service(),
               SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
@@ -1740,7 +1740,7 @@ TEST_F(SyncServiceImplTest, ShouldUnsubscribeWhenStopAndClear) {
               SetInterestedDataTypes(AllOf(ContainsDataType(DEVICE_INFO),
                                            Not(ContainsDataType(BOOKMARKS)))));
   get_controller(BOOKMARKS)->SetPreconditionState(
-      ModelTypeController::PreconditionState::kMustStopAndClearData);
+      DataTypeController::PreconditionState::kMustStopAndClearData);
   service()->DataTypePreconditionChanged(BOOKMARKS);
   base::RunLoop().RunUntilIdle();
 }

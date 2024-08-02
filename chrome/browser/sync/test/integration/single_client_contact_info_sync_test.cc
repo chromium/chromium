@@ -68,7 +68,7 @@ MATCHER_P2(HasContactInfoWithGuidAndUnknownFields, guid, unknown_fields, "") {
 
 // Checker to wait until the CONTACT_INFO datatype becomes (in)active, depending
 // on `expect_active`.
-// This is required because ContactInfoModelTypeController has custom logic to
+// This is required because ContactInfoDataTypeController has custom logic to
 // wait, and stays temporarily stopped even after sync-the-transport is active,
 // until account capabilities are determined for eligibility.
 class ContactInfoActiveChecker : public SingleClientStatusChangeChecker {

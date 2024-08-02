@@ -425,7 +425,7 @@ size_t BookmarkModelTypeProcessor::EstimateMemoryUsage() const {
   return memory_usage;
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 BookmarkModelTypeProcessor::GetWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_ptr_factory_for_controller_.GetWeakPtr();

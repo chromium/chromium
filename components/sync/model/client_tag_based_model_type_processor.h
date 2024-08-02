@@ -49,7 +49,7 @@ class CommitQueue;
 // for a more thorough description.
 class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
                                          public ModelTypeChangeProcessor,
-                                         public ModelTypeControllerDelegate {
+                                         public DataTypeControllerDelegate {
  public:
   ClientTagBasedModelTypeProcessor(ModelType type,
                                    const base::RepeatingClosure& dump_stack);
@@ -90,7 +90,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   std::string TrackedCacheGuid() const override;
   void ReportError(const ModelError& error) override;
   std::optional<ModelError> GetError() const override;
-  base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override;
+  base::WeakPtr<DataTypeControllerDelegate> GetControllerDelegate() override;
   const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
       const std::string& storage_key) const override;
   base::WeakPtr<ModelTypeChangeProcessor> GetWeakPtr() override;
@@ -113,7 +113,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
       std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
       override;
 
-  // ModelTypeControllerDelegate implementation.
+  // DataTypeControllerDelegate implementation.
   // |start_callback| will never be called synchronously.
   void OnSyncStarting(const DataTypeActivationRequest& request,
                       StartCallback callback) override;
@@ -306,7 +306,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // WeakPtrFactory for this processor for ModelTypeController (only gets
+  // WeakPtrFactory for this processor for DataTypeController (only gets
   // invalidated during destruction).
   base::WeakPtrFactory<ClientTagBasedModelTypeProcessor>
       weak_ptr_factory_for_controller_{this};

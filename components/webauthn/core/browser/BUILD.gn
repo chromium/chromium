@@ -6,8 +6,8 @@ import("//build/config/features.gni")
 
 source_set("browser") {
   sources = [
-    "passkey_model_type_controller.cc",
-    "passkey_model_type_controller.h",
+    "passkey_data_type_controller.cc",
+    "passkey_data_type_controller.h",
   ]
   deps = [ "//components/sync" ]
 

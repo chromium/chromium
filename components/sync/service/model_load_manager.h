@@ -14,7 +14,7 @@
 #include "base/timer/timer.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/service/configure_context.h"
-#include "components/sync/service/model_type_controller.h"
+#include "components/sync/service/data_type_controller.h"
 
 namespace base {
 class ElapsedTimer;
@@ -48,14 +48,14 @@ class ModelLoadManagerDelegate {
   virtual ~ModelLoadManagerDelegate() = default;
 };
 
-// `ModelLoadManager` instructs ModelTypeControllers to load models and to stop
+// `ModelLoadManager` instructs DataTypeControllers to load models and to stop
 // (DataTypeManager is responsible for activating/deactivating data types).
 // Since the operations are async it uses an interface to inform DataTypeManager
 // of the results of the operations.
 // This class is owned by DataTypeManager, and lives on the UI thread.
 class ModelLoadManager {
  public:
-  ModelLoadManager(const ModelTypeController::TypeMap* controllers,
+  ModelLoadManager(const DataTypeController::TypeMap* controllers,
                    ModelLoadManagerDelegate* delegate);
 
   ModelLoadManager(const ModelLoadManager&) = delete;
@@ -93,8 +93,8 @@ class ModelLoadManager {
   // A helper to stop an individual datatype.
   void StopDatatypeImpl(const SyncError& error,
                         SyncStopMetadataFate metadata_fate,
-                        ModelTypeController* dtc,
-                        ModelTypeController::StopCallback callback);
+                        DataTypeController* dtc,
+                        DataTypeController::StopCallback callback);
 
   // Calls delegate's OnAllDataTypesReadyForConfigure() if all datatypes from
   // `preferred_types_without_errors_` are loaded. Ensures that
@@ -108,10 +108,10 @@ class ModelLoadManager {
 
   // Loads model for a type using `dtc`. Ensures that LoadModels is only
   // called for types which are not in a FAILED state.
-  void LoadModelsForType(ModelTypeController* dtc);
+  void LoadModelsForType(DataTypeController* dtc);
 
   // Set of all registered controllers.
-  const raw_ptr<const ModelTypeController::TypeMap> controllers_;
+  const raw_ptr<const DataTypeController::TypeMap> controllers_;
 
   // The delegate in charge of handling model load results.
   const raw_ptr<ModelLoadManagerDelegate> delegate_;

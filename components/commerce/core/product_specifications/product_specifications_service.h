@@ -30,8 +30,7 @@ class ProductSpecificationsService
       delete;
   ~ProductSpecificationsService() override;
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetSyncControllerDelegate();
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate();
 
   virtual const std::vector<ProductSpecificationsSet>
   GetAllProductSpecifications();

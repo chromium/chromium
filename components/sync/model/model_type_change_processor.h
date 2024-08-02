@@ -13,8 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_controller_delegate.h"
 
 namespace syncer {
 
@@ -129,8 +129,7 @@ class ModelTypeChangeProcessor {
   virtual std::optional<ModelError> GetError() const = 0;
 
   // Returns the delegate for the controller.
-  virtual base::WeakPtr<ModelTypeControllerDelegate>
-  GetControllerDelegate() = 0;
+  virtual base::WeakPtr<DataTypeControllerDelegate> GetControllerDelegate() = 0;
 
   // Returns the cached version of remote entity specifics for `storage_key` if
   // available. These specifics can be fully or partially trimmed (proto fields

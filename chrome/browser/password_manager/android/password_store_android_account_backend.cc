@@ -15,7 +15,7 @@
 #include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
-#include "components/password_manager/core/browser/password_store/password_model_type_controller_delegate_android.h"
+#include "components/password_manager/core/browser/password_store/password_data_type_controller_delegate_android.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
@@ -354,7 +354,7 @@ void PasswordStoreAndroidAccountBackend::DisableAutoSignInForOriginsAsync(
                                       origin_filter, std::move(completion));
 }
 
-std::unique_ptr<syncer::ModelTypeControllerDelegate>
+std::unique_ptr<syncer::DataTypeControllerDelegate>
 PasswordStoreAndroidAccountBackend::CreateSyncControllerDelegate() {
   return std::make_unique<PasswordModelTypeConrollerDelegateAndroid>();
 }

@@ -26,7 +26,7 @@ class EmptyDataSharingService : public DataSharingService {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   DataSharingNetworkLoader* GetDataSharingNetworkLoader() override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetCollaborationGroupControllerDelegate() override;
   void ReadAllGroups(
       base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback)

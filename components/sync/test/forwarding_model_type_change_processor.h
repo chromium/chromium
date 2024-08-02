@@ -48,7 +48,7 @@ class ForwardingModelTypeChangeProcessor : public ModelTypeChangeProcessor {
   std::string TrackedCacheGuid() const override;
   void ReportError(const ModelError& error) override;
   std::optional<ModelError> GetError() const override;
-  base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override;
+  base::WeakPtr<DataTypeControllerDelegate> GetControllerDelegate() override;
   const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
       const std::string& storage_key) const override;
   base::WeakPtr<ModelTypeChangeProcessor> GetWeakPtr() override;
