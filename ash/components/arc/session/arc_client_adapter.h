@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "chromeos/ash/components/dbus/arc/arc.pb.h"
 #include "chromeos/dbus/common/dbus_callback.h"
 
@@ -25,9 +26,9 @@ namespace arc {
 // An adapter to talk to a Chrome OS daemon to manage lifetime of ARC instance.
 class ArcClientAdapter {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() = default;
+    ~Observer() override = default;
     virtual void ArcInstanceStopped(bool is_system_shutdown) = 0;
   };
 
@@ -96,7 +97,7 @@ class ArcClientAdapter {
  protected:
   ArcClientAdapter();
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace arc
