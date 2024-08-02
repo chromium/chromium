@@ -946,6 +946,7 @@ TEST_F(VaapiVideoEncodeAcceleratorTest, EncodingParametersChange) {
 
     VideoBitrateAllocation expected_bitrate_allocation(bitrate.mode());
     expected_bitrate_allocation.SetBitrate(0, 0, bitrate.target_bps());
+    expected_bitrate_allocation.SetPeakBps(bitrate.peak_bps());
     EXPECT_CALL(*mock_encoder_delegate_,
                 UpdateRates(expected_bitrate_allocation, kNewFramerate))
         .WillOnce(Return(true));
