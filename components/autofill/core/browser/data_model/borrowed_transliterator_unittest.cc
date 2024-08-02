@@ -16,4 +16,16 @@ TEST(BorrowedTransliterator, RemoveDiacriticsAndConvertToLowerCase) {
             u"aeaa11.iucgklnszkaaadeilnooooorstuzssl");
 }
 
+TEST(BorrowedTransliterator, GermanTransliteration) {
+  EXPECT_EQ(
+      RemoveDiacriticsAndConvertToLowerCase(u"ä_ö_ü_ß", AddressCountryCode("")),
+      u"a_o_u_ss");
+  EXPECT_EQ(RemoveDiacriticsAndConvertToLowerCase(u"ä_ö_ü_ß",
+                                                  AddressCountryCode("DE")),
+            u"ae_oe_ue_ss");
+  EXPECT_EQ(RemoveDiacriticsAndConvertToLowerCase(u"Ä_Ö_Ü_ß",
+                                                  AddressCountryCode("DE")),
+            u"ae_oe_ue_ss");
+}
+
 }  // namespace autofill
