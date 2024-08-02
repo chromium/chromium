@@ -227,8 +227,10 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
               -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
-            item_view->SetPrimaryText(data.title);
-            item_view->SetSecondaryText(FormatBrowsingHistoryUrl(data.url));
+            std::u16string formatted_url = FormatBrowsingHistoryUrl(data.url);
+            item_view->SetPrimaryText(data.title.empty() ? formatted_url
+                                                         : data.title);
+            item_view->SetSecondaryText(formatted_url);
             item_view->SetLeadingIcon(data.icon, kBrowsingHistoryIconSize);
             return item_view;
           },
