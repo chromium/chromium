@@ -59,7 +59,8 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     private final boolean mShowStar;
     private final boolean mShowDownload;
     private final boolean mIsOpenedByChrome;
-    private final boolean mIsIncognito;
+    private final boolean mIsIncognitoBranded;
+    private final boolean mIsOffTheRecord;
     private final boolean mIsAuthView;
     private final boolean mIsStartIconMenu;
 
@@ -85,7 +86,8 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             boolean showShare,
             boolean showStar,
             boolean showDownload,
-            boolean isIncognito,
+            boolean isIncognitoBranded,
+            boolean isOffTheRecord,
             boolean isAuthView,
             boolean isStartIconMenu,
             Supplier<ReadAloudController> readAloudControllerSupplier,
@@ -108,7 +110,8 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         mShowShare = showShare && !isAuthView;
         mShowStar = showStar;
         mShowDownload = showDownload;
-        mIsIncognito = isIncognito;
+        mIsIncognitoBranded = isIncognitoBranded;
+        mIsOffTheRecord = isOffTheRecord;
         mIsAuthView = isAuthView;
         mIsStartIconMenu = isStartIconMenu;
         mHasClientPackage = hasClientPackage;
@@ -212,7 +215,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 addToHomeScreenVisible = false;
             }
 
-            if (mIsIncognito) {
+            if (mIsIncognitoBranded) {
                 addToHomeScreenVisible = false;
                 downloadItemVisible = false;
                 openInChromeItemVisible = false;
@@ -264,7 +267,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             MenuItem openInChromeItem = menu.findItem(R.id.open_in_browser_id);
             if (openInChromeItemVisible) {
                 String title =
-                        mIsIncognito
+                        mIsOffTheRecord
                                 ? ContextUtils.getApplicationContext()
                                         .getString(R.string.menu_open_in_incognito_chrome)
                                 : DefaultBrowserInfo.getTitleOpenInDefaultBrowser(
