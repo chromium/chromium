@@ -80,6 +80,10 @@
     test_valid_attr('content', 'attr(data-foo string)', 'abc', '"abc"');
     test_valid_attr('content', 'attr(data-foo string)', 'attr(data-foo)', '"attr(data-foo)"');
 
+    test_valid_attr('animation-name', 'attr(data-foo ident)', 'anim', 'anim');
+    test_valid_attr('animation-name', 'attr(data-foo ident, anim-fallback)', '"anim"', 'anim-fallback');
+    test_valid_attr('animation-name', 'attr(data-foo ident, anim-fallback)', 'initial', 'anim-fallback');
+
     test_valid_attr('background-color', 'attr(data-foo color)', 'red', 'red');
     test_valid_attr('background-color', 'attr(data-foo color)', '#ff0099aa', '#ff0099aa');
     test_valid_attr('background-color', 'attr(data-foo color, red)', '10', 'red');
@@ -117,6 +121,10 @@
     test_valid_attr('grid-template-columns', 'attr(data-foo fr, 3fr)', '10fr', '3fr');
 
     test_dimension_types_and_units();
+
+    test_invalid_attr('animation-name', 'attr(data-foo ident)', 'initial');
+    test_invalid_attr('animation-name', 'attr(data-foo ident)', '"anim"');
+    test_invalid_attr('animation-name', 'attr(data-foo ident)', '"none"');
 
     test_invalid_attr('background-color', 'attr(data-foo color)', 'rgb(0 255 0)');
     test_invalid_attr('background-color', 'attr(data-foo color)', 'color-mix(in lch, red, pink)');

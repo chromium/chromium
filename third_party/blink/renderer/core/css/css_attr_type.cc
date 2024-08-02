@@ -77,7 +77,7 @@ std::optional<CSSSyntaxDefinition> CSSAttrType::ConvertToCSSSyntaxDefinition()
       // supported yet.
       return std::nullopt;
     case Category::kIdent:
-      syntax = "<ident>";
+      syntax = "<custom-ident>";
       break;
     case Category::kColor:
       syntax = "<color>";
