@@ -125,6 +125,9 @@ class TabGroupServiceWrapper : public TabGroupSyncService {
                         const LocalTabID& tab_id,
                         std::optional<gfx::Image> favicon);
 
+  // True if the sync setting for saved tab groups is enabled.
+  bool AreSavedTabGroupsSyncedForProfile(Profile* profile);
+
  private:
   bool ShouldUseSyncService();
 

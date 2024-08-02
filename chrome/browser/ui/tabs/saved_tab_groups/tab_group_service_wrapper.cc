@@ -11,6 +11,7 @@
 #include "base/notimplemented.h"
 #include "base/observer_list.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
@@ -19,6 +20,9 @@
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/types.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 
 class Profile;
 
@@ -429,6 +433,19 @@ void TabGroupServiceWrapper::OnTabGroupVisualsChanged(
   }
 
   saved_keyed_service_->OnTabGroupVisualsChanged(group_guid);
+}
+
+bool TabGroupServiceWrapper::AreSavedTabGroupsSyncedForProfile(
+    Profile* profile) {
+  const syncer::SyncService* const sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+
+  if (!sync_service->IsSyncFeatureEnabled()) {
+    return false;
+  }
+
+  return sync_service->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kSavedTabGroups);
 }
 
 bool TabGroupServiceWrapper::ShouldUseSyncService() {
