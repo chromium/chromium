@@ -66,7 +66,7 @@
 
 - (void)start {
   CHECK(IsIOSTipsNotificationsEnabled() ||
-        IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAppLaunch));
+        IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAny));
   [super start];
 
   _mediator =

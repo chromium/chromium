@@ -41,7 +41,8 @@ bool ShouldShowPromoInCurrentRegion(ChromeBrowserState* browser_state) {
 }  // namespace
 
 ToolbarType DefaultSelectedOmniboxPosition() {
-  CHECK(IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAny));
+  CHECK(IsIOSTipsNotificationsEnabled() ||
+        IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAny));
   std::string featureParam = base::GetFieldTrialParamValueByFeature(
       kBottomOmniboxPromoDefaultPosition,
       kBottomOmniboxPromoDefaultPositionParam);

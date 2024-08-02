@@ -71,7 +71,8 @@ constexpr const CGFloat kSubtitleBottomMargin = 17;
 }
 
 - (void)viewDidLoad {
-  CHECK(IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAny));
+  CHECK(IsIOSTipsNotificationsEnabled() ||
+        IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAny));
   self.view.accessibilityIdentifier =
       first_run::kFirstRunOmniboxPositionChoiceScreenAccessibilityIdentifier;
 
