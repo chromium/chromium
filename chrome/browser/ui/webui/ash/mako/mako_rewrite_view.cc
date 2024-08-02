@@ -31,7 +31,11 @@ constexpr int kMakoRewriteHeightThreshold = 400;
 
 MakoRewriteView::MakoRewriteView(WebUIContentsWrapper* contents_wrapper,
                                  const gfx::Rect& caret_bounds)
-    : WebUIBubbleDialogView(nullptr, contents_wrapper->GetWeakPtr()),
+    : WebUIBubbleDialogView(nullptr,
+                            contents_wrapper->GetWeakPtr(),
+                            std::nullopt,
+                            views::BubbleBorder::TOP_RIGHT,
+                            /*autosize=*/false),
       caret_bounds_(caret_bounds) {
   set_has_parent(false);
   set_corner_radius(kMakoRewriteCornerRadius);

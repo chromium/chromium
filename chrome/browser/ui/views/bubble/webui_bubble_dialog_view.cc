@@ -66,11 +66,12 @@ WebUIBubbleDialogView::WebUIBubbleDialogView(
     views::View* anchor_view,
     base::WeakPtr<WebUIContentsWrapper> contents_wrapper,
     const std::optional<gfx::Rect>& anchor_rect,
-    views::BubbleBorder::Arrow arrow)
+    views::BubbleBorder::Arrow arrow,
+    bool autosize)
     : BubbleDialogDelegateView(anchor_view,
                                arrow,
                                views::BubbleBorder::DIALOG_SHADOW,
-                               true),
+                               autosize),
       contents_wrapper_(contents_wrapper),
       web_view_(AddChildView(std::make_unique<WebUIBubbleView>(
           contents_wrapper_->web_contents()))),
