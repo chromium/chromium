@@ -19,7 +19,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/list_model.h"
 #include "ui/gfx/animation/animation_delegate.h"
-#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
 
@@ -55,7 +54,6 @@ class ASH_EXPORT GlanceablesTasksView
       const views::SizeBounds& available_size) const override;
 
   // GlanceablesTimeManagementBubbleView:
-  bool IsExpanded() const override;
   int GetCollapsedStatePreferredHeight() const override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
@@ -169,9 +167,6 @@ class ASH_EXPORT GlanceablesTasksView
   // states by calling with `is_loading` = false.
   void SetIsLoading(bool is_loading);
 
-  // Updates the interior margin according to the current view state.
-  void UpdateInteriorMargin();
-
   // Triggers tasks bubble resize animation to new preferred size, if an
   // animation is required.
   void AnimateResize(ResizeAnimation::Type resize_type);
@@ -198,7 +193,6 @@ class ASH_EXPORT GlanceablesTasksView
   bool first_task_list_shown_ = false;
 
   // Owned by views hierarchy.
-  raw_ptr<views::FlexLayoutView> tasks_header_view_ = nullptr;
   // This is a simple label that copies the label style on
   // `task_list_combo_box_view_` so that it can visually replace it when
   // `task_list_combo_box_view_` is hidden.
@@ -229,10 +223,6 @@ class ASH_EXPORT GlanceablesTasksView
 
   // The type of resize animation that is currently running.
   std::optional<ResizeAnimation::Type> running_resize_animation_ = std::nullopt;
-
-  // Whether the view is expanded and showing the contents in
-  // `content_scroll_view_`.
-  bool is_expanded_ = true;
 
   // Records the time when the bubble was about to request a task list. Used for
   // metrics.

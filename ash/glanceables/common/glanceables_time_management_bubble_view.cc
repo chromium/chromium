@@ -4,6 +4,7 @@
 
 #include "ash/glanceables/common/glanceables_time_management_bubble_view.h"
 
+#include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -12,11 +13,19 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
+
+// The interior margin should be 12, but space needs to be left for the focus in
+// the child views.
+constexpr int kTotalInteriorMargin = 12;
+constexpr int kSpaceForFocusRing = 4;
+constexpr int kInteriorGlanceableBubbleMargin =
+    kTotalInteriorMargin - kSpaceForFocusRing;
 
 constexpr base::TimeDelta kExpandStateChangeAnimationDuration =
     base::Milliseconds(300);
@@ -94,8 +103,35 @@ int GlanceablesTimeManagementBubbleView::ResizeAnimation::GetCurrentHeight()
       end_height_);
 }
 
-GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView() =
-    default;
+GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView() {
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+
+  UpdateInteriorMargin();
+  SetOrientation(views::LayoutOrientation::kVertical);
+
+  auto* header_container =
+      AddChildView(std::make_unique<views::FlexLayoutView>());
+  header_container->SetMainAxisAlignment(views::LayoutAlignment::kStart);
+  header_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  header_container->SetOrientation(views::LayoutOrientation::kHorizontal);
+  header_container->SetInteriorMargin(gfx::Insets::TLBR(
+      kSpaceForFocusRing, kSpaceForFocusRing, 0, kSpaceForFocusRing));
+
+  header_view_ =
+      header_container->AddChildView(std::make_unique<views::FlexLayoutView>());
+  header_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  header_view_->SetMainAxisAlignment(views::LayoutAlignment::kStart);
+  header_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
+  header_view_->SetID(
+      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleHeaderView));
+  header_view_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded)
+          .WithWeight(1));
+}
+
 GlanceablesTimeManagementBubbleView::~GlanceablesTimeManagementBubbleView() =
     default;
 
@@ -209,6 +245,18 @@ void GlanceablesTimeManagementBubbleView::AddObserver(Observer* observer) {
 
 void GlanceablesTimeManagementBubbleView::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void GlanceablesTimeManagementBubbleView::UpdateInteriorMargin() {
+  const bool no_bottom_margin = !GetBackground() || is_expanded_;
+  SetInteriorMargin(no_bottom_margin
+                        ? gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
+                                            kInteriorGlanceableBubbleMargin, 0,
+                                            kInteriorGlanceableBubbleMargin)
+                        : gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
+                                            kInteriorGlanceableBubbleMargin,
+                                            kTotalInteriorMargin,
+                                            kInteriorGlanceableBubbleMargin));
 }
 
 BEGIN_METADATA(GlanceablesTimeManagementBubbleView)

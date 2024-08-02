@@ -56,6 +56,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
@@ -73,8 +74,6 @@ constexpr int kScrollViewBottomMargin = 12;
 // the child views.
 constexpr int kTotalInteriorMargin = 12;
 constexpr int kSpaceForFocusRing = 4;
-constexpr int kInteriorGlanceableBubbleMargin =
-    kTotalInteriorMargin - kSpaceForFocusRing;
 
 constexpr int kListViewBetweenChildSpacing = 4;
 constexpr int kMaximumTasks = 100;
@@ -161,36 +160,9 @@ END_METADATA
 GlanceablesTasksView::GlanceablesTasksView(
     const ui::ListModel<api::TaskList>* task_lists)
     : shown_time_(base::Time::Now()) {
-  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
-
-  UpdateInteriorMargin();
-  SetOrientation(views::LayoutOrientation::kVertical);
-
-  auto* tasks_header_container =
-      AddChildView(std::make_unique<views::FlexLayoutView>());
-  tasks_header_container->SetMainAxisAlignment(views::LayoutAlignment::kStart);
-  tasks_header_container->SetCrossAxisAlignment(
-      views::LayoutAlignment::kCenter);
-  tasks_header_container->SetOrientation(views::LayoutOrientation::kHorizontal);
-  tasks_header_container->SetInteriorMargin(gfx::Insets::TLBR(
-      kSpaceForFocusRing, kSpaceForFocusRing, 0, kSpaceForFocusRing));
-
-  tasks_header_view_ = tasks_header_container->AddChildView(
-      std::make_unique<views::FlexLayoutView>());
-  tasks_header_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  tasks_header_view_->SetMainAxisAlignment(views::LayoutAlignment::kStart);
-  tasks_header_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
-  tasks_header_view_->SetID(
-      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleHeaderView));
-  tasks_header_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                               views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded)
-          .WithWeight(1));
-
-  expand_button_ = tasks_header_container->AddChildView(
-      std::make_unique<GlanceablesExpandButton>(
+  auto* header_container = header_view()->parent();
+  expand_button_ =
+      header_container->AddChildView(std::make_unique<GlanceablesExpandButton>(
           IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_EXPAND_TOOLTIP,
           IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_COLLAPSE_TOOLTIP));
   expand_button_->SetID(base::to_underlying(
@@ -207,14 +179,14 @@ GlanceablesTasksView::GlanceablesTasksView(
   content_scroll_view_ = AddChildView(
       std::make_unique<GlanceablesContentsScrollView>(Context::kTasks));
 
-  auto* const list_view =
-      content_scroll_view_->SetContents(std::make_unique<views::View>());
-  list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      /*inside_border_insets=*/
-      gfx::Insets::TLBR(kSpaceForFocusRing, kSpaceForFocusRing,
-                        kScrollViewBottomMargin, kSpaceForFocusRing),
-      kListViewBetweenChildSpacing));
+  auto* const list_view = content_scroll_view_->SetContents(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetInsideBorderInsets(
+              gfx::Insets::TLBR(kSpaceForFocusRing, kSpaceForFocusRing,
+                                kScrollViewBottomMargin, kSpaceForFocusRing))
+          .SetBetweenChildSpacing(kListViewBetweenChildSpacing)
+          .Build());
 
   add_new_task_button_ =
       list_view->AddChildView(std::make_unique<AddNewTaskButton>(
@@ -236,7 +208,7 @@ GlanceablesTasksView::GlanceablesTasksView(
           kListViewBetweenChildSpacing));
 
   auto* const header_icon =
-      tasks_header_view_->AddChildView(std::make_unique<IconButton>(
+      header_view()->AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
                               base::Unretained(this),
                               TasksLaunchSource::kHeaderButton,
@@ -254,7 +226,7 @@ GlanceablesTasksView::GlanceablesTasksView(
 
   auto text_on_combobox = task_list_combo_box_view_->GetTextForRow(
       task_list_combo_box_view_->GetSelectedIndex().value());
-  combobox_replacement_label_ = tasks_header_view_->AddChildView(
+  combobox_replacement_label_ = header_view()->AddChildView(
       std::make_unique<views::Label>(text_on_combobox));
   combobox_replacement_label_->SetProperty(views::kMarginsKey,
                                            kComboboxBorderInsets);
@@ -353,10 +325,6 @@ gfx::Size GlanceablesTasksView::CalculatePreferredSize(
 
   return GlanceablesTimeManagementBubbleView::CalculatePreferredSize(
       available_size);
-}
-
-bool GlanceablesTasksView::IsExpanded() const {
-  return is_expanded_;
 }
 
 int GlanceablesTasksView::GetCollapsedStatePreferredHeight() const {
@@ -877,18 +845,6 @@ void GlanceablesTasksView::OnTaskViewAnimationCompleted() {
   animating_task_view_layer_.reset();
 }
 
-void GlanceablesTasksView::UpdateInteriorMargin() {
-  const bool no_bottom_margin = !GetBackground() || is_expanded_;
-  SetInteriorMargin(no_bottom_margin
-                        ? gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
-                                            kInteriorGlanceableBubbleMargin, 0,
-                                            kInteriorGlanceableBubbleMargin)
-                        : gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
-                                            kInteriorGlanceableBubbleMargin,
-                                            kTotalInteriorMargin,
-                                            kInteriorGlanceableBubbleMargin));
-}
-
 void GlanceablesTasksView::AnimateResize(ResizeAnimation::Type resize_type) {
   const int current_height = size().height();
   if (current_height == 0) {
@@ -1013,11 +969,11 @@ void GlanceablesTasksView::RemoveTaskView(
 
 void GlanceablesTasksView::CreateComboBoxView() {
   if (task_list_combo_box_view_) {
-    tasks_header_view_->RemoveChildViewT(
+    header_view()->RemoveChildViewT(
         std::exchange(task_list_combo_box_view_, nullptr));
   }
 
-  task_list_combo_box_view_ = tasks_header_view_->AddChildView(
+  task_list_combo_box_view_ = header_view()->AddChildView(
       std::make_unique<Combobox>(tasks_combobox_model_.get()));
   task_list_combo_box_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox));

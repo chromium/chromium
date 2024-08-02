@@ -67,7 +67,7 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
   virtual int GetCollapsedStatePreferredHeight() const = 0;
 
   // Returns the expanded/collapsed state of the bubble view.
-  virtual bool IsExpanded() const = 0;
+  bool IsExpanded() const { return is_expanded_; }
 
   bool is_animating_resize() const {
     return resize_animation_ && resize_animation_->is_animating();
@@ -120,6 +120,9 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
     const int end_height_;
   };
 
+  // Updates the interior margin according to the current view state.
+  void UpdateInteriorMargin();
+
   void SetUpResizeThroughputTracker(const std::string& histogram_name);
 
   // Removes an active `error_message_` from the view, if any.
@@ -128,7 +131,13 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
                         views::Button::PressedCallback callback,
                         GlanceablesErrorMessageView::ButtonActionType type);
 
+  views::FlexLayoutView* header_view() { return header_view_; }
   GlanceablesErrorMessageView* error_message() { return error_message_; }
+
+  // Whether the view is expanded and showing the contents in contents scroll
+  // view.
+  // TODO(b/333770880): Move this to private after refactoring if possible.
+  bool is_expanded_ = true;
 
   // Linear animation that drive time management bubble resize animation - the
   // animation updates the time management bubble view preferred size, which
@@ -138,6 +147,9 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
   base::ObserverList<Observer> observers_;
 
  private:
+  // Owned by views hierarchy.
+  raw_ptr<views::FlexLayoutView> header_view_ = nullptr;
+
   // Measure animation smoothness metrics for `resize_animation_`.
   std::optional<ui::ThroughputTracker> resize_throughput_tracker_;
 

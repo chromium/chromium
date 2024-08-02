@@ -21,13 +21,8 @@ class GURL;
 class PrefRegistrySimple;
 class PrefService;
 
-namespace ui {
-class ComboboxModel;
-}
-
 namespace views {
 class BoxLayoutView;
-class FlexLayoutView;
 class Label;
 }  // namespace views
 
@@ -71,7 +66,6 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   static void ClearUserStatePrefs(PrefService* pref_service);
 
   // GlanceablesTimeManagementBubbleView:
-  bool IsExpanded() const override;
   int GetCollapsedStatePreferredHeight() const override;
 
   // Invalidates any pending assignments requests. Called when the
@@ -119,7 +113,6 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   void AnnounceListStateOnComboBoxAccessibility();
 
   // Owned by views hierarchy.
-  raw_ptr<views::FlexLayoutView> header_view_ = nullptr;
   raw_ptr<Combobox> combo_box_view_ = nullptr;
   // This is a simple label that copies the label style on `combo_box_view_` so
   // that it can visually replace it when `combo_box_view_` is hidden.
@@ -130,9 +123,6 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   raw_ptr<GlanceablesProgressBarView> progress_bar_ = nullptr;
   raw_ptr<views::Label> empty_list_label_ = nullptr;
   raw_ptr<CounterExpandButton> expand_button_ = nullptr;
-
-  // Whether the view is expanded and showing the contents in `body_container_`.
-  bool is_expanded_ = true;
 
   // Total number of assignments in the selected assignment list.
   size_t total_assignments_ = 0u;
