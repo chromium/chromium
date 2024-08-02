@@ -9,6 +9,7 @@ import android.app.Activity;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -30,6 +31,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class ChromeSurveyController {
     private static final String TRIGGER_STARTUP_SURVEY = "startup_survey";
     private static boolean sForceUmaEnabledForTesting;
+    private static boolean sEnableForTesting;
 
     private final SurveyClient mSurveyClient;
 
@@ -56,7 +58,12 @@ public class ChromeSurveyController {
             Activity activity,
             MessageDispatcher messageDispatcher,
             Profile profile) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_HATS_REFACTOR)) return null;
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID)) return null;
+
+        // Do not create the client for testing unless explicitly enabled.
+        if (BuildConfig.IS_FOR_TEST && !sEnableForTesting) {
+            return null;
+        }
 
         SurveyConfig config = SurveyConfig.get(TRIGGER_STARTUP_SURVEY);
         if (config == null) return null;
@@ -96,5 +103,11 @@ public class ChromeSurveyController {
     public static void forceIsUMAEnabledForTesting(boolean forcedUMAStatus) {
         sForceUmaEnabledForTesting = forcedUMAStatus;
         ResettersForTesting.register(() -> sForceUmaEnabledForTesting = false);
+    }
+
+    /** Set whether to trigger the start up survey in tests. */
+    public static void setEnableForTesting() {
+        sEnableForTesting = true;
+        ResettersForTesting.register(() -> sEnableForTesting = false);
     }
 }

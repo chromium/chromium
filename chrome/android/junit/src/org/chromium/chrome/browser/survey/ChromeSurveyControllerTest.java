@@ -42,7 +42,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 /** Unit tests for {@link ChromeSurveyController} and {@link SurveyThrottler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures(ChromeFeatureList.ANDROID_HATS_REFACTOR)
+@Features.EnableFeatures(ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID)
 public class ChromeSurveyControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
@@ -57,6 +57,7 @@ public class ChromeSurveyControllerTest {
 
     @Before
     public void before() {
+        ChromeSurveyController.setEnableForTesting();
         doReturn(Mockito.mock(Resources.class)).when(mActivity).getResources();
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
@@ -79,7 +80,7 @@ public class ChromeSurveyControllerTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.ANDROID_HATS_REFACTOR)
+    @Features.DisableFeatures(ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID)
     public void doNotInitializationWhenFeatureDisabled() {
         setTestSurveyConfigForTrigger("startup_survey", new String[0], new String[0]);
         ChromeSurveyController controller =

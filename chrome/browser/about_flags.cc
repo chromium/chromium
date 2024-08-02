@@ -7845,10 +7845,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-hats-refactor", flag_descriptions::kAndroidHatsRefactorName,
-     flag_descriptions::kAndroidHatsRefactorDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidHatsRefactor)},
-
     {"android-elegant-text-height",
      flag_descriptions::kAndroidElegantTextHeightName,
      flag_descriptions::kAndroidElegantTextHeightDescription, kOsAndroid,

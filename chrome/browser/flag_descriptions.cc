@@ -4152,10 +4152,6 @@ const char kAndroidGoogleSansTextName[] = "Android Google Sans Text";
 const char kAndroidGoogleSansTextDescription[] =
     "Enables Google Sans Text as the default font family.";
 
-const char kAndroidHatsRefactorName[] = "Android Hats Refactor";
-const char kAndroidHatsRefactorDescription[] =
-    "Enables survey structure refactor.";
-
 const char kAndroidHubFloatingActionButtonName[] =
     "Android Hub Floating Action Button";
 const char kAndroidHubFloatingActionButtonDescription[] =

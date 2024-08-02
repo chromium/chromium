@@ -2436,9 +2436,6 @@ extern const char kAndroidElegantTextHeightDescription[];
 extern const char kAndroidGoogleSansTextName[];
 extern const char kAndroidGoogleSansTextDescription[];
 
-extern const char kAndroidHatsRefactorName[];
-extern const char kAndroidHatsRefactorDescription[];
-
 extern const char kAndroidHubFloatingActionButtonName[];
 extern const char kAndroidHubFloatingActionButtonDescription[];
 

@@ -41,10 +41,7 @@ import java.util.List;
             + TestSurveyUtils.TEST_SURVEY_TRIGGER_ID_OVERRIDE_TEMPLATE
             + TestSurveyUtils.TEST_TRIGGER_ID_FOO
 })
-@Features.EnableFeatures({
-    ChromeFeatureList.ANDROID_HATS_REFACTOR + "<Study",
-    ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID + "<Study"
-})
+@Features.EnableFeatures({ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID + "<Study"})
 @Batch(Batch.PER_CLASS)
 public class ChromeStartupSurveyIntegrationTest {
     @Rule
@@ -59,6 +56,7 @@ public class ChromeStartupSurveyIntegrationTest {
 
     @Before
     public void setup() {
+        ChromeSurveyController.setEnableForTesting();
         ChromeSurveyController.forceIsUMAEnabledForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
         waitForSurveyMessagePresented();
