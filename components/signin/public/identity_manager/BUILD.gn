@@ -43,13 +43,12 @@ source_set("identity_manager") {
     "primary_account_mutator.h",
     "scope_set.h",
     "set_accounts_in_cookie_result.h",
-    "tribool.cc",
-    "tribool.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
+    ":tribool",
     "//base",
     "//components/keyed_service/core",
     "//components/signin/public/base",
@@ -91,6 +90,15 @@ if (is_android) {
   java_cpp_enum("primary_account_mutator_enum_javagen") {
     sources = [ "primary_account_mutator.h" ]
   }
+}
+
+source_set("tribool") {
+  sources = [
+    "tribool.cc",
+    "tribool.h",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

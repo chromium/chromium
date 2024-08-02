@@ -61,6 +61,7 @@ source_set("identity_manager") {
     "//build:chromeos_buildflags",
     "//components/image_fetcher/core",
     "//components/prefs",
+    "//components/signin/public/identity_manager:tribool",
     "//components/signin/public/webdata",
     "//components/supervised_user/core/common:features",
     "//components/version_info",
