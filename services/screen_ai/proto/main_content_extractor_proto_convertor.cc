@@ -200,7 +200,7 @@ void AddAttribute(const std::string& name,
 // |id| and |parent_id|. Updates |tree_dimensions| to include the bounds of the
 // new node.
 // Requires setting "child_ids" and "bounding_box" properties in next steps.
-screenai::UiElement CreateUiElementProto(const ui::AXTree* tree,
+screenai::UiElement CreateUiElementProto(const ui::AXTree& tree,
                                          const ui::AXNode* node,
                                          int id,
                                          int parent_id,
@@ -259,11 +259,11 @@ screenai::UiElement CreateUiElementProto(const ui::AXTree* tree,
   uie.set_parent_id(parent_id);
 
   // Type.
-  uie.set_type(node == tree->root() ? screenai::UiElementType::ROOT
-                                    : screenai::UiElementType::VIEW);
+  uie.set_type(node == tree.root() ? screenai::UiElementType::ROOT
+                                   : screenai::UiElementType::VIEW);
 
   // Bounding Box.
-  gfx::RectF bounds = tree->RelativeToTreeBounds(
+  gfx::RectF bounds = tree.RelativeToTreeBounds(
       node, gfx::RectF(0, 0),
       /* offscreen= */ nullptr, /* clip_bounds= */ false,
       /* skip_container_offset= */ false);
@@ -286,7 +286,7 @@ screenai::UiElement CreateUiElementProto(const ui::AXTree* tree,
 // Adds the subtree of |node| to |proto| with pre-order traversal.
 // Uses |next_unused_node_id| as the current node id and updates it for the
 // children. Updates |tree_dimensions| to include the bounds of the new node.
-void AddSubTree(const ui::AXTree* tree,
+void AddSubTree(const ui::AXTree& tree,
                 const ui::AXNode* node,
                 screenai::ViewHierarchy& proto,
                 int& next_unused_node_id,
@@ -318,10 +318,12 @@ void AddSubTree(const ui::AXTree* tree,
 
 namespace screen_ai {
 
-std::string SnapshotToViewHierarchy(const ui::AXTree* tree) {
+std::optional<ViewHierarchyAndTreeSize> SnapshotToViewHierarchy(
+    const ui::AXTree& tree) {
   // TODO(https://crbug.com/40851192): Consider adding Chrome version.
 
-  // To be computed based on the max dimensions of all elements in the tree.
+  // Tree dimensions will be computed based on the max dimensions of all
+  // elements in the tree.
   // TODO(https://crbug.com/40851192): Consider using combination of scroll
   // max and view port size to find the tree dimensions. Screen2x is getting the
   // size from the screenshot image of the tree.
@@ -332,12 +334,12 @@ std::string SnapshotToViewHierarchy(const ui::AXTree* tree) {
   // required proto.
   int next_unused_node_id = 0;
   screenai::ViewHierarchy proto;
-  AddSubTree(tree, tree->root(), proto, next_unused_node_id, /*parent_id=*/-1,
+  AddSubTree(tree, tree.root(), proto, next_unused_node_id, /*parent_id=*/-1,
              tree_dimensions);
 
   // If the tree has a zero dimension, there is nothing to send.
   if (tree_dimensions.IsEmpty())
-    return "";
+    return std::nullopt;
 
   // The bounds of the root item should be set to the snapshot size.
   proto.mutable_ui_elements(0)->mutable_bounding_box_pixels()->set_right(
@@ -361,7 +363,7 @@ std::string SnapshotToViewHierarchy(const ui::AXTree* tree) {
                             tree_dimensions.width());
   }
 
-  return proto.SerializeAsString();
+  return ViewHierarchyAndTreeSize{proto.SerializeAsString(), tree_dimensions};
 }
 
 std::map<std::string, ax::mojom::Role>

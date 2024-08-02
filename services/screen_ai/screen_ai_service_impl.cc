@@ -16,8 +16,10 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "components/crash/core/common/crash_key.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/screen_ai/buildflags/buildflags.h"
@@ -406,8 +408,26 @@ bool ScreenAIService::ExtractMainContentInternal(
 
   // Deserialize the snapshot and reserialize it to a view hierarchy proto.
   CHECK(tree.Unserialize(snapshot));
-  std::string serialized_snapshot = SnapshotToViewHierarchy(&tree);
-  content_node_ids = library_->ExtractMainContent(serialized_snapshot);
+  std::optional<ViewHierarchyAndTreeSize> converted_snapshot =
+      SnapshotToViewHierarchy(tree);
+  if (!converted_snapshot) {
+    VLOG(0) << "Proto not generated.";
+    return false;
+  }
+
+  // Report request specifications in case the call crashes.
+  static crash_reporter::CrashKeyString<95> crash_info(
+      "main_content_extraction_info");
+  crash_info.Set(base::StringPrintf(
+      "TD:%i, TR:%i, SNC:%10zu, SBS:%10zu, TS:%10i, TW:%6i, TH:%6i, SS:%10zu",
+      snapshot.has_tree_data, snapshot.root_id != ui::kInvalidAXNodeID,
+      snapshot.nodes.size(), snapshot.ByteSize(), tree.size(),
+      static_cast<int>(converted_snapshot->tree_dimensions.width()),
+      static_cast<int>(converted_snapshot->tree_dimensions.height()),
+      converted_snapshot->serialized_proto.size()));
+
+  content_node_ids =
+      library_->ExtractMainContent(converted_snapshot->serialized_proto);
   base::UmaHistogramBoolean(
       "Accessibility.ScreenAI.MainContentExtraction.Successful",
       content_node_ids.has_value());
