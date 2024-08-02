@@ -84,7 +84,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -107,7 +108,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                                         mClientIdMetadata,
                                         /* isAutoReauthn= */ false,
                                         RpContext.SIGN_IN,
-                                        /* requestPermission= */ true);
+                                        /* requestPermission= */ true,
+                                        mNewAccountsIdp);
                                 mAccountSelection.getMediator().setComponentShowTime(-1000);
                                 return null;
                             }
@@ -121,13 +123,19 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                     contentView.findViewById(R.id.account_selection_add_account_btn).performClick();
                 });
 
-        // Because of how we implemented onLogInToIdP, we should be back to account chooser here.
-        // Make sure that the Ana account is now displayed.
-        onView(withText("Ana Doe")).check(matches(isDisplayed()));
+        // Because of newAccountsIdp, the next dialog shown should be the request permission dialog
+        // with only the newly signed-in account and the disclosure text shown.
+        onView(withId(R.id.account_selection_continue_btn))
+                .check(matches(withText("Continue as Ana")));
+        onView(withId(R.id.user_data_sharing_consent))
+                .check(
+                        matches(
+                                withText(
+                                        "To continue, two.com will share your name, email address,"
+                                            + " and profile picture with this site. See this site's"
+                                            + " privacy policy and terms of service.")));
+        clickContinueButton();
 
-        clickFirstAccountInAccountsList();
-
-        // Because this is a returning account, we should immediately sign in now.
         verify(mMockBridge, never()).onDismissed(anyInt());
         verify(mMockBridge).onAccountSelected(any(), any());
     }
@@ -145,7 +153,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -193,7 +202,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -224,7 +234,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -257,7 +268,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -330,7 +342,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -365,7 +378,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -395,7 +409,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ false);
+                            /* requestPermission= */ false,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -425,7 +440,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -458,7 +474,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -504,7 +521,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -556,7 +574,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -605,7 +624,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ false);
+                            /* requestPermission= */ false,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -633,7 +653,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -668,7 +689,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -699,7 +721,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -727,7 +750,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
@@ -760,7 +784,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);

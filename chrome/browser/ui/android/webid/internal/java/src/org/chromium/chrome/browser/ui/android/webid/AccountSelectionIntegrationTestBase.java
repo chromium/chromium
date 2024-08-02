@@ -18,9 +18,11 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -72,6 +74,7 @@ public class AccountSelectionIntegrationTestBase {
     String mTestUrlTermsOfService;
     String mTestUrlPrivacyPolicy;
     ClientIdMetadata mClientIdMetadata;
+    IdentityProviderData mNewAccountsIdp;
     @RpMode.EnumType int mRpMode;
 
     @Before
@@ -88,6 +91,15 @@ public class AccountSelectionIntegrationTestBase {
                         new GURL(mTestUrlTermsOfService),
                         new GURL(mTestUrlPrivacyPolicy),
                         EXAMPLE_ETLD_PLUS_ONE);
+        mNewAccountsIdp =
+                new IdentityProviderData(
+                        EXAMPLE_ETLD_PLUS_ONE,
+                        new Account[] {RETURNING_ANA},
+                        IDP_METADATA_WITH_ADD_ACCOUNT,
+                        mClientIdMetadata,
+                        RpContext.SIGN_IN,
+                        /* requestPermission= */ true,
+                        /* hasLoginStatusMismatch= */ false);
 
         runOnUiThreadBlocking(
                 () -> {

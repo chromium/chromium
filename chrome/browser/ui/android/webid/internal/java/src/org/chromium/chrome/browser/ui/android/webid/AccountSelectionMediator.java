@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.I
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -152,6 +153,7 @@ class AccountSelectionMediator {
     private Bitmap mIdpBrandIcon;
     private Bitmap mRpBrandIcon;
     private ClientIdMetadata mClientMetadata;
+    private boolean mIsAutoReauthn;
     private @RpContext.EnumType int mRpContext;
     private IdentityCredentialTokenError mError;
     private boolean mRequestPermission;
@@ -361,15 +363,7 @@ class AccountSelectionMediator {
 
     private void handleBackPress() {
         mSelectedAccount = null;
-        showAccountsInternal(
-                mRpForDisplay,
-                mIdpForDisplay,
-                mAccounts,
-                mIdpMetadata,
-                mClientMetadata,
-                /* isAutoReauthn= */ false,
-                mRpContext,
-                mRequestPermission);
+        showAccountsInternal(/* newlySignedInAccount= */ null);
     }
 
     private PropertyModel createHeaderItem(
@@ -550,41 +544,41 @@ class AccountSelectionMediator {
             ClientIdMetadata clientMetadata,
             boolean isAutoReauthn,
             @RpContext.EnumType int rpContext,
-            boolean requestPermission) {
+            boolean requestPermission,
+            @Nullable IdentityProviderData newAccountsIdp) {
         // On widget mode, show placeholder icon to preserve header text wrapping when icon is
         // fetched.
         if (mRpMode == RpMode.WIDGET) {
             showPlaceholderIcon(idpMetadata);
         }
+        mRpForDisplay = rpForDisplay;
+        mIdpForDisplay = idpForDisplay;
+        mAccounts = accounts;
+        mIdpMetadata = idpMetadata;
+        mClientMetadata = clientMetadata;
+        mIsAutoReauthn = isAutoReauthn;
+        mRpContext = rpContext;
+        mRequestPermission = requestPermission;
         mSelectedAccount = null;
+
+        fetchBrandIcon(mIdpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
+        // RP brand icon is fetched here, but not shown until the request permission dialog.
+        if (mRpMode == RpMode.BUTTON) {
+            fetchBrandIcon(mClientMetadata.getBrandIconUrl(), bitmap -> updateRpBrandIcon(bitmap));
+        }
+
         if (accounts.size() == 1 && (isAutoReauthn || !idpMetadata.supportsAddAccount())) {
             mSelectedAccount = accounts.get(0);
         }
-        showAccountsInternal(
-                rpForDisplay,
-                idpForDisplay,
-                accounts,
-                idpMetadata,
-                clientMetadata,
-                isAutoReauthn,
-                rpContext,
-                requestPermission);
+
+        // TODO(crbug.com/356665527): Handle multiple newly signed-in accounts.
+        Account newlySignedInAccount =
+                newAccountsIdp != null && newAccountsIdp.getAccounts().size() == 1
+                        ? newAccountsIdp.getAccounts().get(0)
+                        : null;
+
+        showAccountsInternal(newlySignedInAccount);
         setComponentShowTime(SystemClock.elapsedRealtime());
-
-        fetchBrandIcon(idpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
-        // RP brand icon is fetched here, but not shown until the request permission dialog.
-        if (mRpMode == RpMode.BUTTON) {
-            fetchBrandIcon(clientMetadata.getBrandIconUrl(), bitmap -> updateRpBrandIcon(bitmap));
-        }
-
-        // This is a placeholder assuming the tab containing the account chooser will be closed.
-        // This will be updated upon user action i.e. clicking on account row, use
-        // other account button or swiped down. If we do not receive any of these actions by time
-        // onDismissed() is called, it means our placeholder assumption is true i.e. the user has
-        // closed the tab.
-        if (mRpMode == RpMode.BUTTON && !isAutoReauthn) {
-            mAccountChooserState = AccountChooserResult.TAB_CLOSED;
-        }
     }
 
     void showFailureDialog(
@@ -670,30 +664,35 @@ class AccountSelectionMediator {
         return mHeaderType;
     }
 
-    private void showAccountsInternal(
-            String rpForDisplay,
-            String idpForDisplay,
-            List<Account> accounts,
-            IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientMetadata,
-            boolean isAutoReauthn,
-            @RpContext.EnumType int rpContext,
-            boolean requestPermission) {
-        mRpForDisplay = rpForDisplay;
-        mIdpForDisplay = idpForDisplay;
-        mAccounts = accounts;
-        mIdpMetadata = idpMetadata;
-        mClientMetadata = clientMetadata;
-        mRpContext = rpContext;
-        mRequestPermission = requestPermission;
+    private void showAccountsInternal(@Nullable Account newlySignedInAccount) {
+        mHeaderType = mIsAutoReauthn ? HeaderType.VERIFY_AUTO_REAUTHN : HeaderType.SIGN_IN;
 
-        if (mSelectedAccount != null) {
-            accounts = Arrays.asList(mSelectedAccount);
+        if (!mIsAutoReauthn && newlySignedInAccount != null && mRpMode == RpMode.BUTTON) {
+            // TODO(crbug.com/356446419): Optimize showing disclosure text and dialog on Android
+            // button mode.
+            mSelectedAccount = newlySignedInAccount;
+            showRequestPermissionSheet(mSelectedAccount);
+            return;
         }
 
-        mHeaderType = isAutoReauthn ? HeaderType.VERIFY_AUTO_REAUTHN : HeaderType.SIGN_IN;
-        updateSheet(accounts, /* areAccountsClickable= */ mSelectedAccount == null);
+        updateSheet(
+                mSelectedAccount != null ? Arrays.asList(mSelectedAccount) : mAccounts,
+                /* areAccountsClickable= */ mSelectedAccount == null);
         updateBackPressBehavior();
+
+        // This is a placeholder assuming the tab containing the account chooser will be closed.
+        // This will be updated upon user action i.e. clicking on account row, use
+        // other account button or swiped down. If we do not receive any of these actions by time
+        // onDismissed() is called, it means our placeholder assumption is true i.e. the user has
+        // closed the tab.
+        if (mRpMode == RpMode.BUTTON && !mIsAutoReauthn) {
+            // If there was already an account chooser state from a previously shown account
+            // chooser, record the outcome and reset the state.
+            if (mAccountChooserState != null) {
+                maybeRecordAccountChooserResult(mAccountChooserState);
+            }
+            mAccountChooserState = AccountChooserResult.TAB_CLOSED;
+        }
     }
 
     private void updateSheet(List<Account> accounts, boolean areAccountsClickable) {
@@ -956,15 +955,7 @@ class AccountSelectionMediator {
         }
 
         // At this point, the account is a non-returning user and RP mode is widget.
-        showAccountsInternal(
-                mRpForDisplay,
-                mIdpForDisplay,
-                mAccounts,
-                mIdpMetadata,
-                mClientMetadata,
-                /* isAutoReauthn= */ false,
-                mRpContext,
-                mRequestPermission);
+        showAccountsInternal(/* newlySignedInAccount= */ null);
     }
 
     void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {

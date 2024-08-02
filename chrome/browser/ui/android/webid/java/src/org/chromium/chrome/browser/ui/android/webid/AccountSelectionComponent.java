@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.content.webid.IdentityRequestDialogLinkType;
@@ -83,7 +86,8 @@ public interface AccountSelectionComponent {
             ClientIdMetadata clientMetadata,
             boolean isAutoReauthn,
             @RpContext.EnumType int rpContext,
-            boolean requestPermission);
+            boolean requestPermission,
+            @Nullable IdentityProviderData newAccountsIdp);
 
     /**
      * Displays a dialog telling the user that they can sign in to an IDP for the purpose of

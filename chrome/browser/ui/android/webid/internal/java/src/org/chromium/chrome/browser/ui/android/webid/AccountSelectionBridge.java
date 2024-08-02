@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -121,7 +122,8 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
             ClientIdMetadata clientIdMetadata,
             boolean isAutoReauthn,
             @RpContext.EnumType int rpContext,
-            boolean requestPermission) {
+            boolean requestPermission,
+            @Nullable IdentityProviderData newAccountsIdp) {
         assert accounts != null && accounts.length > 0;
         mAccountSelectionComponent.showAccounts(
                 rpForDisplay,
@@ -131,7 +133,8 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
                 clientIdMetadata,
                 isAutoReauthn,
                 rpContext,
-                requestPermission);
+                requestPermission,
+                newAccountsIdp);
     }
 
     /**

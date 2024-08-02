@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerItemDecoration;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -206,7 +208,8 @@ public class AccountSelectionCoordinator
             ClientIdMetadata clientMetadata,
             boolean isAutoReauthn,
             @RpContext.EnumType int rpContext,
-            boolean requestPermission) {
+            boolean requestPermission,
+            @Nullable IdentityProviderData newAccountsIdp) {
         mMediator.showAccounts(
                 rpEtldPlusOne,
                 idpEtldPlusOne,
@@ -215,7 +218,8 @@ public class AccountSelectionCoordinator
                 clientMetadata,
                 isAutoReauthn,
                 rpContext,
-                requestPermission);
+                requestPermission,
+                newAccountsIdp);
     }
 
     @Override
