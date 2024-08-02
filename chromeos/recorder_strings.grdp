@@ -297,6 +297,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Message when there’s no speech in the recording on playback." name="IDS_RECORDER_TRANSCRIPTION_NO_SPEECH_TEXT">
     No speech detected
   </message>
+  <message desc="Label of each different speaker in the transcription. SPEAKER_ID is numbered starting from 1." name="IDS_RECORDER_TRANSCRIPTION_SPEAKER_ID_LABEL">
+    Speaker <ph name="SPEAKER_ID">$1<ex>2</ex></ph>
+  </message>
   <message desc="Message when there’s not yet any speech detected when recording." name="IDS_RECORDER_TRANSCRIPTION_WAITING_SPEECH_TEXT">
     Listening for speech…
   </message>

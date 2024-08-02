@@ -373,7 +373,7 @@ export class TranscriptionView extends ReactiveLitElement {
       speakerLabels.indexOf(speakerLabel) % MAX_SPEAKER_COLORS;
     assert(speakerLabelId !== -1);
     return html`<div class="speaker-label speaker-${speakerLabelId + 1}">
-      Speaker ${speakerLabel}
+      ${i18n.transcriptionSpeakerIdLabel(speakerLabel)}
     </div>`;
   }
 

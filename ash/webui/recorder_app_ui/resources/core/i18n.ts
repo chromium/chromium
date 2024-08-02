@@ -126,6 +126,7 @@ const withArgsStrings = {
   settingsOptionsTranscriptionDownloadingProgressDescription:
     withArgs<[number]>(),
   summaryDownloadingProgressDescription: withArgs<[number]>(),
+  transcriptionSpeakerIdLabel: withArgs<[string]>(),
 } satisfies Record<string, I18nArgType[]>;
 type WithArgsStrings = typeof withArgsStrings;
 
