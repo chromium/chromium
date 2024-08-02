@@ -597,11 +597,6 @@ class FunctionSignatureNodes : public MatchFinder::MatchCallback {
   }
 
   Node getNodeFromMatchResult(const MatchFinder::MatchResult& result) {
-    if (auto* rhs_begin =
-            result.Nodes.getNodeAs<clang::DeclaratorDecl>("rhs_begin")) {
-      return getNodeFromDecl(rhs_begin, result);
-    }
-
     if (auto* type_loc =
             result.Nodes.getNodeAs<clang::PointerTypeLoc>("rhs_type_loc")) {
       return getNodeFromPointerTypeLoc(type_loc, result);
@@ -612,6 +607,16 @@ class FunctionSignatureNodes : public MatchFinder::MatchCallback {
                 "rhs_raw_ptr_type_loc")) {
       return getNodeFromRawPtrTypeLoc(raw_ptr_type_loc, result);
     }
+
+    // "rhs_begin" match id could refer to a declaration that has a raw_ptr
+    // type. Those are handled in getNodeFromRawPtrTypeLoc. We
+    // should always check for a "rhs_raw_ptr_type_loc" match id and call
+    // getNodeFromRawPtrTypeLoc first.
+    if (auto* rhs_begin =
+            result.Nodes.getNodeAs<clang::DeclaratorDecl>("rhs_begin")) {
+      return getNodeFromDecl(rhs_begin, result);
+    }
+
     // Shouldn't get here.
     assert(false);
   }
