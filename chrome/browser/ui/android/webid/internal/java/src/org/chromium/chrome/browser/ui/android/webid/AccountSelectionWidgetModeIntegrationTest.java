@@ -59,7 +59,8 @@ public class AccountSelectionWidgetModeIntegrationTest extends AccountSelectionI
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);

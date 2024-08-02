@@ -102,6 +102,8 @@ static_library("update_client") {
     "crx_update_item.h",
     "network.cc",
     "network.h",
+    "op_download.cc",
+    "op_download.h",
     "patcher.h",
     "persisted_data.cc",
     "persisted_data.h",
@@ -263,6 +265,7 @@ source_set("unit_tests") {
   sources = [
     "cancellation_unittest.cc",
     "crx_cache_unittest.cc",
+    "op_download_unittest.cc",
     "persisted_data_unittest.cc",
     "ping_manager_unittest.cc",
     "protocol_parser_json_unittest.cc",

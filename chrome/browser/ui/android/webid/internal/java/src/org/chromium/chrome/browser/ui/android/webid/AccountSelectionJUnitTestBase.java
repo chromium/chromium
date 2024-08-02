@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.I
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -98,6 +99,8 @@ public class AccountSelectionJUnitTestBase {
     ModelList mSheetAccountItems;
     View mContentView;
     IdentityProviderMetadata mIdpMetadata;
+    IdentityProviderData mNewAccountsIdpSingleAccount;
+    IdentityProviderData mNewAccountsIdpMultipleAccounts;
     AccountSelectionBottomSheetContent mBottomSheetContent;
     AccountSelectionMediator mMediator;
 
@@ -182,6 +185,25 @@ public class AccountSelectionJUnitTestBase {
                         mTestConfigUrl,
                         mTestLoginUrl,
                         /* supportsAddAccount= */ false);
+
+        mNewAccountsIdpSingleAccount =
+                new IdentityProviderData(
+                        mTestEtldPlusOne,
+                        new Account[] {mAnaAccount},
+                        mIdpMetadata,
+                        mClientIdMetadata,
+                        RpContext.SIGN_IN,
+                        /* requestPermission= */ true,
+                        /* hasLoginStatusMismatch= */ false);
+        mNewAccountsIdpMultipleAccounts =
+                new IdentityProviderData(
+                        mTestEtldPlusOne,
+                        new Account[] {mAnaAccount, mBobAccount},
+                        mIdpMetadata,
+                        mClientIdMetadata,
+                        RpContext.SIGN_IN,
+                        /* requestPermission= */ true,
+                        /* hasLoginStatusMismatch= */ false);
 
         mActivityScenarioRule
                 .getScenario()

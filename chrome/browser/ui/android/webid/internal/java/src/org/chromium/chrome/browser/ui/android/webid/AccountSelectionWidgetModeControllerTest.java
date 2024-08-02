@@ -60,7 +60,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
                     mClientIdMetadata,
                     /* isAutoReauthn= */ false,
                     rpContext,
-                    /* requestPermission= */ true);
+                    /* requestPermission= */ true,
+                    /* newAccountsIdp= */ null);
             mMediator.showVerifySheet(mAnaAccount);
 
             assertEquals(1, mSheetAccountItems.size());
@@ -84,7 +85,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
                     mClientIdMetadata,
                     /* isAutoReauthn= */ true,
                     rpContext,
-                    /* requestPermission= */ true);
+                    /* requestPermission= */ true,
+                    /* newAccountsIdp= */ null);
 
             assertEquals(1, mSheetAccountItems.size());
             assertEquals(
@@ -121,7 +123,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
                 mClientIdMetadata,
                 /* isAutoReauthn= */ false,
                 RpContext.SIGN_IN,
-                /* requestPermission= */ true);
+                /* requestPermission= */ true,
+                /* newAccountsIdp= */ null);
 
         assertNull(mModel.get(ItemProperties.HEADER).get(RP_BRAND_ICON));
     }
@@ -149,7 +152,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
                 mClientIdMetadata,
                 /* isAutoReauthn= */ false,
                 RpContext.SIGN_IN,
-                /* requestPermission= */ true);
+                /* requestPermission= */ true,
+                /* newAccountsIdp= */ null);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         // Brand icon should be transparent placeholder icon. This is useful so that the header text

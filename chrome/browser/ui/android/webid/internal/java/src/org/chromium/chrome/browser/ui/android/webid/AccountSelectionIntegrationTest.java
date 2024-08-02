@@ -102,7 +102,8 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -125,7 +126,8 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
         BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
@@ -148,7 +150,8 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                 });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -221,7 +224,8 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
                             RpContext.SIGN_IN,
-                            /* requestPermission= */ true);
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
                 });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockBridge, never()).onAccountSelected(any(), any());

@@ -213,9 +213,6 @@ bool FedCmAccountSelectionView::Show(
         new_accounts_idp_display_data_[0];
 
     if (GetDialogType() == DialogType::MODAL) {
-      // TODO(crbug.com/342194490): Consider case when there's more than one
-      // newly signed in account.
-
       // The browser trusted login state controls whether we'd skip the next
       // dialog. One caveat: if a user was logged out of the IdP and they just
       // logged in with a returning account from the LOADING state, we do not
