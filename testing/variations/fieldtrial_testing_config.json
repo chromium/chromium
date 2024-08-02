@@ -5118,6 +5118,7 @@
     "ClassifyUrlOnProcessResponseEvent": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
@@ -5126,7 +5127,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240730",
+                    "name": "Enabled",
                     "enable_features": [
                         "ClassifyUrlOnProcessResponseEvent"
                     ]
