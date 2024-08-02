@@ -217,29 +217,24 @@ TEST(FontMatcherMacTest, MatchSystemFontWithWeightVariations) {
 }
 
 TEST(FontMatcherMacTest, MatchSystemFontWithWidthVariations) {
-  // Font width variations are supported from Mac OS 11 and later.
-  if (@available(macos 11, *)) {
-    // Mac SystemUI font supports width variations between 30 and 150.
-    int min_width = 30;
-    int max_width = 150;
-    FourCharCode wdth_tag = 'wdth';
-    for (int width = min_width - 10; width <= max_width + 10; width += 10) {
-      if (width != kNormalWidthValue) {
-        ScopedCFTypeRef<CTFontRef> font =
-            MatchSystemUIFont(kNormalWidthValue, kNormalSlopeValue,
-                              FontSelectionValue(width), 11);
-        EXPECT_TRUE(font);
+  // Mac SystemUI font supports width variations between 30 and 150.
+  int min_width = 30;
+  int max_width = 150;
+  FourCharCode wdth_tag = 'wdth';
+  for (int width = min_width - 10; width <= max_width + 10; width += 10) {
+    if (width != kNormalWidthValue) {
+      ScopedCFTypeRef<CTFontRef> font = MatchSystemUIFont(
+          kNormalWidthValue, kNormalSlopeValue, FontSelectionValue(width), 11);
+      EXPECT_TRUE(font);
 
-        NSDictionary* variations =
-            CFToNSOwnershipCast(CTFontCopyVariation(font.get()));
-        NSNumber* actual_width_num =
-            ObjCCast<NSNumber>(variations[@(wdth_tag)]);
-        EXPECT_TRUE(actual_width_num);
+      NSDictionary* variations =
+          CFToNSOwnershipCast(CTFontCopyVariation(font.get()));
+      NSNumber* actual_width_num = ObjCCast<NSNumber>(variations[@(wdth_tag)]);
+      EXPECT_TRUE(actual_width_num);
 
-        float actual_width = actual_width_num.floatValue;
-        float expected_width = std::max(min_width, std::min(max_width, width));
-        EXPECT_EQ(actual_width, expected_width);
-      }
+      float actual_width = actual_width_num.floatValue;
+      float expected_width = std::max(min_width, std::min(max_width, width));
+      EXPECT_EQ(actual_width, expected_width);
     }
   }
 }
