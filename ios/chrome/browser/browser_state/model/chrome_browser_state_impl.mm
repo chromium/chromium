@@ -110,7 +110,7 @@ base::FilePath GetCachePath(const base::FilePath& base) {
 // static
 std::unique_ptr<ChromeBrowserState> ChromeBrowserState::CreateBrowserState(
     const base::FilePath& path,
-    const std::string& browser_state_name,
+    std::string_view browser_state_name,
     CreationMode creation_mode,
     Delegate* delegate) {
   // Get sequenced task runner for making sure that file operations of
@@ -126,7 +126,7 @@ std::unique_ptr<ChromeBrowserState> ChromeBrowserState::CreateBrowserState(
 
 ChromeBrowserStateImpl::ChromeBrowserStateImpl(
     const base::FilePath& state_path,
-    const std::string& browser_state_name,
+    std::string_view browser_state_name,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     CreationMode creation_mode,
     Delegate* delegate)

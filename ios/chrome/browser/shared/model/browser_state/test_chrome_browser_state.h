@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_TEST_CHROME_BROWSER_STATE_H_
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -223,7 +224,7 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   // Used to create the principal TestChromeBrowserState.
   TestChromeBrowserState(
       const base::FilePath& state_path,
-      const std::string& browser_state_name,
+      std::string_view browser_state_name,
       std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
       TestingFactories testing_factories,
       std::unique_ptr<BrowserStatePolicyConnector> policy_connector,

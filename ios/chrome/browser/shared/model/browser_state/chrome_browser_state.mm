@@ -30,7 +30,7 @@ const char kBrowserStateIsChromeBrowserState[] = "IsChromeBrowserState";
 
 ChromeBrowserState::ChromeBrowserState(
     const base::FilePath& state_path,
-    const std::string& browser_state_name,
+    std::string_view browser_state_name,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner)
     : state_path_(state_path),
       browser_state_name_(browser_state_name),
