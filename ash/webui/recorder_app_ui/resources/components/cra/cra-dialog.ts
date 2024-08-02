@@ -40,14 +40,8 @@ export class CraDialog extends MdDialog {
         opacity: 1;
       }
 
-      /* This is the element that gets animated. */
-      .container::before {
+      dialog {
         box-shadow: var(--cros-sys-app_elevation3);
-      }
-
-      .container {
-        /* To not hide the box-shadow. */
-        overflow: initial;
       }
 
       slot[name="headline"]::slotted(*) {
@@ -62,8 +56,17 @@ export class CraDialog extends MdDialog {
         padding-bottom: 0;
       }
 
+      .scrollable.has-headline slot[name="content"]::slotted(*) {
+        padding-top: 16px;
+      }
+
       slot[name="actions"]::slotted(*) {
         padding: 32px 32px 28px;
+      }
+
+      /* CrOS dialog spec doesn't have the divider when the content scrolls. */
+      md-divider {
+        display: none !important;
       }
     `,
   ];

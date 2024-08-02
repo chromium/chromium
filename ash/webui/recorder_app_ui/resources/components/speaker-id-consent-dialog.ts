@@ -4,6 +4,7 @@
 
 import './cra/cra-button.js';
 import './cra/cra-feature-tour-dialog.js';
+import './speaker-id-consent-dialog-content.js';
 
 import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
 
@@ -30,11 +31,15 @@ import {CraFeatureTourDialog} from './cra/cra-feature-tour-dialog.js';
 export class SpeakerIdConsentDialog extends ReactiveLitElement {
   static override styles = css`
     :host {
-      display: block;
+      display: contents;
     }
 
     .left {
       margin-right: auto;
+    }
+
+    cra-feature-tour-dialog {
+      height: 512px;
     }
   `;
 
@@ -69,12 +74,8 @@ export class SpeakerIdConsentDialog extends ReactiveLitElement {
       illustrationName="onboarding_speaker_id"
       header=${i18n.onboardingDialogSpeakerIdHeader}
     >
-      <div slot="content">
-        ${i18n.onboardingDialogSpeakerIdDescription}
-        <a href="javascript:;"
-          >${i18n.onboardingDialogSpeakerIdLearnMoreLink}</a
-        >
-      </div>
+      <speaker-id-consent-dialog-content slot="content">
+      </speaker-id-consent-dialog-content>
       <div slot="actions">
         <cra-button
           .label=${i18n.onboardingDialogSpeakerIdDeferButton}

@@ -116,7 +116,7 @@ def _add_string_to_i18n_ts(id: str):
 def _add_string(id: str) -> Optional[str]:
     logging.debug(f"Adding {id}")
 
-    if not re.match(r"^[A-Z_]+$", id):
+    if not re.match(r"^[A-Z0-9_]+$", id):
         return "ID should be in CAMEL_CASE"
 
     if id.startswith("IDS_") or id.startswith("RECORDER_"):

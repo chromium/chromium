@@ -33,11 +33,15 @@ import {SpeakerIdConsentDialog} from './speaker-id-consent-dialog.js';
 export class TranscriptionConsentDialog extends ReactiveLitElement {
   static override styles = css`
     :host {
-      display: block;
+      display: contents;
     }
 
     .left {
       margin-right: auto;
+    }
+
+    cra-feature-tour-dialog {
+      height: 512px;
     }
   `;
 

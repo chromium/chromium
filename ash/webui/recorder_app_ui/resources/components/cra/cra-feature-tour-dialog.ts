@@ -24,7 +24,11 @@ import {CraDialog} from './cra-dialog.js';
 export class CraFeatureTourDialog extends ReactiveLitElement {
   static override styles = css`
     :host {
-      display: block;
+      display: contents;
+    }
+
+    cra-dialog {
+      height: inherit;
     }
 
     #header {

@@ -53,10 +53,20 @@
   <message desc="Button to defer enabling speaker ID and go next step in the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DEFER_BUTTON">
     Skip
   </message>
-  <message desc="Description of the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DESCRIPTION">
-    When you allow this, Recorder will use advanced audio analysis to automatically detect distinct voices and give each a generic label such as Speaker 1 and Speaker 2.
-
-You can turn this off at anytime in Settings.
+  <message desc="The first item in the list of the explanation of the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DESCRIPTION_LIST_ITEM_1">
+    Compute models of the voices detected in the recording
+  </message>
+  <message desc="The second item in the list of the explanation of the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DESCRIPTION_LIST_ITEM_2">
+    Automatically detect distinct voices and give each speaker a generic label such as Speaker 1 and Speaker 2
+  </message>
+  <message desc="The third item in the list of the explanation of the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DESCRIPTION_LIST_ITEM_3">
+    Compare voices throughout the recording so the transcript reflects what each speaker said and when
+  </message>
+  <message desc="Prefix of the description of the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DESCRIPTION_PREFIX">
+    When you allow this, Recorder will analyze your audio recordings to:
+  </message>
+  <message desc="Suffix of the description of the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DESCRIPTION_SUFFIX">
+    Voice models are stored temporarily on-device until the speaker labeling is complete. You can turn this off at any time in Settings.
   </message>
   <message desc="Button to disable speaker ID and go next step in the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DISALLOW_BUTTON">
     Don’t allow

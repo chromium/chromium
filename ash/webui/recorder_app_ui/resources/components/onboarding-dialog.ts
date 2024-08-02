@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../components/cra/cra-button.js';
-import '../components/cra/cra-image.js';
+import './cra/cra-button.js';
+import './cra/cra-image.js';
+import './speaker-id-consent-dialog-content.js';
 
 import {
   css,
@@ -38,6 +39,9 @@ export class OnboardingDialog extends ReactiveLitElement {
       border-radius: 20px;
       box-shadow: var(--cros-sys-app_elevation3);
       color: var(--cros-sys-on_surface);
+      display: flex;
+      flex-flow: column;
+      height: 512px;
       padding: 0;
 
       /* Want at least 80px left/right margin. */
@@ -65,6 +69,10 @@ export class OnboardingDialog extends ReactiveLitElement {
     }
 
     #content {
+      display: flex;
+      flex: 1;
+      flex-flow: column;
+      min-height: 0;
       padding: 32px 32px 28px;
     }
 
@@ -74,9 +82,11 @@ export class OnboardingDialog extends ReactiveLitElement {
     }
 
     #description {
+      color: var(--cros-sys-on_surface_variant);
+      flex: 1;
       font: var(--cros-body-1-font);
       margin-bottom: 32px;
-      white-space: pre-wrap;
+      overflow-y: auto;
     }
 
     #buttons {
@@ -226,11 +236,8 @@ export class OnboardingDialog extends ReactiveLitElement {
         return this.renderDialog(
           'onboarding_speaker_id',
           i18n.onboardingDialogSpeakerIdHeader,
-          // TODO: b/336963138 - Add correct link
-          // prettier-ignore
-          html`${i18n.onboardingDialogSpeakerIdDescription} <a
-              href="javascript:;"
-              >${i18n.onboardingDialogSpeakerIdLearnMoreLink}</a>`,
+          html`<speaker-id-consent-dialog-content>
+          </speaker-id-consent-dialog-content>`,
           html`
             <cra-button
               .label=${i18n.onboardingDialogSpeakerIdDeferButton}
