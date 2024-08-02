@@ -31,7 +31,6 @@ class URLLoaderThrottle;
 }  // namespace blink
 
 namespace net {
-class NetworkAnonymizationKey;
 class SourceStream;
 }  // namespace net
 
@@ -74,7 +73,6 @@ class CONTENT_EXPORT SignedExchangeLoader final
       std::unique_ptr<SignedExchangeReporter> reporter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       URLLoaderThrottlesGetter url_loader_throttles_getter,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
       int frame_tree_node_id,
       const std::string& accept_langs,
       bool keep_entry_for_prefetch_cache);

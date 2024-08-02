@@ -36,6 +36,10 @@ class ThrottlingURLLoader;
 class URLLoaderThrottle;
 }  // namespace blink
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 class SignedExchangeDevToolsProxy;
@@ -64,7 +68,8 @@ class CONTENT_EXPORT SignedExchangeCertFetcher
       CertificateCallback callback,
       SignedExchangeDevToolsProxy* devtools_proxy,
       const std::optional<base::UnguessableToken>& throttling_profile_id,
-      net::IsolationInfo isolation_info);
+      net::IsolationInfo isolation_info,
+      const std::optional<url::Origin>& initiator);
 
   SignedExchangeCertFetcher(const SignedExchangeCertFetcher&) = delete;
   SignedExchangeCertFetcher& operator=(const SignedExchangeCertFetcher&) =
@@ -90,7 +95,8 @@ class CONTENT_EXPORT SignedExchangeCertFetcher
       CertificateCallback callback,
       SignedExchangeDevToolsProxy* devtools_proxy,
       const std::optional<base::UnguessableToken>& throttling_profile_id,
-      net::IsolationInfo isolation_info);
+      net::IsolationInfo isolation_info,
+      const std::optional<url::Origin>& initiator);
   void Start();
   void Abort();
   void OnHandleReady(MojoResult result);

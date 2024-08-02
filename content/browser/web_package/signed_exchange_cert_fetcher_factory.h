@@ -23,6 +23,10 @@ namespace blink {
 class URLLoaderThrottle;
 }  // namespace blink
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 class SignedExchangeDevToolsProxy;
@@ -46,7 +50,8 @@ class CONTENT_EXPORT SignedExchangeCertFetcherFactory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       URLLoaderThrottlesGetter url_loader_throttles_getter,
       const std::optional<base::UnguessableToken>& throttling_profile_id,
-      net::IsolationInfo isolation_info);
+      net::IsolationInfo isolation_info,
+      const std::optional<url::Origin>& initiator);
 };
 
 }  // namespace content

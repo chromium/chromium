@@ -707,7 +707,7 @@ void SignedExchangeHandler::CheckAbsenceOfCookies(base::OnceClosure callback) {
     std::move(callback).Run();
     return;
   }
-  DCHECK(outer_request_isolation_info_.has_value());
+  CHECK(outer_request_isolation_info_.has_value());
 
   StoragePartition* storage_partition =
       frame->current_frame_host()->GetProcess()->GetStoragePartition();
@@ -731,7 +731,7 @@ void SignedExchangeHandler::CheckAbsenceOfCookies(base::OnceClosure callback) {
           render_frame_host ? render_frame_host->CreateCookieAccessObserver()
                             : mojo::NullRemote());
 
-  DCHECK(isolation_info.top_frame_origin().has_value());
+  CHECK(isolation_info.top_frame_origin().has_value());
   auto match_options = network::mojom::CookieManagerGetOptions::New();
   match_options->name = "";
   match_options->match_type = network::mojom::CookieMatchType::STARTS_WITH;
