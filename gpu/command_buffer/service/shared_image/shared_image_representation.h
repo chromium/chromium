@@ -75,10 +75,6 @@ namespace gfx {
 class NativePixmap;
 }  // namespace gfx
 
-namespace media {
-class VASurface;
-}  // namespace media
-
 namespace gpu {
 class TextureBase;
 
@@ -970,71 +966,6 @@ class GPU_GLES2_EXPORT MemoryImageRepresentation
 
  protected:
   virtual SkPixmap BeginReadAccess() = 0;
-};
-
-// An interface that allows a SharedImageBacking to hold a reference to VA-API
-// surface without depending on //media/gpu/vaapi targets.
-class VaapiDependencies {
- public:
-  virtual ~VaapiDependencies() = default;
-  virtual const media::VASurface* GetVaSurface() const = 0;
-  virtual bool SyncSurface() = 0;
-};
-
-// Interface that allows a SharedImageBacking to create VaapiDependencies from a
-// NativePixmap without depending on //media/gpu/vaapi targets.
-class VaapiDependenciesFactory {
- public:
-  virtual ~VaapiDependenciesFactory() = default;
-  // Returns a VaapiDependencies or nullptr on failure.
-  virtual std::unique_ptr<VaapiDependencies> CreateVaapiDependencies(
-      scoped_refptr<gfx::NativePixmap> pixmap) = 0;
-};
-
-///////////////////////////////////////////////////////////////////////////////
-// VaapiImageRepresentation
-
-// Representation of a SharedImageBacking as a VA-API surface.
-// This representation is currently only supported by OzoneImageBacking.
-//
-// Synchronized access is currently not required in this representation because:
-//
-// For reads:
-// We will be using this for the destination of decoding work, so no read access
-// synchronization is needed from the point of view of the VA-API.
-//
-// For writes:
-// Because of the design of the current video pipeline, we don't start the
-// decoding work until we're sure that the destination buffer is not being used
-// by the rest of the pipeline. However, we still need to keep track of write
-// accesses so that other representations can synchronize with the decoder.
-class GPU_GLES2_EXPORT VaapiImageRepresentation
-    : public SharedImageRepresentation {
- public:
-  class GPU_GLES2_EXPORT ScopedWriteAccess
-      : public ScopedAccessBase<VaapiImageRepresentation> {
-   public:
-    ScopedWriteAccess(base::PassKey<VaapiImageRepresentation> pass_key,
-                      VaapiImageRepresentation* representation);
-
-    ~ScopedWriteAccess();
-
-    const media::VASurface* va_surface();
-  };
-  VaapiImageRepresentation(SharedImageManager* manager,
-                           SharedImageBacking* backing,
-                           MemoryTypeTracker* tracker,
-                           VaapiDependencies* vaapi_dependency);
-  ~VaapiImageRepresentation() override;
-
-  std::unique_ptr<ScopedWriteAccess> BeginScopedWriteAccess();
-
- private:
-  friend class WrappedVaapiRepresentation;
-
-  raw_ptr<VaapiDependencies> vaapi_deps_;
-  virtual void EndAccess() = 0;
-  virtual void BeginAccess() = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -69,10 +69,6 @@ class GPU_GLES2_EXPORT SharedMemoryImageBacking : public SharedImageBacking {
   std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
-  std::unique_ptr<VaapiImageRepresentation> ProduceVASurface(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker,
-      VaapiDependenciesFactory* dep_factory) override;
   std::unique_ptr<MemoryImageRepresentation> ProduceMemory(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;

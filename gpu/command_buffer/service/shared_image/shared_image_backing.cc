@@ -256,13 +256,6 @@ std::unique_ptr<OverlayImageRepresentation> SharedImageBacking::ProduceOverlay(
   return nullptr;
 }
 
-std::unique_ptr<VaapiImageRepresentation> SharedImageBacking::ProduceVASurface(
-    SharedImageManager* manager,
-    MemoryTypeTracker* tracker,
-    VaapiDependenciesFactory* dep_factory) {
-  return nullptr;
-}
-
 std::unique_ptr<MemoryImageRepresentation> SharedImageBacking::ProduceMemory(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
