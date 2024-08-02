@@ -991,7 +991,7 @@
       // For the position-try-fallbacks property, replaces the inset-area()
       // syntax with just <'inset-area'>.
       name: "CSSInsetAreaValue",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://chromestatus.com/feature/6289894144212992
