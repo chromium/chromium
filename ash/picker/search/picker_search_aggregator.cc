@@ -4,7 +4,10 @@
 
 #include "ash/picker/search/picker_search_aggregator.h"
 
+#include <cstddef>
 #include <iterator>
+#include <optional>
+#include <set>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -70,6 +73,20 @@ bool ShouldPromote(const PickerSearchResult& result) {
       result.data());
 }
 
+std::vector<GURL> LinksFromSearchResults(
+    base::span<const PickerSearchResult> results) {
+  std::vector<GURL> links;
+  for (const PickerSearchResult& link : results) {
+    auto* link_data =
+        std::get_if<PickerSearchResult::BrowsingHistoryData>(&link.data());
+    if (link_data == nullptr) {
+      continue;
+    }
+    links.push_back(link_data->url);
+  }
+  return links;
+}
+
 void DeduplicateDriveLinksFromFiles(
     std::vector<PickerSearchResult>& links,
     base::span<const PickerSearchResult> files) {
@@ -103,6 +120,47 @@ void DeduplicateDriveLinksFromFiles(
     }
     return matcher.AnyMatch(link_data->url.spec());
   });
+}
+
+void DeduplicateDriveFilesFromLinks(std::vector<PickerSearchResult>& files,
+                                    base::span<const GURL> links) {
+  std::vector<base::MatcherStringPattern> patterns;
+  for (size_t i = 0; i < files.size(); ++i) {
+    auto* drive_data =
+        std::get_if<PickerSearchResult::DriveFileData>(&files[i].data());
+    if (drive_data == nullptr) {
+      continue;
+    }
+    if (!drive_data->id.has_value()) {
+      continue;
+    }
+    // Pattern IDs need to be associated with the index of the file so we can
+    // remove them below.
+    patterns.emplace_back(*drive_data->id, i);
+  }
+
+  base::SubstringSetMatcher matcher;
+  bool success = matcher.Build(patterns);
+  CHECK(success);
+
+  std::set<size_t> matched_files;
+  for (const GURL& link : links) {
+    // Drive IDs are unlikely to overlap as they are random fixed-length
+    // strings, so the number of `matched_files` set insertions should be
+    // limited to `O(t)` for each call.
+    matcher.Match(link.spec(), &matched_files);
+  }
+  std::vector<PickerSearchResult*> results_to_remove;
+  for (size_t i : matched_files) {
+    results_to_remove.push_back(&files[i]);
+  }
+  base::flat_set<PickerSearchResult*> results_to_remove_set =
+      std::move(results_to_remove);
+
+  std::erase_if(files,
+                [&results_to_remove_set](const PickerSearchResult& file) {
+                  return results_to_remove_set.contains(&file);
+                });
 }
 
 }  // namespace
@@ -142,6 +200,16 @@ void PickerSearchAggregator::HandleSearchSourceResults(
   if (IsPostBurnIn()) {
     // Publish post-burn-in results and skip assignment.
     if (!results.empty()) {
+      if (section_type == PickerSectionType::kDriveFiles &&
+          links_for_drive_dedupe_.has_value()) {
+        DeduplicateDriveFilesFromLinks(results,
+                                       std::move(*links_for_drive_dedupe_));
+        links_for_drive_dedupe_ = std::nullopt;
+      } else if (section_type == PickerSectionType::kLinks) {
+        CHECK(!links_for_drive_dedupe_.has_value());
+        links_for_drive_dedupe_ = LinksFromSearchResults(results);
+      }
+
       std::vector<PickerSearchResultsSection> sections;
       sections.emplace_back(section_type, std::move(results), has_more_results);
       current_callback_.Run(std::move(sections));
@@ -188,12 +256,18 @@ bool PickerSearchAggregator::IsPostBurnIn() const {
 }
 
 void PickerSearchAggregator::PublishBurnInResults() {
+  // This variable should only be set after burn-in.
+  CHECK(!links_for_drive_dedupe_.has_value());
+
   if (UnpublishedResults* link_results =
           AccumulatedResultsForSection(PickerSectionType::kLinks)) {
     if (UnpublishedResults* drive_results =
             AccumulatedResultsForSection(PickerSectionType::kDriveFiles)) {
       DeduplicateDriveLinksFromFiles(link_results->results,
                                      drive_results->results);
+    } else {
+      // Link results came in before burn-in, and Drive results didn't.
+      links_for_drive_dedupe_ = LinksFromSearchResults(link_results->results);
     }
   }
 

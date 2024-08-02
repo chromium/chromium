@@ -7,17 +7,18 @@
 
 #include <array>
 #include <cstddef>
+#include <optional>
 #include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/search/picker_search_source.h"
 #include "ash/picker/views/picker_view_delegate.h"
-#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -78,6 +79,10 @@ class ASH_EXPORT PickerSearchAggregator {
   // Results are only published after burn-in if the `results` vector is not
   // empty.
   std::array<UnpublishedResults, kNumSections> accumulated_results_;
+
+  // Set iff burn-in has completed, link results have been received, and Drive
+  // results have not been received yet.
+  std::optional<std::vector<GURL>> links_for_drive_dedupe_;
 
   base::WeakPtrFactory<PickerSearchAggregator> weak_ptr_factory_{this};
 };
