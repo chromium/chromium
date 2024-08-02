@@ -78,8 +78,8 @@ class TabRemoveObserver : public TabStripModelObserver {
       : browser_(browser), event_generator_(event_generator) {
     browser_->tab_strip_model()->AddObserver(this);
   }
-  TabRemoveObserver(const TabStripObserver&) = delete;
-  TabRemoveObserver& operator=(const TabStripObserver&) = delete;
+  TabRemoveObserver(const TabRemoveObserver&) = delete;
+  TabRemoveObserver& operator=(const TabRemoveObserver&) = delete;
   ~TabRemoveObserver() override {
     browser_->tab_strip_model()->RemoveObserver(this);
   }
@@ -268,7 +268,8 @@ class SnapGroupBrowserTest : public InProcessBrowserTest {
   SnapGroupBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kSnapGroup,
-                              ash::features::kForestFeature},
+                              ash::features::kForestFeature,
+                              ash::features::kSavedDeskUiRevamp},
         /*disabled_features=*/{});
   }
   SnapGroupBrowserTest(const SnapGroupBrowserTest&) = delete;

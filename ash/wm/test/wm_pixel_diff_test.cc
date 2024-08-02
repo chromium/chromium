@@ -42,7 +42,7 @@ class WmPixelDiffTest : public AshTestBase {
  public:
   WmPixelDiffTest() {
     scoped_features_.InitWithFeatures(
-        {features::kForestFeature,
+        {features::kForestFeature, features::kSavedDeskUiRevamp,
          features::kDeskBarWindowOcclusionOptimization},
         {});
   }

@@ -2356,7 +2356,7 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // saved desk grid. This will be needed when we make it so that switching
   // desks keeps us in overview mode.
   if (!saved_desk_util::ShouldShowSavedDesksOptions() ||
-      features::IsForestFeatureEnabled()) {
+      features::IsSavedDeskUiRevampEnabled()) {
     return;
   }
 

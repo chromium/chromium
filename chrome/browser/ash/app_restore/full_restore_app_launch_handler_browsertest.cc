@@ -654,8 +654,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                        RestoreAndLaunchBrowserWithClickRestore) {
   // TODO(http://b/328779923): This test tests clicking a notification that will
-  // not be shown if forest feature is enabled. Remove this test once forest
-  // feature can no longer be disabled.
+  // not be shown if this feature is enabled. Remove this test once this feature
+  // can no longer be disabled.
   if (ash::features::IsForestFeatureEnabled()) {
     GTEST_SKIP() << "Skipping test body for Forest Feature.";
   }
@@ -1043,7 +1043,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   ToggleOverview();
   WaitForOverviewEnterAnimation();
 
-  if (features::IsForestFeatureEnabled()) {
+  if (features::IsSavedDeskUiRevampEnabled()) {
     SelectSaveDeskAsTemplateMenuItem(/*index=*/1);
   } else {
     ClickSaveDeskAsTemplateButton();
@@ -2246,7 +2246,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   // Capture the active desk as a template.
   ToggleOverview();
   WaitForOverviewEnterAnimation();
-  if (features::IsForestFeatureEnabled()) {
+  if (features::IsSavedDeskUiRevampEnabled()) {
     SelectSaveDeskAsTemplateMenuItem(/*index=*/2);
   } else {
     ClickSaveDeskAsTemplateButton();

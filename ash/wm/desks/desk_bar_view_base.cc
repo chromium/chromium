@@ -1906,10 +1906,10 @@ void DeskBarViewBase::MaybeUpdateDeskActionButtonTooltips() {
         desk->name().empty() && desk_index != -1
             ? desk_controller->GetDeskDefaultName(desk_index)
             : desk->name();
-    // The combine desks button only exists if the forest feature is disabled.
-    // The context menu button that would appear in its place does not need to
+    // The combine desks button only exists if the feature is disabled. The
+    // context menu button that would appear in its place does not need to
     // update its tooltip as it doesn't use a formatted string.
-    if (!features::IsForestFeatureEnabled()) {
+    if (!features::IsSavedDeskUiRevampEnabled()) {
       desk_action_view->combine_desks_button()->UpdateTooltip(
           combine_desk_tooltip);
     }

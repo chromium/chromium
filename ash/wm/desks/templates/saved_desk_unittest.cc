@@ -360,7 +360,7 @@ class SavedDeskTest : public OverviewTestBase,
       ToggleOverview();
     }
 
-    if (features::IsForestFeatureEnabled()) {
+    if (features::IsSavedDeskUiRevampEnabled()) {
       LeftClickOn(GetActiveDeskActionContextMenuItem(
           root, DeskActionContextMenu::kSaveAsTemplate));
     } else {
@@ -387,7 +387,7 @@ class SavedDeskTest : public OverviewTestBase,
       ToggleOverview();
     }
 
-    if (features::IsForestFeatureEnabled()) {
+    if (features::IsSavedDeskUiRevampEnabled()) {
       LeftClickOn(GetActiveDeskActionContextMenuItem(
           root, DeskActionContextMenu::kSaveForLater));
     } else {
@@ -4495,7 +4495,7 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskWithDuplicateName) {
     ToggleOverview();
 
     auto* root = Shell::Get()->GetPrimaryRootWindow();
-    if (features::IsForestFeatureEnabled()) {
+    if (features::IsSavedDeskUiRevampEnabled()) {
       LeftClickOn(GetActiveDeskActionContextMenuItem(
           root, DeskActionContextMenu::kSaveForLater));
     } else {
@@ -4609,7 +4609,7 @@ TEST_F(DeskSaveAndRecallTest, NewDeskButtonDisabledWhenRecallingToMaxDesks) {
   // After saving the last desk for later, the new desk button should be enabled
   // again.
   auto* root = Shell::GetPrimaryRootWindow();
-  if (features::IsForestFeatureEnabled()) {
+  if (features::IsSavedDeskUiRevampEnabled()) {
     LeftClickOn(GetActiveDeskActionContextMenuItem(
         root, DeskActionContextMenu::kSaveForLater));
   } else {
@@ -4805,7 +4805,10 @@ TEST_F(SavedDeskTest, NoCrashDuringGuest) {
 
 class ForestSavedDeskTest : public SavedDeskTest {
  public:
-  ForestSavedDeskTest() = default;
+  ForestSavedDeskTest() {
+    forest_feature_list_.InitWithFeatures(
+        {features::kForestFeature, features::kSavedDeskUiRevamp}, {});
+  }
   ForestSavedDeskTest(const ForestSavedDeskTest&) = delete;
   ForestSavedDeskTest& operator=(const ForestSavedDeskTest&) = delete;
   ~ForestSavedDeskTest() override = default;
@@ -4818,7 +4821,7 @@ class ForestSavedDeskTest : public SavedDeskTest {
   }
 
  private:
-  base::test::ScopedFeatureList forest_feature_list_{features::kForestFeature};
+  base::test::ScopedFeatureList forest_feature_list_;
 };
 
 // Tests that the layout of the desk mini view context menu is correct, and the

@@ -286,9 +286,9 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
   CHECK(desk_);
 
   auto get_visible = [this]() -> bool {
-    // If Forest is enabled, then we still want to show the save desk options,
+    // If revamp is enabled, then we still want to show the save desk options,
     // even if we can't remove the desk.
-    if (!features::IsForestFeatureEnabled() &&
+    if (!features::IsSavedDeskUiRevampEnabled() &&
         !DesksController::Get()->CanRemoveDesks()) {
       return false;
     }
@@ -322,7 +322,7 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
   // Only show the combine desks button if there are app windows in the desk,
   // or if the desk is active and there are windows that should be visible on
   // all desks.
-  if (features::IsForestFeatureEnabled()) {
+  if (features::IsSavedDeskUiRevampEnabled()) {
     auto* context_menu_button = desk_action_view_->context_menu_button();
     context_menu_button->SetVisible(context_menu_button->CanShow());
   } else {

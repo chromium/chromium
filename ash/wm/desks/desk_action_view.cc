@@ -37,10 +37,10 @@ DeskActionView::DeskActionView(const std::u16string& combine_desks_target_name,
       gfx::RoundedCornersF(kCornerRadius));
 
   // The "Save desk as template" and "Save desk for later" buttons are being
-  // merged into the desk action context menu, behind the Forest feature flag.
-  // Thus, we replace the combine desks button with a button to open the context
-  // menu if the feature is enabled.
-  if (features::IsForestFeatureEnabled()) {
+  // merged into the desk action context menu, behind the a feature flag. Thus,
+  // we replace the combine desks button with a button to open the context menu
+  // if the feature is enabled.
+  if (features::IsSavedDeskUiRevampEnabled()) {
     context_menu_button_ = AddChildView(std::make_unique<DeskActionButton>(
         std::u16string(), DeskActionButton::Type::kContextMenu,
         std::move(context_menu_callback), this));
@@ -59,7 +59,7 @@ DeskActionView::DeskActionView(const std::u16string& combine_desks_target_name,
 }
 
 DeskActionView::~DeskActionView() {
-  if (features::IsForestFeatureEnabled()) {
+  if (features::IsSavedDeskUiRevampEnabled()) {
     context_menu_button_->RemoveObserver(this);
   } else {
     combine_desks_button_->RemoveObserver(this);
@@ -68,7 +68,7 @@ DeskActionView::~DeskActionView() {
 }
 
 bool DeskActionView::ChildHasFocus() const {
-  return (features::IsForestFeatureEnabled()
+  return (features::IsSavedDeskUiRevampEnabled()
               ? context_menu_button_->HasFocus()
               : combine_desks_button_->HasFocus()) ||
          close_all_button_->HasFocus();
