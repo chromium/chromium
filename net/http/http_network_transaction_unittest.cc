@@ -2114,12 +2114,10 @@ void HttpNetworkTransactionTestBase::PreconnectErrorResendRequestTest(
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  const char upload_data[] = "foobar";
   ChunkedUploadDataStream upload_data_stream(0);
   if (chunked_upload) {
     request.method = "POST";
-    upload_data_stream.AppendData(upload_data, std::size(upload_data) - 1,
-                                  true);
+    upload_data_stream.AppendData(base::byte_span_from_cstring("foobar"), true);
     request.upload_data_stream = &upload_data_stream;
   }
 
@@ -21112,7 +21110,7 @@ TEST_P(HttpNetworkTransactionTest,
   TestCompletionCallback callback;
   HttpRequestInfo request;
   ChunkedUploadDataStream upload_data_stream(0, /*has_null_source=*/false);
-  upload_data_stream.AppendData(request_body.data(), request_body.size(),
+  upload_data_stream.AppendData(base::as_byte_span(request_body),
                                 /*is_done=*/true);
   request.method = "POST";
   request.url = GURL("https://www.example.org");
@@ -21180,7 +21178,7 @@ TEST_P(HttpNetworkTransactionTest, Response421WithStreamingBodyWithNullSource) {
   TestCompletionCallback callback;
   HttpRequestInfo request;
   ChunkedUploadDataStream upload_data_stream(0, /*has_null_source=*/true);
-  upload_data_stream.AppendData(request_body.data(), request_body.size(),
+  upload_data_stream.AppendData(base::as_byte_span(request_body),
                                 /*is_done=*/true);
   request.method = "POST";
   request.url = GURL("https://www.example.org");
@@ -22724,7 +22722,8 @@ TEST_P(HttpNetworkTransactionTest, ChunkedPostReadsErrorResponseAfterReset) {
   // the test more future proof.
   base::RunLoop().RunUntilIdle();
 
-  upload_data_stream.AppendData("last chunk", 10, true);
+  upload_data_stream.AppendData(base::byte_span_from_cstring("last chunk"),
+                                true);
 
   rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsOk());
@@ -23385,10 +23384,10 @@ TEST_P(HttpNetworkTransactionTest, TotalNetworkBytesChunkedPost) {
             trans.Start(&request, callback.callback(), NetLogWithSource()));
 
   base::RunLoop().RunUntilIdle();
-  upload_data_stream.AppendData("f", 1, false);
+  upload_data_stream.AppendData(base::byte_span_from_cstring("f"), false);
 
   base::RunLoop().RunUntilIdle();
-  upload_data_stream.AppendData("oo", 2, true);
+  upload_data_stream.AppendData(base::byte_span_from_cstring("oo"), true);
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 

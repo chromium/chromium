@@ -6043,12 +6043,15 @@ namespace {
 // Adds a standard set of data to an upload for chunked upload integration
 // tests.
 void AddDataToUpload(ChunkedUploadDataStream::Writer* writer) {
-  writer->AppendData("a", 1, false);
-  writer->AppendData("bcd", 3, false);
-  writer->AppendData("this is a longer chunk than before.", 35, false);
-  writer->AppendData("\r\n\r\n", 4, false);
-  writer->AppendData("0", 1, false);
-  writer->AppendData("2323", 4, true);
+  const auto append = [writer](const std::string_view str, bool is_done) {
+    writer->AppendData(base::as_byte_span(str), is_done);
+  };
+  append("a", false);
+  append("bcd", false);
+  append("this is a longer chunk than before.", false);
+  append("\r\n\r\n", false);
+  append("0", false);
+  append("2323", true);
 }
 
 // Checks that the upload data added in AddChunksToUpload() was echoed back from

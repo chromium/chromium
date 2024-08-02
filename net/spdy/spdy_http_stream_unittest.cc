@@ -453,10 +453,11 @@ TEST_P(SpdyHttpStreamTest, SendChunkedPost) {
   InitSession(reads, writes);
 
   ChunkedUploadDataStream upload_stream(0);
-  const int kFirstChunkSize = kUploadDataSize/2;
-  upload_stream.AppendData(kUploadData, kFirstChunkSize, false);
-  upload_stream.AppendData(kUploadData + kFirstChunkSize,
-                            kUploadDataSize - kFirstChunkSize, true);
+  const size_t kFirstChunkSize = kUploadDataSize / 2;
+  auto [first_chunk, second_chunk] =
+      base::byte_span_from_cstring(kUploadData).split_at(kFirstChunkSize);
+  upload_stream.AppendData(first_chunk, false);
+  upload_stream.AppendData(second_chunk, true);
 
   HttpRequestInfo request;
   request.method = "POST";
@@ -515,7 +516,7 @@ TEST_P(SpdyHttpStreamTest, SendChunkedPostLastEmpty) {
   InitSession(reads, writes);
 
   ChunkedUploadDataStream upload_stream(0);
-  upload_stream.AppendData(nullptr, 0, true);
+  upload_stream.AppendData(base::byte_span_from_cstring(""), true);
 
   HttpRequestInfo request;
   request.method = "POST";
@@ -573,7 +574,7 @@ TEST_P(SpdyHttpStreamTest, ConnectionClosedDuringChunkedPost) {
 
   ChunkedUploadDataStream upload_stream(0);
   // Append first chunk.
-  upload_stream.AppendData(kUploadData, kUploadDataSize, false);
+  upload_stream.AppendData(base::byte_span_from_cstring(kUploadData), false);
 
   HttpRequestInfo request;
   request.method = "POST";
@@ -611,7 +612,7 @@ TEST_P(SpdyHttpStreamTest, ConnectionClosedDuringChunkedPost) {
   EXPECT_FALSE(HasSpdySession(http_session_->spdy_session_pool(), key_));
 
   // Appending a second chunk now should not result in a crash.
-  upload_stream.AppendData(kUploadData, kUploadDataSize, true);
+  upload_stream.AppendData(base::byte_span_from_cstring(kUploadData), true);
   // Appending data is currently done synchronously, but seems best to be
   // paranoid.
   base::RunLoop().RunUntilIdle();
@@ -659,7 +660,7 @@ TEST_P(SpdyHttpStreamTest, DelayedSendChunkedPost) {
   ASSERT_THAT(upload_stream.Init(TestCompletionCallback().callback(),
                                  NetLogWithSource()),
               IsOk());
-  upload_stream.AppendData(kUploadData, kUploadDataSize, false);
+  upload_stream.AppendData(base::byte_span_from_cstring(kUploadData), false);
 
   NetLogWithSource net_log;
   auto http_stream =
@@ -684,8 +685,8 @@ TEST_P(SpdyHttpStreamTest, DelayedSendChunkedPost) {
   ASSERT_FALSE(callback.have_result());
 
   // Now append the final two chunks which will enqueue two more writes.
-  upload_stream.AppendData(kUploadData1, kUploadData1Size, false);
-  upload_stream.AppendData(kUploadData, kUploadDataSize, true);
+  upload_stream.AppendData(base::byte_span_from_cstring(kUploadData1), false);
+  upload_stream.AppendData(base::byte_span_from_cstring(kUploadData), true);
 
   // Finish writing all the chunks and do all reads.
   base::RunLoop().RunUntilIdle();
@@ -760,7 +761,7 @@ TEST_P(SpdyHttpStreamTest, DelayedSendChunkedPostWithEmptyFinalDataFrame) {
   ASSERT_THAT(upload_stream.Init(TestCompletionCallback().callback(),
                                  NetLogWithSource()),
               IsOk());
-  upload_stream.AppendData(kUploadData, kUploadDataSize, false);
+  upload_stream.AppendData(base::byte_span_from_cstring(kUploadData), false);
 
   NetLogWithSource net_log;
   auto http_stream =
@@ -789,7 +790,7 @@ TEST_P(SpdyHttpStreamTest, DelayedSendChunkedPostWithEmptyFinalDataFrame) {
   EXPECT_EQ(0, http_stream->GetTotalReceivedBytes());
 
   // Now end the stream with an empty data frame and the FIN set.
-  upload_stream.AppendData(nullptr, 0, true);
+  upload_stream.AppendData(base::byte_span_from_cstring(""), true);
 
   // Finish writing the final frame, and perform all reads.
   base::RunLoop().RunUntilIdle();
@@ -850,7 +851,7 @@ TEST_P(SpdyHttpStreamTest, ChunkedPostWithEmptyPayload) {
   ASSERT_THAT(upload_stream.Init(TestCompletionCallback().callback(),
                                  NetLogWithSource()),
               IsOk());
-  upload_stream.AppendData("", 0, true);
+  upload_stream.AppendData(base::byte_span_from_cstring(""), true);
 
   NetLogWithSource net_log;
   auto http_stream =
@@ -1001,7 +1002,7 @@ TEST_P(SpdyHttpStreamTest, DelayedSendChunkedPostWithWindowUpdate) {
   EXPECT_EQ(static_cast<int64_t>(req.size()), http_stream->GetTotalSentBytes());
   EXPECT_EQ(0, http_stream->GetTotalReceivedBytes());
 
-  upload_stream.AppendData(kUploadData, kUploadDataSize, true);
+  upload_stream.AppendData(base::byte_span_from_cstring(kUploadData), true);
 
   // Verify that the window size has decreased.
   ASSERT_TRUE(http_stream->stream() != nullptr);
@@ -1187,7 +1188,7 @@ TEST_P(SpdyHttpStreamTest, RequestCallbackCancelsStream) {
   ASSERT_THAT(
       upload_stream.Init(upload_callback.callback(), NetLogWithSource()),
       IsOk());
-  upload_stream.AppendData("", 0, true);
+  upload_stream.AppendData(base::byte_span_from_cstring(""), true);
 
   NetLogWithSource net_log;
   SpdyHttpStream http_stream(session_, net_log.source(), {} /* dns_aliases */);
