@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_METRICS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_METRICS_H_
 
+#include <string>
+
 namespace blink {
 
 class AIMetrics {
@@ -32,16 +34,16 @@ class AIMetrics {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIAPI)
 
-  static const char* GetAIAPIUsageMetricName(AISessionType session_type);
-  static const char* GetAIModelAvailabilityMetricName(
+  static std::string GetAIAPIUsageMetricName(AISessionType session_type);
+  static std::string GetAIModelAvailabilityMetricName(
       AISessionType session_type);
-  static const char* GetAISessionRequestSizeMetricName(
+  static std::string GetAISessionRequestSizeMetricName(
       AISessionType session_type);
-  static const char* GetAISessionResponseStatusMetricName(
+  static std::string GetAISessionResponseStatusMetricName(
       AISessionType session_type);
-  static const char* GetAISessionResponseSizeMetricName(
+  static std::string GetAISessionResponseSizeMetricName(
       AISessionType session_type);
-  static const char* GetAISessionResponseCallbackCountMetricName(
+  static std::string GetAISessionResponseCallbackCountMetricName(
       AISessionType session_type);
 };
 
