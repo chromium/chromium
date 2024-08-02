@@ -41,6 +41,11 @@ constexpr char kStandardCookieLine[] = "CookieName=CookieValue; max-age=3600";
 
 constexpr char kCookieName[] = "CookieName";
 
+// Unique key for standard cookie (kStandardCookieLine and kNonGoogleURL).
+// Has cross-site ancestor (true), name (CookieName), domain + path
+// (example.com/), kSecure scheme (2), port (8888).
+constexpr char kCookieUniqueKey[] = "trueCookieNameexample.com/28888";
+
 class CookieChangeListener : public network::mojom::CookieChangeListener {
  public:
   CookieChangeListener(
@@ -272,19 +277,7 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoTest, FiltersOutGoogleCookies) {
   ASSERT_TRUE(SetCookie(cookie_manager(), GURL("https://youtube.com"),
                         kStandardCookieLine));
 
-  auto store_entries = GetStoreEntries();
-  EXPECT_EQ(store_entries.size(), 0u);
-}
-
-IN_PROC_BROWSER_TEST_F(FloatingSsoTest, FiltersOutThirdPartyCookies) {
-  auto& service = floating_sso_service();
-  SetFloatingSsoEnabledPolicy(/*policy_value=*/true);
-  EXPECT_TRUE(service.is_enabled_for_testing_);
-
-  ASSERT_TRUE(
-      SetCookie(cookie_manager(), kNonGoogleURL,
-                "CookieName=CookieValue; SameSite=None; Secure; max-age=3600"));
-
+  // Cookies are not added to store.
   auto store_entries = GetStoreEntries();
   EXPECT_EQ(store_entries.size(), 0u);
 }
@@ -297,8 +290,24 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoTest, FiltersOutSessionCookies) {
   ASSERT_TRUE(
       SetCookie(cookie_manager(), kNonGoogleURL, "CookieName=CookieValue"));
 
+  // Cookie is not added to store.
   auto store_entries = GetStoreEntries();
   EXPECT_EQ(store_entries.size(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(FloatingSsoTest, KeepsThirdPartyCookies) {
+  auto& service = floating_sso_service();
+  SetFloatingSsoEnabledPolicy(/*policy_value=*/true);
+  EXPECT_TRUE(service.is_enabled_for_testing_);
+
+  ASSERT_TRUE(
+      SetCookie(cookie_manager(), kNonGoogleURL,
+                "CookieName=CookieValue; SameSite=None; Secure; max-age=3600"));
+
+  // Cookie is added to store.
+  auto store_entries = GetStoreEntries();
+  EXPECT_EQ(store_entries.size(), 1u);
+  EXPECT_TRUE(store_entries.contains(kCookieUniqueKey));
 }
 
 IN_PROC_BROWSER_TEST_F(FloatingSsoTest, AddsAndDeletesCookiesToStore) {
@@ -310,12 +319,10 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoTest, AddsAndDeletesCookiesToStore) {
   AddCookieAndWaitForCommit(cookie_manager(), kNonGoogleURL,
                             kStandardCookieLine);
 
-  // Has cross-site ancestor (true), name (CookieName), domain + path
-  // (example.com/), kSecure scheme (2), port (8888).
-  constexpr char kUniqueKey[] = "trueCookieNameexample.com/28888";
+  // Cookie is added to store.
   auto store_entries = GetStoreEntries();
   EXPECT_EQ(store_entries.size(), 1u);
-  EXPECT_TRUE(store_entries.contains(kUniqueKey));
+  EXPECT_TRUE(store_entries.contains(kCookieUniqueKey));
 
   // Update cookie.
   UpdateCookieAndWaitForCommit(cookie_manager(), kNonGoogleURL, kCookieName);

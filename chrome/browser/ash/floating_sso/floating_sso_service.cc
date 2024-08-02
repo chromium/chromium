@@ -158,11 +158,6 @@ bool FloatingSsoService::ShouldSyncCookie(
     return false;
   }
 
-  // Filter out Third-Party cookies.
-  if (cookie.IsEffectivelySameSiteNone()) {
-    return false;
-  }
-
   return true;
 }
 
