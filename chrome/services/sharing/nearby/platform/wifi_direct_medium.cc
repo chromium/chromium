@@ -379,6 +379,7 @@ void WifiDirectMedium::OnProperties(
   credentials->SetIPAddress(properties->ipv4_address);
   credentials->SetGateway(properties->ipv4_address);
   ipv4_address_ = properties->ipv4_address;
+  credentials->SetFrequency(properties->frequency);
   waitable_event->Signal();
 }
 
@@ -389,8 +390,12 @@ void WifiDirectMedium::ConnectGroup(WifiDirectCredentials* credentials,
   auto credentials_ptr = ash::wifi_direct::mojom::WifiCredentials::New();
   credentials_ptr->ssid = credentials->GetSSID();
   credentials_ptr->passphrase = credentials->GetPassword();
+  std::optional<uint32_t> frequency = credentials->GetFrequency();
+  if (frequency <= 0) {
+    frequency = std::nullopt;
+  }
   wifi_direct_manager_->ConnectToWifiDirectGroup(
-      std::move(credentials_ptr), std::nullopt,
+      std::move(credentials_ptr), frequency,
       base::BindOnce(&WifiDirectMedium::OnGroupConnected,
                      base::Unretained(this), waitable_event));
 }
