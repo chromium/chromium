@@ -188,7 +188,7 @@ bssl::ParsedCertificateList ParseAllValidCerts(
     std::shared_ptr<const bssl::ParsedCertificate> cert =
         bssl::ParsedCertificate::Create(
             bssl::UpRef(x509_cert->cert_buffer()),
-            net::x509_util::DefaultParseCertificateOptions(), NULL);
+            net::x509_util::DefaultParseCertificateOptions(), nullptr);
     if (cert) {
       parsed_certs.push_back(std::move(cert));
     }

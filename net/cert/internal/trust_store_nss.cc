@@ -19,6 +19,7 @@
 #include <secmod.h>
 #include <secmodt.h>
 
+#include "base/containers/to_vector.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -218,6 +219,7 @@ void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
 
 std::vector<TrustStoreNSS::ListCertsResult>
 TrustStoreNSS::ListCertsIgnoringNSSRoots() {
+  crypto::EnsureNSSInit();
   std::vector<TrustStoreNSS::ListCertsResult> results;
   crypto::ScopedCERTCertList cert_list;
   if (absl::holds_alternative<crypto::ScopedPK11Slot>(
@@ -512,10 +514,24 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
   return bssl::CertificateTrust::ForUnspecified();
 }
 
-std::vector<net::PlatformTrustStore::CertWithTrust>
+std::vector<PlatformTrustStore::CertWithTrust>
 TrustStoreNSS::GetAllUserAddedCerts() {
-  // TODO(crbug.com/40928765): implement this.
-  return {};
+  std::vector<PlatformTrustStore::CertWithTrust> user_added_certs;
+  for (const auto& cert_result : ListCertsIgnoringNSSRoots()) {
+    // Skip user certs, unless the user added the user cert with specific
+    // server auth trust settings.
+    if (cert_result.trust.HasUnspecifiedTrust() &&
+        CERT_IsUserCert(cert_result.cert.get())) {
+      continue;
+    }
+
+    user_added_certs.emplace_back(
+        base::ToVector(base::make_span(cert_result.cert->derCert.data,
+                                       cert_result.cert->derCert.len)),
+        cert_result.trust);
+  }
+
+  return user_added_certs;
 }
 
 }  // namespace net
