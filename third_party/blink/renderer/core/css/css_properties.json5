@@ -5981,6 +5981,18 @@
       runtime_flag: "CSSViewTransitionClass",
     },
     {
+      name: "view-transition-group",
+      field_group: "*",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      converter: "ConvertViewTransitionGroup",
+      type_name: "AtomicString",
+      default_value: "AtomicString()",
+      field_template: "external",
+      keywords: ["normal", "contain", "nearest"],
+      typedom_types: ["Keyword"],
+      runtime_flag: "NestedViewTransition",
+    },
+    {
       name: "view-transition-name",
       field_group: "*",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],

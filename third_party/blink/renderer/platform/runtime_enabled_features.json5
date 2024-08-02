@@ -2796,6 +2796,10 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      name: "NestedViewTransition",
+      status: "experimental",
+    },
+    {
       name: "NetInfoConstantType",
     },
     {

@@ -2343,6 +2343,12 @@ scoped_refptr<SVGDashArray> StyleBuilderConverter::ConvertStrokeDasharray(
   return array;
 }
 
+AtomicString StyleBuilderConverter::ConvertViewTransitionGroup(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return ConvertCustomIdent(state, value)->GetName();
+}
+
 ScopedCSSName* StyleBuilderConverter::ConvertViewTransitionName(
     StyleResolverState& state,
     const CSSValue& value) {

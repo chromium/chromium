@@ -755,6 +755,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
               a.GetVerticalAlignLength() == b.GetVerticalAlignLength());
     case CSSPropertyID::kViewTransitionClass:
       return a.ViewTransitionClass() == b.ViewTransitionClass();
+    case CSSPropertyID::kViewTransitionGroup:
+      return a.ViewTransitionGroup() == b.ViewTransitionGroup();
     case CSSPropertyID::kViewTransitionName:
       return a.ViewTransitionName() == b.ViewTransitionName();
     case CSSPropertyID::kVisibility:

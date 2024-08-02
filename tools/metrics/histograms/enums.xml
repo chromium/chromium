@@ -10718,6 +10718,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5043" label="FlexNewColumnWrapIntrinsicSize"/>
   <int value="5044" label="V8AI_TextModelInfo_Method"/>
   <int value="5045" label="EventTimingSimulatedClickWithNoKeyboardInteraction"/>
+  <int value="5046" label="ViewTransitionGroupNesting"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
@@ -26464,6 +26465,7 @@ Called by update_use_counter_css.py.-->
   <int value="796" label="box-decoration-break"/>
   <int value="797" label="position-try-fallbacks"/>
   <int value="798" label="interpolate-size"/>
+  <int value="799" label="view-transition-group"/>
 </enum>
 
 <enum name="MediaEncryptionType">

@@ -4411,8 +4411,8 @@ enum WebFeature {
   kEyeDropperOpen = 5042,
   kFlexNewColumnWrapIntrinsicSize = 5043,
   kV8AI_TextModelInfo_Method = 5044,
-
   kEventTimingSimulatedClickWithNoKeyboardInteraction = 5045,
+  kViewTransitionGroupNesting = 5046,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

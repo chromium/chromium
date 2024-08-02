@@ -6953,6 +6953,24 @@ const CSSValue* ViewTransitionClass::CSSValueFromComputedStyleInternal(
   return ident_list;
 }
 
+const CSSValue* ViewTransitionGroup::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeCustomIdent(stream, context);
+}
+
+const CSSValue* ViewTransitionGroup::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  if (!style.ViewTransitionGroup()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNormal);
+  }
+  return MakeGarbageCollected<CSSCustomIdentValue>(style.ViewTransitionGroup());
+}
+
 const CSSValue* PaintOrder::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
