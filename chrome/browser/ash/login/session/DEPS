@@ -31,7 +31,7 @@ include_rules = [
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/eche_app",
-  "+chrome/browser/ash/eol_notification.h",
+  "+chrome/browser/ash/eol",
   "+chrome/browser/ash/first_run",
   "+chrome/browser/ash/floating_workspace",
   "+chrome/browser/ash/guest_os",

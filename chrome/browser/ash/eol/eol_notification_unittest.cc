@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/eol_notification.h"
+#include "chrome/browser/ash/eol/eol_notification.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"

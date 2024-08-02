@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_EOL_NOTIFICATION_H_
-#define CHROME_BROWSER_ASH_EOL_NOTIFICATION_H_
+#ifndef CHROME_BROWSER_ASH_EOL_EOL_NOTIFICATION_H_
+#define CHROME_BROWSER_ASH_EOL_EOL_NOTIFICATION_H_
 
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/eol_incentive_util.h"
+#include "chrome/browser/ash/eol/eol_incentive_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "third_party/cros_system_api/dbus/update_engine/dbus-constants.h"
@@ -101,4 +101,4 @@ class EolNotification final : public message_center::NotificationObserver {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_EOL_NOTIFICATION_H_
+#endif  // CHROME_BROWSER_ASH_EOL_EOL_NOTIFICATION_H_
