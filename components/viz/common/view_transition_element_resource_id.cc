@@ -34,10 +34,8 @@ bool ViewTransitionElementResourceId::IsValid() const {
 }
 
 std::string ViewTransitionElementResourceId::ToString() const {
-  static constexpr char kDefaultLabel[] = "no-label";
   return base::StringPrintf(
-      "ViewTransitionElementResourceId : %s %u [transition: %s]",
-      debug_label_.empty() ? kDefaultLabel : debug_label_.c_str(), local_id_,
+      "ViewTransitionElementResourceId : %u [transition: %s]", local_id_,
       transition_token_ ? transition_token_->ToString().c_str() : "invalid");
 }
 

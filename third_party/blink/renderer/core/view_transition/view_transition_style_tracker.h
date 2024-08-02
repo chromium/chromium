@@ -311,8 +311,7 @@ class ViewTransitionStyleTracker
       PhysicalRect& visual_overflow_rect_in_layout_space,
       std::optional<gfx::RectF>& captured_rect_in_layout_space) const;
 
-  viz::ViewTransitionElementResourceId GenerateResourceId(
-      const AtomicString& debug_label) const;
+  viz::ViewTransitionElementResourceId GenerateResourceId() const;
 
   void SnapBrowserControlsToFullyShown();
 
