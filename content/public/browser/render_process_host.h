@@ -477,9 +477,11 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // process. RegisterRenderFrameHost and UnregisterRenderFrameHost are the
   // implementation details and should be called only from within //content.
   virtual void RegisterRenderFrameHost(
-      const GlobalRenderFrameHostId& render_frame_host_id) = 0;
+      const GlobalRenderFrameHostId& render_frame_host_id,
+      bool is_outermost_main_frame) = 0;
   virtual void UnregisterRenderFrameHost(
-      const GlobalRenderFrameHostId& render_frame_host_id) = 0;
+      const GlobalRenderFrameHostId& render_frame_host_id,
+      bool is_outermost_main_frame) = 0;
 
   // "Worker ref count" is similar to "Keep alive ref count", but is specific to
   // workers since they do not have pre-defined timeouts. Also affected by
@@ -741,6 +743,12 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // v8. The default state is `false`, meaning the power/speed tuning is left up
   // to the different components to figure out.
   virtual void SetBatterySaverMode(bool battery_saver_mode_enabled) = 0;
+
+  // Return the memory usage of this process. On Android this value is
+  // provided by the renderer periodically. On other platforms this value is
+  // read from the OS but is cached for a short duration so we don't incur
+  // a cost on every call.
+  virtual uint64_t GetPrivateMemoryFootprint() = 0;
 
   // Static management functions -----------------------------------------------
 

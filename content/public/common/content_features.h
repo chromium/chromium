@@ -201,6 +201,10 @@ CONTENT_EXPORT extern const base::FeatureParam<bool>
     kProcessPerSiteMainFrameAllowIPAndLocalhost;
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kProcessPerSiteMainFrameAllowDevToolsAttached;
+CONTENT_EXPORT extern const base::FeatureParam<double>
+    kProcessPerSiteMainFrameSiteScalingFactor;
+CONTENT_EXPORT extern const base::FeatureParam<double>
+    kProcessPerSiteMainFrameTotalMemoryLimit;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRunVideoCaptureServiceInBrowserProcess);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSchedQoSOnResourcedForChrome);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSecurePaymentConfirmation);

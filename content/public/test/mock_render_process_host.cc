@@ -425,12 +425,14 @@ int MockRenderProcessHost::GetRenderFrameHostCount() const {
 }
 
 void MockRenderProcessHost::RegisterRenderFrameHost(
-    const GlobalRenderFrameHostId& render_frame_host_id) {
+    const GlobalRenderFrameHostId& render_frame_host_id,
+    bool is_outermost_main_frame) {
   render_frame_host_id_set_.insert(render_frame_host_id);
 }
 
 void MockRenderProcessHost::UnregisterRenderFrameHost(
-    const GlobalRenderFrameHostId& render_frame_host_id) {
+    const GlobalRenderFrameHostId& render_frame_host_id,
+    bool is_outermost_main_frame) {
   render_frame_host_id_set_.erase(render_frame_host_id);
 }
 
@@ -586,6 +588,10 @@ void MockRenderProcessHost::ReinitializeLogging(
   NOTIMPLEMENTED();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+uint64_t MockRenderProcessHost::GetPrivateMemoryFootprint() {
+  return 0;
+}
 
 RenderProcessHost::FilterURLResult MockRenderProcessHost::FilterURL(
     bool empty_allowed,

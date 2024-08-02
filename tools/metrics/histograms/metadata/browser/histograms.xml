@@ -1213,6 +1213,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowserRenderProcessHost.MaxOutermostMainFrames"
+    units="frames" expires_after="M132">
+  <owner>dtapuska@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the maximum number of outermost main frames that were hosted in the
+    process. This is logged when the RenderProcessHost is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="BrowserRenderProcessHost.ProcessPerSiteMainFrameLimit"
+    units="frames" expires_after="M132">
+  <owner>dtapuska@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the number of outermost main frames that were hosted in the process
+    when it was determined no more should be placed in the process for the
+    ProcessPerSite algorithm. This is recorded only when this limit is first
+    crossed for each RenderProcessHost.
+  </summary>
+</histogram>
+
 <histogram name="BrowserRenderProcessHost.SpareProcessDelayTime" units="ms"
     expires_after="2025-01-05">
   <owner>kerenzhu@chromium.org</owner>
