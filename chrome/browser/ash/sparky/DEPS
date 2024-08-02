@@ -21,6 +21,7 @@ include_rules = [
   "+chrome/browser/ash/profiles/profile_helper.h",
   "+chrome/browser/extensions/api/settings_private",
   "+chrome/browser/manta",
+  "+chrome/browser/platform_util.h",
   "+chrome/browser/profiles",
   "+chrome/browser/signin/identity_manager_factory.h",
   "+chrome/test/base",

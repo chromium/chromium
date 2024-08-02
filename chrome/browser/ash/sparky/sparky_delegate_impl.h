@@ -8,7 +8,9 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <vector>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -56,6 +58,10 @@ class SparkyDelegateImpl : public manta::SparkyDelegate,
  private:
   friend class SparkyDelegateImplTest;
 
+  void SetRootPathForTesting(const base::FilePath& root_path) {
+    root_path_ = root_path;
+  }
+
   void AddPrefToMap(
       const std::string& pref_name,
       extensions::api::settings_private::PrefType settings_pref_type,
@@ -82,6 +88,10 @@ class SparkyDelegateImpl : public manta::SparkyDelegate,
 
   // Controls if the size of each storage item has been calculated.
   std::bitset<SimpleSizeCalculator::kCalculationTypeCount> calculation_state_;
+
+  // Root path which files will be obtained from.
+  base::FilePath root_path_;
+  std::vector<base::FilePath> trash_paths_;
 
   base::WeakPtrFactory<SparkyDelegateImpl> weak_factory_{this};
 };
