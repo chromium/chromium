@@ -110,6 +110,8 @@ generated_callback_interface_sources_in_modules = [
 ]
 
 generated_dictionary_sources_in_modules = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_language_detection_result.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_language_detection_result.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_aac_encoder_config.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_aac_encoder_config.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ad_auction_data.cc",
@@ -2735,6 +2737,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_track_default_list.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_track_default_list.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_translation.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_language_detector.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_language_detector.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_translation.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_url.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_url.h",

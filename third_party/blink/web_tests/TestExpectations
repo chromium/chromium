@@ -1503,6 +1503,9 @@ crbug.com/649444 external/wpt/css/selectors/xml-class-selector.xml [ Failure ]
 # Bug in <select multiple> tap behavior:
 crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
 
+# Under development, passes with --no-sandbox.
+crbug.com/354069716 external/wpt/language_detection/detect-en.tentative.window.html [ Failure ]
+
 ### sheriff 2019-07-16
 
 ### sheriff 2018-05-28

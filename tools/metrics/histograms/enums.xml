@@ -10719,6 +10719,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5044" label="V8AI_TextModelInfo_Method"/>
   <int value="5045" label="EventTimingSimulatedClickWithNoKeyboardInteraction"/>
   <int value="5046" label="ViewTransitionGroupNesting"/>
+  <int value="5047" label="V8LanguageDetector_Detect_Method"/>
+  <int value="5048" label="V8Translation_CanDetect_Method"/>
+  <int value="5049" label="V8Translation_CreateDetector_Method"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

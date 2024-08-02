@@ -2460,6 +2460,10 @@
       settable_from_internals: true,
     },
     {
+      name: "LanguageDetectionAPI",
+      status: "experimental",
+    },
+    {
       name: "LastSuccessfulPositionOption",
       depends_on: ["CSSAnchorPositioning"],
       status: "stable",
@@ -4229,6 +4233,11 @@
       name: "TranslationAPI",
       status: "test",
       base_feature: "EnableTranslationAPI",
+    },
+    {
+      name: "TranslationAPIEntryPoint",
+      status: "test",
+      implied_by: ["TranslationAPI", "LanguageDetectionAPI"],
     },
     {
       name: "TrustedTypeBeforePolicyCreationEvent",

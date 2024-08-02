@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_translation_language_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/on_device_translation/language_detector.h"
 #include "third_party/blink/renderer/modules/on_device_translation/language_translator.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -43,6 +44,7 @@ ScriptPromise<V8TranslationAvailability> Translation::canTranslate(
     TranslationLanguageOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
+    // TODO(https://crbug.com/357031848): Expose and use the helper.
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
     return EmptyPromise();
@@ -114,4 +116,39 @@ ScriptPromise<LanguageTranslator> Translation::createTranslator(
   return promise;
 }
 
+ScriptPromise<V8TranslationAvailability> Translation::canDetect(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The execution context is not valid.");
+    return ScriptPromise<V8TranslationAvailability>();
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<V8TranslationAvailability>>(
+          script_state);
+  auto promise = resolver->Promise();
+
+  resolver->Resolve(
+      V8TranslationAvailability(V8TranslationAvailability::Enum::kReadily));
+
+  return promise;
+}
+
+ScriptPromise<LanguageDetector> Translation::createDetector(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The execution context is not valid.");
+    return ScriptPromise<LanguageDetector>();
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<LanguageDetector>>(
+          script_state);
+  resolver->Resolve(MakeGarbageCollected<LanguageDetector>());
+  return resolver->Promise();
+}
 }  // namespace blink

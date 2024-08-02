@@ -4413,6 +4413,9 @@ enum WebFeature {
   kV8AI_TextModelInfo_Method = 5044,
   kEventTimingSimulatedClickWithNoKeyboardInteraction = 5045,
   kViewTransitionGroupNesting = 5046,
+  kV8LanguageDetector_Detect_Method = 5047,
+  kV8Translation_CanDetect_Method = 5048,
+  kV8Translation_CreateDetector_Method = 5049,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -1115,6 +1115,10 @@ interface InstallEvent : ExtendableEvent
     attribute @@toStringTag
     method addRoutes
     method constructor
+interface LanguageDetector
+    attribute @@toStringTag
+    method constructor
+    method detect
 interface LanguageTranslator
     attribute @@toStringTag
     method constructor
@@ -1926,8 +1930,10 @@ interface TransformStreamDefaultController
     method terminate
 interface Translation
     attribute @@toStringTag
+    method canDetect
     method canTranslate
     method constructor
+    method createDetector
     method createTranslator
 interface TrustedHTML
     static method fromLiteral
