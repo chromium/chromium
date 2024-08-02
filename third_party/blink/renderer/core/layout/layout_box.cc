@@ -33,7 +33,6 @@
 
 #include "base/memory/values_equivalent.h"
 #include "cc/input/scroll_snap_data.h"
-#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -41,6 +40,8 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -3120,16 +3121,24 @@ PhysicalRect LayoutBox::LocalCaretRect(
 void LayoutBox::UpdateScrollMarkerControlsAfterScroll() const {
   NOT_DESTROYED();
   CHECK(IsScrollContainerWithScrollMarkerGroup());
-  LayoutObject* scroll_marker_group = GetScrollMarkerGroup();
-  CHECK(scroll_marker_group);
-  LayoutObject* selected = scroll_marker_group->SlowFirstChild();
+  LayoutObject* scroll_marker_group_object = GetScrollMarkerGroup();
+  if (!scroll_marker_group_object) {
+    return;
+  }
+  auto* scroll_marker_group =
+      To<ScrollMarkerGroupPseudoElement>(scroll_marker_group_object->GetNode());
+  ScrollMarkerPseudoElement* selected = nullptr;
   PhysicalOffset scroll_offset = ScrolledContentOffset();
-  for (LayoutObject* scroll_marker = selected; scroll_marker;
-       scroll_marker = scroll_marker->NextSibling()) {
+  for (ScrollMarkerPseudoElement* scroll_marker :
+       scroll_marker_group->ScrollMarkers()) {
+    if (!selected) {
+      selected = scroll_marker;
+    }
     const LayoutBox* target_box =
-        DynamicTo<LayoutBox>(To<PseudoElement>(scroll_marker->GetNode())
-                                 ->OriginatingElement()
-                                 ->GetLayoutObject());
+        scroll_marker->OriginatingElement()->GetLayoutBox();
+    if (!target_box) {
+      continue;
+    }
     PhysicalBoxStrut scroll_margin =
         target_box->Style() ? target_box->Style()->ScrollMarginStrut()
                             : PhysicalBoxStrut();
@@ -3153,21 +3162,19 @@ void LayoutBox::UpdateScrollMarkerControlsAfterScroll() const {
                 *target_box, kVerticalScroll));
     PhysicalOffset target_offset(LayoutUnit(target_scroll_offset.x()),
                                  LayoutUnit(target_scroll_offset.y()));
-    if (target_offset.left <= scroll_offset.left &&
-        target_offset.top <= scroll_offset.top) {
+    // TODO(332396355, 355460994): It's a bug for now, since scroll area doesn't
+    // account for its border when If left/top of scroll offset is zero, don't
+    // check that dimension for now, since target can have some border/margin
+    // and will always be more than zero.
+    if ((target_offset.left <= scroll_offset.left || !scroll_offset.left) &&
+        (target_offset.top <= scroll_offset.top || !scroll_offset.top)) {
       selected = scroll_marker;
     }
   }
   if (!selected) {
     return;
   }
-  auto* selected_element = To<PseudoElement>(selected->GetNode());
-  selected_element->Focus();
-  GetDocument().SetFocusedElement(
-      selected_element,
-      FocusParams(SelectionBehaviorOnFocus::kNone,
-                  mojom::blink::FocusType::kMouse, /*capabilities=*/nullptr));
-  selected_element->FocusStateChanged();
+  scroll_marker_group->SetSelected(*selected);
 }
 
 PositionWithAffinity LayoutBox::PositionForPointInFragments(

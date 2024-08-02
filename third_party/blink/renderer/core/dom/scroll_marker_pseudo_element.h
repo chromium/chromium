@@ -20,15 +20,15 @@ class ScrollMarkerPseudoElement : public PseudoElement {
 
   bool IsScrollMarkerPseudoElement() const final { return true; }
 
+  void SetSelected(bool value);
+  bool IsSelected() const { return is_selected_; }
   int DefaultTabIndex() const override { return 0; }
   void DefaultEventHandler(Event&) override;
   bool HasActivationBehavior() const final { return true; }
   bool WillRespondToMouseClickEvents() override { return true; }
   Node* InnerNodeForHitTesting() final { return this; }
   void SetScrollMarkerGroup(
-      ScrollMarkerGroupPseudoElement* scroll_marker_group) {
-    scroll_marker_group_ = scroll_marker_group;
-  }
+      ScrollMarkerGroupPseudoElement* scroll_marker_group);
   ScrollMarkerGroupPseudoElement* ScrollMarkerGroup() const {
     return scroll_marker_group_;
   }
@@ -37,6 +37,7 @@ class ScrollMarkerPseudoElement : public PseudoElement {
   void Trace(Visitor* v) const final;
 
  private:
+  bool is_selected_ = false;
   WeakMember<ScrollMarkerGroupPseudoElement> scroll_marker_group_;
 };
 

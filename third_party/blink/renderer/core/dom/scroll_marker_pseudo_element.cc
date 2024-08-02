@@ -6,6 +6,8 @@
 
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
@@ -15,22 +17,71 @@
 namespace blink {
 
 void ScrollMarkerPseudoElement::DefaultEventHandler(Event& event) {
-  Element* originating_element = OriginatingElement();
   bool is_click =
       event.IsMouseEvent() && event.type() == event_type_names::kClick;
-  bool is_enter = event.IsKeyboardEvent() &&
-                  To<KeyboardEvent>(event).keyCode() == VKEY_RETURN;
-  bool should_intercept = event.target() == this && originating_element &&
-                          IsScrollMarkerPseudoElement() &&
-                          (is_click || is_enter);
+  bool is_key_down =
+      event.IsKeyboardEvent() && event.type() == event_type_names::kKeydown;
+  bool is_enter_or_space =
+      is_key_down && (To<KeyboardEvent>(event).keyCode() == VKEY_RETURN ||
+                      To<KeyboardEvent>(event).keyCode() == VKEY_SPACE);
+  bool is_left_or_up_arrow_key =
+      is_key_down && (To<KeyboardEvent>(event).keyCode() == VKEY_LEFT ||
+                      To<KeyboardEvent>(event).keyCode() == VKEY_UP);
+  bool is_right_or_down_arrow_key =
+      is_key_down && (To<KeyboardEvent>(event).keyCode() == VKEY_RIGHT ||
+                      To<KeyboardEvent>(event).keyCode() == VKEY_DOWN);
+  bool should_intercept =
+      event.target() == this &&
+      (is_click || is_enter_or_space || is_left_or_up_arrow_key ||
+       is_right_or_down_arrow_key);
   if (should_intercept) {
+    ScrollMarkerPseudoElement* scroll_marker = this;
+    if (scroll_marker_group_) {
+      if (is_right_or_down_arrow_key) {
+        scroll_marker = scroll_marker_group_->FindNextScrollMarker(
+            *scroll_marker_group_->Selected());
+      } else if (is_left_or_up_arrow_key) {
+        scroll_marker = scroll_marker_group_->FindPreviousScrollMarker(
+            *scroll_marker_group_->Selected());
+      }
+      scroll_marker_group_->SetSelected(*scroll_marker);
+    }
+    if (is_right_or_down_arrow_key) {
+      GetDocument().SetFocusedElement(
+          scroll_marker, FocusParams(SelectionBehaviorOnFocus::kNone,
+                                     mojom::blink::FocusType::kNone,
+                                     /*capabilities=*/nullptr));
+    }
+    if (is_left_or_up_arrow_key) {
+      GetDocument().SetFocusedElement(
+          scroll_marker, FocusParams(SelectionBehaviorOnFocus::kNone,
+                                     mojom::blink::FocusType::kNone,
+                                     /*capabilities=*/nullptr));
+    }
     mojom::blink::ScrollIntoViewParamsPtr params =
         scroll_into_view_util::CreateScrollIntoViewParams(
-            *originating_element->GetComputedStyle());
-    originating_element->ScrollIntoViewNoVisualUpdate(std::move(params));
+            *scroll_marker->OriginatingElement()->GetComputedStyle());
+    scroll_marker->OriginatingElement()->ScrollIntoViewNoVisualUpdate(
+        std::move(params));
     event.SetDefaultHandled();
   }
   PseudoElement::DefaultEventHandler(event);
+}
+
+void ScrollMarkerPseudoElement::SetScrollMarkerGroup(
+    ScrollMarkerGroupPseudoElement* scroll_marker_group) {
+  if (scroll_marker_group_ && scroll_marker_group_ != scroll_marker_group) {
+    scroll_marker_group_->RemoveFromFocusGroup(*this);
+  }
+  scroll_marker_group_ = scroll_marker_group;
+}
+
+void ScrollMarkerPseudoElement::SetSelected(bool value) {
+  if (is_selected_ == value) {
+    return;
+  }
+  is_selected_ = value;
+  PseudoStateChanged(CSSSelector::kPseudoChecked);
 }
 
 void ScrollMarkerPseudoElement::Dispose() {

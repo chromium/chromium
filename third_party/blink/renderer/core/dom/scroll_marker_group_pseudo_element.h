@@ -26,10 +26,13 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement {
   void AddToFocusGroup(ScrollMarkerPseudoElement& scroll_marker);
   void RemoveFromFocusGroup(const ScrollMarkerPseudoElement& scroll_marker);
   void ClearFocusGroup();
-  ScrollMarkerPseudoElement* FindFocusableElementForward(
-      const Element& current);
-  ScrollMarkerPseudoElement* FindFocusableElementBackward(
-      const Element& current);
+  ScrollMarkerPseudoElement* FindNextScrollMarker(const Element& current);
+  ScrollMarkerPseudoElement* FindPreviousScrollMarker(const Element& current);
+  const HeapVector<Member<ScrollMarkerPseudoElement>>& ScrollMarkers() {
+    return focus_group_;
+  }
+  void SetSelected(ScrollMarkerPseudoElement& scroll_marker);
+  ScrollMarkerPseudoElement* Selected() { return selected_marker_; }
 
   void Dispose() final;
   void Trace(Visitor* v) const final;
@@ -37,6 +40,7 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement {
  private:
   // TODO(332396355): Add spec link, once it's created.
   HeapVector<Member<ScrollMarkerPseudoElement>> focus_group_;
+  Member<ScrollMarkerPseudoElement> selected_marker_ = nullptr;
 };
 
 template <>
