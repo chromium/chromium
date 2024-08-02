@@ -553,16 +553,6 @@ UIColor* DimColorIncognito() {
   UIColor* defaultColor = useDeemphasizedStyling ? SuggestionDetailTextColor()
                                                  : SuggestionTextColor();
 
-  if (fragment.is_bolded()) {
-    UIFontDescriptor* boldFontDescriptor = [defaultFontDescriptor
-        fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-    return @{
-      NSFontAttributeName : [UIFont fontWithDescriptor:boldFontDescriptor
-                                                  size:0],
-      NSForegroundColorAttributeName : defaultColor,
-    };
-  }
-
   omnibox::FormattedString::ColorType color = fragment.color();
   switch (color) {
     case omnibox::FormattedString::COLOR_ON_SURFACE_POSITIVE:
