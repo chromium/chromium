@@ -343,9 +343,8 @@ class CommandBufferSetup {
 #endif
 
     CHECK(gl::init::InitializeStaticGLBindingsImplementation(
-        gl::GLImplementationParts(gl::kGLImplementationEGLANGLE), false));
+        gl::GLImplementationParts(gl::kGLImplementationEGLANGLE)));
     display_ = gl::init::InitializeGLOneOffPlatformImplementation(
-        /*fallback_to_software_gl=*/false,
         /*disable_gl_drawing=*/false,
         /*init_extensions=*/true,
         /*gpu_preference=*/gl::GpuPreference::kDefault);

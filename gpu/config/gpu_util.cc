@@ -557,10 +557,8 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
   bool use_swift_shader = false;
   bool blocklist_needs_more_info = false;
 
-  bool fallback_to_software_gl = false;
   std::optional<gl::GLImplementationParts> requested_impl =
-      gl::GetRequestedGLImplementationFromCommandLine(command_line,
-                                                      &fallback_to_software_gl);
+      gl::GetRequestedGLImplementationFromCommandLine(command_line);
   if (requested_impl) {
     if (*requested_impl == gl::kGLImplementationNone)
       return ComputeGpuFeatureInfoWithNoGpu();

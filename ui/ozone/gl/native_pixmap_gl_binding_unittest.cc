@@ -35,7 +35,11 @@ namespace {
 constexpr gfx::BufferUsage kUsage = gfx::BufferUsage::SCANOUT;
 constexpr gfx::BufferFormat kFormat = gfx::BufferFormat::BGRA_8888;
 
-bool SkipTest(GLDisplay* display) {
+bool SkipTest() {
+  ui::OzonePlatform::InitParams params;
+  params.single_process = true;
+  ui::OzonePlatform::InitializeForGPU(params);
+
   ui::GLOzone* gl_ozone = ui::OzonePlatform::GetInstance()
                               ->GetSurfaceFactoryOzone()
                               ->GetCurrentGLOzone();
@@ -56,6 +60,9 @@ class NativePixmapGLBindingTest : public testing::Test {
  protected:
   // Overridden from testing::Test:
   void SetUp() override {
+    if (SkipTest()) {
+      GTEST_SKIP();
+    }
     display_ = GLTestSupport::InitializeGL(std::nullopt);
     surface_ = gl::init::CreateOffscreenGLSurface(display_, gfx::Size());
     context_ =
@@ -66,8 +73,10 @@ class NativePixmapGLBindingTest : public testing::Test {
     if (texture_id_) {
       glDeleteTextures(1, &texture_id_);
     }
-    context_->ReleaseCurrent(surface_.get());
-    context_ = nullptr;
+    if (context_) {
+      context_->ReleaseCurrent(surface_.get());
+      context_ = nullptr;
+    }
     surface_ = nullptr;
     GLTestSupport::CleanupGL(display_);
   }
@@ -109,10 +118,6 @@ class NativePixmapGLBindingTest : public testing::Test {
 };
 
 TEST_F(NativePixmapGLBindingTest, MAYBE_Create) {
-  if (SkipTest(this->display_)) {
-    GTEST_SKIP() << "Skip because GL initialization failed";
-  }
-
   // NOTE: On some drm devices (mediatek) the minimum width/height to add an fb
   // for a bo must be 64, and YVU_420 in i915 requires at least 128 length.
   const gfx::Size small_image_size(128, 128);

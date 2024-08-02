@@ -179,8 +179,7 @@ GL_EXPORT void SetSoftwareWebGLCommandLineSwitches(
 // gl related argument, nullopt is returned.
 GL_EXPORT std::optional<GLImplementationParts>
 GetRequestedGLImplementationFromCommandLine(
-    const base::CommandLine* command_line,
-    bool* fallback_to_software_gl);
+    const base::CommandLine* command_line);
 
 // Whether the implementation is one of the software GL implementations
 GL_EXPORT bool IsSoftwareGLImplementation(GLImplementationParts implementation);

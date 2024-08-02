@@ -553,10 +553,8 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
   gpu_info->passthrough_cmd_decoder =
       gl::UsePassthroughCommandDecoder(command_line);
 
-  bool fallback_to_software = false;
   std::optional<gl::GLImplementationParts> implementation =
-      gl::GetRequestedGLImplementationFromCommandLine(command_line,
-                                                      &fallback_to_software);
+      gl::GetRequestedGLImplementationFromCommandLine(command_line);
 
   if (implementation == gl::kGLImplementationDisabled) {
     // If GL is disabled then we don't need GPUInfo.

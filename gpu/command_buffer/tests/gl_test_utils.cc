@@ -46,12 +46,11 @@ gl::GLDisplay* GLTestHelper::InitializeGL(gl::GLImplementation gl_impl) {
         /*gpu_preference=*/gl::GpuPreference::kDefault);
   } else {
     if (!gl::init::InitializeStaticGLBindingsImplementation(
-            gl::GLImplementationParts(gl_impl),
-            /*fallback_to_software_gl=*/false))
+            gl::GLImplementationParts(gl_impl))) {
       return nullptr;
+    }
 
     display = gl::init::InitializeGLOneOffPlatformImplementation(
-        /*fallback_to_software_gl=*/false,
         /*disable_gl_drawing=*/false,
         /*init_extensions=*/false,
         /*gpu_preference=*/gl::GpuPreference::kDefault);

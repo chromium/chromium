@@ -55,9 +55,8 @@ class CodecImageTest : public testing::Test {
         .WillByDefault(Return(OkStatus()));
 
     gl::init::InitializeStaticGLBindingsImplementation(
-        gl::GLImplementationParts(gl::kGLImplementationEGLGLES2), false);
+        gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
     display_ = gl::init::InitializeGLOneOffPlatformImplementation(
-        /*fallback_to_software_gl=*/false,
         /*disable_gl_drawing=*/false,
         /*init_extensions=*/false,
         /*gpu_preference=*/gl::GpuPreference::kDefault);

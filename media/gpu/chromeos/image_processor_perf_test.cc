@@ -907,8 +907,7 @@ int main(int argc, char** argv) {
 #endif
 
   gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
-      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
-      /*fallback_to_software_gl=*/false);
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
 
   return RUN_ALL_TESTS();
 }

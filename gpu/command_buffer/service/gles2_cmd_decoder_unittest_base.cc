@@ -2354,9 +2354,8 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
   context_creation_attribs_.bind_generates_resource = true;
 
   gl::init::InitializeStaticGLBindingsImplementation(
-      gl::GLImplementationParts(gl::ANGLEImplementation::kNull), false);
+      gl::GLImplementationParts(gl::ANGLEImplementation::kNull));
   display_ = gl::init::InitializeGLOneOffPlatformImplementation(
-      /*fallback_to_software_gl=*/false,
       /*disable_gl_drawing=*/false,
       /*init_extensions=*/true,
       /*gpu_preference=*/gl::GpuPreference::kDefault);
