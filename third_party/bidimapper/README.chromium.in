@@ -20,12 +20,12 @@ Find the needed revision in the project release list: https://github.com/GoogleC
 Roll the BiDiMapper to the needed version:
 
 ```bash
-set_pinned_version --version=<your-version>
+roll_bidimapper --version=<your-version>
 ```
 
 If you omit the `--version` parameter the latest available version will be pulled from NPM.
 
-The file README.chromium will be updated by set_pinned_version
+The file README.chromium will be updated by roll_bidimapper
 
 Local Modifications:
 Local modifications are not allowed.
