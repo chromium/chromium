@@ -501,15 +501,6 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                  &PickerSearchResult::TextData::primary_text,
                                  u"omnibox")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kLocalFiles),
-                Property(
-                    "results", &PickerSearchResultsSection::results,
-                    ElementsAre(Property(
-                        "data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::LocalFileData>(Field(
-                            "title", &PickerSearchResult::LocalFileData::title,
-                            u"local")))))),
-          AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kDriveFiles),
                 Property("results", &PickerSearchResultsSection::results,
                          ElementsAre(Property(
@@ -518,6 +509,15 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                  "primary_text",
                                  &PickerSearchResult::TextData::primary_text,
                                  u"drive")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kLocalFiles),
+                Property(
+                    "results", &PickerSearchResultsSection::results,
+                    ElementsAre(Property(
+                        "data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::LocalFileData>(Field(
+                            "title", &PickerSearchResult::LocalFileData::title,
+                            u"local")))))),
           AllOf(
               Property("type", &PickerSearchResultsSection::type,
                        PickerSectionType::kClipboard),

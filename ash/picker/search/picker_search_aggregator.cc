@@ -164,8 +164,8 @@ void PickerSearchAggregator::PublishBurnInResults() {
   // User generated results can be ranked amongst themselves.
   for (PickerSectionType type : {
            PickerSectionType::kLinks,
-           PickerSectionType::kLocalFiles,
            PickerSectionType::kDriveFiles,
+           PickerSectionType::kLocalFiles,
            PickerSectionType::kClipboard,
        }) {
     if (UnpublishedResults* results = AccumulatedResultsForSection(type);
@@ -179,8 +179,8 @@ void PickerSearchAggregator::PublishBurnInResults() {
   // The remaining results are ranked based on a predefined order
   for (PickerSectionType type : {
            PickerSectionType::kLinks,
-           PickerSectionType::kLocalFiles,
            PickerSectionType::kDriveFiles,
+           PickerSectionType::kLocalFiles,
            PickerSectionType::kClipboard,
            PickerSectionType::kEditorWrite,
            PickerSectionType::kEditorRewrite,
