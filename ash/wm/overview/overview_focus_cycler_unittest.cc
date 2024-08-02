@@ -15,6 +15,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
+#include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"

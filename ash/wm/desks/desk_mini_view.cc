@@ -57,6 +57,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -500,7 +501,7 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
   desk_preview_->SetHighlightOverlayVisibility(true);
 
   context_menu_ =
-      std::make_unique<DeskActionContextMenu>(std::move(menu_config));
+      std::make_unique<DeskActionContextMenu>(std::move(menu_config), this);
   context_menu_->ShowContextMenuForView(
       this,
       show_on_top ? (base::i18n::IsRTL()

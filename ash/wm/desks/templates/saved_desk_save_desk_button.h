@@ -6,7 +6,9 @@
 #define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_SAVE_DESK_BUTTON_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/desk_template.h"
 #include "ash/style/pill_button.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 #include "base/functional/callback.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -16,27 +18,19 @@ class ASH_EXPORT SavedDeskSaveDeskButton : public PillButton {
   METADATA_HEADER(SavedDeskSaveDeskButton, PillButton)
 
  public:
-  enum class Type {
-    // Button that saves current desk as template.
-    kSaveAsTemplate = 0,
-
-    // Button that saves current desk for later.
-    kSaveForLater,
-  };
-
   SavedDeskSaveDeskButton(base::RepeatingClosure callback,
                           const std::u16string& text,
-                          Type button_type,
+                          DeskTemplateType type,
                           const gfx::VectorIcon* icon);
   SavedDeskSaveDeskButton(const SavedDeskSaveDeskButton&) = delete;
   SavedDeskSaveDeskButton& operator=(const SavedDeskSaveDeskButton&) = delete;
   ~SavedDeskSaveDeskButton() override;
 
-  Type button_type() const { return button_type_; }
+  DeskTemplateType type() const { return type_; }
 
  private:
   base::RepeatingClosure callback_;
-  Type button_type_;
+  DeskTemplateType type_;
 };
 
 }  // namespace ash

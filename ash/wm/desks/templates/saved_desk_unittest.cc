@@ -26,6 +26,7 @@
 #include "ash/shell.h"
 #include "ash/style/close_button.h"
 #include "ash/style/icon_button.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/wm/desks/desk_action_button.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_action_view.h"
@@ -987,9 +988,10 @@ TEST_F(SavedDeskTest, SaveDeskButtonFocusRing) {
   ASSERT_FALSE(save_for_later_button->HasFocus());
 }
 
-// Tests that the save desk as template button and save for later button are
-// enabled and disabled as expected based on the number of saved desk entries.
-TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
+// Tests that the save desk as template option and save for later option
+// are enabled and disabled as expected based on the number of saved desk
+// entries.
+TEST_F(SavedDeskTest, SaveDeskOptionsEnabledDisabled) {
   // Prepare the test environment, like creating an app window which should be
   // supported.
   auto no_app_id_window = CreateAppWindow();
@@ -997,7 +999,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
   auto* delegate = Shell::Get()->saved_desk_delegate();
   ASSERT_TRUE(delegate->IsWindowSupportedForSavedDesk(no_app_id_window.get()));
 
-  // Test `Save Desk as Template` button.
+  // Test `Save Desk as Template` option.
   {
     // Add 6 `kTemplate` entries.
     for (size_t i = 1; i <= 6; i++) {
@@ -1006,10 +1008,17 @@ TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
                DeskTemplateType::kTemplate);
     }
 
-    // Open overview and expect the button to be disabled.
+    // Open overview and expect the option to be disabled.
     ToggleOverview();
-    EXPECT_EQ(views::Button::STATE_DISABLED,
-              GetSaveDeskAsTemplateButtonForRoot(root_window)->GetState());
+    if (features::IsForestFeatureEnabled()) {
+      auto* template_item = GetActiveDeskActionContextMenuItem(
+          root_window, DeskActionContextMenu::kSaveAsTemplate);
+      ASSERT_TRUE(template_item);
+      EXPECT_FALSE(template_item->GetEnabled());
+    } else {
+      EXPECT_EQ(views::Button::STATE_DISABLED,
+                GetSaveDeskAsTemplateButtonForRoot(root_window)->GetState());
+    }
 
     // Exit and reopen overview, then verify that the entry count reaches the
     // maximum.
@@ -1021,7 +1030,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
         saved_desk_presenter->GetMaxEntryCount(DeskTemplateType::kTemplate),
         saved_desk_presenter->GetEntryCount(DeskTemplateType::kTemplate));
 
-    // Verify that the button is re-enabled after we delete all entries.
+    // Verify that the option is re-enabled after we delete all entries.
     std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> entries =
         GetAllEntries();
     for (size_t i = entries.size(); i > 0; i--) {
@@ -1035,8 +1044,16 @@ TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
     ToggleOverview();
 
     EXPECT_FALSE(GetOverviewGridList()[0]->IsShowingSavedDeskLibrary());
-    EXPECT_EQ(views::Button::STATE_NORMAL,
-              GetSaveDeskAsTemplateButtonForRoot(root_window)->GetState());
+
+    if (features::IsForestFeatureEnabled()) {
+      auto* template_item = GetActiveDeskActionContextMenuItem(
+          root_window, DeskActionContextMenu::kSaveAsTemplate);
+      ASSERT_TRUE(template_item);
+      EXPECT_TRUE(template_item->GetEnabled());
+    } else {
+      EXPECT_EQ(views::Button::STATE_NORMAL,
+                GetSaveDeskAsTemplateButtonForRoot(root_window)->GetState());
+    }
 
     // Exit overview.
     ToggleOverview();
@@ -1053,8 +1070,15 @@ TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
 
     // Open overview and expect the button to be disabled.
     ToggleOverview();
-    EXPECT_EQ(views::Button::STATE_DISABLED,
-              GetSaveDeskForLaterButtonForRoot(root_window)->GetState());
+    if (features::IsForestFeatureEnabled()) {
+      auto* save_later_item = GetActiveDeskActionContextMenuItem(
+          root_window, DeskActionContextMenu::kSaveForLater);
+      ASSERT_TRUE(save_later_item);
+      EXPECT_FALSE(save_later_item->GetEnabled());
+    } else {
+      EXPECT_EQ(views::Button::STATE_DISABLED,
+                GetSaveDeskForLaterButtonForRoot(root_window)->GetState());
+    }
 
     // Exit and reopen overview, then verify that the entry count reaches the
     // maximum.
@@ -1081,8 +1105,16 @@ TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
     ToggleOverview();
 
     EXPECT_FALSE(GetOverviewGridList()[0]->IsShowingSavedDeskLibrary());
-    EXPECT_EQ(views::Button::STATE_NORMAL,
-              GetSaveDeskForLaterButtonForRoot(root_window)->GetState());
+
+    if (features::IsForestFeatureEnabled()) {
+      auto* save_later_item = GetActiveDeskActionContextMenuItem(
+          root_window, DeskActionContextMenu::kSaveForLater);
+      ASSERT_TRUE(save_later_item);
+      EXPECT_TRUE(save_later_item->GetEnabled());
+    } else {
+      EXPECT_EQ(views::Button::STATE_NORMAL,
+                GetSaveDeskForLaterButtonForRoot(root_window)->GetState());
+    }
 
     // Exit overview.
     ToggleOverview();
@@ -2084,12 +2116,22 @@ TEST_F(SavedDeskTest, AllUnsupportedAppsDisablesSaveDeskButtons) {
   EXPECT_EQ(0, GetOverviewGridList()[0]->num_incognito_windows());
   EXPECT_EQ(2, GetOverviewGridList()[0]->num_unsupported_windows());
 
-  auto* save_as_template_button =
-      GetSaveDeskAsTemplateButtonForRoot(Shell::Get()->GetPrimaryRootWindow());
-  auto* save_for_later_button =
-      GetSaveDeskForLaterButtonForRoot(Shell::Get()->GetPrimaryRootWindow());
-  EXPECT_EQ(views::Button::STATE_DISABLED, save_as_template_button->GetState());
-  EXPECT_EQ(views::Button::STATE_DISABLED, save_for_later_button->GetState());
+  auto* root = Shell::Get()->GetPrimaryRootWindow();
+  if (features::IsForestFeatureEnabled()) {
+    auto* template_item = GetActiveDeskActionContextMenuItem(
+        root, DeskActionContextMenu::kSaveAsTemplate);
+    auto* save_later_item = GetActiveDeskActionContextMenuItem(
+        root, DeskActionContextMenu::kSaveForLater);
+    ASSERT_TRUE(template_item);
+    ASSERT_TRUE(save_later_item);
+    EXPECT_FALSE(template_item->GetEnabled());
+    EXPECT_FALSE(save_later_item->GetEnabled());
+  } else {
+    EXPECT_EQ(views::Button::STATE_DISABLED,
+              GetSaveDeskAsTemplateButtonForRoot(root)->GetState());
+    EXPECT_EQ(views::Button::STATE_DISABLED,
+              GetSaveDeskForLaterButtonForRoot(root)->GetState());
+  }
 }
 
 // Tests that adding and removing unsupported windows is counted correctly.
@@ -3479,6 +3521,13 @@ TEST_F(SavedDeskTest, SnapWindowTest) {
 // Test that when an unsupported window left in overview grid and a supported
 // window snapped into the split view, the saved desk buttons should be enabled.
 TEST_F(SavedDeskTest, ButtonsEnabledForUnsupportedWindowAndSplitView) {
+  // TODO(http://b/350771229): The desk bar is not shown in split view when
+  // Forest is enabled, so we would not be able to access the save desk options
+  // in the desk context menu.
+  if (ash::features::IsForestFeatureEnabled()) {
+    GTEST_SKIP() << "Skipping test body for Forest Feature.";
+  }
+
   auto* delegate = Shell::Get()->saved_desk_delegate();
 
   // Create a supported app window.
@@ -3510,13 +3559,13 @@ TEST_F(SavedDeskTest, ButtonsEnabledForUnsupportedWindowAndSplitView) {
   split_view_controller->SnapWindow(app_window.get(), SnapPosition::kPrimary);
   ASSERT_TRUE(split_view_controller->InSplitViewMode());
 
+  // Now only an unsupported window left in overview grid, but the desk has
+  // another supported app window in the split view, so the two buttons should
+  // still be enabled.
   auto* save_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(root_window);
   auto* save_for_later_button = GetSaveDeskForLaterButtonForRoot(root_window);
 
-  // Now only an unsupported window left in overview grid, but the desk has
-  // another supported app window in the split view, so the two buttons should
-  // still be enabled.
   EXPECT_EQ(views::Button::STATE_NORMAL, save_as_template_button->GetState());
   EXPECT_EQ(views::Button::STATE_NORMAL, save_for_later_button->GetState());
 }

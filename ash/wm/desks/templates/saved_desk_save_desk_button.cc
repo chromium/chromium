@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
 
+#include "ash/public/cpp/desk_template.h"
 #include "ash/wm/desks/templates/saved_desk_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -15,14 +16,17 @@ namespace ash {
 SavedDeskSaveDeskButton::SavedDeskSaveDeskButton(
     base::RepeatingClosure callback,
     const std::u16string& text,
-    Type button_type,
+    DeskTemplateType type,
     const gfx::VectorIcon* icon)
     : PillButton(callback,
                  text,
                  PillButton::Type::kDefaultElevatedWithIconLeading,
                  icon),
       callback_(callback),
-      button_type_(button_type) {
+      type_(type) {
+  CHECK(type == DeskTemplateType::kTemplate ||
+        type == DeskTemplateType::kSaveAndRecall);
+
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
   SetBorder(std::make_unique<views::HighlightBorder>(

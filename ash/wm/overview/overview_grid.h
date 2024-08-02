@@ -8,10 +8,11 @@
 #include <memory>
 #include <vector>
 
+#include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
-#include "ash/wm/desks/templates/saved_desk_save_desk_button_container.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/birch/birch_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_item.h"
@@ -49,6 +50,7 @@ class OverviewItemBase;
 class OverviewSession;
 class RoundedLabelWidget;
 class SavedDeskSaveDeskButton;
+class SavedDeskSaveDeskButtonContainer;
 class SavedDeskLibraryView;
 class ScopedOverviewHideWindows;
 class ScopedOverviewWallpaperClipper;
@@ -529,6 +531,13 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   int num_incognito_windows() const { return num_incognito_windows_; }
 
   int num_unsupported_windows() const { return num_unsupported_windows_; }
+
+  SaveDeskOptionStatus GetEnableStateAndTooltipIDForTemplateType(
+      DeskTemplateType type) const;
+
+  base::WeakPtr<OverviewGrid> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   friend class DesksTemplatesTest;

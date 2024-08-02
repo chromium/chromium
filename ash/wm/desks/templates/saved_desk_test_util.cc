@@ -11,7 +11,7 @@
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
-#include "ash/wm/desks/templates/saved_desk_util.h"
+#include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/memory/raw_ref.h"

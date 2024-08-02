@@ -13,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/metrics/histogram_macros.h"
+#include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -47,6 +48,7 @@
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
+#include "ash/wm/desks/templates/saved_desk_save_desk_button_container.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -524,6 +526,47 @@ bool ShouldShowInformedRestoreDialog(aura::Window* root_window) {
   return root_window == Shell::GetPrimaryRootWindow() &&
          features::IsForestFeatureEnabled() &&
          !!Shell::Get()->informed_restore_controller()->contents_data();
+}
+
+enum class TooltipStatus {
+  kOk = 0,
+  kReachMax,
+  kIncognitoWindow,
+  kUnsupportedWindow,
+  kIncognitoAndUnsupportedWindow,
+  kNumberOfTooltipStatus,
+};
+
+constexpr std::array<int,
+                     static_cast<int>(TooltipStatus::kNumberOfTooltipStatus)>
+    kSaveAsTemplateButtonTooltipIDs = {
+        IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_AS_TEMPLATE_BUTTON,
+        IDS_ASH_DESKS_TEMPLATES_MAX_TEMPLATES_TOOLTIP,
+        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_INCOGNITO_TOOLTIP,
+        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_TOOLTIP,
+        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_AND_INCOGNITO_TOOLTIP,
+};
+
+constexpr std::array<int,
+                     static_cast<int>(TooltipStatus::kNumberOfTooltipStatus)>
+    kSaveForLaterButtonTooltipIDs = {
+        IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_FOR_LATER_BUTTON,
+        IDS_ASH_DESKS_TEMPLATES_MAX_SAVED_DESKS_TOOLTIP,
+        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_INCOGNITO_TOOLTIP,
+        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_TOOLTIP,
+        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_AND_INCOGNITO_TOOLTIP,
+};
+
+int GetTooltipID(DeskTemplateType type, TooltipStatus status) {
+  switch (type) {
+    case DeskTemplateType::kTemplate:
+      return kSaveAsTemplateButtonTooltipIDs[static_cast<int>(status)];
+    case DeskTemplateType::kSaveAndRecall:
+      return kSaveForLaterButtonTooltipIDs[static_cast<int>(status)];
+    case DeskTemplateType::kFloatingWorkspace:
+    case DeskTemplateType::kUnknown:
+      NOTREACHED_NORETURN();
+  }
 }
 
 }  // namespace
@@ -1828,7 +1871,7 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
 
   auto* desks_controller = DesksController::Get();
 
-  for (ash::DeskMiniView* mini_view : desks_bar_view_->mini_views()) {
+  for (DeskMiniView* mini_view : desks_bar_view_->mini_views()) {
     if (!mini_view->IsPointOnMiniView(screen_location))
       continue;
 
@@ -1865,7 +1908,7 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
   // profile lacros window is logged into.
   const auto windows = dragged_item->GetWindows();
   if (chromeos::features::IsDeskProfilesEnabled() && windows.size() == 1) {
-    if (auto lacros_profile_id = windows[0]->GetProperty(ash::kLacrosProfileId);
+    if (auto lacros_profile_id = windows[0]->GetProperty(kLacrosProfileId);
         lacros_profile_id != 0) {
       target_desk->SetLacrosProfileId(
           lacros_profile_id,
@@ -2230,7 +2273,7 @@ bool OverviewGrid::IsShowingSavedDeskLibrary() const {
 
 bool OverviewGrid::IsSavedDeskNameBeingModified() const {
   if (const SavedDeskLibraryView* library_view = GetSavedDeskLibraryView()) {
-    for (ash::SavedDeskGridView* grid_view : library_view->grid_views()) {
+    for (SavedDeskGridView* grid_view : library_view->grid_views()) {
       if (grid_view->IsSavedDeskNameBeingModified()) {
         return true;
       }
@@ -2391,43 +2434,21 @@ void OverviewGrid::UpdateSaveDeskButtons() {
                        /*animate=*/!in_desk_animation);
   }
 
-  auto* split_view_controller = SplitViewController::Get(root_window_);
-  int snapped_unsupported_window = 0;
-  int snapped_incognito_window = 0;
-  int snapped_supported_window = 0;
-  if (split_view_controller->InSplitViewMode()) {
-    aura::Window* window = split_view_controller->GetDefaultSnappedWindow();
-    if (IsUnsupportedWindow(window)) {
-      snapped_unsupported_window = 1;
-    } else if (IsIncognitoWindow(window)) {
-      snapped_incognito_window = 1;
-    } else {
-      snapped_supported_window = 1;
-    }
-  }
-
   // Enable/disable button and update tooltip.
-  const SavedDeskPresenter* saved_desk_presenter =
-      overview_session_->saved_desk_presenter();
   auto* container = views::AsViewClass<SavedDeskSaveDeskButtonContainer>(
       save_desk_button_container_widget_->GetContentsView());
   CHECK(container);
-  container->UpdateButtonEnableStateAndTooltip(
-      SavedDeskSaveDeskButton::Type::kSaveAsTemplate,
-      saved_desk_presenter->GetEntryCount(DeskTemplateType::kTemplate),
-      saved_desk_presenter->GetMaxEntryCount(DeskTemplateType::kTemplate),
-      num_incognito_windows_ + snapped_incognito_window,
-      num_unsupported_windows_ + snapped_unsupported_window,
-      item_list_.size() + snapped_incognito_window +
-          snapped_unsupported_window + snapped_supported_window);
-  container->UpdateButtonEnableStateAndTooltip(
-      SavedDeskSaveDeskButton::Type::kSaveForLater,
-      saved_desk_presenter->GetEntryCount(DeskTemplateType::kSaveAndRecall),
-      saved_desk_presenter->GetMaxEntryCount(DeskTemplateType::kSaveAndRecall),
-      num_incognito_windows_ + snapped_incognito_window,
-      num_unsupported_windows_ + snapped_unsupported_window,
-      item_list_.size() + snapped_incognito_window +
-          snapped_unsupported_window + snapped_supported_window);
+
+  SaveDeskOptionStatus template_status =
+      GetEnableStateAndTooltipIDForTemplateType(DeskTemplateType::kTemplate);
+  SaveDeskOptionStatus save_later_status =
+      GetEnableStateAndTooltipIDForTemplateType(
+          DeskTemplateType::kSaveAndRecall);
+
+  container->UpdateButtonEnableStateAndTooltip(DeskTemplateType::kTemplate,
+                                               template_status);
+  container->UpdateButtonEnableStateAndTooltip(DeskTemplateType::kSaveAndRecall,
+                                               save_later_status);
 
   // Set the widget position above the overview item window and default width
   // and height.
@@ -2763,6 +2784,78 @@ const SavedDeskLibraryView* OverviewGrid::GetSavedDeskLibraryView() const {
              ? views::AsViewClass<SavedDeskLibraryView>(
                    saved_desk_library_widget_->GetContentsView())
              : nullptr;
+}
+
+SaveDeskOptionStatus OverviewGrid::GetEnableStateAndTooltipIDForTemplateType(
+    DeskTemplateType type) const {
+  // The state and tooltips are only valid for the "Save desk as template" and
+  // "Save desk for later" buttons/menu items.
+  CHECK(type == DeskTemplateType::kTemplate ||
+        type == DeskTemplateType::kSaveAndRecall);
+
+  const SavedDeskPresenter* saved_desk_presenter =
+      overview_session_->saved_desk_presenter();
+  int current_entry_count = saved_desk_presenter->GetEntryCount(type);
+  int max_entry_count = saved_desk_presenter->GetMaxEntryCount(type);
+
+  // Disable if we already have the max supported saved desks.
+  if (current_entry_count >= max_entry_count) {
+    return SaveDeskOptionStatus{
+        .enabled = false,
+        .tooltip_id = GetTooltipID(type, TooltipStatus::kReachMax)};
+  }
+
+  // Iterate through all the windows in the grid to determine the number of
+  // unsupported and/or incognito windows.
+  aura::Window::Windows windows;
+  for (const auto& item : item_list_) {
+    auto item_windows = item.get()->GetWindows();
+    for (aura::Window* window : item_windows) {
+      windows.push_back(window);
+    }
+  }
+
+  // A snapped window is not part of the grid but needs to be considered.
+  if (auto* snapped_window =
+          SplitViewController::Get(root_window_)->GetDefaultSnappedWindow()) {
+    windows.push_back(snapped_window);
+  }
+
+  int incognito_window_count = 0;
+  int unsupported_window_count = 0;
+  for (aura::Window* window : windows) {
+    if (IsUnsupportedWindow(window)) {
+      ++unsupported_window_count;
+    } else if (IsIncognitoWindow(window)) {
+      ++incognito_window_count;
+    }
+  }
+
+  // Enable if there are any supported window.
+  if (incognito_window_count + unsupported_window_count !=
+      static_cast<int>(windows.size())) {
+    return {.enabled = true,
+            .tooltip_id = GetTooltipID(type, TooltipStatus::kOk)};
+  }
+
+  // Disable if there are incognito windows and unsupported Linux Apps but no
+  // supported windows.
+  if (incognito_window_count && unsupported_window_count) {
+    return {.enabled = false,
+            .tooltip_id = GetTooltipID(
+                type, TooltipStatus::kIncognitoAndUnsupportedWindow)};
+  }
+
+  // Disable if there are incognito windows but no supported windows.
+  if (incognito_window_count) {
+    return {.enabled = false,
+            .tooltip_id = GetTooltipID(type, TooltipStatus::kIncognitoWindow)};
+  }
+
+  // Disable if there are unsupported Linux Apps but no supported windows.
+  DCHECK(unsupported_window_count);
+  return {.enabled = false,
+          .tooltip_id = GetTooltipID(type, TooltipStatus::kUnsupportedWindow)};
 }
 
 void OverviewGrid::MaybeInitDesksWidget() {
