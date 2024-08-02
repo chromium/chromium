@@ -8,12 +8,13 @@ import 'chrome://resources/mwc/@material/web/icon/icon.js';
 import 'chrome://resources/mwc/@material/web/iconbutton/icon-button.js';
 import '../components/audio-waveform.js';
 import '../components/cra/cra-image.js';
-import '../components/cra/cra-menu.js';
 import '../components/cra/cra-menu-item.js';
+import '../components/cra/cra-menu.js';
 import '../components/delete-recording-dialog.js';
 import '../components/export-dialog.js';
-import '../components/recording-title.js';
 import '../components/recording-file-list.js';
+import '../components/recording-info-dialog.js';
+import '../components/recording-title.js';
 import '../components/secondary-button.js';
 import '../components/summarization-view.js';
 import '../components/transcription-view.js';
@@ -35,6 +36,7 @@ import {
 import {CraMenu} from '../components/cra/cra-menu.js';
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {ExportDialog} from '../components/export-dialog.js';
+import {RecordingInfoDialog} from '../components/recording-info-dialog.js';
 import {i18n} from '../core/i18n.js';
 import {
   AnimationFrameController,
@@ -308,6 +310,8 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private readonly exportDialog = createRef<ExportDialog>();
 
+  private readonly recordingInfoDialog = createRef<RecordingInfoDialog>();
+
   private readonly recordingDataManager = useRecordingDataManager();
 
   private readonly playbackSpeed = signal(1);
@@ -510,6 +514,10 @@ export class PlaybackPage extends ReactiveLitElement {
     this.exportDialog.value?.show();
   }
 
+  private onShowDetailClick() {
+    this.recordingInfoDialog.value?.show();
+  }
+
   private renderMenu() {
     // TODO: b/344789992 - Implements show detail.
     return html`
@@ -520,6 +528,7 @@ export class PlaybackPage extends ReactiveLitElement {
         ></cra-menu-item>
         <cra-menu-item
           headline=${i18n.playbackMenuShowDetailOption}
+          @cros-menu-item-triggered=${this.onShowDetailClick}
         ></cra-menu-item>
         <cros-menu-separator></cros-menu-separator>
         <cra-menu-item
@@ -527,6 +536,10 @@ export class PlaybackPage extends ReactiveLitElement {
           @cros-menu-item-triggered=${this.onDeleteClick}
         ></cra-menu-item>
       </cra-menu>
+      <recording-info-dialog
+        ${ref(this.recordingInfoDialog)}
+        .recordingId=${this.recordingId}
+      ></recording-info-dialog>
       <export-dialog ${ref(this.exportDialog)} .recordingId=${this.recordingId}>
       </export-dialog>
       <delete-recording-dialog
@@ -566,7 +579,6 @@ export class PlaybackPage extends ReactiveLitElement {
           id="show-menu"
           @click=${this.toggleMenu}
         >
-          <!-- TODO: b/336963138 - Implements more menu -->
           <cra-icon slot="icon" name="more_vertical"></cra-icon>
         </cra-icon-button>
       </div>

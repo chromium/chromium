@@ -201,6 +201,20 @@ export class RecordingFileListItem extends ReactiveLitElement {
     );
   }
 
+  private onShowRecordingInfoClick() {
+    if (this.recording === null) {
+      return;
+    }
+
+    this.dispatchEvent(
+      new CustomEvent('show-recording-info-clicked', {
+        detail: this.recording.id,
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
   private onPlayClick(ev: PointerEvent) {
     // TODO: b/336963138 - Implements inline playing.
     ev.preventDefault();
@@ -308,6 +322,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
           <cra-icon-button
             buttonstyle="floating"
             ?disabled=${!this.menuShown.value}
+            @click=${this.onShowRecordingInfoClick}
           >
             <cra-icon slot="icon" name="info"></cra-icon>
           </cra-icon-button>

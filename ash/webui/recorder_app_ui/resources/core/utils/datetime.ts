@@ -88,6 +88,29 @@ export function formatTime(
   return useTimeFormat(locale).format(new Date(timestamp));
 }
 
+const useFullDatetimeFormat = cacheLatest(
+  (locale: Intl.LocalesArgument) => new Intl.DateTimeFormat(locale, {
+    dateStyle: 'long',
+    timeStyle: 'medium',
+  }),
+);
+
+/**
+ * Formats the timestamp into a string with both year, date and time.
+ *
+ * @param locale Locale to format the string in.
+ * @param timestamp Number of milliseconds elapsed since epoch.
+ * @return The formatted string.
+ * @example formatFullDatetime('en-US', 975902640000)
+ *              // => 'December 4, 2000 at 12:04:00 PM'
+ */
+export function formatFullDatetime(
+  locale: Intl.LocalesArgument,
+  timestamp: number,
+): string {
+  return useFullDatetimeFormat(locale).format(new Date(timestamp));
+}
+
 /**
  * Returns the timestamp of today's date, which is today at exactly 12:00 AM.
  *

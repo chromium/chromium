@@ -24,6 +24,7 @@ component_files = [
   "onboarding-dialog.ts",
   "recording-file-list.ts",
   "recording-file-list-item.ts",
+  "recording-info-dialog.ts",
   "recording-search-box.ts",
   "recording-title-suggestion.ts",
   "recording-title.ts",

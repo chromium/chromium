@@ -168,6 +168,21 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Button to save and exit in the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_SAVE_AND_EXIT_BUTTON">
     Save and exit
   </message>
+  <message desc="Label of the recording creation date on the recording info dialog." name="IDS_RECORDER_RECORD_INFO_DIALOG_DATE_LABEL">
+    Date created
+  </message>
+  <message desc="Label of the recording duration on the recording info dialog." name="IDS_RECORDER_RECORD_INFO_DIALOG_DURATION_LABEL">
+    Duration
+  </message>
+  <message desc="Header of the recording info dialog." name="IDS_RECORDER_RECORD_INFO_DIALOG_HEADER">
+    More details
+  </message>
+  <message desc="Label of the recording file size on the recording info dialog." name="IDS_RECORDER_RECORD_INFO_DIALOG_SIZE_LABEL">
+    Size
+  </message>
+  <message desc="Label of the recording title on the recording info dialog." name="IDS_RECORDER_RECORD_INFO_DIALOG_TITLE_LABEL">
+    Name
+  </message>
   <message desc="Label of the menu item to delete the ongoing recording." name="IDS_RECORDER_RECORD_MENU_DELETE_OPTION">
     Delete
   </message>
