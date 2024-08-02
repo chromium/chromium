@@ -25,6 +25,7 @@ static_library("tether") {
     "//chrome/browser/ash/secure_channel",
     "//chrome/browser/profiles",
     "//chrome/browser/ui/ash/network",
+    "//chrome/browser/ui/webui/ash/settings/pages/internet",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/tether",
     "//chromeos/ash/services/device_sync/public/cpp",
@@ -38,7 +39,10 @@ static_library("tether") {
     "//device/bluetooth",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ui/webui/ash/settings/pages/internet",
+  ]
 }
 source_set("unit_tests") {
   testonly = true

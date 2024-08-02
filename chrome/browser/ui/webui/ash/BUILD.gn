@@ -255,6 +255,10 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/settings/pages/apps/mojom:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/pages/bluetooth:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/pages/crostini:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/device:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/device/display_settings:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/internet:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/search:unit_tests",
   ]
 }
@@ -300,7 +304,15 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/ash/parent_access:browser_tests",
     "//chrome/browser/ui/webui/ash/settings/pages/a11y:browser_tests",
     "//chrome/browser/ui/webui/ash/settings/pages/apps:browser_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/files:browser_tests",
     "//chrome/browser/ui/webui/ash/skyvault:browser_tests",
     "//chrome/browser/ui/webui/ash/smb_shares:browser_tests",
   ]
+}
+
+if (!is_chromeos_device) {
+  group("interactive_ui_tests") {
+    testonly = true
+    deps = [ "//chrome/browser/ui/webui/ash/settings/pages/device/integration_tests:interactive_ui_tests" ]
+  }
 }

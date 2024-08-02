@@ -1,0 +1,74 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("internet") {
+  sources = [
+    "internet_handler.cc",
+    "internet_handler.h",
+    "internet_section.cc",
+    "internet_section.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/ash/components/tether",
+    "//chromeos/ash/services/hotspot_config/public/cpp",
+    "//chromeos/services/network_config/public/cpp",
+    "//mojo/public/cpp/bindings",
+    "//ui/gfx",
+  ]
+
+  deps = [
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/session",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/network_ui:network_health_resource_provider",
+    "//ash/webui/network_ui:traffic_counters_resource_provider",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/extensions/vpn_provider",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash/cellular_setup",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chromeos/ash/components/dbus/hermes",
+    "//chromeos/ash/components/network",
+    "//chromeos/strings",
+    "//components/onc",
+    "//components/prefs",
+    "//components/strings:components_strings",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/chromeos/strings",
+    "//ui/chromeos/strings:strings_provider",
+    "//ui/events:event_constants",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "internet_handler_unittest.cc" ]
+
+  deps = [
+    ":internet",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/tether:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

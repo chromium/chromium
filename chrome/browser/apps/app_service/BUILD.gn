@@ -290,6 +290,8 @@ source_set("app_service") {
       "//chrome/browser/ui/webui/ash/settings/app_management",
       "//chrome/browser/ui/webui/ash/settings/pages",
       "//chrome/browser/ui/webui/ash/settings/pages/apps",
+      "//chrome/browser/ui/webui/ash/settings/pages/device",
+      "//chrome/browser/ui/webui/ash/settings/pages/internet",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/login/login_state",
       "//chromeos/components/kiosk:kiosk",
@@ -356,6 +358,8 @@ source_set("app_service") {
       "//chrome/browser/ui/webui/ash/cloud_upload",
       "//chrome/browser/ui/webui/ash/settings/pages",
       "//chrome/browser/ui/webui/ash/settings/pages/apps",
+      "//chrome/browser/ui/webui/ash/settings/pages/device",
+      "//chrome/browser/ui/webui/ash/settings/pages/internet",
     ]
   }
 

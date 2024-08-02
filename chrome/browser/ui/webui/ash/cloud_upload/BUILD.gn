@@ -88,6 +88,7 @@ static_library("cloud_upload") {
     "//chrome/browser/resources/chromeos/cloud_upload:resources",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash/settings/pages/files",
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/constants",
@@ -112,6 +113,7 @@ static_library("cloud_upload") {
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ash/system_web_apps/apps/help_app",
+    "//chrome/browser/ui/webui/ash/settings/pages/files",
   ]
 }
 

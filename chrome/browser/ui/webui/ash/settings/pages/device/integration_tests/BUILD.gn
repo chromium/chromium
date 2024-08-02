@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "audio_page_interactive_uitest.cc" ]
+
+    deps = [
+      "//ash",
+      "//ash/public/cpp:accelerator_actions",
+      "//ash/webui/settings/public/constants:mojom",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support_ui",
+      "//chrome/test/base/ash/interactive:test_support",
+      "//chromeos/ash/components/audio",
+      "//ui/base",
+      "//ui/base:test_support",
+      "//ui/events:event_constants",
+    ]
+  }
+}

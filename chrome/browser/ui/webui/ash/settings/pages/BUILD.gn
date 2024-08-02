@@ -34,6 +34,10 @@ static_library("pages") {
     "//chrome/browser/ui/webui/ash/settings/pages/bluetooth",
     "//chrome/browser/ui/webui/ash/settings/pages/crostini",
     "//chrome/browser/ui/webui/ash/settings/pages/date_time",
+    "//chrome/browser/ui/webui/ash/settings/pages/device",
+    "//chrome/browser/ui/webui/ash/settings/pages/files",
+    "//chrome/browser/ui/webui/ash/settings/pages/internet",
+    "//chrome/browser/ui/webui/ash/settings/pages/kerberos",
     "//chromeos/ash/components/phonehub",
     "//ui/base",
   ]
@@ -45,6 +49,10 @@ static_library("pages") {
     "//chrome/browser/ui/webui/ash/settings/pages/bluetooth",
     "//chrome/browser/ui/webui/ash/settings/pages/crostini",
     "//chrome/browser/ui/webui/ash/settings/pages/date_time",
+    "//chrome/browser/ui/webui/ash/settings/pages/device",
+    "//chrome/browser/ui/webui/ash/settings/pages/files",
+    "//chrome/browser/ui/webui/ash/settings/pages/internet",
+    "//chrome/browser/ui/webui/ash/settings/pages/kerberos",
     "//chrome/browser/ui/webui/ash/settings/search",
   ]
 }

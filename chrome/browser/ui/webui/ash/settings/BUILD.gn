@@ -29,6 +29,7 @@ static_library("settings") {
     "//chrome/browser/ui/webui/ash/settings/pages/date_time/mojom",
     "//chrome/browser/ui/webui/ash/settings/pages/device/display_settings:mojom",
     "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings:mojom",
+    "//chrome/browser/ui/webui/ash/settings/pages/files",
     "//chrome/browser/ui/webui/ash/settings/pages/files/mojom",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy/mojom",
     "//chrome/browser/ui/webui/ash/settings/search/mojom",
@@ -75,6 +76,7 @@ static_library("settings") {
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/ash/settings/pages/apps",
     "//chrome/browser/ui/webui/ash/settings/pages/date_time",
+    "//chrome/browser/ui/webui/ash/settings/pages/device",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/services/auth_factor_config",
@@ -89,8 +91,10 @@ static_library("settings") {
     "//ui/views",
   ]
 
-  allow_circular_includes_from =
-      [ "//chrome/browser/ui/webui/ash/settings/search" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ui/webui/ash/settings/pages/device",
+    "//chrome/browser/ui/webui/ash/settings/search",
+  ]
 
   if (is_chrome_branded) {
     deps += [ "//chrome/browser/nearby_sharing/internal/icons" ]
