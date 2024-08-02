@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] cast float16 4D tensor to int64
+  assert_true: assert_array_approx_equals_ulp: test cast int64 actual 137438953475 should be close enough to expected 3 by the acceptable 0 ULP distance, but they have 137438953472 ULP distance expected true got false
+[FAIL] cast int64 4D tensor to float16
+  assert_true: assert_array_approx_equals_ulp: test cast float16 actual 0 should be close enough to expected 1 by the acceptable 1 ULP distance, but they have 15360 ULP distance expected true got false
+Harness: the test ran to completion.
+

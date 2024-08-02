@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] div float32 1D constant tensors
+  assert_true: assert_array_approx_equals_ulp: test div float32 actual -0.6358552575111389 should be close enough to expected -0.6358450651168823 by the acceptable 2 ULP distance, but they have 171 ULP distance expected true got false
+Harness: the test ran to completion.
+

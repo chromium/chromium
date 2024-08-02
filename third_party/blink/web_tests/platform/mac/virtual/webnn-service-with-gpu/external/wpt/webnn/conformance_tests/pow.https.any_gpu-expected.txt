@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] pow float32 constant 1D base tensor and 1D integer exponent tensor
+  assert_true: assert_array_approx_equals_ulp: test pow float32 actual 17.84375 should be close enough to expected 17.846010208129883 by the acceptable 32 ULP distance, but they have 1185 ULP distance expected true got false
+[FAIL] pow (square) float32 4D base tensor and broadcastable 0D integer exponent scalar
+  assert_true: assert_array_approx_equals_ulp: test pow float32 actual 318.3994140625 should be close enough to expected 318.4800720214844 by the acceptable 32 ULP distance, but they have 2643 ULP distance expected true got false
+[FAIL] pow (sqrt) float32 4D positive base tensor and broadcastable 0D integer exponent scalar
+  assert_true: assert_array_approx_equals_ulp: test pow float32 actual 1.1907849311828613 should be close enough to expected 1.19107186794281 by the acceptable 32 ULP distance, but they have 2407 ULP distance expected true got false
+Harness: the test ran to completion.
+

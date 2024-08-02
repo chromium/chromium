@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] gemm two float32 2D constant tensors options.c
+  assert_true: assert_array_approx_equals_ulp: test gemm float32 actual 8240.6650390625 should be close enough to expected 8243.9189453125 by the acceptable 9 ULP distance, but they have 3332 ULP distance expected true got false
+Harness: the test ran to completion.
+

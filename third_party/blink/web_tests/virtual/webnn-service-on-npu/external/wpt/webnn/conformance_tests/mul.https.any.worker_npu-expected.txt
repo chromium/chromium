@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] mul float32 1D constant tensors
+  assert_true: assert_array_approx_equals_ulp: test mul float32 actual 3678 should be close enough to expected 3681.4443359375 by the acceptable 1 ULP distance, but they have 14108 ULP distance expected true got false
+[FAIL] mul float32 1D tensors
+  assert_true: assert_array_approx_equals_ulp: test mul float32 actual 3678 should be close enough to expected 3681.4443359375 by the acceptable 1 ULP distance, but they have 14108 ULP distance expected true got false
+[FAIL] mul float32 2D tensors
+  assert_true: assert_array_approx_equals_ulp: test mul float32 actual 3678 should be close enough to expected 3681.4443359375 by the acceptable 1 ULP distance, but they have 14108 ULP distance expected true got false
+[FAIL] mul float32 3D tensors
+  assert_true: assert_array_approx_equals_ulp: test mul float32 actual 3678 should be close enough to expected 3681.4443359375 by the acceptable 1 ULP distance, but they have 14108 ULP distance expected true got false
+[FAIL] mul float32 4D tensors
+  assert_true: assert_array_approx_equals_ulp: test mul float32 actual 3678 should be close enough to expected 3681.4443359375 by the acceptable 1 ULP distance, but they have 14108 ULP distance expected true got false
+[FAIL] mul float32 5D tensors
+  assert_true: assert_array_approx_equals_ulp: test mul float32 actual 3678 should be close enough to expected 3681.4443359375 by the acceptable 1 ULP distance, but they have 14108 ULP distance expected true got false
+[FAIL] mul float32 broadcast 1D to 4D
+  assert_true: assert_array_approx_equals_ulp: test mul float32 actual 3312 should be close enough to expected 3315.18994140625 by the acceptable 1 ULP distance, but they have 13066 ULP distance expected true got false
+[FAIL] mul float32 broadcast 2D to 4D
+  assert_true: assert_array_approx_equals_ulp: test mul float32 actual -4772 should be close enough to expected -4778.197265625 by the acceptable 1 ULP distance, but they have 12692 ULP distance expected true got false
+[FAIL] mul float32 broadcast 4D to 4D
+  assert_true: assert_array_approx_equals_ulp: test mul float32 actual 3312 should be close enough to expected 3315.18994140625 by the acceptable 1 ULP distance, but they have 13066 ULP distance expected true got false
+Harness: the test ran to completion.
+
