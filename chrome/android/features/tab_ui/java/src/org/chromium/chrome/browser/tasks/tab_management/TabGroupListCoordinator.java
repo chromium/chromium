@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -103,7 +104,7 @@ public class TabGroupListCoordinator {
         BiConsumer<GURL, Callback<Drawable>> faviconResolver =
                 buildFaviconResolver(context, profile);
         @Nullable TabGroupSyncService tabGroupSyncService = null;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)) {
+        if (TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) {
             tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         }
         @Nullable DataSharingService dataSharingService = null;

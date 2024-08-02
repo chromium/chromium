@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
@@ -325,7 +326,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         updatePlusAddressesPreference();
 
         boolean isTabGroupSyncAutoOpenConfigurable =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+                TabGroupSyncFeatures.isTabGroupSyncEnabled(getProfile())
                         && ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH);
         if (isTabGroupSyncAutoOpenConfigurable
