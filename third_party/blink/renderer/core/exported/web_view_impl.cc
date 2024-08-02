@@ -666,11 +666,6 @@ WebViewImpl::~WebViewImpl() {
   DCHECK(!page_);
 }
 
-WebDevToolsAgentImpl* WebViewImpl::MainFrameDevToolsAgentImpl() {
-  WebLocalFrameImpl* main_frame = MainFrameImpl();
-  return main_frame ? main_frame->DevToolsAgentImpl() : nullptr;
-}
-
 void WebViewImpl::SetTabKeyCyclesThroughElements(bool value) {
   if (page_)
     page_->SetTabKeyCyclesThroughElements(value);
@@ -3084,7 +3079,10 @@ void WebViewImpl::Show(const LocalFrameToken& opener_frame_token,
       std::move(window_features), opened_by_user_gesture,
       WTF::BindOnce(&WebViewImpl::DidShowCreatedWindow, WTF::Unretained(this)));
 
-  MainFrameDevToolsAgentImpl()->DidShowNewWindow();
+  if (auto* dev_tools_agent =
+          MainFrameImpl()->DevToolsAgentImpl(/*create_if_necessary=*/false)) {
+    dev_tools_agent->DidShowNewWindow();
+  }
 }
 
 void WebViewImpl::DidShowCreatedWindow() {

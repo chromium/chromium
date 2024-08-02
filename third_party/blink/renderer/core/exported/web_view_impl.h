@@ -97,7 +97,6 @@ class DevToolsEmulator;
 class Frame;
 class FullscreenController;
 class PageScaleConstraintsSet;
-class WebDevToolsAgentImpl;
 class WebLocalFrame;
 class WebLocalFrameImpl;
 class WebSettingsImpl;
@@ -361,8 +360,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   Page* GetPage() const { return page_.Get(); }
 
   WebViewClient* Client() { return web_view_client_; }
-
-  WebDevToolsAgentImpl* MainFrameDevToolsAgentImpl();
 
   DevToolsEmulator* GetDevToolsEmulator() const {
     return dev_tools_emulator_.Get();

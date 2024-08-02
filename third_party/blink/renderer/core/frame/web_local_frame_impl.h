@@ -496,8 +496,7 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   void SendOrientationChangeEvent();
 
-  void SetDevToolsAgentImpl(WebDevToolsAgentImpl*);
-  WebDevToolsAgentImpl* DevToolsAgentImpl();
+  WebDevToolsAgentImpl* DevToolsAgentImpl(bool create_if_necessary);
 
   // Instructs devtools to pause loading of the frame as soon as it's shown
   // until explicit command from the devtools client. May only be called on a

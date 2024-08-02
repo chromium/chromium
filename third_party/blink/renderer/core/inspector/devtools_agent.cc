@@ -67,7 +67,8 @@ DevToolsAgent* DevToolsAgentFromContext(ExecutionContext* execution_context) {
         WebLocalFrameImpl::FromFrame(frame->LocalFrameRoot());
     if (!web_frame)
       return nullptr;
-    return web_frame->DevToolsAgentImpl()->GetDevToolsAgent();
+    return web_frame->DevToolsAgentImpl(/*create_if_necessary=*/true)
+        ->GetDevToolsAgent();
   }
   return nullptr;
 }

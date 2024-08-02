@@ -133,7 +133,7 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
             features::kShowHudDisplayForPausedPages)) {
       return;
     }
-    instance_->paused_frame_->DevToolsAgentImpl()
+    instance_->paused_frame_->DevToolsAgentImpl(/*create_if_necessary=*/true)
         ->GetDevToolsAgent()
         ->BringDevToolsWindowToFocus();
   }
@@ -230,7 +230,8 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
 
   void RunInstrumentationPauseLoop(WebLocalFrameImpl* frame) {
     // 0. Flush pending frontend messages.
-    WebDevToolsAgentImpl* agent = frame->DevToolsAgentImpl();
+    WebDevToolsAgentImpl* agent =
+        frame->DevToolsAgentImpl(/*create_if_necessary=*/true);
     agent->FlushProtocolNotifications();
 
     // 1. Run the instrumentation message loop. Also remember the task runner
@@ -251,7 +252,8 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
 
   void RunLoop(WebLocalFrameImpl* frame) {
     // 0. Flush pending frontend messages.
-    WebDevToolsAgentImpl* agent = frame->DevToolsAgentImpl();
+    WebDevToolsAgentImpl* agent =
+        frame->DevToolsAgentImpl(/*create_if_necessary=*/true);
     agent->FlushProtocolNotifications();
     agent->MainThreadDebuggerPaused();
     CHECK(!paused_frame_);
@@ -292,7 +294,8 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
 
     CHECK(paused_frame_);
     if (paused_frame_->GetFrame()) {
-      paused_frame_->DevToolsAgentImpl()->MainThreadDebuggerResumed();
+      paused_frame_->DevToolsAgentImpl(/*create_if_necessary=*/true)
+          ->MainThreadDebuggerResumed();
     }
     paused_frame_ = nullptr;
   }
@@ -595,13 +598,12 @@ WebInputEventResult WebDevToolsAgentImpl::HandleInputEvent(
     if (result != WebInputEventResult::kNotHandled)
       return result;
   }
-
-  if (event.GetType() == WebInputEvent::Type::kMouseDown) {
-    ClientMessageLoopAdapter::ActivatePausedDebuggerWindow(
-        web_local_frame_impl_);
-  }
-
   return WebInputEventResult::kNotHandled;
+}
+
+void WebDevToolsAgentImpl::ActivatePausedDebuggerWindow(
+    WebLocalFrameImpl* local_root) {
+  ClientMessageLoopAdapter::ActivatePausedDebuggerWindow(local_root);
 }
 
 String WebDevToolsAgentImpl::NavigationInitiatorInfo(LocalFrame* frame) {

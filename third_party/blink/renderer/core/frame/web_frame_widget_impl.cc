@@ -1345,8 +1345,10 @@ void WebFrameWidgetImpl::SendScrollSnapChangingEventIfNeeded(
 void WebFrameWidgetImpl::UpdateCompositorScrollState(
     const cc::CompositorCommitData& commit_data) {
   is_scroll_gesture_active_ = commit_data.is_scroll_active;
-  if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl())
+  if (WebDevToolsAgentImpl* devtools =
+          LocalRootImpl()->DevToolsAgentImpl(/*create_if_necessary=*/false)) {
     devtools->SetPageIsScrolling(is_scroll_gesture_active_);
+  }
 
   RecordManipulationTypeCounts(commit_data.manipulation_info);
 
@@ -2885,8 +2887,10 @@ void WebFrameWidgetImpl::ProcessInputEventSynchronouslyForTesting(
 WebInputEventResult WebFrameWidgetImpl::DispatchBufferedTouchEvents() {
   CHECK(LocalRootImpl());
 
-  if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl())
+  if (WebDevToolsAgentImpl* devtools =
+          LocalRootImpl()->DevToolsAgentImpl(/*create_if_necessary=*/false)) {
     devtools->DispatchBufferedTouchEvents();
+  }
 
   return LocalRootImpl()
       ->GetFrame()
@@ -2923,10 +2927,16 @@ WebInputEventResult WebFrameWidgetImpl::HandleInputEvent(
     return WebInputEventResult::kNotHandled;
   }
 
-  if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl()) {
+  if (WebDevToolsAgentImpl* devtools =
+          LocalRootImpl()->DevToolsAgentImpl(/*create_if_necessary=*/false)) {
     auto result = devtools->HandleInputEvent(input_event);
     if (result != WebInputEventResult::kNotHandled)
       return result;
+  }
+
+  // If we are a mouse down potentially activate the paused debugger window.
+  if (input_event.GetType() == WebInputEvent::Type::kMouseDown) {
+    WebDevToolsAgentImpl::ActivatePausedDebuggerWindow(LocalRootImpl());
   }
 
   // Report the event to be NOT processed by WebKit, so that the browser can

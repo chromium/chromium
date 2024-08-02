@@ -549,8 +549,10 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
       }
     }
   }
-  if (WebDevToolsAgentImpl* dev_tools = DevToolsAgent())
+  if (WebDevToolsAgentImpl* dev_tools =
+          DevToolsAgent(/*create_if_necessary=*/false)) {
     dev_tools->DidCommitLoadForLocalFrame(web_frame_->GetFrame());
+  }
 
   web_frame_->DidCommitLoad();
 }
@@ -729,7 +731,8 @@ void LocalFrameClientImpl::BeginNavigation(
     }
   }
 
-  if (WebDevToolsAgentImpl* devtools = DevToolsAgent()) {
+  if (WebDevToolsAgentImpl* devtools =
+          DevToolsAgent(/*create_if_necessary=*/false)) {
     navigation_info->devtools_initiator_info =
         devtools->NavigationInitiatorInfo(web_frame_->GetFrame());
   }
@@ -1009,9 +1012,10 @@ unsigned LocalFrameClientImpl::BackForwardLength() {
   return webview ? webview->HistoryListLength() : 0;
 }
 
-WebDevToolsAgentImpl* LocalFrameClientImpl::DevToolsAgent() {
+WebDevToolsAgentImpl* LocalFrameClientImpl::DevToolsAgent(
+    bool create_if_necessary) {
   return WebLocalFrameImpl::FromFrame(web_frame_->GetFrame()->LocalFrameRoot())
-      ->DevToolsAgentImpl();
+      ->DevToolsAgentImpl(create_if_necessary);
 }
 
 KURL LocalFrameClientImpl::OverrideFlashEmbedWithHTML(const KURL& url) {
@@ -1067,8 +1071,10 @@ base::UnguessableToken LocalFrameClientImpl::GetDevToolsFrameToken() const {
 
 String LocalFrameClientImpl::evaluateInInspectorOverlayForTesting(
     const String& script) {
-  if (WebDevToolsAgentImpl* devtools = DevToolsAgent())
+  if (WebDevToolsAgentImpl* devtools =
+          DevToolsAgent(/*create_if_necessary=*/true)) {
     return devtools->EvaluateInOverlayForTesting(script);
+  }
   return g_empty_string;
 }
 
@@ -1186,8 +1192,10 @@ LocalFrameClientImpl::CreateResourceLoadInfoNotifierWrapper() {
 void LocalFrameClientImpl::BindDevToolsAgent(
     mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost> host,
     mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent> receiver) {
-  if (WebDevToolsAgentImpl* devtools = DevToolsAgent())
+  if (WebDevToolsAgentImpl* devtools =
+          DevToolsAgent(/*create_if_necessary=*/true)) {
     devtools->BindReceiver(std::move(host), std::move(receiver));
+  }
 }
 
 }  // namespace blink

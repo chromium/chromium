@@ -290,7 +290,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
 
  private:
   bool IsLocalFrameClientImpl() const override { return true; }
-  WebDevToolsAgentImpl* DevToolsAgent();
+  WebDevToolsAgentImpl* DevToolsAgent(bool create_if_necessary);
 
   // The WebFrame that owns this object and manages its lifetime. Therefore,
   // the web frame object is guaranteed to exist.

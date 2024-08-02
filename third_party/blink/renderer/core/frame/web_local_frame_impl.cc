@@ -3155,19 +3155,17 @@ Node* WebLocalFrameImpl::ContextMenuImageNodeInner() const {
 
 void WebLocalFrameImpl::WaitForDebuggerWhenShown() {
   DCHECK(frame_->IsLocalRoot());
-  DevToolsAgentImpl()->WaitForDebuggerWhenShown();
+  DevToolsAgentImpl(/*create_if_necessary=*/true)->WaitForDebuggerWhenShown();
 }
 
-void WebLocalFrameImpl::SetDevToolsAgentImpl(WebDevToolsAgentImpl* agent) {
-  DCHECK(!dev_tools_agent_);
-  dev_tools_agent_ = agent;
-}
-
-WebDevToolsAgentImpl* WebLocalFrameImpl::DevToolsAgentImpl() {
-  if (!frame_->IsLocalRoot())
+WebDevToolsAgentImpl* WebLocalFrameImpl::DevToolsAgentImpl(
+    bool create_if_necessary) {
+  if (!frame_->IsLocalRoot()) {
     return nullptr;
-  if (!dev_tools_agent_)
+  }
+  if (!dev_tools_agent_ && create_if_necessary) {
     dev_tools_agent_ = WebDevToolsAgentImpl::CreateForFrame(this);
+  }
   return dev_tools_agent_.Get();
 }
 
