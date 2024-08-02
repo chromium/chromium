@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/passwords/password_generation_popup_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
+
 class PasswordGenerationPopupController;
 
 class PasswordGenerationPopupViewViews : public autofill::PopupBaseView,
@@ -34,6 +36,8 @@ class PasswordGenerationPopupViewViews : public autofill::PopupBaseView,
   [[nodiscard]] bool UpdateBoundsAndRedrawPopup() override;
   void PasswordSelectionUpdated() override;
   void NudgePasswordSelectionUpdated() override;
+
+  const views::ViewAccessibility& GetPasswordViewViewAccessibilityForTest();
 
  private:
   class GeneratedPasswordBox;

@@ -71,11 +71,23 @@ class PasswordGenerationPopupViewTest : public PasswordManagerBrowserTestBase {
     NavigateToFile("/password/signup_form_new_password.html");
   }
 
-  PasswordGenerationPopupViewViews* CreateView(
+  const views::ViewAccessibility& GetPasswordViewAccessibility(
+      PasswordGenerationPopupViewViews* popup_view) {
+    return popup_view->GetPasswordViewViewAccessibilityForTest();
+  }
+
+  void SetPasswordSelected(
       base::WeakPtr<PasswordGenerationPopupControllerImpl> controller) {
-    return new PasswordGenerationPopupViewViews(
-        controller, views::Widget::GetWidgetForNativeWindow(
-                        browser()->window()->GetNativeWindow()));
+    controller->Show(PasswordGenerationPopupController::kOfferGeneration);
+    static_cast<PasswordGenerationPopupController*>(controller.get())
+        ->SetSelected();
+  }
+
+  void ClearSelection(
+      base::WeakPtr<PasswordGenerationPopupControllerImpl> controller) {
+    controller->Show(PasswordGenerationPopupController::kOfferGeneration);
+    static_cast<PasswordGenerationPopupController*>(controller.get())
+        ->SelectionCleared();
   }
 };
 
@@ -141,14 +153,36 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
       client->generation_popup_controller();
 
-  PasswordGenerationPopupViewViews* popup_view = CreateView(controller);
+  PasswordGenerationPopupViewViews* popup_view =
+      static_cast<PasswordGenerationPopupViewViews*>(controller->view());
   ui::AXNodeData node_data;
   popup_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+}
 
-  // The underlying view gets deleted after this call.
-  popup_view->Hide();
+IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
+                       PasswordViewSelectionAccessibleState) {
+  auto* client = ChromePasswordManagerClient::FromWebContents(WebContents());
+  client->SetCurrentTargetFrameForTesting(WebContents()->GetPrimaryMainFrame());
+  client->ShowPasswordEditingPopup(gfx::RectF(0, 0, 10, 10), FormData(),
+                                   FieldRendererId(100), u"password123");
+  // Avoid dangling pointers on shutdown.
+  client->SetCurrentTargetFrameForTesting(nullptr);
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      client->generation_popup_controller();
+  PasswordGenerationPopupViewViews* popup_view =
+      static_cast<PasswordGenerationPopupViewViews*>(controller->view());
+
+  SetPasswordSelected(controller);
+  ui::AXNodeData node_data;
+  GetPasswordViewAccessibility(popup_view).GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  ClearSelection(controller);
+  node_data = ui::AXNodeData();
+  GetPasswordViewAccessibility(popup_view).GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)

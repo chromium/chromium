@@ -309,8 +309,6 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
     }
 
     node_data->role = ax::mojom::Role::kListBoxOption;
-    node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
-                                controller_->password_selected());
     node_data->SetNameChecked(base::JoinString(
         {controller_->SuggestedText(), controller_->password()}, u" "));
     const std::u16string help_text = l10n_util::GetStringFUTF16(
@@ -504,6 +502,11 @@ bool PasswordGenerationPopupViewViews::UpdateBoundsAndRedrawPopup() {
 }
 
 void PasswordGenerationPopupViewViews::PasswordSelectionUpdated() {
+  if (password_view_) {
+    password_view_->GetViewAccessibility().SetIsSelected(
+        controller_->password_selected());
+  }
+
   if (!GetWidget() || !password_view_) {
     return;
   }
@@ -642,6 +645,11 @@ PasswordGenerationPopupView* PasswordGenerationPopupView::Create(
           controller->container_view());
 
   return new PasswordGenerationPopupViewViews(controller, observing_widget);
+}
+
+const views::ViewAccessibility&
+PasswordGenerationPopupViewViews::GetPasswordViewViewAccessibilityForTest() {
+  return password_view_->GetViewAccessibility();
 }
 
 BEGIN_METADATA(PasswordGenerationPopupViewViews)
