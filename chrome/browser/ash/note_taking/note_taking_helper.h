@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_NOTE_TAKING_HELPER_H_
-#define CHROME_BROWSER_ASH_NOTE_TAKING_HELPER_H_
+#ifndef CHROME_BROWSER_ASH_NOTE_TAKING_NOTE_TAKING_HELPER_H_
+#define CHROME_BROWSER_ASH_NOTE_TAKING_NOTE_TAKING_HELPER_H_
 
 #include <memory>
 #include <optional>
@@ -267,4 +267,4 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_NOTE_TAKING_HELPER_H_
+#endif  // CHROME_BROWSER_ASH_NOTE_TAKING_NOTE_TAKING_HELPER_H_
