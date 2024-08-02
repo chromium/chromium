@@ -466,7 +466,7 @@ void VideoDecodeStatsDBImpl::ClearStats(base::OnceClosure clear_done_cb) {
 
   db_->UpdateEntriesWithRemoveFilter(
       std::make_unique<ProtoDecodeStatsEntry::KeyEntryVector>(),
-      base::BindRepeating([](const std::string& key) { return true; }),
+      base::BindRepeating([](const std::string&) { return true; }),
       base::BindOnce(&VideoDecodeStatsDBImpl::OnStatsCleared,
                      weak_ptr_factory_.GetWeakPtr(),
                      pending_operations_.Start("Clear"),
