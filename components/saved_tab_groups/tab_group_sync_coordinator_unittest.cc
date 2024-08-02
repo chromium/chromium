@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::Return;
 
 namespace tab_groups {
 namespace {
@@ -49,6 +50,21 @@ TEST_F(TabGroupSyncCoordinatorTest, HandleOpenTabGroupRequest) {
   EXPECT_CALL(*delegate_, HandleOpenTabGroupRequest(sync_id, testing::_))
       .Times(1);
   coordinator_->HandleOpenTabGroupRequest(sync_id, std::move(context));
+}
+
+TEST_F(TabGroupSyncCoordinatorTest, ConnectLocalTabGroup) {
+  SavedTabGroup group(test::CreateTestSavedTabGroup());
+  base::Uuid sync_id = group.saved_guid();
+  LocalTabGroupID local_id = test::GenerateRandomTabGroupID();
+
+  EXPECT_CALL(*service_, GetGroup(sync_id))
+      .Times(2)
+      .WillRepeatedly(Return(group));
+  EXPECT_CALL(*service_, UpdateLocalTabGroupMapping(sync_id, local_id))
+      .Times(1);
+  EXPECT_CALL(*delegate_, UpdateLocalTabGroup(UuidEq(sync_id))).Times(1);
+
+  coordinator_->ConnectLocalTabGroup(sync_id, local_id);
 }
 
 TEST_F(TabGroupSyncCoordinatorTest, OnTabGroupAdded) {

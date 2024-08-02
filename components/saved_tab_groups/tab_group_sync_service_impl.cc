@@ -371,6 +371,14 @@ void TabGroupSyncServiceImpl::UpdateLocalTabId(
   model_->UpdateLocalTabId(group->saved_guid(), *tab, local_tab_id);
 }
 
+void TabGroupSyncServiceImpl::ConnectLocalTabGroup(
+    const base::Uuid& sync_id,
+    const LocalTabGroupID& local_id) {
+  VLOG(2) << __func__;
+  CHECK(is_initialized_);
+  coordinator_->ConnectLocalTabGroup(sync_id, local_id);
+}
+
 bool TabGroupSyncServiceImpl::IsRemoteDevice(
     const std::optional<std::string>& cache_guid) const {
   std::optional<std::string> local_cache_guid =

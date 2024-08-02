@@ -35,6 +35,20 @@ void TabGroupSyncCoordinatorImpl::HandleOpenTabGroupRequest(
                                                 std::move(context));
 }
 
+void TabGroupSyncCoordinatorImpl::ConnectLocalTabGroup(
+    const base::Uuid& sync_id,
+    const LocalTabGroupID& local_id) {
+  std::optional<SavedTabGroup> group = service_->GetGroup(sync_id);
+  if (!group) {
+    return;
+  }
+
+  service_->UpdateLocalTabGroupMapping(sync_id, local_id);
+  group = service_->GetGroup(sync_id);
+
+  platform_delegate_->UpdateLocalTabGroup(*group);
+}
+
 std::unique_ptr<ScopedLocalObservationPauser>
 TabGroupSyncCoordinatorImpl::CreateScopedLocalObserverPauser() {
   return platform_delegate_->CreateScopedLocalObserverPauser();

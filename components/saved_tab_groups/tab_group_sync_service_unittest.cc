@@ -62,6 +62,9 @@ class MockTabGroupSyncCoordinator : public TabGroupSyncCoordinator {
   MOCK_METHOD(void,
               HandleOpenTabGroupRequest,
               (const base::Uuid&, std::unique_ptr<TabGroupActionContext>));
+  MOCK_METHOD(void,
+              ConnectLocalTabGroup,
+              (const base::Uuid&, const LocalTabGroupID&));
   MOCK_METHOD(std::unique_ptr<ScopedLocalObservationPauser>,
               CreateScopedLocalObserverPauser,
               ());
@@ -379,6 +382,15 @@ TEST_F(TabGroupSyncServiceTest, OpenTabGroup) {
       .Times(1);
   tab_group_sync_service_->OpenTabGroup(
       group_2_.saved_guid(), std::make_unique<TabGroupActionContext>());
+}
+
+TEST_F(TabGroupSyncServiceTest, ConnectLocalTabGroup) {
+  LocalTabGroupID local_id = test::GenerateRandomTabGroupID();
+  EXPECT_CALL(*coordinator_,
+              ConnectLocalTabGroup(group_2_.saved_guid(), local_id))
+      .Times(1);
+  tab_group_sync_service_->ConnectLocalTabGroup(group_2_.saved_guid(),
+                                                local_id);
 }
 
 TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping) {

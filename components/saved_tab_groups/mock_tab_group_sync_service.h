@@ -63,6 +63,9 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(void,
               UpdateLocalTabId,
               (const LocalTabGroupID&, const base::Uuid&, const LocalTabID&));
+  MOCK_METHOD(void,
+              ConnectLocalTabGroup,
+              (const base::Uuid&, const LocalTabGroupID&));
   MOCK_METHOD(bool,
               IsRemoteDevice,
               (const std::optional<std::string>&),

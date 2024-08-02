@@ -100,6 +100,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void UpdateLocalTabId(const LocalTabGroupID& local_group_id,
                         const base::Uuid& sync_tab_id,
                         const LocalTabID& local_tab_id) override;
+  void ConnectLocalTabGroup(const base::Uuid& sync_id,
+                            const LocalTabGroupID& local_id) override;
 
   bool IsRemoteDevice(
       const std::optional<std::string>& cache_guid) const override;

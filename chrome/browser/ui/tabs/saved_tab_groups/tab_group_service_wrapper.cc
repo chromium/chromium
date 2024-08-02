@@ -312,6 +312,16 @@ void TabGroupServiceWrapper::UpdateLocalTabId(
   }
 }
 
+void TabGroupServiceWrapper::ConnectLocalTabGroup(
+    const base::Uuid& sync_id,
+    const LocalTabGroupID& local_id) {
+  if (ShouldUseSyncService()) {
+    sync_service_->ConnectLocalTabGroup(sync_id, local_id);
+  } else {
+    saved_keyed_service_->ConnectLocalTabGroup(local_id, sync_id);
+  }
+}
+
 bool TabGroupServiceWrapper::IsRemoteDevice(
     const std::optional<std::string>& cache_guid) const {
   NOTIMPLEMENTED();

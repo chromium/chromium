@@ -28,7 +28,9 @@ class TabGroupSyncCoordinator : public TabGroupSyncService::Observer {
       const base::Uuid& sync_tab_group_id,
       std::unique_ptr<TabGroupActionContext> context) = 0;
 
-  // Helper method to pause / resume local observer.
+  // Pass-through logic from TabGroupSyncService::ConnectLocalTabGroup.
+  virtual void ConnectLocalTabGroup(const base::Uuid& sync_id,
+                                    const LocalTabGroupID& local_id) = 0;
   virtual std::unique_ptr<ScopedLocalObservationPauser>
   CreateScopedLocalObserverPauser() = 0;
 

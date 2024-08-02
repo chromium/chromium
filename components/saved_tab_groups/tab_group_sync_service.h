@@ -149,6 +149,11 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
                                 const base::Uuid& sync_tab_id,
                                 const LocalTabID& local_tab_id) = 0;
 
+  // Called from the UI layer such as tab group restore from recent tabs or undo
+  // tab group closure to reconnect a local tab group to a saved tab group.
+  virtual void ConnectLocalTabGroup(const base::Uuid& sync_id,
+                                    const LocalTabGroupID& local_id) = 0;
+
   // Attribution related methods.
   // Helper method to determine whether a given cache guid corresponds to a
   // remote device. Empty value or string is considered local device.
