@@ -65,11 +65,11 @@ jobs:
             head: headful
     steps:
       - name: Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           submodules: true
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           node-version-file: '.nvmrc'
           cache: npm
@@ -79,7 +79,7 @@ jobs:
       - name: Setup dirs
         run: mkdir -p out
       - name: Set up Python
-        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
+        uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f # v5.1.1
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -127,7 +127,7 @@ jobs:
           FAIL_NO_TEST: false
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4.3.4
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-${{ matrix.this_chunk }}.${{ matrix.total_chunks }}-artifacts
           path: |
@@ -154,11 +154,11 @@ jobs:
     if: ${{ failure() && (github.event.inputs.auto-commit == 'true' || contains(github.event.pull_request.labels.*.name, 'update-expectations')) }}
     steps:
       - name: Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           submodules: true
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           node-version-file: '.nvmrc'
           cache: npm
@@ -168,7 +168,7 @@ jobs:
       - name: Setup dirs
         run: mkdir -p out
       - name: Set up Python
-        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
+        uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f # v5.1.1
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -177,7 +177,7 @@ jobs:
       - name: Download Artifact
         # Get all the artifacts from the previous WPT run in order to get all the
         # test reports.
-        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           path: wpt_artifacts
           # Merge the artifacts from all jobs in the same file.
@@ -220,7 +220,7 @@ jobs:
           mv ./wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}/* ./artifacts/updated-wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}/
       - name: Upload artifacts
         if: success()
-        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4.3.4
         with:
           name: updated-wpt-metadata-${{ matrix.kind }}-${{ matrix.head }}
           path: ./artifacts
@@ -243,14 +243,14 @@ jobs:
         run: 'exit 0'
       # Just checkout the repo. No need in setting up Node.js or Python.
       - name: Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
       - name: Download Artifact
         # There is no way to download artifacts by wildcard, so we need to download
         # all of them. The `updated-wpt-metadata` directory should contain all the
         # updated expectations from the `update_expectations` matrix.
-        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           path: all-artifacts
           merge-multiple: true
@@ -293,16 +293,16 @@ jobs:
       id-token: write
     steps:
       - name: Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           node-version-file: '.nvmrc'
           cache: npm
       - uses: google/wireit@4aad131006ea85c1e42af927534ebb13426dd730 # setup-github-actions-caching/v1.0.2
       - name: Install and build npm dependencies
         run: npm ci
-      - uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           pattern: chromedriver-headful-*
           merge-multiple: true
