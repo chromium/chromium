@@ -129,6 +129,11 @@ void IOSChromePaymentsAutofillClient::CreditCardUploadCompleted(
         card_saved, std::move(on_confirmation_closed_callback));
   }
   if (!card_saved) {
+    // At this point, infobar would be dismissed but the omnibox icon could
+    // still be tapped to re-show the infobar. Since the card upload has
+    // failed, the save card infobar should not be re-shown, so the infobar is
+    // removed here to remove the associated omnibox icon.
+    client_->RemoveAutofillSaveCardInfoBar();
     autofill_metrics::LogCreditCardUploadConfirmationViewShownMetric(
         /*is_shown=*/true, /*is_card_uploaded=*/false);
     AutofillErrorDialogContext error_context;

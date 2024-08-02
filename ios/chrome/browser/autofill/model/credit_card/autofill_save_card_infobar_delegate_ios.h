@@ -60,6 +60,9 @@ class AutofillSaveCardInfoBarDelegateIOS
   // Runs `on_confirmation_closed_callback` if it holds a value.
   virtual void OnConfirmationClosed();
 
+  // Returns whether credit card upload is complete.
+  virtual bool IsCreditCardUploadComplete();
+
  private:
   base::OnceCallback<void(bool card_saved)>
       credit_card_upload_completion_callback_;
@@ -68,6 +71,9 @@ class AutofillSaveCardInfoBarDelegateIOS
   // uploaded and is eligible for virtual card enrollment.
   std::optional<payments::PaymentsAutofillClient::OnConfirmationClosedCallback>
       on_confirmation_closed_callback_;
+
+  // Indicates whether credit card upload is complete.
+  bool credit_card_upload_completed_;
 };
 
 }  // namespace autofill
