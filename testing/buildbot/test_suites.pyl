@@ -967,6 +967,9 @@
       'cast_unittests': {},
       'components_browsertests': {},
       'components_unittests': {
+        'swarming': {
+          'shards': 3,
+        },
         'android_swarming': {
           'shards': 6,
         },

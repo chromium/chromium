@@ -1026,6 +1026,9 @@ targets.legacy_basic_suite(
         "cast_unittests": targets.legacy_test_config(),
         "components_browsertests": targets.legacy_test_config(),
         "components_unittests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 3,
+            ),
             android_swarming = targets.swarming(
                 shards = 6,
             ),
