@@ -32,6 +32,10 @@ class CC_EXPORT ViewTransitionContentLayer : public Layer {
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
 
+  bool is_live_content_layer_for_testing() const {
+    return is_live_content_layer_;
+  }
+
  protected:
   explicit ViewTransitionContentLayer(
       const viz::ViewTransitionElementResourceId& resource_id,

@@ -1383,4 +1383,44 @@ TEST_P(ViewTransitionTest, NoEffectOnIframe) {
   EXPECT_TRUE(!paint_properties || !paint_properties->Effect());
 }
 
+TEST_P(ViewTransitionTest, SubframeSnapshotLayer) {
+  SetHtmlInnerHTML(R"HTML(
+    <iframe id=frame srcdoc="<html></html>"></iframe>
+  )HTML");
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  auto start_setup_lambda =
+      [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
+
+  // This callback sets the elements for the start phase of the transition.
+  auto start_setup_callback =
+      v8::Function::New(script_state->GetContext(), start_setup_lambda, {})
+          .ToLocalChecked();
+
+  auto& child_document =
+      *To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild())
+           ->GetDocument();
+  ViewTransitionSupplement::startViewTransition(
+      script_state, child_document,
+      V8ViewTransitionCallback::Create(start_setup_callback),
+      ASSERT_NO_EXCEPTION);
+  auto* transition = ViewTransitionUtils::GetTransition(child_document);
+  ASSERT_TRUE(transition);
+
+  UpdateAllLifecyclePhasesForTest();
+  auto layer = transition->GetSubframeSnapshotLayer();
+  ASSERT_TRUE(layer);
+  EXPECT_TRUE(layer->is_live_content_layer_for_testing());
+
+  child_document.GetPage()->GetChromeClient().WillCommitCompositorFrame();
+  auto new_layer = transition->GetSubframeSnapshotLayer();
+  ASSERT_TRUE(new_layer);
+  EXPECT_NE(layer, new_layer);
+  EXPECT_FALSE(new_layer->is_live_content_layer_for_testing());
+}
+
 }  // namespace blink
