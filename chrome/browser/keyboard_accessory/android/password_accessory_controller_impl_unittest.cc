@@ -295,13 +295,14 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
         password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
         static_cast<int>(
             password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
-    mock_pwd_manager_client_ = std::make_unique<MockPasswordManagerClient>(
-        CreateInternalAccountPasswordStore(),
-        CreateInternalProfilePasswordStore());
+    mock_pwd_manager_client_ =
+        std::make_unique<NiceMock<MockPasswordManagerClient>>(
+            CreateInternalAccountPasswordStore(),
+            CreateInternalProfilePasswordStore());
     NavigateAndCommit(GURL(kExampleSite));
 
-    webauthn_credentials_delegate_ =
-        std::make_unique<password_manager::MockWebAuthnCredentialsDelegate>();
+    webauthn_credentials_delegate_ = std::make_unique<
+        NiceMock<password_manager::MockWebAuthnCredentialsDelegate>>();
     ON_CALL(*webauthn_credentials_delegate(), GetPasskeys)
         .WillByDefault(ReturnRef(kNoPasskeys));
     ON_CALL(*password_client(), GetWebAuthnCredentialsDelegateForDriver)
@@ -360,13 +361,13 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
  protected:
   virtual PasswordStoreInterface* CreateInternalAccountPasswordStore() {
     mock_account_password_store_ =
-        base::MakeRefCounted<MockPasswordStoreInterface>();
+        base::MakeRefCounted<NiceMock<MockPasswordStoreInterface>>();
     return mock_account_password_store_.get();
   }
 
   virtual PasswordStoreInterface* CreateInternalProfilePasswordStore() {
     mock_profile_password_store_ =
-        base::MakeRefCounted<MockPasswordStoreInterface>();
+        base::MakeRefCounted<NiceMock<MockPasswordStoreInterface>>();
     return mock_profile_password_store_.get();
   }
 
@@ -387,7 +388,7 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
 
   password_manager::CredentialCache credential_cache_;
   std::unique_ptr<MockPasswordManagerClient> mock_pwd_manager_client_;
-  MockPasswordManagerDriver mock_driver_;
+  NiceMock<MockPasswordManagerDriver> mock_driver_;
   std::unique_ptr<password_manager::MockWebAuthnCredentialsDelegate>
       webauthn_credentials_delegate_;
   autofill::TestAutofillClientInjector<NiceMock<MockAutofillClient>>
