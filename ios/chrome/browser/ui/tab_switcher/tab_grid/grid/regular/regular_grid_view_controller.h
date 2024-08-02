@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
 
+// A view controller that contains a grid of regular items.
 @interface RegularGridViewController
     : BaseGridViewController <InactiveTabsInfoConsumer>
 

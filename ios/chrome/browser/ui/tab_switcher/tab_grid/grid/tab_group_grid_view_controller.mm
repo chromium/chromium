@@ -41,13 +41,10 @@
 // Returns a configured header for the given index path.
 - (UICollectionReusableView*)headerForSectionAtIndexPath:
     (NSIndexPath*)indexPath {
-  if (self.mode == TabGridModeGroup) {
-    return [self.collectionView
-        dequeueConfiguredReusableSupplementaryViewWithRegistration:
-            _tabGroupHeaderRegistration
-                                                      forIndexPath:indexPath];
-  }
-  return [super headerForSectionAtIndexPath:indexPath];
+  return [self.collectionView
+      dequeueConfiguredReusableSupplementaryViewWithRegistration:
+          _tabGroupHeaderRegistration
+                                                    forIndexPath:indexPath];
 }
 
 - (void)createRegistrations {

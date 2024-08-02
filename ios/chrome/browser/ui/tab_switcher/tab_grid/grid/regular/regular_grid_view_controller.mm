@@ -41,9 +41,6 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   // The supplementary view registration for the Inactive Tabs button header.
   UICollectionViewSupplementaryRegistration*
       _inactiveTabsButtonHeaderRegistration;
-  // The supplementary view registration for the Inactive Tabs preamble header.
-  UICollectionViewSupplementaryRegistration*
-      _inactiveTabsPreambleHeaderRegistration;
 }
 
 #pragma mark - Parent's functions
@@ -54,25 +51,17 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 
 - (UICollectionReusableView*)headerForSectionAtIndexPath:
     (NSIndexPath*)indexPath {
+  if (IsInactiveTabButtonRefactoringEnabled()) {
+    return [super headerForSectionAtIndexPath:indexPath];
+  }
+
   if (self.mode == TabGridModeNormal) {
-    if (IsInactiveTabButtonRefactoringEnabled()) {
-      return [super headerForSectionAtIndexPath:indexPath];
-    }
     CHECK(IsInactiveTabsAvailable());
     // The Regular Tabs grid has a button to inform about the hidden inactive
     // tabs.
     return [self.collectionView
         dequeueConfiguredReusableSupplementaryViewWithRegistration:
             _inactiveTabsButtonHeaderRegistration
-                                                      forIndexPath:indexPath];
-  }
-  if (self.mode == TabGridModeInactive) {
-    CHECK(IsInactiveTabsAvailable());
-    // The Inactive Tabs grid has a header to inform about the feature and a
-    // link to its settings.
-    return [self.collectionView
-        dequeueConfiguredReusableSupplementaryViewWithRegistration:
-            _inactiveTabsPreambleHeaderRegistration
                                                       forIndexPath:indexPath];
   }
   return [super headerForSectionAtIndexPath:indexPath];
@@ -120,20 +109,6 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
                           configurationHandler:
                               configureInactiveTabsButtonHeader];
   }
-
-  // Register InactiveTabsPreambleHeader.
-  auto configureInactiveTabsPreambleHeader =
-      ^(InactiveTabsPreambleHeader* header, NSString* elementKind,
-        NSIndexPath* indexPath) {
-        [weakSelf configureInactiveTabsPreambleHeader:header];
-      };
-  _inactiveTabsPreambleHeaderRegistration =
-      [UICollectionViewSupplementaryRegistration
-          registrationWithSupplementaryClass:[InactiveTabsPreambleHeader class]
-                                 elementKind:
-                                     UICollectionElementKindSectionHeader
-                        configurationHandler:
-                            configureInactiveTabsPreambleHeader];
 
   [super createRegistrations];
 }
@@ -226,9 +201,6 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
       [self updateInactiveTabsButtonHeader];
     }
   }
-
-  // Update the preamble.
-  [self updateInactiveTabsPreambleHeader];
 }
 
 #pragma mark - Actions
@@ -237,11 +209,6 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 - (void)didTapInactiveTabsButton {
   CHECK(!IsInactiveTabButtonRefactoringEnabled());
   [self.delegate didTapInactiveTabsButtonInGridViewController:self];
-}
-
-// Called when the Inactive Tabs settings link is tapped.
-- (void)didTapInactiveTabsSettingsLink {
-  [self.delegate didTapInactiveTabsSettingsLinkInGridViewController:self];
 }
 
 #pragma mark - Private
@@ -377,21 +344,6 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   [self configureInactiveTabsButtonHeader:header];
 }
 
-// Reconfigures the Inactive Tabs preamble header.
-- (void)updateInactiveTabsPreambleHeader {
-  NSInteger tabSectionIndex = [self.diffableDataSource
-      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
-  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
-                                               inSection:tabSectionIndex];
-  InactiveTabsPreambleHeader* header =
-      ObjCCast<InactiveTabsPreambleHeader>([self.collectionView
-          supplementaryViewForElementKind:UICollectionElementKindSectionHeader
-                              atIndexPath:indexPath]);
-  // Note: At this point, `header` could be nil if not visible, or if the
-  // supplementary view is not an InactiveTabsPreambleHeader.
-  header.daysThreshold = _inactiveTabsDaysThreshold;
-}
-
 // Configures `cell` according to the current state.
 - (void)configureInativeTabsButtonCell:(InactiveTabsButtonCell*)cell {
   cell.count = _inactiveTabsCount;
@@ -409,17 +361,6 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   [header configureWithDaysThreshold:_inactiveTabsDaysThreshold];
   [header configureWithCount:_inactiveTabsCount];
   header.hidden = _inactiveTabsCount == 0;
-}
-
-// Configures the Inactive Tabs Preamble header according to the current state.
-- (void)configureInactiveTabsPreambleHeader:
-    (InactiveTabsPreambleHeader*)header {
-  __weak __typeof(self) weakSelf = self;
-  header.settingsLinkAction = ^{
-    [weakSelf didTapInactiveTabsSettingsLink];
-  };
-  header.daysThreshold = _inactiveTabsDaysThreshold;
-  header.hidden = !IsInactiveTabsEnabled();
 }
 
 @end

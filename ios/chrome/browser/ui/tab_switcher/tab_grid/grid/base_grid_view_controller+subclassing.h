@@ -35,8 +35,8 @@ typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
 - (void)createRegistrations NS_REQUIRES_SUPER;
 
 // Returns a configured header for the given index path.
-- (UICollectionReusableView*)headerForSectionAtIndexPath:(NSIndexPath*)indexPath
-    NS_REQUIRES_SUPER;
+- (UICollectionReusableView*)headerForSectionAtIndexPath:
+    (NSIndexPath*)indexPath;
 
 // Returns a configured cell for the given `indexPath` and `itemIdentifier`. The
 // subclass must call super if it can't handle it.
