@@ -856,6 +856,73 @@ TEST_F(HttpStreamPoolJobTest, IPEndPointsSlow) {
   EXPECT_THAT(*requester.result(), IsOk());
 }
 
+TEST_F(HttpStreamPoolJobTest, PauseSlowTimerAfterTcpHandshakeForTls) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.set_destination("https://a.test").RequestStream(pool());
+
+  MockConnectCompleter tcp_connect_completer1;
+  auto data1 = std::make_unique<SequencedSocketData>();
+  data1->set_connect_data(MockConnect(&tcp_connect_completer1));
+  socket_factory()->AddSocketDataProvider(data1.get());
+  // This TLS handshake never finishes.
+  auto ssl1 =
+      std::make_unique<SSLSocketDataProvider>(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_factory()->AddSSLSocketDataProvider(ssl1.get());
+
+  MockConnectCompleter tcp_connect_completer2;
+  auto data2 = std::make_unique<SequencedSocketData>();
+  data2->set_connect_data(MockConnect(&tcp_connect_completer2));
+  socket_factory()->AddSocketDataProvider(data2.get());
+  auto ssl2 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(ssl2.get());
+
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder()
+                         .add_v6("2001:db8::1")
+                         .add_v4("192.0.2.1")
+                         .endpoint())
+      .set_crypto_ready(false)
+      .CallOnServiceEndpointsUpdated();
+  Job* job = pool()
+                 .GetOrCreateGroupForTesting(requester.GetStreamKey())
+                 .GetJobForTesting();
+  ASSERT_EQ(job->InFlightAttemptCount(), 1u);
+  ASSERT_FALSE(requester.result().has_value());
+
+  // Complete TCP handshake after a delay that is less than the connection
+  // attempt delay.
+  constexpr base::TimeDelta kTcpDelay = base::Milliseconds(30);
+  ASSERT_LT(kTcpDelay, HttpStreamPool::kConnectionAttemptDelay);
+  FastForwardBy(kTcpDelay);
+  tcp_connect_completer1.Complete(OK);
+  RunUntilIdle();
+  ASSERT_EQ(job->InFlightAttemptCount(), 1u);
+
+  // Fast-forward to the connection attempt delay. Since the in-flight attempt
+  // has completed TCP handshake and is waiting for HTTPS RR, the job shouldn't
+  // start another attempt.
+  FastForwardBy(HttpStreamPool::kConnectionAttemptDelay);
+  ASSERT_EQ(job->InFlightAttemptCount(), 1u);
+
+  // Complete DNS resolution fully.
+  endpoint_request->set_crypto_ready(true).CallOnServiceEndpointRequestFinished(
+      OK);
+  ASSERT_EQ(job->InFlightAttemptCount(), 1u);
+
+  // Fast-forward to the connection attempt delay again. This time the in-flight
+  // attempt is still doing TLS handshake, it's treated as slow and the job
+  // should start another attempt.
+  FastForwardBy(HttpStreamPool::kConnectionAttemptDelay);
+  ASSERT_EQ(job->InFlightAttemptCount(), 2u);
+
+  // Complete the second attempt. The request should finish successfully.
+  tcp_connect_completer2.Complete(OK);
+  RunUntilIdle();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
 TEST_F(HttpStreamPoolJobTest, ReachedGroupLimit) {
   constexpr size_t kMaxPerGroup = 4;
   pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);

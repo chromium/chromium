@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/socket/client_socket_factory.h"
@@ -44,6 +45,15 @@ LoadState TlsStreamAttempt::GetLoadState() const {
 
 scoped_refptr<SSLCertRequestInfo> TlsStreamAttempt::GetCertRequestInfo() {
   return ssl_cert_request_info_;
+}
+
+void TlsStreamAttempt::SetTcpHandshakeCompletionCallback(
+    CompletionOnceCallback callback) {
+  CHECK(!tls_handshake_started_);
+  CHECK(!tcp_handshake_completion_callback_);
+  if (next_state_ <= State::kTcpAttemptComplete) {
+    tcp_handshake_completion_callback_ = std::move(callback);
+  }
 }
 
 int TlsStreamAttempt::StartInternal() {
@@ -106,6 +116,10 @@ int TlsStreamAttempt::DoTcpAttemptComplete(int rv) {
       nested_attempt_->connect_timing();
   mutable_connect_timing().connect_start = nested_timing.connect_start;
   mutable_connect_timing().connect_end = nested_timing.connect_end;
+
+  if (tcp_handshake_completion_callback_) {
+    std::move(tcp_handshake_completion_callback_).Run(rv);
+  }
 
   if (rv != OK) {
     return rv;

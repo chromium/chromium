@@ -479,6 +479,22 @@ void HttpStreamPool::Job::MaybeCalculateSSLConfig() {
 
   ssl_config_.emplace(std::move(ssl_config));
 
+  // Restart slow timer for in-flight attempts that have already completed
+  // TCP handshakes.
+  for (auto& in_flight_attempt : in_flight_attempts_) {
+    if (!in_flight_attempt->is_slow &&
+        !in_flight_attempt->slow_timer.IsRunning()) {
+      // TODO(crbug.com/346835898): Should we use a different delay other than
+      // the connection attempt delay?
+      // base::Unretained() is safe here because `this` owns the
+      // `in_flight_attempt` and `slow_timer`.
+      in_flight_attempt->slow_timer.Start(
+          FROM_HERE, kConnectionAttemptDelay,
+          base::BindOnce(&Job::OnInFlightAttemptSlow, base::Unretained(this),
+                         in_flight_attempt.get()));
+    }
+  }
+
   for (auto& callback : ssl_config_waiting_callbacks_) {
     std::move(callback).Run(OK);
   }
@@ -511,9 +527,10 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
   // There might be multiple pending requests. Make attempts as much as needed
   // and allowed.
   size_t num_attempts = 0;
+  const bool using_tls = UsingTls();
   while (IsConnectionAttemptReady()) {
     std::unique_ptr<StreamAttempt> attempt;
-    if (UsingTls()) {
+    if (using_tls) {
       attempt = std::make_unique<TlsStreamAttempt>(
           pool()->stream_attempt_params(), *ip_endpoint,
           HostPortPair::FromSchemeHostPort(stream_key().destination()),
@@ -545,6 +562,12 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
           FROM_HERE, kConnectionAttemptDelay,
           base::BindOnce(&Job::OnInFlightAttemptSlow, base::Unretained(this),
                          raw_attempt));
+      if (using_tls) {
+        static_cast<TlsStreamAttempt*>(raw_attempt->attempt.get())
+            ->SetTcpHandshakeCompletionCallback(
+                base::BindOnce(&Job::OnInFlightAttemptTcpHandshakeComplete,
+                               base::Unretained(this), raw_attempt));
+      }
     }
 
     ++num_attempts;
@@ -964,6 +987,18 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
   CHECK_NE(stream_socket->GetNegotiatedProtocol(), NextProto::kProtoHTTP2);
   CreateTextBasedStreamAndNotify(std::move(stream_socket),
                                  std::move(connect_timing));
+}
+
+void HttpStreamPool::Job::OnInFlightAttemptTcpHandshakeComplete(
+    InFlightAttempt* raw_attempt,
+    int rv) {
+  auto it = in_flight_attempts_.find(raw_attempt);
+  CHECK(it != in_flight_attempts_.end());
+  if (raw_attempt->is_slow || !raw_attempt->slow_timer.IsRunning()) {
+    return;
+  }
+
+  raw_attempt->slow_timer.Stop();
 }
 
 void HttpStreamPool::Job::OnInFlightAttemptSlow(InFlightAttempt* raw_attempt) {

@@ -266,6 +266,8 @@ class HttpStreamPool::Job
   void OnRequestComplete(RequestEntry* entry);
 
   void OnInFlightAttemptComplete(InFlightAttempt* raw_attempt, int rv);
+  void OnInFlightAttemptTcpHandshakeComplete(InFlightAttempt* raw_attempt,
+                                             int rv);
   void OnInFlightAttemptSlow(InFlightAttempt* raw_attempt);
 
   void HandleAttemptFailure(std::unique_ptr<InFlightAttempt> in_flight_attempt,
