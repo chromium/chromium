@@ -387,6 +387,7 @@ void WebContentsViewAndroid::StartDragging(
     const gfx::Rect& drag_obj_rect,
     const blink::mojom::DragEventSourceInfo& event_info,
     RenderWidgetHostImpl* source_rwh) {
+  current_source_rwh_for_drag_ = source_rwh->GetWeakPtr();
   if (!IsDragEnabledForDropData(drop_data)) {
     // Need to clear drag and drop state in blink.
     OnSystemDragEnded(source_rwh);
@@ -589,12 +590,12 @@ void WebContentsViewAndroid::DragEnteredCallback(
     return;
   }
 
-  current_rwh_for_drag_ = target_rwh->GetWeakPtr();
+  current_target_rwh_for_drag_ = target_rwh->GetWeakPtr();
 
   blink::DragOperationsMask allowed_ops =
       static_cast<blink::DragOperationsMask>(blink::kDragOperationCopy |
                                              blink::kDragOperationMove);
-  current_rwh_for_drag_->DragTargetDragEnterWithMetaData(
+  current_target_rwh_for_drag_->DragTargetDragEnterWithMetaData(
       drag_metadata_, location, screen_location, allowed_ops, 0,
       base::DoNothing());
 }
@@ -655,18 +656,18 @@ void WebContentsViewAndroid::DragUpdatedCallback(
     return;
   }
 
-  if (target_rwh != current_rwh_for_drag_.get()) {
-    if (current_rwh_for_drag_) {
+  if (target_rwh != current_target_rwh_for_drag_.get()) {
+    if (current_target_rwh_for_drag_) {
       gfx::PointF transformed_leave_point = location;
       static_cast<RenderWidgetHostViewBase*>(
           web_contents_->GetRenderWidgetHostView())
           ->TransformPointToCoordSpaceForView(
               location,
               static_cast<RenderWidgetHostViewBase*>(
-                  current_rwh_for_drag_->GetView()),
+                  current_target_rwh_for_drag_->GetView()),
               &transformed_leave_point);
-      current_rwh_for_drag_->DragTargetDragLeave(transformed_leave_point,
-                                                 screen_location);
+      current_target_rwh_for_drag_->DragTargetDragLeave(transformed_leave_point,
+                                                        screen_location);
     }
     DragEnteredCallback(location, screen_location, target);
   }
@@ -680,8 +681,9 @@ void WebContentsViewAndroid::DragUpdatedCallback(
 
 void WebContentsViewAndroid::OnDragExited() {
   if (drag_drop_oopif_enabled_) {
-    if (current_rwh_for_drag_) {
-      current_rwh_for_drag_->DragTargetDragLeave(gfx::PointF(), gfx::PointF());
+    if (current_target_rwh_for_drag_) {
+      current_target_rwh_for_drag_->DragTargetDragLeave(gfx::PointF(),
+                                                        gfx::PointF());
     }
   } else {
     web_contents_->GetRenderViewHost()->GetWidget()->DragTargetDragLeave(
@@ -725,10 +727,10 @@ void WebContentsViewAndroid::PerformDropCallback(
     return;
   }
 
-  if (target_rwh != current_rwh_for_drag_.get()) {
-    if (current_rwh_for_drag_) {
-      current_rwh_for_drag_->DragTargetDragLeave(*transformed_pt,
-                                                 screen_location);
+  if (target_rwh != current_target_rwh_for_drag_.get()) {
+    if (current_target_rwh_for_drag_) {
+      current_target_rwh_for_drag_->DragTargetDragLeave(*transformed_pt,
+                                                        screen_location);
     }
     DragEnteredCallback(location, screen_location, target);
   }
@@ -759,10 +761,12 @@ void WebContentsViewAndroid::OnSystemDragEnded(RenderWidgetHost* source_rwh) {
 
 void WebContentsViewAndroid::OnDragEnded() {
   if (drag_drop_oopif_enabled_) {
-    if (current_rwh_for_drag_) {
-      current_rwh_for_drag_->DragSourceEndedAt(
-          drag_location_, drag_screen_location_,
-          ui::mojom::DragOperation::kNone, base::DoNothing());
+    if (current_source_rwh_for_drag_) {
+      web_contents_->DragSourceEndedAt(
+          drag_location_.x(), drag_location_.y(), drag_screen_location_.x(),
+          drag_screen_location_.y(), ui::mojom::DragOperation::kNone,
+          current_source_rwh_for_drag_.get());
+      OnSystemDragEnded(current_source_rwh_for_drag_.get());
     }
     drag_security_info_.OnDragEnded();
   } else {
@@ -773,7 +777,8 @@ void WebContentsViewAndroid::OnDragEnded() {
   }
 
   drag_metadata_.clear();
-  current_rwh_for_drag_.reset();
+  current_source_rwh_for_drag_.reset();
+  current_target_rwh_for_drag_.reset();
   is_active_drag_ = false;
   drag_exceeded_movement_threshold_ = false;
   drag_entered_location_ = gfx::PointF();
