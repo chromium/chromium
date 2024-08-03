@@ -466,7 +466,7 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForEngagedSites(
   // If HFM or the auto-enable prefs were previously set, do not modify HFM
   // status.
   if (profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled) ||
-      IsBalanceModeEnabled() ||
+      IsBalancedModeEnabled() ||
       profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled)) {
     if (!done_callback.is_null()) {
       std::move(done_callback).Run();

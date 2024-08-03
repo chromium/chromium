@@ -333,6 +333,10 @@ class HttpsUpgradesBrowserTest
     incognito_browser_ = CreateIncognitoBrowser();
   }
   bool IsIncognito() const { return incognito_browser_ != nullptr; }
+  bool OnlyInBalancedMode() const {
+    return https_upgrades_test_type() ==
+           HttpsUpgradesTestType::kHttpsFirstBalancedMode;
+  }
   bool InBalancedMode() const {
     return https_upgrades_test_type() ==
                HttpsUpgradesTestType::kHttpsFirstBalancedMode ||
@@ -630,6 +634,58 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   histograms()->ExpectBucketCount(
       kNavigationRequestSecurityLevelHistogram,
       NavigationRequestSecurityLevel::kNonUniqueHostname, 1);
+}
+
+// Test that unique single-label hostnames (e.g. gTLDs) are upgraded in all
+// modes, but warnings are only shown in strict and incognito modes.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       UniqueSingleLabel_NoWarnInBalancedMode) {
+  // Disable the testing port configuration, as this test doesn't use the
+  // EmbeddedTestServer.
+  HttpsUpgradesInterceptor::SetHttpsPortForTesting(0);
+  HttpsUpgradesInterceptor::SetHttpPortForTesting(0);
+  GURL singlelabel_url = http_server()->GetURL("cl", "/simple.html");
+
+  auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
+
+  if (IsHttpsFirstModePrefEnabled() || IsIncognito()) {
+    // HFM should attempt the upgrade, fail, and fallback to the interstitial.
+    EXPECT_FALSE(content::NavigateToURL(contents, singlelabel_url));
+    EXPECT_TRUE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+    histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 2);
+  } else {
+    // Otherwise, the request should attempt the upgrade, fail, and fallback to
+    // HTTP _without_ an interstitial.
+    NavigateAndWaitForFallback(contents, singlelabel_url);
+    EXPECT_EQ(singlelabel_url, contents->GetLastCommittedURL());
+    EXPECT_FALSE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+    histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                    NavigationRequestSecurityLevel::kInsecure,
+                                    1);
+    histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 3);
+  }
+
+  // Verify that upgrade events were recorded because an upgrade was attempted
+  // and failed no matter what.
+  histograms()->ExpectTotalCount(kEventHistogram, 3);
+  histograms()->ExpectBucketCount(
+      kEventHistogram,
+      security_interstitials::https_only_mode::Event::kUpgradeAttempted, 1);
+  histograms()->ExpectBucketCount(
+      kEventHistogram,
+      security_interstitials::https_only_mode::Event::kUpgradeFailed, 1);
+  histograms()->ExpectBucketCount(
+      kEventHistogram,
+      security_interstitials::https_only_mode::Event::kUpgradeTimedOut, 1);
+
+  histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                  NavigationRequestSecurityLevel::kUpgraded, 1);
+  histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                  NavigationRequestSecurityLevel::kSecure, 1);
 }
 
 // If the user navigates to a non-unique hostname, the navigation should be
@@ -1714,8 +1770,14 @@ IN_PROC_BROWSER_TEST_P(
             return true;
           }));
   EXPECT_FALSE(content::NavigateToURL(contents, http_url));
-  EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(contents));
-  ProceedThroughInterstitial(contents);
+
+  // Balanced mode doesn't show the interstitial on any single-label hosts.
+  if (OnlyInBalancedMode()) {
+    EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+  } else {
+    EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+    ProceedThroughInterstitial(contents);
+  }
 
   // Should now be on the HTTP URL and it should be allowlisted.
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());

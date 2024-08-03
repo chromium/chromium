@@ -306,7 +306,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
                                             storage_partition)) {
     interstitial_state_->enabled_by_engagement_heuristic = true;
   }
-  if (IsBalanceModeEnabled() &&
+  if (IsBalancedModeEnabled() &&
       (state && !state->HttpsFirstBalancedModeSuppressedForTesting())) {
     interstitial_state_->enabled_in_balanced_mode = true;
   }
@@ -700,6 +700,7 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
   }
 
   // If HTTPS-First Mode is not enabled (so no interstitial will be shown),
+  // or if host is one that balanced mode is excluding from warnings,
   // add the fallback hostname to the allowlist now before triggering fallback.
   // HTTPS-First Mode handles this on the user proceeding through the
   // interstitial only.
@@ -709,7 +710,9 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
   // TODO(crbug.com/40248833): Move this to a helper function
   // `AddUrlToAllowlist()`, especially once this gets more complicated for
   // HFM vs. Upgrades.
-  if (!IsInterstitialEnabled(*interstitial_state_)) {
+  if (!IsInterstitialEnabled(*interstitial_state_) ||
+      ShouldExcludeHostnameFromInterstitial(*interstitial_state_,
+                                            request.url.host())) {
     // StatefulSSLHostStateDelegate can be null during tests.
     if (state) {
       state->AllowHttpForHost(

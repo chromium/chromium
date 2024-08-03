@@ -11,7 +11,11 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
+#include "net/base/url_util.h"
 #include "url/gurl.h"
+
+using HttpInterstitialState =
+    security_interstitials::https_only_mode::HttpInterstitialState;
 
 bool IsHostnameInHttpAllowlist(const GURL& url, PrefService* prefs) {
   const base::Value::List& allowed_hosts =
@@ -52,26 +56,47 @@ void ClearHttpAllowlistForHostnamesForTesting(PrefService* prefs) {
   prefs->SetList(prefs::kHttpAllowlist, std::move(empty_list));
 }
 
-bool IsBalanceModeEnabled() {
+bool IsBalancedModeEnabled() {
   // TODO(crbug.com/349860796): Initially, balanced mode is controlled directly
   // by the feature, but it may be controlled via pref or setting in the future.
   return base::FeatureList::IsEnabled(features::kHttpsFirstBalancedMode);
 }
 
-bool IsInterstitialEnabled(
-    const security_interstitials::https_only_mode::HttpInterstitialState&
-        state) {
+bool IsBalancedModeUniquelyEnabled(const HttpInterstitialState& state) {
+  // Balance mode is _uniquely_ enabled only when other HFM variants aren't
+  // enabled.
+  if (state.enabled_by_pref) {
+    return false;
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeV2ForEngagedSites) &&
+      state.enabled_by_engagement_heuristic) {
+    return false;
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeV2ForTypicallySecureUsers) &&
+      state.enabled_by_typically_secure_browsing) {
+    return false;
+  }
+  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
+      state.enabled_by_incognito) {
+    return false;
+  }
+
+  // ...then ensure balanced mode is enabled.
+  return IsBalancedModeEnabled() && state.enabled_in_balanced_mode;
+}
+
+bool IsInterstitialEnabled(const HttpInterstitialState& state) {
   // Interstitials are enabled when "strict" interstitials are enabled...
   if (IsStrictInterstitialEnabled(state)) {
     return true;
   }
   // ...or when balanced mode is enabled.
-  return (IsBalanceModeEnabled() && state.enabled_in_balanced_mode);
+  return (IsBalancedModeEnabled() && state.enabled_in_balanced_mode);
 }
 
-bool IsStrictInterstitialEnabled(
-    const security_interstitials::https_only_mode::HttpInterstitialState&
-        state) {
+bool IsStrictInterstitialEnabled(const HttpInterstitialState& state) {
   if (state.enabled_by_pref) {
     return true;
   }
@@ -89,9 +114,7 @@ bool IsStrictInterstitialEnabled(
          state.enabled_by_typically_secure_browsing;
 }
 
-bool ShouldExemptNonUniqueHostnames(
-    const security_interstitials::https_only_mode::HttpInterstitialState&
-        state) {
+bool ShouldExemptNonUniqueHostnames(const HttpInterstitialState& state) {
   // Full HTTPS-First Mode, HFM-for-engaged-sites, and
   // HFM-for-Typically-Secure-Users apply strict HTTPS enforcement, and warn
   // the user before any HTTP that goes over the network.
@@ -115,12 +138,19 @@ bool ShouldExemptNonUniqueHostnames(
     return true;
   }
   // Balanced mode HFM exempts non-unique hostnames to reduce warning volume.
-  if (IsBalanceModeEnabled() && state.enabled_in_balanced_mode) {
+  if (IsBalancedModeEnabled() && state.enabled_in_balanced_mode) {
     return true;
   }
   // If no interstitial state is set, then the default is HTTPS-Upgrades which
   // does exempt non-unique hostnames.
   return true;
+}
+
+bool ShouldExcludeHostnameFromInterstitial(const HttpInterstitialState& state,
+                                           const std::string hostname) {
+  // Exclude single-label domains in balanced mode.
+  return IsBalancedModeUniquelyEnabled(state) &&
+         net::GetSuperdomain(hostname).empty();
 }
 
 ScopedAllowHttpForHostnamesForTesting::ScopedAllowHttpForHostnamesForTesting(
