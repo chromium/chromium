@@ -2530,15 +2530,15 @@ void LocalFrame::ForceSynchronousDocumentInstall(const AtomicString& mime_type,
       current_chunk.Append(segment.data(),
                            static_cast<wtf_size_t>(segment.size()));
       if (current_chunk.size() > kMaxDocumentChunkSize) {
-        parser->AppendBytes(current_chunk.data(), current_chunk.size());
+        parser->AppendBytes(base::as_byte_span(current_chunk));
         current_chunk.clear();
       }
     }
-    parser->AppendBytes(current_chunk.data(), current_chunk.size());
+    parser->AppendBytes(base::as_byte_span(current_chunk));
     current_chunk.clear();
   } else {
     for (const auto& segment : data) {
-      parser->AppendBytes(segment.data(), segment.size());
+      parser->AppendBytes(base::as_bytes(segment));
     }
   }
 

@@ -437,7 +437,7 @@ class DocumentLoader::EncodedBodyData : public BodyData {
   }
 
   void AppendToParser(DocumentLoader* loader) override {
-    loader->parser_->AppendBytes(data_.data(), data_.size());
+    loader->parser_->AppendBytes(base::as_bytes(data_));
   }
 
   void Buffer(DocumentLoader* loader) override {

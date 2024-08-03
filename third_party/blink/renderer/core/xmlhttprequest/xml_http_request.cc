@@ -1871,7 +1871,7 @@ void XMLHttpRequest::DidReceiveResponse(uint64_t identifier,
   response_ = response;
 }
 
-void XMLHttpRequest::ParseDocumentChunk(const char* data, unsigned len) {
+void XMLHttpRequest::ParseDocumentChunk(base::span<const uint8_t> data) {
   if (!response_document_parser_) {
     DCHECK(!response_document_);
     InitResponseDocument();
@@ -1887,7 +1887,7 @@ void XMLHttpRequest::ParseDocumentChunk(const char* data, unsigned len) {
   if (response_document_parser_->NeedsDecoder())
     response_document_parser_->SetDecoder(CreateDecoder());
 
-  response_document_parser_->AppendBytes(data, len);
+  response_document_parser_->AppendBytes(data);
 }
 
 std::unique_ptr<TextResourceDecoder> XMLHttpRequest::CreateDecoder() const {
@@ -1956,7 +1956,7 @@ void XMLHttpRequest::DidReceiveData(base::span<const char> data) {
 
   unsigned len = base::checked_cast<unsigned>(data.size());
   if (response_type_code_ == kResponseTypeDocument && ResponseIsHTML()) {
-    ParseDocumentChunk(data.data(), len);
+    ParseDocumentChunk(base::as_bytes(data));
   } else if (response_type_code_ == kResponseTypeDefault ||
              response_type_code_ == kResponseTypeText ||
              response_type_code_ == kResponseTypeJSON ||

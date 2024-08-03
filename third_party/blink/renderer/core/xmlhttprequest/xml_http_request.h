@@ -233,7 +233,7 @@ class CORE_EXPORT XMLHttpRequest final
   std::unique_ptr<TextResourceDecoder> CreateDecoder() const;
 
   void InitResponseDocument();
-  void ParseDocumentChunk(const char* data, unsigned data_length);
+  void ParseDocumentChunk(base::span<const uint8_t> data);
 
   bool AreMethodAndURLValidForSend();
 

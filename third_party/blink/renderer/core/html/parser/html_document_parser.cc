@@ -1358,18 +1358,19 @@ void HTMLDocumentParser::ParseDocumentFragment(
   parser->Detach();
 }
 
-void HTMLDocumentParser::AppendBytes(const char* data, size_t length) {
-  TRACE_EVENT_WITH_FLOW2("blink", "HTMLDocumentParser::appendBytes",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "size", (unsigned)length, "parser", (void*)this);
+void HTMLDocumentParser::AppendBytes(base::span<const uint8_t> data) {
+  TRACE_EVENT_WITH_FLOW2(
+      "blink", "HTMLDocumentParser::appendBytes", TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "size",
+      static_cast<unsigned>(data.size()), "parser", (void*)this);
 
   DCHECK(IsMainThread());
 
-  if (!length || IsStopped())
+  if (data.empty() || IsStopped()) {
     return;
+  }
 
-  DecodedDataDocumentParser::AppendBytes(data, length);
+  DecodedDataDocumentParser::AppendBytes(data);
 }
 
 void HTMLDocumentParser::Flush() {
