@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -682,24 +683,68 @@ TEST_F(FocusModeDetailedViewTest, ExpandOrShrinkTaskViewContainer) {
   EXPECT_TRUE(chip_carousel->HasTasks());
   EXPECT_TRUE(chip_carousel->GetVisible());
 
-  auto* radio_button = task_view->radio_button_for_testing();
-  // `radio_button` is invisible before we select a task title.
-  EXPECT_FALSE(radio_button->GetVisible());
+  auto* complete_button = task_view->complete_button_for_testing();
+  // `complete_button` is invisible before we select a task title.
+  EXPECT_FALSE(complete_button->GetVisible());
   const int old_height_before_shrink = task_container_view->bounds().height();
 
   // 1. Shrink the `task_container_view`.
   task_view->CommitTextfieldContents(u"my task title");
   AdvanceClock(base::Milliseconds(10));
   views::test::RunScheduledLayout(task_container_view);
-  EXPECT_TRUE(radio_button->GetVisible());
+  EXPECT_TRUE(complete_button->GetVisible());
   EXPECT_FALSE(chip_carousel->GetVisible());
   EXPECT_GT(old_height_before_shrink, task_container_view->bounds().height());
 
   // 2. Expand the `task_container_view`.
-  LeftClickOn(radio_button);
+  LeftClickOn(complete_button);
   AdvanceClock(kStartAnimationDelay);
   views::test::RunScheduledLayout(task_container_view);
   EXPECT_EQ(old_height_before_shrink, task_container_view->bounds().height());
+}
+
+// Test that after adding or updating a task, the focus should be either on the
+// complete button or the deselect button. Note that this test should enable
+// ChromeVox.
+TEST_F(FocusModeDetailedViewTest, A11yFocusAfterTaskTextfield) {
+  Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
+
+  auto* task_view = GetTaskView();
+  auto* task_textfield = task_view->GetTaskTextfieldForTesting();
+  auto* complete_button = task_view->complete_button_for_testing();
+  EXPECT_FALSE(complete_button->HasFocus());
+
+  // 1. Add a new task. After the commit, the focus will be on the radio button.
+  LeftClickOn(task_textfield);
+  EXPECT_TRUE(task_textfield->HasFocus());
+  task_textfield->SetText(u"task title1");
+  EXPECT_TRUE(task_textfield->IsActive());
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  task_environment()->RunUntilIdle();
+  EXPECT_TRUE(complete_button->HasFocus());
+
+  // 2. Edit the existing textfield and commit the change. Then, pessing the
+  // `Enter` key will bring the focus on the radio button.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+  EXPECT_TRUE(task_textfield->HasFocus());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  EXPECT_TRUE(task_textfield->IsActive());
+  task_textfield->SetText(u"task title2");
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  task_environment()->RunUntilIdle();
+  EXPECT_TRUE(complete_button->HasFocus());
+
+  // 3. Edit the existing textfield and commit the change. Then, pessing the
+  // `TAB` key will bring the focus on the deselect button.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+  EXPECT_TRUE(task_textfield->HasFocus());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  EXPECT_TRUE(task_textfield->IsActive());
+  task_textfield->SetText(u"task title3");
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+  task_environment()->RunUntilIdle();
+  EXPECT_TRUE(task_view->deselect_button_for_testing()->HasFocus());
 }
 
 // Tests that tabbing to the timer decrease button after setting the time to 1
