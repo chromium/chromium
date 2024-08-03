@@ -35,15 +35,26 @@ std::unique_ptr<ui::AXTreeUpdate> CreateInitialUpdate() {
 }
 
 ui::AXNodeData TextNode(int id, std::u16string text_content) {
-  ui::AXNodeData node;
-  node.id = id;
-  node.role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData node = TextNode(id);
   node.SetNameChecked(text_content);
   return node;
 }
 
 ui::AXNodeData TextNode(int id) {
+  ui::AXNodeData node;
+  node.id = id;
+  node.role = ax::mojom::Role::kStaticText;
+  return node;
+}
+
+ui::AXNodeData TextNodeWithTextFromId(int id) {
   return TextNode(id, base::NumberToString16(id));
+}
+
+ui::AXNodeData ExplicitlyEmptyTextNode(int id) {
+  ui::AXNodeData node = TextNode(id);
+  node.SetNameExplicitlyEmpty();
+  return node;
 }
 
 }  // namespace test

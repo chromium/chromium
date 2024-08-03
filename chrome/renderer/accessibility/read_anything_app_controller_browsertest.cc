@@ -15,6 +15,7 @@
 #include "chrome/renderer/accessibility/read_anything_test_utils.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
+#include "read_anything_test_utils.h"
 #include "services/strings/grit/services_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -1170,12 +1171,9 @@ TEST_F(ReadAnythingAppControllerTest, GetImageDataUrl_Unset) {
 
 TEST_F(ReadAnythingAppControllerTest, GetTextContent_NoSelection) {
   ui::AXNodeData node1 = test::TextNode(/* id= */ 2, u"Hello");
-  ui::AXNodeData node2;
-  node2.id = 3;
-  node2.role = ax::mojom::Role::kStaticText;
-  node2.SetNameExplicitlyEmpty();
-
+  ui::AXNodeData node2 = test::ExplicitlyEmptyTextNode(/* id= */ 3);
   ui::AXNodeData node3 = test::TextNode(/* id = */ 4, u" world");
+
   SendUpdateWithNodes({node1, node2, node3});
   OnAXTreeDistilled({});
   EXPECT_EQ("Hello world", GetTextContent(1));
@@ -1212,11 +1210,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
   test::SetUpdateTreeID(&update, id_1);
   ui::AXNodeData node1 = test::TextNode(/* id= */ 2, u"Hello");
-
-  ui::AXNodeData node2;
-  node2.id = 3;
-  node2.role = ax::mojom::Role::kStaticText;
-  node2.SetNameExplicitlyEmpty();
+  ui::AXNodeData node2 = test::ExplicitlyEmptyTextNode(/* id= */ 3);
 
   ui::AXNodeData root;
   root.id = 1;
@@ -1830,9 +1824,7 @@ TEST_F(ReadAnythingAppControllerTest, OnAXTreeDestroyed_EraseTreeCalled) {
   for (int i = 0; i < 3; i++) {
     int id = i + 2;
     child_ids.push_back(id);
-    initial_update.nodes[i].id = id;
-    initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
-    initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
+    initial_update.nodes[i] = test::TextNodeWithTextFromId(id);
   }
   // Since this update is just cosmetic (it changes the nodes' name but doesn't
   // change the structure of the tree by adding or removing nodes), the
@@ -1853,7 +1845,7 @@ TEST_F(ReadAnythingAppControllerTest, OnAXTreeDestroyed_EraseTreeCalled) {
     root.id = 1;
     root.child_ids = child_ids;
 
-    ui::AXNodeData node = test::TextNode(id);
+    ui::AXNodeData node = test::TextNodeWithTextFromId(id);
     update.root_id = root.id;
     update.nodes = {root, node};
     updates.push_back(update);
@@ -1888,9 +1880,7 @@ TEST_F(ReadAnythingAppControllerTest,
   for (int i = 0; i < 3; i++) {
     int id = i + 2;
     child_ids.push_back(id);
-    initial_update.nodes[i].id = id;
-    initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
-    initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
+    initial_update.nodes[i] = test::TextNodeWithTextFromId(id);
   }
   // No events we care about come about, so there's no distillation.
   EXPECT_CALL(*distiller_, Distill).Times(0);
@@ -1909,7 +1899,7 @@ TEST_F(ReadAnythingAppControllerTest,
     root.id = 1;
     root.child_ids = child_ids;
 
-    ui::AXNodeData node = test::TextNode(id);
+    ui::AXNodeData node = test::TextNodeWithTextFromId(id);
     update.root_id = root.id;
     update.nodes = {root, node};
     updates.push_back(update);
@@ -1958,9 +1948,7 @@ TEST_F(ReadAnythingAppControllerTest,
   for (int i = 0; i < 3; i++) {
     int id = i + 2;
     child_ids.push_back(id);
-    initial_update.nodes[i].id = id;
-    initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
-    initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
+    initial_update.nodes[i] = test::TextNodeWithTextFromId(id);
   }
   // No events we care about come about, so there's no distillation.
   EXPECT_CALL(*distiller_, Distill).Times(0);
@@ -1979,7 +1967,7 @@ TEST_F(ReadAnythingAppControllerTest,
     root.id = 1;
     root.child_ids = child_ids;
 
-    ui::AXNodeData node = test::TextNode(id);
+    ui::AXNodeData node = test::TextNodeWithTextFromId(id);
     update.root_id = root.id;
     update.nodes = {root, node};
     updates.push_back(update);
@@ -2040,9 +2028,7 @@ TEST_F(ReadAnythingAppControllerTest,
   for (int i = 0; i < 3; i++) {
     int id = i + 2;
     child_ids.push_back(id);
-    initial_update.nodes[i].id = id;
-    initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
-    initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
+    initial_update.nodes[i] = test::TextNodeWithTextFromId(id);
   }
   // Since this update is just cosmetic (it changes the nodes' name but doesn't
   // change the structure of the tree by adding or removing nodes), the
@@ -2063,7 +2049,7 @@ TEST_F(ReadAnythingAppControllerTest,
     root.id = 1;
     root.child_ids = child_ids;
 
-    ui::AXNodeData node = test::TextNode(id);
+    ui::AXNodeData node = test::TextNodeWithTextFromId(id);
     update.root_id = root.id;
     update.nodes = {root, node};
 
@@ -2106,7 +2092,7 @@ TEST_F(ReadAnythingAppControllerTest,
     root.id = 1;
     root.child_ids = child_ids;
 
-    ui::AXNodeData node = test::TextNode(id);
+    ui::AXNodeData node = test::TextNodeWithTextFromId(id);
     update.root_id = root.id;
     update.nodes = {root, node};
     updates.push_back(update);
@@ -2177,7 +2163,7 @@ TEST_F(ReadAnythingAppControllerTest,
     root.id = 1;
     root.child_ids = child_ids;
 
-    ui::AXNodeData node = test::TextNode(id);
+    ui::AXNodeData node = test::TextNodeWithTextFromId(id);
     update.root_id = root.id;
     update.nodes = {root, node};
     updates.push_back(update);
@@ -2269,17 +2255,10 @@ TEST_F(ReadAnythingAppControllerTest, OnLinkClicked_DistillationInProgress) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
-  ui::AXNodeData node1;
-  node1.id = 2;
-  node1.role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData node1 = test::TextNode(/* id= */ 2);
+  ui::AXNodeData node2 = test::TextNode(/* id= */ 3);
+  ui::AXNodeData node3 = test::TextNode(/* id= */ 4);
 
-  ui::AXNodeData node2;
-  node2.id = 3;
-  node2.role = ax::mojom::Role::kStaticText;
-
-  ui::AXNodeData node3;
-  node3.id = 4;
-  node3.role = ax::mojom::Role::kStaticText;
   SendUpdateWithNodes({node1, node2, node3});
   ui::AXNodeID anchor_node_id = 2;
   int anchor_offset = 0;
@@ -2294,17 +2273,10 @@ TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnCollapseSelection) {
-  ui::AXNodeData node1;
-  node1.id = 2;
-  node1.role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData node1 = test::TextNode(/* id= */ 2);
+  ui::AXNodeData node2 = test::TextNode(/* id= */ 3);
+  ui::AXNodeData node3 = test::TextNode(/* id= */ 4);
 
-  ui::AXNodeData node2;
-  node2.id = 3;
-  node2.role = ax::mojom::Role::kStaticText;
-
-  ui::AXNodeData node3;
-  node3.id = 4;
-  node3.role = ax::mojom::Role::kStaticText;
   SendUpdateWithNodes({node1, node2, node3});
   EXPECT_CALL(page_handler_, OnCollapseSelection()).Times(1);
   OnCollapseSelection();
@@ -2313,13 +2285,8 @@ TEST_F(ReadAnythingAppControllerTest, OnCollapseSelection) {
 
 TEST_F(ReadAnythingAppControllerTest,
        OnSelectionChange_ClickAfterClickDoesNotUpdateSelection) {
-  ui::AXNodeData node1;
-  node1.id = 2;
-  node1.role = ax::mojom::Role::kStaticText;
-
-  ui::AXNodeData node2;
-  node2.id = 3;
-  node2.role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData node1 = test::TextNode(/* id= */ 2);
+  ui::AXNodeData node2 = test::TextNode(/* id= */ 3);
   SendUpdateWithNodes({node1, node2});
 
   ui::AXTreeUpdate selection;
@@ -2339,13 +2306,8 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnSelectionChange_ClickAfterSelectionClearsSelection) {
-  ui::AXNodeData node1;
-  node1.id = 2;
-  node1.role = ax::mojom::Role::kStaticText;
-
-  ui::AXNodeData node2;
-  node2.id = 3;
-  node2.role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData node1 = test::TextNode(/* id= */ 2);
+  ui::AXNodeData node2 = test::TextNode(/* id= */ 3);
   SendUpdateWithNodes({node1, node2});
 
   ui::AXTreeUpdate selection;
@@ -2373,9 +2335,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, new_tree_id);
-  ui::AXNodeData root;
-  root.id = 1;
-  root.role = ax::mojom::Role::kStaticText;
+  ui::AXNodeData root = test::TextNode(/* id= */ 1);
   update.root_id = root.id;
   update.nodes = {root};
   AccessibilityEventReceived({update});

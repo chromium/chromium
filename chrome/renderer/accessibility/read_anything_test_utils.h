@@ -16,6 +16,8 @@ std::unique_ptr<ui::AXTreeUpdate> CreateInitialUpdate();
 // Helpers for creating AXNodeData objects to be used in testing.
 ui::AXNodeData TextNode(int id, std::u16string text_content);
 ui::AXNodeData TextNode(int id);
+ui::AXNodeData TextNodeWithTextFromId(int id);
+ui::AXNodeData ExplicitlyEmptyTextNode(int id);
 
 }  // namespace test
 
