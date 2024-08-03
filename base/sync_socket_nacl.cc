@@ -48,13 +48,6 @@ size_t SyncSocket::ReceiveWithTimeout(span<uint8_t> buffer, TimeDelta timeout) {
   return 0;
 }
 
-size_t SyncSocket::ReceiveWithTimeout(void* buffer,
-                                      size_t length,
-                                      TimeDelta timeout) {
-  NOTIMPLEMENTED();
-  return 0;
-}
-
 size_t SyncSocket::Peek() {
   NOTIMPLEMENTED();
   return 0;

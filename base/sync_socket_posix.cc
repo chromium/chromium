@@ -109,13 +109,6 @@ size_t SyncSocket::Receive(span<uint8_t> buffer) {
   return 0;
 }
 
-size_t SyncSocket::ReceiveWithTimeout(void* buffer,
-                                      size_t length,
-                                      TimeDelta timeout) {
-  return ReceiveWithTimeout(make_span(static_cast<uint8_t*>(buffer), length),
-                            std::move(timeout));
-}
-
 size_t SyncSocket::Receive(void* buffer, size_t length) {
   return Receive(make_span(static_cast<uint8_t*>(buffer), length));
 }

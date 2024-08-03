@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -266,7 +267,7 @@ bool SyncReader::WaitUntilDataIsReady(bool is_mixing) {
   uint32_t renderer_buffer_index = 0;
   while (timeout.InMicroseconds() > 0) {
     bytes_received = socket_.ReceiveWithTimeout(
-        &renderer_buffer_index, sizeof(renderer_buffer_index), timeout);
+        base::byte_span_from_ref(renderer_buffer_index), timeout);
     if (bytes_received != sizeof(renderer_buffer_index)) {
       bytes_received = 0;
       break;

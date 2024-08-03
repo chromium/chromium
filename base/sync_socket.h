@@ -74,10 +74,6 @@ class BASE_EXPORT SyncSocket {
   // `buffer` is exhausted. Currently only timeouts less than one second are
   // allowed. Returns the number of bytes read.
   virtual size_t ReceiveWithTimeout(span<uint8_t> buffer, TimeDelta timeout);
-  // TODO(crbug.com/40284755): Migrate callers to the span version.
-  virtual size_t ReceiveWithTimeout(void* buffer,
-                                    size_t length,
-                                    TimeDelta timeout);
 
   // Returns the number of bytes available. If non-zero, Receive() will not
   // not block when called.
@@ -131,10 +127,6 @@ class BASE_EXPORT CancelableSyncSocket : public SyncSocket {
   // TODO(crbug.com/40284755): Migrate callers to the span version.
   size_t Receive(void* buffer, size_t length) override;
   size_t ReceiveWithTimeout(span<uint8_t> buffer, TimeDelta timeout) override;
-  // TODO(crbug.com/40284755): Migrate callers to the span version.
-  size_t ReceiveWithTimeout(void* buffer,
-                            size_t length,
-                            TimeDelta timeout) override;
 #endif
 
   // Send() is overridden to catch cases where the remote end is not responding
