@@ -66,7 +66,7 @@ void LogCardUploadEnabled(LogManager* log_manager) {
 }  // namespace
 
 // The list of countries for which the credit card upload save feature is fully
-// launched. Last updated M118.
+// launched. Last updated M129.
 const char* const kAutofillUpstreamLaunchedCountries[] = {
     "AD", "AE", "AF", "AG", "AI", "AL", "AO", "AR", "AS", "AT", "AU", "AW",
     "AZ", "BA", "BB", "BE", "BF", "BG", "BH", "BJ", "BM", "BN", "BR", "BS",
@@ -80,10 +80,10 @@ const char* const kAutofillUpstreamLaunchedCountries[] = {
     "MK", "ML", "MN", "MO", "MP", "MQ", "MR", "MS", "MT", "MU", "MW", "MX",
     "MY", "MZ", "NA", "NC", "NE", "NF", "NG", "NI", "NL", "NO", "NR", "NZ",
     "OM", "PA", "PE", "PF", "PG", "PH", "PL", "PM", "PR", "PT", "PW", "PY",
-    "QA", "RE", "RO", "RU", "SB", "SC", "SE", "SG", "SI", "SJ", "SK", "SL",
-    "SM", "SN", "SR", "ST", "SV", "SZ", "TC", "TD", "TG", "TH", "TL", "TM",
-    "TO", "TR", "TT", "TV", "TW", "TZ", "UA", "UG", "US", "UY", "VC", "VE",
-    "VG", "VI", "VN", "VU", "WS", "YT", "ZA", "ZM", "ZW"};
+    "QA", "RE", "RO", "SB", "SC", "SE", "SG", "SI", "SJ", "SK", "SL", "SM",
+    "SN", "SR", "ST", "SV", "SZ", "TC", "TD", "TG", "TH", "TL", "TM", "TO",
+    "TR", "TT", "TV", "TW", "TZ", "UA", "UG", "US", "UY", "VC", "VE", "VG",
+    "VI", "VN", "VU", "WS", "YT", "ZA", "ZM", "ZW"};
 
 bool IsCreditCardUploadEnabled(
     const syncer::SyncService* sync_service,
