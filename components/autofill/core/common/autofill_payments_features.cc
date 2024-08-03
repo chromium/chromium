@@ -193,6 +193,12 @@ BASE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields,
              "AutofillParseVcnCardOnFileStandaloneCvcFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the "Show cards from your Google Account" Autofill suggestion
+// will not be displayed, and Autofill will work as if it had been selected.
+BASE_FEATURE(kAutofillRemovePaymentsButterDropdown,
+             "AutofillRemovePaymentsButterDropdown",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the add/edit local card dialog in chrome://settings on Desktop
 // requires that the card number be valid before saving is allowed.
 BASE_FEATURE(kAutofillRequireValidLocalCardsInSettings,

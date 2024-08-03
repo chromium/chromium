@@ -22907,6 +22907,8 @@ from previous Chrome versions.
       label="AccessibilityMagnifierFollowsChromeVox:enabled"/>
   <int value="1092296990" label="EnableMultiMonitorsInCrd:disabled"/>
   <int value="1092896354" label="EnableFullscreenAppList:disabled"/>
+  <int value="1093305266"
+      label="AutofillRemovePaymentsButterDropdown:disabled"/>
   <int value="1093479250" label="AccessibilitySelectToSpeakShortcut:disabled"/>
   <int value="1093763764" label="SafeSitesFilterBehaviorPolicyAndroid:enabled"/>
   <int value="1093859961" label="RelatedSearchesSimplifiedUx:disabled"/>
@@ -23620,6 +23622,7 @@ from previous Chrome versions.
   <int value="1388323853" label="ModifierSplit:enabled"/>
   <int value="1388726032" label="ChromeOSAmbientModeThrottleAnimation:enabled"/>
   <int value="1388776696" label="ReadAloudLanguagePackDownloading:enabled"/>
+  <int value="1388800959" label="AutofillRemovePaymentsButterDropdown:enabled"/>
   <int value="1389697465" label="OmniboxGroupingFramework:disabled"/>
   <int value="1389729816" label="data-reduction-proxy-lo-fi"/>
   <int value="1390803837" label="NtpSharepointModule:enabled"/>

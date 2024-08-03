@@ -639,6 +639,13 @@ const char kAutofillMoreProminentPopupDescription[] =
     "If enabled Autofill's popup becomes more prominent, i.e. its shadow "
     "becomes more emphasized, position is also updated";
 
+const char kAutofillRemovePaymentsButterDropdownName[] =
+    "Remove \"Show cards from your Google Account\" dropdown";
+const char kAutofillRemovePaymentsButterDropdownDescription[] =
+    "When enabled, the \"Show cards from your Google Account\" Autofill "
+    "suggestion will not be displayed, and Autofill will work as if it had "
+    "been selected.";
+
 const char kAutofillRequireValidLocalCardsInSettingsName[] =
     "Require local card numbers to be valid when adding or editing via "
     "chrome://settings";

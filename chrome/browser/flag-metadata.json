@@ -838,6 +838,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "autofill-remove-payments-butter-dropdown",
+    "owners": [ "jsaul@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "autofill-require-valid-local-cards-in-settings",
     "owners": [ "smcgruer@google.com", "chrome-payments-team@google.com"],
     "expiry_milestone": 135

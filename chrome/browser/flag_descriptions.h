@@ -373,6 +373,9 @@ extern const char kAutofillHighlightOnlyChangedValuesInPreviewModeDescription[];
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[];
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
 
+extern const char kAutofillRemovePaymentsButterDropdownName[];
+extern const char kAutofillRemovePaymentsButterDropdownDescription[];
+
 extern const char kAutofillRequireValidLocalCardsInSettingsName[];
 extern const char kAutofillRequireValidLocalCardsInSettingsDescription[];
 
