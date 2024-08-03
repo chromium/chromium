@@ -2284,23 +2284,16 @@
     ]
   },
   {
-    "prefix": "deprecated-css-appearance-values-enabled",
+    "prefix": "slider-vertical-enabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "css-parser/deprecated-css-appearance-values.html",
-      "css-parser/deprecated-css-appearance-values-warning/appearance-warning-cssom-usecounter.html",
+      "css-parser/vertical-range-slider-appearance.html",
+      "css-parser/deprecated-css-appearance-values-warning/appearance-with-nonstandard-keywords.html",
       "css-parser/deprecated-css-appearance-values-warning/appearance-warning-slider-vertical-usecounter.html",
-      "css-parser/deprecated-css-appearance-values-warning/appearance-warning-usecounter.html",
-      "css-parser/deprecated-css-appearance-values-warning/webkit-appearance-warning-cssom-usecounter.html",
-      "css-parser/deprecated-css-appearance-values-warning/webkit-appearance-warning-usecounter.html",
-      "http/tests/inspector-protocol/issues/css-appearance-non-standard-issue.js",
-      "http/tests/inspector-protocol/issues/css-appearance-non-standard-cssom-issue.js",
       "http/tests/inspector-protocol/issues/css-appearance-non-standard-slider-vertical-cssom-issue.js",
-      "http/tests/inspector-protocol/issues/css-appearance-non-standard-slider-vertical-issue.js",
-      "http/tests/inspector-protocol/issues/css-webkit-appearance-non-standard-issue.js"
+      "http/tests/inspector-protocol/issues/css-appearance-non-standard-slider-vertical-issue.js"
     ],
-    "args": ["--enable-blink-features=NonStandardAppearanceValuesHighUsage",
-             "--enable-blink-features=NonStandardAppearanceValueSliderVertical"],
+    "args": ["--enable-blink-features=NonStandardAppearanceValueSliderVertical"],
     "owners": ["dizhangg@chromium.org"],
     "expires": "Jul 1, 2025"
   },

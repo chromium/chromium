@@ -177,6 +177,8 @@
         "kCSSValueAppearanceNonStandard",
       ],
       chrome_status_feature: 5066630972833792,
+      milestone: 118,
+      obsolete_to_be_removed_after_milestone: 142,
     },
     {
       name: "CSSValueAppearanceSliderVertical",

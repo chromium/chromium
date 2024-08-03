@@ -1150,15 +1150,6 @@ ParseColorResult CSSParserFastPaths::ParseColor(const String& string,
                            color_id);
 }
 
-bool CSSParserFastPaths::IsNonStandardAppearanceValuesHighUsage(
-    CSSValueID value_id) {
-  return value_id == CSSValueID::kInnerSpinButton ||
-         value_id == CSSValueID::kPushButton ||
-         value_id == CSSValueID::kSquareButton ||
-         value_id == CSSValueID::kSliderHorizontal ||
-         value_id == CSSValueID::kSearchfieldCancelButton;
-}
-
 bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     CSSPropertyID property_id,
     CSSValueID value_id,
@@ -1448,9 +1439,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
               value_id == CSSValueID::kTextarea) ||
              (RuntimeEnabledFeatures::StylableSelectEnabled() &&
               value_id == CSSValueID::kBaseSelect) ||
-             (RuntimeEnabledFeatures::
-                  NonStandardAppearanceValuesHighUsageEnabled() &&
-              IsNonStandardAppearanceValuesHighUsage(value_id)) ||
              (RuntimeEnabledFeatures::
                   NonStandardAppearanceValueSliderVerticalEnabled() &&
               value_id == CSSValueID::kSliderVertical) ||

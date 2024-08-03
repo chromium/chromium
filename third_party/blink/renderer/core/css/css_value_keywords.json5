@@ -884,13 +884,8 @@
     "searchfield",
     "textfield",
     "textarea",
-    // TODO(crbug/924486) All appearance values that should not be accepted by the parser (high usage).
-    "inner-spin-button",
-    "push-button",
-    "square-button",
-    "slider-horizontal",
-    "searchfield-cancel-button",
-    // TODO(crbug/1426629) All appearance values that should not be accepted by the parser (special case).
+    // TODO(crbug/1426629) slider-vertical is a non-standard value. We are
+    // waiting for its usage to be lower before deprecating it.
     "slider-vertical",
     //
     // border-image

@@ -258,12 +258,17 @@ inline CSSIdentifierValue::CSSIdentifierValue(ControlPart e)
     // Non standard appearance values that are not listed as
     // compat-auto must be rendered as none.
     // https://drafts.csswg.org/css-ui/#appearance-switching
+    case kInnerSpinButtonPart:
     case kMediaSliderPart:
     case kMediaSliderThumbPart:
     case kMediaVolumeSliderPart:
     case kMediaVolumeSliderThumbPart:
+    case kPushButtonPart:
+    case kSearchFieldCancelButtonPart:
     case kSliderThumbHorizontalPart:
     case kSliderThumbVerticalPart:
+    case kSliderHorizontalPart:
+    case kSquareButtonPart:
       value_id_ = CSSValueID::kNone;
       break;
     case kAutoPart:
@@ -275,17 +280,8 @@ inline CSSIdentifierValue::CSSIdentifierValue(ControlPart e)
     case kRadioPart:
       value_id_ = CSSValueID::kRadio;
       break;
-    case kPushButtonPart:
-      value_id_ = CSSValueID::kPushButton;
-      break;
-    case kSquareButtonPart:
-      value_id_ = CSSValueID::kSquareButton;
-      break;
     case kButtonPart:
       value_id_ = CSSValueID::kButton;
-      break;
-    case kInnerSpinButtonPart:
-      value_id_ = CSSValueID::kInnerSpinButton;
       break;
     case kListboxPart:
       value_id_ = CSSValueID::kListbox;
@@ -305,17 +301,11 @@ inline CSSIdentifierValue::CSSIdentifierValue(ControlPart e)
     case kProgressBarPart:
       value_id_ = CSSValueID::kProgressBar;
       break;
-    case kSliderHorizontalPart:
-      value_id_ = CSSValueID::kSliderHorizontal;
-      break;
     case kSliderVerticalPart:
       value_id_ = CSSValueID::kSliderVertical;
       break;
     case kSearchFieldPart:
       value_id_ = CSSValueID::kSearchfield;
-      break;
-    case kSearchFieldCancelButtonPart:
-      value_id_ = CSSValueID::kSearchfieldCancelButton;
       break;
     case kTextFieldPart:
       value_id_ = CSSValueID::kTextfield;
@@ -341,14 +331,8 @@ inline ControlPart CSSIdentifierValue::ConvertTo() const {
       return kCheckboxPart;
     case CSSValueID::kRadio:
       return kRadioPart;
-    case CSSValueID::kPushButton:
-      return kPushButtonPart;
-    case CSSValueID::kSquareButton:
-      return kSquareButtonPart;
     case CSSValueID::kButton:
       return kButtonPart;
-    case CSSValueID::kInnerSpinButton:
-      return kInnerSpinButtonPart;
     case CSSValueID::kListbox:
       return kListboxPart;
     case CSSValueID::kInternalMediaControl:
@@ -361,14 +345,10 @@ inline ControlPart CSSIdentifierValue::ConvertTo() const {
       return kMeterPart;
     case CSSValueID::kProgressBar:
       return kProgressBarPart;
-    case CSSValueID::kSliderHorizontal:
-      return kSliderHorizontalPart;
     case CSSValueID::kSliderVertical:
       return kSliderVerticalPart;
     case CSSValueID::kSearchfield:
       return kSearchFieldPart;
-    case CSSValueID::kSearchfieldCancelButton:
-      return kSearchFieldCancelButtonPart;
     case CSSValueID::kTextfield:
       return kTextFieldPart;
     case CSSValueID::kTextarea:

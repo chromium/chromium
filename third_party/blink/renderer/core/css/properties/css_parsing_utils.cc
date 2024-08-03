@@ -4234,25 +4234,6 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
   switch (property) {
     case CSSPropertyID::kAppearance:
     case CSSPropertyID::kAliasWebkitAppearance: {
-      // TODO(crbug.com/924486): Remove warnings after shipping.
-      if ((RuntimeEnabledFeatures::
-               NonStandardAppearanceValuesHighUsageEnabled() &&
-           CSSParserFastPaths::IsNonStandardAppearanceValuesHighUsage(
-               value_id))) {
-        if (const auto* document = context.GetDocument()) {
-          document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kDeprecation,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              String("The keyword '") + getValueName(value_id) +
-                  "' specified to an 'appearance' property is not "
-                  "standardized. It will be removed in the future."));
-          Deprecation::CountDeprecation(
-              document->GetExecutionContext(),
-              WebFeature::kCSSValueAppearanceNonStandard);
-        }
-        // We make sure feature is counted even without document context.
-        context.Count(WebFeature::kCSSValueAppearanceNonStandard);
-      }
       // TODO(crbug.com/1426629): Remove warning after shipping.
       if (RuntimeEnabledFeatures::
               NonStandardAppearanceValueSliderVerticalEnabled() &&
@@ -4282,8 +4263,6 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
           feature = WebFeature::kCSSValueAppearanceButton;
         } else if (value_id == CSSValueID::kCheckbox) {
           feature = WebFeature::kCSSValueAppearanceCheckbox;
-        } else if (value_id == CSSValueID::kInnerSpinButton) {
-          feature = WebFeature::kCSSValueAppearanceInnerSpinButton;
         } else if (value_id == CSSValueID::kMenulist) {
           feature = WebFeature::kCSSValueAppearanceMenulist;
         } else if (value_id == CSSValueID::kMenulistButton) {
@@ -4294,18 +4273,10 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
           feature = WebFeature::kCSSValueAppearanceListbox;
         } else if (value_id == CSSValueID::kProgressBar) {
           feature = WebFeature::kCSSValueAppearanceProgressBar;
-        } else if (value_id == CSSValueID::kPushButton) {
-          feature = WebFeature::kCSSValueAppearancePushButton;
         } else if (value_id == CSSValueID::kRadio) {
           feature = WebFeature::kCSSValueAppearanceRadio;
-        } else if (value_id == CSSValueID::kSearchfieldCancelButton) {
-          feature = WebFeature::kCSSValueAppearanceSearchCancel;
-        } else if (value_id == CSSValueID::kSquareButton) {
-          feature = WebFeature::kCSSValueAppearanceSquareButton;
         } else if (value_id == CSSValueID::kSearchfield) {
           feature = WebFeature::kCSSValueAppearanceSearchField;
-        } else if (value_id == CSSValueID::kSliderHorizontal) {
-          feature = WebFeature::kCSSValueAppearanceSliderHorizontal;
         } else if (value_id == CSSValueID::kSliderVertical) {
           feature = WebFeature::kCSSValueAppearanceSliderVertical;
         } else if (value_id == CSSValueID::kTextarea) {
@@ -4364,10 +4335,6 @@ void WarnInvalidKeywordPropertyUsage(CSSPropertyID property,
       // TODO(crbug.com/924486, crbug.com/1426629): Remove warnings after
       // shipping.
       if ((!RuntimeEnabledFeatures::
-               NonStandardAppearanceValuesHighUsageEnabled() &&
-           CSSParserFastPaths::IsNonStandardAppearanceValuesHighUsage(
-               value_id)) ||
-          (!RuntimeEnabledFeatures::
                NonStandardAppearanceValueSliderVerticalEnabled() &&
            value_id == CSSValueID::kSliderVertical)) {
         if (const auto* document = context.GetDocument()) {
@@ -4375,10 +4342,9 @@ void WarnInvalidKeywordPropertyUsage(CSSPropertyID property,
               MakeGarbageCollected<ConsoleMessage>(
                   mojom::blink::ConsoleMessageSource::kOther,
                   mojom::blink::ConsoleMessageLevel::kWarning,
-                  String("The keyword '") + getValueName(value_id) +
-                      "' used on the 'appearance' property was deprecated and "
-                      "has now been removed. It will no longer have any "
-                      "effect."),
+                  "The keyword 'slider-vertical' used on the 'appearance' "
+                  "property was deprecated and has now been removed. It will "
+                  "no longer have any effect."),
               true);
         }
       }
