@@ -747,6 +747,15 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_UPDATE_CHROME" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Update Chrome check finds an issue. [iOS only]">
         Your Chrome is out of date. Update it to stay safe.
       </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_ALERTS_ON_ISSUES" desc="Description of the alerts provided by Safety Check, specifically mentioning privacy or security issues detected by Chrome.">
+        Alerts on any privacy or security issues that Chrome detects for you.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_DESCRIPTION_LONG" desc="Long description of Safety Check, emphasizing its protection against data breaches, unsafe websites, and more, and mentioning alerts for detected privacy or security issues.">
+        Safety Check keeps you safe from data breaches, unsafe websites and more. Receive alerts on any privacy or security issues that Chrome detects for you.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_RECEIVE_ALERTS" desc="Description of the Safety Check feature, highlighting that it provides alerts on privacy or security issues detected by Chrome.">
+        Receive alerts on any privacy or security issues that Chrome automatically detects for you.
+      </message>
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_TWO" desc="Second bullet point under the Safe Browsing enhanced protection mode">
         Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.
       </message>

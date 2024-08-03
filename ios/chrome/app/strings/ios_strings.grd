@@ -4055,6 +4055,60 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAFETY_CHECK_LAST_COMPLETED_CHECK" desc="Subtitle for Safety Check (Magic Stack) module which shows the timestamp of the last check." meaning="Time when the Safety Check was last run.">
         <ph name="TIME">$1<ex>10 minutes ago</ex></ph>
       </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_ADD_BROWSING_PROTECTION" desc="Recommendation to add browsing protection as part of the Safety Check process.">
+        Add Browsing Protection
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_ALLOW_NOTIFICATIONS" desc="Toggle button for allowing notifications for Safety Check alerts.">
+        Allow Notifications
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_CARD_SHOWS_ISSUES" desc="Description of the Safety Check card, stating that it shows privacy or security issues automatically detected by Safety Check.">
+        This card shows any privacy or security issues that Safety Check automatically detects for you.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_CHANGE_PASSWORDS" desc="Recommendation to change passwords as part of the Safety Check process.">
+        Change Your Passwords
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_COMPROMISED_PASSWORD" desc="Alert message indicating that the user has compromised passwords that could put their security at risk, urging them to fix them to stay safe.">
+        {count, plural,
+            =1 {You have {count} compromised password that could put your security at risk. Fix it now to stay safe.}
+            other {You have {count} compromised passwords that could put your security at risk. Fix them now to stay safe.}}
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_HIDE" desc="Option to hide the “Safety Check” feature or card.">
+        Hide “Safety Check”
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_REUSED_PASSWORD" desc="Alert message indicating that the user has multiple reused passwords that could put their security at risk, urging them to fix them to stay safe.">
+        {count, plural,
+            =1 {You have {count} reused password that could put your security at risk. Fix it now to stay safe.}
+            other {You have {count} reused passwords that could put your security at risk. Fix them now to stay safe.}}
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TITLE" desc="Tag label title displayed for the Safety Check Notifications feature.">
+        Safety Check Notifications
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURNED_OFF" desc="Toast message indicating that safety check notifications have been turned off.">
+        Safety Check notifications turned off
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURNED_ON" desc="Toast message indicating that safety check notifications have been turned on.">
+        Safety Check notifications turned on
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_OFF_NOTIFICATIONS" desc="Call to action to turn off notifications for Safety Check alerts.">
+        Turn off Notifications for Safety Check
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_OFF_NOTIFICATIONS_ELLIPSIS" desc="Call to action button to turn off Safety Check notifications, with ellipsis indicating more options.">
+        Turn Off Safety Check Notifications…
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_ON_NOTIFICATIONS" desc="Call to action to turn on notifications for Safety Check alerts.">
+        Turn on Notifications for Safety Check
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_ON_NOTIFICATIONS_ELLIPSIS" desc="Call to action button to turn on Safety Check notifications, with ellipsis indicating more options. [iOS only]">
+        Turn On Safety Check Notifications…
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_UPDATE_BROWSER" desc="Recommendation to update the browser as part of the Safety Check process.">
+        Update Your Browser
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_WEAK_PASSWORD" desc="Alert message indicating that the user has weak passwords that could put their security at risk, urging them to fix them to stay safe.">
+        {count, plural,
+            =1 {You have {count} weak password that could put your security at risk. Fix it now to stay safe.}
+            other {You have {count} weak passwords that could put your security at risk. Fix them now to stay safe.}}
+      </message>
       <message name="IDS_IOS_SAFETY_CHECK_PASSWORD_CHECKUP_ONGOING" desc="In sentence case: Subtitle for the password check item in Safety Check indicating that the checks are running. Sentence case. [CHAR_LIMIT=25] [iOS only]" meaning="In sentence case.">
         Checking passwords…
       </message>
