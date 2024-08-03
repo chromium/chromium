@@ -817,8 +817,10 @@ void ShoppingServiceHandler::GetProductSpecificationsForUrls(
   // happen when (1) the page is closed and ShoppingServiceHandler destructs or
   // (2) there is another `GetProductSpecificationsForUrls` call which creates a
   // new current entry and the old one will destruct.
-  current_log_quality_entry_ =
-      PrepareQualityLogEntry(model_quality_logs_uploader_service_);
+  if (kProductSpecificationsEnableQualityLogging.Get()) {
+    current_log_quality_entry_ =
+        PrepareQualityLogEntry(model_quality_logs_uploader_service_);
+  }
   shopping_service_->GetProductSpecificationsForUrls(
       urls, base::BindOnce(
                 &ShoppingServiceHandler::OnGetProductSpecificationsForUrls,
@@ -1016,13 +1018,20 @@ void ShoppingServiceHandler::SetProductSpecificationsUserFeedback(
   }
   if (user_feedback ==
       optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN) {
-    CHECK(current_log_quality_entry_);
-    // `log_id` of the feedback will be the same as the `execution_id` of the
-    // log entry so that they can be matched later.
-    delegate_->ShowFeedbackForProductSpecifications(
-        /*log_id=*/current_log_quality_entry_->log_ai_data_request()
-            ->model_execution_info()
-            .execution_id());
+    // If quality log is enabled, `log_id` of the feedback will be the same as
+    // the `execution_id` of the log entry so that they can be matched later;
+    // otherwise it will be a random ID.
+    std::string log_id =
+        current_log_quality_entry_
+            ? current_log_quality_entry_->log_ai_data_request()
+                  ->model_execution_info()
+                  .execution_id()
+            : commerce::kProductSpecificationsLoggingPrefix +
+                  base::Uuid::GenerateRandomV4().AsLowercaseString();
+    delegate_->ShowFeedbackForProductSpecifications(std::move(log_id));
+  }
+  if (!current_log_quality_entry_) {
+    return;
   }
   optimization_guide::proto::LogAiDataRequest* request =
       current_log_quality_entry_->log_ai_data_request();
@@ -1087,18 +1096,19 @@ void ShoppingServiceHandler::OnGetProductSpecificationsForUrls(
         shopping_service::mojom::ProductSpecifications::New());
     return;
   }
-
-  // Record response in the current log quality entry.
-  optimization_guide::proto::LogAiDataRequest* request =
-      current_log_quality_entry_->log_ai_data_request();
-  if (!request) {
-    return;
+  if (current_log_quality_entry_) {
+    // Record response in the current log quality entry.
+    optimization_guide::proto::LogAiDataRequest* request =
+        current_log_quality_entry_->log_ai_data_request();
+    if (!request) {
+      return;
+    }
+    RecordQualityEntry(
+        optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
+            *request)
+            ->mutable_quality(),
+        std::move(input_urls), std::move(specs.value()));
   }
-  RecordQualityEntry(
-      optimization_guide::ProductSpecificationsFeatureTypeMap::GetLoggingData(
-          *request)
-          ->mutable_quality(),
-      std::move(input_urls), std::move(specs.value()));
 
   std::move(callback).Run(ProductSpecsToMojo(specs.value()));
 }

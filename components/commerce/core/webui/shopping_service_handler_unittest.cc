@@ -175,7 +175,11 @@ MATCHER_P(MojoBookmarkInfoWithClusterId, expected_id, "") {
 class ShoppingServiceHandlerTest : public testing::Test {
  public:
   ShoppingServiceHandlerTest() : logs_uploader_(&local_state_) {
-    features_.InitAndEnableFeature(kShoppingList);
+    features_.InitWithFeaturesAndParameters(
+        {{kShoppingList, {}},
+         {kProductSpecifications,
+          {{kProductSpecificationsEnableQualityLoggingParam, "true"}}}},
+        {});
   }
 
  protected:
@@ -1260,6 +1264,56 @@ TEST_F(ShoppingServiceHandlerFeatureDisableTest,
 
   handler_->GetAllPriceTrackedBookmarkProductInfo(base::BindOnce(
       &GetEvaluationProductInfos, base::DoNothing(), std::move(empty_list)));
+}
+
+class ShoppingServiceHandlerLoggingDisableTest
+    : public ShoppingServiceHandlerTest {
+ public:
+  ShoppingServiceHandlerLoggingDisableTest() {
+    features_.InitWithFeaturesAndParameters(
+        {{kShoppingList, {}},
+         {kProductSpecifications,
+          {{kProductSpecificationsEnableQualityLoggingParam, "false"}}}},
+        {});
+  }
+
+ protected:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(ShoppingServiceHandlerLoggingDisableTest,
+       TestGetProductSpecifications_NoLoggingEntry) {
+  ProductSpecifications specs;
+  shopping_service_->SetResponseForGetProductSpecificationsForUrls(
+      std::move(specs));
+
+  base::RunLoop run_loop;
+  handler_->GetProductSpecificationsForUrls(
+      {GURL(kTestUrl1)},
+      base::BindOnce(
+          [](ShoppingServiceHandler* handler,
+             shopping_service::mojom::ProductSpecificationsPtr specs_ptr) {
+            ASSERT_EQ(nullptr,
+                      handler->current_log_quality_entry_for_testing());
+          },
+          handler_.get())
+          .Then(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  handler_->ShowBookmarkEditorForCurrentUrl();
+}
+
+TEST_F(ShoppingServiceHandlerLoggingDisableTest,
+       SetProductSpecificationsUserFeedback_NoFeedback) {
+  EXPECT_CALL(*delegate_, ShowFeedbackForProductSpecifications).Times(1);
+
+  handler_->GetProductSpecificationsForUrls({GURL(kTestUrl1)},
+                                            base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(nullptr, handler_->current_log_quality_entry_for_testing());
+  handler_->SetProductSpecificationsUserFeedback(
+      shopping_service::mojom::UserFeedback::kThumbsDown);
 }
 
 }  // namespace

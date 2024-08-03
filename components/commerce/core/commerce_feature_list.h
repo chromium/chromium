@@ -392,6 +392,9 @@ extern const base::FeatureParam<base::TimeDelta>
     kProductSpecificationsSetValidForClusteringTime;
 extern const char kProductSpecificationsUseServerClusteringParam[];
 extern const base::FeatureParam<bool> kProductSpecificationsUseServerClustering;
+extern const char kProductSpecificationsEnableQualityLoggingParam[];
+extern const base::FeatureParam<bool>
+    kProductSpecificationsEnableQualityLogging;
 
 // Check if a URL belongs to a partner merchant of any type of discount.
 bool IsPartnerMerchant(const GURL& url);
