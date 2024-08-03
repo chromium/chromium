@@ -23,6 +23,7 @@ class ImageDecoderWrapper {
                       SegmentReader* data,
                       const SkPixmap& pixmap,
                       ColorBehavior decoder_color_behavior,
+                      cc::AuxImage aux_image,
                       wtf_size_t index,
                       bool all_data_received,
                       cc::PaintImage::GeneratorClientId client_id);
@@ -51,6 +52,7 @@ class ImageDecoderWrapper {
   SegmentReader* data_;
   SkPixmap pixmap_;
   const ColorBehavior decoder_color_behavior_;
+  const cc::AuxImage aux_image_;
   const wtf_size_t frame_index_;
   const bool all_data_received_;
   const cc::PaintImage::GeneratorClientId client_id_;

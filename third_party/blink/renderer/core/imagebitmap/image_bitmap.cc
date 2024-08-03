@@ -592,7 +592,7 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
             : ImageDecoder::kDefaultBitDepth,
         parsed_options.has_color_space_conversion ? ColorBehavior::kTag
                                                   : ColorBehavior::kIgnore,
-        Platform::GetMaxDecodedImageBytes()));
+        cc::AuxImage::kDefault, Platform::GetMaxDecodedImageBytes()));
     auto skia_image = ImageBitmap::GetSkImageFromDecoder(std::move(decoder));
     if (!skia_image)
       return;

@@ -75,7 +75,7 @@ DecodingImageGenerator::CreateAsSkImageGenerator(sk_sp<SkData> data) {
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       segment_reader, data_complete, ImageDecoder::kAlphaPremultiplied,
       ImageDecoder::kDefaultBitDepth, ColorBehavior::kTag,
-      Platform::GetMaxDecodedImageBytes());
+      cc::AuxImage::kDefault, Platform::GetMaxDecodedImageBytes());
   if (!decoder || !decoder->IsSizeAvailable())
     return nullptr;
 
@@ -86,7 +86,8 @@ DecodingImageGenerator::CreateAsSkImageGenerator(sk_sp<SkData> data) {
 
   scoped_refptr<ImageFrameGenerator> frame = ImageFrameGenerator::Create(
       SkISize::Make(size.width(), size.height()), false,
-      decoder->GetColorBehavior(), decoder->GetSupportedDecodeSizes());
+      decoder->GetColorBehavior(), cc::AuxImage::kDefault,
+      decoder->GetSupportedDecodeSizes());
   if (!frame)
     return nullptr;
 

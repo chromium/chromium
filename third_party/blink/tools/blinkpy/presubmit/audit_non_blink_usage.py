@@ -367,6 +367,7 @@ _CONFIG = [
             'base::PendingTask',
 
             # cc painting and raster types.
+            'cc::AuxImage',
             'cc::CategorizedWorkerPool',
             'cc::ColorFilter',
             'cc::DrawLooper',

@@ -52,7 +52,7 @@ SkBitmap WebImage::FromData(const WebData& data,
   std::unique_ptr<ImageDecoder> decoder(ImageDecoder::Create(
       data, data_complete, ImageDecoder::kAlphaPremultiplied,
       ImageDecoder::kDefaultBitDepth, ColorBehavior::kIgnore,
-      Platform::GetMaxDecodedImageBytes()));
+      cc::AuxImage::kDefault, Platform::GetMaxDecodedImageBytes()));
   if (!decoder || !decoder->IsSizeAvailable())
     return {};
 
@@ -137,7 +137,7 @@ WebVector<SkBitmap> WebImage::FramesFromData(const WebData& data) {
   std::unique_ptr<ImageDecoder> decoder(ImageDecoder::Create(
       data, data_complete, ImageDecoder::kAlphaPremultiplied,
       ImageDecoder::kDefaultBitDepth, ColorBehavior::kIgnore,
-      Platform::GetMaxDecodedImageBytes()));
+      cc::AuxImage::kDefault, Platform::GetMaxDecodedImageBytes()));
   if (!decoder || !decoder->IsSizeAvailable())
     return {};
 
@@ -171,7 +171,7 @@ WebVector<WebImage::AnimationFrame> WebImage::AnimationFromData(
   std::unique_ptr<ImageDecoder> decoder(ImageDecoder::Create(
       data, data_complete, ImageDecoder::kAlphaPremultiplied,
       ImageDecoder::kDefaultBitDepth, ColorBehavior::kIgnore,
-      Platform::GetMaxDecodedImageBytes()));
+      cc::AuxImage::kDefault, Platform::GetMaxDecodedImageBytes()));
   if (!decoder || !decoder->IsSizeAvailable() || decoder->FrameCount() == 0)
     return {};
 

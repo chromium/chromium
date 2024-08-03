@@ -70,7 +70,8 @@ void DecodeAndResizeImage(
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       std::move(data), /*data_complete=*/true,
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::kTransformToSRGB, Platform::GetMaxDecodedImageBytes());
+      ColorBehavior::kTransformToSRGB, cc::AuxImage::kDefault,
+      Platform::GetMaxDecodedImageBytes());
 
   if (!decoder) {
     notify_complete(SkBitmap(), -1.0);
