@@ -18,6 +18,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -145,7 +146,9 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
 TEST_F(WebAppRunOnOsLoginMacTest, Register) {
   auto_login_util_mock_->ResetCounts();
   EXPECT_FALSE(base::PathExists(shim_path_));
-  EXPECT_TRUE(internals::RegisterRunOnOsLogin(*info_));
+  base::test::TestFuture<Result> result;
+  internals::RegisterRunOnOsLogin(*info_, result.GetCallback());
+  EXPECT_EQ(result.Get(), Result::kOk);
   EXPECT_TRUE(base::PathExists(shim_path_));
   EXPECT_EQ(auto_login_util_mock_->GetAddToLoginItemsCalledCount(), 1);
   EXPECT_TRUE(base::PathExists(shim_path_));
@@ -155,7 +158,9 @@ TEST_F(WebAppRunOnOsLoginMacTest, Register) {
 TEST_F(WebAppRunOnOsLoginMacTest, Unregister) {
   auto_login_util_mock_->ResetCounts();
   EXPECT_FALSE(base::PathExists(shim_path_));
-  EXPECT_TRUE(internals::RegisterRunOnOsLogin(*info_));
+  base::test::TestFuture<Result> result;
+  internals::RegisterRunOnOsLogin(*info_, result.GetCallback());
+  EXPECT_EQ(result.Get(), Result::kOk);
   EXPECT_TRUE(base::PathExists(shim_path_));
   EXPECT_EQ(auto_login_util_mock_->GetAddToLoginItemsCalledCount(), 1);
   EXPECT_EQ(auto_login_util_mock_->GetRemoveFromLoginItemsCalledCount(), 0);

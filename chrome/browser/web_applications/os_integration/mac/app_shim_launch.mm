@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #import "base/mac/launch_application.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
@@ -245,43 +246,57 @@ void LaunchShimOnFileThread(LaunchShimUpdateBehavior update_behavior,
                             ShimLaunchMode launch_mode,
                             ShimLaunchedCallback launched_callback,
                             ShimTerminatedCallback terminated_callback,
-                            const ShortcutInfo& shortcut_info) {
+                            std::unique_ptr<ShortcutInfo> shortcut_info) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-
-  WebAppShortcutCreator shortcut_creator(
-      internals::GetShortcutDataDir(shortcut_info), GetChromeAppsFolder(),
-      &shortcut_info);
 
   // Recreate shims if requested, and populate |shim_paths| with the paths to
   // attempt to launch.
   bool launched_after_rebuild = false;
   std::vector<base::FilePath> shim_paths;
   bool shortcuts_updated = true;
-  switch (update_behavior) {
-    case LaunchShimUpdateBehavior::kDoNotRecreate:
-      // Attempt to locate the shim's path using LaunchServices.
-      shim_paths = shortcut_creator.GetAppBundlesById();
-      break;
-    case LaunchShimUpdateBehavior::kRecreateIfInstalled:
-      // Only attempt to launch shims that were updated.
-      launched_after_rebuild = true;
-      shortcuts_updated = shortcut_creator.UpdateShortcuts(
-          /*create_if_needed=*/false, &shim_paths);
-      break;
-    case LaunchShimUpdateBehavior::kRecreateUnconditionally:
-      // Likewise, only attempt to launch shims that were updated.
-      launched_after_rebuild = true;
-      shortcuts_updated = shortcut_creator.UpdateShortcuts(
-          /*create_if_needed=*/true, &shim_paths);
-      break;
+  std::string bundle_id;
+
+  {
+    // Nested scope ensures that `shortcut_creator` is destroyed before the
+    // `shortcut_info` it references.
+    WebAppShortcutCreator shortcut_creator(
+        internals::GetShortcutDataDir(*shortcut_info), GetChromeAppsFolder(),
+        shortcut_info.get());
+
+    // Recreate shims if requested, and populate |shim_paths| with the paths
+    // to attempt to launch.
+    switch (update_behavior) {
+      case LaunchShimUpdateBehavior::kDoNotRecreate:
+        // Attempt to locate the shim's path using LaunchServices.
+        shim_paths = shortcut_creator.GetAppBundlesById();
+        break;
+      case LaunchShimUpdateBehavior::kRecreateIfInstalled:
+        // Only attempt to launch shims that were updated.
+        launched_after_rebuild = true;
+        shortcuts_updated = shortcut_creator.UpdateShortcuts(
+            /*create_if_needed=*/false, &shim_paths);
+        break;
+      case LaunchShimUpdateBehavior::kRecreateUnconditionally:
+        // Likewise, only attempt to launch shims that were updated.
+        launched_after_rebuild = true;
+        shortcuts_updated = shortcut_creator.UpdateShortcuts(
+            /*create_if_needed=*/true, &shim_paths);
+        break;
+    }
+    LOG_IF(ERROR, !shortcuts_updated)
+        << "Could not write shortcut for app shim.";
+
+    bundle_id = shortcut_creator.GetAppBundleId();
   }
-  LOG_IF(ERROR, !shortcuts_updated) << "Could not write shortcut for app shim.";
+
+  // shortcut_info is no longer needed. Destroy it on the UI thread.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::DoNothingWithBoundArgs(std::move(shortcut_info)));
 
   LaunchTheFirstShimThatWorksOnFileThread(
-      shim_paths, launched_after_rebuild, launch_mode,
-      shortcut_creator.GetAppBundleId(), std::move(launched_callback),
-      std::move(terminated_callback));
+      shim_paths, launched_after_rebuild, launch_mode, bundle_id,
+      std::move(launched_callback), std::move(terminated_callback));
 }
 
 }  // namespace
@@ -298,7 +313,7 @@ void LaunchShim(LaunchShimUpdateBehavior update_behavior,
     return;
   }
 
-  internals::PostShortcutIOTask(
+  internals::PostAsyncShortcutIOTask(
       base::BindOnce(&LaunchShimOnFileThread, update_behavior, launch_mode,
                      std::move(launched_callback),
                      std::move(terminated_callback)),

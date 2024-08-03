@@ -10,12 +10,13 @@ namespace web_app {
 
 namespace internals {
 
-bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
+void RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info,
+                          ResultCallback callback) {
   // `web_app::ScheduleRegisterRunOnOsLogin` already updates the
   // RunOnOsLoginMode of the WebApp. On ChromeOS, the RunOnOsLoginMode is
   // checked after Login to start the WebApp as no platform shortcuts can be
-  // used. Return true to ensure that InstallOsHooks does not fail here.
-  return true;
+  // used. Return kOk to ensure that InstallOsHooks does not fail here.
+  std::move(callback).Run(Result::kOk);
 }
 
 Result UnregisterRunOnOsLogin(const std::string& app_id,

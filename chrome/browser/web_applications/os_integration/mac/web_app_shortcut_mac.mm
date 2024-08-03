@@ -77,10 +77,11 @@ bool UseAdHocSigningForWebAppShims() {
 
 namespace internals {
 
-bool CreatePlatformShortcuts(const base::FilePath& app_data_path,
+void CreatePlatformShortcuts(const base::FilePath& app_data_path,
                              const ShortcutLocations& creation_locations,
                              ShortcutCreationReason creation_reason,
-                             const ShortcutInfo& shortcut_info) {
+                             const ShortcutInfo& shortcut_info,
+                             CreateShortcutsCallback callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   // If this is set, then keeping this as a local variable ensures it is not
@@ -89,12 +90,14 @@ bool CreatePlatformShortcuts(const base::FilePath& app_data_path,
   scoped_refptr<OsIntegrationTestOverride> test_override =
       web_app::OsIntegrationTestOverride::Get();
   if (AppShimCreationAndLaunchDisabledForTest()) {
-    return true;
+    std::move(callback).Run(true);
+    return;
   }
 
   WebAppShortcutCreator shortcut_creator(app_data_path, GetChromeAppsFolder(),
                                          &shortcut_info);
-  return shortcut_creator.CreateShortcuts(creation_reason, creation_locations);
+  std::move(callback).Run(
+      shortcut_creator.CreateShortcuts(creation_reason, creation_locations));
 }
 
 ShortcutLocations GetAppExistingShortCutLocationImpl(
@@ -183,10 +186,11 @@ void DeleteMultiProfileShortcutsForApp(const std::string& app_id) {
   }
 }
 
-Result UpdatePlatformShortcuts(
+void UpdatePlatformShortcuts(
     const base::FilePath& app_data_path,
     const std::u16string& old_app_title,
     std::optional<ShortcutLocations> user_specified_locations,
+    ResultCallback callback,
     const ShortcutInfo& shortcut_info) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -196,16 +200,18 @@ Result UpdatePlatformShortcuts(
   scoped_refptr<OsIntegrationTestOverride> test_override =
       web_app::OsIntegrationTestOverride::Get();
   if (AppShimCreationAndLaunchDisabledForTest()) {
-    return Result::kOk;
+    std::move(callback).Run(Result::kOk);
+    return;
   }
 
   WebAppShortcutCreator shortcut_creator(app_data_path, GetChromeAppsFolder(),
                                          &shortcut_info);
   std::vector<base::FilePath> updated_shim_paths;
-  return (shortcut_creator.UpdateShortcuts(/*create_if_needed=*/false,
-                                           &updated_shim_paths)
-              ? Result::kOk
-              : Result::kError);
+  Result result = shortcut_creator.UpdateShortcuts(/*create_if_needed=*/false,
+                                                   &updated_shim_paths)
+                      ? Result::kOk
+                      : Result::kError;
+  std::move(callback).Run(result);
 }
 
 void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {

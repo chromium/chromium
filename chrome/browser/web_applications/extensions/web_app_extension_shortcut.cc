@@ -75,11 +75,10 @@ void UpdateAllShortcutsForShortcutInfo(
     std::unique_ptr<ShortcutInfo> shortcut_info) {
   base::FilePath shortcut_data_dir =
       internals::GetShortcutDataDir(*shortcut_info);
-  internals::PostShortcutIOTaskAndReplyWithResult(
-      base::BindOnce(&internals::UpdatePlatformShortcuts,
-                     std::move(shortcut_data_dir), old_app_title,
-                     /*user_specified_locations=*/std::nullopt),
-      std::move(shortcut_info), std::move(callback));
+  internals::ScheduleUpdatePlatformShortcuts(
+      std::move(shortcut_data_dir), old_app_title,
+      /*user_specified_locations=*/std::nullopt, std::move(callback),
+      std::move(shortcut_info));
 }
 
 using AppCallbackMap =
