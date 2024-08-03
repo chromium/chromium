@@ -348,8 +348,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private LocaleManager mLocaleManager;
 
-    private AppIndexingUtil mAppIndexingUtil;
-
     private Runnable mShowHistoryRunnable;
 
     private CompositorViewHolder mCompositorViewHolder;
@@ -2328,8 +2326,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         }
                     }
                 };
-        mAppIndexingUtil = new AppIndexingUtil(mTabModelSelector);
-
         if (startIncognito) mTabModelSelector.selectModel(true);
     }
 
@@ -3187,11 +3183,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (mUndoBarPopupController != null) {
             mUndoBarPopupController.destroy();
             mUndoBarPopupController = null;
-        }
-
-        if (mAppIndexingUtil != null) {
-            mAppIndexingUtil.destroy();
-            mAppIndexingUtil = null;
         }
 
         if (mStartupPaintPreviewHelperSupplier != null) {

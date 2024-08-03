@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataCounterBridge.Brows
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils.TimePeriodSpinnerOption;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -438,9 +437,6 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             BrowsingDataBridge.getForProfile(mProfile)
                     .clearBrowsingData(this, dataTypesArray, mLastSelectedTimePeriod);
         }
-
-        // Clear all reported entities.
-        AppIndexingReporter.getInstance().clearHistory();
     }
 
     private void dismissProgressDialog() {

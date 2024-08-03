@@ -4,16 +4,15 @@
 
 package org.chromium.chrome.browser;
 
-import androidx.annotation.Nullable;
-
 import android.content.Context;
 import android.view.View;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.gsa.GSAHelper;
-import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.metrics.VariationsSession;
@@ -75,16 +74,8 @@ public abstract class AppHooks {
     }
 
     /**
-     * Creates a new {@link AppIndexingReporter}.
-     * @return the created {@link AppIndexingReporter}.
-     */
-    public AppIndexingReporter createAppIndexingReporter() {
-        return new AppIndexingReporter();
-    }
-
-    /**
-     * @return An instance of {@link CustomTabsConnection}. Should not be called
-     * outside of {@link CustomTabsConnection#getInstance()}.
+     * @return An instance of {@link CustomTabsConnection}. Should not be called outside of {@link
+     *     CustomTabsConnection#getInstance()}.
      */
     public CustomTabsConnection createCustomTabsConnection() {
         return new CustomTabsConnection();
