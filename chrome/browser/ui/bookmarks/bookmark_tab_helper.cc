@@ -14,8 +14,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper_observer.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/sad_tab.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
@@ -75,11 +74,10 @@ bool BookmarkTabHelper::ShouldShowBookmarkBar() const {
 
   const bool has_bookmarks = bookmark_model_ && bookmark_model_->HasBookmarks();
 
-  const tab_groups::SavedTabGroupKeyedService* stg_service =
-      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
-          profile);
+  const auto wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(profile);
   const bool has_saved_tab_groups =
-      stg_service && (stg_service->model()->Count() > 0);
+      wrapper_service && !wrapper_service->GetAllGroups().empty();
 
   // The bookmark bar is only shown on the NTP if the user
   // has added something to it.
