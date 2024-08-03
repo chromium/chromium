@@ -12,7 +12,11 @@ export function getHtml(this: OnDeviceInternalsAppElement) {
 <h1>On-Device Internals</h1>
 <cr-tab-box id="tabbox" hidden
     @selected-index-change="${this.onSelectedIndexChange_}">
+  <div slot="tab">Event Logs</div>
   <div slot="tab">Tools</div>
+  <div slot="panel" id="event-log">
+    <on-device-internals-event-log></on-device-internals-event-log>
+  </div>
   <div slot="panel" id="tools">
     <on-device-internals-tools></on-device-internals-tools>
   </div>

@@ -6,9 +6,21 @@ module mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
 import "services/on_device_model/public/mojom/on_device_model.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
-// Primary interface for the chrome://on-device-internals WebUI.
-interface OnDeviceInternalsPage {
+
+// Lives in the browser process. A renderer uses this to link itself with
+// a page handler.
+interface OnDeviceInternalsPageHandlerFactory {
+  // Create a page handler and link it to the UI.
+  CreatePageHandler(pending_remote<OnDeviceInternalsPage> page,
+                    pending_receiver<OnDeviceInternalsPageHandler> handler);
+};
+
+
+// Primary interface for the chrome://on-device-internals WebUI. Lives in the
+// browser process.
+interface OnDeviceInternalsPageHandler {
   // Binds a new OnDeviceModel interface if possible using model assets loaded
   // from within `model_path`.
   LoadModel(mojo_base.mojom.FilePath model_path,
@@ -18,4 +30,15 @@ interface OnDeviceInternalsPage {
   // Returns the performance class based on benchmarks run on the device.
   GetEstimatedPerformanceClass() =>
       (on_device_model.mojom.PerformanceClass performance_class);
+};
+
+
+// Renderer-side handler for internals WebUI page to process the updates from
+// the service.
+interface OnDeviceInternalsPage {
+  // Notifies the page of a log event from the OptimizationGuide service.
+  OnLogMessageAdded(mojo_base.mojom.Time event_time,
+                    string source_file,
+                    int64 source_line,
+                    string message);
 };

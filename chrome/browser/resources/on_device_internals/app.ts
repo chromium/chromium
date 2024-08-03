@@ -5,6 +5,7 @@
 
 import '//resources/cr_elements/cr_tab_box/cr_tab_box.js';
 import './tools.js';
+import './event_log.js';
 
 import type {CrTabBoxElement} from '//resources/cr_elements/cr_tab_box/cr_tab_box.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';

@@ -26,9 +26,14 @@ build_webui("build") {
     "app.html.ts",
     "app.ts",
     "browser_proxy.ts",
+    "event_log.html.ts",
+    "event_log.ts",
   ]
 
-  css_files = [ "app.css" ]
+  css_files = [
+    "app.css",
+    "event_log.css",
+  ]
 
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
