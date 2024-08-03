@@ -103,6 +103,11 @@ inline constexpr char kTrackingProtection3pcdEnabled[] =
 inline constexpr char kIpProtectionEnabled[] =
     "tracking_protection.ip_protection_enabled";
 
+// Synced boolean that indicates whether the user has had their IP protection
+// pref initialized. Used ONLY for Google dogfood.
+inline constexpr char kIpProtectionInitializedByDogfood[] =
+    "tracking_protection.ip_protection_initialized_by_dogfood";
+
 // Synced boolean that indicates whether the user has enabled the
 // fingerprinting protection setting.
 inline constexpr char kFingerprintingProtectionEnabled[] =

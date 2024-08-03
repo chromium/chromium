@@ -188,6 +188,10 @@ BASE_DECLARE_FEATURE(kFingerprintingProtectionUserBypass);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kIpProtectionV1);
 
+// Enables IP Protection by default. For use in dogfood only.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kIpProtectionDogfoodDefaultOn);
+
 // Enables showing IP Protection toggle on the settings page.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kIpProtectionUx);

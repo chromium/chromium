@@ -638,6 +638,10 @@ IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, TrackingProtectionSettings) {
           "runMochaSuite('TrackingProtectionSettings')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, ActSettings) {
+  RunTest("settings/cookies_page_test.js", "runMochaSuite('ActSettings')");
+}
+
 // Test with --enable-pixel-output-in-tests enabled, required by fingerprint
 // element test using HTML canvas.
 class SettingsWithPixelOutputTest : public SettingsBrowserTest {
