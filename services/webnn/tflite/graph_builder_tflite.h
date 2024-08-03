@@ -235,6 +235,13 @@ class GraphBuilderTflite final {
                                    int32_t input_tensor_index,
                                    base::span<const uint32_t> permutation);
 
+  // Serialize a sub graph (pow appending mul operation) for erf operation.
+  int32_t SerializeSubGraphPowMul(base::span<const int32_t> input_dimensions,
+                                  ::tflite::TensorType input_tensor_type,
+                                  int32_t input_tensor_index,
+                                  float pow_exponent,
+                                  float mul_alpha);
+
   // Serialize a sub graph (input * weight + bias) for gru cell.
   int32_t SerializeSubGraphMatmulAdd(base::span<const int32_t> input_dimensions,
                                      ::tflite::TensorType input_tensor_type,
@@ -330,6 +337,8 @@ class GraphBuilderTflite final {
       const mojom::ElementWiseUnary& op);
   base::expected<OperatorOffset, std::string> SerializeElu(
       const mojom::Elu& elu);
+  base::expected<OperatorOffset, std::string> SerializeErf(
+      const mojom::ElementWiseUnary& erf);
   OperatorOffset SerializeExpand(const mojom::Expand& expand);
   base::expected<OperatorOffset, std::string> SerializeGather(
       const mojom::Gather& gather);

@@ -295,8 +295,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*abs_input=*/kAbsSupportedDataTypes,
        /*ceil_input=*/kFloat32,
        /*cos_input=*/kFloat32,
-       // Erf is not implemented.
-       /*erf_input=*/{},
+       /*erf_input=*/kFloat32,
        /*exp_input=*/kFloat32,
        /*floor_input=*/kFloat32,
        // Identity is emulated by reshape.
@@ -780,7 +779,7 @@ auto GraphBuilderTflite::SerializeNormalizationOperation(
       ::tflite::BuiltinOperator_SUB, input_tensor_index, mean_tensor_index,
       output_tensor_index_of_sub));
 
-  // Serialize the subset expression `sqrt(Variance + Epsilon)`.
+  // Serialize the subexpression `sqrt(Variance + Epsilon)`.
   const int32_t epsilon_tensor_index = SerializeTensorWithBuffer<float>(
       /*buffer=*/std::array<float, 1>{epsilon},
       /*dimensions=*/{});
@@ -1005,6 +1004,33 @@ int32_t GraphBuilderTflite::InsertTransposeOperation(
       input_tensor_index, output_tensor_index, permutation));
 
   return output_tensor_index;
+}
+
+int32_t GraphBuilderTflite::SerializeSubGraphPowMul(
+    base::span<const int32_t> input_dimensions,
+    ::tflite::TensorType input_tensor_type,
+    int32_t input_tensor_index,
+    float pow_exponent,
+    float mul_alpha) {
+  const int32_t output_tensor_index_of_pow =
+      SerializeTemporaryTensor(input_dimensions, input_tensor_type);
+  const int32_t pow_exponent_tensor_index = SerializeTensorWithBuffer<float>(
+      /*buffer=*/std::array<float, 1>{pow_exponent},
+      /*dimensions=*/{});
+  operators_.emplace_back(SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_POW, input_tensor_index,
+      pow_exponent_tensor_index, output_tensor_index_of_pow));
+
+  const int32_t output_tensor_index_of_mul =
+      SerializeTemporaryTensor(input_dimensions, input_tensor_type);
+  const int32_t mul_alpha_tensor_index = SerializeTensorWithBuffer<float>(
+      /*buffer=*/std::array<float, 1>{mul_alpha},
+      /*dimensions=*/{});
+  operators_.emplace_back(SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_MUL, output_tensor_index_of_pow,
+      mul_alpha_tensor_index, output_tensor_index_of_mul));
+
+  return output_tensor_index_of_mul;
 }
 
 auto GraphBuilderTflite::SerializeArgMinMax(const mojom::ArgMinMax& arg_min_max)
@@ -1448,8 +1474,7 @@ auto GraphBuilderTflite::SerializeElementWiseUnary(
     case mojom::ElementWiseUnary::Kind::kErf: {
       CHECK(
           context_properties_.data_type_limits.erf_input.Has(input_data_type));
-      return base::unexpected(
-          base::StrCat({base::ToString(op.kind), " is not implemented."}));
+      return SerializeErf(op);
     }
   }
 }
@@ -1465,6 +1490,120 @@ auto GraphBuilderTflite::SerializeElu(const mojom::Elu& elu)
       ::tflite::BuiltinOperator_ELU,
       operand_to_index_map_.at(elu.input_operand_id),
       operand_to_index_map_.at(elu.output_operand_id));
+}
+
+auto GraphBuilderTflite::SerializeErf(const mojom::ElementWiseUnary& erf)
+    -> base::expected<OperatorOffset, std::string> {
+  const mojom::Operand& input_operand = GetOperand(erf.input_operand_id);
+  // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
+  // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
+  if (input_operand.descriptor.data_type() == OperandDataType::kFloat16) {
+    return base::unexpected("The 16-bit float data type is not supported.");
+  }
+  CHECK_EQ(input_operand.descriptor.data_type(), OperandDataType::kFloat32);
+  // The input shape has been validated to not overflow before creating tensor.
+  const auto signed_input_dimensions =
+      ToSignedDimensions(input_operand.descriptor.shape());
+  CHECK(signed_input_dimensions.has_value());
+  const ::tflite::TensorType input_tensor_type =
+      OperandDataTypeToTFLite(input_operand.descriptor.data_type());
+
+  // Emulated the erf operation with the expression `erf(x) = 1 - (a1 * t + a2 *
+  // pow(t, 2) + ... + a5 * pow(t, 5)) * exp(-pow(x, 2))`, the `t` is the subset
+  // expression `1 / (1 + p * |x|)` as documented here:
+  // https://en.wikipedia.org/wiki/Error_function
+  const std::array<float, 5> constants = {/*a1*/ 0.254829592,
+                                          /*a2*/ -0.284496736,
+                                          /*a3*/ 1.421413741,
+                                          /*a4*/ -1.453152027,
+                                          /*a5*/ 1.061405429};
+  const float p = 0.3275911;
+
+  // Compute the subexpression `t = 1 / (1 + p * |x|)`.
+  const int32_t input_tensor_index =
+      operand_to_index_map_.at(erf.input_operand_id);
+  const int32_t output_tensor_index_of_abs =
+      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeUnaryOperation(::tflite::BuiltinOperator_ABS,
+                                                  input_tensor_index,
+                                                  output_tensor_index_of_abs));
+  const int32_t output_tensor_index_of_line =
+      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeLinearOperation(
+      *signed_input_dimensions, input_tensor_type, output_tensor_index_of_abs,
+      output_tensor_index_of_line, p, 1.0));
+  const int32_t constant_one_tensor_index = SerializeTensorWithBuffer<float>(
+      /*buffer=*/std::array<float, 1>{1.0},
+      /*dimensions=*/{});
+  const int32_t t_expression_tensor_index =
+      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_DIV, constant_one_tensor_index,
+      output_tensor_index_of_line, t_expression_tensor_index));
+
+  // Compute subexpression `(a1 * t + a2 * pow(t, 2) + ... + a5 * pow(t, 5))`.
+  std::optional<int32_t> sum_pow_mul_tensor_index;
+  for (size_t i = 0; i < constants.size(); ++i) {
+    const int32_t output_tensor_index_of_pow_mul = SerializeSubGraphPowMul(
+        *signed_input_dimensions, input_tensor_type, t_expression_tensor_index,
+        /*pow_exponent=*/i + 1,
+        /*mul_alpha=*/constants[i]);
+    if (sum_pow_mul_tensor_index) {
+      const int32_t output_tensor_index_of_add =
+          SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+      operators_.emplace_back(SerializeBinaryOperation(
+          ::tflite::BuiltinOperator_ADD, output_tensor_index_of_pow_mul,
+          *sum_pow_mul_tensor_index, output_tensor_index_of_add));
+      sum_pow_mul_tensor_index = output_tensor_index_of_add;
+    } else {
+      sum_pow_mul_tensor_index = output_tensor_index_of_pow_mul;
+    }
+  }
+
+  // Compute the subexpression `exp(-pow(x, 2))`.
+  const int32_t output_tensor_index_of_pow =
+      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+  const int32_t pow_exponent_tensor_index = SerializeTensorWithBuffer<float>(
+      /*buffer=*/std::array<float, 1>{2.0},
+      /*dimensions=*/{});
+  operators_.emplace_back(SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_POW, input_tensor_index,
+      pow_exponent_tensor_index, output_tensor_index_of_pow));
+  const int32_t output_tensor_index_of_neg =
+      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeUnaryOperation(::tflite::BuiltinOperator_NEG,
+                                                  output_tensor_index_of_pow,
+                                                  output_tensor_index_of_neg));
+  const int32_t output_tensor_index_of_exp =
+      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeUnaryOperation(::tflite::BuiltinOperator_EXP,
+                                                  output_tensor_index_of_neg,
+                                                  output_tensor_index_of_exp));
+
+  // Compute `1 - (the sum of pow mul subexpression) * (the pow exp subset
+  // expression)`.
+  const int32_t output_tensor_index_of_mul =
+      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_MUL, output_tensor_index_of_exp,
+      *sum_pow_mul_tensor_index, output_tensor_index_of_mul));
+  const int32_t output_tensor_index_of_sub =
+      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_SUB, constant_one_tensor_index,
+      output_tensor_index_of_mul, output_tensor_index_of_sub));
+
+  // Compute the subexpression `sign = sign(x)`
+  const int32_t output_tensor_index_of_sign =
+      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+  operators_.emplace_back(
+      SerializeUnaryOperation(::tflite::BuiltinOperator_SIGN,
+                              input_tensor_index, output_tensor_index_of_sign));
+
+  return SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_MUL, output_tensor_index_of_sign,
+      output_tensor_index_of_sub,
+      operand_to_index_map_.at(erf.output_operand_id));
 }
 
 auto GraphBuilderTflite::SerializeExpand(const mojom::Expand& expand)
@@ -2224,7 +2363,7 @@ auto GraphBuilderTflite::SerializeHardSigmoid(
   // Emulate the hardSigmoid operation with function `y = max(0, min(1, alpha *
   // x + beta))` that is applied to the input tensor element-wise.
   //
-  // The subset expression `alpha * x + beta` is considered a linear operation.
+  // The subexpression `alpha * x + beta` is considered a linear operation.
   const mojom::Operand& input_operand =
       GetOperand(hard_sigmoid.input_operand_id);
   CHECK(input_operand.descriptor.data_type() == OperandDataType::kFloat16 ||
