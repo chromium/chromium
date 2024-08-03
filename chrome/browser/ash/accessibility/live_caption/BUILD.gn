@@ -39,10 +39,7 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "live_caption_ui_remote_driver_browsertest.cc",
-    "system_live_caption_service_browsertest.cc",
-  ]
+  sources = [ "system_live_caption_service_browsertest.cc" ]
 
   deps = [
     ":live_caption",

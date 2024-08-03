@@ -140,8 +140,6 @@ source_set("unit_tests") {
 
   sources = [
     "app_discovery_metrics_manager_unittest.cc",
-    "app_search_provider_test_base.cc",
-    "app_search_provider_test_base.h",
     "app_search_provider_unittest.cc",
     "app_zero_state_provider_unittest.cc",
     "assistant_text_search_provider_unittest.cc",
@@ -163,6 +161,7 @@ source_set("unit_tests") {
 
   deps = [
     ":search",
+    ":test_support",
     "//ash",
     "//ash/components/arc:arc_test_support",
     "//ash/components/arc/mojom",

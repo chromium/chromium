@@ -121,8 +121,6 @@ source_set("unit_tests") {
     "arc_package_install_priority_handler_unittest.cc",
     "arc_vpn_provider_unittest.cc",
     "intent_unittest.cc",
-    "mock_arc_app_list_prefs_observer.cc",
-    "mock_arc_app_list_prefs_observer.h",
   ]
 
   deps = [
