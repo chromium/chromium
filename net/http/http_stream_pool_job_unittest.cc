@@ -2156,4 +2156,56 @@ TEST_F(HttpStreamPoolJobTest, PreconnectReachedPoolLimit) {
   ASSERT_EQ(group_b.IdleStreamSocketCount(), 1u);
 }
 
+TEST_F(HttpStreamPoolJobTest, RequestStreamAndPreconnectWhileFailing) {
+  constexpr std::string_view kDestination = "http://a.test";
+
+  // Add two fake DNS resolutions (one for failing case, another is for success
+  // case).
+  for (size_t i = 0; i < 2; ++i) {
+    FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+    endpoint_request
+        ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+        .set_start_result(OK);
+  }
+
+  auto failed_data = std::make_unique<SequencedSocketData>();
+  failed_data->set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_RESET));
+  socket_factory()->AddSocketDataProvider(failed_data.get());
+
+  auto success_data = std::make_unique<SequencedSocketData>();
+  success_data->set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(success_data.get());
+
+  StreamRequester requester1;
+  requester1.set_destination(kDestination).RequestStream(pool());
+
+  RunUntilIdle();
+  EXPECT_THAT(requester1.result(), Optional(IsError(ERR_CONNECTION_RESET)));
+
+  // The first request isn't destroyed yet so the failing job is still alive.
+  // A request that comes during a failure also fails.
+  StreamRequester requester2;
+  requester2.set_destination(kDestination).RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(requester2.result(), Optional(IsError(ERR_CONNECTION_RESET)));
+
+  // Preconnect fails too.
+  Preconnector preconnector1(kDestination);
+  EXPECT_THAT(preconnector1.Preconnect(pool()), IsError(ERR_CONNECTION_RESET));
+
+  // Destroy failed requests. This should destroy the failing job.
+  requester1.CancelRequest();
+  requester2.CancelRequest();
+
+  // Request a stream again. This time server is happy to accept the connection.
+  StreamRequester requester3;
+  requester3.set_destination(kDestination).RequestStream(pool());
+
+  RunUntilIdle();
+  EXPECT_THAT(requester3.result(), Optional(IsOk()));
+
+  Preconnector preconnector2(kDestination);
+  EXPECT_THAT(preconnector2.Preconnect(pool()), IsOk());
+}
+
 }  // namespace net

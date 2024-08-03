@@ -130,18 +130,23 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
     const NetLogWithSource& net_log) {
-  // TODO(crbug.com/346835898): Handle requests that are coming while `this` is
-  // failing.
-  CHECK(!is_failing_);
+  auto entry = std::make_unique<RequestEntry>(this);
+  std::unique_ptr<HttpStreamRequest> request =
+      entry->CreateRequest(delegate, net_log);
+  requests_.Insert(std::move(entry), priority);
+
+  if (is_failing_) {
+    // `this` is failing, notify the failure.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&Job::NotifyStreamRequestOfFailure,
+                                  weak_ptr_factory_.GetWeakPtr()));
+    return request;
+  }
 
   if (!enable_ip_based_pooling) {
     enable_ip_based_pooling_ = enable_ip_based_pooling;
   }
 
-  auto entry = std::make_unique<RequestEntry>(this);
-  std::unique_ptr<HttpStreamRequest> request =
-      entry->CreateRequest(delegate, net_log);
-  requests_.Insert(std::move(entry), priority);
   MaybeChangeServiceEndpointRequestPriority();
 
   // Check if we already have SPDY session. When found, notify the request that
@@ -181,9 +186,9 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
 
 int HttpStreamPool::Job::Preconnect(size_t num_streams,
                                     CompletionOnceCallback callback) {
-  // TODO(crbug.com/346835898): Handle requests that are coming while `this` is
-  // failing.
-  CHECK(!is_failing_);
+  if (is_failing_) {
+    return error_to_notify_;
+  }
 
   if (spdy_session_pool()->HasAvailableSession(spdy_session_key(),
                                                /*is_websocket=*/false)) {
