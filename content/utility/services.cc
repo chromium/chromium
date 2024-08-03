@@ -91,6 +91,11 @@ extern sandbox::TargetServices* g_utility_target_services;
 #include "media/mojo/services/media_foundation_service_broker.h"  // nogncheck
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "media/mojo/mojom/mediadrm_support.mojom.h"       // nogncheck
+#include "media/mojo/services/mediadrm_support_service.h"  // nogncheck
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) && \
     (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
 #include "ash/components/arc/video_accelerator/oop_arc_video_accelerator_factory.h"
@@ -306,6 +311,13 @@ RunMediaFoundationServiceBroker(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+auto RunMediaDrmSupportService(
+    mojo::PendingReceiver<media::mojom::MediaDrmSupport> receiver) {
+  return std::make_unique<media::MediaDrmSupportService>(std::move(receiver));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 auto RunStorageService(
     mojo::PendingReceiver<storage::mojom::StorageService> receiver) {
   return std::make_unique<storage::StorageServiceImpl>(
@@ -459,6 +471,10 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #if BUILDFLAG(IS_WIN)
   services.Add(RunMediaFoundationServiceBroker);
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_ANDROID)
+  services.Add(RunMediaDrmSupportService);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_VR) && !BUILDFLAG(IS_ANDROID)
   services.Add(RunXrDeviceService);

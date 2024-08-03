@@ -1,0 +1,23 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "sandbox/policy/mojom/sandbox.mojom";
+
+struct MediaDrmSupportResult {
+  bool key_system_supports_video_mp4;
+  bool key_system_supports_video_webm;
+};
+
+// A service to execute some MediaDrm functions on Android due to the OS
+// occasionally running into problems and crashing.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
+interface MediaDrmSupport {
+  // Checks whether key system `key_system` is supported. If it is, returns
+  // `key_system_supports` with whether `key_system` supports MP4 and/or
+  // WebM. If `key_system` is not supported, nothing is returned.
+  IsKeySystemSupported(string key_system)
+      => (MediaDrmSupportResult? key_system_supports);
+};

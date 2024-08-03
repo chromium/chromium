@@ -165,6 +165,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // clear on how user can remove persistent media licenses from UI.
   aw_feature_overrides.DisableFeature(media::kMediaDrmPersistentLicense);
 
+  // WebView does not support multiple processes, so don't try to call some
+  // MediaDrm APIs in a separate process.
+  aw_feature_overrides.DisableFeature(
+      media::kAllowMediaCodecCallsInSeparateProcess);
+
   aw_feature_overrides.DisableFeature(::features::kBackgroundFetch);
 
   // SurfaceControl is controlled by kWebViewSurfaceControl flag.

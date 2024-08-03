@@ -56,7 +56,10 @@ mojom("mojom") {
   }
 
   if (is_android) {
-    sources += [ "android_overlay.mojom" ]
+    sources += [
+      "android_overlay.mojom",
+      "mediadrm_support.mojom",
+    ]
   } else {
     sources += [ "speech_recognition_service.mojom" ]
   }
