@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -96,25 +95,7 @@ ActivationError CheckMinGmsVersionAndFlagEnabled(const base::Feature& feature) {
     return ActivationError::kOutdatedGmsCore;
   }
 
-  // Compare with the compile-time constant before comparing with the
-  // runtime value, as the latter will add the user to the A/B experiment.
-  //
-  // Note: We need to use this value as a sentinel value for auto as well
-  // at this point, to allow server-side changes to activate the feature without
-  // client-side changes being needed, once a min version is established.
-  // As soon as the min GMS version for auto can be changed client-side,
-  // consider using it as a sentinel value here instead.
   if (gms_version < password_manager::GetLocalUpmMinGmsVersion()) {
-    return ActivationError::kOutdatedGmsCore;
-  }
-
-  const char* feature_param =
-      base::android::BuildInfo::GetInstance()->is_automotive()
-          ? password_manager::features::kLocalUpmMinGmsVersionParamForAuto
-          : password_manager::features::kLocalUpmMinGmsVersionParam;
-  if (gms_version < base::GetFieldTrialParamByFeatureAsInt(
-                        feature, feature_param,
-                        password_manager::GetLocalUpmMinGmsVersion())) {
     return ActivationError::kOutdatedGmsCore;
   }
 
@@ -330,7 +311,7 @@ void MaybeDeleteLoginDataFiles(PrefService* prefs,
 // Must only be called if the state pref is kOn or kOffAndMigrationPending, to
 // set it to kOff if any of these happened:
 // - The user downgraded GmsCore and can no longer use the local UPM properly.
-// - The min GmsCore version for the A/B experiment was bumped server-side.
+// - The min GmsCore version was bumped client-side.
 // - The A/B experiment was stopped due to bugs.
 // - The user manually turned off the flag.
 void MaybeDeactivateSplitStoresAndLocalUpm(

@@ -60,14 +60,7 @@ bool IsGmsCoreUpdateRequired(const PrefService* pref_service,
   }
 
   // GMSCore version is post-UPM with local passwords, no update required.
-  const char* feature_param =
-      base::android::BuildInfo::GetInstance()->is_automotive()
-          ? password_manager::features::kLocalUpmMinGmsVersionParamForAuto
-          : password_manager::features::kLocalUpmMinGmsVersionParam;
-  if (gms_version >= base::GetFieldTrialParamByFeatureAsInt(
-                         kUnifiedPasswordManagerSyncOnlyInGMSCore,
-                         feature_param,
-                         password_manager::GetLocalUpmMinGmsVersion())) {
+  if (gms_version >= GetLocalUpmMinGmsVersion()) {
     return false;
   }
 

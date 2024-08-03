@@ -121,12 +121,10 @@ BASE_DECLARE_FEATURE(
 // UnifiedPasswordManagerLocalPasswordsAndroidWithMigration will replace this
 // feature once UPM starts to be rolled out to users who have saved local
 // passwords.
-// See also kLocalUpmMinGmsVersionParam below.
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
 
 // Enables use of Google Mobile services for non-synced password storage add for
 // users who have local passwords saved.
-// See also kLocalUpmMinGmsVersionParam below.
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
 
 // Helper function which returns the delay when the local passwords migration is
@@ -143,17 +141,6 @@ BASE_DECLARE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers);
 // This feature clears login database if user is capable of using UPM.
 BASE_DECLARE_FEATURE(kClearLoginDatabaseForUPMUsers);
 
-// A parameter for both the NoMigration and WithMigration features above. It
-// dictates the min value of base::android::BuildInfo::gms_version_code() for
-// the flag take effect.
-inline constexpr char kLocalUpmMinGmsVersionParam[] = "min_gms_version";
-
-// Same as above, but for automotive.
-//
-// IMPORTANT: as the flags have been enabled by default, this is now the only
-// feature guard remaining on automotive!
-inline constexpr char kLocalUpmMinGmsVersionParamForAuto[] =
-    "min_gms_version_for_auto";
 // Helper function returning the status of
 // `UnifiedPasswordManagerSyncOnlyInGMSCore`.
 bool IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
