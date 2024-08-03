@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/os_integration/mac/apps_folder_support.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -53,7 +54,8 @@ class WebAppShortcutCreatorMock : public WebAppShortcutCreator {
                             const ShortcutInfo* shortcut_info)
       : WebAppShortcutCreator(app_data_dir,
                               GetChromeAppsFolder(),
-                              shortcut_info) {}
+                              shortcut_info,
+                              web_app::UseAdHocSigningForWebAppShims()) {}
 
   MOCK_CONST_METHOD0(GetAppBundlesByIdUnsorted, std::vector<base::FilePath>());
   MOCK_CONST_METHOD1(RevealAppShimInFinder, void(const base::FilePath&));
@@ -69,7 +71,8 @@ class WebAppShortcutCreatorSortingMock : public WebAppShortcutCreator {
                                    const ShortcutInfo* shortcut_info)
       : WebAppShortcutCreator(app_data_dir,
                               GetChromeAppsFolder(),
-                              shortcut_info) {}
+                              shortcut_info,
+                              web_app::UseAdHocSigningForWebAppShims()) {}
 
   MOCK_CONST_METHOD0(GetAppBundlesByIdUnsorted, std::vector<base::FilePath>());
 

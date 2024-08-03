@@ -42,8 +42,8 @@
 #include "chrome/browser/web_applications/os_integration/mac/icns_encoder.h"
 #include "chrome/browser/web_applications/os_integration/mac/icon_utils.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #import "chrome/common/mac/app_mode_common.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
@@ -228,9 +228,10 @@ bool AppShimRevealDisabledForTest() {
          OsIntegrationTestOverride::Get();
 }
 
-bool CopyStagingBundleToDestination(base::FilePath staging_path,
+bool CopyStagingBundleToDestination(bool use_ad_hoc_signing_for_web_app_shims,
+                                    base::FilePath staging_path,
                                     base::FilePath dst_app_path) {
-  if (!UseAdHocSigningForWebAppShims()) {
+  if (!use_ad_hoc_signing_for_web_app_shims) {
     return base::CopyDirectory(staging_path, dst_app_path, true);
   }
 
@@ -376,10 +377,13 @@ NSData* AppShimEntitlements() {
 WebAppShortcutCreator::WebAppShortcutCreator(
     const base::FilePath& app_data_dir,
     const base::FilePath& chrome_apps_dir,
-    const ShortcutInfo* shortcut_info)
+    const ShortcutInfo* shortcut_info,
+    bool use_ad_hoc_signing_for_web_app_shims)
     : app_data_dir_(app_data_dir),
       chrome_apps_dir_(chrome_apps_dir),
-      info_(shortcut_info) {
+      info_(shortcut_info),
+      use_ad_hoc_signing_for_web_app_shims_(
+          use_ad_hoc_signing_for_web_app_shims) {
   DCHECK(shortcut_info);
 }
 
@@ -764,7 +768,8 @@ void WebAppShortcutCreator::CreateShortcutsAt(
     base::DeletePathRecursively(dst_app_path);
 
     // Copy the bundle to |dst_app_path|.
-    if (!CopyStagingBundleToDestination(staging_path, dst_app_path)) {
+    if (!CopyStagingBundleToDestination(UseAdHocSigningForWebAppShims(),
+                                        staging_path, dst_app_path)) {
       RecordCreateShortcut(CreateShortcutResult::kFailToCopyApp);
       LOG(ERROR) << "Copying app to dst dir: " << dst_parent_dir.value()
                  << " failed";
@@ -1077,6 +1082,11 @@ bool WebAppShortcutCreator::UpdateSignature(
                                 info_->app_id, std::move(cd_hash)));
 
   return true;
+}
+
+// Return true if ad-hoc signing should be used for web app shims.
+bool WebAppShortcutCreator::UseAdHocSigningForWebAppShims() const {
+  return use_ad_hoc_signing_for_web_app_shims_;
 }
 
 }  // namespace web_app

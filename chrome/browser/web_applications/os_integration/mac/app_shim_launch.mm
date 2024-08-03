@@ -244,6 +244,7 @@ void LaunchTheFirstShimThatWorksOnFileThread(
 
 void LaunchShimOnFileThread(LaunchShimUpdateBehavior update_behavior,
                             ShimLaunchMode launch_mode,
+                            bool use_ad_hoc_signing_for_web_app_shims,
                             ShimLaunchedCallback launched_callback,
                             ShimTerminatedCallback terminated_callback,
                             std::unique_ptr<ShortcutInfo> shortcut_info) {
@@ -262,7 +263,7 @@ void LaunchShimOnFileThread(LaunchShimUpdateBehavior update_behavior,
     // `shortcut_info` it references.
     WebAppShortcutCreator shortcut_creator(
         internals::GetShortcutDataDir(*shortcut_info), GetChromeAppsFolder(),
-        shortcut_info.get());
+        shortcut_info.get(), use_ad_hoc_signing_for_web_app_shims);
 
     // Recreate shims if requested, and populate |shim_paths| with the paths
     // to attempt to launch.
@@ -315,6 +316,7 @@ void LaunchShim(LaunchShimUpdateBehavior update_behavior,
 
   internals::PostAsyncShortcutIOTask(
       base::BindOnce(&LaunchShimOnFileThread, update_behavior, launch_mode,
+                     UseAdHocSigningForWebAppShims(),
                      std::move(launched_callback),
                      std::move(terminated_callback)),
       std::move(shortcut_info));
