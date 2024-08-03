@@ -98,16 +98,23 @@ ChromePaymentsAutofillClient::~ChromePaymentsAutofillClient() = default;
 
 void ChromePaymentsAutofillClient::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
+  if (!risk_data_.empty() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnablePrefetchingRiskDataForRetrieval)) {
+    // Notify tests that the cached risk data was used and new risk data was not
+    // loaded, if the callback exists.
+    if (cached_risk_data_loaded_callback_for_testing_) {
+      std::move(cached_risk_data_loaded_callback_for_testing_).Run(risk_data_);
+      return;
+    }
+    std::move(callback).Run(risk_data_);
+    return;
+  }
   risk_util::LoadRiskData(
       0, web_contents(),
-      base::BindOnce(
-          [](base::OnceCallback<void(const std::string&)> callback,
-             base::TimeTicks start_time, const std::string& risk_data) {
-            autofill::autofill_metrics::LogRiskDataLoadingLatency(
-                base::TimeTicks::Now() - start_time);
-            std::move(callback).Run(risk_data);
-          },
-          std::move(callback), base::TimeTicks::Now()));
+      base::BindOnce(&ChromePaymentsAutofillClient::OnRiskDataLoaded,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     base::TimeTicks::Now()));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -853,6 +860,28 @@ std::u16string ChromePaymentsAutofillClient::GetAccountHolderName() const {
   AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   return base::UTF8ToUTF16(primary_account_info.full_name);
+}
+
+void ChromePaymentsAutofillClient::SetRiskDataForTesting(
+    const std::string& risk_data) {
+  risk_data_ = risk_data;
+}
+
+void ChromePaymentsAutofillClient::SetCachedRiskDataLoadedCallbackForTesting(
+    base::OnceCallback<void(const std::string&)>
+        cached_risk_data_loaded_callback_for_testing) {
+  cached_risk_data_loaded_callback_for_testing_ =
+      std::move(cached_risk_data_loaded_callback_for_testing);
+}
+
+void ChromePaymentsAutofillClient::OnRiskDataLoaded(
+    base::OnceCallback<void(const std::string&)> callback,
+    base::TimeTicks start_time,
+    const std::string& risk_data) {
+  autofill_metrics::LogRiskDataLoadingLatency(base::TimeTicks::Now() -
+                                              start_time);
+  risk_data_ = risk_data;
+  std::move(callback).Run(risk_data_);
 }
 
 }  // namespace autofill::payments

@@ -232,11 +232,22 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   void SetAutofillMessageControllerForTesting(
       std::unique_ptr<AutofillMessageController> autofill_message_controller);
 #endif
+  void SetRiskDataForTesting(const std::string& risk_data);
+
+  void SetCachedRiskDataLoadedCallbackForTesting(
+      base::OnceCallback<void(const std::string&)>
+          cached_risk_data_loaded_callback_for_testing);
 
  private:
   std::u16string GetAccountHolderName() const;
 
   const raw_ref<ContentAutofillClient> client_;
+
+  // The method takes `risk_data` and caches it in `risk_data_`, logs the start
+  // time and runs the callback with the risk_data.
+  void OnRiskDataLoaded(base::OnceCallback<void(const std::string&)> callback,
+                        base::TimeTicks start_time,
+                        const std::string& risk_data);
 
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AutofillCvcSaveMessageDelegate>
@@ -295,6 +306,15 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       card_unmask_authentication_selection_controller_;
 
   std::unique_ptr<IbanAccessManager> iban_access_manager_;
+
+  // Used to cache client side risk data. The cache is invalidated when the
+  // chrome browser tab is closed.
+  std::string risk_data_;
+
+  base::OnceCallback<void(const std::string&)>
+      cached_risk_data_loaded_callback_for_testing_;
+
+  base::WeakPtrFactory<ChromePaymentsAutofillClient> weak_ptr_factory_{this};
 };
 
 }  // namespace payments
