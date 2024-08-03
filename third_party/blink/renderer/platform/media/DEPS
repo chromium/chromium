@@ -24,7 +24,6 @@ include_rules = [
   "+media/learning/mojo/public/cpp",
   "+media/media_buildflags.h",
   "+media/mojo/mojom",
-  "+media/remoting/remoting_constants.h",
   "+media/renderers/paint_canvas_video_renderer.h",
   "+net/base/data_url.h",
   "+net/base/net_errors.h",

@@ -17,7 +17,6 @@ source_set("remoting_sender") {
   ]
 
   deps = [
-    ":remoting_constants",
     "//base",
     "//media",
     "//media/mojo/common",
@@ -42,10 +41,6 @@ source_set("remoting_sender") {
     # generated remoting.pb.h file.
     public_deps += [ "//media/cast/openscreen:remoting_utils" ]
   }
-}
-
-source_set("remoting_constants") {
-  sources = [ "remoting_constants.h" ]
 }
 
 source_set("remoting_device_capability") {
@@ -73,7 +68,6 @@ source_set("remoting_renderer") {
   ]
 
   deps = [
-    ":remoting_constants",
     "//media/mojo/common:common",
     "//media/mojo/mojom:remoting",
     "//third_party/openscreen/src/cast/streaming:common",

@@ -19,10 +19,6 @@ inline constexpr char kRemotePlaybackPresentationUrlPath[] =
 inline constexpr char kRemotePlaybackDesktopUrlFormat[] =
     "remote-playback:media-session?video_codec=%s&audio_codec=%s&tab_id=%d";
 
-// The minimum media element duration that is allowed for media remoting.
-// Needs to be in sync with media/remoting/remoting_constants.h
-inline constexpr double kMinRemotingMediaDurationInSec = 15;
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_REMOTEPLAYBACK_REMOTE_PLAYBACK_SOURCE_H_

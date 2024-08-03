@@ -20,7 +20,6 @@ include_rules = [
   "+media/media_buildflags.h",
   "+media/remoting/receiver_controller.h",
   "+media/remoting/stream_provider.h",
-  "+media/remoting/remoting_constants.h",
   "+media/renderers",
   "+mojo/public",
   "+base/strings/escape.h",

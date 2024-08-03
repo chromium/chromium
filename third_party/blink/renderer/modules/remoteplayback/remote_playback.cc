@@ -9,6 +9,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "media/base/remoting_constants.h"
 #include "third_party/blink/public/platform/modules/remoteplayback/remote_playback_source.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -462,7 +463,8 @@ void RemotePlayback::UpdateAvailabilityUrlsAndStartListening() {
   // If the video is too short, it's unlikely to be cast. Disable availability
   // monitoring so that the cast buttons are hidden from the video player.
   if (!media_element_ || std::isnan(media_element_->duration()) ||
-      media_element_->duration() <= kMinRemotingMediaDurationInSec) {
+      media_element_->duration() <=
+          media::remoting::kMinRemotingMediaDurationInSec) {
     StopListeningForAvailability();
     availability_urls_.clear();
     return;
