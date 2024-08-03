@@ -6,8 +6,8 @@ module webnn.mojom;
 
 import "services/webnn/public/mojom/features.mojom";
 import "services/webnn/public/mojom/webnn_context.mojom";
+import "services/webnn/public/mojom/webnn_context_properties.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
-import "services/webnn/public/mojom/webnn_graph.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 // Represents options of creating `WebNNContext` interface.
@@ -54,74 +54,6 @@ struct CreateContextOptions {
   // discussion on how this information should be communicated is happening
   // here: https://github.com/webmachinelearning/webnn/issues/436
   uint8 thread_count_hint;
-};
-
-struct SupportedDataTypes {
-  bool float32;
-  bool float16;
-  bool int32;
-  bool uint32;
-  bool int64;
-  bool uint64;
-  bool int8;
-  bool uint8;
-};
-
-// Represents the data type limits exposed through
-// `MLContext::opSupportLimits()`.
-// Keep the order as the same as build methods of `MLGraphBuilder`, for
-// operator with multiple parameters, maintain the parameter positions order.
-struct DataTypeLimits {
-  SupportedDataTypes input;
-  SupportedDataTypes constant;
-
-  // ArgMin/Max.
-  SupportedDataTypes arg_min_max_input;
-  SupportedDataTypes arg_min_max_output;
-
-  SupportedDataTypes concat_inputs;
-
-  // Element-wise unary ops.
-  SupportedDataTypes abs_input;
-  SupportedDataTypes ceil_input;
-  SupportedDataTypes cos_input;
-  SupportedDataTypes erf_input;
-  SupportedDataTypes exp_input;
-  SupportedDataTypes floor_input;
-  SupportedDataTypes identity_input;
-  SupportedDataTypes log_input;
-  SupportedDataTypes neg_input;
-  SupportedDataTypes reciprocal_input;
-  SupportedDataTypes sin_input;
-  SupportedDataTypes sqrt_input;
-  SupportedDataTypes tan_input;
-
-  SupportedDataTypes elu_input;
-
-  // Gather.
-  SupportedDataTypes gather_input;
-  SupportedDataTypes gather_indices;
-
-  SupportedDataTypes gelu_input;
-  SupportedDataTypes leaky_relu_input;
-  SupportedDataTypes relu_input;
-  SupportedDataTypes sigmoid_input;
-  SupportedDataTypes slice_input;
-  SupportedDataTypes softmax_input;
-  SupportedDataTypes softplus_input;
-  SupportedDataTypes softsign_input;
-  SupportedDataTypes split_input;
-
-  // Where.
-  SupportedDataTypes where_condition;
-  SupportedDataTypes where_value;
-};
-
-// Represents properties of the `WebNNContext` implementation that has been
-// provided.
-struct ContextProperties {
-  InputOperandLayout input_operand_layout;
-  DataTypeLimits data_type_limits;
 };
 
 // Represents a successful call to `WebNNContextProvider::CreateWebNNContext`.

@@ -7,7 +7,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
-#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/mojom/webnn_context_properties.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(ContextPropertiesMojomTraitsTest, Basic) {

@@ -7,8 +7,7 @@
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/webnn/public/cpp/context_properties.h"
-#include "services/webnn/public/mojom/webnn_context_provider.mojom-shared.h"
-#include "services/webnn/public/mojom/webnn_graph.mojom-shared.h"
+#include "services/webnn/public/mojom/webnn_context_properties.mojom-shared.h"
 
 namespace mojo {
 

@@ -4,9 +4,6 @@
 
 #include "services/webnn/public/mojom/operand_descriptor_mojom_traits.h"
 
-#include <numeric>
-
-#include "base/numerics/checked_math.h"
 #include "base/types/expected.h"
 
 namespace mojo {
