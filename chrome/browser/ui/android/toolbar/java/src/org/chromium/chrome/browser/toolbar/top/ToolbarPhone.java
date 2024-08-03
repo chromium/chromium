@@ -115,9 +115,10 @@ public class ToolbarPhone extends ToolbarLayout
     protected static final int ENTERING_TAB_SWITCHER = 2;
     protected static final int EXITING_TAB_SWITCHER = 3;
 
-    // Finch params for code cleanup - default enabled.
+    // Finch params and default values for code cleanup.
     private static final String PARAM_REMOVE_REDUNDANT_ANIM_CALL =
             "remove_redundant_ntpupdate_in_lbvisualupdate";
+    public static final boolean PARAM_REMOVE_REDUNDANT_ANIM_CALL_DEFAULT_VAL = false;
 
     @ViewDebug.ExportedProperty(
             category = "chrome",
@@ -2596,11 +2597,10 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         if (!visualStateChanged) {
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_PHONE_CLEANUP)
-                    && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ChromeFeatureList.TOOLBAR_PHONE_CLEANUP,
-                            PARAM_REMOVE_REDUNDANT_ANIM_CALL,
-                            true)) {
+            if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.TOOLBAR_PHONE_CLEANUP,
+                    PARAM_REMOVE_REDUNDANT_ANIM_CALL,
+                    PARAM_REMOVE_REDUNDANT_ANIM_CALL_DEFAULT_VAL)) {
                 if (mVisualState == VisualState.NEW_TAB_NORMAL) {
                     updateNtpTransitionAnimation();
                 } else {
@@ -2623,7 +2623,10 @@ public class ToolbarPhone extends ToolbarLayout
 
         mLocationBar.updateVisualsForState();
 
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_PHONE_CLEANUP)) {
+        if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.TOOLBAR_PHONE_CLEANUP,
+                PARAM_REMOVE_REDUNDANT_ANIM_CALL,
+                PARAM_REMOVE_REDUNDANT_ANIM_CALL_DEFAULT_VAL)) {
             // These are used to skip setting state unnecessarily while in the tab switcher.
             boolean inOrEnteringStaticTab =
                     mTabSwitcherState == STATIC_TAB || mTabSwitcherState == EXITING_TAB_SWITCHER;
