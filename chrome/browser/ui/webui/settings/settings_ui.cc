@@ -537,6 +537,14 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       TrackingProtectionSettingsFactory::GetForProfile(profile)
           ->IsTrackingProtection3pcdEnabled());
 
+  // ACT UX
+  html_source->AddBoolean(
+      "isIpProtectionUxEnabled",
+      base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx));
+  html_source->AddBoolean("isFingerprintingProtectionUxEnabled",
+                          base::FeatureList::IsEnabled(
+                              privacy_sandbox::kFingerprintingProtectionUx));
+
   html_source->AddBoolean(
       "isProactiveTopicsBlockingEnabled",
       base::FeatureList::IsEnabled(
