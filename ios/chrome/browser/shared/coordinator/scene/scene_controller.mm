@@ -65,7 +65,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/promo/omnibox_position_choice_scene_agent.h"
-#import "ios/chrome/browser/geolocation/model/geolocation_logger.h"
+#import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_delegate.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator.h"
@@ -1111,9 +1111,8 @@ void OnListFamilyMembersResponse(
   [self.browserViewWrangler loadSession];
   [self createInitialUI:[self initialUIMode]];
 
-  // Make sure the geolocation controller is created to observe permission
-  // events.
-  [GeolocationLogger sharedInstance];
+  // Make sure the GeolocationManager is created to observe permission events.
+  [GeolocationManager sharedInstance];
 
   if (ShouldPromoManagerDisplayPromos()) {
     [sceneState addAgent:[[PromosManagerSceneAgent alloc]

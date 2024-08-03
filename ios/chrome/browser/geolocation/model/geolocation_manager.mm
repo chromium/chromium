@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/geolocation/model/geolocation_logger.h"
+#import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
 
 #import <CoreLocation/CoreLocation.h>
 
+#import <optional>
+
 #import "base/metrics/histogram_macros.h"
+#import "ios/chrome/browser/geolocation/model/authorization_status_cache_util.h"
 
 namespace {
 
@@ -59,17 +62,24 @@ AuthorizationStatus ToAuthorizationStatus(
 
 }  // anonymous namespace
 
-@interface GeolocationLogger () <CLLocationManagerDelegate>
+@interface GeolocationManager () <CLLocationManagerDelegate>
 
 @property(nonatomic, strong) CLLocationManager* locationManager;
 
+// The status received during this application run
+@property(nonatomic) std::optional<CLAuthorizationStatus> status;
+
 @end
 
-@implementation GeolocationLogger
+@implementation GeolocationManager
 
-+ (GeolocationLogger*)sharedInstance {
-  static GeolocationLogger* instance = [[GeolocationLogger alloc] init];
++ (GeolocationManager*)sharedInstance {
+  static GeolocationManager* instance = [[GeolocationManager alloc] init];
   return instance;
+}
+
++ (GeolocationManager*)createForTesting {
+  return [[GeolocationManager alloc] init];
 }
 
 - (instancetype)init {
@@ -81,24 +91,40 @@ AuthorizationStatus ToAuthorizationStatus(
   return self;
 }
 
+- (CLAuthorizationStatus)authorizationStatus {
+  if (self.status) {
+    return static_cast<CLAuthorizationStatus>(self.status.value());
+  }
+
+  std::optional<CLAuthorizationStatus> cached_status =
+      authorization_status_cache_util::GetAuthorizationStatus();
+  if (cached_status) {
+    return cached_status.value();
+  }
+
+  return kCLAuthorizationStatusNotDetermined;
+}
+
 #pragma mark - CLLocationManagerDelegate
 
 - (void)locationManagerDidChangeAuthorization:
     (CLLocationManager*)locationManager {
+  self.status = self.locationManager.authorizationStatus;
+
+  authorization_status_cache_util::SetAuthorizationStatus(self.status.value());
+
   // The initial call to this method represents the initial value of geolocation
   // authorization status rather than a change.
   static BOOL initialCall = YES;
   if (initialCall) {
     initialCall = NO;
-    UMA_HISTOGRAM_ENUMERATION(
-        kGeolocationInitialAuthorizationStateHistogram,
-        ToAuthorizationStatus(self.locationManager.authorizationStatus));
+    UMA_HISTOGRAM_ENUMERATION(kGeolocationInitialAuthorizationStateHistogram,
+                              ToAuthorizationStatus(self.status.value()));
     return;
   }
 
-  UMA_HISTOGRAM_ENUMERATION(
-      kGeolocationAuthorizationStateChangedHistogram,
-      ToAuthorizationStatus(self.locationManager.authorizationStatus));
+  UMA_HISTOGRAM_ENUMERATION(kGeolocationAuthorizationStateChangedHistogram,
+                            ToAuthorizationStatus(self.status.value()));
 }
 
 @end

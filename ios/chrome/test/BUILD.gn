@@ -266,6 +266,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/first_run/ui_bundled/tos:unit_tests",
     "//ios/chrome/browser/flags:unit_tests",
     "//ios/chrome/browser/follow/model:unit_tests",
+    "//ios/chrome/browser/geolocation/model:unit_tests",
     "//ios/chrome/browser/history/model:unit_tests",
     "//ios/chrome/browser/history/ui_bundled:unit_tests",
     "//ios/chrome/browser/home_customization/coordinator:unit_tests",

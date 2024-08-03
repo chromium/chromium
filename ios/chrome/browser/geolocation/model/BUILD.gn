@@ -4,12 +4,34 @@
 
 source_set("model") {
   sources = [
-    "geolocation_logger.h",
-    "geolocation_logger.mm",
+    "geolocation_manager.h",
+    "geolocation_manager.mm",
   ]
   deps = [
+    ":util",
     "//base",
-    "//ios/chrome/app:tests_hook",
+  ]
+  frameworks = [ "CoreLocation.framework" ]
+}
+
+source_set("util") {
+  sources = [
+    "authorization_status_cache_util.h",
+    "authorization_status_cache_util.mm",
+  ]
+  deps = [ "//base" ]
+  frameworks = [ "CoreLocation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "geolocation_manager_unittest.mm" ]
+  deps = [
+    ":model",
+    ":util",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
   ]
   frameworks = [ "CoreLocation.framework" ]
 }
