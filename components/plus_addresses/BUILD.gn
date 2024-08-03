@@ -65,6 +65,7 @@ source_set("plus_addresses") {
   ]
   deps = [
     ":parsing",
+    ":prefs",
     "//components/affiliations/core/browser:affiliations",
     "//components/feature_engagement/public",
     "//components/plus_addresses/metrics",
@@ -115,6 +116,7 @@ source_set("unit_tests") {
     "plus_address_http_client_impl_unittest.cc",
     "plus_address_jit_allocator_unittest.cc",
     "plus_address_parsing_utils_unittest.cc",
+    "plus_address_preallocator_unittest.cc",
     "plus_address_service_unittest.cc",
   ]
 
@@ -122,6 +124,7 @@ source_set("unit_tests") {
     ":features",
     ":parsing",
     ":plus_addresses",
+    ":prefs",
     ":test_support",
     "//base/test:test_support",
     "//components/affiliations/core/browser:affiliations",

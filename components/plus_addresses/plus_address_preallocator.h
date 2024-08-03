@@ -11,6 +11,8 @@
 #include "components/plus_addresses/plus_address_types.h"
 #include "url/origin.h"
 
+class PrefService;
+
 namespace url {
 class Origin;
 }  // namespace url
@@ -22,7 +24,8 @@ class PlusAddressService;
 
 class PlusAddressPreallocator : public PlusAddressAllocator {
  public:
-  explicit PlusAddressPreallocator(PlusAddressHttpClient* http_client);
+  PlusAddressPreallocator(PrefService* pref_service,
+                          PlusAddressHttpClient* http_client);
   ~PlusAddressPreallocator() override;
 
   // PlusAddressAllocator:
@@ -32,6 +35,13 @@ class PlusAddressPreallocator : public PlusAddressAllocator {
   bool IsRefreshingSupported(const url::Origin& origin) const override;
 
  private:
+  // Deletes pre-allocated plus addresses that have reached their EOL and
+  // updates the index of the next plus preallocated plus address.
+  void PrunePreallocatedPlusAddresses();
+
+  // Owned by the `Profile` that (indirectly) owns `this`.
+  const raw_ref<PrefService> pref_service_;
+
   // Responsible for server communication. Owned by the `PlusAddressService` and
   // outlives `this`.
   const raw_ref<PlusAddressHttpClient> http_client_;
