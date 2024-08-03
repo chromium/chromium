@@ -4,18 +4,18 @@
 
 import 'chrome://privacy-sandbox-internals/private_state_tokens/private_state_tokens.js';
 
-import type {CrCollapseElement, PrivateStateTokensContainerElement} from 'chrome://privacy-sandbox-internals/private_state_tokens/private_state_tokens.js';
+import type {CrCollapseElement, PrivateStateTokensListContainerElement} from 'chrome://privacy-sandbox-internals/private_state_tokens/private_state_tokens.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {dummyListItemData} from './test_data.js';
 
-suite('ContainerTest', () => {
-  let container: PrivateStateTokensContainerElement;
+suite('ListContainerTest', () => {
+  let container: PrivateStateTokensListContainerElement;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    container = document.createElement('private-state-tokens-container');
+    container = document.createElement('private-state-tokens-list-container');
     document.body.appendChild(container);
     container.data = dummyListItemData;
     await microtasksFinished();

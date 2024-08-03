@@ -15,7 +15,9 @@ function getHtmlWithoutRedemptions(this: PrivateStateTokensListItemElement) {
       <span id='tokenText'>${this.getNumTokensString_()}</span>
       <span></span>
     </div>
-    <cr-icon icon="cr:info-outline" class="spacing"></cr-icon>
+    <cr-icon-button iron-icon="cr:info-outline"
+        @click="${this.updateMetadataUrlParams}">
+    </cr-icon-button>
   </div>`;
   // clang-format on
 }
@@ -30,7 +32,9 @@ function getHtmlWithRedemptions(this: PrivateStateTokensListItemElement) {
       <span>${this.issuerOrigin}</span>
       <span id='tokenText'>${this.getNumTokensString_()}</span>
       <span>${this.getRedemptionsString_()}</span>
-      <cr-icon icon="cr:info-outline" class="spacing"></cr-icon>
+      <cr-icon-button iron-icon="cr:info-outline"
+          @click="${this.updateMetadataUrlParams}">
+      </cr-icon-button>
     </cr-expand-button>
     <cr-collapse id="expandedContent" ?opened="${this.expanded}">
       ${this.redemptions.map(redemption => html`

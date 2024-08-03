@@ -4,8 +4,9 @@
 
 import 'chrome://privacy-sandbox-internals/private_state_tokens/private_state_tokens.js';
 
-import type {PrivateStateTokensAppElement} from 'chrome://privacy-sandbox-internals/private_state_tokens/private_state_tokens.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {PrivateStateTokensAppElement, PrivateStateTokensNavigationElement} from 'chrome://privacy-sandbox-internals/private_state_tokens/private_state_tokens.js';
+import {ItemsToRender} from 'chrome://privacy-sandbox-internals/private_state_tokens/private_state_tokens.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('PrivateStateTokensAppTest', () => {
@@ -41,5 +42,23 @@ suite('PrivateStateTokensAppTest', () => {
     app.$.drawer.close();
     await microtasksFinished();
     assertFalse(isVisible(app.$.drawer));
+  });
+
+  test('check rendered item', async () => {
+    const container = app.shadowRoot!.querySelector<HTMLElement>('#container')!
+                          .querySelector<HTMLElement>('#content');
+    assertTrue(!!container);
+    const contentContainer =
+        container.querySelector<PrivateStateTokensNavigationElement>(
+            'private-state-tokens-navigation');
+    assertTrue(!!contentContainer);
+    const contentContainerChild =
+        contentContainer.shadowRoot!.querySelector<HTMLElement>(
+            'private-state-tokens-list-container');
+    assertEquals(
+        app.itemToRender, ItemsToRender.ISSUER_LIST,
+        'app.itemToRender is not ISSUER_LIST');
+    assertTrue(
+        !!contentContainerChild, 'contentContainerChild is null or undefined');
   });
 });

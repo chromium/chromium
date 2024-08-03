@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {PrivateStateTokensContainerElement} from './container.js';
+import type {PrivateStateTokensListContainerElement} from './list_container.js';
 
-export function getHtml(this: PrivateStateTokensContainerElement) {
+export function getHtml(this: PrivateStateTokensListContainerElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
   <div class="cr-centered-card-container class="flex">
@@ -34,7 +34,8 @@ export function getHtml(this: PrivateStateTokensContainerElement) {
               .numTokens="${item.numTokens}"
               .redemptions="${item.redemptions}"
               @expanded-toggled="${this.onExpandedToggled_}"
-              .index="${index}">
+              .index="${index}"
+              .metadata="${item.metadata}">
           </private-state-tokens-list-item>`)}
     </div>
   </div>

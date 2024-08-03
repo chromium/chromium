@@ -5,7 +5,7 @@
 import './toolbar.js';
 import '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import './sidebar.js';
-import './container.js';
+import './navigation.js';
 
 import type {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -14,7 +14,8 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {PrivateStateTokensSidebarElement} from './sidebar.js';
 import type {PrivateStateTokensToolbarElement} from './toolbar.js';
-
+import {ItemsToRender} from './types.js';
+import type {Metadata} from './types.js';
 
 export interface PrivateStateTokensAppElement {
   $: {
@@ -43,6 +44,7 @@ export class PrivateStateTokensAppElement extends CrLitElement {
       narrow_: {type: Boolean},
       narrowThreshold_: {type: Number},
       isDrawerOpen_: {type: Boolean},
+      itemToRender: {type: String},
     };
   }
 
@@ -52,6 +54,14 @@ export class PrivateStateTokensAppElement extends CrLitElement {
         'cr-toolbar-menu-click', this.onMenuButtonClick_ as EventListener);
     this.addEventListener(
         'narrow-changed', this.onNarrowChanged_ as EventListener);
+  }
+
+  override firstUpdated() {
+    window.addEventListener(
+        'navigate-to-metadata',
+        this.handleNavigationToMetadata_ as EventListener);
+    window.addEventListener(
+        'navigate-to-container', this.handleNavigationToList_ as EventListener);
   }
 
   override disconnectedCallback() {
@@ -71,6 +81,12 @@ export class PrivateStateTokensAppElement extends CrLitElement {
   protected narrow_: boolean;
   protected pageTitle_: string = 'Private State Tokens';
   protected isDrawerOpen_: boolean = false;
+  itemToRender: ItemsToRender = ItemsToRender.ISSUER_LIST;
+  protected metadata_?: Metadata;
+  private handleNavigationToMetadata_ =
+      this.handleContentNavigation_.bind(this, ItemsToRender.ISSUER_METADATA);
+  private handleNavigationToList_ =
+      this.handleContentNavigation_.bind(this, ItemsToRender.ISSUER_LIST);
 
   protected onNarrowChanged_(e: CustomEvent<{value: boolean}>) {
     this.narrow_ = e.detail.value;
@@ -90,6 +106,15 @@ export class PrivateStateTokensAppElement extends CrLitElement {
 
   protected onDrawerClose_() {
     this.isDrawerOpen_ = this.$.drawer.open;
+  }
+
+  protected handleContentNavigation_(
+      itemToRender: ItemsToRender, event: CustomEvent<Metadata>) {
+    this.itemToRender = itemToRender;
+    if (this.itemToRender === ItemsToRender.ISSUER_METADATA) {
+      this.metadata_ = event.detail;
+    }
+    this.requestUpdate();
   }
 
   setNarrowForTesting(state: boolean) {

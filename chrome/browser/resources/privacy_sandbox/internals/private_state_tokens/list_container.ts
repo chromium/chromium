@@ -9,20 +9,20 @@ import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './container.css.js';
-import {getHtml} from './container.html.js';
+import {getCss} from './list_container.css.js';
+import {getHtml} from './list_container.html.js';
 import {dummyListItemData} from './test_data.js';
-import type {ListItem} from './test_data.js';
+import type {ListItem} from './types.js';
 
-export interface PrivateStateTokensContainerElement {
+export interface PrivateStateTokensListContainerElement {
   $: {
     expandCollapseButton: CrButtonElement,
   };
 }
 
-export class PrivateStateTokensContainerElement extends CrLitElement {
+export class PrivateStateTokensListContainerElement extends CrLitElement {
   static get is() {
-    return 'private-state-tokens-container';
+    return 'private-state-tokens-list-container';
   }
 
   static override get styles() {
@@ -75,9 +75,11 @@ export class PrivateStateTokensContainerElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'private-state-tokens-container': PrivateStateTokensContainerElement;
+    'private-state-tokens-list-container':
+    PrivateStateTokensListContainerElement;
   }
 }
 
 customElements.define(
-    PrivateStateTokensContainerElement.is, PrivateStateTokensContainerElement);
+    PrivateStateTokensListContainerElement.is,
+    PrivateStateTokensListContainerElement);
