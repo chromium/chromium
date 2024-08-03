@@ -5445,6 +5445,20 @@ TEST_F(ProjectorCaptureModeIntegrationTests, EntryPoint) {
                                       CaptureModeEntryType::kProjector, 1);
 }
 
+// Tests that a fullscreen screenshot can be taken via the keyboard shortcut
+// while a Projector-initiated session is active without ending the session.
+TEST_P(ProjectorCaptureModeIntegrationTests, FullscreenScreenshotKeyCombo) {
+  StartProjectorModeSession();
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN);
+  WaitForCaptureFileToBeSaved();
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller->IsActive());
+  CaptureModeBehavior* active_behavior =
+      controller->capture_mode_session()->active_behavior();
+  ASSERT_TRUE(active_behavior);
+  EXPECT_EQ(active_behavior->behavior_type(), BehaviorType::kProjector);
+}
+
 // Tests that the settings view is simplified in projector mode.
 TEST_F(ProjectorCaptureModeIntegrationTests, CaptureModeSettings) {
   auto* controller = CaptureModeController::Get();

@@ -598,7 +598,8 @@ class ASH_EXPORT CaptureModeController
   // `instant_screenshot_callback` will be moved and invoked in
   // `OnDlpRestrictionCheckedAtCaptureScreenshot()` to perform the instant
   // screenshot. This is invoked via the screenshot accelerator commands and
-  // will end capture mode session if it is active.
+  // will end capture mode session if it is active (only if the session was
+  // started by the same behavior).
   void CaptureInstantScreenshot(CaptureModeEntryType entry_type,
                                 CaptureModeSource source,
                                 base::OnceClosure instant_screenshot_callback,

@@ -1500,10 +1500,16 @@ void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
   // which doesn't go through the capture mode UI, and doesn't change |type_|.
   CHECK(delegate_->IsCaptureAllowedByPolicy());
 
-  // Stop the capture session now, so as not to take a screenshot of the capture
-  // bar.
-  if (IsActive()) {
-    CHECK_EQ(capture_mode_session_->active_behavior(), behavior);
+  // A screenshot can be requested via the fullscreen screenshot keyboard
+  // shortcut (which uses the default `behavior`) even though an active capture
+  // mode session belongs to a different `behavior` kind (e.g. Projector or
+  // Game Dashboard). In this case, the assumption is that the user wants to
+  // take a screenshot of the screen in its current state (i.e. while keeping
+  // the session active). Therefore, we don't stop the session in this case.
+  // See http://b/353908198 for more details.
+  if (IsActive() && behavior == capture_mode_session_->active_behavior()) {
+    // Other than the above mentioned case, we stop the session now, so the
+    // capture UIs don't end up in the screenshot.
     Stop();
   }
 
@@ -2247,8 +2253,8 @@ void CaptureModeController::OnDlpRestrictionCheckedAtCaptureScreenshot(
     return;
   }
 
-  // Due to fact that the DLP warning dialog may take a while, check the
-  // enterprise policy again even though we checked in
+  // Due to the fact that the DLP warning dialog may take a while, check the
+  // enterprise policy again even though we checked it in
   // `CaptureInstantScreenshot()`.
   if (!delegate_->IsCaptureAllowedByPolicy()) {
     ShowDisabledNotification(CaptureAllowance::kDisallowedByPolicy);
