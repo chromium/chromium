@@ -336,7 +336,13 @@ TEST_F(SparkyUtilTest, AddDialog) {
                              Role::kAssistant, &launch_actions));
 }
 
-TEST_F(SparkyUtilTest, AddFilesData) {
+// TODO(b/357134635) - Reenable this test.
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#define MAYBE_AddFilesData DISABLED_AddFilesData
+#else
+#define MAYBE_AddFilesData AddFilesData
+#endif
+TEST_F(SparkyUtilTest, MAYBE_AddFilesData) {
   std::vector<manta::FileData> files_data;
   auto file_1 = FileData("path1", "name1", "2024");
   file_1.summary = "file 1 summary";
