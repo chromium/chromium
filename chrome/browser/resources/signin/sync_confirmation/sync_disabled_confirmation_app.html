@@ -1,19 +1,4 @@
-<style include="signin-shared">
-  .container {
-    width: 100%;
-  }
 
-  .details {
-    padding: 0 24px;
-  }
-
-  #syncDisabledDetails {
-    line-height: 20px;
-    margin-bottom: 8px;
-    margin-top: 16px;
-    padding: 0 24px;
-  }
-</style>
 <!--
   Use the 'consent-description' attribute to annotate all the UI elements
   that are part of the text the user reads before consenting to the Sync
@@ -31,11 +16,11 @@
   </div>
   <div class="action-container">
     <cr-button class="action-button" id="confirmButton"
-        consent-confirmation on-click="onConfirm_">
+        consent-confirmation @click="${this.onConfirm_}">
       $i18n{syncDisabledConfirmationConfirmLabel}
     </cr-button>
-    <cr-button id="undoButton" on-click="onUndo_"
-        hidden="[[signoutDisallowed_]]">
+    <cr-button id="undoButton" @click="${this.onUndo_}"
+        ?hidden="${this.signoutDisallowed_}">
       $i18n{syncDisabledConfirmationUndoLabel}
     </cr-button>
   </div>
