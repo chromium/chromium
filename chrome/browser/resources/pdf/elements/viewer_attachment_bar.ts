@@ -2,40 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './pdf_shared.css.js';
 import './viewer_attachment.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Attachment} from '../constants.js';
 
-import {getTemplate} from './viewer_attachment_bar.html.js';
+import {getCss} from './viewer_attachment_bar.css.js';
+import {getHtml} from './viewer_attachment_bar.html.js';
 
-export class ViewerAttachmentBarElement extends PolymerElement {
+export class ViewerAttachmentBarElement extends CrLitElement {
   static get is() {
     return 'viewer-attachment-bar';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      attachments: Array,
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      exceedSizeLimit_: {
-        type: Boolean,
-        computed: 'computeExceedSizeLimit_(attachments)',
-      },
+  static override get properties() {
+    return {
+      attachments: {type: Array},
     };
   }
 
-  attachments: Attachment[];
-  private exceedSizeLimit_: boolean;
+  attachments: Attachment[] = [];
 
   /* Indicates whether any oversized attachments exist */
-  private computeExceedSizeLimit_(): boolean {
+  protected exceedSizeLimit_(): boolean {
     return this.attachments.some(attachment => attachment.size === -1);
   }
 }

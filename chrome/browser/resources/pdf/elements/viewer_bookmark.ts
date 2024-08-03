@@ -3,16 +3,15 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import './pdf_shared.css.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Bookmark} from '../bookmark_type.js';
 
-import {getTemplate} from './viewer_bookmark.html.js';
+import {getCss} from './viewer_bookmark.css.js';
+import {getHtml} from './viewer_bookmark.html.js';
 
 /** Amount that each level of bookmarks is indented by (px). */
 const BOOKMARK_INDENT: number = 20;
@@ -60,45 +59,37 @@ export interface ViewerBookmarkElement {
   };
 }
 
-export class ViewerBookmarkElement extends PolymerElement {
+export class ViewerBookmarkElement extends CrLitElement {
   static get is() {
     return 'viewer-bookmark';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      bookmark: {
-        type: Object,
-        observer: 'bookmarkChanged_',
-      },
+      bookmark: {type: Object},
 
-      depth: {
-        type: Number,
-        observer: 'depthChanged_',
-      },
-
-      childDepth_: Number,
+      depth: {type: Number},
 
       childrenShown_: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: false,
+        reflect: true,
       },
     };
   }
 
   bookmark: Bookmark;
-  depth: number;
-  private childDepth_: number;
-  private childrenShown_: boolean;
+  depth: number = 0;
+  protected childrenShown_: boolean = false;
 
-  override ready() {
-    super.ready();
-
+  override firstUpdated() {
     this.$.item.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
         this.onEnter_(e);
@@ -108,41 +99,37 @@ export class ViewerBookmarkElement extends PolymerElement {
     });
   }
 
-  private fire_(eventName: string, detail?: any) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  protected getItemStartPaddingStyle_(): string {
+    return `padding-inline-start: ${this.depth * BOOKMARK_INDENT}px`;
   }
 
-  private bookmarkChanged_() {
-    this.$.expand.style.visibility =
-        this.bookmark.children.length > 0 ? 'visible' : 'hidden';
+  protected getChildDepth_(): number {
+    return this.depth + 1;
   }
 
-  private depthChanged_() {
-    this.childDepth_ = this.depth + 1;
-    this.$.item.style.paddingInlineStart =
-        (this.depth * BOOKMARK_INDENT) + 'px';
+  protected getExpandHidden_(): boolean {
+    return this.bookmark.children.length <= 0;
   }
 
-  private onClick_() {
+  protected onClick_() {
     if (this.bookmark.page != null) {
       if (this.bookmark.zoom != null) {
-        this.fire_('change-zoom', {zoom: this.bookmark.zoom});
+        this.fire('change-zoom', {zoom: this.bookmark.zoom});
       }
       if (this.bookmark.x != null && this.bookmark.y != null) {
-        this.fire_('change-page-and-xy', {
+        this.fire('change-page-and-xy', {
           page: this.bookmark.page,
           x: this.bookmark.x,
           y: this.bookmark.y,
           origin: ChangePageOrigin.BOOKMARK,
         });
       } else {
-        this.fire_(
+        this.fire(
             'change-page',
             {page: this.bookmark.page, origin: ChangePageOrigin.BOOKMARK});
       }
     } else if (this.bookmark.uri != null) {
-      this.fire_('navigate', {uri: this.bookmark.uri, newtab: true});
+      this.fire('navigate', {uri: this.bookmark.uri, newtab: true});
     }
   }
 
@@ -162,13 +149,9 @@ export class ViewerBookmarkElement extends PolymerElement {
     e.preventDefault();
   }
 
-  private toggleChildren_(e: Event) {
+  protected toggleChildren_(e: Event) {
     this.childrenShown_ = !this.childrenShown_;
     e.stopPropagation();  // Prevent the above onClick_ handler from firing.
-  }
-
-  private getAriaExpanded_(): string {
-    return this.childrenShown_ ? 'true' : 'false';
   }
 }
 

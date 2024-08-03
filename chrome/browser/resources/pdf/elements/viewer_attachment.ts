@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Attachment} from '../constants.js';
 
-import {getTemplate} from './viewer_attachment.html.js';
+import {getCss} from './viewer_attachment.css.js';
+import {getHtml} from './viewer_attachment.html.js';
 
 export interface SaveAttachment {
   index: number;
@@ -30,40 +30,43 @@ export interface ViewerAttachmentElement {
   };
 }
 
-export class ViewerAttachmentElement extends PolymerElement {
+export class ViewerAttachmentElement extends CrLitElement {
   static get is() {
     return 'viewer-attachment';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      attachment: Object,
-
-      index: Number,
-
+      attachment: {type: Object},
+      index: {type: Number},
       saveAllowed_: {
         type: Boolean,
-        reflectToAttribute: true,
-        computed: 'computeSaveAllowed_(attachment.size)',
+        reflect: true,
       },
     };
   }
 
   attachment: Attachment;
-  index: number;
-  private saveAllowed_: boolean;
+  index: number = -1;
+  protected saveAllowed_: boolean = false;
 
-  /** Indicate whether the attachment can be downloaded. */
-  private computeSaveAllowed_(): boolean {
-    return this.attachment.size !== -1;
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('attachment')) {
+      this.saveAllowed_ = !!this.attachment && this.attachment.size !== -1;
+    }
   }
 
-  private onDownloadClick_() {
-    if (this.attachment.size === -1) {
+  protected onDownloadClick_() {
+    if (!this.attachment || this.attachment.size === -1) {
       return;
     }
     this.dispatchEvent(new CustomEvent(
