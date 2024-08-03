@@ -15,8 +15,9 @@ static_library("babelorca") {
     "response_callback_wrapper_impl.h",
     "token_data_wrapper.h",
     "token_fetcher.h",
-    "token_manager.cc",
     "token_manager.h",
+    "token_manager_impl.cc",
+    "token_manager_impl.h",
   ]
 
   deps = [
@@ -33,6 +34,8 @@ source_set("test_support") {
   sources = [
     "fake_token_fetcher.cc",
     "fake_token_fetcher.h",
+    "fake_token_manager.cc",
+    "fake_token_manager.h",
   ]
 
   deps = [
@@ -47,7 +50,7 @@ source_set("unit_tests") {
   sources = [
     "oauth_token_fetcher_unittest.cc",
     "response_callback_wrapper_impl_unittest.cc",
-    "token_manager_unittest.cc",
+    "token_manager_impl_unittest.cc",
   ]
 
   deps = [

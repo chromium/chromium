@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/boca/babelorca/token_manager.h"
+#include "chromeos/ash/components/boca/babelorca/token_manager_impl.h"
 
-#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -22,18 +21,18 @@
 
 namespace babelorca {
 
-TokenManager::TokenManager(std::unique_ptr<TokenFetcher> token_fetcher,
-                           base::TimeDelta expiration_buffer,
-                           base::Clock* clock)
+TokenManagerImpl::TokenManagerImpl(std::unique_ptr<TokenFetcher> token_fetcher,
+                                   base::TimeDelta expiration_buffer,
+                                   base::Clock* clock)
     : token_fetcher_(std::move(token_fetcher)),
       expiration_buffer_(expiration_buffer),
       clock_(*clock) {}
 
-TokenManager::~TokenManager() {
+TokenManagerImpl::~TokenManagerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-const std::string* TokenManager::GetTokenString() {
+const std::string* TokenManagerImpl::GetTokenString() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!token_data_ ||
       token_data_->expiration_time < clock_->Now() + expiration_buffer_) {
@@ -42,12 +41,12 @@ const std::string* TokenManager::GetTokenString() {
   return &(token_data_->token);
 }
 
-int TokenManager::GetFetchedVersion() {
+int TokenManagerImpl::GetFetchedVersion() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return fetched_version_;
 }
 
-void TokenManager::ForceFetchToken(
+void TokenManagerImpl::ForceFetchToken(
     base::OnceCallback<void(bool)> success_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pending_requests_callbacks_.push(std::move(success_callback));
@@ -57,10 +56,10 @@ void TokenManager::ForceFetchToken(
   }
   token_fetcher_->FetchToken(base::BindOnce(
       // base::Unretained is safe, `this` owns `token_fetcher_`.
-      &TokenManager::OnTokenFetchCompleted, base::Unretained(this)));
+      &TokenManagerImpl::OnTokenFetchCompleted, base::Unretained(this)));
 }
 
-void TokenManager::OnTokenFetchCompleted(
+void TokenManagerImpl::OnTokenFetchCompleted(
     std::optional<TokenDataWrapper> token_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool success = false;

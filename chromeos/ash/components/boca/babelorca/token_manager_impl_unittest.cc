@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/boca/babelorca/token_manager.h"
+#include "chromeos/ash/components/boca/babelorca/token_manager_impl.h"
 
 #include <memory>
 #include <optional>
@@ -21,20 +21,20 @@ namespace {
 
 constexpr char kOAuthToken[] = "test-token";
 
-TEST(TokenManagerTest, TokenInitiallyEmpty) {
-  TokenManager token_manager(std::make_unique<FakeTokenFetcher>());
+TEST(TokenManagerImplTest, TokenInitiallyEmpty) {
+  TokenManagerImpl token_manager(std::make_unique<FakeTokenFetcher>());
 
   EXPECT_THAT(token_manager.GetTokenString(), testing::IsNull());
   EXPECT_EQ(token_manager.GetFetchedVersion(), 0);
 }
 
-TEST(TokenManagerTest, RepsondOnFetchAndStoreToken) {
+TEST(TokenManagerImplTest, RepsondOnFetchAndStoreToken) {
   auto token_fetcher = std::make_unique<FakeTokenFetcher>();
   auto* token_fetcher_ptr = token_fetcher.get();
   base::SimpleTestClock test_clock;
   test_clock.SetNow(base::Time::Now());
-  TokenManager token_manager(std::move(token_fetcher), base::Seconds(5),
-                             &test_clock);
+  TokenManagerImpl token_manager(std::move(token_fetcher), base::Seconds(5),
+                                 &test_clock);
   base::test::TestFuture<bool> test_future;
 
   token_manager.ForceFetchToken(test_future.GetCallback());
@@ -48,13 +48,13 @@ TEST(TokenManagerTest, RepsondOnFetchAndStoreToken) {
   EXPECT_EQ(token_manager.GetFetchedVersion(), 1);
 }
 
-TEST(TokenManagerTest, ReturnNullIfTokenExpired) {
+TEST(TokenManagerImplTest, ReturnNullIfTokenExpired) {
   auto token_fetcher = std::make_unique<FakeTokenFetcher>();
   auto* token_fetcher_ptr = token_fetcher.get();
   base::SimpleTestClock test_clock;
   test_clock.SetNow(base::Time::Now());
-  TokenManager token_manager(std::move(token_fetcher), base::Seconds(5),
-                             &test_clock);
+  TokenManagerImpl token_manager(std::move(token_fetcher), base::Seconds(5),
+                                 &test_clock);
   base::test::TestFuture<bool> test_future;
 
   token_manager.ForceFetchToken(test_future.GetCallback());
@@ -67,13 +67,13 @@ TEST(TokenManagerTest, ReturnNullIfTokenExpired) {
   EXPECT_EQ(token_manager.GetFetchedVersion(), 1);
 }
 
-TEST(TokenManagerTest, QueueRequestsUntilFetchIsComplete) {
+TEST(TokenManagerImplTest, QueueRequestsUntilFetchIsComplete) {
   auto token_fetcher = std::make_unique<FakeTokenFetcher>();
   auto* token_fetcher_ptr = token_fetcher.get();
   base::SimpleTestClock test_clock;
   test_clock.SetNow(base::Time::Now());
-  TokenManager token_manager(std::move(token_fetcher), base::Seconds(5),
-                             &test_clock);
+  TokenManagerImpl token_manager(std::move(token_fetcher), base::Seconds(5),
+                                 &test_clock);
   base::test::TestFuture<bool> test_future1;
   base::test::TestFuture<bool> test_future2;
 
@@ -89,10 +89,10 @@ TEST(TokenManagerTest, QueueRequestsUntilFetchIsComplete) {
   EXPECT_EQ(token_manager.GetFetchedVersion(), 1);
 }
 
-TEST(TokenManagerTest, RespondWithFalseOnFetchFailure) {
+TEST(TokenManagerImplTest, RespondWithFalseOnFetchFailure) {
   auto token_fetcher = std::make_unique<FakeTokenFetcher>();
   auto* token_fetcher_ptr = token_fetcher.get();
-  TokenManager token_manager(std::move(token_fetcher));
+  TokenManagerImpl token_manager(std::move(token_fetcher));
   base::test::TestFuture<bool> test_future;
 
   token_manager.ForceFetchToken(test_future.GetCallback());
@@ -101,13 +101,13 @@ TEST(TokenManagerTest, RespondWithFalseOnFetchFailure) {
   EXPECT_FALSE(test_future.Get());
 }
 
-TEST(TokenManagerTest, IncrementVersionOnNewTokenFetch) {
+TEST(TokenManagerImplTest, IncrementVersionOnNewTokenFetch) {
   auto token_fetcher = std::make_unique<FakeTokenFetcher>();
   auto* token_fetcher_ptr = token_fetcher.get();
   base::SimpleTestClock test_clock;
   test_clock.SetNow(base::Time::Now());
-  TokenManager token_manager(std::move(token_fetcher), base::Seconds(5),
-                             &test_clock);
+  TokenManagerImpl token_manager(std::move(token_fetcher), base::Seconds(5),
+                                 &test_clock);
   base::test::TestFuture<bool> test_future1;
   base::test::TestFuture<bool> test_future2;
 
@@ -125,13 +125,13 @@ TEST(TokenManagerTest, IncrementVersionOnNewTokenFetch) {
   EXPECT_EQ(token_manager.GetFetchedVersion(), 2);
 }
 
-TEST(TokenManagerTest, DoesNotOverwriteTokenOnFailure) {
+TEST(TokenManagerImplTest, DoesNotOverwriteTokenOnFailure) {
   auto token_fetcher = std::make_unique<FakeTokenFetcher>();
   auto* token_fetcher_ptr = token_fetcher.get();
   base::SimpleTestClock test_clock;
   test_clock.SetNow(base::Time::Now());
-  TokenManager token_manager(std::move(token_fetcher), base::Seconds(5),
-                             &test_clock);
+  TokenManagerImpl token_manager(std::move(token_fetcher), base::Seconds(5),
+                                 &test_clock);
   base::test::TestFuture<bool> success_future;
   base::test::TestFuture<bool> fail_future;
 
