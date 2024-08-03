@@ -85,6 +85,7 @@ suite('Speech', () => {
     chrome.readingMode.setContentForTesting(axTree, leafIds);
     speechSynthesis = new FakeSpeechSynthesis();
     app.synth = speechSynthesis;
+    speechSynthesis.setDefaultVoices();
 
     app.enabledLangs = ['en'];
     app.getSpeechSynthesisVoice();
@@ -376,6 +377,7 @@ suite('Speech', () => {
       // Remote voices already reduce the size of a speech segment to avoid
       // the bug where speech stops without an error callback.
       speechSynthesis.useLocalVoices();
+      speechSynthesis.setDefaultVoices();
       chrome.readingMode.onVoiceChange = () => {};
       emitEvent(
           app, 'select-voice',

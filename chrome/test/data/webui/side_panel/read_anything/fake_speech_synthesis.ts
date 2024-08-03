@@ -48,19 +48,26 @@ export class FakeSpeechSynthesis {
   }
 
   getVoices(): SpeechSynthesisVoice[] {
-    return this.voices_.length > 0 ? this.voices_ : [
+    return this.voices_;
+  }
+
+  setVoices(voices: SpeechSynthesisVoice[]) {
+    this.voices_ = voices;
+  }
+
+  setDefaultVoices() {
+    this.setVoices([
       createSpeechSynthesisVoice({lang: 'en', name: 'Lauren', default: true}),
       createSpeechSynthesisVoice({lang: 'en', name: 'Eitan'}),
       createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'}),
       createSpeechSynthesisVoice({lang: 'en', name: 'Shari'}),
       createSpeechSynthesisVoice({lang: 'en', name: 'Yu'}),
-      createSpeechSynthesisVoice(
-          {lang: 'en', name: 'Xiang', localService: this.shouldUseLocalVoices}),
-    ];
-  }
-
-  setVoices(voices: SpeechSynthesisVoice[]) {
-    this.voices_ = voices;
+      createSpeechSynthesisVoice({
+        lang: 'en',
+        name: 'Xiang',
+        localService: this.shouldUseLocalVoices,
+      }),
+    ]);
   }
 
   speak(utterance: SpeechSynthesisUtterance) {

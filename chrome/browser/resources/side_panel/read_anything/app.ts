@@ -280,6 +280,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   speechSynthesisLanguage: string;
 
+  // If we weren't able to restore language preferences successfully and we
+  // should attempt to restore settings if voices refresh.
+  // Sometimes, the speech synthesis engine hasn't refreshed available
+  // voices by the time we restore settings, which means we end up
+  // ignoring previous settings if we get an onvoiceschanged callback
+  // a few seconds later. By keeping track of whether or not preferences
+  // were successfully restored, we can re-attempt to restore voice and
+  // language preferences from settings in onVoicesChanged.
+  shouldAttemptLanguageSettingsRestore: boolean = true;
+
   constructor() {
     super();
     this.constructorTime = Date.now();
@@ -1032,9 +1042,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   onVoicesChanged() {
+    const previousSize =
+        this.availableVoices_ ? this.availableVoices_.length : 0;
     // Get a new list of voices. This should be done before we call
     // refreshVoicePackStatuses();
     this.getVoices_(/*refresh =*/ true);
+
+    if (this.shouldAttemptLanguageSettingsRestore && previousSize === 0 &&
+        this.availableVoices_ && this.availableVoices_.length > 0) {
+      // If we go from having no available voices to having voices available,
+      // restore voice settings from preferences.
+      this.restoreEnabledLanguagesFromPref();
+      this.selectPreferredVoice();
+    }
 
     // If voice was selected automatically and not by the user, check if
     // there's a higher quality voice available now.
@@ -1059,6 +1079,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         !this.availableVoices_.some(
             voice => areVoicesEqual(voice, this.selectedVoice_!))) {
       this.selectedVoice_ = undefined;
+    }
+
+    if (!this.selectedVoice_) {
       this.getSpeechSynthesisVoice();
     }
   }
@@ -2195,6 +2218,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // refresh the list of voices and available langs
     this.getVoices_();
 
+    // If there are no available languages or voices yet, we might not be
+    // able to restore voice settings yet, so signal that we should attempt
+    // to restore settings the next time onVoicesChanged is called with
+    // available voices.
+    this.shouldAttemptLanguageSettingsRestore =
+        !(this.availableLangs_ && this.availableLangs_.length > 0);
+
     const storedLanguagesPref: string[] =
         chrome.readingMode.getLanguagesEnabledInPref();
     const browserOrPageBaseLang = chrome.readingMode.baseLanguageForSpeech;
@@ -2484,6 +2514,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       ...this.voiceStatusLocalState_,
       [voicePackLanguage]: status,
     };
+  }
+
+  resetVoiceForTesting() {
+    this.selectedVoice_ = undefined;
   }
 
   private setVoicePackServerStatus_(lang: string, status: VoicePackStatus) {
