@@ -292,6 +292,8 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
 
   void OnQuicBroken() override {}
 
+  void OnSwitchesToHttpStreamPool(HttpStreamKey stream_key) override {}
+
   void WaitForStream() {
     stream_done_ = false;
     loop_ = std::make_unique<base::RunLoop>();

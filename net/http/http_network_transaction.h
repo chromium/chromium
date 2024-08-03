@@ -124,6 +124,9 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   void OnNeedsClientAuth(SSLCertRequestInfo* cert_info) override;
 
   void OnQuicBroken() override;
+
+  void OnSwitchesToHttpStreamPool(HttpStreamKey stream_key) override;
+
   ConnectionAttempts GetConnectionAttempts() const override;
 
  private:

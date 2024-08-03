@@ -81,8 +81,8 @@ BASE_FEATURE(kUseHostResolverCache,
              "UseHostResolverCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableHappyEyeballsV3,
-             "EnableHappyEyeballsV3",
+BASE_FEATURE(kHappyEyeballsV3,
+             "HappyEyeballsV3",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kAlternativePortForGloballyReachableCheck{

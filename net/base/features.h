@@ -99,7 +99,7 @@ NET_EXPORT BASE_DECLARE_FEATURE(kUseHostResolverCache);
 
 // Enables the Happy Eyeballs v3, where we use intermediate DNS resolution
 // results to make connection attempts as soon as possible.
-NET_EXPORT BASE_DECLARE_FEATURE(kEnableHappyEyeballsV3);
+NET_EXPORT BASE_DECLARE_FEATURE(kHappyEyeballsV3);
 
 // If the `kUseAlternativePortForGloballyReachableCheck` flag is enabled, the
 // globally reachable check will use the port number specified by

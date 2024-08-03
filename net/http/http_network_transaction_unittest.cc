@@ -88,6 +88,7 @@
 #include "net/http/http_server_properties.h"
 #include "net/http/http_stream.h"
 #include "net/http/http_stream_factory.h"
+#include "net/http/http_stream_pool_test_util.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -27976,6 +27977,53 @@ TEST_P(HttpNetworkTransactionTest,
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
+}
+
+// Tests specific to the HappyEyeballsV3 feature.
+// TODO(crbug.com/346835898): Find ways to run more tests with the
+// HappyEyeballsV3 feature enabled.
+class HttpNetworkTransactionPoolTest : public HttpNetworkTransactionTest {
+ public:
+  HttpNetworkTransactionPoolTest() {
+    feature_list_.InitAndEnableFeature(features::kHappyEyeballsV3);
+    session_deps_.alternate_host_resolver =
+        std::make_unique<FakeServiceEndpointResolver>();
+  }
+
+ protected:
+  FakeServiceEndpointResolver* resolver() {
+    return static_cast<FakeServiceEndpointResolver*>(
+        session_deps_.alternate_host_resolver.get());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HttpNetworkTransactionPoolTest,
+                         ::testing::Bool());
+
+TEST_P(HttpNetworkTransactionPoolTest, SwitchToHttpStreamPool) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("127.0.0.1").endpoint())
+      .set_start_result(OK);
+
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.1 200 OK\r\n\r\n"),
+      MockRead("hello world"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+  SimpleGetHelperResult out = SimpleGetHelper(data_reads);
+  EXPECT_THAT(out.rv, IsOk());
+  EXPECT_EQ("HTTP/1.1 200 OK", out.status_line);
+  EXPECT_EQ("hello world", out.response_data);
+  int64_t reads_size = CountReadBytes(data_reads);
+  EXPECT_EQ(reads_size, out.total_received_bytes);
+  EXPECT_EQ(0u, out.connection_attempts.size());
+
+  EXPECT_FALSE(out.remote_endpoint_after_start.address().empty());
 }
 
 }  // namespace net

@@ -251,6 +251,8 @@ class StreamRequester : public HttpStreamRequest::Delegate {
 
   void OnQuicBroken() override {}
 
+  void OnSwitchesToHttpStreamPool(HttpStreamKey stream_key) override {}
+
   std::unique_ptr<HttpStream> ReleaseStream() { return std::move(stream_); }
 
   std::optional<int> result() const { return result_; }
@@ -293,7 +295,7 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
   HttpStreamPoolJobTest()
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitAndEnableFeature(features::kEnableHappyEyeballsV3);
+    feature_list_.InitAndEnableFeature(features::kHappyEyeballsV3);
     session_deps_.alternate_host_resolver =
         std::make_unique<FakeServiceEndpointResolver>();
     http_network_session_ =

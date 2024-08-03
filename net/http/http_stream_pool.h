@@ -78,6 +78,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   void IncrementTotalIdleStreamCount();
   void DecrementTotalIdleStreamCount();
 
+  size_t TotalIdleStreamCount() { return total_idle_stream_count_; }
+
   // Increments/Decrements the total number of active streams this pool handed
   // out.
   void IncrementTotalHandedOutStreamCount();
