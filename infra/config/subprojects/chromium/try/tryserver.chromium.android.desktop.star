@@ -40,6 +40,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    cores = 32,
 )
 
 try_.builder(
@@ -53,6 +54,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    cores = 32,
 )
 
 try_.builder(
@@ -66,6 +68,7 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
+    cores = 32,
 )
 
 try_.builder(
@@ -79,4 +82,5 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
+    cores = 32,
 )
