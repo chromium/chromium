@@ -95,19 +95,10 @@ class WorkerNodeImpl;
 // TODO(crbug.com/40485134): This is a hack to prevent new uses of
 // SupportsWeakPtr. The remaining uses are troublesome to fix, so we declare
 // these classes as friends so they have access to the constructor.
-namespace gl {
-class GLContext;
-class GLSurface;
-}  // namespace gl
-
 namespace ui {
 class MenuModel;
 class TextInputClient;
 }  // namespace ui
-
-namespace views {
-class WidgetDelegate;
-}  // namespace views
 
 namespace base {
 
@@ -514,11 +505,8 @@ class SupportsWeakPtr : public internal::SupportsWeakPtrBase {
   friend struct MultiplyDerivedProducer;
   friend struct Producer;
   friend struct weak_ptr_unittest::Target;
-  friend class gl::GLContext;
-  friend class gl::GLSurface;
   friend class ui::MenuModel;
   friend class ui::TextInputClient;
-  friend class views::WidgetDelegate;
 
   // The constructor is private so only the declared friends can construct
   // instances.
