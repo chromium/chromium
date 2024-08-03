@@ -31,7 +31,8 @@ class CORE_EXPORT CullRectUpdater {
   STACK_ALLOCATED();
 
  public:
-  explicit CullRectUpdater(PaintLayer& starting_layer);
+  explicit CullRectUpdater(PaintLayer& starting_layer,
+                           bool disable_expansion = false);
 
   void Update();
 
@@ -84,7 +85,7 @@ class CORE_EXPORT CullRectUpdater {
   PaintLayer& starting_layer_;
   PropertyTreeState root_state_ = PropertyTreeState::Uninitialized();
   ViewTransitionSupplement* view_transition_supplement_;
-  bool disable_expansion_ = false;
+  float expansion_ratio_;
 };
 
 // Used when painting with a custom top-level cull rect, e.g. when printing a

@@ -1772,10 +1772,19 @@ BLINK_COMMON_EXPORT bool IsLinkPreviewTriggerTypeEnabled(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kRemoveAuthroizationOnCrossOriginRedirect);
 
-// Number of pixels to expand in root coordinates for cull rect under
-// scroll translation or other composited transform.
+// Number of pixels to expand in root layout coordinates for cull rect under
+// scroll translation or other composited transform:
+//   kCullRectPixelDistanceToExpand *
+//   (1 + (device_pixel_ratio - 1) * kCullRectExpansionDPRCoef)
+// If kCullRectExpansionDPRCoef equals 0 (the default), the expansion will be
+// kCullRectPixelDistanceToExpand in local coordinates.
+// If kCullRectExpansionDPRCoef equals 1, the expansion will be
+// kCullRectPixelDistanceToExpand in device coordinates.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExpandCompositedCullRect);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int> kPixelDistanceToExpand;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kCullRectPixelDistanceToExpand;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
+    kCullRectExpansionDPRCoef;
 
 // Treat HTTP header `Expires: "0"` as expired value according section 5.3 on
 // RFC 9111.

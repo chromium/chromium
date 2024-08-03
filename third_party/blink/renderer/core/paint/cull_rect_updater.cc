@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 
 #include "base/auto_reset.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/pagination_state.h"
@@ -25,6 +26,13 @@
 namespace blink {
 
 namespace {
+
+float ExpansionRatio(const LayoutObject& object) {
+  static const int dpr_coef = features::kCullRectExpansionDPRCoef.Get();
+  float device_pixel_ratio =
+      object.GetFrame()->LocalFrameRoot().GetDocument()->DevicePixelRatio();
+  return 1 + (device_pixel_ratio - 1) * dpr_coef;
+}
 
 using FragmentCullRects = OverriddenCullRectScope::FragmentCullRects;
 // This is set to non-null when we are updating overridden cull rects for
@@ -166,7 +174,7 @@ bool HasScrolledEnough(const LayoutObject& object) {
                              scrollable_area->LastCullRectUpdateScrollPosition()
                                  .OffsetFromOrigin();
       return object.FirstFragment().GetContentsCullRect().HasScrolledEnough(
-          delta, *scroll_translation);
+          delta, *scroll_translation, ExpansionRatio(object));
     }
   }
   return false;
@@ -174,8 +182,12 @@ bool HasScrolledEnough(const LayoutObject& object) {
 
 }  // anonymous namespace
 
-CullRectUpdater::CullRectUpdater(PaintLayer& starting_layer)
-    : starting_layer_(starting_layer) {
+CullRectUpdater::CullRectUpdater(PaintLayer& starting_layer,
+                                 bool disable_expansion)
+    : starting_layer_(starting_layer),
+      expansion_ratio_(disable_expansion
+                           ? 0.f
+                           : ExpansionRatio(starting_layer.GetLayoutObject())) {
   view_transition_supplement_ = ViewTransitionSupplement::FromIfExists(
       starting_layer.GetLayoutObject().GetDocument());
 }
@@ -208,7 +220,8 @@ void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
     return;
   }
 
-  object.GetFrameView()->SetCullRectNeedsUpdateForFrames(disable_expansion_);
+  object.GetFrameView()->SetCullRectNeedsUpdateForFrames(
+      /*disable_expansion=*/expansion_ratio_ == 0);
 
   if (!starting_layer_.NeedsCullRectUpdate() &&
       !starting_layer_.DescendantNeedsCullRectUpdate() &&
@@ -465,7 +478,7 @@ CullRect CullRectUpdater::ComputeFragmentCullRect(
       old_cull_rect = fragment.GetCullRect();
     bool expanded =
         cull_rect.ApplyPaintProperties(root_state_, parent_state, local_state,
-                                       old_cull_rect, disable_expansion_);
+                                       old_cull_rect, expansion_ratio_);
     if (expanded && fragment.GetCullRect() != cull_rect)
       context.current.force_proactive_update = true;
   }
@@ -488,7 +501,7 @@ CullRect CullRectUpdater::ComputeFragmentContentsCullRect(
       old_contents_cull_rect = fragment.GetContentsCullRect();
     bool expanded = contents_cull_rect.ApplyPaintProperties(
         root_state_, local_state, contents_state, old_contents_cull_rect,
-        disable_expansion_);
+        expansion_ratio_);
     if (expanded && fragment.GetContentsCullRect() != contents_cull_rect)
       context.current.force_proactive_update = true;
   }
@@ -621,8 +634,7 @@ OverriddenCullRectScope::OverriddenCullRectScope(PaintLayer& starting_layer,
   }
 
   g_original_cull_rects = &original_cull_rects_;
-  CullRectUpdater updater(starting_layer);
-  updater.disable_expansion_ = disable_expansion;
+  CullRectUpdater updater(starting_layer, disable_expansion);
   updater.UpdateInternal(cull_rect);
 }
 

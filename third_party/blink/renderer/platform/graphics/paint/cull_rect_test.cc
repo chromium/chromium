@@ -25,13 +25,13 @@ class CullRectTest : public testing::Test,
       const PropertyTreeState& destination,
       const std::optional<CullRect>& old_cull_rect = std::nullopt) {
     return cull_rect.ApplyPaintProperties(root, source, destination,
-                                          old_cull_rect, disable_expansion_);
+                                          old_cull_rect, expansion_ratio_);
   }
 
   std::pair<bool, bool> ApplyScrollTranslation(
       CullRect& cull_rect,
       const TransformPaintPropertyNode& t) {
-    return cull_rect.ApplyScrollTranslation(t, t, disable_expansion_);
+    return cull_rect.ApplyScrollTranslation(t, t, expansion_ratio_);
   }
 
   bool ChangedEnough(const gfx::Rect& old_rect,
@@ -39,10 +39,10 @@ class CullRectTest : public testing::Test,
                      const std::optional<gfx::Rect>& bounds = std::nullopt,
                      const std::pair<bool, bool>& expanded = {true, true}) {
     return CullRect(new_rect).ChangedEnough(expanded, CullRect(old_rect),
-                                            bounds);
+                                            bounds, 1.f);
   }
 
-  bool disable_expansion_ = false;
+  float expansion_ratio_ = 1.f;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, CullRectTest, testing::Bool());
@@ -185,6 +185,32 @@ TEST_P(CullRectTest, ApplyScrollTranslationPartialScrollingContents2) {
 }
 
 TEST_P(CullRectTest,
+       ApplyScrollTranslationPartialScrollingContentsExpansionRatio) {
+  expansion_ratio_ = 3;
+  auto state = CreateCompositedScrollTranslationState(
+      PropertyTreeState::Root(), -9000, -15000, gfx::Rect(20, 10, 40, 50),
+      gfx::Size(24000, 24000));
+  auto& scroll_translation = state.Transform();
+
+  CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
+  // Similar to ApplyScrollTranslationPartialScrollingContents1, but expands
+  // cull rect along both axes.
+  EXPECT_EQ(std::make_pair(true, true),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()
+                ? gfx::Rect(3020, 9010, 12030, 12050)
+                : gfx::Rect(20, 3010, 21030, 21000),
+            cull_rect.Rect());
+  cull_rect = CullRect::Infinite();
+  EXPECT_EQ(std::make_pair(true, true),
+            ApplyScrollTranslation(cull_rect, scroll_translation));
+  EXPECT_EQ(RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()
+                ? gfx::Rect(3020, 9010, 12040, 12050)
+                : gfx::Rect(20, 3010, 21040, 21000),
+            cull_rect.Rect());
+}
+
+TEST_P(CullRectTest,
        ApplyNonCompositedScrollTranslationPartialScrollingContents1) {
   auto state = CreateScrollTranslationState(PropertyTreeState::Root(), 0, -5000,
                                             gfx::Rect(20, 10, 40, 50),
@@ -239,7 +265,7 @@ TEST_P(CullRectTest,
 
 TEST_P(CullRectTest,
        ApplyScrollTranslationPartialScrollingContentsWithoutExpansion) {
-  disable_expansion_ = true;
+  expansion_ratio_ = 0;
   auto state = CreateCompositedScrollTranslationState(
       PropertyTreeState::Root(), -3000, -5000, gfx::Rect(20, 10, 40, 50),
       gfx::Size(8000, 8000));
@@ -328,7 +354,7 @@ TEST_P(CullRectTest,
 
 TEST_P(CullRectTest,
        ApplyScrollTranslationWholeScrollingContentsWithoutExpansion) {
-  disable_expansion_ = true;
+  expansion_ratio_ = 0;
   auto state = CreateCompositedScrollTranslationState(
       PropertyTreeState::Root(), -10, -15, gfx::Rect(20, 10, 40, 50),
       gfx::Size(2000, 2000));
@@ -801,7 +827,7 @@ TEST_P(CullRectTest, CompositedTranslationUnderClip) {
 }
 
 TEST_P(CullRectTest, CompositedTransformUnderClipWithoutExpansion) {
-  disable_expansion_ = true;
+  expansion_ratio_ = 0;
   PropertyTreeState root = PropertyTreeState::Root();
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(100, 200, 300, 400));
   auto t1 = CreateTransform(t0(), MakeTranslationMatrix(10, 20), gfx::Point3F(),

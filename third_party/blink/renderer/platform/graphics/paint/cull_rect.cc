@@ -21,22 +21,30 @@ namespace blink {
 namespace {
 
 constexpr int kReasonablePixelLimit = LayoutUnit::kIntMax;
-constexpr int kChangedEnoughMinimumDistance = 512;
+
+int ChangedEnoughMinimumDistance(float expansion_ratio) {
+  constexpr int kChangedEnoughMinimumDistance = 512;
+  return kChangedEnoughMinimumDistance * expansion_ratio;
+}
 
 // Returns the number of pixels to expand the cull rect for composited scroll
 // and transform.
 int LocalPixelDistanceToExpand(
     const TransformPaintPropertyNode& root_transform,
-    const TransformPaintPropertyNode& local_transform) {
-  static int pixel_distance_to_expand = features::kPixelDistanceToExpand.Get();
+    const TransformPaintPropertyNode& local_transform,
+    float expansion_ratio) {
+  static const int pixel_distance_to_expand =
+      features::kCullRectPixelDistanceToExpand.Get();
+  int local_pixel_distance_to_expand =
+      pixel_distance_to_expand * expansion_ratio;
   float scale = GeometryMapper::SourceToDestinationApproximateMinimumScale(
       root_transform, local_transform);
   // A very big scale may be caused by non-invertable near non-invertable
   // transforms. Fallback to scale 1. The limit is heuristic.
-  if (scale > kReasonablePixelLimit / pixel_distance_to_expand) {
-    return pixel_distance_to_expand;
+  if (scale > kReasonablePixelLimit / local_pixel_distance_to_expand) {
+    return local_pixel_distance_to_expand;
   }
-  return scale * pixel_distance_to_expand;
+  return scale * local_pixel_distance_to_expand;
 }
 
 bool CanExpandForScroll(const ScrollPaintPropertyNode& scroll) {
@@ -97,7 +105,7 @@ void CullRect::ApplyTransform(const TransformPaintPropertyNode& transform) {
 std::pair<bool, bool> CullRect::ApplyScrollTranslation(
     const TransformPaintPropertyNode& root_transform,
     const TransformPaintPropertyNode& scroll_translation,
-    bool disable_expansion) {
+    float expansion_ratio) {
   const auto* scroll = scroll_translation.ScrollNode();
   DCHECK(scroll);
 
@@ -109,7 +117,7 @@ std::pair<bool, bool> CullRect::ApplyScrollTranslation(
 
   ApplyTransform(scroll_translation);
 
-  if (disable_expansion) {
+  if (expansion_ratio == 0) {
     return {false, false};
   }
   if (!CanExpandForScroll(*scroll)) {
@@ -119,7 +127,8 @@ std::pair<bool, bool> CullRect::ApplyScrollTranslation(
   gfx::Rect contents_rect = scroll->ContentsRect();
   // Expand the cull rect for scrolling contents for composited scrolling.
   std::pair<bool, bool> expanded{true, true};
-  int outset = LocalPixelDistanceToExpand(root_transform, scroll_translation);
+  int outset = LocalPixelDistanceToExpand(root_transform, scroll_translation,
+                                          expansion_ratio);
   if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
     int scroll_range_x = contents_rect.width() - container_rect.width();
     int scroll_range_y = contents_rect.height() - container_rect.height();
@@ -180,7 +189,7 @@ bool CullRect::ApplyPaintProperties(
     const PropertyTreeState& source,
     const PropertyTreeState& destination,
     const std::optional<CullRect>& old_cull_rect,
-    bool disable_expansion) {
+    float expansion_ratio) {
   // The caller should check this before calling this function.
   DCHECK_NE(source, destination);
 
@@ -225,7 +234,7 @@ bool CullRect::ApplyPaintProperties(
     *this = Infinite();
     return root != destination &&
            ApplyPaintProperties(root, root, destination, old_cull_rect,
-                                disable_expansion);
+                                expansion_ratio);
   }
 
   // These are either the source transform/clip or the last scroll
@@ -270,7 +279,7 @@ bool CullRect::ApplyPaintProperties(
 
     // We only keep the expanded status of the last scroll translation.
     expanded = ApplyScrollTranslation(root.Transform(), *scroll_translation,
-                                      disable_expansion);
+                                      expansion_ratio);
     last_transform = scroll_translation;
   }
 
@@ -316,7 +325,7 @@ bool CullRect::ApplyPaintProperties(
     }
   }
 
-  if (!disable_expansion && last_transform != &destination.Transform() &&
+  if (expansion_ratio > 0 && last_transform != &destination.Transform() &&
       destination.Transform().RequiresCullRectExpansion()) {
     // Direct compositing reasons such as will-change transform can cause the
     // content to move arbitrarily, so there is no exact cull rect. Instead of
@@ -324,8 +333,8 @@ bool CullRect::ApplyPaintProperties(
     // |pixel_distance_to_expand|. To avoid extreme expansion in the presence
     // of nested composited transforms, the heuristic is skipped for rects that
     // are already very large.
-    int pixel_distance_to_expand =
-        LocalPixelDistanceToExpand(root.Transform(), destination.Transform());
+    int pixel_distance_to_expand = LocalPixelDistanceToExpand(
+        root.Transform(), destination.Transform(), expansion_ratio);
     if (rect_.width() < pixel_distance_to_expand) {
       rect_.Outset(gfx::Outsets::VH(0, pixel_distance_to_expand));
       if (expansion_bounds)
@@ -340,18 +349,18 @@ bool CullRect::ApplyPaintProperties(
     }
   }
 
-  if (old_cull_rect &&
-      !ChangedEnough(expanded, *old_cull_rect, expansion_bounds)) {
+  if (old_cull_rect && !ChangedEnough(expanded, *old_cull_rect,
+                                      expansion_bounds, expansion_ratio)) {
     rect_ = old_cull_rect->Rect();
   }
 
   return expanded.first || expanded.second;
 }
 
-bool CullRect::ChangedEnough(
-    const std::pair<bool, bool>& expanded,
-    const CullRect& old_cull_rect,
-    const std::optional<gfx::Rect>& expansion_bounds) const {
+bool CullRect::ChangedEnough(const std::pair<bool, bool>& expanded,
+                             const CullRect& old_cull_rect,
+                             const std::optional<gfx::Rect>& expansion_bounds,
+                             float expansion_ratio) const {
   const auto& new_rect = Rect();
   const auto& old_rect = old_cull_rect.Rect();
   if (old_rect.IsEmpty() && new_rect.IsEmpty()) {
@@ -376,7 +385,7 @@ bool CullRect::ChangedEnough(
   }
 
   auto old_rect_with_threshold = old_rect;
-  old_rect_with_threshold.Outset(kChangedEnoughMinimumDistance);
+  old_rect_with_threshold.Outset(ChangedEnoughMinimumDistance(expansion_ratio));
   if (!old_rect_with_threshold.Contains(new_rect)) {
     return true;
   }
@@ -397,7 +406,7 @@ bool CullRect::ChangedEnough(
   // For example,
   //   scroller contents dimensions: 100x1000
   //   old cull rect: 0,100 100x8000
-  // A new rect of 0,0 100x8000 will not be |kChangedEnoughMinimumDistance|
+  // A new rect of 0,0 100x8000 will not be ChangedEnoughMinimumDistance()
   // pixels away from the current rect. Without additional logic for this case,
   // we will continue using the old cull rect.
   if (rect_.x() == expansion_bounds->x() &&
@@ -422,13 +431,16 @@ bool CullRect::ChangedEnough(
 
 bool CullRect::HasScrolledEnough(
     const gfx::Vector2dF& delta,
-    const TransformPaintPropertyNode& scroll_translation) {
+    const TransformPaintPropertyNode& scroll_translation,
+    float expansion_ratio) {
   if (!scroll_translation.ScrollNode() ||
       !CanExpandForScroll(*scroll_translation.ScrollNode())) {
     return !delta.IsZero();
   }
-  if (std::abs(delta.x()) < kChangedEnoughMinimumDistance &&
-      std::abs(delta.y()) < kChangedEnoughMinimumDistance) {
+  int changed_enough_minimum_distance =
+      ChangedEnoughMinimumDistance(expansion_ratio);
+  if (std::abs(delta.x()) < changed_enough_minimum_distance &&
+      std::abs(delta.y()) < changed_enough_minimum_distance) {
     return false;
   }
 

@@ -2615,9 +2615,10 @@ bool IsLinkPreviewTriggerTypeEnabled(LinkPreviewTriggerType type) {
 BASE_FEATURE(kExpandCompositedCullRect,
              "ExpandCompositedCullRect",
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int> kPixelDistanceToExpand(&kExpandCompositedCullRect,
-                                                     "pixels",
-                                                     4000);
+const base::FeatureParam<int>
+    kCullRectPixelDistanceToExpand(&kExpandCompositedCullRect, "pixels", 4000);
+const base::FeatureParam<double>
+    kCullRectExpansionDPRCoef(&kExpandCompositedCullRect, "dpr-coef", 0);
 BASE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink,
              "TreatHTTPExpiresHeaderValueZeroAsExpiredInBlink",
              base::FEATURE_ENABLED_BY_DEFAULT);
