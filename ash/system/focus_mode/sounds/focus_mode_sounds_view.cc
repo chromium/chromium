@@ -27,6 +27,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
@@ -282,6 +283,7 @@ void FocusModeSoundsView::CreateTabSliderButtons(
 
   auto* sound_tab_slider = tab_slider_box->AddChildView(
       std::make_unique<TabSlider>(/*max_tab_num=*/2));
+  sound_tab_slider->GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
 
   if (base::Contains(sections, focus_mode_util::SoundType::kSoundscape)) {
     soundscape_button_ = sound_tab_slider->AddButton<LabelSliderButton>(
@@ -289,6 +291,7 @@ void FocusModeSoundsView::CreateTabSliderButtons(
                             weak_factory_.GetWeakPtr()),
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_SOUNDSCAPE_BUTTON));
+    soundscape_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kTab);
   }
   if (base::Contains(sections, focus_mode_util::SoundType::kYouTubeMusic)) {
     youtube_music_button_ = sound_tab_slider->AddButton<LabelSliderButton>(
@@ -296,6 +299,8 @@ void FocusModeSoundsView::CreateTabSliderButtons(
                             weak_factory_.GetWeakPtr()),
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_BUTTON));
+    youtube_music_button_->GetViewAccessibility().SetRole(
+        ax::mojom::Role::kTab);
   }
 
   if (!is_network_connected) {
@@ -328,18 +333,22 @@ void FocusModeSoundsView::ToggleYouTubeMusicAlternateView(bool show) {
 void FocusModeSoundsView::OnSoundscapeButtonToggled() {
   if (soundscape_container_) {
     soundscape_container_->SetVisible(true);
+    soundscape_button_->GetViewAccessibility().SetIsSelected(true);
   }
   if (youtube_music_container_) {
     youtube_music_container_->SetVisible(false);
+    youtube_music_button_->GetViewAccessibility().SetIsSelected(false);
   }
 }
 
 void FocusModeSoundsView::OnYouTubeMusicButtonToggled() {
   if (soundscape_container_) {
     soundscape_container_->SetVisible(false);
+    soundscape_button_->GetViewAccessibility().SetIsSelected(false);
   }
   if (youtube_music_container_) {
     youtube_music_container_->SetVisible(true);
+    youtube_music_button_->GetViewAccessibility().SetIsSelected(true);
   }
 }
 
