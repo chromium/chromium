@@ -18,6 +18,99 @@
 #include "components/user_manager/known_user.h"
 
 namespace ash {
+namespace {
+
+bool ShouldReenableKeyboardAmbientLightSensor(
+    const AccountId& account_id,
+    user_manager::KnownUser& known_user) {
+  // Retrieve the reason.
+  const int keyboard_ambient_light_sensor_disabled_reason =
+      known_user
+          .FindIntPath(account_id,
+                       prefs::kKeyboardAmbientLightSensorDisabledReason)
+          .value_or(static_cast<int>(
+              power_manager::
+                  AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP));
+
+  // Re-enable ambient light sensor if cause is not from settings app, or
+  // restored from preference.
+  switch (keyboard_ambient_light_sensor_disabled_reason) {
+    case power_manager::
+        AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP:
+    case power_manager::
+        AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST_SETTINGS_APP:
+    case power_manager::
+        AmbientLightSensorChange_Cause_RESTORED_FROM_USER_PREFERENCE:
+      return false;
+    default:
+      return true;
+  }
+}
+
+bool ShouldRestoreKeyboardAmbientLightSensor(
+    const AccountId& account_id,
+    user_manager::KnownUser& known_user) {
+  // Retrieve the reason.
+  const int keyboard_ambient_light_sensor_disabled_reason =
+      known_user
+          .FindIntPath(account_id, prefs::kAmbientLightSensorDisabledReason)
+          .value_or(static_cast<int>(
+              power_manager::
+                  AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP));
+
+  // Only restore ALS when cause is from settings app.
+  switch (keyboard_ambient_light_sensor_disabled_reason) {
+    case power_manager::
+        AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP:
+    case power_manager::
+        AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST_SETTINGS_APP:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool ShouldSaveKeyboardAmbientLightSensorForNewDevice(
+    const power_manager::AmbientLightSensorChange& change) {
+  return change.cause() ==
+             power_manager::
+                 AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP ||
+         change.cause() ==
+             power_manager::
+                 AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST_SETTINGS_APP;
+}
+
+power_manager::SetAmbientLightSensorEnabledRequest_Cause
+KeyboardAmbientLightSensorChangeSourceToCause(
+    KeyboardAmbientLightSensorEnabledChangeSource source) {
+  switch (source) {
+    case KeyboardAmbientLightSensorEnabledChangeSource::kSettingsApp:
+      return power_manager::
+          SetAmbientLightSensorEnabledRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP;
+    // TODO(longbowei): Add a new cause
+    // SetAmbientLightSensorEnabledRequest_Cause_SYSTEM_REENABLED to platform
+    // and update.
+    default:
+      return power_manager::
+          SetAmbientLightSensorEnabledRequest_Cause_RESTORED_FROM_USER_PREFERENCE;
+  }
+}
+
+power_manager::SetBacklightBrightnessRequest_Cause
+KeyboardBrightnessChangeSourceToCause(KeyboardBrightnessChangeSource source) {
+  switch (source) {
+    case KeyboardBrightnessChangeSource::kSettingsApp:
+      return power_manager::
+          SetBacklightBrightnessRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP;
+    case KeyboardBrightnessChangeSource::kRestoredFromUserPref:
+      return power_manager::
+          SetBacklightBrightnessRequest_Cause_RESTORED_FROM_USER_PREFERENCE;
+    default:
+      return power_manager::SetBacklightBrightnessRequest_Cause_USER_REQUEST;
+  }
+}
+
+}  // namespace
 
 KeyboardBrightnessController::KeyboardBrightnessController(
     PrefService* local_state,
@@ -140,6 +233,7 @@ void KeyboardBrightnessController::KeyboardAmbientLightSensorEnabledChanged(
         active_account_id_.value(),
         prefs::kKeyboardAmbientLightSensorDisabledReason,
         std::make_optional<base::Value>(static_cast<int>(change.cause())));
+    keyboard_ambient_light_sensor_disabled_timestamp_ = base::Time::Now();
   } else {
     // If the ambient light sensor was enabled, remove the existing "disabled
     // reason" pref.
@@ -152,12 +246,16 @@ void KeyboardBrightnessController::KeyboardAmbientLightSensorEnabledChanged(
                      prefs::kKeyboardAmbientLightSensorEnabled,
                      std::make_optional<base::Value>(change.sensor_enabled()));
 
-  // Save a user pref so that we can restore users' settings when they login to
-  // a new device.
-  PrefService* primary_user_prefs = session_controller_->GetActivePrefService();
-  if (primary_user_prefs) {
-    primary_user_prefs->SetBoolean(
-        prefs::kKeyboardAmbientLightSensorLastEnabled, change.sensor_enabled());
+  if (ShouldSaveKeyboardAmbientLightSensorForNewDevice(change)) {
+    // Save a user pref new device if change is from settings app so that we can
+    // restore users' ALS settings when they login to a new device.
+    PrefService* primary_user_prefs =
+        session_controller_->GetActivePrefService();
+    if (primary_user_prefs) {
+      primary_user_prefs->SetBoolean(
+          prefs::kKeyboardAmbientLightSensorLastEnabled,
+          change.sensor_enabled());
+    }
   }
 }
 
@@ -180,6 +278,37 @@ void KeyboardBrightnessController::KeyboardBrightnessChanged(
     known_user.SetPath(active_account_id_.value(),
                        prefs::kKeyboardBrightnessPercent,
                        std::make_optional<base::Value>(change.percent()));
+  }
+}
+
+// PowerManagerClient::Observer:
+void KeyboardBrightnessController::SuspendImminent(
+    power_manager::SuspendImminent::Reason reason) {
+  if (!features::IsKeyboardBacklightControlInSettingsEnabled()) {
+    return;
+  }
+  // In tests, these may not be present.
+  if (!active_account_id_.has_value() || !local_state_) {
+    return;
+  }
+  if (!keyboard_ambient_light_sensor_disabled_timestamp_.has_value()) {
+    return;
+  }
+
+  user_manager::KnownUser known_user(local_state_);
+  base::Time now = base::Time::Now();
+
+  // Re-enable ALS if it passed local midnight.
+  if (now.LocalMidnight() -
+          keyboard_ambient_light_sensor_disabled_timestamp_.value()
+              .LocalMidnight() >=
+      base::Days(1)) {
+    if (ShouldReenableKeyboardAmbientLightSensor(active_account_id_.value(),
+                                                 known_user)) {
+      HandleSetKeyboardAmbientLightSensorEnabled(
+          true,
+          KeyboardAmbientLightSensorEnabledChangeSource::kSystemReenabled);
+    }
   }
 }
 
@@ -214,14 +343,7 @@ void KeyboardBrightnessController::HandleSetKeyboardBrightness(
       gradual
           ? power_manager::SetBacklightBrightnessRequest_Transition_FAST
           : power_manager::SetBacklightBrightnessRequest_Transition_INSTANT);
-
-  power_manager::SetBacklightBrightnessRequest_Cause
-      keyboard_brightness_change_cause =
-          source == KeyboardBrightnessChangeSource::kSettingsApp
-              ? power_manager::
-                    SetBacklightBrightnessRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP
-              : power_manager::SetBacklightBrightnessRequest_Cause_USER_REQUEST;
-  request.set_cause(keyboard_brightness_change_cause);
+  request.set_cause(KeyboardBrightnessChangeSourceToCause(source));
   chromeos::PowerManagerClient::Get()->SetKeyboardBrightness(request);
 }
 
@@ -242,43 +364,44 @@ void KeyboardBrightnessController::HandleSetKeyboardAmbientLightSensorEnabled(
     KeyboardAmbientLightSensorEnabledChangeSource source) {
   power_manager::SetAmbientLightSensorEnabledRequest request;
   request.set_sensor_enabled(enabled);
-  request.set_cause(
-      source == KeyboardAmbientLightSensorEnabledChangeSource::kSettingsApp
-          ? power_manager::
-                SetAmbientLightSensorEnabledRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP
-          : power_manager::
-                SetAmbientLightSensorEnabledRequest_Cause_RESTORED_FROM_USER_PREFERENCE);
+  request.set_cause(KeyboardAmbientLightSensorChangeSourceToCause(source));
   chromeos::PowerManagerClient::Get()->SetKeyboardAmbientLightSensorEnabled(
       request);
 }
 
 void KeyboardBrightnessController::RestoreKeyboardBrightnessSettings(
     const AccountId& account_id) {
-  // Get the user's stored preference for whether the keyboard ambient light
-  // sensor should be enabled. Defaulting to enabled if no preference is found.
   user_manager::KnownUser known_user(local_state_);
-  const bool keyboard_ambient_light_sensor_enabled_for_account =
-      known_user
-          .FindBoolPath(account_id, prefs::kKeyboardAmbientLightSensorEnabled)
-          .value_or(true);
+  bool keyboard_ambient_light_sensor_enabled_for_account = true;
 
-  if (!keyboard_ambient_light_sensor_enabled_for_account) {
-    // If the keyboard ambient light sensor is disabled, restore the user's
-    // preferred keyboard brightness level.
-    const std::optional<double> keyboard_brightness_for_account =
-        known_user.FindPath(account_id, prefs::kKeyboardBrightnessPercent)
-            ->GetIfDouble();
-    if (keyboard_brightness_for_account.has_value()) {
-      HandleSetKeyboardBrightness(
-          keyboard_brightness_for_account.value(),
-          /*gradual=*/true,
-          KeyboardBrightnessChangeSource::kRestoredFromUserPref);
+  if (ShouldReenableKeyboardAmbientLightSensor(account_id, known_user)) {
+    HandleSetKeyboardAmbientLightSensorEnabled(
+        /*enabled=*/true,
+        KeyboardAmbientLightSensorEnabledChangeSource::kSystemReenabled);
+  } else {
+    keyboard_ambient_light_sensor_enabled_for_account =
+        known_user
+            .FindBoolPath(account_id, prefs::kKeyboardAmbientLightSensorEnabled)
+            .value_or(true);
+    if (!keyboard_ambient_light_sensor_enabled_for_account) {
+      // If the keyboard ambient light sensor is disabled, restore the user's
+      // preferred keyboard brightness level.
+      const std::optional<double> keyboard_brightness_for_account =
+          known_user.FindPath(account_id, prefs::kKeyboardBrightnessPercent)
+              ->GetIfDouble();
+      if (keyboard_brightness_for_account.has_value()) {
+        HandleSetKeyboardBrightness(
+            keyboard_brightness_for_account.value(),
+            /*gradual=*/true,
+            KeyboardBrightnessChangeSource::kRestoredFromUserPref);
+      }
+    }
+    if (ShouldRestoreKeyboardAmbientLightSensor(account_id, known_user)) {
+      HandleSetKeyboardAmbientLightSensorEnabled(
+          keyboard_ambient_light_sensor_enabled_for_account,
+          KeyboardAmbientLightSensorEnabledChangeSource::kRestoredFromUserPref);
     }
   }
-
-  HandleSetKeyboardAmbientLightSensorEnabled(
-      keyboard_ambient_light_sensor_enabled_for_account,
-      KeyboardAmbientLightSensorEnabledChangeSource::kRestoredFromUserPref);
 
   // Record the keyboard ambient light sensor status at login.
   if (has_sensor_ && !has_keyboard_ambient_light_sensor_status_been_recorded_) {

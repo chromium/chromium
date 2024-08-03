@@ -27,7 +27,8 @@ enum class KeyboardBrightnessChangeSource {
 enum class KeyboardAmbientLightSensorEnabledChangeSource {
   kSettingsApp = 0,
   kRestoredFromUserPref = 1,
-  kMaxValue = kRestoredFromUserPref,
+  kSystemReenabled = 2,
+  kMaxValue = kSystemReenabled,
 };
 
 // Delegate for controlling the keyboard brightness.

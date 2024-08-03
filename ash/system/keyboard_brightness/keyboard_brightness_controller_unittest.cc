@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/user_manager/known_user.h"
 
@@ -77,7 +78,8 @@ class FakeKeyboardBrightnessControlDelegate
 
 class KeyboardBrightnessControllerTest : public AshTestBase {
  public:
-  KeyboardBrightnessControllerTest() = default;
+  KeyboardBrightnessControllerTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -217,6 +219,10 @@ class KeyboardBrightnessControllerTest : public AshTestBase {
             [expected_value](std::optional<double> keyboard_brightness) {
               EXPECT_EQ(keyboard_brightness.value(), expected_value);
             }));
+  }
+
+  void AdvanceClock(base::TimeDelta time) {
+    task_environment()->AdvanceClock(time);
   }
 
  protected:
@@ -682,7 +688,25 @@ TEST_F(KeyboardBrightnessControllerTest, KeyboardAmbientLightEnabledUserPref) {
       Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
           prefs::kKeyboardAmbientLightSensorLastEnabled));
 
-  // Disable the sensor via user settings and verify the preference updates.
+  // Disable the sensor via brightness change (not from settings app), pref
+  // should remain true.
+  SetKeyboardAmbientLightSensorEnabled(
+      false, power_manager::AmbientLightSensorChange_Cause::
+                 AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST);
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kKeyboardAmbientLightSensorLastEnabled));
+
+  // Re-enable the sensor from settings app, pref should be true.
+  SetKeyboardAmbientLightSensorEnabled(
+      true, power_manager::AmbientLightSensorChange_Cause::
+                AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kKeyboardAmbientLightSensorLastEnabled));
+
+  // Disable the sensor again, this time, the request is from settings app, the
+  // pref should be updated to false.
   SetKeyboardAmbientLightSensorEnabled(
       false, power_manager::AmbientLightSensorChange_Cause::
                  AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
@@ -862,6 +886,237 @@ TEST_F(KeyboardBrightnessControllerTest, SetKeyboardBrightness_Cause) {
       power_manager_client()->requested_keyboard_brightness_cause(),
       power_manager::
           SetBacklightBrightnessRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP);
+}
+
+TEST_F(KeyboardBrightnessControllerTest,
+       ReenableKeyboardAmbientLightSensor_Reboot_DisabledFromSettingsApp) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableKeyboardBacklightControlInSettings);
+
+  // Set initial ALS and keyboard brightness.
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
+  power_manager_client()->set_keyboard_brightness_percent(
+      kInitialKeyboardBrightness);
+
+  // Log in
+  ClearLogin();
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  user_manager::KnownUser known_user(local_state());
+  SimulateUserLogin(kUserEmail);
+
+  // Set ALS to false, and set the disabled reason to be
+  // USER_REQUEST_SETTINGS_APP.
+  SetKeyboardAmbientLightSensorEnabled(
+      false,
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+  known_user.SetPath(
+      account_id, prefs::kKeyboardAmbientLightSensorDisabledReason,
+      std::make_optional<base::Value>(
+          power_manager::
+              AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP));
+
+  // ALS is disabled.
+  ExpectKeyboardAmbientLightSensorEnabled(false);
+  EXPECT_EQ(false, GetKeyboardAmbientLightSensorEnabledPrefValue(known_user,
+                                                                 account_id));
+
+  // "disabled reason" pref stored in KnownUser should be
+  // USER_REQUEST_SETTINGS_APP.
+  EXPECT_TRUE(HasKeyboardAmbientLightSensorDisabledReasonPrefValue(known_user,
+                                                                   account_id));
+  EXPECT_EQ(
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP,
+      GetKeyboardAmbientLightSensorDisabledReasonPrefValue(known_user,
+                                                           account_id));
+
+  // Simulate reboot, and log in again.
+  known_user.SetPath(account_id, prefs::kKeyboardBrightnessPercent,
+                     std::make_optional<base::Value>(30.0));
+  login_data_dispatcher()->NotifyFocusPod(account_id);
+
+  // Expect ambient light sensor remain disabled, and brightness should be
+  // restored.
+  ExpectKeyboardAmbientLightSensorEnabled(false);
+  ExpectKeyboardBrightnessPercent(30.0);
+
+  // Simulate reboot, and log in the third time.
+  login_data_dispatcher()->NotifyFocusPod(account_id);
+
+  // ALS and brightness should remain the same as last reboot.
+  ExpectKeyboardAmbientLightSensorEnabled(false);
+  ExpectKeyboardBrightnessPercent(30.0);
+}
+
+TEST_F(KeyboardBrightnessControllerTest,
+       ReenableKeyboardAmbientLightSensor_Reboot_DisabledFromBrightnessKey) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableKeyboardBacklightControlInSettings);
+
+  // Set initial ALS and keyboard brightness.
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
+  power_manager_client()->set_keyboard_brightness_percent(
+      kInitialKeyboardBrightness);
+
+  // Log in
+  ClearLogin();
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  user_manager::KnownUser known_user(local_state());
+  SimulateUserLogin(kUserEmail);
+
+  // Set ALS to false by brightness key, and set the disabled reason to be
+  // BRIGHTNESS_USER_REQUEST.
+  SetKeyboardAmbientLightSensorEnabled(
+      false,
+      power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST);
+  known_user.SetPath(
+      account_id, prefs::kKeyboardAmbientLightSensorDisabledReason,
+      std::make_optional<base::Value>(
+          power_manager::
+              AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST));
+
+  // ALS is disabled.
+  ExpectKeyboardAmbientLightSensorEnabled(false);
+  EXPECT_EQ(false, GetKeyboardAmbientLightSensorEnabledPrefValue(known_user,
+                                                                 account_id));
+
+  // "disabled reason" pref stored in KnownUser should be
+  // USER_REQUEST_SETTINGS_APP.
+  EXPECT_TRUE(HasKeyboardAmbientLightSensorDisabledReasonPrefValue(known_user,
+                                                                   account_id));
+  EXPECT_EQ(
+      power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST,
+      GetKeyboardAmbientLightSensorDisabledReasonPrefValue(known_user,
+                                                           account_id));
+
+  // Simulate reboot, and log in again.
+  known_user.SetPath(account_id, prefs::kKeyboardBrightnessPercent,
+                     std::make_optional<base::Value>(30.0));
+  login_data_dispatcher()->NotifyFocusPod(account_id);
+
+  // Expect ambient light sensor is re-enabled.
+  ExpectKeyboardAmbientLightSensorEnabled(true);
+
+  // Simulate reboot, and log in the third time.
+  login_data_dispatcher()->NotifyFocusPod(account_id);
+
+  // ALS and should remain the same as last reboot.
+  ExpectKeyboardAmbientLightSensorEnabled(true);
+}
+
+TEST_F(
+    KeyboardBrightnessControllerTest,
+    ReenableKeyboardAmbientLightSensor_AfterLocalMidnight_DisableFromSettingApp) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableKeyboardBacklightControlInSettings);
+
+  // Set initial ALS status and brightness level.
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
+  power_manager_client()->set_keyboard_brightness_percent(
+      kInitialKeyboardBrightness);
+
+  // Log in
+  ClearLogin();
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  user_manager::KnownUser known_user(local_state());
+  SimulateUserLogin(kUserEmail);
+
+  // Set ALS to false, and set the disabled reason to be
+  // USER_REQUEST_SETTINGS_APP.
+  SetKeyboardAmbientLightSensorEnabled(
+      false,
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+  known_user.SetPath(
+      account_id, prefs::kKeyboardAmbientLightSensorDisabledReason,
+      std::make_optional<base::Value>(
+          power_manager::
+              AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP));
+
+  // "disabled reason" pref stored in KnownUser should be
+  // USER_REQUEST_SETTINGS_APP.
+  EXPECT_TRUE(HasKeyboardAmbientLightSensorDisabledReasonPrefValue(known_user,
+                                                                   account_id));
+  EXPECT_EQ(
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP,
+      GetKeyboardAmbientLightSensorDisabledReasonPrefValue(known_user,
+                                                           account_id));
+
+  // Ambient light sensor is disabled.
+  ExpectKeyboardAmbientLightSensorEnabled(false);
+
+  // Simulate the passing of 1 day.
+  AdvanceClock(base::Days(1));
+
+  // Trigger suspend event.
+  KeyboardBrightnessController* keyboard_brightness_controller =
+      static_cast<KeyboardBrightnessController*>(
+          keyboard_brightness_control_delegate());
+  keyboard_brightness_controller->SuspendImminent(
+      power_manager::SuspendImminent::LID_CLOSED);
+
+  // Ambient light sensor should remain disabled.
+  ExpectKeyboardAmbientLightSensorEnabled(false);
+}
+
+TEST_F(
+    KeyboardBrightnessControllerTest,
+    ReenableKeyboardAmbientLightSensor_AfterLocalMidnight_DisableOutsideSettingsApp) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableKeyboardBacklightControlInSettings);
+
+  // Set initial ALS status and brightness level.
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(request);
+  power_manager_client()->set_keyboard_brightness_percent(
+      kInitialKeyboardBrightness);
+
+  // Log in
+  ClearLogin();
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  user_manager::KnownUser known_user(local_state());
+  SimulateUserLogin(kUserEmail);
+
+  // Set ALS to false, and set the disabled reason to be
+  // BRIGHTNESS_USER_REQUEST.
+  SetKeyboardAmbientLightSensorEnabled(
+      false,
+      power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST);
+  known_user.SetPath(
+      account_id, prefs::kKeyboardAmbientLightSensorDisabledReason,
+      std::make_optional<base::Value>(
+          power_manager::
+              AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST));
+
+  // "disabled reason" pref stored in KnownUser should be
+  // BRIGHTNESS_USER_REQUEST.
+  EXPECT_TRUE(HasKeyboardAmbientLightSensorDisabledReasonPrefValue(known_user,
+                                                                   account_id));
+  EXPECT_EQ(
+      power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST,
+      GetKeyboardAmbientLightSensorDisabledReasonPrefValue(known_user,
+                                                           account_id));
+
+  // Amebient light sensor is disabled.
+  ExpectKeyboardAmbientLightSensorEnabled(false);
+
+  // Simulate the passing of 1 day.
+  AdvanceClock(base::Days(1));
+
+  // Trigger suspend event.
+  KeyboardBrightnessController* keyboard_brightness_controller =
+      static_cast<KeyboardBrightnessController*>(
+          keyboard_brightness_control_delegate());
+  keyboard_brightness_controller->SuspendImminent(
+      power_manager::SuspendImminent::LID_CLOSED);
+
+  // Ambient light sensor is re-enabled.
+  ExpectKeyboardAmbientLightSensorEnabled(true);
 }
 
 TEST_F(KeyboardBrightnessControllerTest,
