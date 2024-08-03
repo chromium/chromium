@@ -275,6 +275,33 @@ TEST(WindowSizerTest, PersistedBoundsCase) {
 #endif  // BUILDFLAG(IS_MAC)
 }
 
+#if !BUILDFLAG(IS_MAC)
+// Tests that there is no crash and the window is sized and positioned correctly
+// with extremely small work area and bounds.
+TEST(WindowSizerTest, TinyWorkAreaAndBounds) {
+  {
+    const gfx::Rect window_bounds =
+        WindowSizerTestUtil()
+            .WithMonitorBounds(gfx::Rect(0, 0, 40, 30))
+            .WithLastActiveBounds(gfx::Rect(30, 20, 20, 15))
+            .GetWindowBounds();
+    // The window size should be adjusted to satisfy the minimum size and
+    // repositioned to be fully visible inside the display.
+    EXPECT_EQ(gfx::Rect(10, 0, 30, 30), window_bounds);
+  }
+
+  {
+    const gfx::Rect window_bounds =
+        WindowSizerTestUtil()
+            .WithMonitorBounds(gfx::Rect(0, 0, 20, 15))
+            .WithLastActiveBounds(gfx::Rect(10, 10, 30, 40))
+            .GetWindowBounds();
+    // The window should be adjusted to fit the entire work area.
+    EXPECT_EQ(gfx::Rect(0, 0, 20, 15), window_bounds);
+  }
+}
+#endif  // !BUILDFLAG(IS_MAC)
+
 //////////////////////////////////////////////////////////////////////////////
 // The following unittests have different results on Mac/non-Mac because we
 // reposition windows aggressively on Mac.  The *WithAggressiveReposition tests
