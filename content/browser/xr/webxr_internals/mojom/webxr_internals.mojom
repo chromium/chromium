@@ -97,4 +97,8 @@ interface XRInternalsSessionListener {
     // for the specified XR device.
     // This method does not send historical data.
     LogXrRuntimeRemoved(device.mojom.XRDeviceId device_id);
+
+    // Begin listening for incoming frames for diagnostics calculation.
+    // This method does not send historical data.
+    LogFrameData(device.mojom.XrFrameStatistics xrframe_statistics);
 };

@@ -1535,7 +1535,9 @@ void XRSystem::FinishSessionCreation(
       session_ptr->interaction_mode, std::move(session_ptr->client_receiver),
       std::move(session_ptr->device_config), enabled_features);
 
-  frameProvider()->OnSessionStarted(session, std::move(session_ptr));
+  frameProvider()->OnSessionStarted(
+      session, std::move(session_ptr), result->get_success()->trace_id,
+      std::move(result->get_success()->xr_internals_listener));
 
   if (query->mode() == device::mojom::blink::XRSessionMode::kImmersiveVr ||
       query->mode() == device::mojom::blink::XRSessionMode::kImmersiveAr) {

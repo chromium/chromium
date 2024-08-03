@@ -51,6 +51,7 @@ void WebXrLoggerManager::RecordSessionStopped(
   }
 
   session_stopped_records_.push_back(std::move(session_stopped_record));
+  renderer_listener_receiver_.reset();
 }
 
 void WebXrLoggerManager::RecordRuntimeAdded(
@@ -92,6 +93,18 @@ void WebXrLoggerManager::SubscribeToEvents(
   }
 
   remote_set_.Add(std::move(remote));
+}
+
+mojo::PendingRemote<device::mojom::WebXrInternalsRendererListener>
+WebXrLoggerManager::BindRenderListener() {
+  return renderer_listener_receiver_.BindNewPipeAndPassRemote();
+}
+
+void WebXrLoggerManager::OnFrameData(
+    device::mojom::XrFrameStatisticsPtr xrframe_statistics) {
+  for (const auto& remote : remote_set_) {
+    remote->LogFrameData(xrframe_statistics->Clone());
+  }
 }
 
 }  // namespace content

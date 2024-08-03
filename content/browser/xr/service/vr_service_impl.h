@@ -176,7 +176,12 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
       SessionRequestData request,
       device::mojom::XRSessionPtr session,
       mojo::PendingRemote<device::mojom::XRSessionMetricsRecorder>
-          session_metrics_recorder);
+          session_metrics_recorder,
+      mojo::PendingRemote<device::mojom::WebXrInternalsRendererListener>
+          xr_internals_listener);
+
+  mojo::PendingRemote<device::mojom::WebXrInternalsRendererListener>
+  WebXrInternalsRendererListener();
 
   ExitPresentCallback on_exit_present_;
 

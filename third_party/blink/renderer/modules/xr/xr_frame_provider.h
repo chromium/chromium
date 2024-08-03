@@ -44,8 +44,12 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
 
   XRSession* immersive_session() const { return immersive_session_.Get(); }
 
-  void OnSessionStarted(XRSession* session,
-                        device::mojom::blink::XRSessionPtr session_ptr);
+  void OnSessionStarted(
+      XRSession* session,
+      device::mojom::blink::XRSessionPtr session_ptr,
+      uint64_t trace_id,
+      mojo::PendingRemote<device::mojom::blink::WebXrInternalsRendererListener>
+          frame_data_logger);
 
   // The FrameProvider needs to be notified before the page does that the
   // session has been ended so that requesting a new session is possible.
@@ -99,6 +103,10 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   // session.
   void ScheduleNonImmersiveFrame(
       device::mojom::blink::XRFrameDataRequestOptionsPtr options);
+
+  // Sends the frame data to the requesting sessions for calculating
+  // diagnostics.
+  void SendFrameData();
 
   void OnProviderConnectionError(XRSession* session);
   void ProcessScheduledFrame(device::mojom::blink::XRFrameDataPtr frame_data,
@@ -170,6 +178,17 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   gpu::SyncToken camera_image_sync_token_;
 
   bool last_has_focus_ = false;
+
+  int num_frames_ = 0;
+  int dropped_frames_ = 0;
+
+  uint64_t trace_id_;
+
+  base::TimeTicks last_frame_statistics_sent_time_;
+  base::RepeatingTimer repeating_timer_;
+
+  HeapMojoRemote<device::mojom::blink::WebXrInternalsRendererListener>
+      frame_data_logger_;
 };
 
 }  // namespace blink
