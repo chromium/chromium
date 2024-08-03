@@ -1460,13 +1460,6 @@ Diese Richtlinie ist normalerweise zum Schutz vor Phishing deaktiviert.</transla
 
       Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist die Definition über die Funktion „Schnellinfo“ aktiviert.
       Wenn die Richtlinie deaktiviert ist, ist die Definition über „Schnellinfo“ deaktiviert.</translation>
-<translation id="2095778449451007308">Mit dieser Richtlinie wird festgelegt, ob Nutzer den Nur-HTTPS-Modus („Immer sichere Verbindungen verwenden“) in den Einstellungen aktivieren können. Über den Nur-HTTPS-Modus werden alle Aufrufe von Websites auf HTTPS umgestellt.
-      Wenn diese Einstellung nicht konfiguriert oder auf „Zugelassen“ festgelegt ist, dürfen Nutzer den Nur-HTTPS-Modus aktivieren.
-      Ist sie auf „Nicht zugelassen“ festgelegt, dürfen Nutzer den Nur-HTTPS-Modus nicht aktivieren.
-      Wenn diese Einstellung auf „force_enabled“ gesetzt ist, wird der Nur-HTTPS-Modus aktiviert und Nutzer können ihn nicht deaktivieren.
-      Die erzwungene Aktivierung des Nur-HTTPS-Modus wird ab M112 unterstützt.
-
-Die separate Richtlinie „<ph name="HTTP_ALLOWLIST_POLICY_NAME" />“ kann verwendet werden, um bestimmte Hostnamen oder Hostnamenmuster von der Aktualisierung auf HTTPS durch diese Funktion auszuschließen.</translation>
 <translation id="209586405398070749">Stabiler Kanal</translation>
 <translation id="2096932573113293941">Nutzer um Erlaubnis zum Ausführen von Plug-ins bitten, die eine Autorisierung erfordern</translation>
 <translation id="2098658257603918882">Berichte mit Nutzungs- und Absturzdaten erstellen</translation>
@@ -2026,7 +2019,6 @@ Ist die Richtlinie nicht konfiguriert, ist „<ph name="POLICY_VALUE_VISIBLE" />
 <translation id="2492240920793040106">Berichte zu Systeminformationen und Seiteninhalten aktivieren, um Safe Browsing zu verbessern</translation>
 <translation id="2496180316473517155">Browserverlauf</translation>
 <translation id="2497751676088107779">Nutzerskript</translation>
-<translation id="2497965601277442929">Nutzern nicht erlauben, den Nur-HTTPS-Modus zu aktivieren</translation>
 <translation id="249798396824949930"> Über diese Richtlinie wird geregelt, ob der Browser den obligatorischen Anwendungsbereich von Richtlinien unter <ph name="MAC_OS_NAME" /> erkennen kann.
 
       Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird der Anwendungsbereich jeder Richtlinie vom Anwendungsbereich des jeweiligen verwalteten <ph name="MAC_OS_NAME" />-Profils bestimmt.
@@ -2658,7 +2650,6 @@ Ist der Wert auf „<ph name="LONGPRESSONLY_ENUM_VALUE" />“ gesetzt, werden En
 
       Wenn diese Richtlinie in <ph name="PRODUCT_NAME" /> (Version 81 oder neuer) nicht konfiguriert ist, wird die passive Authentifizierung nur für reguläre Sitzungen aktiviert.</translation>
 <translation id="3021562480854470924">Rollback bei erreichter Anzahl von Meilensteinen ist erlaubt</translation>
-<translation id="3023172689742785487">Aktivierung des Nur-HTTPS-Modus erzwingen</translation>
 <translation id="3023572080620427845">URL einer XML-Datei, die URLs enthält, mit denen ein alternativer Browser geladen werden kann.</translation>
 <translation id="302528139996622624">Bildeinstellungen</translation>
 <translation id="3026740867910702435">Mit dieser Richtlinie kann die Bedienungshilfe "großer Cursor" auf der Anmeldeseite aktiviert werden.
@@ -6230,7 +6221,6 @@ Mit der Richtlinie „<ph name="MICROSOFT_ONE_DRIVE_ACCOUNT_RESTRICTIONS" />“ 
 <translation id="5848438019586925019">Algorithmus für die Generierung von Schlüsselpaaren.</translation>
 <translation id="5851248808417680865">Dunkles Design verwenden</translation>
 <translation id="585270638818921943">Nutzer daran hindern, Android-Apps aus nicht vertrauenswürdigen Quellen zu verwenden</translation>
-<translation id="5853547031212075792">Nutzern erlauben, den Nur-HTTPS-Modus zu aktivieren</translation>
 <translation id="5859344336338527083">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, über welche URLs Erweiterungen, Apps und Designs installiert werden dürfen. Vor <ph name="PRODUCT_NAME" />-Version 21 konnten Nutzer auf den Link zu einer CRX-Datei klicken und die Datei nach einigen Hinweisen in <ph name="PRODUCT_NAME" /> installieren. In allen nachfolgenden Versionen müssen solche Dateien zuerst heruntergeladen und dann auf die Seite "Einstellungen" in <ph name="PRODUCT_NAME" /> gezogen werden. Anhand dieser Einstellung kann bei bestimmten URLs der alte, einfachere Installationsvorgang angewendet werden.
 
       Bei den Einträgen in dieser Liste handelt es sich um auf die Erweiterung angepasste Übereinstimmungsmuster (siehe https://developer.chrome.com/extensions/match_patterns). Wenn eine URL mit einem Eintrag in dieser Liste übereinstimmt, können Nutzer eine Datei ganz einfach über diese URL installieren. Sowohl der Speicherort der CRX-Datei als auch die Seite, über die der Download gestartet wird, also die Referrer-URL, müssen durch diese Muster zugelassen sein.
@@ -8146,9 +8136,6 @@ Hinweis: Wenn du diese Richtlinie verwendest, um die Zeitzone automatisch zu erm
       Wenn eine Erweiterung nicht in der Liste enthalten ist oder keine Liste festgelegt wurde, schlägt der API-Aufruf fehl und ein Fehlercode wird angezeigt.</translation>
 <translation id="718956142899066210">Für Updates zugelassene Verbindungstypen</translation>
 <translation id="7190286937411178540">Bedienungshilfe "Objekt mit Tastaturfokus hervorheben" aktivieren</translation>
-<translation id="7193489339723768342">Wenn du diese Richtlinie konfigurierst, gibst du eine Liste von URLs an, deren Muster mit dem SecurityOrigin-Objekt der anfragenden URL abgeglichen werden. Bei einer Übereinstimmung wird ohne Nachfrage Zugriff auf Audioaufnahmegeräte gewährt.
-
-      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="719398790886719721">Root-Zugriff auf virtuelle Maschinen mit Linux deaktivieren</translation>
 <translation id="7194407337890404814">Name der Standardsuchmaschine</translation>
 <translation id="7196336906814426783">Diese Richtlinie legt eine Reihe von wöchentlichen Intervallen zur Planung des automatischen Ruhemodus fest. Zu Beginn eines Intervalls wechselt das <ph name="PRODUCT_OS_NAME" />-Gerät in den Ruhemodus und wird wieder aktiv, wenn das Intervall endet.
@@ -8775,9 +8762,6 @@ werden abgelehnt.</translation>
 
       Diese Richtlinie war für die vorübergehende Nutzung vorgesehen und wurde entfernt, nachdem die neue Benutzeroberfläche für das Download-Infofeld vollständig eingeführt wurde.</translation>
 <translation id="7736521021425189418">Terminal (wird seit Version 117 unterstützt)</translation>
-<translation id="77379430721695807">Wenn du diese Richtlinie konfigurierst, gibst du eine Liste von URLs an, deren Muster mit dem SecurityOrigin-Objekt der anfragenden URL abgeglichen werden. Bei einer Übereinstimmung wird ohne Nachfrage Zugriff auf Videoaufnahmegeräte gewährt.
-
-      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="7740644123648617252">Import von Autofill-Daten für Formulare bei der ersten Ausführung aktivieren</translation>
 <translation id="7744253761377202223">Bildschirmhelligkeit im Netzbetrieb in Prozent</translation>
 <translation id="7747447585227954402">Geräten erlauben, <ph name="PLUGIN_VM_NAME" /> auf <ph name="PRODUCT_OS_NAME" /> zu verwenden</translation>

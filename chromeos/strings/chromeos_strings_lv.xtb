@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Dokumentu padevējs (divpusēji)</translation>
 <translation id="3201315366910775591">Kopīgotos albumus var atjaunināt citi lietotāji</translation>
 <translation id="3211671540163313381">Taustiņu saistīšanas virzienu slēdzis</translation>
-<translation id="3224812403568276799">Ja to atļausiet, lietotnē Ierakstītājs tiks izmantota uzlabota audio analīze, lai automātiski noteiktu atšķirīgas balsis un katrai no tām piešķirtu vispārīgu iezīmi, piemēram, “1. runātājs” un “2. runātājs”.
-
-Varat jebkurā brīdī izslēgt šo funkciju sadaļā Iestatījumi.</translation>
 <translation id="3226405216343213872">Notiek skeneru meklēšana…</translation>
 <translation id="3226657629376379887">Izkārtojuma darbību izvēlne</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> jādala ar <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@ Varat jebkurā brīdī izslēgt šo funkciju sadaļā Iestatījumi.</translation
 <translation id="5318334351163689047">TCP pieprasījumu kļūmes</translation>
 <translation id="53196409393069519">Vai ieslēgt transkribēšanu?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />: <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Nosaukums</translation>
 <translation id="5332948983412042822">Izvēlieties jaunu jau tūlīt</translation>
 <translation id="5333530671332546086">Nezināms portāla statuss</translation>
 <translation id="5335373365677455232">rozā</translation>
@@ -1108,6 +1106,7 @@ Varat jebkurā brīdī izslēgt šo funkciju sadaļā Iestatījumi.</translation
 <translation id="6905724422583748843">Atpakaļ uz lapu <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Skenera vāks ir atvērts. Aizveriet vāku un mēģiniet vēlreiz.</translation>
 <translation id="6911383237894364323">Nevar izveidot savienojumu ar multivides satura serveriem.</translation>
+<translation id="6930242544192836755">Ilgums</translation>
 <translation id="6930597342185648547">Par fonu</translation>
 <translation id="6939667434404433010">Meklēt ieraksta nosaukumu</translation>
 <translation id="6939766318048400022">Kafejnīca</translation>
@@ -1324,6 +1323,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8004582292198964060">Pārlūkprogramma</translation>
 <translation id="8017679124341497925">Saīsne rediģēta</translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
+<translation id="8028993641010258682">Izmērs</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Iespējot automātisko krāsu režīmu</translation>
 <translation id="8041089156583427627">Sūtīt atsauksmes</translation>

@@ -2374,6 +2374,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> дели Chrome картицу.</translation>
 <translation id="2670350619068134931">Смањене анимације</translation>
 <translation id="2670403088701171361">Не дозволите сајтовима да виде текст или слике из привремене меморије</translation>
+<translation id="2671423594960767771">Дели групу</translation>
 <translation id="2671451824761031126">Обележивачи и подешавања су спремни</translation>
 <translation id="2672142220933875349">crx датотека је оштећена. Отпакивање није успело.</translation>
 <translation id="2672200806060988299">Наслови и URL-ови картица се шаљу Google-у и могу да их виде особе које прегледају ради побољшања ове функције.</translation>
@@ -7122,7 +7123,6 @@
 <translation id="6164393601566177235">Додајте сајтове</translation>
 <translation id="6164832038898943453">Додајте језике који ће се аутоматски преводити</translation>
 <translation id="6165508094623778733">Сазнајте више</translation>
-<translation id="6165850999903769629">Све апликације у ChromeOS-у се сад отварају у сопственим прозорима апликација уместо у Chrome-у.</translation>
 <translation id="6166185671393271715">Увезите лозинке у Chrome</translation>
 <translation id="6169040057125497443">Проверите микрофон.</translation>
 <translation id="6169967265765719844">Дозволама за игре и апликације инсталиране преко Steam-а може да се управља у <ph name="LINK_BEGIN" />подешавањима апликације Steam<ph name="LINK_END" />.</translation>
@@ -7825,6 +7825,7 @@
 <translation id="6691936601825168937">Напре&amp;д</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 страница}one{{COUNT} страница}few{{COUNT} странице}other{{COUNT} страница}}</translation>
 <translation id="6693820805264897502">замените постојеће лозинке</translation>
+<translation id="6694634756612002311">Управљај дељењем</translation>
 <translation id="6697172646384837537">Изаберите где желите да увезете лозинке</translation>
 <translation id="6697492270171225480">Приказуј предлоге за сличне странице када нека страница не може да се пронађе</translation>
 <translation id="6697690052557311665">Да бисте делили, кликните десним тастером на фолдер у апликацији Files, па изаберите „Дели са Linux-ом“.</translation>
@@ -7927,7 +7928,6 @@
 <translation id="6776729248872343918">Омогући Брзо упаривање</translation>
 <translation id="6777817260680419853">Преусмеравање је блокирано</translation>
 <translation id="6777845730143344223">Сазнајте више о Passpoint претплатама</translation>
-<translation id="6778660707554364320"><ph name="APP" /> се сада отвара као апликација</translation>
 <translation id="6779092717724412415">Да бисте направили истицање попут овог, изаберите било који текст и кликните десним тастером.</translation>
 <translation id="6779348349813025131">Google менаџер лозинки тражи приступ MacOS Keychain-у</translation>
 <translation id="677965093459947883">Јако мали</translation>

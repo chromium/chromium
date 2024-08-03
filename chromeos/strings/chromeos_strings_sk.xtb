@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Podávač dokumentov (obojstranný)</translation>
 <translation id="3201315366910775591">Zdieľané albumy môžu aktualizovať iní ľudia</translation>
 <translation id="3211671540163313381">Priradený krížový ovládač</translation>
-<translation id="3224812403568276799">Keď to povolíte, Diktafón bude pomocou pokročilej analýzy zvuku automaticky rozpoznávať rôzne hlasy a každý označí všeobecným štítkom, napríklad 1. hovoriaci a 2. hovoriaci.
-
-V nastaveniach to môžete kedykoľvek vypnúť.</translation>
 <translation id="3226405216343213872">Hľadajú sa skenery</translation>
 <translation id="3226657629376379887">Ponuka akcií rozloženia</translation>
 <translation id="3227186760713762082">Hodnotu <ph name="CATEGORY_TEXT" /> vydeľte číslom <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@ V nastaveniach to môžete kedykoľvek vypnúť.</translation>
 <translation id="5318334351163689047">Neúspešné žiadosti TCP</translation>
 <translation id="53196409393069519">Chcete zapnúť prepis?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Názov</translation>
 <translation id="5332948983412042822">Zvoľte si nové heslo teraz</translation>
 <translation id="5333530671332546086">Neznámy stav portálu</translation>
 <translation id="5335373365677455232">ružový/-á</translation>
@@ -1108,6 +1106,7 @@ V nastaveniach to môžete kedykoľvek vypnúť.</translation>
 <translation id="6905724422583748843">Späť na <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Je otvorený kryt skenera. Zavrite ho a skúste to znova.</translation>
 <translation id="6911383237894364323">Nepodarilo sa pripojiť k mediálnym serverom</translation>
+<translation id="6930242544192836755">Trvanie</translation>
 <translation id="6930597342185648547">Informácie o pozadí</translation>
 <translation id="6939667434404433010">Vyhľadajte názov nahrávky</translation>
 <translation id="6939766318048400022">Kaviareň</translation>
@@ -1328,6 +1327,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8004582292198964060">Prehliadač</translation>
 <translation id="8017679124341497925">Skratka bola upravená</translation>
 <translation id="802154636333426148">Stiahnutie zlyhalo</translation>
+<translation id="8028993641010258682">Veľkosť</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Povoliť automatický farebný režim</translation>
 <translation id="8041089156583427627">Odoslať spätnú väzbu</translation>

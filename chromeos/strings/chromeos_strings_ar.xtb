@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">وحدة تغذية المستندات (وجهان)</translation>
 <translation id="3201315366910775591">يمكن للمستخدمين الآخرين تعديل الألبومات المشترَكة</translation>
 <translation id="3211671540163313381">لوحة التحكّم في تحديد المفاتيح</translation>
-<translation id="3224812403568276799">في حال تفعيل هذه الميزة، سيستخدم تطبيق "المسجّلة الذكية" تحليلاً صوتيًا متقدّمًا لرصد الأصوات المختلفة تلقائيًا ومنح كل صوت تصنيفًا عامًا مثل "المتحدّث 1" و"المتحدّث 2".
-
-يمكنك متى شئت إيقاف هذه الميزة من خلال "الإعدادات".</translation>
 <translation id="3226405216343213872">جارٍ البحث عن أجهزة مسح ضوئي</translation>
 <translation id="3226657629376379887">قائمة إجراءات التصميم</translation>
 <translation id="3227186760713762082">قسمة قيمة <ph name="CATEGORY_TEXT" /> على <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@
 <translation id="5318334351163689047">‏تعذَّر طلب بروتوكول TCP.</translation>
 <translation id="53196409393069519">هل تريد تفعيل تحويل الصوت إلى نص؟</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">الاسم</translation>
 <translation id="5332948983412042822">اختيار كلمة مرور جديدة الآن</translation>
 <translation id="5333530671332546086">حالة المدخل غير معروفة.</translation>
 <translation id="5335373365677455232">زهري</translation>
@@ -1108,6 +1106,7 @@
 <translation id="6905724422583748843">الرجوع إلى <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">غطاء الماسح الضوئي مفتوح. يُرجى إغلاق الغطاء وإعادة المحاولة.</translation>
 <translation id="6911383237894364323">تعذَّر الاتصال بخوادم الوسائط.</translation>
+<translation id="6930242544192836755">المدة</translation>
 <translation id="6930597342185648547">لمحة عن الخلفية</translation>
 <translation id="6939667434404433010">البحث عن اسم التسجيل</translation>
 <translation id="6939766318048400022">مقهى</translation>
@@ -1328,6 +1327,7 @@
 <translation id="8004582292198964060">المتصفّح</translation>
 <translation id="8017679124341497925">تمّ تعديل الاختصار</translation>
 <translation id="802154636333426148">تعذّر التنزيل</translation>
+<translation id="8028993641010258682">الحجم</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">تفعيل وضع الألوان التلقائية</translation>
 <translation id="8041089156583427627">إرسال ملاحظات</translation>

@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Alimentator de documente (față-verso)</translation>
 <translation id="3201315366910775591">Albumele comune pot fi actualizate de alți utilizatori</translation>
 <translation id="3211671540163313381">D-pad pentru maparea tastelor</translation>
-<translation id="3224812403568276799">Dacă permiți, Recorder va folosi analiza audio avansată pentru a detecta automat vocile distincte și va atribui fiecăreia o etichetă generică, de exemplu, Vorbitorul 1 și Vorbitorul 2.
-
-Poți dezactiva oricând această opțiune din Setări.</translation>
 <translation id="3226405216343213872">Se caută scanere</translation>
 <translation id="3226657629376379887">Meniu de acțiuni pentru aspect</translation>
 <translation id="3227186760713762082">Împarte valoarea pentru <ph name="CATEGORY_TEXT" /> la <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@ Poți dezactiva oricând această opțiune din Setări.</translation>
 <translation id="5318334351163689047">Erori de solicitare TCP</translation>
 <translation id="53196409393069519">Activezi transcrierea?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Nume</translation>
 <translation id="5332948983412042822">Alege una nouă acum</translation>
 <translation id="5333530671332546086">Stare necunoscută a portalului</translation>
 <translation id="5335373365677455232">roz</translation>
@@ -1108,6 +1106,7 @@ Poți dezactiva oricând această opțiune din Setări.</translation>
 <translation id="6905724422583748843">Înapoi la <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Capacul scanerului este deschis. Închide capacul și încearcă din nou.</translation>
 <translation id="6911383237894364323">Nu se poate conecta la serverele media</translation>
+<translation id="6930242544192836755">Durată</translation>
 <translation id="6930597342185648547">Despre fundal</translation>
 <translation id="6939667434404433010">Caută numele înregistrării</translation>
 <translation id="6939766318048400022">Cafenea</translation>
@@ -1328,6 +1327,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8017679124341497925">Comanda rapidă a fost editată</translation>
 <translation id="802154636333426148">Descărcarea nu a reușit</translation>
+<translation id="8028993641010258682">Dimensiune</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Activează modul de culoare automată</translation>
 <translation id="8041089156583427627">Trimiteți feedback</translation>

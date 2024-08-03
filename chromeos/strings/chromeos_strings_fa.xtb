@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">تغذیه‌کننده سند (دورو)</translation>
 <translation id="3201315366910775591">دیگران می‌توانند آلبوم‌های مشترک را به‌روز کنند</translation>
 <translation id="3211671540163313381">نگاشتن کلید پد کنترل</translation>
-<translation id="3224812403568276799">وقتی این اجازه را بدهید، «ضبط‌صوت» بااستفاده از تجزیه‌وتحلیل پیشرفته صدا، هریک از صداها را شناسایی می‌کند و برچسب عمومی به آن‌ها اختصاص می‌دهد، مثل «گوینده ۱» و «گوینده ۲».
-
-هروقت بخواهید می‌توانید این گزینه را در «تنظیمات» خاموش کنید.</translation>
 <translation id="3226405216343213872">درحال جستجوی اسکنرها</translation>
 <translation id="3226657629376379887">منوی کنش‌های طرح‌بندی</translation>
 <translation id="3227186760713762082">تقسیم مقدار <ph name="CATEGORY_TEXT" /> بر <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@
 <translation id="5318334351163689047">‏خطاهای درخواست TCP</translation>
 <translation id="53196409393069519">ترانویسی روشن شود؟</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">نام</translation>
 <translation id="5332948983412042822">انتخاب گذرواژه جدید، هم‌اکنون</translation>
 <translation id="5333530671332546086">وضعیت درگاه نامشخص است</translation>
 <translation id="5335373365677455232">صورتی</translation>
@@ -1108,6 +1106,7 @@
 <translation id="6905724422583748843">بازگشت به <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">پوشش اسکنر باز است. پوشش را ببندید و دوباره امتحان کنید.</translation>
 <translation id="6911383237894364323">امکان اتصال به سرورهای رسانه وجود ندارد</translation>
+<translation id="6930242544192836755">مدت زمان</translation>
 <translation id="6930597342185648547">درباره پس‌زمینه</translation>
 <translation id="6939667434404433010">نام قطعه ضبطشده را جستجو کنید</translation>
 <translation id="6939766318048400022">کافه</translation>
@@ -1328,6 +1327,7 @@
 <translation id="8004582292198964060">مرورگر</translation>
 <translation id="8017679124341497925">میان‌بر ویرایش شد</translation>
 <translation id="802154636333426148">بارگیری نشد</translation>
+<translation id="8028993641010258682">اندازه</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">فعال کردن حالت رنگ خودکار</translation>
 <translation id="8041089156583427627">ارسال بازخورد</translation>

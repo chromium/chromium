@@ -87,6 +87,7 @@
 <translation id="1270290102613614947">صفحه‌کلید مجازی غیرفعال شد</translation>
 <translation id="1272079795634619415">توقف</translation>
 <translation id="1275285675049378717">درحال تأمین برق <ph name="POWER_SOURCE" /></translation>
+<translation id="1275718070701477396">انتخاب شد</translation>
 <translation id="1276975447697633661">فایل را انتخاب کنید و <ph name="KEY" /> را فشار دهید</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">پیدا کردن تلفن</translation>
@@ -1761,6 +1762,7 @@
 <translation id="7312210124139670355">سرپرستتان درحال بازنشاندن سیم‌کارت داخلی شما است. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="7312761820869643657">دستگاه را به نسخه قبلی به‌روزرسانی کنید</translation>
 <translation id="7313193732017069507">گسترده کردن دوربین</translation>
+<translation id="73289266812733869">انتخاب نشده</translation>
 <translation id="7330397557116570022">برای استفاده از «دیکته» به فیلد نوشتاری بروید</translation>
 <translation id="7331646370422660166">دگرساز + پایین‌بر</translation>
 <translation id="7337660433630200387">بیش‌از ۱۰ دقیقه</translation>

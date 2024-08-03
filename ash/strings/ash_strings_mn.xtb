@@ -87,6 +87,7 @@
 <translation id="1270290102613614947">Дэлгэцэн дээрх гарыг идэвхгүй болгосон байна</translation>
 <translation id="1272079795634619415">Зогс</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" />-г цэнэглэж байна</translation>
+<translation id="1275718070701477396">Сонгогдсон</translation>
 <translation id="1276975447697633661">Файлаа сонгоод дараа нь <ph name="KEY" />-г дарна уу</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Утасны байршил тогтоох</translation>
@@ -1762,6 +1763,7 @@
 <translation id="7312210124139670355">Таны администратор eSIM-г тань шинэчилж байна. Үүнд хэдэн минут шаардлагатай.</translation>
 <translation id="7312761820869643657">Төхөөрөмжийг өмнөх хувилбар луу нь шинэчилнэ үү</translation>
 <translation id="7313193732017069507">Камерыг дэлгэх</translation>
+<translation id="73289266812733869">Сонгогдоогүй</translation>
 <translation id="7330397557116570022">Дуу хоолойгоор бичихийг ашиглахын тулд текстийн талбар луу очно уу</translation>
 <translation id="7331646370422660166">alt + доош сум</translation>
 <translation id="7337660433630200387">+10 минут</translation>

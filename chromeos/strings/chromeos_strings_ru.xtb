@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Автоподатчик документов (двусторонний)</translation>
 <translation id="3201315366910775591">Другие пользователи могут обновлять общие альбомы</translation>
 <translation id="3211671540163313381">D-pad для привязки клавиш</translation>
-<translation id="3224812403568276799">В Диктофоне будут использоваться новейшие технологии анализа аудиоданных, чтобы автоматически определять отдельные голоса и присваивать каждому стандартную метку, например "Говорящий 1" и "Говорящий 2".
-
-Вы можете в любой момент отключить эту функцию в настройках.</translation>
 <translation id="3226405216343213872">Поиск сканеров…</translation>
 <translation id="3226657629376379887">Меню действий, связанных с раскладкой</translation>
 <translation id="3227186760713762082">Разделите значение "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@
 <translation id="5318334351163689047">Невыполненные запросы TCP.</translation>
 <translation id="53196409393069519">Включить расшифровку?</translation>
 <translation id="5326394068492324457">Файл "<ph name="DOCUMENT_TITLE" />", принтер "<ph name="PRINTER_NAME" />", дата – <ph name="CREATION_TIME" />, состояние: "<ph name="COMPLETION_STATUS" />"</translation>
+<translation id="5327248766486351172">Имя</translation>
 <translation id="5332948983412042822">Смените пароль как можно скорее.</translation>
 <translation id="5333530671332546086">Неизвестное состояние сетевого портала.</translation>
 <translation id="5335373365677455232">розовый</translation>
@@ -1108,6 +1106,7 @@
 <translation id="6905724422583748843">Вернуться на страницу "<ph name="PAGE_NAME" />"</translation>
 <translation id="6910312834584889076">Открыта крышка сканера. Закройте крышку и повторите попытку.</translation>
 <translation id="6911383237894364323">Не удалось подключиться к медиасерверам.</translation>
+<translation id="6930242544192836755">Продолжительность</translation>
 <translation id="6930597342185648547">О фоне</translation>
 <translation id="6939667434404433010">Поиск по названию записи</translation>
 <translation id="6939766318048400022">Кафе</translation>
@@ -1328,6 +1327,7 @@
 <translation id="8004582292198964060">Браузер</translation>
 <translation id="8017679124341497925">Ярлык изменен</translation>
 <translation id="802154636333426148">Ошибка скачивания</translation>
+<translation id="8028993641010258682">Размер</translation>
 <translation id="8031884997696620457">HSPA+</translation>
 <translation id="80398733265834479">Включить автоматический цветовой режим</translation>
 <translation id="8041089156583427627">Отправить отзыв</translation>

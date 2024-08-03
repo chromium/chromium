@@ -87,6 +87,7 @@
 <translation id="1270290102613614947">অন-স্ক্রিন কীবোর্ড অক্ষম করা রয়েছে</translation>
 <translation id="1272079795634619415">বন্ধ</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> চার্জ করা হচ্ছে</translation>
+<translation id="1275718070701477396">নির্বাচিত</translation>
 <translation id="1276975447697633661">ফাইল বেছে নিন, তারপর <ph name="KEY" /> প্রেস করুন</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ফোনের লোকেশন খুঁজে পাওয়ার সুবিধা</translation>
@@ -1762,6 +1763,7 @@
 <translation id="7312210124139670355">আপনার অ্যাডমিনিস্ট্রেটর আপনার ই-সিম রিসেট করছেন। এতে কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="7312761820869643657">ডিভাইস আগের ভার্সনে আপডেট করুন</translation>
 <translation id="7313193732017069507">ক্যামেরা সামনে আনুন</translation>
+<translation id="73289266812733869">অনির্বাচিত</translation>
 <translation id="7330397557116570022">'ডিকটেশন' ব্যবহার করতে টেক্সট ফিল্ডে যান</translation>
 <translation id="7331646370422660166">alt + নিম্নমুখী তীরচিহ্ন</translation>
 <translation id="7337660433630200387">১০ মিনিটের বেশি</translation>

@@ -2388,6 +2388,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2670102641511624474"><ph name="APP_NAME" /> jakaa Chrome-välilehden.</translation>
 <translation id="2670350619068134931">Rajoitetut animaatiot</translation>
 <translation id="2670403088701171361">Älä salli sivustojen nähdä tekstiä tai kuvia leikepöydälläsi</translation>
+<translation id="2671423594960767771">Jaa ryhmä</translation>
 <translation id="2671451824761031126">Kirjanmerkkisi ja asetuksesi ovat valmiina.</translation>
 <translation id="2672142220933875349">Virheellinen crx-tiedosto, purkaminen epäonnistui.</translation>
 <translation id="2672200806060988299">Välilehtien nimet ja URL-osoitteet lähetetään Googlelle. Tarkastajat voivat nähdä ne ominaisuuden parantamiseksi.</translation>
@@ -7133,7 +7134,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6164393601566177235">Lisää sivustoja</translation>
 <translation id="6164832038898943453">Lisää kieliä, jotka käännetään automaattisesti</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>
-<translation id="6165850999903769629">Kaikki ChromeOS:n sovellukset avautuvat nyt omissa sovellusikkunoissaan Chromen sijaan.</translation>
 <translation id="6166185671393271715">Tuo salasanat Chromeen</translation>
 <translation id="6169040057125497443">Tarkista mikrofonisi.</translation>
 <translation id="6169967265765719844">Steamin kautta asennettujen pelien ja sovellusten lupia voi muokata <ph name="LINK_BEGIN" />Steamin sovellusasetuksissa<ph name="LINK_END" />.</translation>
@@ -7934,7 +7934,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6776729248872343918">Laita Pikapari pois päältä</translation>
 <translation id="6777817260680419853">Uudelleenohjaus estetty</translation>
 <translation id="6777845730143344223">Lue lisää Passpoint-tilauksista</translation>
-<translation id="6778660707554364320"><ph name="APP" /> avautuu nyt sovelluksena</translation>
 <translation id="6779092717724412415">Jos haluat luoda tällaisen korostuksen, valitse tekstiä ja klikkaa sitä hiiren kakkospainikkeella.</translation>
 <translation id="6779348349813025131">Google Salasanat tarvitsee pääsyn MacOS-avainnippuun</translation>
 <translation id="677965093459947883">Hyvin pieni</translation>

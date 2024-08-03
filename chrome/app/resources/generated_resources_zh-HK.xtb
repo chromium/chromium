@@ -2389,6 +2389,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> 正在共用 Chrome 分頁。</translation>
 <translation id="2670350619068134931">減少動畫</translation>
 <translation id="2670403088701171361">不允許網站查看剪貼簿中的文字或圖片</translation>
+<translation id="2671423594960767771">分享群組項目</translation>
 <translation id="2671451824761031126">現在可以使用您的書籤和設定了</translation>
 <translation id="2672142220933875349">crx 檔案損毀，無法解除套件。</translation>
 <translation id="2672200806060988299">分頁標題和網址會傳送給 Google，並可能交由人手審查以改善有關功能。</translation>
@@ -7122,7 +7123,6 @@
 <translation id="6164393601566177235">新增網站</translation>
 <translation id="6164832038898943453">加要自動翻譯嘅語言</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
-<translation id="6165850999903769629">在 ChromeOS 上，所有應用程式現在都會在各自的應用程式視窗中開啟，不會使用 Chrome 開啟。</translation>
 <translation id="6166185671393271715">將密碼匯入至 Chrome</translation>
 <translation id="6169040057125497443">請檢查麥克風。</translation>
 <translation id="6169967265765719844">您可以在 <ph name="LINK_BEGIN" />Steam 應用程式設定<ph name="LINK_END" />中，管理透過 Steam 安裝的遊戲和應用程式權限。</translation>
@@ -7923,7 +7923,6 @@
 <translation id="6776729248872343918">啟用「快速配對」</translation>
 <translation id="6777817260680419853">已禁止重新導向</translation>
 <translation id="6777845730143344223">進一步了解 Passpoint 訂閱</translation>
-<translation id="6778660707554364320">「<ph name="APP" />」現在會以應用程式的形式開啟</translation>
 <translation id="6779092717724412415">如要建立其他突顯內容，請選取所需文字後按一下右鍵。</translation>
 <translation id="6779348349813025131">「Google 密碼管理工具」需要存取「MacOS 鑰匙圈」</translation>
 <translation id="677965093459947883">非常小</translation>

@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Dokumentindføring (to sider)</translation>
 <translation id="3201315366910775591">Delte album kan opdateres af andre personer</translation>
 <translation id="3211671540163313381">Tastaturtilknytning for D-pad</translation>
-<translation id="3224812403568276799">Når du tillader dette, bruger Lydoptager avanceret lydanalyse til automatisk at registrere forskellige stemmer og give hver stemme et generisk navn som f.eks. Taler 1 og Taler 2.
-
-Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="3226405216343213872">Søger efter scannere</translation>
 <translation id="3226657629376379887">Handlingsmenu for layout</translation>
 <translation id="3227186760713762082">Divider værdien for <ph name="CATEGORY_TEXT" /> med <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="5318334351163689047">Mislykkede TCP-anmodninger</translation>
 <translation id="53196409393069519">Vil du aktivere transskription?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Navn</translation>
 <translation id="5332948983412042822">Vælg en ny adgangskode nu</translation>
 <translation id="5333530671332546086">Ukendt portaltilstand</translation>
 <translation id="5335373365677455232">lyserød</translation>
@@ -1108,6 +1106,7 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="6905724422583748843">Tilbage til <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Scannerens er åben. Luk den, og prøv igen.</translation>
 <translation id="6911383237894364323">Der kunne ikke oprettes forbindelse til medieservere</translation>
+<translation id="6930242544192836755">Varighed</translation>
 <translation id="6930597342185648547">Om baggrunden</translation>
 <translation id="6939667434404433010">Søg efter navnet på optagelsen</translation>
 <translation id="6939766318048400022">Café</translation>
@@ -1328,6 +1327,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8017679124341497925">Genvejen blev redigeret</translation>
 <translation id="802154636333426148">Download mislykkedes</translation>
+<translation id="8028993641010258682">Størrelse</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Aktivér tilstanden med automatisk farve</translation>
 <translation id="8041089156583427627">Send feedback</translation>

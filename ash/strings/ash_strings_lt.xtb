@@ -87,6 +87,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1270290102613614947">Ekrano klaviatūra išjungta</translation>
 <translation id="1272079795634619415">Sustabdyti</translation>
 <translation id="1275285675049378717">Teikia maitinimą šiam įrenginiui: <ph name="POWER_SOURCE" /></translation>
+<translation id="1275718070701477396">Pasirinkta</translation>
 <translation id="1276975447697633661">Pasirinkite failą, tada paspauskite <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Telefono vietos nustatymas</translation>
@@ -1362,6 +1363,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="5819918159912280082">„Chromebook“ buvo netikėtai paleistas iš naujo. Atidarykite ankstesnius langus ir programas.</translation>
 <translation id="5823239091726045201">„Google Tasks“ žiniatinklyje</translation>
 <translation id="5825969630400862129">Susietų įrenginių nustatymai</translation>
+<translation id="5830180081891717894">Dar <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Sustabdyti „<ph name="ROUTE_TITLE" />“ („<ph name="RECEIVER_NAME" />“)</translation>
 <translation id="5841296711770970362">Eiti į kitą takelį</translation>
 <translation id="5842553299352339114">„<ph name="DEVICE_NAME" />“ viešosios interneto prieigos taškas įjungtas, nėra jokių prijungtų įrenginių</translation>
@@ -1761,6 +1763,7 @@ Naujas įdiegimas</translation>
 <translation id="7312210124139670355">Administratorius iš naujo nustato jūsų „eSIM“ kortelę. Tai gali užtrukti kelias minutes.</translation>
 <translation id="7312761820869643657">Grąžinkite ankstesnę įrenginio versiją</translation>
 <translation id="7313193732017069507">Išskleisti fotoaparatą</translation>
+<translation id="73289266812733869">Nepasirinkta</translation>
 <translation id="7330397557116570022">Eikite į teksto lauką, kad galėtumėte naudoti diktavimo funkciją</translation>
 <translation id="7331646370422660166">„Alt“ + rodyklė žemyn</translation>
 <translation id="7337660433630200387">+10 min.</translation>
@@ -2068,6 +2071,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8375916635258623388">Šis „<ph name="DEVICE_NAME" />“ įrenginys ir telefonas bus susieti automatiškai</translation>
 <translation id="8380784334203145311">Labanakt,</translation>
 <translation id="8382715499079447151">Peržiūros apsauga</translation>
+<translation id="8383614331548401927">Sveiki! Tai – „Recap“</translation>
 <translation id="8388750414311082622">Negalima pašalinti paskutinio pulto.</translation>
 <translation id="8394567579869570560">Vienas iš tėvų užrakino šį įrenginį</translation>
 <translation id="8401850874595457088">Kalbos pasirinkimo meniu</translation>

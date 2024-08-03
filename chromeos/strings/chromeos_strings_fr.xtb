@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Chargeur de document (recto verso)</translation>
 <translation id="3201315366910775591">Les albums partagés peuvent être mis à jour par d'autres personnes</translation>
 <translation id="3211671540163313381">Pavé directionnel du mappage des touches</translation>
-<translation id="3224812403568276799">Si vous accordez cette autorisation, l'Enregistreur effectuera une analyse audio avancée pour détecter automatiquement les différentes voix et leur attribuer un identifiant générique (par exemple, Intervenant 1 et Intervenant 2).
-
-Vous pouvez désactiver cette option à tout moment dans les paramètres.</translation>
 <translation id="3226405216343213872">Recherche de scanners…</translation>
 <translation id="3226657629376379887">Menu d'actions de la mise en page</translation>
 <translation id="3227186760713762082">Diviser la valeur <ph name="CATEGORY_TEXT" /> par <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@ Vous pouvez désactiver cette option à tout moment dans les paramètres.</trans
 <translation id="5318334351163689047">Échec de la requête TCP</translation>
 <translation id="53196409393069519">Activer la transcription ?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Nom</translation>
 <translation id="5332948983412042822">Choisissez-en un nouveau maintenant</translation>
 <translation id="5333530671332546086">État du portail inconnu</translation>
 <translation id="5335373365677455232">rose</translation>
@@ -1108,6 +1106,7 @@ Vous pouvez désactiver cette option à tout moment dans les paramètres.</trans
 <translation id="6905724422583748843">Revenir à <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Le capot du scanner est ouvert. Refermez-le, puis réessayez.</translation>
 <translation id="6911383237894364323">Impossible de se connecter aux serveurs multimédias</translation>
+<translation id="6930242544192836755">Durée</translation>
 <translation id="6930597342185648547">À propos de l'arrière-plan</translation>
 <translation id="6939667434404433010">Rechercher le nom de l'enregistrement</translation>
 <translation id="6939766318048400022">Café</translation>
@@ -1328,6 +1327,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8004582292198964060">Navigateur</translation>
 <translation id="8017679124341497925">Raccourci modifié</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
+<translation id="8028993641010258682">Taille</translation>
 <translation id="8031884997696620457">HSPA+</translation>
 <translation id="80398733265834479">Activer le mode couleur auto</translation>
 <translation id="8041089156583427627">Envoyer des commentaires</translation>

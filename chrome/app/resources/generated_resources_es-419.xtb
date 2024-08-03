@@ -2373,6 +2373,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2670102641511624474"><ph name="APP_NAME" /> comparte una pestaña de Chrome.</translation>
 <translation id="2670350619068134931">Animaciones reducidas</translation>
 <translation id="2670403088701171361">No permitir que los sitios visualicen texto ni imágenes del portapapeles</translation>
+<translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2671451824761031126">Tus marcadores y opciones de configuración están listos</translation>
 <translation id="2672142220933875349">El archivo crx no es válido; no se pudo desempaquetar.</translation>
 <translation id="2672200806060988299">Los títulos y las URLs de tus pestañas se envían a Google y es posible que los vean revisores humanos para mejorar esta función.</translation>
@@ -7118,7 +7119,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6164393601566177235">Agrega sitios</translation>
 <translation id="6164832038898943453">Agrega idiomas para traducirlos automáticamente</translation>
 <translation id="6165508094623778733">Más información</translation>
-<translation id="6165850999903769629">Todas las apps de ChromeOS ahora se abren en sus propias ventanas en lugar de en Chrome.</translation>
 <translation id="6166185671393271715">Importar contraseñas a Chrome</translation>
 <translation id="6169040057125497443">Comprueba el micrófono.</translation>
 <translation id="6169967265765719844">Se pueden administrar los permisos para juegos y apps instalados a través de Steam en la <ph name="LINK_BEGIN" />configuración de la app de Steam<ph name="LINK_END" />.</translation>
@@ -7918,7 +7918,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6776729248872343918">Habilitar Vinculación rápida</translation>
 <translation id="6777817260680419853">Se bloqueó el redireccionamiento</translation>
 <translation id="6777845730143344223">Más información sobre las suscripciones a Passpoint</translation>
-<translation id="6778660707554364320"><ph name="APP" /> ahora se abre como una app</translation>
 <translation id="6779092717724412415">Para crear texto destacado como este, selecciona cualquier texto y haz clic con el botón derecho.</translation>
 <translation id="6779348349813025131">El Administrador de contraseñas de Google necesita acceso al llavero de macOS</translation>
 <translation id="677965093459947883">Muy pequeño</translation>

@@ -2381,6 +2381,7 @@
 <translation id="2670102641511624474">‏يشارك <ph name="APP_NAME" /> علامة تبويب متصفح Chrome.</translation>
 <translation id="2670350619068134931">الحد من الصور المتحركة</translation>
 <translation id="2670403088701171361">عدم السماح للمواقع الإلكترونية بالوصول إلى النصوص أو الصور في الحافظة</translation>
+<translation id="2671423594960767771">مشاركة المجموعة</translation>
 <translation id="2671451824761031126">الإشارات المرجعية والإعدادات جاهزة</translation>
 <translation id="2672142220933875349">‏ملف CRX غير صالح. تعذر فك الحزمة.</translation>
 <translation id="2672200806060988299">‏يتم إرسال عناوين علامات التبويب وعناوين URL إلى Google، وقد يطّلِع عليها فريق من المراجعين لتحسين هذه الميزة.</translation>
@@ -7124,7 +7125,6 @@
 <translation id="6164393601566177235">إضافة المواقع الإلكترونية</translation>
 <translation id="6164832038898943453">إضافة اللغات إلى قائمة "لغات أريد ترجمتها تلقائيًا"</translation>
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
-<translation id="6165850999903769629">‏يتم الآن فتح جميع التطبيقات في نوافذها الخاصة بدلاً من نوافذ Chrome على نظام التشغيل ChromeOS.</translation>
 <translation id="6166185671393271715">‏استيراد كلمات المرور إلى Chrome</translation>
 <translation id="6169040057125497443">الرجاء التحقق من الميكروفون.</translation>
 <translation id="6169967265765719844">‏يمكن إدارة الأذونات للألعاب والتطبيقات المثبَّتة عبر Steam في <ph name="LINK_BEGIN" />إعدادات تطبيق Steam<ph name="LINK_END" />.</translation>
@@ -7932,7 +7932,6 @@
 <translation id="6776729248872343918">تفعيل ميزة "الإقران السريع"</translation>
 <translation id="6777817260680419853">تم حظر إعادة التوجيه</translation>
 <translation id="6777845730143344223">مزيد من المعلومات حول اشتراكات "نقطة مرور"</translation>
-<translation id="6778660707554364320">يتم فتح "<ph name="APP" />" حاليًا كتطبيق.</translation>
 <translation id="6779092717724412415">لإنشاء تمييز كهذا، حدِّد أي نص وانقر عليه بزر الماوس الأيمن.</translation>
 <translation id="6779348349813025131">‏يحتاج "مدير كلمات المرور في Google" إلى الإذن بالوصول إلى تطبيق MacOS Keychain.</translation>
 <translation id="677965093459947883">صغير جدًا</translation>

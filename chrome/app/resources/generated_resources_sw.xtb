@@ -2386,6 +2386,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2670102641511624474"><ph name="APP_NAME" /> inashiriki kichupo cha Chrome.</translation>
 <translation id="2670350619068134931">Uhuishaji uliopunguzwa</translation>
 <translation id="2670403088701171361">Usiruhusu tovuti zione maandishi wala picha kwenye ubao wako wa kunakili</translation>
+<translation id="2671423594960767771">Shiriki kikundi</translation>
 <translation id="2671451824761031126">Alamisho na mipangilio yako viko tayari</translation>
 <translation id="2672142220933875349">Faili mbaya ya CRX, imeshindwa kutenganishwa.</translation>
 <translation id="2672200806060988299">URL na majina ya vichupo vyako hutumwa kwa Google na yanaweza kuonekana na wahakiki wanadamu ili kuboresha kipengele hiki.</translation>
@@ -7132,7 +7133,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6164393601566177235">Weka tovuti</translation>
 <translation id="6164832038898943453">Weka lugha za kutafsiriwa kiotomatiki</translation>
 <translation id="6165508094623778733">Pata maelezo zaidi</translation>
-<translation id="6165850999903769629">Programu zote kwenye ChromeOS sasa zinafunguka katika madirisha ya programu zao zenyewe badala ya Chrome.</translation>
 <translation id="6166185671393271715">Leta Manenosiri Kwenye Chrome</translation>
 <translation id="6169040057125497443">Tafadhali angalia maikrofoni yako.</translation>
 <translation id="6169967265765719844">Ruhusa za michezo na programu zilizosakinishwa kupitia Steam zinaweza kudhibitiwa kupitia <ph name="LINK_BEGIN" />Mipangilio ya programu ya Steam<ph name="LINK_END" />.</translation>
@@ -7933,7 +7933,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6776729248872343918">Washa Kioanishaji cha Haraka</translation>
 <translation id="6777817260680419853">Imezuia shughuli ya kuelekeza kwingine</translation>
 <translation id="6777845730143344223">Pata maelezo zaidi kuhusu usajili wa Passpoint</translation>
-<translation id="6778660707554364320"><ph name="APP" /> sasa inafunguka kama programu</translation>
 <translation id="6779092717724412415">Ili uangazie maandishi kama yalivyo hapa, chagua maandishi yoyote kisha ubofye kulia.</translation>
 <translation id="6779348349813025131">Kidhibiti cha Manenosiri cha Google kinahitaji idhini ya kufikia MacOS Keychain</translation>
 <translation id="677965093459947883">Ndogo sana</translation>

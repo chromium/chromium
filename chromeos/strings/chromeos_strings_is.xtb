@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Skjalamatari (tvíhliða)</translation>
 <translation id="3201315366910775591">Aðrir notendur geta uppfært sameiginleg albúm</translation>
 <translation id="3211671540163313381">Stefnuhnappur lyklaskipanar</translation>
-<translation id="3224812403568276799">Þegar þú leyfir þetta mun Upptökutæki nota háþróaða hljóðgreiningu til að greina sjálfkrafa aðskildar raddir og merkja hverja þeirra með sjálfgefnu merki, t.d. Mælandi 1 og Mælandi 2.
-
-Þú getur slökkt á þessu hvenær sem er í stillingunum.</translation>
 <translation id="3226405216343213872">Leitar að skönnum</translation>
 <translation id="3226657629376379887">Aðgerðavalmynd uppsetningar</translation>
 <translation id="3227186760713762082">Deildu gildinu <ph name="CATEGORY_TEXT" /> með <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@
 <translation id="5318334351163689047">TCP-beiðnir mistókust</translation>
 <translation id="53196409393069519">Kveikja á umritun?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Heiti</translation>
 <translation id="5332948983412042822">Veldu nýtt núna</translation>
 <translation id="5333530671332546086">Óþekkt staða gáttar</translation>
 <translation id="5335373365677455232">bleik(ur)</translation>
@@ -1108,6 +1106,7 @@
 <translation id="6905724422583748843">Til baka í <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Lokið á skannanum er opið. Lokaðu skannanum og reyndu aftur.</translation>
 <translation id="6911383237894364323">Ekki er hægt að tengjast efnisþjónum</translation>
+<translation id="6930242544192836755">Tímalengd</translation>
 <translation id="6930597342185648547">Um bakgrunn</translation>
 <translation id="6939667434404433010">Leita eftir heiti upptöku</translation>
 <translation id="6939766318048400022">Kaffihús</translation>
@@ -1328,6 +1327,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8004582292198964060">Vafri</translation>
 <translation id="8017679124341497925">Flýtileið breytt</translation>
 <translation id="802154636333426148">Niðurhal mistókst</translation>
+<translation id="8028993641010258682">Stærð</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Kveikja á sjálfvirkri litastillingu</translation>
 <translation id="8041089156583427627">Senda ábendingu</translation>

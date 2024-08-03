@@ -2391,6 +2391,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" />이(가) Chrome 탭을 공유합니다.</translation>
 <translation id="2670350619068134931">애니메이션 감소</translation>
 <translation id="2670403088701171361">사이트에서 클립보드에 저장된 텍스트 또는 이미지를 확인하도록 허용하지 않음</translation>
+<translation id="2671423594960767771">그룹 공유</translation>
 <translation id="2671451824761031126">북마크와 설정을 가져왔습니다.</translation>
 <translation id="2672142220933875349">잘못된 crx 파일입니다. 압축을 해제하지 못했습니다.</translation>
 <translation id="2672200806060988299">탭 제목과 URL은 Google로 전송되며 기능 개선을 위해 인적 검토자가 이를 확인할 수 있습니다.</translation>
@@ -7135,7 +7136,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6164393601566177235">사이트 추가</translation>
 <translation id="6164832038898943453">자동 번역할 언어 추가</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
-<translation id="6165850999903769629">이제 ChromeOS의 모든 앱은 Chrome이 아닌 자체 앱 창에서 열립니다.</translation>
 <translation id="6166185671393271715">Chrome으로 비밀번호 가져오기</translation>
 <translation id="6169040057125497443">마이크를 확인하세요.</translation>
 <translation id="6169967265765719844">Steam을 통해 설치된 게임 및 앱에 대한 권한은 <ph name="LINK_BEGIN" />Steam 앱 설정<ph name="LINK_END" />에서 관리할 수 있습니다.</translation>
@@ -7935,7 +7935,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6776729248872343918">빠른 페어링 사용</translation>
 <translation id="6777817260680419853">리디렉션이 차단됨</translation>
 <translation id="6777845730143344223">Passpoint 구독 자세히 알아보기</translation>
-<translation id="6778660707554364320">이제 <ph name="APP" />가 앱으로 열립니다</translation>
 <translation id="6779092717724412415">이와 같이 강조표시하려면 텍스트를 선택하고 마우스 오른쪽 버튼으로 클릭하세요.</translation>
 <translation id="6779348349813025131">Google 비밀번호 관리자에 MacOS 키체인 액세스 권한 필요</translation>
 <translation id="677965093459947883">아주 작게</translation>

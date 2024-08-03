@@ -2377,6 +2377,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2670102641511624474"><ph name="APP_NAME" /> partage un onglet Chrome.</translation>
 <translation id="2670350619068134931">Animations réduites</translation>
 <translation id="2670403088701171361">Ne pas autoriser les sites à accéder au texte ni aux images de votre presse-papiers</translation>
+<translation id="2671423594960767771">Partager le groupe</translation>
 <translation id="2671451824761031126">Vos favoris et vos paramètres sont prêts</translation>
 <translation id="2672142220933875349">Fichier crx incorrect. Échec du déballage.</translation>
 <translation id="2672200806060988299">Les titres et les URL de vos onglets sont envoyés à Google et peuvent être consultés par des réviseurs humains afin d'améliorer cette fonctionnalité.</translation>
@@ -7119,7 +7120,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6164393601566177235">Ajouter des sites</translation>
 <translation id="6164832038898943453">Ajoutez des langues à traduire automatiquement</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
-<translation id="6165850999903769629">Toutes les applis sur ChromeOS s'ouvrent désormais dans leur propre fenêtre au lieu de Chrome.</translation>
 <translation id="6166185671393271715">Importer des mots de passe dans Chrome</translation>
 <translation id="6169040057125497443">Veuillez vérifier votre micro.</translation>
 <translation id="6169967265765719844">Les autorisations pour les jeux et applis installés via Steam peuvent être gérées dans les <ph name="LINK_BEGIN" />paramètres de l'appli Steam<ph name="LINK_END" />.</translation>
@@ -7921,7 +7921,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6776729248872343918">Activer l'Association express</translation>
 <translation id="6777817260680419853">Redirection bloquée</translation>
 <translation id="6777845730143344223">En savoir plus sur les abonnements Passpoint</translation>
-<translation id="6778660707554364320"><ph name="APP" /> s'ouvre désormais en tant qu'appli</translation>
 <translation id="6779092717724412415">Pour créer un effet de surbrillance comme celui-ci, sélectionnez du texte et effectuez un clic droit.</translation>
 <translation id="6779348349813025131">Le Gestionnaire de mots de passe de Google a besoin d'accéder au trousseau macOS</translation>
 <translation id="677965093459947883">Très petite</translation>

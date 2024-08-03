@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Sənəd Bəsləyici (İki tərəfli)</translation>
 <translation id="3201315366910775591">Digər şəxslər paylaşılan albomları yeniləyə bilər</translation>
 <translation id="3211671540163313381">Düymə uyğunlaşdırması - D-pad</translation>
-<translation id="3224812403568276799">Buna icazə verdiyiniz zaman Diktofon fərqli səsləri avtomatik aşkar etmək üçün təkmil audio təhlilindən istifadə edəcək və hər birinə Dinamik 1 və Dinamik 2 kimi ümumi etiket verəcək.
-
-Bunu Ayarlarda söndürə bilərsiniz.</translation>
 <translation id="3226405216343213872">Skanerlər axtarılır</translation>
 <translation id="3226657629376379887">Tərtibat üzrə əməliyyatlar menyusu</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> dəyərini <ph name="CONVERSION_RATE" /> ilə bölün</translation>
@@ -812,6 +809,7 @@ Bunu Ayarlarda söndürə bilərsiniz.</translation>
 <translation id="5318334351163689047">Alınmayan TCP sorğuları</translation>
 <translation id="53196409393069519">Transkripsiya yandırılsın?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Ad</translation>
 <translation id="5332948983412042822">İndi yenisini seçin</translation>
 <translation id="5333530671332546086">Naməlum portal vəziyyəti</translation>
 <translation id="5335373365677455232">çəhrayı</translation>
@@ -1108,6 +1106,7 @@ Bunu Ayarlarda söndürə bilərsiniz.</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> səhifəsinə qayıdın</translation>
 <translation id="6910312834584889076">Skanerin qapağı açıqdır. Qapağı bağlayıb yenidən sınayın.</translation>
 <translation id="6911383237894364323">Media serverlərinə qoşulmaq olmur</translation>
+<translation id="6930242544192836755">Müddət</translation>
 <translation id="6930597342185648547">Arxa fon haqqında</translation>
 <translation id="6939667434404433010">Səsyazma adını axtarın</translation>
 <translation id="6939766318048400022">Kafe</translation>
@@ -1328,6 +1327,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8004582292198964060">Brauzer</translation>
 <translation id="8017679124341497925">Qısayol redaktə edildi</translation>
 <translation id="802154636333426148">Endirmə alınmadı</translation>
+<translation id="8028993641010258682">Ölçü</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Avtomatik rəng rejimini aktiv edin</translation>
 <translation id="8041089156583427627">Geri Əlaqə Göndərin</translation>

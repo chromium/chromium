@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Hujjat tasmasi (Ikki tomonlama)</translation>
 <translation id="3201315366910775591">Umumiy albomlar boshqalar tomonidan yangilanishi mumkin</translation>
 <translation id="3211671540163313381">Tugma tayinlash: Strelkali tugmalar</translation>
-<translation id="3224812403568276799">Ruxsat berilsa, Diktofon kengaytirilgan audio tashxis yordamida ovozlarni avtomatik aniqlaydi va har bir nutq egasiga tegishli umumiy nom beradi, masalan, Gapiruvchi 1 va Gapiruvchi 2 kabi.
-
-Buni istalgan vaqt Sozlamalar orqali faolsizlantirish mumkin.</translation>
 <translation id="3226405216343213872">Skanerlar qidirilmoqda</translation>
 <translation id="3226657629376379887">Interfeys amallari menyusi</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> qiymatini <ph name="CONVERSION_RATE" /> ga boʻling</translation>
@@ -812,6 +809,7 @@ Buni istalgan vaqt Sozlamalar orqali faolsizlantirish mumkin.</translation>
 <translation id="5318334351163689047">Bajarilmagan TCP soʻrovlari</translation>
 <translation id="53196409393069519">Transkripsiya yoqilsinmi?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Nomi</translation>
 <translation id="5332948983412042822">Hoziroq yangi parol tanlang</translation>
 <translation id="5333530671332546086">Portal holati noaniq</translation>
 <translation id="5335373365677455232">pushti</translation>
@@ -1108,6 +1106,7 @@ Buni istalgan vaqt Sozlamalar orqali faolsizlantirish mumkin.</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> sahifasiga qaytish</translation>
 <translation id="6910312834584889076">Skaner qopqogʻi yopilmagan. Qopqogʻini toping va qaytadan urining.</translation>
 <translation id="6911383237894364323">Media serverlarga ulana olmadi</translation>
+<translation id="6930242544192836755">Davomiyligi</translation>
 <translation id="6930597342185648547">Orqa fon haqida</translation>
 <translation id="6939667434404433010">Yozuv nomini qidirish</translation>
 <translation id="6939766318048400022">Kafe</translation>
@@ -1328,6 +1327,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8004582292198964060">Brauzer</translation>
 <translation id="8017679124341497925">Yorliq tahrirlandi</translation>
 <translation id="802154636333426148">Yuklab olib bo‘lmadi</translation>
+<translation id="8028993641010258682">Hajm</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Avtomatik rangli rejimni yoqish</translation>
 <translation id="8041089156583427627">Fikr-mulohaza</translation>
@@ -1364,6 +1364,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8208861521865154048">Imtiyozlar</translation>
 <translation id="8226628635270268143">Sevimli suratlar va albomlaringizni tanlang</translation>
 <translation id="8227119283605456246">Fayl biriktirish</translation>
+<translation id="8227488649450500937">Bu soʻrovlardan birini sinang yoki <ph name="BEGIN_LINK_PROMPTING_GUIDE" />soʻrovlar berish qoʻllanmasi<ph name="END_LINK_PROMPTING_GUIDE" /> bilan tanishing</translation>
 <translation id="8230672074305416752">Birlamchi tarmoq shlyuzi ping qilinmadi</translation>
 <translation id="8238771987802558562">APN tanlash</translation>
 <translation id="8246209727385807362">Noma’lum provayder</translation>

@@ -2383,6 +2383,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2670102641511624474"><ph name="APP_NAME" /> deler en Chrome-fane.</translation>
 <translation id="2670350619068134931">Reduserte animasjoner</translation>
 <translation id="2670403088701171361">Ikke la nettsteder se tekst eller bilder på utklippstavlen</translation>
+<translation id="2671423594960767771">Del gruppe</translation>
 <translation id="2671451824761031126">Bokmerkene og innstillingene dine er klare</translation>
 <translation id="2672142220933875349">Skadet crx-fil. Kunne ikke pakke den ut.</translation>
 <translation id="2672200806060988299">Titlene og nettadressene til fanene dine sendes til Google og kan bli sett av menneskelige evaluerere som jobber med å gjøre denne funksjonen bedre.</translation>
@@ -7123,7 +7124,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6164393601566177235">Legg til nettsteder</translation>
 <translation id="6164832038898943453">Legg til språk som skal oversettes automatisk</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
-<translation id="6165850999903769629">Alle apper i ChromeOS åpnes nå i sine egne appvinduer i stedet for i Chrome.</translation>
 <translation id="6166185671393271715">Importér passord i Chrome</translation>
 <translation id="6169040057125497443">Sjekk mikrofonen din.</translation>
 <translation id="6169967265765719844">Tillatelser for spill og apper som er installert via Steam, kan administreres i <ph name="LINK_BEGIN" />innstillingene i Steam-appen<ph name="LINK_END" />.</translation>
@@ -7923,7 +7923,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6776729248872343918">Aktiver rask sammenkobling</translation>
 <translation id="6777817260680419853">Viderekobling er blokkert</translation>
 <translation id="6777845730143344223">Finn ut mer om Passpoint-abonnementer</translation>
-<translation id="6778660707554364320"><ph name="APP" /> åpnes nå som en app</translation>
 <translation id="6779092717724412415">For å lage en fremheving som denne, merk litt tekst og høyreklikk.</translation>
 <translation id="6779348349813025131">Google Passordlagring trenger tilgang til macOS-nøkkelring</translation>
 <translation id="677965093459947883">Veldig liten</translation>

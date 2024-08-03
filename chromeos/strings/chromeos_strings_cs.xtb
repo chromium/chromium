@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Podavač dokumentů (oboustranných)</translation>
 <translation id="3201315366910775591">Sdílená alba mohou aktualizovat ostatní</translation>
 <translation id="3211671540163313381">Křížový ovladač mapování kláves</translation>
-<translation id="3224812403568276799">Když tuto funkci povolíte, bude Diktafon pomocí pokročilé analýzy zvuku automaticky rozpoznávat jednotlivé hlasy a každému přidělí obecný štítek, například Mluvčí 1 a Mluvčí 2.
-
-Tuto funkci můžete v Nastavení kdykoli vypnout.</translation>
 <translation id="3226405216343213872">Vyhledávání skenerů</translation>
 <translation id="3226657629376379887">Nabídka akcí s rozvržením</translation>
 <translation id="3227186760713762082">Vydělte hodnotu <ph name="CATEGORY_TEXT" /> číslem <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@ Tuto funkci můžete v Nastavení kdykoli vypnout.</translation>
 <translation id="5318334351163689047">Selhání požadavků TCP</translation>
 <translation id="53196409393069519">Zapnout přepis?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Jméno</translation>
 <translation id="5332948983412042822">Zvolte si nové</translation>
 <translation id="5333530671332546086">Neznámý stav portálu</translation>
 <translation id="5335373365677455232">růžová</translation>
@@ -1108,6 +1106,7 @@ Tuto funkci můžete v Nastavení kdykoli vypnout.</translation>
 <translation id="6905724422583748843">Zpět na stránku <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Kryt skeneru je otevřený. Zavřete kryt a zkuste to znovu.</translation>
 <translation id="6911383237894364323">Nelze se připojit k mediálním serverům</translation>
+<translation id="6930242544192836755">Délka</translation>
 <translation id="6930597342185648547">O pozadí</translation>
 <translation id="6939667434404433010">Vyhledat název nahrávky</translation>
 <translation id="6939766318048400022">Kavárna</translation>
@@ -1328,6 +1327,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8004582292198964060">Prohlížeč</translation>
 <translation id="8017679124341497925">Zkratka byla upravena</translation>
 <translation id="802154636333426148">Stažení se nezdařilo</translation>
+<translation id="8028993641010258682">Velikost</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Zapnout režim automatických barev</translation>
 <translation id="8041089156583427627">Odeslat svůj názor</translation>

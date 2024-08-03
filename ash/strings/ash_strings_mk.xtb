@@ -87,6 +87,7 @@
 <translation id="1270290102613614947">Тастатурата на екранот е оневозможена</translation>
 <translation id="1272079795634619415">Запри</translation>
 <translation id="1275285675049378717">Се напојува <ph name="POWER_SOURCE" /></translation>
+<translation id="1275718070701477396">Избран</translation>
 <translation id="1276975447697633661">Изберете ја датотеката, а потоа притиснете <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Лоцирај го телефонот</translation>
@@ -1762,6 +1763,7 @@
 <translation id="7312210124139670355">Администраторот ја ресетира вашата eSIM. Може да потрае неколку минути.</translation>
 <translation id="7312761820869643657">Вратете го уредот на претходна верзија</translation>
 <translation id="7313193732017069507">Прошири ја камерата</translation>
+<translation id="73289266812733869">Неизбран</translation>
 <translation id="7330397557116570022">Одете на текстуално поле за да користите „Диктирање“</translation>
 <translation id="7331646370422660166">alt + стрелка надолу</translation>
 <translation id="7337660433630200387">+ 10 мин.</translation>

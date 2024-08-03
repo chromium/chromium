@@ -87,6 +87,7 @@
 <translation id="1270290102613614947">မျက်နှာပြင် ပေါ်က ကီးဘုတ် ပိတ်ထား</translation>
 <translation id="1272079795634619415">ရပ်ရန်</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> ကို အားသွင်းနေသည်</translation>
+<translation id="1275718070701477396">ရွေးထား</translation>
 <translation id="1276975447697633661">ဖိုင်ကို ရွေးပြီး <ph name="KEY" /> ကို နှိပ်ပါ</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ဖုန်းရှာခြင်း</translation>
@@ -1362,6 +1363,7 @@
 <translation id="5819918159912280082">သင်၏ Chromebook သည် မမျှော်လင့်ဘဲ ပြန်လည်စတင်သွားသည်။ သင်၏ ယခင် ဝင်းဒိုးနှင့်အက်ပ်များ ဖွင့်နိုင်သည်။</translation>
 <translation id="5823239091726045201">ဝဘ်ပေါ်ရှိ Google Tasks</translation>
 <translation id="5825969630400862129">ချိတ်ဆက်ထားသည့် စက်ဆက်တင်များ</translation>
+<translation id="5830180081891717894">နောက်ထပ် <ph name="WINDOWS" /> ခု</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> တွင် <ph name="ROUTE_TITLE" /> ကို ရပ်ရန်</translation>
 <translation id="5841296711770970362">နောက်တစ်ပုဒ် ဖွင့်ရန်</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> ဟော့စပေါ့ ဖွင့်ထားသည်။ မည်သည့်စက်မျှ ချိတ်ဆက်မထားပါ</translation>
@@ -1761,6 +1763,7 @@
 <translation id="7312210124139670355">သင်၏စီမံခန့်ခွဲသူသည် eSIM ကို ပြင်ဆင်သတ်မှတ်နေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
 <translation id="7312761820869643657">စက်ကို ယခင်ဗားရှင်းသို့ အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="7313193732017069507">ကင်မရာခလုတ် ချဲ့ရန်</translation>
+<translation id="73289266812733869">ရွေးမထာ</translation>
 <translation id="7330397557116570022">‘နှုတ်တိုက်ချပေးခြင်း’ သုံးရန် စာသားအကွက်သို့ သွားပါ</translation>
 <translation id="7331646370422660166">Alt + အောက်ညွှန်မြား</translation>
 <translation id="7337660433630200387">+၁၀ မိနစ်</translation>
@@ -2068,6 +2071,7 @@
 <translation id="8375916635258623388">ဤ <ph name="DEVICE_NAME" /> နှင့် သင့်ဖုန်းတို့ အလိုအလျောက် ချိတ်ဆက်ပါမည်</translation>
 <translation id="8380784334203145311">မင်္ဂလာ ညချမ်းပါ၊</translation>
 <translation id="8382715499079447151">ကြည့်ရှုမှုဆိုင်ရာ အကာအကွယ်</translation>
+<translation id="8383614331548401927">‘အကျဉ်းချုပ်’ က ကြိုဆိုပါသည်</translation>
 <translation id="8388750414311082622">နောက်ဆုံးစားပွဲကို ဖယ်ရှား၍မရပါ။</translation>
 <translation id="8394567579869570560">ဤစက်ကို သင့်မိဘက လော့ခ်ချထားသည်</translation>
 <translation id="8401850874595457088">ဘာသာစကားမီနူးသို့ ဝင်ရန်</translation>

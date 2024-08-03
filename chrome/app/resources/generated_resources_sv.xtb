@@ -2389,6 +2389,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2670102641511624474"><ph name="APP_NAME" /> delar en Chrome-flik.</translation>
 <translation id="2670350619068134931">Reducerade animationer</translation>
 <translation id="2670403088701171361">Tillåt inte att webbplatser ser text eller bilder i Urklipp</translation>
+<translation id="2671423594960767771">Dela grupp</translation>
 <translation id="2671451824761031126">Dina bokmärken och inställningar är klara</translation>
 <translation id="2672142220933875349">CRX-filen fungerar inte. Det gick inte att packa upp.</translation>
 <translation id="2672200806060988299">Dina fliktitlar och webbadresser skickas till Google och kan ses av mänskliga granskare för att förbättra den här funktionen.</translation>
@@ -7134,7 +7135,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6164393601566177235">Lägg till webbplatser</translation>
 <translation id="6164832038898943453">Lägg till språk som ska översättas automatiskt</translation>
 <translation id="6165508094623778733">Läs mer</translation>
-<translation id="6165850999903769629">Alla appar i ChromeOS öppnas nu i sina egna appfönster i stället för i Chrome.</translation>
 <translation id="6166185671393271715">Importera lösenord till Chrome</translation>
 <translation id="6169040057125497443">Kontrollera mikrofonen.</translation>
 <translation id="6169967265765719844">Behörigheter för spel och appar som installerats via Steam kan hanteras i <ph name="LINK_BEGIN" />inställningarna för Steam-appen<ph name="LINK_END" />.</translation>
@@ -7934,7 +7934,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6776729248872343918">Aktivera Snabb parkoppling</translation>
 <translation id="6777817260680419853">Omdirigeringen blockerades</translation>
 <translation id="6777845730143344223">Läs mer om Passpoint-prenumerationer</translation>
-<translation id="6778660707554364320"><ph name="APP" /> öppnas nu som en app</translation>
 <translation id="6779092717724412415">Om du vill lyfta fram text på det här sättet markerar du texten och högerklickar.</translation>
 <translation id="6779348349813025131">Google Lösenordshantering behöver åtkomst till MacOS-nyckelringen</translation>
 <translation id="677965093459947883">Mycket liten</translation>

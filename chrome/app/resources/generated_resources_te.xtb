@@ -2387,6 +2387,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> ఒక Chrome ట్యాబ్‌ను షేర్ చేస్తోంది.</translation>
 <translation id="2670350619068134931">తక్కువ యానిమేషన్‌లు</translation>
 <translation id="2670403088701171361">మీ క్లిప్‌బోర్డ్‌లోని టెక్స్ట్ లేదా ఇమేజ్‌లను చూడటానికి సైట్‌లను అనుమతించకండి</translation>
+<translation id="2671423594960767771">గ్రూప్‌ను షేర్ చేయండి</translation>
 <translation id="2671451824761031126">మీ బుక్‌మార్క్‌లు మరియు సెట్టింగ్‌లు సిద్ధంగా ఉన్నాయి</translation>
 <translation id="2672142220933875349">చెల్లని crx ఫైల్, అన్‌ప్యాక్ చేయడం విఫలమైంది.</translation>
 <translation id="2672200806060988299">మీ ట్యాబ్ టైటిల్స్, URLలు Googleకి పంపబడ్డాయి, ఈ ఫీచర్‌ను మెరుగుపరచడానికి రివ్యూవర్ చూడవచ్చు.</translation>
@@ -7134,7 +7135,6 @@
 <translation id="6164393601566177235">సైట్‌లను జోడించండి</translation>
 <translation id="6164832038898943453">ఆటోమేటిక్‌గా ఏ భాషలలోకి అనువదించాలో, వాటిని జోడించండి</translation>
 <translation id="6165508094623778733">మరింత తెలుసుకోండి</translation>
-<translation id="6165850999903769629">ChromeOSలోని అన్ని యాప్‌లు ఇప్పుడు Chromeలో కాకుండా వాటి స్వంత యాప్ విండోలలో తెరవబడతాయి.</translation>
 <translation id="6166185671393271715">Chromeకి పాస్‌వర్డ్‌లను దిగుమతి చేయండి</translation>
 <translation id="6169040057125497443">దయచేసి మీ మైక్రోఫోన్‌ని చెక్ చేయండి.</translation>
 <translation id="6169967265765719844">Steam ద్వారా ఇన్‌స్టాల్ చేయబడిన గేమ్‌లు, యాప్‌ల కోసం అనుమతులు <ph name="LINK_BEGIN" />Steam యాప్ సెట్టింగ్‌ల<ph name="LINK_END" />లో మేనేజ్ చేయబడతాయి.</translation>
@@ -7833,6 +7833,7 @@
 <translation id="6691936601825168937">&amp;ఫార్వార్డ్ చేయి</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 పేజీ}other{{COUNT} పేజీలు}}</translation>
 <translation id="6693820805264897502">ఇప్పటికే ఉన్న పాస్‌వర్డ్‌లను రీప్లేస్ చేయండి</translation>
+<translation id="6694634756612002311">షేరింగ్‌ను మేనేజ్ చేయండి</translation>
 <translation id="6697172646384837537">మీ పాస్‌వర్డ్‌ను ఎక్కడ దిగుమతి చేయాలో ఎంచుకోండి</translation>
 <translation id="6697492270171225480">పేజీ కనుగొనబడనప్పుడు అటువంటి పేజీల కోసం సూచనలను చూపుతుంది</translation>
 <translation id="6697690052557311665">షేర్ చేయడానికి, ఫైళ్లు యాప్‌లో ఫోల్డర్‌పై కుడి క్లిక్ చేసి, ఆపై "Linuxతో షేర్ చేయి" ఎంచుకోండి.</translation>
@@ -7935,7 +7936,6 @@
 <translation id="6776729248872343918">ఫాస్ట్ పెయిర్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="6777817260680419853">మళ్ళింపు బ్లాక్ చేయబడింది</translation>
 <translation id="6777845730143344223">Passpoint సబ్‌స్క్రిప్షన్‌ల గురించి మరింత తెలుసుకోండి</translation>
-<translation id="6778660707554364320"><ph name="APP" /> ఇప్పుడు యాప్ లాగా తెరవబడుతుంది</translation>
 <translation id="6779092717724412415">ఇటువంటి హైలైట్‌ను క్రియేట్ చేయడానికి, ఏదైనా టెక్స్ట్‌ను ఎంచుకొని, దానిపై కుడి క్లిక్ చేయండి.</translation>
 <translation id="6779348349813025131">Google Password Managerకి MacOS కీచెయిన్ యాక్సెస్ అవసరం</translation>
 <translation id="677965093459947883">చాలా చిన్నవిగా</translation>

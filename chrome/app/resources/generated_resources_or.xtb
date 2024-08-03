@@ -2372,6 +2372,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> ଏକ Chrome ଟାବ୍‌ ସେୟାର୍‌ କରୁଛି।</translation>
 <translation id="2670350619068134931">କମ ହୋଇଥିବା ଆନିମେସନଗୁଡ଼ିକ</translation>
 <translation id="2670403088701171361">ଆପଣଙ୍କ କ୍ଲିପବୋର୍ଡରେ ଥିବା ଟେକ୍ସଟ୍ କିମ୍ବା ଛବିଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
+<translation id="2671423594960767771">ଗୋଷ୍ଠୀ ସେୟାର୍‌ କରନ୍ତୁ</translation>
 <translation id="2671451824761031126">ଆପଣଙ୍କର ବୁକ୍‌ମାର୍କସ୍ ଏବଂ ସେଟିଂସ୍ ପ୍ରସ୍ତୁତ ଅଛି</translation>
 <translation id="2672142220933875349">ଖରାପ crx ଫାଇଲ୍‌, ଅନ୍‍ପ୍ୟାକିଂ ବିଫଳ ହେଲା।</translation>
 <translation id="2672200806060988299">ଆପଣଙ୍କ ଟାବ ଟାଇଟେଲ ଓ URLଗୁଡ଼ିକୁ Googleକୁ ପଠାଯାଏ ଏବଂ ଏହି ଫିଚରକୁ ଉନ୍ନତ କରିବା ପାଇଁ ମାନବ ସମୀକ୍ଷକମାନଙ୍କ ଦ୍ୱାରା ଦେଖାଯାଇପାରେ।</translation>
@@ -7112,7 +7113,6 @@
 <translation id="6164393601566177235">ସାଇଟଗୁଡ଼ିକ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6164832038898943453">ସ୍ୱଚାଳିତ ଭାବେ ଅନୁବାଦ କରିବା ପାଇଁ ଭାଷାଗୁଡ଼ିକୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6165508094623778733">ଅଧିକ ଜାଣନ୍ତୁ</translation>
-<translation id="6165850999903769629">ChromeOSରେ ଥିବା ସମସ୍ତ ଆପ୍ସ ବର୍ତ୍ତମାନ Chromeରେ ଖୋଲିବା ପରିବର୍ତ୍ତେ ସେଗୁଡ଼ିକର ନିଜ ଆପ ୱିଣ୍ଡୋରେ ଖୋଲିବ।</translation>
 <translation id="6166185671393271715">Chromeକୁ ପାସ୍‍ୱର୍ଡ ଇମ୍ପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="6169040057125497443">ଦୟାକରି, ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନ୍‍ ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="6169967265765719844">Steam ମାଧ୍ୟମରେ ଇନଷ୍ଟଲ କରାଯାଇଥିବା ଗେମ ଏବଂ ଆପ୍ସ ପାଇଁ ଅନୁମତିଗୁଡ଼ିକୁ <ph name="LINK_BEGIN" />Steam ଆପ ସେଟିଂସ<ph name="LINK_END" />ରେ ପରିଚାଳନା କରାଯାଇପାରିବ।</translation>
@@ -7914,7 +7914,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6776729248872343918">ଫାଷ୍ଟ ପେୟାରକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="6777817260680419853">ରିଡାଇରେକ୍ଟକୁ ଅବରୋଧ କରାଯାଇଛି।</translation>
 <translation id="6777845730143344223">Passpoint ସଦସ୍ୟତା ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
-<translation id="6778660707554364320"><ph name="APP" /> ବର୍ତ୍ତମାନ ଏକ ଆପ ଭାବେ ଖୋଲେ</translation>
 <translation id="6779092717724412415">ଏହିପରି ଏକ ହାଇଲାଇଟ ତିଆରି କରିବା ପାଇଁ ଯେ କୌଣସି ଟେକ୍ସଟକୁ ଚୟନ କରି ଡାହାଣ-କ୍ଲିକ କରନ୍ତୁ।</translation>
 <translation id="6779348349813025131">Google Password Manager MacOS କୀଚେନକୁ ଆକ୍ସେସ ଆବଶ୍ୟକ କରେ</translation>
 <translation id="677965093459947883">ଅତି ଛୋଟ</translation>

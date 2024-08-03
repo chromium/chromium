@@ -2385,6 +2385,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> Chrome-н чихтэй хуудсыг хуваалцаж байна.</translation>
 <translation id="2670350619068134931">Багасгасан анимациуд</translation>
 <translation id="2670403088701171361">Сайтуудад таны түр санах ой дээрх текст эсвэл зургийг харахыг бүү зөвшөөр</translation>
+<translation id="2671423594960767771">Бүлгийг хуваалцах</translation>
 <translation id="2671451824761031126">Таны хавчуурга, тохиргоо бэлэн боллоо</translation>
 <translation id="2672142220933875349">crx файл алдаатай байна, задлаж чадсангүй.</translation>
 <translation id="2672200806060988299">Энэ онцлогийг сайжруулахын тулд таны табын гарчиг болон URL-г Google рүү илгээдэг бөгөөд хянагч хүмүүс харж магадгүй.</translation>
@@ -7129,7 +7130,6 @@
 <translation id="6164393601566177235">Сайтууд нэмэх</translation>
 <translation id="6164832038898943453">Автоматаар орчуулах хэл нэмнэ үү</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
-<translation id="6165850999903769629">ChromeOS дээрх бүх аппыг одоо Chrome-н оронд өөрсдийнх нь аппын цонхонд нээнэ.</translation>
 <translation id="6166185671393271715">Нууц үгийг Chrome-д импортлох</translation>
 <translation id="6169040057125497443">Микрофоноо шалгана уу.</translation>
 <translation id="6169967265765719844">Steam-р суулгасан тоглоомууд болон аппуудын зөвшөөрлийг <ph name="LINK_BEGIN" />Steam аппын тохиргоо<ph name="LINK_END" /> хэсэгт удирдах боломжтой.</translation>
@@ -7929,7 +7929,6 @@
 <translation id="6776729248872343918">Хурдан холбохыг идэвхжүүлэх</translation>
 <translation id="6777817260680419853">Дахин чиглүүлэлтийг блоклосон</translation>
 <translation id="6777845730143344223">Passpoint-н захиалгын талаар нэмэлт мэдээлэл авах</translation>
-<translation id="6778660707554364320"><ph name="APP" /> одоо апп байдлаар нээгдэнэ</translation>
 <translation id="6779092717724412415">Үүнтэй адил тодруулга үүсгэхийн тулд дурын текст сонгож, баруун талыг товшино уу.</translation>
 <translation id="6779348349813025131">Google Password Manager-т MacOS Keychain-д хандах эрх шаардлагатай</translation>
 <translation id="677965093459947883">Маш жижиг</translation>

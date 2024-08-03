@@ -2376,6 +2376,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2670102641511624474"><ph name="APP_NAME" /> deelt een Chrome-tabblad.</translation>
 <translation id="2670350619068134931">Minder animaties</translation>
 <translation id="2670403088701171361">Niet toestaan dat sites tekst of afbeeldingen op je klembord bekijken</translation>
+<translation id="2671423594960767771">Groep delen</translation>
 <translation id="2671451824761031126">Je bookmarks en instellingen zijn klaar</translation>
 <translation id="2672142220933875349">Beschadigd crx-bestand, uitpakken mislukt.</translation>
 <translation id="2672200806060988299">Je tabbladtitels en -URL's worden naar Google gestuurd en kunnen door menselijke reviewers worden bekeken om deze functie te verbeteren.</translation>
@@ -7116,7 +7117,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6164393601566177235">Sites toevoegen</translation>
 <translation id="6164832038898943453">Talen toevoegen om automatisch te vertalen</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
-<translation id="6165850999903769629">Alle apps op ChromeOS worden nu geopend in hun eigen app-vensters in plaats van in Chrome.</translation>
 <translation id="6166185671393271715">Wachtwoorden importeren in Chrome</translation>
 <translation id="6169040057125497443">Controleer je microfoon</translation>
 <translation id="6169967265765719844">Je kunt de rechten voor via Steam geïnstalleerde games en apps beheren in de <ph name="LINK_BEGIN" />instellingen van de Steam-app<ph name="LINK_END" />.</translation>
@@ -7815,6 +7815,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6691936601825168937">&amp;Vooruit</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 pagina}other{{COUNT} pagina's}}</translation>
 <translation id="6693820805264897502">bestaande wachtwoorden vervangen</translation>
+<translation id="6694634756612002311">Delen beheren</translation>
 <translation id="6697172646384837537">Selecteer waar je je wachtwoorden wilt importeren.</translation>
 <translation id="6697492270171225480">Suggesties voor vergelijkbare pagina's geven wanneer een pagina niet wordt gevonden</translation>
 <translation id="6697690052557311665">Als je een map wilt delen, klik je in de app Bestanden met de rechtermuisknop op een map en selecteer je 'Delen met Linux'.</translation>
@@ -7917,7 +7918,6 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6776729248872343918">Snel koppelen aanzetten</translation>
 <translation id="6777817260680419853">Omleiding geblokkeerd</translation>
 <translation id="6777845730143344223">Meer informatie over Passpoint-abonnementen</translation>
-<translation id="6778660707554364320"><ph name="APP" /> wordt nu geopend als app</translation>
 <translation id="6779092717724412415">Selecteer tekst en klik met de rechtermuisknop om een markering zoals deze te maken.</translation>
 <translation id="6779348349813025131">Google Wachtwoordmanager heeft toegang tot macOS-sleutelhanger nodig</translation>
 <translation id="677965093459947883">Zeer klein</translation>

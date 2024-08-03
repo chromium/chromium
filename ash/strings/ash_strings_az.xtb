@@ -87,6 +87,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1270290102613614947">Ekranüstü klaviatura deaktiv edildi</translation>
 <translation id="1272079795634619415">Dayandırın</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> cihazını qidalandırır</translation>
+<translation id="1275718070701477396">Seçilib</translation>
 <translation id="1276975447697633661">Faylı seçib, <ph name="KEY" /> düyməsini basın</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Telefonun məkanını təyin edin</translation>
@@ -1761,6 +1762,7 @@ Yeni quraşdırma</translation>
 <translation id="7312210124139670355">Administratorunuz eSIM-inizi sıfırlayır. Bir neçə dəqiqə çəkə bilər.</translation>
 <translation id="7312761820869643657">Cihazı əvvəlki versiyaya güncəlləyin</translation>
 <translation id="7313193732017069507">Kameranı genişləndirin</translation>
+<translation id="73289266812733869">Seçilməmiş</translation>
 <translation id="7330397557116570022">Mətn sahəsinə keçərək Diktədən istifadə edin</translation>
 <translation id="7331646370422660166">alt + aşağı ox</translation>
 <translation id="7337660433630200387">+10 dəq</translation>

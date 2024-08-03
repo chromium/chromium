@@ -188,7 +188,6 @@
 <translation id="132301787627749051">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಚಿತ್ರಕ್ಕಾಗಿ ಹುಡುಕಿ</translation>
 <translation id="1323433172918577554">ಇನ್ನಷ್ಟು ತೋರಿಸಿ</translation>
 <translation id="132390688737681464">ವಿಳಾಸಗಳನ್ನು ಉಳಿಸಿ ಮತ್ತು ಭರ್ತಿ ಮಾಡಿ</translation>
-<translation id="1325412080783393306">ಇನ್ನಷ್ಟು ಖರೀದಿಯ ಆಯ್ಕೆಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="1329916999021038454">ವರದಿಯೊಂದನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="1330449323196174374">ಎಡಭಾಗದ ಗೇಟ್ ಅನ್ನು ಮಡಿಸಿ</translation>
 <translation id="1333745675627230582">Chrome Dino ಗೇಮ್ ಆಡಿರಿ</translation>
@@ -232,6 +231,7 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ಯಾವುದೇ ಡೇಟಾ ಕಳುಹಿಸಲಾಗಿಲ್ಲ.</translation>
 <translation id="1405567553485452995">ತಿಳಿ ಹಸಿರು</translation>
 <translation id="1406812885827747674">ಈ ಬಾರಿ ಅನುಮತಿಸಿ</translation>
+<translation id="14070772729708640"><ph name="CLOUD_PROVIDER" /> ನಲ್ಲಿನ <ph name="FOLDER_NAME" /> ಗೆ ಯಶಸ್ವಿಯಾಗಿ ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1407135791313364759">ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ</translation>
 <translation id="1408787208417187241">ಮೇಲ್ಭಾಗದಲ್ಲಿ ಮೂರು ಸ್ಟೇಪಲ್ ಹಾಕಿ</translation>
 <translation id="1410365862999780287">ಈ ಸಾಧನವನ್ನು ಬಳಸುವ ಇತರರು ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ, ಇದರಿಂದ ನೀವು ಹೆಚ್ಚು ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಬಹುದು. ಇದರಿಂದ ನೀವು ಭೇಟಿ ನೀಡುವ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು Google ಸೇರಿದಂತೆ ಅವರು ಬಳಸುವ ಸೇವೆಗಳಿಂದ ಡೇಟಾವನ್ನು ಹೇಗೆ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ ಎಂಬುದು ಬದಲಾಗುವುದಿಲ್ಲ. ಡೌನ್‌ಲೋಡ್‌ಗಳು, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಓದುವ ಪಟ್ಟಿ ಐಟಂಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
@@ -267,6 +267,7 @@
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿರುವ ಫಾಂಟ್‌ಗಳನ್ನು ಬಳಸಿ, ಇದರಿಂದ ನೀವು ಹೈ ಫಿಡೆಲಿಟಿ ವಿಷಯವನ್ನು ರಚಿಸಬಹುದು</translation>
 <translation id="1463793142714244641">ಟೈಮ್‌ಶೇರ್‌ಗಳು ಮತ್ತು ವೆಕೇಶನ್ ಪ್ರಾಪರ್ಟಿಗಳು</translation>
+<translation id="1465457928007067810">IBAN ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಗೆ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1467432559032391204">ಎಡಕ್ಕೆ</translation>
 <translation id="1468653229182955856"><ph name="TOP_ORIGIN" /> ನಲ್ಲಿ ಮುಂದುವರಿಯಲು <ph name="EMBEDDED_ORIGIN" /> ಗೆ ಸಂಬಂಧಿಸಿದ ನಿಮ್ಮ ಕೋಡ್ <ph name="ONE_TIME_CODE" /></translation>
 <translation id="1472675084647422956">ಇನ್ನಷ್ಟು ತೋರಿಸಿ</translation>
@@ -1190,6 +1191,7 @@
 <translation id="3240791268468473923">ಸುರಕ್ಷಿತ ಪಾವತಿ ರುಜುವಾತಿಗೆ ಹೊಂದಾಣಿಕೆಯಾಗುವ ಯಾವುದೇ ರುಜುವಾತು ಶೀಟ್ ಅನ್ನು ತೆರೆಯಲಾಗಿಲ್ಲ</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” ಲಿಂಕ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="3248329428895535435">ಈ ಸೈಟ್‌ನಲ್ಲಿ ತೋರಿಸಬೇಡಿ</translation>
+<translation id="3249102948665905108">ದೋಷಗಳೊಂದಿಗೆ <ph name="CLOUD_PROVIDER" /> ಗೆ ಫೈಲ್ ಅಪ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="3252772880526154546">ವಾಸ್ತುಶಿಲ್ಪ</translation>
 <translation id="3254301855501243548">18 x 22 ಇಂಚು</translation>
 <translation id="3255926992597692024">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಭರ್ತಿ ಮಾಡಲು Chromium ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮಾರ್ಪಡಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>
@@ -1359,6 +1361,7 @@
 <translation id="3552155506104542239">ಎಚ್ಚರಿಕೆ: ಈ ನೀತಿ ಮತ್ತು <ph name="POLICY_NAME" /> ನಡುವೆ ಸಂಘರ್ಷವಿದೆ, ಇದು Android ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಪರಿಣಾಮಕಾರಿಯಾಗಿಲ್ಲ. ಇಲ್ಲವಾದರೆ, ಈ ನೀತಿಯು ಉದ್ದೇಶಿಸಿದಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.</translation>
 <translation id="3552297013052089404">ಸ್ಯಾನ್ಸ್ ಸೆರಿಫ್ ಫಾಂಟ್</translation>
 <translation id="3558573058928565255">ದಿನದ ಸಮಯ</translation>
+<translation id="3559897352860026926">ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ <ph name="CLOUD_PROVIDER" /> ಕಾನ್ಫಿಗರೇಶನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಹೇಳಿ.</translation>
 <translation id="355995771319966853">ಆಟೋಫಿಲ್ ಅನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="3560408312959371419">ಟ್ರ್ಯಾಕಿಂಗ್ ಸಂರಕ್ಷಣೆಗಳು ಮತ್ತು ಸಾಧನದಲ್ಲಿರುವ ಸೈಟ್ ಡೇಟಾದ ಆಯ್ಕೆಗಳು</translation>
 <translation id="3560824484345057728">ಸಂಬಂಧಿತ ಸೈಟ್‌ಗಳನ್ನು ನೋಡಿ</translation>
@@ -2023,6 +2026,7 @@
 <translation id="4816492930507672669">ಪುಟಕ್ಕೆ ಹೊಂದಿಸು</translation>
 <translation id="4819347708020428563">ಡೀಫಾಲ್ಟ್ ವೀಕ್ಷಣೆಯಲ್ಲಿ ಟಿಪ್ಪಣಿಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="4822493756793346865">ಸಾಮಾನ್ಯ ಬೆಲೆಗಳು ವೆಬ್‌ನಾದ್ಯಂತದ ಸ್ಟೋರ್‌ಗಳಲ್ಲಿನ ಕಳೆದ 90 ದಿನಗಳಲ್ಲಿನ ಬೆಲೆಗಳನ್ನು ಆಧರಿಸಿವೆ.</translation>
+<translation id="4822922322149719535">ದೋಷದ ಲಾಗ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಹೊಸ Google Sheet ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="4826588772550366629">ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್</translation>
 <translation id="4827283332383516812">ಕಾರ್ಡ್ ಅನ್ನು ಅಳಿಸಿ</translation>
@@ -2681,6 +2685,7 @@
 <translation id="6061154937977953833">ಕುಸ್ತಿ</translation>
 <translation id="6062937464449575061">ಬೆಲೆ ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="6063415549109819824">ಗೃಹ ಸಾಲ</translation>
+<translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" /> ನಲ್ಲಿನ <ph name="FOLDER_NAME" /> ಗೆ ಒಂದು ಅಥವಾ ಹೆಚ್ಚಿನ ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6080696365213338172">ನಿರ್ವಾಹಕರು-ಒದಗಿಸಿದ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಬಳಸಿಕೊಂಡು ನೀವು ವಿಷಯವನ್ನು ಪ್ರವೇಶಿಸಿರುವಿರಿ. <ph name="DOMAIN" /> ಗೆ ನೀವು ಒದಗಿಸುವ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ತಡೆಹಿಡಿಯಬಹುದಾಗಿದೆ.</translation>
 <translation id="6085149458302186532">ಲೇಬಲ್‌ಗಳು (ಬಣ್ಣದ)</translation>
 <translation id="6087312102907839798">ಸಂಬಂಧಿತ ಹುಡುಕಾಟಗಳು</translation>
@@ -2802,6 +2807,7 @@
 <translation id="6307968763353904914">ಈಗ ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಈ ಪಾವತಿ ವಿಧಾನಕ್ಕಾಗಿ ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ಗಳನ್ನು ಒದಗಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ, ಆದರೆ ನೀವು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಪಾವತಿಸಲು ಈಗಲೂ ನಿಮ್ಮ <ph name="CARD_LABEL" /> ಅನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="6311410654831092784">ಕಾರ್ಡ್ ಸ್ಟಾಕ್</translation>
 <translation id="6312113039770857350">ವೆಬ್‌ಪುಟ ಲಭ್ಯವಿಲ್ಲ</translation>
+<translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" /> ಗೆ ಫೈಲ್ ಅಪ್‌ಲೋಡ್ ಮಾಡುವುದನ್ನು ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6316723751983724988">ಹೊಸತು: Chrome ಗಾಗಿ Family Link ಆಯ್ಕೆಗಳು ಇಲ್ಲಿ ಅನ್ವಯಿಸುತ್ತವೆ</translation>
 <translation id="63172326633386613">ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6321917430147971392">ನಿಮ್ಮ DNS ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
@@ -3000,6 +3006,7 @@
 <translation id="6687335167692595844">ವಿನಂತಿಸಲಾದ ಫಾಂಟ್ ಗಾತ್ರ</translation>
 <translation id="6688743156324860098">ಅಪ್‌ಡೇಟ್ ಮಾಡಿ…</translation>
 <translation id="6688775486821967877">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಇದೀಗ ಲಭ್ಯವಿಲ್ಲ, ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
+<translation id="6688851075017682769">ದೇಶದ ಪ್ರಕಾರ ವಿಳಾಸವನ್ನು ಪರೀಕ್ಷಿಸಿ</translation>
 <translation id="6689249931105087298">ಕಪ್ಪು ಬಿಂದು ಕಂಪ್ರೆಶ್ಶನ್‌ಗೆ ಸಂಬಂಧಿಸಿದ</translation>
 <translation id="6689271823431384964">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿರುವ ಕಾರಣದಿಂದಾಗಿ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನಿಮ್ಮ ಕಾರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲು Chrome ಅವಕಾಶ ನೀಡುತ್ತಿದೆ. ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನೀವು ಈ ವರ್ತನೆಯನ್ನು ಬದಲಿಸಬಹುದು. ಕಾರ್ಡ್ ಹೋಲ್ಡರ್ ಹೆಸರು ನಿಮ್ಮ ಖಾತೆಯಿಂದ ಬರುತ್ತದೆ.</translation>
 <translation id="6691397311652656001"><ph name="REQUIRED_FREE_DISK_SPACE" /> 
@@ -3157,6 +3164,7 @@
 <translation id="6979440798594660689">ಮ್ಯೂಟ್ (ಡಿಫಾಲ್ಟ್)</translation>
 <translation id="6984270784814146224">ಲೇಬಲ್ ಮಾಡದ ಚಿತ್ರ. Google AI ನಿಂದ ಚಾಲಿತ ಪಠ್ಯವನ್ನು ಎಕ್ಸ್‌ಟ್ರ್ಯಾಕ್ಟ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6987806006823772670">ಎನ್ವಲಪ್ (ಲೇಪಿತ)</translation>
+<translation id="6989256887001961296">ಈ ಕಂಟೆಂಟ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="6989763994942163495">ಸುಧಾರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸು...</translation>
 <translation id="6996312675313362352"><ph name="ORIGINAL_LANGUAGE" />ಭಾಷೆಯನ್ನು ಯಾವಾಗಲೂ ಅನುವಾದಿಸಿ</translation>
 <translation id="6997288673234694149">ಬೇಸ್‌ಬಾಲ್ ಮತ್ತು ಸಾಫ್ಟ್‌ಬಾಲ್ ಉಪಕರಣ</translation>
@@ -3188,6 +3196,7 @@
 <translation id="7050187094878475250">ನೀವು <ph name="DOMAIN" /> ಅನ್ನು ತಲುಪಲು ಪ್ರಯತ್ನಿಸಿರುವಿರಿ, ಆದರೆ ಸರ್ವರ್ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿರಲು ತುಂಬ ಉದ್ದವಾದ ವಾಯಿದೆ ಅವಧಿಯನ್ನು ಹೊಂದಿರುವ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಸಲ್ಲಿಸಿದೆ.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ಇದೀಗ ಈ ಕಾರ್ಡ್ ಅನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ}one{ಇದೀಗ ಈ ಕಾರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ}other{ಇದೀಗ ಈ ಕಾರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ}}</translation>
 <translation id="7053983685419859001">ನಿರ್ಬಂಧಿಸು</translation>
+<translation id="7054717457611655239">ಇಂದಿನಿಂದ, ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು <ph name="CLOUD_PROVIDER" /> ಗೆ ಸೇವ್ ಮಾಡಿ.</translation>
 <translation id="7058163556978339998"><ph name="ISSUER" /> ಈ ವೆಬ್‌ಸೈಟ್‌ನ ಪ್ರಮಾಣಪತ್ರವನ್ನು ನೀಡಿದೆ ಎಂದು <ph name="BROWSER" /> ಪರಿಶೀಲಿಸಿದೆ.</translation>
 <translation id="7058774143982824355">CSV ಪಾಸ್‌ವರ್ಡ್ ವಿಶ್ಲೇಷಕ ಸೇವೆ</translation>
 <translation id="7062635574500127092">ಗಾಢ ಹಸಿರು-ನೀಲಿ</translation>
@@ -3917,6 +3926,7 @@
 <translation id="8371841335382565017">ಕ್ಯಾಸ್ಟ್ ಮಾಡುವುದಕ್ಕಾಗಿ ಸಾಧನದ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8371889962595521444">ಕಸ್ಟಮ್ ರೂಟ್ ಪ್ರಮಾಣಪತ್ರಗಳು</translation>
 <translation id="8374636051559112948">ಬದಲಾಗುತ್ತದೆ</translation>
+<translation id="837840316697671463">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಫೈಲ್ ಅನ್ನು ಹುಡುಕಲಾಗದಿದ್ದರೆ, <ph name="CLOUD_PROVIDER" /> ನಲ್ಲಿ ಹುಡುಕಿ.</translation>
 <translation id="8378714024927312812">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="8380941800586852976">ಅಪಾಯಕಾರಿ</translation>
 <translation id="8381674639488873545">ಈ ಶುಲ್ಕವು ಒಂದು ಬಾರಿ ಪಾವತಿಯದಾಗಿರಬಹುದು ಅಥವಾ ಮರುಕಳಿಸುವುದಾಗಿರಬಹುದು, ಮತ್ತು ಸ್ಪಷ್ಟವಾಗಿಲ್ಲದೇ ಇರಬಹುದು. <ph name="BEGIN_LINK" />ಹೇಗಿದ್ದರೂ ತೋರಿಸಿ<ph name="END_LINK" /></translation>
@@ -4066,6 +4076,7 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> ಮೌಲ್ಯವು ಗಾತ್ರದ ಅಗತ್ಯತೆಗಳನ್ನು ಪೂರೈಸುವುದಿಲ್ಲ.</translation>
 <translation id="867224526087042813">ಸಹಿ</translation>
 <translation id="8672535691554698269">ಕಂಪ್ಯೂಟರ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
+<translation id="8675446170353411473">ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು <ph name="CLOUD_PROVIDER" /> ಗೆ ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8676424191133491403">ಯಾವುದೇ ವಿಳಂಬವಿಲ್ಲ</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, ಉತ್ತರ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> ನಲ್ಲಿ ವೆಬ್‌ಪುಟವನ್ನು ಈ ಕಾರಣದಿಂದ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ:</translation>
@@ -4147,6 +4158,7 @@
 <translation id="8820817407110198400">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="882338992931677877">ಹಸ್ತಚಾಲಿತ ಟ್ರೇ</translation>
 <translation id="8830320733681313421">Hagaki ಪೋಸ್ಟ್‌ಕಾರ್ಡ್</translation>
+<translation id="8830565333350631528"><ph name="CLOUD_PROVIDER" /> ನಲ್ಲಿ ಫೈಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="8833007469711500369">ಬಟ್ಟೆ ಒಗೆಯುವ ಮತ್ತು ಒಣಗಿಸುವ ಯಂತ್ರಗಳು</translation>
 <translation id="8834962751196791179">ನೀವು ಈ ಎಚ್ಚರಿಕೆಯನ್ನು ನೋಡುತ್ತಿರುವುದು ಏಕೆಂದರೆ ಈ ಸೈಟ್ HTTPS ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ ಮತ್ತು ನೀವು ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿರುವಿರಿ. <ph name="BEGIN_LEARN_MORE_LINK" />ಈ ಎಚ್ಚರಿಕೆಯ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">TV ಸೈ-ಫೈ ಮತ್ತು ಫ್ಯಾಂಟಸಿ ಶೋಗಳು</translation>

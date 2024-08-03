@@ -87,6 +87,7 @@
 <translation id="1270290102613614947">ეკრანული კლავიატურა გამორთულია</translation>
 <translation id="1272079795634619415">შეწყვეტა</translation>
 <translation id="1275285675049378717">ელკვება მიეწოდება: <ph name="POWER_SOURCE" /></translation>
+<translation id="1275718070701477396">შერჩეული</translation>
 <translation id="1276975447697633661">აირჩიეთ ფაილი, შემდეგ კი დააჭერით აირჩიეთ <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ტელეფონის მდებარეობის დადგენა</translation>
@@ -1085,6 +1086,7 @@
 <translation id="4890408602550914571">ტელეფონი ახლოს უნდა გქონდეთ და მასზე ჩართული იყოს Bluetooth.</translation>
 <translation id="4892981359753171125">სახის კონტროლი</translation>
 <translation id="4895488851634969361">ბატარეა სავსეა.</translation>
+<translation id="4902797682482387055">ფოკუსირებისთვის შემოთავაზებული დავალება</translation>
 <translation id="490375751687810070">ვერტიკალური</translation>
 <translation id="490788395437447240">ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="491504982845934899">გააქტიურება მოწყობილობის დაყენების შემდეგ <ph name="NETWORK_NAME" /></translation>
@@ -1762,6 +1764,7 @@
 <translation id="7312210124139670355">ადმინისტრატორი ახორციელებს თქვენი eSIM-ის გადაყენებას. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="7312761820869643657">დააბრუნეთ მოწყობილობის წინა ვერსია</translation>
 <translation id="7313193732017069507">კამერის გაფართოება</translation>
+<translation id="73289266812733869">მოუნიშნავი</translation>
 <translation id="7330397557116570022">კარნახის გამოსაყენებლად გადადით ტექსტურ ველზე</translation>
 <translation id="7331646370422660166">alt + ქვემოთ მიმართული ისარი</translation>
 <translation id="7337660433630200387">+10 წთ</translation>

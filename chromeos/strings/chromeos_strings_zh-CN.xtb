@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">文件馈送器（双面）</translation>
 <translation id="3201315366910775591">他人可以更新共享影集</translation>
 <translation id="3211671540163313381">按键映射方向键</translation>
-<translation id="3224812403568276799">如果您允许使用此功能，录音机会使用高级音频分析技术自动检测不同的语音，并为每种语音添加一个宽泛的标签，例如讲者 1、讲者 2。
-
-您随时可在“设置”中关闭此功能。</translation>
 <translation id="3226405216343213872">正在搜寻扫描器</translation>
 <translation id="3226657629376379887">布局操作菜单</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />值除以 <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@
 <translation id="5318334351163689047">TCP 请求失败</translation>
 <translation id="53196409393069519">要开启转写功能吗？</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，<ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">名称</translation>
 <translation id="5332948983412042822">请立即设置一个新密码</translation>
 <translation id="5333530671332546086">门户状态不明</translation>
 <translation id="5335373365677455232">粉色</translation>
@@ -1108,6 +1106,7 @@
 <translation id="6905724422583748843">返回“<ph name="PAGE_NAME" />”</translation>
 <translation id="6910312834584889076">扫描仪的盖子没合上。请合上盖子，然后重试。</translation>
 <translation id="6911383237894364323">无法连接到媒体服务器</translation>
+<translation id="6930242544192836755">持续时间</translation>
 <translation id="6930597342185648547">关于背景</translation>
 <translation id="6939667434404433010">搜索录制内容名称</translation>
 <translation id="6939766318048400022">咖啡馆</translation>
@@ -1328,6 +1327,7 @@
 <translation id="8004582292198964060">浏览器</translation>
 <translation id="8017679124341497925">已修改快捷方式</translation>
 <translation id="802154636333426148">下载失败</translation>
+<translation id="8028993641010258682">大小</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">启用自动颜色模式</translation>
 <translation id="8041089156583427627">发送反馈</translation>

@@ -1460,13 +1460,6 @@ Cette règle est habituellement désactivée pour protéger les utilisateurs con
 
       Si elle est activée ou si elle n'est pas configurée, la définition pour Réponses rapides sera activée.
       Si elle est désactivée, la définition pour Réponses rapides sera désactivée.</translation>
-<translation id="2095778449451007308">Cette règle détermine si les utilisateurs peuvent activer ou non le mode HTTPS uniquement (toujours utiliser une connexion sécurisée) dans les paramètres. Ce mode fait passer toutes les navigations en HTTPS.
-      Si ce paramètre n'est pas défini ou s'il est défini sur "Autorisé", les utilisateurs seront autorisés à activer le mode HTTPS uniquement.
-      Si ce paramètre est défini sur "Interdit", les utilisateurs ne seront pas autorisés à activer le mode HTTPS uniquement.
-      Si ce paramètre est défini sur "force_enabled", le mode HTTPS uniquement sera activé et les utilisateurs ne pourront pas le désactiver.
-      L'activation forcée du mode HTTPS uniquement est disponible à partir de M112.
-
-La règle <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> distincte permet d'éviter que cette fonctionnalité mette à niveau des noms d'hôte ou des modèles du nom d'hôte spécifiques vers HTTPS.</translation>
 <translation id="209586405398070749">Version stable</translation>
 <translation id="2096932573113293941">Demander à l'utilisateur l'autorisation d'exécuter les plug-ins qui nécessitent une autorisation</translation>
 <translation id="2098658257603918882">Autoriser l'envoi de statistiques d'utilisation et de rapports d'erreur</translation>
@@ -2026,7 +2019,6 @@ Si cette règle n'est pas configurée, la valeur par défaut est <ph name="POLIC
 <translation id="2492240920793040106">Activer les rapports sur les informations système et du contenu de pages afin d'améliorer la navigation sécurisée</translation>
 <translation id="2496180316473517155">Historique de navigation</translation>
 <translation id="2497751676088107779">Script utilisateur</translation>
-<translation id="2497965601277442929">Ne pas autoriser les utilisateurs à activer le mode HTTPS uniquement</translation>
 <translation id="249798396824949930"> Détermine si le navigateur peut ou non détecter le champ d'application obligatoire des règles sur <ph name="MAC_OS_NAME" />.
 
       Si cette règle est activée ou n'est pas configurée, la portée de chaque règle sera déterminée par la portée du profil <ph name="MAC_OS_NAME" /> géré.
@@ -2658,7 +2650,6 @@ Si la valeur est définie sur <ph name="LONGPRESSONLY_ENUM_VALUE" />, les entit�
 
       Dans <ph name="PRODUCT_NAME" /> 81 et les versions ultérieures, si la règle n'est pas définie, l'authentification ambiante sera activée pour les sessions standards uniquement.</translation>
 <translation id="3021562480854470924">Nombre de versions intermédiaires autorisées pour le rollback</translation>
-<translation id="3023172689742785487">Forcer l'activation du mode HTTPS uniquement</translation>
 <translation id="3023572080620427845">URL d'un fichier XML qui contient des URL à charger dans un navigateur secondaire.</translation>
 <translation id="302528139996622624">Paramètres des images</translation>
 <translation id="3026740867910702435">Permet d'activer la fonctionnalité d'accessibilité de grand curseur sur l'écran de connexion.
@@ -6250,7 +6241,6 @@ Vous pouvez ajouter une autre restriction de compte avec la règle <ph name="MIC
 <translation id="5848438019586925019">Algorithme pour la génération de paires de clés.</translation>
 <translation id="5851248808417680865">Utiliser le thème sombre</translation>
 <translation id="585270638818921943">Empêche l'utilisateur de se servir d'applications Android provenant de sources non approuvées</translation>
-<translation id="5853547031212075792">Autoriser les utilisateurs à activer le mode HTTPS uniquement</translation>
 <translation id="5859344336338527083">Permet de déterminer quelles URL peuvent installer des extensions, des applications et des thèmes. Avant la version 21 de <ph name="PRODUCT_NAME" />, les utilisateurs pouvaient cliquer sur un lien qui renvoyait vers un fichier *.crx, et <ph name="PRODUCT_NAME" /> leur proposait d'installer ce fichier, tout en affichant d'abord quelques avertissements. Depuis, les fichiers de ce type doivent être téléchargés et glissés vers la page des paramètres <ph name="PRODUCT_NAME" />. Cette règle permet d'appliquer à des URL spécifiques l'ancienne procédure d'installation, plus facile à suivre.
 
       Chaque élément de cette liste est un format d'identification de style extension (voir https://developer.chrome.com/extensions/match_patterns). Les utilisateurs peuvent facilement installer des éléments depuis n'importe quelle URL correspondant à un élément de cette liste. L'emplacement du fichier *.crx et la page de téléchargement (page de provenance) doivent tous deux être autorisés par ces formats.
@@ -8165,9 +8155,6 @@ Remarque : Si vous utilisez cette règle pour résoudre automatiquement le fuse
       Si une extension ne figure pas sur la liste, ou si la liste n'est pas configurée, l'appel vers l'API échoue, et un code d'erreur est renvoyé.</translation>
 <translation id="718956142899066210">Types de connexion autorisés pour les mises à jour</translation>
 <translation id="7190286937411178540">Activer la fonctionnalité d'accessibilité de mise en surbrillance au clavier</translation>
-<translation id="7193489339723768342">Permet d'établir la liste des URL dont les formats sont mis en correspondance avec la source de sécurité de l'URL à l'origine de la demande. En cas de correspondance, l'accès aux appareils de capture audio est autorisé sans invite.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, consultez la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="719398790886719721">Désactiver l'accès racine aux machines virtuelles Linux</translation>
 <translation id="7194407337890404814">Nom du moteur de recherche par défaut</translation>
 <translation id="7196336906814426783">Cette règle définit une série d'intervalles hebdomadaires pour la planification des suspensions automatiques. L'appareil <ph name="PRODUCT_OS_NAME" /> passe en mode suspendu au début d'un intervalle, puis se réactive à la fin de l'intervalle.
@@ -8798,9 +8785,6 @@ Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélection
 
       Il était prévu que cette règle serait temporaire. Elle a été supprimée après le lancement complet de la nouvelle interface utilisateur de l'info-bulle de téléchargement.</translation>
 <translation id="7736521021425189418">Terminal (disponible depuis la version 117)</translation>
-<translation id="77379430721695807">Permet d'établir la liste des URL dont les formats sont mis en correspondance avec la source de sécurité de l'URL à l'origine de la demande. En cas de correspondance, l'accès aux appareils de capture vidéo est autorisé sans invite.
-
-      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, consultez la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="7740644123648617252">Activer l'importation des données de saisie automatique à la première exécution</translation>
 <translation id="7744253761377202223">Pourcentage de luminosité de l'écran lorsque l'appareil fonctionne sur secteur.</translation>
 <translation id="7747447585227954402">Autoriser les appareils à utiliser un <ph name="PLUGIN_VM_NAME" /> pour <ph name="PRODUCT_OS_NAME" /></translation>

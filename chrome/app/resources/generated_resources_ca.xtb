@@ -2376,6 +2376,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2670102641511624474"><ph name="APP_NAME" /> està compartint una pestanya de Chrome.</translation>
 <translation id="2670350619068134931">Animacions reduïdes</translation>
 <translation id="2670403088701171361">No permetis que els llocs web vegin el text o les imatges del porta-retalls</translation>
+<translation id="2671423594960767771">Comparteix el grup</translation>
 <translation id="2671451824761031126">Les adreces d'interès i la configuració estan preparades</translation>
 <translation id="2672142220933875349">El fitxer crx és incorrecte i no s'ha pogut descomprimir.</translation>
 <translation id="2672200806060988299">Els títols i els URL de les pestanyes s'envien a Google i és possible que els revisors humans els vegin per millorar aquesta funció.</translation>
@@ -7115,7 +7116,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6164393601566177235">Afegeix llocs web</translation>
 <translation id="6164832038898943453">Afegeix idiomes perquè es tradueixin automàticament</translation>
 <translation id="6165508094623778733">Més informació</translation>
-<translation id="6165850999903769629">Ara, totes les aplicacions que utilitzen ChromeOS s'obren a les seves pròpies finestres d'aplicació en lloc de fer-ho a Chrome.</translation>
 <translation id="6166185671393271715">Importeu contrasenyes a Chrome</translation>
 <translation id="6169040057125497443">Comprova el micròfon.</translation>
 <translation id="6169967265765719844">Els permisos per als jocs i les aplicacions instal·lats mitjançant Steam es poden gestionar a la <ph name="LINK_BEGIN" />configuració de l'aplicació Steam<ph name="LINK_END" />.</translation>
@@ -7915,7 +7915,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6776729248872343918">Activa Vinculació ràpida</translation>
 <translation id="6777817260680419853">S'ha bloquejat la redirecció</translation>
 <translation id="6777845730143344223">Més informació sobre les subscripcions a Passpoint</translation>
-<translation id="6778660707554364320"><ph name="APP" /> ara s'obre com una aplicació</translation>
 <translation id="6779092717724412415">Per crear un destacat com aquest, selecciona qualsevol text i fes clic amb el botó dret.</translation>
 <translation id="6779348349813025131">El gestor de contrasenyes de Google necessita accés al clauer de macOS</translation>
 <translation id="677965093459947883">Molt petita</translation>

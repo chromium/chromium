@@ -87,6 +87,7 @@
 <translation id="1270290102613614947">ಆನ್ ಸ್ಕ್ರೀನ್ ಕೀಬೋರ್ಡ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1272079795634619415">ನಿಲ್ಲಿಸಿ</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> ಅನ್ನು ಚಾರ್ಜ್ ಮಾಡುತ್ತಿದೆ</translation>
+<translation id="1275718070701477396">ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1276975447697633661">ಫೈಲ್‌ ಆಯ್ಕೆ ಮಾಡಿ, ನಂತರ <ph name="KEY" /> ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ಫೋನ್ ಅನ್ನು ಪತ್ತೆ ಹಚ್ಚಿ</translation>
@@ -1362,6 +1363,7 @@
 <translation id="5819918159912280082">ನಿಮ್ಮ Chromebook ಅನಿರೀಕ್ಷಿತವಾಗಿ ಮರುಪ್ರಾರಂಭಗೊಂಡಿದೆ. ನಿಮ್ಮ ಹಿಂದಿನ ವಿಂಡೋಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="5823239091726045201">ವೆಬ್‌ನಲ್ಲಿ Google ಕಾರ್ಯಗಳು</translation>
 <translation id="5825969630400862129">ಕನೆಕ್ಟ್ ಮಾಡಿದ ಸಾಧನಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="5830180081891717894">ಇನ್ನೂ <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> ನಲ್ಲಿ <ph name="ROUTE_TITLE" /> ನಿಲ್ಲಿಸಿ</translation>
 <translation id="5841296711770970362">ಮುಂದಿನ ಟ್ರ್ಯಾಕ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> ಹಾಟ್‌ಸ್ಪಾಟ್ ಆನ್ ಆಗಿದೆ, ಯಾವುದೇ ಸಾಧನಗಳು ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ</translation>
@@ -1761,6 +1763,7 @@
 <translation id="7312210124139670355">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಮ್ಮ eSIM ಅನ್ನು ರೀಸೆಟ್ ಮಾಡುತ್ತಿದ್ದಾರೆ. ಇದಕ್ಕೆ ಕೆಲವು ನಿಮಿಷಗಳ ಕಾಲಾವಕಾಶ ಬೇಕಾಗಬಹುದು.</translation>
 <translation id="7312761820869643657">ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ</translation>
 <translation id="7313193732017069507">ಕ್ಯಾಮರಾ ವಿಸ್ತರಿಸಿ</translation>
+<translation id="73289266812733869">ಆಯ್ಕೆ ಮಾಡಲಾಗಿಲ್ಲ</translation>
 <translation id="7330397557116570022">ಉಕ್ತಲೇಖನವನ್ನು ಬಳಸಲು ಪಠ್ಯದ ಫೀಲ್ಡ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="7331646370422660166">alt + ಡೌನ್ ಆ್ಯರೋ</translation>
 <translation id="7337660433630200387">+10 ನಿಮಿಷ</translation>
@@ -2068,6 +2071,7 @@
 <translation id="8375916635258623388">ಈ <ph name="DEVICE_NAME" /> ಸಾಧನ ಮತ್ತು ನಿಮ್ಮ ಫೋನ್ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸಂಪರ್ಕಗೊಳ್ಳುತ್ತವೆ</translation>
 <translation id="8380784334203145311">ಶುಭ ರಾತ್ರಿ,</translation>
 <translation id="8382715499079447151">ವೀಕ್ಷಣೆ ಸುರಕ್ಷತೆ</translation>
+<translation id="8383614331548401927">ಸುಸ್ವಾಗತ Recap</translation>
 <translation id="8388750414311082622">ಕೊನೆಯ ಡೆಸ್ಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕುವಂತಿಲ್ಲ.</translation>
 <translation id="8394567579869570560">ನಿಮ್ಮ ಪೋಷಕರು ಈ ಸಾಧನವನ್ನು ಲಾಕ್ ಮಾಡಿದ್ದಾರೆ</translation>
 <translation id="8401850874595457088">ಭಾಷೆ ಮೆನುವನ್ನು ನಮೂದಿಸಿ</translation>

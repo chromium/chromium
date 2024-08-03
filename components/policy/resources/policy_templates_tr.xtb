@@ -1486,13 +1486,6 @@ Genellikle bu politika kimlik avına karşı bir savunma olarak Devre Dışıdı
 
       Politika etkinleştirilirse veya ayarlanmadan bırakılırsa Bil bakalım tanımı etkinleştirilir.
       Politika devre dışı bırakılırsa Bil bakalım tanımı devre dışı bırakılır.</translation>
-<translation id="2095778449451007308">Bu politika, kullanıcıların Yalnızca HTTPS Modu'nu (Her Zaman Güvenli Bağlantılar Kullan) Ayarlar'da etkinleştirip etkinleştiremeyeceğini kontrol eder. Yalnızca HTTPS Modu, tüm gezinmeleri HTTPS'ye yükseltir.
-      Bu ayar belirtilmezse veya izin verildi olarak seçilirse kullanıcılar Yalnızca HTTPS Modunu etkinleştirebilir.
-      Bu ayar izin verilmedi olarak seçilirse kullanıcılar Yalnızca HTTPS Modunu etkinleştiremez.
-      Bu ayar, force_enabled değerine ayarlanırsa "yalnızca HTTPS modu" etkinleştirilir ve kullanıcılar bu modu devre dışı bırakamaz.
-      Yalnızca HTTPS modunu etkinleştirmeye zorla seçeneği, M112 ve sonraki sürümlerde desteklenir.
-
-Belirli ana makine adlarının veya ana makine adı kalıplarının bu özellik tarafından HTTPS'ye yükseltilmesini engellemek için ayrı <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> politikası kullanılabilir.</translation>
 <translation id="209586405398070749">Mevcut ürün kanalı</translation>
 <translation id="2096932573113293941">Yetkilendirme gerektiren eklentileri çalıştırmak için kullanıcıdan izin iste</translation>
 <translation id="2098658257603918882">Kullanım ve kilitlenme ile ilgili verilerin raporlanmasını etkinleştir</translation>
@@ -2072,7 +2065,6 @@ seçimdir.</translation>
 <translation id="2492240920793040106">Güvenli Tarama'nın iyileştirilmesine yardımcı olmak için sistem bilgilerinin ve sayfa içeriğinin raporlanmasını etkinleştir</translation>
 <translation id="2496180316473517155">Tarama geçmişi</translation>
 <translation id="2497751676088107779">Kullanıcı komut dosyası</translation>
-<translation id="2497965601277442929">Kullanıcıların Yalnızca HTTPS Modunu etkinleştirmesine izin verme</translation>
 <translation id="249798396824949930"> Tarayıcının, <ph name="MAC_OS_NAME" /> işletim sisteminde zorunlu politika kapsamını algılayıp algılamayacağını kontrol eder.
 
       Politika, etkin değerine ayarlanır veya ayarlanmadan bırakılırsa her politikanın kapsamı, <ph name="MAC_OS_NAME" /> yönetilen profilinin kapsamına göre belirlenir.
@@ -2710,7 +2702,6 @@ Değer <ph name="LONGPRESSONLY_ENUM_VALUE" /> olarak ayarlanırsa öğeler algı
 
       <ph name="PRODUCT_NAME" /> sürüm 81 ve sonraki sürümlerde politika ayarlanmadan bırakılırsa ambiyans kimlik doğrulaması yalnızca normal oturumlarda etkinleştirilir.</translation>
 <translation id="3021562480854470924">Geri alma işleminin izin verildiği dönüm noktası sayısı</translation>
-<translation id="3023172689742785487">Yalnızca HTTPS modunu etkinleştirmeye zorla</translation>
 <translation id="3023572080620427845">Alternatif bir tarayıcıda yüklenecek URL'leri içeren bir XML dosyasının URL'si.</translation>
 <translation id="302528139996622624">Resim ayarları</translation>
 <translation id="3026740867910702435">Giriş ekranında büyük imleç erişilebilirlik özelliğini etkinleştirin.
@@ -6354,7 +6345,6 @@ Politikanın ayarlanmadan bırakılması, normal kullanıcılar için işlevsel 
 <translation id="5848438019586925019">Anahtar çifti oluşturmak için kullanılan algoritma.</translation>
 <translation id="5851248808417680865">Koyu temayı kullan</translation>
 <translation id="585270638818921943">Kullanıcının güvenilmeyen kaynaklardan Android uygulamaları kullanmasını engelle</translation>
-<translation id="5853547031212075792">Kullanıcıların Yalnızca HTTPS Modunu etkinleştirmesine izin ver</translation>
 <translation id="5859344336338527083">Politikayı ayarlamak uzantı, uygulama ve tema yükleyebilecek URL'leri belirtir. <ph name="PRODUCT_NAME" /> 21 sürümünden önce, kullanıcılar bir *.crx dosyası bağlantısını tıklayarak <ph name="PRODUCT_NAME" /> ürününün birkaç uyarıdan sonra dosyayı yüklemesini sağlayabiliyordu. Daha sonra, bu tür dosyaların indirilip <ph name="PRODUCT_NAME" /> ayarları sayfasına sürüklenmesi zorunlu hale getirilmiştir. Bu ayar, belirli URL'lerin eski, daha kolay yükleme akışına sahip olmasına olanak tanır.
 
       Bu listedeki her öğe bir uzantı stili eşleşme kalıbıdır (https://developer.chrome.com/extensions/match_patterns sayfasına bakın). Kullanıcılar, bu listedeki bir öğeyle eşleşen herhangi bir URL'deki öğeleri kolayca yükleyebilirler. Bu kalıplar hem *.crx dosyasının konumuna hem de indirmenin başlatıldığı sayfaya (yönlendirene) izin vermelidir.
@@ -8323,9 +8313,6 @@ Not: Bu politikayı, saat dilimini otomatik olarak çözümlemek için kullanıy
       Bir uzantı listede yoksa veya liste ayarlanmamışsa API'ye yapılan çağrılar başarısız olur ve hata kodu görüntülenir.</translation>
 <translation id="718956142899066210">Güncellemeler için izin verilen bağlantı türleri</translation>
 <translation id="7190286937411178540">Klavye odağını vurgulama erişilebilirlik özelliğini etkinleştir</translation>
-<translation id="7193489339723768342">Politikanın ayarlanması, kalıpları istek yapan URL'nin güvenlik kaynağıyla eşleşen URL listesini sizin belirttiğiniz anlamına gelir. Eşleşme olması halinde istemde bulunulmadan ses yakalama cihazlarına erişim izni verilir
-
-      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için lütfen https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakın.</translation>
 <translation id="719398790886719721">Linux sanal makinelerine kök erişimi devre dışı bırak</translation>
 <translation id="7194407337890404814">Varsayılan arama sağlayıcının adı</translation>
 <translation id="7196336906814426783">Bu politika, otomatik askıya alma işleminin programlanması için bir dizi haftalık aralık oluşturur. <ph name="PRODUCT_OS_NAME" /> cihaz, bir aralık başladığında askıya alma moduna girer ve aralık sona erdiğinde uyanır.
@@ -8965,9 +8952,6 @@ Bu politika ayarlanmadan bırakılırsa PDF oluşturucu tarayıcı tarafından s
 
       Geçici bir süreliğine kullanılması planlanan bu politika, yeni indirme balonu kullanıcı arayüzü tam olarak kullanıma sunulduktan sonra kaldırılmıştır.</translation>
 <translation id="7736521021425189418">Terminal (117 sürümünden itibaren desteklenir)</translation>
-<translation id="77379430721695807">Politikanın ayarlanması, kalıpları istek yapan URL'nin güvenlik kaynağıyla eşleşen URL listesini sizin belirttiğiniz anlamına gelir. Eşleşme olması halinde istemde bulunulmadan video yakalama cihazlarına erişim izni verilir
-
-      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için lütfen https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakın.</translation>
 <translation id="7740644123648617252">İlk çalıştırmada form otomatik doldurma verilerinin içe aktarılmasını etkinleştir</translation>
 <translation id="7744253761377202223">AC gücünde çalışırken ekran parlaklığı yüzdesi</translation>
 <translation id="7747447585227954402">Cihazların <ph name="PRODUCT_OS_NAME" /> üzerinde bir <ph name="PLUGIN_VM_NAME" /> kullanmasına izin verir</translation>

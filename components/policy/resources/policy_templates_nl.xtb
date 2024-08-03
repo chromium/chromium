@@ -1460,13 +1460,6 @@ Dit beleid wordt meestal niet toegepast als beveiliging tegen phishing.</transla
 
       Als je het beleid toepast of niet instelt, wordt Definitie van Snelle antwoorden aangezet.
       Als je het beleid niet toepast, wordt Definitie van Snelle antwoorden uitgezet.</translation>
-<translation id="2095778449451007308">Met dit beleid wordt bepaald of gebruikers de modus Alleen HTTPS (Altijd beveiligde verbindingen gebruiken) kunnen aanzetten in de instellingen. Met de modus Alleen HTTPS worden alle navigaties geüpgraded naar HTTPS.
-      Als deze instelling niet is ingesteld of is ingesteld op Toegestaan, kunnen gebruikers de modus Alleen HTTPS aanzetten.
-      Als deze instelling is ingesteld op Niet toegestaan, kunnen gebruikers de modus Alleen HTTPS niet aanzetten.
-      Als deze instelling is ingesteld op force_enabled, wordt de modus Alleen HTTPS aangezet en kunnen gebruikers deze niet uitzetten.
-      Afdwingen dat de modus Alleen HTTPS wordt aangezet, wordt ondersteund vanaf M112.
-
-Het afzonderlijke beleid <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> kan worden gebruikt om te voorkomen dat specifieke hostnamen of hostnaampatronen door deze functie worden geüpgraded naar HTTPS.</translation>
 <translation id="209586405398070749">Stabiel kanaal</translation>
 <translation id="2096932573113293941">De gebruiker om toestemming vragen om plug-ins uit te voeren waarvoor machtiging is vereist</translation>
 <translation id="2098658257603918882">Rapportage van gebruiks- en crashgegevens aanzetten</translation>
@@ -2024,7 +2017,6 @@ Als je het beleid niet instelt, is <ph name="POLICY_VALUE_VISIBLE" /> de standaa
 <translation id="2492240920793040106">Rapportage van systeemgegevens en paginacontent aanzetten om Safe Browsing te helpen verbeteren</translation>
 <translation id="2496180316473517155">Browsegeschiedenis</translation>
 <translation id="2497751676088107779">Gebruikersscript</translation>
-<translation id="2497965601277442929">Gebruikers niet toestaan de modus 'Alleen HTTPS' aan te zetten</translation>
 <translation id="249798396824949930"> Hiermee bepaal je of de browser het verplichte beleidsbereik op <ph name="MAC_OS_NAME" /> wel of niet kan waarnemen.
 
       Als je het beleid toepast of niet instelt, wordt het bereik van elk beleid bepaald door het bereik van het beheerde <ph name="MAC_OS_NAME" />-profiel.
@@ -2656,7 +2648,6 @@ Als je de waarde instelt op <ph name="LONGPRESSONLY_ENUM_VALUE" />, worden entit
 
       Als het beleid niet is ingesteld in versie 81 en hoger van <ph name="PRODUCT_NAME" />, wordt Ambient-verificatie alleen gebruikt in normale sessies.</translation>
 <translation id="3021562480854470924">Aantal mijlpalen dat rollback kan terugzetten</translation>
-<translation id="3023172689742785487">Aanzetten van de modus Alleen HTTPS afdwingen</translation>
 <translation id="3023572080620427845">URL van een XML-bestand dat URL's bevat voor laden in een alternatieve browser.</translation>
 <translation id="302528139996622624">Instellingen voor afbeeldingen</translation>
 <translation id="3026740867910702435">Zet de toegankelijkheidsfunctie 'Grote cursor' op het inlogscherm aan.
@@ -6220,7 +6211,6 @@ Je kunt meer accountbeperkingen toevoegen met het beleid <ph name="MICROSOFT_ONE
 <translation id="5848438019586925019">Het algoritme voor het genereren van sleutelparen.</translation>
 <translation id="5851248808417680865">Donker thema gebruiken</translation>
 <translation id="585270638818921943">Voorkomen dat de gebruiker Android-apps van niet-vertrouwde bronnen gebruikt</translation>
-<translation id="5853547031212075792">Gebruikers toestaan de modus 'Alleen HTTPS' aan te zetten</translation>
 <translation id="5859344336338527083">Als je dit beleid instelt, kun je opgeven welke URL's extensies, apps en thema's mogen installeren. Vóór <ph name="PRODUCT_NAME" /> 21 konden gebruikers op een link naar een *.crx-bestand klikken en bood <ph name="PRODUCT_NAME" /> aan het bestand te installeren na een aantal waarschuwingen. Sindsdien moeten bestanden worden gedownload en naar de instellingenpagina van <ph name="PRODUCT_NAME" /> worden gesleept. Met deze instelling kunnen specifieke URL's het oude, eenvoudigere installatieproces gebruiken.
 
       Elk item in deze lijst is een patroon van een extensie (zie https://developer.chrome.com/extensions/match_patterns). Gebruikers kunnen gemakkelijk items installeren vanaf elke URL die overeenkomt met een item in deze lijst. De locatie van het *.crx-bestand en de pagina waar de download wordt gestart (de verwijzer genoemd), moeten beide zijn toegestaan op basis van deze patronen.
@@ -8130,9 +8120,6 @@ Opmerking: Als je dit beleid gebruikt om de tijdzone automatisch te wijzigen, mo
       Als een extensie niet in de lijst voorkomt of als de lijst niet is ingesteld, mislukt de API-aanroep en wordt er een foutcode getoond.</translation>
 <translation id="718956142899066210">Verbindingstypen die zijn toegestaan voor updates</translation>
 <translation id="7190286937411178540">Toegankelijkheidsfunctie voor markeren via toetsenbordfocus aanzetten</translation>
-<translation id="7193489339723768342">Als je het beleid instelt, specificeer je de lijst met URL's waarvan de patronen worden vergeleken met de beveiligingsoorsprong van de aanvragende URL. Bij een overeenkomst wordt zonder prompt toegang verleend tot apparaten voor audio-opnamen.
-
-      Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen.</translation>
 <translation id="719398790886719721">Roottoegang tot virtuele Linux-machines uitzetten</translation>
 <translation id="7194407337890404814">Naam van standaardzoekprovider</translation>
 <translation id="7196336906814426783">Met dit beleid stel je een reeks wekelijkse intervallen vast om automatische opschorting te plannen. Als een interval begint, wordt de opschortingsstand van het <ph name="PRODUCT_OS_NAME" />-apparaat geactiveerd. Het apparaat wordt weer geactiveerd als het interval voorbij is.
@@ -8763,9 +8750,6 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
 
       Dit beleid was bedoeld als tijdelijk en is verwijderd nadat de nieuwe ballon-UI voor downloaden volledig is gelanceerd.</translation>
 <translation id="7736521021425189418">Terminal (ondersteund sinds versie 117)</translation>
-<translation id="77379430721695807">Als je het beleid instelt, specificeer je de lijst met URL's waarvan de patronen worden vergeleken met de beveiligingsoorsprong van de aanvragende URL. Bij een overeenkomst wordt zonder prompt toegang verleend tot apparaten voor video-opnamen.
-
-      Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen.</translation>
 <translation id="7740644123648617252">Import van formuliergegevens voor automatisch invullen bij eerste uitvoering aanzetten</translation>
 <translation id="7744253761377202223">Percentage voor schermhelderheid als er op netvoeding wordt gewerkt</translation>
 <translation id="7747447585227954402">Toestaan dat apparaten een <ph name="PLUGIN_VM_NAME" /> gebruiken op <ph name="PRODUCT_OS_NAME" /></translation>

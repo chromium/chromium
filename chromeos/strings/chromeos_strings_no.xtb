@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Dokumentmater (tosidig)</translation>
 <translation id="3201315366910775591">Delte albumer kan oppdateres av andre personer</translation>
 <translation id="3211671540163313381">Tastaturoppsett av styrepiler</translation>
-<translation id="3224812403568276799">Når du tillater dette, bruker Lydopptaker avansert lydanalyse for å registrere forskjellige stemmer automatisk og gi hver av dem en generisk etikett, for eksempel Person 1 og Person 2.
-
-Du kan når som helst slå dette av i innstillingene.</translation>
 <translation id="3226405216343213872">Ser etter skannere</translation>
 <translation id="3226657629376379887">Handlingsmeny for layout</translation>
 <translation id="3227186760713762082">Divider <ph name="CATEGORY_TEXT" />-verdien med <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@ Du kan når som helst slå dette av i innstillingene.</translation>
 <translation id="5318334351163689047">Mislykkede TCP-forespørsler</translation>
 <translation id="53196409393069519">Vil du slå på transkripsjon?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Navn</translation>
 <translation id="5332948983412042822">Velg et nytt passord nå</translation>
 <translation id="5333530671332546086">Ukjent portaltilstand</translation>
 <translation id="5335373365677455232">rosa</translation>
@@ -1108,6 +1106,7 @@ Du kan når som helst slå dette av i innstillingene.</translation>
 <translation id="6905724422583748843">Tilbake til <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Skannerens deksel er åpent. Lukk dekselet, og prøv på nytt.</translation>
 <translation id="6911383237894364323">Kan ikke koble til medietjenere</translation>
+<translation id="6930242544192836755">Varighet</translation>
 <translation id="6930597342185648547">Om bakgrunnen</translation>
 <translation id="6939667434404433010">Søk på opptaksnavn</translation>
 <translation id="6939766318048400022">Kafé</translation>
@@ -1328,6 +1327,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8004582292198964060">Nettleser</translation>
 <translation id="8017679124341497925">Snarveien er endret</translation>
 <translation id="802154636333426148">Nedlastingen mislyktes</translation>
+<translation id="8028993641010258682">Størrelse</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Slå på automatisk fargemodus</translation>
 <translation id="8041089156583427627">Send tilbakemelding</translation>

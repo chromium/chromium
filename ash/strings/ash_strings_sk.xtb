@@ -87,6 +87,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1270290102613614947">Klávesnica na obrazovke je zakázaná</translation>
 <translation id="1272079795634619415">Zastaviť</translation>
 <translation id="1275285675049378717">Napája sa zariadenie <ph name="POWER_SOURCE" /></translation>
+<translation id="1275718070701477396">Riadok bol vybratý</translation>
 <translation id="1276975447697633661">Vyberte súbor a stlačte <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Lokalizácia telefónu</translation>
@@ -1761,6 +1762,7 @@ Nová inštalácia</translation>
 <translation id="7312210124139670355">Správca resetuje vašu eSIM kartu. Môže trvať niekoľko minút.</translation>
 <translation id="7312761820869643657">Aktualizujte zariadenie na predchádzajúcu verziu</translation>
 <translation id="7313193732017069507">Rozbaliť kameru</translation>
+<translation id="73289266812733869">Nevybraté</translation>
 <translation id="7330397557116570022">Ak chcete použiť diktovanie, prejdite do textového poľa</translation>
 <translation id="7331646370422660166">alt + šípka nadol</translation>
 <translation id="7337660433630200387">+10 min</translation>

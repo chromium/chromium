@@ -2390,6 +2390,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> споделува картичка на Chrome.</translation>
 <translation id="2670350619068134931">Намалени анимации</translation>
 <translation id="2670403088701171361">Не им дозволувај на сајтовите да гледаат текст или слики од привремената меморија</translation>
+<translation id="2671423594960767771">Сподели ја групата</translation>
 <translation id="2671451824761031126">Обележувачите и поставките се подготвени</translation>
 <translation id="2672142220933875349">Лоша crx датотека, отпакувањето не успеа.</translation>
 <translation id="2672200806060988299">За да се подобри функцијава, вашите наслови на картичките и URL-адреси се испраќаат до Google, а може да ги гледаат и прегледувачи.</translation>
@@ -7135,7 +7136,6 @@
 <translation id="6164393601566177235">Додавање сајтови</translation>
 <translation id="6164832038898943453">Додајте јазици што автоматски треба да се преведуваат</translation>
 <translation id="6165508094623778733">Дознајте повеќе</translation>
-<translation id="6165850999903769629">Сега сите апликации на ChromeOS се отвораат во сопствени прозорци на апликација наместо во Chrome.</translation>
 <translation id="6166185671393271715">Увоз на лозинки во Chrome</translation>
 <translation id="6169040057125497443">Проверете го микрофонот.</translation>
 <translation id="6169967265765719844">Можете да управувате со дозволите за игри и апликации инсталирани преку Steam во <ph name="LINK_BEGIN" />поставките за апликацијата Steam<ph name="LINK_END" />.</translation>
@@ -7937,7 +7937,6 @@
 <translation id="6776729248872343918">Овозможи „Брзо спарување“</translation>
 <translation id="6777817260680419853">Пренасочувањето е блокирано</translation>
 <translation id="6777845730143344223">Дознајте повеќе за претплатите на Passpoint</translation>
-<translation id="6778660707554364320"><ph name="APP" /> сега се отвора како апликација</translation>
 <translation id="6779092717724412415">За да нагласите текст слично на ова, изберете текст и кликнете со десното копче.</translation>
 <translation id="6779348349813025131">Google Password Manager бара пристап до macOS Keychain</translation>
 <translation id="677965093459947883">Многу мал</translation>

@@ -2384,6 +2384,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> የChrome ትር እያጋራ ነው።</translation>
 <translation id="2670350619068134931">የተቀነሱ እነማዎች</translation>
 <translation id="2670403088701171361">ጣቢያዎች በቅንጥብ ሰሌዳዎ ላይ ጽሁፍ ወይም ምስሎችን እንዲያዩ አይፍቀዱላቸው</translation>
+<translation id="2671423594960767771">ቡድንን አጋራ</translation>
 <translation id="2671451824761031126">የእርስዎ ዕልባቶች እና ቅንብሮች ዝግጁ ናቸው</translation>
 <translation id="2672142220933875349">መጥፎ የcrx ፋይል፣ ጥቅል መክፈት አልተሳካም።</translation>
 <translation id="2672200806060988299">የእርስዎ የትር ርዕሶች እና ዩአርኤሎች ወደ Google ተልከዋል እና ይህን ባህሪ ለማሻሻል በሰው ገምጋሚዎች ሊታዩ ይችላሉ።</translation>
@@ -7127,7 +7128,6 @@
 <translation id="6164393601566177235">ጣቢያዎችን ያክሉ</translation>
 <translation id="6164832038898943453">በራስ-ሰር ለመተርጎም ቋንቋዎችን ያክሉ</translation>
 <translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
-<translation id="6165850999903769629">በChromeOS ላይ ያሉ ሁሉም መተግበሪያዎች አሁን ከChrome ይልቅ በራሳቸው የመተግበሪያ መስኮቶች ውስጥ ይከፈታሉ።</translation>
 <translation id="6166185671393271715">የይለፍ ቃላትን ወደ Chrome ያስመጡ</translation>
 <translation id="6169040057125497443">እባክዎ ማይክሮፎንዎን ይፈትሹ።</translation>
 <translation id="6169967265765719844">በSteam በኩል የተጫኑ ጨዋታዎች እና መተግበሪያዎች ፈቃዶች በ<ph name="LINK_BEGIN" />Steam መተግበሪያ ቅንብሮች<ph name="LINK_END" /> ውስጥ ሊተዳደሩ ይችላሉ።</translation>
@@ -7929,7 +7929,6 @@
 <translation id="6776729248872343918">ፈጣን ጥምረትን ያንቁ</translation>
 <translation id="6777817260680419853">አቅጣጫ ማዞር ታግዷል</translation>
 <translation id="6777845730143344223">ስለ መተላለፊያ የደንበኝነት ምዝገባዎች የበለጠ ይወቁ</translation>
-<translation id="6778660707554364320"><ph name="APP" /> አሁን እንደ መተግበሪያ ይከፈታል</translation>
 <translation id="6779092717724412415">እንደዚህ ዓይነት ድምቀት ለመፍጠር ማንኛውንም ጽሁፍ ይምረጡ እና የቀኝ-ጠቅ ያድርጉ።</translation>
 <translation id="6779348349813025131">Google የይለፍ ቃል አስተዳዳሪ ለ MacOS Keychain መዳረሻ ይፈልጋል</translation>
 <translation id="677965093459947883">በጣም ትንሽ</translation>

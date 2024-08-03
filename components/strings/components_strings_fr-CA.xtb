@@ -188,7 +188,6 @@
 <translation id="132301787627749051">Rechercher une image du presse-papiers</translation>
 <translation id="1323433172918577554">Afficher plus</translation>
 <translation id="132390688737681464">Enregistrer et remplir les adresses</translation>
-<translation id="1325412080783393306">Rechercher plus d'options d'achat</translation>
 <translation id="1329916999021038454">Envoyer un rapport</translation>
 <translation id="1330449323196174374">Pli du volet gauche</translation>
 <translation id="1333745675627230582">Jouer au jeu du dinosaure de Chrome</translation>
@@ -1739,6 +1738,7 @@
 <translation id="4235360514405112390">Valide</translation>
 <translation id="4239799716689808527">Étiquettes</translation>
 <translation id="4242380780309416996">Enveloppe (épaisse)</translation>
+<translation id="4242981939686657948">Pour une recherche plus efficace dans votre historique de navigation, activez</translation>
 <translation id="4244926541863471678">Pellicule</translation>
 <translation id="4246517972543675653">Études à l'étranger</translation>
 <translation id="4250431568374086873">Votre connexion à ce site n'est pas totalement sécurisée</translation>
@@ -3968,6 +3968,7 @@ Détails supplémentaires :
 <translation id="84561192812921051">Votre administrateur peut apporter des modifications à votre profil et à votre navigateur à distance, analyser les informations concernant le navigateur au moyen des rapports et effectuer d'autres tâches nécessaires. L'activité sur cet appareil peut aussi être gérée à l'extérieur de Chrome.  <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Indéfini</translation>
 <translation id="8458202188076138974">Lettre extra</translation>
+<translation id="8458605637341729751">En continuant, vous acceptez que la position précise de votre appareil soit collectée et partagée avec le titulaire de votre compte à des fins de prévention de la fraude. Pour désactiver Pix dans Chrome, accédez à vos <ph name="BEGIN_LINK1" />paramètres des paiements<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Activer l'initiative</translation>
 <translation id="8461694314515752532">Chiffrer vos données synchronisées avec votre propre phrase de passe de synchronisation</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 carte de crédit}one{# carte de crédit}other{# cartes de crédit}}</translation>

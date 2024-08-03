@@ -87,6 +87,7 @@
 <translation id="1270290102613614947">ແປ້ນພິມ​ເທິງ​ໜ້າ​ຈໍ​ປິດ​ໃຊ້​ງານ​ແລ້ວ</translation>
 <translation id="1272079795634619415">ຢຸດ</translation>
 <translation id="1275285675049378717">ການສາກໄຟ <ph name="POWER_SOURCE" /></translation>
+<translation id="1275718070701477396">​ເລືອກແລ້ວ</translation>
 <translation id="1276975447697633661">ເລືອກໄຟລ໌, ແລ້ວກົດ <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ຊອກຫາໂທລະສັບ</translation>
@@ -1761,6 +1762,7 @@
 <translation id="7312210124139670355">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານກຳລັງຣີເຊັດ eSIM ທ່ານຢູ່. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="7312761820869643657">ອັບເດດອຸປະກອນເປັນເວີຊັນກ່ອນໜ້າ</translation>
 <translation id="7313193732017069507">ຂະຫຍາຍກ້ອງຖ່າຍຮູບ</translation>
+<translation id="73289266812733869">ບໍ່ໄດ້ເລືອກໄວ້</translation>
 <translation id="7330397557116570022">ເຂົ້າໄປຊ່ອງຂໍ້ຄວາມເພື່ອໃຊ້ການປ້ອນຂໍ້ມູນດ້ວຍສຽງ</translation>
 <translation id="7331646370422660166">Alt + ລູກສອນລົງ</translation>
 <translation id="7337660433630200387">ເພີ່ມ 10 ນທ</translation>

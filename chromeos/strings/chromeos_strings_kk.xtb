@@ -418,9 +418,6 @@
 <translation id="3199982728237701504">Құжат беруші (екі жақты)</translation>
 <translation id="3201315366910775591">Ортақ альбомдарды басқа адамдар жаңарта алады</translation>
 <translation id="3211671540163313381">Кілтті түрлендіру D-pad</translation>
-<translation id="3224812403568276799">Рұқсат берсеңіз, диктофон дауыстарды тану, ажырату және әрқайсысын 1-сөйлеуші және 2-сөйлеуші деген сияқты жалпылама белгілеу үшін кеңейтілген аудио талдауын пайдаланады.
-
-Мұны "Параметрлер" бөлімінде кез келген уақытта өшіруге болады.</translation>
 <translation id="3226405216343213872">Сканерлер ізделуде</translation>
 <translation id="3226657629376379887">Форматтың әрекеттер мәзірі</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> мәнін <ph name="CONVERSION_RATE" /> санына бөлу</translation>
@@ -814,6 +811,7 @@
 <translation id="5318334351163689047">TCP сұрауының ақаулары</translation>
 <translation id="53196409393069519">Транскрипцияны қосу керек пе?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Аты</translation>
 <translation id="5332948983412042822">Жаңа құпия сөз енгізіңіз.</translation>
 <translation id="5333530671332546086">Портал күйі белгісіз.</translation>
 <translation id="5335373365677455232">қызғылт</translation>
@@ -1110,6 +1108,7 @@
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> бетіне оралу</translation>
 <translation id="6910312834584889076">Сканердің жапқышы ашық. Оның жапқышын жауып, әрекетті қайталаңыз.</translation>
 <translation id="6911383237894364323">Медиасерверлерге қосылмады.</translation>
+<translation id="6930242544192836755">Ұзақтық</translation>
 <translation id="6930597342185648547">Фон туралы ақпарат</translation>
 <translation id="6939667434404433010">Жазба атауын іздеу</translation>
 <translation id="6939766318048400022">Кафе</translation>
@@ -1330,6 +1329,7 @@
 <translation id="8004582292198964060">Браузер</translation>
 <translation id="8017679124341497925">Таңбаша өзгерді</translation>
 <translation id="802154636333426148">Жүктеу сәтсіз аяқталды</translation>
+<translation id="8028993641010258682">Көлемі</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Автобаланс режимін қосу</translation>
 <translation id="8041089156583427627">Пікір жіберу</translation>

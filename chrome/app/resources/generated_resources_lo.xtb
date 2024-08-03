@@ -2388,6 +2388,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> ກຳລັງແບ່ງປັນແຖບ Chrome.</translation>
 <translation id="2670350619068134931">ອະນິເມຊັນທີ່ຫຼຸດລົງແລ້ວ</translation>
 <translation id="2670403088701171361">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊເບິ່ງເຫັນຂໍ້ຄວາມ ຫຼື ຮູບຢູ່ຄລິບບອດຂອງທ່ານໄດ້</translation>
+<translation id="2671423594960767771">ແບ່ງປັນກຸ່ມ</translation>
 <translation id="2671451824761031126">ບຸກມາກ ແລະ ການຕັ້ງຄ່າຂອງທ່ານພ້ອມແລ້ວ</translation>
 <translation id="2672142220933875349">ໄຟລ​໌ crx ບໍ່​ດີ​, ການແຍກອອກບໍ່ສໍາ​ເລັດ​.</translation>
 <translation id="2672200806060988299">ລະບົບຈະສົ່ງຊື່ແຖບ ແລະ URL ໄປຫາ Google ແລະ ທີມງານກວດສອບອາດເບິ່ງເຫັນຂໍ້ມູນເຫຼົ່ານີ້ເພື່ອນຳໃຊ້ໃນການປັບປຸງຄຸນສົມບັດນີ້.</translation>
@@ -7132,7 +7133,6 @@
 <translation id="6164393601566177235">ເພີ່ມເວັບໄຊ</translation>
 <translation id="6164832038898943453">ເພີ່ມພາສາເພື່ອແປພາສາໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6165508094623778733">ສຶກສາ​ເພີ່ມ​ເຕີມ</translation>
-<translation id="6165850999903769629">ຕອນນີ້ແອັບທັງໝົດຢູ່ ChromeOS ຈະເປີດໃນໜ້າຈໍແອັບຂອງພວກມັນເອງແທນທີ່ຈະເປີດໃນ Chrome.</translation>
 <translation id="6166185671393271715">ນໍາເຂົ້າລະຫັດຜ່ານຫາ Chrome</translation>
 <translation id="6169040057125497443">ກະລຸນາກວດເບິ່ງໄມໂຄຣໂຟນຂອງທ່ານ.</translation>
 <translation id="6169967265765719844">ການອະນຸຍາດສຳລັບເກມ ແລະ ແອັບທີ່ຕິດຕັ້ງຜ່ານ Steam ແມ່ນສາມາດຈັດການໄດ້ໃນ <ph name="LINK_BEGIN" />ການຕັ້ງຄ່າແອັບ Steam<ph name="LINK_END" />.</translation>
@@ -7932,7 +7932,6 @@
 <translation id="6776729248872343918">ເປີດການນຳໃຊ້ການຈັບຄູ່ດ່ວນ</translation>
 <translation id="6777817260680419853">ບລັອກການປ່ຽນເສັ້ນທາງແລ້ວ</translation>
 <translation id="6777845730143344223">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການສະໝັກສະມາຊິກ Passpoint</translation>
-<translation id="6778660707554364320">ຕອນນີ້ຈະເປີດ <ph name="APP" /> ເປັນແອັບ</translation>
 <translation id="6779092717724412415">ເພື່ອສ້າງໄຮໄລ້ແບບນີ້, ໃຫ້ເລືອກຂໍ້ຄວາມໃດກໍໄດ້ແລ້ວຄລິກຂວາ.</translation>
 <translation id="6779348349813025131">ຕົວຈັດການລະຫັດຜ່ານ Google ຕ້ອງການສິດເຂົ້າເຖິງ Keychain ຂອງ MacOS</translation>
 <translation id="677965093459947883">ນ້ອຍຫຼາຍ</translation>

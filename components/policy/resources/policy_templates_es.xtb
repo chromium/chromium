@@ -1461,13 +1461,6 @@ Esta política suele estar inhabilitada para ofrecer protección contra phishing
 
       Si se habilita esta política o no se establece, se activará la definición de Respuestas rápidas.
       Si se inhabilita esta política, se desactivará la definición de Respuestas rápidas.</translation>
-<translation id="2095778449451007308">Esta política controla si los usuarios pueden habilitar el modo Solo HTTPS (Usar siempre conexiones seguras) en Configuración. El modo Solo HTTPS cambia todos los accesos a páginas al protocolo HTTPS.
-      Si esta opción no se establece o se le asigna el valor allowed, los usuarios podrán habilitar el modo Solo HTTPS.
-      Si se le asigna el valor disallowed, los usuarios no podrán habilitar el modo Solo HTTPS.
-      Si se le asigna el valor force_enabled, se habilitará el modo Solo HTTPS y los usuarios no podrán inhabilitarlo.
-      Se puede forzar la habilitación del modo Solo HTTPS a partir de la versión M112.
-
-La política independiente <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> puede usarse para impedir que esta función cambie a HTTPS algunos nombres de host o patrones de nombre de host concretos.</translation>
 <translation id="209586405398070749">Canal estable</translation>
 <translation id="2096932573113293941">Pedir permiso al usuario para ejecutar complementos que requieran autorización</translation>
 <translation id="2098658257603918882">Habilitar informes de uso y de datos sobre fallos</translation>
@@ -2027,7 +2020,6 @@ Si no se define esta política, la opción predeterminada será <ph name="POLICY
 <translation id="2492240920793040106">Habilitar los informes sobre datos del sistema y contenido de páginas para ayudar a mejorar la función Navegación segura</translation>
 <translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="2497751676088107779">Secuencia de comandos de usuario</translation>
-<translation id="2497965601277442929">No permitir que los usuarios habiliten el modo Solo HTTPS</translation>
 <translation id="249798396824949930"> Controla si el navegador puede detectar si el nivel de cada política es obligatorio en <ph name="MAC_OS_NAME" /> o no.
 
       Si se habilita esta política o no se establece, el nivel de cada política lo determinará el nivel del perfil gestionado de <ph name="MAC_OS_NAME" />.
@@ -2661,7 +2653,6 @@ Si se le asigna el valor <ph name="LONGPRESSONLY_ENUM_VALUE" />, se detectarán 
 
       En la versión 81 y versiones posteriores de <ph name="PRODUCT_NAME" />, si no se establece la política, la autenticación pasiva se habilitará únicamente en las sesiones normales.</translation>
 <translation id="3021562480854470924">Se permite restaurar el número de eventos clave</translation>
-<translation id="3023172689742785487">Forzar la habilitación del modo Solo HTTPS</translation>
 <translation id="3023572080620427845">URL de un archivo XML que contiene las URL que se cargarán en un navegador alternativo.</translation>
 <translation id="302528139996622624">Configuración de imagen</translation>
 <translation id="3026740867910702435">Habilita la función de accesibilidad del cursor grande en la pantalla de inicio de sesión.
@@ -6270,7 +6261,6 @@ Es posible añadir más restricciones de cuentas con la política <ph name="MICR
 <translation id="5848438019586925019">El algoritmo para generar pares de claves.</translation>
 <translation id="5851248808417680865">Usar el tema oscuro</translation>
 <translation id="585270638818921943">Evitar que el usuario utilice aplicaciones Android de fuentes que no son de confianza</translation>
-<translation id="5853547031212075792">Permitir que los usuarios habiliten el modo Solo HTTPS</translation>
 <translation id="5859344336338527083">Si se define esta política, se especificarán las URL que pueden instalar extensiones, aplicaciones y temas. Antes de la versión 21 de <ph name="PRODUCT_NAME" />, los usuarios podían hacer clic en un enlace a un archivo .crx y <ph name="PRODUCT_NAME" /> les ofrecería la opción de instalar el archivo después de mostrar algunas advertencias. A continuación, esos archivos debían descargarse y arrastrarse a la página de configuración de <ph name="PRODUCT_NAME" />. Esta opción permite que determinadas URL sigan utilizando el proceso de instalación anterior, que era más sencillo.
 
       Todos los elementos de esta lista son patrones que coinciden con el estilo de las extensiones. Para obtener más información, visita https://developer.chrome.com/extensions/match_patterns. Los usuarios pueden instalar fácilmente elementos procedentes de cualquier URL que coincida con un elemento de esta lista. Estos patrones deben permitir tanto la ubicación del archivo .crx como la página en la que se inicia la descarga (la URL referente).
@@ -8202,9 +8192,6 @@ Nota: Si vas a usar esta política para resolver la zona horaria automáticament
       Si una extensión no está en la lista o no se ha configurado la lista, la llamada a la API devolverá un código de error.</translation>
 <translation id="718956142899066210">Tipos de conexión permitidos para realizar actualizaciones</translation>
 <translation id="7190286937411178540">Habilitar la función de accesibilidad de elementos destacados</translation>
-<translation id="7193489339723768342">Si se define esta política, se especificará la lista de URLs cuyos patrones se compararán con el origen de seguridad de la URL solicitante. Si se encuentra una coincidencia, se concederá acceso a dispositivos de captura de audio sin solicitarlo.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="719398790886719721">Inhabilitar el acceso root a las máquinas virtuales de Linux</translation>
 <translation id="7194407337890404814">Nombre del proveedor de búsquedas predeterminadas</translation>
 <translation id="7196336906814426783">Esta política establece una serie de intervalos semanales para programar la suspensión automática. Cuando comience un intervalo, el dispositivo <ph name="PRODUCT_OS_NAME" /> pasará al modo Suspensión. Cuando finalice el intervalo, el dispositivo se activará.
@@ -8841,9 +8828,6 @@ Si no se establece esta política, el navegador seleccionará el renderizador de
 
       Esta política era temporal y se retiró después del lanzamiento de la nueva interfaz del cuadro de descargas.</translation>
 <translation id="7736521021425189418">Terminal (compatible desde la versión 117)</translation>
-<translation id="77379430721695807">Si se define esta política, se especificará la lista de URLs cuyos patrones se compararán con el origen de seguridad de la URL solicitante. Si se encuentra una coincidencia, se concederá acceso a dispositivos de captura de vídeo sin solicitarlo.
-
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="7740644123648617252">Habilitar la importación de los datos para autocompletar formularios en la primera ejecución</translation>
 <translation id="7744253761377202223">Porcentaje de brillo de la pantalla cuando el dispositivo esté conectado a la red eléctrica</translation>
 <translation id="7747447585227954402">Permite a los dispositivos usar <ph name="PLUGIN_VM_NAME" /> en <ph name="PRODUCT_OS_NAME" /></translation>

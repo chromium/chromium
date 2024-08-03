@@ -2377,6 +2377,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> абагульвае ўкладку Chrome.</translation>
 <translation id="2670350619068134931">Менш анімацыі</translation>
 <translation id="2670403088701171361">Не дазваляць сайтам праглядаць тэкст і відарысы ў буферы абмену</translation>
+<translation id="2671423594960767771">Абагуліць групу</translation>
 <translation id="2671451824761031126">Імпарт закладак і налад выкананы</translation>
 <translation id="2672142220933875349">Памылка распакоўкі: недапушчальны файл "crx".</translation>
 <translation id="2672200806060988299">Для паляпшэння гэтай функцыі назвы ўкладак і URL-адрасы адпраўляюцца ў Google і могуць праглядацца спецыялістамі.</translation>
@@ -7122,7 +7123,6 @@
 <translation id="6164393601566177235">Дадайце сайты</translation>
 <translation id="6164832038898943453">Дадаць мовы для аўтаматычнага перакладу</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
-<translation id="6165850999903769629">Усе праграмы для ChromeOS цяпер адкрываюцца ва ўласных вокнах, а не ў Chrome.</translation>
 <translation id="6166185671393271715">Імпарт пароляў у Chrome</translation>
 <translation id="6169040057125497443">Праверце мікрафон.</translation>
 <translation id="6169967265765719844">Дазволамі для гульняў і праграм, усталяваных праз платформу Steam, можна кіраваць у <ph name="LINK_BEGIN" />яе наладах<ph name="LINK_END" />.</translation>
@@ -7827,6 +7827,7 @@
 <translation id="6691936601825168937">&amp;Наперад</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 старонка}one{{COUNT} старонка}few{{COUNT} старонкі}many{{COUNT} старонак}other{{COUNT} старонкі}}</translation>
 <translation id="6693820805264897502">замяніць існуючыя паролі</translation>
+<translation id="6694634756612002311">Кіраваць абагульваннем</translation>
 <translation id="6697172646384837537">Выберыце, куды трэба імпартаваць паролі</translation>
 <translation id="6697492270171225480">Паказваць прапановы падобных старонак, калі старонку не ўдаецца знайсці</translation>
 <translation id="6697690052557311665">Каб абагуліць папку, націсніце на ёй правай кнопкай мышы ў праграме "Файлы" і выберыце "Абагуліць з Linux".</translation>
@@ -7929,7 +7930,6 @@
 <translation id="6776729248872343918">Уключыць хуткае спалучэнне</translation>
 <translation id="6777817260680419853">Перанакіраванне заблакіравана</translation>
 <translation id="6777845730143344223">Даведацца больш пра падпіскі Passpoint</translation>
-<translation id="6778660707554364320">Праграма "<ph name="APP" />" цяпер адкрываецца ва ўласным акне</translation>
 <translation id="6779092717724412415">Каб стварыць такое вылучэнне, як гэта, выберыце які-небудзь тэкст і націсніце на яго правай кнопкай мышы.</translation>
 <translation id="6779348349813025131">Менеджару пароляў Google патрабуецца доступ да звязка ключоў macOS</translation>
 <translation id="677965093459947883">Вельмі дробны</translation>

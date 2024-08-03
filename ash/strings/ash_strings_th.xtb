@@ -87,6 +87,7 @@
 <translation id="1270290102613614947">ปิดใช้แป้นพิมพ์บนหน้าจออยู่</translation>
 <translation id="1272079795634619415">หยุด</translation>
 <translation id="1275285675049378717">การชาร์จไฟ <ph name="POWER_SOURCE" /></translation>
+<translation id="1275718070701477396">เลือกแล้ว</translation>
 <translation id="1276975447697633661">เลือกไฟล์แล้วกด <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ระบุตำแหน่งของโทรศัพท์</translation>
@@ -1357,6 +1358,7 @@
 <translation id="5819918159912280082">Chromebook รีสตาร์ทโดยไม่คาดคิด เปิดหน้าต่างและแอปก่อนหน้า</translation>
 <translation id="5823239091726045201">Google Tasks บนเว็บ</translation>
 <translation id="5825969630400862129">การตั้งค่าอุปกรณ์ที่เชื่อมต่อ</translation>
+<translation id="5830180081891717894">อีก <ph name="WINDOWS" /> รายการ</translation>
 <translation id="5837036133683224804">หยุด <ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">ไปที่แทร็กถัดไป</translation>
 <translation id="5842553299352339114">ฮอตสปอต <ph name="DEVICE_NAME" /> เปิดอยู่ ไม่มีอุปกรณ์ใดเชื่อมต่อ</translation>
@@ -1756,6 +1758,7 @@
 <translation id="7312210124139670355">ผู้ดูแลระบบกำลังรีเซ็ต eSIM การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="7312761820869643657">อัปเดตอุปกรณ์เป็นเวอร์ชันก่อนหน้า</translation>
 <translation id="7313193732017069507">ขยายขนาดกล้อง</translation>
+<translation id="73289266812733869">ยกเลิกการเลือกแล้ว</translation>
 <translation id="7330397557116570022">ไปที่ช่องข้อความเพื่อใช้การพิมพ์ตามคําบอก</translation>
 <translation id="7331646370422660166">Alt + ลูกศรลง</translation>
 <translation id="7337660433630200387">เพิ่ม 10 นาที</translation>
@@ -2063,6 +2066,7 @@
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> นี้และโทรศัพท์จะเชื่อมต่อกันโดยอัตโนมัติ</translation>
 <translation id="8380784334203145311">ราตรีสวัสดิ์</translation>
 <translation id="8382715499079447151">การป้องกันการดู</translation>
+<translation id="8383614331548401927">สรุปต้อนรับ</translation>
 <translation id="8388750414311082622">นำพื้นที่ทำงานสุดท้ายออกไม่ได้</translation>
 <translation id="8394567579869570560">ผู้ปกครองของคุณล็อกอุปกรณ์นี้ไว้</translation>
 <translation id="8401850874595457088">ป้อนเมนูภาษา</translation>

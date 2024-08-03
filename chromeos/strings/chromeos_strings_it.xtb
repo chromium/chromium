@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Alimentatore di documenti (fronte e retro)</translation>
 <translation id="3201315366910775591">Gli album condivisi possono essere aggiornati da altri utenti</translation>
 <translation id="3211671540163313381">Mappatura tasti per il D-pad</translation>
-<translation id="3224812403568276799">Se consenti questa opzione, Registratore userà un'analisi audio avanzata per rilevare automaticamente le voci distinte e assegnare a ciascuna un'etichetta generica come Persona 1 e Persona 2.
-
-Puoi disattivare questa funzionalità in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="3226405216343213872">Ricerca di scanner in corso…</translation>
 <translation id="3226657629376379887">Menu azioni del layout</translation>
 <translation id="3227186760713762082">Dividi il valore <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@ Puoi disattivare questa funzionalità in qualsiasi momento nelle Impostazioni.</
 <translation id="5318334351163689047">Errori delle richieste TCP</translation>
 <translation id="53196409393069519">Attivare la trascrizione?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Nome</translation>
 <translation id="5332948983412042822">Scegline ora una nuova</translation>
 <translation id="5333530671332546086">Stato del portale sconosciuto</translation>
 <translation id="5335373365677455232">rosa</translation>
@@ -1108,6 +1106,7 @@ Puoi disattivare questa funzionalità in qualsiasi momento nelle Impostazioni.</
 <translation id="6905724422583748843">Torna a <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Il coperchio dello scanner è aperto. Chiudilo e riprova.</translation>
 <translation id="6911383237894364323">Impossibile connettersi ai server multimediali</translation>
+<translation id="6930242544192836755">Durata</translation>
 <translation id="6930597342185648547">Informazioni sullo sfondo</translation>
 <translation id="6939667434404433010">Cerca nome registrazione</translation>
 <translation id="6939766318048400022">Bar</translation>
@@ -1328,6 +1327,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8017679124341497925">Scorciatoia modificata</translation>
 <translation id="802154636333426148">Download non riuscito</translation>
+<translation id="8028993641010258682">Dimensioni</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Attiva la modalità Colore automatico</translation>
 <translation id="8041089156583427627">Invia feedback</translation>

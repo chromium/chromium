@@ -2373,6 +2373,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2670102641511624474"><ph name="APP_NAME" /> hat einen Chrome-Tab freigegeben.</translation>
 <translation id="2670350619068134931">Reduzierte Animationen</translation>
 <translation id="2670403088701171361">Websites dürfen nicht auf Text oder Bilder in meiner Zwischenablage zugreifen</translation>
+<translation id="2671423594960767771">Gruppe teilen</translation>
 <translation id="2671451824761031126">Deine Lesezeichen und Einstellungen stehen bereit</translation>
 <translation id="2672142220933875349">Fehler beim Entpacken wegen fehlerhafter CRX-Datei.</translation>
 <translation id="2672200806060988299">Deine Tabtitel und URLs werden an Google gesendet und möglicherweise von Prüfern zur Verbesserung dieser Funktion angesehen.</translation>
@@ -7111,7 +7112,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6164393601566177235">Websites hinzufügen</translation>
 <translation id="6164832038898943453">Sprachen hinzufügen, die automatisch übersetzt werden sollen</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
-<translation id="6165850999903769629">Alle Apps unter ChromeOS werden jetzt in einem eigenen App-Fenster statt in Chrome geöffnet.</translation>
 <translation id="6166185671393271715">Passwörter in Chrome importieren</translation>
 <translation id="6169040057125497443">Überprüfe dein Mikrofon.</translation>
 <translation id="6169967265765719844">Berechtigungen für Spiele und Apps, die über Steam installiert wurden, können in den <ph name="LINK_BEGIN" />Einstellungen der Steam-App<ph name="LINK_END" /> verwaltet werden.</translation>
@@ -7911,7 +7911,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6776729248872343918">Schnelles Pairing aktivieren</translation>
 <translation id="6777817260680419853">Weiterleitung blockiert</translation>
 <translation id="6777845730143344223">Weitere Informationen zu Passpoint-Abos</translation>
-<translation id="6778660707554364320"><ph name="APP" /> wird jetzt als App geöffnet</translation>
 <translation id="6779092717724412415">Wenn du Text hervorheben möchtest, wähle ihn einfach aus und klicke mit der rechten Maustaste.</translation>
 <translation id="6779348349813025131">Der Google Passwortmanager benötigt Zugriff auf den macOS-Schlüsselbund</translation>
 <translation id="677965093459947883">Sehr klein</translation>

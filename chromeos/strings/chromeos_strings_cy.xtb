@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Bwydydd Dogfen (Dwy ochr)</translation>
 <translation id="3201315366910775591">Gall albymau a rennir gael eu diweddaru gan bobl eraill</translation>
 <translation id="3211671540163313381">D-pad mapio allweddi</translation>
-<translation id="3224812403568276799">Pan fyddwch yn caniatáu hyn, bydd Recorder yn defnyddio dadansoddiad sain uwch i ganfod lleisiau gwahanol yn awtomatig a rhoi label generig i bob un fel Siaradwr 1 a Siaradwr 2.
-
-Gallwch ddiffodd hwn unrhyw bryd yn y Gosodiadau.</translation>
 <translation id="3226405216343213872">Wrthi'n chwilio am sganwyr</translation>
 <translation id="3226657629376379887">Dewislen gweithredoedd cynllun</translation>
 <translation id="3227186760713762082">Rhannu'r gwerth <ph name="CATEGORY_TEXT" /> â <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@ Gallwch ddiffodd hwn unrhyw bryd yn y Gosodiadau.</translation>
 <translation id="5318334351163689047">Methiannau ceisiadau UDP</translation>
 <translation id="53196409393069519">Troi trawsgrifiad ymlaen?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Enw</translation>
 <translation id="5332948983412042822">Dewiswch un newydd nawr</translation>
 <translation id="5333530671332546086">Cyflwr porth anhysbys</translation>
 <translation id="5335373365677455232">pinc</translation>
@@ -1108,6 +1106,7 @@ Gallwch ddiffodd hwn unrhyw bryd yn y Gosodiadau.</translation>
 <translation id="6905724422583748843">Nôl i <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Mae gorchudd y sganiwr ar agor. Caewch y gorchudd a rhowch gynnig arall arni.</translation>
 <translation id="6911383237894364323">Methu â chysylltu â gweinyddion cyfryngau</translation>
+<translation id="6930242544192836755">Hyd</translation>
 <translation id="6930597342185648547">Ynglŷn â'r cefndir</translation>
 <translation id="6939667434404433010">Chwilio enw recordiad</translation>
 <translation id="6939766318048400022">Caffi</translation>
@@ -1328,6 +1327,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8004582292198964060">Porwr</translation>
 <translation id="8017679124341497925">Mae'r llwybr byr wedi'i newid</translation>
 <translation id="802154636333426148">Wedi methu â lawrlwytho</translation>
+<translation id="8028993641010258682">Maint</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Galluogi'r modd lliw awtomatig</translation>
 <translation id="8041089156583427627">Anfon adborth</translation>

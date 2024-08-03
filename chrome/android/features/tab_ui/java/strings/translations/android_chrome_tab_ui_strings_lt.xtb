@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Oranžinė</translation>
 <translation id="125153950246128346">Palieskite, kad peržiūrėtumėte kitą skirtuką</translation>
 <translation id="1273910660700874265">„<ph name="TITLE_OF_GROUP" />“ skirtukų grupės parinktys</translation>
+<translation id="1340839264183302272">Išeiti iš grupės</translation>
 <translation id="1419023007528516122">Atlikus šį veiksmą grupė bus visam laikui ištrinta iš įrenginio</translation>
 <translation id="1486715732399361704">Visas skirtukų grupes rasite čia</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Sukurta prieš <ph name="NUM_MINS_ONE" /> minutę}one{Sukurta prieš <ph name="NUM_MINS_MANY" /> minutę}few{Sukurta prieš <ph name="NUM_MINS_MANY" /> minutes}many{Sukurta prieš <ph name="NUM_MINS_MANY" /> minutės}other{Sukurta prieš <ph name="NUM_MINS_MANY" /> minučių}}</translation>
@@ -41,6 +42,7 @@
 <translation id="2801787514987684416">Peržiūrėti parduotuvės informaciją?</translation>
 <translation id="2928243913527329289">„Google“ | Apie šią parduotuvę</translation>
 <translation id="2977480621796371840">Pašalinti iš grupės</translation>
+<translation id="29919168204617356">Neaktyvūs skirtukai bus automatiškai uždaryti. Juos visada rasite skiltyje „Istorija“.</translation>
 <translation id="3008554597174452548">Stabdyti produkto stebėjimą</translation>
 <translation id="3026391124054406831">Kurkite grupes, kad galėtumėte tvarkyti skirtukus.</translation>
 <translation id="3051031624272448591">Visada galite juos peržiūrėti istorijoje</translation>
@@ -51,6 +53,7 @@
 <translation id="3322827343001922122">Atidaryti skirtukų grupės „<ph name="TITLE_OF_GROUP" />“ veiksmų meniu</translation>
 <translation id="3328308545011660196">Pasiūlymas: skirtukai (iš viso: <ph name="NUMBER_OF_TABS" />) atrodo susiję. Grupuoti juos?</translation>
 <translation id="3547352561153509682">Grupė bus ištrinta iš visų įrenginių, kuriuose prisijungta prie <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">Slėpti neaktyvių skirtukų dialogo langą</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Bendrinimo lapo peržiūros miniatiūra.</translation>
 <translation id="381219490185664296">Išgrupuoti skirtukų grupę?</translation>
@@ -120,6 +123,7 @@
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Perkelti skirtuką į kairę</translation>
 <translation id="6615455863669487791">Rodyti</translation>
+<translation id="6694634756612002311">Tvarkyti bendrinimą</translation>
 <translation id="6744956528665271406">Redaguoti grupės spalvą</translation>
 <translation id="6856809498882026482">Slėpti kelių elementų pasirinkimo režimą</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Bendrinti skirtuką}one{Bendrinti skirtukus}few{Bendrinti skirtukus}many{Bendrinti skirtukus}other{Bendrinti skirtukus}}</translation>
@@ -137,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> apžvalga iš „Google“}one{<ph name="REVIEWS_COUNT_MANY" /> apžvalga iš „Google“}few{<ph name="REVIEWS_COUNT_MANY" /> apžvalgos iš „Google“}many{<ph name="REVIEWS_COUNT_MANY" /> apžvalgos iš „Google“}other{<ph name="REVIEWS_COUNT_MANY" /> apžvalgų iš „Google“}}</translation>
 <translation id="7559245342362162951">Rodyti grupės skirtukus viso ekrano tinklelyje</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
+<translation id="7688386659311034820">Neaktyvių skirtukų dialogo langas</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Bendrinti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką}one{Bendrinti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką}few{Bendrinti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus}many{Bendrinti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko}other{Bendrinti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus}}</translation>
 <translation id="7773714564112603605">Pašalinti skirtuką ir ištrinti grupę</translation>
 <translation id="7792771145871471484">Peržiūrėkite pasiūlymus.</translation>
@@ -171,6 +176,7 @@
 <translation id="8926389886865778422">Neklauskite dar kartą</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Išskleisti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_ONE" /> skirtukas.}one{Išskleisti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukas.}few{Išskleisti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukai.}many{Išskleisti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtuko.}other{Išskleisti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukų.}}</translation>
 <translation id="9090098097337832354">Informacija apie šią parduotuvę uždaryta</translation>
+<translation id="9111228330448174435">Rodyti dialogo langą kuriant naują skirtukų grupę</translation>
 <translation id="9150694013019234766">Skirtukus perjunkite skirtukų grupėje netoli ekrano apačios</translation>
 <translation id="9169594135889675189">Pridėti naują skirtuką prie grupės</translation>
 <translation id="9216898458513705996">Skirtukai liks atidaryti šiame įrenginyje, bet grupė bus ištrinta iš visų įrenginių, kuriuose prisijungta prie <ph name="USER_EMAIL" /></translation>

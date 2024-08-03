@@ -2379,6 +2379,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2670102641511624474"><ph name="APP_NAME" /> dijeli Chromeovu karticu.</translation>
 <translation id="2670350619068134931">Smanjene animacije</translation>
 <translation id="2670403088701171361">Ne dopuštaj web-lokacijama da vide tekst ili slike u međuspremniku</translation>
+<translation id="2671423594960767771">Dijeli grupu</translation>
 <translation id="2671451824761031126">Oznake i postavke su spremne</translation>
 <translation id="2672142220933875349">Neispravna crx datoteka. Raspakiravanje nije uspjelo.</translation>
 <translation id="2672200806060988299">Naslovi i URL-ovi vaših kartica šalju se Googleu i mogu ih vidjeti pregledavatelji radi poboljšanja te značajke.</translation>
@@ -7121,7 +7122,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6164393601566177235">Dodaj web-lokacije</translation>
 <translation id="6164832038898943453">Dodajte jezike koji će se automatski prevoditi</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
-<translation id="6165850999903769629">Sve aplikacije na ChromeOS-u sada se otvaraju u vlastitim prozorima aplikacije, a ne u Chromeu.</translation>
 <translation id="6166185671393271715">Uvoz zaporki u Chrome</translation>
 <translation id="6169040057125497443">Provjerite mikrofon.</translation>
 <translation id="6169967265765719844">Dopuštenjima za igre i aplikacije instalirane putem Steama može se upravljati u <ph name="LINK_BEGIN" />postavkama aplikacije Steam<ph name="LINK_END" />.</translation>
@@ -7926,7 +7926,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6776729248872343918">Omogući Brzo uparivanje</translation>
 <translation id="6777817260680419853">Preusmjeravanje je blokirano</translation>
 <translation id="6777845730143344223">Saznajte više o pretplatama na Passpointu</translation>
-<translation id="6778660707554364320"><ph name="APP" /> se sada otvara kao aplikacija</translation>
 <translation id="6779092717724412415">Da biste izradili isticanje poput ovog, odaberite bilo koji tekst i kliknite desnom tipkom.</translation>
 <translation id="6779348349813025131">Google upravitelj zaporki treba pristup MacOS Keychainu</translation>
 <translation id="677965093459947883">Vrlo mali</translation>

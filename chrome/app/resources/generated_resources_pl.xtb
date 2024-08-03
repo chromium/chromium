@@ -2360,6 +2360,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2670102641511624474"><ph name="APP_NAME" /> udostępnia kartę Chrome.</translation>
 <translation id="2670350619068134931">Mniej animacji</translation>
 <translation id="2670403088701171361">Nie zezwalaj witrynom na dostęp do tekstu i obrazów w schowku</translation>
+<translation id="2671423594960767771">Udostępnij grupę</translation>
 <translation id="2671451824761031126">Zakładki i ustawienia są gotowe</translation>
 <translation id="2672142220933875349">Nieprawidłowy plik CRX. Nie udało się go rozpakować.</translation>
 <translation id="2672200806060988299">Twoje tytuły kart i adresy URL są wysyłane do Google. Mogą je zobaczyć weryfikatorzy, którzy pracują nad ulepszaniem tej funkcji.</translation>
@@ -7098,7 +7099,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6164393601566177235">Dodaj witryny</translation>
 <translation id="6164832038898943453">Dodaj języki, które mają być tłumaczone automatycznie</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
-<translation id="6165850999903769629">Wszystkie aplikacje w ChromeOS otwierają się teraz w osobnych oknach aplikacji, a nie w Chrome.</translation>
 <translation id="6166185671393271715">Importowanie haseł do Chrome</translation>
 <translation id="6169040057125497443">Sprawdź mikrofon.</translation>
 <translation id="6169967265765719844">Uprawnieniami gier i aplikacji zainstalowanych za pomocą aplikacji Steam można zarządzać w <ph name="LINK_BEGIN" />jej ustawieniach<ph name="LINK_END" />.</translation>
@@ -7902,7 +7902,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6776729248872343918">Włącz Szybkie parowanie</translation>
 <translation id="6777817260680419853">Przekierowanie zostało zablokowane</translation>
 <translation id="6777845730143344223">Dowiedz się więcej o subskrypcjach Passpoint</translation>
-<translation id="6778660707554364320">Aplikacja <ph name="APP" /> otwiera się teraz jako aplikacja</translation>
 <translation id="6779092717724412415">Aby utworzyć wyróżnienie takie jak to, zaznacz dowolny tekst i kliknij prawym przyciskiem myszy.</translation>
 <translation id="6779348349813025131">Menedżer haseł Google potrzebuje dostępu do pęku kluczy macOS</translation>
 <translation id="677965093459947883">Bardzo mały</translation>

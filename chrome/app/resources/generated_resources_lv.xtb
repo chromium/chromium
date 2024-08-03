@@ -2378,6 +2378,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2670102641511624474">Lietotne <ph name="APP_NAME" /> koplieto Chrome cilni.</translation>
 <translation id="2670350619068134931">Mazāk animāciju</translation>
 <translation id="2670403088701171361">Neļaut vietnēm piekļūt tekstam vai attēliem starpliktuvē</translation>
+<translation id="2671423594960767771">Kopīgot grupu</translation>
 <translation id="2671451824761031126">Jūsu grāmatzīmes un iestatījumi ir gatavi.</translation>
 <translation id="2672142220933875349">.crx fails ir bojāts. Neizdevās atvērt pakotni.</translation>
 <translation id="2672200806060988299">Jūsu ciļņu nosaukumi un vietrāži URL tiek nosūtīti Google serveriem, un tos var skatīt pārskatītāji, lai uzlabotu šo funkciju.</translation>
@@ -7117,7 +7118,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="6164393601566177235">Vietņu pievienošana</translation>
 <translation id="6164832038898943453">Pievienot valodas, no kurām jātulko automātiski</translation>
 <translation id="6165508094623778733">Uzzināt vairāk</translation>
-<translation id="6165850999903769629">Visas lietotnes operētājsistēmā ChromeOS tagad tiek atvērtas atsevišķā attiecīgās lietotnes logā, nevis pārlūkā Chrome.</translation>
 <translation id="6166185671393271715">Paroļu importēšana pārlūkā Chrome</translation>
 <translation id="6169040057125497443">Lūdzu, pārbaudiet savu mikrofonu.</translation>
 <translation id="6169967265765719844">Ja spēļu un lietotņu instalēšanai izmantojāt Steam, šo spēļu un lietotņu atļaujas varat pārvaldīt <ph name="LINK_BEGIN" />lietotnes Steam iestatījumos<ph name="LINK_END" />.</translation>
@@ -7921,7 +7921,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6776729248872343918">Iespējot ātro savienošanu pārī</translation>
 <translation id="6777817260680419853">Novirzīšana bloķēta</translation>
 <translation id="6777845730143344223">Uzzināt vairāk par Passpoint abonementiem</translation>
-<translation id="6778660707554364320"><ph name="APP" /> tagad tiek atvērta kā lietotne</translation>
 <translation id="6779092717724412415">Lai izveidotu šādu izcēlumu, atlasiet tekstu un noklikšķiniet ar peles labo pogu.</translation>
 <translation id="6779348349813025131">Google paroļu pārvaldniekam ir nepieciešama piekļuve MacOS sistēmai Keychain</translation>
 <translation id="677965093459947883">Ļoti mazs</translation>

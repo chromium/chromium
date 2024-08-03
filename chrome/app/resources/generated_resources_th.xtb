@@ -2376,6 +2376,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> กำลังแชร์แท็บใน Chrome</translation>
 <translation id="2670350619068134931">ภาพเคลื่อนไหวที่ลดลง</translation>
 <translation id="2670403088701171361">ไม่อนุญาตให้เว็บไซต์ดูข้อความหรือรูปภาพในคลิปบอร์ด</translation>
+<translation id="2671423594960767771">แชร์กลุ่ม</translation>
 <translation id="2671451824761031126">บุ๊กมาร์กและการตั้งค่าของคุณพร้อมแล้ว</translation>
 <translation id="2672142220933875349">ไฟล์ crx ใช้ไม่ได้ การคลายการแพ็กล้มเหลว</translation>
 <translation id="2672200806060988299">ระบบจะส่งชื่อแท็บและ URL ไปยัง Google และเจ้าหน้าที่ตรวจสอบอาจมองเห็นข้อมูลเหล่านี้เพื่อนำไปใช้ปรับปรุงฟีเจอร์นี้</translation>
@@ -7117,7 +7118,6 @@
 <translation id="6164393601566177235">เพิ่มเว็บไซต์</translation>
 <translation id="6164832038898943453">เพิ่มภาษาที่จะให้แปลโดยอัตโนมัติ</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
-<translation id="6165850999903769629">ตอนนี้แอปทั้งหมดใน ChromeOS จะเปิดในหน้าต่างแอปของตัวเองแทนการเปิดใน Chrome</translation>
 <translation id="6166185671393271715">นำเข้ารหัสผ่านไปยัง Chrome</translation>
 <translation id="6169040057125497443">โปรดตรวจสอบไมโครโฟน</translation>
 <translation id="6169967265765719844">คุณสามารถจัดการสิทธิ์สำหรับเกมและแอปที่ติดตั้งผ่าน Steam ได้ใน<ph name="LINK_BEGIN" />การตั้งค่าแอป Steam<ph name="LINK_END" /></translation>
@@ -7816,6 +7816,7 @@
 <translation id="6691936601825168937">&amp;ส่งต่อ</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 หน้า}other{{COUNT} หน้า}}</translation>
 <translation id="6693820805264897502">แทนที่รหัสผ่านที่มีอยู่</translation>
+<translation id="6694634756612002311">จัดการการแชร์</translation>
 <translation id="6697172646384837537">เลือกปลายทางที่ต้องการนำเข้ารหัสผ่าน</translation>
 <translation id="6697492270171225480">แสดงคำแนะนำหน้าที่คล้ายกันเมื่อไม่พบหน้าเว็บ</translation>
 <translation id="6697690052557311665">หากต้องการแชร์ ให้คลิกขวาที่โฟลเดอร์ในแอป Files จากนั้นเลือก "แชร์กับ Linux"</translation>
@@ -7918,7 +7919,6 @@
 <translation id="6776729248872343918">เปิดใช้ฟีเจอร์จับคู่ด่วน</translation>
 <translation id="6777817260680419853">การเปลี่ยนเส้นทางถูกบล็อก</translation>
 <translation id="6777845730143344223">ดูข้อมูลเพิ่มเติมเกี่ยวกับการสมัครใช้บริการ Passpoint</translation>
-<translation id="6778660707554364320">ตอนนี้ <ph name="APP" /> จะเปิดขึ้นเป็นแอปๆ หนึ่ง</translation>
 <translation id="6779092717724412415">เลือกข้อความแล้วคลิกขวาเพื่อสร้างไฮไลต์ในลักษณะนี้</translation>
 <translation id="6779348349813025131">เครื่องมือจัดการรหัสผ่านบน Google ต้องการสิทธิ์เข้าถึง Keychain ของ MacOS</translation>
 <translation id="677965093459947883">เล็กมาก</translation>
@@ -10992,6 +10992,7 @@
 <translation id="8984694057134206124">ทุกคนจะมองเห็นคุณเป็นเวลา <ph name="MINUTES" /> นาที <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">ยินดีต้อนรับสู่ Steam สำหรับ Chromebook</translation>
 <translation id="8985264973231822211">ใช้งานเมื่อ <ph name="DEVICE_LAST_ACTIVATED_TIME" /> วันที่ผ่านมา</translation>
+<translation id="8985561265504464578">เกณฑ์การตรวจจับ</translation>
 <translation id="8985661493893822002">โปรดเชื่อมต่ออินเทอร์เน็ตเพื่อลงชื่อเข้าใช้ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8985661571449404298">ดาวน์โหลดไฟล์ที่ไม่ปลอดภัยแล้ว</translation>
 <translation id="8986362086234534611">เลิกจำ</translation>

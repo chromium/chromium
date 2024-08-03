@@ -2375,6 +2375,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2670102641511624474"><ph name="APP_NAME" /> tətbiqi Chrome panelini paylaşır.</translation>
 <translation id="2670350619068134931">Azaldılmış animasiyalar</translation>
 <translation id="2670403088701171361">Saytlara mübadilə buferinizdəki mətnə və ya şəkillərə baxmaq icazəsi verməyin</translation>
+<translation id="2671423594960767771">Qrupu paylaşın</translation>
 <translation id="2671451824761031126">Əlfəcin və ayarlar hazırdır</translation>
 <translation id="2672142220933875349">Crx fayl keyfiyyətsizdir, paketdən çıxarma alınmadı.</translation>
 <translation id="2672200806060988299">Tab başlıqları və URL-lər Google-a göndərilir və bu funksiyanı təkmilləşdirmək üçün insan redaktorlar onlara baxa bilərlər.</translation>
@@ -7116,7 +7117,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6164393601566177235">Sayt əlavə edin</translation>
 <translation id="6164832038898943453">Avtomatik tərcümə etmək üçün dillər əlavə edin</translation>
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
-<translation id="6165850999903769629">ChromeOS-dakı bütün tətbiqlər indi Chrome-da deyil, öz tətbiq pəncərələrində açılır.</translation>
 <translation id="6166185671393271715">Parolları Chrome'a import edin</translation>
 <translation id="6169040057125497443">Mikrofonu yoxlayın.</translation>
 <translation id="6169967265765719844">Steam vasitəsilə quraşdırılmış oyunlar və tətbiqlər üçün icazələr <ph name="LINK_BEGIN" />Steam tətbiqi ayarlarında<ph name="LINK_END" /> idarə oluna bilər.</translation>
@@ -7916,7 +7916,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6776729248872343918">Sürətli Birləşdirməni aktiv edin</translation>
 <translation id="6777817260680419853">Yönləndirmə blok edildi</translation>
 <translation id="6777845730143344223">Keçid nöqtəsi abunələri haqqında ətraflı</translation>
-<translation id="6778660707554364320"><ph name="APP" /> tətbiq kimi açılır</translation>
 <translation id="6779092717724412415">Buna bənzər bir vurğulama yaratmaq üçün istənilən mətni seçin və sağ düymə ilə klikləyin.</translation>
 <translation id="6779348349813025131">Google Parol Meneceri MacOS Keychain-ə giriş tələb edir</translation>
 <translation id="677965093459947883">Çox kiçik</translation>

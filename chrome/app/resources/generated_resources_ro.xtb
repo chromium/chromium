@@ -2377,6 +2377,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2670102641511624474"><ph name="APP_NAME" /> trimite conținutul unei file Chrome.</translation>
 <translation id="2670350619068134931">Animații reduse</translation>
 <translation id="2670403088701171361">Nu permite site-urilor să vadă text sau imagini din clipboard</translation>
+<translation id="2671423594960767771">Trimite grupul</translation>
 <translation id="2671451824761031126">Marcajele și setările sunt gata</translation>
 <translation id="2672142220933875349">Fișier crx incorect. Despachetarea nu a reușit.</translation>
 <translation id="2672200806060988299">Titlurile filelor și adresele URL sunt trimise la Google și pot fi văzute de evaluatori umani pentru a îmbunătăți această funcție.</translation>
@@ -7119,7 +7120,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6164393601566177235">Adaugă site-uri</translation>
 <translation id="6164832038898943453">Adaugă limbi pentru traducere automată</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
-<translation id="6165850999903769629">Toate aplicațiile din ChromeOS se deschid acum în propriile ferestre de aplicații, nu în Chrome.</translation>
 <translation id="6166185671393271715">Importă parolele în Chrome</translation>
 <translation id="6169040057125497443">Verifică microfonul.</translation>
 <translation id="6169967265765719844">Permisiunile pentru jocurile și aplicațiile instalate prin Steam se pot gestiona în <ph name="LINK_BEGIN" />setările aplicației Steam<ph name="LINK_END" />.</translation>
@@ -7921,7 +7921,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6776729248872343918">Activează Fast Pair</translation>
 <translation id="6777817260680419853">Redirecționarea a fost blocată</translation>
 <translation id="6777845730143344223">Află mai multe despre abonamentele Passpoint</translation>
-<translation id="6778660707554364320"><ph name="APP" /> se deschide acum ca aplicație</translation>
 <translation id="6779092717724412415">Pentru a crea o evidențiere precum aceasta, selectează orice text și dă clic dreapta.</translation>
 <translation id="6779348349813025131">Managerul de parole Google are nevoie de acces la MacOS Keychain</translation>
 <translation id="677965093459947883">Foarte mică</translation>

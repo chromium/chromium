@@ -2386,6 +2386,7 @@
 <translation id="2670102641511624474">‏<ph name="APP_NAME" /> درحال اشتراک‌گذاری یک برگه Chrome است.</translation>
 <translation id="2670350619068134931">پویانمایی‌های کاهش‌یافته</translation>
 <translation id="2670403088701171361">به سایت‌ها اجازه داده نشود نوشتار یا تصاویر موجود در بریده‌دان را ببینند</translation>
+<translation id="2671423594960767771">هم‌رسانی گروه</translation>
 <translation id="2671451824761031126">نشانک‌ها و تنظیمات شما آماده هستند</translation>
 <translation id="2672142220933875349">‏فایل crx نادرست، باز کردن بسته انجام نشد.</translation>
 <translation id="2672200806060988299">‏برای بهبود این ویژگی، عنوان و نشانی وب برگه‌ها به Google ارسال می‌شود و ممکن است افراد بازبین آن‌ها را ببینند.</translation>
@@ -7131,7 +7132,6 @@
 <translation id="6164393601566177235">افزودن سایت‌ها</translation>
 <translation id="6164832038898943453">زبان‌های موردنظر را برای ترجمه خودکار اضافه کنید</translation>
 <translation id="6165508094623778733">بیشتر بدانید</translation>
-<translation id="6165850999903769629">‏همه برنامه‌ها در ChromeOS اکنون به‌جای Chrome در پنجره‌های برنامه مخصوص خودشان باز می‌شوند.</translation>
 <translation id="6166185671393271715">‏وارد کردن گذرواژه‌ها به Chrome</translation>
 <translation id="6169040057125497443">لطفاً میکروفون را بررسی کنید.</translation>
 <translation id="6169967265765719844">‏اجازه‌های مربوط به بازی‌ها و برنامه‌های نصب‌شده ازطریق Steam را می‌توان در <ph name="LINK_BEGIN" />تنظیمات برنامه Steam<ph name="LINK_END" /> مدیریت کرد.</translation>
@@ -7933,7 +7933,6 @@
 <translation id="6776729248872343918">فعال کردن «جفت‌سازی سریع»</translation>
 <translation id="6777817260680419853">هدایت کردن مسدود شده است</translation>
 <translation id="6777845730143344223">‏درباره اشتراک‌های Passpoint بیشتر بدانید</translation>
-<translation id="6778660707554364320"><ph name="APP" /> اکنون به‌عنوان برنامه باز می‌شود</translation>
 <translation id="6779092717724412415">برای ایجاد بخش برجسته مثل این، نوشتار موردنظر را انتخاب و کلیک راست کنید.</translation>
 <translation id="6779348349813025131">‏«مدیر گذرواژه Google» باید به MacOS Keychain دسترسی داشته باشد</translation>
 <translation id="677965093459947883">خیلی کوچک</translation>

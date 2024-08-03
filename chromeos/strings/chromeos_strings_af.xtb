@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Dokumentvoerder (twee kante)</translation>
 <translation id="3201315366910775591">Ander mense kan gedeelde albums opdateer</translation>
 <translation id="3211671540163313381">Sleutelkartering-D-paneel</translation>
-<translation id="3224812403568276799">As jy dit toelaat, sal Klankopnemer gevorderde oudio-ontleding gebruik om kenmerkende stemme outomaties te bespeur en vir elkeen ’n generiese etiket soos Spreker 1 en Spreker 2 te gee.
-
-Jy kan dit enige tyd in Instellings afskakel.</translation>
 <translation id="3226405216343213872">Soek skandeerders</translation>
 <translation id="3226657629376379887">Uitleghandelingekieslys</translation>
 <translation id="3227186760713762082">Deel die <ph name="CATEGORY_TEXT" />-waarde deur <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@ Jy kan dit enige tyd in Instellings afskakel.</translation>
 <translation id="5318334351163689047">Mislukte TCP-versoeke</translation>
 <translation id="53196409393069519">Skakel transkripsie aan?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Naam</translation>
 <translation id="5332948983412042822">Kies nou 'n nuwe een</translation>
 <translation id="5333530671332546086">Onbekende portaalstatus</translation>
 <translation id="5335373365677455232">pienk</translation>
@@ -1108,6 +1106,7 @@ Jy kan dit enige tyd in Instellings afskakel.</translation>
 <translation id="6905724422583748843">Terug na <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Die skandeerder se deksel is oop. Maak die deksel toe en probeer weer.</translation>
 <translation id="6911383237894364323">Kan nie aan mediabedieners koppel nie</translation>
+<translation id="6930242544192836755">Duur</translation>
 <translation id="6930597342185648547">Meer oor agtergrond</translation>
 <translation id="6939667434404433010">Soek na opnamenaam</translation>
 <translation id="6939766318048400022">Kafee</translation>
@@ -1328,6 +1327,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8004582292198964060">Blaaier</translation>
 <translation id="8017679124341497925">Kortpad is gewysig</translation>
 <translation id="802154636333426148">Kon nie aflaai nie</translation>
+<translation id="8028993641010258682">Grootte</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Aktiveer outokleurmodus</translation>
 <translation id="8041089156583427627">Stuur terugvoer</translation>

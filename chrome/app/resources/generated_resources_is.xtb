@@ -2390,6 +2390,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2670102641511624474"><ph name="APP_NAME" /> deilir flipa í Chrome.</translation>
 <translation id="2670350619068134931">Hreyfimyndir með minnkaðri hreyfingu</translation>
 <translation id="2670403088701171361">Ekki leyfa vefsvæðum að sjá texta eða myndir á klippiborðinu</translation>
+<translation id="2671423594960767771">Deila hópi</translation>
 <translation id="2671451824761031126">Bókamerki og stillingar eru til reiðu</translation>
 <translation id="2672142220933875349">Skemmd crx-skrá. Mistókst að afpakka.</translation>
 <translation id="2672200806060988299">Flipaheitin þín og vefslóðir eru sendar til Google og mannlegir yfirlesarar kunna að fara yfir þær til að bæta þennan eiginleika.</translation>
@@ -7135,7 +7136,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6164393601566177235">Bæta við vefsvæðum</translation>
 <translation id="6164832038898943453">Bættu við tungumálum til að þýða sjálfkrafa</translation>
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
-<translation id="6165850999903769629">Öll forrit í ChromeOS opnast nú í sér gluggum í stað Chrome.</translation>
 <translation id="6166185671393271715">Flytja inn aðgangsorð í Chrome</translation>
 <translation id="6169040057125497443">Athugaðu hljóðnemann.</translation>
 <translation id="6169967265765719844">Heimildum fyrir leiki og forrit sem sett eru upp í gegnum Steam er hægt að stjórna í <ph name="LINK_BEGIN" />stillingum Steam forritsins<ph name="LINK_END" />.</translation>
@@ -7937,7 +7937,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6776729248872343918">Kveikja á hraðpörun</translation>
 <translation id="6777817260680419853">Lokað á framsendingu</translation>
 <translation id="6777845730143344223">Nánar um áskriftir að Aðgangspunkti</translation>
-<translation id="6778660707554364320"><ph name="APP" /> opnast nú sem forrit</translation>
 <translation id="6779092717724412415">Veldu hvaða texta sem er og hægrismelltu til að merkja á þennan hátt.</translation>
 <translation id="6779348349813025131">Google-aðgangsorðastjórnun þarf aðgang að MacOS Keychain</translation>
 <translation id="677965093459947883">Mjög lítið</translation>

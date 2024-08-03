@@ -2390,6 +2390,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2670102641511624474"><ph name="APP_NAME" /> deler en Chrome-fane.</translation>
 <translation id="2670350619068134931">Reducerede animationer</translation>
 <translation id="2670403088701171361">Tillad ikke, at websites ser tekst eller billeder fra din udklipsholder</translation>
+<translation id="2671423594960767771">Del gruppe</translation>
 <translation id="2671451824761031126">Dine bogmærker og indstillinger er klar</translation>
 <translation id="2672142220933875349">Ugyldig CRX-fil. Udpakning mislykkedes.</translation>
 <translation id="2672200806060988299">Titlerne og webadresserne på dine faner sendes til Google og kan gennemgås af menneskelige kontrollanter for at forbedre denne funktion.</translation>
@@ -7135,7 +7136,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6164393601566177235">Tilføj websites</translation>
 <translation id="6164832038898943453">Tilføj sprog for at oversætte automatisk</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
-<translation id="6165850999903769629">Alle apps i ChromeOS åbner nu i deres egne appvinduer i stedet for i Chrome.</translation>
 <translation id="6166185671393271715">Importér adgangskoder til Chrome</translation>
 <translation id="6169040057125497443">Tjek din mikrofon.</translation>
 <translation id="6169967265765719844">Tilladelser for spil og apps, som er installeret via Steam, kan administreres i <ph name="LINK_BEGIN" />indstillingerne for Steam-appen<ph name="LINK_END" />.</translation>
@@ -7937,7 +7937,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6776729248872343918">Aktivér Hurtig parring</translation>
 <translation id="6777817260680419853">Omdirigeringen blev blokeret</translation>
 <translation id="6777845730143344223">Få flere oplysninger om Passpoint-abonnementer</translation>
-<translation id="6778660707554364320"><ph name="APP" /> åbnes nu som en app</translation>
 <translation id="6779092717724412415">Vælg en tekst, og højreklik på den for at oprette en markering som denne.</translation>
 <translation id="6779348349813025131">Google Adgangs­kode­admin­istrator skal have adgang til macOS-nøgleringen</translation>
 <translation id="677965093459947883">Meget lille</translation>

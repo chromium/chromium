@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">ਦਸਤਾਵੇਜ਼ ਫ਼ੀਡਰ (ਦੋ ਪਾਸੜ)</translation>
 <translation id="3201315366910775591">ਸਾਂਝੀਆਂ ਐਲਬਮਾਂ ਨੂੰ ਹੋਰ ਲੋਕਾਂ ਵੱਲੋਂ ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="3211671540163313381">ਕੀ-ਮੈਪਿੰਗ ਡੀ-ਪੈਡ</translation>
-<translation id="3224812403568276799">ਤੁਹਾਡੇ ਵੱਲੋਂ ਇਸਨੂੰ ਆਗਿਆ ਦੇਣ ਤੋਂ ਬਾਅਦ, Recorder ਵਿਲੱਖਣ ਅਵਾਜ਼ਾਂ ਦਾ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪਤਾ ਲਗਾਉਣ ਲਈ ਅਡਵਾਂਸ ਆਡੀਓ ਵਿਸ਼ਲੇਸ਼ਣ ਦੀ ਵਰਤੋਂ ਕਰੇਗੀ ਅਤੇ ਹਰੇਕ ਨੂੰ ਸਪੀਕਰ 1 ਅਤੇ ਸਪੀਕਰ 2 ਵਰਗੇ ਆਮ ਲੇਬਲ ਦੇਵੇਗੀ।
-
-ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਿਸੇ ਵੀ ਵੇਲੇ ਇਸਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3226405216343213872">ਸਕੈਨਰ ਲੱਭੇ ਜਾ ਰਹੇ ਹਨ</translation>
 <translation id="3226657629376379887">ਖਾਕਾ ਕਾਰਵਾਈ ਮੀਨੂ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> ਮੁੱਲ ਨੂੰ <ph name="CONVERSION_RATE" /> ਨਾਲ ਭਾਗ ਕਰੋ</translation>
@@ -812,6 +809,7 @@
 <translation id="5318334351163689047">TCP ਬੇਨਤੀ ਦੀਆਂ ਅਸਫਲਤਾਵਾਂ</translation>
 <translation id="53196409393069519">ਕੀ ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">ਨਾਮ</translation>
 <translation id="5332948983412042822">ਹੁਣੇ ਇੱਕ ਨਵਾਂ ਪਾਸਵਰਡ ਚੁਣੋ</translation>
 <translation id="5333530671332546086">ਅਗਿਆਤ ਪੋਰਟਲ ਸਥਿਤੀ</translation>
 <translation id="5335373365677455232">ਗੁਲਾਬੀ</translation>
@@ -1108,6 +1106,7 @@
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="6910312834584889076">ਸਕੈਨਰ ਦਾ ਕਵਰ ਖੁੱਲ੍ਹਾ ਹੈ। ਕਵਰ ਬੰਦ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6911383237894364323">ਮੀਡੀਆ ਸਰਵਰਾਂ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
+<translation id="6930242544192836755">ਮਿਆਦ</translation>
 <translation id="6930597342185648547">ਬੈਕਗ੍ਰਾਊਂਡ ਬਾਰੇ</translation>
 <translation id="6939667434404433010">ਰਿਕਾਰਡਿੰਗ ਦਾ ਨਾਮ ਖੋਜੋ</translation>
 <translation id="6939766318048400022">ਕੈਫ਼ੇ</translation>
@@ -1328,6 +1327,7 @@
 <translation id="8004582292198964060">ਬ੍ਰਾਊਜ਼ਰ</translation>
 <translation id="8017679124341497925">ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="802154636333426148">ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ</translation>
+<translation id="8028993641010258682">ਆਕਾਰ</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ਸਵੈ-ਵਿਵਸਥਿਤ ਰੰਗ ਵਾਲੇ ਮੋਡ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="8041089156583427627">ਵਿਚਾਰ ਭੇਜੋ</translation>

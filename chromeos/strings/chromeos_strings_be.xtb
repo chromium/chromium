@@ -418,9 +418,6 @@
 <translation id="3199982728237701504">Прылада для падачы дакументаў (абодвума бакамі)</translation>
 <translation id="3201315366910775591">Іншыя карыстальнікі могуць змяняць абагуленыя альбомы</translation>
 <translation id="3211671540163313381">D-pad для вызначэння клавіш</translation>
-<translation id="3224812403568276799">Калі вы дасце дазвол, Дыктафон будзе выкарыстоўваць пашыраны аналіз аўдыя, каб аўтаматычна выяўляць асобныя галасы і прысвойваць ім меткі, напрыклад "Суразмоўнік 1" і "Суразмоўнік 2".
-
-Гэту функцыю можна ў любы час выключыць у наладах.</translation>
 <translation id="3226405216343213872">Ідзе пошук сканераў</translation>
 <translation id="3226657629376379887">Меню дзеянняў з макетам</translation>
 <translation id="3227186760713762082">Падзяліць значэнне "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
@@ -814,6 +811,7 @@
 <translation id="5318334351163689047">Збоі запытаў TCP</translation>
 <translation id="53196409393069519">Уключыць расшыфроўку?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Імя</translation>
 <translation id="5332948983412042822">Задайце новы</translation>
 <translation id="5333530671332546086">Стан партала невядомы</translation>
 <translation id="5335373365677455232">ружовы</translation>
@@ -1110,6 +1108,7 @@
 <translation id="6905724422583748843">Вярнуцца на старонку "<ph name="PAGE_NAME" />"</translation>
 <translation id="6910312834584889076">Вечка сканера адкрыта. Закрыйце вечка і паўтарыце спробу.</translation>
 <translation id="6911383237894364323">Не ўдалося падключыцца да сервераў мультымедыя</translation>
+<translation id="6930242544192836755">Працягласць</translation>
 <translation id="6930597342185648547">Пра фон</translation>
 <translation id="6939667434404433010">Шукаць па назве запісу</translation>
 <translation id="6939766318048400022">Кафэ</translation>
@@ -1328,6 +1327,7 @@
 <translation id="8004582292198964060">Браўзер</translation>
 <translation id="8017679124341497925">Ярлык зменены</translation>
 <translation id="802154636333426148">Збой спампоўкі</translation>
+<translation id="8028993641010258682">Памер</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Уключыць рэжым аўтакарэкцыі колераў</translation>
 <translation id="8041089156583427627">Адправіць водгук</translation>

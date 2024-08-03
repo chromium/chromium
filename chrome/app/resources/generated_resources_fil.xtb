@@ -2390,6 +2390,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2670102641511624474">Nagbabahagi ang <ph name="APP_NAME" /> ng isang tab ng Chrome.</translation>
 <translation id="2670350619068134931">Mga pinasimpleng animation</translation>
 <translation id="2670403088701171361">Huwag payagan ang mga site na makita ang text o mga larawan sa iyong clipboard</translation>
+<translation id="2671423594960767771">Ibahagi ang pangkat</translation>
 <translation id="2671451824761031126">Handa na ang iyong mga bookmark at setting</translation>
 <translation id="2672142220933875349">Sirang crx file, hindi na-unpack.</translation>
 <translation id="2672200806060988299">Ipinapadala sa Google ang mga pamagat at URL ng iyong tab, at puwedeng makita ang mga ito ng mga taong tagasuri para mapahusay ang feature na ito.</translation>
@@ -7138,7 +7139,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="6164393601566177235">Magdagdag ng mga site</translation>
 <translation id="6164832038898943453">Magdagdag ng mga wikang awtomatikong isasalin</translation>
 <translation id="6165508094623778733">Matuto pa</translation>
-<translation id="6165850999903769629">Sa halip na sa Chrome, nabubuksan na sa mga sarili nitong app window ang lahat ng app sa ChromeOS.</translation>
 <translation id="6166185671393271715">Mag-import ng Mga Password sa Chrome</translation>
 <translation id="6169040057125497443">Pakisuri ang iyong mikropono.</translation>
 <translation id="6169967265765719844">Mapapamahalaan ang mga pahintulot para sa mga laro at app na na-install sa pamamagitan ng Steam sa <ph name="LINK_BEGIN" />mga setting ng Steam app<ph name="LINK_END" />.</translation>
@@ -7941,7 +7941,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6776729248872343918">I-enable ang Mabilis na Pagpares</translation>
 <translation id="6777817260680419853">Na-block ang pag-redirect</translation>
 <translation id="6777845730143344223">Matuto pa tungkol sa mga subscription sa Passpoint</translation>
-<translation id="6778660707554364320">Nabubuksan na ang <ph name="APP" /> bilang isang app</translation>
 <translation id="6779092717724412415">Para gumawa ng highlight tulad nito, pumili ng anumang text at i-right-click.</translation>
 <translation id="6779348349813025131">Kailangan ng Google Password Manager ng access sa MacOS Keychain</translation>
 <translation id="677965093459947883">Napakaliit</translation>

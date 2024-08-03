@@ -2390,6 +2390,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> Chrome ਟੈਬ ਸਾਂਝਾ ਕਰ ਰਹੀ ਹੈ।</translation>
 <translation id="2670350619068134931">ਘਟਾਏ ਗਏ ਐਨੀਮੇਸ਼ਨ</translation>
 <translation id="2670403088701171361">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਲਿਖਤ ਜਾਂ ਚਿੱਤਰ ਦੇਖਣ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
+<translation id="2671423594960767771">ਗਰੁੱਪ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="2671451824761031126">ਤੁਹਾਡੇ ਬੁੱਕਮਾਰਕ ਅਤੇ ਸੈਟਿੰਗਾਂ ਤਿਆਰ ਹਨ</translation>
 <translation id="2672142220933875349">ਖ਼ਰਾਬ crx ਫਾਈਲ, ਅਨਪੈਕ ਕਰਨਾ ਅਸਫਲ।</translation>
 <translation id="2672200806060988299">Google ਨੂੰ ਤੁਹਾਡੇ ਟੈਬ ਸਿਰਲੇਖ ਅਤੇ URL ਭੇਜੇ ਜਾਂਦੇ ਹਨ ਅਤੇ ਮਨੁੱਖੀ ਸਮੀਖਿਅਕ ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਇਨ੍ਹਾਂ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹਨ।</translation>
@@ -7135,7 +7136,6 @@
 <translation id="6164393601566177235">ਸਾਈਟਾਂ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6164832038898943453">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਅਨੁਵਾਦ ਕਰਨ ਲਈ ਭਾਸ਼ਾਵਾਂ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6165508094623778733">ਹੋਰ ਜਾਣੋ</translation>
-<translation id="6165850999903769629">ChromeOS 'ਤੇ ਉਪਲਬਧ ਸਾਰੀਆਂ ਐਪਾਂ ਹੁਣ Chrome ਦੀ ਬਜਾਏ ਆਪਣੀਆਂ ਖੁਦ ਦੀਆਂ ਐਪ ਵਿੰਡੋਆਂ 'ਤੇ ਖੁੱਲ੍ਹਦੀਆਂ ਹਨ।</translation>
 <translation id="6166185671393271715">ਪਾਸਵਰਡਾਂ ਨੂੰ Chrome ਵਿੱਚ ਆਯਾਤ ਕਰੋ</translation>
 <translation id="6169040057125497443">ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਮਾਇਕ੍ਰੋਫ਼ੋਨ ਦੀ ਜਾਂਚ ਕਰੋ।</translation>
 <translation id="6169967265765719844">Steam ਰਾਹੀਂ ਸਥਾਪਤ ਕੀਤੀਆਂ ਗੇਮਾਂ ਅਤੇ ਐਪਾਂ ਲਈ ਇਜਾਜ਼ਤਾਂ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="LINK_BEGIN" />Steam ਐਪ ਸੈਟਿੰਗਾਂ<ph name="LINK_END" /> ਵਿੱਚ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
@@ -7836,6 +7836,7 @@
 <translation id="6691936601825168937">&amp;ਫਾਰਵਰਡ</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 ਪੰਨਾ}one{{COUNT} ਪੰਨਾ}other{{COUNT} ਪੰਨੇ}}</translation>
 <translation id="6693820805264897502">ਮੌਜੂਦਾ ਪਾਸਵਰਡਾਂ ਨੂੰ ਬਦਲੋ</translation>
+<translation id="6694634756612002311">ਸਾਂਝਾਕਰਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6697172646384837537">ਆਪਣੇ ਪਾਸਵਰਡ ਆਯਾਤ ਕਰਨ ਲਈ ਕੋਈ ਥਾਂ ਚੁਣੋ</translation>
 <translation id="6697492270171225480">ਜਦੋਂ ਕੋਈ ਪੰਨਾ ਮਿਲ ਨਾ ਰਿਹਾ ਹੋਵੇ ਤਾਂ ਮਿਲਦੇ-ਜੁਲਦੇ ਪੰਨਿਆਂ ਦੇ ਸੁਝਾਅ ਦਿਖਾਓ</translation>
 <translation id="6697690052557311665">ਸਾਂਝਾ ਕਰਨ ਲਈ, Files ਐਪ ਵਿੱਚ ਕਿਸੇ ਫੋਲਡਰ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ, ਫਿਰ "Linux ਨਾਲ ਸਾਂਝਾ ਕਰੋ" ਚੁਣੋ।</translation>
@@ -7938,7 +7939,6 @@
 <translation id="6776729248872343918">ਤੇਜ਼ ਜੋੜਾਬੰਦੀ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6777817260680419853">ਰੀਡਾਇਰੈਕਟ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6777845730143344223">ਪਾਸ ਪੁਆਇੰਟ ਸਬਸਕ੍ਰਿਪਸ਼ਨਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
-<translation id="6778660707554364320"><ph name="APP" /> ਹੁਣ ਐਪ ਵਜੋਂ ਖੁੱਲ੍ਹਦੀ ਹੈ</translation>
 <translation id="6779092717724412415">ਇਸ ਵਰਗੀ ਹਾਈਲਾਈਟ ਬਣਾਉਣ ਲਈ, ਕੋਈ ਲਿਖਤ ਚੁਣੋ ਅਤੇ ਸੱਜਾ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="6779348349813025131">Google Password Manager ਨੂੰ MacOS Keychain ਤੱਕ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="677965093459947883">ਬਹੁਤ ਛੋਟਾ</translation>

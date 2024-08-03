@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Alimentador de documentos (dos caras)</translation>
 <translation id="3201315366910775591">Otras personas pueden actualizar los álbumes compartidos</translation>
 <translation id="3211671540163313381">Cruceta de asignación de teclas</translation>
-<translation id="3224812403568276799">Si permites esta opción, Grabadora usará un análisis avanzado del audio para detectar automáticamente voces distintas y asignarles etiquetas genéricas, como Interlocutor 1 e Interlocutor 2.
-
-Puedes desactivar esta opción en cualquier momento en Configuración.</translation>
 <translation id="3226405216343213872">Buscando escáneres</translation>
 <translation id="3226657629376379887">Menú de acciones de diseño</translation>
 <translation id="3227186760713762082">Divide el valor de <ph name="CATEGORY_TEXT" /> entre <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@ Puedes desactivar esta opción en cualquier momento en Configuración.</translat
 <translation id="5318334351163689047">Errores de solicitud TCP</translation>
 <translation id="53196409393069519">¿Activar transcripción?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Nombre</translation>
 <translation id="5332948983412042822">Selecciona otra ahora</translation>
 <translation id="5333530671332546086">Estado del portal desconocido</translation>
 <translation id="5335373365677455232">rosa</translation>
@@ -1108,6 +1106,7 @@ Puedes desactivar esta opción en cualquier momento en Configuración.</translat
 <translation id="6905724422583748843">Volver a <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">La cubierta del escáner está abierta. Ciérrala y vuelve a intentarlo.</translation>
 <translation id="6911383237894364323">No se ha podido conectar con los servidores multimedia</translation>
+<translation id="6930242544192836755">Duración</translation>
 <translation id="6930597342185648547">Información sobre el fondo</translation>
 <translation id="6939667434404433010">Buscar nombre de la grabación</translation>
 <translation id="6939766318048400022">Cafetería</translation>
@@ -1328,6 +1327,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8017679124341497925">Se ha editado el acceso directo</translation>
 <translation id="802154636333426148">No se ha podido descargar el archivo</translation>
+<translation id="8028993641010258682">Tamaño</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Habilitar modo de color automático</translation>
 <translation id="8041089156583427627">Enviar</translation>

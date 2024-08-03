@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Документтерди берүүчү түзмөк (эки тараптуу)</translation>
 <translation id="3201315366910775591">Башка адамдар жалпы альбомдорду жаңырта алышат</translation>
 <translation id="3211671540163313381">Баскычтарды дайындоо үчүн D-pad</translation>
-<translation id="3224812403568276799">Буга уруксат бергениңизде, Диктофон ар кандай үндөрдү автоматтык түрдө аныктоо үчүн өркүндөтүлгөн аудио талдоосун колдонот жана ар бирине Динамик 1 жана Динамик 2 деп белгилеп коёт.
-
-Муну каалаган убакта Параметрлерден өчүрө аласыз.</translation>
 <translation id="3226405216343213872">Сканерлер изделүүдө</translation>
 <translation id="3226657629376379887">Калып боюнча аракеттер менюсу</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> маанисин төмөнкүгө бөлүңүз: <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@
 <translation id="5318334351163689047">Ишке ашпай калган TCP сурамдары</translation>
 <translation id="53196409393069519">Транскрипция күйгүзүлсүнбү?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Аты:</translation>
 <translation id="5332948983412042822">Жаңысын азыр тандаңыз</translation>
 <translation id="5333530671332546086">Порталдын абалы белгисиз</translation>
 <translation id="5335373365677455232">кызгылтым</translation>
@@ -1108,6 +1106,7 @@
 <translation id="6905724422583748843">Төмөнкүгө кайтуу: <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Сканердин капкагы ачык. Капкагын жаап, кайра аракет кылыңыз.</translation>
 <translation id="6911383237894364323">Медиа серверлерине туташпай жатат</translation>
+<translation id="6930242544192836755">Узактыгы</translation>
 <translation id="6930597342185648547">Фон тууралуу</translation>
 <translation id="6939667434404433010">Жаздыруунун аталышын издөө</translation>
 <translation id="6939766318048400022">Кафе</translation>
@@ -1328,6 +1327,7 @@
 <translation id="8004582292198964060">Серепчи</translation>
 <translation id="8017679124341497925">Кыска жол түзөтүлдү</translation>
 <translation id="802154636333426148">Жүктөлүп алынбай калды</translation>
+<translation id="8028993641010258682">Өлчөм</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Авто түс режимин иштетүү</translation>
 <translation id="8041089156583427627">Пикириңизди билдириңиз</translation>

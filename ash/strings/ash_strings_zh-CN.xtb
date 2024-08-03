@@ -87,6 +87,7 @@
 <translation id="1270290102613614947">屏幕键盘已停用</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1275285675049378717">正在为 <ph name="POWER_SOURCE" />充电</translation>
+<translation id="1275718070701477396">已选择</translation>
 <translation id="1276975447697633661">选择相应文件，然后按 <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" />（<ph name="ANNOTATION" />）</translation>
 <translation id="1285992161347843613">定位手机</translation>
@@ -1759,6 +1760,7 @@
 <translation id="7312210124139670355">您的管理员正在重置您的 eSIM 卡。这可能需要几分钟的时间。</translation>
 <translation id="7312761820869643657">将设备回滚为上一个版本</translation>
 <translation id="7313193732017069507">展开相机</translation>
+<translation id="73289266812733869">未选中</translation>
 <translation id="7330397557116570022">需要选择一个文本字段才能使用语音输入</translation>
 <translation id="7331646370422660166">alt + 向下键</translation>
 <translation id="7337660433630200387">增加 10 分钟</translation>

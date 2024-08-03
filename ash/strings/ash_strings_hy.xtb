@@ -87,6 +87,7 @@
 <translation id="1270290102613614947">Էկրանի ստեղնաշարն անջատված է</translation>
 <translation id="1272079795634619415">Դադարեցնել</translation>
 <translation id="1275285675049378717">Լիցքավորում է <ph name="POWER_SOURCE" /> սարքը</translation>
+<translation id="1275718070701477396">Ընտրված</translation>
 <translation id="1276975447697633661">Ընտրեք ֆայլը, ապա սեղմեք <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Տեղորոշել հեռախոսը</translation>
@@ -1761,6 +1762,7 @@
 <translation id="7312210124139670355">Ադմինիստրատորը վերակայում է ձեր eSIM-ը։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="7312761820869643657">Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին</translation>
 <translation id="7313193732017069507">Ծավալել տեսախցիկը</translation>
+<translation id="73289266812733869">Ընտրությունը չեղարկված է</translation>
 <translation id="7330397557116570022">Թելադրումն օգտագործելու համար անցեք տեքստային դաշտ</translation>
 <translation id="7331646370422660166">alt + ներքև սլաք</translation>
 <translation id="7337660433630200387">+10 ր</translation>

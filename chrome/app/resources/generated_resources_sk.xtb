@@ -2378,6 +2378,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2670102641511624474"><ph name="APP_NAME" /> zdieľa kartu Chromu.</translation>
 <translation id="2670350619068134931">Obmedzené animácie</translation>
 <translation id="2670403088701171361">Nepovoliť webom zobrazovať text alebo obrázky v schránke</translation>
+<translation id="2671423594960767771">Zdieľať skupinu</translation>
 <translation id="2671451824761031126">Vaše záložky a nastavenia sú k dispozícii</translation>
 <translation id="2672142220933875349">Neplatný súbor crx, rozbalenie zlyhalo</translation>
 <translation id="2672200806060988299">Názvy a webové adresy vašich kariet sa odosielajú Googlu a môžu si ich prezrieť kontrolóri s cieľom zlepšiť túto funkciu.</translation>
@@ -7121,7 +7122,6 @@ Na tento účet sa môžu vzťahovať povolenia, ktoré ste už udelili webom a�
 <translation id="6164393601566177235">Pridanie webov</translation>
 <translation id="6164832038898943453">Pridajte jazyky, ktoré sa majú automaticky prekladať</translation>
 <translation id="6165508094623778733">Ďalšie informácie</translation>
-<translation id="6165850999903769629">Všetky aplikácie v systéme ChromeOS sa teraz otvárajú vo vlastných oknách, nie v Chrome.</translation>
 <translation id="6166185671393271715">Import hesiel do Chromu</translation>
 <translation id="6169040057125497443">Skontrolujte mikrofón.</translation>
 <translation id="6169967265765719844">Povolenia pre hry a aplikácie nainštalované prostredníctvom služby Steam je možné spravovať v <ph name="LINK_BEGIN" />nastaveniach aplikácie Steam<ph name="LINK_END" />.</translation>
@@ -7925,7 +7925,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6776729248872343918">Povoliť rýchle párovanie</translation>
 <translation id="6777817260680419853">Presmerovanie bolo zablokované</translation>
 <translation id="6777845730143344223">Ďalšie informácie o odberoch Passpoint</translation>
-<translation id="6778660707554364320"><ph name="APP" /> sa teraz otvára ako aplikácia</translation>
 <translation id="6779092717724412415">Ak chcete vytvoriť podobné zvýraznenie, vyberte text a kliknite pravým tlačidlom.</translation>
 <translation id="6779348349813025131">Správca hesiel Google potrebuje prístup ku Kľúčenke systému MacOS</translation>
 <translation id="677965093459947883">Veľmi malé</translation>

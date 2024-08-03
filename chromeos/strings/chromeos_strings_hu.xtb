@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Dokumentumadagoló (kétoldalas)</translation>
 <translation id="3201315366910775591">A megosztott albumokat mások is módosíthatják</translation>
 <translation id="3211671540163313381">Billentyűzetkiosztás – d-pad</translation>
-<translation id="3224812403568276799">Ha engedélyezi ezt, a Hangfelvevő speciális hangelemzést használ a különböző hangok automatikus észleléséhez, és mindegyikhez általános címkét (pl. 1. beszélő és 2. beszélő) rendel hozzá.
-
-Ezt a funkciót bármikor kikapcsolhatja a Beállításokban.</translation>
 <translation id="3226405216343213872">Szkennerek keresése</translation>
 <translation id="3226657629376379887">Elrendezésműveletek menüje</translation>
 <translation id="3227186760713762082">Ossza el a(z) <ph name="CATEGORY_TEXT" /> értékét ennyivel: <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@ Ezt a funkciót bármikor kikapcsolhatja a Beállításokban.</translation>
 <translation id="5318334351163689047">Hibás TCP-kérések.</translation>
 <translation id="53196409393069519">Bekapcsolja az Átírás funkciót?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Név</translation>
 <translation id="5332948983412042822">Válasszon most új jelszót</translation>
 <translation id="5333530671332546086">A portál állapota ismeretlen</translation>
 <translation id="5335373365677455232">rózsaszín</translation>
@@ -1108,6 +1106,7 @@ Ezt a funkciót bármikor kikapcsolhatja a Beállításokban.</translation>
 <translation id="6905724422583748843">Vissza ide: <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">A szkenner fedele nyitva van. Zárja le, és próbálja újra.</translation>
 <translation id="6911383237894364323">Nem lehet csatlakozni a médiaszerverekhez.</translation>
+<translation id="6930242544192836755">Időtartam</translation>
 <translation id="6930597342185648547">A háttérről</translation>
 <translation id="6939667434404433010">Keresés felvétel neve szerint</translation>
 <translation id="6939766318048400022">Kávézó</translation>
@@ -1328,6 +1327,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8004582292198964060">Böngésző</translation>
 <translation id="8017679124341497925">Billentyűparancs szerkesztve</translation>
 <translation id="802154636333426148">Nem sikerült a letöltés</translation>
+<translation id="8028993641010258682">Méret</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Automatikus szín mód engedélyezése</translation>
 <translation id="8041089156583427627">Visszajelzés küldése</translation>

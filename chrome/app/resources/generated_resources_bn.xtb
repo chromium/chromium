@@ -2390,6 +2390,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> একটি Chrome ট্যাব শেয়ার করছে।</translation>
 <translation id="2670350619068134931">কমানো হয়েছে এমন অ্যানিমেশন</translation>
 <translation id="2670403088701171361">সাইটকে আপনার ক্লিপবোর্ডের টেক্সট অথবা ছবি দেখতে দেয় না</translation>
+<translation id="2671423594960767771">গ্রুপ শেয়ার করুন</translation>
 <translation id="2671451824761031126">আপনার বুকমার্কস এবং সেটিংস প্রস্তুত আছে</translation>
 <translation id="2672142220933875349">খারাপ crx ফাইল, প্যাকমুক্ত করতে ব্যর্থ হয়েছে৷</translation>
 <translation id="2672200806060988299">আপনার ট্যাবের টাইটেল ও URL Google-এ পাঠানো হয় এবং এই ফিচার উন্নত করার জন্য হিউম্যান রিভিউয়ার এগুলি দেখতে পারেন।</translation>
@@ -7136,7 +7137,6 @@
 <translation id="6164393601566177235">সাইট যোগ করুন</translation>
 <translation id="6164832038898943453">অটোমেটিক অনুবাদের জন্য ভাষা যোগ করুন</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
-<translation id="6165850999903769629">ChromeOS-এর সব অ্যাপ এখন Chrome-এর বদলে তাদের নিজস্ব অ্যাপ উইন্ডোয় খোলে।</translation>
 <translation id="6166185671393271715">Chrome এ পাসওয়ার্ড আমদানি করুন</translation>
 <translation id="6169040057125497443">অনুগ্রহ করে আপনার মাইক্রোফোন ভাল করে দেখে নিন।</translation>
 <translation id="6169967265765719844">Steam-এর মাধ্যমে ইনস্টল করা গেম এবং অ্যাপের অনুমতি <ph name="LINK_BEGIN" />Steam অ্যাপ সেটিংস<ph name="LINK_END" /> বিভাগে ম্যানেজ করা যেতে পারে।</translation>
@@ -7938,7 +7938,6 @@
 <translation id="6776729248872343918">'দ্রুত পেয়ার' ফিচার চালু করুন</translation>
 <translation id="6777817260680419853">রিডাইরেক্ট ব্লক করা হয়েছে</translation>
 <translation id="6777845730143344223">পাসপয়েন্ট সাবস্ক্রিপশন সম্পর্কে আরও জানুন</translation>
-<translation id="6778660707554364320"><ph name="APP" /> এখন অ্যাপ হিসেবে খোলে</translation>
 <translation id="6779092717724412415">এইরকম একটি হাইলাইট তৈরি করতে, যেকোনও টেক্সট বেছে নিন এবং ডানদিকের বোতামে ক্লিক করুন।</translation>
 <translation id="6779348349813025131">Google Password Manager-এর MacOS Keychain-এর অ্যাক্সেস প্রয়োজন</translation>
 <translation id="677965093459947883">অতি ক্ষুদ্র</translation>

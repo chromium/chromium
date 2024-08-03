@@ -2376,6 +2376,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2670102641511624474"><ph name="APP_NAME" /> Chrome-ko fitxa bat partekatzen ari da.</translation>
 <translation id="2670350619068134931">Animazio murriztuak</translation>
 <translation id="2670403088701171361">Ez eman arbeleko testua edo irudiak ikusteko baimena webguneei</translation>
+<translation id="2671423594960767771">Partekatu taldea</translation>
 <translation id="2671451824761031126">Prest dituzu laster-markak eta ezarpenak</translation>
 <translation id="2672142220933875349">crx fitxategiak ez du balio. Ezin izan da deskonprimatu.</translation>
 <translation id="2672200806060988299">Fitxen izenak eta URLak Google-ra bidaltzen dira, eta baliteke gizakiak diren berrikusleek ikustea, eginbidea hobetzeko.</translation>
@@ -7114,7 +7115,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6164393601566177235">Gehitu webguneak</translation>
 <translation id="6164832038898943453">Gehitu automatikoki itzuli behar diren hizkuntzak</translation>
 <translation id="6165508094623778733">Lortu informazio gehiago</translation>
-<translation id="6165850999903769629">Orain, ChromeOS-eko aplikazio guztiak beren leihoetan irekitzen dira, eta ez Chrome-n.</translation>
 <translation id="6166185671393271715">Inportatu pasahitzak Chrome-ra</translation>
 <translation id="6169040057125497443">Egiaztatu mikrofonoa.</translation>
 <translation id="6169967265765719844"><ph name="LINK_BEGIN" />Steam aplikazioaren ezarpenetan<ph name="LINK_END" /> kudea ditzakezu Steam bidez instalatutako jokoen eta aplikazioen baimenak.</translation>
@@ -7914,7 +7914,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6776729248872343918">Gaitu Parekatze bizkorra</translation>
 <translation id="6777817260680419853">Blokeatu egin da birbideratzeko ekintza</translation>
 <translation id="6777845730143344223">Lortu informazio gehiago Passpoint-eko harpidetzei buruz</translation>
-<translation id="6778660707554364320">Orain, <ph name="APP" /> aplikazio gisa irekitzen da</translation>
 <translation id="6779092717724412415">Testua horrela nabarmentzeko, hautatu edozein testu zati eta egin klik eskuineko botoiarekin.</translation>
 <translation id="6779348349813025131">Google-ren Pasahitz-kudeatzailea zerbitzuak MacOS Keychain erabiltzeko baimena behar du</translation>
 <translation id="677965093459947883">Oso txikia</translation>

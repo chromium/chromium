@@ -87,6 +87,7 @@
 <translation id="1270290102613614947">螢幕小鍵盤已停用</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1275285675049378717">為「<ph name="POWER_SOURCE" />」供電</translation>
+<translation id="1275718070701477396">已選取</translation>
 <translation id="1276975447697633661">選取檔案，然後按下<ph name="KEY" />鍵</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">尋找手機</translation>
@@ -1757,6 +1758,7 @@
 <translation id="7312210124139670355">管理員正在重設 eSIM 卡，請稍候片刻。</translation>
 <translation id="7312761820869643657">將裝置復原為先前的版本</translation>
 <translation id="7313193732017069507">展開相機調整大小的按鈕</translation>
+<translation id="73289266812733869">已取消選取</translation>
 <translation id="7330397557116570022">必須點選文字欄位，才能使用語音輸入功能</translation>
 <translation id="7331646370422660166">alt + 向下鍵</translation>
 <translation id="7337660433630200387">+10 分鐘</translation>

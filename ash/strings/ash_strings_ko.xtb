@@ -87,6 +87,7 @@
 <translation id="1270290102613614947">터치 키보드 사용 중지됨</translation>
 <translation id="1272079795634619415">중지</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> 전원 공급 중</translation>
+<translation id="1275718070701477396">선택됨</translation>
 <translation id="1276975447697633661">파일을 선택한 후 <ph name="KEY" /> 키 누르기</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" />(<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">휴대전화 찾기</translation>
@@ -1761,6 +1762,7 @@
 <translation id="7312210124139670355">관리자가 eSIM을 재설정하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="7312761820869643657">기기를 이전 버전으로 업데이트</translation>
 <translation id="7313193732017069507">카메라 펼치기</translation>
+<translation id="73289266812733869">선택 안함</translation>
 <translation id="7330397557116570022">음성기록을 사용하려면 텍스트 필드로 이동하세요.</translation>
 <translation id="7331646370422660166">Alt + 아래쪽 화살표</translation>
 <translation id="7337660433630200387">+10분</translation>

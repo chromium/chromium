@@ -2389,6 +2389,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2670102641511624474"><ph name="APP_NAME" /> berkongsi tab Chrome.</translation>
 <translation id="2670350619068134931">Animasi yang dikurangkan</translation>
 <translation id="2670403088701171361">Jangan benarkan laman melihat teks atau imej pada papan keratan anda</translation>
+<translation id="2671423594960767771">Kongsi kumpulan</translation>
 <translation id="2671451824761031126">Penanda halaman dan tetapan anda sudah sedia</translation>
 <translation id="2672142220933875349">Fail crx rosak, pemunggahan gagal.</translation>
 <translation id="2672200806060988299">Tajuk dan URL tab anda akan dihantar kepada Google dan mungkin dilihat oleh jurusemak untuk meningkatkan ciri ini.</translation>
@@ -7137,7 +7138,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6164393601566177235">Tambahkan laman</translation>
 <translation id="6164832038898943453">Tambahkan bahasa untuk diterjemahkan secara automatik</translation>
 <translation id="6165508094623778733">Ketahui lebih lanjut</translation>
-<translation id="6165850999903769629">Semua apl pada ChromeOS kini dibuka pada tetingkap aplnya sendiri dan bukan dalam Chrome.</translation>
 <translation id="6166185671393271715">Import Kata Laluan Ke Chrome</translation>
 <translation id="6169040057125497443">Sila periksa mikrofon anda.</translation>
 <translation id="6169967265765719844">Kebenaran untuk permainan dan apl yang dipasang melalui Steam boleh diurus dalam <ph name="LINK_BEGIN" />Tetapan apl Steam<ph name="LINK_END" />.</translation>
@@ -7836,6 +7836,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6691936601825168937">&amp;Majukan</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 halaman}other{{COUNT} halaman}}</translation>
 <translation id="6693820805264897502">gantikan kata laluan sedia ada</translation>
+<translation id="6694634756612002311">Urus perkongsian</translation>
 <translation id="6697172646384837537">Pilih destinasi untuk mengimport kata laluan anda</translation>
 <translation id="6697492270171225480">Tunjukkan cadangan untuk halaman yang serupa apabila halaman tidak ditemui</translation>
 <translation id="6697690052557311665">Untuk berkongsi, klik kanan folder dalam apl Fail, kemudian pilih "Kongsi dengan Linux".</translation>
@@ -7938,7 +7939,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6776729248872343918">Dayakan Ganding Pantas</translation>
 <translation id="6777817260680419853">Ubah hala disekat</translation>
 <translation id="6777845730143344223">Ketahui lebih lanjut tentang langganan Passpoint</translation>
-<translation id="6778660707554364320"><ph name="APP" /> kini dibuka sebagai apl</translation>
 <translation id="6779092717724412415">Untuk membuat serlahan seperti ini, pilih mana-mana teks, kemudian klik kanan.</translation>
 <translation id="6779348349813025131">Google Password Manager memerlukan akses kepada MacOS Keychain</translation>
 <translation id="677965093459947883">Sangat kecil</translation>

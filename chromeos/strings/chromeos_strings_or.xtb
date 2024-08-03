@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">ଡକ୍ୟୁମେଣ୍ଟ ଫିଡର୍ (ଦୁଇ-ପାର୍ଶ୍ୱ)</translation>
 <translation id="3201315366910775591">ସେୟାର କରାଯାଇଥିବା ଆଲବମ ଅନ୍ୟ ଲୋକମାନଙ୍କ ଦ୍ୱାରା ଅପଡେଟ କରାଯାଇପାରିବ</translation>
 <translation id="3211671540163313381">କୀମେପିଂ ଡି-ପେଡ</translation>
-<translation id="3224812403568276799">ଆପଣ ଏହାକୁ ଅନୁମତି ଦେଲେ, ସ୍ୱତନ୍ତ୍ର ଭଏସଗୁଡ଼ିକୁ ସ୍ୱତଃ ଚିହ୍ନଟ କରିବା ପାଇଁ Recorder ଉନ୍ନତ ଅଡିଓ ବିଶ୍ଳେଷଣକୁ ବ୍ୟବହାର କରିବ ଏବଂ ପ୍ରତ୍ୟେକ ଭଏସକୁ ସ୍ପିକର 1 ଏବଂ ସ୍ପିକର 2 ପରି ଏକ ଜେନେରିକ ଲେବଲ ଦେବ।
-
-ଆପଣ ଏହାକୁ ସେଟିଂସରେ ଯେ କୌଣସି ସମୟରେ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="3226405216343213872">ସ୍କାନରଗୁଡ଼ିକୁ ଖୋଜାଯାଉଛି</translation>
 <translation id="3226657629376379887">ଲେଆଉଟ ଆକ୍ସନ ମେନୁ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> ଭେଲ୍ୟୁକୁ <ph name="CONVERSION_RATE" /> ଦ୍ୱାରା ଭାଗ କରନ୍ତୁ</translation>
@@ -812,6 +809,7 @@
 <translation id="5318334351163689047">TCP ଅନୁରୋଧ ବିଫଳ</translation>
 <translation id="53196409393069519">ଟ୍ରାନ୍ସକ୍ରିପସନକୁ ଚାଲୁ କରିବେ?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">ନାମ</translation>
 <translation id="5332948983412042822">ବର୍ତ୍ତମାନ ଏକ ନୂଆ ବାଛନ୍ତୁ</translation>
 <translation id="5333530671332546086">ଅଜଣା ପୋର୍ଟାଲ୍ ସ୍ଥିତି</translation>
 <translation id="5335373365677455232">ଗୋଲାପି</translation>
@@ -1108,6 +1106,7 @@
 <translation id="6905724422583748843"><ph name="PAGE_NAME" />କୁ ଫେରନ୍ତୁ</translation>
 <translation id="6910312834584889076">ସ୍କାନରର କଭର୍ ଖୋଲା ଅଛି। କଭର୍ ବନ୍ଦ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6911383237894364323">ମିଡିଆ ସର୍ଭରଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ଅସମର୍ଥ</translation>
+<translation id="6930242544192836755">ଅବଧି</translation>
 <translation id="6930597342185648547">ବେକଗ୍ରାଉଣ୍ଡ ବିଷୟରେ</translation>
 <translation id="6939667434404433010">ରେକର୍ଡିଂର ନାମ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6939766318048400022">କାଫେ</translation>
@@ -1328,6 +1327,7 @@
 <translation id="8004582292198964060">ବ୍ରାଉଜର</translation>
 <translation id="8017679124341497925">ସର୍ଟକଟ୍ ଏଡିଟ୍ କରାଯାଇଛି</translation>
 <translation id="802154636333426148">ଡାଉନ୍‌ଲୋଡ୍ ବିଫଳ ହୋଇଛି</translation>
+<translation id="8028993641010258682">ଆକାର</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ଅଟୋ କଲର ମୋଡକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="8041089156583427627">ମତାମତ ପଠାନ୍ତୁ</translation>

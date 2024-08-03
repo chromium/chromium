@@ -2378,6 +2378,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> partage un onglet Chrome.</translation>
 <translation id="2670350619068134931">Animations réduites</translation>
 <translation id="2670403088701171361">Ne pas autoriser les sites à accéder au texte ni aux images de votre presse-papiers</translation>
+<translation id="2671423594960767771">Partager le groupe</translation>
 <translation id="2671451824761031126">Vos favoris et paramètres ont été importés</translation>
 <translation id="2672142220933875349">Mauvais fichier crx, échec du déballage.</translation>
 <translation id="2672200806060988299">Les titres et les URL de vos onglets sont envoyés à Google et peuvent être vus par des réviseurs humains pour améliorer cette fonctionnalité.</translation>
@@ -5420,6 +5421,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4893336867552636863">Cette action entraînera la suppression définitive de vos données de navigation sur cet appareil.</translation>
 <translation id="4893454800196085005">Bonne – DVD</translation>
 <translation id="4893522937062257019">À l'écran de verrouillage</translation>
+<translation id="4894055916816649664">Seulement pour 10 minutes</translation>
 <translation id="4895799941222633551">Créer un raccourci...</translation>
 <translation id="4898011734382862273">Le certificat « <ph name="CERTIFICATE_NAME" /> » représente une autorité de certification</translation>
 <translation id="4898913189644355814">Un site peut enregistrer votre langue préférée ou les articles que vous souhaitez acheter. Ces renseignements sont accessibles sur le site et ses sous-domaines.</translation>
@@ -6056,6 +6058,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5380526436444479273">Veuillez patienter quelques minutes et réessayer</translation>
 <translation id="5382591305415226340">Gérer des liens pris en charge</translation>
 <translation id="5383740867328871413">Groupe sans nom : <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5384401776498845256">Qui peut partager avec vous</translation>
 <translation id="5385628342687007304">Ce mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.</translation>
 <translation id="5387116558048951800">Modifier le <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="5387496897058645038">Caractéristiques du produit</translation>
@@ -6922,6 +6925,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6015776718598175635">Étoiles</translation>
 <translation id="6015796118275082299">Année</translation>
 <translation id="6016178549409952427">Naviguer vers l'élément de contenu supplémentaire <ph name="CURRENT_ELEMENT" /> sur <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="6016462059150340136">Toute personne à proximité</translation>
 <translation id="6016551720757758985">Confirmez la fonctionnalité Powerwash avec un retour à la version précédente</translation>
 <translation id="6016972670657536680">Sélectionnez une langue et une touche du clavier. Langue actuellement sélectionnée : <ph name="LANGUAGE" />.</translation>
 <translation id="6017514345406065928">Vert</translation>
@@ -7122,7 +7126,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6164393601566177235">Ajouter des sites</translation>
 <translation id="6164832038898943453">Ajouter des langues à traduire automatiquement</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
-<translation id="6165850999903769629">Toutes les applications sur ChromeOS s'ouvrent désormais dans leurs propres fenêtres d'application plutôt que dans Chrome.</translation>
 <translation id="6166185671393271715">Importer les mots de passe dans Chrome</translation>
 <translation id="6169040057125497443">Veuillez vérifier votre microphone.</translation>
 <translation id="6169967265765719844">Les autorisations pour les applications et les jeux installés à l'aide de Steam peuvent être gérées dans les <ph name="LINK_BEGIN" />paramètres de l'application Steam<ph name="LINK_END" />.</translation>
@@ -7371,6 +7374,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6345878117466430440">Marquer comme lu</translation>
 <translation id="6346952829206698721">Coller à partir du presse-papiers</translation>
 <translation id="6347010704471250799">Afficher une notification</translation>
+<translation id="634792071306410644">Personne ne peut partager du contenu avec vous tant que vous ne devenez pas visible</translation>
 <translation id="6348252528297699679">Vous pouvez désactiver la localisation dans Paramètres &gt; Confidentialité et sécurité &gt; Paramètres de confidentialité &gt; Accès à la position. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6348805481186204412">Stockage hors ligne</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
@@ -7924,7 +7928,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6776729248872343918">Activer le mode Association rapide</translation>
 <translation id="6777817260680419853">Redirection bloquée</translation>
 <translation id="6777845730143344223">En savoir plus sur les abonnements Passpoint</translation>
-<translation id="6778660707554364320"><ph name="APP" /> s'ouvre désormais en tant qu'application</translation>
 <translation id="6779092717724412415">Pour mettre en évidence un élément comme celui-ci, sélectionnez un texte et faites un clic droit.</translation>
 <translation id="6779348349813025131">Le gestionnaire de mots de passe Google doit accéder au trousseau macOS</translation>
 <translation id="677965093459947883">Très petit</translation>
@@ -7976,6 +7979,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="680572642341004180">Activer le suivi RLZ pour <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6806089545527108739">Ne pas autoriser, mais demander plus tard</translation>
 <translation id="680644983456221885">Une protection proactive en temps réel contre les sites, les extensions et les téléchargements dangereux, basée sur les données de navigation envoyées à Google</translation>
+<translation id="6806781719264274042">Seulement vos contacts qui ont un compte Google. <ph name="LINK_BEGIN" />Afficher les contacts<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">Pour continuer, insérez et touchez votre clé de sécurité</translation>
 <translation id="6808166974213191158">Générateur d'images du système Chrome OS Flex</translation>
 <translation id="6808193438228982088">Renard</translation>
@@ -8042,6 +8046,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6840214587087739194">Adresse supprimée</translation>
 <translation id="6841143363521180029">Chiffré</translation>
 <translation id="6841186874966388268">Erreurs</translation>
+<translation id="6842135459748401207">Seulement les appareils connectés à <ph name="USER_EMAIL" /></translation>
 <translation id="6842136130964845393">Pour vous assurer de toujours pouvoir accéder à vos mots de passe enregistrés, vérifiez qu'il s'agit bien de vous</translation>
 <translation id="6842749380892715807">Le dernier téléchargement des listes de sites XML a eu lieu à <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">En général, les sites détectent quand vous utilisez activement votre appareil pour définir votre disponibilité dans les applications de clavardage</translation>
@@ -10693,6 +10698,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Afficher toutes les recherches de <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Mettre à jour Chrome automatiquement pour tous les utilisateurs</translation>
+<translation id="8768049274922835860">Tous</translation>
 <translation id="876956356450740926">Exécutez des outils pour les développeurs, des environnements de développement intégrés et des éditeurs. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Répertoire racine de l'extension</translation>
 <translation id="8771300903067484968">L'arrière-plan de la page d'accueil a été réinitialisé à sa valeur par défaut.</translation>
@@ -11020,6 +11026,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8999560016882908256">Erreur de syntaxe de section : <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Mouvement réduit sur l'écran</translation>
 <translation id="9000185763019430629">Touchez le capteur d'empreintes digitales sur le côté droit de votre <ph name="DEVICE_TYPE" />. Les données liées à votre empreinte digitale sont stockées de façon sécurisée et ne quittent jamais votre <ph name="DEVICE_TYPE" />.</translation>
+<translation id="9003031149571024583">Entrer le chiffre <ph name="NUM_DIGIT" /> sur 6 du NIP. Utilisez la touche retour arrière ou supprimer pour retirer le dernier chiffre.</translation>
 <translation id="9003185744423389627">La connexion au serveur de gestion des appareils a échoué avec l'état « <ph name="STATUS_TEXT" /> » à <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Rechercher automatiquement les profils eSIM disponibles?</translation>
 <translation id="9003647077635673607">Autoriser sur tous les sites</translation>

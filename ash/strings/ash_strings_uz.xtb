@@ -87,6 +87,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1270290102613614947">Ekran klaviaturasi o‘chirib qo‘yilgan</translation>
 <translation id="1272079795634619415">To‘xtatish</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> quvvatlanmoqda</translation>
+<translation id="1275718070701477396">Tanlandi</translation>
 <translation id="1276975447697633661">Faylni tanlab, <ph name="KEY" /> tugmasini bosing</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Telefonni topish</translation>
@@ -1085,6 +1086,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4890408602550914571">Telefoningiz yoningizda va undagi Bluetooth yoniqligini tekshiring.</translation>
 <translation id="4892981359753171125">Yuz nazorati</translation>
 <translation id="4895488851634969361">Batareya to‘ldi.</translation>
+<translation id="4902797682482387055">Fokus qaratish uchun tavsiya etilgan vazifa</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="490788395437447240">Batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="491504982845934899">Qurilma sozlangandan keyin <ph name="NETWORK_NAME" /> faollashtiriladi</translation>
@@ -1761,6 +1763,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7312210124139670355">Administrator eSIM kartangizni tiklamoqda. Bu bir necha daqiqa vaqt olishi mumkin.</translation>
 <translation id="7312761820869643657">Qurilma tizimini avvalgi versiyaga qaytarish</translation>
 <translation id="7313193732017069507">Kamera tugmasini chiqarish</translation>
+<translation id="73289266812733869">Tanlash bekor qilindi</translation>
 <translation id="7330397557116570022">Ovoz bilan yozishdan foydalanish uchun matn maydoniga oʻting</translation>
 <translation id="7331646370422660166">alt + pastga strelka</translation>
 <translation id="7337660433630200387">+10 daq</translation>

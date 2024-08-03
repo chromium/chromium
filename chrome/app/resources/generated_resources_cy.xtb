@@ -2392,6 +2392,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2670102641511624474">Mae <ph name="APP_NAME" /> yn rhannu tab Chrome.</translation>
 <translation id="2670350619068134931">Llai o animeiddiadau</translation>
 <translation id="2670403088701171361">Peidio â chaniatáu i wefannau weld testun neu luniau ar eich clipfwrdd</translation>
+<translation id="2671423594960767771">Rhannu â grŵp</translation>
 <translation id="2671451824761031126">Mae eich nodau tudalen a'ch gosodiadau yn barod</translation>
 <translation id="2672142220933875349">Ffeil crx gwael, dadbacio wedi methu.</translation>
 <translation id="2672200806060988299">Anfonir teitlau eich tab a'ch cyfeiriadau URL i Google a gall adolygwyr dynol eu gweld i wella'r nodwedd hon.</translation>
@@ -7137,7 +7138,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6164393601566177235">Ychwanegu gwefannau</translation>
 <translation id="6164832038898943453">Ychwanegu ieithoedd i gyfieithu'n awtomatig</translation>
 <translation id="6165508094623778733">Dysgu rhagor</translation>
-<translation id="6165850999903769629">Mae pob ap ar ChromeOS bellach yn agor yn eu ffenestri ap eu hunain yn hytrach nag yn Chrome.</translation>
 <translation id="6166185671393271715">Mewnforio Cyfrineiriau I Chrome</translation>
 <translation id="6169040057125497443">Gwiriwch eich meicroffon.</translation>
 <translation id="6169967265765719844">Gellir rheoli caniatadau ar gyfer gemau ac apiau sydd wedi'u gosod drwy Steam yng <ph name="LINK_BEGIN" />ngosodiadau'r ap Steam<ph name="LINK_END" />.</translation>
@@ -7945,7 +7945,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6776729248872343918">Galluogi Paru Cyflym</translation>
 <translation id="6777817260680419853">Mae ailgyfeirio wedi'i rwystro</translation>
 <translation id="6777845730143344223">Dysgu rhagor am danysgrifiadau Passpoint</translation>
-<translation id="6778660707554364320">Mae <ph name="APP" /> bellach yn agor fel ap</translation>
 <translation id="6779092717724412415">I amlygu rhywbeth fel hyn, dewiswch unrhyw destun a de-gliciwch.</translation>
 <translation id="6779348349813025131">Mae angen mynediad at MacOS Keychain ar Reolwr Cyfrineiriau Google</translation>
 <translation id="677965093459947883">Bach iawn</translation>

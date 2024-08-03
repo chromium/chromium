@@ -2388,6 +2388,7 @@
 <translation id="2670102641511624474">‏<ph name="APP_NAME" /> משתף כרטיסיית Chrome.</translation>
 <translation id="2670350619068134931">אנימציות מצומצמות</translation>
 <translation id="2670403088701171361">לא לאפשר לאתרים לראות טקסט או תמונות בלוח</translation>
+<translation id="2671423594960767771">שיתוף קבוצה</translation>
 <translation id="2671451824761031126">הסימניות וההגדרות שלך מוכנות</translation>
 <translation id="2672142220933875349">‏קובץ crx פגום, פירוק האריזה נכשל.</translation>
 <translation id="2672200806060988299">‏השמות וכתובות ה-URL של הכרטיסיות יישלחו אל Google ויכול להיות שבודקים אנושיים יראו אותם כדי לשפר את התכונה הזו.</translation>
@@ -7134,7 +7135,6 @@
 <translation id="6164393601566177235">הוספת אתרים</translation>
 <translation id="6164832038898943453">הוספת שפות שיתורגמו באופן אוטומטי</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
-<translation id="6165850999903769629">‏עכשיו, כל האפליקציות ב-ChromeOS נפתחות בחלונות נפרדים של אפליקציות במקום ב-Chrome.</translation>
 <translation id="6166185671393271715">‏ייבוא סיסמאות אל Chrome</translation>
 <translation id="6169040057125497443">יש לבדוק את המיקרופון.</translation>
 <translation id="6169967265765719844">‏אפשר לנהל את ההרשאות למשחקים ולאפליקציות שהותקנו דרך Steam <ph name="LINK_BEGIN" />בהגדרות של אפליקציית Steam<ph name="LINK_END" />.</translation>
@@ -7938,7 +7938,6 @@
 <translation id="6776729248872343918">הפעלת ההתאמה המהירה</translation>
 <translation id="6777817260680419853">הפניה לכתובת אתר אחרת נחסמה</translation>
 <translation id="6777845730143344223">‏מידע נוסף על מינויים ל-Passpoint</translation>
-<translation id="6778660707554364320">עכשיו השירות <ph name="APP" /> ייפתח כאפליקציה</translation>
 <translation id="6779092717724412415">כדי ליצור הדגשה דומה, בוחרים טקסט כלשהו ולוחצים לחיצה ימנית.</translation>
 <translation id="6779348349813025131">‏למנהל הסיסמאות של Google נדרשת גישה אל 'צרור מפתחות של macOS'</translation>
 <translation id="677965093459947883">קטן מאוד</translation>

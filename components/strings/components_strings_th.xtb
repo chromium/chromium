@@ -188,7 +188,6 @@
 <translation id="132301787627749051">ค้นหารูปภาพในคลิปบอร์ด</translation>
 <translation id="1323433172918577554">แสดงเพิ่มเติม</translation>
 <translation id="132390688737681464">บันทึกและกรอกที่อยู่</translation>
-<translation id="1325412080783393306">ค้นหาตัวเลือกการซื้อเพิ่มเติม</translation>
 <translation id="1329916999021038454">ส่งรายงาน</translation>
 <translation id="1330449323196174374">พับทบด้านซ้าย</translation>
 <translation id="1333745675627230582">เล่นเกมไดโนเสาร์ Chrome</translation>
@@ -232,6 +231,7 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ไม่ส่งข้อมูลใดๆ</translation>
 <translation id="1405567553485452995">เขียวอ่อน</translation>
 <translation id="1406812885827747674">อนุญาตในครั้งนี้</translation>
+<translation id="14070772729708640">อัปโหลดไฟล์ไปยัง <ph name="FOLDER_NAME" /> ใน <ph name="CLOUD_PROVIDER" /> เรียบร้อยแล้ว</translation>
 <translation id="1407135791313364759">เปิดทั้งหมด</translation>
 <translation id="1408787208417187241">เย็บด้วยลวดเย็บกระดาษด้านบน 3 ครั้ง</translation>
 <translation id="1410365862999780287">คนอื่นๆ ที่ใช้อุปกรณ์นี้จะไม่เห็นกิจกรรมของคุณ คุณจึงท่องเว็บได้แบบส่วนตัวมากขึ้น โหมดนี้จะไม่เปลี่ยนแปลงวิธีเก็บรวบรวมข้อมูลโดยเว็บไซต์ที่คุณเข้าชมและบริการที่เว็บไซต์เหล่านั้นใช้ รวมถึง Google ด้วย ระบบจะบันทึกรายการที่ดาวน์โหลด บุ๊กมาร์ก และเรื่องรออ่านไว้</translation>
@@ -267,6 +267,7 @@
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">ใช้แบบอักษรที่มีอยู่ในคอมพิวเตอร์เพื่อให้สร้างเนื้อหาความแม่นยำสูงได้</translation>
 <translation id="1463793142714244641">สถานที่พักผ่อนในวันหยุดและสถานที่ประเภทแบ่งเวลา</translation>
+<translation id="1465457928007067810">บันทึก IBAN ไปยังบัญชี Google แล้ว</translation>
 <translation id="1467432559032391204">ซ้าย</translation>
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> คือรหัสสำหรับ <ph name="EMBEDDED_ORIGIN" /> เพื่อดำเนินการต่อใน <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">แสดงเพิ่มเติม</translation>
@@ -1192,6 +1193,7 @@
 <translation id="3240791268468473923">ระบบได้เปิด Bottom Sheet ซึ่งแจ้งว่าไม่พบข้อมูลเข้าสู่ระบบที่ตรงกันสำหรับข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัย</translation>
 <translation id="324180406144491771">ลิงก์ “<ph name="HOST_NAME" />” ถูกบล็อก</translation>
 <translation id="3248329428895535435">ไม่ต้องแสดงในเว็บไซต์นี้</translation>
+<translation id="3249102948665905108">การอัปโหลดไฟล์ไปยัง <ph name="CLOUD_PROVIDER" /> เสร็จสมบูรณ์โดยมีข้อผิดพลาด</translation>
 <translation id="3252772880526154546">สถาปัตยกรรม</translation>
 <translation id="3254301855501243548">18 x 22 นิ้ว</translation>
 <translation id="3255926992597692024">Chromium กำลังพยายามแก้ไขการตั้งค่าสำหรับการกรอกวิธีการชำระเงิน</translation>
@@ -1360,6 +1362,7 @@
 <translation id="3552155506104542239">คำเตือน: นโยบายนี้ขัดแย้งกับ <ph name="POLICY_NAME" /> และจะไม่มีผลกับแอป Android หากมิเช่นนั้น นโยบายนี้จะทำงานตามที่ตั้งใจไว้</translation>
 <translation id="3552297013052089404">แบบอักษร Sans Serif</translation>
 <translation id="3558573058928565255">ตอนกลางวัน</translation>
+<translation id="3559897352860026926">ขอให้ผู้ดูแลระบบยืนยันการตั้งค่าการกำหนดค่า <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="355995771319966853">ยกเลิกการป้อนข้อความอัตโนมัติ</translation>
 <translation id="3560408312959371419">ตัวเลือกสำหรับการป้องกันการติดตามและข้อมูลเว็บไซต์ในอุปกรณ์</translation>
 <translation id="3560824484345057728">ดูเว็บไซต์ที่เกี่ยวข้อง</translation>
@@ -2026,6 +2029,7 @@
 <translation id="4816492930507672669">พอดีกับหน้า</translation>
 <translation id="4819347708020428563">แก้ไขคำอธิบายประกอบในมุมมองเริ่มต้นใช่ไหม</translation>
 <translation id="4822493756793346865">ราคาปกติอิงจากร้านค้าต่างๆ ทั่วทั้งอินเทอร์เน็ตในช่วง 90 วันที่ผ่านมา</translation>
+<translation id="4822922322149719535">ตรวจสอบบันทึกข้อผิดพลาด</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างชีตใหม่ใน Google ชีตอย่างรวดเร็ว</translation>
 <translation id="4826588772550366629">กล้องและไมโครโฟน</translation>
 <translation id="4827283332383516812">ลบบัตร</translation>
@@ -2684,6 +2688,7 @@
 <translation id="6061154937977953833">มวยปล้ำ</translation>
 <translation id="6062937464449575061">ยกเลิกการติดตามราคา</translation>
 <translation id="6063415549109819824">สินเชื่อบ้าน</translation>
+<translation id="6070432475334343308">ไม่ได้อัปโหลดไฟล์อย่างน้อย 1 รายการไปยัง <ph name="FOLDER_NAME" /> ใน <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="6080696365213338172">คุณเข้าถึงเนื้อหาโดยใช้ใบรับรองที่ผู้ดูแลระบบออกให้ ข้อมูลที่คุณให้กับ <ph name="DOMAIN" /> อาจถูกสกัดกั้นโดยผู้ดูแลระบบ</translation>
 <translation id="6085149458302186532">ป้าย (มีสี)</translation>
 <translation id="6087312102907839798">การค้นหาที่เกี่ยวข้อง</translation>
@@ -2806,6 +2811,7 @@
 <translation id="6307968763353904914">ธนาคารเสนอบัตรเสมือน (Virtual Card) สำหรับวิธีการชำระเงินนี้ไม่ได้ในขณะนี้ แต่คุณจะยังใช้บัตร <ph name="CARD_LABEL" /> เพื่อชำระเงินออนไลน์ได้</translation>
 <translation id="6311410654831092784">แผ่นไม้บางๆ</translation>
 <translation id="6312113039770857350">หน้าเว็บไม่พร้อมใช้งาน</translation>
+<translation id="6316110367871394043">การอัปโหลดไฟล์ไปยัง <ph name="CLOUD_PROVIDER" /> หยุดชั่วคราว</translation>
 <translation id="6316723751983724988">ใหม่: ตัวเลือก Family Link สำหรับ Chrome จะมีผลที่นี่</translation>
 <translation id="63172326633386613">จัดการการตั้งค่าการช่วยเหลือพิเศษ</translation>
 <translation id="6321917430147971392">ตรวจสอบการตั้งค่า DNS</translation>
@@ -3004,6 +3010,7 @@
 <translation id="6687335167692595844">ขอขนาดแบบอักษรแล้ว</translation>
 <translation id="6688743156324860098">อัปเดต…</translation>
 <translation id="6688775486821967877">บัตรเสมือนไม่พร้อมใช้งานในขณะนี้ โปรดลองอีกครั้งภายหลัง</translation>
+<translation id="6688851075017682769">ที่อยู่ทดสอบตามประเทศ</translation>
 <translation id="6689249931105087298">สัมพัทธ์กับการบีบจุดสีดำ</translation>
 <translation id="6689271823431384964">Chrome เสนอที่จะบันทึกบัตรลงในบัญชี Google ของคุณเพราะคุณลงชื่อเข้าใช้อยู่ คุณปรับเปลี่ยนลักษณะการทำงานนี้ได้ในการตั้งค่า ชื่อผู้ถือบัตรมาจากบัญชีของคุณ</translation>
 <translation id="6691397311652656001">เพิ่มพื้นที่ว่างมากกว่า <ph name="REQUIRED_FREE_DISK_SPACE" /></translation>
@@ -3160,6 +3167,7 @@
 <translation id="6979440798594660689">ปิดเสียง (ค่าเริ่มต้น)</translation>
 <translation id="6984270784814146224">รูปภาพที่ไม่มีป้ายกำกับ กำลังดึงข้อความ ทำงานด้วยระบบ AI ของ Google</translation>
 <translation id="6987806006823772670">ซอง (เคลือบ)</translation>
+<translation id="6989256887001961296">เนื้อหานี้ถูกบล็อก</translation>
 <translation id="6989763994942163495">แสดงการตั้งค่าขั้นสูง...</translation>
 <translation id="6996312675313362352">แปลภาษา<ph name="ORIGINAL_LANGUAGE" />เสมอ</translation>
 <translation id="6997288673234694149">อุปกรณ์เบสบอลและซอฟต์บอล</translation>
@@ -3191,6 +3199,7 @@
 <translation id="7050187094878475250">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่เซิร์ฟเวอร์ได้แสดงใบรับรองที่มีระยะเวลาที่สามารถใช้ได้นานเกินกว่าที่จะเชื่อถือได้</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{บันทึกบัตรนี้ไม่ได้ในตอนนี้}other{บันทึกบัตรเหล่านี้ไม่ได้ในตอนนี้}}</translation>
 <translation id="7053983685419859001">บล็อก</translation>
+<translation id="7054717457611655239">นับจากนี้เป็นต้นไป ระบบจะบันทึกไฟล์ของคุณไปยัง <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ยืนยันว่า <ph name="ISSUER" /> ได้ออกใบรับรองของเว็บไซต์นี้</translation>
 <translation id="7058774143982824355">บริการโปรแกรมแยกวิเคราะห์รหัสผ่าน CSV</translation>
 <translation id="7062635574500127092">น้ำเงินอมเขียว</translation>
@@ -3921,6 +3930,7 @@
 <translation id="8371841335382565017">แสดงรายการอุปกรณ์สําหรับการแคสต์</translation>
 <translation id="8371889962595521444">ใบรับรองรูทที่กำหนดเอง</translation>
 <translation id="8374636051559112948">หลากหลาย</translation>
+<translation id="837840316697671463">หากไม่พบไฟล์ในอุปกรณ์ของคุณ ให้ลองดูที่ <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8378714024927312812">จัดการโดยองค์กร</translation>
 <translation id="8380941800586852976">อันตราย</translation>
 <translation id="8381674639488873545">การเรียกเก็บเงินเหล่านี้อาจเกิดขึ้นครั้งเดียวหรือเกิดขึ้นซ้ำๆ และอาจไม่แสดงอย่างชัดแจ้ง <ph name="BEGIN_LINK" />เปิดเว็บไซต์<ph name="END_LINK" /></translation>
@@ -4071,6 +4081,7 @@
 <translation id="8671519637524426245">ค่า <ph name="SECURE_DNS_SALT" /> ไม่เป็นไปตามข้อกำหนดด้านขนาด</translation>
 <translation id="867224526087042813">ลายเซ็น</translation>
 <translation id="8672535691554698269">เครือข่ายคอมพิวเตอร์</translation>
+<translation id="8675446170353411473">กำลังอัปโหลดไฟล์ไปยัง <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">ไม่หน่วงเวลา</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, คำตอบ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">ไม่สามารถโหลดหน้าเว็บที่ <ph name="PAGE" /> เนื่องจาก:</translation>
@@ -4152,6 +4163,7 @@
 <translation id="8820817407110198400">บุ๊กมาร์ก</translation>
 <translation id="882338992931677877">ช่องแบบเลือกด้วยตนเอง</translation>
 <translation id="8830320733681313421">ไปรษณียบัตร Hagaki</translation>
+<translation id="8830565333350631528">ดูไฟล์ใน <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8833007469711500369">เครื่องซักผ้าและเครื่องอบผ้า</translation>
 <translation id="8834962751196791179">คุณเห็นคำเตือนนี้เพราะเว็บไซต์นี้ไม่รองรับ HTTPS และคุณกำลังใช้โหมดไม่ระบุตัวตนอยู่ <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">รายการทีวีแนวไซไฟและแฟนตาซี</translation>

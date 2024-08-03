@@ -2385,6 +2385,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2670102641511624474"><ph name="APP_NAME" /> споделя раздел в Chrome.</translation>
 <translation id="2670350619068134931">Ограничени анимации</translation>
 <translation id="2670403088701171361">Да не се разрешава на сайтовете достъп до текста и изображенията в буферната памет</translation>
+<translation id="2671423594960767771">Споделяне на групата</translation>
 <translation id="2671451824761031126">Отметките и настройките ви са готови</translation>
 <translation id="2672142220933875349">Невалиден crx файл. Разпакетирането не бе успешно.</translation>
 <translation id="2672200806060988299">Заглавията и URL адресите на разделите ви се изпращат до Google и може да бъдат видени от проверяващи лица с цел подобряване на тази функция.</translation>
@@ -7132,7 +7133,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6164393601566177235">Добавяне на сайтове</translation>
 <translation id="6164832038898943453">Добавяне на езици за автоматичен превод</translation>
 <translation id="6165508094623778733">Научете повече</translation>
-<translation id="6165850999903769629">Всички приложения под ChromeOS вече се отварят в свои собствени прозорци вместо в Chrome.</translation>
 <translation id="6166185671393271715">Импортиране на пароли в Chrome</translation>
 <translation id="6169040057125497443">Моля, проверете микрофона си.</translation>
 <translation id="6169967265765719844">Разрешенията за игри и приложения, инсталирани чрез Steam, могат да бъдат управлявани от <ph name="LINK_BEGIN" />настройките на едноименното приложение<ph name="LINK_END" />.</translation>
@@ -7932,7 +7932,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6776729248872343918">Активиране на бързото сдвояване</translation>
 <translation id="6777817260680419853">Блокирано бе пренасочване</translation>
 <translation id="6777845730143344223">Научете повече за абонаментите за Passpoint</translation>
-<translation id="6778660707554364320"><ph name="APP" /> вече се отваря като приложение</translation>
 <translation id="6779092717724412415">За да създадете такова открояване, изберете текст и кликнете с десния бутон.</translation>
 <translation id="6779348349813025131">Google Мениджър на пароли се нуждае от достъп до Keychain на macOS</translation>
 <translation id="677965093459947883">Много малък</translation>

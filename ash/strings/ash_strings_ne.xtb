@@ -87,6 +87,7 @@
 <translation id="1270290102613614947">अन-स्क्रिन किबोर्ड अक्षम गरियो</translation>
 <translation id="1272079795634619415">रोक्नुहोस्</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> चार्ज गर्दै</translation>
+<translation id="1275718070701477396">चयन गरिएको</translation>
 <translation id="1276975447697633661">फाइल चयन गर्नुहोस् अनि <ph name="KEY" /> थिच्नुहोस्</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">फोन रहेको स्थान पत्ता लगाउनुहोस्</translation>
@@ -1362,6 +1363,7 @@
 <translation id="5819918159912280082">तपाईंको Chromebook अनपेक्षित रूपमा रिस्टार्ट भयो। आफूले यसअघि खोलेका विन्डो तथा एपहरू खोल्नुहोस्।</translation>
 <translation id="5823239091726045201">वेबमा उपलब्ध Google Tasks</translation>
 <translation id="5825969630400862129">कनेक्ट गरिएका यन्त्रहरूसम्बन्धी सेटिङ</translation>
+<translation id="5830180081891717894">थप <ph name="WINDOWS" /> वटा</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> मा <ph name="ROUTE_TITLE" /> बन्द गर्नुहोस्</translation>
 <translation id="5841296711770970362">अर्को ट्र्याक प्ले गर्नुहोस्</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> को हटस्पट अन छ, कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
@@ -1761,6 +1763,7 @@
 <translation id="7312210124139670355">तपाईंका एड्मिन तपाईंको eSIM रिसेट गर्दै हुनुहुन्छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="7312761820869643657">डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्</translation>
 <translation id="7313193732017069507">क्यामेरा एक्स्पान्ड गर्नुहोस्</translation>
+<translation id="73289266812733869">चयन नगरिएको</translation>
 <translation id="7330397557116570022">स्पिच-टु-टेक्स्ट प्रयोग गर्न टेक्स्ट फिल्डमा जानुहोस्</translation>
 <translation id="7331646370422660166">alt + डाउन एरो</translation>
 <translation id="7337660433630200387">+१० मिनेट</translation>
@@ -2068,6 +2071,7 @@
 <translation id="8375916635258623388">यो <ph name="DEVICE_NAME" /> र तपाईंको फोन स्वतः जोडिने छन्</translation>
 <translation id="8380784334203145311">नमस्ते,</translation>
 <translation id="8382715499079447151">सुरक्षित रूपमा हेर्ने सुविधा</translation>
+<translation id="8383614331548401927">स्वागत रिक्याप</translation>
 <translation id="8388750414311082622">अन्तिम डेस्क हटाउन सकिँदैन।</translation>
 <translation id="8394567579869570560">तपाईंका अभिभावकले यो डिभाइस लक गर्नुभयो</translation>
 <translation id="8401850874595457088">भाषासम्बन्धी मेनु खोल्नुहोस्</translation>

@@ -2389,6 +2389,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2670102641511624474"><ph name="APP_NAME" /> is sharing a Chrome tab.</translation>
 <translation id="2670350619068134931">Reduced animations</translation>
 <translation id="2670403088701171361">Don't allow sites to see text or images on your clipboard</translation>
+<translation id="2671423594960767771">Share group</translation>
 <translation id="2671451824761031126">Your bookmarks and settings are ready</translation>
 <translation id="2672142220933875349">Bad crx file, unpacking failed.</translation>
 <translation id="2672200806060988299">Your tab titles and URLs are sent to Google and may be seen by human reviewers to improve this feature.</translation>
@@ -7134,7 +7135,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6164393601566177235">Add sites</translation>
 <translation id="6164832038898943453">Add languages to automatically translate</translation>
 <translation id="6165508094623778733">Learn more</translation>
-<translation id="6165850999903769629">All apps on ChromeOS now open in their own app windows instead of in Chrome.</translation>
 <translation id="6166185671393271715">Import Passwords To Chrome</translation>
 <translation id="6169040057125497443">Please check your microphone.</translation>
 <translation id="6169967265765719844">Permissions for games and apps installed via Steam can be managed in the <ph name="LINK_BEGIN" />Steam app settings<ph name="LINK_END" />.</translation>
@@ -7934,7 +7934,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6776729248872343918">Enable Fast Pair</translation>
 <translation id="6777817260680419853">Redirect blocked</translation>
 <translation id="6777845730143344223">Learn more about Passpoint subscriptions</translation>
-<translation id="6778660707554364320"><ph name="APP" /> now opens as an app</translation>
 <translation id="6779092717724412415">To create a highlight like this one, select any text and right-click.</translation>
 <translation id="6779348349813025131">Google Password Manager needs access to MacOS Keychain</translation>
 <translation id="677965093459947883">Very small</translation>

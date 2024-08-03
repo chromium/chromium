@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">လိမ္မော်ရောင်</translation>
 <translation id="125153950246128346">နောက်တဘ်တစ်ခုကြည့်ရန် တို့ပါ</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စု ရွေးစရာများ</translation>
+<translation id="1340839264183302272">အဖွဲ့မှထွက်ရန်</translation>
 <translation id="1419023007528516122">၎င်းသည် သင့်စက်မှအဖွဲ့ကို အပြီးဖျက်ပါမည်</translation>
 <translation id="1486715732399361704">သင့်တဘ်အုပ်စုအားလုံးကို ဤနေရာတွင် တွေ့နိုင်သည်</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{ပြီးခဲ့သော <ph name="NUM_MINS_ONE" /> မိနစ်က ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_MINS_MANY" /> မိနစ်က ပြုလုပ်ထားသည်}}</translation>
@@ -41,6 +42,7 @@
 <translation id="2801787514987684416">ဆိုင်အချက်အလက် ကြည့်မလား။</translation>
 <translation id="2928243913527329289">Google | ဤဆိုင်အကြောင်း</translation>
 <translation id="2977480621796371840">အဖွဲ့မှ ဖယ်ရှားပါ</translation>
+<translation id="29919168204617356">အသုံးမပြုသောတဘ်များကို အလိုအလျောက်ပိတ်ပါမည်။ ‘မှတ်တမ်း’ တွင် ၎င်းတို့ကို အချိန်မရွေးရှာတွေ့နိုင်သည်။</translation>
 <translation id="3008554597174452548">ထုတ်ကုန်စောင့်ကြည့်ခြင်း ရပ်ရန်</translation>
 <translation id="3026391124054406831">သင့်တဘ်များကို စီမံရန် အုပ်စုဖွဲ့ပါ။</translation>
 <translation id="3051031624272448591">၎င်းတို့ကို မှတ်တမ်းတွင် အချိန်မရွေးပြန်ယူနိုင်သည်</translation>
@@ -51,6 +53,7 @@
 <translation id="3322827343001922122">တဘ်အုပ်စု လုပ်ဆောင်ချက် မီနူးကို <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုအတွက် ဖွင့်ရန်</translation>
 <translation id="3328308545011660196">အကြံပြုချက်- တဘ် <ph name="NUMBER_OF_TABS" /> ခုက ဆက်စပ်ပုံပေါ်သည်။ ၎င်းတို့ကို အုပ်စုဖွဲ့မလား။</translation>
 <translation id="3547352561153509682">၎င်းသည် <ph name="USER_EMAIL" /> သို့ လက်မှတ်ထိုးဝင်ထားသည့် စက်အားလုံးတွင် အုပ်စုကို ဖျက်လိုက်ပါမည်</translation>
+<translation id="3613492231657284463">အသုံးမပြုသောတဘ်များ ဖျောက်ရန် ဒိုင်ယာလော့</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">စာမျက်နှာအစမ်းကြည့်ရှုမှု မျှဝေရန်ပုံသေး။</translation>
 <translation id="381219490185664296">တဘ်အုပ်စုကို အုပ်စုဖြုတ်မလား။</translation>
@@ -120,6 +123,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">တဘ်ကို ဘယ်ဘက်သို့ ရွှေ့ရန်</translation>
 <translation id="6615455863669487791">ပြရန်</translation>
+<translation id="6694634756612002311">မျှဝေခြင်းကို စီမံရန်</translation>
 <translation id="6744956528665271406">အုပ်စုအရောင် တည်းဖြတ်ရန်</translation>
 <translation id="6856809498882026482">မျိုးစုံရွေးမုဒ်ကို ဝှက်ရန်</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{တဘ် မျှဝေရန်}other{တဘ်များ မျှဝေရန်}}</translation>
@@ -137,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google မှ သုံးသပ်ချက် <ph name="REVIEWS_COUNT_ONE" /> ခု}other{Google မှ သုံးသပ်ချက် <ph name="REVIEWS_COUNT_MANY" /> ခု}}</translation>
 <translation id="7559245342362162951">မျက်နှာပြင်ပြည့် ဇယားကွက်အတွင်း အုပ်စု၏ တဘ်များကို ပြရန်</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
+<translation id="7688386659311034820">အသုံးမပြုသောတဘ်များ ဒိုင်ယာလော့</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{ရွေးထားသည့်တဘ် <ph name="TABS_COUNT_ONE" /> ခု မျှဝေရန်}other{ရွေးထားသည့်တဘ် <ph name="TABS_COUNT_MANY" /> ခု မျှဝေရန်}}</translation>
 <translation id="7773714564112603605">တဘ်ဖယ်ရှားပြီး အုပ်စုကို ဖျက်ရန်</translation>
 <translation id="7792771145871471484">အကြံပြုချက်များကို စစ်ဆေးရန်။</translation>
@@ -171,6 +176,7 @@
 <translation id="8926389886865778422">ထပ် မမေးပါနှင့်</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခုပါသော တဘ်အုပ်စုကို ပိုပြပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုပါသော တဘ်အုပ်စုကို ပိုပြပါ။}}</translation>
 <translation id="9090098097337832354">ဤဆိုင် ပိတ်ရသည့်အကြောင်း</translation>
+<translation id="9111228330448174435">တဘ်အုပ်စုအသစ် ပြုလုပ်ရာတွင် ဒိုင်ယာလော့ဂ် ပြပါ</translation>
 <translation id="9150694013019234766">မျက်နှာပြင်အောက်ခြေနားရှိ သင်၏ တဘ်အုပ်စုအတွင်း တဘ်တစ်ခုမှတစ်ခုသို့ ပြောင်းပါ</translation>
 <translation id="9169594135889675189">တဘ်အသစ်ကို အုပ်စုသို့ ထည့်ရန်</translation>
 <translation id="9216898458513705996">တဘ်များကို ဤစက်တွင် ဆက်ဖွင့်ထားမည်ဖြစ်သော်လည်း <ph name="USER_EMAIL" /> သို့ လက်မှတ်ထိုးဝင်ထားသည့် စက်အားလုံးတွင် အုပ်စုကို ဖျက်လိုက်ပါမည်</translation>

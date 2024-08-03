@@ -358,6 +358,7 @@
 <translation id="2780756493585863768">Arrière-plans récents propulsés par l'IA de Google</translation>
 <translation id="2783010256799387990">TEST RÉUSSI</translation>
 <translation id="2786429550992142861">lin</translation>
+<translation id="2787237339470862294">Cette langue n'est pas prise en charge pour le moment</translation>
 <translation id="2787435249130282949">clavier plus lumineux</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="28232023175184696">Impossible de se connecter à Internet. Cliquez pour réessayer.</translation>
@@ -417,9 +418,6 @@
 <translation id="3199982728237701504">Chargeur de document (recto verso)</translation>
 <translation id="3201315366910775591">D'autres utilisateurs peuvent mettre à jour les albums partagés</translation>
 <translation id="3211671540163313381">Pavé directionnel d'affectation des touches</translation>
-<translation id="3224812403568276799">Lorsque vous autorisez cette option, l'Enregistreur utilisera une analyse audio avancée pour détecter automatiquement des voix distinctes et attribuer à chacune une étiquette générique telle que Locuteur 1 et Locuteur 2.
-
-Vous pouvez désactiver cette option en tout temps dans les paramètres.</translation>
 <translation id="3226405216343213872">Recherche de numériseurs en cours…</translation>
 <translation id="3226657629376379887">Menu des actions de mise en page</translation>
 <translation id="3227186760713762082">Diviser la valeur <ph name="CATEGORY_TEXT" /> par <ph name="CONVERSION_RATE" /></translation>
@@ -672,6 +670,7 @@ Vous pouvez désactiver cette option en tout temps dans les paramètres.</transl
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4593212453765072419">Authentification requise du mandataire</translation>
 <translation id="4594021849294327751">Créer une transcription</translation>
+<translation id="4607282946861182308">Impossible de créer des images de cette requête. Essayez une autre requête.</translation>
 <translation id="4609350030397390689">Diminuer la luminosité du clavier</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
 <translation id="463791356324567266">Annulation de la numérisation en cours…</translation>
@@ -812,6 +811,7 @@ Vous pouvez désactiver cette option en tout temps dans les paramètres.</transl
 <translation id="5318334351163689047">Échecs des demandes TCP</translation>
 <translation id="53196409393069519">Activer la transcription?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Nom</translation>
 <translation id="5332948983412042822">Choisissez-en un nouveau maintenant</translation>
 <translation id="5333530671332546086">État du portail inconnu</translation>
 <translation id="5335373365677455232">rose</translation>
@@ -1108,6 +1108,7 @@ Vous pouvez désactiver cette option en tout temps dans les paramètres.</transl
 <translation id="6905724422583748843">Retourner à <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Le couvercle du numériseur est ouvert. Fermez le couvercle, puis réessayez.</translation>
 <translation id="6911383237894364323">Impossible de se connecter aux serveurs multimédias</translation>
+<translation id="6930242544192836755">Durée</translation>
 <translation id="6930597342185648547">À propos de l'arrière-plan</translation>
 <translation id="6939667434404433010">Rechercher le nom de l'enregistrement</translation>
 <translation id="6939766318048400022">Café</translation>
@@ -1328,6 +1329,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8004582292198964060">Navigateur</translation>
 <translation id="8017679124341497925">Raccourci modifié</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
+<translation id="8028993641010258682">Taille</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Activer le mode Couleur automatique</translation>
 <translation id="8041089156583427627">Envoyer des commentaires</translation>

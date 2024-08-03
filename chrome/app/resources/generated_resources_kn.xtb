@@ -2382,6 +2382,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> Chrome ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.</translation>
 <translation id="2670350619068134931">ಕಡಿಮೆ ಆ್ಯನಿಮೇಶನ್‌ಗಳು</translation>
 <translation id="2670403088701171361">ನಿಮ್ಮ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ನಲ್ಲಿನ ಪಠ್ಯ ಅಥವಾ ಚಿತ್ರಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
+<translation id="2671423594960767771">ಗುಂಪನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="2671451824761031126">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಸಿದ್ಧವಾಗಿವೆ</translation>
 <translation id="2672142220933875349">ತಪ್ಪಾದ crx ಫೈಲ್, ಅನ್‌ಪ್ಯಾಕಿಂಗ್ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="2672200806060988299">ನಿಮ್ಮ ಟ್ಯಾಬ್ ಶೀರ್ಷಿಕೆಗಳು ಮತ್ತು URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ ಮತ್ತು ಈ ಫೀಚರ್ ಅನ್ನು ಸುಧಾರಿಸಲು ಮಾನವ ರಿವ್ಯೂವರ್‌ಗಳು ನೋಡಬಹುದು.</translation>
@@ -7126,7 +7127,6 @@
 <translation id="6164393601566177235">ಸೈಟ್‌ಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="6164832038898943453">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಭಾಷಾಂತರಿಸಲು ಭಾಷೆಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
-<translation id="6165850999903769629">ChromeOS ನಲ್ಲಿನ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಈಗ Chrome ನ ಬದಲಿಗೆ ತಮ್ಮದೇ ಆದ ಆ್ಯಪ್ ವಿಂಡೋಗಳಲ್ಲಿ ತೆರೆದುಕೊಳ್ಳುತ್ತವೆ.</translation>
 <translation id="6166185671393271715">Chrome ಗೆ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿ</translation>
 <translation id="6169040057125497443">ನಿಮ್ಮ ಮೈಕ್ರೋಫೋನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="6169967265765719844">Steam ಮೂಲಕ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಗೇಮ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳ ಅನುಮತಿಗಳನ್ನು <ph name="LINK_BEGIN" />Steam ಆ್ಯಪ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="LINK_END" /> ನಿರ್ವಹಿಸಬಹುದು.</translation>
@@ -7826,6 +7826,7 @@
 <translation id="6691936601825168937">&amp;ಮುಂದೆ ತನ್ನಿ</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 ಪುಟ}one{{COUNT} ಪುಟಗಳು}other{{COUNT} ಪುಟಗಳು}}</translation>
 <translation id="6693820805264897502">ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
+<translation id="6694634756612002311">ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6697172646384837537">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎಲ್ಲಿಗೆ ಆಮದು ಮಾಡಿಕೊಳ್ಳಬೇಕು ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6697492270171225480">ಯಾವುದೇ ಪುಟವನ್ನು ಕಂಡುಹಿಡಿಯಲು ಸಾಧ್ಯವಾಗದಿದ್ದರೆ, ಅಂತಹುದೇ ಪುಟಗಳ ಸಲಹೆಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="6697690052557311665">ಇದನ್ನು ಹಂಚಿಕೊಳ್ಳಲು, ಫೈಲ್‌ಗಳ ಆ್ಯಪ್‌ನಲ್ಲಿ ಒಂದು ಫೋಲ್ಡರ್‌ನ ಮೇಲೆ ರೈಟ್-ಕ್ಲಿಕ್ ಮಾಡಿ, ನಂತರ "Linux ನೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ" ಎಂಬುದನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.</translation>
@@ -7928,7 +7929,6 @@
 <translation id="6776729248872343918">ಶೀಘ್ರ ಜೋಡಿಯಾಗಿಸುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="6777817260680419853">ಮರುನಿರ್ದೇಶಿಸುವಿಕೆಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="6777845730143344223">Passpoint ಸಬ್‌ಸ್ಕ್ರಿಪ್ಶನ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
-<translation id="6778660707554364320"><ph name="APP" /> ಈಗ ಆ್ಯಪ್‌ನಂತೆ ತೆರೆಯುತ್ತದೆ</translation>
 <translation id="6779092717724412415">ಈ ರೀತಿಯ ಹೈಲೈಟ್ ರಚಿಸಲು, ಯಾವುದೇ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಬಲ ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="6779348349813025131">Google Password Manager ಗೆ MacOS Keychain ನ ಆ್ಯಕ್ಸೆಸ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="677965093459947883">ತುಂಬಾ ಚಿಕ್ಕದು</translation>
@@ -10997,6 +10997,7 @@
 <translation id="8984694057134206124">ನೀವು <ph name="MINUTES" /> ನಿಮಿಷಗಳವರೆಗೆ ಎಲ್ಲರಿಗೂ ಕಾಣಿಸುತ್ತೀರಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Chromebook ನ Steam ಗೆ ಸುಸ್ವಾಗತ</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> ದಿನದ ಹಿಂದೆ ಸಕ್ರಿಯ</translation>
+<translation id="8985561265504464578">ಪತ್ತೆ ಮಾಡುವಿಕೆಯ ಥ್ರೆಶೋಲ್ಡ್</translation>
 <translation id="8985661493893822002">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ.</translation>
 <translation id="8985661571449404298">ಸುರಕ್ಷಿತವಲ್ಲದ ಫೈಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8986362086234534611">ಮರೆತುಹೋಗು</translation>

@@ -2390,6 +2390,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2670102641511624474">O app <ph name="APP_NAME" /> está compartilhando uma guia do Chrome.</translation>
 <translation id="2670350619068134931">Animações reduzidas</translation>
 <translation id="2670403088701171361">Não permitir que os sites acessem os textos e imagens da área de transferência</translation>
+<translation id="2671423594960767771">Compartilhar grupo</translation>
 <translation id="2671451824761031126">Seus favoritos e configurações estão prontos</translation>
 <translation id="2672142220933875349">Arquivo crx defeituoso, a descompactação falhou.</translation>
 <translation id="2672200806060988299">Os títulos e os URLs das guias são enviados ao Google e podem ser conferidos por revisores humanos para melhorar esse recurso.</translation>
@@ -7136,7 +7137,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6164393601566177235">Adicionar sites</translation>
 <translation id="6164832038898943453">Adicione idiomas para traduzir automaticamente</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
-<translation id="6165850999903769629">Agora, todos os apps no ChromeOS são abertos nas próprias janelas, não no Chrome.</translation>
 <translation id="6166185671393271715">Importar senhas para o Chrome</translation>
 <translation id="6169040057125497443">Verifique seu microfone.</translation>
 <translation id="6169967265765719844">Nas <ph name="LINK_BEGIN" />configurações do app Steam<ph name="LINK_END" />, podem ser gerenciadas as permissões de jogos e apps instalados por ele.</translation>
@@ -7938,7 +7938,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6776729248872343918">Ativar "Pareamento rápido"</translation>
 <translation id="6777817260680419853">Redirecionamento bloqueado</translation>
 <translation id="6777845730143344223">Saiba mais sobre as assinaturas do Passpoint</translation>
-<translation id="6778660707554364320"><ph name="APP" /> agora abre como um app</translation>
 <translation id="6779092717724412415">Para criar um destaque como esse, selecione qualquer trecho do texto e clique nele com o botão direito do mouse.</translation>
 <translation id="6779348349813025131">O Gerenciador de senhas do Google precisa de permissão para abrir o Acesso às Chaves do MacOS</translation>
 <translation id="677965093459947883">Muito pequeno</translation>

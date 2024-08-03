@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Dokumendisöötur (kahepoolne)</translation>
 <translation id="3201315366910775591">Teised võivad jagatud albumeid värskendada.</translation>
 <translation id="3211671540163313381">Klahvide vastendamine, juhtimisklahvistik</translation>
-<translation id="3224812403568276799">Kui selle lubate, kasutab salvesti täiustatud helianalüüsi, et tuvastada automaatselt eri hääled ning anda igaühele üldine silt, näiteks Kõlar 1 ja Kõlar 2.
-
-Selle saate seadetes alati välja lülitada.</translation>
 <translation id="3226405216343213872">Skannerite otsimine</translation>
 <translation id="3226657629376379887">Paigutuse toimingute menüü</translation>
 <translation id="3227186760713762082">Jagage <ph name="CATEGORY_TEXT" /> arvuga <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@ Selle saate seadetes alati välja lülitada.</translation>
 <translation id="5318334351163689047">TCP-taotluste vead</translation>
 <translation id="53196409393069519">Kas lülitada transkribeerimine sisse?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Nimi</translation>
 <translation id="5332948983412042822">Valige kohe uus</translation>
 <translation id="5333530671332546086">Portaali tundmatu olek</translation>
 <translation id="5335373365677455232">roosa</translation>
@@ -1108,6 +1106,7 @@ Selle saate seadetes alati välja lülitada.</translation>
 <translation id="6905724422583748843">Tagasi lehele <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Skanneri kaas on avatud. Sulgege kaas ja proovige uuesti.</translation>
 <translation id="6911383237894364323">Meediaserveritega ei õnnestu ühendust luua</translation>
+<translation id="6930242544192836755">Kestus</translation>
 <translation id="6930597342185648547">Teave tausta kohta</translation>
 <translation id="6939667434404433010">Otsige salvestise nime</translation>
 <translation id="6939766318048400022">Kohvik</translation>
@@ -1328,6 +1327,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8004582292198964060">Brauser</translation>
 <translation id="8017679124341497925">Otsetee on muudetud</translation>
 <translation id="802154636333426148">Allalaadimine ebaõnnestus</translation>
+<translation id="8028993641010258682">Suurus</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Luba automaatne värvirežiim</translation>
 <translation id="8041089156583427627">Saada tagasiside</translation>

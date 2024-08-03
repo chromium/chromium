@@ -1507,13 +1507,6 @@ In genere, questo criterio è disattivato per difendere gli utenti da tentativi 
 
       Se il criterio è attivato o non impostato, la funzionalità di definizione di Risposte rapide sarà attiva.
       Se il criterio è disattivato, la funzionalità di definizione di Risposte rapide sarà disattivata.</translation>
-<translation id="2095778449451007308">Questo criterio consente di stabilire se gli utenti possono attivare o meno la modalità solo HTTPS (Utilizza sempre connessioni sicure) nelle Impostazioni. La modalità solo HTTPS esegue l'upgrade di tutte le navigazioni ad HTTPS.
-      Se questa impostazione non viene configurata o se viene impostata su allowed, gli utenti potranno attivare la modalità solo HTTPS.
-      Se viene impostata su disallowed, gli utenti non potranno attivare la modalità solo HTTPS.
-      Se viene impostata su force_enabled, la modalità solo HTTPS verrà attivata e gli utenti non potranno disattivarla.
-      L'attivazione forzata della modalità solo HTTPS è supportata a partire dalla versione M112.
-
-Il criterio <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separato può essere utilizzato per escludere determinati nomi host o pattern dei nomi host dall'upgrade ad HTTPS da parte di questa funzionalità.</translation>
 <translation id="209586405398070749">Canale stabile</translation>
 <translation id="2096932573113293941">Chiedi all'utente l'autorizzazione a eseguire plug-in che la richiedono</translation>
 <translation id="2098658257603918882">Attiva rapporti sull'utilizzo e sui dati relativi agli arresti anomali</translation>
@@ -2076,7 +2069,6 @@ Se il criterio non viene configurato, <ph name="POLICY_VALUE_VISIBLE" /> è la s
 <translation id="2492240920793040106">Attiva la segnalazione di informazioni di sistema e contenuti della pagina per migliorare Navigazione sicura</translation>
 <translation id="2496180316473517155">Cronologia di navigazione</translation>
 <translation id="2497751676088107779">Script utente</translation>
-<translation id="2497965601277442929">Non consentire agli utenti di attivare la Modalità solo HTTPS</translation>
 <translation id="249798396824949930"> Consente di stabilire se il browser può rilevare l'ambito dei criteri obbligatori su <ph name="MAC_OS_NAME" /> o meno.
 
       Se il criterio viene impostato su Enabled o se non viene configurato, l'ambito di ogni criterio viene determinato dall'ambito del profilo gestito di <ph name="MAC_OS_NAME" />.
@@ -2715,7 +2707,6 @@ Se il valore è impostato su <ph name="LONGPRESSONLY_ENUM_VALUE" />, le entità 
 
       Se nella versione 81 e nelle versioni successive di <ph name="PRODUCT_NAME" /> questo criterio non viene impostato, l'autenticazione ambientale sarà consentita soltanto nelle sessioni standard.</translation>
 <translation id="3021562480854470924">Numero di obiettivi consentiti per il rollback</translation>
-<translation id="3023172689742785487">Forza l'attivazione della Modalità solo HTTPS</translation>
 <translation id="3023572080620427845">URL di un file XML che contiene gli URL da caricare su un browser alternativo.</translation>
 <translation id="302528139996622624">Impostazioni immagini</translation>
 <translation id="3026740867910702435">Consente di attivare la funzione di accessibilità del puntatore grande nella schermata di accesso.
@@ -6329,7 +6320,6 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
 <translation id="5848438019586925019">L'algoritmo per la generazione di coppie di chiavi.</translation>
 <translation id="5851248808417680865">Usa il tema scuro</translation>
 <translation id="585270638818921943">Impedisci all'utente di usare app Android di fonti non attendibili</translation>
-<translation id="5853547031212075792">Consenti agli utenti di attivare la Modalità solo HTTPS</translation>
 <translation id="5859344336338527083">Impostare il criterio specifica quali URL sono autorizzati a installare estensioni, app e temi. Prima di <ph name="PRODUCT_NAME" /> 21, gli utenti potevano fare clic su un link a un file *.crx e <ph name="PRODUCT_NAME" /> avrebbe proposto di installare il file dopo alcuni avvisi. Successivamente, tali file devono essere scaricati e trascinati nella pagina delle impostazioni di <ph name="PRODUCT_NAME" />. Questa impostazione consente a URL specifici di utilizzare il precedente flusso di installazione semplificato.
 
       Ogni voce di questo elenco è un pattern di corrispondenza in stile di estensione (vedi https://developer.chrome.com/extensions/match_patterns). Gli utenti possono installare facilmente elementi da qualsiasi URL che corrisponda a una voce nell'elenco. Questi pattern devono consentire sia la posizione del file *.crx sia la pagina da cui viene avviato il download (il referrer).
@@ -8302,9 +8292,6 @@ Nota: se utilizzi questo criterio per risolvere automaticamente il fuso orario, 
       Se un'estensione non è presente nell'elenco o se l'elenco non viene configurato, la chiamata all'API non va a buon fine e viene generato un codice di errore.</translation>
 <translation id="718956142899066210">Tipi di connessioni consentiti per gli aggiornamenti</translation>
 <translation id="7190286937411178540">Attiva la funzione di accessibilità di evidenziazione dell'elemento attivo tramite tastiera</translation>
-<translation id="7193489339723768342">Se il criterio viene configurato, verrà specificato l'elenco di URL i cui pattern vengono confrontati con l'origine di sicurezza dell'URL richiedente. Una corrispondenza assicura l'accesso ai dispositivi di acquisizione audio senza richieste
-
-Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="719398790886719721">Disattiva l'accesso root alle macchine virtuali Linux</translation>
 <translation id="7194407337890404814">Nome del provider di ricerca predefinito</translation>
 <translation id="7196336906814426783">Questo criterio stabilisce una serie di intervalli settimanali per la pianificazione della sospensione automatica. Quando inizia un intervallo, il dispositivo <ph name="PRODUCT_OS_NAME" /> entra in modalità di sospensione e si riattiva al termine dell'intervallo.
@@ -8934,9 +8921,6 @@ Se questo criterio non viene impostato, il renderer del PDF viene scelto dal bro
 
       Questo criterio era stato pensato per essere temporaneo ed è stato rimosso dopo l'avvio completo della nuova interfaccia utente del fumetto dei download.</translation>
 <translation id="7736521021425189418">Terminale (supportata dalla versione 117)</translation>
-<translation id="77379430721695807">Se il criterio viene configurato, verrà specificato l'elenco di URL i cui pattern vengono confrontati con l'origine di sicurezza dell'URL richiedente. Una corrispondenza assicura l'accesso ai dispositivi per l'acquisizione video senza richieste
-
-Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="7740644123648617252">Abilita l'importazione dei dati di compilazione automatica dei moduli alla prima esecuzione</translation>
 <translation id="7744253761377202223">La percentuale di luminosità dello schermo quando viene usata l'alimentazione CA.</translation>
 <translation id="7747447585227954402">Consenti ai dispositivi di usare <ph name="PLUGIN_VM_NAME" /> su <ph name="PRODUCT_OS_NAME" /></translation>

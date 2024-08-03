@@ -41,6 +41,7 @@
 <translation id="2801787514987684416">Afficher les renseignements sur le magasin?</translation>
 <translation id="2928243913527329289">Google | À propos de cette boutique</translation>
 <translation id="2977480621796371840">Supprimer du groupe</translation>
+<translation id="29919168204617356">Les onglets inactifs seront automatiquement fermés. Vous pouvez toujours les trouver dans l'historique.</translation>
 <translation id="3008554597174452548">Arrêter de suivre ce produit</translation>
 <translation id="3026391124054406831">Créez des groupes pour organiser vos onglets.</translation>
 <translation id="3051031624272448591">Vous pouvez toujours les retrouver dans l'historique</translation>
@@ -51,6 +52,7 @@
 <translation id="3322827343001922122">Ouvrir le menu Action du groupe d'onglets <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Suggestion : <ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper?</translation>
 <translation id="3547352561153509682">Cela supprimera le groupe de tous les appareils connectés à <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">Masquer la boîte de dialogue des onglets inactifs</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Min. aper. feuille partage.</translation>
 <translation id="381219490185664296">Dissocier le groupe d'onglets?</translation>
@@ -137,6 +139,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> avis de Google}one{<ph name="REVIEWS_COUNT_MANY" /> avis de Google}other{<ph name="REVIEWS_COUNT_MANY" /> avis de Google}}</translation>
 <translation id="7559245342362162951">Afficher les onglets du groupe dans une grille plein écran</translation>
 <translation id="7658239707568436148">Annuler</translation>
+<translation id="7688386659311034820">Boîte de dialogue des onglets inactifs</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Partager <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Partager <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Partager <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="7773714564112603605">Retirer l'onglet et supprimer le groupe</translation>
 <translation id="7792771145871471484">Examiner les suggestions.</translation>

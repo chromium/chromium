@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">दस्तऐवज फीडर (दोन बाजू असलेले)</translation>
 <translation id="3201315366910775591">शेअर केलेले अल्बम हे इतर लोकांद्वारे अपडेट केले जाऊ शकतात</translation>
 <translation id="3211671540163313381">कीमॅपिंग D-pad</translation>
-<translation id="3224812403568276799">तुम्ही याला अनुमती देता, तेव्हा Recorder हे वेगळे आवाज आपोआप डिटेक्ट करण्यासाठी प्रगत ऑडिओ विश्लेषण वापरेल आणि प्रत्येक आवाजाला स्पीकर १ आणि स्पीकर २ यांसारखे सामान्य लेबल देईल.
-
-तुम्ही हे सेटिंग्ज मध्ये कधीही बंद करू शकता.</translation>
 <translation id="3226405216343213872">स्कॅनर शोधत आहे</translation>
 <translation id="3226657629376379887">लेआउट अ‍ॅक्‍शन मेनू</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" /> ने <ph name="CATEGORY_TEXT" /> मूल्याचा भागाकार करा</translation>
@@ -812,6 +809,7 @@
 <translation id="5318334351163689047">TCP विनंती पूर्ण करता आली नाही</translation>
 <translation id="53196409393069519">ट्रान्सक्रिप्शन सुरू करायचे आहे का?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">नाव</translation>
 <translation id="5332948983412042822">आता नवीन निवडा</translation>
 <translation id="5333530671332546086">पोर्टलची स्थिती अज्ञात आहे</translation>
 <translation id="5335373365677455232">गुलाबी</translation>
@@ -1108,6 +1106,7 @@
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> वर परत या</translation>
 <translation id="6910312834584889076">स्कॅनरचे कव्हर उघडे आहे. कव्हर बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="6911383237894364323">मीडिया सर्व्हरशी कनेक्ट करता आले नाही</translation>
+<translation id="6930242544192836755">कालावधी</translation>
 <translation id="6930597342185648547">बॅकग्राउंडविषयी</translation>
 <translation id="6939667434404433010">रेकॉर्डिंगचे नाव शोधा</translation>
 <translation id="6939766318048400022">कॅफे</translation>
@@ -1328,6 +1327,7 @@
 <translation id="8004582292198964060">ब्राउझर</translation>
 <translation id="8017679124341497925">शॉर्टकट संपादित केला</translation>
 <translation id="802154636333426148">डाउनलोड अयशस्वी झाले</translation>
+<translation id="8028993641010258682">आकार</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ऑटो कलर मोड सुरू करा</translation>
 <translation id="8041089156583427627">अभिप्राय पाठवा</translation>

@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Alimentador de documents (a dues cares)</translation>
 <translation id="3201315366910775591">Altres persones poden actualitzar els àlbums compartits</translation>
 <translation id="3211671540163313381">Creu direccional del mapatge de teclat</translation>
-<translation id="3224812403568276799">Si ho permets, la gravadora utilitzarà una anàlisi d'àudio avançada per detectar automàticament cadascuna de les veus i assignar-li una etiqueta genèrica, com ara Interlocutor 1 i Interlocutor 2.
-
-Pots desactivar aquesta opció en qualsevol moment a la configuració.</translation>
 <translation id="3226405216343213872">S'estan cercant escàners</translation>
 <translation id="3226657629376379887">Menú d'accions de disseny</translation>
 <translation id="3227186760713762082">Divideix el valor de <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@ Pots desactivar aquesta opció en qualsevol moment a la configuració.</translat
 <translation id="5318334351163689047">Errors en la sol·licitud de TCP</translation>
 <translation id="53196409393069519">Vols activar la transcripció?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Nom</translation>
 <translation id="5332948983412042822">Tria'n una de nova ara</translation>
 <translation id="5333530671332546086">Estat del portal desconegut</translation>
 <translation id="5335373365677455232">rosa</translation>
@@ -1108,6 +1106,7 @@ Pots desactivar aquesta opció en qualsevol moment a la configuració.</translat
 <translation id="6905724422583748843">Torna a <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">La tapa de l'escàner està oberta. Tanca-la i torna-ho a provar.</translation>
 <translation id="6911383237894364323">No es pot connectar als servidors multimèdia</translation>
+<translation id="6930242544192836755">Durada</translation>
 <translation id="6930597342185648547">Sobre el fons</translation>
 <translation id="6939667434404433010">Cerca el nom de la gravació</translation>
 <translation id="6939766318048400022">Cafeteria</translation>
@@ -1328,6 +1327,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8017679124341497925">S'ha editat la drecera</translation>
 <translation id="802154636333426148">Error de baixada</translation>
+<translation id="8028993641010258682">Mida</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Activa el mode de color automàtic</translation>
 <translation id="8041089156583427627">Envia suggeriments</translation>

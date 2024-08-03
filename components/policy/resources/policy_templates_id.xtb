@@ -1536,15 +1536,6 @@ Kebijakan ini biasanya Dinonaktifkan sebagai pertahanan terhadap phishing.</tran
 
       Jika kebijakan ini disetel ke aktif atau tidak disetel, Definisi Jawaban Instan akan diaktifkan.
       Jika kebijakan ini disetel ke nonaktif, Definisi Jawaban Instan akan dinonaktifkan.</translation>
-<translation id="2095778449451007308">Kebijakan ini mengontrol apakah pengguna dapat mengaktifkan Mode Khusus HTTPS (Selalu Gunakan Koneksi Aman) di Setelan. Mode Khusus HTTPS mengupgrade semua navigasi ke HTTPS.
-      Jika setelan ini tidak disetel atau disetel ke diizinkan, pengguna akan diizinkan mengaktifkan Mode Khusus HTTPS.
-      Jika setelan ini disetel ke tidak diizinkan, pengguna tidak akan diizinkan mengaktifkan Mode Khusus HTTPS.
-      Jika setelan ini disetel ke force_enabled, Mode Khusus HTTPS akan diaktifkan dan pengguna tidak akan dapat menonaktifkannya.
-      Mengaktifkan paksa Mode Khusus HTTPS didukung mulai dari M112 dan seterusnya.
-
-Kebijakan <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> terpisah
-dapat digunakan untuk mengecualikan nama host atau pola nama host tertentu agar tidak
-diupgrade ke HTTPS oleh fitur ini.</translation>
 <translation id="209586405398070749">Saluran stabil</translation>
 <translation id="2096932573113293941">Minta izin pengguna untuk menjalankan plugin yang memerlukan otorisasi</translation>
 <translation id="2098658257603918882">Aktifkan laporan data penggunaan dan yang terkait error</translation>
@@ -2132,7 +2123,6 @@ pilihan default.</translation>
 <translation id="2492240920793040106">Aktifkan pelaporan informasi sistem dan konten halaman untuk membantu meningkatkan Safe Browsing</translation>
 <translation id="2496180316473517155">Histori penjelajahan</translation>
 <translation id="2497751676088107779">Skrip pengguna</translation>
-<translation id="2497965601277442929">Jangan izinkan pengguna mengaktifkan Mode Khusus HTTPS</translation>
 <translation id="249798396824949930"> Mengontrol apakah browser dapat mendeteksi cakupan kebijakan wajib di <ph name="MAC_OS_NAME" /> atau tidak.
 
       Jika kebijakan disetel ke Aktif atau tidak disetel, setiap cakupan kebijakan akan ditentukan oleh cakupan profil yang dikelola <ph name="MAC_OS_NAME" />.
@@ -2785,7 +2775,6 @@ Jika nilai disetel ke <ph name="LONGPRESSONLY_ENUM_VALUE" />, entity akan terdet
 
       Dalam <ph name="PRODUCT_NAME" /> versi 81 dan setelahnya, jika kebijakan tidak ditetapkan, autentikasi pasif hanya akan diaktifkan di sesi reguler.</translation>
 <translation id="3021562480854470924">Jumlah rollback milestone diizinkan</translation>
-<translation id="3023172689742785487">Aktifkan paksa Mode Khusus HTTPS</translation>
 <translation id="3023572080620427845">URL file XML yang berisi URL yang akan dimuat di browser alternatif.</translation>
 <translation id="302528139996622624">Setelan gambar</translation>
 <translation id="3026740867910702435">Mengaktifkan fitur aksesibilitas kursor besar di layar login.
@@ -6502,7 +6491,6 @@ Anda dapat menambahkan pembatasan akun lebih lanjut dengan kebijakan <ph name="M
 <translation id="5848438019586925019">Algoritme untuk pembuatan pasangan kunci.</translation>
 <translation id="5851248808417680865">Gunakan Tema gelap</translation>
 <translation id="585270638818921943">Cegah pengguna menggunakan aplikasi Android dari sumber yang tidak tepercaya</translation>
-<translation id="5853547031212075792">Izinkan pengguna mengaktifkan Mode Khusus HTTPS</translation>
 <translation id="5859344336338527083">Menyetel kebijakan akan menentukan URL mana yang dapat menginstal ekstensi, aplikasi, dan tema. Sebelum <ph name="PRODUCT_NAME" /> 21, pengguna dapat mengklik link ke file *.crx, dan <ph name="PRODUCT_NAME" /> akan menawarkan untuk menginstal file setelah menampilkan beberapa peringatan. Setelah itu, file tersebut harus didownload dan ditarik ke halaman setelan <ph name="PRODUCT_NAME" />. Setelan ini memungkinkan URL tertentu menggunakan alur penginstalan lama yang lebih mudah.
 
       Setiap item dalam daftar ini merupakan pola kecocokan gaya ekstensi (buka https://developer.chrome.com/extensions/match_patterns). Pengguna dapat dengan mudah menginstal item dari URL apa pun yang cocok dengan item dalam daftar ini. Baik lokasi file *.crx maupun halaman tempat dimulainya download (halaman perujuk) harus diizinkan oleh pola ini.
@@ -8541,9 +8529,6 @@ Catatan: Jika Anda menggunakan kebijakan ini untuk menentukan zona waktu secara 
       Jika ekstensi tidak ada dalam daftar, atau daftar tidak disetel, panggilan ke API akan gagal dan disertai kode error.</translation>
 <translation id="718956142899066210">Jenis sambungan yang diizinkan untuk pembaruan</translation>
 <translation id="7190286937411178540">Mengaktifkan fitur aksesibilitas penyorotan fokus keyboard</translation>
-<translation id="7193489339723768342">Jika kebijakan disetel, artinya Anda menentukan daftar URL yang polanya cocok dengan asal keamanan URL yang meminta. Jika terdapat kecocokan, akses ke perangkat perekaman audio akan diberikan tanpa permintaan izin
-
-      Untuk informasi mendetail tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="719398790886719721">Nonaktifkan akses root ke mesin virtual Linux</translation>
 <translation id="7194407337890404814">Nama penyedia penelusuran default</translation>
 <translation id="7196336906814426783">Kebijakan ini menetapkan serangkaian interval mingguan untuk penjadwalan penangguhan otomatis. Saat interval dimulai, perangkat <ph name="PRODUCT_OS_NAME" /> akan memasuki mode ditangguhkan, dan akan aktif saat interval berakhir.
@@ -9179,9 +9164,6 @@ Jika kebijakan ini tidak disetel, perender PDF akan dipilih oleh browser.</trans
 
       Kebijakan ini bersifat sementara dan telah dihapus setelah UI balon download yang baru diluncurkan sepenuhnya.</translation>
 <translation id="7736521021425189418">Terminal (didukung sejak versi 117)</translation>
-<translation id="77379430721695807">Jika kebijakan disetel, artinya Anda menentukan daftar URL yang polanya cocok dengan asal keamanan URL yang meminta. Jika terdapat kecocokan, akses ke perangkat perekaman video akan diberikan tanpa permintaan izin
-
-      Untuk informasi mendetail tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="7740644123648617252">Aktifkan impor data formulir isi otomatis saat browser pertama kali dijalankan</translation>
 <translation id="7744253761377202223">Persentase kecerahan layar saat menggunakan daya AC.</translation>
 <translation id="7747447585227954402">Izinkan perangkat menggunakan <ph name="PLUGIN_VM_NAME" /> di <ph name="PRODUCT_OS_NAME" /></translation>

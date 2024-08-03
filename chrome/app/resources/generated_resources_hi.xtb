@@ -2390,6 +2390,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" />, Chrome टैब को शेयर कर रहा है.</translation>
 <translation id="2670350619068134931">सीमित ऐनिमेशन</translation>
 <translation id="2670403088701171361">साइटों को आपके क्लिपबोर्ड पर मौजूद टेक्स्ट या इमेज देखने की अनुमति न दें</translation>
+<translation id="2671423594960767771">ग्रुप शेयर करें</translation>
 <translation id="2671451824761031126">आपके बुकमार्क और सेटिंग तैयार हैं</translation>
 <translation id="2672142220933875349">खराब crx फ़ाइल, अनपैक करना विफल.</translation>
 <translation id="2672200806060988299">टैब के टाइटल और यूआरएल Google को भेजे जाते हैं. इन्हें समीक्षा करने वाले लोग देख सकते हैं, ताकि इस सुविधा को बेहतर बनाया जा सके.</translation>
@@ -7012,6 +7013,7 @@
 <translation id="6075075631258766703">फ़ोन नंबर की पुष्टि करें</translation>
 <translation id="6075731018162044558">ओह!  सिस्टम इस डिवाइस के लिए, लंबे समय तक चलने वाला एक API (एपीआई) एक्सेस टोकन नहीं पा सका.</translation>
 <translation id="6075907793831890935"><ph name="HOSTNAME" /> नामक डिवाइस से डेटा का लेन-देन करें</translation>
+<translation id="6076092653254552547">सिस्टम सेटिंग</translation>
 <translation id="6076491747490570887">हल्का स्लेटी</translation>
 <translation id="6076576896267434196">"<ph name="EXTENSION_NAME" />" एक्सटेंशन आपके खाते को ऐक्सेस करना चाहता है</translation>
 <translation id="6077131872140550515">पसंदीदा से निकालें</translation>
@@ -7135,7 +7137,6 @@
 <translation id="6164393601566177235">साइटें जोड़ें</translation>
 <translation id="6164832038898943453">अपने-आप अनुवाद की सुविधा के लिए भाषाएं जोड़ें</translation>
 <translation id="6165508094623778733">ज़्यादा जानें</translation>
-<translation id="6165850999903769629">ChromeOS पर उपलब्ध सभी ऐप्लिकेशन अब Chrome के बजाय, अपनी खुद की ऐप्लिकेशन विंडो पर खुलते हैं.</translation>
 <translation id="6166185671393271715">Chrome में पासवर्ड आयात करें</translation>
 <translation id="6169040057125497443">कृपया अपना माइक्रोफ़ोन जाँचें.</translation>
 <translation id="6169967265765719844">Steam के ज़रिए इंस्टॉल किए गए गेम और ऐप्लिकेशन की अनुमतियां, <ph name="LINK_BEGIN" />Steam ऐप्लिकेशन की सेटिंग<ph name="LINK_END" /> में जाकर मैनेज की जा सकती हैं.</translation>
@@ -7836,6 +7837,7 @@
 <translation id="6691936601825168937">&amp;अग्रेषित करें</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 पेज}one{{COUNT} पेज}other{{COUNT} पेज}}</translation>
 <translation id="6693820805264897502">मौजूदा पासवर्ड बदलें</translation>
+<translation id="6694634756612002311">शेयर करने की सुविधा मैनेज करें</translation>
 <translation id="6697172646384837537">चुनें कि आपको अपने पासवर्ड कहां इंपोर्ट करने हैं</translation>
 <translation id="6697492270171225480">जब कोई पेज मिल नहीं पा रहा हो तो मिलते-जुलते पेज के सुझाव दिखाएं</translation>
 <translation id="6697690052557311665">शेयर करने के लिए, फ़ाइलें ऐप्लिकेशन में किसी फ़ोल्डर पर क्लिक करें, फिर "Linux से शेयर करें" चुनें.</translation>
@@ -7938,7 +7940,6 @@
 <translation id="6776729248872343918">फ़ास्ट पेयर की सुविधा चालू करें</translation>
 <translation id="6777817260680419853">रीडायरेक्ट ब्लॉक किया गया</translation>
 <translation id="6777845730143344223">पासपॉइंट की सदस्यताओं के बारे में ज़्यादा जानें</translation>
-<translation id="6778660707554364320"><ph name="APP" /> अब ऐप्लिकेशन के तौर पर खुलता है</translation>
 <translation id="6779092717724412415">किसी भी टेक्स्ट को हाइलाइट करने के लिए, उसे चुनें और दायां क्लिक करें.</translation>
 <translation id="6779348349813025131">Google Password Manager को MacOS Keychain का ऐक्सेस चाहिए</translation>
 <translation id="677965093459947883">बहुत छोटा</translation>
@@ -9391,6 +9392,7 @@
 <translation id="7826254698725248775">विरोधी डिवाइस पहचानकर्ता</translation>
 <translation id="7828642077514646543">गड़बड़ी: सर्टिफ़िकेट डिकोड नहीं किया जा सका</translation>
 <translation id="7829877209233347340">स्कूल वाला खाता जोड़ने की अनुमति देने के लिए, अपने माता-पिता से साइन इन करने को कहें</translation>
+<translation id="7830276128493844263">सिस्टम सेटिंग में, जगह की जानकारी ऐक्सेस करने की सुविधा बंद है</translation>
 <translation id="7830833461614351956">क्या <ph name="NUM_OF_FILES" /> फ़ाइलों को खोलने के लिए, उन्हें <ph name="CLOUD_PROVIDER" /> पर कॉपी करना है?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">सेव किए गए कस्टम शब्द यहां दिखाई देंगे</translation>

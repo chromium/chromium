@@ -2368,6 +2368,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> 正在共享 Chrome 标签页。</translation>
 <translation id="2670350619068134931">经过简化的动画</translation>
 <translation id="2670403088701171361">不允许网站查看您剪贴板中的文字或图片</translation>
+<translation id="2671423594960767771">分享组</translation>
 <translation id="2671451824761031126">您的书签和设置已就绪</translation>
 <translation id="2672142220933875349">crx 文件已损坏，未能成功解压。</translation>
 <translation id="2672200806060988299">您的标签页标题和网址会发送给 Google，并且可能由人工审核员查看，以改进此功能。</translation>
@@ -7105,7 +7106,6 @@
 <translation id="6164393601566177235">添加网站</translation>
 <translation id="6164832038898943453">添加可自动翻译的语言</translation>
 <translation id="6165508094623778733">了解详情</translation>
-<translation id="6165850999903769629">现在，ChromeOS 上的所有应用均在各自的应用窗口中打开，而不是在 Chrome 中打开。</translation>
 <translation id="6166185671393271715">将密码导入到 Chrome 中</translation>
 <translation id="6169040057125497443">请检查您的麦克风。</translation>
 <translation id="6169967265765719844">您可以在 <ph name="LINK_BEGIN" />Steam 应用设置<ph name="LINK_END" />中管理通过 Steam 安装的游戏和应用的权限。</translation>
@@ -7905,7 +7905,6 @@
 <translation id="6776729248872343918">启用快速配对</translation>
 <translation id="6777817260680419853">已禁止重定向</translation>
 <translation id="6777845730143344223">详细了解 Passpoint 订阅</translation>
-<translation id="6778660707554364320"><ph name="APP" />现在会作为应用打开</translation>
 <translation id="6779092717724412415">如需创建与这相似的突出显示内容，请选择任意文本并右键点击它。</translation>
 <translation id="6779348349813025131">Google 密码管理工具需要获权访问 MacOS 钥匙串</translation>
 <translation id="677965093459947883">特小</translation>

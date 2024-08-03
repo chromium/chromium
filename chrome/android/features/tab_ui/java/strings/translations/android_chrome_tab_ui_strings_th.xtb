@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">สีส้ม</translation>
 <translation id="125153950246128346">แตะเพื่อดูแท็บอื่น</translation>
 <translation id="1273910660700874265">ตัวเลือกกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1340839264183302272">ออกจากกลุ่ม</translation>
 <translation id="1419023007528516122">การดำเนินการนี้จะลบกลุ่มออกจากอุปกรณ์ของคุณอย่างถาวร</translation>
 <translation id="1486715732399361704">คุณดูกลุ่มแท็บทั้งหมดได้ที่นี่</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{สร้างเมื่อ <ph name="NUM_MINS_ONE" /> นาทีที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_MINS_MANY" /> นาทีที่ผ่านมา}}</translation>
@@ -122,6 +123,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ย้ายแท็บไปทางซ้าย</translation>
 <translation id="6615455863669487791">แสดงให้ฉันเห็น</translation>
+<translation id="6694634756612002311">จัดการการแชร์</translation>
 <translation id="6744956528665271406">แก้ไขสีกลุ่ม</translation>
 <translation id="6856809498882026482">ซ่อนโหมดเลือกหลายรายการ</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{แชร์แท็บ}other{แชร์แท็บ}}</translation>
@@ -174,6 +176,7 @@
 <translation id="8926389886865778422">ไม่ต้องถามอีก</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บที่มีอยู่ <ph name="TABS_COUNT_ONE" /> แท็บ}other{ขยายกลุ่มแท็บที่มีอยู่ <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="9090098097337832354">ปิดข้อมูลเกี่ยวกับร้านนี้แล้ว</translation>
+<translation id="9111228330448174435">แสดงกล่องโต้ตอบเมื่อสร้างกลุ่มแท็บใหม่</translation>
 <translation id="9150694013019234766">สลับไปมาระหว่างแท็บในกลุ่มแท็บบริเวณด้านล่างของหน้าจอ</translation>
 <translation id="9169594135889675189">เพิ่มแท็บใหม่ลงในกลุ่ม</translation>
 <translation id="9216898458513705996">แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ <ph name="USER_EMAIL" /></translation>

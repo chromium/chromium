@@ -2374,6 +2374,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2670102641511624474"><ph name="APP_NAME" /> po ndan një skedë të Chrome.</translation>
 <translation id="2670350619068134931">Animacione të reduktuara</translation>
 <translation id="2670403088701171361">Mos lejo që sajtet të shikojnë tekstet ose imazhet në kujtesën e fragmenteve</translation>
+<translation id="2671423594960767771">Ndaj grupin</translation>
 <translation id="2671451824761031126">Faqeshënuesit dhe cilësimet e tua janë gati</translation>
 <translation id="2672142220933875349">Skedar i prishur crx. Shpaketimi dështoi.</translation>
 <translation id="2672200806060988299">Titujt e skedave dhe URL-të dërgohen te Google dhe mund të shikohen nga shqyrtues njerëzore për të përmirësuar këtë veçori.</translation>
@@ -7115,7 +7116,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6164393601566177235">Shto sajtet</translation>
 <translation id="6164832038898943453">Shto gjuhët që do të përkthehen automatikisht</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
-<translation id="6165850999903769629">Të gjitha aplikacionet në ChromeOS tani hapen në dritaret e aplikacioneve të tyre në vend që të hapen në Chrome.</translation>
 <translation id="6166185671393271715">Importo fjalëkalimet në Chrome</translation>
 <translation id="6169040057125497443">Kontrollo mikrofonin.</translation>
 <translation id="6169967265765719844">Lejet për lojërat dhe aplikacionet e instaluara përmes Steam mund të menaxhohen te <ph name="LINK_BEGIN" />cilësimet e aplikacionit Steam<ph name="LINK_END" />.</translation>
@@ -7915,7 +7915,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6776729248872343918">Aktivizo "Çiftimin e shpejtë"</translation>
 <translation id="6777817260680419853">Ridrejtimi u bllokua</translation>
 <translation id="6777845730143344223">Mëso më shumë për abonimet e Passpoint</translation>
-<translation id="6778660707554364320"><ph name="APP" /> tani hapet si një aplikacion</translation>
 <translation id="6779092717724412415">Për të krijuar një theksim të tillë, zgjidh çdo tekst dhe kliko me të djathtin.</translation>
 <translation id="6779348349813025131">"Menaxheri i fjalëkalimeve i Google" ka nevojë për qasje te MacOS Keychain</translation>
 <translation id="677965093459947883">Shumë të vogla</translation>

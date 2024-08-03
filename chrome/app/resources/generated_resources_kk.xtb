@@ -2373,6 +2373,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> қолданбасы Chrome қойындысын бөлісуде.</translation>
 <translation id="2670350619068134931">Азайтылған анимациялар</translation>
 <translation id="2670403088701171361">Сайттардың буферіңіздегі мәтінді немесе суреттерді көруіне рұқсат бермеу</translation>
+<translation id="2671423594960767771">Топты бөлісу</translation>
 <translation id="2671451824761031126">Бетбелгілер мен параметрлер дайын</translation>
 <translation id="2672142220933875349">CRX файлы жарамсыз, пакеттен шығару сәтсіз аяқталды.</translation>
 <translation id="2672200806060988299">Қойынды атаулары мен URL мекенжайлары Google-ға жіберіледі. Бұл функцияны жақсарту үшін оларды тексерушілер қарауы мүмкін.</translation>
@@ -7114,7 +7115,6 @@
 <translation id="6164393601566177235">Сайттар қосу</translation>
 <translation id="6164832038898943453">Автоматты түрде аударылатын тілдерді қосу</translation>
 <translation id="6165508094623778733">Толығырақ</translation>
-<translation id="6165850999903769629">ChromeOS-тегі барлық қолданба енді Chrome орнына өздерінің қолданба терезелерінде ашылып жатыр.</translation>
 <translation id="6166185671393271715">Құпия сөздерді Chrome жүйесіне импорттау</translation>
 <translation id="6169040057125497443">Микрофонды тексеріңіз.</translation>
 <translation id="6169967265765719844">Steam арқылы орнатылған ойындар мен қолданбаларға арналған рұқсаттарды <ph name="LINK_BEGIN" />Steam қолданбасы параметрлерінен<ph name="LINK_END" /> басқаруға болады.</translation>
@@ -7915,7 +7915,6 @@
 <translation id="6776729248872343918">Fast Pair функциясын қосу</translation>
 <translation id="6777817260680419853">Бағыттауға тыйым салынған</translation>
 <translation id="6777845730143344223">Passpoint жазылымдары туралы толық ақпарат</translation>
-<translation id="6778660707554364320"><ph name="APP" /> енді қолданба ретінде ашылып жатыр</translation>
 <translation id="6779092717724412415">Осылай ерекшелеу үшін мәтінді таңдап, тінтуірдің оң жақ түймесін басыңыз.</translation>
 <translation id="6779348349813025131">Google Password Manager қызметіне MacOS кілттер тізбегін пайдалануға рұқсат қажет</translation>
 <translation id="677965093459947883">Тым кішкентай</translation>

@@ -2370,6 +2370,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> が Chrome タブを共有しています。</translation>
 <translation id="2670350619068134931">アニメーションを減らす</translation>
 <translation id="2670403088701171361">サイトにクリップボード内のテキストや画像へのアクセスを許可しない</translation>
+<translation id="2671423594960767771">グループを共有</translation>
 <translation id="2671451824761031126">ブックマークと設定をインポートしました</translation>
 <translation id="2672142220933875349">不正な crx ファイルです。解凍できませんでした。</translation>
 <translation id="2672200806060988299">タブのタイトルと URL は Google に送信され、この機能の改善のために人間のレビュアーによる確認が行われる場合があります。</translation>
@@ -7106,7 +7107,6 @@
 <translation id="6164393601566177235">サイトの追加</translation>
 <translation id="6164832038898943453">自動翻訳する言語を追加</translation>
 <translation id="6165508094623778733">詳細</translation>
-<translation id="6165850999903769629">ChromeOS のアプリはすべて Chrome ではなく専用のアプリ ウィンドウで開くようになりました。</translation>
 <translation id="6166185671393271715">Chrome にパスワードをインポート</translation>
 <translation id="6169040057125497443">マイクを確認してください。</translation>
 <translation id="6169967265765719844">Steam 経由でインストールしたゲームやアプリの権限は、<ph name="LINK_BEGIN" />Steam アプリの設定<ph name="LINK_END" />で管理できます。</translation>
@@ -7905,7 +7905,6 @@
 <translation id="6776729248872343918">ファスト ペアリングを有効にする</translation>
 <translation id="6777817260680419853">リダイレクトがブロックされました</translation>
 <translation id="6777845730143344223">Passpoint の登録の詳細</translation>
-<translation id="6778660707554364320"><ph name="APP" /> がアプリとして開くようになりました</translation>
 <translation id="6779092717724412415">このように選択箇所を指定するには、テキストを選択して右クリックします。</translation>
 <translation id="6779348349813025131">Google パスワード マネージャーに MacOS キーチェーンへのアクセスを許可する必要があります</translation>
 <translation id="677965093459947883">極小</translation>

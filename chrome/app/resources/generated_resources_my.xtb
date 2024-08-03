@@ -2387,6 +2387,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> သည် Chrome တဘ်ကိုမျှဝေနေသည်။</translation>
 <translation id="2670350619068134931">လျှော့ချထားသော လှုပ်ရှားသက်ဝင်ပုံ</translation>
 <translation id="2670403088701171361">သင့်ကလစ်ဘုတ်ရှိ စာသား (သို့) ပုံများ ကြည့်ရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
+<translation id="2671423594960767771">အုပ်စုကို မျှဝေရန်</translation>
 <translation id="2671451824761031126">သင်သိမ်းထားသော ဝဘ်လိပ်စာများနှင့် ဆက်တင်များ အဆင်သင့်ဖြစ်ပါပြီ</translation>
 <translation id="2672142220933875349">ဆိုးရွားသော crx ဖိုင်၊ ရှင်းလင်းခြင်း မအောင်မြင်ပါ။</translation>
 <translation id="2672200806060988299">သင့်တဘ်ခေါင်းစဉ်နှင့် URL များကို Google သို့ ပို့သည်။ ဤဝန်ဆောင်မှု ပိုကောင်းလာစေရန် ပြန်စစ်သည့် ပုဂ္ဂိုလ်များက ၎င်းတို့ကို ကြည့်နိုင်သည်။</translation>
@@ -5429,6 +5430,7 @@
 <translation id="4893336867552636863">သင်၏ ရှာဖွေမှု ဒေတာကို ဤကိရိယာထဲမှ ထာဝရ ဖျက်ပစ်ပါမည်။</translation>
 <translation id="4893454800196085005">ကောင်း - DVD</translation>
 <translation id="4893522937062257019">လော့ခ်ချထားသည့်မျက်နှာပြင်ပေါ်တွင်</translation>
+<translation id="4894055916816649664">၁၀ မိနစ်သာ</translation>
 <translation id="4895799941222633551">&amp;ဖြတ်လမ်းလင့်ခ် ပြုလုပ်ရန်...</translation>
 <translation id="4898011734382862273">အသိမှတ်ပြုလက်မှတ် "<ph name="CERTIFICATE_NAME" />" သည် စီမံခန့်ခွဲမှုဆိုင်ရာ အသိမှတ်ပြုလက်မှတ် ထုတ်ပေးသူကို ကိုယ်စားပြုပါသည်</translation>
 <translation id="4898913189644355814">ဝဘ်ဆိုက်တစ်ခုသည် သင့်စိတ်ကြိုက် ဘာသာစကား (သို့) သင်ဝယ်လိုသောပစ္စည်းများကို သိမ်းနိုင်သည်။ ဤအချက်အလက်ကို ဝဘ်ဆိုက်နှင့် ၎င်း၏ဒိုမိန်းအပိုင်းခွဲများတွင် ရနိုင်သည်။</translation>
@@ -6066,6 +6068,7 @@
 <translation id="5380526436444479273">မိနစ်အနည်းငယ် စောင့်ပြီး ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="5382591305415226340">ပံ့ပိုးထားသည့်လင့်ခ်များကို စီမံခန့်ခွဲပါ</translation>
 <translation id="5383740867328871413">အမည်ပေးမထားသော အုပ်စု - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5384401776498845256">သင်နှင့် မျှဝေနိုင်သူများ</translation>
 <translation id="5385628342687007304">ဤစကားဝှက်ကို ယခုစက်တွင်သာ သိမ်းလိုက်သည်။ အခြားစက်များတွင်သုံးရန် ၎င်းကို သင်၏ Google Account ၌ သိမ်းပါ။</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" /> ပြင်ရန်</translation>
 <translation id="5387496897058645038">ထုတ်ကုန် သတ်မှတ်ချက်များ</translation>
@@ -6931,6 +6934,7 @@
 <translation id="6015776718598175635">ကြယ်များ</translation>
 <translation id="6015796118275082299">နှစ်</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" /> ခုအနက် အကြောင်းအရာအပို <ph name="CURRENT_ELEMENT" /> သို့ သွားရန်</translation>
+<translation id="6016462059150340136">အနီးတစ်ဝိုက်ရှိ လူတိုင်း</translation>
 <translation id="6016551720757758985">ယခင်ဗားရှင်းသို့ ပြန်သွားရန် Powerwash အား အတည်ပြုခြင်း</translation>
 <translation id="6016972670657536680">ဘာသာစကားနှင့် ကီးဘုတ်ခလုတ်ကို ရွေးပါ။ လက်ရှိရွေးထားသည့် ဘာသာစကားသည် <ph name="LANGUAGE" /> ဖြစ်သည်။</translation>
 <translation id="6017514345406065928">အစိမ်းရောင်</translation>
@@ -7131,7 +7135,6 @@
 <translation id="6164393601566177235">ဝဘ်ဆိုက်များ ထည့်ခြင်း</translation>
 <translation id="6164832038898943453">အလိုအလျောက်ဘာသာပြန်ရန်အတွက် ဘာသာစကားထည့်ရန်</translation>
 <translation id="6165508094623778733">ပိုမိုလေ့လာရန်</translation>
-<translation id="6165850999903769629">ChromeOS ရှိ အက်ပ်အားလုံးကို Chrome တွင်ဖွင့်မည့်အစား ၎င်းတို့၏ကိုယ်ပိုင်အက်ပ်ဝင်းဒိုးတွင် ဖွင့်ပါမည်။</translation>
 <translation id="6166185671393271715">Chrome သို့စကားဝှက်များကို သွင်းထည့်ပါ</translation>
 <translation id="6169040057125497443">သင့်မိုက်ကရိုဖုန်းကို စစ်ဆေးပါ။</translation>
 <translation id="6169967265765719844">Steam ဖြင့်ထည့်သွင်းထားသော ဂိမ်းနှင့် အက်ပ်များအတွက် ခွင့်ပြုချက်များကို <ph name="LINK_BEGIN" />Steam အက်ပ်ဆက်တင်များ<ph name="LINK_END" /> တွင် စီမံနိုင်သည်။</translation>
@@ -7381,6 +7384,7 @@
 <translation id="6345878117466430440">ဖတ်ပြီးဟု မှတ်သားရန်</translation>
 <translation id="6346952829206698721">ကလစ်ဘုတ်မှ ကူးထည့်ရန်</translation>
 <translation id="6347010704471250799">အကြောင်းကြားချက်ပြခြင်း</translation>
+<translation id="634792071306410644">သင့်ကိုမြင်နိုင်အောင် မလုပ်မချင်း မည်သူမျှ သင်နှင့်မမျှဝေနိုင်ပါ</translation>
 <translation id="6348252528297699679">ဆက်တင်များ &gt; အချက်အလက်နှင့်စက်လုံခြုံရေး &gt; ကိုယ်ရေးအချက်အလက်လုံခြုံမှု ဆက်တင်များ &gt; တည်နေရာသုံးခွင့်တွင် တည်နေရာကို ပိတ်နိုင်သည်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="6348805481186204412">အော့ဖ်လိုင်း သိုလှောင်ခန်း</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ထည့်သွင်းရန်</translation>
@@ -7828,6 +7832,7 @@
 <translation id="6691936601825168937">ရှေ့သို့</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 မျက်နှာ}other{{COUNT} မျက်နှာ}}</translation>
 <translation id="6693820805264897502">ရှိပြီးသား စကားဝှက်များကို အစားထိုးခြင်း</translation>
+<translation id="6694634756612002311">မျှဝေခြင်းကို စီမံရန်</translation>
 <translation id="6697172646384837537">သင့်စကားဝှက်များ ထည့်သွင်းလိုသောနေရာကို ရွေးရန်</translation>
 <translation id="6697492270171225480">စာမျက်နှာ ရှာမတွေ့သည့်အခါ အလားတူစာမျက်နှာများအတွက် အကြံပြုချက်များ ပြရန်</translation>
 <translation id="6697690052557311665">မျှဝေရန် Files အက်ပ်ထဲရှိ ဖိုင်တွဲတွင် ညာခလုတ်နှိပ်ပြီး "Linux နှင့် မျှဝေရန်" ကို ရွေးပါ။</translation>
@@ -7930,7 +7935,6 @@
 <translation id="6776729248872343918">အမြန်တွဲချိတ်ခြင်း ဖွင့်ရန်</translation>
 <translation id="6777817260680419853">တဆင့်ပြန်ညွှန်ခြင်းကို ပိတ်ထားသည်</translation>
 <translation id="6777845730143344223">‘ဖြတ်သန်းခွင့်ပြုမှတ်’ စာရင်းသွင်းမှုများအကြောင်း ပိုမိုလေ့လာရန်</translation>
-<translation id="6778660707554364320"><ph name="APP" /> ကို အက်ပ်အဖြစ် ဖွင့်သည်</translation>
 <translation id="6779092717724412415">ဤကဲ့သို့ မြင်သာအောင်လုပ်ရန် နှစ်သက်ရာစာသား ရွေးပြီး ညာဘက်ခလုတ်ကို နှိပ်ပါ။</translation>
 <translation id="6779348349813025131">Google Password Manager သည် MacOS Keychain သုံးခွင့်လိုအပ်သည်</translation>
 <translation id="677965093459947883">အလွန်သေး</translation>
@@ -7982,6 +7986,7 @@
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" /> ထဲမှာ RLZ ခြေရာခံမှုကို ဖွင့်ပေးသည်။</translation>
 <translation id="6806089545527108739">ခွင့်မပြုဘဲ နောက်မှထပ်မေးရန်</translation>
 <translation id="680644983456221885">Google သို့ ပို့ထားသော သင်၏ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာပေါ် အခြေခံ၍ အန္တရာယ်ရှိသော ဝဘ်ဆိုက်၊ ဒေါင်းလုဒ်နှင့် နောက်ဆက်တွဲများမှ အချိန်နှင့်တစ်ပြေးညီ ကြိုတင်ကာကွယ်ပေးခြင်း</translation>
+<translation id="6806781719264274042">Google Account ရှိသော သင့်အဆက်အသွယ်များသာ။ <ph name="LINK_BEGIN" />အဆက်အသွယ် ကြည့်ရန်<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">ရှေ့ဆက်ရန် သင်၏လုံခြုံရေးကီး ထည့်သွင်းပြီး ထိပါ</translation>
 <translation id="6808166974213191158">ChromeOS Flex ကွန်ပျူတာစနစ်မိတ္တူကို ရေးသည့်စနစ်</translation>
 <translation id="6808193438228982088">မြေခွေး</translation>
@@ -8048,6 +8053,7 @@
 <translation id="6840214587087739194">လိပ်စာကို ဖျက်လိုက်သည်</translation>
 <translation id="6841143363521180029">အသွင်ဝှက်ထားသည်</translation>
 <translation id="6841186874966388268">အမှားများ</translation>
+<translation id="6842135459748401207"><ph name="USER_EMAIL" /> သို့ လက်မှတ်ထိုးဝင်ထားသော စက်များသာ</translation>
 <translation id="6842136130964845393">သိမ်းထားသောစကားဝှက်များကို အမြဲသုံးခွင့်ရကြောင်း သေချာစေရန် သင်ဖြစ်ကြောင်းအတည်ပြုပါ</translation>
 <translation id="6842749380892715807">XML ဝဘ်ဆိုက်စာရင်းများကို <ph name="LAST_DATE_DOWNLOAD" /> တွင် နောက်ဆုံးဒေါင်းလုဒ်လုပ်ထားသည်။</translation>
 <translation id="6842868554183332230">ချတ်အက်ပ်များတွင် ချတ်လုပ်နိုင်မှုကို သတ်မှတ်ရန် သင့်ကိရိယာသုံးနေချိန်ကို ဝဘ်ဆိုက်များက စူးစမ်းလေ့ရှိသည်</translation>
@@ -10700,6 +10706,7 @@
 <translation id="8766796754185931010">ကိုတိုရီ</translation>
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> အတွက် ရှာဖွေမှုအားလုံးပြရန်</translation>
 <translation id="8767621466733104912">အသုံးပြုသူများ အားလုံးအတွက် Chrome ကို အလိုအလျောက် အပ်ဒိတ်လုပ်ပါ</translation>
+<translation id="8768049274922835860">လူတိုင်း</translation>
 <translation id="876956356450740926">ဆော့ဖ်ဝဲရေးသူတူးလ်၊ IDE နှင့် တည်းဖြတ်ကိရိယာများ ဖွင့်နိုင်သည်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">နောက်ဆက်တွဲ ပင်မလမ်းကြောင်း</translation>
 <translation id="8771300903067484968">စတင်သည့် စာမျက်နှာနောက်ခံကို မူလနောက်ခံသို့ ပြင်ဆင်သတ်မှတ်ထားပါသည်။</translation>
@@ -11000,6 +11007,7 @@
 <translation id="8984694057134206124">သင့်ကို လူတိုင်းက <ph name="MINUTES" /> မိနစ်ကြာ မြင်နိုင်မည်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Chromebook ၏ Steam က ကြိုဆိုပါသည်</translation>
 <translation id="8985264973231822211">ပြီးခဲ့သော <ph name="DEVICE_LAST_ACTIVATED_TIME" /> ရက်က အသုံးပြုထားသည်</translation>
+<translation id="8985561265504464578">သိရှိခြင်း သတ်မှတ်ချက်</translation>
 <translation id="8985661493893822002">သင်၏ <ph name="DEVICE_TYPE" /> သို့ လက်မှတ်ထိုးဝင်ရန် အင်တာနက်ချိတ်ဆက်ပါ။</translation>
 <translation id="8985661571449404298">မလုံခြုံသောဖိုင်ကို ဒေါင်းလုဒ်လုပ်ထားသည်</translation>
 <translation id="8986362086234534611">မေ့ပစ်လိုက်ပါ</translation>

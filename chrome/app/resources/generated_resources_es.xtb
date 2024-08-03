@@ -2377,6 +2377,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2670102641511624474"><ph name="APP_NAME" /> está compartiendo una pestaña de Chrome.</translation>
 <translation id="2670350619068134931">Animaciones reducidas</translation>
 <translation id="2670403088701171361">No permitir que los sitios vean texto ni imágenes del portapapeles</translation>
+<translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2671451824761031126">Tu configuración y tus marcadores están listos</translation>
 <translation id="2672142220933875349">El archivo crx no es válido y no se ha podido descomprimir.</translation>
 <translation id="2672200806060988299">Los títulos y las URLs de tus pestañas se envían a Google, y es posible que los vean revisores humanos para mejorar esta función.</translation>
@@ -7118,7 +7119,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6164393601566177235">Añadir sitios</translation>
 <translation id="6164832038898943453">Añadir idiomas para traducirlos automáticamente</translation>
 <translation id="6165508094623778733">Más información</translation>
-<translation id="6165850999903769629">Todas las aplicaciones de ChromeOS ahora se abren en sus propias ventanas de aplicaciones en lugar de en Chrome.</translation>
 <translation id="6166185671393271715">Importar contraseñas a Chrome</translation>
 <translation id="6169040057125497443">Comprueba el micrófono.</translation>
 <translation id="6169967265765719844">Los permisos para juegos y aplicaciones instalados a través de Steam pueden gestionarse en los <ph name="LINK_BEGIN" />ajustes de la aplicación Steam<ph name="LINK_END" />.</translation>
@@ -7918,7 +7918,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6776729248872343918">Habilitar Emparejamiento rápido</translation>
 <translation id="6777817260680419853">Redirección bloqueada</translation>
 <translation id="6777845730143344223">Más información sobre las suscripciones a Passpoint</translation>
-<translation id="6778660707554364320"><ph name="APP" /> ahora se abre como aplicación</translation>
 <translation id="6779092717724412415">Para resaltar texto de esta forma, selecciona el texto y haz clic con el botón derecho.</translation>
 <translation id="6779348349813025131">El Gestor de contraseñas de Google necesita acceder al llavero de macOS</translation>
 <translation id="677965093459947883">Muy pequeño</translation>

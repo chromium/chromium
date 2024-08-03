@@ -87,6 +87,7 @@
 <translation id="1270290102613614947">Екранната клавиатура е деактивирана</translation>
 <translation id="1272079795634619415">Стоп</translation>
 <translation id="1275285675049378717">Захранва се <ph name="POWER_SOURCE" /></translation>
+<translation id="1275718070701477396">Избрано</translation>
 <translation id="1276975447697633661">Изберете файла и натиснете <ph name="KEY" /></translation>
 <translation id="1279938420744323401">„<ph name="DISPLAY_NAME" />“ (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Намиране на телефона</translation>
@@ -1761,6 +1762,7 @@
 <translation id="7312210124139670355">Администраторът ви нулира електронната ви SIM карта. Това може да отнеме няколко минути.</translation>
 <translation id="7312761820869643657">Връщане на устройството към предишна версия</translation>
 <translation id="7313193732017069507">Разгъване на камерата</translation>
+<translation id="73289266812733869">Неизбрано</translation>
 <translation id="7330397557116570022">Изберете текстово поле, за да използвате функцията за диктуване</translation>
 <translation id="7331646370422660166">Alt + стрелката за надолу</translation>
 <translation id="7337660433630200387">+ 10 мин</translation>

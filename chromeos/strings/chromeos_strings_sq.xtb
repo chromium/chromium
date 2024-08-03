@@ -417,9 +417,6 @@
 <translation id="3199982728237701504">Furnizuesi i dokumentit (dy anë)</translation>
 <translation id="3201315366910775591">Albumet e ndara mund të përditësohen nga persona të tjerë</translation>
 <translation id="3211671540163313381">Blloku i drejtimit për organizimin e tasteve</translation>
-<translation id="3224812403568276799">Kur e lejon këtë, "Regjistruesi" do të përdorë analizën e përparuar të audios për të zbuluar automatikisht zërat e veçantë dhe për t'i dhënë secilit një etiketë të përgjithshme, si p.sh. "Folësi 1" dhe "Folësi 2".
-
-Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="3226405216343213872">Po kërkon për skanerë</translation>
 <translation id="3226657629376379887">Menyja e veprimeve të strukturës</translation>
 <translation id="3227186760713762082">Pjesëto vlerën <ph name="CATEGORY_TEXT" /> me <ph name="CONVERSION_RATE" /></translation>
@@ -812,6 +809,7 @@ Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="5318334351163689047">Dështimet e kërkesave TCP</translation>
 <translation id="53196409393069519">Të aktivizohet transkriptimi?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Emri</translation>
 <translation id="5332948983412042822">Zgjidh një të ri tani</translation>
 <translation id="5333530671332546086">Gjendje e panjohur portali</translation>
 <translation id="5335373365677455232">rozë</translation>
@@ -1108,6 +1106,7 @@ Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="6905724422583748843">Prapa te <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Kapaku i skanerit është i hapur. Mbylle kapakun dhe provo përsëri.</translation>
 <translation id="6911383237894364323">Nuk mund të lidhet me serverët e medias.</translation>
+<translation id="6930242544192836755">Kohëzgjatja</translation>
 <translation id="6930597342185648547">Rreth sfondit</translation>
 <translation id="6939667434404433010">Kërko për emrin e regjistrimit</translation>
 <translation id="6939766318048400022">Kafene</translation>
@@ -1328,6 +1327,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8004582292198964060">Shfletuesi</translation>
 <translation id="8017679124341497925">Shkurtorja u modifikua</translation>
 <translation id="802154636333426148">Shkarkimi dështoi</translation>
+<translation id="8028993641010258682">Madhësia</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Aktivizo modalitetin automatik të ngjyrave</translation>
 <translation id="8041089156583427627">Dërgo komentet</translation>

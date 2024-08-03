@@ -1428,13 +1428,6 @@
 
       如果將這項政策設為啟用或不設定，系統會啟用快速解答的定義功能。
       如果停用這項政策，系統會停用快速解答的定義功能。</translation>
-<translation id="2095778449451007308">這項政策可控管使用者能否在「設定」中啟用僅限 HTTPS 模式 (一律使用安全連線)。此模式會禁止瀏覽僅支援 HTTP 的網站。
-      如果將這項政策設為允許或不設定，使用者將可啟用僅限 HTTPS 模式。
-      如果將這項政策設為禁止，使用者無法啟用僅限 HTTPS 模式。
-      如果將這項政策設為 force_enabled，系統會啟用僅限 HTTPS 模式，而且使用者無法停用。
-      自 M112 版起，系統將支援強制啟用僅限 HTTPS 模式。
-
-獨立的 <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> 政策可用於排除特定主機名稱或主機名稱模式，避免這項功能將其升級為 HTTPS。</translation>
 <translation id="209586405398070749">穩定版</translation>
 <translation id="2096932573113293941">要求使用授予權限以執行需要授權的外掛程式</translation>
 <translation id="2098658257603918882">啟用使用量和當機相關資料的報告功能</translation>
@@ -1986,7 +1979,6 @@
 <translation id="2492240920793040106">啟用系統資訊及頁面內容回報功能，協助改善安全瀏覽服務</translation>
 <translation id="2496180316473517155">瀏覽記錄</translation>
 <translation id="2497751676088107779">使用者指令碼</translation>
-<translation id="2497965601277442929">禁止使用者啟用僅限 HTTPS 模式</translation>
 <translation id="249798396824949930"> 這項政策可控管瀏覽器是否可以偵測 <ph name="MAC_OS_NAME" /> 上的強制政策範圍。
 
       如果將這項政策設為啟用或不設定，系統會根據 <ph name="MAC_OS_NAME" /> 受管理設定檔的範圍，決定每項政策的範圍。
@@ -2608,7 +2600,6 @@
 
       在 <ph name="PRODUCT_NAME" /> 81 以上版本中，如果未設定這項政策，系統只會在一般工作階段中啟用背景驗證功能。</translation>
 <translation id="3021562480854470924">允許復原的重要事件數</translation>
-<translation id="3023172689742785487">強制啟用僅限 HTTPS 模式</translation>
 <translation id="3023572080620427845">XML 檔案的網址，其中包含要在替代瀏覽器中載入的網址。</translation>
 <translation id="302528139996622624">圖片設定</translation>
 <translation id="3026740867910702435">在登入畫面上啟用大型游標無障礙功能。
@@ -6107,7 +6098,6 @@
 <translation id="5848438019586925019">用於產生金鑰組的演算法。</translation>
 <translation id="5851248808417680865">使用深色主題</translation>
 <translation id="585270638818921943">禁止使用者使用來源不受信任的 Android 應用程式</translation>
-<translation id="5853547031212075792">允許使用者啟用僅限 HTTPS 模式</translation>
 <translation id="5859344336338527083">你可以透過這項政策，指定可安裝擴充功能、應用程式和主題的網址。在 <ph name="PRODUCT_NAME" /> 21 以前的版本中，使用者只要點選 *.crx 檔案的連結，<ph name="PRODUCT_NAME" /> 就會在顯示幾則警告訊息後，詢問使用者是否要安裝該檔案。在後續版本中，使用者則必須先下載這類檔案，再將檔案拖曳至 <ph name="PRODUCT_NAME" /> 設定頁面中。透過這項設定，你可以允許特定網址使用較簡易的舊式安裝流程。
 
           這份清單中的每個項目皆為擴充功能形式的比對模式 (請參閱 https://developer.chrome.com/extensions/match_patterns)。任何網址只要與這份清單中的任意項目相符，使用者便可輕鬆安裝該網址提供的檔案。*.crx 檔案位置和下載來源網頁 (參照網址) 都必須與這份清單中的模式相符。
@@ -7999,9 +7989,6 @@ M127 版預設會為企業版使用者停用這項政策。</translation>
       如果擴充功能未列在清單上，或是未設定清單，將導致 API 呼叫失敗，並收到錯誤代碼。</translation>
 <translation id="718956142899066210">允許進行更新的連線類型</translation>
 <translation id="7190286937411178540">啟用鍵盤焦點醒目顯示無障礙功能</translation>
-<translation id="7193489339723768342">你可以透過這項政策指定網址清單，系統會將這份清單中的模式與要求網址的安全性來源進行比對。如果模式相符，系統會直接授予音訊擷取裝置存取權限，而不會顯示提示
-
-      如果想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="719398790886719721">停用 Linux 虛擬機器的 Root 權限</translation>
 <translation id="7194407337890404814">預設搜尋引擎名稱</translation>
 <translation id="7196336906814426783">這項政策會建立一系列每週時段，用以安排自動暫停時間表。時段開始時，<ph name="PRODUCT_OS_NAME" /> 裝置會進入暫停模式，時段結束後就會醒來。
@@ -8621,9 +8608,6 @@ M127 版預設會為企業版使用者停用這項政策。</translation>
 
       這項政策只是暫時性措施，新版下載對話框使用者介面完全上線後就已移除。</translation>
 <translation id="7736521021425189418">終端機 (自 117 版起開始支援)</translation>
-<translation id="77379430721695807">你可以透過這項政策指定網址清單，系統會將這份清單中的模式與要求網址的安全性來源進行比對。如果模式相符，系統會直接授予影片擷取裝置存取權限，而不會顯示提示
-
-      如果想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="7740644123648617252">允許在第一次執行時匯入自動填入表單資料</translation>
 <translation id="7744253761377202223">使用 AC 電源供電時的螢幕亮度百分比</translation>
 <translation id="7747447585227954402">允許裝置在 <ph name="PRODUCT_OS_NAME" /> 使用 <ph name="PLUGIN_VM_NAME" /></translation>

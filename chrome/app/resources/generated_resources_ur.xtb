@@ -2378,6 +2378,7 @@
 <translation id="2670102641511624474">‏<ph name="APP_NAME" /> ایک Chrome ٹیب کا اشتراک کر رہی ہے۔</translation>
 <translation id="2670350619068134931">کم کردہ اینیمیشنز</translation>
 <translation id="2670403088701171361">سائٹس کو اپنے کلپ بورڈ پر ٹیکسٹ یا تصاویر دیکھنے کی اجازت نہ دیں</translation>
+<translation id="2671423594960767771">گروپ کا اشتراک کریں</translation>
 <translation id="2671451824761031126">آپ کے بُک مارکس اور ترتیبات تیار ہیں</translation>
 <translation id="2672142220933875349">‏غلط crx فائل، پیک کھولنا ناکام ہو گیا۔</translation>
 <translation id="2672200806060988299">‏آپ کے ٹیب کے عنوانات اور URLs ‏Google کو بھیجے جاتے ہیں اور اس خصوصیت کو بہتر بنانے کے لیے انسان جائزہ کاران انہیں دیکھ سکتے ہیں۔</translation>
@@ -7121,7 +7122,6 @@
 <translation id="6164393601566177235">سائٹس شامل کریں</translation>
 <translation id="6164832038898943453">خودکار طور پر ترجمہ کرنے کے لیے زبانیں شامل کریں</translation>
 <translation id="6165508094623778733">مزید جانیں</translation>
-<translation id="6165850999903769629">‏ChromeOS پر موجود تمام ایپس اب Chrome کی بجائے اپنی ایپ ونڈوز میں کھلتی ہیں۔</translation>
 <translation id="6166185671393271715">‏Chrome پر پاس ورڈز درآمد کریں</translation>
 <translation id="6169040057125497443">براہ کرم اپنا مائیکروفون چیک کریں۔</translation>
 <translation id="6169967265765719844">‏Steam کے ذریعے انسٹال کردہ گیمز اور ایپس کی اجازتوں کا نظم <ph name="LINK_BEGIN" />Steam ایپ کی ترتیبات<ph name="LINK_END" /> میں کیا جا سکتا ہے۔</translation>
@@ -7922,7 +7922,6 @@
 <translation id="6776729248872343918">فاسٹ پئیر کو فعال کریں</translation>
 <translation id="6777817260680419853">ری ڈائریکٹ مسدود ہے</translation>
 <translation id="6777845730143344223">پاس پوائنٹ سبسکرپشنز کے بارے میں مزید جانیں</translation>
-<translation id="6778660707554364320"><ph name="APP" /> اب بطور ایپ کھلتی ہے</translation>
 <translation id="6779092717724412415">اس طرح کی ہائی لائٹ تخلیق کرنے کے لیے، کوئی بھی ٹیکسٹ منتخب کریں اور دائیں طرف کلک کریں۔</translation>
 <translation id="6779348349813025131">‏Google پاس ورڈ مینیجر کو MacOS Keychain تک رسائی درکار ہے</translation>
 <translation id="677965093459947883">بہت چھوٹا</translation>

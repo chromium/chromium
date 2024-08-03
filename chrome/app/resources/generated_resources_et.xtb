@@ -2380,6 +2380,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2670102641511624474">Rakendus <ph name="APP_NAME" /> jagab Chrome'i vahelehte.</translation>
 <translation id="2670350619068134931">Vähendatud animatsioon</translation>
 <translation id="2670403088701171361">Ära luba saitidel näha minu lõikelaual olevat teksti ega pilte</translation>
+<translation id="2671423594960767771">Jaga gruppi</translation>
 <translation id="2671451824761031126">Järjehoidjad ja seaded on valmis</translation>
 <translation id="2672142220933875349">Vigane crx-fail, lahtipakkimine nurjus.</translation>
 <translation id="2672200806060988299">Teie vahelehtede pealkirjad ja URL-id saadetakse Google'ile ning selle funktsiooni täiustamiseks võivad ülevaatajad neid näha.</translation>
@@ -7125,7 +7126,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6164393601566177235">Saitide lisamine</translation>
 <translation id="6164832038898943453">Lisage keeled, mille jaoks soovite automaatselt tõlke saada</translation>
 <translation id="6165508094623778733">Lisateave</translation>
-<translation id="6165850999903769629">Kõik rakendused avanevad ChromeOS-is nüüd Chrome'i asemel eraldi rakenduseakendes.</translation>
 <translation id="6166185671393271715">Paroolide importimine Chrome'i</translation>
 <translation id="6169040057125497443">Kontrollige mikrofoni.</translation>
 <translation id="6169967265765719844">Steami kaudu installitud mängude ja rakenduste lube saab hallata <ph name="LINK_BEGIN" />Steami rakenduse seadetes<ph name="LINK_END" />.</translation>
@@ -7925,7 +7925,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6776729248872343918">Luba kiirsidumine</translation>
 <translation id="6777817260680419853">Ümbersuunamine blokeeriti</translation>
 <translation id="6777845730143344223">Lisateave Passpointi tellimuste kohta</translation>
-<translation id="6778660707554364320"><ph name="APP" /> avaneb nüüd rakendusena</translation>
 <translation id="6779092717724412415">Sellega sarnase esiletõstu loomiseks valige mis tahes tekst ja tehke paremklikk.</translation>
 <translation id="6779348349813025131">Google'i paroolihaldur vajab juurdepääsu MacOS Keychainile</translation>
 <translation id="677965093459947883">Väga väike</translation>

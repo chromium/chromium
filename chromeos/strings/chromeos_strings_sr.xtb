@@ -418,9 +418,6 @@
 <translation id="3199982728237701504">Увлачење документа (двострано)</translation>
 <translation id="3201315366910775591">Други људи могу да ажурирају дељене албуме</translation>
 <translation id="3211671540163313381">D-pad за мапирање тастера</translation>
-<translation id="3224812403568276799">Када то дозволите, Снимач звука ће користити напредну аудио анализу да би аутоматски открио различите гласове и свакоме дао генеричку ознаку као што је 1. говорник и 2. говорник.
-
-То увек можете да искључите у Подешавањима.</translation>
 <translation id="3226405216343213872">Траже се скенери</translation>
 <translation id="3226657629376379887">Мени са радњама за распоред</translation>
 <translation id="3227186760713762082">Вредност (<ph name="CATEGORY_TEXT" />) дели се бројем <ph name="CONVERSION_RATE" /></translation>
@@ -814,6 +811,7 @@
 <translation id="5318334351163689047">Неуспели TCP захтеви</translation>
 <translation id="53196409393069519">Желите да укључите транскрипцију?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Назив</translation>
 <translation id="5332948983412042822">Одаберите нову</translation>
 <translation id="5333530671332546086">Стање портала није познато</translation>
 <translation id="5335373365677455232">розе</translation>
@@ -1110,6 +1108,7 @@
 <translation id="6905724422583748843">Вратите се на страницу <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Поклопац скенера је отворен. Затворите га и пробајте поново.</translation>
 <translation id="6911383237894364323">Повезивање са медијским серверима није успело</translation>
+<translation id="6930242544192836755">Трајање</translation>
 <translation id="6930597342185648547">О позадини</translation>
 <translation id="6939667434404433010">Претражите назив снимка</translation>
 <translation id="6939766318048400022">Кафић</translation>
@@ -1330,6 +1329,7 @@
 <translation id="8004582292198964060">Прегледач</translation>
 <translation id="8017679124341497925">Пречица је измењена</translation>
 <translation id="802154636333426148">Преузимање није успело</translation>
+<translation id="8028993641010258682">Величина</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Омогућите режим аутоподешавања боја</translation>
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>

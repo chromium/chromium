@@ -2374,6 +2374,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" />, Chrome ટૅબને શેર કરી રહી છે.</translation>
 <translation id="2670350619068134931">ઘટાડેલા ઍનિમેશન</translation>
 <translation id="2670403088701171361">સાઇટને તમારા ક્લિપબોર્ડ પર ટેક્સ્ટ કે છબીઓ જોવાની મંજૂરી આપશો નહીં</translation>
+<translation id="2671423594960767771">જૂથ શેર કરો</translation>
 <translation id="2671451824761031126">તમારા બુકમાર્ક અને સેટિંગ તૈયાર છે</translation>
 <translation id="2672142220933875349">ખોટી crx ફાઇલ, અનપૅક કરવું નિષ્ફળ થયું.</translation>
 <translation id="2672200806060988299">તમારા ટૅબના શીર્ષકો અને URLs Googleને મોકલવામાં આવે છે તેમજ માનવ રિવ્યૂઅર દ્વારા જોવામાં આવે એમ બની શકે છે, જેથી આ સુવિધાને બહેતર બનાવી શકાય.</translation>
@@ -7124,7 +7125,6 @@ USB ડિવાઇસ</translation>
 <translation id="6164393601566177235">સાઇટ ઉમેરો</translation>
 <translation id="6164832038898943453">ઑટોમૅટિક રીતે અનુવાદ કરવા માટેની ભાષાઓ ઉમેરો</translation>
 <translation id="6165508094623778733">વધુ જાણો</translation>
-<translation id="6165850999903769629">ChromeOS પરની બધી ઍપ હવે Chromeના બદલે, તેમની પોતાની ઍપ વિન્ડોમાં ખુલે છે.</translation>
 <translation id="6166185671393271715">Chrome માં પાસવર્ડ્સને આયાત કરો</translation>
 <translation id="6169040057125497443">કૃપા કરીને તમારો માઇક્રોફોન તપાસો.</translation>
 <translation id="6169967265765719844">Steam મારફતે ઇન્સ્ટૉલ કરેલી ગેમ અને ઍપ માટેની પરવાનગીઓને <ph name="LINK_BEGIN" />Steam ઍપ સેટિંગ<ph name="LINK_END" />માં મેનેજ કરી શકાય છે.</translation>
@@ -7825,6 +7825,7 @@ USB ડિવાઇસ</translation>
 <translation id="6691936601825168937">&amp;ફોર્વર્ડ કરો</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 પેજ}one{{COUNT} પેજ}other{{COUNT} પેજ}}</translation>
 <translation id="6693820805264897502">વર્તમાન પાસવર્ડ બદલો</translation>
+<translation id="6694634756612002311">શેરિંગ સુવિધા મેનેજ કરો</translation>
 <translation id="6697172646384837537">તમારા પાસવર્ડ ક્યાં આયાત કરવા તે પસંદ કરો</translation>
 <translation id="6697492270171225480">જ્યારે કોઈ પેજ ન મળે ત્યારે તેના જેવા પેજ માટે સૂચનો બતાવો</translation>
 <translation id="6697690052557311665">શેર કરવા માટે, Files ઍપમાં કોઈ ફોલ્ડર પર રાઇટ-ક્લિક કરો, પછી "Linux વડે શેર કરો" પસંદ કરો.</translation>
@@ -7927,7 +7928,6 @@ USB ડિવાઇસ</translation>
 <translation id="6776729248872343918">ઝડપી જોડાણની સુવિધા ચાલુ કરો</translation>
 <translation id="6777817260680419853">રીડાયરેક્ટ કરવાનું બ્લૉક કર્યું</translation>
 <translation id="6777845730143344223">Passpoint સબ્સ્ક્રિપ્શન વિશે વધુ જાણો</translation>
-<translation id="6778660707554364320"><ph name="APP" /> હવે કોઈ ઍપ તરીકે ખુલે છે</translation>
 <translation id="6779092717724412415">આના જેવી હાઇલાઇટ બનાવવા માટે, કોઈપણ ટેક્સ્ટ પસંદ કરો અને રાઇટ ક્લિક કરો.</translation>
 <translation id="6779348349813025131">Google Password Managerને MacOS કીચેનનો ઍક્સેસ હોવો જરૂરી છે</translation>
 <translation id="677965093459947883">ખૂબ નાનું</translation>

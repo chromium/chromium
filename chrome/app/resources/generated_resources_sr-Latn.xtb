@@ -2374,6 +2374,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2670102641511624474"><ph name="APP_NAME" /> deli Chrome karticu.</translation>
 <translation id="2670350619068134931">Smanjene animacije</translation>
 <translation id="2670403088701171361">Ne dozvolite sajtovima da vide tekst ili slike iz privremene memorije</translation>
+<translation id="2671423594960767771">Deli grupu</translation>
 <translation id="2671451824761031126">Obeleživači i podešavanja su spremni</translation>
 <translation id="2672142220933875349">crx datoteka je oštećena. Otpakivanje nije uspelo.</translation>
 <translation id="2672200806060988299">Naslovi i URL-ovi kartica se šalju Google-u i mogu da ih vide osobe koje pregledaju radi poboljšanja ove funkcije.</translation>
@@ -7122,7 +7123,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6164393601566177235">Dodajte sajtove</translation>
 <translation id="6164832038898943453">Dodajte jezike koji će se automatski prevoditi</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
-<translation id="6165850999903769629">Sve aplikacije u ChromeOS-u se sad otvaraju u sopstvenim prozorima aplikacija umesto u Chrome-u.</translation>
 <translation id="6166185671393271715">Uvezite lozinke u Chrome</translation>
 <translation id="6169040057125497443">Proverite mikrofon.</translation>
 <translation id="6169967265765719844">Dozvolama za igre i aplikacije instalirane preko Steam-a može da se upravlja u <ph name="LINK_BEGIN" />podešavanjima aplikacije Steam<ph name="LINK_END" />.</translation>
@@ -7825,6 +7825,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6691936601825168937">Napre&amp;d</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 stranica}one{{COUNT} stranica}few{{COUNT} stranice}other{{COUNT} stranica}}</translation>
 <translation id="6693820805264897502">zamenite postojeće lozinke</translation>
+<translation id="6694634756612002311">Upravljaj deljenjem</translation>
 <translation id="6697172646384837537">Izaberite gde želite da uvezete lozinke</translation>
 <translation id="6697492270171225480">Prikazuj predloge za slične stranice kada neka stranica ne može da se pronađe</translation>
 <translation id="6697690052557311665">Da biste delili, kliknite desnim tasterom na folder u aplikaciji Files, pa izaberite „Deli sa Linux-om“.</translation>
@@ -7927,7 +7928,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6776729248872343918">Omogući Brzo uparivanje</translation>
 <translation id="6777817260680419853">Preusmeravanje je blokirano</translation>
 <translation id="6777845730143344223">Saznajte više o Passpoint pretplatama</translation>
-<translation id="6778660707554364320"><ph name="APP" /> se sada otvara kao aplikacija</translation>
 <translation id="6779092717724412415">Da biste napravili isticanje poput ovog, izaberite bilo koji tekst i kliknite desnim tasterom.</translation>
 <translation id="6779348349813025131">Google menadžer lozinki traži pristup MacOS Keychain-u</translation>
 <translation id="677965093459947883">Jako mali</translation>

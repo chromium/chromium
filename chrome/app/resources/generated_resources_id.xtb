@@ -2389,6 +2389,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2670102641511624474"><ph name="APP_NAME" /> membagikan tab Chrome.</translation>
 <translation id="2670350619068134931">Sedikit animasi</translation>
 <translation id="2670403088701171361">Jangan izinkan situs melihat teks atau gambar di papan klip Anda</translation>
+<translation id="2671423594960767771">Bagikan grup</translation>
 <translation id="2671451824761031126">Bookmark dan setelan Anda sudah siap</translation>
 <translation id="2672142220933875349">File crx yang buruk. Gagal membuka kemasan.</translation>
 <translation id="2672200806060988299">Judul dan URL tab Anda dikirim ke Google dan mungkin dilihat oleh petugas peninjau untuk meningkatkan kualitas fitur ini.</translation>
@@ -7134,7 +7135,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6164393601566177235">Tambahkan situs</translation>
 <translation id="6164832038898943453">Tambahkan bahasa ke daftar bahasa yang otomatis diterjemahkan</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
-<translation id="6165850999903769629">Semua aplikasi di ChromeOS kini terbuka di jendela aplikasinya sendiri, bukan di Chrome.</translation>
 <translation id="6166185671393271715">Impor Sandi ke Chrome</translation>
 <translation id="6169040057125497443">Harap periksa mikrofon Anda.</translation>
 <translation id="6169967265765719844">Izin untuk game dan aplikasi yang diinstal melalui Steam dapat dikelola di <ph name="LINK_BEGIN" />setelan aplikasi Steam<ph name="LINK_END" />.</translation>
@@ -7934,7 +7934,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6776729248872343918">Aktifkan Sambungan Cepat</translation>
 <translation id="6777817260680419853">Pengalihan diblokir</translation>
 <translation id="6777845730143344223">Pelajari langganan Passpoint lebih lanjut</translation>
-<translation id="6778660707554364320"><ph name="APP" /> kini terbuka sebagai aplikasi</translation>
 <translation id="6779092717724412415">Untuk membuat sorotan seperti ini, pilih teks mana pun lalu klik kanan.</translation>
 <translation id="6779348349813025131">Pengelola Sandi Google memerlukan akses ke Rantai Kunci macOS</translation>
 <translation id="677965093459947883">Sangat kecil</translation>

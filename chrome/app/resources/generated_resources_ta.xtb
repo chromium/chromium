@@ -2389,6 +2389,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> Chrome தாவலைப் பகிர்கிறது.</translation>
 <translation id="2670350619068134931">குறைவான அனிமேஷன்கள்</translation>
 <translation id="2670403088701171361">கிளிப்போர்டில் உள்ள உரையையோ படங்களையோ பார்க்க தளங்களை அனுமதிக்காதே</translation>
+<translation id="2671423594960767771">குழுவைப் பகிர்</translation>
 <translation id="2671451824761031126">உங்கள் புத்தகக்குறிகளும் அமைப்புகளும் தயாராக உள்ளன</translation>
 <translation id="2672142220933875349">தவறான crx ஃபைல், அசல் நிலைக்கு மாற்றுவது தோல்வி.</translation>
 <translation id="2672200806060988299">உங்கள் பக்கத் தலைப்புகள், URLகள் ஆகியவை Googleளுக்கு அனுப்பப்படுவதுடன் இந்த அம்சத்தை மேம்படுத்துவதற்காக மதிப்பாய்வாளர்களுக்குக் காட்டப்படலாம்.</translation>
@@ -7135,7 +7136,6 @@
 <translation id="6164393601566177235">தளங்களைச் சேர்த்தல்</translation>
 <translation id="6164832038898943453">தானாக மொழிபெயர்க்க வேண்டிய மொழிகளைச் சேர்க்கும்</translation>
 <translation id="6165508094623778733">மேலும் அறிக</translation>
-<translation id="6165850999903769629">ChromeOSஸின் அனைத்து ஆப்ஸும் இப்போது Chromeமுக்குப் பதிலாக அவற்றின் சொந்த ஆப்ஸ் சாளரங்களில் திறக்கும்.</translation>
 <translation id="6166185671393271715">Chromeக்குக் கடவுச்சொற்களை இறக்குதல்</translation>
 <translation id="6169040057125497443">உங்கள் மைக்ரோஃபோனைச் சரிபார்க்கவும்.</translation>
 <translation id="6169967265765719844">Steam மூலம் நிறுவப்பட்ட கேம்கள், ஆப்ஸுக்கான அனுமதிகளை <ph name="LINK_BEGIN" />Steam ஆப்ஸ் அமைப்புகளில்<ph name="LINK_END" /> நிர்வகிக்கலாம்.</translation>
@@ -7935,7 +7935,6 @@
 <translation id="6776729248872343918">துரித இணைப்பு அம்சத்தை இயக்கு</translation>
 <translation id="6777817260680419853">திசைதிருப்புவது தடுக்கப்பட்டது</translation>
 <translation id="6777845730143344223">Passpoint சந்தா குறித்து மேலும் தெரிந்துகொள்ளலாம்</translation>
-<translation id="6778660707554364320"><ph name="APP" />, இப்போது ஆப்ஸில் திறக்கும்</translation>
 <translation id="6779092717724412415">இதுபோன்ற ஹைலைட்டை உருவாக்க, விருப்பமான வார்த்தைகளைத் தேர்ந்தெடுத்து வலது கிளிக் செய்யுங்கள்.</translation>
 <translation id="6779348349813025131">Google Password Managerருக்கு MacOS Keychain அணுகல் தேவை</translation>
 <translation id="677965093459947883">மிகச் சிறியது</translation>

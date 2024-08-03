@@ -87,6 +87,7 @@
 <translation id="1270290102613614947">ऑन-स्‍क्रीन कीबोर्ड अक्षम है</translation>
 <translation id="1272079795634619415">रोकें</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> चार्ज कर रहा है</translation>
+<translation id="1275718070701477396">चयनित</translation>
 <translation id="1276975447697633661">फ़ाइल चुनें, फिर <ph name="KEY" /> दबाएं</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">फ़ोन का पता लगाएं</translation>
@@ -1086,6 +1087,7 @@
 <translation id="4890408602550914571">पक्का करें कि आपका फ़ोन आस-पास हो और उस पर ब्लूटूथ चालू हो.</translation>
 <translation id="4892981359753171125">चेहरे से कंट्रोल करने की सुविधा</translation>
 <translation id="4895488851634969361">बैटरी भरी हुई है.</translation>
+<translation id="4902797682482387055">फ़ोकस करने के लिए सुझाया गया टास्क</translation>
 <translation id="490375751687810070">वर्टिकल व्यू</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% बैटरी</translation>
 <translation id="491504982845934899">डिवाइस सेटअप होने के बाद, <ph name="NETWORK_NAME" /> को चालू करें</translation>
@@ -1763,6 +1765,7 @@
 <translation id="7312210124139670355">आपका एडमिन ई-सिम को रीसेट कर रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="7312761820869643657">डिवाइस को पिछले वर्शन पर अपडेट करें</translation>
 <translation id="7313193732017069507">कैमरा बड़ा करें</translation>
+<translation id="73289266812733869">अचयनित</translation>
 <translation id="7330397557116570022">लिखवाने की सुविधा इस्तेमाल करने के लिए, किसी टेक्स्ट फ़ील्ड पर जाएं</translation>
 <translation id="7331646370422660166">alt + डाउन ऐरो</translation>
 <translation id="7337660433630200387">+10 मिनट</translation>

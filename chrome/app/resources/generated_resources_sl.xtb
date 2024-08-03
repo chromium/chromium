@@ -2392,6 +2392,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2670102641511624474">Aplikacija <ph name="APP_NAME" /> je v skupno rabo dala Chromov zavihek.</translation>
 <translation id="2670350619068134931">Manj animacij</translation>
 <translation id="2670403088701171361">Spletnim mestom ni dovoljen ogled besedila ali slik v odložišču</translation>
+<translation id="2671423594960767771">Deli skupino</translation>
 <translation id="2671451824761031126">Zaznamki in nastavitve so pripravljeni</translation>
 <translation id="2672142220933875349">Poškodovana datoteka crx. Odpakiranje ni uspelo.</translation>
 <translation id="2672200806060988299">Naslovi in URL-ji zavihkov se pošiljajo Googlu in morda jih bodo zaradi izboljšanja te funkcije videli pregledovalci.</translation>
@@ -7139,7 +7140,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6164393601566177235">Dodajanje spletnih mest</translation>
 <translation id="6164832038898943453">Dodajte jezike za samodejno prevajanje</translation>
 <translation id="6165508094623778733">Več o tem</translation>
-<translation id="6165850999903769629">Vse aplikacije v sistemu ChromeOS se poslej namesto v Chromu odprejo v svojih oknih aplikacij.</translation>
 <translation id="6166185671393271715">Uvoz gesel v Chrome</translation>
 <translation id="6169040057125497443">Preverite mikrofon.</translation>
 <translation id="6169967265765719844">Dovoljenja za igre in aplikacije, nameščene prek storitve Steam, je mogoče upravljati v <ph name="LINK_BEGIN" />nastavitvah aplikacije Steam<ph name="LINK_END" />.</translation>
@@ -7945,7 +7945,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6776729248872343918">Omogočanje hitre seznanitve</translation>
 <translation id="6777817260680419853">Preusmeritev je blokirana</translation>
 <translation id="6777845730143344223">Preberite več o naročninah na Passpoint</translation>
-<translation id="6778660707554364320"><ph name="APP" /> se poslej odpre kot aplikacija</translation>
 <translation id="6779092717724412415">Če želite označiti na tak način, izberite poljubno besedilo in kliknite z desnim gumbom.</translation>
 <translation id="6779348349813025131">Googlov upravitelj gesel potrebuje dostop do shrambe poverilnic Keychain sistema macOS</translation>
 <translation id="677965093459947883">Zelo majhna</translation>

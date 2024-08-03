@@ -2390,6 +2390,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2670102641511624474"><ph name="APP_NAME" /> yabelana ngethebhu ye-Chrome.</translation>
 <translation id="2670350619068134931">Izithombe ezincishisiwe</translation>
 <translation id="2670403088701171361">Ungavumeli amasayithi abone umbhalo noma izithombe ezisebhodini lokunamathisela</translation>
+<translation id="2671423594960767771">Yabelana ngeqembu</translation>
 <translation id="2671451824761031126">Amabhukhimakhi akho nezilungiselelo kulungile</translation>
 <translation id="2672142220933875349">Ifayela elibi le-crx, ukukhipha kuphakethe kuhlulekile.</translation>
 <translation id="2672200806060988299">Izihloko zakho zethebhu nama-URL zithunyelwa kuGoogle futhi zingase zibonwe ababuyekezi abangabantu ukuze kuphuculwe lesi sakhi.</translation>
@@ -7135,7 +7136,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="6164393601566177235">Engeza amasayithi</translation>
 <translation id="6164832038898943453">Engeza izilimi ukuze uhumushe ngokuzenzekelayo</translation>
 <translation id="6165508094623778733">Funda kabanzi</translation>
-<translation id="6165850999903769629">Wonke ama-app ku-ChromeOS manje azivulekela kumawindi we-app yawo esikhundleni se-Chrome.</translation>
 <translation id="6166185671393271715">Ngenisa amaphasiwedi ku-Chrome</translation>
 <translation id="6169040057125497443">Sicela uhlole imakrofoni yakho.</translation>
 <translation id="6169967265765719844">Izimvume zamageyimu ne-app efakwe nge-Steam zingaphathwa <ph name="LINK_BEGIN" />kumasethingi e-app ye-Steam<ph name="LINK_END" />.</translation>
@@ -7937,7 +7937,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="6776729248872343918">Nika amandla Ukuhlanganisa Okusheshayo</translation>
 <translation id="6777817260680419853">Ukuqondiswa kabusha kuvinjiwe</translation>
 <translation id="6777845730143344223">Funda kabanzi mayelana nokubhaliselwe kwe-Passpoint</translation>
-<translation id="6778660707554364320">I-<ph name="APP" /> manje ivuleka njenge-app</translation>
 <translation id="6779092717724412415">Ukuze wenze okugqamile njengalokhu, khetha noma yimuphi umbhalo bese uchofoza kwesokudla.</translation>
 <translation id="6779348349813025131">I-Google Password Manager idinga ukufinyelela ku-MacOS Keychain</translation>
 <translation id="677965093459947883">Incane kakhulu</translation>

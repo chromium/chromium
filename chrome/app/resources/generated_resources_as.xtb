@@ -2387,6 +2387,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" />এ এটা Chrome টেব শ্বেয়াৰ কৰি আছে।</translation>
 <translation id="2670350619068134931">কমোৱা এনিমেশ্বন</translation>
 <translation id="2670403088701171361">ছাইটক আপোনাৰ ক্লিপব’ৰ্ডত থকা পাঠ অথবা প্ৰতিচ্ছবি চাবলৈ নিদিব</translation>
+<translation id="2671423594960767771">গোট শ্বেয়াৰ কৰক</translation>
 <translation id="2671451824761031126">আপোনাৰ বুকমাৰ্ক আৰু ছেটিংসমূহ সাজু হৈ আছে</translation>
 <translation id="2672142220933875349">ত্ৰুটিপূৰ্ণ crx ফাইল, আনপেক কৰিব পৰা নগ’ল।</translation>
 <translation id="2672200806060988299">আপোনাৰ টেবৰ শিৰোনাম আৰু URLসমূহ Googleলৈ পঠিওৱা হয় আৰু সেয়া এই সুবিধাটো উন্নত কৰিবলৈ মানৱ পৰ্যালোচকে চাব পাৰে।</translation>
@@ -7134,7 +7135,6 @@
 <translation id="6164393601566177235">ছাইট যোগ দিয়ক</translation>
 <translation id="6164832038898943453">স্বয়ংক্ৰিয়ভাৱে অনুবাদ হ’বলৈ ভাষা যোগ দিয়ক</translation>
 <translation id="6165508094623778733">অধিক জানক</translation>
-<translation id="6165850999903769629">ChromeOSৰ আটাইবোৰ এপ্‌ এতিয়া Chromeৰ পৰিৱৰ্তে সেইসমূহৰ নিজৰ এপৰ ৱিণ্ড’ত খোল খায়।</translation>
 <translation id="6166185671393271715">Chromeলৈ পাছৱর্ডসমূহ আমদানি কৰক</translation>
 <translation id="6169040057125497443">আপোনাৰ মাইক্ৰ’ফ’ন পৰীক্ষা কৰক।</translation>
 <translation id="6169967265765719844">Steamৰ জৰিয়তে ইনষ্টল কৰা গে’ম আৰু এপৰ বাবে অনুমতি <ph name="LINK_BEGIN" />Steam এপৰ ছেটিঙ<ph name="LINK_END" />ত পৰিচালনা কৰিব পৰা যায়।</translation>
@@ -7835,6 +7835,7 @@
 <translation id="6691936601825168937">&amp;ফৰৱাৰ্ড কৰক</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{১ খন পৃষ্ঠা}one{{COUNT} খন পৃষ্ঠা}other{{COUNT} খন পৃষ্ঠা}}</translation>
 <translation id="6693820805264897502">আগৰে পৰা থকা পাছৱৰ্ড সলনি কৰক</translation>
+<translation id="6694634756612002311">শ্বেয়াৰ কৰাৰ সুবিধা পৰিচালনা কৰক</translation>
 <translation id="6697172646384837537">আপোনাৰ পাছৱৰ্ড কোন ঠাইলৈ আমদানি কৰিব বাছনি কৰক</translation>
 <translation id="6697492270171225480">কোনো এটা পৃষ্ঠা বিচাৰি নোপোৱাৰ সময়ত একেধৰণৰ পৃষ্ঠাৰ পৰামর্শ প্ৰদর্শন কৰক</translation>
 <translation id="6697690052557311665">শ্বেয়াৰ কৰিবলৈ Files এপত থকা কোনো এটা ফ’ল্ডাৰত সোঁফালে ক্লিক কৰক আৰু "Share with Linux" বাছনি কৰক।</translation>
@@ -7937,7 +7938,6 @@
 <translation id="6776729248872343918">দ্ৰুতভাৱে পেয়াৰ কৰাৰ সুবিধা সক্ষম কৰক</translation>
 <translation id="6777817260680419853">পুনৰ নির্দেশ কৰাটো অৱৰোধ কৰা হৈছে</translation>
 <translation id="6777845730143344223">পাছপইণ্ট ছাবস্ক্ৰিপশ্বনৰ বিষয়ে অধিক জানক</translation>
-<translation id="6778660707554364320"><ph name="APP" /> এতিয়া এটা এপ্‌ হিচাপে খোল খায়</translation>
 <translation id="6779092717724412415">এইটোৰ দৰে এটা হাইলাইট সৃষ্টি কৰিবলৈ, যিকোনো পাঠ বাছনি কৰক আৰু ৰাইট-ক্লিক কৰক।</translation>
 <translation id="6779348349813025131">Google Password Managerএ MacOS কীচেইন এক্সেছ কৰাৰ প্ৰয়োজন</translation>
 <translation id="677965093459947883">নিচেই সৰু</translation>

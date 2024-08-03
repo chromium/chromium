@@ -2388,6 +2388,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2670102641511624474">Aplikacija <ph name="APP_NAME" /> dijeli Chrome karticu.</translation>
 <translation id="2670350619068134931">Smanjene animacije</translation>
 <translation id="2670403088701171361">Nemoj dozvoliti web lokacijama da vide tekst ili slike u međumemoriji</translation>
+<translation id="2671423594960767771">Dijeli grupu</translation>
 <translation id="2671451824761031126">Vaše oznake i postavke su spremne</translation>
 <translation id="2672142220933875349">Loš crx fajl, raspakivanje nije uspjelo.</translation>
 <translation id="2672200806060988299">Naslovi vaših kartica i URL-ovi se šalju Googleu i mogu ih vidjeti osobe koje vrše pregled radi poboljšanja ove funkcije.</translation>
@@ -7136,7 +7137,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6164393601566177235">Dodajte web lokacije</translation>
 <translation id="6164832038898943453">Dodavanje jezika za automatsko prevođenje</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
-<translation id="6165850999903769629">Sve aplikacije u ChromeOS-u se sada otvaraju u svojim prozorima aplikacije umjesto u Chromeu.</translation>
 <translation id="6166185671393271715">Uvoz lozinki u Chrome</translation>
 <translation id="6169040057125497443">Provjerite mikrofon</translation>
 <translation id="6169967265765719844">Odobrenjima za igre i aplikacijama instaliranim putem Steama možete upravljati u <ph name="LINK_BEGIN" />postavkama aplikacije Steam<ph name="LINK_END" />.</translation>
@@ -7941,7 +7941,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6776729248872343918">Omogući Brzo uparivanje</translation>
 <translation id="6777817260680419853">Preusmjeravanje je blokirano</translation>
 <translation id="6777845730143344223">Više informacija o pretplatama na Passpoint</translation>
-<translation id="6778660707554364320">Aplikacija <ph name="APP" /> se sada otvara kao aplikacija</translation>
 <translation id="6779092717724412415">Da kreirate istaknuti tekst poput ovog, odaberite bilo koji tekst i kliknite desnim klikom.</translation>
 <translation id="6779348349813025131">Google upravitelj lozinki treba pristup MacOS Keychainu</translation>
 <translation id="677965093459947883">Vrlo mali</translation>

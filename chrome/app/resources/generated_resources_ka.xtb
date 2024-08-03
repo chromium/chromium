@@ -2376,6 +2376,7 @@
 <translation id="2670102641511624474"><ph name="APP_NAME" /> Chrome-ის ჩანართს აზიარებს.</translation>
 <translation id="2670350619068134931">შემცირებული ანიმაციები</translation>
 <translation id="2670403088701171361">საიტებისთვის თქვენს გაცვლის ბუფერში არსებული ტექსტისა თუ სურათების ნახვის აკრძალვა</translation>
+<translation id="2671423594960767771">ჯგუფის გაზიარება</translation>
 <translation id="2671451824761031126">თქვენი სანიშნეები და პარამეტრები მზად არის</translation>
 <translation id="2672142220933875349">crx ფაილი დაზიანებულია, ამოღება ვერ მოხერხდა.</translation>
 <translation id="2672200806060988299">თქვენი ჩანართის სათაურები და URL-ები გაეგზავნება Google-ს და ისინი შეიძლება ნახონ ადამიანმა მიმომხილველებმა, ამ ფუნქციის გაუმჯობესების მიზნით.</translation>
@@ -7001,6 +7002,7 @@
 <translation id="6075075631258766703">ტელეფონის დადასტურება</translation>
 <translation id="6075731018162044558">უი! სისტემამ ვერ მიიღო გრძელვადიანი API წვდომის ჟეტონი ამ მოწყობილობისთვის.</translation>
 <translation id="6075907793831890935">მოწყობილობასთან: <ph name="HOSTNAME" /> მონაცემთა მიმოცვლა</translation>
+<translation id="6076092653254552547">სისტემის პარამეტრები</translation>
 <translation id="6076491747490570887">გრილი ნაცრისფერი</translation>
 <translation id="6076576896267434196">გაფართოებას „<ph name="EXTENSION_NAME" />“ სურს თქვენს ანგარიშზე წვდომა</translation>
 <translation id="6077131872140550515">სასურველებიდან ამოშლა</translation>
@@ -7124,7 +7126,6 @@
 <translation id="6164393601566177235">დაამატეთ საიტები</translation>
 <translation id="6164832038898943453">დაამატეთ ენები, რომლებიც ავტომატურად უნდა ითარგმნოს</translation>
 <translation id="6165508094623778733">შეიტყვეთ მეტი</translation>
-<translation id="6165850999903769629">ChromeOS-ზე ყველა აპი ამიერიდან გაიხსნება შესაბამისი აპების საკუთარ ფანჯრებში და არა Chrome-ში.</translation>
 <translation id="6166185671393271715">პაროლების იმპორტი Chrome-ში</translation>
 <translation id="6169040057125497443">შეამოწმეთ თქვენი მიკროფონი.</translation>
 <translation id="6169967265765719844">Steam-ის მეშვეობით დაინტალირებული თამაშებისა და აპების ნებართვების მართვა შესაძლებელია <ph name="LINK_BEGIN" />Steam აპის პარამეტრებიდან<ph name="LINK_END" />.</translation>
@@ -7823,6 +7824,7 @@
 <translation id="6691936601825168937">&amp;გადამისამართება</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 გვერდი}other{{COUNT} გვერდი}}</translation>
 <translation id="6693820805264897502">არსებული პაროლების ჩანაცვლება</translation>
+<translation id="6694634756612002311">გაზიარების მართვა</translation>
 <translation id="6697172646384837537">აირჩიეთ, სად გსურთ თქვენი პაროლების იმპორტირება</translation>
 <translation id="6697492270171225480">მსგავსი გვერდების შემოთავაზებების ჩვენება, როცა გვერდი ვერ მოიძებნება</translation>
 <translation id="6697690052557311665">გასაზიარებლად დააწკაპუნეთ მარჯვენა ღილაკით საქაღალდეს ფაილების აპში, შემდეგ კი აირჩიეთ — „Linux-თან გაზიარება“.</translation>
@@ -7925,7 +7927,6 @@
 <translation id="6776729248872343918">სწრაფი დაწყვილების ჩართვა</translation>
 <translation id="6777817260680419853">გადამისამართება დაიბლოკა</translation>
 <translation id="6777845730143344223">შეიტყვეთ მეტი Passpoint-ის გამოწერის შესახებ</translation>
-<translation id="6778660707554364320"><ph name="APP" /> ამიერიდან გაიხსნება აპის სახით</translation>
 <translation id="6779092717724412415">ამის მსგავსი გამოყოფის შესაქმნელად, აირჩიეთ ნებისმიერი ტექსტი და დააწკაპუნეთ მარჯვენა ღილაკზე</translation>
 <translation id="6779348349813025131">Google პაროლების მმართველი საჭიროებს წვდომას MacOS Keychain-ზე</translation>
 <translation id="677965093459947883">ძალიან პატარა</translation>
@@ -9378,6 +9379,7 @@
 <translation id="7826254698725248775">მოწყობილობის იდენტიფიკატორი კონფლიქტშია.</translation>
 <translation id="7828642077514646543">შეცდომა: სერტიფიკატის დეშიფრაცია ვერ მოხერხდა</translation>
 <translation id="7829877209233347340">სასწავლებლის ანგარიშის დამატების ნებართვის მოსანიჭებლად სთხოვეთ მშობელს სისტემაში შესვლა</translation>
+<translation id="7830276128493844263">მდებარეობაზე წვდომა გამორთულია სისტემის პარამეტრებიდან</translation>
 <translation id="7830833461614351956">დაკოპირდეს <ph name="NUM_OF_FILES" /> ფაილი <ph name="CLOUD_PROVIDER" />-ში გასახსნელად?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">შენახული მორგებული სიტყვები აქ გამოჩნდება</translation>

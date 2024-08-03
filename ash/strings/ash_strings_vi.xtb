@@ -87,6 +87,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1270290102613614947">Đã tắt bàn phím ảo</translation>
 <translation id="1272079795634619415">Dừng</translation>
 <translation id="1275285675049378717">Đang cấp nguồn cho <ph name="POWER_SOURCE" /></translation>
+<translation id="1275718070701477396">Đã chọn</translation>
 <translation id="1276975447697633661">Chọn tệp, rồi nhấn phím <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Tìm điện thoại</translation>
@@ -1761,6 +1762,7 @@ Mới cài đặt</translation>
 <translation id="7312210124139670355">Quản trị viên đang đặt lại eSIM của bạn. Quá trình này có thể mất vài phút.</translation>
 <translation id="7312761820869643657">Khôi phục hệ điều hành trên thiết bị về phiên bản trước</translation>
 <translation id="7313193732017069507">Mở rộng máy ảnh</translation>
+<translation id="73289266812733869">Không được chọn</translation>
 <translation id="7330397557116570022">Vào một trường văn bản để dùng tính năng Nhập bằng giọng nói</translation>
 <translation id="7331646370422660166">alt + mũi tên xuống</translation>
 <translation id="7337660433630200387">Thêm 10 phút</translation>

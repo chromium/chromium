@@ -2375,6 +2375,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2670102641511624474"><ph name="APP_NAME" /> está compartindo unha pestana de Chrome.</translation>
 <translation id="2670350619068134931">Animacións reducidas</translation>
 <translation id="2670403088701171361">Non permitir que os sitios accedan ao texto nin ás imaxes do portapapeis</translation>
+<translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2671451824761031126">Os marcadores e a configuración están listos</translation>
 <translation id="2672142220933875349">Ficheiro crx incorrecto, fallo na descompresión.</translation>
 <translation id="2672200806060988299">Os URL e títulos das túas pestanas envíanse a Google. O noso equipo pode revisalos para mellorar esta función.</translation>
@@ -7120,7 +7121,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6164393601566177235">Engadir sitios</translation>
 <translation id="6164832038898943453">Engadir idiomas para traducilos automaticamente</translation>
 <translation id="6165508094623778733">Máis información</translation>
-<translation id="6165850999903769629">As aplicacións de ChromeOS ábrense agora na súa propia ventá en lugar de en Chrome.</translation>
 <translation id="6166185671393271715">Importar contrasinais en Chrome</translation>
 <translation id="6169040057125497443">Comproba o micrófono.</translation>
 <translation id="6169967265765719844">Os permisos das aplicacións e xogos instalados a través de Steam poden xestionarse na <ph name="LINK_BEGIN" />configuración da aplicación Steam<ph name="LINK_END" />.</translation>
@@ -7920,7 +7920,6 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6776729248872343918">Habilitar Vinculación rápida</translation>
 <translation id="6777817260680419853">Bloqueouse a redirección</translation>
 <translation id="6777845730143344223">Máis información sobre as subscricións a Passpoint</translation>
-<translation id="6778660707554364320"><ph name="APP" /> ábrese agora como unha aplicación</translation>
 <translation id="6779092717724412415">Para crear un elemento destacado coma este, selecciona texto e fai clic co botón dereito.</translation>
 <translation id="6779348349813025131">O xestor de contrasinais de Google necesita permiso para acceder a MacOS Keychain</translation>
 <translation id="677965093459947883">Moi pequeno</translation>
