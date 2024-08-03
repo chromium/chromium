@@ -2938,6 +2938,15 @@ if ((is_win && (current_cpu == "x64" || current_cpu == "arm64")) || is_mac ||
   loadable_module("base_profiler_test_support_library") {
     testonly = true
     sources = [ "profiler/test_support_library.cc" ]
+
+    # Don't link libc++ and libc++abi into the shared library.
+    # libc++abi uses `thread_local`, and that interferes with
+    # the ability to unload shared libraries on some systems.
+    no_default_deps = true
+    if (!toolchain_for_rust_host_build_tools) {
+      public_deps = [ "//build/config:common_deps_without_libcxx" ]
+      public_configs = [ "//build/config/sanitizers:link_shared_library" ]
+    }
   }
 }
 
@@ -2952,6 +2961,13 @@ if (is_android && (current_cpu == "arm" || current_cpu == "arm64")) {
   loadable_module("base_profiler_reparsing_test_support_library") {
     testonly = true
     sources = [ "profiler/test_support_library.cc" ]
+
+    # For consistency with base_profiler_reparsing_test_support_library.
+    no_default_deps = true
+    if (!toolchain_for_rust_host_build_tools) {
+      public_deps = [ "//build/config:common_deps_without_libcxx" ]
+      public_configs = [ "//build/config/sanitizers:link_shared_library" ]
+    }
   }
 }
 
