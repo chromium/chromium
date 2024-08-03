@@ -307,7 +307,7 @@ void ExecuteScriptInMainWorld(
         mojom::blink::PromiseResultOption::kAwait,
     mojom::blink::UserActivationOption user_gesture =
         mojom::blink::UserActivationOption::kDoNotActivate) {
-  ExecuteScriptsInMainWorld(frame, base::make_span(&script_string, 1u),
+  ExecuteScriptsInMainWorld(frame, base::span_from_ref(script_string),
                             std::move(callback), wait_for_promise,
                             user_gesture);
 }

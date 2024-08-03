@@ -57,7 +57,7 @@ class VirtualTimeTest : public SimTest {
     ScriptExecutionCallbackHelper callback_helper;
     WebScriptSource source(script_source);
     WebView().MainFrame()->ToWebLocalFrame()->RequestExecuteScript(
-        DOMWrapperWorld::kMainWorldId, base::make_span(&source, 1u),
+        DOMWrapperWorld::kMainWorldId, base::span_from_ref(source),
         mojom::blink::UserActivationOption::kDoNotActivate,
         mojom::blink::EvaluationTiming::kSynchronous,
         mojom::blink::LoadEventBlockingOption::kDoNotBlock,

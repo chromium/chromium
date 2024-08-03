@@ -111,7 +111,7 @@ void PostResponse(base::OnceCallback<void(const TProto&)> callback,
 std::string ReadPassword(int password_fd) {
   std::string password;
   char c;
-  while (base::ReadFromFD(password_fd, base::make_span(&c, 1u))) {
+  while (base::ReadFromFD(password_fd, base::span_from_ref(c))) {
     password.push_back(c);
   }
   return password;

@@ -125,7 +125,7 @@ base::ScopedFD CreatePasswordPipe(const std::string& data) {
   const size_t data_size = data.size();
 
   base::WriteFileDescriptor(pipe_write_end.get(),
-                            base::as_bytes(base::make_span(&data_size, 1u)));
+                            base::as_bytes(base::span_from_ref(data_size)));
   base::WriteFileDescriptor(pipe_write_end.get(), data);
 
   return pipe_read_end;

@@ -94,7 +94,7 @@ bool SaveIconWithCheckSum(const base::FilePath& icon_file,
   // Passing digest as one element in a span of digest fields, therefore the 1u,
   // and then having as_bytes converting it to a new span of uint8_t's.
   return base::WriteFile(cheksum_file,
-                         base::as_bytes(base::make_span(&digest, 1u)));
+                         base::as_bytes(base::span_from_ref(digest)));
 }
 
 // Returns true if |icon_file| is missing or different from |image|.

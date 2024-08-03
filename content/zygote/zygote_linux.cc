@@ -477,7 +477,7 @@ int Zygote::ForkWithRealPid(const std::string& process_type,
     base::ProcessId real_pid;
     if (!base::ReadFromFD(
             read_pipe.get(),
-            base::as_writable_chars(base::make_span(&real_pid, 1u)))) {
+            base::as_writable_chars(base::span_from_ref(real_pid)))) {
       LOG(FATAL) << "Failed to synchronise with parent zygote process";
     }
     if (real_pid <= 0) {

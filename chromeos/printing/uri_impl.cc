@@ -111,7 +111,7 @@ bool Uri::Pim::ParseString(const Iter& begin,
       // Try to parse UTF-8 character.
       base::StreamingUtf8Validator utf_parser;
       base::StreamingUtf8Validator::State state =
-          utf_parser.AddBytes(base::as_bytes(base::make_span(&c, 1u)));
+          utf_parser.AddBytes(base::as_bytes(base::span_from_ref(c)));
       if (state != base::StreamingUtf8Validator::State::VALID_MIDPOINT) {
         parser_error_.status = ParserStatus::kDisallowedASCIICharacter;
         return false;
@@ -127,7 +127,7 @@ bool Uri::Pim::ParseString(const Iter& begin,
           parser_error_.status = ParserStatus::kInvalidPercentEncoding;
           return false;
         }
-        state = utf_parser.AddBytes(base::as_bytes(base::make_span(&c, 1u)));
+        state = utf_parser.AddBytes(base::as_bytes(base::span_from_ref(c)));
         if (state == base::StreamingUtf8Validator::State::INVALID) {
           parser_error_.status = ParserStatus::kInvalidUTF8Character;
           return false;

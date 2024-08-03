@@ -1231,9 +1231,9 @@ bool UkmRecorderImpl::IsSampledIn(int64_t source_id,
   // purposes.
   uint32_t sampled_num = sampling_seed_;
   sampled_num =
-      base::Crc32(sampled_num, base::as_bytes(base::make_span(&source_id, 1u)));
+      base::Crc32(sampled_num, base::as_bytes(base::span_from_ref(source_id)));
   sampled_num =
-      base::Crc32(sampled_num, base::as_bytes(base::make_span(&event_id, 1u)));
+      base::Crc32(sampled_num, base::as_bytes(base::span_from_ref(event_id)));
 
   return sampled_num % sampling_rate == 0;
 }

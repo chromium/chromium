@@ -84,10 +84,10 @@ void SendReceivePeek(SyncSocket* socket_a, SyncSocket* socket_b) {
   // Verify |socket_a| can send to |socket_a| and |socket_a| can Receive from
   // |socket_a|.
   ASSERT_EQ(sizeof(kSending),
-            socket_a->Send(as_bytes(make_span(&kSending, 1u))));
+            socket_a->Send(as_bytes(span_from_ref(kSending))));
   ASSERT_EQ(sizeof(kSending), socket_b->Peek());
   ASSERT_EQ(sizeof(kSending),
-            socket_b->Receive(as_writable_bytes(make_span(&received, 1u))));
+            socket_b->Receive(as_writable_bytes(span_from_ref(received))));
   ASSERT_EQ(kSending, received);
 
   ASSERT_EQ(0u, socket_a->Peek());
@@ -96,10 +96,10 @@ void SendReceivePeek(SyncSocket* socket_a, SyncSocket* socket_b) {
   // Now verify the reverse.
   received = 0;
   ASSERT_EQ(sizeof(kSending),
-            socket_b->Send(as_bytes(make_span(&kSending, 1u))));
+            socket_b->Send(as_bytes(span_from_ref(kSending))));
   ASSERT_EQ(sizeof(kSending), socket_a->Peek());
   ASSERT_EQ(sizeof(kSending),
-            socket_a->Receive(as_writable_bytes(make_span(&received, 1u))));
+            socket_a->Receive(as_writable_bytes(span_from_ref(received))));
   ASSERT_EQ(kSending, received);
 
   ASSERT_EQ(0u, socket_a->Peek());
@@ -182,7 +182,7 @@ TEST_F(CancelableSyncSocketTest, ShutdownCancelsReceiveWithTimeout) {
 TEST_F(CancelableSyncSocketTest, ReceiveAfterShutdown) {
   socket_a_.Shutdown();
   int data = 0;
-  EXPECT_EQ(0u, socket_a_.Receive(as_writable_bytes(make_span(&data, 1u))));
+  EXPECT_EQ(0u, socket_a_.Receive(as_writable_bytes(span_from_ref(data))));
 }
 
 TEST_F(CancelableSyncSocketTest, ReceiveWithTimeoutAfterShutdown) {

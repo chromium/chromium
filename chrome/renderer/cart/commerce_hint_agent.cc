@@ -876,7 +876,7 @@ void CommerceHintAgent::ExtractCartWithUpdatedScript(
       GetProductExtractionScript(product_id_json, cart_extraction_script));
 
   main_frame->RequestExecuteScript(
-      ISOLATED_WORLD_ID_CHROME_INTERNAL, base::make_span(&source, 1u),
+      ISOLATED_WORLD_ID_CHROME_INTERNAL, base::span_from_ref(source),
       blink::mojom::UserActivationOption::kDoNotActivate,
       blink::mojom::EvaluationTiming::kAsynchronous,
       blink::mojom::LoadEventBlockingOption::kDoNotBlock,

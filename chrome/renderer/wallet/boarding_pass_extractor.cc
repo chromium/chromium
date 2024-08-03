@@ -151,7 +151,7 @@ void BoardingPassExtractor::ExtractBoardingPassWithScript(
       blink::WebScriptSource(blink::WebString::FromUTF8(script));
 
   main_frame->RequestExecuteScript(
-      ISOLATED_WORLD_ID_CHROME_INTERNAL, base::make_span(&source, 1u),
+      ISOLATED_WORLD_ID_CHROME_INTERNAL, base::span_from_ref(source),
       blink::mojom::UserActivationOption::kDoNotActivate,
       blink::mojom::EvaluationTiming::kAsynchronous,
       blink::mojom::LoadEventBlockingOption::kDoNotBlock,

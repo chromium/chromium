@@ -70,12 +70,12 @@ const bool kStackTypeArray = true;
 #endif
 
 inline void WriteKeyNameAsRawPtr(Pickle& pickle, const char* ptr) {
-  pickle.WriteBytes(as_bytes(make_span(&kTypeCStr, 1u)));
+  pickle.WriteBytes(as_bytes(span_from_ref(kTypeCStr)));
   pickle.WriteUInt64(static_cast<uint64_t>(reinterpret_cast<uintptr_t>(ptr)));
 }
 
 inline void WriteKeyNameWithCopy(Pickle& pickle, std::string_view str) {
-  pickle.WriteBytes(as_bytes(make_span(&kTypeString, 1u)));
+  pickle.WriteBytes(as_bytes(span_from_ref(kTypeString)));
   pickle.WriteString(str);
 }
 
@@ -106,50 +106,50 @@ class PickleWriter final : public TracedValue::Writer {
   bool IsProtoWriter() const override { return false; }
 
   void SetInteger(const char* name, int value) override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeInt, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeInt)));
     pickle_.WriteInt(value);
     WriteKeyNameAsRawPtr(pickle_, name);
   }
 
   void SetIntegerWithCopiedName(std::string_view name, int value) override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeInt, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeInt)));
     pickle_.WriteInt(value);
     WriteKeyNameWithCopy(pickle_, name);
   }
 
   void SetDouble(const char* name, double value) override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeDouble, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeDouble)));
     pickle_.WriteDouble(value);
     WriteKeyNameAsRawPtr(pickle_, name);
   }
 
   void SetDoubleWithCopiedName(std::string_view name, double value) override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeDouble, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeDouble)));
     pickle_.WriteDouble(value);
     WriteKeyNameWithCopy(pickle_, name);
   }
 
   void SetBoolean(const char* name, bool value) override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeBool, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeBool)));
     pickle_.WriteBool(value);
     WriteKeyNameAsRawPtr(pickle_, name);
   }
 
   void SetBooleanWithCopiedName(std::string_view name, bool value) override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeBool, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeBool)));
     pickle_.WriteBool(value);
     WriteKeyNameWithCopy(pickle_, name);
   }
 
   void SetString(const char* name, std::string_view value) override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeString, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeString)));
     pickle_.WriteString(value);
     WriteKeyNameAsRawPtr(pickle_, name);
   }
 
   void SetStringWithCopiedName(std::string_view name,
                                std::string_view value) override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeString, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeString)));
     pickle_.WriteString(value);
     WriteKeyNameWithCopy(pickle_, name);
   }
@@ -173,57 +173,57 @@ class PickleWriter final : public TracedValue::Writer {
   }
 
   void BeginArray() override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeStartArray, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeStartArray)));
   }
 
   void BeginDictionary() override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeStartDict, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeStartDict)));
   }
 
   void BeginDictionary(const char* name) override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeStartDict, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeStartDict)));
     WriteKeyNameAsRawPtr(pickle_, name);
   }
 
   void BeginDictionaryWithCopiedName(std::string_view name) override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeStartDict, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeStartDict)));
     WriteKeyNameWithCopy(pickle_, name);
   }
 
   void BeginArray(const char* name) override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeStartArray, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeStartArray)));
     WriteKeyNameAsRawPtr(pickle_, name);
   }
 
   void BeginArrayWithCopiedName(std::string_view name) override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeStartArray, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeStartArray)));
     WriteKeyNameWithCopy(pickle_, name);
   }
 
   void EndDictionary() override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeEndDict, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeEndDict)));
   }
   void EndArray() override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeEndArray, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeEndArray)));
   }
 
   void AppendInteger(int value) override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeInt, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeInt)));
     pickle_.WriteInt(value);
   }
 
   void AppendDouble(double value) override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeDouble, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeDouble)));
     pickle_.WriteDouble(value);
   }
 
   void AppendBoolean(bool value) override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeBool, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeBool)));
     pickle_.WriteBool(value);
   }
 
   void AppendString(std::string_view value) override {
-    pickle_.WriteBytes(as_bytes(make_span(&kTypeString, 1u)));
+    pickle_.WriteBytes(as_bytes(span_from_ref(kTypeString)));
     pickle_.WriteString(value);
   }
 

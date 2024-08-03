@@ -142,7 +142,7 @@ bool AddPathToRPath(const base::FilePath& executable_path,
 
   mach_header_64 header;
   if (!executable_file.ReadAtCurrentPosAndCheck(
-          base::as_writable_bytes(base::make_span(&header, 1u))) ||
+          base::as_writable_bytes(base::span_from_ref(header))) ||
       header.magic != MH_MAGIC_64 || header.filetype != MH_EXECUTE) {
     LOG(ERROR) << "File at " << executable_path
                << " is not a valid Mach-O executable";
@@ -184,7 +184,7 @@ bool AddPathToRPath(const base::FilePath& executable_path,
 
       // Write the updated header and commands back to the file.
       if (!executable_file.WriteAndCheck(
-              0, base::as_bytes(base::make_span(&header, 1u))) ||
+              0, base::as_bytes(base::span_from_ref(header))) ||
           !executable_file.WriteAndCheck(sizeof header,
                                          base::make_span(commands))) {
         LOG(ERROR) << "Failed to write updated load commands to "

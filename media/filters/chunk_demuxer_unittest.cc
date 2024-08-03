@@ -2257,7 +2257,7 @@ TEST_F(ChunkDemuxerTest, ParseErrorDuringInit) {
 
   EXPECT_MEDIA_LOG(StreamParsingFailed());
   uint8_t tmp = 0;
-  ASSERT_FALSE(AppendData(base::make_span(&tmp, 1u)));
+  ASSERT_FALSE(AppendData(base::span_from_ref(tmp)));
 }
 
 TEST_F(ChunkDemuxerTest, AVHeadersWithAudioOnlyType) {

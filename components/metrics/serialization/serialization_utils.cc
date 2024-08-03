@@ -275,7 +275,7 @@ bool SerializationUtils::WriteMetricToFile(const MetricSample& sample,
   uint32_t encoded_size = base::checked_cast<uint32_t>(size);
   if (!base::WriteFileDescriptor(
           file_descriptor.get(),
-          base::as_bytes(base::make_span(&encoded_size, 1u)))) {
+          base::as_bytes(base::span_from_ref(encoded_size)))) {
     DPLOG(ERROR) << "error writing message length: " << filename;
     std::ignore = flock(file_descriptor.get(), LOCK_UN);
     return false;
