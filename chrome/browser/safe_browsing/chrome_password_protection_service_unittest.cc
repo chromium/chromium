@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -41,6 +40,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
@@ -65,9 +65,9 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
 #include "chrome/browser/password_manager/android/mock_password_checkup_launcher_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/common/chrome_switches.h"
 #include "components/sync/test/test_sync_service.h"
 #endif
 
@@ -1645,8 +1645,8 @@ class ChromePasswordProtectionServiceWithAccountPasswordStoreTest
     feature_list_.InitAndEnableFeature(
         password_manager::features::
             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(password_manager::GetLocalUpmMinGmsVersion()));
 #endif
   }
 
@@ -1733,8 +1733,8 @@ class PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest
     feature_list_.InitAndEnableFeature(
         password_manager::features::
             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(password_manager::GetLocalUpmMinGmsVersion()));
     PasswordCheckupWithPhishGuardTest::SetUp();
   }
 };

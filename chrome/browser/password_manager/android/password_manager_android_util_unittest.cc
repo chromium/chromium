@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/bind.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -71,6 +71,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using password_manager::GetLocalUpmMinGmsVersion;
 using password_manager::UsesSplitStoresAndUPMForLocal;
 using password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores;
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
@@ -179,10 +180,9 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
                         password_manager::kLoginDataForProfileFileName),
                     "");
 
-    // Skip the Gms version check, otherwise enabling UPM flags in individual
-    // tests won't actually do anything in bots with outdated GmsCore.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+    // Most tests check the modern GmsCore case.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(GetLocalUpmMinGmsVersion()));
   }
 
   // SetUsesSplitStoresAndUPMForLocal() reads whether password sync is enabled
@@ -217,12 +217,6 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
 
   const base::FilePath& login_db_directory() { return login_db_directory_; }
-
-  const char* min_gms_version_param_name() {
-    return base::android::BuildInfo::GetInstance()->is_automotive()
-               ? password_manager::features::kLocalUpmMinGmsVersionParamForAuto
-               : password_manager::features::kLocalUpmMinGmsVersionParam;
-  }
 
  private:
   TestingPrefServiceSimple pref_service_;
@@ -470,8 +464,8 @@ TEST_F(
   base::test::ScopedFeatureList enable_local_upm(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
 
   pref_service()->SetBoolean(
       password_manager::prefs::kEmptyProfileStoreLoginDatabase, true);
@@ -666,8 +660,8 @@ TEST_F(
        password_manager::features::
            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
       {});
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
   SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
 
   // The migration did not get marked as pending, because the GMS min version
@@ -952,8 +946,8 @@ TEST_F(PasswordManagerAndroidUtilTest,
   base::test::ScopedFeatureList enable_local_upm(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
   SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
 
   // Nothing should have happened, because the min GMS Core version condition
@@ -1147,14 +1141,11 @@ TEST_F(PasswordManagerAndroidUtilTest,
 TEST_F(PasswordManagerAndroidUtilTest,
        SetUsesSplitStoresAndUPMForLocal_OldGmsCoreVersionIsNotActivated) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList enable_local_upm_with_high_min_version;
-  enable_local_upm_with_high_min_version.InitAndEnableFeatureWithParameters(
+  base::test::ScopedFeatureList enable_local_upm(
       password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-      {{min_gms_version_param_name(),
-        base::ToString(std::numeric_limits<int>::max())}});
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
   pref_service()->SetBoolean(
       password_manager::prefs::kEmptyProfileStoreLoginDatabase, true);
 
@@ -1172,16 +1163,13 @@ TEST_F(PasswordManagerAndroidUtilTest,
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       SetUsesSplitStoresAndUPMForLocal_BumpingMinGmsCoreVersionDeactivates) {
+       SetUsesSplitStoresAndUPMForLocal_DowngradingGmsCoreDeactivates) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList enable_local_upm_with_high_min_version;
-  enable_local_upm_with_high_min_version.InitAndEnableFeatureWithParameters(
+  base::test::ScopedFeatureList enable_local_upm(
       password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-      {{min_gms_version_param_name(),
-        base::ToString(std::numeric_limits<int>::max())}});
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
   pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
                              static_cast<int>(kOn));
   pref_service()->SetBoolean(
@@ -1226,25 +1214,20 @@ TEST_F(
             static_cast<int>(kOff));
 }
 
-TEST_F(
-    PasswordManagerAndroidUtilTest,
-    SetUsesSplitStoresAndUPMForLocal_BumpingMinGmsCoreVersionCancelsMigration) {
+TEST_F(PasswordManagerAndroidUtilTest,
+       SetUsesSplitStoresAndUPMForLocal_DowngradingGmsCoreCancelsMigration) {
   // In the past the WithMigration flag was enabled and the migration got
-  // scheduled, but never finished. The min GmsCore version has since been
-  // bumped.
-  base::test::ScopedFeatureList enable_local_upm_with_high_min_version;
-  enable_local_upm_with_high_min_version.InitWithFeaturesAndParameters(
+  // scheduled, but never finished. GmsCore has since been downgraded.
+  base::test::ScopedFeatureList enable_local_upm;
+  enable_local_upm.InitWithFeatures(
       /*enabled_features=*/
-      {{password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-        {}},
-       {password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
-        {{min_gms_version_param_name(),
-          base::ToString(std::numeric_limits<int>::max())}}}},
-      /*disabled_features=*/{});
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
+       password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration},
+      {});
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
   pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
                              static_cast<int>(kOffAndMigrationPending));
   pref_service()->SetBoolean(
@@ -1322,19 +1305,15 @@ TEST_F(
     SetUsesSplitStoresAndUPMForLocal_NoLoginDataFilesCreatedForDeactivatedAccountUsers) {
   // This test simulated a case when the GMS Core version was manually
   // downgraded after UPM activation.
-  base::test::ScopedFeatureList enable_local_upm_with_high_min_version;
-  enable_local_upm_with_high_min_version.InitWithFeaturesAndParameters(
-      {{password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-        {{min_gms_version_param_name(),
-          base::ToString(std::numeric_limits<int>::max())}}},
-       {password_manager::features::kClearLoginDatabaseForAllMigratedUPMUsers,
-        {}}},
+  base::test::ScopedFeatureList enable_local_upm;
+  enable_local_upm.InitWithFeatures(
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
+       password_manager::features::kClearLoginDatabaseForAllMigratedUPMUsers},
       {});
-  // In this test UPM should get deactivated because of the low GMS Core version
-  // so the check for the UPM version has to be active.
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+  // In this test UPM should get deactivated because of low GMS Core version.
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
 
   // The initial state of the test is that the user is activated for UPM with
   // split stores and the login data files were deleted.
@@ -1372,8 +1351,8 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
         syncer::kSyncDeferredStartupTimeoutSeconds, "0");
     // Skip the Gms version check, otherwise enabling UPM flags in individual
     // tests won't actually do anything in bots with outdated GmsCore.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(GetLocalUpmMinGmsVersion()));
   }
 
   // Can be invoked more than once, calling DestroyProfile() in-between.
