@@ -39,7 +39,7 @@ body {
 }
 
 body:-webkit-full-page-media {
-    background-color: rgb(0, 0, 0)
+    background-color: rgb(0, 0, 0);
 }
 
 p {
@@ -51,11 +51,11 @@ p {
 }
 
 div {
-    display: block
+    display: block;
 }
 
 article, aside, footer, header, hgroup, main, nav, search, section {
-    display: block
+    display: block;
 }
 
 marquee {
@@ -64,7 +64,7 @@ marquee {
 }
 
 address {
-    display: block
+    display: block;
 }
 
 blockquote {
@@ -76,7 +76,7 @@ blockquote {
 }
 
 figcaption {
-    display: block
+    display: block;
 }
 
 figure {
@@ -88,7 +88,7 @@ figure {
 }
 
 q {
-    display: inline
+    display: inline;
 }
 
 q:before {
@@ -102,7 +102,7 @@ q:after {
 center {
     display: block;
     /* special centering to be able to emulate the html4/netscape behaviour */
-    text-align: -webkit-center
+    text-align: -webkit-center;
 }
 
 hr {
@@ -113,11 +113,11 @@ hr {
     margin-inline-start: auto;
     margin-inline-end: auto;
     border-style: inset;
-    border-width: 1px
+    border-width: 1px;
 }
 
 map {
-    display: inline
+    display: inline;
 }
 
 video {
@@ -169,7 +169,7 @@ h1 {
     margin-block-end: 0.67em;
     margin-inline-start: 0;
     margin-inline-end: 0;
-    font-weight: bold
+    font-weight: bold;
 }
 
 :-webkit-any(article,aside,nav,section) h1 {
@@ -209,7 +209,7 @@ h2 {
     margin-block-end: 0.83em;
     margin-inline-start: 0;
     margin-inline-end: 0;
-    font-weight: bold
+    font-weight: bold;
 }
 
 h3 {
@@ -219,7 +219,7 @@ h3 {
     margin-block-end: 1em;
     margin-inline-start: 0;
     margin-inline-end: 0;
-    font-weight: bold
+    font-weight: bold;
 }
 
 h4 {
@@ -228,7 +228,7 @@ h4 {
     margin-block-end: 1.33em;
     margin-inline-start: 0;
     margin-inline-end: 0;
-    font-weight: bold
+    font-weight: bold;
 }
 
 h5 {
@@ -238,7 +238,7 @@ h5 {
     margin-block-end: 1.67em;
     margin-inline-start: 0;
     margin-inline-end: 0;
-    font-weight: bold
+    font-weight: bold;
 }
 
 h6 {
@@ -248,7 +248,7 @@ h6 {
     margin-block-end: 2.33em;
     margin-inline-start: 0;
     margin-inline-end: 0;
-    font-weight: bold
+    font-weight: bold;
 }
 
 /* tables */
@@ -259,25 +259,25 @@ table {
     border-spacing: 2px;
     border-color: gray;
     box-sizing: border-box;
-    text-indent: initial
+    text-indent: initial;
 }
 
 thead {
     display: table-header-group;
     vertical-align: middle;
-    border-color: inherit
+    border-color: inherit;
 }
 
 tbody {
     display: table-row-group;
     vertical-align: middle;
-    border-color: inherit
+    border-color: inherit;
 }
 
 tfoot {
     display: table-footer-group;
     vertical-align: middle;
-    border-color: inherit
+    border-color: inherit;
 }
 
 /* for tables without table section elements (can happen with XHTML or dynamically created tables) */
@@ -286,17 +286,17 @@ table > tr {
 }
 
 col {
-    display: table-column
+    display: table-column;
 }
 
 colgroup {
-    display: table-column-group
+    display: table-column-group;
 }
 
 tr {
     display: table-row;
     vertical-align: inherit;
-    border-color: inherit
+    border-color: inherit;
 }
 
 td, th {
@@ -313,12 +313,12 @@ th:not(table th) {
 
 th {
     font-weight: bold;
-    text-align: -internal-center
+    text-align: -internal-center;
 }
 
 caption {
     display: table-caption;
-    text-align: -webkit-center
+    text-align: -webkit-center;
 }
 
 /* lists */
@@ -330,7 +330,7 @@ ul, menu, dir {
     margin-block-end: 1em;
     margin-inline-start: 0;
     margin-inline-end: 0;
-    padding-inline-start: 40px
+    padding-inline-start: 40px;
 }
 
 ol {
@@ -340,7 +340,7 @@ ol {
     margin-block-end: 1em;
     margin-inline-start: 0;
     margin-inline-end: 0;
-    padding-inline-start: 40px
+    padding-inline-start: 40px;
 }
 
 li {
@@ -349,16 +349,16 @@ li {
 }
 
 ul ul, ol ul {
-    list-style-type: circle
+    list-style-type: circle;
 }
 
 ol ol ul, ol ul ul, ul ol ul, ul ul ul {
-    list-style-type: square
+    list-style-type: square;
 }
 
 dd {
     display: block;
-    margin-inline-start: 40px
+    margin-inline-start: 40px;
 }
 
 dl {
@@ -370,7 +370,7 @@ dl {
 }
 
 dt {
-    display: block
+    display: block;
 }
 
 ol ul, ul ol, ul ul, ol ol {
@@ -397,7 +397,7 @@ legend {
     display: block;
     padding-inline-start: 2px;
     padding-inline-end: 2px;
-    border: none
+    border: none;
 }
 
 fieldset {
@@ -670,7 +670,7 @@ input[type="button" i], input[type="submit" i], input[type="reset" i] {
     -internal-empty-line-height: fabricated;
     appearance: auto;
     user-select: none;
-    white-space: pre
+    white-space: pre;
 }
 
 input[type="file" i]::-webkit-file-upload-button {
@@ -768,11 +768,11 @@ button:disabled {
 }
 
 input[type="button" i]:active, input[type="submit" i]:active, input[type="reset" i]:active, input[type="file" i]:active::-webkit-file-upload-button, button:active {
-    border-style: inset
+    border-style: inset;
 }
 
 input[type="button" i]:active:disabled, input[type="submit" i]:active:disabled, input[type="reset" i]:active:disabled, input[type="file" i]:active:disabled::-webkit-file-upload-button, button:active:disabled {
-    border-style: outset
+    border-style: outset;
 }
 
 input:disabled, textarea:disabled {
@@ -839,7 +839,7 @@ input[type="color" i]::-webkit-color-swatch-wrapper {
     box-sizing: border-box;
     -webkit-user-modify: read-only !important;
     width: 100%;
-    height: 100%
+    height: 100%;
 }
 
 input[type="color" i]::-webkit-color-swatch {
@@ -855,7 +855,7 @@ input[type="color" i]::-webkit-color-swatch {
 input[type="color" i][list] {
     appearance: auto;
     inline-size: 94px;
-      block-size: 27px
+      block-size: 27px;
 }
 
 input[type="color" i][list]::-webkit-color-swatch-wrapper {
@@ -1238,7 +1238,7 @@ progress::-webkit-progress-value {
 /* inline elements */
 
 u, ins {
-    text-decoration: underline
+    text-decoration: underline;
 }
 
 abbr[title], acronym[title] {
@@ -1246,22 +1246,22 @@ abbr[title], acronym[title] {
 }
 
 strong, b {
-    font-weight: bold
+    font-weight: bold;
 }
 
 i, cite, em, var, address, dfn {
-    font-style: italic
+    font-style: italic;
 }
 
 tt, code, kbd, samp {
-    font-family: monospace
+    font-family: monospace;
 }
 
 pre, xmp, plaintext, listing {
     display: block;
     font-family: monospace;
     white-space: pre;
-    margin: 1__qem 0
+    margin: 1__qem 0;
 }
 
 mark {
@@ -1270,29 +1270,29 @@ mark {
 }
 
 big {
-    font-size: larger
+    font-size: larger;
 }
 
 small {
-    font-size: smaller
+    font-size: smaller;
 }
 
 s, strike, del {
-    text-decoration: line-through
+    text-decoration: line-through;
 }
 
 sub {
     vertical-align: sub;
-    font-size: smaller
+    font-size: smaller;
 }
 
 sup {
     vertical-align: super;
-    font-size: smaller
+    font-size: smaller;
 }
 
 nobr {
-    white-space: nowrap
+    white-space: nowrap;
 }
 
 /* states */
@@ -1302,15 +1302,15 @@ nobr {
 }
 
 :focus-visible {
-    outline: auto 1px -webkit-focus-ring-color
+    outline: auto 1px -webkit-focus-ring-color;
 }
 
 html:focus-visible, body:focus-visible {
-    outline: none
+    outline: none;
 }
 
 embed:focus-visible, iframe:focus-visible, object:focus-visible {
-    outline: none
+    outline: none;
 }
 
 input:focus-visible, textarea:focus-visible, select:focus-visible {
@@ -1448,15 +1448,15 @@ ruby > rt {
 /* other elements */
 
 frameset, frame {
-    display: block
+    display: block;
 }
 
 frameset {
-    border-color: inherit
+    border-color: inherit;
 }
 
 iframe {
-    border: 2px inset
+    border: 2px inset;
 }
 
 fencedframe {
@@ -1466,11 +1466,11 @@ fencedframe {
 }
 
 details {
-    display: block
+    display: block;
 }
 
 summary {
-    display: block
+    display: block;
 }
 
 /*
