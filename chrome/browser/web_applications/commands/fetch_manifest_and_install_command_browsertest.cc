@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -71,8 +72,9 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, SuccessInstall) {
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-            EXPECT_TRUE(
-                provider().registrar_unsafe().IsLocallyInstalled(app_id));
+            EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
+                app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                         proto::INSTALLED_WITH_OS_INTEGRATION}));
             loop.Quit();
           }),
       FallbackBehavior::kCraftedManifestOnly);
@@ -131,7 +133,9 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleManifests) {
   EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kSuccessNewInstall);
   webapps::AppId app_id = install_future.Get<webapps::AppId>();
-  EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
+      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::INSTALLED_WITH_OS_INTEGRATION}));
 
   // multiple_manifest_test_page.html includes both manifest_with_id.json and
   // manifest.json. Section 4.6.7.10 of the HTML spec says the first manifest
@@ -157,8 +161,9 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-            EXPECT_TRUE(
-                provider().registrar_unsafe().IsLocallyInstalled(app_id));
+            EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
+                app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                         proto::INSTALLED_WITH_OS_INTEGRATION}));
           }),
       FallbackBehavior::kCraftedManifestOnly);
 
@@ -171,7 +176,9 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
         EXPECT_EQ(
             code,
             webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
-        EXPECT_FALSE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
+        EXPECT_FALSE(provider().registrar_unsafe().IsInstallState(
+            app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                     proto::INSTALLED_WITH_OS_INTEGRATION}));
         loop.Quit();
       }),
       FallbackBehavior::kCraftedManifestOnly);
@@ -193,8 +200,9 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, InvalidManifest) {
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code,
                       webapps::InstallResultCode::kNotValidManifestForWebApp);
-            EXPECT_FALSE(
-                provider().registrar_unsafe().IsLocallyInstalled(app_id));
+            EXPECT_FALSE(provider().registrar_unsafe().IsInstallState(
+                app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                         proto::INSTALLED_WITH_OS_INTEGRATION}));
             loop.Quit();
           }),
       FallbackBehavior::kCraftedManifestOnly);
@@ -216,8 +224,9 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, UserDeclineInstall) {
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kUserInstallDeclined);
-            EXPECT_FALSE(
-                provider().registrar_unsafe().IsLocallyInstalled(app_id));
+            EXPECT_FALSE(provider().registrar_unsafe().IsInstallState(
+                app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                         proto::INSTALLED_WITH_OS_INTEGRATION}));
             loop.Quit();
           }),
       FallbackBehavior::kCraftedManifestOnly);
@@ -240,8 +249,9 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kWebContentsDestroyed);
-            EXPECT_FALSE(
-                provider().registrar_unsafe().IsLocallyInstalled(app_id));
+            EXPECT_FALSE(provider().registrar_unsafe().IsInstallState(
+                app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                         proto::INSTALLED_WITH_OS_INTEGRATION}));
             loop.Quit();
           }),
       FallbackBehavior::kCraftedManifestOnly);
@@ -270,8 +280,9 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-            EXPECT_TRUE(
-                provider().registrar_unsafe().IsLocallyInstalled(app_id));
+            EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
+                app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                         proto::INSTALLED_WITH_OS_INTEGRATION}));
             loop.Quit();
           }),
       FallbackBehavior::kAllowFallbackDataAlways);
@@ -294,7 +305,9 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
     update->CreateApp(std::move(web_app));
   }
 
-  EXPECT_FALSE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstallState(
+      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(app_id));
   EXPECT_EQ(provider().registrar_unsafe().GetAppUserDisplayMode(app_id).value(),
             mojom::UserDisplayMode::kStandalone);
@@ -318,7 +331,9 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
           }),
       FallbackBehavior::kAllowFallbackDataAlways);
   loop.Run();
-  EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
+      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::INSTALLED_WITH_OS_INTEGRATION}));
 
   EXPECT_EQ(provider().registrar_unsafe().GetAppUserDisplayMode(app_id).value(),
             mojom::UserDisplayMode::kStandalone);
@@ -340,7 +355,9 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kSuccessNewInstall);
   webapps::AppId app_id = install_future.Get<webapps::AppId>();
-  EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
+      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_EQ(provider().registrar_unsafe().GetAppUserDisplayMode(app_id),
             mojom::UserDisplayMode::kStandalone);
 
@@ -413,7 +430,9 @@ IN_PROC_BROWSER_TEST_P(FetchManifestAndInstallCommandTestWithSVG,
       base::BindLambdaForTesting([&](const webapps::AppId& app_id,
                                      webapps::InstallResultCode code) {
         EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-        EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
+        EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
+            app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                     proto::INSTALLED_WITH_OS_INTEGRATION}));
         installed_app_id = app_id;
         loop.Quit();
       }),
@@ -468,7 +487,9 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandUniversalInstallTest,
   EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kSuccessNewInstall);
   webapps::AppId app_id = install_future.Get<webapps::AppId>();
-  EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
+      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::INSTALLED_WITH_OS_INTEGRATION}));
 
   EXPECT_EQ("Web app banner test page",
             provider().registrar_unsafe().GetAppShortName(app_id));

@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -61,7 +62,9 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, SimpleInstall) {
   loop.Run();
   EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id));
   EXPECT_EQ(AreAppsLocallyInstalledBySync(),
-            provider->registrar_unsafe().IsLocallyInstalled(id));
+            provider->registrar_unsafe().IsInstallState(
+                id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                     proto::INSTALLED_WITH_OS_INTEGRATION}));
 
   SkColor icon_color =
       IconManagerReadAppIconPixel(provider->icon_manager(), id, 96);
@@ -120,7 +123,9 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
   {
     EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id));
     EXPECT_EQ(AreAppsLocallyInstalledBySync(),
-              provider->registrar_unsafe().IsLocallyInstalled(id));
+              provider->registrar_unsafe().IsInstallState(
+                  id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                       proto::INSTALLED_WITH_OS_INTEGRATION}));
 
     SkColor icon_color =
         IconManagerReadAppIconPixel(provider->icon_manager(), id, 96);
@@ -130,7 +135,9 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
   {
     EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(other_id));
     EXPECT_EQ(AreAppsLocallyInstalledBySync(),
-              provider->registrar_unsafe().IsLocallyInstalled(other_id));
+              provider->registrar_unsafe().IsInstallState(
+                  other_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                             proto::INSTALLED_WITH_OS_INTEGRATION}));
 
     SkColor icon_color =
         IconManagerReadAppIconPixel(provider->icon_manager(), other_id, 96);

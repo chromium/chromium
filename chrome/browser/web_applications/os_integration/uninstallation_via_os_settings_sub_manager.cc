@@ -52,6 +52,8 @@ void UninstallationViaOsSettingsSubManager::Configure(
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_uninstall_registration());
 
+  // TODO(crbug.com/340951801): Migrate `IsInstallState` call to using an enum
+  // on the protobuf.
   bool should_register =
       IsOsUninstallationSupported() &&
       provider_->registrar_unsafe().GetInstallState(app_id) ==

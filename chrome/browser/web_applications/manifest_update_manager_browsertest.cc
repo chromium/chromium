@@ -1055,7 +1055,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   // beginning.
   GetProvider().sync_bridge_unsafe().SetAppNotLocallyInstalledForTesting(
       app_id);
-  EXPECT_FALSE(GetProvider().registrar_unsafe().IsLocallyInstalled(app_id));
+  EXPECT_EQ(GetProvider().registrar_unsafe().GetInstallState(app_id),
+            proto::SUGGESTED_FROM_ANOTHER_DEVICE);
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "red"});
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),

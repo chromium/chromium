@@ -1265,7 +1265,10 @@ std::vector<webapps::AppId> WebAppRegistrar::GetOverlappingAppsMatchingScope(
 bool WebAppRegistrar::AppScopesMatchForUserLinkCapturing(
     const webapps::AppId& app_id1,
     const webapps::AppId& app_id2) const {
-  if (!IsLocallyInstalled(app_id1) || !IsLocallyInstalled(app_id2)) {
+  if (!IsInstallState(app_id1, {proto::INSTALLED_WITH_OS_INTEGRATION,
+                                proto::INSTALLED_WITHOUT_OS_INTEGRATION}) ||
+      !IsInstallState(app_id2, {proto::INSTALLED_WITH_OS_INTEGRATION,
+                                proto::INSTALLED_WITHOUT_OS_INTEGRATION})) {
     return false;
   }
 

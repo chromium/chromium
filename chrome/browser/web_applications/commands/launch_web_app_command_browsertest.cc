@@ -191,7 +191,9 @@ IN_PROC_BROWSER_TEST_P(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  ASSERT_TRUE(GetProvider().registrar_unsafe().IsLocallyInstalled(app_id));
+  ASSERT_TRUE(GetProvider().registrar_unsafe().IsInstallState(
+      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::INSTALLED_WITH_OS_INTEGRATION}));
 
   Browser* browser = LaunchWebAppBrowser(app_id);
   ASSERT_TRUE(browser);
@@ -216,7 +218,9 @@ IN_PROC_BROWSER_TEST_P(LaunchWebAppWithFirstRunServiceBrowserTest,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  ASSERT_TRUE(GetProvider().registrar_unsafe().IsLocallyInstalled(app_id));
+  ASSERT_TRUE(GetProvider().registrar_unsafe().IsInstallState(
+      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::INSTALLED_WITH_OS_INTEGRATION}));
 
   Browser* browser = LaunchBrowserForWebAppInTab(app_id);
   ASSERT_TRUE(browser);
@@ -239,7 +243,9 @@ IN_PROC_BROWSER_TEST_P(LaunchWebAppWithFirstRunServiceBrowserTest,
     ASSERT_FALSE(first_run_service);
   }
 
-  ASSERT_TRUE(GetProvider().registrar_unsafe().IsLocallyInstalled(app_id));
+  ASSERT_TRUE(GetProvider().registrar_unsafe().IsInstallState(
+      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::INSTALLED_WITH_OS_INTEGRATION}));
 
   Browser* browser = LaunchWebAppBrowser(app_id);
   ASSERT_EQ(browser == nullptr, GetParam());
@@ -262,7 +268,9 @@ IN_PROC_BROWSER_TEST_P(LaunchWebAppWithFirstRunServiceBrowserTest,
     ASSERT_FALSE(first_run_service);
   }
 
-  ASSERT_TRUE(GetProvider().registrar_unsafe().IsLocallyInstalled(app_id));
+  ASSERT_TRUE(GetProvider().registrar_unsafe().IsInstallState(
+      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::INSTALLED_WITH_OS_INTEGRATION}));
 
   Browser* browser = LaunchBrowserForWebAppInTab(app_id);
   ASSERT_TRUE(browser);

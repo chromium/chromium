@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics_factory.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -419,7 +420,9 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
       app_banner_manager->GetCurrentWebAppBannerData();
 
   const webapps::AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
-  if (app_id && provider->registrar_unsafe().IsLocallyInstalled(*app_id)) {
+  if (app_id && provider->registrar_unsafe().IsInstallState(
+                    *app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                              proto::INSTALLED_WITH_OS_INTEGRATION})) {
     // App is installed
     features.start_url = provider->registrar_unsafe().GetAppStartUrl(*app_id);
     features.installed = true;

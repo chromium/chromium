@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -269,7 +270,9 @@ TEST_F(ExternalAppResolutionCommandTest, SuccessInternalDefault) {
   auto result = InstallAndWait(install_options);
   EXPECT_EQ(result.code, webapps::InstallResultCode::kSuccessNewInstall);
   ASSERT_TRUE(result.app_id.has_value());
-  EXPECT_TRUE(registrar().IsLocallyInstalled(*result.app_id));
+  EXPECT_TRUE(registrar().IsInstallState(
+      *result.app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                       proto::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_FALSE(IsPlaceholderAppUrl(kWebAppUrl));
   std::optional<webapps::AppId> id =
       registrar().LookupExternalAppId(kWebAppUrl);
@@ -293,7 +296,9 @@ TEST_F(ExternalAppResolutionCommandTest, SuccessAppFromPolicy) {
   auto result = InstallAndWait(install_options);
   EXPECT_EQ(result.code, webapps::InstallResultCode::kSuccessNewInstall);
   ASSERT_TRUE(result.app_id.has_value());
-  EXPECT_TRUE(registrar().IsLocallyInstalled(*result.app_id));
+  EXPECT_TRUE(registrar().IsInstallState(
+      *result.app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                       proto::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_FALSE(IsPlaceholderAppUrl(kWebAppUrl));
   std::optional<webapps::AppId> id =
       registrar().LookupExternalAppId(kWebAppUrl);
@@ -805,7 +810,9 @@ TEST_F(ExternalAppResolutionCommandTest, SucessInstallForcedContainerWindow) {
   auto result = InstallAndWait(install_options);
   EXPECT_EQ(result.code, webapps::InstallResultCode::kSuccessNewInstall);
   ASSERT_TRUE(result.app_id.has_value());
-  EXPECT_TRUE(registrar().IsLocallyInstalled(*result.app_id));
+  EXPECT_TRUE(registrar().IsInstallState(
+      *result.app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                       proto::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_FALSE(IsPlaceholderAppUrl(kWebAppUrl));
   std::optional<webapps::AppId> id =
       registrar().LookupExternalAppId(kWebAppUrl);
@@ -832,7 +839,9 @@ TEST_F(ExternalAppResolutionCommandTest, GetWebAppInstallInfoFailed) {
   EXPECT_EQ(result.code,
             webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
   ASSERT_FALSE(result.app_id.has_value());
-  EXPECT_FALSE(registrar().IsLocallyInstalled(kWebAppId));
+  EXPECT_FALSE(registrar().IsInstallState(
+      kWebAppId, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                  proto::INSTALLED_WITH_OS_INTEGRATION}));
 }
 
 TEST_F(ExternalAppResolutionCommandTest, UpgradeLock) {
@@ -900,7 +909,9 @@ TEST_F(ExternalAppResolutionCommandTest, UpgradeLock) {
 
   EXPECT_EQ(result.code, webapps::InstallResultCode::kSuccessNewInstall);
   ASSERT_TRUE(result.app_id.has_value());
-  EXPECT_TRUE(registrar().IsLocallyInstalled(*result.app_id));
+  EXPECT_TRUE(registrar().IsInstallState(
+      *result.app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                       proto::INSTALLED_WITH_OS_INTEGRATION}));
 
   EXPECT_TRUE(callback_command_run);
 
@@ -1205,7 +1216,9 @@ TEST_F(ExternalAppResolutionCommandTest, SuccessWithUninstallAndReplace) {
   auto result = InstallAndWait(install_options, std::move(data_retriever));
   EXPECT_EQ(result.code, webapps::InstallResultCode::kSuccessNewInstall);
   ASSERT_TRUE(result.app_id.has_value());
-  EXPECT_TRUE(registrar().IsLocallyInstalled(*result.app_id));
+  EXPECT_TRUE(registrar().IsInstallState(
+      *result.app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                       proto::INSTALLED_WITH_OS_INTEGRATION}));
 
   std::optional<proto::WebAppOsIntegrationState> os_state =
       registrar().GetAppCurrentOsIntegrationState(*result.app_id);

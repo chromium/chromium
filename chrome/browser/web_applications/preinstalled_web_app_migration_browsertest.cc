@@ -37,6 +37,7 @@
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -284,7 +285,8 @@ class PreinstalledWebAppMigrationBrowserTest
   bool IsWebAppInstalled() {
     return WebAppProvider::GetForTest(profile())
         ->registrar_unsafe()
-        .IsLocallyInstalled(GetWebAppId());
+        .IsInstallState(GetWebAppId(), {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                                        proto::INSTALLED_WITH_OS_INTEGRATION});
   }
 
   bool IsExtensionAppInstalled() {

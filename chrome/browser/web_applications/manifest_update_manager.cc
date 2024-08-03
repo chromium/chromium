@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -209,7 +210,9 @@ void ManifestUpdateManager::MaybeUpdate(
   }
 
   if (!app_id.has_value() ||
-      !provider_->registrar_unsafe().IsLocallyInstalled(*app_id)) {
+      !provider_->registrar_unsafe().IsInstallState(
+          *app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                    proto::INSTALLED_WITH_OS_INTEGRATION})) {
     NotifyResult(url, app_id, ManifestUpdateResult::kNoAppInScope);
     return;
   }

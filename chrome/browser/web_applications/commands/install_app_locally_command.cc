@@ -50,7 +50,7 @@ void InstallAppLocallyCommand::StartWithLock(
   // Setting app to be installed with OS integration before calling
   // Synchronize() helps trigger the OS integration.
   if (!app_lock_->registrar().IsInstallState(
-          app_id_, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+          app_id_, {proto::INSTALLED_WITH_OS_INTEGRATION})) {
     ScopedRegistryUpdate update = app_lock_->sync_bridge().BeginUpdate();
     WebApp* web_app_to_update = update->UpdateApp(app_id_);
     if (web_app_to_update) {
