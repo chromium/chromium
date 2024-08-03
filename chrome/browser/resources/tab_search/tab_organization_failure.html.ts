@@ -15,7 +15,7 @@ export function getHtml(this: TabOrganizationFailureElement) {
         class="tab-organization-header"
         aria-live="polite"
         aria-relevant="all">
-      ${this.getTitle_()}
+      ${this.getTitle(this.error)}
     </div>
     <div class="tab-organization-body">
       <localized-link localized-string="${this.getBody_()}"

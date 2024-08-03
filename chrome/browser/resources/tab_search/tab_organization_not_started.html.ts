@@ -16,7 +16,7 @@ export function getHtml(this: TabOrganizationNotStartedElement) {
         class="tab-organization-header"
         aria-live="polite"
         aria-relevant="all">
-      ${this.getTitle_()}
+      ${this.getTitle()}
     </div>
     <div class="tab-organization-body">
       ${this.getBody_()}

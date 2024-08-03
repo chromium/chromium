@@ -14,7 +14,7 @@ export function getHtml(this: TabOrganizationInProgressElement) {
       class="tab-organization-header"
       aria-live="polite"
       aria-relevant="all">
-    $i18n{inProgressTitle}
+    ${this.getTitle()}
   </div>
   <div id="loading-container">
     <cr-loading-gradient>

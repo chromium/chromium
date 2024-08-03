@@ -14,7 +14,7 @@ export function getHtml(this: TabOrganizationResultsElement) {
       class="tab-organization-header"
       aria-live="polite"
       aria-relevant="all">
-    ${this.getTitle_()}
+    ${this.getTitle()}
   </div>
   <div id="scrollable" class="scrolled-to-bottom">
     ${this.getOrganizations_().map(item => html`
