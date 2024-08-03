@@ -95,7 +95,6 @@ void DeskActionButton::UpdateTooltip(const std::u16string& tooltip) {
   int message_id;
   switch (type_) {
     case DeskActionButton::Type::kContextMenu:
-      // TODO(hewer): Upload string for translation.
       message_id = IDS_ASH_DESKS_CONTEXT_MENU_DESCRIPTION;
       break;
     case DeskActionButton::Type::kCloseDesk:

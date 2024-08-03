@@ -42,6 +42,8 @@ DeskActionView::DeskActionView(const std::u16string& combine_desks_target_name,
   // if the feature is enabled.
   if (features::IsSavedDeskUiRevampEnabled()) {
     context_menu_button_ = AddChildView(std::make_unique<DeskActionButton>(
+        // The tooltip for the context menu button will be set by the button
+        // itself, as its tooltip is constant.
         std::u16string(), DeskActionButton::Type::kContextMenu,
         std::move(context_menu_callback), this));
     context_menu_button_->AddObserver(this);
