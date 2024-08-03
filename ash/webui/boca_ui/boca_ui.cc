@@ -33,6 +33,7 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, kChromeBocaAppUntrustedURL);
 
+  source->AddResourcePath("", IDR_ASH_BOCA_UI_INDEX_HTML);
   source->AddResourcePaths(
       base::make_span(kAshBocaUiResources, kAshBocaUiResourcesSize));
 
@@ -60,6 +61,12 @@ BocaUI::BocaUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types polymer_resin lit-html goog#html polymer-html-literal "
       "polymer-template-event-attribute-policy;");
+
+  // For testing
+  host_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome-untrusted://resources chrome-untrusted://webui-test "
+      "'self';");
 
   // Register common permissions for chrome-untrusted:// pages.
   // TODO(crbug.com/40710326): Remove this after common permissions are
