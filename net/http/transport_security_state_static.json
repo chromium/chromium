@@ -138522,7 +138522,6 @@
     { "name": "edealzshop.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "edumovlive.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "eeyo.re", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    { "name": "efic.gov.au", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "ehbo-woenselnoord.nl", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "eikodental.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "elemental-photography.co.uk", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
