@@ -132,7 +132,7 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
             return windowInsetsCompat;
         }
 
-        // Ignore the input if the insets were not processed.
+        // Ignore the input if the insets were not processed to find the widest unoccluded rect.
         if (!maybeUpdateWidestUnoccludedRect(windowInsetsCompat)) {
             return windowInsetsCompat;
         }
@@ -142,15 +142,20 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
                 .build();
     }
 
+    /**
+     * @return Whether the applied window insets should be consumed by this class. {@code false}
+     *     when the window frame is empty, {@code true} otherwise.
+     */
     private boolean maybeUpdateWidestUnoccludedRect(WindowInsetsCompat windowInsetsCompat) {
         // Do nothing if the window frame is empty, or there's no update from the cached insets, or
         // the root view size remains unchanged.
         WindowInsets windowInsets = windowInsetsCompat.toWindowInsets();
         Size windowSize = WindowInsetsUtils.getFrameFromInsets(windowInsets);
         if (windowSize.getWidth() == 0 && windowSize.getHeight() == 0) return false;
+
         Rect windowRect = new Rect(0, 0, windowSize.getWidth(), windowSize.getHeight());
         if (windowInsetsCompat.equals(mCachedInsets) && windowRect.equals(mWindowRect)) {
-            return false;
+            return true;
         }
 
         mCachedInsets = windowInsetsCompat;
