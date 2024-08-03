@@ -55,9 +55,7 @@ void ProportionalImageView::OnPaint(gfx::Canvas* canvas) {
     SkScalar corner_radius = SkIntToScalar(message_center::kImageCornerRadius);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (chromeos::features::IsJellyEnabled()) {
-      corner_radius = SkIntToScalar(message_center::kJellyImageCornerRadius);
-    }
+    corner_radius = SkIntToScalar(message_center::kJellyImageCornerRadius);
 #endif
 
     const SkScalar kRadius[8] = {corner_radius, corner_radius, corner_radius,
