@@ -1997,7 +1997,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/kotlin_stdlib',
-              'version': 'UaIxwtZy6HBN-OaF7kVsTB8HqiqJ79HxnBuzdQKMKLYC',
+              'version': 'qtDQdcYfgSh4FeSY3TnkSjnZ5FqCbP1kjk1Zj1m6Jd4C',
           },
       ],
       'condition': 'checkout_android',
