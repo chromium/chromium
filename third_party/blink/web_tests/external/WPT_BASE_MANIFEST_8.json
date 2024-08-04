@@ -643241,6 +643241,15 @@
     }
    },
    "scroll-to-text-fragment": {
+    "drag-selection-over-target-text.html": [
+     "f7b3c4c7f4d409b908498d5d05708808a88728cd",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "find-range-from-text-directive.html": [
      "bc34b60fe7f8eefe2c46266956c45c5fa4311a99",
      [
