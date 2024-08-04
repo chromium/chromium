@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] size: letter
+  assert_equals: for rule 12 expected "letter;" but got "letter portrait;"
+Harness: the test ran to completion.
+

@@ -2589,6 +2589,7 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac14 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/tall--contain--nonpercent-width-percent-height.html [ Failure ]
 crbug.com/356913453 external/wpt/css/motion/offset-path-shape-circle-008.html [ Failure ]
 crbug.com/356913453 external/wpt/css/motion/offset-path-shape-ellipse-007.html [ Failure ]
 crbug.com/356955226 external/wpt/fedcm/lfedcm-identity.create-store-collect.tentative.sub.https.html [ Timeout ]

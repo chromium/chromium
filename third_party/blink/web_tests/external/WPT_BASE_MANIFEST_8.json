@@ -333996,12 +333996,12 @@
        "abde3de3aaf7d90d137003fd7476a43e72513060",
        []
       ],
-      "size-001-expected.txt": [
-       "8a02abd1ff485ee68055366480945e9746d490aa",
-       []
-      ],
       "size-invalid-expected.txt": [
        "46b13aaa6eac34d91b62cd148c8c5f4ea4d6d1c0",
+       []
+      ],
+      "size-valid-expected.txt": [
+       "a2c88b17edcd8dc348ac33bb4beaf559fe823bb7",
        []
       ]
      },
@@ -467010,15 +467010,15 @@
         {}
        ]
       ],
-      "size-001.html": [
-       "885a7b85306f3f5d0737e62e400225d9f35a2bb6",
+      "size-invalid.html": [
+       "238d10ee4a18e90778dd90135578719538012e93",
        [
         null,
         {}
        ]
       ],
-      "size-invalid.html": [
-       "238d10ee4a18e90778dd90135578719538012e93",
+      "size-valid.html": [
+       "1e0911655369ae8923c46761749c4eef654ac72b",
        [
         null,
         {}
