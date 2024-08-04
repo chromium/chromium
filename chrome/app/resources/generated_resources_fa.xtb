@@ -5429,6 +5429,7 @@
 <translation id="4893336867552636863">این کار داده مرور شما را برای همیشه از روی این دستگاه حذف می‌کند.</translation>
 <translation id="4893454800196085005">‏خوب - DVD</translation>
 <translation id="4893522937062257019">در صفحه قفل</translation>
+<translation id="4894055916816649664">فقط برای ۱۰ دقیقه</translation>
 <translation id="4895799941222633551">ایجاد میان‌بر…</translation>
 <translation id="4898011734382862273">مجوز «<ph name="CERTIFICATE_NAME" />» نشان‌دهنده یک ارائه‌دهنده مجوز است</translation>
 <translation id="4898913189644355814">ممکن است سایتی زبان برگزیده شما یا مواردی را که می‌خواهید بخرید ذخیره کند. این اطلاعات دردسترس سایت و زیردامنه‌های آن است.</translation>
@@ -6066,6 +6067,7 @@
 <translation id="5380526436444479273">چند دقیقه صبر کنید و دوباره امتحان کنید</translation>
 <translation id="5382591305415226340">مدیریت پیوندهای پشتیبانی‌شده</translation>
 <translation id="5383740867328871413">گروه بدون نام - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5384401776498845256">چه کسانی می‌توانند با شما هم‌رسانی کنند</translation>
 <translation id="5385628342687007304">‏این گذرواژه فقط در این دستگاه ذخیره می‌شود. برای استفاده از این گذرواژه در دستگاه‌های دیگر، آن را در «حساب Google» خود ذخیره کنید.</translation>
 <translation id="5387116558048951800">ویرایش <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="5387496897058645038">مشخصات محصول</translation>
@@ -6932,6 +6934,7 @@
 <translation id="6015776718598175635">ستاره</translation>
 <translation id="6015796118275082299">سال</translation>
 <translation id="6016178549409952427">پیمایش به محتوای اضافی <ph name="CURRENT_ELEMENT" /> از <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="6016462059150340136">هر کسی دراطراف</translation>
 <translation id="6016551720757758985">‏تأیید Powerwash به همراه بازگشت به نسخه قبلی</translation>
 <translation id="6016972670657536680">دکمه انتخاب زبان و صفحه‌کلید. درحال‌حاضر زبان <ph name="LANGUAGE" /> انتخاب شده است.</translation>
 <translation id="6017514345406065928">سبز</translation>
@@ -7380,6 +7383,7 @@
 <translation id="6345878117466430440">علامت‌گذاری به‌عنوان خوانده‌شده</translation>
 <translation id="6346952829206698721">جای‌گذاری از بریده‌دان</translation>
 <translation id="6347010704471250799">نمایش اعلان</translation>
+<translation id="634792071306410644">تا زمانی‌که خودتان را نمایان نکنید، هیچ‌کس نمی‌تواند با شما هم‌رسانی کند</translation>
 <translation id="6348252528297699679">می‌توانید مکان را در «تنظیمات &gt; حریم خصوصی و امنیت &gt; تنظیمات حریم خصوصی &gt; دسترسی به مکان» خاموش کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="6348805481186204412">فضای ذخیره‌سازی آفلاین</translation>
 <translation id="6349101878882523185">نصب <ph name="APP_NAME" /></translation>
@@ -7831,6 +7835,7 @@
 <translation id="6691936601825168937">&amp;ارسال کردن</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{۱ صفحه}one{{COUNT} صفحه}other{{COUNT} صفحه}}</translation>
 <translation id="6693820805264897502">گذرواژه‌های موجود را جایگزین کند</translation>
+<translation id="6694634756612002311">مدیریت هم‌رسانی</translation>
 <translation id="6697172646384837537">مکان وارد کردن گذرواژه‌ها را انتخاب کنید</translation>
 <translation id="6697492270171225480">نمایش پیشنهادهای صفحه‌های مشابه وقتی صفحه‌ای پیدا نمی‌شود</translation>
 <translation id="6697690052557311665">‏برای هم‌رسانی، روی پوشه‌ای در برنامه Files کلیک راست کنید، سپس «هم‌رسانی با Linux» را انتخاب کنید.</translation>
@@ -7984,6 +7989,7 @@
 <translation id="680572642341004180">‏‫فعال کردن ردیابی RLZ در <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6806089545527108739">اجازه داده نشود اما بعداً سؤال شود</translation>
 <translation id="680644983456221885">‏محافظت بی‌وقفه و پیش‌نگر دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک که براساس داده‌های مرور ارسالی به Google است</translation>
+<translation id="6806781719264274042">‏فقط مخاطبینی که «حساب Google» دارند. <ph name="LINK_BEGIN" />مشاهده مخاطبین<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">برای ادامه، کلید ایمنی را وارد کنید و لمس کنید</translation>
 <translation id="6808166974213191158">‏ایجادکننده تصویر سیستم ChromeOS Flex</translation>
 <translation id="6808193438228982088">روباه</translation>
@@ -8050,6 +8056,7 @@
 <translation id="6840214587087739194">نشانی حذف شد</translation>
 <translation id="6841143363521180029">رمزگذاری‌شده</translation>
 <translation id="6841186874966388268">خطاها</translation>
+<translation id="6842135459748401207">فقط دستگاه‌های واردشده به سیستم <ph name="USER_EMAIL" /></translation>
 <translation id="6842136130964845393">برای اینکه مطمئن شوید همیشه می‌توانید به گذرواژه‌های ذخیره‌شده دسترسی داشته باشید، هویتتان را به‌تأیید برسانید</translation>
 <translation id="6842749380892715807">‏فهرست سایت‌های XML آخرین بار در تاریخ <ph name="LAST_DATE_DOWNLOAD" /> بارگیری شد.</translation>
 <translation id="6842868554183332230">سایت‌ها معمولاً برای تنظیم دردسترس بودن شما در برنامه‌های گپ، زمان‌هایی را که به‌طور فعال از دستگاه استفاده می‌کنید شناسایی می‌کنند</translation>
@@ -10703,6 +10710,7 @@
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">نمایش همه جستجوهای مربوط به <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">‏به‌روزرسانی‌ خودکار Chrome برای همه کاربران</translation>
+<translation id="8768049274922835860">همه</translation>
 <translation id="876956356450740926">ابزار توسعه‌دهندگان، محیط‌های توسعه نرم‌افزار یکپارچه، و ویرایشگرها را اجرا کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">دایرکتوری ریشه افزونه:</translation>
 <translation id="8771300903067484968">پس‌زمینه صفحه شروع روی پس‌زمینه پیش‌فرض بازنشانی شده است.</translation>
@@ -11004,6 +11012,7 @@
 <translation id="8984694057134206124">به‌مدت <ph name="MINUTES" /> دقیقه برای همه افراد نمایان خواهید بود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">‏به Steam ویژه Chromebook خوش آمدید</translation>
 <translation id="8985264973231822211">آخرین فعالیت: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> روز قبل</translation>
+<translation id="8985561265504464578">آستانه تشخیص</translation>
 <translation id="8985661493893822002">برای ورود به سیستم در <ph name="DEVICE_TYPE" />، لطفاً به اینترنت وصل شوید.</translation>
 <translation id="8985661571449404298">فایل ناامنی بارگیری شده است</translation>
 <translation id="8986362086234534611">فراموش شود</translation>

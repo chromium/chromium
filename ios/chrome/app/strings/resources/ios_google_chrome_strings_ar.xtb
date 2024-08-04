@@ -35,6 +35,7 @@
 <translation id="1554731936187952550">‏يوفِّر لك Chrome أعلى مستوى من الحماية ضد المواقع الإلكترونية الضارة.</translation>
 <translation id="1615715390546812898">‏البحث باستخدام الصوت في Chrome</translation>
 <translation id="1657395063736185342">‏البحث عن العناصر المرئية في Chrome</translation>
+<translation id="1670609221633730681">‏نصيحة بشأن Chrome: اختَر مكان شريط العناوين</translation>
 <translation id="1675955119303651351">‏لم يتم حفظ بعض بيانات Chrome في حسابك على Google إلى الآن.
         يُرجى الانتظار بضع دقائق قبل تسجيل الخروج. إذا سجّلت الخروج الآن، سيتم حذف هذه البيانات.</translation>
 <translation id="1682483655351012182">‏مزامنة بيانات Chrome</translation>
@@ -113,12 +114,14 @@
 <translation id="3984746313391923992">‏تطلُب مؤسستك منك البقاء في وضع تسجيل الخروج من Chrome.</translation>
 <translation id="3988789688219830639">‏لا تتوفر لدي Google Chrome إمكانية الدخول إلى الصور أو الفيديوهات. تستطيع تفعيل الدخول في إعدادات iOS &gt; الخصوصية &gt; الصور.</translation>
 <translation id="4064699917955374540">‏عليك إثبات هويتك لاستخدام بيانات Chrome وحفظها في حسابك على Google.</translation>
+<translation id="4066411101507716142">‏يمكنك الوصول إلى Chrome بسرعة أكبر من خلال "شريط الأيقونات" (Dock) في الشاشة الرئيسية على جهاز iPad.</translation>
 <translation id="4067858366537947361">‏فتح علامة تبويب في وضع التصفّح المتخفي في Chrome</translation>
 <translation id="4093042601582616698">‏هل تريد أن يكون Chrome المتصفِّح التلقائي؟</translation>
 <translation id="417201473131094001">‏غير متاح على Chrome Canary</translation>
 <translation id="424864128008805179">‏هل تريد تسجيل الخروج من Chrome؟</translation>
 <translation id="4251174643044751591">‏يؤدي هذا الاختصار إلى فتح صفحة إعدادات "طرق الدفع" في Chrome.</translation>
 <translation id="4286914711740227883">‏حذف بيانات التصفّح في Chrome</translation>
+<translation id="430839890088895017">‏نصيحة بشأن Chrome: انقُل Chrome إلى"شريط الأيقونات" (Dock)</translation>
 <translation id="4453284704333523777">‏إدارة إعدادات Chrome</translation>
 <translation id="4523886039239821078">‏تتسبب بعض الإضافات في تعطل Chrome. يُرجى إزالتها:</translation>
 <translation id="4633328489441962921">‏يتعذّر على Chrome البحث عن تحديثات.</translation>
@@ -236,6 +239,7 @@
 <translation id="7581063337314642333">‏الانتقال إلى شبكة علامات التبويب في Chrome</translation>
 <translation id="7662994914830945754">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chrome، سجِّل الدخول وفعِّل المزامنة.</translation>
 <translation id="7669869107155339016">‏انتقِل إلى إعدادات Chrome.</translation>
+<translation id="7683540977001394271">‏يمكنك الوصول إلى Chrome بسرعة أكبر من خلال "شريط الأيقونات" (Dock) في الشاشة الرئيسية على هاتف iPhone.</translation>
 <translation id="769104993356536261">‏استخدام "إجراءات Chrome" على نظام التشغيل iOS</translation>
 <translation id="7693590760643069321">‏يمكنك الآن استخدام Chrome في أي وقت تنقر فيه على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="7698568245838009292">‏متصفِّح Chrome يريد الوصول إلى الكاميرا</translation>

@@ -5417,6 +5417,7 @@
 <translation id="4893336867552636863">Այս սարքից այցելությունների տվյալներն ընդմիշտ կջնջվեն:</translation>
 <translation id="4893454800196085005">Լավ՝ DVD</translation>
 <translation id="4893522937062257019">Կողպէկրանին</translation>
+<translation id="4894055916816649664">Միայն 10 րոպե</translation>
 <translation id="4895799941222633551">Ստեղծել &amp;դյուրանցում…</translation>
 <translation id="4898011734382862273">«<ph name="CERTIFICATE_NAME" />» հավաստագիրը ներկայացնում է հավաստագրման կենտրոնը</translation>
 <translation id="4898913189644355814">Կայքը կարող է պահել տեղեկութուններ ձեր նախընտրած լեզվի կամ ապրանքների մասին, որոնք ուզում եք գնել։ Այդ տեղեկությունները հասանելի են կայքին և դրա ենթատիրույթներին։</translation>
@@ -6053,6 +6054,7 @@
 <translation id="5380526436444479273">Սպասեք մի քանի րոպե և նորից փորձեք</translation>
 <translation id="5382591305415226340">Կառավարել աջակցվող հղումները</translation>
 <translation id="5383740867328871413">Անանուն խումբ – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5384401776498845256">Ով կարող է կիսվել ձեզ հետ</translation>
 <translation id="5385628342687007304">Այս գաղտնաբառը պահվում է միայն այս սարքում։ Գաղտնաբառը ձեր մյուս սարքերում օգտագործելու համար պահեք այն ձեր Google հաշվում։</translation>
 <translation id="5387116558048951800">Փոփոխել <ph name="CREDENTIAL_TYPE" />ը</translation>
 <translation id="5387496897058645038">Ապրանքների բնութագրեր</translation>
@@ -6916,6 +6918,7 @@
 <translation id="6015776718598175635">Աստղեր</translation>
 <translation id="6015796118275082299">Տարի</translation>
 <translation id="6016178549409952427">Անցնել լրացուցիչ բովանդակություն <ph name="CURRENT_ELEMENT" />՝ <ph name="TOTAL_ELEMENTS" />-ից</translation>
+<translation id="6016462059150340136">Բոլորը մոտակայքում</translation>
 <translation id="6016551720757758985">Հաստատեք Powerwash-ը՝ նախկին տարբերակին վերադարձով</translation>
 <translation id="6016972670657536680">Ընտրեք լեզուն և ստեղնաշարը։ Ընթացիկ լեզուն՝ <ph name="LANGUAGE" />։</translation>
 <translation id="6017514345406065928">Կանաչ</translation>
@@ -7364,6 +7367,7 @@
 <translation id="6345878117466430440">Նշել որպես կարդացված</translation>
 <translation id="6346952829206698721">Տեղադրել սեղմատախտակից</translation>
 <translation id="6347010704471250799">Ցուցադրել ծանուցում</translation>
+<translation id="634792071306410644">Ոչ ոք չի կարող կիսվել ձեզ հետ տվյալներով, քանի դեռ դուք տեսանելի չեք մյուսներին</translation>
 <translation id="6348252528297699679">Տեղորոշումն անջատելու համար անցեք Կարգավորումներ &gt; Գաղտնիություն և անվտանգություն &gt; Գաղտնիության կարգավորումներ &gt; Տեղորոշման թույլտվություն։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="6348805481186204412">Օֆլայն հիշողություն</translation>
 <translation id="6349101878882523185">Տեղադրել <ph name="APP_NAME" /> հավելվածը</translation>
@@ -7968,6 +7972,7 @@
 <translation id="680572642341004180">Միացնել RLZ հետագծումը <ph name="SHORT_PRODUCT_OS_NAME" />-ում:</translation>
 <translation id="6806089545527108739">Թույլ չտալ, բայց հարցնել ավելի ուշ</translation>
 <translation id="680644983456221885">Իրական ժամանակում արդյունավետ պաշտպանությունը վտանգավոր կայքերից, ներբեռնումներից և ընդլայնումներից հիմնված է ձեր այցելությունների պատմության վրա, որն ուղարկվում է Google-ին</translation>
+<translation id="6806781719264274042">Միայն Google հաշիվ ունեցող ձեր կոնտակտները։ <ph name="LINK_BEGIN" />Դիտել կոնտակտները<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">Շարունակելու համար տեղադրեք անվտանգության բանալին և հպեք դրան</translation>
 <translation id="6808166974213191158">ChromeOS Flex-ի համակարգի պատկերի գրիչ</translation>
 <translation id="6808193438228982088">Աղվես</translation>
@@ -8034,6 +8039,7 @@
 <translation id="6840214587087739194">Հասցեն ջնջվել է</translation>
 <translation id="6841143363521180029">Ֆայլը գաղտնագրված է</translation>
 <translation id="6841186874966388268">Սխալներ</translation>
+<translation id="6842135459748401207">Միայն <ph name="USER_EMAIL" /> հաշիվ մուտք գործած սարքերը</translation>
 <translation id="6842136130964845393">Հաստատեք ձեր ինքնությունը, որպեսզի պահված գաղտնաբառերը միշտ հասանելի լինեն ձեզ</translation>
 <translation id="6842749380892715807">Կայքերի ցուցակները XML ձևաչափով վերջին անգամ ներբեռնվել են հետևյալ ամսաթվին՝ <ph name="LAST_DATE_DOWNLOAD" />։</translation>
 <translation id="6842868554183332230">Կայքերը սովորաբար որոշում են, թե երբ եք դուք ակտիվորեն օգտագործում ձեր սարքը, որպեսզի հաղորդագրման հավելվածներում ցույց տան ձեր առցանց/անցանց լինելու կարգավիճակը։</translation>
@@ -10685,6 +10691,7 @@
 <translation id="8766796754185931010">Կոտոերի</translation>
 <translation id="8767069439158587614">Ցուցադրել «<ph name="QUERY_CLUSTER_NAME" />» հարցումով բոլոր որոնումները</translation>
 <translation id="8767621466733104912">Ինքնաթարմացնել Chrome-ը բոլոր օգտատերերի համար</translation>
+<translation id="8768049274922835860">Բոլորը</translation>
 <translation id="876956356450740926">Աշխատեցրեք ծրագրավորողի գործիքներ, IDE-ներ և խմբագրիչներ։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Ընդլայնման արմատային գրացուցակ</translation>
 <translation id="8771300903067484968">Գլխավոր էջը վերակայվել է կանխադրված ֆոնով։</translation>
@@ -11012,6 +11019,7 @@
 <translation id="8999560016882908256">Բաժնի շարահյուսության սխալ՝ <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Շարժման նվազեցում էկրանին</translation>
 <translation id="9000185763019430629">Հպեք մատնահետքերի սկաներին, որը ձեր <ph name="DEVICE_TYPE" /> սարքի աջ կողմում է։ Մատնահետքի տվյալներն ապահով պահվում են ձեր <ph name="DEVICE_TYPE" /> սարքում և երբեք չեն փոխանցվում այլ անձանց։</translation>
+<translation id="9003031149571024583">Մուտքագրեք PIN կոդի թվանշան <ph name="NUM_DIGIT" />-ը՝ 6-ից։ Սեղմեք Backspace կամ Delete՝ վերջին մուտքագրված թվանշանը հեռացնելու համար։</translation>
 <translation id="9003185744423389627">Սարքերի կառավարիչի սերվերի միացումը ձախողվեց <ph name="FAILURE_TIME" /> «<ph name="STATUS_TEXT" />» կարգավիճակով</translation>
 <translation id="90033698482696970">Ավտոմատ որոնե՞լ հասանելի eSIM պրոֆիլներ</translation>
 <translation id="9003647077635673607">Թույլ տալ բոլոր վեբկայքերում</translation>

@@ -358,6 +358,7 @@
 <translation id="2780756493585863768">‏أحدث الخلفيات المستندة إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
 <translation id="2783010256799387990">تم الاجتياز</translation>
 <translation id="2786429550992142861">الكتّان</translation>
+<translation id="2787237339470862294">هذه اللغة غير متاحة في الوقت الحالي</translation>
 <translation id="2787435249130282949">إضاءة ساطعة للوحة المفاتيح</translation>
 <translation id="2805756323405976993">التطبيقات</translation>
 <translation id="28232023175184696">تعذَّر الاتصال بالإنترنت. يُرجى النقر لإعادة المحاولة.</translation>
@@ -669,6 +670,7 @@
 <translation id="458794348635939462">تعذَّرت مطابقة جميع الأجهزة المضيفة.</translation>
 <translation id="4593212453765072419">مطلوب مصادقة الخادم الوكيل</translation>
 <translation id="4594021849294327751">إنشاء نص</translation>
+<translation id="4607282946861182308">يتعذّر إنشاء صور استنادًا إلى الطلب الذي أدخلته. جرِّب طلبًا آخر.</translation>
 <translation id="4609350030397390689">تقليل سطوع لوحة المفاتيح</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> من أصل <ph name="TOTAL_PAGE_NUMBER" />. يمكنك الضغط على enter لإلغاء مهمة الطباعة.</translation>
 <translation id="463791356324567266">جارٍ إلغاء المسح الضوئي...</translation>

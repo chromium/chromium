@@ -302,6 +302,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2529021024822217800">Odpri vse</translation>
 <translation id="2536991091671391962">Shranjena gesla lahko uporabljate v poljubni napravi. V Google Upravitelju gesel so shranjena za račun <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Skrij »Varnostno preverjanje«</translation>
+<translation id="2545094307889012168">Prekrivanje Googla Lens</translation>
 <translation id="2547458583188611426">Sinhronizacija ne deluje. Če želite začeti sinhronizacijo, vnesite geslo.</translation>
 <translation id="2551153019974022505">Napaka računa</translation>
 <translation id="2556092377360758201">Brez zaščite (ni priporočljivo)</translation>
@@ -848,6 +849,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5205197603258285592">Shrani sliko v …</translation>
 <translation id="5211488077761630279">Ali spletnemu mestu »<ph name="SITE_NAME" />« dovolite uporabo dovoljenja za <ph name="PERMISSION" />?</translation>
+<translation id="5215046161188172474">Deljenje celotnega URL-ja</translation>
 <translation id="5219295696240154694">Pomagajte izboljšati varnost v spletu za vse</translation>
 <translation id="5220945116117011963">Ustvarjanje koledarskih dogodkov na podlagi datumov</translation>
 <translation id="5221339005270097309">Preverjanje gesel …</translation>
@@ -1124,6 +1126,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na različnih spletnih mestih, na primer za osebno prilagajanje oglasov.</translation>
 <translation id="6476253015009698798">Spremljanje cen ni na voljo za to spletno mesto.</translation>
 <translation id="6476800141292307438">Prevajanje strani v ta jezik: <ph name="LANGUAGE" />. Možnosti so na voljo blizu dna zaslona.</translation>
+<translation id="6477585407014744043">Poimenujte skupino</translation>
 <translation id="648164694371393720">Napaka pri preverjanju pristnosti</translation>
 <translation id="6494931198667773526">Se konča</translation>
 <translation id="6500795388871406244">Uporabi predlagano geslo</translation>

@@ -41,6 +41,7 @@
 <translation id="2801787514987684416">Դիտե՞լ խանութի մասին տեղեկությունները։</translation>
 <translation id="2928243913527329289">Google | Այս խանութի մասին</translation>
 <translation id="2977480621796371840">Հեռացնել խմբից</translation>
+<translation id="29919168204617356">Անգործուն ներդիրներն ավտոմատ կփակվեն։ Դուք կարող եք գտնել դրանք պատմության մեջ։</translation>
 <translation id="3008554597174452548">Այլևս չհետևել ապրանքին</translation>
 <translation id="3026391124054406831">Ստեղծեք խմբեր՝ ներդիրները դասավորելու համար։</translation>
 <translation id="3051031624272448591">Դուք միշտ կարող եք պատմության էջից դրանք վերադարձնել</translation>
@@ -51,6 +52,7 @@
 <translation id="3322827343001922122">Բացել «<ph name="TITLE_OF_GROUP" />» ներդիրների խմբի գործողությունների ընտրացանկը</translation>
 <translation id="3328308545011660196">Հուշում․ <ph name="NUMBER_OF_TABS" /> ներդիր նմանություն ունեն։ Խմբավորե՞լ դրանք։</translation>
 <translation id="3547352561153509682">Խումբը կջնջվի բոլոր սարքերում, որոնցում մտել եք <ph name="USER_EMAIL" /> հաշիվ</translation>
+<translation id="3613492231657284463">Անգործուն ներդիրները թաքցնելու երկխոսության պատուհան</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Թերթի նախադիտ․ կիսվելու մանրապատկեր</translation>
 <translation id="381219490185664296">Ապախմբավորե՞լ ներդիրների խումբը</translation>
@@ -137,6 +139,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> կարծիք Google-ից}one{<ph name="REVIEWS_COUNT_MANY" /> կարծիք Google-ից}other{<ph name="REVIEWS_COUNT_MANY" /> կարծիք Google-ից}}</translation>
 <translation id="7559245342362162951">Ցուցադրել խմբի ներդիրները լիաէկրան ցանցի ռեժիմում</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
+<translation id="7688386659311034820">Անգործուն ներդիրների երկխոսության պատուհան</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Կիսվել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրով}one{Կիսվել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրով}other{Կիսվել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրներով}}</translation>
 <translation id="7773714564112603605">Հեռացնել ներդիրը և ջնջել խումբը</translation>
 <translation id="7792771145871471484">Դիտել հուշումները։</translation>

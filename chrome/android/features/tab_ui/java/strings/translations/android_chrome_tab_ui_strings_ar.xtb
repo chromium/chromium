@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">برتقالي</translation>
 <translation id="125153950246128346">يُرجى النقر للاطِّلاع على علامة تبويب أخرى</translation>
 <translation id="1273910660700874265">خيارات مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />"</translation>
+<translation id="1340839264183302272">مغادرة المجموعة</translation>
 <translation id="1419023007528516122">سيؤدي هذا الإجراء إلى حذف المجموعة نهائيًا من جهازك</translation>
 <translation id="1486715732399361704">تظهر هنا كل مجموعات علامات التبويب</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{تم إنشاء المجموعة قبل دقيقة واحدة (<ph name="NUM_MINS_ONE" />)}zero{تم إنشاء المجموعة قبل <ph name="NUM_MINS_MANY" /> دقيقة}two{تم إنشاء المجموعة قبل دقيقتَين (<ph name="NUM_MINS_MANY" />)}few{تم إنشاء المجموعة قبل <ph name="NUM_MINS_MANY" /> دقائق}many{تم إنشاء المجموعة قبل <ph name="NUM_MINS_MANY" /> دقيقة}other{تم إنشاء المجموعة قبل <ph name="NUM_MINS_MANY" /> دقيقة}}</translation>
@@ -41,6 +42,7 @@
 <translation id="2801787514987684416">هل تريد عرض معلومات المتجر؟</translation>
 <translation id="2928243913527329289">‏Google | لمحة عن هذا المتجر</translation>
 <translation id="2977480621796371840">الإزالة من مجموعة</translation>
+<translation id="29919168204617356">سيتم تلقائيًا إغلاق علامات التبويب غير النشطة. ويمكنك العثور عليها في أي وقت ضمن "السجلّ".</translation>
 <translation id="3008554597174452548">التوقف عن تتبُّع سعر المنتج</translation>
 <translation id="3026391124054406831">أنشِئ مجموعات لتنظيم علامات التبويب.</translation>
 <translation id="3051031624272448591">يمكنك استعادتها في أي وقت من خلال السجلّ</translation>
@@ -51,6 +53,7 @@
 <translation id="3322827343001922122">فتح قائمة الإجراءات لمجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="3328308545011660196">اقتراح: يبدو أن هناك <ph name="NUMBER_OF_TABS" /> من علامات التبويب متشابهة. هل تريد تجميعها؟</translation>
 <translation id="3547352561153509682">سيؤدي هذا الإجراء إلى حذف المجموعة من جميع الأجهزة التي تم تسجيل الدخول إلى حساب <ph name="USER_EMAIL" />عليها</translation>
+<translation id="3613492231657284463">إخفاء مربّع حوار علامات التبويب غير النشطة</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">صورة مصغّرة لمعاينة صفحة المشاركة</translation>
 <translation id="381219490185664296">هل تريد إلغاء تجميع مجموعة علامات التبويب؟</translation>
@@ -120,6 +123,7 @@
 <translation id="6557858706263317126">‎<ph name="HIDDEN_TABS_COUNT" />+</translation>
 <translation id="6562820390860419811">نقل علامة التبويب إلى اليمين</translation>
 <translation id="6615455863669487791">عرض</translation>
+<translation id="6694634756612002311">إدارة المشاركة</translation>
 <translation id="6744956528665271406">تعديل لون المجموعة</translation>
 <translation id="6856809498882026482">إخفاء وضع التحديد المتعدد</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{مشاركة علامة التبويب}zero{مشاركة علامات التبويب}two{مشاركة علامتَي التبويب}few{مشاركة علامات التبويب}many{مشاركة علامات التبويب}other{مشاركة علامات التبويب}}</translation>
@@ -137,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{‏مراجعة واحدة (<ph name="REVIEWS_COUNT_ONE" />) من Google}zero{‏<ph name="REVIEWS_COUNT_MANY" /> مراجعة من Google}two{‏مراجعتان (<ph name="REVIEWS_COUNT_MANY" />) من Google}few{‏<ph name="REVIEWS_COUNT_MANY" /> مراجعات من Google}many{‏<ph name="REVIEWS_COUNT_MANY" /> مراجعة من Google}other{‏<ph name="REVIEWS_COUNT_MANY" /> مراجعة من Google}}</translation>
 <translation id="7559245342362162951">عرض علامات تبويب المجموعة في شبكة ملء الشاشة</translation>
 <translation id="7658239707568436148">إلغاء</translation>
+<translation id="7688386659311034820">مربّع حوار علامات التبويب غير النشطة</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{مشاركة علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) محدَّدة}zero{مشاركة <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}two{مشاركة علامتَي تبويب (<ph name="TABS_COUNT_MANY" />) محدَّدتَين}few{مشاركة <ph name="TABS_COUNT_MANY" /> علامات تبويب محدَّدة}many{مشاركة <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}other{مشاركة <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}}</translation>
 <translation id="7773714564112603605">إزالة علامة التبويب وحذف المجموعة</translation>
 <translation id="7792771145871471484">مراجعة الاقتراحات</translation>
@@ -171,6 +176,7 @@
 <translation id="8926389886865778422">عدم السؤال مرة أخرى</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{توسيع المجموعة التي تحتوي على علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{توسيع المجموعة التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}two{توسيع المجموعة التي تحتوي على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />)}few{توسيع المجموعة التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامات تبويب}many{توسيع المجموعة التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}other{توسيع المجموعة التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="9090098097337832354">تم إخفاء المعلومات حول هذا المتجر.</translation>
+<translation id="9111228330448174435">عرض مربّع الحوار عند إنشاء مجموعة علامات تبويب جديدة</translation>
 <translation id="9150694013019234766">يمكنك التبديل بين علامات التبويب ضمن المجموعة بالقرب من أسفل الشاشة.</translation>
 <translation id="9169594135889675189">إضافة علامة تبويب جديدة للمجموعة</translation>
 <translation id="9216898458513705996">ستظل علامات التبويب مفتوحة على هذا الجهاز، ولكن سيتم حذف المجموعة من جميع الأجهزة التي تم تسجيل الدخول إلى حساب <ph name="USER_EMAIL" /> عليها</translation>
