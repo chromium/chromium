@@ -354315,7 +354315,7 @@
        []
       ],
       "parse-part-expected.txt": [
-       "80f25d1a2afc376e8ec0db90a412d23bfebae9cd",
+       "b77cc63a2608c6f3497c048beee095aed3af5600",
        []
       ]
      },
@@ -470897,6 +470897,13 @@
        {}
       ]
      ],
+     "grouping-with-disabled.html": [
+      "187b40ba3b50ec9df0a91fde5ce79e80e0b3f002",
+      [
+       null,
+       {}
+      ]
+     ],
      "host-part-001.html": [
       "9004141534f134d85590df3372f83838668a72e7",
       [
@@ -483080,7 +483087,7 @@
        ]
       ],
       "pseudo-elements-invalid.html": [
-       "14bd768f76cfc2d631f7b5db841c8f1c37d560dc",
+       "e13df89fe329ad79bc5dd985b902583229986b1c",
        [
         null,
         {}
@@ -483094,7 +483101,7 @@
        ]
       ],
       "pseudo-elements-valid.html": [
-       "1a0e5b82d35e7bdd7bb1b753d42106c9d46b9c30",
+       "1d5ccd1442c20ce5457e1145a8d1b8c8a10727d6",
        [
         null,
         {}
@@ -486276,7 +486283,7 @@
     "fill-stroke": {
      "animation": {
       "stroke-color-interpolation.html": [
-       "2f1ec8598b4160825bf4b9e10f4713daa09d7f26",
+       "e519e6b8a53635301b5823b1483dad8fe3fc4cb9",
        [
         null,
         {}
@@ -488876,7 +488883,7 @@
        ]
       ],
       "parse-part.html": [
-       "c166fd7765b1bfb36871b47ea08a55e03392292d",
+       "fa1856ad2a9ff3bddeb73ba673c548f31b36bba7",
        [
         null,
         {}
