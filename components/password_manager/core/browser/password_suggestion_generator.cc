@@ -231,7 +231,8 @@ void AddFillPasswordChildSuggestion(Suggestion& suggestion,
           IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
       SuggestionType::kFillPassword);
   fill_password.payload = Suggestion::PasswordSuggestionDetails(
-      credential.password,
+      credential.username, credential.password,
+      credential.GetFirstSignonRealm(),
       GetHumanReadableRealm(credential.GetFirstSignonRealm()),
       is_cross_origin.value());
   suggestion.children.emplace_back(std::move(fill_password));
@@ -257,8 +258,7 @@ void AppendManualFallbackSuggestions(const CredentialUIEntry& credential,
   // websites.
   for (const CredentialUIEntry::DomainInfo& domain_info :
        credential.GetAffiliatedDomains()) {
-    const std::string kDisplaySingonRealm = domain_info.name;
-    Suggestion suggestion(kDisplaySingonRealm, /*label=*/"",
+    Suggestion suggestion(domain_info.name, /*label=*/"",
                           Suggestion::Icon::kGlobe,
                           SuggestionType::kPasswordEntry);
     bool replaced;
@@ -266,7 +266,8 @@ void AppendManualFallbackSuggestions(const CredentialUIEntry& credential,
         ReplaceEmptyUsername(credential.username, &replaced);
     suggestion.labels = {{autofill::Suggestion::Text(maybe_username)}};
     suggestion.payload = Suggestion::PasswordSuggestionDetails(
-        credential.password, base::UTF8ToUTF16(kDisplaySingonRealm),
+        credential.username, credential.password, domain_info.signon_realm,
+        /*display_signon_realm=*/base::UTF8ToUTF16(domain_info.name),
         is_cross_origin.value());
     suggestion.is_acceptable = on_password_form.value();
     if (FacetURI::FromPotentiallyInvalidSpec(domain_info.signon_realm)

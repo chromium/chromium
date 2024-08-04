@@ -27,9 +27,12 @@ namespace autofill {
 
 struct Suggestion {
   struct PasswordSuggestionDetails {
-    friend bool operator==(const PasswordSuggestionDetails&,
-                           const PasswordSuggestionDetails&) = default;
+    std::u16string username;
     std::u16string password;
+    // The signon realm of the password. Unlike the `display_signon_realm`, it
+    // is not necessarily user friendly/readable, but rather has the raw
+    // `PasswordForm::signon_realm` value.
+    std::string signon_realm;
     // Stores either the password signon realm or the Android app name for which
     // the password was saved.
     std::u16string display_signon_realm;
@@ -37,7 +40,22 @@ struct Suggestion {
     // represent exact, strongly affiliated, PSL and weakly affiliated matches
     // for the domain the suggestions are shown for. All other suggestions have
     // this flag set to `true`.
-    bool is_cross_domain;
+    bool is_cross_domain = false;
+
+    PasswordSuggestionDetails();
+    PasswordSuggestionDetails(std::u16string_view username,
+                              std::u16string_view password,
+                              std::string_view signon_realm,
+                              std::u16string_view display_signon_realm,
+                              bool is_cross_domain);
+    PasswordSuggestionDetails(const PasswordSuggestionDetails&);
+    PasswordSuggestionDetails(PasswordSuggestionDetails&);
+    PasswordSuggestionDetails& operator=(const PasswordSuggestionDetails&);
+    PasswordSuggestionDetails& operator=(PasswordSuggestionDetails&&);
+    virtual ~PasswordSuggestionDetails();
+
+    friend bool operator==(const PasswordSuggestionDetails&,
+                           const PasswordSuggestionDetails&) = default;
   };
 
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
