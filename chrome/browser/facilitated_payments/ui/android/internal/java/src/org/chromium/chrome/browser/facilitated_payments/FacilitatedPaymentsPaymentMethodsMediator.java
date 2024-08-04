@@ -151,7 +151,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 new PropertyModel.Builder(FooterProperties.ALL_KEYS)
                         .with(
                                 FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
-                                () -> mDelegate.showFinancialAccountsManagementSettings(mContext))
+                                () -> mDelegate.showManagePaymentMethodsSettings(mContext))
                         .build());
     }
 

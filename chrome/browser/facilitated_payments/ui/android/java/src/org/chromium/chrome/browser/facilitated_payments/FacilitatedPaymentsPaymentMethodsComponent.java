@@ -30,6 +30,9 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
 
         /** Called whenever the payment settings text is clicked on the bottom sheet. */
         boolean showFinancialAccountsManagementSettings(Context context);
+
+        /** Called whenever the manage payment methods footer is tapped on the bottom sheet. */
+        boolean showManagePaymentMethodsSettings(Context context);
     }
 
     /** Initializes the component. */

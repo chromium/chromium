@@ -59,6 +59,16 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
         return true;
     }
 
+    @Override
+    public boolean showManagePaymentMethodsSettings(Context context) {
+        if (context == null) {
+            return false;
+        }
+        SettingsLauncherFactory.createSettingsLauncher()
+                .launchSettingsActivity(context, SettingsLauncher.SettingsFragment.PAYMENT_METHODS);
+        return true;
+    }
+
     @NativeMethods
     interface Natives {
         void onDismissed(long nativeFacilitatedPaymentsController);
