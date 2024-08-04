@@ -84,6 +84,7 @@ TEST_F(StartupHelperTest, CreateRemoteGroupForNewLocalGroup) {
 }
 
 TEST_F(StartupHelperTest, ReconcileGroupsToSync) {
+  group_1_.SetLocalGroupId(local_group_id_1_);
   std::vector<SavedTabGroup> groups = {group_1_};
 
   EXPECT_CALL(*service_, GetAllGroups()).WillRepeatedly(Return(groups));

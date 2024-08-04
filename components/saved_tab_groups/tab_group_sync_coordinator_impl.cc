@@ -43,9 +43,13 @@ void TabGroupSyncCoordinatorImpl::ConnectLocalTabGroup(
     return;
   }
 
+  // First, create ID mappings for both the group and its tabs.
   service_->UpdateLocalTabGroupMapping(sync_id, local_id);
-  group = service_->GetGroup(sync_id);
+  startup_helper_.MapTabIdsForGroup(local_id, *group);
 
+  // Retrieve the group again which should have IDs mapped already. Now, update
+  // the local tab URLs and group visuals to exactly match sync.
+  group = service_->GetGroup(sync_id);
   platform_delegate_->UpdateLocalTabGroup(*group);
 }
 
