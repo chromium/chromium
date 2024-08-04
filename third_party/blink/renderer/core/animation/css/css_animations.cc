@@ -996,9 +996,8 @@ const StylePropertyShorthand& PropertiesForTransitionAllDiscrete(
     const ExecutionContext* execution_context) {
   DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties,
                       (PropertiesForTransitionAll(true, execution_context)));
-  DEFINE_STATIC_LOCAL(
-      StylePropertyShorthand, property_shorthand,
-      (CSSPropertyID::kInvalid, properties.data(), properties.size()));
+  DEFINE_STATIC_LOCAL(StylePropertyShorthand, property_shorthand,
+                      (CSSPropertyID::kInvalid, properties));
   return property_shorthand;
 }
 
@@ -1006,9 +1005,8 @@ const StylePropertyShorthand& PropertiesForTransitionAllNormal(
     const ExecutionContext* execution_context) {
   DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties,
                       (PropertiesForTransitionAll(false, execution_context)));
-  DEFINE_STATIC_LOCAL(
-      StylePropertyShorthand, property_shorthand,
-      (CSSPropertyID::kInvalid, properties.data(), properties.size()));
+  DEFINE_STATIC_LOCAL(StylePropertyShorthand, property_shorthand,
+                      (CSSPropertyID::kInvalid, properties));
   return property_shorthand;
 }
 
