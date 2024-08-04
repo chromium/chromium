@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/local_discovery/service_discovery_client.h"
+
 #import <Cocoa/Cocoa.h>
 #include <stdint.h>
 
@@ -10,8 +12,8 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
-#include "chrome/browser/local_discovery/service_discovery_client.h"
 #include "chrome/browser/local_discovery/service_discovery_client_mac.h"
+#include "chrome/browser/local_discovery/service_discovery_client_mac_util.h"
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/ip_endpoint.h"

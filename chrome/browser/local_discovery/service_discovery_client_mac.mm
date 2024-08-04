@@ -21,11 +21,11 @@
 #include "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "chrome/browser/local_discovery/service_discovery_client_mac_util.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -77,12 +77,6 @@ namespace {
 const char kServiceDiscoveryThreadName[] = "Service Discovery Thread";
 
 const NSTimeInterval kResolveTimeout = 10.0;
-
-struct ServiceInfo {
-  std::string instance;
-  std::string type;
-  std::string domain;
-};
 
 void SetUpServiceBrowser(
     nw_browser_t browser,
@@ -165,79 +159,6 @@ void StopServiceResolver(NetServiceResolver* resolver) {
   [resolver stop];
 }
 
-// Extracts the instance name, name type and domain from a full service name or
-// the service type and domain from a service type. Returns true if successful.
-// TODO(justinlin): This current only handles service names with format
-// <name>._<protocol2>._<protocol1>.<domain>. Service names with
-// subtypes will not parse correctly:
-// <name>._<type>._<sub>._<protocol2>._<protocol1>.<domain>.
-std::optional<ServiceInfo> ExtractServiceInfo(const std::string& service,
-                                              bool is_service_name) {
-  if (service.empty() || !base::IsStringUTF8(service)) {
-    return std::nullopt;
-  }
-
-  const size_t last_period = service.find_last_of('.');
-  if (last_period == std::string::npos || service.length() <= last_period) {
-    return std::nullopt;
-  }
-
-  ServiceInfo info;
-  if (!is_service_name) {
-    info.type = service.substr(0, last_period) + ".";
-  } else {
-    // Find third last period that delimits type and instance name.
-    size_t type_period = last_period;
-    for (int i = 0; i < 2; ++i) {
-      type_period = service.find_last_of('.', type_period - 1);
-      if (type_period == std::string::npos) {
-        return std::nullopt;
-      }
-    }
-
-    info.instance = service.substr(0, type_period);
-    info.type = service.substr(type_period + 1, last_period - type_period);
-  }
-  info.domain = service.substr(last_period + 1) + ".";
-
-  if (info.domain.empty() || info.type.empty() ||
-      (is_service_name && info.instance.empty())) {
-    return std::nullopt;
-  } else {
-    return info;
-  }
-}
-
-void ParseTxtRecord(NSData* record, std::vector<std::string>* output) {
-  if (record.length <= 1) {
-    return;
-  }
-
-  VLOG(1) << "ParseTxtRecord: " << record.length;
-
-  const uint8_t* bytes = reinterpret_cast<const uint8_t*>(record.bytes);
-  size_t size = record.length;
-  size_t offset = 0;
-  while (offset < size) {
-    uint8_t record_size = bytes[offset++];
-    if (offset > size - record_size)
-      break;
-
-    NSString* txt_record =
-        [[NSString alloc] initWithBytes:&bytes[offset]
-                                 length:record_size
-                               encoding:NSUTF8StringEncoding];
-    if (txt_record) {
-      std::string txt_record_string = base::SysNSStringToUTF8(txt_record);
-      VLOG(1) << "TxtRecord: " << txt_record_string;
-      output->push_back(std::move(txt_record_string));
-    } else {
-      VLOG(1) << "TxtRecord corrupted at offset " << offset;
-    }
-
-    offset += record_size;
-  }
-}
 
 }  // namespace
 
@@ -322,12 +243,11 @@ void ServiceWatcherImplMac::Start() {
               << service_type_ << "'";
       return;
     }
-    VLOG(1) << "Listening for service type '" << service_info->type
-            << "' on domain '" << service_info->domain << "'";
+    VLOG(1) << "Listening for service" << service_info.value();
 
     nw_browse_descriptor_t descriptor =
         nw_browse_descriptor_create_bonjour_service(
-            service_info->type.c_str(), service_info->domain.c_str());
+            service_info->service_type.c_str(), service_info->domain.c_str());
     nw_parameters_t parameters = nw_parameters_create_secure_tcp(
         NW_PARAMETERS_DISABLE_PROTOCOL, NW_PARAMETERS_DEFAULT_CONFIGURATION);
     nw_browser_ = nw_browser_create(descriptor, parameters);
@@ -428,22 +348,6 @@ void ServiceResolverImplMac::StopResolving() {
       FROM_HERE, base::BindOnce(&StopServiceResolver, std::move(resolver_)));
 }
 
-void ParseNetService(NSNetService* service, ServiceDescription& description) {
-  for (NSData* address in [service addresses]) {
-    const void* bytes = [address bytes];
-    int length = [address length];
-    const sockaddr* socket = static_cast<const sockaddr*>(bytes);
-    net::IPEndPoint end_point;
-    if (end_point.FromSockAddr(socket, length)) {
-      description.address = net::HostPortPair::FromIPEndPoint(end_point);
-      description.ip_address = end_point.address();
-      break;
-    }
-  }
-
-  ParseTxtRecord([service TXTRecordData], &description.metadata);
-}
-
 }  // namespace local_discovery
 
 // Service Watcher /////////////////////////////////////////////////////////////
@@ -491,14 +395,12 @@ void ParseNetService(NSNetService* service, ServiceDescription& description) {
             << _serviceType << "'";
     return;
   }
+  VLOG(1) << "Listening for " << service_info.value();
 
-  NSString* type = base::SysUTF8ToNSString(service_info->type);
+  NSString* service_type = base::SysUTF8ToNSString(service_info->service_type);
   NSString* domain = base::SysUTF8ToNSString(service_info->domain);
 
-  DVLOG(1) << "Listening for service type '" << type << "' on domain '"
-           << domain << "'";
-
-  [_browser searchForServicesOfType:type inDomain:domain];
+  [_browser searchForServicesOfType:service_type inDomain:domain];
 }
 
 - (void)stop {
@@ -605,14 +507,13 @@ void ParseNetService(NSNetService* service, ServiceDescription& description) {
     [self updateServiceDescription:ServiceResolver::STATUS_KNOWN_NONEXISTENT];
     return;
   }
-  NSString* instance = base::SysUTF8ToNSString(service_info->instance);
-  NSString* type = base::SysUTF8ToNSString(service_info->type);
+  VLOG(1) << "-[ServiceResolver resolveService] " << _serviceName << ", "
+          << service_info.value();
+
+  CHECK(service_info->instance);
+  NSString* instance = base::SysUTF8ToNSString(service_info->instance.value());
+  NSString* type = base::SysUTF8ToNSString(service_info->service_type);
   NSString* domain = base::SysUTF8ToNSString(service_info->domain);
-
-  VLOG(1) << "-[ServiceResolver resolveService] " << _serviceName
-          << ", instance: " << instance << ", type: " << type
-          << ", domain: " << domain;
-
   _service = [[NSNetService alloc] initWithDomain:domain
                                              type:type
                                              name:instance];

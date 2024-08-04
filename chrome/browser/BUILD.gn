@@ -8042,6 +8042,8 @@ static_library("browser") {
         "local_discovery/service_discovery_client_mac.mm",
         "local_discovery/service_discovery_client_mac_factory.h",
         "local_discovery/service_discovery_client_mac_factory.mm",
+        "local_discovery/service_discovery_client_mac_util.h",
+        "local_discovery/service_discovery_client_mac_util.mm",
       ]
 
       frameworks += [ "Network.framework" ]
