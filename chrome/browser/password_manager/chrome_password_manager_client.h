@@ -289,6 +289,8 @@ class ChromePasswordManagerClient
   version_info::Channel GetChannel() const override;
   void RefreshPasswordManagerSettingsIfNeeded() const override;
 #if !BUILDFLAG(IS_ANDROID)
+  void OpenPasswordDetailsBubble(
+      const password_manager::PasswordForm& form) override;
   std::unique_ptr<
       password_manager::PasswordCrossDomainConfirmationPopupController>
   ShowCrossDomainConfirmationPopup(

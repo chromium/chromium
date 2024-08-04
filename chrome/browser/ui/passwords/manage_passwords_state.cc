@@ -16,6 +16,8 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using password_manager::PasswordForm;
 using password_manager::PasswordFormManagerForUI;
@@ -327,11 +329,18 @@ void ManagePasswordsState::ChooseCredential(const PasswordForm* form) {
   std::move(credentials_callback_).Run(form);
 }
 
+void ManagePasswordsState::OpenPasswordDetailsBubble(
+    const password_manager::PasswordForm& form) {
+  single_credential_mode_credential_ = form;
+  SetState(password_manager::ui::State::MANAGE_STATE);
+}
+
 void ManagePasswordsState::ClearData() {
   form_manager_.reset();
   local_credentials_forms_.clear();
   credentials_callback_.Reset();
   unsynced_credentials_.clear();
+  single_credential_mode_credential_.reset();
 }
 
 bool ManagePasswordsState::AddForm(const PasswordForm& form) {

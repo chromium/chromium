@@ -1199,6 +1199,15 @@ void ChromePasswordManagerClient::RefreshPasswordManagerSettingsIfNeeded()
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+void ChromePasswordManagerClient::OpenPasswordDetailsBubble(
+    const PasswordForm& form) {
+  PasswordsClientUIDelegate* manage_passwords_ui_controller =
+      PasswordsClientUIDelegateFromWebContents(web_contents());
+  if (manage_passwords_ui_controller) {
+    manage_passwords_ui_controller->OnOpenPasswordDetailsBubble(form);
+  }
+}
+
 std::unique_ptr<
     password_manager::PasswordCrossDomainConfirmationPopupController>
 ChromePasswordManagerClient::ShowCrossDomainConfirmationPopup(

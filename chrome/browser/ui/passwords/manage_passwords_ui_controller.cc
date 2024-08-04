@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -52,6 +53,7 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
@@ -253,6 +255,29 @@ void ManagePasswordsUIController::OnHideManualFallbackForSaving() {
   }
 
   UpdateBubbleAndIconVisibility();
+}
+
+void ManagePasswordsUIController::OnOpenPasswordDetailsBubble(
+    const password_manager::PasswordForm& form) {
+  std::u16string message;
+#if BUILDFLAG(IS_MAC)
+  message = l10n_util::GetStringUTF16(
+      IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
+#elif BUILDFLAG(IS_WIN)
+  message = l10n_util::GetStringUTF16(IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT);
+#endif
+
+  AuthenticateUserWithMessage(
+      message, base::BindOnce(
+                   [](ManagePasswordsUIController* self,
+                      password_manager::PasswordForm form, bool auth_success) {
+                     if (auth_success) {
+                       self->passwords_data_.OpenPasswordDetailsBubble(form);
+                       self->bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+                       self->UpdateBubbleAndIconVisibility();
+                     }
+                   },
+                   this, form));
 }
 
 bool ManagePasswordsUIController::OnChooseCredentials(
@@ -678,10 +703,7 @@ ManagePasswordsUIController::GetCurrentForms() const {
 const std::optional<password_manager::PasswordForm>&
 ManagePasswordsUIController::
     GetManagePasswordsSingleCredentialDetailsModeCredential() const {
-  // TODO(crbug.com/324242001): Remove and use credential from passwords_data_.
-  static base::NoDestructor<std::optional<password_manager::PasswordForm>>
-      tmp_single_credential_mode_credential;
-  return *tmp_single_credential_mode_credential;
+  return passwords_data_.single_credential_mode_credential();
 }
 
 const password_manager::InteractionsStats*
@@ -749,6 +771,15 @@ void ManagePasswordsUIController::OnBubbleHidden() {
              password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE) {
     passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
     passwords_data_.clear_selected_password();
+    update_icon = true;
+  } else if (GetState() == password_manager::ui::MANAGE_STATE &&
+             passwords_data_.single_credential_mode_credential().has_value()) {
+    if (passwords_data_.GetCurrentForms().empty()) {
+      ClearPopUpFlagForBubble();
+      passwords_data_.OnInactive();
+    } else {
+      passwords_data_.ClearSingleCredentialModeCredential();
+    }
     update_icon = true;
   }
   if (update_icon) {

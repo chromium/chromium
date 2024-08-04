@@ -88,6 +88,8 @@ class ManagePasswordsUIController
       bool has_generated_password,
       bool is_update) override;
   void OnHideManualFallbackForSaving() override;
+  void OnOpenPasswordDetailsBubble(
+      const password_manager::PasswordForm& form) override;
   bool OnChooseCredentials(
       std::vector<std::unique_ptr<password_manager::PasswordForm>>
           local_credentials,
