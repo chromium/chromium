@@ -47,7 +47,7 @@ export class CalendarElement extends CrLitElement {
   calendarLink: string;
   events: CalendarEvent[] = [];
 
-  private doubleBookedIndices_: number[];
+  private doubleBookedIndices_: number[] = [];
   private expandedEventIndex_: number;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -55,27 +55,24 @@ export class CalendarElement extends CrLitElement {
 
     if (changedProperties.has('events')) {
       this.expandedEventIndex_ = this.computeExpandedEventIndex_();
-      this.doubleBookedIndices_ = this.computeDoubleBookedIndices_();
+      if (this.expandedEventIndex_ !== -1) {
+        this.sortEvents_();
+        this.doubleBookedIndices_ = this.computeDoubleBookedIndices_();
+      }
     }
   }
 
   private computeDoubleBookedIndices_(): number[] {
-    const result: number[] = [];
-    if (this.expandedEventIndex_ >= 0) {
-      const expandedEventStartTime =
-          toJsTimestamp(this.events[this.expandedEventIndex_].startTime);
-      const expandedEventEndTime =
-          toJsTimestamp(this.events[this.expandedEventIndex_].endTime);
-      this.events.forEach((event, index) => {
-        const startTime = toJsTimestamp(event.startTime);
-        const endTime = toJsTimestamp(event.endTime);
-        if (startTime < expandedEventEndTime &&
-            endTime > expandedEventStartTime) {
-          result.push(index);
-        }
-      });
+    const results: number[] = [];
+    for (let i = this.expandedEventIndex_ + 1; i < this.events.length; i++) {
+      if (this.events[i].startTime.internalValue ===
+          this.events[this.expandedEventIndex_].startTime.internalValue) {
+        results.push(i);
+      } else {
+        break;
+      }
     }
-    return result;
+    return results;
   }
 
   private compareEventPriority_(
@@ -143,12 +140,33 @@ export class CalendarElement extends CrLitElement {
     return expandableEventIndices[0];
   }
 
+  protected hasDoubleBooked_() {
+    return this.doubleBookedIndices_.length > 0;
+  }
+
   protected isDoubleBooked_(index: number) {
     return this.doubleBookedIndices_.includes(index);
   }
 
   protected isExpanded_(index: number) {
     return index === this.expandedEventIndex_;
+  }
+
+  // Sort events to move expanded events before any of its double booked
+  // events.
+  protected sortEvents_() {
+    const expandedEvent = this.events[this.expandedEventIndex_];
+    const firstDoubleBookedEventIndex =
+        this.events.findIndex((calendarEvent: CalendarEvent) => {
+          return calendarEvent.startTime.internalValue ===
+              expandedEvent.startTime.internalValue;
+        });
+
+    if (firstDoubleBookedEventIndex < this.expandedEventIndex_) {
+      this.events.splice(this.expandedEventIndex_, 1);
+      this.expandedEventIndex_ = firstDoubleBookedEventIndex;
+      this.events.splice(this.expandedEventIndex_, 0, expandedEvent);
+    }
   }
 }
 

@@ -5,7 +5,7 @@
 import type {CalendarEvent} from 'chrome://new-tab-page/google_calendar.mojom-webui.js';
 import {CalendarElement} from 'chrome://new-tab-page/lazy_load.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -109,8 +109,9 @@ suite('NewTabPageModulesCalendarTest', () => {
     const eventElements =
         element.shadowRoot!.querySelectorAll('ntp-calendar-event');
     assertEquals(eventElements.length, 2);
-    const expandedEvent = eventElements[1];
+    const expandedEvent = eventElements[0];
     assertTrue(expandedEvent!.hasAttribute('expanded'));
+    assertEquals(expandedEvent!.event!.title, 'Test Event 1');
   });
 
   test('prioritize event with other attendee', async () => {
@@ -133,8 +134,9 @@ suite('NewTabPageModulesCalendarTest', () => {
     const eventElements =
         element.shadowRoot!.querySelectorAll('ntp-calendar-event');
     assertEquals(eventElements.length, 2);
-    const expandedEvent = eventElements[1];
+    const expandedEvent = eventElements[0];
     assertTrue(expandedEvent!.hasAttribute('expanded'));
+    assertEquals(expandedEvent!.event!.title, 'Test Event 1');
   });
 
   test('do not expand any meetings if they are all over', async () => {
@@ -181,15 +183,21 @@ suite('NewTabPageModulesCalendarTest', () => {
         isAccepted: i === 1,
       }));
     }
+    // Create future event.
+    events.push(createEvent(3, {
+      startTime: toTime(new Date(mockTime + ((4) * 30 * 60000))),
+      endTime: toTime(new Date(mockTime + ((5) * 30 * 60000))),
+    }));
     element.events = events;
     await microtasksFinished();
 
     // Assert.
     const eventElements =
         element.shadowRoot!.querySelectorAll('ntp-calendar-event');
-    assertEquals(3, eventElements.length);
-    assertTrue(eventElements[1]!.hasAttribute('expanded'));
-    assertTrue(eventElements[0]!.hasAttribute('double-booked'));
-    assertTrue(eventElements[2]!.hasAttribute('double-booked'));
+    assertEquals(4, eventElements.length);
+    assertTrue(eventElements[0]!.hasAttribute('expanded'));
+    assertEquals(eventElements[1]!.className, 'row double-booked');
+    assertEquals(eventElements[2]!.className, 'row double-booked');
+    assertNotEquals(eventElements[3]!.className, 'row double-booked');
   });
 });

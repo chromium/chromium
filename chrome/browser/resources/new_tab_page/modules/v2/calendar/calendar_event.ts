@@ -47,11 +47,6 @@ export class CalendarEventElement extends CalendarEventElementBase {
 
   static override get properties() {
     return {
-      doubleBooked: {
-        type: Boolean,
-        reflect: true,
-      },
-
       event: {type: Object},
 
       expanded: {
@@ -65,7 +60,6 @@ export class CalendarEventElement extends CalendarEventElementBase {
     };
   }
 
-  doubleBooked: boolean;
   event: CalendarEvent;
   expanded: boolean;
 
@@ -98,8 +92,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
       this.formattedStartTime_ = this.computeFormattedStartTime_();
     }
 
-    if (changedProperties.has('event') || changedProperties.has('expanded') ||
-        changedProperties.has('doubleBooked')) {
+    if (changedProperties.has('event') || changedProperties.has('expanded')) {
       this.timeStatus_ = this.computeTimeStatus_();
     }
   }
@@ -116,7 +109,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
 
   private computeTimeStatus_(): string {
     if (!this.expanded) {
-      return this.doubleBooked ? this.i18n('modulesCalendarDoubleBooked') : '';
+      return '';
     }
 
     // Start time of event in milliseconds since Windows epoch.

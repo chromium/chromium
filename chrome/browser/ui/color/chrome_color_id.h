@@ -251,6 +251,7 @@
   E_CPONLY(kColorNewTabPageModuleBackground) \
   E_CPONLY(kColorNewTabPageModuleCalendarEventTimeStatusBackground) \
   E_CPONLY(kColorNewTabPageModuleCalendarAttachmentScrollbarThumb) \
+  E_CPONLY(kColorNewTabPageModuleCalendarDividerColor) \
   E_CPONLY(kColorNewTabPageModuleIconBackground) \
   E_CPONLY(kColorNewTabPageModuleElementDivider) \
   E_CPONLY(kColorNewTabPageModuleIconContainerBackground) \
