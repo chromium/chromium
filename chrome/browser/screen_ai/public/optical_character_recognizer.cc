@@ -5,11 +5,18 @@
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace {
+
+// The delay after which the idle connection to OCR service will be
+// disconnected.
+// TODO(b/353718857): Remove this when ScreenAI service is set to auto shut down
+// on idle.
+constexpr base::TimeDelta kIdleDisconnectDelay = base::Minutes(5);
 
 class SequenceBoundReceiver {
  public:
@@ -103,25 +110,25 @@ void OpticalCharacterRecognizer::OnOCRInitializationCallback(
   }
 
   // This should be called only once.
-  DCHECK(!screen_ai_annotator_);
+  DCHECK(!is_ready());
   ready_ = successful;
+}
 
-  if (successful) {
-    screen_ai_annotator_ =
-        std::make_unique<mojo::Remote<mojom::ScreenAIAnnotator>>();
-
-    ScreenAIServiceRouter* router =
-        ScreenAIServiceRouterFactory::GetForBrowserContext(profile_);
-
-    router->BindScreenAIAnnotator(
-        screen_ai_annotator_->BindNewPipeAndPassReceiver());
-    screen_ai_annotator_->reset_on_disconnect();
-    (*screen_ai_annotator_)->SetClientType(client_type_);
+void OpticalCharacterRecognizer::MaybeConnectToOcrService() {
+  if (is_connected()) {
+    return;
   }
 
-  // Profile is not needed any more.
-  profile_ = nullptr;
-  profile_observer_.Reset();
+  if (!screen_ai_annotator_) {
+    screen_ai_annotator_ =
+        std::make_unique<mojo::Remote<mojom::ScreenAIAnnotator>>();
+  }
+  ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
+      ->BindScreenAIAnnotator(
+          screen_ai_annotator_->BindNewPipeAndPassReceiver());
+  screen_ai_annotator_->reset_on_disconnect();
+  screen_ai_annotator_->reset_on_idle_timeout(kIdleDisconnectDelay);
+  (*screen_ai_annotator_)->SetClientType(client_type_);
 }
 
 void OpticalCharacterRecognizer::OnProfileWillBeDestroyed(Profile* profile) {
@@ -141,7 +148,7 @@ OpticalCharacterRecognizer::~OpticalCharacterRecognizer() {
 void OpticalCharacterRecognizer::PerformOCR(
     const ::SkBitmap& image,
     base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)> callback) {
-  if (!screen_ai_annotator_) {
+  if (!is_ready()) {
     VLOG(0)
         << "PerformOCR called before the service is ready, returning empty.";
     std::move(callback).Run(mojom::VisualAnnotation::New());
@@ -149,6 +156,7 @@ void OpticalCharacterRecognizer::PerformOCR(
   }
 
   if (::content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    MaybeConnectToOcrService();
     (*screen_ai_annotator_)
         ->PerformOcrAndReturnAnnotation(image, std::move(callback));
     return;
@@ -169,6 +177,7 @@ void OpticalCharacterRecognizer::PerformOCR(
           [](scoped_refptr<OpticalCharacterRecognizer> ocr,
              const SkBitmap& image,
              base::OnceCallback<void(mojom::VisualAnnotationPtr)> callback) {
+            ocr->MaybeConnectToOcrService();
             (*ocr->screen_ai_annotator_)
                 ->PerformOcrAndReturnAnnotation(image, std::move(callback));
           },
@@ -190,13 +199,14 @@ void OpticalCharacterRecognizer::PerformOCR(
     base::OnceCallback<void(const ui::AXTreeUpdate&)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!screen_ai_annotator_) {
+  if (!is_ready()) {
     VLOG(0)
         << "PerformOCR called before the service is ready, returning empty.";
     std::move(callback).Run(ui::AXTreeUpdate());
     return;
   }
 
+  MaybeConnectToOcrService();
   (*screen_ai_annotator_)
       ->PerformOcrAndReturnAXTreeUpdate(image, std::move(callback));
 }
