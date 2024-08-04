@@ -5,11 +5,13 @@
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_PERSISTER_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_PERSISTER_H_
 
+#include <map>
 #include <memory>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 
 namespace network {
@@ -20,6 +22,11 @@ class TrustTokenIssuerToplevelPairConfig;
 typedef base::RepeatingCallback<bool(const SuitableTrustTokenOrigin&)>
     PSTKeyMatcher;
 typedef base::RepeatingCallback<bool(const base::Time&)> PSTTimeMatcher;
+
+// Used by PST Dev UI, stores toplevel origin and last redemption per issuer.
+typedef base::flat_map<url::Origin,
+                       std::vector<mojom::ToplevelRedemptionRecordPtr>>
+    IssuerRedemptionRecordMap;
 
 // Interface TrustTokenPersister defines interaction with a backing store for
 // Trust Tokens state. The most-frequently-used implementation will
@@ -77,6 +84,9 @@ class TrustTokenPersister {
 
   virtual base::flat_map<SuitableTrustTokenOrigin, int>
   GetStoredTrustTokenCounts() = 0;
+
+  // Used by PST Dev UI to surface toplevel config information
+  virtual IssuerRedemptionRecordMap GetRedemptionRecords() = 0;
 
   bool DeleteForOrigins(PSTKeyMatcher key_matcher,
                         PSTTimeMatcher time_matcher) {

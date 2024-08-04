@@ -87,6 +87,7 @@ class SQLiteTrustTokenPersister : public TrustTokenPersister {
 
   base::flat_map<SuitableTrustTokenOrigin, int> GetStoredTrustTokenCounts()
       override;
+  IssuerRedemptionRecordMap GetRedemptionRecords() override;
 
  private:
   // Manages the underlying database.

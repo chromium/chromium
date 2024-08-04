@@ -4,6 +4,7 @@
 
 #include "services/network/trust_tokens/trust_token_store.h"
 
+#include <map>
 #include <memory>
 #include <utility>
 
@@ -238,6 +239,40 @@ TEST(TrustTokenStore, GetsAllStoredTokens) {
   result = my_store->GetStoredTrustTokenCounts();
   EXPECT_TRUE(result.contains(issuer_b));
   EXPECT_EQ(result.find(issuer_b)->second, 2);
+}
+
+TEST(TrustTokenStore, GetsAllRedemptionRecordsByIssuerToplevelPair) {
+  auto my_store = TrustTokenStore::CreateForTesting(
+      std::make_unique<InMemoryTrustTokenPersister>());
+  auto issuer = SuitableTrustTokenOrigin::Create(GURL("https://issuer.com"));
+  ASSERT_TRUE(issuer);
+  auto toplevel =
+      SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com"));
+  ASSERT_TRUE(toplevel);
+  base::test::TaskEnvironment env(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+  // A freshly initialized store should be storing zero redemption records.
+  EXPECT_TRUE(my_store->GetRedemptionRecords().empty())
+      << my_store->GetRedemptionRecords().size();
+
+  // Providing a redemption records should mean that subsequent
+  // queries should return that record.
+
+  TrustTokenRedemptionRecord my_record;
+  my_record.set_body("Look at me! I'm a redemption record!");
+  my_store->SetRedemptionRecord(*issuer, *toplevel, my_record);
+
+  auto result = my_store->GetRedemptionRecords();
+  EXPECT_TRUE(result.contains(issuer->origin()));
+  EXPECT_EQ(result[*issuer][0]->toplevel_origin, toplevel);
+  EXPECT_EQ(result[*issuer][0]->last_redemption, base::Time::Now());
+
+  base::TimeDelta some_arbitrary_time = base::Seconds(42);
+  env.AdvanceClock(some_arbitrary_time);
+  my_store->SetRedemptionRecord(*issuer, *toplevel, my_record);
+  result = my_store->GetRedemptionRecords();
+  EXPECT_EQ(result[*issuer][0]->last_redemption, base::Time::Now());
 }
 
 TEST(TrustTokenStore, PrunesDataAssociatedWithRemovedKeyCommitments) {

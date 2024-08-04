@@ -140,6 +140,7 @@ class MockTrustTokenPersister : public TrustTokenPersister {
                bool(PSTKeyMatcher key_matcher, PSTTimeMatcher time_matcher));
   MOCK_METHOD0(GetStoredTrustTokenCounts,
                base::flat_map<SuitableTrustTokenOrigin, int>());
+  MOCK_METHOD0(GetRedemptionRecords, IssuerRedemptionRecordMap());
 };
 
 class MockTrustTokenStore : public TrustTokenStore {

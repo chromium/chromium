@@ -321,6 +321,14 @@ struct StoredTrustTokensForIssuer {
   int32 count;
 };
 
+
+// Used by PST Dev UI to store redemption record information per issuer/toplevel
+// pair.
+struct ToplevelRedemptionRecord {
+  url.mojom.Origin toplevel_origin;
+  mojo_base.mojom.Time last_redemption;
+};
+
 // Returned by DeleteStoredTrustTokens method on the NetworkContext.
 enum DeleteStoredTrustTokensStatus {
   kSuccessTokensDeleted,

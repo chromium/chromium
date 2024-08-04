@@ -191,4 +191,26 @@ InMemoryTrustTokenPersister::GetStoredTrustTokenCounts() {
   return result;
 }
 
+IssuerRedemptionRecordMap InMemoryTrustTokenPersister::GetRedemptionRecords() {
+  IssuerRedemptionRecordMap result;
+
+  for (const auto& [issuer_toplevel_origin, issuer_toplevel_config] :
+       issuer_toplevel_pair_configs_) {
+    const base::Time last_redemption =
+        internal::TimestampToTime(issuer_toplevel_config->last_redemption());
+    auto entry = mojom::ToplevelRedemptionRecord::New(
+        std::move(issuer_toplevel_origin.second), std::move(last_redemption));
+
+    if (auto it = result.find(issuer_toplevel_origin.first.origin());
+        it != result.end()) {
+      it->second.push_back(std::move(entry));
+      continue;
+    }
+    std::vector<mojom::ToplevelRedemptionRecordPtr> v = {};
+    v.push_back(std::move(entry));
+    result.emplace(std::move(issuer_toplevel_origin.first), std::move(v));
+  }
+  return result;
+}
+
 }  // namespace network

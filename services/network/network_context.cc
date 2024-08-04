@@ -1091,6 +1091,25 @@ void NetworkContext::GetStoredTrustTokenCounts(
   }
 }
 
+void NetworkContext::GetPrivateStateTokenRedemptionRecords(
+    GetPrivateStateTokenRedemptionRecordsCallback callback) {
+  // The Trust Tokens feature is disabled, return immediately with an empty
+  // map.
+  if (!trust_token_store_) {
+    base::flat_map<url::Origin, std::vector<mojom::ToplevelRedemptionRecordPtr>>
+        empty_result;
+    std::move(callback).Run(std::move(empty_result));
+    return;
+  }
+  auto get_redemption_records_from_store =
+      [](NetworkContext::GetPrivateStateTokenRedemptionRecordsCallback callback,
+         TrustTokenStore* trust_token_store) {
+        std::move(callback).Run(trust_token_store->GetRedemptionRecords());
+      };
+  trust_token_store_->ExecuteOrEnqueue(
+      base::BindOnce(get_redemption_records_from_store, std::move(callback)));
+}
+
 void NetworkContext::DeleteStoredTrustTokens(
     const url::Origin& issuer,
     DeleteStoredTrustTokensCallback callback) {

@@ -54,6 +54,8 @@ class InMemoryTrustTokenPersister : public TrustTokenPersister {
   base::flat_map<SuitableTrustTokenOrigin, int> GetStoredTrustTokenCounts()
       override;
 
+  IssuerRedemptionRecordMap GetRedemptionRecords() override;
+
  private:
   std::map<SuitableTrustTokenOrigin, std::unique_ptr<TrustTokenToplevelConfig>>
       toplevel_configs_;
