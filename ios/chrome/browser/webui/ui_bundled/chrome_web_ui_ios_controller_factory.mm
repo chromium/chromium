@@ -11,6 +11,7 @@
 #import "base/no_destructor.h"
 #import "components/commerce/core/commerce_constants.h"
 #import "components/commerce/ios/browser/commerce_internals_ui.h"
+#import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #import "components/version_info/channel.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/browser/webui/ui_bundled/net_export/net_export_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/ntp_tiles_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/omaha_ui.h"
+#import "ios/chrome/browser/webui/ui_bundled/on_device_llm_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/optimization_guide_internals/optimization_guide_internals_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/policy/policy_ui.h"
 #import "ios/chrome/browser/webui/ui_bundled/prefs_internals_ui.h"
@@ -143,6 +145,11 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
       GetChannel() != Channel::STABLE) {
     return &NewWebUIIOS<UserDefaultsInternalsUI>;
   }
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  if (url_host == kChromeUIOnDeviceLlmInternalsHost) {
+    return &NewWebUIIOS<OnDeviceLlmInternalsUI>;
+  }
+#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
   return nullptr;
 }

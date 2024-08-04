@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+<title>On-device LLM Internals</title>
+<script src="chrome://resources/js/ios/web_ui.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById("llmForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      var args = [];
+      for (const pair of formData.entries()) {
+        args.push(pair[1]);
+      }
+      chrome.send('initAndGenerateResponse', args);
+    });
+    chrome.send('requestModelInformation', []);
+  });
+
+  function updateModelInformation(information) {
+    document.getElementById("modelName").textContent = information;
+  }
+
+  function showResult(result) {
+    document.getElementById("response").textContent = result;
+  }
+</script>
+</head>
+<body>
+<h1>chrome://llm-internals</h1>
+<form id="llmForm">
+  <label for="modelName">Model name:</label><br>
+  <div id="modelName"></div><br>
+  <label for="query">Query:</label><br>
+  <input type="text" id="query" name="query" size="50"><br>
+  <input type="submit" value="Submit">
+</form>
+<p>Response:</p>
+<p id="response"></p>
+</body>
+</html>

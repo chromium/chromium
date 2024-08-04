@@ -2,6 +2,8 @@
 # Use of this source code is governed by faa BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
+
 source_set("coordinator") {
   sources = [
     "about/about_ui.cc",
@@ -114,12 +116,15 @@ source_set("webui_internal") {
     "chrome_web_ui_provider.cc",
     "omaha_ui.cc",
     "omaha_ui.h",
+    "on_device_llm_internals_ui.h",
+    "on_device_llm_internals_ui.mm",
     "signin_internals_ui_ios.cc",
     "signin_internals_ui_ios.h",
   ]
   deps = [
     ":coordinator",
     "//components/commerce/ios/browser",
+    "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
     "//components/resources",
     "//components/signin/public/identity_manager",
@@ -128,6 +133,7 @@ source_set("webui_internal") {
     "//ios/chrome/app/resources:ios_resources",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/omaha/model",
+    "//ios/chrome/browser/optimization_guide/resources:on_device_llm_buildflags",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features:system_flags",
@@ -147,6 +153,14 @@ source_set("webui_internal") {
     "//ios/components/webui/sync_internals",
     "//url",
   ]
+
+  if (build_with_internal_optimization_guide) {
+    deps += [
+      "//components/optimization_guide/internal:optimization_guide_internal+bundle",
+      "//components/optimization_guide/internal:optimization_guide_internal+link",
+      "//ios/chrome/browser/optimization_guide/resources:on_device_llm_bundle_data",
+    ]
+  }
 
   public_deps = [
     "//base",
