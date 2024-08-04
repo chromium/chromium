@@ -62,6 +62,8 @@ class CONTENT_EXPORT AXMainNodeAnnotator : public AXAnnotator {
   // Weak, owns us.
   const raw_ptr<RenderAccessibilityImpl> render_accessibility_;
 
+  bool annotator_enabled_ = false;
+
   // The remote of the Screen2x main content extractor. The receiver lives in
   // the utility process.
   mojo::Remote<screen_ai::mojom::Screen2xMainContentExtractor>
