@@ -25,7 +25,7 @@ bool CalculateTriggerSubmission(SubmissionReadinessState submission_readiness) {
     case SubmissionReadinessState::kNoPasswordField:
     case SubmissionReadinessState::kFieldBetweenUsernameAndPassword:
     case SubmissionReadinessState::kFieldAfterPasswordField:
-    case SubmissionReadinessState::kHasChildFrames:
+    case SubmissionReadinessState::kLikelyHasCaptcha:
       return false;
 
     case SubmissionReadinessState::kEmptyFields:
@@ -92,8 +92,8 @@ SubmissionReadinessState CalculateSubmissionReadiness(
   }
 
   // There is likely a CAPTCHA in the child frame.
-  if (!form_data.child_frames().empty()) {
-    return SubmissionReadinessState::kHasChildFrames;
+  if (form_data.likely_contains_captcha()) {
+    return SubmissionReadinessState::kLikelyHasCaptcha;
   }
 
   size_t number_of_visible_elements = 0;

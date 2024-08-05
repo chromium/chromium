@@ -456,6 +456,10 @@ struct StructTraits<autofill::mojom::FormDataDataView, autofill::FormData> {
     return d.is_gaia_with_skip_save_password_form();
   }
 
+  static bool likely_contains_captcha(const autofill::FormData& d) {
+    return d.likely_contains_captcha();
+  }
+
   static bool Read(autofill::mojom::FormDataDataView data,
                    autofill::FormData* out);
 };

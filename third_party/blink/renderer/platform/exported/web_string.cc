@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 STATIC_ASSERT_ENUM(WTF::kLenientUTF8Conversion,
                    blink::WebString::UTF8ConversionMode::kLenient);
@@ -145,6 +146,22 @@ bool WebString::Equals(const WebString& s) const {
 bool WebString::Equals(std::string_view characters) const {
   return Equal(impl_.get(), characters.data(),
                base::checked_cast<wtf_size_t>(characters.length()));
+}
+
+size_t WebString::Find(const WebString& s) const {
+  if (!impl_) {
+    return std::string::npos;
+  }
+  wtf_size_t pos = impl_->Find(s.impl_.get());
+  return pos != WTF::kNotFound ? pos : std::string::npos;
+}
+
+size_t WebString::Find(std::string_view characters) const {
+  if (!impl_) {
+    return std::string::npos;
+  }
+  wtf_size_t pos = impl_->Find(characters.data());
+  return pos != WTF::kNotFound ? pos : std::string::npos;
 }
 
 bool WebString::operator<(const WebString& other) const {
