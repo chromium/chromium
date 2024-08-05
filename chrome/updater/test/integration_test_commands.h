@@ -53,7 +53,8 @@ class IntegrationTestCommands
       const std::string& tag,
       const std::string& child_window_text_to_find,
       bool always_launch_cmd,
-      bool verify_app_logo_loaded) const = 0;
+      bool verify_app_logo_loaded,
+      bool expect_success) const = 0;
   virtual void SetActive(const std::string& app_id) const = 0;
   virtual void ExpectActive(const std::string& app_id) const = 0;
   virtual void ExpectNotActive(const std::string& app_id) const = 0;
@@ -80,7 +81,8 @@ class IntegrationTestCommands
                                     const std::string& install_data_index,
                                     UpdateService::Priority priority,
                                     const base::Version& from_version,
-                                    const base::Version& to_version) const = 0;
+                                    const base::Version& to_version,
+                                    bool do_fault_injection) const = 0;
   virtual void ExpectUpdateSequenceBadHash(
       ScopedServer* test_server,
       const std::string& app_id,
@@ -93,7 +95,8 @@ class IntegrationTestCommands
                                      const std::string& install_data_index,
                                      UpdateService::Priority priority,
                                      const base::Version& from_version,
-                                     const base::Version& to_version) const = 0;
+                                     const base::Version& to_version,
+                                     bool do_fault_injection) const = 0;
   virtual void ExpectVersionActive(const std::string& version) const = 0;
   virtual void ExpectVersionNotActive(const std::string& version) const = 0;
   virtual void Uninstall() const = 0;

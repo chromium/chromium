@@ -514,6 +514,9 @@ inline constexpr int kErrorMojoConnectionFailure = kUpdaterErrorBase + 76;
 // Mojo server rejected the request.
 inline constexpr int kErrorMojoRequestRejected = kUpdaterErrorBase + 77;
 
+// Cannot find the console user, for example when the user is not logged on.
+inline constexpr int kErrorNoConsoleUser = kUpdaterErrorBase + 78;
+
 // Policy Management constants.
 // The maximum value allowed for policy AutoUpdateCheckPeriodMinutes.
 inline constexpr int kMaxAutoUpdateCheckPeriodMinutes = 43200;

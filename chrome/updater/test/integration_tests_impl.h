@@ -167,7 +167,8 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           const std::string& tag,
                           const std::string& child_window_text_to_find,
                           bool always_launch_cmd,
-                          bool verify_app_logo_loaded);
+                          bool verify_app_logo_loaded,
+                          bool expect_success);
 
 // Expects that the updater is installed on the system and the specified
 // version is active.
@@ -374,7 +375,8 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           const std::string& install_data_index,
                           UpdateService::Priority priority,
                           const base::Version& from_version,
-                          const base::Version& to_version);
+                          const base::Version& to_version,
+                          bool do_fault_injection);
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
                                  ScopedServer* test_server,
@@ -390,7 +392,8 @@ void ExpectInstallSequence(UpdaterScope scope,
                            const std::string& install_data_index,
                            UpdateService::Priority priority,
                            const base::Version& from_version,
-                           const base::Version& to_version);
+                           const base::Version& to_version,
+                           bool do_fault_injection);
 
 void ExpectAppsUpdateSequence(UpdaterScope scope,
                               ScopedServer* test_server,

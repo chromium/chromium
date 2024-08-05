@@ -490,8 +490,12 @@ void ExpectAppVersion(UpdaterScope scope,
       base::MakeRefCounted<PersistedData>(
           scope, CreateGlobalPrefs(scope)->GetPrefService(), nullptr)
           ->GetProductVersion(app_id);
-  EXPECT_TRUE(app_version.IsValid());
-  EXPECT_EQ(version, app_version);
+  if (version.IsValid()) {
+    EXPECT_TRUE(app_version.IsValid());
+    EXPECT_EQ(version, app_version);
+  } else {
+    EXPECT_FALSE(app_version.IsValid());
+  }
 }
 
 void ExpectPrepareToRunBundleSuccess(const base::FilePath& bundle_path) {

@@ -256,10 +256,11 @@ class IntegrationTest : public ::testing::Test {
                             const std::string& tag,
                             const std::string& child_window_text_to_find = {},
                             const bool always_launch_cmd = false,
-                            const bool verify_app_logo_loaded = false) {
+                            const bool verify_app_logo_loaded = false,
+                            const bool expect_success = true) {
     test_commands_->InstallUpdaterAndApp(
         app_id, is_silent_install, tag, child_window_text_to_find,
-        always_launch_cmd, verify_app_logo_loaded);
+        always_launch_cmd, verify_app_logo_loaded, expect_success);
   }
 
   void ExpectInstalled() { test_commands_->ExpectInstalled(); }
@@ -516,10 +517,11 @@ class IntegrationTest : public ::testing::Test {
                             const std::string& install_data_index,
                             UpdateService::Priority priority,
                             const base::Version& from_version,
-                            const base::Version& to_version) {
-    test_commands_->ExpectUpdateSequence(test_server, app_id,
-                                         install_data_index, priority,
-                                         from_version, to_version);
+                            const base::Version& to_version,
+                            bool do_fault_injection = false) {
+    test_commands_->ExpectUpdateSequence(
+        test_server, app_id, install_data_index, priority, from_version,
+        to_version, do_fault_injection);
   }
 
   void ExpectUpdateSequenceBadHash(ScopedServer* test_server,
@@ -542,10 +544,11 @@ class IntegrationTest : public ::testing::Test {
                              const std::string& install_data_index,
                              UpdateService::Priority priority,
                              const base::Version& from_version,
-                             const base::Version& to_version) {
-    test_commands_->ExpectInstallSequence(test_server, app_id,
-                                          install_data_index, priority,
-                                          from_version, to_version);
+                             const base::Version& to_version,
+                             bool do_fault_injection = false) {
+    test_commands_->ExpectInstallSequence(
+        test_server, app_id, install_data_index, priority, from_version,
+        to_version, do_fault_injection);
   }
 
   void StressUpdateService() { test_commands_->StressUpdateService(); }
@@ -2003,6 +2006,42 @@ TEST_F(IntegrationTest, PrivilegedHelperInstall) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+TEST_F(IntegrationTest, FallbackToOutOfProcessFetcher) {
+  const std::string kAppId1("test1");
+  const base::Version v1("1");
+  // Injects an HTTP error before each network fetch to activate the fallback
+  // fetcher. The installation should still succeed.
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
+      &test_server, kAppId1, "", UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), v1, /*do_fault_injection=*/true));
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      kAppId1, /*is_silent_install=*/true,
+      base::StrCat({"appguid=", kAppId1, "&ap=foo&usagestats=1"})));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId1, v1));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppTag(kAppId1, "foo"));
+
+  const std::string kAppId2("test2");
+  const base::Version v2("2.0");
+  // Consecutive HTTP errors should fail the installation, given the fact that
+  // updater has only one fallback for each network task.
+  test_server.ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
+  test_server.ExpectOnce({}, "", net::HTTP_GONE);
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      kAppId2, /*is_silent_install=*/true,
+      base::StrCat({"appguid=", kAppId2, "&ap=foo2&usagestats=1"}),
+      /*child_window_text_to_find=*/{}, /*always_launch_cmd=*/false,
+      /*verify_app_logo_loaded=*/false,
+      /*expect_success=*/false));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId2, base::Version()));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppTag(kAppId2, ""));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -2632,6 +2671,47 @@ TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+#if BUILDFLAG(IS_MAC)
+TEST_F(IntegrationTestDeviceManagement, FallbackToOutOfProcessFetcher) {
+  OmahaSettingsClientProto omaha_settings;
+  omaha_settings.set_install_default(
+      enterprise_management::INSTALL_DEFAULT_DISABLED);
+  omaha_settings.set_download_preference("not-cacheable");
+  ApplicationSettings app;
+  app.set_app_guid(kApp1.appid);
+  app.set_update(enterprise_management::AUTOMATIC_UPDATES_ONLY);
+  omaha_settings.mutable_application_settings()->Add(std::move(app));
+
+  DMPushEnrollmentToken(kEnrollmentToken);
+
+  // Verify that a single HTTP error from DM server is recovered by the
+  // fallback fetcher.
+  test_server_->ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  test_server_->ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           omaha_settings);
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+
+  scoped_refptr<device_management_storage::DMStorage> dm_storage =
+      device_management_storage::GetDefaultDMStorage();
+  ASSERT_NE(dm_storage, nullptr);
+  std::optional<OmahaSettingsClientProto> omaha_policy =
+      GetOmahaPolicySettings(dm_storage);
+  ASSERT_TRUE(omaha_policy);
+  EXPECT_EQ(omaha_policy->download_preference(), "not-cacheable");
+  ASSERT_GT(omaha_policy->application_settings_size(), 0);
+  const ApplicationSettings& app_policy =
+      omaha_policy->application_settings()[0];
+  EXPECT_EQ(app_policy.app_guid(), kApp1.appid);
+  EXPECT_EQ(app_policy.update(), enterprise_management::AUTOMATIC_UPDATES_ONLY);
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 #if !defined(COMPONENT_BUILD)
 
 TEST_F(IntegrationTestDeviceManagement, AppInstall) {
@@ -3111,6 +3191,11 @@ TEST_F(IntegrationTestDeviceManagement, DMTokenDeletion) {
   // Run a second policy fetch and delete the DM token.
   ExpectDeviceManagementTokenDeletionRequest(test_server_.get(), kDMToken,
                                              /*invalidate_token=*/false);
+#if BUILDFLAG(IS_MAC)
+  // A second response for fallback fetcher.
+  ExpectDeviceManagementTokenDeletionRequest(test_server_.get(), kDMToken,
+                                             /*invalidate_token=*/false);
+#endif
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
   EXPECT_TRUE(
@@ -3142,6 +3227,11 @@ TEST_F(IntegrationTestDeviceManagement, DMTokenInvalidation) {
   // Run a second policy fetch and invalidate the DM token.
   ExpectDeviceManagementTokenDeletionRequest(test_server_.get(), kDMToken,
                                              /*invalidate_token=*/true);
+#if BUILDFLAG(IS_MAC)
+  // A second response for fallback fetcher.
+  ExpectDeviceManagementTokenDeletionRequest(test_server_.get(), kDMToken,
+                                             /*invalidate_token=*/true);
+#endif  // BUILDFLAG(IS_MAC)
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
   EXPECT_TRUE(
@@ -3939,7 +4029,8 @@ class IntegrationTestUserInSystem : public IntegrationTest {
                                  const base::Version& to_version) {
     user_test_commands_->ExpectInstallSequence(test_server, app_id,
                                                install_data_index, priority,
-                                               from_version, to_version);
+                                               from_version, to_version,
+                                               /*do_fault_injection=*/false);
   }
 
   void InstallUserUpdaterAndApp(
@@ -3951,7 +4042,8 @@ class IntegrationTestUserInSystem : public IntegrationTest {
       const bool verify_app_logo_loaded = false) {
     user_test_commands_->InstallUpdaterAndApp(
         app_id, is_silent_install, tag, child_window_text_to_find,
-        always_launch_cmd, verify_app_logo_loaded);
+        always_launch_cmd, verify_app_logo_loaded,
+        /*expect_success=*/true);
   }
 
   scoped_refptr<IntegrationTestCommands> user_test_commands_ =

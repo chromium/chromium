@@ -39,13 +39,26 @@ void FallbackNetFetcher::PostRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   impl_->PostRequest(
       url, post_data, content_type, post_additional_headers,
-      response_started_callback, progress_callback,
+      base::BindRepeating(
+          &FallbackNetFetcher::ResponseStarted,
+          base::Unretained(this),  // Assume the fetcher outlives the fetch.
+          response_started_callback),
+      progress_callback,
       base::BindOnce(
           &FallbackNetFetcher::PostRequestDone,
           base::Unretained(this),  // Assume the fetcher outlives the fetch.
           url, post_data, content_type, post_additional_headers,
           response_started_callback, progress_callback,
           std::move(post_request_complete_callback)));
+}
+
+void FallbackNetFetcher::ResponseStarted(
+    update_client::NetworkFetcher::ResponseStartedCallback
+        response_started_callback,
+    int32_t http_status_code,
+    int64_t content_length) {
+  http_status_code_ = http_status_code;
+  response_started_callback.Run(http_status_code, content_length);
 }
 
 void FallbackNetFetcher::PostRequestDone(
@@ -64,7 +77,8 @@ void FallbackNetFetcher::PostRequestDone(
     const std::string& header_x_cup_server_proof,
     int64_t xheader_retry_after_sec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (net_error && next_) {
+  const int should_fallback = net_error || (http_status_code_ != 200);
+  if (should_fallback && next_) {
     VLOG(1) << __func__ << " Falling back to next NetFetcher for " << url;
     next_->PostRequest(url, post_data, content_type, post_additional_headers,
                        response_started_callback, progress_callback,
@@ -86,7 +100,12 @@ base::OnceClosure FallbackNetFetcher::DownloadToFile(
         download_to_file_complete_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cancellation_->OnCancel(impl_->DownloadToFile(
-      url, file_path, response_started_callback, progress_callback,
+      url, file_path,
+      base::BindRepeating(
+          &FallbackNetFetcher::ResponseStarted,
+          base::Unretained(this),  // Assume the fetcher outlives the fetch.
+          response_started_callback),
+      progress_callback,
       base::BindOnce(
           &FallbackNetFetcher::DownloadToFileDone,
           base::Unretained(this),  // Assume the fetcher outlives the fetch.
@@ -107,7 +126,8 @@ void FallbackNetFetcher::DownloadToFileDone(
     int64_t content_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cancellation_->Clear();
-  if (net_error && next_) {
+  const int should_fallback = net_error || (http_status_code_ != 200);
+  if (should_fallback && next_) {
     VLOG(1) << __func__ << " Falling back to next NetFetcher for " << url;
     cancellation_->OnCancel(next_->DownloadToFile(
         url, file_path, response_started_callback, progress_callback,
