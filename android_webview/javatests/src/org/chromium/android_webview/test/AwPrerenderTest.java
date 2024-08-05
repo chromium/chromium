@@ -297,6 +297,19 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testSpeculationRulesPrerenderingRendererInitiatedActivation() throws Throwable {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+                                /*kActivated*/ 0)
+                        .expectIntRecord(
+                                "Preloading.Prerender.Attempt.SpeculationRules.Precision",
+                                /*kTruePositive*/ 0)
+                        .expectIntRecord(
+                                "Preloading.Prerender.Attempt.SpeculationRules.Recall",
+                                /*kTruePositive*/ 0)
+                        .build();
+
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
 
@@ -308,6 +321,8 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
 
         activatePage(mPrerenderingUrl, ActivationBy.JAVASCRIPT);
+
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
     // Tests basic end-to-end behavior of speculation rules prerendering on WebView with
@@ -317,6 +332,19 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testSpeculationRulesPrerenderingEmbedderInitiatedActivation() throws Throwable {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+                                /*kActivated*/ 0)
+                        .expectIntRecord(
+                                "Preloading.Prerender.Attempt.SpeculationRules.Precision",
+                                /*kTruePositive*/ 0)
+                        .expectIntRecord(
+                                "Preloading.Prerender.Attempt.SpeculationRules.Recall",
+                                /*kTruePositive*/ 0)
+                        .build();
+
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
 
@@ -328,15 +356,18 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
 
         activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
+
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
-    // Tests speculation rules prerendering with No-Vary-Search header.
+    // Tests speculation rules prerendering with No-Vary-Search header and renderer-initiated
+    // activation.
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.EnableFeatures({BlinkFeatures.PRERENDER2_NO_VARY_SEARCH})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
-    public void testNoVarySearchHeader() throws Throwable {
+    public void testNoVarySearchHeader_RendererInitiatedActivation() throws Throwable {
         setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
         loadInitialPage();
 
@@ -345,6 +376,12 @@ public class AwPrerenderTest extends AwParameterizedTest {
                         .expectIntRecord(
                                 "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
                                 /*kActivated*/ 0)
+                        .expectIntRecord(
+                                "Preloading.Prerender.Attempt.SpeculationRules.Precision",
+                                /*kTruePositive*/ 0)
+                        .expectIntRecord(
+                                "Preloading.Prerender.Attempt.SpeculationRules.Recall",
+                                /*kTruePositive*/ 0)
                         .build();
 
         // Start prerendering `prerender.html`. This response will have
@@ -355,6 +392,43 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // should activate the prerendered page for the No-Vary-Search header.
         String url = mTestServer.getURL(PRERENDER_URL.concat("?a=42"));
         activatePage(url, ActivationBy.JAVASCRIPT);
+
+        // Wait until the navigation activates the prerendered page.
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    // Tests speculation rules prerendering with No-Vary-Search header and embedder-initiated
+    // activation.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.EnableFeatures({BlinkFeatures.PRERENDER2_NO_VARY_SEARCH})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testNoVarySearchHeader_EmbedderInitiatedActivation() throws Throwable {
+        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+                                /*kActivated*/ 0)
+                        .expectIntRecord(
+                                "Preloading.Prerender.Attempt.SpeculationRules.Precision",
+                                /*kTruePositive*/ 0)
+                        .expectIntRecord(
+                                "Preloading.Prerender.Attempt.SpeculationRules.Recall",
+                                /*kTruePositive*/ 0)
+                        .build();
+
+        // Start prerendering `prerender.html`. This response will have
+        // `No-Vary-Search: params=("a")` header.
+        injectSpeculationRulesAndWait(mPrerenderingUrl);
+
+        // Navigate to `prerender.html?a=42`. This doesn't exactly match the prerendering URL but
+        // should activate the prerendered page for the No-Vary-Search header.
+        String url = mTestServer.getURL(PRERENDER_URL.concat("?a=42"));
+        activatePage(url, ActivationBy.LOAD_URL);
 
         // Wait until the navigation activates the prerendered page.
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
@@ -375,6 +449,12 @@ public class AwPrerenderTest extends AwParameterizedTest {
                         .expectIntRecord(
                                 "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
                                 /*kActivated*/ 0)
+                        .expectIntRecord(
+                                "Preloading.Prerender.Attempt.SpeculationRules.Precision",
+                                /*kTruePositive*/ 0)
+                        .expectIntRecord(
+                                "Preloading.Prerender.Attempt.SpeculationRules.Recall",
+                                /*kTruePositive*/ 0)
                         .build();
 
         final String path =
@@ -411,6 +491,12 @@ public class AwPrerenderTest extends AwParameterizedTest {
                         .expectIntRecord(
                                 "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
                                 /*kTriggerDestroyed*/ 16)
+                        .expectIntRecord(
+                                "Preloading.Prerender.Attempt.SpeculationRules.Precision",
+                                /*kFalsePositive*/ 1)
+                        .expectIntRecord(
+                                "Preloading.Prerender.Attempt.SpeculationRules.Recall",
+                                /*kFalseNegative*/ 3)
                         .build();
 
         // Start prerendering `prerender.html`. This response will have

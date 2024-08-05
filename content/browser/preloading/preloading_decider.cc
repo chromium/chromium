@@ -28,6 +28,7 @@
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom.h"
 
@@ -360,8 +361,17 @@ void PreloadingDecider::UpdateSpeculationCandidates(
   preloading_data->SetIsNavigationInDomainCallback(
       content_preloading_predictor::kSpeculationRules,
       base::BindRepeating([](NavigationHandle* navigation_handle) -> bool {
+        // The page transition type check on activation can be relaxed by
+        // WebContentsDelegate. Calculating the navigation domain should follow
+        // the behavior. See comments in
+        // `AreInitialPrerenderNavigationParamsCompatibleWithNavigation()` on
+        // PrerenderHost for details.
         return ui::PageTransitionIsWebTriggerable(
-            navigation_handle->GetPageTransition());
+                   navigation_handle->GetPageTransition()) ||
+               navigation_handle->GetWebContents()
+                   ->GetDelegate()
+                   ->ShouldAllowPartialParamMismatchOfPrerender2(
+                       *navigation_handle);
       }));
   PredictorDomainCallback is_new_link_nav =
       base::BindRepeating([](NavigationHandle* navigation_handle) -> bool {
