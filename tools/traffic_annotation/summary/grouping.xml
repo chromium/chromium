@@ -384,7 +384,6 @@ after discussions on the right group.
       <annotation id="supervised_user_list_family_members"/>
       <annotation id="password_protection_request"/>
       <annotation id="permission_predictions"/>
-      <annotation id="safe_browsing_certificate_error_reporting"/>
       <annotation id="safe_browsing_client_side_phishing_detector"/>
       <annotation id="safe_browsing_extended_reporting"/>
       <annotation id="safe_browsing_extension_telemetry"/>
