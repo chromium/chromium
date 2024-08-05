@@ -1,4 +1,5 @@
 ci/Mac13 Tests
+ci/Oreo Phone Tester
 ci/ios-simulator
 ci/ios-simulator-full-configs
 ci/lacros-arm64-generic-rel
@@ -7,6 +8,7 @@ try/android-arm-compile-dbg
 try/android-arm64-rel
 try/android-arm64-rel-compilator
 try/android-binary-size
+try/android-oreo-arm64-dbg
 try/android-pie-arm64-dbg
 try/android-webview-oreo-arm64-dbg
 try/android-webview-pie-arm64-dbg

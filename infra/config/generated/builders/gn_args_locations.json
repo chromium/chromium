@@ -125,6 +125,7 @@
     "android-cronet-mainline-clang-x86-dbg": "try/android-cronet-mainline-clang-x86-dbg/gn-args.json",
     "android-cronet-x64-dbg": "try/android-cronet-x64-dbg/gn-args.json",
     "android-cronet-x86-dbg-10-tests": "try/android-cronet-x86-dbg-10-tests/gn-args.json",
+    "android-oreo-arm64-dbg": "try/android-oreo-arm64-dbg/gn-args.json",
     "android-pie-arm64-dbg": "try/android-pie-arm64-dbg/gn-args.json",
     "android-webview-oreo-arm64-dbg": "try/android-webview-oreo-arm64-dbg/gn-args.json",
     "android-webview-pie-arm64-dbg": "try/android-webview-pie-arm64-dbg/gn-args.json",

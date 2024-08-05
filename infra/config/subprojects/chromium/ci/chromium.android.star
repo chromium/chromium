@@ -643,6 +643,7 @@ ci.builder(
 
 ci.thin_tester(
     name = "Oreo Phone Tester",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
