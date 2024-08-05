@@ -82,10 +82,7 @@ bool IsPasswordSyncEnabled(PrefService* pref_service) {
   }
 }
 
-// WARNING: Use this function rather than base::FeatureList::IsEnabled(), it
-// defers the base::Feature checks to avoid adding ineligible users to the A/B
-// experiment.
-ActivationError CheckMinGmsVersionAndFlagEnabled(const base::Feature& feature) {
+ActivationError CheckMinGmsVersion() {
   std::string gms_version_str =
       base::android::BuildInfo::GetInstance()->gms_version_code();
   int gms_version = 0;
@@ -97,6 +94,18 @@ ActivationError CheckMinGmsVersionAndFlagEnabled(const base::Feature& feature) {
 
   if (gms_version < password_manager::GetLocalUpmMinGmsVersion()) {
     return ActivationError::kOutdatedGmsCore;
+  }
+
+  return ActivationError::kNone;
+}
+
+// WARNING: Use this function rather than base::FeatureList::IsEnabled(), it
+// defers the base::Feature checks to avoid adding ineligible users to the A/B
+// experiment.
+ActivationError CheckMinGmsVersionAndFlagEnabled(const base::Feature& feature) {
+  ActivationError error = CheckMinGmsVersion();
+  if (error != ActivationError::kNone) {
+    return error;
   }
 
   return base::FeatureList::IsEnabled(feature) ? ActivationError::kNone
@@ -203,9 +212,7 @@ void MaybeActivateSplitStoresAndLocalUpm(
   UserType user_type = GetUserType(pref_service, login_db_directory);
   switch (user_type) {
     case UserType::kNonSyncingAndNoMigrationNeeded:
-      error = CheckMinGmsVersionAndFlagEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+      error = CheckMinGmsVersion();
       break;
     case UserType::kNonSyncingAndMigrationNeeded:
       if (ShouldDelayMigrationUntillMigrationWarningIsAcknowledged(
@@ -229,9 +236,7 @@ void MaybeActivateSplitStoresAndLocalUpm(
         error = ActivationError::kInitialUpmMigrationMissing;
         break;
       }
-      error = CheckMinGmsVersionAndFlagEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+      error = CheckMinGmsVersion();
       if (error != ActivationError::kNone) {
         break;
       }
@@ -341,29 +346,8 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
     return;
   }
 
-  // The user was activated. Only deactivate based on the *NoMigration* flag.
-  // - If problems arise when rolling out NoMigration (first launch), disable
-  //   that flag server-side. Non-syncing users will revert to using the login
-  //   DB. Syncing users will revert to a single PasswordStore talking to
-  //   GmsCore.
-  // - If problems arise when rolling out WithMigration (second launch), there
-  //   are 2 options:
-  //     1. Keep NoMigration enabled. This means:
-  //       * Users whose migration always fails stay deactivated, which is good.
-  //         For those, it's enough to implement client-side fixes for the
-  //         migration.
-  //       * Users whose migration was incorrectly reported as successful (e.g.
-  //         some passwords are missing) stay activated, which is bad. For
-  //         those, either implement new client-side fixes as above (the
-  //         login DB data still exists, the migration can be re-attempted) and
-  //         wait for them to launch, or go with option 2 below.
-  //     2. Disable NoMigration.
-  //       * Deactivates all users, reverting them to the old behavior, even
-  //         healthy ones.
-  // This flag check also keeps the user in the A/B experiment after activation.
-  ActivationError error = CheckMinGmsVersionAndFlagEnabled(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+  // Check if GmsCore was downgraded.
+  ActivationError error = CheckMinGmsVersion();
   // Continue recording the metric for previously activated users. so they show
   // up on the dashboard no matter the aggregation window. One caveat is the
   // state recorded now might not be the same one where the user got activated

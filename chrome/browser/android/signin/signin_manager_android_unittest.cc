@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -33,7 +32,6 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/offline_pages/core/stub_offline_page_model.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -71,9 +69,9 @@ std::unique_ptr<KeyedService> BuildOfflinePageModel(SimpleFactoryKey* key) {
 class SigninManagerAndroidTest : public ::testing::Test {
  public:
   SigninManagerAndroidTest() {
-    feature_list_.InitAndDisableFeature(
-        password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    // TODO(crbug.com/346556567): Switch with the WithLocalUpmTest, i.e. run
+    // most tests with UPM enabled rather than disabled.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test("0");
   }
 
   SigninManagerAndroidTest(const SigninManagerAndroidTest&) = delete;
@@ -162,7 +160,6 @@ class SigninManagerAndroidTest : public ::testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::BackgroundTracingManager>
       background_tracing_manager_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that wiping all data also deletes bookmarks.
@@ -199,15 +196,11 @@ TEST_F(SigninManagerAndroidTest, WipePasswordsIfLocalUpmOff) {
 class SigninManagerAndroidWithLocalUpmTest : public SigninManagerAndroidTest {
  public:
   SigninManagerAndroidWithLocalUpmTest() {
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    // Override the GMS version to be big enough for local UPM support, so these
+    // tests still pass in bots with an outdated version.
     base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
         base::NumberToString(password_manager::GetLocalUpmMinGmsVersion()));
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SigninManagerAndroidWithLocalUpmTest, DoNotWipePasswordsIfLocalUpmOn) {

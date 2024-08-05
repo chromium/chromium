@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -34,7 +33,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -1639,19 +1637,12 @@ class ChromePasswordProtectionServiceWithAccountPasswordStoreTest
  public:
   ChromePasswordProtectionServiceWithAccountPasswordStoreTest() {
 #if BUILDFLAG(IS_ANDROID)
-    // Using the account store on Android requires enabling the flag for UPM
-    // support of local passwords. Skip the Gms version check, otherwise the
-    // flag won't do anything in bots that have outdated GmsCore.
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    // Override the GMS version to be big enough for local UPM support, so these
+    // tests still pass in bots with an outdated version.
     base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
         base::NumberToString(password_manager::GetLocalUpmMinGmsVersion()));
 #endif
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
@@ -1693,9 +1684,6 @@ TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
 class PasswordCheckupWithPhishGuardTest
     : public ChromePasswordProtectionServiceTest {
  protected:
-  base::test::ScopedFeatureList feature_list_;
-  raw_ptr<syncer::TestSyncService> sync_service_ = nullptr;
-
   void SetUpSyncService(bool is_syncing_passwords) {
     // Setting up the syncing account.
     CoreAccountInfo account;
@@ -1721,18 +1709,16 @@ class PasswordCheckupWithPhishGuardTest
         LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED, "unused_token",
         WarningUIType::MODAL_DIALOG, WarningAction::CHANGE_PASSWORD);
   }
+
+  raw_ptr<syncer::TestSyncService> sync_service_ = nullptr;
 };
 
 class PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest
     : public PasswordCheckupWithPhishGuardTest {
  public:
   void SetUp() override {
-    // Splitting the stores requires enabling the flag for UPM support of local
-    // passwords. Skip the Gms version check, otherwise the flag won't do
-    // anything in bots that have outdated GmsCore.
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    // Override the GMS version to be big enough for local UPM support, so these
+    // tests still pass in bots with an outdated version.
     base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
         base::NumberToString(password_manager::GetLocalUpmMinGmsVersion()));
     PasswordCheckupWithPhishGuardTest::SetUp();
@@ -1825,9 +1811,8 @@ class PasswordCheckupWithPhishGuardUPMBeforeStoreSplitAndroidTest
     : public PasswordCheckupWithPhishGuardTest {
  public:
   void SetUp() override {
-    feature_list_.InitAndDisableFeature(
-        password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    // Force split stores to be off by faking an outdated GmsCore version.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test("0");
     PasswordCheckupWithPhishGuardTest::SetUp();
   }
 };
