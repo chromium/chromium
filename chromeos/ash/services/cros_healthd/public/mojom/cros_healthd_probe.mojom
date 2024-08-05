@@ -320,12 +320,16 @@ union BlockDeviceFirmware {
 
 // Purpose of the storage device.
 //
-// NextMinVersion: 1, NextIndex: 3
+// NextMinVersion: 2, NextIndex: 4
 [Stable, Extensible]
 enum StorageDevicePurpose {
   [Default] kUnknown = 0,
+  // The storage device is the root device which ChromeOS boots from.
   kBootDevice = 1,
-  kSwapDevice = 2,
+  // DEPRECATED. See b/287120238.
+  DEPRECATED_kSwapDevice = 2,
+  // The storage device is not the root device which ChromeOS boots from.
+  [MinVersion=1] kNonBootDevice = 3,
 };
 
 // NVMe-specific device info.
@@ -386,7 +390,7 @@ union BlockDeviceInfo {
 
 // Information related to a specific non-removable block device.
 //
-// NextMinVersion: 3, NextIndex: 19
+// NextMinVersion: 4, NextIndex: 20
 [Stable]
 struct NonRemovableBlockDeviceInfo {
   // IO statistics
@@ -444,6 +448,9 @@ struct NonRemovableBlockDeviceInfo {
   // String representatil of the device FW version
   [MinVersion=2]
   string? firmware_string@18;
+  // Whether the block device is a spinning disk.
+  [MinVersion=3]
+  bool? is_rotational@19;
 };
 
 // CPU probe result. Can either be populated with the CpuInfo or an error
@@ -1996,13 +2003,19 @@ struct TouchscreenDevice {
 
 // Data of a touchpad device.
 //
-// NextMinVersion: 1, NextIndex: 2
+// NextMinVersion: 2, NextIndex: 4
 [Stable]
 struct TouchpadDevice {
   // The input device of this touchpad.
   InputDevice input_device@0;
   // The kernel driver in use.
   string driver_name@1;
+  // The touchpad vendor id
+  [MinVersion=1]
+  string? vendor_id@2;
+  // the touchpad product id
+  [MinVersion=1]
+  string? product_id@3;
 };
 
 // Data of a input device.

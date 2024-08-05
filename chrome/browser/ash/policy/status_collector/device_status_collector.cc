@@ -1003,8 +1003,10 @@ class DeviceStatusCollectorState : public StatusCollectorState {
               case cros_healthd::StorageDevicePurpose::kBootDevice:
                 disk_info_out->set_purpose(em::DiskInfo::PURPOSE_BOOT);
                 break;
-              case cros_healthd::StorageDevicePurpose::kSwapDevice:
+              case cros_healthd::StorageDevicePurpose::DEPRECATED_kSwapDevice:
                 disk_info_out->set_purpose(em::DiskInfo::PURPOSE_SWAP);
+                break;
+              case cros_healthd::StorageDevicePurpose::kNonBootDevice:
                 break;
             }
           }

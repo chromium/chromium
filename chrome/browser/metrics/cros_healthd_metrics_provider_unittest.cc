@@ -47,9 +47,9 @@ constexpr auto kTypeEmmc =
 constexpr auto kTypeUfs =
     metrics::SystemProfileProto::Hardware::InternalStorageDevice::TYPE_UFS;
 constexpr auto kMojoPurpose =
-    ash::cros_healthd::mojom::StorageDevicePurpose::kSwapDevice;
+    ash::cros_healthd::mojom::StorageDevicePurpose::kBootDevice;
 constexpr auto kUmaPurpose =
-    metrics::SystemProfileProto::Hardware::InternalStorageDevice::PURPOSE_SWAP;
+    metrics::SystemProfileProto::Hardware::InternalStorageDevice::PURPOSE_BOOT;
 
 }  // namespace
 
