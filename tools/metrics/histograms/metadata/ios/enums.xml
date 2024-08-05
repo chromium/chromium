@@ -635,6 +635,11 @@ the generic promo launch. -->
   <int value="6" label="Success"/>
 </enum>
 
+<enum name="IOSSafetyCheckFreshnessTrigger">
+  <int value="0" label="Password Check - State Changed"/>
+  <int value="1" label="Update Chrome Check - State Changed"/>
+</enum>
+
 <enum name="IOSSaveToDriveOutcomeType">
   <int value="0" label="Failure - WebState Hidden"/>
   <int value="1" label="Failure - WebState Destroyed"/>

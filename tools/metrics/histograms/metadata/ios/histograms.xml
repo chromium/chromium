@@ -3424,6 +3424,16 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.SafetyCheck.FreshnessTrigger"
+    enum="IOSSafetyCheckFreshnessTrigger" expires_after="2025-01-01">
+  <owner>bwwilliams@google.com</owner>
+  <owner>thegreenfrog@google.com</owner>
+  <summary>
+    This histogram logs the reason for signaling freshness to the Segmentation
+    Platform when the Safety Check Manager updates the freshness status.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SafetyCheck.MagicStack.ModuleExistsInModuleOrder"
     enum="BooleanMatched" expires_after="2024-12-24">
   <owner>bwwilliams@google.com</owner>
