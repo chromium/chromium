@@ -491,9 +491,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       "realboxMatchSearchboxTheme",
       base::FeatureList::IsEnabled(ntp_features::kRealboxMatchSearchboxTheme));
 
-  bool redesigned_modules_enabled = ntp_features::IsNtpModulesRedesignedEnabled(
-      g_browser_process->GetApplicationLocale(),
-      GetVariationsServiceCountryCode(g_browser_process->variations_service()));
+  bool redesigned_modules_enabled =
+      base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned);
   source->AddString("realboxWidthBehavior",
                     redesigned_modules_enabled ? "wide" : "");
   source->AddBoolean("realboxIsTall", redesigned_modules_enabled);

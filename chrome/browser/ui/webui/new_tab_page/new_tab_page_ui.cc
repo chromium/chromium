@@ -23,7 +23,6 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion_handler.h"
@@ -164,9 +163,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       base::FeatureList::IsEnabled(ntp_features::kNtpOneGoogleBar));
   source->AddBoolean("shortcutsEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpShortcuts));
-  bool redesigned_modules_enabled = ntp_features::IsNtpModulesRedesignedEnabled(
-      g_browser_process->GetApplicationLocale(),
-      GetVariationsServiceCountryCode(g_browser_process->variations_service()));
+  bool redesigned_modules_enabled =
+      base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned);
   source->AddBoolean("singleRowShortcutsEnabled", redesigned_modules_enabled);
   source->AddBoolean("logoEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpLogo));

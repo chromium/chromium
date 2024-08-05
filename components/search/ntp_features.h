@@ -228,11 +228,6 @@ extern const base::FeatureParam<bool>
 // Parameter determining the whether the steady state realbox has a shadow.
 extern const base::FeatureParam<bool> kNtpRealboxCr23SteadyStateShadow;
 
-// Returns whether the NTP redesigned launchpad experience is enabled for the
-// given locale and country code.
-bool IsNtpModulesRedesignedEnabled(std::string application_locale,
-                                   std::string country_code);
-
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
 
