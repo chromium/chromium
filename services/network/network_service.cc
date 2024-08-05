@@ -498,7 +498,9 @@ NetworkService::~NetworkService() {
   DCHECK(network_contexts_.empty());
 
   if (file_net_log_observer_) {
-    file_net_log_observer_->StopObserving(nullptr /*polled_data*/,
+    auto polled_data =
+        std::make_unique<base::Value>(std::move(net_log_polled_data_list_));
+    file_net_log_observer_->StopObserving(std::move(polled_data),
                                           base::OnceClosure());
   }
 
@@ -1080,6 +1082,10 @@ void NetworkService::OnNetworkContextConnectionClosed(
     NetworkContext* network_context) {
   auto it = owned_network_contexts_.find(network_context);
   CHECK(it != owned_network_contexts_.end(), base::NotFatalUntil::M130);
+  if (file_net_log_observer_) {
+    net_log_polled_data_list_.Append(
+        net::GetNetInfo(network_context->url_request_context()));
+  }
   owned_network_contexts_.erase(it);
 }
 

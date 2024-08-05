@@ -1346,6 +1346,9 @@ TEST_F(NetworkServiceTestWithService, StartsNetLog) {
 
   base::Value::Dict log_dict = base::test::ParseJsonDictFromFile(log_path);
   ASSERT_EQ(*log_dict.FindStringByDottedPath("constants.amiatest"), "iamatest");
+
+  // The log should have a "polledData" list.
+  ASSERT_TRUE(log_dict.FindList("polledData"));
 }
 
 // Verifies that a passed net log file is successfully opened and sane data
