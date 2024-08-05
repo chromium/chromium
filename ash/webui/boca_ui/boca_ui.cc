@@ -62,6 +62,11 @@ BocaUI::BocaUI(content::WebUI* web_ui)
       "trusted-types polymer_resin lit-html goog#html polymer-html-literal "
       "polymer-template-event-attribute-policy;");
 
+  // Enables the page to load images. The page is restricted to only loading
+  // images from data URLs passed to the page.
+  host_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ImgSrc, "img-src data:;");
+
   // For testing
   host_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
