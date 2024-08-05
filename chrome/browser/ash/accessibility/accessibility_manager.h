@@ -523,6 +523,7 @@ class AccessibilityManager
   void PostLoadEnhancedNetworkTts();
 
   void UpdateAlwaysShowMenuFromPref();
+  void OnFaceGazeChanged();
   void OnLargeCursorChanged();
   void OnLiveCaptionChanged();
   void OnStickyKeysChanged();

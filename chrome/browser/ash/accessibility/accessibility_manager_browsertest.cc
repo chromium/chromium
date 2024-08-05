@@ -485,7 +485,8 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {features::kOnDeviceSpeechRecognition,
          ::features::kAccessibilityReducedAnimations,
-         ::features::kAccessibilityMouseKeys},
+         ::features::kAccessibilityMouseKeys,
+         ::features::kAccessibilityFaceGaze},
         {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
@@ -995,6 +996,16 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
   EXPECT_EQ(600, panel->GetWidget()->GetWindowBoundsInScreen().width());
   EXPECT_TRUE(root_windows[0]->GetBoundsInScreen().Contains(
       panel->GetWidget()->GetWindowBoundsInScreen()));
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
+                       FaceGazeSettingsPageOpensWhenFeatureIsEnabled) {
+  base::RunLoop waiter;
+  AccessibilityManager::Get()->SetOpenSettingsSubpageObserverForTest(
+      base::BindLambdaForTesting([&waiter]() { waiter.Quit(); }));
+  // Enable FaceGaze and wait for settings page to open.
+  AccessibilityManager::Get()->EnableFaceGaze(true);
+  waiter.Run();
 }
 
 class AccessibilityManagerDlcTest : public AccessibilityManagerTest {

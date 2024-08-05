@@ -133,6 +133,8 @@ using ::extensions::api::braille_display_private::StubBrailleController;
 // When this flag is set, system sounds will not be played.
 constexpr char kAshDisableSystemSounds[] = "ash-disable-system-sounds";
 
+constexpr char kFaceGazeSettingsPath[] = "manageAccessibility/faceGaze";
+
 // A key for the spoken feedback enabled boolean state for a known user.
 const char kUserSpokenFeedbackEnabled[] = "UserSpokenFeedbackEnabled";
 
@@ -654,6 +656,15 @@ void AccessibilityManager::EnableLargeCursor(bool enabled) {
   PrefService* pref_service = profile_->GetPrefs();
   pref_service->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, enabled);
   pref_service->CommitPendingWrite();
+}
+
+void AccessibilityManager::OnFaceGazeChanged() {
+  OnAccessibilityCommonChanged(prefs::kAccessibilityFaceGazeEnabled);
+  const bool enabled =
+      profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityFaceGazeEnabled);
+  if (enabled) {
+    OpenSettingsSubpage(kFaceGazeSettingsPath);
+  }
 }
 
 void AccessibilityManager::OnLargeCursorChanged() {
@@ -1656,9 +1667,8 @@ void AccessibilityManager::SetProfile(Profile* profile) {
     if (::features::IsAccessibilityFaceGazeEnabled()) {
       pref_change_registrar_->Add(
           prefs::kAccessibilityFaceGazeEnabled,
-          base::BindRepeating(
-              &AccessibilityManager::OnAccessibilityCommonChanged,
-              base::Unretained(this)));
+          base::BindRepeating(&AccessibilityManager::OnFaceGazeChanged,
+                              base::Unretained(this)));
     }
 
     local_state_pref_change_registrar_ =
