@@ -360,6 +360,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ProductComparisonItem& proto) {
   VISIT(product_comparison_uuid);
   VISIT(url);
   VISIT(unique_position);
+  VISIT(title);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ProductComparisonSpecifics& proto) {
