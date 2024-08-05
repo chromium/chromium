@@ -38,19 +38,31 @@ namespace {
 constexpr char kFeatureTourCompletedPref[] =
     "ash.picker.feature_tour.completed";
 
-std::u16string GetHeadingText() {
+std::u16string GetHeadingText(PickerFeatureTour::EditorStatus editor_status) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(
-      IDS_PICKER_FEATURE_TOUR_WITH_EDITOR_HEADING_TEXT);
+  switch (editor_status) {
+    case PickerFeatureTour::EditorStatus::kEligible:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_FEATURE_TOUR_WITH_EDITOR_HEADING_TEXT);
+    case PickerFeatureTour::EditorStatus::kNotEligible:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_FEATURE_TOUR_WITHOUT_EDITOR_HEADING_TEXT);
+  }
 #else
   return u"";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-std::u16string GetBodyText() {
+std::u16string GetBodyText(PickerFeatureTour::EditorStatus editor_status) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(
-      IDS_PICKER_FEATURE_TOUR_WITH_EDITOR_BODY_TEXT);
+  switch (editor_status) {
+    case PickerFeatureTour::EditorStatus::kEligible:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_FEATURE_TOUR_WITH_EDITOR_BODY_TEXT);
+    case PickerFeatureTour::EditorStatus::kNotEligible:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_FEATURE_TOUR_WITHOUT_EDITOR_BODY_TEXT);
+  }
 #else
   return u"";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -66,12 +78,13 @@ ui::ImageModel GetIllustration() {
 }
 
 std::unique_ptr<views::Widget> CreateWidget(
+    PickerFeatureTour::EditorStatus editor_status,
     base::RepeatingClosure learn_more_callback,
     base::RepeatingClosure completion_callback) {
   auto feature_tour_dialog =
       views::Builder<SystemDialogDelegateView>()
-          .SetTitleText(GetHeadingText())
-          .SetDescription(GetBodyText())
+          .SetTitleText(GetHeadingText(editor_status))
+          .SetDescription(GetBodyText(editor_status))
           .SetAcceptButtonText(l10n_util::GetStringUTF16(
               IDS_PICKER_FEATURE_TOUR_START_BUTTON_LABEL))
           .SetAcceptCallback(std::move(completion_callback))
@@ -108,6 +121,7 @@ void PickerFeatureTour::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 bool PickerFeatureTour::MaybeShowForFirstUse(
     PrefService* prefs,
+    EditorStatus editor_status,
     base::RepeatingClosure learn_more_callback,
     base::RepeatingClosure completion_callback) {
   auto* pref = prefs->FindPreference(kFeatureTourCompletedPref);
@@ -119,7 +133,7 @@ bool PickerFeatureTour::MaybeShowForFirstUse(
     return false;
   }
 
-  widget_ = CreateWidget(std::move(learn_more_callback),
+  widget_ = CreateWidget(editor_status, std::move(learn_more_callback),
                          std::move(completion_callback));
   widget_->Show();
 

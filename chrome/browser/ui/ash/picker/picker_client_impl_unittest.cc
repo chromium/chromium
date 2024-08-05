@@ -596,6 +596,38 @@ class PickerClientImplEditorTest : public PickerClientImplTest {
 };
 
 TEST_F(PickerClientImplEditorTest,
+       IsEligibleForEditorReturnsFalseIfEditorDisabled) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  GetEditorMediator(profile()).OverrideEditorModeForTesting(
+      ash::input_method::EditorMode::kHardBlocked);
+
+  EXPECT_FALSE(client.IsEligibleForEditor());
+}
+
+TEST_F(PickerClientImplEditorTest,
+       IsEligibleForEditorReturnsFalseIfHardBlocked) {
+  base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  GetEditorMediator(profile()).OverrideEditorModeForTesting(
+      ash::input_method::EditorMode::kHardBlocked);
+
+  EXPECT_FALSE(client.IsEligibleForEditor());
+}
+
+TEST_F(PickerClientImplEditorTest,
+       IsEligibleForEditorReturnsTrueIfSoftBlocked) {
+  base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  GetEditorMediator(profile()).OverrideEditorModeForTesting(
+      ash::input_method::EditorMode::kSoftBlocked);
+
+  EXPECT_TRUE(client.IsEligibleForEditor());
+}
+
+TEST_F(PickerClientImplEditorTest,
        CacheEditorContextReturnsNullCallbackWhenEditorFlagDisabled) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());

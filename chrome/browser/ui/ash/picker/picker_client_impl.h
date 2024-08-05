@@ -68,6 +68,7 @@ class PickerClientImpl
                        std::optional<ash::PickerCategory> category,
                        CrosSearchResultsCallback callback) override;
   void StopCrosQuery() override;
+  bool IsEligibleForEditor() override;
   ShowEditorCallback CacheEditorContext() override;
   void GetSuggestedEditorResults(
       SuggestedEditorResultsCallback callback) override;

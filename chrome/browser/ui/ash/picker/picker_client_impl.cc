@@ -317,6 +317,17 @@ void PickerClientImpl::StopCrosQuery() {
   search_engine_->StopQuery();
 }
 
+bool PickerClientImpl::IsEligibleForEditor() {
+  ash::input_method::EditorMediator* editor_mediator =
+      GetEditorMediator(profile_);
+  if (editor_mediator == nullptr) {
+    return false;
+  }
+
+  return editor_mediator->GetEditorMode() !=
+         ash::input_method::EditorMode::kHardBlocked;
+}
+
 PickerClientImpl::ShowEditorCallback PickerClientImpl::CacheEditorContext() {
   ash::input_method::EditorMediator* editor_mediator =
       GetEditorMediator(profile_);

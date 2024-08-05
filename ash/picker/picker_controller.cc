@@ -370,6 +370,9 @@ void PickerController::ToggleWidget(
       g_feature_tour_enabled && prefs &&
       feature_tour_.MaybeShowForFirstUse(
           prefs,
+          client_->IsEligibleForEditor()
+              ? PickerFeatureTour::EditorStatus::kEligible
+              : PickerFeatureTour::EditorStatus::kNotEligible,
           base::BindRepeating(&PickerController::OnFeatureTourLearnMore,
                               weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&PickerController::OnFeatureTourCompleted,

@@ -56,6 +56,9 @@ class ASH_PUBLIC_EXPORT PickerClient {
   // (`app_list::SearchEngine::StopQuery`).
   virtual void StopCrosQuery() = 0;
 
+  // Whether this device is eligble for editor.
+  virtual bool IsEligibleForEditor() = 0;
+
   // Caches the current input field context and returns a callback to show
   // Editor. If Editor is not available, this returns a null callback.
   virtual ShowEditorCallback CacheEditorContext() = 0;

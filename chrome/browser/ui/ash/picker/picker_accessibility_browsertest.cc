@@ -733,8 +733,10 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   ash::PickerFeatureTour feature_tour;
 
   sm_.Call([this, &feature_tour]() {
-    feature_tour.MaybeShowForFirstUse(browser()->profile()->GetPrefs(),
-                                      base::DoNothing(), base::DoNothing());
+    feature_tour.MaybeShowForFirstUse(
+        browser()->profile()->GetPrefs(),
+        ash::PickerFeatureTour::EditorStatus::kEligible, base::DoNothing(),
+        base::DoNothing());
   });
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

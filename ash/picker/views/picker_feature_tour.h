@@ -22,6 +22,11 @@ namespace ash {
 
 class ASH_EXPORT PickerFeatureTour {
  public:
+  enum class EditorStatus {
+    kEligible,
+    kNotEligible,
+  };
+
   PickerFeatureTour();
   PickerFeatureTour(const PickerFeatureTour&) = delete;
   PickerFeatureTour& operator=(const PickerFeatureTour&) = delete;
@@ -38,6 +43,7 @@ class ASH_EXPORT PickerFeatureTour {
   // information. `completion_callback` is called when the user has completed
   // the feature tour. Returns whether the feature tour dialog was shown or not.
   bool MaybeShowForFirstUse(PrefService* prefs,
+                            EditorStatus editor_status,
                             base::RepeatingClosure learn_more_callback,
                             base::RepeatingClosure completion_callback);
 
@@ -47,6 +53,10 @@ class ASH_EXPORT PickerFeatureTour {
   const views::Button* learn_more_button_for_testing() const;
   // Returns the button to complete the tour.
   const views::Button* complete_button_for_testing() const;
+  // Returns the title of the feature tour.
+  std::u16string_view GetTitleTextForTesting() const;
+  // Returns the description of the feature tour.
+  std::u16string_view GetDescriptionForTesting() const;
 
  private:
   views::UniqueWidgetPtr widget_;
