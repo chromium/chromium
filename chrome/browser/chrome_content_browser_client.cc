@@ -3820,8 +3820,9 @@ bool ChromeContentBrowserClient::ShouldDenyRequestOnCertificateError(
 
 namespace {
 
-bool ShouldDisableForcedColorsForWebContent(content::WebContents* contents) {
-  if (!contents) {
+bool ShouldDisableForcedColorsForWebContent(content::WebContents* contents,
+                                            bool in_forced_colors) {
+  if (!contents || !in_forced_colors) {
     return false;
   }
 
@@ -3859,7 +3860,8 @@ bool ShouldDisableForcedColorsForWebContent(content::WebContents* contents) {
 bool IsForcedColorsEnabledForWebContent(content::WebContents* contents,
                                         const ui::NativeTheme* native_theme) {
   return native_theme->InForcedColorsMode() &&
-         !ShouldDisableForcedColorsForWebContent(contents);
+         !ShouldDisableForcedColorsForWebContent(contents,
+                                                 /*in_forced_colors=*/true);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -4541,8 +4543,8 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   web_prefs->in_forced_colors =
       IsForcedColorsEnabledForWebContent(web_contents, GetWebTheme());
 
-  web_prefs->is_forced_colors_disabled =
-      ShouldDisableForcedColorsForWebContent(web_contents);
+  web_prefs->is_forced_colors_disabled = ShouldDisableForcedColorsForWebContent(
+      web_contents, GetWebTheme()->InForcedColorsMode());
 
   UpdatePreferredColorScheme(
       web_prefs,
@@ -4644,8 +4646,8 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
   prefs_changed |= (web_prefs->in_forced_colors != in_forced_colors);
   web_prefs->in_forced_colors = in_forced_colors;
 
-  const bool is_forced_colors_disabled =
-      ShouldDisableForcedColorsForWebContent(web_contents);
+  const bool is_forced_colors_disabled = ShouldDisableForcedColorsForWebContent(
+      web_contents, GetWebTheme()->InForcedColorsMode());
   prefs_changed |=
       (web_prefs->is_forced_colors_disabled != is_forced_colors_disabled);
   web_prefs->is_forced_colors_disabled = is_forced_colors_disabled;
