@@ -42,6 +42,7 @@
 <translation id="2801787514987684416">Προβολή πληροφοριών καταστήματος;</translation>
 <translation id="2928243913527329289">Google | Σχετικά με αυτό το κατάστημα</translation>
 <translation id="2977480621796371840">Κατάργηση από την ομάδα</translation>
+<translation id="29919168204617356">Οι ανενεργές καρτέλες θα κλείσουν αυτόματα. Μπορείτε να τις βρείτε στο Ιστορικό ανά πάσα στιγμή.</translation>
 <translation id="3008554597174452548">Διακοπή παρακολούθησης προϊόντος</translation>
 <translation id="3026391124054406831">Δημιουργήστε ομάδες για να οργανώσετε τις καρτέλες σας.</translation>
 <translation id="3051031624272448591">Μπορείτε να τις επαναφέρετε ανά πάσα στιγμή από το ιστορικό</translation>
@@ -52,6 +53,7 @@
 <translation id="3322827343001922122">Άνοιγμα του μενού ενεργειών ομάδας καρτελών για την ομάδα καρτελών <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Πρόταση: <ph name="NUMBER_OF_TABS" /> καρτέλες φαίνονται σχετικές. Να γίνει ομαδοποίηση;</translation>
 <translation id="3547352561153509682">Αυτή η ενέργεια θα διαγράψει την ομάδα από όλες τις συσκευές που είναι συνδεδεμένες στον λογαριασμό <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">Παράθυρο διαλόγου απόκρυψης ανενεργών καρτελών</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Μικρ. προεπ. φύλλου κοινής χρήσης.</translation>
 <translation id="381219490185664296">Να καταργηθεί η ομαδοποίηση της ομάδας καρτελών;</translation>
@@ -139,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> έλεγχος από την Google}other{<ph name="REVIEWS_COUNT_MANY" /> έλεγχοι από την Google}}</translation>
 <translation id="7559245342362162951">Εμφάνιση καρτελών ομάδας σε πλέγμα πλήρους οθόνης</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
+<translation id="7688386659311034820">Παράθυρο διαλόγου ανενεργών καρτελών</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Κοινοποίηση <ph name="TABS_COUNT_ONE" /> επιλεγμένης καρτέλας}other{Κοινοποίηση <ph name="TABS_COUNT_MANY" /> επιλεγμένων καρτελών}}</translation>
 <translation id="7773714564112603605">Κατάργηση καρτέλας και διαγραφή ομάδας</translation>
 <translation id="7792771145871471484">Έλεγχος των προτάσεων.</translation>

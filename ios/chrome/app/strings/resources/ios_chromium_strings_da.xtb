@@ -144,6 +144,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chromium-d
 <translation id="5131565040785979529">Din organisation, <ph name="DOMAIN" />, administrerer den konto, du er logget ind på, og hvordan Chromium bruges.</translation>
 <translation id="5146749061471423558">Føj bogmærker til Chromium</translation>
 <translation id="5171868502429358653">Log ind på Chromium</translation>
+<translation id="5203483872492817335">Få hurtigere adgang til Chromium via docken på din iPads startskærm</translation>
 <translation id="5213683223491576284">Åbner Adgangs­kode­admin­istrator i Chromium.</translation>
 <translation id="5224391634244552924">Der er ingen gemte adgangskoder. Chromium kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="5242782538551259282">Nogle af dine Chromium-data er endnu ikke gemt på din Google-konto.
@@ -225,6 +226,7 @@ Vær opmærksom på følgende:
 Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssætningen bliver ikke sendt til eller gemt af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />slette Chromium-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromium-notifikationer er i øjeblikket deaktiveret i enhedsindstillingerne.</translation>
 <translation id="7222001353246886083">Søg efter ${searchphrase} i Chromium</translation>
+<translation id="7228180817326917122">Tip til Chromium: Vælg, hvor din adresselinje skal placeres</translation>
 <translation id="725427773388857052">Chromium kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere.</translation>
 <translation id="7269362888766543920">Nogle tilføjelser får Chromium til at gå ned. Prøv at afinstallere dem.</translation>
 <translation id="7285031092584344905">Få adgang til dine Chromium-adgangskoder og meget mere i andre apps.</translation>
@@ -247,6 +249,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="7928628054454574139">Åbn Chromium, hver gang du trykker på links i andre apps</translation>
 <translation id="7931842119211730154">Lås inkognitofaner, når du lukker Chromium</translation>
 <translation id="7934404985878918282">Se Chromium-læselisten</translation>
+<translation id="7947765692209663835">Få hurtigere adgang til Chromium via docken på din iPhones startskærm</translation>
 <translation id="7971753607796745700">Føj et element til læselisten i Chromium</translation>
 <translation id="7980860476903281594">Chromium deler din lokation med godkendte websites.</translation>
 <translation id="7994322153108931467">Aktivér notifikationer i iOS-indstillingerne for at få nyttige tips til Chromium.</translation>
@@ -265,6 +268,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="8386869251364507178">Chromium-handlinger</translation>
 <translation id="8409374867500149834">Du har Chromiums stærkeste beskyttelse mod skadelige websites</translation>
 <translation id="8458950033462118672">Du kan åbne links i Chromium automatisk ved at angive Chromium som din standardapp til browsing.</translation>
+<translation id="8473874987831035139">Tip til Chromium: Flyt Chromium til docken</translation>
 <translation id="8502918057530111907">Brug som standard Chromium til nemt at få prisinfo</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut. Data, som kun er gemt på denne enhed, mens du var logget ind, slettes. Dette kan omfatte historik og adgangskoder.}one{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut. Data, som kun er gemt på denne enhed, mens du var logget ind, slettes. Dette kan omfatte historik og adgangskoder.}other{Dette sker, når Chromium ikke bruges i {THRESHOLD} minutter. Data, som kun er gemt på denne enhed, mens du var logget ind, slettes. Dette kan omfatte historik og adgangskoder.}}</translation>
 <translation id="858114650497379505">Du kan bruge de adgangskoder, du har gemt i Adgangs­kode­admin­istrator, i andre apps på din iPhone.</translation>

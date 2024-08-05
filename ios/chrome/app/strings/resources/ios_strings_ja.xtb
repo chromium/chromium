@@ -885,6 +885,7 @@
 <translation id="5396950905475481456">ファミリー メンバーの招待</translation>
 <translation id="5407969256130905701">変更を破棄</translation>
 <translation id="5414763847370083940">値下げしたサイトがある場合は、アラートが表示されます。</translation>
+<translation id="5415289094036440596">パスキーは共有できません</translation>
 <translation id="5416022985862681400">過去 7 日間</translation>
 <translation id="5416455648658732408">タブグループに移動</translation>
 <translation id="5423269318075950257">価格のトラッキング</translation>
@@ -969,7 +970,7 @@
 <translation id="5802829331520313983">セットアップ…</translation>
 <translation id="5803566855766646066">この新しいカードを破棄してもよろしいですか？</translation>
 <translation id="5804241973901381774">権限</translation>
-<translation id="5812974770859303494">追加先…</translation>
+<translation id="5812974770859303494">追加する</translation>
 <translation id="581659025233126501">同期をオンにする</translation>
 <translation id="5817176759448082654">パスワード チェックアップ</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> によって管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -1293,6 +1294,7 @@
 <translation id="734758817008927353">カードの保存オプション</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
 <translation id="7353432112255316844">本人確認</translation>
+<translation id="736564850024123010">アドレスバーの位置を変更して使用環境をカスタマイズできます。</translation>
 <translation id="7367530036083223701">パスワード マネージャー ウィジェットを使用すると、ホーム画面からパスワードに安全にアクセスできます。</translation>
 <translation id="7380220816562673297">現在のところ、パスワードはファミリー メンバーとのみ共有できます。最大 6 人のメンバーを招待して<ph name="BEGIN_LINK" />ファミリー グループを作成<ph name="END_LINK" />すると、Google のさまざまなサービスやサブスクリプションをさらに活用できます。</translation>
 <translation id="739101637685146669">ブックマークする URL を指定してください。</translation>
@@ -1595,6 +1597,7 @@
 <translation id="8730621377337864115">完了</translation>
 <translation id="8731958888085671579">[ページ内を検索] を非表示にする</translation>
 <translation id="87371078663613140">メニューバーのオプションを確認します</translation>
+<translation id="8739145690729256497">通知を許可する</translation>
 <translation id="8741995161408053644">Google アカウントでの他の形式の閲覧履歴が <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> に残ることがあります。</translation>
 <translation id="8750037785291841318">タブはここに表示されます</translation>
 <translation id="8756969031206844760">パスワードを更新しますか？</translation>

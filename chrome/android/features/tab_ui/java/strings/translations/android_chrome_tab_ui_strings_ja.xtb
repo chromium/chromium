@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">オレンジ</translation>
 <translation id="125153950246128346">タップすると他のタブが表示されます</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> 個のタブグループのオプション</translation>
+<translation id="1340839264183302272">グループから退出</translation>
 <translation id="1419023007528516122">この操作を行うとデバイスからグループが完全に削除されます</translation>
 <translation id="1486715732399361704">ここですべてのタブグループを表示できます</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分前に作成}other{<ph name="NUM_MINS_MANY" /> 分前に作成}}</translation>
@@ -41,6 +42,7 @@
 <translation id="2801787514987684416">ストア情報を表示しますか？</translation>
 <translation id="2928243913527329289">Google | このショップについて</translation>
 <translation id="2977480621796371840">グループから削除</translation>
+<translation id="29919168204617356">アクティブでないタブは自動的に閉じられます。閉じたタブは履歴でいつでも見つけることができます。</translation>
 <translation id="3008554597174452548">商品のトラッキングを停止</translation>
 <translation id="3026391124054406831">グループを作成すると、タブを整理できます。</translation>
 <translation id="3051031624272448591">履歴でいつでも元に戻すことができます</translation>
@@ -51,6 +53,7 @@
 <translation id="3322827343001922122">タブグループ <ph name="TITLE_OF_GROUP" /> のタブグループ操作メニューを開く</translation>
 <translation id="3328308545011660196">おすすめ: <ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
 <translation id="3547352561153509682"><ph name="USER_EMAIL" /> にログインしているすべてのデバイスからグループを削除します</translation>
+<translation id="3613492231657284463">アクティブでないタブのダイアログを非表示にする</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">共有シートのプレビューのサムネイル。</translation>
 <translation id="381219490185664296">タブグループを解除しますか？</translation>
@@ -120,6 +123,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">タブを左に移動</translation>
 <translation id="6615455863669487791">表示</translation>
+<translation id="6694634756612002311">共有の管理</translation>
 <translation id="6744956528665271406">グループの色を編集</translation>
 <translation id="6856809498882026482">複数選択モードを非表示にします</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{タブを共有する}other{タブを共有する}}</translation>
@@ -137,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google による審査 <ph name="REVIEWS_COUNT_ONE" /> 件}other{Google による審査 <ph name="REVIEWS_COUNT_MANY" /> 件}}</translation>
 <translation id="7559245342362162951">グループのタブを全画面グリッドで表示</translation>
 <translation id="7658239707568436148">キャンセル</translation>
+<translation id="7688386659311034820">アクティブでないタブのダイアログ</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブを共有}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブを共有}}</translation>
 <translation id="7773714564112603605">タブとグループを削除</translation>
 <translation id="7792771145871471484">提案を確認します。</translation>
@@ -171,6 +176,7 @@
 <translation id="8926389886865778422">再表示させない</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{タブグループの <ph name="TABS_COUNT_ONE" /> 個のタブを展開します。}other{タブグループの <ph name="TABS_COUNT_MANY" /> 個のタブを展開します。}}</translation>
 <translation id="9090098097337832354">このショップに関する情報は非表示になっています</translation>
+<translation id="9111228330448174435">新しいタブグループの作成時にダイアログを表示する</translation>
 <translation id="9150694013019234766">画面下部にあるタブグループのタブを切り替えます</translation>
 <translation id="9169594135889675189">グループに新しいタブを追加</translation>
 <translation id="9216898458513705996">タブはこのデバイスで引き続き表示されますが、グループは <ph name="USER_EMAIL" /> にログインしているすべてのデバイスから削除されます</translation>

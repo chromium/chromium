@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Oranžová</translation>
 <translation id="125153950246128346">Klepnutím zobrazíte ďalšiu kartu</translation>
 <translation id="1273910660700874265">Možnosti skupiny kariet <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1340839264183302272">Opustiť skupinu</translation>
 <translation id="1419023007528516122">Týmto natrvalo odstránite skupinu zo svojho zariadenia</translation>
 <translation id="1486715732399361704">Tu nájdete všetky svoje skupiny kariet</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Vytvorená pred <ph name="NUM_MINS_ONE" /> minútou}few{Vytvorená pred <ph name="NUM_MINS_MANY" /> minútami}many{Vytvorená pred <ph name="NUM_MINS_MANY" /> minúty}other{Vytvorená pred <ph name="NUM_MINS_MANY" /> minútami}}</translation>
@@ -41,6 +42,7 @@
 <translation id="2801787514987684416">Chcete zobraziť informácie o obchode?</translation>
 <translation id="2928243913527329289">Google | Tento obchod</translation>
 <translation id="2977480621796371840">Odstrániť zo skupiny</translation>
+<translation id="29919168204617356">Neaktívne karty sa automaticky zavrú. Vždy ich nájdete v histórii.</translation>
 <translation id="3008554597174452548">Prestať sledovať výrobok</translation>
 <translation id="3026391124054406831">Vytvorte skupiny, aby ste mali karty usporiadané.</translation>
 <translation id="3051031624272448591">V sekcii História sa k nim môžete kedykoľvek vrátiť</translation>
@@ -51,6 +53,7 @@
 <translation id="3322827343001922122">Otvoriť ponuku akcií skupiny kariet <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Návrh: Zdá, sa že niekoľko (<ph name="NUMBER_OF_TABS" />) kariet spolu súvisí. Chcete ich zoskupiť?</translation>
 <translation id="3547352561153509682">Týmto odstránite skupinu zo všetkých zariadení prihlásených do účtu <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">Skryť dialógové okno neaktívnych kariet</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniat. zdieľ. ukážky tab.</translation>
 <translation id="381219490185664296">Chcete zrušiť zoskupenie kariet v skupine?</translation>
@@ -120,6 +123,7 @@
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Presunúť kartu doľava</translation>
 <translation id="6615455863669487791">Ukázať</translation>
+<translation id="6694634756612002311">Spravovať zdieľanie</translation>
 <translation id="6744956528665271406">Upraviť farbu skupiny</translation>
 <translation id="6856809498882026482">Skryť režim hromadného výberu</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Zdieľať kartu}few{Zdieľať karty}many{Zdieľať karty}other{Zdieľať karty}}</translation>
@@ -137,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> recenzia od Googlu}few{<ph name="REVIEWS_COUNT_MANY" /> recenzie od Googlu}many{<ph name="REVIEWS_COUNT_MANY" /> reviews from Google}other{<ph name="REVIEWS_COUNT_MANY" /> recenzií od Googlu}}</translation>
 <translation id="7559245342362162951">Zobraziť karty skupiny v mriežke na celú obrazovku</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
+<translation id="7688386659311034820">Dialógové okno neaktívnych kariet</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Zdieľať <ph name="TABS_COUNT_ONE" /> vybranú kartu}few{Zdieľať <ph name="TABS_COUNT_MANY" /> vybrané karty}many{Share <ph name="TABS_COUNT_MANY" /> selected tabs}other{Zdieľať <ph name="TABS_COUNT_MANY" /> vybraných kariet}}</translation>
 <translation id="7773714564112603605">Odstráni sa karta aj skupina</translation>
 <translation id="7792771145871471484">Prezrieť návrhy.</translation>
@@ -171,6 +176,7 @@
 <translation id="8926389886865778422">Túto otázku už nezobrazovať</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Rozbaľte skupinu kariet s <ph name="TABS_COUNT_ONE" /> kartou.}few{Rozbaľte skupinu kariet s <ph name="TABS_COUNT_MANY" /> kartami.}many{Expand tab group with <ph name="TABS_COUNT_MANY" /> tabs.}other{Rozbaľte skupinu s <ph name="TABS_COUNT_MANY" /> kartami.}}</translation>
 <translation id="9090098097337832354">Informácie o tomto obchode boli zavreté</translation>
+<translation id="9111228330448174435">Zobrazovať dialógové okno pri vytváraní novej skupiny kariet</translation>
 <translation id="9150694013019234766">Prepínajte karty v skupine kariet v dolnej časti obrazovky</translation>
 <translation id="9169594135889675189">Pridať novú kartu do skupiny</translation>
 <translation id="9216898458513705996">Karty zostanú v tomto zariadení otvorené, ale skupina bude odstránená zo všetkých zariadení prihlásených do účtu <ph name="USER_EMAIL" /></translation>

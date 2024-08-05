@@ -35,6 +35,7 @@ Važne napomene:
 <translation id="1554731936187952550">Imate najjaču Chromeovu zaštitu od štetnih web-lokacija</translation>
 <translation id="1615715390546812898">Pretražujte glasovno u Chromeu.</translation>
 <translation id="1657395063736185342">Pretraživanje slika u Chromeu</translation>
+<translation id="1670609221633730681">Savjet za Chrome: odaberite položaj adresne trake</translation>
 <translation id="1675955119303651351">Neki vaši podaci iz Chromea još nisu spremljeni na vaš Google račun.
         Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi će se podaci izbrisati.</translation>
 <translation id="1682483655351012182">Sinkroniziraj podatke iz Chromea</translation>
@@ -113,12 +114,14 @@ Važne napomene:
 <translation id="3984746313391923992">Vaša organizacija zahtijeva da ostanete odjavljeni s Chromea.</translation>
 <translation id="3988789688219830639">Chrome nema pristup fotografijama ni videozapisima. Omogućite pristup u Postavkama iOS-a &gt; Privatnost &gt; Fotografije.</translation>
 <translation id="4064699917955374540">Da biste upotrebljavali i spremali podatke iz Chromea na svoj Google račun, potvrdite da ste to vi.</translation>
+<translation id="4066411101507716142">Brže pristupite Chromeu putem donje trake početnog zaslona na iPadu.</translation>
 <translation id="4067858366537947361">Otvori anonimnu karticu u Chromeu</translation>
 <translation id="4093042601582616698">Želite li postaviti Chrome kao zadani preglednik?</translation>
 <translation id="417201473131094001">Nije podržano u Chrome Canaryju</translation>
 <translation id="424864128008805179">Želite li se odjaviti s Chromea?</translation>
 <translation id="4251174643044751591">Otvara stranicu postavki načina plaćanja u Chromeu.</translation>
 <translation id="4286914711740227883">Brisanje podataka o pregledavanju u Chromeu</translation>
+<translation id="430839890088895017">Savjet za Chrome: premjestite Chrome na donju traku</translation>
 <translation id="4453284704333523777">Upravljanje postavkama Chromea</translation>
 <translation id="4523886039239821078">Neki programski dodaci uzrokuju rušenje preglednika Chrome. Deinstalirajte:</translation>
 <translation id="4633328489441962921">Chrome ne može provjeriti ima li ažuriranja</translation>
@@ -236,6 +239,7 @@ Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u 
 <translation id="7581063337314642333">Otvaranje rešetke kartica u Chromeu</translation>
 <translation id="7662994914830945754">Da biste vidjeli svoje kartice bez obzira na to gdje koristite Chrome, prijavite se i uključite sinkronizaciju</translation>
 <translation id="7669869107155339016">Otvorite postavke Chromea.</translation>
+<translation id="7683540977001394271">Brže pristupite Chromeu putem donje trake početnog zaslona na iPhoneu.</translation>
 <translation id="769104993356536261">Upotreba radnji u Chromeu na iOS-u</translation>
 <translation id="7693590760643069321">Sad možete koristiti Chrome svaki put kad dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="7698568245838009292">Chrome želi pristupiti kameri</translation>

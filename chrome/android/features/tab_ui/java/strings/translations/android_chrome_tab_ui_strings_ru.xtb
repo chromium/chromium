@@ -42,6 +42,7 @@
 <translation id="2801787514987684416">Посмотреть сведения о магазине?</translation>
 <translation id="2928243913527329289">Google | О магазине</translation>
 <translation id="2977480621796371840">Удалить из группы</translation>
+<translation id="29919168204617356">Неактивные вкладки будут закрываться автоматически. Их всегда можно найти в разделе "История".</translation>
 <translation id="3008554597174452548">Не отслеживать товар</translation>
 <translation id="3026391124054406831">Создавайте группы, чтобы упорядочивать вкладки.</translation>
 <translation id="3051031624272448591">Вы сможете посмотреть их в истории в любое время.</translation>
@@ -52,6 +53,7 @@
 <translation id="3322827343001922122">Открыть меню действий для группы вкладок "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="3328308545011660196">Подсказка: обнаружены похожие вкладки (<ph name="NUMBER_OF_TABS" />). Сгруппировать их?</translation>
 <translation id="3547352561153509682">Группа будет удалена со всех устройств, на которых выполнен вход в аккаунт <ph name="USER_EMAIL" />.</translation>
+<translation id="3613492231657284463">Скрыть диалоговое окно неактивных вкладок</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Значок для отпр. предпросм. листа</translation>
 <translation id="381219490185664296">Расформировать группу вкладок?</translation>
@@ -139,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> отзыв из Google}one{<ph name="REVIEWS_COUNT_MANY" /> отзыв из Google}few{<ph name="REVIEWS_COUNT_MANY" /> отзыва из Google}many{<ph name="REVIEWS_COUNT_MANY" /> отзывов из Google}other{<ph name="REVIEWS_COUNT_MANY" /> отзыва из Google}}</translation>
 <translation id="7559245342362162951">Показать сетку с вкладками группы на весь экран</translation>
 <translation id="7658239707568436148">Отмена</translation>
+<translation id="7688386659311034820">Диалоговое окно неактивных вкладок</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Поделиться <ph name="TABS_COUNT_ONE" /> выбранной вкладкой}one{Поделиться <ph name="TABS_COUNT_MANY" /> выбранной вкладкой}few{Поделиться <ph name="TABS_COUNT_MANY" /> выбранными вкладками}many{Поделиться <ph name="TABS_COUNT_MANY" /> выбранными вкладками}other{Поделиться <ph name="TABS_COUNT_MANY" /> выбранной вкладки}}</translation>
 <translation id="7773714564112603605">Удалить вкладку и группу</translation>
 <translation id="7792771145871471484">Подробнее.</translation>

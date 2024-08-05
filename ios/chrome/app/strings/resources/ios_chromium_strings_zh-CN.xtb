@@ -144,6 +144,7 @@
 <translation id="5131565040785979529">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号以及 Chromium 的使用方式。</translation>
 <translation id="5146749061471423558">将书签添加到 Chromium</translation>
 <translation id="5171868502429358653">登录 Chromium</translation>
+<translation id="5203483872492817335">从 iPad 主屏幕上的程序坞更快速地访问 Chromium。</translation>
 <translation id="5213683223491576284">在 Chromium 中打开密码管理工具。</translation>
 <translation id="5224391634244552924">尚未保存任何密码。您需要先保存密码才能使用 Chromium 的密码检查功能。</translation>
 <translation id="5242782538551259282">部分 Chromium 数据尚未保存到您的 Google 账号。
@@ -225,6 +226,7 @@
 只有知道您口令的人能读取您的加密数据。该口令不会发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
 <translation id="7192111075364461693">目前，在您的设备设置中，Chromium 通知功能处于关闭状态。</translation>
 <translation id="7222001353246886083">在 Chromium 中搜索 ${searchPhrase}</translation>
+<translation id="7228180817326917122">Chromium 提示：选择地址栏的位置</translation>
 <translation id="725427773388857052">Chromium 有助于保护您免受数据泄露、不安全网站等问题的影响。</translation>
 <translation id="7269362888766543920">部分插件会导致 Chromium 崩溃，请尝试卸载这些插件。</translation>
 <translation id="7285031092584344905">在其他应用中使用 Chromium 中保存的密码和其他信息。</translation>
@@ -247,6 +249,7 @@
 <translation id="7928628054454574139">每当您点按其他应用中的链接时，系统都会使用 Chromium 打开相应链接</translation>
 <translation id="7931842119211730154">在您关闭 Chromium 时锁定无痕式标签页</translation>
 <translation id="7934404985878918282">查看 Chromium 阅读清单</translation>
+<translation id="7947765692209663835">从 iPhone 主屏幕上的程序坞更快速地访问 Chromium。</translation>
 <translation id="7971753607796745700">将阅读清单项添加到 Chromium</translation>
 <translation id="7980860476903281594">Chromium 会将您的位置信息分享给您允许的网站。</translation>
 <translation id="7994322153108931467">如需获取实用 Chromium 提示，请在 iOS 设置中开启通知。</translation>
@@ -265,6 +268,7 @@
 <translation id="8386869251364507178">Chromium 操作</translation>
 <translation id="8409374867500149834">Chromium 正在为您提供极强大的安全保护，帮助您防范有害网站</translation>
 <translation id="8458950033462118672">只需将 Chromium 设为默认浏览器应用，便可自动在 Chromium 中打开链接。</translation>
+<translation id="8473874987831035139">Chromium 提示：将 Chromium 移至程序坞</translation>
 <translation id="8502918057530111907">默认使用 Chromium 轻松获取价格分析</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况。系统会删除您在登录期间仅保存在此设备上的数据。这些数据可能包括历史记录和密码。}other{当 Chromium 闲置 {THRESHOLD} 分钟后，就会发生这种情况。系统会删除您在登录期间仅保存在此设备上的数据。这些数据可能包括历史记录和密码。}}</translation>
 <translation id="858114650497379505">您可在 iPhone 上的其他应用内使用已保存至密码管理器的密码。</translation>

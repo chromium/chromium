@@ -358,6 +358,7 @@
 <translation id="2780756493585863768">由 Google AI 赋能的近期背景</translation>
 <translation id="2783010256799387990">通过</translation>
 <translation id="2786429550992142861">亚麻</translation>
+<translation id="2787237339470862294">目前尚不支持此语言</translation>
 <translation id="2787435249130282949">调亮键盘</translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="28232023175184696">无法连接到互联网。点击即可重试。</translation>
@@ -669,6 +670,7 @@
 <translation id="458794348635939462">未能解析所有主机</translation>
 <translation id="4593212453765072419">需要验证代理身份</translation>
 <translation id="4594021849294327751">创建转写文本</translation>
+<translation id="4607282946861182308">无法创建这样的图片。请试试其他提示。</translation>
 <translation id="4609350030397390689">调低键盘亮度</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已打印 <ph name="PRINTED_PAGE_NUMBER" /> 页，共 <ph name="TOTAL_PAGE_NUMBER" /> 页。按 Enter 键即可取消这项打印任务。</translation>
 <translation id="463791356324567266">正在取消扫描…</translation>
@@ -1364,6 +1366,7 @@
 <translation id="8208861521865154048">福利</translation>
 <translation id="8226628635270268143">选择您喜爱的照片和影集</translation>
 <translation id="8227119283605456246">附上文件</translation>
+<translation id="8227488649450500937">请尝试以下提示之一，或参阅<ph name="BEGIN_LINK_PROMPTING_GUIDE" />提示指南<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">未能对默认网关执行 ping 操作</translation>
 <translation id="8238771987802558562">选择 APN</translation>
 <translation id="8246209727385807362">未知运营商</translation>

@@ -41,6 +41,7 @@
 <translation id="2801787514987684416">Дүкөн тууралуу маалыматты көрөсүзбү?</translation>
 <translation id="2928243913527329289">Google | Бул дүкөн тууралуу</translation>
 <translation id="2977480621796371840">Топтон алып салуу</translation>
+<translation id="29919168204617356">Жигерсиз өтмөктөр автоматтык түрдө жабылат. Аларды Таржымалдан каалаган убакта таба аласыз.</translation>
 <translation id="3008554597174452548">Товарга көз салууну токтотуу</translation>
 <translation id="3026391124054406831">Өтмөктөрдү иреттөө үчүн топторду түзүңүз.</translation>
 <translation id="3051031624272448591">Каалаган убакта аларды таржымалдан таба аласыз</translation>
@@ -51,6 +52,7 @@
 <translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> өтмөктөр тобу үчүн өтмөктөр тобунун аракет менюсун ачыңыз</translation>
 <translation id="3328308545011660196">Сунуш: <ph name="NUMBER_OF_TABS" /> өтмөк окшош окшойт. Алар топко бириктирилсинби?</translation>
 <translation id="3547352561153509682">Ушуну менен топ <ph name="USER_EMAIL" /> аккаунтуна кирип турган бардык түзмөктөрдөн өчүрүлөт</translation>
+<translation id="3613492231657284463">Жигерсиз өтмөктөр диалогун жашыруу</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Бөлүшүлгөн баракты алдын ала көрүү эскизи</translation>
 <translation id="381219490185664296">Өтмөктөр тобу ажыратылсынбы?</translation>
@@ -137,6 +139,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google'да жазылган <ph name="REVIEWS_COUNT_ONE" /> сын-пикир}other{Google'да жазылган <ph name="REVIEWS_COUNT_MANY" /> сын-пикир}}</translation>
 <translation id="7559245342362162951">Топтун өтмөктөрүн толук экрандагы торчодо көрсөтүү</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
+<translation id="7688386659311034820">Жигерсиз өтмөктөр диалогу</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү бөлүшүү}other{Тандалган <ph name="TABS_COUNT_MANY" /> өтмөктү бөлүшүү}}</translation>
 <translation id="7773714564112603605">Өтмөктү алып салып, топту өчүрүү</translation>
 <translation id="7792771145871471484">Сунуштарды карап чыгуу.</translation>

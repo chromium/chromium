@@ -1363,6 +1363,7 @@ Walang nakakonektang device.</translation>
 <translation id="5819918159912280082">Biglaang nag-restart ang iyong Chromebook. Buksan ang iyong mga nakaraang window at app.</translation>
 <translation id="5823239091726045201">Google Tasks sa web</translation>
 <translation id="5825969630400862129">Mga setting ng mga nakakonektang device</translation>
+<translation id="5830180081891717894"><ph name="WINDOWS" /> pa</translation>
 <translation id="5837036133683224804">Ihinto ang <ph name="ROUTE_TITLE" /> sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Pumunta sa susunod na track</translation>
 <translation id="5842553299352339114">Naka-on ang hotspot ng <ph name="DEVICE_NAME" />, walang nakakonektang device</translation>
@@ -2069,6 +2070,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8375916635258623388">Awtomatikong kokonekta ang <ph name="DEVICE_NAME" /> na ito at ang iyong telepono</translation>
 <translation id="8380784334203145311">Magandang gabi,</translation>
 <translation id="8382715499079447151">Proteksyon sa pagtingin</translation>
+<translation id="8383614331548401927">Welcome Recap</translation>
 <translation id="8388750414311082622">Hindi puwedeng alisin ang huling desk.</translation>
 <translation id="8394567579869570560">Ni-lock ng iyong magulang ang device na ito</translation>
 <translation id="8401850874595457088">Menu na maglagay ng wika</translation>

@@ -5429,6 +5429,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4893336867552636863">Данните за сърфирането ви ще се изтрият за постоянно от това устройство.</translation>
 <translation id="4893454800196085005">Добро – DVD</translation>
 <translation id="4893522937062257019">На заключения екран</translation>
+<translation id="4894055916816649664">Само за 10 минути</translation>
 <translation id="4895799941222633551">Създаване на &amp;пряк път...</translation>
 <translation id="4898011734382862273">Сертификатът „<ph name="CERTIFICATE_NAME" />“ представлява сертифициращ орган.</translation>
 <translation id="4898913189644355814">Даден сайт може да запази предпочитания от вас език или артикулите, които искате да купите. Тази информация е налице за съответния сайт и поддомейните му.</translation>
@@ -6066,6 +6067,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5380526436444479273">Изчакайте няколко минути и опитайте отново</translation>
 <translation id="5382591305415226340">Управление на поддържаните връзки</translation>
 <translation id="5383740867328871413">Група без име – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5384401776498845256">Кой може да споделя с вас</translation>
 <translation id="5385628342687007304">Паролата е запазена само на това устройство. За да я използвате на другите си устройства, запазете я в профила си в Google.</translation>
 <translation id="5387116558048951800">Редактиране на <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="5387496897058645038">Продуктови спецификации</translation>
@@ -6933,6 +6935,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6015776718598175635">Звезди</translation>
 <translation id="6015796118275082299">Година</translation>
 <translation id="6016178549409952427">Преминаване към допълнително съдържание <ph name="CURRENT_ELEMENT" /> от <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="6016462059150340136">Всички в близост</translation>
 <translation id="6016551720757758985">Потвърждаване на извършването на Powerwash и връщането към предишната версия</translation>
 <translation id="6016972670657536680">Бутон за избиране на език и клавиатура. Понастоящем езикът е <ph name="LANGUAGE" />.</translation>
 <translation id="6017514345406065928">зелено</translation>
@@ -7010,6 +7013,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6075075631258766703">Потвърждаване на телефона</translation>
 <translation id="6075731018162044558">Ами сега!  Системата не успя да получи дългосрочно означение за достъп на това устройство до приложния програмен интерфейс (API).</translation>
 <translation id="6075907793831890935">Обмен на данни с устройството с име „<ph name="HOSTNAME" />“</translation>
+<translation id="6076092653254552547">Системни настройки</translation>
 <translation id="6076491747490570887">Студено сиво</translation>
 <translation id="6076576896267434196">Разширението „<ph name="EXTENSION_NAME" />“ иска достъп до профила ви</translation>
 <translation id="6077131872140550515">Премахване от предпочитаните</translation>
@@ -7381,6 +7385,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6345878117466430440">Означаване като прочетено</translation>
 <translation id="6346952829206698721">Поставяне от буферната памет</translation>
 <translation id="6347010704471250799">Показване на известие</translation>
+<translation id="634792071306410644">Никой не може да споделя с вас, докато не станете видими</translation>
 <translation id="6348252528297699679">Можете да изключите местоположението от „Настройки &gt; Поверителност и сигурност &gt; Контроли за поверителност &gt; Достъп до местоположението“. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="6348805481186204412">Офлайн хранилище</translation>
 <translation id="6349101878882523185">Инсталиране на <ph name="APP_NAME" /></translation>
@@ -7830,6 +7835,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6691936601825168937">&amp;Препращане</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 страница}other{{COUNT} страници}}</translation>
 <translation id="6693820805264897502">замени съществуващите пароли</translation>
+<translation id="6694634756612002311">Управление на споделянето</translation>
 <translation id="6697172646384837537">Изберете къде да импортирате паролите си</translation>
 <translation id="6697492270171225480">Показване на предложения за подобни страници, когато дадена страница не може да бъде намерена</translation>
 <translation id="6697690052557311665">За да споделите папка, кликнете с десен бутон върху нея в приложението файлове и изберете „Споделяне с Linux“.</translation>
@@ -7983,6 +7989,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="680572642341004180">Активиране на проследяването на RLZ в <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6806089545527108739">Забраняване, но извеждане на запитване по-късно</translation>
 <translation id="680644983456221885">Проактивна защита в реално време срещу опасни сайтове, изтегляния и разширения, която работи чрез изпращане на данни за сърфирането ви до Google</translation>
+<translation id="6806781719264274042">Само контакти с профил в Google. <ph name="LINK_BEGIN" />Преглед на контактите<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">За да продължите, поставете и докоснете ключа си за сигурност</translation>
 <translation id="6808166974213191158">Запис на системни изображения на ChromeOS Flex</translation>
 <translation id="6808193438228982088">Лисица</translation>
@@ -8049,6 +8056,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6840214587087739194">Адресът е изтрит</translation>
 <translation id="6841143363521180029">Шифровано</translation>
 <translation id="6841186874966388268">Грешки</translation>
+<translation id="6842135459748401207">Само устройства, с които сте влезли в(ъв) <ph name="USER_EMAIL" /></translation>
 <translation id="6842136130964845393">Потвърдете, че сте вие, за да имате постоянен достъп до запазените си пароли</translation>
 <translation id="6842749380892715807">Списъците със сайтове в XML бяха изтеглени за последен път на <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">Сайтовете обикновено разпознават кога използвате устройството си активно, за да задават състоянието ви в приложения за чат</translation>
@@ -9384,6 +9392,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7826254698725248775">Идентификаторът на устройството е несъвместим.</translation>
 <translation id="7828642077514646543">Грешка: Сертификатът не бе декодиран</translation>
 <translation id="7829877209233347340">Поискайте от родител да влезе в профила си, за да разреши добавянето на училищен профил</translation>
+<translation id="7830276128493844263">Местоположението е изключено от системните настройки</translation>
 <translation id="7830833461614351956">Искате ли да копирате <ph name="NUM_OF_FILES" /> файла в <ph name="CLOUD_PROVIDER" />, за да ги отворите?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Тук ще се покажат запазените персонализирани думи</translation>
@@ -10703,6 +10712,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8766796754185931010">Котоери</translation>
 <translation id="8767069439158587614">Показване на всички търсения за „<ph name="QUERY_CLUSTER_NAME" />“</translation>
 <translation id="8767621466733104912">Автоматично актуализиране на Chrome за всички потребители</translation>
+<translation id="8768049274922835860">Всички</translation>
 <translation id="876956356450740926">Използвайте инструменти за програмисти, интегрирани среди за програмиране и редактори. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Основна директория на разширението</translation>
 <translation id="8771300903067484968">Възстановен е стандартният фон на началната страница.</translation>
@@ -10909,7 +10919,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8918900204934259333">Приложението се инсталира...</translation>
 <translation id="891931289445130855">Изтриване на данните и разрешенията</translation>
 <translation id="8920133120839850939">За да навигирате назад и напред, изберете раздела „Още жестове“ и включете „Прокарване на пръст между страниците“</translation>
-<translation id="8922348435910470639">Дублирана резервация</translation>
 <translation id="8922624386829239660">Преместване на екрана, когато мишката докосва краищата му</translation>
 <translation id="8923880975836399332">Тъмно синьо-зелено</translation>
 <translation id="8925124370124776087">Заглавната лента е скрита</translation>
@@ -11003,6 +11012,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8984694057134206124">Устройството ви ще бъде видимо за всички в продължение на <ph name="MINUTES" /> минути. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Добре дошли в Steam за Chromebook</translation>
 <translation id="8985264973231822211">Активно преди <ph name="DEVICE_LAST_ACTIVATED_TIME" /> ден</translation>
+<translation id="8985561265504464578">Праг за разпознаване</translation>
 <translation id="8985661493893822002">Моля, свържете се с интернет, за да влезете в устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8985661571449404298">Изтеглен бе незащитен файл</translation>
 <translation id="8986362086234534611">Забравяне</translation>

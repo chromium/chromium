@@ -144,6 +144,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="5131565040785979529">La teva organització, <ph name="DOMAIN" />, gestiona el compte en què tens la sessió iniciada i com s'utilitza Chromium.</translation>
 <translation id="5146749061471423558">Afegeix adreces d'interès a Chromium</translation>
 <translation id="5171868502429358653">Inicia la sessió a Chromium</translation>
+<translation id="5203483872492817335">Accedeix a Chromium més ràpidament des del Dock de la pantalla d'inici de l'iPad.</translation>
 <translation id="5213683223491576284">Obre el gestor de contrasenyes a Chromium.</translation>
 <translation id="5224391634244552924">No hi ha cap contrasenya desada. Chromium pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="5242782538551259282">Algunes dades de Chromium encara no s'han desat al teu Compte de Google.
@@ -225,6 +226,7 @@ Aspectes que cal tenir en compte:
 Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix les dades de Chromium del compte<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">En aquests moments, les notificacions de Chromium estan desactivades a la configuració del dispositiu.</translation>
 <translation id="7222001353246886083">Cerca ${searchFrase} a Chromium</translation>
+<translation id="7228180817326917122">Consell de Chromium: tria la posició de la barra d'adreces</translation>
 <translation id="725427773388857052">Chromium pot ajudar a protegir-te de violacions de les dades, de llocs web no segurs i més.</translation>
 <translation id="7269362888766543920">Alguns complements fan que Chromium es bloquegi. Prova de desinstal·lar-los.</translation>
 <translation id="7285031092584344905">Accedeix a les teves contrasenyes de Chromium i a més elements en altres aplicacions.</translation>
@@ -247,6 +249,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="7928628054454574139">Obre Chromium cada vegada que toquis enllaços en altres aplicacions</translation>
 <translation id="7931842119211730154">Bloqueja les pestanyes d'incògnit després de tancar Chromium</translation>
 <translation id="7934404985878918282">Mostra la llista de lectura de Chromium</translation>
+<translation id="7947765692209663835">Accedeix a Chromium més ràpidament des del Dock de la pantalla d'inici de l'iPhone.</translation>
 <translation id="7971753607796745700">Afegeix un element de llista de lectura a Chromium</translation>
 <translation id="7980860476903281594">Chromium comparteix la teva ubicació amb els llocs web que autoritzis.</translation>
 <translation id="7994322153108931467">Per rebre consells útils sobre Chromium, activa les notificacions a la configuració d'iOS.</translation>
@@ -265,6 +268,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="8386869251364507178">Accions de Chromium</translation>
 <translation id="8409374867500149834">Tens la seguretat més efectiva de Chromium contra llocs web perillosos</translation>
 <translation id="8458950033462118672">Pots obrir enllaços automàticament a Chromium establint-lo com la teva aplicació de navegador predeterminada.</translation>
+<translation id="8473874987831035139">Consell de Chromium: mou Chromium al Dock</translation>
 <translation id="8502918057530111907">Utilitza Chromium de manera predeterminada per obtenir estadístiques de preus fàcilment</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minut. Se suprimiran les dades que s'han desat només en aquest dispositiu mentre tenies la sessió iniciada. S'hi podrien incloure l'historial i les contrasenyes.}other{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minuts. Se suprimiran les dades que s'han desat només en aquest dispositiu mentre tenies la sessió iniciada. S'hi podrien incloure l'historial i les contrasenyes.}}</translation>
 <translation id="858114650497379505">Pots utilitzar les contrasenyes que has desat al gestor de contrasenyes en altres aplicacions de l'iPhone.</translation>

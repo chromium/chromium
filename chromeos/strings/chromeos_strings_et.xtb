@@ -358,6 +358,7 @@
 <translation id="2780756493585863768">Hiljutised taustad, mis toimivad Google’i AI platvormil</translation>
 <translation id="2783010256799387990">LÄBITUD</translation>
 <translation id="2786429550992142861">linariidest</translation>
+<translation id="2787237339470862294">Seda keelt praegu ei toetata</translation>
 <translation id="2787435249130282949">heledam klaviatuur</translation>
 <translation id="2805756323405976993">Rakendused</translation>
 <translation id="28232023175184696">Internetiga ei õnnestu ühendust luua. Klõpsake uuesti proovimiseks.</translation>
@@ -669,6 +670,7 @@
 <translation id="458794348635939462">Kõikide hostide lahendamine ebaõnnestus</translation>
 <translation id="4593212453765072419">Vajalik on puhverserveri autentimine</translation>
 <translation id="4594021849294327751">Loo transkriptsioon</translation>
+<translation id="4607282946861182308">Ei saa selle kohta pilte luua. Proovige muud päringut.</translation>
 <translation id="4609350030397390689">Klaviatuuri ereduse vähendamine</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Prinditöö tühistamiseks vajutage sisestusklahvi.</translation>
 <translation id="463791356324567266">Skannimise tühistamine …</translation>

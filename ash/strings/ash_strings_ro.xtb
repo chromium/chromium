@@ -1363,6 +1363,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5819918159912280082">Chromebookul a repornit în mod neașteptat. Deschide ferestrele și aplicațiile anterioare.</translation>
 <translation id="5823239091726045201">Google Tasks pe web</translation>
 <translation id="5825969630400862129">Setări pentru dispozitivele conectate</translation>
+<translation id="5830180081891717894">Încă <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Întrerupe <ph name="ROUTE_TITLE" /> pe <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Accesează melodia următoare</translation>
 <translation id="5842553299352339114">Hotspotul <ph name="DEVICE_NAME" /> este activat. Nu s-a conectat niciun dispozitiv.</translation>
@@ -2070,6 +2071,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> și telefonul se vor conecta automat</translation>
 <translation id="8380784334203145311">Bună seara!</translation>
 <translation id="8382715499079447151">Protecție la afișare</translation>
+<translation id="8383614331548401927">Recapitulare de bun venit</translation>
 <translation id="8388750414311082622">Ultimul desktop nu poate fi eliminat.</translation>
 <translation id="8394567579869570560">Părintele tău a blocat dispozitivul</translation>
 <translation id="8401850874595457088">Accesează meniul de limbă</translation>

@@ -35,6 +35,7 @@ Du bør tenke på følgende:
 <translation id="1554731936187952550">Du har den sterkeste sikkerheten i Chrome mot skadelige nettsteder</translation>
 <translation id="1615715390546812898">Søk med stemmen i Chrome.</translation>
 <translation id="1657395063736185342">Søk i visuelle elementer i Chrome</translation>
+<translation id="1670609221633730681">Chrome-tips: Velg plassering for adressefeltet</translation>
 <translation id="1675955119303651351">Noen av Chrome-dataene dine er ikke lagret i Google-kontoen din ennå.
         Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="1682483655351012182">Synkroniser Chrome-dataene dine</translation>
@@ -113,12 +114,14 @@ Du bør tenke på følgende:
 <translation id="3984746313391923992">Organisasjonen din krever at du forblir logget av Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome har ikke tilgang til bildene eller videoene dine. Slå på tilgangen i iOS-innstillingene &gt; Personvern &gt; Bilder.</translation>
 <translation id="4064699917955374540">For å bruke og lagre Chrome-data i Google-kontoen din, bekreft at det er deg.</translation>
+<translation id="4066411101507716142">Få raskere tilgang til Chrome fra dokken på Hjem-skjermen på iPad.</translation>
 <translation id="4067858366537947361">Åpne en inkognitofane i Chrome</translation>
 <translation id="4093042601582616698">Vil du gjøre Chrome til standardnettleseren din?</translation>
 <translation id="417201473131094001">Støttes ikke i Chrome Canary</translation>
 <translation id="424864128008805179">Vil du logge av Chrome?</translation>
 <translation id="4251174643044751591">Åpner innstillingssiden for betalingsmåter i Chrome.</translation>
 <translation id="4286914711740227883">Slett nettlesingsdata i Chrome</translation>
+<translation id="430839890088895017">Chrome-tips: Flytt Chrome til dokken</translation>
 <translation id="4453284704333523777">Administrer Chrome-innstillinger</translation>
 <translation id="4523886039239821078">Noen tillegg fører til at Chrome krasjer. Avinstaller:</translation>
 <translation id="4633328489441962921">Chrome kan ikke se etter oppdateringer</translation>
@@ -236,6 +239,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="7581063337314642333">Gå til fanerutenettet i Chrome</translation>
 <translation id="7662994914830945754">For å se fanene dine overalt hvor du bruker Chrome, logg på og slå på synkronisering</translation>
 <translation id="7669869107155339016">Gå til Chrome-innstillingene.</translation>
+<translation id="7683540977001394271">Få raskere tilgang til Chrome fra dokken på Hjem-skjermen på iPhone.</translation>
 <translation id="769104993356536261">Bruk Chrome-handlinger i iOS</translation>
 <translation id="7693590760643069321">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="7698568245838009292">Chrome vil ha tilgang til kameraet</translation>

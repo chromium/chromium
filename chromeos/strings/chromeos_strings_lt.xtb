@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">Silpnas signalas</translation>
 <translation id="1300115153046603471">APN yra numatytojo tipo ir <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">Sukūrimo data</translation>
 <translation id="1308754910631152188">Atnaujinama (atlikta <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> min.</translation>
 <translation id="1310380015393971138">Nėra jokių pasiekiamų „<ph name="NETWORK_NAME" />“ tinklų</translation>
@@ -506,6 +507,7 @@
 <translation id="3708186454126126312">Anksčiau susieti</translation>
 <translation id="3715651196924935218">Išeiti iš slankiojo režimo</translation>
 <translation id="3716250181321371108">Kurti valdiklį</translation>
+<translation id="3716830479327464973">Kai tai leisite, Garso įrašytuvas analizuos jūsų garso įrašus, kad būtų galima atlikti toliau nurodytus veiksmus.</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (apžvalgų: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Neprisijungta</translation>
 <translation id="3749289110408117711">Failo pavadinimas</translation>
@@ -532,6 +534,7 @@
 <translation id="3869314628814282185">tiulio</translation>
 <translation id="387301095347517405">Kartų, kai akumuliatorius buvo įkraunamas visą ciklą, skaičius</translation>
 <translation id="3877066159641251281">Klausyti vertimo</translation>
+<translation id="3880601782712134623">Automatiškai aptikti skirtingus balsus ir kiekvienam kalbančiajam suteikti bendrojo pobūdžio etiketę, pvz., „1 kalbantysis“ ir „2 kalbantysis“</translation>
 <translation id="3885327323343477505">Keisti ekrano užsklandą</translation>
 <translation id="3889914174935857450">Nustatyti datą iš naujo</translation>
 <translation id="3897092660631435901">Meniu</translation>
@@ -757,6 +760,7 @@
 <translation id="5049856988445523908">SIM kortelė užrakinta (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grupės pavadinimas</translation>
 <translation id="5051044138948155788">Tai vienintelis puslapis. Būsite nukreipti į nuskaitymo pradžios ekraną.</translation>
+<translation id="5078711626843651677">Balso modeliai laikinai saugomi įrenginyje, kol baigiamas kalbančiųjų žymėjimas etiketėmis. Bet kada galite išjungti šią funkciją skiltyje „Nustatymai“.</translation>
 <translation id="5078983345702708852">futuristinis</translation>
 <translation id="5087864757604726239">atgal</translation>
 <translation id="5088172560898466307">Prieglobos serverio pavadinimas</translation>
@@ -1107,6 +1111,7 @@
 <translation id="6905163627763043954">Išbandyti</translation>
 <translation id="6905724422583748843">Atgal į puslapį „<ph name="PAGE_NAME" />“</translation>
 <translation id="6910312834584889076">Skaitytuvo dangtis atidarytas. Uždarykite dangtį ir bandykite dar kartą.</translation>
+<translation id="6910845598686542904">Įvertinti įraše aptiktų balsų modelius</translation>
 <translation id="6911383237894364323">Nepavyko prisijungti prie medijos serverių</translation>
 <translation id="6930242544192836755">Trukmė</translation>
 <translation id="6930597342185648547">Apie foną</translation>
@@ -1366,6 +1371,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8208861521865154048">Privilegijos</translation>
 <translation id="8226628635270268143">Pasirinkite mėgstamiausias nuotraukas ir albumus</translation>
 <translation id="8227119283605456246">Pridėtas failas</translation>
+<translation id="8227488649450500937">Pabandykite vieną iš šių užklausų arba peržiūrėkite <ph name="BEGIN_LINK_PROMPTING_GUIDE" />užklausų vadovą<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Nepavyko patikrinti ryšio su numatytuoju tinklų sietuvu</translation>
 <translation id="8238771987802558562">APN pasirinkimas</translation>
 <translation id="8246209727385807362">Nežinomas operatorius</translation>
@@ -1374,6 +1380,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8261506727792406068">Ištrinti</translation>
 <translation id="8262870577632766028">Viena valanda</translation>
 <translation id="827422111966801947">Indigo spalva</translation>
+<translation id="8280224923876749648"><ph name="SPEAKER_ID" /> kalbantysis</translation>
 <translation id="8281886186245836920">Praleisti</translation>
 <translation id="8286154143153872371">Jei norite peržiūrėti ekrano foną, prisijunkite prie tinklo ir iš naujo įkelkite puslapį.</translation>
 <translation id="8291967909914612644">Namų paslaugos teikėjo šalis</translation>
@@ -1571,6 +1578,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Siųsti atsiliepimą</translation>
 <translation id="950520315903467048">Trūksta klavišo, skirto veiksmui „<ph name="DIRECTION" />“. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">Palyginti įrašo balsus, kad transkribuotame tekste atsispindėtų, ką ir kada pasakė kiekvienas kalbantysis</translation>
 <translation id="952992212772159698">Nesuaktyvinta</translation>
 <translation id="95718197892796296">molio</translation>
 <translation id="960719561871045870">Operacijos ženklo kodas</translation>

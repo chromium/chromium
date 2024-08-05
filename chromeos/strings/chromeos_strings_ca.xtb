@@ -358,6 +358,7 @@
 <translation id="2780756493585863768">Fons recents amb la tecnologia de la IA de Google</translation>
 <translation id="2783010256799387990">SUPERADA</translation>
 <translation id="2786429550992142861">lli</translation>
+<translation id="2787237339470862294">Aquest idioma no s'admet en aquest moment</translation>
 <translation id="2787435249130282949">teclat més brillant</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="28232023175184696">No es pot connectar a Internet. Fes clic per tornar-ho a provar.</translation>
@@ -669,6 +670,7 @@
 <translation id="458794348635939462">No s'han pogut resoldre tots els amfitrions</translation>
 <translation id="4593212453765072419">Cal l'autenticació del servidor intermediari</translation>
 <translation id="4594021849294327751">Crea una transcripció</translation>
+<translation id="4607282946861182308">No es poden crear imatges d'això. Prova-ho amb una altra línia d'ordres.</translation>
 <translation id="4609350030397390689">Disminueix la brillantor del teclat</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prem Retorn per cancel·lar la tasca d'impressió.</translation>
 <translation id="463791356324567266">S'està cancel·lant l'escaneig...</translation>

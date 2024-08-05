@@ -144,6 +144,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chromiu
 <translation id="5131565040785979529">Organisaatiosi (<ph name="DOMAIN" />) ylläpitää tiliä, jolla olet kirjautuneena sisään ja sitä, miten Chromiumia käytetään.</translation>
 <translation id="5146749061471423558">Lisää kirjanmerkkejä Chromiumiin</translation>
 <translation id="5171868502429358653">Kirjaudu Chromiumiin</translation>
+<translation id="5203483872492817335">Avaa Chromium nopeammin iPadin aloitusnäytön alapalkista.</translation>
 <translation id="5213683223491576284">Avaa Salasanat Chromiumissa.</translation>
 <translation id="5224391634244552924">Ei tallennettuja salasanoja. Chromium voi tarkistaa salasanasi, kun tallennat niitä.</translation>
 <translation id="5242782538551259282">Osaa Chromium-datastasi ei ole vielä tallennettu Google-tilillesi.
@@ -225,6 +226,7 @@ Huomioitavaa:
 Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />poista tilin Chromium-data<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromiumin ilmoitukset ovat tällä hetkellä poissa päältä laiteasetuksissa.</translation>
 <translation id="7222001353246886083">Tee haku ${searchPhrase} Chromiumissa</translation>
+<translation id="7228180817326917122">Chromium-vinkki: Valitse osoitepalkin sijainti</translation>
 <translation id="725427773388857052">Chromium voi auttaa suojaamaan sinua esim. tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta.</translation>
 <translation id="7269362888766543920">Jokin laajennus kaataa Chromiumin. Kokeile poistaa laajennuksia.</translation>
 <translation id="7285031092584344905">Käytä Chromium-salasanojasi ja muita ominaisuuksia eri sovelluksissa.</translation>
@@ -247,6 +249,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="7928628054454574139">Avaa Chromium, kun napautat linkkejä muissa sovelluksissa</translation>
 <translation id="7931842119211730154">Lukitse incognito-välilehdet, kun suljet Chromiumin</translation>
 <translation id="7934404985878918282">Näytä Chromiumin lukulista</translation>
+<translation id="7947765692209663835">Avaa Chromium nopeammin iPhonen aloitusnäytön alapalkista.</translation>
 <translation id="7971753607796745700">Lisää lukulistakohde Chromiumiin</translation>
 <translation id="7980860476903281594">Chromium jakaa sijaintisi sallimillesi sivustoille.</translation>
 <translation id="7994322153108931467">Jos haluat hyödyllisiä Chromium-vinkkejä, laita ilmoitukset päälle iOS-asetuksista.</translation>
@@ -265,6 +268,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="8386869251364507178">Chromium-toiminnot</translation>
 <translation id="8409374867500149834">Käytössäsi on Chromiumin vahvin suojaus haitallisia verkkosivustoja vastaan</translation>
 <translation id="8458950033462118672">Voit avata linkkejä Chromiumissa automaattisesti tekemällä siitä oletusselainsovelluksesi.</translation>
+<translation id="8473874987831035139">Chromium-vinkki: Siirrä Chromium alapalkkiin</translation>
 <translation id="8502918057530111907">Käytä Chromiumia oletuksena, niin näet hintatiedot helposti</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin. Data, joka on tallennettu vain tälle laitteelle ollessasi kirjautuneena sisään, poistetaan. Tämä koskee esimerkiksi historiaa ja salasanoja.}other{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin. Data, joka on tallennettu vain tälle laitteelle ollessasi kirjautuneena sisään, poistetaan. Tämä koskee esimerkiksi historiaa ja salasanoja.}}</translation>
 <translation id="858114650497379505">Voit käyttää Salasanojen ylläpitoon tallennettuja salasanoja muissa iPhonesi sovelluksissa.</translation>

@@ -304,6 +304,7 @@
 <translation id="2529021024822217800">فتح الكل</translation>
 <translation id="2536991091671391962">‏يمكنك استخدام كلمات المرور المحفوظة على أي جهاز. تُحفظ كلمات المرور في "مدير كلمات المرور في Google" لدى <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">إخفاء ميزة "تأكيد السلامة"</translation>
+<translation id="2545094307889012168">Lens Overlay</translation>
 <translation id="2547458583188611426">المزامنة غير مفعَّلة. يجب إدخال عبارة المرور لبدء المزامنة.</translation>
 <translation id="2551153019974022505">خطأ في الحساب</translation>
 <translation id="2556092377360758201">بلا حماية (غير مُستحسَن)</translation>
@@ -850,6 +851,7 @@
 <translation id="5197255632782567636">الإنترنت</translation>
 <translation id="5205197603258285592">حفظ الصورة في…</translation>
 <translation id="5211488077761630279">هل تريد السماح لـ "<ph name="SITE_NAME" />" باستخدام <ph name="PERMISSION" />؟</translation>
+<translation id="5215046161188172474">‏مشاركة عنوان URL الكامل</translation>
 <translation id="5219295696240154694">المساعدة في تحسين الأمان على الإنترنت من أجل الجميع</translation>
 <translation id="5220945116117011963">إنشاء أحداث في التقويم من التواريخ</translation>
 <translation id="5221339005270097309">جارٍ التحقّق من كلمات المرور…</translation>
@@ -1127,6 +1129,7 @@
 لن يسمح هذا الإجراء للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفّح على المواقع الإلكترونية المختلفة، بهدف تقديم إعلانات مخصّصة لك مثلاً.</translation>
 <translation id="6476253015009698798">ميزة تتبُّع السعر غير متاحة لهذه الصفحة.</translation>
 <translation id="6476800141292307438">ترجمة صفحة إلى <ph name="LANGUAGE" />. وتتوفّر الخيارات بالقرب من أسفل الشاشة.</translation>
+<translation id="6477585407014744043">تسمية المجموعة</translation>
 <translation id="648164694371393720">خطأ في المصادقة</translation>
 <translation id="6494931198667773526">الانتهاء</translation>
 <translation id="6500795388871406244">استخدِم كلمة المرور المقترَحة:</translation>
@@ -1599,6 +1602,7 @@
 <translation id="8730621377337864115">تم</translation>
 <translation id="8731958888085671579">إخفاء ميزة "البحث في الصفحة"</translation>
 <translation id="87371078663613140">اطّلِع على الخيارات في شريط القوائم.</translation>
+<translation id="8739145690729256497">السماح بالإشعارات</translation>
 <translation id="8741995161408053644">‏قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح في <ph name="BEGIN_LINK" /> history.google.com <ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">ستظهر لك علامات التبويب هنا</translation>
 <translation id="8756969031206844760">هل تريد تعديل كلمة المرور؟</translation>

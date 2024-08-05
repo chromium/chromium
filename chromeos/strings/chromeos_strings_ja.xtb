@@ -358,6 +358,7 @@
 <translation id="2780756493585863768">Google AI で最近作成した背景</translation>
 <translation id="2783010256799387990">合格</translation>
 <translation id="2786429550992142861">リネン</translation>
+<translation id="2787237339470862294">この言語は現在サポートされていません</translation>
 <translation id="2787435249130282949">キーボードを明るくする</translation>
 <translation id="2805756323405976993">アプリ</translation>
 <translation id="28232023175184696">インターネットに接続できません。クリックしてもう一度お試しください。</translation>
@@ -669,6 +670,7 @@
 <translation id="458794348635939462">すべてのホストを解決できませんでした</translation>
 <translation id="4593212453765072419">プロキシ認証が必要です</translation>
 <translation id="4594021849294327751">文字起こしを行う</translation>
+<translation id="4607282946861182308">この画像を作成できません。別のプロンプトをお試しください。</translation>
 <translation id="4609350030397390689">キーボードの明るさを下げる</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />。印刷ジョブをキャンセルするには、Enter キーを押します。</translation>
 <translation id="463791356324567266">スキャンをキャンセルしています...</translation>

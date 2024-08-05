@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">橙色</translation>
 <translation id="125153950246128346">点按即可查看另一标签页</translation>
 <translation id="1273910660700874265">“<ph name="TITLE_OF_GROUP" />”标签页分组选项</translation>
+<translation id="1340839264183302272">退出分组</translation>
 <translation id="1419023007528516122">此操作会将该分组从您的设备中永久删除</translation>
 <translation id="1486715732399361704">您可在此处找到您的所有标签页分组</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{创建时间：<ph name="NUM_MINS_ONE" /> 分钟前}other{创建时间：<ph name="NUM_MINS_MANY" /> 分钟前}}</translation>
@@ -41,6 +42,7 @@
 <translation id="2801787514987684416">查看商店信息？</translation>
 <translation id="2928243913527329289">Google | 关于此商店</translation>
 <translation id="2977480621796371840">从组中移除</translation>
+<translation id="29919168204617356">系统会自动关闭闲置标签页。您随时可以在“历史记录”中找到它们。</translation>
 <translation id="3008554597174452548">停止跟踪产品</translation>
 <translation id="3026391124054406831">创建分组来整理标签页。</translation>
 <translation id="3051031624272448591">您随时可以从历史记录中重新打开这些标签页</translation>
@@ -51,6 +53,7 @@
 <translation id="3322827343001922122">打开标签页分组“<ph name="TITLE_OF_GROUP" />”的操作菜单</translation>
 <translation id="3328308545011660196">建议：有 <ph name="NUMBER_OF_TABS" /> 个标签页似乎彼此相关。为它们建组？</translation>
 <translation id="3547352561153509682">此操作会从已登录 <ph name="USER_EMAIL" /> 的所有设备中删除该分组</translation>
+<translation id="3613492231657284463">“隐藏闲置标签页”对话框</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">“分享”动作条预览效果的缩略图。</translation>
 <translation id="381219490185664296">要取消标签页分组吗？</translation>
@@ -120,6 +123,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">左移标签页</translation>
 <translation id="6615455863669487791">演示一下</translation>
+<translation id="6694634756612002311">管理共享设置</translation>
 <translation id="6744956528665271406">修改分组颜色</translation>
 <translation id="6856809498882026482">隐藏多选模式</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{分享标签页}other{分享标签页}}</translation>
@@ -137,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> 条来自 Google 的评价}other{<ph name="REVIEWS_COUNT_MANY" /> 条来自 Google 的评价}}</translation>
 <translation id="7559245342362162951">以全屏网格状视图显示组中的标签页</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7688386659311034820">“闲置标签页”对话框</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{分享所选的 <ph name="TABS_COUNT_ONE" /> 个标签页}other{分享所选的 <ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="7773714564112603605">移除标签页并删除分组</translation>
 <translation id="7792771145871471484">查看建议。</translation>
@@ -171,6 +176,7 @@
 <translation id="8926389886865778422">不再询问</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的标签页分组。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页分组。}}</translation>
 <translation id="9090098097337832354">此商店的相关信息已关闭</translation>
+<translation id="9111228330448174435">在创建新标签页分组时显示对话框</translation>
 <translation id="9150694013019234766">在屏幕底部附近的标签页组中切换标签页</translation>
 <translation id="9169594135889675189">向组中添加新标签页</translation>
 <translation id="9216898458513705996">相应标签页将在此设备上保持打开状态，但系统会从所有已登录 <ph name="USER_EMAIL" /> 的设备中删除该分组</translation>

@@ -41,6 +41,7 @@
 <translation id="2801787514987684416">Si želite ogledati podatke o trgovini?</translation>
 <translation id="2928243913527329289">Google | O tej trgovini</translation>
 <translation id="2977480621796371840">Odstrani iz skupine</translation>
+<translation id="29919168204617356">Neaktivni zavihki bodo samodejno zaprti. Vedno jih lahko najdete v razdelku Zgodovina.</translation>
 <translation id="3008554597174452548">Ustavi spremljanje izdelka</translation>
 <translation id="3026391124054406831">Ustvarite skupine in organizirajte zavihke.</translation>
 <translation id="3051031624272448591">Vedno jih lahko obnovite v zgodovini</translation>
@@ -51,6 +52,7 @@
 <translation id="3322827343001922122">Odpiranje menija z dejanji za skupino zavihkov <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Predlog: Videti je, da je toliko sorodnih zavihkov: <ph name="NUMBER_OF_TABS" />. Jih želite uvrstiti v skupino?</translation>
 <translation id="3547352561153509682">S tem boste skupino izbrisali iz vseh naprav, v katerih ste prijavljeni v račun <ph name="USER_EMAIL" />.</translation>
+<translation id="3613492231657284463">Skrivanje pogovornega okna neaktivnih zavihkov</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Sličica za predogled deljenega lista.</translation>
 <translation id="381219490185664296">Želite razdružiti skupino zavihkov?</translation>
@@ -137,6 +139,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> mnenje iz Googla}one{<ph name="REVIEWS_COUNT_MANY" /> mnenje iz Googla}two{<ph name="REVIEWS_COUNT_MANY" /> mnenji iz Googla}few{<ph name="REVIEWS_COUNT_MANY" /> mnenja iz Googla}other{<ph name="REVIEWS_COUNT_MANY" /> mnenj iz Googla}}</translation>
 <translation id="7559245342362162951">Zavihke skupine pokaži v celozaslonski mreži</translation>
 <translation id="7658239707568436148">Prekliči</translation>
+<translation id="7688386659311034820">Pogovorno okno neaktivnih zavihkov</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Deli <ph name="TABS_COUNT_ONE" /> izbran zavihek}one{Deli <ph name="TABS_COUNT_MANY" /> izbran zavihek}two{Deli <ph name="TABS_COUNT_MANY" /> izbrana zavihka}few{Deli <ph name="TABS_COUNT_MANY" /> izbrane zavihke}other{Deli <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}}</translation>
 <translation id="7773714564112603605">Odstrani zavihek in izbriši skupino</translation>
 <translation id="7792771145871471484">Pregled predlogov.</translation>

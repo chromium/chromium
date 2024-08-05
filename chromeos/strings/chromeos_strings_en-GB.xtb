@@ -358,6 +358,7 @@
 <translation id="2780756493585863768">Recent backgrounds powered by Google AI</translation>
 <translation id="2783010256799387990">PASSED</translation>
 <translation id="2786429550992142861">linen</translation>
+<translation id="2787237339470862294">This language isn't supported at this time</translation>
 <translation id="2787435249130282949">keyboard brighter</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Cannot connect to the Internet. Click to try again.</translation>
@@ -669,6 +670,7 @@
 <translation id="458794348635939462">Failed to resolve all hosts</translation>
 <translation id="4593212453765072419">Proxy authentication required</translation>
 <translation id="4594021849294327751">Create transcript</translation>
+<translation id="4607282946861182308">Can't create images of this. Try another prompt.</translation>
 <translation id="4609350030397390689">Keyboard brightness down</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> out of <ph name="TOTAL_PAGE_NUMBER" />. Press Enter to cancel the print job.</translation>
 <translation id="463791356324567266">Cancelling scanning...</translation>

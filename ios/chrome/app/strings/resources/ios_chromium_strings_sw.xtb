@@ -144,6 +144,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chromium kwe
 <translation id="5131565040785979529">Shirika lako, <ph name="DOMAIN" />, hudhibiti akaunti uliyotumia kuingia na jinsi Chromium inavyotumika.</translation>
 <translation id="5146749061471423558">Weka Alamisho kwenye Chromium</translation>
 <translation id="5171868502429358653">Ingia Katika Akaunti kwenye Chromium</translation>
+<translation id="5203483872492817335">Fikia Chromium kwa haraka katika Sehemu Iliyopachikwa kwenye Skrini ya Kwanza ya iPad yako.</translation>
 <translation id="5213683223491576284">Hufungua Kidhibiti cha Manenosiri kwenye Chromium.</translation>
 <translation id="5224391634244552924">Hakuna manenosiri yaliyohifadhiwa. Chromium inaweza kukagua manenosiri yako ukiyahifadhi.</translation>
 <translation id="5242782538551259282">Baadhi ya data yako ya Chromium bado haijahifadhiwa kwenye Akaunti yako ya Google.
@@ -225,6 +226,7 @@ Mambo ya kuzingatia:
 Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa kwa njia fiche. Kauli ya siri haitumwi kwa au kuhifadhiwa na Google. Ukisahau kauli yako ya siri au ukitaka kubadilisha mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chromium kwenye akaunti yako<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Kwa sasa arifa za Chromium zimezimwa kwenye mipangilio ya kifaa chako.</translation>
 <translation id="7222001353246886083">Kutatufa ${searchPhrase} kwenye Chromium</translation>
+<translation id="7228180817326917122">Kidokezo cha Chromium: Chagua nafasi ya sehemu ya anwani</translation>
 <translation id="725427773388857052">Chromium inaweza kukusaidia ulinde akaunti yako dhidi ya ufichuzi haramu wa data, tovuti ambazo si salama na zaidi.</translation>
 <translation id="7269362888766543920">Baadhi ya programu jalizi husababisha Chromium iache kufanya kazi. Tafadhali jaribu kuziondoa.</translation>
 <translation id="7285031092584344905">Fikia manenosiri yako ya Chromium na zaidi kwenye programu nyingine.</translation>
@@ -247,6 +249,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="7928628054454574139">Tumia Chromium kufungua viungo vyovyote unavyogusa katika programu zingine</translation>
 <translation id="7931842119211730154">Funga Vichupo Fiche Unapofunga Chromium</translation>
 <translation id="7934404985878918282">Angalia Orodha ya Kusoma ya Chromium</translation>
+<translation id="7947765692209663835">Fikia Chromium kwa haraka katika Sehemu Iliyopachikwa kwenye Skrini ya Kwanza ya iPhone yako.</translation>
 <translation id="7971753607796745700">Weka Kipengee cha Orodha ya Kusoma kwenye Chromium</translation>
 <translation id="7980860476903281594">Chromium hushiriki maelezo ya mahali ulipo na tovuti unazoruhusu.</translation>
 <translation id="7994322153108931467">Ili upate vidokezo muhimu vya Chromium, washa arifa kwenye mipangilio yako ya iOS.</translation>
@@ -265,6 +268,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="8386869251364507178">Vitendo vya Chromium</translation>
 <translation id="8409374867500149834">Una ulinzi thabiti zaidi wa Chromium dhidi ya tovuti hatari</translation>
 <translation id="8458950033462118672">Unaweza kufungua viungo kiotomatiki katika Chromium kwa kuifanya iwe Programu yako Chaguomsingi ya Kuvinjari.</translation>
+<translation id="8473874987831035139">Kidokezo cha Chromium: Weka Chromium kwenye Sehemu Iliyopachikwa</translation>
 <translation id="8502918057530111907">Tumia Chromium kwa Chaguomsingi ili Upate Maarifa ya Bei kwa Urahisi</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Hali hii hutokea wakati hujatumia Chromium kwa dakika {THRESHOLD}. Data iliyohifadhiwa kwenye kifaa hiki pekee ulipokuwa umeingia katika akaunti itafutwa. Data hii inaweza kujumuisha historia na manenosiri.}other{Hali hii hutokea wakati hujatumia Chromium kwa dakika {THRESHOLD}. Data iliyohifadhiwa kwenye kifaa hiki pekee ulipokuwa umeingia katika akaunti itafutwa. Data hii inaweza kujumuisha historia na manenosiri.}}</translation>
 <translation id="858114650497379505">Unaweza kutumia manenosiri uliyohifadhi kwenye Kidhibiti cha Manenosiri katika programu zingine kwenye iPhone yako.</translation>

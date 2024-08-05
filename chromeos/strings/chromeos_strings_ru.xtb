@@ -358,6 +358,7 @@
 <translation id="2780756493585863768">Новые фоны, созданные с помощью ИИ от Google</translation>
 <translation id="2783010256799387990">ПРОЙДЕНО</translation>
 <translation id="2786429550992142861">лен</translation>
+<translation id="2787237339470862294">Этот язык пока не поддерживается.</translation>
 <translation id="2787435249130282949">увеличить яркость клавиатуры</translation>
 <translation id="2805756323405976993">Сервисы</translation>
 <translation id="28232023175184696">Ошибка подключения к Интернету. Нажмите, чтобы повторить попытку.</translation>
@@ -669,6 +670,7 @@
 <translation id="458794348635939462">Не удалось преобразовать имена всех хостов.</translation>
 <translation id="4593212453765072419">Требуется аутентификация на прокси-сервере</translation>
 <translation id="4594021849294327751">Создать расшифровку</translation>
+<translation id="4607282946861182308">Не удалось создать изображения. Попробуйте ввести другой запрос.</translation>
 <translation id="4609350030397390689">Уменьшение яркости клавиатуры</translation>
 <translation id="4627232916386272576">Файл "<ph name="DOCUMENT_TITLE" />", принтер "<ph name="PRINTER_NAME" />", дата – <ph name="CREATION_TIME" />, напечатано страниц: <ph name="PRINTED_PAGE_NUMBER" /> из <ph name="TOTAL_PAGE_NUMBER" />. Чтобы отменить задание печати, нажмите клавишу "Ввод".</translation>
 <translation id="463791356324567266">Отмена сканирования…</translation>

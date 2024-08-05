@@ -41,6 +41,7 @@
 <translation id="2801787514987684416">Kas kuvada poe teave?</translation>
 <translation id="2928243913527329289">Google | Teave selle poe kohta</translation>
 <translation id="2977480621796371840">Grupist eemaldamine</translation>
+<translation id="29919168204617356">Inaktiivsed vahelehed suletakse automaatselt. Leiate need alati jaotisest Ajalugu.</translation>
 <translation id="3008554597174452548">Lõpeta toote jälgimine</translation>
 <translation id="3026391124054406831">Looge vahekaartide korraldamiseks gruppe.</translation>
 <translation id="3051031624272448591">Teil on alati võimalik need ajaloo abil tagasi saada</translation>
@@ -51,6 +52,7 @@
 <translation id="3322827343001922122">Avage vahelehegrupi <ph name="TITLE_OF_GROUP" /> toimingute menüü</translation>
 <translation id="3328308545011660196">Soovitus: <ph name="NUMBER_OF_TABS" /> vahelehte näivad olevat seotud. Kas soovite need grupeerida?</translation>
 <translation id="3547352561153509682">See kustutab grupi kõikidest seadmetest, mis on kontoga <ph name="USER_EMAIL" /> sisse logitud</translation>
+<translation id="3613492231657284463">Dialoog Peida inaktiivsed vahelehed</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Jagatud lehe eelvaate pisipilt.</translation>
 <translation id="381219490185664296">Kas tühistada vahelehegrupi sorteerimine?</translation>
@@ -137,6 +139,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> arvustus Google'ist}other{<ph name="REVIEWS_COUNT_MANY" /> arvustust Google'ist}}</translation>
 <translation id="7559245342362162951">Kuva grupi vahelehed täisekraani ruudustikus</translation>
 <translation id="7658239707568436148">Tühista</translation>
+<translation id="7688386659311034820">Dialoog Inaktiivsed vahelehed</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Jaga <ph name="TABS_COUNT_ONE" /> valitud vahelehte}other{Jaga <ph name="TABS_COUNT_MANY" /> valitud vahelehte}}</translation>
 <translation id="7773714564112603605">Eemaldage vaheleht ja kustutage grupp</translation>
 <translation id="7792771145871471484">Vaadake soovitused üle.</translation>

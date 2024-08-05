@@ -358,6 +358,7 @@
 <translation id="2780756493585863768">Seneste baggrunde baseret på Google AI</translation>
 <translation id="2783010256799387990">GENNEMFØRT</translation>
 <translation id="2786429550992142861">linned</translation>
+<translation id="2787237339470862294">Dette sprog understøttes ikke i øjeblikket</translation>
 <translation id="2787435249130282949">lysere tastatur</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Der kunne ikke oprettes forbindelse til internettet. Klik for at prøve igen.</translation>
@@ -669,6 +670,7 @@
 <translation id="458794348635939462">Ikke alle hosts kunne identificeres</translation>
 <translation id="4593212453765072419">Proxygodkendelse påkrævet</translation>
 <translation id="4594021849294327751">Opret transskription</translation>
+<translation id="4607282946861182308">Der kan ikke oprettes billeder for denne forespørgsel. Prøv en anden prompt.</translation>
 <translation id="4609350030397390689">Reducer tastaturets lysstyrke</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ud af <ph name="TOTAL_PAGE_NUMBER" />. Tryk på Enter for at annullere udskriftsjobbet.</translation>
 <translation id="463791356324567266">Annullerer scanning...</translation>

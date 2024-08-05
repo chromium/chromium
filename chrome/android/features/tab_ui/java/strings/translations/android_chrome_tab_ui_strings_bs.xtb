@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Narandžasta</translation>
 <translation id="125153950246128346">Dodirnite da vidite drugu karticu</translation>
 <translation id="1273910660700874265">Opcije grupe kartica "<ph name="TITLE_OF_GROUP" />"</translation>
+<translation id="1340839264183302272">Napusti grupu</translation>
 <translation id="1419023007528516122">Ovo će trajno izbrisati grupu s uređaja</translation>
 <translation id="1486715732399361704">Ovdje možete pronaći sve grupe kartica</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Kreirano je prije <ph name="NUM_MINS_ONE" /> minute}one{Kreirano je prije <ph name="NUM_MINS_MANY" /> minute}few{Kreirano je prije <ph name="NUM_MINS_MANY" /> minute}other{Kreirano je prije <ph name="NUM_MINS_MANY" /> minuta}}</translation>
@@ -122,6 +123,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Pomjeranje kartice ulijevo</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
+<translation id="6694634756612002311">Upravljanje dijeljenjem</translation>
 <translation id="6744956528665271406">Uredite boju grupe</translation>
 <translation id="6856809498882026482">Skrivanje načina rada višestrukog izbora</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Dijeli karticu}one{Dijeli kartice}few{Dijeli kartice}other{Dijeli kartice}}</translation>
@@ -174,6 +176,7 @@
 <translation id="8926389886865778422">Ne pitaj ponovo</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Proširivanje grupe kartica s <ph name="TABS_COUNT_ONE" /> karticom.}one{Proširivanje grupe kartica sa <ph name="TABS_COUNT_MANY" /> karticom.}few{Proširivanje grupe kartica sa <ph name="TABS_COUNT_MANY" /> kartice.}other{Proširivanje grupe kartica sa <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="9090098097337832354">Informacije o ovoj trgovini su zatvorene</translation>
+<translation id="9111228330448174435">Prikaži dijaloški okvir pri izradi nove grupe kartica</translation>
 <translation id="9150694013019234766">Prebacivanje između kartica unutar grupe kartica pri dnu ekrana</translation>
 <translation id="9169594135889675189">Dodaj novu karticu u grupu</translation>
 <translation id="9216898458513705996">Kartice će ostati otvorene na uređaju, ali će se grupa izbrisati sa svih uređaja na kojima ste prijavljeni na <ph name="USER_EMAIL" /></translation>

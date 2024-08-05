@@ -41,6 +41,7 @@
 <translation id="2801787514987684416">¿Ver información de la tienda?</translation>
 <translation id="2928243913527329289">Google | Acerca de esta tienda</translation>
 <translation id="2977480621796371840">Quitar del grupo</translation>
+<translation id="29919168204617356">Las pestañas inactivas se cerrarán automáticamente. Podrás encontrarlas en el historial siempre que quieras.</translation>
 <translation id="3008554597174452548">Dejar de seguir el producto</translation>
 <translation id="3026391124054406831">Crea grupos para organizar tus pestañas.</translation>
 <translation id="3051031624272448591">Siempre puedes recuperarlas desde el historial</translation>
@@ -51,6 +52,7 @@
 <translation id="3322827343001922122">Abrir el menú de acciones del grupo de pestañas <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Sugerencia: Hay <ph name="NUMBER_OF_TABS" /> pestañas que parecen relacionadas. ¿Quieres agruparlas?</translation>
 <translation id="3547352561153509682">Se eliminará el grupo de todos los dispositivos en los que se haya iniciado sesión con <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">Ocultar cuadro de diálogo de pestañas inactivas</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatura de hoja para compartir.</translation>
 <translation id="381219490185664296">¿Desagrupar grupo de pestañas?</translation>
@@ -137,6 +139,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> reseña de Google}other{<ph name="REVIEWS_COUNT_MANY" /> reseñas de Google}}</translation>
 <translation id="7559245342362162951">Mostrar las pestañas del grupo en una cuadrícula en pantalla completa</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7688386659311034820">Cuadro de diálogo de pestañas inactivas</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Compartir <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Compartir <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
 <translation id="7773714564112603605">Quitar pestaña y eliminar grupo</translation>
 <translation id="7792771145871471484">Revisar las sugerencias.</translation>

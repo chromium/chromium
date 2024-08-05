@@ -1363,6 +1363,7 @@
 <translation id="5819918159912280082">Chromebook が予期せず再起動されました。前回使用していたウィンドウやアプリを開きます。</translation>
 <translation id="5823239091726045201">ウェブの Google ToDo リスト</translation>
 <translation id="5825969630400862129">接続済みデバイスの設定</translation>
+<translation id="5830180081891717894">他 <ph name="WINDOWS" /> 件</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> の「<ph name="ROUTE_TITLE" />」を停止します</translation>
 <translation id="5841296711770970362">次のトラックに移動する</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> のアクセス ポイントはオンです。デバイスが接続されていません</translation>
@@ -2071,6 +2072,7 @@
 <translation id="8375916635258623388">この <ph name="DEVICE_NAME" /> とお使いのスマートフォンは自動的に接続されます</translation>
 <translation id="8380784334203145311">おやすみなさい</translation>
 <translation id="8382715499079447151">表示保護機能</translation>
+<translation id="8383614331548401927">おかえりなさい</translation>
 <translation id="8388750414311082622">最後のデスクは削除できません。</translation>
 <translation id="8394567579869570560">保護者の方がこのデバイスをロックしました</translation>
 <translation id="8401850874595457088">言語メニューを入力してください</translation>

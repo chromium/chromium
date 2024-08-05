@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Oranye</translation>
 <translation id="125153950246128346">Ketuk untuk melihat tab lainnya</translation>
 <translation id="1273910660700874265">Opsi grup tab <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1340839264183302272">Keluar dari grup</translation>
 <translation id="1419023007528516122">Tindakan ini akan menghapus permanen grup dari perangkat Anda</translation>
 <translation id="1486715732399361704">Anda dapat menemukan semua grup tab di sini</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Dibuat <ph name="NUM_MINS_ONE" /> menit lalu}other{Dibuat <ph name="NUM_MINS_MANY" /> menit lalu}}</translation>
@@ -41,6 +42,7 @@
 <translation id="2801787514987684416">Lihat info toko?</translation>
 <translation id="2928243913527329289">Google | Tentang toko ini</translation>
 <translation id="2977480621796371840">Keluarkan dari grup</translation>
+<translation id="29919168204617356">Tab yang tidak aktif akan ditutup secara otomatis. Anda dapat menemukannya di Histori kapan saja.</translation>
 <translation id="3008554597174452548">Hentikan pemantauan produk</translation>
 <translation id="3026391124054406831">Buat grup untuk mengatur tab Anda.</translation>
 <translation id="3051031624272448591">Anda selalu dapat membukanya kembali di histori</translation>
@@ -51,6 +53,7 @@
 <translation id="3322827343001922122">Buka menu tindakan grup tab untuk grup tab <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Saran: <ph name="NUMBER_OF_TABS" /> tab sepertinya berkaitan. Masukkan ke grup?</translation>
 <translation id="3547352561153509682">Tindakan ini akan menghapus grup dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">Sembunyikan dialog tab tidak aktif</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Thumbnail untuk pratinjau sheet berbagi.</translation>
 <translation id="381219490185664296">Pisahkan grup tab?</translation>
@@ -120,6 +123,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Pindahkan tab ke kiri</translation>
 <translation id="6615455863669487791">Tunjukkan</translation>
+<translation id="6694634756612002311">Kelola pembagian</translation>
 <translation id="6744956528665271406">Edit warna grup</translation>
 <translation id="6856809498882026482">Sembunyikan mode multi-pilihan</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Bagikan tab}other{Bagikan tab}}</translation>
@@ -137,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> ulasan dari Google}other{<ph name="REVIEWS_COUNT_MANY" /> ulasan dari Google}}</translation>
 <translation id="7559245342362162951">Tampilkan tab grup dalam petak layar penuh</translation>
 <translation id="7658239707568436148">Batal</translation>
+<translation id="7688386659311034820">Dialog tab tidak aktif</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Bagikan <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Bagikan <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="7773714564112603605">Hapus tab dan grup</translation>
 <translation id="7792771145871471484">Tinjau saran.</translation>
@@ -171,6 +176,7 @@
 <translation id="8926389886865778422">Jangan tanya lagi</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Luaskan grup tab yang berisi <ph name="TABS_COUNT_ONE" /> tab.}other{Luaskan grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="9090098097337832354">Informasi tentang toko ini ditutup</translation>
+<translation id="9111228330448174435">Tampilkan dialog terkait pembuatan grup tab baru</translation>
 <translation id="9150694013019234766">Beralih ke tab lain pada grup tab Anda di dekat bagian bawah layar</translation>
 <translation id="9169594135889675189">Tambahkan tab baru ke grup</translation>
 <translation id="9216898458513705996">Tab akan tetap terbuka di perangkat ini, tetapi grup akan dihapus dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" /></translation>

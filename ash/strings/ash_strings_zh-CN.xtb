@@ -1085,6 +1085,7 @@
 <translation id="4890408602550914571">请确保您的手机就在附近且已开启蓝牙。</translation>
 <translation id="4892981359753171125">面部控制</translation>
 <translation id="4895488851634969361">电池电量已满。</translation>
+<translation id="4902797682482387055">建议要专注处理的任务</translation>
 <translation id="490375751687810070">纵向</translation>
 <translation id="490788395437447240">电池电量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="491504982845934899">在设备完成设置后启用“<ph name="NETWORK_NAME" />”</translation>
@@ -1361,6 +1362,7 @@
 <translation id="5819918159912280082">Chromebook 意外重启了。打开之前的窗口和应用。</translation>
 <translation id="5823239091726045201">Google Tasks 网页版</translation>
 <translation id="5825969630400862129">设置已连接的设备</translation>
+<translation id="5830180081891717894">另外 <ph name="WINDOWS" /> 项</translation>
 <translation id="5837036133683224804">停止将“<ph name="ROUTE_TITLE" />”投放至“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="5841296711770970362">切换到下一首</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> 热点已开启，但尚未连接任何设备</translation>
@@ -2068,6 +2070,7 @@
 <translation id="8375916635258623388">此<ph name="DEVICE_NAME" />将会自动连接到您的手机</translation>
 <translation id="8380784334203145311">晚安！</translation>
 <translation id="8382715499079447151">防窥探功能</translation>
+<translation id="8383614331548401927">欢迎来到 Recap</translation>
 <translation id="8388750414311082622">无法移除最后一个桌面。</translation>
 <translation id="8394567579869570560">您的家长锁定了此设备</translation>
 <translation id="8401850874595457088">进入语言菜单</translation>

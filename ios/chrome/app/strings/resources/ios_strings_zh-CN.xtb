@@ -302,6 +302,7 @@
 <translation id="2529021024822217800">全部打开</translation>
 <translation id="2536991091671391962">您可在任意设备上使用保存的密码。系统会将密码保存到 <ph name="EMAIL" /> 的 Google 密码管理工具中。</translation>
 <translation id="2542268842667970959">隐藏“安全检查”</translation>
+<translation id="2545094307889012168">智能镜头叠加层</translation>
 <translation id="2547458583188611426">同步功能无法正常运行。若要开始同步，请输入您的口令。</translation>
 <translation id="2551153019974022505">账号错误</translation>
 <translation id="2556092377360758201">不保护（不建议）</translation>
@@ -848,6 +849,7 @@
 <translation id="5197255632782567636">互联网</translation>
 <translation id="5205197603258285592">将图片保存到…</translation>
 <translation id="5211488077761630279">允许“<ph name="SITE_NAME" />”使用您的<ph name="PERMISSION" />？</translation>
+<translation id="5215046161188172474">分享完整网址</translation>
 <translation id="5219295696240154694">帮助我们为所有人改善网络安全环境</translation>
 <translation id="5220945116117011963">根据日期创建日历活动</translation>
 <translation id="5221339005270097309">正在检查密码…</translation>
@@ -885,6 +887,7 @@
 <translation id="5396950905475481456">邀请家庭成员</translation>
 <translation id="5407969256130905701">舍弃更改</translation>
 <translation id="5414763847370083940">当相应商品在所跟踪的任何网站上降价时，您都会收到提醒。</translation>
+<translation id="5415289094036440596">无法分享通行密钥</translation>
 <translation id="5416022985862681400">过去 7 天</translation>
 <translation id="5416455648658732408">移至标签页分组</translation>
 <translation id="5423269318075950257">跟踪价格</translation>
@@ -1124,6 +1127,7 @@
 不过，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。</translation>
 <translation id="6476253015009698798">无法在此网页上跟踪价格。</translation>
 <translation id="6476800141292307438">将页面翻译成<ph name="LANGUAGE" />。选项位于屏幕底部附近。</translation>
+<translation id="6477585407014744043">命名分组</translation>
 <translation id="648164694371393720">身份验证出错</translation>
 <translation id="6494931198667773526">结束日期</translation>
 <translation id="6500795388871406244">使用建议的密码：</translation>
@@ -1293,6 +1297,7 @@
 <translation id="734758817008927353">卡片信息保存选项</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7353432112255316844">请验证是您本人在操作</translation>
+<translation id="736564850024123010">更换地址栏的位置，获享个性化体验。</translation>
 <translation id="7367530036083223701">使用“密码管理工具”小组件从主屏幕安全地获取您的密码。</translation>
 <translation id="7380220816562673297">目前，您只能与家庭成员分享密码。您可以<ph name="BEGIN_LINK" />创建一个家人群组<ph name="END_LINK" />并添加最多 6 名成员，与他们一起充分利用 Google 产品和订阅。</translation>
 <translation id="739101637685146669">您想为哪个网址添加书签？</translation>
@@ -1595,6 +1600,7 @@
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731958888085671579">隐藏“在网页中查找”</translation>
 <translation id="87371078663613140">浏览菜单栏中的选项</translation>
+<translation id="8739145690729256497">允许通知</translation>
 <translation id="8741995161408053644">您的 Google 账号在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="8750037785291841318">您已打开的标签页会显示在此处</translation>
 <translation id="8756969031206844760">要更新密码吗？</translation>

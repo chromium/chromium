@@ -144,6 +144,7 @@
 <translation id="5131565040785979529">你的機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和使用 Chromium 的方式。</translation>
 <translation id="5146749061471423558">將書籤新增至 Chromium</translation>
 <translation id="5171868502429358653">登入 Chromium</translation>
+<translation id="5203483872492817335">從 iPad 主畫面 Dock 更快存取 Chromium。</translation>
 <translation id="5213683223491576284">在 Chromium 中開啟「密碼管理工具」。</translation>
 <translation id="5224391634244552924">沒有已儲存的密碼。儲存密碼時，Chromium 可檢查您的密碼。</translation>
 <translation id="5242782538551259282">部分 Chromium 資料尚未儲存至 Google 帳戶。
@@ -225,6 +226,7 @@
 只有知道密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="7192111075364461693">目前未在裝置設定中開啟 Chromium 通知。</translation>
 <translation id="7222001353246886083">在 Chromium 中搜尋「${searchphrase}」</translation>
+<translation id="7228180817326917122">Chromium 提示：選擇網址列位置</translation>
 <translation id="725427773388857052">Chromium 能確保系統安全，避免發生資料外洩或瀏覽不安全網站等問題。</translation>
 <translation id="7269362888766543920">部份外掛程式導致 Chromium 當機，請解除安裝那些外掛程式。</translation>
 <translation id="7285031092584344905">在其他應用程式中使用你的 Chromium 密碼和其他資料。</translation>
@@ -247,6 +249,7 @@
 <translation id="7928628054454574139">在您輕按其他應用程式內的連結時開啟 Chromium</translation>
 <translation id="7931842119211730154">關閉 Chromium 時鎖定無痕式分頁</translation>
 <translation id="7934404985878918282">查看 Chromium 閱讀清單</translation>
+<translation id="7947765692209663835">從 iPhone 主畫面 Dock 更快存取 Chromium。</translation>
 <translation id="7971753607796745700">將閱讀清單項目新增至 Chromium</translation>
 <translation id="7980860476903281594">Chromium 會與您允許的網站分享您的位置資訊。</translation>
 <translation id="7994322153108931467">如要取得 Chromium 的實用提示，請在 iOS 設定中開啟通知功能。</translation>
@@ -265,6 +268,7 @@
 <translation id="8386869251364507178">Chromium 操作</translation>
 <translation id="8409374867500149834">Chromium 最強大的安全功能可協助防範有害網站</translation>
 <translation id="8458950033462118672">將 Chromium 設定為「預設瀏覽器應用程式」，即可自動以 Chromium 開啟連結。</translation>
+<translation id="8473874987831035139">Chromium 提示：將 Chromium 移至 Dock</translation>
 <translation id="8502918057530111907">預設使用 Chromium 可輕鬆取得價格分析資料</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作。系統將刪除你登入時只儲存至此裝置的資料，其中可能包括記錄和密碼。}other{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作。系統將刪除你登入時只儲存至此裝置的資料，其中可能包括記錄和密碼。}}</translation>
 <translation id="858114650497379505">您可在 iPhone 上的其他應用程式使用您儲存到「密碼管理工具」的密碼。</translation>

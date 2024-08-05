@@ -5420,6 +5420,7 @@
 <translation id="4893336867552636863">Все данные о работе в браузере будут удалены с устройства.</translation>
 <translation id="4893454800196085005">Хорошее – DVD</translation>
 <translation id="4893522937062257019">Экран блокировки</translation>
+<translation id="4894055916816649664">Только на 10 минут</translation>
 <translation id="4895799941222633551">Создать &amp;ярлык</translation>
 <translation id="4898011734382862273">Сертификат "<ph name="CERTIFICATE_NAME" />" представляет центр сертификации</translation>
 <translation id="4898913189644355814">Сайт может сохранять информацию о предпочтительном языке или товарах, которые вы хотите купить. Эти данные доступны сайту и его субдоменам.</translation>
@@ -6057,6 +6058,7 @@
 <translation id="5380526436444479273">Подождите несколько минут и повторите попытку.</translation>
 <translation id="5382591305415226340">Управление поддерживаемыми ссылками</translation>
 <translation id="5383740867328871413">Группа без названия: <ph name="GROUP_CONTENTS" />, <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5384401776498845256">Кто может отправлять контент на ваше устройство</translation>
 <translation id="5385628342687007304">Пароль сохранен только на этом устройстве. Чтобы он синхронизировался с другими устройствами, добавьте его в аккаунт Google.</translation>
 <translation id="5387116558048951800">Изменить <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="5387496897058645038">Характеристики</translation>
@@ -6923,6 +6925,7 @@
 <translation id="6015776718598175635">Звезды</translation>
 <translation id="6015796118275082299">Год</translation>
 <translation id="6016178549409952427">Перейти к дополнительному контенту на карточке <ph name="CURRENT_ELEMENT" /> из <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="6016462059150340136">Все пользователи поблизости</translation>
 <translation id="6016551720757758985">Подтверждение Powerwash и возврата к предыдущей версии</translation>
 <translation id="6016972670657536680">Выберите язык и клавишу. Текущий язык: <ph name="LANGUAGE" />.</translation>
 <translation id="6017514345406065928">Зеленый</translation>
@@ -7371,6 +7374,7 @@
 <translation id="6345878117466430440">Отметить как прочитанное</translation>
 <translation id="6346952829206698721">Вставить из буфера обмена</translation>
 <translation id="6347010704471250799">Показывать уведомление</translation>
+<translation id="634792071306410644">Никто не может обмениваться с вами контентом, пока вы не разрешите другим устройствам обнаруживать ваше</translation>
 <translation id="6348252528297699679">Чтобы отключить определение местоположения, откройте "Настройки &gt; Конфиденциальность и безопасность &gt; Настройки конфиденциальности &gt; Данные о местоположении". <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="6348805481186204412">Офлайн-хранилище</translation>
 <translation id="6349101878882523185">Установите приложение "<ph name="APP_NAME" />"</translation>
@@ -7980,6 +7984,7 @@
 <translation id="680572642341004180">Включить отслеживание RLZ-идентификатора для <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6806089545527108739">Запретить и спросить позже</translation>
 <translation id="680644983456221885">Это эффективная защита в реальном времени от опасных сайтов, расширений и скачанных файлов, которая основана на ваших данных о работе в браузере, предоставляемых в Google.</translation>
+<translation id="6806781719264274042">Только ваши контакты, у которых есть аккаунт Google. <ph name="LINK_BEGIN" />Показать контакты.<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">Чтобы продолжить, вставьте электронный ключ и нажмите кнопку на нем.</translation>
 <translation id="6808166974213191158">Средство записи образов системы Chrome OS Flex</translation>
 <translation id="6808193438228982088">Лиса</translation>
@@ -8046,6 +8051,7 @@
 <translation id="6840214587087739194">Адрес удален</translation>
 <translation id="6841143363521180029">Зашифрованный файл</translation>
 <translation id="6841186874966388268">Ошибки</translation>
+<translation id="6842135459748401207">Только устройства, на которых выполнен вход в аккаунт <ph name="USER_EMAIL" /></translation>
 <translation id="6842136130964845393">Чтобы всегда иметь доступ к сохраненным паролям, подтвердите свою личность.</translation>
 <translation id="6842749380892715807">Текущие списки сайтов XML скачаны <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">Данные об использовании устройства нужны сайтам, чтобы показывать в приложениях для обмена сообщениями, что вы находитесь онлайн.</translation>
@@ -10699,6 +10705,7 @@
 <translation id="8766796754185931010">Котоери</translation>
 <translation id="8767069439158587614">Показать все результаты поиска по запросу "<ph name="QUERY_CLUSTER_NAME" />"</translation>
 <translation id="8767621466733104912">Обновить Chrome для всех пользователей</translation>
+<translation id="8768049274922835860">Все</translation>
 <translation id="876956356450740926">Запускайте инструменты разработчика, интегрированные среды разработки и редакторы. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Корневой каталог расширения</translation>
 <translation id="8771300903067484968">Фон стартовой страницы изменен на вариант по умолчанию.</translation>
@@ -10908,7 +10915,6 @@
 <translation id="8918900204934259333">Установка приложения…</translation>
 <translation id="891931289445130855">Удалить данные и разрешения</translation>
 <translation id="8920133120839850939">Выберите вкладку с дополнительными жестами, а затем включите функцию "Пролистывание страниц" для перехода вперед или назад.</translation>
-<translation id="8922348435910470639">Пересекающиеся мероприятия</translation>
 <translation id="8922624386829239660">Перемещать экран, когда курсор касается его краев</translation>
 <translation id="8923880975836399332">Темно-бирюзовый</translation>
 <translation id="8925124370124776087">Строка заголовка теперь скрыта.</translation>

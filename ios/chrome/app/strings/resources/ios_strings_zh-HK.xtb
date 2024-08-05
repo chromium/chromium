@@ -885,7 +885,7 @@
 <translation id="5396950905475481456">邀請家庭成員</translation>
 <translation id="5407969256130905701">捨棄變更</translation>
 <translation id="5414763847370083940">如果產品在任何網站上降價，系統將通知您。</translation>
-<translation id="5415289094036440596">無法分享密碼金鑰</translation>
+<translation id="5415289094036440596">無法分享密鑰</translation>
 <translation id="5416022985862681400">最近 7 天</translation>
 <translation id="5416455648658732408">移至分頁群組</translation>
 <translation id="5423269318075950257">追蹤價格</translation>
@@ -1294,6 +1294,7 @@
 <translation id="734758817008927353">付款卡儲存選項</translation>
 <translation id="7352651011704765696">發生問題</translation>
 <translation id="7353432112255316844">驗證身分</translation>
+<translation id="736564850024123010">切換網址列的位置，享受自訂的使用體驗。</translation>
 <translation id="7367530036083223701">在主畫面上使用「密碼管理工具」小工具安全存取密碼。</translation>
 <translation id="7380220816562673297">目前只能與家庭成員分享密碼。你可<ph name="BEGIN_LINK" />建立家庭群組<ph name="END_LINK" /> (最多 6 位成員)，讓 Google 的產品和訂閱服務發揮更多價值。</translation>
 <translation id="739101637685146669">要將邊個網址加去書籤？</translation>
@@ -1596,6 +1597,7 @@
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731958888085671579">隱藏「在網頁中搜尋」</translation>
 <translation id="87371078663613140">瀏覽選單列中的選項</translation>
+<translation id="8739145690729256497">允許通知</translation>
 <translation id="8741995161408053644">您的 Google 帳戶在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄。</translation>
 <translation id="8750037785291841318">您可在此查看分頁</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>

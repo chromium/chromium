@@ -358,6 +358,7 @@
 <translation id="2780756493585863768">Nedávne pozadia používajúce umelú inteligenciu od Googlu</translation>
 <translation id="2783010256799387990">ÚSPEŠNÉ</translation>
 <translation id="2786429550992142861">ľan</translation>
+<translation id="2787237339470862294">Tento jazyk nie je momentálne podporovaný</translation>
 <translation id="2787435249130282949">jasnejšia klávesnica</translation>
 <translation id="2805756323405976993">Aplikácie</translation>
 <translation id="28232023175184696">Nedá sa pripojiť k internetu. Kliknutím to skúste znova.</translation>
@@ -669,6 +670,7 @@
 <translation id="458794348635939462">Nepodarilo sa vybrať všetkých hostiteľov</translation>
 <translation id="4593212453765072419">Vyžaduje sa overenie servera proxy</translation>
 <translation id="4594021849294327751">Vytvoriť prepis</translation>
+<translation id="4607282946861182308">Obrázky tohto sa nedajú vytvoriť. Vyskúšajte iný pokyn.</translation>
 <translation id="4609350030397390689">Zníženie jasu klávesnice</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tlačovú úlohu zrušíte stlačením klávesa Enter.</translation>
 <translation id="463791356324567266">Ruší sa skenovanie…</translation>
