@@ -60,7 +60,6 @@ class AIManagerKeyedService : public KeyedService,
   // Creates an `AITextSession`, either as a new session, or as a clone of an
   // existing session with its context copied.
   std::unique_ptr<AITextSession> CreateTextSessionInternal(
-      mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
       const blink::mojom::AITextSessionSamplingParamsPtr& sampling_params,
       const std::optional<const AITextSession::Context>& context =
           std::nullopt);

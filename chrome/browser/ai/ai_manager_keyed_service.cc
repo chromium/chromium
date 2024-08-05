@@ -128,7 +128,6 @@ void AIManagerKeyedService::CanCreateTextSession(
 }
 
 std::unique_ptr<AITextSession> AIManagerKeyedService::CreateTextSessionInternal(
-    mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
     const blink::mojom::AITextSessionSamplingParamsPtr& sampling_params,
     const std::optional<const AITextSession::Context>& context) {
   CHECK(browser_context_);
@@ -166,10 +165,15 @@ void AIManagerKeyedService::CreateTextSession(
     const std::optional<std::string>& system_prompt,
     CreateTextSessionCallback callback) {
   std::unique_ptr<AITextSession> session =
-      CreateTextSessionInternal(std::move(receiver), sampling_params);
+      CreateTextSessionInternal(sampling_params);
   if (!session) {
     std::move(callback).Run(false);
+    return;
   }
+
+  // TODO(crbug.com/356809696): instead of using `mojo::MakeSelfOwnedReceiver`,
+  // the session's lifetime should be associated with either the host of the
+  // document or worker.
 
   if (!system_prompt.has_value()) {
     // The new `AITextSession` shares the same lifetime with the `receiver`.
@@ -234,7 +238,7 @@ void AIManagerKeyedService::CreateTextSessionForCloning(
     const AITextSession::Context& context,
     base::OnceCallback<void(bool)> callback) {
   std::unique_ptr<AITextSession> session =
-      CreateTextSessionInternal(std::move(receiver), sampling_params, context);
+      CreateTextSessionInternal(sampling_params, context);
   if (!session) {
     std::move(callback).Run(false);
     return;
