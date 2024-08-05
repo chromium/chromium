@@ -144,8 +144,8 @@ class PlusAddressService : public KeyedService,
 
   // Returns a list of plus profiles for the `origin` and all affiliated
   // domains.
-  void GetAffiliatedPlusProfiles(const url::Origin& origin,
-                                 GetPlusProfilesCallback callback);
+  virtual void GetAffiliatedPlusProfiles(const url::Origin& origin,
+                                         GetPlusProfilesCallback callback);
 
   // Returns all the cached plus profiles. There are no server requests
   // triggered by this method, only the cached responses are returned.

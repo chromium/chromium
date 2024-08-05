@@ -35,6 +35,13 @@ bool FakePlusAddressService::IsPlusAddress(
   return potential_plus_address == kFakePlusAddress;
 }
 
+void FakePlusAddressService::GetAffiliatedPlusProfiles(
+    const url::Origin& origin,
+    GetPlusProfilesCallback callback) {
+  std::move(callback).Run(std::vector<PlusProfile>{
+      PlusProfile(kFakeProfileId, kFacet, kFakePlusAddress, is_confirmed_)});
+}
+
 void FakePlusAddressService::ReservePlusAddress(
     const url::Origin& origin,
     PlusAddressRequestCallback on_completed) {

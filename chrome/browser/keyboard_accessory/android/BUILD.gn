@@ -20,6 +20,7 @@ static_library("public") {
     "//base",
     "//components/autofill/core/browser",
     "//components/password_manager/core/browser",
+    "//components/plus_addresses:types",
     "//content/public/browser",
     "//url",
   ]
@@ -38,6 +39,7 @@ source_set("unit_test") {
   testonly = true
   sources = [
     "address_accessory_controller_impl_unittest.cc",
+    "affiliated_plus_profiles_cache_unittest.cc",
     "manual_filling_controller_impl_unittest.cc",
     "password_accessory_controller_impl_unittest.cc",
     "payment_method_accessory_controller_impl_unittest.cc",
@@ -58,6 +60,8 @@ source_set("unit_test") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
     "//components/plus_addresses:features",
+    "//components/plus_addresses:test_support",
+    "//components/plus_addresses/settings:test_support",
     "//components/strings",
     "//components/webauthn/android",
     "//content/test:test_support",

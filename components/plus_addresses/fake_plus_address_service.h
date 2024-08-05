@@ -35,6 +35,8 @@ class FakePlusAddressService : public PlusAddressService {
 
   // PlusAddressService:
   bool IsPlusAddress(const std::string& potential_plus_address) const override;
+  void GetAffiliatedPlusProfiles(const url::Origin& origin,
+                                 GetPlusProfilesCallback callback) override;
   void ReservePlusAddress(const url::Origin& origin,
                           PlusAddressRequestCallback on_completed) override;
   void ConfirmPlusAddress(const url::Origin& origin,
