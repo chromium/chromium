@@ -299,53 +299,151 @@ void MigrateArrayOfDatesPreferenceFromUserDefaults(std::string_view pref_name,
   [defaults removeObjectForKey:key];
 }
 
+// Migrates a boolean pref from source to target PrefService.
+void MigrateBooleanPref(std::string_view pref_name,
+                        PrefService* target_pref_service,
+                        PrefService* source_pref_service) {
+  const std::string pref_key = pref_name.data();
+  const PrefService::Preference* target_pref =
+      target_pref_service->FindPreference(pref_key);
+  CHECK(target_pref);
+
+  const PrefService::Preference* source_pref =
+      source_pref_service->FindPreference(pref_key);
+  CHECK(source_pref);
+
+  // Only migrate the pref if 1. it is not set in target,
+  // 2. it is not the default in source.
+  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
+    target_pref_service->SetBoolean(pref_key,
+                                    source_pref_service->GetBoolean(pref_key));
+  }
+
+  // In all cases, clear the pref from source.
+  source_pref_service->ClearPref(pref_key);
+}
+
+// Migrates a list pref from source to target PrefService.
+void MigrateListPref(std::string_view pref_name,
+                     PrefService* target_pref_service,
+                     PrefService* source_pref_service) {
+  const std::string pref_key = pref_name.data();
+  const PrefService::Preference* target_pref =
+      target_pref_service->FindPreference(pref_key);
+  CHECK(target_pref);
+
+  const PrefService::Preference* source_pref =
+      source_pref_service->FindPreference(pref_key);
+  CHECK(source_pref);
+
+  // Only migrate the pref if 1. it is not set in target,
+  // 2. it is not the default in source.
+  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
+    target_pref_service->SetList(
+        pref_key, source_pref_service->GetList(pref_key).Clone());
+  }
+
+  // In all cases, clear the pref from source.
+  source_pref_service->ClearPref(pref_key);
+}
+
+// Migrates a integer pref from source to target PrefService.
+void MigrateIntegerPref(std::string_view pref_name,
+                        PrefService* target_pref_service,
+                        PrefService* source_pref_service) {
+  const std::string pref_key = pref_name.data();
+  const PrefService::Preference* target_pref =
+      target_pref_service->FindPreference(pref_key);
+  CHECK(target_pref);
+
+  const PrefService::Preference* source_pref =
+      source_pref_service->FindPreference(pref_key);
+  CHECK(source_pref);
+
+  // Only migrate the pref if 1. it is not set in target,
+  // 2. it is not the default in source.
+  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
+    target_pref_service->SetInteger(pref_key,
+                                    source_pref_service->GetInteger(pref_key));
+  }
+
+  // In all cases, clear the pref from source.
+  source_pref_service->ClearPref(pref_key);
+}
+
+// Migrates a time pref from source to target PrefService.
+void MigrateTimePref(std::string_view pref_name,
+                     PrefService* target_pref_service,
+                     PrefService* source_pref_service) {
+  const std::string pref_key = pref_name.data();
+  const PrefService::Preference* target_pref =
+      target_pref_service->FindPreference(pref_key);
+  CHECK(target_pref);
+
+  const PrefService::Preference* source_pref =
+      source_pref_service->FindPreference(pref_key);
+  CHECK(source_pref);
+
+  // Only migrate the pref if 1. it is not set in target,
+  // 2. it is not the default in source.
+  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
+    target_pref_service->SetTime(pref_key,
+                                 source_pref_service->GetTime(pref_key));
+  }
+
+  // In all cases, clear the pref from source.
+  source_pref_service->ClearPref(pref_key);
+}
+
+// Migrates a string pref from source to target PrefService.
+void MigrateStringPref(std::string_view pref_name,
+                       PrefService* target_pref_service,
+                       PrefService* source_pref_service) {
+  const std::string pref_key = pref_name.data();
+  const PrefService::Preference* target_pref =
+      target_pref_service->FindPreference(pref_key);
+  CHECK(target_pref);
+
+  const PrefService::Preference* source_pref =
+      source_pref_service->FindPreference(pref_key);
+  CHECK(source_pref);
+
+  // Only migrate the pref if 1. it is not set in target,
+  // 2. it is not the default in source.
+  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
+    target_pref_service->SetString(pref_key,
+                                   source_pref_service->GetString(pref_key));
+  }
+
+  // In all cases, clear the pref from source.
+  source_pref_service->ClearPref(pref_key);
+}
+
 // Helper function migrating the `list` preference from LocalState prefs to
 // BrowserState prefs.
 void MigrateListPrefFromLocalStatePrefsToProfilePrefs(
     std::string_view pref_name,
-    PrefService* pref_service) {
-  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
-
-  const PrefService::Preference* legacy_pref =
-      local_pref_service->FindPreference(pref_name.data());
-  if (legacy_pref && !legacy_pref->IsDefaultValue()) {
-    pref_service->SetList(
-        pref_name.data(),
-        local_pref_service->GetList(pref_name.data()).Clone());
-    local_pref_service->ClearPref(pref_name.data());
-  }
+    PrefService* profile_pref_service) {
+  MigrateListPref(pref_name, profile_pref_service,
+                  GetApplicationContext()->GetLocalState());
 }
 
 // Helper function migrating the `string` preference from LocalState prefs to
 // BrowserState prefs.
 void MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
     std::string_view pref_name,
-    PrefService* pref_service) {
-  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
-
-  const PrefService::Preference* legacy_pref =
-      local_pref_service->FindPreference(pref_name.data());
-  if (legacy_pref && !legacy_pref->IsDefaultValue()) {
-    pref_service->SetString(pref_name.data(),
-                            local_pref_service->GetString(pref_name.data()));
-    local_pref_service->ClearPref(pref_name.data());
-  }
+    PrefService* profile_pref_service) {
+  MigrateStringPref(pref_name, profile_pref_service,
+                    GetApplicationContext()->GetLocalState());
 }
 
 // Helper function migrating the `time` preference from LocalState prefs to
 // BrowserState prefs.
 void MigrateTimePrefFromLocalStatePrefsToProfilePrefs(
     std::string_view pref_name,
-    PrefService* pref_service) {
-  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
-
-  const PrefService::Preference* legacy_pref =
-      local_pref_service->FindPreference(pref_name.data());
-  if (legacy_pref && !legacy_pref->IsDefaultValue()) {
-    pref_service->SetTime(pref_name.data(),
-                          local_pref_service->GetTime(pref_name.data()));
-    local_pref_service->ClearPref(pref_name.data());
-  }
+    PrefService* profile_pref_service) {
+  MigrateTimePref(pref_name, profile_pref_service,
+                  GetApplicationContext()->GetLocalState());
 }
 
 // Helper function migrating the `int` preference from LocalState prefs to
@@ -353,15 +451,8 @@ void MigrateTimePrefFromLocalStatePrefsToProfilePrefs(
 void MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
     std::string_view pref_name,
     PrefService* profile_pref_service) {
-  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
-
-  const PrefService::Preference* legacy_pref =
-      local_pref_service->FindPreference(pref_name.data());
-  if (legacy_pref && !legacy_pref->IsDefaultValue()) {
-    profile_pref_service->SetInteger(pref_name.data(),
-                             local_pref_service->GetInteger(pref_name.data()));
-    local_pref_service->ClearPref(pref_name.data());
-  }
+  MigrateIntegerPref(pref_name, profile_pref_service,
+                     GetApplicationContext()->GetLocalState());
 }
 
 // Helper function migrating the `bool` preference from BrowserState prefs to
@@ -369,15 +460,8 @@ void MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
 void MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
     std::string_view pref_name,
     PrefService* profile_pref_service) {
-  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
-
-  const PrefService::Preference* legacy_pref =
-      profile_pref_service->FindPreference(pref_name.data());
-  if (legacy_pref && !legacy_pref->IsDefaultValue()) {
-    local_pref_service->SetBoolean(
-        pref_name.data(), profile_pref_service->GetBoolean(pref_name.data()));
-    profile_pref_service->ClearPref(pref_name.data());
-  }
+  MigrateBooleanPref(pref_name, GetApplicationContext()->GetLocalState(),
+                     profile_pref_service);
 }
 
 }  // namespace
@@ -568,6 +652,17 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Bottom omnibox preferences.
   registry->RegisterBooleanPref(prefs::kBottomOmnibox, false);
   registry->RegisterBooleanPref(prefs::kBottomOmniboxByDefault, false);
+
+  // Prefs migrated to browserState prefs.
+  registry->RegisterListPref(prefs::kIosLatestMostVisitedSites,
+                             PrefRegistry::LOSSY_PREF);
+  registry->RegisterStringPref(
+      tab_resumption_prefs::kTabResumptionLastOpenedTabURLPref, std::string());
+  registry->RegisterTimePref(prefs::kTabPickupLastDisplayedTime, base::Time());
+  registry->RegisterStringPref(prefs::kTabPickupLastDisplayedURL,
+                               std::string());
+  registry->RegisterIntegerPref(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
+                                0);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -856,6 +951,10 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(kObsoletePasswordsPerAccountPrefMigrationDone,
                                 false);
+
+  // Prefs migrated to localState prefs.
+  registry->RegisterBooleanPref(prefs::kBottomOmnibox, false);
+  registry->RegisterBooleanPref(prefs::kBottomOmniboxByDefault, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
