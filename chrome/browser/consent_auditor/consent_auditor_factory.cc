@@ -52,7 +52,7 @@ ConsentAuditorFactory::ConsentAuditorFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 ConsentAuditorFactory::~ConsentAuditorFactory() = default;
@@ -63,8 +63,8 @@ ConsentAuditorFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = static_cast<Profile*>(context);
 
   std::unique_ptr<consent_auditor::ConsentSyncBridge> consent_sync_bridge;
-  syncer::OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
 
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(

@@ -17,8 +17,8 @@ WebAppDatabaseFactory::WebAppDatabaseFactory(Profile* profile)
 
 WebAppDatabaseFactory::~WebAppDatabaseFactory() = default;
 
-syncer::OnceModelTypeStoreFactory WebAppDatabaseFactory::GetStoreFactory() {
-  return ModelTypeStoreServiceFactory::GetForProfile(profile_)
+syncer::OnceDataTypeStoreFactory WebAppDatabaseFactory::GetStoreFactory() {
+  return DataTypeStoreServiceFactory::GetForProfile(profile_)
       ->GetStoreFactory();
 }
 

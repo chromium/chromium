@@ -29,7 +29,7 @@ namespace webauthn {
 class PasskeySyncBridge : public syncer::DataTypeSyncBridge,
                           public PasskeyModel {
  public:
-  explicit PasskeySyncBridge(syncer::OnceModelTypeStoreFactory store_factory);
+  explicit PasskeySyncBridge(syncer::OnceDataTypeStoreFactory store_factory);
   PasskeySyncBridge(const PasskeySyncBridge&) = delete;
   PasskeySyncBridge& operator=(const PasskeySyncBridge&) = delete;
   ~PasskeySyncBridge() override;
@@ -84,10 +84,10 @@ class PasskeySyncBridge : public syncer::DataTypeSyncBridge,
 
  private:
   void OnCreateStore(const std::optional<syncer::ModelError>& error,
-                     std::unique_ptr<syncer::ModelTypeStore> store);
+                     std::unique_ptr<syncer::DataTypeStore> store);
   void OnStoreReadAllDataAndMetadata(
       const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
+      std::unique_ptr<syncer::DataTypeStore::RecordList> entries,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   void OnStoreCommitWriteBatch(const std::optional<syncer::ModelError>& error);
   void NotifyPasskeysChanged(const std::vector<PasskeyModelChange>& changes);
@@ -99,7 +99,7 @@ class PasskeySyncBridge : public syncer::DataTypeSyncBridge,
   std::map<std::string, sync_pb::WebauthnCredentialSpecifics> data_;
 
   // Passkeys are stored locally in leveldb.
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
 
   base::ObserverList<Observer> observers_;
 

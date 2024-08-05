@@ -20,8 +20,8 @@ source_set("model") {
     "sync_service_factory.mm",
   ]
   deps = [
+    ":data_type_store_service_factory",
     ":device_info_sync_service_factory",
-    ":model_type_store_service_factory",
     ":sync_invalidations_service_factory",
     "//base",
     "//components/autofill/core/browser",
@@ -113,7 +113,7 @@ source_set("device_info_sync_service_factory") {
     "device_info_sync_service_factory.mm",
   ]
   deps = [
-    ":model_type_store_service_factory",
+    ":data_type_store_service_factory",
     ":sync_invalidations_service_factory",
     "//base",
     "//components/keyed_service/core",
@@ -148,7 +148,7 @@ source_set("sync_invalidations_service_factory") {
   ]
 }
 
-source_set("model_type_store_service_factory") {
+source_set("data_type_store_service_factory") {
   sources = [
     "data_type_store_service_factory.cc",
     "data_type_store_service_factory.h",

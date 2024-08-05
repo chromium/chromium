@@ -132,7 +132,7 @@ class DataSharingServiceAndroidTest : public testing::Test {
     data_sharing_service_ = std::make_unique<DataSharingServiceImpl>(
         std::move(test_url_loader_factory),
         identity_test_env_.identity_manager(),
-        syncer::ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+        syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         version_info::Channel::UNKNOWN, std::move(sdk_delegate),
         /*ui_delegate=*/nullptr);
     data_sharing_service_android_ = std::make_unique<DataSharingServiceAndroid>(

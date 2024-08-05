@@ -51,7 +51,7 @@ SyncedPrintersManagerFactory::SyncedPrintersManagerFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 SyncedPrintersManagerFactory::~SyncedPrintersManagerFactory() = default;
@@ -60,8 +60,8 @@ SyncedPrintersManager* SyncedPrintersManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
-  syncer::OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
 
   std::unique_ptr<PrintersSyncBridge> sync_bridge =
       std::make_unique<PrintersSyncBridge>(

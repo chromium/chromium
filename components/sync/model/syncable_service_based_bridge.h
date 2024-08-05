@@ -40,7 +40,7 @@ class SyncableServiceBasedBridge : public DataTypeSyncBridge {
   // Pointers must not be null and |syncable_service| must outlive this object.
   SyncableServiceBasedBridge(
       ModelType type,
-      OnceModelTypeStoreFactory store_factory,
+      OnceDataTypeStoreFactory store_factory,
       std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
       SyncableService* syncable_service);
 
@@ -75,13 +75,13 @@ class SyncableServiceBasedBridge : public DataTypeSyncBridge {
   // For testing.
   static std::unique_ptr<SyncChangeProcessor>
   CreateLocalChangeProcessorForTesting(ModelType type,
-                                       ModelTypeStore* store,
+                                       DataTypeStore* store,
                                        InMemoryStore* in_memory_store,
                                        DataTypeLocalChangeProcessor* other);
 
  private:
   void OnStoreCreated(const std::optional<ModelError>& error,
-                      std::unique_ptr<ModelTypeStore> store);
+                      std::unique_ptr<DataTypeStore> store);
   void OnReadAllDataForInit(std::unique_ptr<InMemoryStore> in_memory_store,
                             const std::optional<ModelError>& error);
   void OnReadAllMetadataForInit(const std::optional<ModelError>& error,
@@ -96,7 +96,7 @@ class SyncableServiceBasedBridge : public DataTypeSyncBridge {
   const ModelType type_;
   const raw_ptr<SyncableService> syncable_service_;
 
-  std::unique_ptr<ModelTypeStore> store_;
+  std::unique_ptr<DataTypeStore> store_;
   bool syncable_service_started_ = false;
 
   // In-memory copy of |store_|.

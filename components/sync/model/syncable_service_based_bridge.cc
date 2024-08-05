@@ -86,12 +86,12 @@ SyncChange::SyncChangeType ConvertToSyncChangeType(
 // parameter is first for binding purposes.
 std::optional<ModelError> ParseInMemoryStoreOnBackendSequence(
     SyncableServiceBasedBridge::InMemoryStore* in_memory_store,
-    std::unique_ptr<ModelTypeStore::RecordList> record_list) {
+    std::unique_ptr<DataTypeStore::RecordList> record_list) {
   DCHECK(in_memory_store);
   DCHECK(in_memory_store->empty());
   DCHECK(record_list);
 
-  for (const ModelTypeStore::Record& record : *record_list) {
+  for (const DataTypeStore::Record& record : *record_list) {
     sync_pb::PersistedEntityData persisted_entity;
     if (!persisted_entity.ParseFromString(record.value)) {
       return ModelError(FROM_HERE, "Failed deserializing data.");
@@ -111,7 +111,7 @@ class LocalChangeProcessor : public SyncChangeProcessor {
       ModelType type,
       const base::RepeatingCallback<void(const std::optional<ModelError>&)>&
           error_callback,
-      ModelTypeStore* store,
+      DataTypeStore* store,
       SyncableServiceBasedBridge::InMemoryStore* in_memory_store,
       DataTypeLocalChangeProcessor* other)
       : type_(type),
@@ -139,7 +139,7 @@ class LocalChangeProcessor : public SyncChangeProcessor {
       return processor_error;
     }
 
-    std::unique_ptr<ModelTypeStore::WriteBatch> batch =
+    std::unique_ptr<DataTypeStore::WriteBatch> batch =
         store_->CreateWriteBatch();
 
     for (const SyncChange& change : change_list) {
@@ -208,7 +208,7 @@ class LocalChangeProcessor : public SyncChangeProcessor {
   const ModelType type_;
   const base::RepeatingCallback<void(const std::optional<ModelError>&)>
       error_callback_;
-  const raw_ptr<ModelTypeStore> store_;
+  const raw_ptr<DataTypeStore> store_;
   const raw_ptr<SyncableServiceBasedBridge::InMemoryStore, DanglingUntriaged>
       in_memory_store_;
   const raw_ptr<DataTypeLocalChangeProcessor> other_;
@@ -219,7 +219,7 @@ class LocalChangeProcessor : public SyncChangeProcessor {
 
 SyncableServiceBasedBridge::SyncableServiceBasedBridge(
     ModelType type,
-    OnceModelTypeStoreFactory store_factory,
+    OnceDataTypeStoreFactory store_factory,
     std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
     SyncableService* syncable_service)
     : DataTypeSyncBridge(std::move(change_processor)),
@@ -248,7 +248,7 @@ SyncableServiceBasedBridge::~SyncableServiceBasedBridge() {
 std::unique_ptr<MetadataChangeList>
 SyncableServiceBasedBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  return DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<ModelError> SyncableServiceBasedBridge::MergeFullSyncData(
@@ -383,7 +383,7 @@ size_t SyncableServiceBasedBridge::EstimateSyncOverheadMemoryUsage() const {
 std::unique_ptr<SyncChangeProcessor>
 SyncableServiceBasedBridge::CreateLocalChangeProcessorForTesting(
     ModelType type,
-    ModelTypeStore* store,
+    DataTypeStore* store,
     InMemoryStore* in_memory_store,
     DataTypeLocalChangeProcessor* other) {
   return std::make_unique<LocalChangeProcessor>(
@@ -393,7 +393,7 @@ SyncableServiceBasedBridge::CreateLocalChangeProcessorForTesting(
 
 void SyncableServiceBasedBridge::OnStoreCreated(
     const std::optional<ModelError>& error,
-    std::unique_ptr<ModelTypeStore> store) {
+    std::unique_ptr<DataTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error) {
@@ -527,8 +527,7 @@ std::optional<ModelError> SyncableServiceBasedBridge::StartSyncableService() {
 SyncChangeList SyncableServiceBasedBridge::StoreAndConvertRemoteChanges(
     std::unique_ptr<MetadataChangeList> initial_metadata_change_list,
     EntityChangeList input_entity_change_list) {
-  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
   batch->TakeMetadataChangesFrom(std::move(initial_metadata_change_list));
 
   SyncChangeList output_sync_change_list;

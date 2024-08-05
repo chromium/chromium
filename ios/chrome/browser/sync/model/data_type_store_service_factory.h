@@ -13,23 +13,23 @@
 class ChromeBrowserState;
 
 namespace syncer {
-class ModelTypeStoreService;
+class DataTypeStoreService;
 }  // namespace syncer
 
-// Singleton that owns all ModelTypeStoreService and associates them with
+// Singleton that owns all DataTypeStoreService and associates them with
 // ChromeBrowserState.
-class ModelTypeStoreServiceFactory : public BrowserStateKeyedServiceFactory {
+class DataTypeStoreServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static syncer::ModelTypeStoreService* GetForBrowserState(
+  static syncer::DataTypeStoreService* GetForBrowserState(
       ChromeBrowserState* browser_state);
 
-  static ModelTypeStoreServiceFactory* GetInstance();
+  static DataTypeStoreServiceFactory* GetInstance();
 
  private:
-  friend class base::NoDestructor<ModelTypeStoreServiceFactory>;
+  friend class base::NoDestructor<DataTypeStoreServiceFactory>;
 
-  ModelTypeStoreServiceFactory();
-  ~ModelTypeStoreServiceFactory() override;
+  DataTypeStoreServiceFactory();
+  ~DataTypeStoreServiceFactory() override;
 
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(

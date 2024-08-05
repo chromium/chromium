@@ -43,8 +43,8 @@ PasskeyModelFactory::PasskeyModelFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(AffiliationServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 PasskeyModelFactory::~PasskeyModelFactory() = default;
@@ -55,7 +55,7 @@ PasskeyModelFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   DCHECK(base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials));
   auto sync_bridge = std::make_unique<webauthn::PasskeySyncBridge>(
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
   // Do not instantiate the affiliation service for guest profiles, since the
   // password manager does not run for them.
   if (!profile->IsGuestSession()) {

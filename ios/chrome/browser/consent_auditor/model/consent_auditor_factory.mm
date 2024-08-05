@@ -52,7 +52,7 @@ ConsentAuditorFactory::ConsentAuditorFactory()
     : BrowserStateKeyedServiceFactory(
           "ConsentAuditor",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 ConsentAuditorFactory::~ConsentAuditorFactory() {}
@@ -63,8 +63,8 @@ std::unique_ptr<KeyedService> ConsentAuditorFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(browser_state);
 
   std::unique_ptr<consent_auditor::ConsentSyncBridge> consent_sync_bridge;
-  syncer::OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreServiceFactory::GetForBrowserState(ios_browser_state)
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForBrowserState(ios_browser_state)
           ->GetStoreFactory();
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(

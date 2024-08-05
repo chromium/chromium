@@ -459,7 +459,7 @@ TEST_F(WebApkSyncBridgeTest, MergeFullSyncData) {
   sync_changes.push_back(std::move(sync_change_5));
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
 
   EXPECT_CALL(processor(), Put).Times(0);
   EXPECT_CALL(processor(), Delete).Times(0);
@@ -561,7 +561,7 @@ TEST_F(WebApkSyncBridgeTest, MergeFullSyncData_NoChanges) {
   InitSyncBridge();
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
   syncer::EntityChangeList sync_changes;
   std::optional<syncer::ModelError> result = sync_bridge().MergeFullSyncData(
       std::move(metadata_change_list), std::move(sync_changes));
@@ -629,7 +629,7 @@ TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges) {
   sync_changes.push_back(std::move(sync_change_4));
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
   std::optional<syncer::ModelError> result =
       sync_bridge().ApplyIncrementalSyncChanges(std::move(metadata_change_list),
                                                 std::move(sync_changes));
@@ -697,7 +697,7 @@ TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges_NoChanges) {
   InitSyncBridge();
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
   syncer::EntityChangeList sync_changes;
   std::optional<syncer::ModelError> result =
       sync_bridge().ApplyIncrementalSyncChanges(std::move(metadata_change_list),

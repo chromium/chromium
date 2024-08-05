@@ -60,8 +60,7 @@ class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
     SaveToLocalStore(uris);
     bridge_ = ProfileAuthServersSyncBridge::CreateForTesting(
         &mock_observer_, mock_processor_.CreateForwardingProcessor(),
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
-            store_.get()));
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()));
     base::RunLoop loop;
     EXPECT_CALL(mock_observer_, OnProfileAuthorizationServersInitialized())
         .WillOnce([&loop]() { loop.Quit(); });
@@ -125,7 +124,7 @@ class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
 
  private:
   void SaveToLocalStore(const std::vector<std::string>& uris) {
-    std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+    std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
         store_->CreateWriteBatch();
     for (const std::string& uri : uris) {
       sync_pb::PrintersAuthorizationServerSpecifics specifics;
@@ -146,8 +145,8 @@ class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
 
   // In memory model type store needs to be able to post tasks.
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<syncer::ModelTypeStore> store_ =
-      syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
+  std::unique_ptr<syncer::DataTypeStore> store_ =
+      syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
 };
 
 TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, Initialization) {

@@ -31,7 +31,7 @@ class FloatingSsoService : public KeyedService,
       PrefService* prefs,
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       network::mojom::CookieManager* cookie_manager,
-      syncer::OnceModelTypeStoreFactory create_store_callback);
+      syncer::OnceDataTypeStoreFactory create_store_callback);
   FloatingSsoService(const FloatingSsoService&) = delete;
   FloatingSsoService& operator=(const FloatingSsoService&) = delete;
 

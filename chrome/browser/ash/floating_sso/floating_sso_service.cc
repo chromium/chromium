@@ -43,7 +43,7 @@ FloatingSsoService::FloatingSsoService(
     PrefService* prefs,
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     network::mojom::CookieManager* cookie_manager,
-    syncer::OnceModelTypeStoreFactory create_store_callback)
+    syncer::OnceDataTypeStoreFactory create_store_callback)
     : prefs_(prefs),
       cookie_manager_(cookie_manager),
       bridge_(std::move(change_processor), std::move(create_store_callback)),

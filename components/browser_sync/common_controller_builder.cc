@@ -226,9 +226,9 @@ void CommonControllerBuilder::SetIdentityManager(
   identity_manager_.Set(identity_manager);
 }
 
-void CommonControllerBuilder::SetModelTypeStoreService(
-    syncer::ModelTypeStoreService* model_type_store_service) {
-  model_type_store_service_.Set(model_type_store_service);
+void CommonControllerBuilder::SetDataTypeStoreService(
+    syncer::DataTypeStoreService* data_type_store_service) {
+  data_type_store_service_.Set(data_type_store_service);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -493,7 +493,7 @@ CommonControllerBuilder::Build(syncer::ModelTypeSet disabled_types,
   if (!disabled_types.Has(syncer::HISTORY_DELETE_DIRECTIVES)) {
     controllers.push_back(
         std::make_unique<history::HistoryDeleteDirectivesDataTypeController>(
-            dump_stack, sync_service, model_type_store_service_.value(),
+            dump_stack, sync_service, data_type_store_service_.value(),
             history_service_.value(), pref_service_.value()));
   }
 
@@ -593,7 +593,7 @@ CommonControllerBuilder::Build(syncer::ModelTypeSet disabled_types,
     controllers.push_back(
         std::make_unique<SyncableServiceBasedDataTypeController>(
             syncer::PREFERENCES,
-            model_type_store_service_.value()->GetStoreFactory(),
+            data_type_store_service_.value()->GetStoreFactory(),
             SyncableServiceForPrefs(pref_service_syncable_.value(),
                                     syncer::PREFERENCES),
             dump_stack,
@@ -612,7 +612,7 @@ CommonControllerBuilder::Build(syncer::ModelTypeSet disabled_types,
     controllers.push_back(
         std::make_unique<SyncableServiceBasedDataTypeController>(
             syncer::PRIORITY_PREFERENCES,
-            model_type_store_service_.value()->GetStoreFactory(),
+            data_type_store_service_.value()->GetStoreFactory(),
             SyncableServiceForPrefs(pref_service_syncable_.value(),
                                     syncer::PRIORITY_PREFERENCES),
             dump_stack,
@@ -714,7 +714,7 @@ CommonControllerBuilder::Build(syncer::ModelTypeSet disabled_types,
   if (supervised_user_settings_service_.value()) {
     controllers.push_back(
         std::make_unique<SupervisedUserSettingsDataTypeController>(
-            dump_stack, model_type_store_service_.value()->GetStoreFactory(),
+            dump_stack, data_type_store_service_.value()->GetStoreFactory(),
             supervised_user_settings_service_.value()->AsWeakPtr(),
             pref_service_.value()));
   }

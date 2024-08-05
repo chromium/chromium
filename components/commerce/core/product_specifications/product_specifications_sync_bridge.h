@@ -59,7 +59,7 @@ class ProductSpecificationsSyncBridge : public syncer::DataTypeSyncBridge {
   };
 
   ProductSpecificationsSyncBridge(
-      syncer::OnceModelTypeStoreFactory create_store_callback,
+      syncer::OnceDataTypeStoreFactory create_store_callback,
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       base::OnceCallback<void(void)> init_callback,
       Delegate* delegate);
@@ -114,12 +114,12 @@ class ProductSpecificationsSyncBridge : public syncer::DataTypeSyncBridge {
       const std::vector<sync_pb::ProductComparisonSpecifics> specifics);
 
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
-                      std::unique_ptr<syncer::ModelTypeStore> store);
+                      std::unique_ptr<syncer::DataTypeStore> store);
   void OnReadAllDataAndMetadata(
       const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list,
+      std::unique_ptr<syncer::DataTypeStore::RecordList> record_list,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
-  void Commit(std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch);
+  void Commit(std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch);
   bool SyncMetadataCacheContainsSupportedFields(
       const syncer::EntityMetadataMap& metadata_map) const;
 
@@ -141,7 +141,7 @@ class ProductSpecificationsSyncBridge : public syncer::DataTypeSyncBridge {
 
   std::map<std::string, sync_pb::ProductComparisonSpecifics> entries_;
 
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
 
   base::OnceCallback<void(void)> init_callback_;
 

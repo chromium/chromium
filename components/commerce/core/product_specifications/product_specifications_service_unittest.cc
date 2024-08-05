@@ -191,14 +191,14 @@ class MockProductSpecificationsSetObserver
 class ProductSpecificationsServiceTest : public testing::Test {
  public:
   void SetUp() override {
-    store_ = syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
+    store_ = syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
     ON_CALL(processor_, GetPossiblyTrimmedRemoteSpecifics)
         .WillByDefault(
             testing::ReturnRef(sync_pb::EntitySpecifics::default_instance()));
     service_ = std::make_unique<ProductSpecificationsService>(
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store()),
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store()),
         change_processor().CreateForwardingProcessor());
     service_->AddObserver(&observer_);
     base::RunLoop().RunUntilIdle();
@@ -251,7 +251,7 @@ class ProductSpecificationsServiceTest : public testing::Test {
             [](std::map<std::string, sync_pb::ProductComparisonSpecifics>*
                    storage_key_to_specifics,
                const std::optional<syncer::ModelError>& error,
-               std::unique_ptr<syncer::ModelTypeStore::RecordList>
+               std::unique_ptr<syncer::DataTypeStore::RecordList>
                    data_records) {
               for (auto& record : *data_records.get()) {
                 sync_pb::ProductComparisonSpecifics specifics;
@@ -293,7 +293,7 @@ class ProductSpecificationsServiceTest : public testing::Test {
     return false;
   }
 
-  syncer::ModelTypeStore* store() { return store_.get(); }
+  syncer::DataTypeStore* store() { return store_.get(); }
 
   std::map<std::string, sync_pb::ProductComparisonSpecifics>& entries() {
     return service()->bridge_->entries_;
@@ -359,7 +359,7 @@ class ProductSpecificationsServiceTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ProductSpecificationsService> service_;
   raw_ptr<ProductSpecificationsSyncBridge> bridge_;
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
   testing::NiceMock<MockProductSpecificationsSetObserver> observer_;
   base::test::ScopedFeatureList scoped_feature_list_;

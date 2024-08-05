@@ -113,7 +113,7 @@ WebViewDeviceInfoSyncServiceFactory::WebViewDeviceInfoSyncServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "DeviceInfoSyncService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(WebViewModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(WebViewDataTypeStoreServiceFactory::GetInstance());
   DependsOn(WebViewSyncInvalidationsServiceFactory::GetInstance());
 }
 
@@ -138,7 +138,7 @@ WebViewDeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
       browser_state->GetPrefs(), base::DefaultClock::GetInstance());
 
   return std::make_unique<syncer::DeviceInfoSyncServiceImpl>(
-      WebViewModelTypeStoreServiceFactory::GetForBrowserState(browser_state)
+      WebViewDataTypeStoreServiceFactory::GetForBrowserState(browser_state)
           ->GetStoreFactory(),
       std::move(local_device_info_provider), std::move(device_prefs),
       std::move(device_info_sync_client), sync_invalidations_service);

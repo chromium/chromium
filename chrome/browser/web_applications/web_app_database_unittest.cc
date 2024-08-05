@@ -104,7 +104,7 @@ class WebAppDatabaseTest : public WebAppTest {
   }
 
   void WriteBatch(
-      std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch) {
+      std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch) {
     base::RunLoop run_loop;
 
     database_factory().GetStore()->CommitWriteBatch(

@@ -19,7 +19,7 @@ class SupervisedUserSettingsDataTypeController
   // |sync_client| must not be null and must outlive this object.
   SupervisedUserSettingsDataTypeController(
       const base::RepeatingClosure& dump_stack,
-      syncer::OnceModelTypeStoreFactory store_factory,
+      syncer::OnceDataTypeStoreFactory store_factory,
       base::WeakPtr<syncer::SyncableService> syncable_service,
       PrefService* pref_service);
 

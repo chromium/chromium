@@ -25,7 +25,7 @@ using syncer::ForwardingDataTypeControllerDelegate;
 using syncer::SyncableServiceBasedBridge;
 
 ArcPackageSyncDataTypeController::ArcPackageSyncDataTypeController(
-    syncer::OnceModelTypeStoreFactory store_factory,
+    syncer::OnceDataTypeStoreFactory store_factory,
     base::WeakPtr<syncer::SyncableService> syncable_service,
     const base::RepeatingClosure& dump_stack,
     syncer::SyncService* sync_service,

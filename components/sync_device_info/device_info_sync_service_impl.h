@@ -30,7 +30,7 @@ class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService,
   // |device_info_sync_client| must not be null and must outlive this object.
   // |sync_invalidations_service| must not be null and must outlive this object.
   DeviceInfoSyncServiceImpl(
-      OnceModelTypeStoreFactory model_type_store_factory,
+      OnceDataTypeStoreFactory data_type_store_factory,
       std::unique_ptr<MutableLocalDeviceInfoProvider>
           local_device_info_provider,
       std::unique_ptr<DeviceInfoPrefs> device_info_prefs,

@@ -11,32 +11,32 @@
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
 namespace syncer {
-class ModelTypeStoreService;
+class DataTypeStoreService;
 }  // namespace syncer
 
 namespace ios_web_view {
 class WebViewBrowserState;
 
-// Singleton that owns all ModelTypeStoreService and associates them with
+// Singleton that owns all DataTypeStoreService and associates them with
 // WebViewBrowserState
-class WebViewModelTypeStoreServiceFactory
+class WebViewDataTypeStoreServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static syncer::ModelTypeStoreService* GetForBrowserState(
+  static syncer::DataTypeStoreService* GetForBrowserState(
       WebViewBrowserState* browser_state);
 
-  static WebViewModelTypeStoreServiceFactory* GetInstance();
+  static WebViewDataTypeStoreServiceFactory* GetInstance();
 
-  WebViewModelTypeStoreServiceFactory(
-      const WebViewModelTypeStoreServiceFactory&) = delete;
-  WebViewModelTypeStoreServiceFactory& operator=(
-      const WebViewModelTypeStoreServiceFactory&) = delete;
+  WebViewDataTypeStoreServiceFactory(
+      const WebViewDataTypeStoreServiceFactory&) = delete;
+  WebViewDataTypeStoreServiceFactory& operator=(
+      const WebViewDataTypeStoreServiceFactory&) = delete;
 
  private:
-  friend class base::NoDestructor<WebViewModelTypeStoreServiceFactory>;
+  friend class base::NoDestructor<WebViewDataTypeStoreServiceFactory>;
 
-  WebViewModelTypeStoreServiceFactory();
-  ~WebViewModelTypeStoreServiceFactory() override;
+  WebViewDataTypeStoreServiceFactory();
+  ~WebViewDataTypeStoreServiceFactory() override;
 
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(

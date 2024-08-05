@@ -16,10 +16,10 @@ namespace webapk {
 class AbstractWebApkDatabaseFactory {
  public:
   virtual ~AbstractWebApkDatabaseFactory() = default;
-  virtual syncer::OnceModelTypeStoreFactory GetStoreFactory() = 0;
+  virtual syncer::OnceDataTypeStoreFactory GetStoreFactory() = 0;
 };
 
-// Creates a ModelTypeStoreFactory per profile.
+// Creates a DataTypeStoreFactory per profile.
 class WebApkDatabaseFactory : public AbstractWebApkDatabaseFactory {
  public:
   explicit WebApkDatabaseFactory(Profile* profile);
@@ -28,7 +28,7 @@ class WebApkDatabaseFactory : public AbstractWebApkDatabaseFactory {
   ~WebApkDatabaseFactory() override;
 
   // AbstractWebApkDatabaseFactory implementation.
-  syncer::OnceModelTypeStoreFactory GetStoreFactory() override;
+  syncer::OnceDataTypeStoreFactory GetStoreFactory() override;
 
  private:
   const raw_ptr<Profile> profile_;

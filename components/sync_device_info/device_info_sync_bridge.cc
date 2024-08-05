@@ -51,9 +51,9 @@ using sync_pb::DeviceInfoSpecifics;
 using sync_pb::FeatureSpecificFields;
 using sync_pb::SharingSpecificFields;
 
-using Record = ModelTypeStore::Record;
-using RecordList = ModelTypeStore::RecordList;
-using WriteBatch = ModelTypeStore::WriteBatch;
+using Record = DataTypeStore::Record;
+using RecordList = DataTypeStore::RecordList;
+using WriteBatch = DataTypeStore::WriteBatch;
 
 namespace {
 
@@ -375,7 +375,7 @@ DeviceInfoSyncBridge::ImmutableDeviceInfoAndSpecifics::
 
 DeviceInfoSyncBridge::DeviceInfoSyncBridge(
     std::unique_ptr<MutableLocalDeviceInfoProvider> local_device_info_provider,
-    OnceModelTypeStoreFactory store_factory,
+    OnceDataTypeStoreFactory store_factory,
     std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
     std::unique_ptr<DeviceInfoPrefs> device_info_prefs)
     : DataTypeSyncBridge(std::move(change_processor)),
@@ -675,7 +675,7 @@ void DeviceInfoSyncBridge::NotifyObservers() {
 // static
 std::optional<ModelError> DeviceInfoSyncBridge::ParseSpecificsOnBackendSequence(
     ClientIdToDeviceInfo* all_data,
-    std::unique_ptr<ModelTypeStore::RecordList> record_list) {
+    std::unique_ptr<DataTypeStore::RecordList> record_list) {
   DCHECK(all_data);
   DCHECK(all_data->empty());
   DCHECK(record_list);
@@ -729,7 +729,7 @@ std::string DeviceInfoSyncBridge::GetLocalClientName() const {
 
 void DeviceInfoSyncBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<ModelTypeStore> store) {
+    std::unique_ptr<DataTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
     return;
@@ -916,7 +916,7 @@ void DeviceInfoSyncBridge::SendLocalData() {
 }
 
 void DeviceInfoSyncBridge::SendLocalDataWithBatch(
-    std::unique_ptr<ModelTypeStore::WriteBatch> batch) {
+    std::unique_ptr<DataTypeStore::WriteBatch> batch) {
   CHECK(store_);
   DCHECK(local_device_info_provider_->GetLocalDeviceInfo());
   DCHECK(change_processor()->IsTrackingMetadata());

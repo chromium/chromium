@@ -20,7 +20,7 @@ class Profile;
 
 namespace syncer {
 class DataTypeController;
-class ModelTypeStoreService;
+class DataTypeStoreService;
 class SyncService;
 class SyncableService;
 }  // namespace syncer
@@ -58,8 +58,8 @@ class ChromeSyncClient : public syncer::SyncClient {
       const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group)
       override;
  private:
-  // Convenience function that exercises ModelTypeStoreServiceFactory.
-  syncer::ModelTypeStoreService* GetModelTypeStoreService();
+  // Convenience function that exercises DataTypeStoreServiceFactory.
+  syncer::DataTypeStoreService* GetDataTypeStoreService();
 
   // Convenience function used during controller creation.
   base::WeakPtr<syncer::SyncableService> GetSyncableServiceForType(

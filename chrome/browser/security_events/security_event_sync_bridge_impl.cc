@@ -50,7 +50,7 @@ std::unique_ptr<syncer::EntityData> ToEntityData(
 }  // namespace
 
 SecurityEventSyncBridgeImpl::SecurityEventSyncBridgeImpl(
-    syncer::OnceModelTypeStoreFactory store_factory,
+    syncer::OnceDataTypeStoreFactory store_factory,
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
     : syncer::DataTypeSyncBridge(std::move(change_processor)) {
   StoreWithCache::CreateAndLoad(
@@ -92,7 +92,7 @@ SecurityEventSyncBridgeImpl::GetControllerDelegate() {
 
 std::unique_ptr<syncer::MetadataChangeList>
 SecurityEventSyncBridgeImpl::CreateMetadataChangeList() {
-  return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  return syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<syncer::ModelError>

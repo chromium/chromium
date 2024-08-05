@@ -8,21 +8,21 @@
 #include "components/sync/model/data_type_store_service_impl.h"
 
 // static
-ModelTypeStoreServiceFactory* ModelTypeStoreServiceFactory::GetInstance() {
-  static base::NoDestructor<ModelTypeStoreServiceFactory> instance;
+DataTypeStoreServiceFactory* DataTypeStoreServiceFactory::GetInstance() {
+  static base::NoDestructor<DataTypeStoreServiceFactory> instance;
   return instance.get();
 }
 
 // static
-syncer::ModelTypeStoreService* ModelTypeStoreServiceFactory::GetForProfile(
+syncer::DataTypeStoreService* DataTypeStoreServiceFactory::GetForProfile(
     Profile* profile) {
-  return static_cast<syncer::ModelTypeStoreService*>(
+  return static_cast<syncer::DataTypeStoreService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
-ModelTypeStoreServiceFactory::ModelTypeStoreServiceFactory()
+DataTypeStoreServiceFactory::DataTypeStoreServiceFactory()
     : ProfileKeyedServiceFactory(
-          "ModelTypeStoreService",
+          "DataTypeStoreService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
               // TODO(crbug.com/40257657): Check if this service is needed in
@@ -33,11 +33,11 @@ ModelTypeStoreServiceFactory::ModelTypeStoreServiceFactory()
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
-ModelTypeStoreServiceFactory::~ModelTypeStoreServiceFactory() = default;
+DataTypeStoreServiceFactory::~DataTypeStoreServiceFactory() = default;
 
-KeyedService* ModelTypeStoreServiceFactory::BuildServiceInstanceFor(
+KeyedService* DataTypeStoreServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new syncer::ModelTypeStoreServiceImpl(profile->GetPath(),
-                                               profile->GetPrefs());
+  return new syncer::DataTypeStoreServiceImpl(profile->GetPath(),
+                                              profile->GetPrefs());
 }

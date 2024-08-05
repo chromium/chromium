@@ -41,9 +41,9 @@ SendTabToSelfSyncServiceFactory::SendTabToSelfSyncServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
-  DependsOn(HistoryServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  DependsOn(HistoryServiceFactory::GetInstance());
 }
 
 SendTabToSelfSyncServiceFactory::~SendTabToSelfSyncServiceFactory() = default;
@@ -52,8 +52,8 @@ KeyedService* SendTabToSelfSyncServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  syncer::OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
 
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(profile,

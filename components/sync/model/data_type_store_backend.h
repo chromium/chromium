@@ -27,23 +27,23 @@ class WriteBatch;
 
 namespace syncer {
 
-// ModelTypeStoreBackend handles operations with leveldb. It is oblivious of the
+// DataTypeStoreBackend handles operations with leveldb. It is oblivious of the
 // fact that it is called from separate thread (with the exception of ctor),
 // meaning it shouldn't deal with callbacks and task_runners.
 //
 // Created and destroyed on any sequence, but otherwise initialized and used on
 // a single sequence (attached during Init()).
-class ModelTypeStoreBackend
-    : public base::RefCountedThreadSafe<ModelTypeStoreBackend> {
+class DataTypeStoreBackend
+    : public base::RefCountedThreadSafe<DataTypeStoreBackend> {
  public:
-  static scoped_refptr<ModelTypeStoreBackend> CreateInMemoryForTest();
+  static scoped_refptr<DataTypeStoreBackend> CreateInMemoryForTest();
 
-  // Creates a new and uninitialized instance of ModelTypeStoreBackend. Init()
+  // Creates a new and uninitialized instance of DataTypeStoreBackend. Init()
   // must be called afterwards, which binds the instance to a certain sequence.
-  static scoped_refptr<ModelTypeStoreBackend> CreateUninitialized();
+  static scoped_refptr<DataTypeStoreBackend> CreateUninitialized();
 
-  ModelTypeStoreBackend(const ModelTypeStoreBackend&) = delete;
-  ModelTypeStoreBackend& operator=(const ModelTypeStoreBackend&) = delete;
+  DataTypeStoreBackend(const DataTypeStoreBackend&) = delete;
+  DataTypeStoreBackend& operator=(const DataTypeStoreBackend&) = delete;
 
   // Opens the database at `path`, creating it if it doesn't exist yet. May be
   // called from a sequence that is different to the constructing one, but from
@@ -67,15 +67,15 @@ class ModelTypeStoreBackend
   // function will still return success in this case.
   std::optional<ModelError> ReadRecordsWithPrefix(
       const std::string& prefix,
-      const ModelTypeStore::IdList& id_list,
-      ModelTypeStore::RecordList* record_list,
-      ModelTypeStore::IdList* missing_id_list);
+      const DataTypeStore::IdList& id_list,
+      DataTypeStore::RecordList* record_list,
+      DataTypeStore::IdList* missing_id_list);
 
   // Reads all records with keys starting with |prefix|. Prefix is removed from
   // key before it is added to |record_list|.
   std::optional<ModelError> ReadAllRecordsWithPrefix(
       const std::string& prefix,
-      ModelTypeStore::RecordList* record_list);
+      DataTypeStore::RecordList* record_list);
 
   // Writes modifications accumulated in |write_batch| to database.
   std::optional<ModelError> WriteModifications(
@@ -96,7 +96,7 @@ class ModelTypeStoreBackend
   static const char kDBSchemaDescriptorRecordId[];
 
  private:
-  friend class base::RefCountedThreadSafe<ModelTypeStoreBackend>;
+  friend class base::RefCountedThreadSafe<DataTypeStoreBackend>;
 
   // This is a slightly adapted version of base::OnTaskRunnerDeleter: The one
   // difference is that if the destruction request already happens on the target
@@ -130,9 +130,9 @@ class ModelTypeStoreBackend
   // based environment from leveldb::Env::Default().
   // Providing |env| allows to override environment used by leveldb for tests
   // with in-memory or faulty environment.
-  explicit ModelTypeStoreBackend(std::unique_ptr<leveldb::Env> env);
+  explicit DataTypeStoreBackend(std::unique_ptr<leveldb::Env> env);
 
-  ~ModelTypeStoreBackend();
+  ~DataTypeStoreBackend();
 
   // Opens leveldb database passing correct options. On success sets |db_| and
   // returns ok status. On failure |db_| is nullptr and returned status reflects
@@ -162,7 +162,7 @@ class ModelTypeStoreBackend
   std::optional<ModelError> UpdateDataPrefix(const std::string& old_prefix,
                                              const std::string& new_prefix);
 
-  // In some scenarios ModelTypeStoreBackend holds ownership of env. Typical
+  // In some scenarios DataTypeStoreBackend holds ownership of env. Typical
   // example is when test creates in memory environment with CreateInMemoryEnv
   // and wants it to be destroyed along with backend. This is achieved by
   // passing ownership of env to TakeEnvOwnership function.

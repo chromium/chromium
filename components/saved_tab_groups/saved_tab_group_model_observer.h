@@ -59,7 +59,7 @@ class SavedTabGroupModelObserver {
   // Happens when a group is reordered from sync.
   virtual void SavedTabGroupReorderedFromSync() {}
 
-  // Called when sync / ModelTypeStore updates data.
+  // Called when sync / DataTypeStore updates data.
   virtual void SavedTabGroupAddedFromSync(const base::Uuid& guid) {}
 
   // TODO(crbug.com/40870833): Decide if we want to also remove the tabgroup

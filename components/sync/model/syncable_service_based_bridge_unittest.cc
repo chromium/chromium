@@ -101,7 +101,7 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
 
  protected:
   SyncableServiceBasedBridgeTest()
-      : store_(ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
+      : store_(DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     ON_CALL(syncable_service_, WaitUntilReadyToSync)
         .WillByDefault(
             Invoke([](base::OnceClosure done) { std::move(done).Run(); }));
@@ -122,7 +122,7 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
     mock_processor_.DelegateCallsByDefaultTo(real_processor_.get());
     bridge_ = std::make_unique<SyncableServiceBasedBridge>(
         model_type,
-        ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
+        DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         mock_processor_.CreateForwardingProcessor(), &syncable_service_);
   }
 
@@ -179,7 +179,7 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
   testing::NiceMock<MockSyncableService> syncable_service_;
   testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
   base::MockCallback<ModelErrorHandler> mock_error_handler_;
-  const std::unique_ptr<ModelTypeStore> store_;
+  const std::unique_ptr<DataTypeStore> store_;
   std::unique_ptr<syncer::ClientTagBasedDataTypeProcessor> real_processor_;
   std::unique_ptr<SyncableServiceBasedBridge> bridge_;
   std::unique_ptr<MockDataTypeWorker> worker_;
@@ -535,8 +535,8 @@ TEST(SyncableServiceBasedBridgeLocalChangeProcessorTest,
   const std::string kClientTagHash = "clienttaghash1";
 
   base::test::SingleThreadTaskEnvironment task_environment;
-  std::unique_ptr<ModelTypeStore> store =
-      ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
+  std::unique_ptr<DataTypeStore> store =
+      DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
   SyncableServiceBasedBridge::InMemoryStore in_memory_store;
   testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor;
 
@@ -570,8 +570,8 @@ TEST(SyncableServiceBasedBridgeLocalChangeProcessorTest,
   const std::string kClientTagHash = "clienttaghash1";
 
   base::test::SingleThreadTaskEnvironment task_environment;
-  std::unique_ptr<ModelTypeStore> store =
-      ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
+  std::unique_ptr<DataTypeStore> store =
+      DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
   SyncableServiceBasedBridge::InMemoryStore in_memory_store;
   testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor;
 

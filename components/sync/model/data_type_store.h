@@ -17,7 +17,7 @@ namespace syncer {
 
 class MetadataBatch;
 
-// ModelTypeStore is leveldb backed store for model type's data, metadata and
+// DataTypeStore is leveldb backed store for model type's data, metadata and
 // global metadata.
 //
 // Store keeps records for entries identified by ids. For each entry store keeps
@@ -43,11 +43,11 @@ class MetadataBatch;
 // Destroying store object doesn't necessarily cancel asynchronous operations
 // issued previously. You should be prepared to handle callbacks from those
 // operations.
-class ModelTypeStore : public ModelTypeStoreBase {
+class DataTypeStore : public DataTypeStoreBase {
  public:
   using InitCallback =
       base::OnceCallback<void(const std::optional<ModelError>& error,
-                              std::unique_ptr<ModelTypeStore> store)>;
+                              std::unique_ptr<DataTypeStore> store)>;
   using CallbackWithResult =
       base::OnceCallback<void(const std::optional<ModelError>& error)>;
   using ReadDataCallback =
@@ -108,12 +108,12 @@ class ModelTypeStore : public ModelTypeStoreBase {
 };
 
 // Typedef for a store factory that has all params bound except InitCallback.
-using RepeatingModelTypeStoreFactory =
-    base::RepeatingCallback<void(ModelType type, ModelTypeStore::InitCallback)>;
+using RepeatingDataTypeStoreFactory =
+    base::RepeatingCallback<void(ModelType type, DataTypeStore::InitCallback)>;
 
 // Same as above but as a OnceCallback.
-using OnceModelTypeStoreFactory =
-    base::OnceCallback<void(ModelType type, ModelTypeStore::InitCallback)>;
+using OnceDataTypeStoreFactory =
+    base::OnceCallback<void(ModelType type, DataTypeStore::InitCallback)>;
 
 }  // namespace syncer
 

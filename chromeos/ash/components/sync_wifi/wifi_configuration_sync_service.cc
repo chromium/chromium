@@ -27,7 +27,7 @@ namespace ash::sync_wifi {
 WifiConfigurationSyncService::WifiConfigurationSyncService(
     version_info::Channel channel,
     PrefService* pref_service,
-    syncer::OnceModelTypeStoreFactory create_store_callback) {
+    syncer::OnceDataTypeStoreFactory create_store_callback) {
   NetworkHandler* network_handler = NetworkHandler::Get();
   ash::GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());

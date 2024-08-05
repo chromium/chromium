@@ -54,14 +54,14 @@ class ProfileAuthServersSyncBridge : public syncer::DataTypeSyncBridge {
   // Factory function. |observer| must not be nullptr.
   static std::unique_ptr<ProfileAuthServersSyncBridge> Create(
       Observer* observer,
-      syncer::OnceModelTypeStoreFactory store_factory);
+      syncer::OnceDataTypeStoreFactory store_factory);
 
   // Factory function for testing. |observer| and |change_processor| must not be
   // nullptr.
   static std::unique_ptr<ProfileAuthServersSyncBridge> CreateForTesting(
       Observer* observer,
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory store_factory);
+      syncer::OnceDataTypeStoreFactory store_factory);
 
   ProfileAuthServersSyncBridge(const ProfileAuthServersSyncBridge&) = delete;
   ProfileAuthServersSyncBridge& operator=(const ProfileAuthServersSyncBridge&) =
@@ -102,17 +102,17 @@ class ProfileAuthServersSyncBridge : public syncer::DataTypeSyncBridge {
  private:
   ProfileAuthServersSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory store_factory,
+      syncer::OnceDataTypeStoreFactory store_factory,
       Observer* observer);
 
-  // Callback for ModelTypeStore initialization.
+  // Callback for DataTypeStore initialization.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
-                      std::unique_ptr<syncer::ModelTypeStore> store);
+                      std::unique_ptr<syncer::DataTypeStore> store);
 
   // Callback from the store when all data are loaded.
   void OnReadAllData(
       const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list);
+      std::unique_ptr<syncer::DataTypeStore::RecordList> record_list);
 
   // Callback from the store when all metadata are loaded.
   void OnReadAllMetadata(const std::optional<syncer::ModelError>& error,
@@ -133,7 +133,7 @@ class ProfileAuthServersSyncBridge : public syncer::DataTypeSyncBridge {
   std::set<std::string> servers_uris_;
 
   // The local store.
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
 
   raw_ptr<Observer> const observer_;
   base::WeakPtrFactory<ProfileAuthServersSyncBridge> weak_ptr_factory_{this};

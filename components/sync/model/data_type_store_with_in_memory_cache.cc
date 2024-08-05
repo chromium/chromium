@@ -18,43 +18,43 @@ namespace syncer {
 
 // static
 template <typename Entry>
-void ModelTypeStoreWithInMemoryCache<Entry>::CreateAndLoad(
-    OnceModelTypeStoreFactory store_factory,
+void DataTypeStoreWithInMemoryCache<Entry>::CreateAndLoad(
+    OnceDataTypeStoreFactory store_factory,
     ModelType type,
     CreateCallback callback) {
   // Initialization happens in two phases:
-  // 1. Create the underlying ModelTypeStore.
-  // 2. Load the data and metadata, create the ModelTypeStoreWithInMemoryCache,
+  // 1. Create the underlying DataTypeStore.
+  // 2. Load the data and metadata, create the DataTypeStoreWithInMemoryCache,
   //    and pass it and the metadata on to the caller.
 
   // Stage 2: Run when data+metadata has been loaded from the underlying store.
   auto on_loaded = base::BindOnce(
       [](CreateCallback callback,
-         std::unique_ptr<syncer::ModelTypeStore> underlying_store,
+         std::unique_ptr<syncer::DataTypeStore> underlying_store,
          const std::optional<ModelError>& error,
-         std::unique_ptr<ModelTypeStoreBase::RecordList> data_records,
+         std::unique_ptr<DataTypeStoreBase::RecordList> data_records,
          std::unique_ptr<MetadataBatch> metadata_batch) {
         if (error) {
           std::move(callback).Run(error, nullptr, nullptr);
         } else {
           // WrapUnique because the constructor is private.
-          auto store = base::WrapUnique(new ModelTypeStoreWithInMemoryCache(
+          auto store = base::WrapUnique(new DataTypeStoreWithInMemoryCache(
               std::move(underlying_store), std::move(data_records)));
           std::move(callback).Run(std::nullopt, std::move(store),
                                   std::move(metadata_batch));
         }
       });
 
-  // Stage 1: Creates the ModelTypeStore, then (if successful) kicks off loading
+  // Stage 1: Creates the DataTypeStore, then (if successful) kicks off loading
   // of data+metadata.
   auto on_store_created = base::BindOnce(
       [](decltype(on_loaded) on_loaded_callback, CreateCallback create_callback,
          const std::optional<syncer::ModelError>& error,
-         std::unique_ptr<syncer::ModelTypeStore> underlying_store) {
+         std::unique_ptr<syncer::DataTypeStore> underlying_store) {
         if (error) {
           std::move(create_callback).Run(error, nullptr, nullptr);
         } else {
-          syncer::ModelTypeStore* underlying_store_raw = underlying_store.get();
+          syncer::DataTypeStore* underlying_store_raw = underlying_store.get();
           underlying_store_raw->ReadAllDataAndMetadata(base::BindOnce(
               std::move(on_loaded_callback), std::move(create_callback),
               std::move(underlying_store)));
@@ -66,11 +66,11 @@ void ModelTypeStoreWithInMemoryCache<Entry>::CreateAndLoad(
 }
 
 template <typename Entry>
-ModelTypeStoreWithInMemoryCache<Entry>::ModelTypeStoreWithInMemoryCache(
-    std::unique_ptr<ModelTypeStore> underlying_store,
-    std::unique_ptr<ModelTypeStoreBase::RecordList> data_records)
+DataTypeStoreWithInMemoryCache<Entry>::DataTypeStoreWithInMemoryCache(
+    std::unique_ptr<DataTypeStore> underlying_store,
+    std::unique_ptr<DataTypeStoreBase::RecordList> data_records)
     : underlying_store_(std::move(underlying_store)) {
-  for (ModelTypeStoreBase::Record& record : *data_records) {
+  for (DataTypeStoreBase::Record& record : *data_records) {
     Entry entry;
     if (entry.ParseFromString(record.value)) {
       in_memory_data_[std::move(record.id)] = std::move(entry);
@@ -79,18 +79,18 @@ ModelTypeStoreWithInMemoryCache<Entry>::ModelTypeStoreWithInMemoryCache(
 }
 
 template <typename Entry>
-ModelTypeStoreWithInMemoryCache<Entry>::~ModelTypeStoreWithInMemoryCache() =
+DataTypeStoreWithInMemoryCache<Entry>::~DataTypeStoreWithInMemoryCache() =
     default;
 
 template <typename Entry>
-std::unique_ptr<typename ModelTypeStoreWithInMemoryCache<Entry>::WriteBatch>
-ModelTypeStoreWithInMemoryCache<Entry>::CreateWriteBatch() {
+std::unique_ptr<typename DataTypeStoreWithInMemoryCache<Entry>::WriteBatch>
+DataTypeStoreWithInMemoryCache<Entry>::CreateWriteBatch() {
   return std::make_unique<WriteBatchImpl>(
       underlying_store_->CreateWriteBatch());
 }
 
 template <typename Entry>
-void ModelTypeStoreWithInMemoryCache<Entry>::CommitWriteBatch(
+void DataTypeStoreWithInMemoryCache<Entry>::CommitWriteBatch(
     std::unique_ptr<WriteBatch> write_batch,
     CallbackWithResult callback) {
   std::unique_ptr<WriteBatchImpl> write_batch_impl =
@@ -112,7 +112,7 @@ void ModelTypeStoreWithInMemoryCache<Entry>::CommitWriteBatch(
 }
 
 template <typename Entry>
-void ModelTypeStoreWithInMemoryCache<Entry>::DeleteAllDataAndMetadata(
+void DataTypeStoreWithInMemoryCache<Entry>::DeleteAllDataAndMetadata(
     CallbackWithResult callback) {
   in_memory_data_.clear();
   underlying_store_->DeleteAllDataAndMetadata(std::move(callback));
@@ -120,31 +120,31 @@ void ModelTypeStoreWithInMemoryCache<Entry>::DeleteAllDataAndMetadata(
 
 // static
 template <typename Entry>
-std::unique_ptr<ModelTypeStore>
-ModelTypeStoreWithInMemoryCache<Entry>::ExtractUnderlyingStoreForTest(
-    std::unique_ptr<ModelTypeStoreWithInMemoryCache> store) {
+std::unique_ptr<DataTypeStore>
+DataTypeStoreWithInMemoryCache<Entry>::ExtractUnderlyingStoreForTest(
+    std::unique_ptr<DataTypeStoreWithInMemoryCache> store) {
   return std::move(store->underlying_store_);
 }
 
 template <typename Entry>
-ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::WriteBatchImpl(
-    std::unique_ptr<ModelTypeStoreBase::WriteBatch> underlying_batch)
+DataTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::WriteBatchImpl(
+    std::unique_ptr<DataTypeStoreBase::WriteBatch> underlying_batch)
     : underlying_batch_(std::move(underlying_batch)) {}
 
 template <typename Entry>
-ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::~WriteBatchImpl() =
+DataTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::~WriteBatchImpl() =
     default;
 
 // static
 template <typename Entry>
-std::unique_ptr<ModelTypeStoreBase::WriteBatch>
-ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::ExtractUnderlying(
+std::unique_ptr<DataTypeStoreBase::WriteBatch>
+DataTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::ExtractUnderlying(
     std::unique_ptr<WriteBatchImpl> wrapper) {
   return std::move(wrapper->underlying_batch_);
 }
 
 template <typename Entry>
-void ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::WriteData(
+void DataTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::WriteData(
     const std::string& id,
     Entry value) {
   underlying_batch_->WriteData(id, value.SerializeAsString());
@@ -152,20 +152,20 @@ void ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::WriteData(
 }
 
 template <typename Entry>
-void ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::DeleteData(
+void DataTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::DeleteData(
     const std::string& id) {
   underlying_batch_->DeleteData(id);
   changes_[id] = std::nullopt;
 }
 
 template <typename Entry>
-MetadataChangeList* ModelTypeStoreWithInMemoryCache<
-    Entry>::WriteBatchImpl::GetMetadataChangeList() {
+MetadataChangeList*
+DataTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::GetMetadataChangeList() {
   return underlying_batch_->GetMetadataChangeList();
 }
 
 template <typename Entry>
-void ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::
+void DataTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::
     TakeMetadataChangesFrom(std::unique_ptr<MetadataChangeList> mcl) {
   static_cast<InMemoryMetadataChangeList*>(mcl.get())->TransferChangesTo(
       GetMetadataChangeList());
@@ -173,14 +173,14 @@ void ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::
 
 template <typename Entry>
 std::map<std::string, std::optional<Entry>>
-ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::ExtractChanges() {
+DataTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::ExtractChanges() {
   return std::move(changes_);
 }
 
 // Explicit instantiations for all required entry types.
-template class ModelTypeStoreWithInMemoryCache<sync_pb::CookieSpecifics>;
-template class ModelTypeStoreWithInMemoryCache<sync_pb::SecurityEventSpecifics>;
-template class ModelTypeStoreWithInMemoryCache<sync_pb::UserConsentSpecifics>;
-template class ModelTypeStoreWithInMemoryCache<sync_pb::UserEventSpecifics>;
+template class DataTypeStoreWithInMemoryCache<sync_pb::CookieSpecifics>;
+template class DataTypeStoreWithInMemoryCache<sync_pb::SecurityEventSpecifics>;
+template class DataTypeStoreWithInMemoryCache<sync_pb::UserConsentSpecifics>;
+template class DataTypeStoreWithInMemoryCache<sync_pb::UserEventSpecifics>;
 
 }  // namespace syncer

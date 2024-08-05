@@ -20,7 +20,7 @@
 namespace syncer {
 
 DeviceInfoSyncServiceImpl::DeviceInfoSyncServiceImpl(
-    OnceModelTypeStoreFactory model_type_store_factory,
+    OnceDataTypeStoreFactory data_type_store_factory,
     std::unique_ptr<MutableLocalDeviceInfoProvider> local_device_info_provider,
     std::unique_ptr<DeviceInfoPrefs> device_info_prefs,
     std::unique_ptr<DeviceInfoSyncClient> device_info_sync_client,
@@ -37,8 +37,7 @@ DeviceInfoSyncServiceImpl::DeviceInfoSyncServiceImpl(
       local_device_info_provider->GetChannel();
 
   bridge_ = std::make_unique<DeviceInfoSyncBridge>(
-      std::move(local_device_info_provider),
-      std::move(model_type_store_factory),
+      std::move(local_device_info_provider), std::move(data_type_store_factory),
       std::make_unique<ClientTagBasedDataTypeProcessor>(
           DEVICE_INFO,
           /*dump_stack=*/base::BindRepeating(&ReportUnrecoverableError,

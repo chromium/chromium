@@ -27,9 +27,9 @@ namespace {
 
 using base::test::RunOnceCallback;
 using StoreWithCache =
-    ModelTypeStoreWithInMemoryCache<sync_pb::SecurityEventSpecifics>;
+    DataTypeStoreWithInMemoryCache<sync_pb::SecurityEventSpecifics>;
 
-void WriteToStore(ModelTypeStore& store,
+void WriteToStore(DataTypeStore& store,
                   const std::string& storage_key,
                   sync_pb::SecurityEventSpecifics entry,
                   sync_pb::EntityMetadata metadata) {
@@ -53,7 +53,7 @@ void WriteToStore(ModelTypeStore& store,
 std::tuple<std::optional<ModelError>,
            std::unique_ptr<StoreWithCache>,
            std::unique_ptr<MetadataBatch>>
-CreateAndLoadStoreWithCache(OnceModelTypeStoreFactory store_factory) {
+CreateAndLoadStoreWithCache(OnceDataTypeStoreFactory store_factory) {
   std::optional<ModelError> error;
   std::unique_ptr<StoreWithCache> store;
   std::unique_ptr<MetadataBatch> metadata_batch;
@@ -78,21 +78,21 @@ CreateAndLoadStoreWithCache(OnceModelTypeStoreFactory store_factory) {
                          std::move(metadata_batch));
 }
 
-class ModelTypeStoreWithInMemoryCacheTest : public ::testing::Test {
+class DataTypeStoreWithInMemoryCacheTest : public ::testing::Test {
  public:
-  ModelTypeStoreWithInMemoryCacheTest() = default;
-  ~ModelTypeStoreWithInMemoryCacheTest() override = default;
+  DataTypeStoreWithInMemoryCacheTest() = default;
+  ~DataTypeStoreWithInMemoryCacheTest() override = default;
 
  private:
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(ModelTypeStoreWithInMemoryCacheTest, LoadsEmptyStore) {
+TEST_F(DataTypeStoreWithInMemoryCacheTest, LoadsEmptyStore) {
   std::optional<ModelError> error;
   std::unique_ptr<StoreWithCache> store;
   std::unique_ptr<MetadataBatch> metadata_batch;
   std::tie(error, store, metadata_batch) = CreateAndLoadStoreWithCache(
-      ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest());
+      DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest());
 
   EXPECT_FALSE(error.has_value());
   ASSERT_TRUE(store);
@@ -101,9 +101,9 @@ TEST_F(ModelTypeStoreWithInMemoryCacheTest, LoadsEmptyStore) {
   EXPECT_TRUE(metadata_batch->GetAllMetadata().empty());
 }
 
-TEST_F(ModelTypeStoreWithInMemoryCacheTest, LoadsPopulatedStore) {
-  std::unique_ptr<ModelTypeStore> underlying_store =
-      ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(
+TEST_F(DataTypeStoreWithInMemoryCacheTest, LoadsPopulatedStore) {
+  std::unique_ptr<DataTypeStore> underlying_store =
+      DataTypeStoreTestUtil::CreateInMemoryStoreForTest(
           ModelType::SECURITY_EVENTS);
 
   const std::string storage_key = "12345";
@@ -114,8 +114,8 @@ TEST_F(ModelTypeStoreWithInMemoryCacheTest, LoadsPopulatedStore) {
   WriteToStore(*underlying_store, storage_key, entry_in_store,
                metadata_in_store);
 
-  OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreTestUtil::MoveStoreToFactory(std::move(underlying_store));
+  OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreTestUtil::MoveStoreToFactory(std::move(underlying_store));
 
   std::optional<ModelError> error;
   std::unique_ptr<StoreWithCache> store;
@@ -138,8 +138,8 @@ TEST_F(ModelTypeStoreWithInMemoryCacheTest, LoadsPopulatedStore) {
             metadata_in_store.creation_time());
 }
 
-TEST_F(ModelTypeStoreWithInMemoryCacheTest, HandlesStoreCreationError) {
-  base::MockCallback<OnceModelTypeStoreFactory> store_factory;
+TEST_F(DataTypeStoreWithInMemoryCacheTest, HandlesStoreCreationError) {
+  base::MockCallback<OnceDataTypeStoreFactory> store_factory;
   EXPECT_CALL(store_factory, Run)
       .WillOnce(RunOnceCallback<1>(
           ModelError(FROM_HERE, "Store creation error!"), nullptr));
@@ -155,11 +155,11 @@ TEST_F(ModelTypeStoreWithInMemoryCacheTest, HandlesStoreCreationError) {
   EXPECT_FALSE(metadata_batch);
 }
 
-TEST_F(ModelTypeStoreWithInMemoryCacheTest, HandlesStoreLoadError) {
-  auto underlying_store = std::make_unique<MockModelTypeStore>();
-  MockModelTypeStore* underlying_store_raw = underlying_store.get();
-  OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreTestUtil::MoveStoreToFactory(std::move(underlying_store));
+TEST_F(DataTypeStoreWithInMemoryCacheTest, HandlesStoreLoadError) {
+  auto underlying_store = std::make_unique<MockDataTypeStore>();
+  MockDataTypeStore* underlying_store_raw = underlying_store.get();
+  OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreTestUtil::MoveStoreToFactory(std::move(underlying_store));
 
   EXPECT_CALL(*underlying_store_raw, ReadAllDataAndMetadata)
       .WillOnce(RunOnceCallback<0>(ModelError(FROM_HERE, "Store load error!"),

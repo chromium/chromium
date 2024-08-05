@@ -43,7 +43,7 @@ CreateSavedTabGroupDataTypeConfiguration(Profile* profile) {
           syncer::SAVED_TAB_GROUP,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               chrome::GetChannel())),
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 }
 
 std::unique_ptr<SyncDataTypeConfiguration>
@@ -58,7 +58,7 @@ MaybeCreateSharedTabGroupDataTypeConfiguration(Profile* profile) {
           syncer::SHARED_TAB_GROUP_DATA,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               chrome::GetChannel())),
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 }
 }  // namespace
 
@@ -83,7 +83,7 @@ TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
 }
 

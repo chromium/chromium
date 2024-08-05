@@ -11,7 +11,7 @@ package tab_groups.proto;
 import "components/sync/protocol/saved_tab_group_specifics.proto";
 import "components/saved_tab_groups/proto/local_tab_group_data.proto";
 
-// Message stored in the ModelTypeStore, encapsulating both synced
+// Message stored in the DataTypeStore, encapsulating both synced
 // tab group data (SavedTabGroupSpecifics) and local-only metadata.
 message SavedTabGroupData {
   // Version of this proto.

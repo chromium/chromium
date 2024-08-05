@@ -229,6 +229,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   ContentNotificationServiceFactory::GetInstance();
   ContextualPanelModelServiceFactory::GetInstance();
   CredentialsCleanerRunnerFactory::GetInstance();
+  DataTypeStoreServiceFactory::GetInstance();
   DeviceAuthenticatorProxyFactory::GetInstance();
   DeviceInfoSyncServiceFactory::GetInstance();
   DeviceSharingManagerFactory::GetInstance();
@@ -269,7 +270,6 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   ListFamilyMembersServiceFactory::GetInstance();
   MailtoHandlerServiceFactory::GetInstance();
   ManagedBookmarkServiceFactory::GetInstance();
-  ModelTypeStoreServiceFactory::GetInstance();
   OhttpKeyServiceFactory::GetInstance();
   OptimizationGuideServiceFactory::GetInstance();
   PageContentAnnotationsServiceFactory::GetInstance();

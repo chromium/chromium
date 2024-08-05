@@ -45,7 +45,7 @@ SecurityEventRecorderFactory::SecurityEventRecorderFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 SecurityEventRecorderFactory::~SecurityEventRecorderFactory() = default;
@@ -54,8 +54,8 @@ std::unique_ptr<KeyedService>
 SecurityEventRecorderFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
-  syncer::OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
 
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(

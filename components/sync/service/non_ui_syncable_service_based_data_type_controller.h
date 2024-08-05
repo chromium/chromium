@@ -47,7 +47,7 @@ class NonUiSyncableServiceBasedDataTypeController
   // transport mode.
   NonUiSyncableServiceBasedDataTypeController(
       ModelType type,
-      OnceModelTypeStoreFactory store_factory,
+      OnceDataTypeStoreFactory store_factory,
       SyncableServiceProvider syncable_service_provider,
       const base::RepeatingClosure& dump_stack,
       scoped_refptr<base::SequencedTaskRunner> task_runner,

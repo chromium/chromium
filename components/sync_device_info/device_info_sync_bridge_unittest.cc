@@ -70,9 +70,9 @@ using testing::UnorderedElementsAre;
 using DeviceCountMap = std::map<DeviceInfo::FormFactor, int>;
 using DeviceInfoList = std::vector<std::unique_ptr<DeviceInfo>>;
 using StorageKeyList = DataTypeSyncBridge::StorageKeyList;
-using RecordList = ModelTypeStore::RecordList;
+using RecordList = DataTypeStore::RecordList;
 using StartCallback = DataTypeControllerDelegate::StartCallback;
-using WriteBatch = ModelTypeStore::WriteBatch;
+using WriteBatch = DataTypeStore::WriteBatch;
 
 const int kLocalSuffix = 0;
 
@@ -489,7 +489,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
                                  public DeviceInfoTracker::Observer {
  protected:
   DeviceInfoSyncBridgeTest()
-      : store_(ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
+      : store_(DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     DeviceInfoPrefs::RegisterProfilePrefs(pref_service_.registry());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -536,7 +536,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
     local_device_info_provider_ = local_device_info_provider.get();
     bridge_ = std::make_unique<DeviceInfoSyncBridge>(
         std::move(local_device_info_provider),
-        ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
+        DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         mock_processor_.CreateForwardingProcessor(),
         std::make_unique<DeviceInfoPrefs>(&pref_service_, &clock_));
     bridge_->AddObserver(this);
@@ -581,7 +581,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
 
   // Allows access to the store before that will ultimately be used to
   // initialize the bridge.
-  ModelTypeStore* store() {
+  DataTypeStore* store() {
     EXPECT_TRUE(store_);
     return store_.get();
   }
@@ -659,12 +659,12 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   }
 
   std::map<std::string, DeviceInfoSpecifics> ReadAllFromStore() {
-    std::unique_ptr<ModelTypeStore::RecordList> records;
+    std::unique_ptr<DataTypeStore::RecordList> records;
     base::RunLoop loop;
     store()->ReadAllData(base::BindOnce(
-        [](std::unique_ptr<ModelTypeStore::RecordList>* output_records,
+        [](std::unique_ptr<DataTypeStore::RecordList>* output_records,
            base::RunLoop* loop, const std::optional<syncer::ModelError>& error,
-           std::unique_ptr<ModelTypeStore::RecordList> input_records) {
+           std::unique_ptr<DataTypeStore::RecordList> input_records) {
           EXPECT_FALSE(error) << error->ToString();
           EXPECT_THAT(input_records, NotNull());
           *output_records = std::move(input_records);
@@ -674,7 +674,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
     loop.Run();
     std::map<std::string, DeviceInfoSpecifics> result;
     if (records) {
-      for (const ModelTypeStore::Record& record : *records) {
+      for (const DataTypeStore::Record& record : *records) {
         DeviceInfoSpecifics specifics;
         EXPECT_TRUE(specifics.ParseFromString(record.value));
         result.emplace(record.id, specifics);
@@ -715,7 +715,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
 
   // Holds the store.
-  const std::unique_ptr<ModelTypeStore> store_;
+  const std::unique_ptr<DataTypeStore> store_;
 
   // Stores the local device's name information.
   LocalDeviceNameInfo local_device_name_info_;

@@ -37,7 +37,7 @@ IOSPasskeyModelFactory::IOSPasskeyModelFactory()
     : BrowserStateKeyedServiceFactory(
           "PasskeyModel",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
 }
 
@@ -48,7 +48,7 @@ std::unique_ptr<KeyedService> IOSPasskeyModelFactory::BuildServiceInstanceFor(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   auto sync_bridge = std::make_unique<webauthn::PasskeySyncBridge>(
-      ModelTypeStoreServiceFactory::GetForBrowserState(browser_state)
+      DataTypeStoreServiceFactory::GetForBrowserState(browser_state)
           ->GetStoreFactory());
 
   std::unique_ptr<password_manager::PasskeyAffiliationSourceAdapter> adapter =

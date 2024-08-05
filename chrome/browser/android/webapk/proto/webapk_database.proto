@@ -13,7 +13,7 @@ option optimize_for = LITE_RUNTIME;
 
 package webapk;
 
-// Synced & local WebApk data to be serialized into a ModelTypeStore.
+// Synced & local WebApk data to be serialized into a DataTypeStore.
 message WebApkProto {
   // Synced data.
   optional sync_pb.WebApkSpecifics sync_data = 1;

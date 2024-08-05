@@ -124,7 +124,7 @@ class SendTabToSelfBridgeTest : public testing::Test {
 
  protected:
   SendTabToSelfBridgeTest()
-      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
+      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
 
   void InitializeLocalDeviceIfNeeded() {
     if (local_device_) {
@@ -150,7 +150,7 @@ class SendTabToSelfBridgeTest : public testing::Test {
     ON_CALL(mock_processor_, IsTrackingMetadata()).WillByDefault(Return(true));
     bridge_ = std::make_unique<SendTabToSelfBridge>(
         mock_processor_.CreateForwardingProcessor(), &clock_,
-        syncer::ModelTypeStoreTestUtil::MoveStoreToFactory(std::move(store_)),
+        syncer::DataTypeStoreTestUtil::MoveStoreToFactory(std::move(store_)),
         /*history_service=*/nullptr, &device_info_tracker_);
     bridge_->AddObserver(&mock_observer_);
     base::RunLoop().RunUntilIdle();
@@ -241,7 +241,7 @@ class SendTabToSelfBridgeTest : public testing::Test {
   // In memory model type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
 
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
 
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
 

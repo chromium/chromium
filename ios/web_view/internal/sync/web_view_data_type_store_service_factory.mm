@@ -14,37 +14,37 @@
 namespace ios_web_view {
 
 // static
-WebViewModelTypeStoreServiceFactory*
-WebViewModelTypeStoreServiceFactory::GetInstance() {
-  static base::NoDestructor<WebViewModelTypeStoreServiceFactory> instance;
+WebViewDataTypeStoreServiceFactory*
+WebViewDataTypeStoreServiceFactory::GetInstance() {
+  static base::NoDestructor<WebViewDataTypeStoreServiceFactory> instance;
   return instance.get();
 }
 
 // static
-syncer::ModelTypeStoreService*
-WebViewModelTypeStoreServiceFactory::GetForBrowserState(
+syncer::DataTypeStoreService*
+WebViewDataTypeStoreServiceFactory::GetForBrowserState(
     WebViewBrowserState* browser_state) {
-  return static_cast<syncer::ModelTypeStoreService*>(
+  return static_cast<syncer::DataTypeStoreService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
 
-WebViewModelTypeStoreServiceFactory::WebViewModelTypeStoreServiceFactory()
+WebViewDataTypeStoreServiceFactory::WebViewDataTypeStoreServiceFactory()
     : BrowserStateKeyedServiceFactory(
-          "ModelTypeStoreService",
+          "DataTypeStoreService",
           BrowserStateDependencyManager::GetInstance()) {}
 
-WebViewModelTypeStoreServiceFactory::~WebViewModelTypeStoreServiceFactory() {}
+WebViewDataTypeStoreServiceFactory::~WebViewDataTypeStoreServiceFactory() {}
 
 std::unique_ptr<KeyedService>
-WebViewModelTypeStoreServiceFactory::BuildServiceInstanceFor(
+WebViewDataTypeStoreServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   WebViewBrowserState* browser_state =
       WebViewBrowserState::FromBrowserState(context);
-  return std::make_unique<syncer::ModelTypeStoreServiceImpl>(
+  return std::make_unique<syncer::DataTypeStoreServiceImpl>(
       browser_state->GetStatePath(), browser_state->GetPrefs());
 }
 
-web::BrowserState* WebViewModelTypeStoreServiceFactory::GetBrowserStateToUse(
+web::BrowserState* WebViewDataTypeStoreServiceFactory::GetBrowserStateToUse(
     web::BrowserState* context) const {
   WebViewBrowserState* browser_state =
       WebViewBrowserState::FromBrowserState(context);

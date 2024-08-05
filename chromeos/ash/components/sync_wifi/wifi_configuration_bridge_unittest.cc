@@ -147,7 +147,7 @@ class WifiConfigurationBridgeTest : public testing::Test {
 
  protected:
   WifiConfigurationBridgeTest()
-      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
+      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     network_test_helper_ = std::make_unique<NetworkTestHelper>();
   }
 
@@ -180,10 +180,9 @@ class WifiConfigurationBridgeTest : public testing::Test {
     histogram_tester.ExpectTotalCount(kTotalCountHistogram, 0);
   }
 
-  syncer::OnceModelTypeStoreFactory CreateDelayedStoreCallback() {
-    return base::BindOnce(
-        &WifiConfigurationBridgeTest::OnModelTypeStoreCallback,
-        base::Unretained(this));
+  syncer::OnceDataTypeStoreFactory CreateDelayedStoreCallback() {
+    return base::BindOnce(&WifiConfigurationBridgeTest::OnDataTypeStoreCallback,
+                          base::Unretained(this));
   }
 
   void InitializeSyncStore() {
@@ -191,8 +190,8 @@ class WifiConfigurationBridgeTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void OnModelTypeStoreCallback(syncer::ModelType type,
-                                syncer::ModelTypeStore::InitCallback callback) {
+  void OnDataTypeStoreCallback(syncer::ModelType type,
+                               syncer::DataTypeStore::InitCallback callback) {
     init_callback_ = std::move(callback);
   }
 
@@ -222,7 +221,7 @@ class WifiConfigurationBridgeTest : public testing::Test {
 
   // This can only be called before InitializeSyncStore().
   void PresaveSyncedNetwork(const WifiConfigurationSpecifics& proto) {
-    std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+    std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
         store_->CreateWriteBatch();
     std::string storage_key =
         NetworkIdentifier::FromProto(proto).SerializeToString();
@@ -269,8 +268,8 @@ class WifiConfigurationBridgeTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  syncer::ModelTypeStore::InitCallback init_callback_;
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  syncer::DataTypeStore::InitCallback init_callback_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<WifiConfigurationBridge> bridge_;
   std::unique_ptr<TestSyncedNetworkUpdater> synced_network_updater_;

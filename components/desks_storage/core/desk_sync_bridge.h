@@ -40,7 +40,7 @@ class DeskSyncBridge : public syncer::DataTypeSyncBridge, public DeskModel {
  public:
   DeskSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory create_store_callback,
+      syncer::OnceDataTypeStoreFactory create_store_callback,
       const AccountId& account_id);
   DeskSyncBridge(const DeskSyncBridge&) = delete;
   DeskSyncBridge& operator=(const DeskSyncBridge&) = delete;
@@ -117,7 +117,7 @@ class DeskSyncBridge : public syncer::DataTypeSyncBridge, public DeskModel {
 
   // Methods used as callbacks given to DataTypeStore.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
-                      std::unique_ptr<syncer::ModelTypeStore> store);
+                      std::unique_ptr<syncer::DataTypeStore> store);
   void OnReadAllData(std::unique_ptr<DeskEntries> initial_entries,
                      const std::optional<syncer::ModelError>& error);
   void OnReadAllMetadata(const std::optional<syncer::ModelError>& error,
@@ -125,7 +125,7 @@ class DeskSyncBridge : public syncer::DataTypeSyncBridge, public DeskModel {
   void OnCommit(const std::optional<syncer::ModelError>& error);
 
   // Persists changes in sync store.
-  void Commit(std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch);
+  void Commit(std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch);
 
   // Uploads data that only exists locally to Sync during MergeFullSyncData().
   void UploadLocalOnlyData(syncer::MetadataChangeList* metadata_change_list,
@@ -143,7 +143,7 @@ class DeskSyncBridge : public syncer::DataTypeSyncBridge, public DeskModel {
 
   // In charge of actually persisting changes to disk, or loading previous
   // data.
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
 
   // Account ID of the user this class will sync data for.
   const AccountId account_id_;

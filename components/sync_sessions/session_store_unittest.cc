@@ -33,13 +33,13 @@ namespace {
 
 using sync_pb::SessionSpecifics;
 using syncer::DataBatch;
+using syncer::DataTypeStore;
 using syncer::EntityData;
 using syncer::EntityMetadataMap;
 using syncer::HasEncryptionKeyName;
 using syncer::IsEmptyMetadataBatch;
 using syncer::MetadataBatch;
 using syncer::MetadataBatchContains;
-using syncer::ModelTypeStore;
 using syncer::NoModelError;
 using testing::_;
 using testing::ElementsAre;
@@ -111,7 +111,7 @@ std::map<std::string, EntityData> BatchToEntityDataMap(
 }
 
 std::unique_ptr<MetadataBatch> ReadAllPersistedMetadataFrom(
-    ModelTypeStore* store) {
+    DataTypeStore* store) {
   std::unique_ptr<MetadataBatch> batch;
   base::RunLoop loop;
   store->ReadAllMetadata(base::BindOnce(
@@ -129,13 +129,13 @@ std::unique_ptr<MetadataBatch> ReadAllPersistedMetadataFrom(
 }
 
 std::map<std::string, SessionSpecifics> ReadAllPersistedDataFrom(
-    ModelTypeStore* store) {
-  std::unique_ptr<ModelTypeStore::RecordList> records;
+    DataTypeStore* store) {
+  std::unique_ptr<DataTypeStore::RecordList> records;
   base::RunLoop loop;
   store->ReadAllData(base::BindOnce(
-      [](std::unique_ptr<ModelTypeStore::RecordList>* output_records,
+      [](std::unique_ptr<DataTypeStore::RecordList>* output_records,
          base::RunLoop* loop, const std::optional<syncer::ModelError>& error,
-         std::unique_ptr<ModelTypeStore::RecordList> input_records) {
+         std::unique_ptr<DataTypeStore::RecordList> input_records) {
         EXPECT_FALSE(error) << error->ToString();
         EXPECT_THAT(input_records, NotNull());
         *output_records = std::move(input_records);
@@ -145,7 +145,7 @@ std::map<std::string, SessionSpecifics> ReadAllPersistedDataFrom(
   loop.Run();
   std::map<std::string, SessionSpecifics> result;
   if (records) {
-    for (const ModelTypeStore::Record& record : *records) {
+    for (const DataTypeStore::Record& record : *records) {
       SessionSpecifics specifics;
       EXPECT_TRUE(specifics.ParseFromString(record.value));
       result.emplace(record.id, specifics);
@@ -159,7 +159,7 @@ class SessionStoreOpenTest : public ::testing::Test {
   SessionStoreOpenTest()
       : session_sync_prefs_(&pref_service_),
         underlying_store_(
-            syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(
+            syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest(
                 syncer::SESSIONS)) {
     SessionSyncPrefs::RegisterProfilePrefs(pref_service_.registry());
 
@@ -170,7 +170,7 @@ class SessionStoreOpenTest : public ::testing::Test {
         .WillByDefault(Return(&session_sync_prefs_));
     ON_CALL(*mock_sync_sessions_client_, GetStoreFactory())
         .WillByDefault(
-            Return(syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
+            Return(syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
                 underlying_store_.get())));
   }
 
@@ -180,7 +180,7 @@ class SessionStoreOpenTest : public ::testing::Test {
   TestingPrefServiceSimple pref_service_;
   SessionSyncPrefs session_sync_prefs_;
   std::unique_ptr<MockSyncSessionsClient> mock_sync_sessions_client_;
-  std::unique_ptr<ModelTypeStore> underlying_store_;
+  std::unique_ptr<DataTypeStore> underlying_store_;
 };
 
 TEST_F(SessionStoreOpenTest, ShouldCreateStore) {

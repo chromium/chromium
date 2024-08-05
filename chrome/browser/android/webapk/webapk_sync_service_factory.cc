@@ -32,7 +32,7 @@ WebApkSyncServiceFactory::WebApkSyncServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "WebApkSyncService",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 WebApkSyncServiceFactory::~WebApkSyncServiceFactory() = default;

@@ -41,12 +41,12 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   WebViewAffiliationServiceFactory::GetInstance();
   WebViewAutocompleteHistoryManagerFactory::GetInstance();
   WebViewBulkLeakCheckServiceFactory::GetInstance();
+  WebViewDataTypeStoreServiceFactory::GetInstance();
   WebViewDeviceInfoSyncServiceFactory::GetInstance();
   WebViewGCMProfileServiceFactory::GetInstance();
   WebViewIdentityManagerFactory::GetInstance();
   WebViewInstanceIDProfileServiceFactory::GetInstance();
   WebViewLanguageModelManagerFactory::GetInstance();
-  WebViewModelTypeStoreServiceFactory::GetInstance();
   WebViewPasswordManagerLogRouterFactory::GetInstance();
   WebViewPasswordRequirementsServiceFactory::GetInstance();
   WebViewPasswordReuseManagerFactory::GetInstance();

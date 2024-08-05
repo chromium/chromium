@@ -45,7 +45,7 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // either the local or remote clients.
   class Observer : public base::CheckedObserver {
    public:
-    // The data from sync ModelTypeStore has been loaded to memory.
+    // The data from sync DataTypeStore has been loaded to memory.
     virtual void OnInitialized() = 0;
 
     // A new tab group was added at the given |source|.

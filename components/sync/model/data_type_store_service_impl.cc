@@ -35,17 +35,17 @@ constexpr base::FilePath::CharType kSyncDataFolderName[] =
 constexpr base::FilePath::CharType kLevelDBFolderName[] =
     FILE_PATH_LITERAL("LevelDB");
 
-// Initializes ModelTypeStoreBackend, on the backend sequence.
+// Initializes DataTypeStoreBackend, on the backend sequence.
 std::optional<ModelError> InitOnBackendSequence(
     const base::FilePath& level_db_path,
-    scoped_refptr<ModelTypeStoreBackend> store_backend,
+    scoped_refptr<DataTypeStoreBackend> store_backend,
     bool migrate_rl_from_local_to_account) {
   std::vector<std::pair<std::string, std::string>> prefixes_to_migrate;
   if (migrate_rl_from_local_to_account) {
     prefixes_to_migrate.emplace_back(
-        BlockingModelTypeStoreImpl::FormatPrefixForModelTypeAndStorageType(
+        BlockingDataTypeStoreImpl::FormatPrefixForModelTypeAndStorageType(
             READING_LIST, StorageType::kUnspecified),
-        BlockingModelTypeStoreImpl::FormatPrefixForModelTypeAndStorageType(
+        BlockingDataTypeStoreImpl::FormatPrefixForModelTypeAndStorageType(
             READING_LIST, StorageType::kAccount));
     RecordSyncToSigninMigrationReadingListStep(
         ReadingListMigrationStep::kMigrationStarted);
@@ -53,57 +53,57 @@ std::optional<ModelError> InitOnBackendSequence(
   return store_backend->Init(level_db_path, prefixes_to_migrate);
 }
 
-std::unique_ptr<BlockingModelTypeStoreImpl, base::OnTaskRunnerDeleter>
-CreateBlockingModelTypeStoreOnBackendSequence(
+std::unique_ptr<BlockingDataTypeStoreImpl, base::OnTaskRunnerDeleter>
+CreateBlockingDataTypeStoreOnBackendSequence(
     ModelType model_type,
     StorageType storage_type,
-    scoped_refptr<ModelTypeStoreBackend> store_backend) {
-  BlockingModelTypeStoreImpl* blocking_store = nullptr;
+    scoped_refptr<DataTypeStoreBackend> store_backend) {
+  BlockingDataTypeStoreImpl* blocking_store = nullptr;
   if (store_backend->IsInitialized()) {
     blocking_store =
-        new BlockingModelTypeStoreImpl(model_type, storage_type, store_backend);
+        new BlockingDataTypeStoreImpl(model_type, storage_type, store_backend);
   }
-  return std::unique_ptr<BlockingModelTypeStoreImpl,
+  return std::unique_ptr<BlockingDataTypeStoreImpl,
                          base::OnTaskRunnerDeleter /*[]*/>(
       blocking_store, base::OnTaskRunnerDeleter(
                           base::SequencedTaskRunner::GetCurrentDefault()));
 }
 
-void ConstructModelTypeStoreOnFrontendSequence(
+void ConstructDataTypeStoreOnFrontendSequence(
     ModelType model_type,
     StorageType storage_type,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
-    ModelTypeStore::InitCallback callback,
-    std::unique_ptr<BlockingModelTypeStoreImpl, base::OnTaskRunnerDeleter>
+    DataTypeStore::InitCallback callback,
+    std::unique_ptr<BlockingDataTypeStoreImpl, base::OnTaskRunnerDeleter>
         blocking_store) {
   if (blocking_store) {
     std::move(callback).Run(
         /*error=*/std::nullopt,
-        std::make_unique<ModelTypeStoreImpl>(model_type, storage_type,
-                                             std::move(blocking_store),
-                                             backend_task_runner));
+        std::make_unique<DataTypeStoreImpl>(model_type, storage_type,
+                                            std::move(blocking_store),
+                                            backend_task_runner));
   } else {
     std::move(callback).Run(
-        ModelError(FROM_HERE, "ModelTypeStore backend initialization failed"),
+        ModelError(FROM_HERE, "DataTypeStore backend initialization failed"),
         /*store=*/nullptr);
   }
 }
 
-void CreateModelTypeStoreOnFrontendSequence(
+void CreateDataTypeStoreOnFrontendSequence(
     StorageType storage_type,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
-    scoped_refptr<ModelTypeStoreBackend> store_backend,
+    scoped_refptr<DataTypeStoreBackend> store_backend,
     ModelType model_type,
-    ModelTypeStore::InitCallback callback) {
-  // BlockingModelTypeStoreImpl must be instantiated in the backend sequence.
+    DataTypeStore::InitCallback callback) {
+  // BlockingDataTypeStoreImpl must be instantiated in the backend sequence.
   // This also guarantees that the creation is sequenced with the backend's
   // initialization, since we can't know for sure that InitOnBackendSequence()
   // has already run.
-  auto task = base::BindOnce(&CreateBlockingModelTypeStoreOnBackendSequence,
+  auto task = base::BindOnce(&CreateBlockingDataTypeStoreOnBackendSequence,
                              model_type, storage_type, store_backend);
 
   auto reply =
-      base::BindOnce(&ConstructModelTypeStoreOnFrontendSequence, model_type,
+      base::BindOnce(&ConstructDataTypeStoreOnFrontendSequence, model_type,
                      storage_type, backend_task_runner, std::move(callback));
 
   backend_task_runner->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
@@ -112,7 +112,7 @@ void CreateModelTypeStoreOnFrontendSequence(
 
 }  // namespace
 
-ModelTypeStoreServiceImpl::ModelTypeStoreServiceImpl(
+DataTypeStoreServiceImpl::DataTypeStoreServiceImpl(
     const base::FilePath& base_path,
     PrefService* pref_service)
     : sync_path_(base_path.Append(base::FilePath(kSyncDataFolderName))),
@@ -120,7 +120,7 @@ ModelTypeStoreServiceImpl::ModelTypeStoreServiceImpl(
       pref_service_(pref_service),
       backend_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
-      store_backend_(ModelTypeStoreBackend::CreateUninitialized()) {
+      store_backend_(DataTypeStoreBackend::CreateUninitialized()) {
   DCHECK(backend_task_runner_);
   bool migrate_rl_from_local_to_account = pref_service_->GetBoolean(
       syncer::prefs::internal::kMigrateReadingListFromLocalToAccount);
@@ -128,15 +128,15 @@ ModelTypeStoreServiceImpl::ModelTypeStoreServiceImpl(
       FROM_HERE,
       base::BindOnce(&InitOnBackendSequence, leveldb_path_, store_backend_,
                      migrate_rl_from_local_to_account),
-      base::BindOnce(&ModelTypeStoreServiceImpl::BackendInitializationDone,
+      base::BindOnce(&DataTypeStoreServiceImpl::BackendInitializationDone,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-ModelTypeStoreServiceImpl::~ModelTypeStoreServiceImpl() {
+DataTypeStoreServiceImpl::~DataTypeStoreServiceImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 }
 
-void ModelTypeStoreServiceImpl::BackendInitializationDone(
+void DataTypeStoreServiceImpl::BackendInitializationDone(
     std::optional<ModelError> error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
@@ -156,32 +156,32 @@ void ModelTypeStoreServiceImpl::BackendInitializationDone(
   base::UmaHistogramBoolean("Sync.ModelTypeStoreBackendInitializationSuccess",
                             !error.has_value());
   if (error) {
-    DLOG(ERROR) << "Failed to initialize ModelTypeStore backend: "
+    DLOG(ERROR) << "Failed to initialize DataTypeStore backend: "
                 << error->ToString();
   }
 }
 
-const base::FilePath& ModelTypeStoreServiceImpl::GetSyncDataPath() const {
+const base::FilePath& DataTypeStoreServiceImpl::GetSyncDataPath() const {
   return sync_path_;
 }
 
-RepeatingModelTypeStoreFactory ModelTypeStoreServiceImpl::GetStoreFactory() {
+RepeatingDataTypeStoreFactory DataTypeStoreServiceImpl::GetStoreFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-  return base::BindRepeating(&CreateModelTypeStoreOnFrontendSequence,
+  return base::BindRepeating(&CreateDataTypeStoreOnFrontendSequence,
                              StorageType::kUnspecified, backend_task_runner_,
                              store_backend_);
 }
 
-RepeatingModelTypeStoreFactory
-ModelTypeStoreServiceImpl::GetStoreFactoryForAccountStorage() {
+RepeatingDataTypeStoreFactory
+DataTypeStoreServiceImpl::GetStoreFactoryForAccountStorage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-  return base::BindRepeating(&CreateModelTypeStoreOnFrontendSequence,
+  return base::BindRepeating(&CreateDataTypeStoreOnFrontendSequence,
                              StorageType::kAccount, backend_task_runner_,
                              store_backend_);
 }
 
 scoped_refptr<base::SequencedTaskRunner>
-ModelTypeStoreServiceImpl::GetBackendTaskRunner() {
+DataTypeStoreServiceImpl::GetBackendTaskRunner() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
   return backend_task_runner_;
 }

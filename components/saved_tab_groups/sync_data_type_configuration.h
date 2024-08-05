@@ -19,11 +19,11 @@ namespace tab_groups {
 struct SyncDataTypeConfiguration {
   SyncDataTypeConfiguration(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory model_type_store_factory);
+      syncer::OnceDataTypeStoreFactory data_type_store_factory);
   ~SyncDataTypeConfiguration();
 
   std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor;
-  syncer::OnceModelTypeStoreFactory model_type_store_factory;
+  syncer::OnceDataTypeStoreFactory data_type_store_factory;
 };
 
 }  // namespace tab_groups

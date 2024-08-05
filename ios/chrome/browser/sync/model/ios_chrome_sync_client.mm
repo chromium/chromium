@@ -104,7 +104,7 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
       this,
       DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state_)
           ->GetDeviceInfoTracker(),
-      ModelTypeStoreServiceFactory::GetForBrowserState(browser_state_)
+      DataTypeStoreServiceFactory::GetForBrowserState(browser_state_)
           ->GetSyncDataPath());
 }
 
@@ -163,8 +163,8 @@ IOSChromeSyncClient::CreateDataTypeControllers(
   builder.SetHistoryService(ios::HistoryServiceFactory::GetForBrowserState(
       browser_state_, ServiceAccessType::EXPLICIT_ACCESS));
   builder.SetIdentityManager(GetIdentityManager());
-  builder.SetModelTypeStoreService(
-      ModelTypeStoreServiceFactory::GetForBrowserState(browser_state_));
+  builder.SetDataTypeStoreService(
+      DataTypeStoreServiceFactory::GetForBrowserState(browser_state_));
 #if !BUILDFLAG(IS_ANDROID)
   builder.SetPasskeyModel(
       base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)

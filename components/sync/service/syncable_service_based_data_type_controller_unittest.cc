@@ -19,18 +19,18 @@ namespace {
 class SyncableServiceBasedDataTypeControllerTest : public testing::Test {
  public:
   SyncableServiceBasedDataTypeControllerTest()
-      : store_(ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
+      : store_(DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
   ~SyncableServiceBasedDataTypeControllerTest() override {}
 
  private:
   base::test::TaskEnvironment task_environment_;
-  const std::unique_ptr<ModelTypeStore> store_;
+  const std::unique_ptr<DataTypeStore> store_;
 };
 
 TEST_F(SyncableServiceBasedDataTypeControllerTest, HandlesNullService) {
   // Create a controller with a null SyncableService.
   SyncableServiceBasedDataTypeController controller(
-      PREFERENCES, ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+      PREFERENCES, DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
       /*syncable_service=*/nullptr, base::DoNothing(),
       SyncableServiceBasedDataTypeController::DelegateMode::
           kTransportModeWithSingleModel);

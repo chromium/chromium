@@ -220,7 +220,7 @@ void WebApkSyncBridge::OnDatabaseOpened(
 
 std::unique_ptr<syncer::MetadataChangeList>
 WebApkSyncBridge::CreateMetadataChangeList() {
-  return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  return syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 bool WebApkSyncBridge::AppWasUsedRecently(
@@ -327,7 +327,7 @@ void WebApkSyncBridge::MergeSyncDataForTesting(
   CHECK(app_vector.size() == last_used_days_vector.size());
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
   std::unique_ptr<webapk::RegistryUpdateData> registry_update =
       std::make_unique<webapk::RegistryUpdateData>();
 
@@ -448,7 +448,7 @@ void WebApkSyncBridge::OnWebApkUninstalled(const std::string& manifest_id) {
 
   database_.Write(
       *registry_update,
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList(),
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList(),
       base::BindOnce(&WebApkSyncBridge::OnDataWritten,
                      weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 }
@@ -555,7 +555,7 @@ void WebApkSyncBridge::AddOrModifyAppInSync(std::unique_ptr<WebApkProto> app,
       CreateSyncEntityDataFromSpecifics(app->sync_data());
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
   change_processor()->Put(app_id, std::move(entity_data),
                           metadata_change_list.get());
 
@@ -581,7 +581,7 @@ void WebApkSyncBridge::DeleteAppsFromSync(
   RecordSyncedWebApkRemovalCountHistogram(app_ids.size());
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
   std::unique_ptr<RegistryUpdateData> registry_update =
       std::make_unique<RegistryUpdateData>();
 

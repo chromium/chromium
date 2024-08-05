@@ -25,7 +25,7 @@ namespace syncer {
 class UserEventSyncBridge : public DataTypeSyncBridge {
  public:
   UserEventSyncBridge(
-      OnceModelTypeStoreFactory store_factory,
+      OnceDataTypeStoreFactory store_factory,
       std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
       GlobalIdMapper* global_id_mapper);
 
@@ -54,11 +54,11 @@ class UserEventSyncBridge : public DataTypeSyncBridge {
 
   static std::string GetStorageKeyFromSpecificsForTest(
       const sync_pb::UserEventSpecifics& specifics);
-  std::unique_ptr<ModelTypeStore> StealStoreForTest();
+  std::unique_ptr<DataTypeStore> StealStoreForTest();
 
  private:
   using StoreWithCache =
-      syncer::ModelTypeStoreWithInMemoryCache<sync_pb::UserEventSpecifics>;
+      syncer::DataTypeStoreWithInMemoryCache<sync_pb::UserEventSpecifics>;
 
   void RecordUserEventImpl(
       std::unique_ptr<sync_pb::UserEventSpecifics> specifics);

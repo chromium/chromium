@@ -27,14 +27,14 @@ using testing::Le;
 using testing::NotNull;
 using testing::SizeIs;
 
-std::unique_ptr<ModelTypeStore> ExerciseStoreFactoryAndWait(
-    const RepeatingModelTypeStoreFactory& store_factory,
+std::unique_ptr<DataTypeStore> ExerciseStoreFactoryAndWait(
+    const RepeatingDataTypeStoreFactory& store_factory,
     ModelType model_type = ModelType::PREFERENCES) {
-  std::unique_ptr<ModelTypeStore> result;
+  std::unique_ptr<DataTypeStore> result;
   base::RunLoop loop;
   store_factory.Run(model_type, base::BindLambdaForTesting(
                                     [&](const std::optional<ModelError>& error,
-                                        std::unique_ptr<ModelTypeStore> store) {
+                                        std::unique_ptr<DataTypeStore> store) {
                                       EXPECT_FALSE(error.has_value());
                                       result = std::move(store);
                                       loop.Quit();
@@ -43,10 +43,10 @@ std::unique_ptr<ModelTypeStore> ExerciseStoreFactoryAndWait(
   return result;
 }
 
-void WriteDataAndWait(ModelTypeStore* store,
+void WriteDataAndWait(DataTypeStore* store,
                       const std::string& id,
                       const std::string& value) {
-  std::unique_ptr<ModelTypeStore::WriteBatch> batch = store->CreateWriteBatch();
+  std::unique_ptr<DataTypeStore::WriteBatch> batch = store->CreateWriteBatch();
   batch->WriteData(id, value);
   base::RunLoop loop;
   store->CommitWriteBatch(
@@ -56,15 +56,15 @@ void WriteDataAndWait(ModelTypeStore* store,
   loop.Run();
 }
 
-std::optional<std::string> ReadDataAndWait(ModelTypeStore* store,
+std::optional<std::string> ReadDataAndWait(DataTypeStore* store,
                                            const std::string& id) {
   base::RunLoop loop;
   std::optional<std::string> read_value;
   store->ReadData(
       {id}, base::BindLambdaForTesting(
                 [&](const std::optional<ModelError>& error,
-                    std::unique_ptr<ModelTypeStore::RecordList> data_records,
-                    std::unique_ptr<ModelTypeStore::IdList> missing_id_list) {
+                    std::unique_ptr<DataTypeStore::RecordList> data_records,
+                    std::unique_ptr<DataTypeStore::IdList> missing_id_list) {
                   EXPECT_THAT(*data_records, SizeIs(Le(1u)));
                   if (data_records->size() == 1) {
                     read_value = data_records->front().value;
@@ -75,9 +75,9 @@ std::optional<std::string> ReadDataAndWait(ModelTypeStore* store,
   return read_value;
 }
 
-class ModelTypeStoreServiceImplTest : public testing::Test {
+class DataTypeStoreServiceImplTest : public testing::Test {
  public:
-  ModelTypeStoreServiceImplTest() {
+  DataTypeStoreServiceImplTest() {
     pref_service_.registry()->RegisterBooleanPref(
         prefs::internal::kMigrateReadingListFromLocalToAccount, false);
   }
@@ -88,11 +88,11 @@ class ModelTypeStoreServiceImplTest : public testing::Test {
 };
 
 // Regression test for http://crbug.com/1190187.
-TEST_F(ModelTypeStoreServiceImplTest, ShouldSupportFactoryOutlivingService) {
-  auto service = std::make_unique<ModelTypeStoreServiceImpl>(
+TEST_F(DataTypeStoreServiceImplTest, ShouldSupportFactoryOutlivingService) {
+  auto service = std::make_unique<DataTypeStoreServiceImpl>(
       base::CreateUniqueTempDirectoryScopedToTest(), &pref_service_);
 
-  const RepeatingModelTypeStoreFactory store_factory =
+  const RepeatingDataTypeStoreFactory store_factory =
       service->GetStoreFactory();
   ASSERT_TRUE(store_factory);
 
@@ -104,21 +104,21 @@ TEST_F(ModelTypeStoreServiceImplTest, ShouldSupportFactoryOutlivingService) {
   EXPECT_THAT(ExerciseStoreFactoryAndWait(store_factory), NotNull());
 }
 
-TEST_F(ModelTypeStoreServiceImplTest, ShouldUseIsolatedStorageTypes) {
-  auto service = std::make_unique<ModelTypeStoreServiceImpl>(
+TEST_F(DataTypeStoreServiceImplTest, ShouldUseIsolatedStorageTypes) {
+  auto service = std::make_unique<DataTypeStoreServiceImpl>(
       base::CreateUniqueTempDirectoryScopedToTest(), &pref_service_);
 
-  const RepeatingModelTypeStoreFactory default_store_factory =
+  const RepeatingDataTypeStoreFactory default_store_factory =
       service->GetStoreFactory();
-  const RepeatingModelTypeStoreFactory account_store_factory =
+  const RepeatingDataTypeStoreFactory account_store_factory =
       service->GetStoreFactoryForAccountStorage();
 
   ASSERT_TRUE(default_store_factory);
   ASSERT_TRUE(account_store_factory);
 
-  std::unique_ptr<ModelTypeStore> default_store =
+  std::unique_ptr<DataTypeStore> default_store =
       ExerciseStoreFactoryAndWait(default_store_factory);
-  std::unique_ptr<ModelTypeStore> account_store =
+  std::unique_ptr<DataTypeStore> account_store =
       ExerciseStoreFactoryAndWait(account_store_factory);
 
   ASSERT_THAT(default_store, NotNull());
@@ -132,16 +132,16 @@ TEST_F(ModelTypeStoreServiceImplTest, ShouldUseIsolatedStorageTypes) {
   EXPECT_THAT(ReadDataAndWait(account_store.get(), "key"), Eq("B"));
 }
 
-TEST_F(ModelTypeStoreServiceImplTest,
+TEST_F(DataTypeStoreServiceImplTest,
        ShouldTriggerReadingListMigrationIfPrefSet) {
   base::FilePath temp_path = base::CreateUniqueTempDirectoryScopedToTest();
   // Put some data into the default (local) store.
   {
     auto service =
-        std::make_unique<ModelTypeStoreServiceImpl>(temp_path, &pref_service_);
-    const RepeatingModelTypeStoreFactory default_store_factory =
+        std::make_unique<DataTypeStoreServiceImpl>(temp_path, &pref_service_);
+    const RepeatingDataTypeStoreFactory default_store_factory =
         service->GetStoreFactory();
-    std::unique_ptr<ModelTypeStore> default_store = ExerciseStoreFactoryAndWait(
+    std::unique_ptr<DataTypeStore> default_store = ExerciseStoreFactoryAndWait(
         default_store_factory, ModelType::READING_LIST);
     WriteDataAndWait(default_store.get(), "key", "data");
   }
@@ -152,19 +152,19 @@ TEST_F(ModelTypeStoreServiceImplTest,
       prefs::internal::kMigrateReadingListFromLocalToAccount));
   {
     auto service =
-        std::make_unique<ModelTypeStoreServiceImpl>(temp_path, &pref_service_);
+        std::make_unique<DataTypeStoreServiceImpl>(temp_path, &pref_service_);
 
     // The item should still be in the default store.
-    const RepeatingModelTypeStoreFactory default_store_factory =
+    const RepeatingDataTypeStoreFactory default_store_factory =
         service->GetStoreFactory();
-    std::unique_ptr<ModelTypeStore> default_store = ExerciseStoreFactoryAndWait(
+    std::unique_ptr<DataTypeStore> default_store = ExerciseStoreFactoryAndWait(
         default_store_factory, ModelType::READING_LIST);
     EXPECT_THAT(ReadDataAndWait(default_store.get(), "key"), Eq("data"));
 
     // And not in the account store.
-    const RepeatingModelTypeStoreFactory account_store_factory =
+    const RepeatingDataTypeStoreFactory account_store_factory =
         service->GetStoreFactoryForAccountStorage();
-    std::unique_ptr<ModelTypeStore> account_store = ExerciseStoreFactoryAndWait(
+    std::unique_ptr<DataTypeStore> account_store = ExerciseStoreFactoryAndWait(
         account_store_factory, ModelType::READING_LIST);
     EXPECT_THAT(ReadDataAndWait(account_store.get(), "key"), Eq(std::nullopt));
   }
@@ -175,19 +175,19 @@ TEST_F(ModelTypeStoreServiceImplTest,
       prefs::internal::kMigrateReadingListFromLocalToAccount, true);
   {
     auto service =
-        std::make_unique<ModelTypeStoreServiceImpl>(temp_path, &pref_service_);
+        std::make_unique<DataTypeStoreServiceImpl>(temp_path, &pref_service_);
 
     // The item should not be in the default store anymore.
-    const RepeatingModelTypeStoreFactory default_store_factory =
+    const RepeatingDataTypeStoreFactory default_store_factory =
         service->GetStoreFactory();
-    std::unique_ptr<ModelTypeStore> default_store = ExerciseStoreFactoryAndWait(
+    std::unique_ptr<DataTypeStore> default_store = ExerciseStoreFactoryAndWait(
         default_store_factory, ModelType::READING_LIST);
     EXPECT_THAT(ReadDataAndWait(default_store.get(), "key"), std::nullopt);
 
     // It should be in the *account* store now.
-    const RepeatingModelTypeStoreFactory account_store_factory =
+    const RepeatingDataTypeStoreFactory account_store_factory =
         service->GetStoreFactoryForAccountStorage();
-    std::unique_ptr<ModelTypeStore> account_store = ExerciseStoreFactoryAndWait(
+    std::unique_ptr<DataTypeStore> account_store = ExerciseStoreFactoryAndWait(
         account_store_factory, ModelType::READING_LIST);
     EXPECT_THAT(ReadDataAndWait(account_store.get(), "key"), Eq("data"));
 

@@ -47,7 +47,7 @@ bool IsMultiSpecSetsEnabled() {
 namespace commerce {
 
 ProductSpecificationsSyncBridge::ProductSpecificationsSyncBridge(
-    syncer::OnceModelTypeStoreFactory create_store_callback,
+    syncer::OnceDataTypeStoreFactory create_store_callback,
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     base::OnceCallback<void(void)> init_callback,
     Delegate* delegate)
@@ -64,7 +64,7 @@ ProductSpecificationsSyncBridge::~ProductSpecificationsSyncBridge() = default;
 
 std::unique_ptr<syncer::MetadataChangeList>
 ProductSpecificationsSyncBridge::CreateMetadataChangeList() {
-  return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  return syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<syncer::ModelError>
@@ -79,7 +79,7 @@ std::optional<syncer::ModelError>
 ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
   std::map<std::string, sync_pb::ProductComparisonSpecifics> prev_entries;
@@ -215,16 +215,17 @@ void ProductSpecificationsSyncBridge::AddSpecifics(
   // Sync is mandatory for this feature to be usable.
   CHECK(change_processor()->IsTrackingMetadata());
 
-    std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
-        store_->CreateWriteBatch();
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
 
-    for (const auto& specific : specifics) {
-      change_processor()->Put(specific.uuid(), CreateEntityData(specific),
-                              batch->GetMetadataChangeList());
-      batch->WriteData(specific.uuid(), specific.SerializeAsString());
-      entries_.emplace(specific.uuid(), specific);
-    }
-    Commit(std::move(batch));
+  for (const auto& specific : specifics) {
+    change_processor()->Put(specific.uuid(), CreateEntityData(specific),
+                            batch->GetMetadataChangeList());
+    batch->WriteData(specific.uuid(), specific.SerializeAsString());
+    entries_.emplace(specific.uuid(), specific);
+  }
+
+  Commit(std::move(batch));
 }
 
 void ProductSpecificationsSyncBridge::UpdateSpecifics(
@@ -236,7 +237,7 @@ void ProductSpecificationsSyncBridge::UpdateSpecifics(
 
   entries_[new_specifics.uuid()] = new_specifics;
 
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
   change_processor()->Put(new_specifics.uuid(), CreateEntityData(new_specifics),
@@ -252,7 +253,7 @@ void ProductSpecificationsSyncBridge::DeleteSpecifics(
     return;
   }
 
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
   for (auto& specifics : to_remove) {
@@ -269,7 +270,7 @@ void ProductSpecificationsSyncBridge::DeleteSpecifics(
 
 void ProductSpecificationsSyncBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore> store) {
+    std::unique_ptr<syncer::DataTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
     return;
@@ -283,7 +284,7 @@ void ProductSpecificationsSyncBridge::OnStoreCreated(
 
 void ProductSpecificationsSyncBridge::OnReadAllDataAndMetadata(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list,
+    std::unique_ptr<syncer::DataTypeStore::RecordList> record_list,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -298,10 +299,10 @@ void ProductSpecificationsSyncBridge::OnReadAllDataAndMetadata(
           metadata_batch->GetAllMetadata())) {
     store_->DeleteAllDataAndMetadata(base::DoNothing());
     metadata_batch = std::make_unique<syncer::MetadataBatch>();
-    record_list = std::make_unique<syncer::ModelTypeStore::RecordList>();
+    record_list = std::make_unique<syncer::DataTypeStore::RecordList>();
   }
 
-  for (const syncer::ModelTypeStore::Record& record : *record_list) {
+  for (const syncer::DataTypeStore::Record& record : *record_list) {
     sync_pb::ProductComparisonSpecifics product_comparison_specifics;
     if (!product_comparison_specifics.ParseFromString(record.value)) {
       continue;
@@ -319,7 +320,7 @@ void ProductSpecificationsSyncBridge::OnReadAllDataAndMetadata(
 }
 
 void ProductSpecificationsSyncBridge::Commit(
-    std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch) {
+    std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch) {
   store_->CommitWriteBatch(
       std::move(batch),
       base::BindOnce(&ProductSpecificationsSyncBridge::OnCommit,

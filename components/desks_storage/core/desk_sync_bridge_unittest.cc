@@ -72,6 +72,8 @@ using ash::DeskTemplateSource;
 using ash::DeskTemplateType;
 using sync_pb::ModelTypeState;
 using sync_pb::WorkspaceDeskSpecifics;
+using syncer::DataTypeStore;
+using syncer::DataTypeStoreTestUtil;
 using syncer::EntityChange;
 using syncer::EntityChangeList;
 using syncer::EntityData;
@@ -81,8 +83,6 @@ using syncer::MetadataBatchContains;
 using syncer::MetadataChangeList;
 using syncer::MockDataTypeLocalChangeProcessor;
 using syncer::ModelError;
-using syncer::ModelTypeStore;
-using syncer::ModelTypeStoreTestUtil;
 using testing::_;
 using testing::Return;
 using testing::SizeIs;
@@ -585,7 +585,7 @@ class DeskSyncBridgeTest : public testing::Test {
 
  protected:
   DeskSyncBridgeTest()
-      : store_(ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()),
+      : store_(DataTypeStoreTestUtil::CreateInMemoryStoreForTest()),
         cache_(std::make_unique<apps::AppRegistryCache>()),
         account_id_(AccountId::FromUserEmail("test@gmail.com")) {}
 
@@ -593,7 +593,7 @@ class DeskSyncBridgeTest : public testing::Test {
     ON_CALL(mock_processor_, IsTrackingMetadata()).WillByDefault(Return(true));
     bridge_ = std::make_unique<DeskSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
-        ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
+        DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         account_id_);
     bridge_->AddObserver(&mock_observer_);
   }
@@ -622,7 +622,7 @@ class DeskSyncBridgeTest : public testing::Test {
   void WriteToStoreWithMetadata(
       const std::vector<WorkspaceDeskSpecifics>& specifics_list,
       ModelTypeState state) {
-    std::unique_ptr<ModelTypeStore::WriteBatch> batch =
+    std::unique_ptr<DataTypeStore::WriteBatch> batch =
         store_->CreateWriteBatch();
     for (auto& specifics : specifics_list) {
       batch->WriteData(specifics.uuid(), specifics.SerializeAsString());
@@ -631,7 +631,7 @@ class DeskSyncBridgeTest : public testing::Test {
     CommitToStoreAndWait(std::move(batch));
   }
 
-  void CommitToStoreAndWait(std::unique_ptr<ModelTypeStore::WriteBatch> batch) {
+  void CommitToStoreAndWait(std::unique_ptr<DataTypeStore::WriteBatch> batch) {
     base::RunLoop loop;
     store_->CommitWriteBatch(
         std::move(batch),
@@ -784,7 +784,7 @@ class DeskSyncBridgeTest : public testing::Test {
   // In memory model type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
 
-  std::unique_ptr<ModelTypeStore> store_;
+  std::unique_ptr<DataTypeStore> store_;
 
   testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
 

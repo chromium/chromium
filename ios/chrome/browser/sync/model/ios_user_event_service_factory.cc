@@ -42,7 +42,7 @@ IOSUserEventServiceFactory::IOSUserEventServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "UserEventService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
 }
 
@@ -57,8 +57,8 @@ IOSUserEventServiceFactory::BuildServiceInstanceFor(
 
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  syncer::OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreServiceFactory::GetForBrowserState(browser_state)
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForBrowserState(browser_state)
           ->GetStoreFactory();
   auto bridge = std::make_unique<syncer::UserEventSyncBridge>(
       std::move(store_factory),

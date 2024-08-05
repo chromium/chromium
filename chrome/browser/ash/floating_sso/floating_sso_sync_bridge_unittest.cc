@@ -40,8 +40,8 @@ syncer::EntityData MakeEntityData(const sync_pb::CookieSpecifics& specifics) {
 }
 
 void CommitToStoreAndWait(
-    syncer::ModelTypeStore* store,
-    std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch) {
+    syncer::DataTypeStore* store,
+    std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch) {
   base::test::TestFuture<const std::optional<syncer::ModelError>&> future;
 
   store->CommitWriteBatch(std::move(batch), future.GetCallback());
@@ -55,14 +55,13 @@ class FloatingSsoSyncBridgeTest : public testing::Test {
  public:
   void SetUp() override {
     // Create a store for test and add some initial data to it.
-    store_ = syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
+    store_ = syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
 
     // Create a bridge and then wait until it finishes reading initial data from
     // the store.
     bridge_ = std::make_unique<FloatingSsoSyncBridge>(
         processor_.CreateForwardingProcessor(),
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
-            store_.get()));
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()));
 
     for (size_t i = 0; i < kNamesForTests.size(); ++i) {
       sync_pb::CookieSpecifics specifics =
@@ -81,7 +80,7 @@ class FloatingSsoSyncBridgeTest : public testing::Test {
  private:
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
   std::unique_ptr<FloatingSsoSyncBridge> bridge_;
 };
 
@@ -336,10 +335,10 @@ TEST_F(FloatingSsoSyncBridgeTest, DeleteCookie) {
 TEST(FloatingSsoSyncBridgeInitialization, EventsWhileStoreIsLoading) {
   base::test::SingleThreadTaskEnvironment task_environment;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor;
-  auto store = syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
+  auto store = syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
 
   // Add a cookie to the store so that we can delete it later.
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store->CreateWriteBatch();
   sync_pb::CookieSpecifics delete_specifics =
       CreatePredefinedCookieSpecificsForTest(0);
@@ -347,8 +346,7 @@ TEST(FloatingSsoSyncBridgeInitialization, EventsWhileStoreIsLoading) {
                    delete_specifics.SerializeAsString());
   CommitToStoreAndWait(store.get(), std::move(batch));
 
-  base::test::TestFuture<syncer::ModelType,
-                         syncer::ModelTypeStore::InitCallback>
+  base::test::TestFuture<syncer::ModelType, syncer::DataTypeStore::InitCallback>
       store_future;
 
   // Create a bridge.

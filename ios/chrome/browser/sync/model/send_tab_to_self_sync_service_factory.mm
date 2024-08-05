@@ -22,8 +22,8 @@ std::unique_ptr<KeyedService> BuildSendTabToSelfService(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
 
-  syncer::OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreServiceFactory::GetForBrowserState(browser_state)
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForBrowserState(browser_state)
           ->GetStoreFactory();
 
   history::HistoryService* history_service =
@@ -63,9 +63,9 @@ SendTabToSelfSyncServiceFactory::SendTabToSelfSyncServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "SendTabToSelfSyncService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
-  DependsOn(ios::HistoryServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  DependsOn(ios::HistoryServiceFactory::GetInstance());
 }
 
 SendTabToSelfSyncServiceFactory::~SendTabToSelfSyncServiceFactory() {}

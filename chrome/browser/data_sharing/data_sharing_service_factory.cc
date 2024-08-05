@@ -50,8 +50,8 @@ DataSharingServiceFactory::DataSharingServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
 
 DataSharingServiceFactory::~DataSharingServiceFactory() = default;
@@ -79,7 +79,7 @@ KeyedService* DataSharingServiceFactory::BuildServiceInstanceFor(
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       IdentityManagerFactory::GetForProfile(profile),
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       chrome::GetChannel(), std::move(sdk_delegate), std::move(ui_delegate));
 }
 

@@ -12,10 +12,10 @@
 
 namespace syncer {
 
-class MockModelTypeStore : public ModelTypeStore {
+class MockDataTypeStore : public DataTypeStore {
  public:
-  MockModelTypeStore();
-  ~MockModelTypeStore() override;
+  MockDataTypeStore();
+  ~MockDataTypeStore() override;
 
   MOCK_METHOD(void,
               ReadData,

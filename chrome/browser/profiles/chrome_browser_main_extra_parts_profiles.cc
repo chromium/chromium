@@ -776,6 +776,7 @@ void ChromeBrowserMainExtraPartsProfiles::
     CrosAppsKeyEventHandlerFactory::GetInstance();
   }
 #endif
+  DataTypeStoreServiceFactory::GetInstance();
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   data_controls::ReportingServiceFactory::GetInstance();
   data_controls::ChromeRulesServiceFactory::GetInstance();
@@ -972,7 +973,6 @@ void ChromeBrowserMainExtraPartsProfiles::
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   metrics::DesktopProfileSessionDurationsServiceFactory::GetInstance();
 #endif
-  ModelTypeStoreServiceFactory::GetInstance();
   NavigationPredictorKeyedServiceFactory::GetInstance();
   PreloadingModelKeyedServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS_ASH)

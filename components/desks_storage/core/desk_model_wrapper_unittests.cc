@@ -190,7 +190,7 @@ class DeskModelWrapperTest : public testing::Test {
         cache_(std::make_unique<apps::AppRegistryCache>()),
         account_id_(AccountId::FromUserEmail("test@gmail.com")),
         data_manager_(std::unique_ptr<LocalDeskDataManager>()),
-        store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
+        store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
 
   DeskModelWrapperTest(const DeskModelWrapperTest&) = delete;
   DeskModelWrapperTest& operator=(const DeskModelWrapperTest&) = delete;
@@ -212,7 +212,7 @@ class DeskModelWrapperTest : public testing::Test {
         .WillByDefault(testing::Return(true));
     bridge_ = std::make_unique<DeskSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         account_id_);
     bridge_->AddObserver(&mock_observer_);
   }
@@ -315,7 +315,7 @@ class DeskModelWrapperTest : public testing::Test {
   std::unique_ptr<apps::AppRegistryCache> cache_;
   AccountId account_id_;
   std::unique_ptr<LocalDeskDataManager> data_manager_;
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<DeskSyncBridge> bridge_;
   testing::NiceMock<MockDeskModelObserver> mock_observer_;

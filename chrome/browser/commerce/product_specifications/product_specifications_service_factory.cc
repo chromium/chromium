@@ -69,7 +69,7 @@ std::unique_ptr<KeyedService>
 ProductSpecificationsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return std::make_unique<commerce::ProductSpecificationsService>(
-      ModelTypeStoreServiceFactory::GetForProfile(
+      DataTypeStoreServiceFactory::GetForProfile(
           Profile::FromBrowserContext(context))
           ->GetStoreFactory(),
       CreateChangeProcessor());

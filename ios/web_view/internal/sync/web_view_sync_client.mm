@@ -27,7 +27,7 @@ namespace ios_web_view {
 WebViewSyncClient::WebViewSyncClient(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
-    syncer::ModelTypeStoreService* model_type_store_service,
+    syncer::DataTypeStoreService* data_type_store_service,
     syncer::DeviceInfoSyncService* device_info_sync_service,
     syncer::SyncInvalidationsService* sync_invalidations_service)
     : pref_service_(pref_service),
@@ -35,7 +35,7 @@ WebViewSyncClient::WebViewSyncClient(
       sync_invalidations_service_(sync_invalidations_service) {
   engine_factory_ = std::make_unique<browser_sync::SyncEngineFactoryImpl>(
       this, device_info_sync_service->GetDeviceInfoTracker(),
-      model_type_store_service->GetSyncDataPath());
+      data_type_store_service->GetSyncDataPath());
 
   // TODO(crbug.com/40264840): introduce ios webview version of
   // TrustedVaultServiceFactory.

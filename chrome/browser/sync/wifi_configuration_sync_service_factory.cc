@@ -50,7 +50,7 @@ WifiConfigurationSyncServiceFactory::WifiConfigurationSyncServiceFactory()
                                      .WithGuest(ProfileSelection::kOriginalOnly)
                                      .WithAshInternals(ProfileSelection::kNone)
                                      .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 WifiConfigurationSyncServiceFactory::~WifiConfigurationSyncServiceFactory() =
@@ -62,7 +62,7 @@ WifiConfigurationSyncServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<ash::sync_wifi::WifiConfigurationSyncService>(
       chrome::GetChannel(), profile->GetPrefs(),
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 }
 
 void WifiConfigurationSyncServiceFactory::RegisterProfilePrefs(

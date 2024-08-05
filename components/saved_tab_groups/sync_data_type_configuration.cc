@@ -10,9 +10,9 @@ namespace tab_groups {
 
 SyncDataTypeConfiguration::SyncDataTypeConfiguration(
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-    syncer::OnceModelTypeStoreFactory model_type_store_factory)
+    syncer::OnceDataTypeStoreFactory data_type_store_factory)
     : change_processor(std::move(change_processor)),
-      model_type_store_factory(std::move(model_type_store_factory)) {}
+      data_type_store_factory(std::move(data_type_store_factory)) {}
 
 SyncDataTypeConfiguration::~SyncDataTypeConfiguration() = default;
 

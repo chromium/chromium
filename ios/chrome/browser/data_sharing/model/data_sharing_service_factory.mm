@@ -44,7 +44,7 @@ std::unique_ptr<KeyedService> BuildDataSharingService(
   return std::make_unique<DataSharingServiceImpl>(
       browser_state->GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
-      ModelTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
+      DataTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
           ->GetStoreFactory(),
       ::GetChannel(),
       /*sdk_delegate=*/nullptr, /*ui_delegate=*/nullptr);
@@ -69,8 +69,8 @@ DataSharingServiceFactory::DataSharingServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "DataSharingService",
           BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
 
 DataSharingServiceFactory::~DataSharingServiceFactory() = default;

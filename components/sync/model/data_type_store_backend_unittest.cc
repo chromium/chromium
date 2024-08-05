@@ -25,10 +25,10 @@ using testing::UnorderedElementsAre;
 namespace syncer {
 namespace {
 
-class ModelTypeStoreBackendTest : public testing::Test {
+class DataTypeStoreBackendTest : public testing::Test {
  protected:
-  ModelTypeStoreBackendTest() = default;
-  ~ModelTypeStoreBackendTest() override = default;
+  DataTypeStoreBackendTest() = default;
+  ~DataTypeStoreBackendTest() override = default;
 
   // Required for task-posting during destruction.
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -36,12 +36,12 @@ class ModelTypeStoreBackendTest : public testing::Test {
 
 // Test that after record is written to backend it can be read back even after
 // backend is destroyed and recreated in the same environment.
-TEST_F(ModelTypeStoreBackendTest, WriteThenRead) {
+TEST_F(DataTypeStoreBackendTest, WriteThenRead) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  scoped_refptr<ModelTypeStoreBackend> backend =
-      ModelTypeStoreBackend::CreateUninitialized();
+  scoped_refptr<DataTypeStoreBackend> backend =
+      DataTypeStoreBackend::CreateUninitialized();
   std::optional<ModelError> error = backend->Init(temp_dir.GetPath(), {});
   ASSERT_FALSE(error) << error->ToString();
 
@@ -52,7 +52,7 @@ TEST_F(ModelTypeStoreBackendTest, WriteThenRead) {
   ASSERT_FALSE(error) << error->ToString();
 
   // Read all records with prefix.
-  ModelTypeStore::RecordList record_list;
+  DataTypeStore::RecordList record_list;
   error = backend->ReadAllRecordsWithPrefix("prefix:", &record_list);
   ASSERT_FALSE(error) << error->ToString();
   ASSERT_EQ(1ul, record_list.size());
@@ -62,7 +62,7 @@ TEST_F(ModelTypeStoreBackendTest, WriteThenRead) {
 
   // Recreate backend and read all records with prefix.
   backend = nullptr;
-  backend = ModelTypeStoreBackend::CreateUninitialized();
+  backend = DataTypeStoreBackend::CreateUninitialized();
   error = backend->Init(temp_dir.GetPath(), {});
   ASSERT_FALSE(error) << error->ToString();
 
@@ -74,9 +74,9 @@ TEST_F(ModelTypeStoreBackendTest, WriteThenRead) {
 }
 
 // Test that ReadAllRecordsWithPrefix correclty filters records by prefix.
-TEST_F(ModelTypeStoreBackendTest, ReadAllRecordsWithPrefix) {
-  scoped_refptr<ModelTypeStoreBackend> backend =
-      ModelTypeStoreBackend::CreateInMemoryForTest();
+TEST_F(DataTypeStoreBackendTest, ReadAllRecordsWithPrefix) {
+  scoped_refptr<DataTypeStoreBackend> backend =
+      DataTypeStoreBackend::CreateInMemoryForTest();
 
   std::unique_ptr<leveldb::WriteBatch> write_batch(new leveldb::WriteBatch());
   write_batch->Put("prefix1:id1", "data1");
@@ -85,7 +85,7 @@ TEST_F(ModelTypeStoreBackendTest, ReadAllRecordsWithPrefix) {
       backend->WriteModifications(std::move(write_batch));
   ASSERT_FALSE(error) << error->ToString();
 
-  ModelTypeStore::RecordList record_list;
+  DataTypeStore::RecordList record_list;
   error = backend->ReadAllRecordsWithPrefix("prefix1:", &record_list);
   ASSERT_FALSE(error) << error->ToString();
   ASSERT_EQ(1UL, record_list.size());
@@ -95,9 +95,9 @@ TEST_F(ModelTypeStoreBackendTest, ReadAllRecordsWithPrefix) {
 
 // Test that deleted records are correctly marked as milling in results of
 // ReadRecordsWithPrefix.
-TEST_F(ModelTypeStoreBackendTest, ReadDeletedRecord) {
-  scoped_refptr<ModelTypeStoreBackend> backend =
-      ModelTypeStoreBackend::CreateInMemoryForTest();
+TEST_F(DataTypeStoreBackendTest, ReadDeletedRecord) {
+  scoped_refptr<DataTypeStoreBackend> backend =
+      DataTypeStoreBackend::CreateInMemoryForTest();
 
   // Create records, ensure they are returned by ReadRecordsWithPrefix.
   std::unique_ptr<leveldb::WriteBatch> write_batch(new leveldb::WriteBatch());
@@ -107,9 +107,9 @@ TEST_F(ModelTypeStoreBackendTest, ReadDeletedRecord) {
       backend->WriteModifications(std::move(write_batch));
   ASSERT_FALSE(error) << error->ToString();
 
-  ModelTypeStore::IdList id_list;
-  ModelTypeStore::IdList missing_id_list;
-  ModelTypeStore::RecordList record_list;
+  DataTypeStore::IdList id_list;
+  DataTypeStore::IdList missing_id_list;
+  DataTypeStore::RecordList record_list;
   id_list.push_back("id1");
   id_list.push_back("id2");
   error = backend->ReadRecordsWithPrefix("prefix:", id_list, &record_list,
@@ -137,9 +137,9 @@ TEST_F(ModelTypeStoreBackendTest, ReadDeletedRecord) {
 }
 
 // Test that DeleteDataAndMetadataForPrefix correctly deletes records by prefix.
-TEST_F(ModelTypeStoreBackendTest, DeleteDataAndMetadataForPrefix) {
-  scoped_refptr<ModelTypeStoreBackend> backend =
-      ModelTypeStoreBackend::CreateInMemoryForTest();
+TEST_F(DataTypeStoreBackendTest, DeleteDataAndMetadataForPrefix) {
+  scoped_refptr<DataTypeStoreBackend> backend =
+      DataTypeStoreBackend::CreateInMemoryForTest();
 
   auto write_batch = std::make_unique<leveldb::WriteBatch>();
   write_batch->Put("prefix1:id1", "data1");
@@ -154,21 +154,21 @@ TEST_F(ModelTypeStoreBackendTest, DeleteDataAndMetadataForPrefix) {
   EXPECT_FALSE(error) << error->ToString();
 
   {
-    ModelTypeStore::RecordList record_list;
+    DataTypeStore::RecordList record_list;
     error = backend->ReadAllRecordsWithPrefix("prefix2:", &record_list);
     EXPECT_FALSE(error) << error->ToString();
     EXPECT_EQ(0UL, record_list.size());
   }
 
   {
-    ModelTypeStore::RecordList record_list;
+    DataTypeStore::RecordList record_list;
     error = backend->ReadAllRecordsWithPrefix("prefix1:", &record_list);
     EXPECT_FALSE(error) << error->ToString();
     EXPECT_EQ(1UL, record_list.size());
   }
 
   {
-    ModelTypeStore::RecordList record_list;
+    DataTypeStore::RecordList record_list;
     error = backend->ReadAllRecordsWithPrefix("prefix3:", &record_list);
     EXPECT_FALSE(error) << error->ToString();
     EXPECT_EQ(1UL, record_list.size());
@@ -176,21 +176,21 @@ TEST_F(ModelTypeStoreBackendTest, DeleteDataAndMetadataForPrefix) {
 }
 
 // Test that initializing the database migrates it to the latest schema version.
-TEST_F(ModelTypeStoreBackendTest, MigrateNoSchemaVersionToLatestVersionTest) {
-  scoped_refptr<ModelTypeStoreBackend> backend =
-      ModelTypeStoreBackend::CreateInMemoryForTest();
+TEST_F(DataTypeStoreBackendTest, MigrateNoSchemaVersionToLatestVersionTest) {
+  scoped_refptr<DataTypeStoreBackend> backend =
+      DataTypeStoreBackend::CreateInMemoryForTest();
 
-  ASSERT_EQ(ModelTypeStoreBackend::kLatestSchemaVersion,
+  ASSERT_EQ(DataTypeStoreBackend::kLatestSchemaVersion,
             backend->GetStoreVersionForTest());
 }
 
 // Test that the 0 to 1 migration succeeds and sets the schema version to 1.
-TEST_F(ModelTypeStoreBackendTest, Migrate0To1Test) {
-  scoped_refptr<ModelTypeStoreBackend> backend =
-      ModelTypeStoreBackend::CreateInMemoryForTest();
+TEST_F(DataTypeStoreBackendTest, Migrate0To1Test) {
+  scoped_refptr<DataTypeStoreBackend> backend =
+      DataTypeStoreBackend::CreateInMemoryForTest();
 
   std::unique_ptr<leveldb::WriteBatch> write_batch(new leveldb::WriteBatch());
-  write_batch->Delete(ModelTypeStoreBackend::kDBSchemaDescriptorRecordId);
+  write_batch->Delete(DataTypeStoreBackend::kDBSchemaDescriptorRecordId);
   std::optional<ModelError> error =
       backend->WriteModifications(std::move(write_batch));
   ASSERT_FALSE(error) << error->ToString();
@@ -202,18 +202,18 @@ TEST_F(ModelTypeStoreBackendTest, Migrate0To1Test) {
 }
 
 // Test that migration to an unknown version fails
-TEST_F(ModelTypeStoreBackendTest, MigrateWithHigherExistingVersionFails) {
-  scoped_refptr<ModelTypeStoreBackend> backend =
-      ModelTypeStoreBackend::CreateInMemoryForTest();
+TEST_F(DataTypeStoreBackendTest, MigrateWithHigherExistingVersionFails) {
+  scoped_refptr<DataTypeStoreBackend> backend =
+      DataTypeStoreBackend::CreateInMemoryForTest();
 
   std::optional<ModelError> error =
-      backend->MigrateForTest(ModelTypeStoreBackend::kLatestSchemaVersion + 1,
-                              ModelTypeStoreBackend::kLatestSchemaVersion);
+      backend->MigrateForTest(DataTypeStoreBackend::kLatestSchemaVersion + 1,
+                              DataTypeStoreBackend::kLatestSchemaVersion);
   ASSERT_TRUE(error);
   EXPECT_EQ("Schema version too high", error->message());
 }
 
-TEST_F(ModelTypeStoreBackendTest, MigrateReadingListFromLocalToAccount) {
+TEST_F(DataTypeStoreBackendTest, MigrateReadingListFromLocalToAccount) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
@@ -221,8 +221,8 @@ TEST_F(ModelTypeStoreBackendTest, MigrateReadingListFromLocalToAccount) {
 
   // Setup: Put some data into the persisted storage.
   {
-    scoped_refptr<ModelTypeStoreBackend> backend =
-        ModelTypeStoreBackend::CreateUninitialized();
+    scoped_refptr<DataTypeStoreBackend> backend =
+        DataTypeStoreBackend::CreateUninitialized();
     error = backend->Init(temp_dir.GetPath(),
                           /*prefixes_to_update=*/{});
     ASSERT_FALSE(error) << error->ToString();
@@ -245,8 +245,8 @@ TEST_F(ModelTypeStoreBackendTest, MigrateReadingListFromLocalToAccount) {
   }
 
   // Recreate the backend and trigger the ReadingList migration.
-  scoped_refptr<ModelTypeStoreBackend> backend =
-      ModelTypeStoreBackend::CreateUninitialized();
+  scoped_refptr<DataTypeStoreBackend> backend =
+      DataTypeStoreBackend::CreateUninitialized();
   error = backend->Init(
       temp_dir.GetPath(),
       /*prefixes_to_update=*/{{"reading_list", "A-reading_list"}});
@@ -254,49 +254,49 @@ TEST_F(ModelTypeStoreBackendTest, MigrateReadingListFromLocalToAccount) {
 
   // Local ReadingList data should be empty now.
   {
-    ModelTypeStore::RecordList record_list;
+    DataTypeStore::RecordList record_list;
     error = backend->ReadAllRecordsWithPrefix("reading_list-", &record_list);
     ASSERT_FALSE(error) << error->ToString();
     EXPECT_TRUE(record_list.empty());
   }
   // Instead, the existing ReadingList data should be in the account store.
   {
-    ModelTypeStore::RecordList record_list;
+    DataTypeStore::RecordList record_list;
     error = backend->ReadAllRecordsWithPrefix("A-reading_list-", &record_list);
     ASSERT_FALSE(error) << error->ToString();
     EXPECT_THAT(
         record_list,
         UnorderedElementsAre(
-            ModelTypeStore::Record{"dt-id1", "rl_data1"},
-            ModelTypeStore::Record{"md-id1", "rl_metadata1"},
-            ModelTypeStore::Record{"GlobalMetadata", "rl_global_metadata"}));
+            DataTypeStore::Record{"dt-id1", "rl_data1"},
+            DataTypeStore::Record{"md-id1", "rl_metadata1"},
+            DataTypeStore::Record{"GlobalMetadata", "rl_global_metadata"}));
   }
   // Data from other types should be unaffected.
   {
-    ModelTypeStore::RecordList record_list;
+    DataTypeStore::RecordList record_list;
     error = backend->ReadAllRecordsWithPrefix("bookmarks-", &record_list);
     ASSERT_FALSE(error) << error->ToString();
     EXPECT_THAT(
         record_list,
         UnorderedElementsAre(
-            ModelTypeStore::Record{"dt-id1", "bm_data1"},
-            ModelTypeStore::Record{"md-id1", "bm_metadata1"},
-            ModelTypeStore::Record{"GlobalMetadata", "bm_global_metadata"}));
+            DataTypeStore::Record{"dt-id1", "bm_data1"},
+            DataTypeStore::Record{"md-id1", "bm_metadata1"},
+            DataTypeStore::Record{"GlobalMetadata", "bm_global_metadata"}));
   }
   {
-    ModelTypeStore::RecordList record_list;
+    DataTypeStore::RecordList record_list;
     error = backend->ReadAllRecordsWithPrefix("A-passwords-", &record_list);
     ASSERT_FALSE(error) << error->ToString();
     EXPECT_THAT(
         record_list,
         UnorderedElementsAre(
-            ModelTypeStore::Record{"dt-id1", "pw_data1"},
-            ModelTypeStore::Record{"md-id1", "pw_metadata1"},
-            ModelTypeStore::Record{"GlobalMetadata", "pw_global_metadata"}));
+            DataTypeStore::Record{"dt-id1", "pw_data1"},
+            DataTypeStore::Record{"md-id1", "pw_metadata1"},
+            DataTypeStore::Record{"GlobalMetadata", "pw_global_metadata"}));
   }
 }
 
-TEST_F(ModelTypeStoreBackendTest,
+TEST_F(DataTypeStoreBackendTest,
        MigrateReadingListFromLocalToAccount_Idempotent) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -305,8 +305,8 @@ TEST_F(ModelTypeStoreBackendTest,
 
   // Setup: Put some data into the persisted storage.
   {
-    scoped_refptr<ModelTypeStoreBackend> backend =
-        ModelTypeStoreBackend::CreateUninitialized();
+    scoped_refptr<DataTypeStoreBackend> backend =
+        DataTypeStoreBackend::CreateUninitialized();
     error = backend->Init(temp_dir.GetPath(),
                           /*prefixes_to_update=*/{});
     ASSERT_FALSE(error) << error->ToString();
@@ -323,8 +323,8 @@ TEST_F(ModelTypeStoreBackendTest,
   // Recreate the backend and trigger the ReadingList migration for the first
   // time.
   {
-    scoped_refptr<ModelTypeStoreBackend> backend =
-        ModelTypeStoreBackend::CreateUninitialized();
+    scoped_refptr<DataTypeStoreBackend> backend =
+        DataTypeStoreBackend::CreateUninitialized();
     error = backend->Init(
         temp_dir.GetPath(),
         /*prefixes_to_update=*/{{"reading_list", "A-reading_list"}});
@@ -333,8 +333,8 @@ TEST_F(ModelTypeStoreBackendTest,
 
   // Recreate the backend and trigger the ReadingList migration *again*. This
   // should have no further effect.
-  scoped_refptr<ModelTypeStoreBackend> backend =
-      ModelTypeStoreBackend::CreateUninitialized();
+  scoped_refptr<DataTypeStoreBackend> backend =
+      DataTypeStoreBackend::CreateUninitialized();
   error = backend->Init(
       temp_dir.GetPath(),
       /*prefixes_to_update=*/{{"reading_list", "A-reading_list"}});
@@ -342,28 +342,28 @@ TEST_F(ModelTypeStoreBackendTest,
 
   // Local ReadingList data should be empty now.
   {
-    ModelTypeStore::RecordList record_list;
+    DataTypeStore::RecordList record_list;
     error = backend->ReadAllRecordsWithPrefix("reading_list-", &record_list);
     ASSERT_FALSE(error) << error->ToString();
     EXPECT_TRUE(record_list.empty());
   }
   // Instead, the existing ReadingList data should be in the account store.
   {
-    ModelTypeStore::RecordList record_list;
+    DataTypeStore::RecordList record_list;
     error = backend->ReadAllRecordsWithPrefix("A-reading_list-", &record_list);
     ASSERT_FALSE(error) << error->ToString();
     EXPECT_THAT(
         record_list,
         UnorderedElementsAre(
-            ModelTypeStore::Record{"dt-id1", "rl_data1"},
-            ModelTypeStore::Record{"md-id1", "rl_metadata1"},
-            ModelTypeStore::Record{"GlobalMetadata", "rl_global_metadata"}));
+            DataTypeStore::Record{"dt-id1", "rl_data1"},
+            DataTypeStore::Record{"md-id1", "rl_metadata1"},
+            DataTypeStore::Record{"GlobalMetadata", "rl_global_metadata"}));
   }
 }
 
 // Tests that initializing store after corruption triggers recovery and results
 // in successful store initialization.
-TEST_F(ModelTypeStoreBackendTest, RecoverAfterCorruption) {
+TEST_F(DataTypeStoreBackendTest, RecoverAfterCorruption) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
@@ -373,8 +373,8 @@ TEST_F(ModelTypeStoreBackendTest, RecoverAfterCorruption) {
   // Easiest way to simulate leveldb corruption is to create empty CURRENT file.
   base::WriteFile(temp_dir.GetPath().Append(FILE_PATH_LITERAL("CURRENT")), "");
 
-  scoped_refptr<ModelTypeStoreBackend> backend =
-      ModelTypeStoreBackend::CreateUninitialized();
+  scoped_refptr<DataTypeStoreBackend> backend =
+      DataTypeStoreBackend::CreateUninitialized();
   std::optional<ModelError> error = backend->Init(temp_dir.GetPath(), {});
   ASSERT_FALSE(error) << error->ToString();
 }

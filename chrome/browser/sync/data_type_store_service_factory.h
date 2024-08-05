@@ -11,23 +11,23 @@
 class Profile;
 
 namespace syncer {
-class ModelTypeStoreService;
+class DataTypeStoreService;
 }  // namespace syncer
 
-class ModelTypeStoreServiceFactory : public ProfileKeyedServiceFactory {
+class DataTypeStoreServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  static syncer::ModelTypeStoreService* GetForProfile(Profile* profile);
-  static ModelTypeStoreServiceFactory* GetInstance();
+  static syncer::DataTypeStoreService* GetForProfile(Profile* profile);
+  static DataTypeStoreServiceFactory* GetInstance();
 
-  ModelTypeStoreServiceFactory(const ModelTypeStoreServiceFactory&) = delete;
-  ModelTypeStoreServiceFactory& operator=(const ModelTypeStoreServiceFactory&) =
+  DataTypeStoreServiceFactory(const DataTypeStoreServiceFactory&) = delete;
+  DataTypeStoreServiceFactory& operator=(const DataTypeStoreServiceFactory&) =
       delete;
 
  private:
-  friend base::NoDestructor<ModelTypeStoreServiceFactory>;
+  friend base::NoDestructor<DataTypeStoreServiceFactory>;
 
-  ModelTypeStoreServiceFactory();
-  ~ModelTypeStoreServiceFactory() override;
+  DataTypeStoreServiceFactory();
+  ~DataTypeStoreServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(

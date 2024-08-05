@@ -168,7 +168,7 @@ sync_pb::SessionSpecifics CreateTabSpecifics(const std::string& session_tag,
 class SessionSyncBridgeTest : public ::testing::Test {
  protected:
   SessionSyncBridgeTest()
-      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(
+      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest(
             syncer::SESSIONS)),
         session_sync_prefs_(&pref_service_) {
     SessionSyncPrefs::RegisterProfilePrefs(pref_service_.registry());
@@ -177,7 +177,7 @@ class SessionSyncBridgeTest : public ::testing::Test {
         .WillByDefault(Return(&session_sync_prefs_));
     ON_CALL(mock_sync_sessions_client_, GetStoreFactory())
         .WillByDefault(
-            Return(syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
+            Return(syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
                 store_.get())));
     ON_CALL(mock_sync_sessions_client_, GetSyncedWindowDelegatesGetter())
         .WillByDefault(Return(&window_getter_));
@@ -306,11 +306,11 @@ class SessionSyncBridgeTest : public ::testing::Test {
     return real_processor_.get();
   }
 
-  syncer::ModelTypeStore* underlying_store() { return store_.get(); }
+  syncer::DataTypeStore* underlying_store() { return store_.get(); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  const std::unique_ptr<syncer::ModelTypeStore> store_;
+  const std::unique_ptr<syncer::DataTypeStore> store_;
 
   // Dependencies.
   TestingPrefServiceSimple pref_service_;
@@ -1306,9 +1306,8 @@ TEST_F(SessionSyncBridgeTest, ShouldHandleRemoteDeletion) {
         {header_storage_key, tab_storage_key},
         base::BindLambdaForTesting(
             [&](const std::optional<syncer::ModelError>& error,
-                std::unique_ptr<syncer::ModelTypeStore::RecordList>
-                    data_records,
-                std::unique_ptr<syncer::ModelTypeStore::IdList>
+                std::unique_ptr<syncer::DataTypeStore::RecordList> data_records,
+                std::unique_ptr<syncer::DataTypeStore::IdList>
                     missing_id_list) {
               EXPECT_THAT(data_records, Pointee(IsEmpty()));
               EXPECT_THAT(

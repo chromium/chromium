@@ -72,7 +72,7 @@ class AuthorizationZonesManagerImpl
       : client_ids_database_(ClientIdsDatabase::Create()),
         sync_bridge_(ProfileAuthServersSyncBridge::Create(
             this,
-            ModelTypeStoreServiceFactory::GetForProfile(profile)
+            DataTypeStoreServiceFactory::GetForProfile(profile)
                 ->GetStoreFactory())),
         url_loader_factory_(profile->GetURLLoaderFactory()),
         auth_zone_creator_(base::BindRepeating(AuthorizationZone::Create,
@@ -84,7 +84,7 @@ class AuthorizationZonesManagerImpl
       CreateAuthZoneCallback auth_zone_creator,
       std::unique_ptr<ClientIdsDatabase> client_ids_database,
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory store_factory)
+      syncer::OnceDataTypeStoreFactory store_factory)
       : client_ids_database_(std::move(client_ids_database)),
         sync_bridge_(ProfileAuthServersSyncBridge::CreateForTesting(
             this,
@@ -276,7 +276,7 @@ AuthorizationZonesManager::CreateForTesting(
     CreateAuthZoneCallback auth_zone_creator,
     std::unique_ptr<ClientIdsDatabase> client_ids_database,
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-    syncer::OnceModelTypeStoreFactory store_factory) {
+    syncer::OnceDataTypeStoreFactory store_factory) {
   DCHECK(profile);
   return std::make_unique<AuthorizationZonesManagerImpl>(
       profile, std::move(auth_zone_creator), std::move(client_ids_database),

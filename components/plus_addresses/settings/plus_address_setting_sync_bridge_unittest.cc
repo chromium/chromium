@@ -55,15 +55,14 @@ std::vector<SettingSpecifics> ExtractSpecificsFromBatch(
 class PlusAddressSettingSyncBridgeTest : public testing::Test {
  public:
   PlusAddressSettingSyncBridgeTest()
-      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
+      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     RecreateBridge();
   }
 
   void RecreateBridge() {
     bridge_ = std::make_unique<PlusAddressSettingSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
-            store_.get()));
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()));
     // Even though the test uses an in-memory store, it still posts tasks. Wait
     // for initialisation to complete.
     task_environment_.RunUntilIdle();
@@ -71,7 +70,7 @@ class PlusAddressSettingSyncBridgeTest : public testing::Test {
 
   PlusAddressSettingSyncBridge& bridge() { return *bridge_; }
 
-  syncer::ModelTypeStore& store() { return *store_; }
+  syncer::DataTypeStore& store() { return *store_; }
 
   syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
     return mock_processor_;
@@ -96,7 +95,7 @@ class PlusAddressSettingSyncBridgeTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<PlusAddressSettingSyncBridge> bridge_;
 };

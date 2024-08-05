@@ -55,7 +55,7 @@ std::unique_ptr<EntityData> MoveToEntityData(
 }  // namespace
 
 UserEventSyncBridge::UserEventSyncBridge(
-    OnceModelTypeStoreFactory store_factory,
+    OnceDataTypeStoreFactory store_factory,
     std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
     GlobalIdMapper* global_id_mapper)
     : DataTypeSyncBridge(std::move(change_processor)),
@@ -74,7 +74,7 @@ UserEventSyncBridge::~UserEventSyncBridge() = default;
 
 std::unique_ptr<MetadataChangeList>
 UserEventSyncBridge::CreateMetadataChangeList() {
-  return ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  return DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<ModelError> UserEventSyncBridge::MergeFullSyncData(
@@ -177,7 +177,7 @@ std::string UserEventSyncBridge::GetStorageKeyFromSpecificsForTest(
   return GetStorageKeyFromSpecifics(specifics);
 }
 
-std::unique_ptr<ModelTypeStore> UserEventSyncBridge::StealStoreForTest() {
+std::unique_ptr<DataTypeStore> UserEventSyncBridge::StealStoreForTest() {
   return StoreWithCache::ExtractUnderlyingStoreForTest(std::move(store_));
 }
 

@@ -6,7 +6,7 @@
 
 namespace syncer {
 
-MockModelTypeStore::MockModelTypeStore() = default;
-MockModelTypeStore::~MockModelTypeStore() = default;
+MockDataTypeStore::MockDataTypeStore() = default;
+MockDataTypeStore::~MockDataTypeStore() = default;
 
 }  // namespace syncer

@@ -31,22 +31,22 @@ std::string FormatMetaPrefix(ModelType model_type, StorageType storage_type);
 std::string FormatGlobalMetadataKey(ModelType model_type,
                                     StorageType storage_type);
 
-class ModelTypeStoreBackend;
+class DataTypeStoreBackend;
 
-class BlockingModelTypeStoreImpl : public BlockingModelTypeStore {
+class BlockingDataTypeStoreImpl : public BlockingDataTypeStore {
  public:
   // |backend| must not be null.
-  BlockingModelTypeStoreImpl(ModelType model_type,
-                             StorageType storage_type,
-                             scoped_refptr<ModelTypeStoreBackend> backend);
+  BlockingDataTypeStoreImpl(ModelType model_type,
+                            StorageType storage_type,
+                            scoped_refptr<DataTypeStoreBackend> backend);
 
-  BlockingModelTypeStoreImpl(const BlockingModelTypeStoreImpl&) = delete;
-  BlockingModelTypeStoreImpl& operator=(const BlockingModelTypeStoreImpl&) =
+  BlockingDataTypeStoreImpl(const BlockingDataTypeStoreImpl&) = delete;
+  BlockingDataTypeStoreImpl& operator=(const BlockingDataTypeStoreImpl&) =
       delete;
 
-  ~BlockingModelTypeStoreImpl() override;
+  ~BlockingDataTypeStoreImpl() override;
 
-  // BlockingModelTypeStore implementation.
+  // BlockingDataTypeStore implementation.
   std::optional<ModelError> ReadData(const IdList& id_list,
                                      RecordList* data_records,
                                      IdList* missing_id_list) override;
@@ -73,7 +73,7 @@ class BlockingModelTypeStoreImpl : public BlockingModelTypeStore {
  private:
   const ModelType model_type_;
   const StorageType storage_type_;
-  const scoped_refptr<ModelTypeStoreBackend> backend_;
+  const scoped_refptr<DataTypeStoreBackend> backend_;
 
   // Key prefix for data/metadata records of this model type.
   const std::string data_prefix_;

@@ -14,7 +14,7 @@ namespace browser_sync {
 
 ExtensionSettingDataTypeController::ExtensionSettingDataTypeController(
     syncer::ModelType type,
-    syncer::OnceModelTypeStoreFactory store_factory,
+    syncer::OnceDataTypeStoreFactory store_factory,
     SyncableServiceProvider syncable_service_provider,
     const base::RepeatingClosure& dump_stack,
     DelegateMode delegate_mode,

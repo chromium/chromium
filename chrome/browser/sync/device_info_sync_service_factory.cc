@@ -71,7 +71,7 @@ DeviceInfoSyncServiceFactory::DeviceInfoSyncServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
 }
 
@@ -93,7 +93,7 @@ KeyedService* DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
       profile->GetPrefs(), base::DefaultClock::GetInstance());
 
   return new syncer::DeviceInfoSyncServiceImpl(
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       std::move(local_device_info_provider), std::move(device_prefs),
       std::move(device_info_sync_client),
       SyncInvalidationsServiceFactory::GetForProfile(profile));

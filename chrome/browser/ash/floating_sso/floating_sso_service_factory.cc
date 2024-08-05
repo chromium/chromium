@@ -44,7 +44,7 @@ FloatingSsoServiceFactory::FloatingSsoServiceFactory()
               .WithSystem(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 FloatingSsoServiceFactory::~FloatingSsoServiceFactory() = default;
@@ -54,8 +54,8 @@ FloatingSsoServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   PrefService* prefs = profile->GetPrefs();
-  syncer::OnceModelTypeStoreFactory create_store_callback =
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
+  syncer::OnceDataTypeStoreFactory create_store_callback =
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
   network::mojom::CookieManager* cookie_manager =
       profile->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess();

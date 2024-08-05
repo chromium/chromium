@@ -32,7 +32,7 @@ class IncomingPasswordSharingInvitationSyncBridge
  public:
   IncomingPasswordSharingInvitationSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory create_sync_metadata_store_callback);
+      syncer::OnceDataTypeStoreFactory create_sync_metadata_store_callback);
   IncomingPasswordSharingInvitationSyncBridge(
       const IncomingPasswordSharingInvitationSyncBridge&) = delete;
   IncomingPasswordSharingInvitationSyncBridge& operator=(
@@ -69,21 +69,21 @@ class IncomingPasswordSharingInvitationSyncBridge
 
  private:
   // Methods used as callbacks given to DataTypeStore.
-  void OnModelTypeStoreCreated(const std::optional<syncer::ModelError>& error,
-                               std::unique_ptr<syncer::ModelTypeStore> store);
+  void OnDataTypeStoreCreated(const std::optional<syncer::ModelError>& error,
+                              std::unique_ptr<syncer::DataTypeStore> store);
   void OnReadAllMetadata(const std::optional<syncer::ModelError>& error,
                          std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   void OnCommitSyncMetadata(const std::optional<syncer::ModelError>& error);
 
   // Persists the changes to sync metadata store.
   void CommitSyncMetadata(
-      std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch);
+      std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   // In charge of actually persisting changes to disk, or loading previous data.
   // Stores only sync metadata.
-  std::unique_ptr<syncer::ModelTypeStore> sync_metadata_store_;
+  std::unique_ptr<syncer::DataTypeStore> sync_metadata_store_;
 
   // Used to process incoming invitations.
   raw_ptr<PasswordReceiverService> password_receiver_service_ = nullptr;

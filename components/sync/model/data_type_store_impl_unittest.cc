@@ -47,7 +47,7 @@ sync_pb::EntityMetadata CreateEntityMetadata(const std::string& value) {
 }
 
 // Following functions capture parameters passed to callbacks into variables
-// provided by test. They can be passed as callbacks to ModelTypeStore
+// provided by test. They can be passed as callbacks to DataTypeStore
 // functions.
 static void CaptureError(std::optional<ModelError>* dst,
                          const std::optional<ModelError>& error) {
@@ -56,9 +56,9 @@ static void CaptureError(std::optional<ModelError>* dst,
 
 void CaptureErrorAndRecords(
     std::optional<ModelError>* dst_error,
-    std::unique_ptr<ModelTypeStore::RecordList>* dst_records,
+    std::unique_ptr<DataTypeStore::RecordList>* dst_records,
     const std::optional<ModelError>& error,
-    std::unique_ptr<ModelTypeStore::RecordList> records) {
+    std::unique_ptr<DataTypeStore::RecordList> records) {
   *dst_error = error;
   *dst_records = std::move(records);
 }
@@ -73,20 +73,20 @@ void CaptureErrorAndMetadataBatch(std::optional<ModelError>* dst_error,
 
 void CaptureErrorRecordsAndIdList(
     std::optional<ModelError>* dst_error,
-    std::unique_ptr<ModelTypeStore::RecordList>* dst_records,
-    std::unique_ptr<ModelTypeStore::IdList>* dst_id_list,
+    std::unique_ptr<DataTypeStore::RecordList>* dst_records,
+    std::unique_ptr<DataTypeStore::IdList>* dst_id_list,
     const std::optional<ModelError>& error,
-    std::unique_ptr<ModelTypeStore::RecordList> records,
-    std::unique_ptr<ModelTypeStore::IdList> missing_id_list) {
+    std::unique_ptr<DataTypeStore::RecordList> records,
+    std::unique_ptr<DataTypeStore::IdList> missing_id_list) {
   *dst_error = error;
   *dst_records = std::move(records);
   *dst_id_list = std::move(missing_id_list);
 }
 
-void WriteData(ModelTypeStore* store,
+void WriteData(DataTypeStore* store,
                const std::string& key,
                const std::string& data) {
-  std::unique_ptr<ModelTypeStore::WriteBatch> write_batch =
+  std::unique_ptr<DataTypeStore::WriteBatch> write_batch =
       store->CreateWriteBatch();
   write_batch->WriteData(key, data);
   std::optional<ModelError> error;
@@ -96,10 +96,10 @@ void WriteData(ModelTypeStore* store,
   ASSERT_FALSE(error) << error->ToString();
 }
 
-void WriteMetadata(ModelTypeStore* store,
+void WriteMetadata(DataTypeStore* store,
                    const std::string& key,
                    const sync_pb::EntityMetadata& metadata) {
-  std::unique_ptr<ModelTypeStore::WriteBatch> write_batch =
+  std::unique_ptr<DataTypeStore::WriteBatch> write_batch =
       store->CreateWriteBatch();
   write_batch->GetMetadataChangeList()->UpdateMetadata(key, metadata);
 
@@ -110,9 +110,9 @@ void WriteMetadata(ModelTypeStore* store,
   ASSERT_FALSE(error) << error->ToString();
 }
 
-void WriteModelTypeState(ModelTypeStore* store,
+void WriteModelTypeState(DataTypeStore* store,
                          const sync_pb::ModelTypeState& state) {
-  std::unique_ptr<ModelTypeStore::WriteBatch> write_batch =
+  std::unique_ptr<DataTypeStore::WriteBatch> write_batch =
       store->CreateWriteBatch();
   write_batch->GetMetadataChangeList()->UpdateModelTypeState(state);
 
@@ -123,10 +123,9 @@ void WriteModelTypeState(ModelTypeStore* store,
   ASSERT_FALSE(error) << error->ToString();
 }
 
-void ReadStoreContents(
-    ModelTypeStore* store,
-    std::unique_ptr<ModelTypeStore::RecordList>* data_records,
-    std::unique_ptr<MetadataBatch>* metadata_batch) {
+void ReadStoreContents(DataTypeStore* store,
+                       std::unique_ptr<DataTypeStore::RecordList>* data_records,
+                       std::unique_ptr<MetadataBatch>* metadata_batch) {
   std::optional<ModelError> error;
   store->ReadAllData(
       base::BindOnce(&CaptureErrorAndRecords, &error, data_records));
@@ -161,21 +160,21 @@ MATCHER_P2(RecordMatches, id, value, "") {
 
 }  // namespace
 
-class ModelTypeStoreImplTest : public testing::TestWithParam<StorageType> {
+class DataTypeStoreImplTest : public testing::TestWithParam<StorageType> {
  public:
-  ModelTypeStoreImplTest()
-      : store_(ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(
+  DataTypeStoreImplTest()
+      : store_(DataTypeStoreTestUtil::CreateInMemoryStoreForTest(
             PREFERENCES,
             /*storage_type=*/GetParam())) {}
 
-  ~ModelTypeStoreImplTest() override {
+  ~DataTypeStoreImplTest() override {
     if (store_) {
       store_.reset();
       base::RunLoop().RunUntilIdle();
     }
   }
 
-  ModelTypeStore* store() { return store_.get(); }
+  DataTypeStore* store() { return store_.get(); }
 
   void WriteTestData() {
     WriteData(store(), "id1", "data1");
@@ -186,17 +185,17 @@ class ModelTypeStoreImplTest : public testing::TestWithParam<StorageType> {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<ModelTypeStore> store_;
+  std::unique_ptr<DataTypeStore> store_;
 };
 
 INSTANTIATE_TEST_SUITE_P(StorageType,
-                         ModelTypeStoreImplTest,
+                         DataTypeStoreImplTest,
                          testing::Values(StorageType::kUnspecified,
                                          StorageType::kAccount));
 
 // Test read functions on empty store.
-TEST_P(ModelTypeStoreImplTest, ReadEmptyStore) {
-  std::unique_ptr<ModelTypeStore::RecordList> data_records;
+TEST_P(DataTypeStoreImplTest, ReadEmptyStore) {
+  std::unique_ptr<DataTypeStore::RecordList> data_records;
   std::unique_ptr<MetadataBatch> metadata_batch;
   ReadStoreContents(store(), &data_records, &metadata_batch);
   ASSERT_TRUE(data_records->empty());
@@ -205,10 +204,10 @@ TEST_P(ModelTypeStoreImplTest, ReadEmptyStore) {
 }
 
 // Test that records that are written to store later can be read from it.
-TEST_P(ModelTypeStoreImplTest, WriteThenRead) {
+TEST_P(DataTypeStoreImplTest, WriteThenRead) {
   WriteTestData();
 
-  std::unique_ptr<ModelTypeStore::RecordList> data_records;
+  std::unique_ptr<DataTypeStore::RecordList> data_records;
   std::unique_ptr<MetadataBatch> metadata_batch;
   ReadStoreContents(store(), &data_records, &metadata_batch);
   ASSERT_THAT(*data_records,
@@ -218,16 +217,16 @@ TEST_P(ModelTypeStoreImplTest, WriteThenRead) {
                  {{"id1", CreateEntityMetadata("metadata1")}});
 }
 
-TEST_P(ModelTypeStoreImplTest, WriteThenReadWithPreprocessing) {
+TEST_P(DataTypeStoreImplTest, WriteThenReadWithPreprocessing) {
   WriteTestData();
 
   base::RunLoop loop;
   std::map<std::string, std::string> preprocessed;
   store()->ReadAllDataAndPreprocess(
       base::BindLambdaForTesting(
-          [&](std::unique_ptr<ModelTypeStore::RecordList> record_list)
+          [&](std::unique_ptr<DataTypeStore::RecordList> record_list)
               -> std::optional<ModelError> {
-            for (const ModelTypeStore::Record& record : *record_list) {
+            for (const DataTypeStore::Record& record : *record_list) {
               preprocessed[std::string("key_") + record.id] =
                   std::string("value_") + record.value;
             }
@@ -246,13 +245,13 @@ TEST_P(ModelTypeStoreImplTest, WriteThenReadWithPreprocessing) {
                                    Pair("key_id2", "value_data2")));
 }
 
-TEST_P(ModelTypeStoreImplTest, WriteThenReadWithPreprocessingError) {
+TEST_P(DataTypeStoreImplTest, WriteThenReadWithPreprocessingError) {
   WriteTestData();
 
   base::RunLoop loop;
   store()->ReadAllDataAndPreprocess(
       base::BindLambdaForTesting(
-          [&](std::unique_ptr<ModelTypeStore::RecordList> record_list)
+          [&](std::unique_ptr<DataTypeStore::RecordList> record_list)
               -> std::optional<ModelError> {
             return ModelError(FROM_HERE, "Preprocessing error");
           }),
@@ -264,11 +263,11 @@ TEST_P(ModelTypeStoreImplTest, WriteThenReadWithPreprocessingError) {
 }
 
 // Test that records that DeleteAllDataAndMetadata() deletes everything.
-TEST_P(ModelTypeStoreImplTest, WriteThenDeleteAll) {
+TEST_P(DataTypeStoreImplTest, WriteThenDeleteAll) {
   WriteTestData();
 
   {
-    std::unique_ptr<ModelTypeStore::RecordList> data_records;
+    std::unique_ptr<DataTypeStore::RecordList> data_records;
     std::unique_ptr<MetadataBatch> metadata_batch;
     ReadStoreContents(store(), &data_records, &metadata_batch);
     ASSERT_THAT(*data_records, SizeIs(2));
@@ -278,7 +277,7 @@ TEST_P(ModelTypeStoreImplTest, WriteThenDeleteAll) {
   store()->DeleteAllDataAndMetadata(base::DoNothing());
 
   {
-    std::unique_ptr<ModelTypeStore::RecordList> data_records;
+    std::unique_ptr<DataTypeStore::RecordList> data_records;
     std::unique_ptr<MetadataBatch> metadata_batch;
     ReadStoreContents(store(), &data_records, &metadata_batch);
     EXPECT_THAT(*data_records, IsEmpty());
@@ -288,12 +287,12 @@ TEST_P(ModelTypeStoreImplTest, WriteThenDeleteAll) {
 
 // Test that if ModelTypeState is not set then ReadAllMetadata still succeeds
 // and returns entry metadata records.
-TEST_P(ModelTypeStoreImplTest, MissingModelTypeState) {
+TEST_P(DataTypeStoreImplTest, MissingModelTypeState) {
   WriteTestData();
 
   std::optional<ModelError> error;
 
-  std::unique_ptr<ModelTypeStore::WriteBatch> write_batch =
+  std::unique_ptr<DataTypeStore::WriteBatch> write_batch =
       store()->CreateWriteBatch();
   write_batch->GetMetadataChangeList()->ClearModelTypeState();
   store()->CommitWriteBatch(std::move(write_batch),
@@ -312,17 +311,17 @@ TEST_P(ModelTypeStoreImplTest, MissingModelTypeState) {
 
 // Test that when reading data records by id, if one of the ids is missing
 // operation still succeeds and missing id is returned in missing_id_list.
-TEST_P(ModelTypeStoreImplTest, ReadMissingDataRecords) {
+TEST_P(DataTypeStoreImplTest, ReadMissingDataRecords) {
   WriteTestData();
 
   std::optional<ModelError> error;
 
-  ModelTypeStore::IdList id_list;
+  DataTypeStore::IdList id_list;
   id_list.push_back("id1");
   id_list.push_back("id3");
 
-  std::unique_ptr<ModelTypeStore::RecordList> records;
-  std::unique_ptr<ModelTypeStore::IdList> missing_id_list;
+  std::unique_ptr<DataTypeStore::RecordList> records;
+  std::unique_ptr<DataTypeStore::IdList> missing_id_list;
 
   store()->ReadData(
       id_list, base::BindOnce(&CaptureErrorRecordsAndIdList, &error, &records,
@@ -334,11 +333,11 @@ TEST_P(ModelTypeStoreImplTest, ReadMissingDataRecords) {
   ASSERT_THAT(*missing_id_list, testing::UnorderedElementsAre("id3"));
 }
 
-TEST_P(ModelTypeStoreImplTest, ReadAllDataAndMetadata) {
+TEST_P(DataTypeStoreImplTest, ReadAllDataAndMetadata) {
   WriteData(store(), "id", "data");
   WriteMetadata(store(), "id", CreateEntityMetadata("metadata"));
   base::test::TestFuture<const std::optional<ModelError>&,
-                         std::unique_ptr<ModelTypeStore::RecordList>,
+                         std::unique_ptr<DataTypeStore::RecordList>,
                          std::unique_ptr<MetadataBatch>>
       result;
   store()->ReadAllDataAndMetadata(result.GetCallback());
@@ -351,13 +350,13 @@ TEST_P(ModelTypeStoreImplTest, ReadAllDataAndMetadata) {
 
 // Test that stores for different types that share the same backend don't
 // interfere with each other's records.
-TEST(ModelTypeStoreImplWithTwoStoreTest, TwoStoresWithSharedBackend) {
+TEST(DataTypeStoreImplWithTwoStoreTest, TwoStoresWithSharedBackend) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
-  std::unique_ptr<ModelTypeStore> store_1 =
-      ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(AUTOFILL);
-  std::unique_ptr<ModelTypeStore> store_2 =
-      ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(BOOKMARKS);
+  std::unique_ptr<DataTypeStore> store_1 =
+      DataTypeStoreTestUtil::CreateInMemoryStoreForTest(AUTOFILL);
+  std::unique_ptr<DataTypeStore> store_2 =
+      DataTypeStoreTestUtil::CreateInMemoryStoreForTest(BOOKMARKS);
 
   const sync_pb::EntityMetadata metadata1 = CreateEntityMetadata("metadata1");
   const sync_pb::EntityMetadata metadata2 = CreateEntityMetadata("metadata2");
@@ -372,7 +371,7 @@ TEST(ModelTypeStoreImplWithTwoStoreTest, TwoStoresWithSharedBackend) {
   WriteMetadata(store_2.get(), "key", metadata2);
   WriteModelTypeState(store_2.get(), state2);
 
-  std::unique_ptr<ModelTypeStore::RecordList> data_records;
+  std::unique_ptr<DataTypeStore::RecordList> data_records;
   std::unique_ptr<MetadataBatch> metadata_batch;
 
   ReadStoreContents(store_1.get(), &data_records, &metadata_batch);
@@ -390,13 +389,13 @@ TEST(ModelTypeStoreImplWithTwoStoreTest, TwoStoresWithSharedBackend) {
 
 // Test that records that DeleteAllDataAndMetadata() does not delete data from
 // another store when the backend is shared.
-TEST(ModelTypeStoreImplWithTwoStoreTest, DeleteAllWithSharedBackend) {
+TEST(DataTypeStoreImplWithTwoStoreTest, DeleteAllWithSharedBackend) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
-  std::unique_ptr<ModelTypeStore> store_1 =
-      ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(AUTOFILL);
-  std::unique_ptr<ModelTypeStore> store_2 =
-      ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(BOOKMARKS);
+  std::unique_ptr<DataTypeStore> store_1 =
+      DataTypeStoreTestUtil::CreateInMemoryStoreForTest(AUTOFILL);
+  std::unique_ptr<DataTypeStore> store_2 =
+      DataTypeStoreTestUtil::CreateInMemoryStoreForTest(BOOKMARKS);
 
   const sync_pb::EntityMetadata metadata1 = CreateEntityMetadata("metadata1");
   const sync_pb::EntityMetadata metadata2 = CreateEntityMetadata("metadata2");
@@ -408,7 +407,7 @@ TEST(ModelTypeStoreImplWithTwoStoreTest, DeleteAllWithSharedBackend) {
   WriteMetadata(store_2.get(), "key", metadata2);
 
   {
-    std::unique_ptr<ModelTypeStore::RecordList> data_records;
+    std::unique_ptr<DataTypeStore::RecordList> data_records;
     std::unique_ptr<MetadataBatch> metadata_batch;
     ReadStoreContents(store_1.get(), &data_records, &metadata_batch);
     ASSERT_THAT(*data_records, SizeIs(1));
@@ -421,7 +420,7 @@ TEST(ModelTypeStoreImplWithTwoStoreTest, DeleteAllWithSharedBackend) {
   store_2->DeleteAllDataAndMetadata(base::DoNothing());
 
   {
-    std::unique_ptr<ModelTypeStore::RecordList> data_records;
+    std::unique_ptr<DataTypeStore::RecordList> data_records;
     std::unique_ptr<MetadataBatch> metadata_batch;
     ReadStoreContents(store_1.get(), &data_records, &metadata_batch);
     EXPECT_THAT(*data_records, SizeIs(1));
@@ -432,16 +431,16 @@ TEST(ModelTypeStoreImplWithTwoStoreTest, DeleteAllWithSharedBackend) {
   }
 }
 
-TEST(ModelTypeStoreImplWithTwoStoreTest,
+TEST(DataTypeStoreImplWithTwoStoreTest,
      AccountStoreDeleteAllWithSharedBackendAndSameModelType) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
-  std::unique_ptr<ModelTypeStore> store_1 =
-      ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(
+  std::unique_ptr<DataTypeStore> store_1 =
+      DataTypeStoreTestUtil::CreateInMemoryStoreForTest(
           PREFERENCES, StorageType::kUnspecified);
-  std::unique_ptr<ModelTypeStore> store_2 =
-      ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(PREFERENCES,
-                                                         StorageType::kAccount);
+  std::unique_ptr<DataTypeStore> store_2 =
+      DataTypeStoreTestUtil::CreateInMemoryStoreForTest(PREFERENCES,
+                                                        StorageType::kAccount);
 
   const sync_pb::EntityMetadata metadata1 = CreateEntityMetadata("metadata1");
   const sync_pb::EntityMetadata metadata2 = CreateEntityMetadata("metadata2");
@@ -457,7 +456,7 @@ TEST(ModelTypeStoreImplWithTwoStoreTest,
   WriteModelTypeState(store_2.get(), state2);
 
   {
-    std::unique_ptr<ModelTypeStore::RecordList> data_records;
+    std::unique_ptr<DataTypeStore::RecordList> data_records;
     std::unique_ptr<MetadataBatch> metadata_batch;
     ReadStoreContents(store_1.get(), &data_records, &metadata_batch);
     ASSERT_THAT(*data_records, SizeIs(1));
@@ -470,7 +469,7 @@ TEST(ModelTypeStoreImplWithTwoStoreTest,
   store_2->DeleteAllDataAndMetadata(base::DoNothing());
 
   {
-    std::unique_ptr<ModelTypeStore::RecordList> data_records;
+    std::unique_ptr<DataTypeStore::RecordList> data_records;
     std::unique_ptr<MetadataBatch> metadata_batch;
     ReadStoreContents(store_1.get(), &data_records, &metadata_batch);
     EXPECT_THAT(*data_records, SizeIs(1));
@@ -481,15 +480,15 @@ TEST(ModelTypeStoreImplWithTwoStoreTest,
   }
 }
 
-TEST(ModelTypeStoreImplWithTwoStoreTest,
+TEST(DataTypeStoreImplWithTwoStoreTest,
      UnspecifiedStoreDeleteAllWithSharedBackendAndSameModelType) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
-  std::unique_ptr<ModelTypeStore> store_1 =
-      ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(PREFERENCES,
-                                                         StorageType::kAccount);
-  std::unique_ptr<ModelTypeStore> store_2 =
-      ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(
+  std::unique_ptr<DataTypeStore> store_1 =
+      DataTypeStoreTestUtil::CreateInMemoryStoreForTest(PREFERENCES,
+                                                        StorageType::kAccount);
+  std::unique_ptr<DataTypeStore> store_2 =
+      DataTypeStoreTestUtil::CreateInMemoryStoreForTest(
           PREFERENCES, StorageType::kUnspecified);
 
   const sync_pb::EntityMetadata metadata1 = CreateEntityMetadata("metadata1");
@@ -506,7 +505,7 @@ TEST(ModelTypeStoreImplWithTwoStoreTest,
   WriteModelTypeState(store_2.get(), state2);
 
   {
-    std::unique_ptr<ModelTypeStore::RecordList> data_records;
+    std::unique_ptr<DataTypeStore::RecordList> data_records;
     std::unique_ptr<MetadataBatch> metadata_batch;
     ReadStoreContents(store_1.get(), &data_records, &metadata_batch);
     ASSERT_THAT(*data_records, SizeIs(1));
@@ -519,7 +518,7 @@ TEST(ModelTypeStoreImplWithTwoStoreTest,
   store_2->DeleteAllDataAndMetadata(base::DoNothing());
 
   {
-    std::unique_ptr<ModelTypeStore::RecordList> data_records;
+    std::unique_ptr<DataTypeStore::RecordList> data_records;
     std::unique_ptr<MetadataBatch> metadata_batch;
     ReadStoreContents(store_1.get(), &data_records, &metadata_batch);
     EXPECT_THAT(*data_records, SizeIs(1));

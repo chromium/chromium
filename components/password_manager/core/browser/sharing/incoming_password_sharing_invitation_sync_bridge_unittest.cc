@@ -112,7 +112,7 @@ class IncomingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
  public:
   IncomingPasswordSharingInvitationSyncBridgeTest()
       : sync_metadata_store_(
-            syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
+            syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     ON_CALL(*mock_processor(), ModelReadyToSync)
         .WillByDefault(
             Invoke(this, &IncomingPasswordSharingInvitationSyncBridgeTest::
@@ -131,7 +131,7 @@ class IncomingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
 
     bridge_ = std::make_unique<IncomingPasswordSharingInvitationSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
             sync_metadata_store_.get()));
     bridge_->SetPasswordReceiverService(&mock_password_receiver_service_);
 
@@ -165,7 +165,7 @@ class IncomingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
   testing::NiceMock<MockPasswordReceiverService>
       mock_password_receiver_service_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
-  std::unique_ptr<syncer::ModelTypeStore> sync_metadata_store_;
+  std::unique_ptr<syncer::DataTypeStore> sync_metadata_store_;
   std::unique_ptr<IncomingPasswordSharingInvitationSyncBridge> bridge_;
 
   // Called if present on ModelReadyToSync() call for |mock_processor_|.

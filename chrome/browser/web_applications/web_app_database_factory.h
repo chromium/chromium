@@ -15,7 +15,7 @@ namespace web_app {
 class AbstractWebAppDatabaseFactory {
  public:
   virtual ~AbstractWebAppDatabaseFactory() = default;
-  virtual syncer::OnceModelTypeStoreFactory GetStoreFactory() = 0;
+  virtual syncer::OnceDataTypeStoreFactory GetStoreFactory() = 0;
 };
 
 class WebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
@@ -26,7 +26,7 @@ class WebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
   ~WebAppDatabaseFactory() override;
 
   // AbstractWebAppDatabaseFactory implementation.
-  syncer::OnceModelTypeStoreFactory GetStoreFactory() override;
+  syncer::OnceDataTypeStoreFactory GetStoreFactory() override;
 
  private:
   const raw_ptr<Profile> profile_;

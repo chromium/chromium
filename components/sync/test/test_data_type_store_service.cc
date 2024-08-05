@@ -9,27 +9,27 @@
 
 namespace syncer {
 
-TestModelTypeStoreService::TestModelTypeStoreService() {
+TestDataTypeStoreService::TestDataTypeStoreService() {
   DCHECK(sync_data_path_.CreateUniqueTempDir());
 }
 
-TestModelTypeStoreService::~TestModelTypeStoreService() = default;
+TestDataTypeStoreService::~TestDataTypeStoreService() = default;
 
-const base::FilePath& TestModelTypeStoreService::GetSyncDataPath() const {
+const base::FilePath& TestDataTypeStoreService::GetSyncDataPath() const {
   return sync_data_path_.GetPath();
 }
 
-RepeatingModelTypeStoreFactory TestModelTypeStoreService::GetStoreFactory() {
-  return ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest();
+RepeatingDataTypeStoreFactory TestDataTypeStoreService::GetStoreFactory() {
+  return DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest();
 }
 
-RepeatingModelTypeStoreFactory
-TestModelTypeStoreService::GetStoreFactoryForAccountStorage() {
-  return ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest();
+RepeatingDataTypeStoreFactory
+TestDataTypeStoreService::GetStoreFactoryForAccountStorage() {
+  return DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest();
 }
 
 scoped_refptr<base::SequencedTaskRunner>
-TestModelTypeStoreService::GetBackendTaskRunner() {
+TestDataTypeStoreService::GetBackendTaskRunner() {
   return base::SequencedTaskRunner::GetCurrentDefault();
 }
 

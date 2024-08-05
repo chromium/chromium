@@ -96,7 +96,7 @@ namespace syncer {
 class DeviceInfoSyncService;
 class DataTypeController;
 class DataTypeControllerDelegate;
-class ModelTypeStoreService;
+class DataTypeStoreService;
 class SyncService;
 class UserEventService;
 }  // namespace syncer
@@ -144,8 +144,8 @@ class CommonControllerBuilder {
   void SetGoogleGroupsManager(GoogleGroupsManager* google_groups_manager);
   void SetHistoryService(history::HistoryService* history_service);
   void SetIdentityManager(signin::IdentityManager* identity_manager);
-  void SetModelTypeStoreService(
-      syncer::ModelTypeStoreService* model_type_store_service);
+  void SetDataTypeStoreService(
+      syncer::DataTypeStoreService* data_type_store_service);
 
 #if !BUILDFLAG(IS_ANDROID)
   void SetPasskeyModel(webauthn::PasskeyModel* passkey_model);
@@ -240,8 +240,7 @@ class CommonControllerBuilder {
   SafeOptional<raw_ptr<favicon::FaviconService>> favicon_service_;
   SafeOptional<raw_ptr<GoogleGroupsManager>> google_groups_manager_;
   SafeOptional<raw_ptr<history::HistoryService>> history_service_;
-  SafeOptional<raw_ptr<syncer::ModelTypeStoreService>>
-      model_type_store_service_;
+  SafeOptional<raw_ptr<syncer::DataTypeStoreService>> data_type_store_service_;
   SafeOptional<raw_ptr<webauthn::PasskeyModel>> passkey_model_;
   SafeOptional<raw_ptr<password_manager::PasswordReceiverService>>
       password_receiver_service_;

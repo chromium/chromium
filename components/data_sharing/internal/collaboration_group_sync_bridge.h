@@ -42,7 +42,7 @@ class CollaborationGroupSyncBridge : public syncer::DataTypeSyncBridge {
 
   CollaborationGroupSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory store_factory);
+      syncer::OnceDataTypeStoreFactory store_factory);
 
   CollaborationGroupSyncBridge(const CollaborationGroupSyncBridge&) = delete;
   CollaborationGroupSyncBridge& operator=(const CollaborationGroupSyncBridge&) =
@@ -80,18 +80,18 @@ class CollaborationGroupSyncBridge : public syncer::DataTypeSyncBridge {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Methods used as callbacks given to `model_type_store_`.
-  void OnModelTypeStoreCreated(const std::optional<syncer::ModelError>& error,
-                               std::unique_ptr<syncer::ModelTypeStore> store);
+  // Methods used as callbacks given to `data_type_store_`.
+  void OnDataTypeStoreCreated(const std::optional<syncer::ModelError>& error,
+                              std::unique_ptr<syncer::DataTypeStore> store);
   void OnReadAllData(
       const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list);
+      std::unique_ptr<syncer::DataTypeStore::RecordList> record_list);
   void OnReadAllMetadata(const std::optional<syncer::ModelError>& error,
                          std::unique_ptr<syncer::MetadataBatch> metadata_batch);
-  void OnModelTypeStoreCommit(const std::optional<syncer::ModelError>& error);
+  void OnDataTypeStoreCommit(const std::optional<syncer::ModelError>& error);
 
   // In charge of actually persisting data to disk, or loading previous data.
-  std::unique_ptr<syncer::ModelTypeStore> model_type_store_;
+  std::unique_ptr<syncer::DataTypeStore> data_type_store_;
 
   // Maps `collaboration_id` (also known as group id) to specifics. Used as
   // in-memory cache of the data.

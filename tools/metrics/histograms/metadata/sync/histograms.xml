@@ -1111,9 +1111,9 @@ chromium-metrics-reviews@google.com.
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
-    Records the LevelDB Status error code for ModelTypeStore {Operation}
+    Records the LevelDB Status error code for DataTypeStore {Operation}
     operations. Recorded when there is an error while communicating with the DB
-    for any data type that uses the ModelTypeStore. This metric should be used
+    for any data type that uses the DataTypeStore. This metric should be used
     together with Sync.DataType[Run|Start]Failures2 to figure out the root cause
     of the data type failure.
   </summary>
@@ -1132,9 +1132,9 @@ chromium-metrics-reviews@google.com.
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
-    Records the outcome of the initialization of the ModelTypeStoreBackend,
-    which typically happens once every browser startup (or more precisely,
-    profile initialization).
+    Records the outcome of the initialization of the DataTypeStoreBackend, which
+    typically happens once every browser startup (or more precisely, profile
+    initialization).
   </summary>
 </histogram>
 

@@ -78,7 +78,7 @@ class BridgeBuilder {
  public:
   BridgeBuilder(
       ModelType type,
-      OnceModelTypeStoreFactory store_factory,
+      OnceDataTypeStoreFactory store_factory,
       NonUiSyncableServiceBasedDataTypeController::SyncableServiceProvider
           syncable_service_provider,
       const base::RepeatingClosure& dump_stack,
@@ -111,7 +111,7 @@ class BridgeBuilder {
  private:
   void InitOnModelThread(
       ModelType type,
-      OnceModelTypeStoreFactory store_factory,
+      OnceDataTypeStoreFactory store_factory,
       NonUiSyncableServiceBasedDataTypeController::SyncableServiceProvider
           syncable_service_provider,
       const base::RepeatingClosure& dump_stack) {
@@ -170,7 +170,7 @@ struct CustomOnTaskRunnerDeleter {
 
 ProxyDataTypeControllerDelegate::DelegateProvider BuildDelegateProvider(
     ModelType type,
-    OnceModelTypeStoreFactory store_factory,
+    OnceDataTypeStoreFactory store_factory,
     NonUiSyncableServiceBasedDataTypeController::SyncableServiceProvider
         syncable_service_provider,
     const base::RepeatingClosure& dump_stack,
@@ -192,7 +192,7 @@ ProxyDataTypeControllerDelegate::DelegateProvider BuildDelegateProvider(
 NonUiSyncableServiceBasedDataTypeController::
     NonUiSyncableServiceBasedDataTypeController(
         ModelType type,
-        OnceModelTypeStoreFactory store_factory,
+        OnceDataTypeStoreFactory store_factory,
         SyncableServiceProvider syncable_service_provider,
         const base::RepeatingClosure& dump_stack,
         scoped_refptr<base::SequencedTaskRunner> task_runner,

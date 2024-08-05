@@ -50,7 +50,7 @@ class DeskTemplateSemanticsTest : public testing::TestWithParam<std::string> {
   DeskTemplateSemanticsTest()
       : cache_(std::make_unique<apps::AppRegistryCache>()),
         account_id_(AccountId::FromUserEmail("test@gmail.com")),
-        store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
+        store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
 
   // testing::test.
   void SetUp() override {
@@ -58,7 +58,7 @@ class DeskTemplateSemanticsTest : public testing::TestWithParam<std::string> {
         .WillByDefault(testing::Return(true));
     bridge_ = std::make_unique<DeskSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         account_id_);
     desk_test_util::PopulateAppRegistryCache(account_id_, cache_.get());
   }
@@ -74,7 +74,7 @@ class DeskTemplateSemanticsTest : public testing::TestWithParam<std::string> {
   std::unique_ptr<apps::AppRegistryCache> cache_;
   AccountId account_id_;
   std::unique_ptr<DeskSyncBridge> bridge_;
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
 };
 
 TEST_P(DeskTemplateSemanticsTest, PolicyTemplateSemanticallyEquivalentToProto) {

@@ -35,7 +35,7 @@ class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
 
   explicit FloatingSsoSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory create_store_callback);
+      syncer::OnceDataTypeStoreFactory create_store_callback);
   ~FloatingSsoSyncBridge() override;
 
   // syncer::DataTypeSyncBridge:
@@ -66,7 +66,7 @@ class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
 
  private:
   using StoreWithCache =
-      syncer::ModelTypeStoreWithInMemoryCache<sync_pb::CookieSpecifics>;
+      syncer::DataTypeStoreWithInMemoryCache<sync_pb::CookieSpecifics>;
 
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<StoreWithCache> store,

@@ -110,13 +110,13 @@ base::Time AdvanceAndGetTime(base::SimpleTestClock* clock) {
   return clock->Now();
 }
 
-syncer::ModelTypeStore::RecordList ReadAllDataFromModelTypeStore(
-    syncer::ModelTypeStore* store) {
-  syncer::ModelTypeStore::RecordList result;
+syncer::DataTypeStore::RecordList ReadAllDataFromDataTypeStore(
+    syncer::DataTypeStore* store) {
+  syncer::DataTypeStore::RecordList result;
   base::RunLoop loop;
   store->ReadAllData(base::BindLambdaForTesting(
       [&](const std::optional<syncer::ModelError>& error,
-          std::unique_ptr<syncer::ModelTypeStore::RecordList> records) {
+          std::unique_ptr<syncer::DataTypeStore::RecordList> records) {
         EXPECT_FALSE(error.has_value()) << error->ToString();
         result = std::move(*records);
         loop.Quit();
@@ -139,9 +139,9 @@ class ReadingListSyncBridgeTest : public testing::Test {
                            syncer::WipeModelUponSyncDisabledBehavior
                                wipe_model_upon_sync_disabled_behavior,
                            bool initial_sync_done) {
-    std::unique_ptr<syncer::ModelTypeStore> model_type_store =
-        syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
-    underlying_in_memory_store_ = model_type_store.get();
+    std::unique_ptr<syncer::DataTypeStore> data_type_store =
+        syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
+    underlying_in_memory_store_ = data_type_store.get();
 
     if (initial_sync_done) {
       // Mimic initial sync having been done earlier.
@@ -150,7 +150,7 @@ class ReadingListSyncBridgeTest : public testing::Test {
       model_type_state.set_initial_sync_state(
           sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
-      std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
           underlying_in_memory_store_->CreateWriteBatch();
       write_batch->GetMetadataChangeList()->UpdateModelTypeState(
           model_type_state);
@@ -160,8 +160,8 @@ class ReadingListSyncBridgeTest : public testing::Test {
 
     model_ = ReadingListModelImpl::BuildNewForTest(
         std::make_unique<ReadingListModelStorageImpl>(
-            syncer::ModelTypeStoreTestUtil::MoveStoreToFactory(
-                std::move(model_type_store))),
+            syncer::DataTypeStoreTestUtil::MoveStoreToFactory(
+                std::move(data_type_store))),
         storage_type, wipe_model_upon_sync_disabled_behavior, &clock_,
         processor_.CreateForwardingProcessor());
 
@@ -181,8 +181,8 @@ class ReadingListSyncBridgeTest : public testing::Test {
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
   std::unique_ptr<ReadingListModelImpl> model_;
 
-  // ModelTypeStore is owned by |model_|.
-  raw_ptr<syncer::ModelTypeStore> underlying_in_memory_store_ = nullptr;
+  // DataTypeStore is owned by |model_|.
+  raw_ptr<syncer::DataTypeStore> underlying_in_memory_store_ = nullptr;
 };
 
 TEST_F(ReadingListSyncBridgeTest, SaveOneRead) {
@@ -427,9 +427,9 @@ TEST_F(ReadingListSyncBridgeTest, DisableSyncWithAccountStorageAndOrphanData) {
                       /*initial_sync_done=*/true);
 
   // Write some orphan or unexpected data directly onto the underlying
-  // ModelTypeStore, which should be rare but may be possible due to bugs or
+  // DataTypeStore, which should be rare but may be possible due to bugs or
   // edge cases.
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
       underlying_in_memory_store_->CreateWriteBatch();
   write_batch->WriteData("orphan-data-key", "orphan-data-value");
   std::optional<syncer::ModelError> error;
@@ -443,12 +443,12 @@ TEST_F(ReadingListSyncBridgeTest, DisableSyncWithAccountStorageAndOrphanData) {
           }));
   loop.Run();
 
-  ASSERT_THAT(ReadAllDataFromModelTypeStore(underlying_in_memory_store_),
+  ASSERT_THAT(ReadAllDataFromDataTypeStore(underlying_in_memory_store_),
               SizeIs(1));
 
   bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
 
-  EXPECT_THAT(ReadAllDataFromModelTypeStore(underlying_in_memory_store_),
+  EXPECT_THAT(ReadAllDataFromDataTypeStore(underlying_in_memory_store_),
               SizeIs(0));
 }
 

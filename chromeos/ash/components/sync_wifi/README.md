@@ -13,7 +13,7 @@ synced to their account.  Public networks, enterprise networks, and networks
 which have static ip configurations will not be synced.
 
 The network configurations with credentials will be stored in the users
-cryptohome using a syncer::ModelTypeStore and held in memory during the
+cryptohome using a syncer::DataTypeStore and held in memory during the
 user session.  All network details will be encrypted before getting sent
 to the Chrome sync server.
 

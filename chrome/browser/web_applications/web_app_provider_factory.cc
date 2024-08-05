@@ -51,7 +51,7 @@ WebAppProviderFactory::WebAppProviderFactory()
     : BrowserContextKeyedServiceFactory(
           "WebAppProvider",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(ukm::UkmBackgroundRecorderFactory::GetInstance());
   // Required to listen to file handling settings change in
   // `WebAppInstallFinalizer::OnContentSettingChanged()`

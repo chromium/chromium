@@ -14,8 +14,8 @@ WebApkDatabaseFactory::WebApkDatabaseFactory(Profile* profile)
 
 WebApkDatabaseFactory::~WebApkDatabaseFactory() = default;
 
-syncer::OnceModelTypeStoreFactory WebApkDatabaseFactory::GetStoreFactory() {
-  return ModelTypeStoreServiceFactory::GetForProfile(profile_)
+syncer::OnceDataTypeStoreFactory WebApkDatabaseFactory::GetStoreFactory() {
+  return DataTypeStoreServiceFactory::GetForProfile(profile_)
       ->GetStoreFactory();
 }
 

@@ -84,7 +84,7 @@ DataSharingService::PeopleGroupActionOutcome StatusToPeopleGroupActionOutcome(
 DataSharingServiceImpl::DataSharingServiceImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    syncer::OnceModelTypeStoreFactory model_type_store_factory,
+    syncer::OnceDataTypeStoreFactory data_type_store_factory,
     version_info::Channel channel,
     std::unique_ptr<DataSharingSDKDelegate> sdk_delegate,
     std::unique_ptr<DataSharingUIDelegate> ui_delegate)
@@ -99,7 +99,7 @@ DataSharingServiceImpl::DataSharingServiceImpl(
           base::BindRepeating(&syncer::ReportUnrecoverableError, channel));
   collaboration_group_sync_bridge_ =
       std::make_unique<CollaborationGroupSyncBridge>(
-          std::move(change_processor), std::move(model_type_store_factory));
+          std::move(change_processor), std::move(data_type_store_factory));
   collaboration_group_sync_bridge_->AddObserver(this);
   if (sdk_delegate_) {
     sdk_delegate_->Initialize(data_sharing_network_loader_.get());

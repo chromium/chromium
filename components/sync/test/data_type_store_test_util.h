@@ -13,27 +13,27 @@
 namespace syncer {
 
 // Util class with several static methods to facilitate writing unit tests for
-// classes that use ModelTypeStore objects.
-class ModelTypeStoreTestUtil {
+// classes that use DataTypeStore objects.
+class DataTypeStoreTestUtil {
  public:
   // Creates an in memory store synchronously.
-  static std::unique_ptr<ModelTypeStore> CreateInMemoryStoreForTest(
+  static std::unique_ptr<DataTypeStore> CreateInMemoryStoreForTest(
       ModelType type = PREFERENCES,
       StorageType storage_type = StorageType::kUnspecified);
 
   // Creates a factory callback to synchronously return in memory stores.
-  static RepeatingModelTypeStoreFactory FactoryForInMemoryStoreForTest();
+  static RepeatingDataTypeStoreFactory FactoryForInMemoryStoreForTest();
 
   // Returns a once-factory that returns an already created store to a service
   // constructor in a unit test.
-  static OnceModelTypeStoreFactory MoveStoreToFactory(
-      std::unique_ptr<ModelTypeStore> store);
+  static OnceDataTypeStoreFactory MoveStoreToFactory(
+      std::unique_ptr<DataTypeStore> store);
 
   // Returns a callback that constructs a store that forwards all calls to
   // |target|. |*target| must outlive the returned factory as well any store
   // created by the factory.
-  static RepeatingModelTypeStoreFactory FactoryForForwardingStore(
-      ModelTypeStore* target);
+  static RepeatingDataTypeStoreFactory FactoryForForwardingStore(
+      DataTypeStore* target);
 };
 
 }  // namespace syncer

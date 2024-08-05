@@ -120,11 +120,11 @@ std::unique_ptr<sync_pb::PrinterSpecifics> CreateTestPrinterSpecifics(
 
 void WaitForPrinterStoreToLoad(content::BrowserContext* context) {
   GetPrinterStore(context);
-  // Run tasks to allow a ModelTypeStore to be associated with the
+  // Run tasks to allow a DataTypeStore to be associated with the
   // SyncedPrinterManager.
   //
   // TODO(sync): Remove this forced initialization once there is a mechanism
-  // to queue writes/reads before the ModelTypeStore is associated with the
+  // to queue writes/reads before the DataTypeStore is associated with the
   // SyncedPrinterManager. https://crbug.com/709094.
   content::RunAllTasksUntilIdle();
 }

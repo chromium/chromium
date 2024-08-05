@@ -83,7 +83,7 @@ class AuthorizationZonesManager : public KeyedService {
       CreateAuthZoneCallback auth_zone_creator,
       std::unique_ptr<ClientIdsDatabase> client_ids_database,
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory store_factory);
+      syncer::OnceDataTypeStoreFactory store_factory);
 
   ~AuthorizationZonesManager() override;
   virtual syncer::DataTypeSyncBridge* GetDataTypeSyncBridge() = 0;

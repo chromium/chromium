@@ -60,13 +60,13 @@ class LoggingObserver : public SyncedPrintersManager::Observer {
 class SyncedPrintersManagerTest : public testing::Test {
  protected:
   SyncedPrintersManagerTest()
-      : manager_(SyncedPrintersManager::Create(std::make_unique<
-                                               PrintersSyncBridge>(
-            syncer::ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
-            base::BindRepeating(
-                base::IgnoreResult(&base::debug::DumpWithoutCrashing),
-                FROM_HERE,
-                base::Minutes(5))))) {
+      : manager_(
+            SyncedPrintersManager::Create(std::make_unique<PrintersSyncBridge>(
+                syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+                base::BindRepeating(
+                    base::IgnoreResult(&base::debug::DumpWithoutCrashing),
+                    FROM_HERE,
+                    base::Minutes(5))))) {
     base::RunLoop().RunUntilIdle();
   }
 

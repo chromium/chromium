@@ -19,7 +19,7 @@ class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
                                     public syncer::DataTypeSyncBridge {
  public:
   SecurityEventSyncBridgeImpl(
-      syncer::OnceModelTypeStoreFactory store_factory,
+      syncer::OnceDataTypeStoreFactory store_factory,
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
 
   SecurityEventSyncBridgeImpl(const SecurityEventSyncBridgeImpl&) = delete;
@@ -52,7 +52,7 @@ class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
 
  private:
   using StoreWithCache =
-      syncer::ModelTypeStoreWithInMemoryCache<sync_pb::SecurityEventSpecifics>;
+      syncer::DataTypeStoreWithInMemoryCache<sync_pb::SecurityEventSpecifics>;
 
   void OnStoreLoaded(const std::optional<syncer::ModelError>& error,
                      std::unique_ptr<StoreWithCache> store,

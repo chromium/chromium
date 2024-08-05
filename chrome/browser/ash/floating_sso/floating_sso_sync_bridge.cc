@@ -39,7 +39,7 @@ std::unique_ptr<syncer::EntityData> CreateEntityData(
 
 FloatingSsoSyncBridge::FloatingSsoSyncBridge(
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-    syncer::OnceModelTypeStoreFactory create_store_callback)
+    syncer::OnceDataTypeStoreFactory create_store_callback)
     : syncer::DataTypeSyncBridge(std::move(change_processor)) {
   StoreWithCache::CreateAndLoad(
       std::move(create_store_callback), syncer::COOKIES,
@@ -56,7 +56,7 @@ FloatingSsoSyncBridge::~FloatingSsoSyncBridge() {
 
 std::unique_ptr<syncer::MetadataChangeList>
 FloatingSsoSyncBridge::CreateMetadataChangeList() {
-  return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  return syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<syncer::ModelError> FloatingSsoSyncBridge::MergeFullSyncData(

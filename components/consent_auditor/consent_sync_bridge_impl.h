@@ -23,7 +23,7 @@ class ConsentSyncBridgeImpl : public ConsentSyncBridge,
                               public syncer::DataTypeSyncBridge {
  public:
   ConsentSyncBridgeImpl(
-      syncer::OnceModelTypeStoreFactory store_factory,
+      syncer::OnceDataTypeStoreFactory store_factory,
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
 
   ConsentSyncBridgeImpl(const ConsentSyncBridgeImpl&) = delete;
@@ -56,11 +56,11 @@ class ConsentSyncBridgeImpl : public ConsentSyncBridge,
 
   static std::string GetStorageKeyFromSpecificsForTest(
       const sync_pb::UserConsentSpecifics& specifics);
-  std::unique_ptr<syncer::ModelTypeStore> StealStoreForTest();
+  std::unique_ptr<syncer::DataTypeStore> StealStoreForTest();
 
  private:
   using StoreWithCache =
-      syncer::ModelTypeStoreWithInMemoryCache<sync_pb::UserConsentSpecifics>;
+      syncer::DataTypeStoreWithInMemoryCache<sync_pb::UserConsentSpecifics>;
 
   void RecordConsentImpl(
       std::unique_ptr<sync_pb::UserConsentSpecifics> specifics);

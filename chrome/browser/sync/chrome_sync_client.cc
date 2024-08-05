@@ -275,7 +275,7 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
       this,
       DeviceInfoSyncServiceFactory::GetForProfile(profile_)
           ->GetDeviceInfoTracker(),
-      GetModelTypeStoreService()->GetSyncDataPath());
+      GetDataTypeStoreService()->GetSyncDataPath());
 }
 
 ChromeSyncClient::~ChromeSyncClient() = default;
@@ -359,8 +359,8 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
   builder.SetHistoryService(HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS));
   builder.SetIdentityManager(GetIdentityManager());
-  builder.SetModelTypeStoreService(
-      ModelTypeStoreServiceFactory::GetForProfile(profile_));
+  builder.SetDataTypeStoreService(
+      DataTypeStoreServiceFactory::GetForProfile(profile_));
 #if !BUILDFLAG(IS_ANDROID)
   builder.SetPasskeyModel(
       base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)
@@ -403,8 +403,8 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
 
   const base::RepeatingClosure dump_stack = GetDumpStackClosure();
 
-  syncer::RepeatingModelTypeStoreFactory model_type_store_factory =
-      GetModelTypeStoreService()->GetStoreFactory();
+  syncer::RepeatingDataTypeStoreFactory data_type_store_factory =
+      GetDataTypeStoreService()->GetStoreFactory();
 
   if (ShouldSyncBrowserTypes()) {
     syncer::DataTypeControllerDelegate* security_events_delegate =
@@ -440,14 +440,14 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     // Extension sync is enabled by default.
     controllers.push_back(std::make_unique<ExtensionDataTypeController>(
-        syncer::EXTENSIONS, model_type_store_factory,
+        syncer::EXTENSIONS, data_type_store_factory,
         GetSyncableServiceForType(syncer::EXTENSIONS), dump_stack,
         ExtensionDataTypeController::DelegateMode::kLegacyFullSyncModeOnly,
         profile_));
 
     // Extension setting sync is enabled by default.
     controllers.push_back(std::make_unique<ExtensionSettingDataTypeController>(
-        syncer::EXTENSION_SETTINGS, model_type_store_factory,
+        syncer::EXTENSION_SETTINGS, data_type_store_factory,
         extensions::settings_sync_util::GetSyncableServiceProvider(
             profile_, syncer::EXTENSION_SETTINGS),
         dump_stack,
@@ -487,7 +487,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
 #if !BUILDFLAG(IS_ANDROID)
     // Theme sync is enabled by default.
     controllers.push_back(std::make_unique<ExtensionDataTypeController>(
-        syncer::THEMES, model_type_store_factory,
+        syncer::THEMES, data_type_store_factory,
         GetSyncableServiceForType(syncer::THEMES), dump_stack,
         ExtensionDataTypeController::DelegateMode::kLegacyFullSyncModeOnly,
         profile_));
@@ -495,7 +495,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
     // Search Engine sync is enabled by default.
     controllers.push_back(
         std::make_unique<syncer::SyncableServiceBasedDataTypeController>(
-            syncer::SEARCH_ENGINES, model_type_store_factory,
+            syncer::SEARCH_ENGINES, data_type_store_factory,
             GetSyncableServiceForType(syncer::SEARCH_ENGINES), dump_stack,
             syncer::SyncableServiceBasedDataTypeController::DelegateMode::
                 kLegacyFullSyncModeOnly));
@@ -551,7 +551,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
     if (GetPrefService()->GetBoolean(spellcheck::prefs::kSpellCheckEnable)) {
       controllers.push_back(
           std::make_unique<syncer::SyncableServiceBasedDataTypeController>(
-              syncer::DICTIONARY, model_type_store_factory,
+              syncer::DICTIONARY, data_type_store_factory,
               GetSyncableServiceForType(syncer::DICTIONARY), dump_stack,
               syncer::SyncableServiceBasedDataTypeController::DelegateMode::
                   kLegacyFullSyncModeOnly));
@@ -568,7 +568,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
     // Runs in sync transport-mode and full-sync mode.
     controllers.push_back(
         std::make_unique<syncer::SyncableServiceBasedDataTypeController>(
-            syncer::APP_LIST, model_type_store_factory,
+            syncer::APP_LIST, data_type_store_factory,
             GetSyncableServiceForType(syncer::APP_LIST), dump_stack,
             syncer::SyncableServiceBasedDataTypeController::DelegateMode::
                 kTransportModeWithSingleModel));
@@ -577,19 +577,18 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
   if (arc::IsArcAllowedForProfile(profile_) &&
       !arc::IsArcAppSyncFlowDisabled()) {
     controllers.push_back(std::make_unique<ArcPackageSyncDataTypeController>(
-        model_type_store_factory,
-        GetSyncableServiceForType(syncer::ARC_PACKAGE), dump_stack,
-        sync_service, profile_));
+        data_type_store_factory, GetSyncableServiceForType(syncer::ARC_PACKAGE),
+        dump_stack, sync_service, profile_));
   }
   controllers.push_back(
       std::make_unique<syncer::SyncableServiceBasedDataTypeController>(
-          syncer::OS_PREFERENCES, model_type_store_factory,
+          syncer::OS_PREFERENCES, data_type_store_factory,
           GetSyncableServiceForType(syncer::OS_PREFERENCES), dump_stack,
           syncer::SyncableServiceBasedDataTypeController::DelegateMode::
               kTransportModeWithSingleModel));
   controllers.push_back(
       std::make_unique<syncer::SyncableServiceBasedDataTypeController>(
-          syncer::OS_PRIORITY_PREFERENCES, model_type_store_factory,
+          syncer::OS_PRIORITY_PREFERENCES, data_type_store_factory,
           GetSyncableServiceForType(syncer::OS_PRIORITY_PREFERENCES),
           dump_stack,
           syncer::SyncableServiceBasedDataTypeController::DelegateMode::
@@ -678,8 +677,8 @@ ChromeSyncClient::GetExtensionsActivity() {
   return extensions_activity_monitor_.GetExtensionsActivity();
 }
 
-syncer::ModelTypeStoreService* ChromeSyncClient::GetModelTypeStoreService() {
-  return ModelTypeStoreServiceFactory::GetForProfile(profile_);
+syncer::DataTypeStoreService* ChromeSyncClient::GetDataTypeStoreService() {
+  return DataTypeStoreServiceFactory::GetForProfile(profile_);
 }
 
 base::WeakPtr<syncer::SyncableService>
@@ -808,7 +807,7 @@ ChromeSyncClient::CreateAppsDataTypeController() {
         kTransportModeWithSingleModel;
   }
   return std::make_unique<ExtensionDataTypeController>(
-      syncer::APPS, GetModelTypeStoreService()->GetStoreFactory(),
+      syncer::APPS, GetDataTypeStoreService()->GetStoreFactory(),
       GetSyncableServiceForType(syncer::APPS), GetDumpStackClosure(),
       delegate_mode, profile_);
 }
@@ -823,7 +822,7 @@ ChromeSyncClient::CreateAppSettingsDataTypeController(
         kTransportModeWithSingleModel;
   }
   return std::make_unique<ExtensionSettingDataTypeController>(
-      syncer::APP_SETTINGS, GetModelTypeStoreService()->GetStoreFactory(),
+      syncer::APP_SETTINGS, GetDataTypeStoreService()->GetStoreFactory(),
       extensions::settings_sync_util::GetSyncableServiceProvider(
           profile_, syncer::APP_SETTINGS),
       GetDumpStackClosure(), delegate_mode, profile_);

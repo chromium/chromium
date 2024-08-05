@@ -60,7 +60,7 @@ class WifiConfigurationBridge : public syncer::DataTypeSyncBridge,
       ash::timer_factory::TimerFactory* timer_factory,
       PrefService* pref_service,
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory create_store_callback);
+      syncer::OnceDataTypeStoreFactory create_store_callback);
 
   WifiConfigurationBridge(const WifiConfigurationBridge&) = delete;
   WifiConfigurationBridge& operator=(const WifiConfigurationBridge&) = delete;
@@ -106,14 +106,14 @@ class WifiConfigurationBridge : public syncer::DataTypeSyncBridge,
       base::WeakPtr<NetworkMetadataStore> network_metadata_store);
 
  private:
-  void Commit(std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch);
+  void Commit(std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch);
 
-  // Callbacks for ModelTypeStore.
+  // Callbacks for DataTypeStore.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
-                      std::unique_ptr<syncer::ModelTypeStore> store);
+                      std::unique_ptr<syncer::DataTypeStore> store);
   void OnReadAllData(
       const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> records);
+      std::unique_ptr<syncer::DataTypeStore::RecordList> records);
   void OnReadAllMetadata(const std::optional<syncer::ModelError>& error,
                          std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   void OnCommit(const std::optional<syncer::ModelError>& error);
@@ -162,7 +162,7 @@ class WifiConfigurationBridge : public syncer::DataTypeSyncBridge,
   // The on disk store of WifiConfigurationSpecifics protos that mirrors what
   // is on the sync server.  This gets updated when changes are received from
   // the server and after local changes have been committed to the server.
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
 
   raw_ptr<SyncedNetworkUpdater, DanglingUntriaged> synced_network_updater_;
   raw_ptr<LocalNetworkCollector, DanglingUntriaged> local_network_collector_;

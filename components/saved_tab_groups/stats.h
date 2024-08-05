@@ -57,12 +57,12 @@ void RecordTabCountMismatchOnConnect(size_t tabs_in_saved_group,
 // Records various migration step outcomes during initialization.
 void RecordMigrationResult(MigrationResult migration_result);
 
-// Records the number of entries in ModelTypeStore that failed to parse as a
+// Records the number of entries in DataTypeStore that failed to parse as a
 // specific during migration.
 void RecordSpecificsParseFailureCount(int parse_failure_count,
                                       int total_entries);
 
-// Records the number of entries in ModelTypeStore that failed to parse as a
+// Records the number of entries in DataTypeStore that failed to parse as a
 // SavedTabGroupData in the final stage of startup.
 void RecordParsedSavedTabGroupDataCount(int parsed_entries_count,
                                         int total_entries);

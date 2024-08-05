@@ -34,7 +34,7 @@ IOSChromePasswordSenderServiceFactory::IOSChromePasswordSenderServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "PasswordSenderService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 IOSChromePasswordSenderServiceFactory::

@@ -10,22 +10,22 @@ namespace syncer {
 
 // static
 std::unique_ptr<MetadataChangeList>
-ModelTypeStoreBase::WriteBatch::CreateMetadataChangeList() {
+DataTypeStoreBase::WriteBatch::CreateMetadataChangeList() {
   return std::make_unique<InMemoryMetadataChangeList>();
 }
 
-ModelTypeStoreBase::WriteBatch::WriteBatch() = default;
+DataTypeStoreBase::WriteBatch::WriteBatch() = default;
 
-ModelTypeStoreBase::WriteBatch::~WriteBatch() = default;
+DataTypeStoreBase::WriteBatch::~WriteBatch() = default;
 
-void ModelTypeStoreBase::WriteBatch::TakeMetadataChangesFrom(
+void DataTypeStoreBase::WriteBatch::TakeMetadataChangesFrom(
     std::unique_ptr<MetadataChangeList> mcl) {
   static_cast<InMemoryMetadataChangeList*>(mcl.get())->TransferChangesTo(
       GetMetadataChangeList());
 }
 
-ModelTypeStoreBase::ModelTypeStoreBase() = default;
+DataTypeStoreBase::DataTypeStoreBase() = default;
 
-ModelTypeStoreBase::~ModelTypeStoreBase() = default;
+DataTypeStoreBase::~DataTypeStoreBase() = default;
 
 }  // namespace syncer

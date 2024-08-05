@@ -17,28 +17,28 @@
 
 namespace syncer {
 
-class BlockingModelTypeStoreImpl;
+class BlockingDataTypeStoreImpl;
 
-// ModelTypeStoreImpl handles details of store initialization and threading.
-// Actual leveldb IO calls are performed in BlockingModelTypeStoreImpl (in the
-// underlying ModelTypeStoreBackend).
-class ModelTypeStoreImpl : public ModelTypeStore {
+// DataTypeStoreImpl handles details of store initialization and threading.
+// Actual leveldb IO calls are performed in BlockingDataTypeStoreImpl (in the
+// underlying DataTypeStoreBackend).
+class DataTypeStoreImpl : public DataTypeStore {
  public:
   // |backend_store| must not be null and must have been created in
   // |backend_task_runner|.
-  ModelTypeStoreImpl(
+  DataTypeStoreImpl(
       ModelType model_type,
       StorageType storage_type,
-      std::unique_ptr<BlockingModelTypeStoreImpl, base::OnTaskRunnerDeleter>
+      std::unique_ptr<BlockingDataTypeStoreImpl, base::OnTaskRunnerDeleter>
           backend_store,
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
 
-  ModelTypeStoreImpl(const ModelTypeStoreImpl&) = delete;
-  ModelTypeStoreImpl& operator=(const ModelTypeStoreImpl&) = delete;
+  DataTypeStoreImpl(const DataTypeStoreImpl&) = delete;
+  DataTypeStoreImpl& operator=(const DataTypeStoreImpl&) = delete;
 
-  ~ModelTypeStoreImpl() override;
+  ~DataTypeStoreImpl() override;
 
-  // ModelTypeStore implementation.
+  // DataTypeStore implementation.
   void ReadData(const IdList& id_list, ReadDataCallback callback) override;
   void ReadAllData(ReadAllDataCallback callback) override;
   void ReadAllMetadata(ReadMetadataCallback callback) override;
@@ -52,7 +52,7 @@ class ModelTypeStoreImpl : public ModelTypeStore {
   void DeleteAllDataAndMetadata(CallbackWithResult callback) override;
 
  private:
-  // Callbacks for different calls to ModelTypeStoreBackend.
+  // Callbacks for different calls to DataTypeStoreBackend.
   void ReadDataDone(ReadDataCallback callback,
                     std::unique_ptr<RecordList> record_list,
                     std::unique_ptr<IdList> missing_id_list,
@@ -81,12 +81,12 @@ class ModelTypeStoreImpl : public ModelTypeStore {
   const StorageType storage_type_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
   // |backend_store_| should be deleted on backend thread.
-  std::unique_ptr<BlockingModelTypeStoreImpl, base::OnTaskRunnerDeleter>
+  std::unique_ptr<BlockingDataTypeStoreImpl, base::OnTaskRunnerDeleter>
       backend_store_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<ModelTypeStoreImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<DataTypeStoreImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace syncer

@@ -43,7 +43,7 @@ class WifiConfigurationSyncService : public KeyedService {
   WifiConfigurationSyncService(
       version_info::Channel channel,
       PrefService* pref_service,
-      syncer::OnceModelTypeStoreFactory create_store_callback);
+      syncer::OnceDataTypeStoreFactory create_store_callback);
 
   WifiConfigurationSyncService(const WifiConfigurationSyncService&) = delete;
   WifiConfigurationSyncService& operator=(const WifiConfigurationSyncService&) =

@@ -13,24 +13,24 @@
 
 namespace syncer {
 
-// Handles the shared resources for ModelTypeStore and related classes,
+// Handles the shared resources for DataTypeStore and related classes,
 // including a shared background sequence runner.
-class ModelTypeStoreService : public KeyedService {
+class DataTypeStoreService : public KeyedService {
  public:
   // Returns the root directory under which sync stores data.
   // This doesn't belong here strictly speaking, but it is convenient to
   // centralize all storage-related paths in one class.
   virtual const base::FilePath& GetSyncDataPath() const = 0;
 
-  // Returns a factory to create instances of ModelTypeStore with unspecified
+  // Returns a factory to create instances of DataTypeStore with unspecified
   // storage type (i.e. `StorageType::kUnspecified`). May be used from any
   // thread and independently of the lifetime of this object.
-  virtual RepeatingModelTypeStoreFactory GetStoreFactory() = 0;
+  virtual RepeatingDataTypeStoreFactory GetStoreFactory() = 0;
 
   // Same as above but uses `StorageType::kAccount` for the underlying data
   // storage, which means it's fully isolated from the storage managed via
   // `GetStoreFactory()`.
-  virtual RepeatingModelTypeStoreFactory GetStoreFactoryForAccountStorage() = 0;
+  virtual RepeatingDataTypeStoreFactory GetStoreFactoryForAccountStorage() = 0;
 
   virtual scoped_refptr<base::SequencedTaskRunner> GetBackendTaskRunner() = 0;
 };

@@ -139,7 +139,7 @@ GetProductSpecificationsSetFromMultiSpecifics(
 namespace commerce {
 
 ProductSpecificationsService::ProductSpecificationsService(
-    syncer::OnceModelTypeStoreFactory create_store_callback,
+    syncer::OnceDataTypeStoreFactory create_store_callback,
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
     : bridge_(std::make_unique<ProductSpecificationsSyncBridge>(
           std::move(create_store_callback),

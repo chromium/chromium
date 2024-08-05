@@ -20,7 +20,7 @@ namespace {
 class ControllerDelegate : public DataTypeControllerDelegate {
  public:
   ControllerDelegate(ModelType type,
-                     OnceModelTypeStoreFactory store_factory,
+                     OnceDataTypeStoreFactory store_factory,
                      base::WeakPtr<SyncableService> syncable_service,
                      const base::RepeatingClosure& dump_stack)
       : type_(type), dump_stack_(dump_stack) {
@@ -118,13 +118,12 @@ class ControllerDelegate : public DataTypeControllerDelegate {
 
 }  // namespace
 
-SyncableServiceBasedDataTypeController::
-    SyncableServiceBasedDataTypeController(
-        ModelType type,
-        OnceModelTypeStoreFactory store_factory,
-        base::WeakPtr<SyncableService> syncable_service,
-        const base::RepeatingClosure& dump_stack,
-        DelegateMode delegate_mode)
+SyncableServiceBasedDataTypeController::SyncableServiceBasedDataTypeController(
+    ModelType type,
+    OnceDataTypeStoreFactory store_factory,
+    base::WeakPtr<SyncableService> syncable_service,
+    const base::RepeatingClosure& dump_stack,
+    DelegateMode delegate_mode)
     : DataTypeController(type),
       delegate_(std::make_unique<ControllerDelegate>(type,
                                                      std::move(store_factory),

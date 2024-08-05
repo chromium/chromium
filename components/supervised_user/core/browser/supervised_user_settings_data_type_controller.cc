@@ -13,7 +13,7 @@
 SupervisedUserSettingsDataTypeController::
     SupervisedUserSettingsDataTypeController(
         const base::RepeatingClosure& dump_stack,
-        syncer::OnceModelTypeStoreFactory store_factory,
+        syncer::OnceDataTypeStoreFactory store_factory,
         base::WeakPtr<syncer::SyncableService> syncable_service,
         PrefService* pref_service)
     : SyncableServiceBasedDataTypeController(

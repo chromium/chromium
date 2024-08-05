@@ -204,6 +204,7 @@ SyncServiceFactory::SyncServiceFactory()
   // actually plumbed in IOSChromeSyncClient, which this factory constructs.
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
   DependsOn(ConsentAuditorFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(GoogleGroupsManagerFactory::GetInstance());
@@ -225,7 +226,6 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(IOSChromeAccountPasswordStoreFactory::GetInstance());
   DependsOn(IOSTrustedVaultServiceFactory::GetInstance());
   DependsOn(IOSUserEventServiceFactory::GetInstance());
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(PlusAddressSettingServiceFactory::GetInstance());
   DependsOn(ReadingListModelFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());

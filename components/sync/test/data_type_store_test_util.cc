@@ -20,12 +20,12 @@
 namespace syncer {
 namespace {
 
-// Implementation of ModelTypeStore that delegates all calls to another
+// Implementation of DataTypeStore that delegates all calls to another
 // instance, as injected in the constructor, useful for APIs that take ownership
-// of ModelTypeStore.
-class ForwardingModelTypeStore : public ModelTypeStore {
+// of DataTypeStore.
+class ForwardingDataTypeStore : public DataTypeStore {
  public:
-  explicit ForwardingModelTypeStore(ModelTypeStore* other) : other_(other) {}
+  explicit ForwardingDataTypeStore(DataTypeStore* other) : other_(other) {}
 
   void ReadData(const IdList& id_list, ReadDataCallback callback) override {
     other_->ReadData(id_list, std::move(callback));
@@ -65,60 +65,60 @@ class ForwardingModelTypeStore : public ModelTypeStore {
   }
 
  private:
-  const raw_ptr<ModelTypeStore, DanglingUntriaged> other_;
+  const raw_ptr<DataTypeStore, DanglingUntriaged> other_;
 };
 
 }  // namespace
 
 // static
-std::unique_ptr<ModelTypeStore>
-ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(ModelType type,
-                                                   StorageType storage_type) {
-  std::unique_ptr<BlockingModelTypeStoreImpl, base::OnTaskRunnerDeleter>
-      blocking_store(new BlockingModelTypeStoreImpl(
+std::unique_ptr<DataTypeStore>
+DataTypeStoreTestUtil::CreateInMemoryStoreForTest(ModelType type,
+                                                  StorageType storage_type) {
+  std::unique_ptr<BlockingDataTypeStoreImpl, base::OnTaskRunnerDeleter>
+      blocking_store(new BlockingDataTypeStoreImpl(
                          type, storage_type,
-                         ModelTypeStoreBackend::CreateInMemoryForTest()),
+                         DataTypeStoreBackend::CreateInMemoryForTest()),
                      base::OnTaskRunnerDeleter(
                          base::SequencedTaskRunner::GetCurrentDefault()));
   // Not all tests issue a RunUntilIdle() at the very end, to guarantee that
   // the backend is properly destroyed. They also don't need to verify that, so
   // let keep memory sanitizers happy.
   ANNOTATE_LEAKING_OBJECT_PTR(blocking_store.get());
-  return std::make_unique<ModelTypeStoreImpl>(
+  return std::make_unique<DataTypeStoreImpl>(
       type, storage_type, std::move(blocking_store),
       base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 // static
-RepeatingModelTypeStoreFactory
-ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest() {
+RepeatingDataTypeStoreFactory
+DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest() {
   return base::BindRepeating(
-      [](ModelType type, ModelTypeStore::InitCallback callback) {
+      [](ModelType type, DataTypeStore::InitCallback callback) {
         std::move(callback).Run(/*error=*/std::nullopt,
                                 CreateInMemoryStoreForTest(type));
       });
 }
 
 // static
-OnceModelTypeStoreFactory ModelTypeStoreTestUtil::MoveStoreToFactory(
-    std::unique_ptr<ModelTypeStore> store) {
+OnceDataTypeStoreFactory DataTypeStoreTestUtil::MoveStoreToFactory(
+    std::unique_ptr<DataTypeStore> store) {
   return base::BindOnce(
-      [](std::unique_ptr<ModelTypeStore> store, ModelType type,
-         ModelTypeStore::InitCallback callback) {
+      [](std::unique_ptr<DataTypeStore> store, ModelType type,
+         DataTypeStore::InitCallback callback) {
         std::move(callback).Run(/*error=*/std::nullopt, std::move(store));
       },
       std::move(store));
 }
 
 // static
-RepeatingModelTypeStoreFactory
-ModelTypeStoreTestUtil::FactoryForForwardingStore(ModelTypeStore* target) {
+RepeatingDataTypeStoreFactory DataTypeStoreTestUtil::FactoryForForwardingStore(
+    DataTypeStore* target) {
   return base::BindRepeating(
-      [](ModelTypeStore* target, ModelType,
-         ModelTypeStore::InitCallback callback) {
+      [](DataTypeStore* target, ModelType,
+         DataTypeStore::InitCallback callback) {
         std::move(callback).Run(
             /*error=*/std::nullopt,
-            std::make_unique<ForwardingModelTypeStore>(target));
+            std::make_unique<ForwardingDataTypeStore>(target));
       },
       base::Unretained(target));
 }

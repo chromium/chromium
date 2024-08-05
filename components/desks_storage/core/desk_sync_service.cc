@@ -17,7 +17,7 @@ namespace desks_storage {
 DeskSyncService::DeskSyncService() = default;
 DeskSyncService::DeskSyncService(
     version_info::Channel channel,
-    syncer::OnceModelTypeStoreFactory create_store_callback,
+    syncer::OnceDataTypeStoreFactory create_store_callback,
     const AccountId& account_id) {
   bridge_ = std::make_unique<desks_storage::DeskSyncBridge>(
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(

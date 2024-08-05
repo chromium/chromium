@@ -84,8 +84,7 @@ class PrintingOAuth2AuthorizationZonesManagerTest : public testing::Test {
             base::Unretained(this)),
         std::move(client_ids_database),
         mock_processor_.CreateForwardingProcessor(),
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
-            store_.get()));
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()));
   }
 
   // Wait for `auth_zones_manager_` to be completely initialized. It is done
@@ -217,8 +216,8 @@ class PrintingOAuth2AuthorizationZonesManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
-  std::unique_ptr<syncer::ModelTypeStore> store_ =
-      syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
+  std::unique_ptr<syncer::DataTypeStore> store_ =
+      syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
   base::RunLoop bridge_initialization_;
   std::unique_ptr<AuthorizationZonesManager> auth_zones_manager_;
 };

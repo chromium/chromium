@@ -37,7 +37,7 @@ DeskSyncServiceFactory::DeskSyncServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -47,8 +47,8 @@ DeskSyncServiceFactory::BuildServiceInstanceForBrowserContext(
   const AccountId account_id =
       multi_user_util::GetAccountIdFromProfile(profile);
 
-  syncer::OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
 
   // This instance will be wrapped in a |std::unique_ptr|, owned by
   // |KeyedServiceFactory| and associated with the given browser context.

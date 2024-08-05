@@ -34,7 +34,7 @@ class ArcPackageSyncDataTypeController
  public:
   // |dump_stack| is called when an unrecoverable error occurs.
   ArcPackageSyncDataTypeController(
-      syncer::OnceModelTypeStoreFactory store_factory,
+      syncer::OnceDataTypeStoreFactory store_factory,
       base::WeakPtr<syncer::SyncableService> syncable_service,
       const base::RepeatingClosure& dump_stack,
       syncer::SyncService* sync_service,

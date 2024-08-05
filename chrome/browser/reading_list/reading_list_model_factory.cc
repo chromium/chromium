@@ -34,8 +34,8 @@ namespace {
 std::unique_ptr<KeyedService> BuildReadingListModel(
     content::BrowserContext* context) {
   Profile* const profile = Profile::FromBrowserContext(context);
-  syncer::OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
   auto local_storage =
       std::make_unique<ReadingListModelStorageImpl>(std::move(store_factory));
   auto reading_list_model_for_local_storage =
@@ -44,8 +44,8 @@ std::unique_ptr<KeyedService> BuildReadingListModel(
           syncer::WipeModelUponSyncDisabledBehavior::kNever,
           base::DefaultClock::GetInstance());
 
-  syncer::OnceModelTypeStoreFactory store_factory_for_account_storage =
-      ModelTypeStoreServiceFactory::GetForProfile(profile)
+  syncer::OnceDataTypeStoreFactory store_factory_for_account_storage =
+      DataTypeStoreServiceFactory::GetForProfile(profile)
           ->GetStoreFactoryForAccountStorage();
   auto account_storage = std::make_unique<ReadingListModelStorageImpl>(
       std::move(store_factory_for_account_storage));
@@ -101,7 +101,7 @@ ReadingListModelFactory::ReadingListModelFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 ReadingListModelFactory::~ReadingListModelFactory() = default;

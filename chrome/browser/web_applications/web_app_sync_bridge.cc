@@ -811,7 +811,7 @@ void WebAppSyncBridge::ApplyIncrementalSyncChangesToRegistrar(
 
 std::unique_ptr<syncer::MetadataChangeList>
 WebAppSyncBridge::CreateMetadataChangeList() {
-  return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  return syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<syncer::ModelError> WebAppSyncBridge::MergeFullSyncData(

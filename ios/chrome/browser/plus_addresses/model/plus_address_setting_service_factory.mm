@@ -34,7 +34,7 @@ PlusAddressSettingServiceFactory::PlusAddressSettingServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "PlusAddressSettingServiceImpl",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -44,7 +44,7 @@ PlusAddressSettingServiceFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<plus_addresses::PlusAddressSettingServiceImpl>(
       plus_addresses::PlusAddressSettingSyncBridge::CreateBridge(
-          ModelTypeStoreServiceFactory::GetForBrowserState(browser_state)
+          DataTypeStoreServiceFactory::GetForBrowserState(browser_state)
               ->GetStoreFactory()));
 }
 

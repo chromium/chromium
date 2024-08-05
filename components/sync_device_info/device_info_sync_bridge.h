@@ -42,7 +42,7 @@ class DeviceInfoSyncBridge : public DataTypeSyncBridge,
   DeviceInfoSyncBridge(
       std::unique_ptr<MutableLocalDeviceInfoProvider>
           local_device_info_provider,
-      OnceModelTypeStoreFactory store_factory,
+      OnceDataTypeStoreFactory store_factory,
       std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
       std::unique_ptr<DeviceInfoPrefs> device_info_prefs);
 
@@ -124,15 +124,15 @@ class DeviceInfoSyncBridge : public DataTypeSyncBridge,
   // parameter is first for binding purposes.
   static std::optional<ModelError> ParseSpecificsOnBackendSequence(
       ClientIdToDeviceInfo* all_data,
-      std::unique_ptr<ModelTypeStore::RecordList> record_list);
+      std::unique_ptr<DataTypeStore::RecordList> record_list);
 
   // Store SyncData in the cache and durable storage.
   void StoreSpecifics(sync_pb::DeviceInfoSpecifics specifics,
-                      ModelTypeStore::WriteBatch* batch);
+                      DataTypeStore::WriteBatch* batch);
   // Delete SyncData from the cache and durable storage, returns true if there
   // was actually anything at the given tag.
   bool DeleteSpecifics(const std::string& tag,
-                       ModelTypeStore::WriteBatch* batch);
+                       DataTypeStore::WriteBatch* batch);
 
   // Returns the device name based on |sync_mode_|. For transport only mode,
   // the device model name is returned. For full sync mode,
@@ -144,7 +144,7 @@ class DeviceInfoSyncBridge : public DataTypeSyncBridge,
 
   // Methods used as callbacks given to DataTypeStore.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
-                      std::unique_ptr<ModelTypeStore> store);
+                      std::unique_ptr<DataTypeStore> store);
   void OnLocalDeviceNameInfoRetrieved(
       LocalDeviceNameInfo local_device_name_info);
   void OnReadAllData(std::unique_ptr<ClientIdToDeviceInfo> all_data,
@@ -166,12 +166,11 @@ class DeviceInfoSyncBridge : public DataTypeSyncBridge,
   void SendLocalData();
 
   // Same as above but allows callers to specify a WriteBatch
-  void SendLocalDataWithBatch(
-      std::unique_ptr<ModelTypeStore::WriteBatch> batch);
+  void SendLocalDataWithBatch(std::unique_ptr<DataTypeStore::WriteBatch> batch);
 
   // Persists the changes in the given aggregators and notifies observers if
   // indicated to do as such.
-  void CommitAndNotify(std::unique_ptr<ModelTypeStore::WriteBatch> batch,
+  void CommitAndNotify(std::unique_ptr<DataTypeStore::WriteBatch> batch,
                        bool should_notify);
 
   // Deletes locally old data and metadata entries without issuing tombstones.
@@ -196,7 +195,7 @@ class DeviceInfoSyncBridge : public DataTypeSyncBridge,
   base::ObserverList<Observer, true>::Unchecked observers_;
 
   // In charge of actually persisting changes to disk, or loading previous data.
-  std::unique_ptr<ModelTypeStore> store_;
+  std::unique_ptr<DataTypeStore> store_;
 
   // Used to update our local device info once every pulse interval.
   base::OneShotTimer pulse_timer_;

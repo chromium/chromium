@@ -39,7 +39,7 @@ CreateSavedTabGroupDataTypeConfiguration(ChromeBrowserState* browser_state) {
           syncer::SAVED_TAB_GROUP,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               ::GetChannel())),
-      ModelTypeStoreServiceFactory::GetForBrowserState(browser_state)
+      DataTypeStoreServiceFactory::GetForBrowserState(browser_state)
           ->GetStoreFactory());
 }
 }  // namespace
@@ -62,8 +62,8 @@ TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
           "TabGroupSyncServiceFactory",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(BrowserListFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(SessionRestorationServiceFactory::GetInstance());
 }
 

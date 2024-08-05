@@ -49,7 +49,7 @@ UserEventServiceFactory::UserEventServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
 }
 
@@ -62,8 +62,8 @@ KeyedService* UserEventServiceFactory::BuildServiceInstanceFor(
   }
 
   Profile* profile = Profile::FromBrowserContext(context);
-  syncer::OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
 
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(

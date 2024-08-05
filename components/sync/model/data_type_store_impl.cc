@@ -23,12 +23,11 @@ namespace syncer {
 namespace {
 
 std::optional<ModelError> ReadAllDataAndPreprocessOnBackendSequence(
-    BlockingModelTypeStoreImpl* blocking_store,
-    ModelTypeStore::PreprocessCallback
-        preprocess_on_backend_sequence_callback) {
+    BlockingDataTypeStoreImpl* blocking_store,
+    DataTypeStore::PreprocessCallback preprocess_on_backend_sequence_callback) {
   DCHECK(blocking_store);
 
-  auto record_list = std::make_unique<ModelTypeStoreBase::RecordList>();
+  auto record_list = std::make_unique<DataTypeStoreBase::RecordList>();
   std::optional<ModelError> error =
       blocking_store->ReadAllData(record_list.get());
   if (error) {
@@ -41,10 +40,10 @@ std::optional<ModelError> ReadAllDataAndPreprocessOnBackendSequence(
 
 }  // namespace
 
-ModelTypeStoreImpl::ModelTypeStoreImpl(
+DataTypeStoreImpl::DataTypeStoreImpl(
     ModelType model_type,
     StorageType storage_type,
-    std::unique_ptr<BlockingModelTypeStoreImpl, base::OnTaskRunnerDeleter>
+    std::unique_ptr<BlockingDataTypeStoreImpl, base::OnTaskRunnerDeleter>
         backend_store,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
     : model_type_(model_type),
@@ -55,7 +54,7 @@ ModelTypeStoreImpl::ModelTypeStoreImpl(
   DCHECK(backend_task_runner_);
 }
 
-ModelTypeStoreImpl::~ModelTypeStoreImpl() {
+DataTypeStoreImpl::~DataTypeStoreImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -70,48 +69,48 @@ ModelTypeStoreImpl::~ModelTypeStoreImpl() {
 //  - Function bound by reply calls consumer's callback and passes ownership of
 //    output lists to it.
 
-void ModelTypeStoreImpl::ReadData(const IdList& id_list,
-                                  ReadDataCallback callback) {
+void DataTypeStoreImpl::ReadData(const IdList& id_list,
+                                 ReadDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
   std::unique_ptr<RecordList> record_list(new RecordList());
   std::unique_ptr<IdList> missing_id_list(new IdList());
 
-  auto task = base::BindOnce(&BlockingModelTypeStore::ReadData,
+  auto task = base::BindOnce(&BlockingDataTypeStore::ReadData,
                              base::Unretained(backend_store_.get()), id_list,
                              base::Unretained(record_list.get()),
                              base::Unretained(missing_id_list.get()));
   auto reply = base::BindOnce(
-      &ModelTypeStoreImpl::ReadDataDone, weak_ptr_factory_.GetWeakPtr(),
+      &DataTypeStoreImpl::ReadDataDone, weak_ptr_factory_.GetWeakPtr(),
       std::move(callback), std::move(record_list), std::move(missing_id_list));
   backend_task_runner_->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
                                                    std::move(reply));
 }
 
-void ModelTypeStoreImpl::ReadDataDone(ReadDataCallback callback,
-                                      std::unique_ptr<RecordList> record_list,
-                                      std::unique_ptr<IdList> missing_id_list,
-                                      const std::optional<ModelError>& error) {
+void DataTypeStoreImpl::ReadDataDone(ReadDataCallback callback,
+                                     std::unique_ptr<RecordList> record_list,
+                                     std::unique_ptr<IdList> missing_id_list,
+                                     const std::optional<ModelError>& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run(error, std::move(record_list),
                           std::move(missing_id_list));
 }
 
-void ModelTypeStoreImpl::ReadAllData(ReadAllDataCallback callback) {
+void DataTypeStoreImpl::ReadAllData(ReadAllDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
   std::unique_ptr<RecordList> record_list(new RecordList());
-  auto task = base::BindOnce(&BlockingModelTypeStore::ReadAllData,
+  auto task = base::BindOnce(&BlockingDataTypeStore::ReadAllData,
                              base::Unretained(backend_store_.get()),
                              base::Unretained(record_list.get()));
-  auto reply = base::BindOnce(&ModelTypeStoreImpl::ReadAllDataDone,
+  auto reply = base::BindOnce(&DataTypeStoreImpl::ReadAllDataDone,
                               weak_ptr_factory_.GetWeakPtr(),
                               std::move(callback), std::move(record_list));
   backend_task_runner_->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
                                                    std::move(reply));
 }
 
-void ModelTypeStoreImpl::ReadAllDataDone(
+void DataTypeStoreImpl::ReadAllDataDone(
     ReadAllDataCallback callback,
     std::unique_ptr<RecordList> record_list,
     const std::optional<ModelError>& error) {
@@ -119,27 +118,27 @@ void ModelTypeStoreImpl::ReadAllDataDone(
   std::move(callback).Run(error, std::move(record_list));
 }
 
-void ModelTypeStoreImpl::ReadAllMetadata(ReadMetadataCallback callback) {
-  TRACE_EVENT0("sync", "ModelTypeStoreImpl::ReadAllMetadata");
+void DataTypeStoreImpl::ReadAllMetadata(ReadMetadataCallback callback) {
+  TRACE_EVENT0("sync", "DataTypeStoreImpl::ReadAllMetadata");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
   auto metadata_batch = std::make_unique<MetadataBatch>();
-  auto task = base::BindOnce(&BlockingModelTypeStore::ReadAllMetadata,
+  auto task = base::BindOnce(&BlockingDataTypeStore::ReadAllMetadata,
                              base::Unretained(backend_store_.get()),
                              base::Unretained(metadata_batch.get()));
-  auto reply = base::BindOnce(&ModelTypeStoreImpl::ReadAllMetadataDone,
+  auto reply = base::BindOnce(&DataTypeStoreImpl::ReadAllMetadataDone,
                               weak_ptr_factory_.GetWeakPtr(),
                               std::move(callback), std::move(metadata_batch));
   backend_task_runner_->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
                                                    std::move(reply));
 }
 
-void ModelTypeStoreImpl::ReadAllMetadataDone(
+void DataTypeStoreImpl::ReadAllMetadataDone(
     ReadMetadataCallback callback,
     std::unique_ptr<MetadataBatch> metadata_batch,
     const std::optional<ModelError>& error) {
-  TRACE_EVENT0("sync", "ModelTypeStoreImpl::ReadAllMetadataDone");
+  TRACE_EVENT0("sync", "DataTypeStoreImpl::ReadAllMetadataDone");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error) {
@@ -150,18 +149,18 @@ void ModelTypeStoreImpl::ReadAllMetadataDone(
   std::move(callback).Run({}, std::move(metadata_batch));
 }
 
-void ModelTypeStoreImpl::ReadAllDataAndMetadata(
+void DataTypeStoreImpl::ReadAllDataAndMetadata(
     ReadAllDataAndMetadataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
   // Read data and metadata by calling `ReadAllData()` and `ReadAllMetadata()`
   // in sequence - aborting early if an error occurs.
   ReadAllData(
-      base::BindOnce(&ModelTypeStoreImpl::ReadMetadataAfterReadAllDataDone,
+      base::BindOnce(&DataTypeStoreImpl::ReadMetadataAfterReadAllDataDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ModelTypeStoreImpl::ReadMetadataAfterReadAllDataDone(
+void DataTypeStoreImpl::ReadMetadataAfterReadAllDataDone(
     ReadAllDataAndMetadataCallback callback,
     const std::optional<ModelError>& error,
     std::unique_ptr<RecordList> record_list) {
@@ -170,13 +169,12 @@ void ModelTypeStoreImpl::ReadMetadataAfterReadAllDataDone(
                             std::make_unique<MetadataBatch>());
     return;
   }
-  ReadAllMetadata(
-      base::BindOnce(&ModelTypeStoreImpl::ReadAllDataAndMetadataDone,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(record_list)));
+  ReadAllMetadata(base::BindOnce(&DataTypeStoreImpl::ReadAllDataAndMetadataDone,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 std::move(callback), std::move(record_list)));
 }
 
-void ModelTypeStoreImpl::ReadAllDataAndMetadataDone(
+void DataTypeStoreImpl::ReadAllDataAndMetadataDone(
     ReadAllDataAndMetadataCallback callback,
     std::unique_ptr<RecordList> record_list,
     const std::optional<ModelError>& error,
@@ -190,7 +188,7 @@ void ModelTypeStoreImpl::ReadAllDataAndMetadataDone(
   }
 }
 
-void ModelTypeStoreImpl::ReadAllDataAndPreprocess(
+void DataTypeStoreImpl::ReadAllDataAndPreprocess(
     PreprocessCallback preprocess_on_backend_sequence_callback,
     CallbackWithResult completion_on_frontend_sequence_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -203,55 +201,55 @@ void ModelTypeStoreImpl::ReadAllDataAndPreprocess(
   // ReadAllDataAndPreprocessDone() is only needed to guarantee that callbacks
   // get cancelled if |this| gets destroyed.
   auto reply =
-      base::BindOnce(&ModelTypeStoreImpl::ReadAllDataAndPreprocessDone,
+      base::BindOnce(&DataTypeStoreImpl::ReadAllDataAndPreprocessDone,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(completion_on_frontend_sequence_callback));
   backend_task_runner_->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
                                                    std::move(reply));
 }
 
-void ModelTypeStoreImpl::ReadAllDataAndPreprocessDone(
+void DataTypeStoreImpl::ReadAllDataAndPreprocessDone(
     CallbackWithResult callback,
     const std::optional<ModelError>& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run(error);
 }
 
-void ModelTypeStoreImpl::DeleteAllDataAndMetadata(CallbackWithResult callback) {
+void DataTypeStoreImpl::DeleteAllDataAndMetadata(CallbackWithResult callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
-  auto task = base::BindOnce(&BlockingModelTypeStore::DeleteAllDataAndMetadata,
+  auto task = base::BindOnce(&BlockingDataTypeStore::DeleteAllDataAndMetadata,
                              base::Unretained(backend_store_.get()));
   auto reply =
-      base::BindOnce(&ModelTypeStoreImpl::WriteModificationsDone,
+      base::BindOnce(&DataTypeStoreImpl::WriteModificationsDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
   backend_task_runner_->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
                                                    std::move(reply));
 }
 
-std::unique_ptr<ModelTypeStore::WriteBatch>
-ModelTypeStoreImpl::CreateWriteBatch() {
+std::unique_ptr<DataTypeStore::WriteBatch>
+DataTypeStoreImpl::CreateWriteBatch() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return BlockingModelTypeStoreImpl::CreateWriteBatch(model_type_,
-                                                      storage_type_);
+  return BlockingDataTypeStoreImpl::CreateWriteBatch(model_type_,
+                                                     storage_type_);
 }
 
-void ModelTypeStoreImpl::CommitWriteBatch(
+void DataTypeStoreImpl::CommitWriteBatch(
     std::unique_ptr<WriteBatch> write_batch,
     CallbackWithResult callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
-  auto task = base::BindOnce(&BlockingModelTypeStore::CommitWriteBatch,
+  auto task = base::BindOnce(&BlockingDataTypeStore::CommitWriteBatch,
                              base::Unretained(backend_store_.get()),
                              std::move(write_batch));
   auto reply =
-      base::BindOnce(&ModelTypeStoreImpl::WriteModificationsDone,
+      base::BindOnce(&DataTypeStoreImpl::WriteModificationsDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
   backend_task_runner_->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
                                                    std::move(reply));
 }
 
-void ModelTypeStoreImpl::WriteModificationsDone(
+void DataTypeStoreImpl::WriteModificationsDone(
     CallbackWithResult callback,
     const std::optional<ModelError>& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

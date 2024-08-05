@@ -13,35 +13,35 @@
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 // static
-ModelTypeStoreServiceFactory* ModelTypeStoreServiceFactory::GetInstance() {
-  static base::NoDestructor<ModelTypeStoreServiceFactory> instance;
+DataTypeStoreServiceFactory* DataTypeStoreServiceFactory::GetInstance() {
+  static base::NoDestructor<DataTypeStoreServiceFactory> instance;
   return instance.get();
 }
 
 // static
-syncer::ModelTypeStoreService* ModelTypeStoreServiceFactory::GetForBrowserState(
+syncer::DataTypeStoreService* DataTypeStoreServiceFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {
-  return static_cast<syncer::ModelTypeStoreService*>(
+  return static_cast<syncer::DataTypeStoreService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
 
-ModelTypeStoreServiceFactory::ModelTypeStoreServiceFactory()
+DataTypeStoreServiceFactory::DataTypeStoreServiceFactory()
     : BrowserStateKeyedServiceFactory(
-          "ModelTypeStoreService",
+          "DataTypeStoreService",
           BrowserStateDependencyManager::GetInstance()) {}
 
-ModelTypeStoreServiceFactory::~ModelTypeStoreServiceFactory() {}
+DataTypeStoreServiceFactory::~DataTypeStoreServiceFactory() {}
 
 std::unique_ptr<KeyedService>
-ModelTypeStoreServiceFactory::BuildServiceInstanceFor(
+DataTypeStoreServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<syncer::ModelTypeStoreServiceImpl>(
+  return std::make_unique<syncer::DataTypeStoreServiceImpl>(
       browser_state->GetStatePath(), browser_state->GetPrefs());
 }
 
-web::BrowserState* ModelTypeStoreServiceFactory::GetBrowserStateToUse(
+web::BrowserState* DataTypeStoreServiceFactory::GetBrowserStateToUse(
     web::BrowserState* context) const {
   return GetBrowserStateRedirectedInIncognito(context);
 }

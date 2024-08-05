@@ -38,7 +38,7 @@ PlusAddressSettingServiceFactory::PlusAddressSettingServiceFactory()
               .WithSystem(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -47,6 +47,6 @@ PlusAddressSettingServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<plus_addresses::PlusAddressSettingServiceImpl>(
       plus_addresses::PlusAddressSettingSyncBridge::CreateBridge(
-          ModelTypeStoreServiceFactory::GetForProfile(profile)
+          DataTypeStoreServiceFactory::GetForProfile(profile)
               ->GetStoreFactory()));
 }

@@ -65,7 +65,7 @@ ReadingListModelFactory::ReadingListModelFactory()
     : BrowserStateKeyedServiceFactory(
           "ReadingListModel",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 ReadingListModelFactory::~ReadingListModelFactory() {}
@@ -75,8 +75,8 @@ std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(context);
 
-  syncer::OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
           ->GetStoreFactory();
   auto local_storage =
       std::make_unique<ReadingListModelStorageImpl>(std::move(store_factory));
@@ -86,8 +86,8 @@ std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
           GetWipeModelUponSyncDisabledBehaviorForSyncableModel(),
           base::DefaultClock::GetInstance());
 
-  syncer::OnceModelTypeStoreFactory store_factory_for_account_storage =
-      ModelTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
+  syncer::OnceDataTypeStoreFactory store_factory_for_account_storage =
+      DataTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
           ->GetStoreFactoryForAccountStorage();
   auto account_storage = std::make_unique<ReadingListModelStorageImpl>(
       std::move(store_factory_for_account_storage));

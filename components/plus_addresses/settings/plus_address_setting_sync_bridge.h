@@ -22,13 +22,13 @@ class PlusAddressSettingSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   explicit PlusAddressSettingSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory store_factory);
+      syncer::OnceDataTypeStoreFactory store_factory);
   ~PlusAddressSettingSyncBridge() override;
 
   // Factory function to create the bridge (to share the creation logic between
   // the iOS and non-iOS service factories owning the bridge).
   static std::unique_ptr<PlusAddressSettingSyncBridge> CreateBridge(
-      syncer::OnceModelTypeStoreFactory store_factory);
+      syncer::OnceDataTypeStoreFactory store_factory);
 
   // Returns the specifics for the setting of the given `name` if the bridge
   // is aware of any such setting. Otherwise, nullopt is returned.
@@ -64,17 +64,17 @@ class PlusAddressSettingSyncBridge : public syncer::DataTypeSyncBridge {
  private:
   // Callbacks for various asynchronous operations of the `store_`.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
-                      std::unique_ptr<syncer::ModelTypeStore> store);
+                      std::unique_ptr<syncer::DataTypeStore> store);
   void StartSyncingWithDataAndMetadata(
       const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> data,
+      std::unique_ptr<syncer::DataTypeStore::RecordList> data,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   void ReportErrorIfSet(const std::optional<syncer::ModelError>& error);
 
   // Storage layer used by this sync bridge. Asynchronously created through the
   // `store_factory` injected through the constructor. Non-null if creation
   // finished without an error.
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
 
   // A copy of the settings from the `store_`, used for synchronous access.
   // Keyed by `PlusAddressSettingSpecifics::name`.

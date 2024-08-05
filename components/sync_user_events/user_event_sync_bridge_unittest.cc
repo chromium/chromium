@@ -37,7 +37,7 @@ using testing::SaveArg;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using testing::WithArg;
-using WriteBatch = ModelTypeStore::WriteBatch;
+using WriteBatch = DataTypeStore::WriteBatch;
 
 MATCHER_P(MatchesUserEvent, expected, "") {
   if (!arg.has_user_event()) {
@@ -100,15 +100,15 @@ class UserEventSyncBridgeTest : public testing::Test {
   UserEventSyncBridgeTest() { ResetBridge(); }
 
   void ResetBridge() {
-    OnceModelTypeStoreFactory store_factory;
+    OnceDataTypeStoreFactory store_factory;
     if (bridge_) {
       // Carry over the underlying store from previous bridge instances.
-      std::unique_ptr<ModelTypeStore> store = bridge_->StealStoreForTest();
+      std::unique_ptr<DataTypeStore> store = bridge_->StealStoreForTest();
       bridge_.reset();
       store_factory =
-          ModelTypeStoreTestUtil::MoveStoreToFactory(std::move(store));
+          DataTypeStoreTestUtil::MoveStoreToFactory(std::move(store));
     } else {
-      store_factory = ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest();
+      store_factory = DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest();
     }
     bridge_ = std::make_unique<UserEventSyncBridge>(
         std::move(store_factory), mock_processor_.CreateForwardingProcessor(),

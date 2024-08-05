@@ -105,7 +105,7 @@ CreateSharedTabGroupDataChangeProcessor() {
 
 std::unique_ptr<SyncDataTypeConfiguration>
 MaybeCreateSyncConfigurationForSharedTabGroupData(
-    syncer::OnceModelTypeStoreFactory store_factory) {
+    syncer::OnceDataTypeStoreFactory store_factory) {
   if (!base::FeatureList::IsEnabled(
           data_sharing::features::kDataSharingFeature)) {
     return nullptr;
@@ -159,9 +159,9 @@ bool SavedTabGroupKeyedService::AreSavedTabGroupsSynced() {
       syncer::UserSelectableType::kSavedTabGroups);
 }
 
-syncer::OnceModelTypeStoreFactory SavedTabGroupKeyedService::GetStoreFactory() {
-  DCHECK(ModelTypeStoreServiceFactory::GetForProfile(profile()));
-  return ModelTypeStoreServiceFactory::GetForProfile(profile())
+syncer::OnceDataTypeStoreFactory SavedTabGroupKeyedService::GetStoreFactory() {
+  DCHECK(DataTypeStoreServiceFactory::GetForProfile(profile()));
+  return DataTypeStoreServiceFactory::GetForProfile(profile())
       ->GetStoreFactory();
 }
 

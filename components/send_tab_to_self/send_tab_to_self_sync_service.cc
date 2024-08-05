@@ -23,7 +23,7 @@ SendTabToSelfSyncService::SendTabToSelfSyncService() : pref_service_(nullptr) {}
 
 SendTabToSelfSyncService::SendTabToSelfSyncService(
     version_info::Channel channel,
-    syncer::OnceModelTypeStoreFactory create_store_callback,
+    syncer::OnceDataTypeStoreFactory create_store_callback,
     history::HistoryService* history_service,
     PrefService* pref_service,
     syncer::DeviceInfoTracker* device_info_tracker)

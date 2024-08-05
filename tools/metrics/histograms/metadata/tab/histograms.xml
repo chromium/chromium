@@ -640,9 +640,9 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-multiplayer-eng@google.com</owner>
   <summary>
     Records the percentage of stored entries in the saved tab group
-    ModelTypeStore that failed to parse as a SavedTabGroupData in the final
-    stage of startup. Recorded during SavedTabGroupSyncBridge initialization
-    after sucessfully passing through the migration stages.
+    DataTypeStore that failed to parse as a SavedTabGroupData in the final stage
+    of startup. Recorded during SavedTabGroupSyncBridge initialization after
+    sucessfully passing through the migration stages.
   </summary>
 </histogram>
 
@@ -812,7 +812,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-multiplayer-eng@google.com</owner>
   <summary>
     Records the percentage of stored entries in the saved tab group
-    ModelTypeStore that failed to parse as a SavedTabGroupSpecfics during
+    DataTypeStore that failed to parse as a SavedTabGroupSpecfics during
     migration to SavedTabGroupData. Recorded during the one-time migration. If
     the data is already migrated, this histogram is not recorded.
   </summary>

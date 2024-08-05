@@ -45,12 +45,12 @@ HistoryDeleteDirectivesDataTypeController::
     HistoryDeleteDirectivesDataTypeController(
         const base::RepeatingClosure& dump_stack,
         syncer::SyncService* sync_service,
-        syncer::ModelTypeStoreService* model_type_store_service,
+        syncer::DataTypeStoreService* data_type_store_service,
         HistoryService* history_service,
         PrefService* pref_service)
     : SyncableServiceBasedDataTypeController(
           syncer::HISTORY_DELETE_DIRECTIVES,
-          model_type_store_service->GetStoreFactory(),
+          data_type_store_service->GetStoreFactory(),
           GetSyncableServiceFromHistoryService(history_service),
           dump_stack,
           GetDelegateMode()),

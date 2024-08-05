@@ -364,9 +364,9 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
         migration_successful && (error == base::File::Error::FILE_OK);
   }
 
-  // Reading list: Set migration pref. The ModelTypeStoreServiceImpl will read
-  // it, and instruct the ModelTypeStoreBackend to actually migrate the data.
-  // Note that ModelTypeStoreServiceImpl (a KeyedService) can't have been
+  // Reading list: Set migration pref. The DataTypeStoreServiceImpl will read
+  // it, and instruct the DataTypeStoreBackend to actually migrate the data.
+  // Note that DataTypeStoreServiceImpl (a KeyedService) can't have been
   // constructed yet, so no risk of race conditions.
   if (reading_list_decision ==
       SyncToSigninMigrationDataTypeDecision::kMigrate) {

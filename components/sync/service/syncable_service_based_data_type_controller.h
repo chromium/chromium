@@ -38,7 +38,7 @@ class SyncableServiceBasedDataTypeController : public DataTypeController {
   // transport mode.
   SyncableServiceBasedDataTypeController(
       ModelType type,
-      OnceModelTypeStoreFactory store_factory,
+      OnceDataTypeStoreFactory store_factory,
       base::WeakPtr<SyncableService> syncable_service,
       const base::RepeatingClosure& dump_stack,
       DelegateMode delegate_mode);

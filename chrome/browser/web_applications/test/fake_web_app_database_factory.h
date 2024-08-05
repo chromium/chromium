@@ -14,7 +14,7 @@
 #include "components/webapps/common/web_app_id.h"
 
 namespace syncer {
-class ModelTypeStore;
+class DataTypeStore;
 }  // namespace syncer
 
 namespace web_app {
@@ -29,10 +29,10 @@ class FakeWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
       delete;
   ~FakeWebAppDatabaseFactory() override;
 
-  syncer::ModelTypeStore* GetStore();
+  syncer::DataTypeStore* GetStore();
 
   // AbstractWebAppDatabaseFactory interface implementation.
-  syncer::OnceModelTypeStoreFactory GetStoreFactory() override;
+  syncer::OnceDataTypeStoreFactory GetStoreFactory() override;
 
   Registry ReadRegistry();
 
@@ -42,7 +42,7 @@ class FakeWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
   void WriteRegistry(const Registry& registry);
 
  private:
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
 };
 
 }  // namespace web_app

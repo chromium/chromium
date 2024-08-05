@@ -67,8 +67,8 @@ class SyncSessionsClientImpl final : public sync_sessions::SyncSessionsClient {
     return &session_sync_prefs_;
   }
 
-  syncer::RepeatingModelTypeStoreFactory GetStoreFactory() override {
-    return ModelTypeStoreServiceFactory::GetForProfile(profile_)
+  syncer::RepeatingDataTypeStoreFactory GetStoreFactory() override {
+    return DataTypeStoreServiceFactory::GetForProfile(profile_)
         ->GetStoreFactory();
   }
 
@@ -156,10 +156,10 @@ SessionSyncServiceFactory::SessionSyncServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(FaviconServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(sync_sessions::SyncSessionsWebContentsRouterFactory::GetInstance());
 }
 

@@ -13,22 +13,21 @@
 
 namespace syncer {
 
-// Test-only ModelTypeStoreService implementation that uses a temporary dir
-// for GetSyncDataPath() and uses in-memory storage for ModelTypeStore.
-class TestModelTypeStoreService : public ModelTypeStoreService {
+// Test-only DataTypeStoreService implementation that uses a temporary dir
+// for GetSyncDataPath() and uses in-memory storage for DataTypeStore.
+class TestDataTypeStoreService : public DataTypeStoreService {
  public:
-  TestModelTypeStoreService();
+  TestDataTypeStoreService();
 
-  TestModelTypeStoreService(const TestModelTypeStoreService&) = delete;
-  TestModelTypeStoreService& operator=(const TestModelTypeStoreService&) =
-      delete;
+  TestDataTypeStoreService(const TestDataTypeStoreService&) = delete;
+  TestDataTypeStoreService& operator=(const TestDataTypeStoreService&) = delete;
 
-  ~TestModelTypeStoreService() override;
+  ~TestDataTypeStoreService() override;
 
-  // ModelTypeStoreService:
+  // DataTypeStoreService:
   const base::FilePath& GetSyncDataPath() const override;
-  RepeatingModelTypeStoreFactory GetStoreFactory() override;
-  RepeatingModelTypeStoreFactory GetStoreFactoryForAccountStorage() override;
+  RepeatingDataTypeStoreFactory GetStoreFactory() override;
+  RepeatingDataTypeStoreFactory GetStoreFactoryForAccountStorage() override;
   scoped_refptr<base::SequencedTaskRunner> GetBackendTaskRunner() override;
 
  private:

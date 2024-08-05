@@ -26,7 +26,7 @@ class DeskSyncService : public KeyedService {
  public:
   DeskSyncService();
   DeskSyncService(version_info::Channel channel,
-                  syncer::OnceModelTypeStoreFactory create_store_callback,
+                  syncer::OnceDataTypeStoreFactory create_store_callback,
                   const AccountId& account_id);
   DeskSyncService(const DeskSyncService&) = delete;
   DeskSyncService& operator=(const DeskSyncService&) = delete;

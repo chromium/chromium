@@ -16,9 +16,9 @@ namespace syncer {
 
 class MetadataBatch;
 
-// BlockingModelTypeStore represents a synchronous API for a leveldb-based
+// BlockingDataTypeStore represents a synchronous API for a leveldb-based
 // persistence layer, with support for metadata.
-class BlockingModelTypeStore : public ModelTypeStoreBase {
+class BlockingDataTypeStore : public DataTypeStoreBase {
  public:
   virtual std::optional<ModelError> ReadData(const IdList& id_list,
                                              RecordList* data_records,

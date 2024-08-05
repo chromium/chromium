@@ -84,7 +84,7 @@ MATCHER_P(UuidEq, uuid, "") {
 class TabGroupSyncServiceTest : public testing::Test {
  public:
   TabGroupSyncServiceTest()
-      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()),
+      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()),
         fake_controller_delegate_(syncer::SAVED_TAB_GROUP),
         group_1_(test::CreateTestSavedTabGroup()),
         group_2_(test::CreateTestSavedTabGroup()),
@@ -109,7 +109,7 @@ class TabGroupSyncServiceTest : public testing::Test {
         std::move(model),
         std::make_unique<SyncDataTypeConfiguration>(
             processor_.CreateForwardingProcessor(),
-            syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
+            syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
                 store_.get())),
         nullptr, &pref_service_, std::move(metrics_logger));
     ON_CALL(processor_, IsTrackingMetadata())
@@ -209,7 +209,7 @@ class TabGroupSyncServiceTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
   raw_ptr<SavedTabGroupModel> model_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
   std::unique_ptr<MockTabGroupSyncServiceObserver> observer_;
   syncer::FakeDeviceInfoTracker device_info_tracker_;
   raw_ptr<MockTabGroupSyncCoordinator> coordinator_;

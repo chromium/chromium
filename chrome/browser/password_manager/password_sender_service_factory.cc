@@ -40,7 +40,7 @@ PasswordSenderServiceFactory::PasswordSenderServiceFactory()
               .WithSystem(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 PasswordSenderServiceFactory::~PasswordSenderServiceFactory() = default;

@@ -15,7 +15,7 @@
 namespace syncer {
 
 // Base class for leveldb-based storage layers.
-class ModelTypeStoreBase {
+class DataTypeStoreBase {
  public:
   // Output of read operations is passed back as list of Record structures.
   struct Record {
@@ -64,12 +64,12 @@ class ModelTypeStoreBase {
   using RecordList = std::vector<Record>;
   using IdList = std::vector<std::string>;
 
-  ModelTypeStoreBase(const ModelTypeStoreBase&) = delete;
-  ModelTypeStoreBase& operator=(const ModelTypeStoreBase&) = delete;
+  DataTypeStoreBase(const DataTypeStoreBase&) = delete;
+  DataTypeStoreBase& operator=(const DataTypeStoreBase&) = delete;
 
  protected:
-  ModelTypeStoreBase();
-  virtual ~ModelTypeStoreBase();
+  DataTypeStoreBase();
+  virtual ~DataTypeStoreBase();
 };
 
 }  // namespace syncer

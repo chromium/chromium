@@ -44,7 +44,7 @@ PasswordReceiverServiceFactory::PasswordReceiverServiceFactory()
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
   DependsOn(AccountPasswordStoreFactory::GetInstance());
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(ProfilePasswordStoreFactory::GetInstance());
 }
 
@@ -74,7 +74,7 @@ PasswordReceiverServiceFactory::BuildServiceInstanceForBrowserContext(
   auto sync_bridge = std::make_unique<
       password_manager::IncomingPasswordSharingInvitationSyncBridge>(
       std::move(change_processor),
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 
   return std::make_unique<password_manager::PasswordReceiverServiceImpl>(
       profile->GetPrefs(), std::move(sync_bridge),

@@ -77,8 +77,8 @@ syncer::DataTypeController::TypeVector CreateControllers(
       WebViewDeviceInfoSyncServiceFactory::GetForBrowserState(browser_state));
   controller_builder.SetIdentityManager(
       WebViewIdentityManagerFactory::GetForBrowserState(browser_state));
-  controller_builder.SetModelTypeStoreService(
-      WebViewModelTypeStoreServiceFactory::GetForBrowserState(browser_state));
+  controller_builder.SetDataTypeStoreService(
+      WebViewDataTypeStoreServiceFactory::GetForBrowserState(browser_state));
   controller_builder.SetPasswordStore(
       WebViewProfilePasswordStoreFactory::GetForBrowserState(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS),
@@ -135,13 +135,13 @@ WebViewSyncServiceFactory::WebViewSyncServiceFactory()
   // when it is shut down.  Specify those dependencies here to build the proper
   // destruction order. Note that some of the dependencies are listed here but
   // actually plumbed in WebViewSyncClient, which this factory constructs.
+  DependsOn(WebViewDataTypeStoreServiceFactory::GetInstance());
   DependsOn(WebViewDeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(WebViewIdentityManagerFactory::GetInstance());
   DependsOn(WebViewWebDataServiceWrapperFactory::GetInstance());
   DependsOn(WebViewAccountPasswordStoreFactory::GetInstance());
   DependsOn(WebViewProfilePasswordStoreFactory::GetInstance());
   DependsOn(WebViewGCMProfileServiceFactory::GetInstance());
-  DependsOn(WebViewModelTypeStoreServiceFactory::GetInstance());
   DependsOn(WebViewSyncInvalidationsServiceFactory::GetInstance());
 }
 
@@ -159,7 +159,7 @@ WebViewSyncServiceFactory::BuildServiceInstanceFor(
   init_params.sync_client = std::make_unique<WebViewSyncClient>(
       browser_state->GetPrefs(),
       WebViewIdentityManagerFactory::GetForBrowserState(browser_state),
-      WebViewModelTypeStoreServiceFactory::GetForBrowserState(browser_state),
+      WebViewDataTypeStoreServiceFactory::GetForBrowserState(browser_state),
       WebViewDeviceInfoSyncServiceFactory::GetForBrowserState(browser_state),
       WebViewSyncInvalidationsServiceFactory::GetForBrowserState(
           browser_state));

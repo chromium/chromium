@@ -37,13 +37,12 @@ std::unique_ptr<syncer::EntityData> SpecificsToEntityData(
 
 CollaborationGroupSyncBridge::CollaborationGroupSyncBridge(
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-    syncer::OnceModelTypeStoreFactory store_factory)
+    syncer::OnceDataTypeStoreFactory store_factory)
     : syncer::DataTypeSyncBridge(std::move(change_processor)) {
   std::move(store_factory)
-      .Run(
-          syncer::COLLABORATION_GROUP,
-          base::BindOnce(&CollaborationGroupSyncBridge::OnModelTypeStoreCreated,
-                         weak_ptr_factory_.GetWeakPtr()));
+      .Run(syncer::COLLABORATION_GROUP,
+           base::BindOnce(&CollaborationGroupSyncBridge::OnDataTypeStoreCreated,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 CollaborationGroupSyncBridge::~CollaborationGroupSyncBridge() {
@@ -74,8 +73,8 @@ CollaborationGroupSyncBridge::ApplyIncrementalSyncChanges(
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
-      model_type_store_->CreateWriteBatch();
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
+      data_type_store_->CreateWriteBatch();
 
   std::vector<GroupId> added_ids;
   std::vector<GroupId> updated_ids;
@@ -118,9 +117,9 @@ CollaborationGroupSyncBridge::ApplyIncrementalSyncChanges(
   }
 
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
-  model_type_store_->CommitWriteBatch(
+  data_type_store_->CommitWriteBatch(
       std::move(batch),
-      base::BindOnce(&CollaborationGroupSyncBridge::OnModelTypeStoreCommit,
+      base::BindOnce(&CollaborationGroupSyncBridge::OnDataTypeStoreCommit,
                      weak_ptr_factory_.GetWeakPtr()));
 
   for (auto& observer : observers_) {
@@ -164,7 +163,7 @@ void CollaborationGroupSyncBridge::ApplyDisableSyncChanges(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ids_to_specifics_.clear();
-  model_type_store_->DeleteAllDataAndMetadata(base::DoNothing());
+  data_type_store_->DeleteAllDataAndMetadata(base::DoNothing());
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -176,9 +175,9 @@ bool CollaborationGroupSyncBridge::IsEntityDataValid(
               .empty();
 }
 
-void CollaborationGroupSyncBridge::OnModelTypeStoreCreated(
+void CollaborationGroupSyncBridge::OnDataTypeStoreCreated(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore> store) {
+    std::unique_ptr<syncer::DataTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error) {
@@ -186,16 +185,16 @@ void CollaborationGroupSyncBridge::OnModelTypeStoreCreated(
     return;
   }
 
-  model_type_store_ = std::move(store);
+  data_type_store_ = std::move(store);
 
-  model_type_store_->ReadAllData(
+  data_type_store_->ReadAllData(
       base::BindOnce(&CollaborationGroupSyncBridge::OnReadAllData,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CollaborationGroupSyncBridge::OnReadAllData(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list) {
+    std::unique_ptr<syncer::DataTypeStore::RecordList> record_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error) {
@@ -217,7 +216,7 @@ void CollaborationGroupSyncBridge::OnReadAllData(
     observer.OnDataLoaded();
   }
 
-  model_type_store_->ReadAllMetadata(
+  data_type_store_->ReadAllMetadata(
       base::BindOnce(&CollaborationGroupSyncBridge::OnReadAllMetadata,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -234,7 +233,7 @@ void CollaborationGroupSyncBridge::OnReadAllMetadata(
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
 }
 
-void CollaborationGroupSyncBridge::OnModelTypeStoreCommit(
+void CollaborationGroupSyncBridge::OnDataTypeStoreCommit(
     const std::optional<syncer::ModelError>& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

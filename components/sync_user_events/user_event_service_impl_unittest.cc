@@ -75,7 +75,7 @@ class UserEventServiceImplTest : public testing::Test {
       run_loop.Quit();
     });
     auto bridge = std::make_unique<UserEventSyncBridge>(
-        ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+        DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         mock_processor_.CreateForwardingProcessor(), &mapper_);
     run_loop.Run();
     return bridge;

@@ -24,9 +24,9 @@ class FakeWebApkDatabaseFactory : public AbstractWebApkDatabaseFactory {
       delete;
   ~FakeWebApkDatabaseFactory() override;
 
-  syncer::ModelTypeStore* GetStore();
+  syncer::DataTypeStore* GetStore();
 
-  syncer::OnceModelTypeStoreFactory GetStoreFactory() override;
+  syncer::OnceDataTypeStoreFactory GetStoreFactory() override;
 
   Registry ReadRegistry();
 
@@ -34,7 +34,7 @@ class FakeWebApkDatabaseFactory : public AbstractWebApkDatabaseFactory {
   void WriteRegistry(const Registry& registry);
 
  private:
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
 };
 }  // namespace webapk
 

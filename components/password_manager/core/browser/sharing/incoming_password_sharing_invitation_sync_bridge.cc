@@ -22,12 +22,12 @@ namespace password_manager {
 IncomingPasswordSharingInvitationSyncBridge::
     IncomingPasswordSharingInvitationSyncBridge(
         std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-        syncer::OnceModelTypeStoreFactory create_sync_metadata_store_callback)
+        syncer::OnceDataTypeStoreFactory create_sync_metadata_store_callback)
     : syncer::DataTypeSyncBridge(std::move(change_processor)) {
   std::move(create_sync_metadata_store_callback)
       .Run(syncer::INCOMING_PASSWORD_SHARING_INVITATION,
            base::BindOnce(&IncomingPasswordSharingInvitationSyncBridge::
-                              OnModelTypeStoreCreated,
+                              OnDataTypeStoreCreated,
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -76,7 +76,7 @@ IncomingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(password_receiver_service_);
 
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       sync_metadata_store_->CreateWriteBatch();
 
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
@@ -162,9 +162,9 @@ bool IncomingPasswordSharingInvitationSyncBridge::IsEntityDataValid(
          specifics.has_client_only_unencrypted_data();
 }
 
-void IncomingPasswordSharingInvitationSyncBridge::OnModelTypeStoreCreated(
+void IncomingPasswordSharingInvitationSyncBridge::OnDataTypeStoreCreated(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore> store) {
+    std::unique_ptr<syncer::DataTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
     change_processor()->ReportError(*error);
@@ -197,7 +197,7 @@ void IncomingPasswordSharingInvitationSyncBridge::OnCommitSyncMetadata(
 }
 
 void IncomingPasswordSharingInvitationSyncBridge::CommitSyncMetadata(
-    std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch) {
+    std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch) {
   sync_metadata_store_->CommitWriteBatch(
       std::move(batch),
       base::BindOnce(

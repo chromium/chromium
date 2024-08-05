@@ -25,15 +25,15 @@ namespace {
 
 using sync_pb::UserConsentSpecifics;
 using syncer::DataBatch;
+using syncer::DataTypeStore;
+using syncer::DataTypeStoreTestUtil;
 using syncer::DataTypeSyncBridge;
 using syncer::EntityChange;
 using syncer::EntityChangeList;
 using syncer::EntityData;
 using syncer::MetadataChangeList;
 using syncer::MockDataTypeLocalChangeProcessor;
-using syncer::ModelTypeStore;
-using syncer::ModelTypeStoreTestUtil;
-using syncer::OnceModelTypeStoreFactory;
+using syncer::OnceDataTypeStoreFactory;
 using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
@@ -49,7 +49,7 @@ using testing::SaveArg;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using testing::WithArg;
-using WriteBatch = ModelTypeStore::WriteBatch;
+using WriteBatch = DataTypeStore::WriteBatch;
 
 MATCHER_P(MatchesUserConsent, expected, "") {
   if (!arg.has_user_consent()) {
@@ -82,15 +82,15 @@ class ConsentSyncBridgeImplTest : public testing::Test {
   ConsentSyncBridgeImplTest() { ResetBridge(); }
 
   void ResetBridge() {
-    OnceModelTypeStoreFactory store_factory;
+    OnceDataTypeStoreFactory store_factory;
     if (bridge_) {
       // Carry over the underlying store from previous bridge instances.
-      std::unique_ptr<ModelTypeStore> store = bridge_->StealStoreForTest();
+      std::unique_ptr<DataTypeStore> store = bridge_->StealStoreForTest();
       bridge_.reset();
       store_factory =
-          ModelTypeStoreTestUtil::MoveStoreToFactory(std::move(store));
+          DataTypeStoreTestUtil::MoveStoreToFactory(std::move(store));
     } else {
-      store_factory = ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest();
+      store_factory = DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest();
     }
 
     bridge_ = std::make_unique<ConsentSyncBridgeImpl>(

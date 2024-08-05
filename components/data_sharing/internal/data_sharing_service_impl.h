@@ -46,7 +46,7 @@ class DataSharingServiceImpl : public DataSharingService,
   DataSharingServiceImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      syncer::OnceModelTypeStoreFactory model_type_store_factory,
+      syncer::OnceDataTypeStoreFactory data_type_store_factory,
       version_info::Channel channel,
       std::unique_ptr<DataSharingSDKDelegate> sdk_delegate,
       std::unique_ptr<DataSharingUIDelegate> ui_delegate);

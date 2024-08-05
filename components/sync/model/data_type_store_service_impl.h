@@ -19,27 +19,26 @@ class PrefService;
 
 namespace syncer {
 
-class ModelTypeStoreBackend;
+class DataTypeStoreBackend;
 
-// Handles the shared resources for ModelTypeStore and related classes,
+// Handles the shared resources for DataTypeStore and related classes,
 // including a shared background sequence runner.
-class ModelTypeStoreServiceImpl : public ModelTypeStoreService {
+class DataTypeStoreServiceImpl : public DataTypeStoreService {
  public:
   // `base_path` represents the profile's path.
   // `pref_service` must not be null and must outlive this object.
-  ModelTypeStoreServiceImpl(const base::FilePath& base_path,
-                            PrefService* pref_service);
+  DataTypeStoreServiceImpl(const base::FilePath& base_path,
+                           PrefService* pref_service);
 
-  ModelTypeStoreServiceImpl(const ModelTypeStoreServiceImpl&) = delete;
-  ModelTypeStoreServiceImpl& operator=(const ModelTypeStoreServiceImpl&) =
-      delete;
+  DataTypeStoreServiceImpl(const DataTypeStoreServiceImpl&) = delete;
+  DataTypeStoreServiceImpl& operator=(const DataTypeStoreServiceImpl&) = delete;
 
-  ~ModelTypeStoreServiceImpl() override;
+  ~DataTypeStoreServiceImpl() override;
 
-  // ModelTypeStoreService:
+  // DataTypeStoreService:
   const base::FilePath& GetSyncDataPath() const override;
-  RepeatingModelTypeStoreFactory GetStoreFactory() override;
-  RepeatingModelTypeStoreFactory GetStoreFactoryForAccountStorage() override;
+  RepeatingDataTypeStoreFactory GetStoreFactory() override;
+  RepeatingDataTypeStoreFactory GetStoreFactoryForAccountStorage() override;
   scoped_refptr<base::SequencedTaskRunner> GetBackendTaskRunner() override;
 
  private:
@@ -49,7 +48,7 @@ class ModelTypeStoreServiceImpl : public ModelTypeStoreService {
   // information.
   const base::FilePath sync_path_;
 
-  // Subdirectory where ModelTypeStore persists the leveldb database.
+  // Subdirectory where DataTypeStore persists the leveldb database.
   const base::FilePath leveldb_path_;
 
   const raw_ptr<PrefService> pref_service_;
@@ -59,11 +58,11 @@ class ModelTypeStoreServiceImpl : public ModelTypeStoreService {
 
   // Constructed on the UI thread, used on |backend_task_runner_| and destroyed
   // on any sequence.
-  const scoped_refptr<ModelTypeStoreBackend> store_backend_;
+  const scoped_refptr<DataTypeStoreBackend> store_backend_;
 
   SEQUENCE_CHECKER(ui_sequence_checker_);
 
-  base::WeakPtrFactory<ModelTypeStoreServiceImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<DataTypeStoreServiceImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace syncer

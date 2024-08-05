@@ -100,8 +100,8 @@ class MockObserver : public CollaborationGroupSyncBridge::Observer {
 class CollaborationGroupSyncBridgeTest : public testing::Test {
  public:
   CollaborationGroupSyncBridgeTest()
-      : model_type_store_(
-            syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
+      : data_type_store_(
+            syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
   ~CollaborationGroupSyncBridgeTest() override = default;
 
   void TearDown() override { bridge_->RemoveObserver(&observer_); }
@@ -113,8 +113,8 @@ class CollaborationGroupSyncBridgeTest : public testing::Test {
 
     bridge_ = std::make_unique<CollaborationGroupSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
-            model_type_store_.get()));
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
+            data_type_store_.get()));
 
     bridge_->AddObserver(&observer_);
 
@@ -136,7 +136,7 @@ class CollaborationGroupSyncBridgeTest : public testing::Test {
 
   testing::NiceMock<MockObserver>& observer() { return observer_; }
 
-  syncer::ModelTypeStore& model_type_store() { return *model_type_store_; }
+  syncer::DataTypeStore& data_type_store() { return *data_type_store_; }
 
   std::vector<sync_pb::CollaborationGroupSpecifics> GetBridgeSpecifics() {
     return ExtractSpecificsFromDataBatch(bridge().GetAllDataForDebugging());
@@ -145,7 +145,7 @@ class CollaborationGroupSyncBridgeTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  std::unique_ptr<syncer::ModelTypeStore> model_type_store_;
+  std::unique_ptr<syncer::DataTypeStore> data_type_store_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   testing::NiceMock<MockObserver> observer_;
   std::unique_ptr<CollaborationGroupSyncBridge> bridge_;
@@ -350,25 +350,24 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldApplyDisableSyncChanges) {
   // Verify that data and metadata was removed from disk as well.
   {
     base::RunLoop run_loop;
-    base::MockOnceCallback<syncer::ModelTypeStore::ReadAllDataCallback::RunType>
+    base::MockOnceCallback<syncer::DataTypeStore::ReadAllDataCallback::RunType>
         get_all_data_callback;
     EXPECT_CALL(get_all_data_callback,
                 Run(NoModelError(), /*data_records*/ Pointee(IsEmpty())))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-    model_type_store().ReadAllData(get_all_data_callback.Get());
+    data_type_store().ReadAllData(get_all_data_callback.Get());
     run_loop.Run();
   }
 
   // Verify that metadata was removed from disk.
   {
     base::RunLoop run_loop;
-    base::MockOnceCallback<
-        syncer::ModelTypeStore::ReadMetadataCallback::RunType>
+    base::MockOnceCallback<syncer::DataTypeStore::ReadMetadataCallback::RunType>
         get_metadata_callback;
     EXPECT_CALL(get_metadata_callback,
                 Run(NoModelError(), IsEmptyMetadataBatch()))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-    model_type_store().ReadAllMetadata(get_metadata_callback.Get());
+    data_type_store().ReadAllMetadata(get_metadata_callback.Get());
     run_loop.Run();
   }
 }

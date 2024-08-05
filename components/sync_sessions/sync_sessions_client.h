@@ -32,7 +32,7 @@ class SyncSessionsClient {
 
   // Getters for services that sessions depends on.
   virtual SessionSyncPrefs* GetSessionSyncPrefs() = 0;
-  virtual syncer::RepeatingModelTypeStoreFactory GetStoreFactory() = 0;
+  virtual syncer::RepeatingDataTypeStoreFactory GetStoreFactory() = 0;
 
   // Clears all on demand favicons (downloaded based on synced history data).
   virtual void ClearAllOnDemandFavicons() = 0;

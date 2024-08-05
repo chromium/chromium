@@ -17,6 +17,6 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-message ModelTypeStoreSchemaDescriptor {
+message DataTypeStoreSchemaDescriptor {
   optional int64 version_number = 1;
 }
