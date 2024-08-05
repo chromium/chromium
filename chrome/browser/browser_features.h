@@ -135,6 +135,8 @@ BASE_DECLARE_FEATURE(kBrowserDynamicCodeDisabled);
 #endif
 
 BASE_DECLARE_FEATURE(kReportPakFileIntegrity);
+
+BASE_DECLARE_FEATURE(kRemovalOfIWAsFromTabCapture);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_

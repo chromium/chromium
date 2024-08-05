@@ -392,4 +392,10 @@ BASE_FEATURE(kReportPakFileIntegrity,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// This flag enables the removal of IWAs surface captures from Chrome Tabs
+// category in getDisplayMedia() API. When disabled, IWAs surface captures
+// show both in Chrome Tabs and Windows.
+BASE_FEATURE(kRemovalOfIWAsFromTabCapture,
+             "RemovalOfIWAsFromTabCapture",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features

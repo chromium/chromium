@@ -2588,6 +2588,7 @@ if (!is_android) {
       "../browser/media/webrtc/media_stream_devices_controller_browsertest.cc",
       "../browser/media/webrtc/same_origin_observer_browsertest.cc",
       "../browser/media/webrtc/sub_capture_browsertest.cc",
+      "../browser/media/webrtc/tab_desktop_media_list_browsertest.cc",
       "../browser/media/webrtc/test_stats_dictionary_unittest.cc",
       "../browser/performance_manager/persistence/site_data/site_data_cache_facade_browsertest.cc",
       "../browser/webapps/installable/installable_manager_browsertest.cc",
