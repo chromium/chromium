@@ -61,12 +61,14 @@ sync_pb::WebauthnCredentialSpecifics PasskeyFromCredential(
 
 // Convenience initializer from a WebauthnCredentialSpecifics.
 - (instancetype)initWithFavicon:(NSString*)favicon
+                           gaia:(NSString*)gaia
                         passkey:(const sync_pb::WebauthnCredentialSpecifics&)
                                     passkey {
   // Any passkey member which contains a string of bytes with potentially non
   // ASCII characters is hex encoded first before being transformed into an
   // NSString object.
   return [self initWithFavicon:favicon
+                          gaia:gaia
               recordIdentifier:RecordIdentifierForPasskey(passkey)
                         syncId:StringToData(passkey.sync_id())
                       username:SysUTF8ToNSString(passkey.user_name())

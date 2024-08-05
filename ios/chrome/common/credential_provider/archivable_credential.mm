@@ -10,6 +10,7 @@ namespace {
 
 // Keys used to serialize properties.
 NSString* const kACFaviconKey = @"favicon";
+NSString* const kACGaiaKey = @"gaia";
 NSString* const kACPasswordKey = @"password";
 NSString* const kACRankKey = @"rank";
 NSString* const kACRecordIdentifierKey = @"recordIdentifier";
@@ -56,6 +57,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
 @implementation ArchivableCredential
 
 @synthesize favicon = _favicon;
+@synthesize gaia = _gaia;
 @synthesize password = _password;
 @synthesize rank = _rank;
 @synthesize recordIdentifier = _recordIdentifier;
@@ -78,6 +80,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
   if (credential.isPasskey) {
     // Use the passkey initilizer
     self = [self initWithFavicon:credential.favicon
+                            gaia:credential.gaia
                 recordIdentifier:credential.recordIdentifier
                           syncId:credential.syncId
                         username:credential.username
@@ -92,6 +95,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
   } else {
     // Use the password initializer
     self = [self initWithFavicon:credential.favicon
+                            gaia:credential.gaia
                         password:credential.password
                             rank:credential.rank
                 recordIdentifier:credential.recordIdentifier
@@ -104,6 +108,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
 }
 
 - (instancetype)initWithFavicon:(NSString*)favicon
+                           gaia:(NSString*)gaia
                        password:(NSString*)password
                            rank:(int64_t)rank
                recordIdentifier:(NSString*)recordIdentifier
@@ -114,6 +119,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
   self = [super init];
   if (self) {
     _favicon = favicon;
+    _gaia = gaia;
     _password = password;
     _rank = rank;
     _recordIdentifier = recordIdentifier;
@@ -126,6 +132,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
 }
 
 - (instancetype)initWithFavicon:(NSString*)favicon
+                           gaia:(NSString*)gaia
                recordIdentifier:(NSString*)recordIdentifier
                          syncId:(NSData*)syncId
                        username:(NSString*)username
@@ -141,6 +148,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
   self = [super init];
   if (self) {
     _favicon = favicon;
+    _gaia = gaia;
     _recordIdentifier = recordIdentifier;
     _syncId = syncId;
     _username = username;
@@ -181,6 +189,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
     }
     ArchivableCredential* otherCredential = (ArchivableCredential*)other;
     return stringsAreEqual(self.favicon, otherCredential.favicon) &&
+           stringsAreEqual(self.gaia, otherCredential.gaia) &&
            stringsAreEqual(self.password, otherCredential.password) &&
            self.rank == otherCredential.rank &&
            stringsAreEqual(self.recordIdentifier,
@@ -217,6 +226,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
 
 - (void)encodeWithCoder:(NSCoder*)coder {
   [coder encodeObject:self.favicon forKey:kACFaviconKey];
+  [coder encodeObject:self.gaia forKey:kACGaiaKey];
   [coder encodeObject:self.recordIdentifier forKey:kACRecordIdentifierKey];
   [coder encodeObject:self.username forKey:kACUserKey];
   if (self.isPasskey) {
@@ -245,6 +255,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
     // Use the passkey initilizer
     return [self
          initWithFavicon:[coder decodeNSStringForKey:kACFaviconKey]
+                    gaia:[coder decodeNSStringForKey:kACGaiaKey]
         recordIdentifier:[coder decodeNSStringForKey:kACRecordIdentifierKey]
                   syncId:[coder decodeNSDataForKey:kACSyncIdKey]
                 username:[coder decodeNSStringForKey:kACUserKey]
@@ -261,6 +272,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
     // Use the password initializer
     return [self
           initWithFavicon:[coder decodeNSStringForKey:kACFaviconKey]
+                     gaia:[coder decodeNSStringForKey:kACGaiaKey]
                  password:[coder decodeNSStringForKey:kACPasswordKey]
                      rank:[coder decodeInt64ForKey:kACRankKey]
          recordIdentifier:[coder decodeNSStringForKey:kACRecordIdentifierKey]

@@ -41,6 +41,7 @@ NSData* SecurityDomainSecret() {
 ArchivableCredential* TestPasskeyCredential() {
   return
       [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                               gaia:nil
                                    recordIdentifier:@"recordIdentifier"
                                              syncId:StringToData("syncId")
                                            username:@"username"

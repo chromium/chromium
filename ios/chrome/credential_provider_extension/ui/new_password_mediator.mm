@@ -76,6 +76,7 @@ using base::SysUTF16ToNSString;
 - (void)saveCredentialWithUsername:(NSString*)username
                           password:(NSString*)password
                               note:(NSString*)note
+                              gaia:(NSString*)gaia
                      shouldReplace:(BOOL)shouldReplace {
   if (!shouldReplace && [self credentialExistsForUsername:username]) {
     [self.uiHandler alertUserCredentialExists];
@@ -85,7 +86,8 @@ using base::SysUTF16ToNSString;
   ArchivableCredential* credential =
       [self createNewCredentialWithUsername:username
                                    password:password
-                                       note:note];
+                                       note:note
+                                       gaia:gaia];
 
   if (!credential) {
     [self.uiHandler alertSavePasswordFailed];
@@ -120,12 +122,14 @@ using base::SysUTF16ToNSString;
 // Creates a new credential but doesn't add it to any stores.
 - (ArchivableCredential*)createNewCredentialWithUsername:(NSString*)username
                                                 password:(NSString*)password
-                                                    note:(NSString*)note {
+                                                    note:(NSString*)note
+                                                    gaia:(NSString*)gaia {
   NSString* identifier = [self currentIdentifier];
   NSURL* url = [NSURL URLWithString:identifier];
   NSString* recordIdentifier = RecordIdentifierForData(url, username);
 
   return [[ArchivableCredential alloc] initWithFavicon:nil
+                                                  gaia:gaia
                                               password:password
                                                   rank:1
                                       recordIdentifier:recordIdentifier

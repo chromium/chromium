@@ -14,6 +14,7 @@ using MemoryCredentialStoreTest = PlatformTest;
 
 ArchivableCredential* TestCredential() {
   return [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                                  gaia:nil
                                               password:@"qwerty!"
                                                   rank:5
                                       recordIdentifier:@"recordIdentifier"
@@ -48,6 +49,7 @@ TEST_F(MemoryCredentialStoreTest, update) {
 
   ArchivableCredential* updatedCredential =
       [[ArchivableCredential alloc] initWithFavicon:@"other_favicon"
+                                               gaia:nil
                                            password:@"Qwerty123!"
                                                rank:credential.rank + 10
                                    recordIdentifier:@"recordIdentifier"

@@ -43,7 +43,8 @@ password_manager::PasswordForm PasswordFormFromCredential(
 
 - (instancetype)initWithPasswordForm:
                     (const password_manager::PasswordForm&)passwordForm
-                             favicon:(NSString*)favicon {
+                             favicon:(NSString*)favicon
+                                gaia:(NSString*)gaia {
   if (passwordForm.blocked_by_user) {
     return nil;
   }
@@ -87,6 +88,7 @@ password_manager::PasswordForm PasswordFormFromCredential(
   DCHECK(serviceIdentifier.length);
 
   return [self initWithFavicon:favicon
+                          gaia:gaia
                       password:SysUTF16ToNSString(passwordForm.password_value)
                           rank:passwordForm.times_used_in_html_form
               recordIdentifier:RecordIdentifierForPasswordForm(passwordForm)

@@ -18,6 +18,9 @@
 // passkeys.
 @property(nonatomic, readonly) NSString* recordIdentifier;
 
+// User's account identifier. Used by passwords and passkeys.
+@property(nonatomic, readonly) NSString* gaia;
+
 // Username of the service. Used by passwords and passkeys.
 @property(nonatomic, readonly) NSString* username;
 

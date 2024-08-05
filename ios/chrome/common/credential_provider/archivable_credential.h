@@ -23,6 +23,7 @@
 
 // Initializer used for password credentials.
 - (instancetype)initWithFavicon:(NSString*)favicon
+                           gaia:(NSString*)gaia
                        password:(NSString*)password
                            rank:(int64_t)rank
                recordIdentifier:(NSString*)recordIdentifier
@@ -33,6 +34,7 @@
 
 // Initializer used for passkey credentials.
 - (instancetype)initWithFavicon:(NSString*)favicon
+                           gaia:(NSString*)gaia
                recordIdentifier:(NSString*)recordIdentifier
                          syncId:(NSData*)syncId
                        username:(NSString*)username

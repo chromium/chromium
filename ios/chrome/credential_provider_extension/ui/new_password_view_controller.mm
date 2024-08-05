@@ -381,9 +381,15 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   NSString* password = self.passwordText;
   NSString* note = self.noteText;
 
+  // TODO(crbug.com/330355124): Get the gaia ID if there's only 1 account OR
+  // show some UI so that the user can pick which account to create the password
+  // in.
+  NSString* gaia = nil;
+
   [self.credentialHandler saveCredentialWithUsername:username
                                             password:password
                                                 note:note
+                                                gaia:gaia
                                        shouldReplace:shouldReplace];
 }
 

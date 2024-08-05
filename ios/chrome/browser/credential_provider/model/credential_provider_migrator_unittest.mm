@@ -39,6 +39,7 @@ ArchivableCredential* TestPasswordCredential() {
   NSString* recordIdentifier = @"recordIdentifier";
   NSString* note = @"note";
   return [[ArchivableCredential alloc] initWithFavicon:nil
+                                                  gaia:nil
                                               password:password
                                                   rank:1
                                       recordIdentifier:recordIdentifier
@@ -51,6 +52,7 @@ ArchivableCredential* TestPasswordCredential() {
 ArchivableCredential* TestPasskeyCredential() {
   return
       [[ArchivableCredential alloc] initWithFavicon:nil
+                                               gaia:nil
                                    recordIdentifier:@"recordIdentifier"
                                              syncId:StringToData("syncId")
                                            username:@"username"

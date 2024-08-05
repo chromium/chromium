@@ -63,6 +63,7 @@ NSUserDefaults* TestUserDefaults() {
 
 ArchivableCredential* TestCredential(NSString* recordIdentifier) {
   return [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                                  gaia:nil
                                               password:@"qwerty123"
                                                   rank:5
                                       recordIdentifier:recordIdentifier
@@ -142,6 +143,7 @@ TEST_F(NewPasswordMediatorTest, SaveNewCredential) {
   [mediator_ saveCredentialWithUsername:testUsername
                                password:testPassword
                                    note:testNote
+                                   gaia:nil
                           shouldReplace:NO];
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^BOOL {
     return blockWaitCompleted;
@@ -201,6 +203,7 @@ TEST_F(NewPasswordMediatorTest, SaveUpdateCredential) {
   [mediator_ saveCredentialWithUsername:testUsername
                                password:testPassword
                                    note:testNote
+                                   gaia:nil
                           shouldReplace:NO];
 
   EXPECT_TRUE(uiHandler_.alertedCredentialExists);
@@ -213,6 +216,7 @@ TEST_F(NewPasswordMediatorTest, SaveUpdateCredential) {
   [mediator_ saveCredentialWithUsername:testUsername
                                password:testPassword
                                    note:testNote
+                                   gaia:nil
                           shouldReplace:YES];
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^BOOL {
     return blockWaitCompleted;
