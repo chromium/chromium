@@ -56,8 +56,6 @@ bool SwitchableGPUsSupported(const GPUInfo& gpu_info,
 #if BUILDFLAG(IS_MAC)
   if (command_line.HasSwitch(switches::kUseGL) &&
       (command_line.GetSwitchValueASCII(switches::kUseGL) !=
-           gl::kGLImplementationDesktopName &&
-       command_line.GetSwitchValueASCII(switches::kUseGL) !=
            gl::kGLImplementationANGLEName)) {
     return false;
   }

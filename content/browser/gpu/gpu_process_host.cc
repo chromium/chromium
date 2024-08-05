@@ -510,8 +510,8 @@ class GpuSandboxedProcessLauncherDelegate
   };
 
   bool UseOpenGLRenderer() {
-    return cmd_line_.GetSwitchValueASCII(switches::kUseGL) ==
-           gl::kGLImplementationDesktopName;
+    // TODO(crbug.com/40848940): Remove this function.
+    return false;
   }
 
   bool CanLowIntegrityAccessDesktop() {
