@@ -186,6 +186,10 @@ TEST_F(PickerSearchFieldViewTest, HidesClearButtonWithEmptyQuery) {
 
   view->RequestFocus();
   PressAndReleaseKey(*widget, ui::KeyboardCode::VKEY_A);
+  // This backspace press does not do anything, causing the query text to remain
+  // "a" and not hiding the clear button.
+  // TODO: b/357464892 - Fix this test and replace the below `EXPECT_TRUE` with
+  // an `EXPECT_FALSE`.
   PressAndReleaseKey(*widget, ui::KeyboardCode::VKEY_BACK);
 
   EXPECT_TRUE(view->clear_button_for_testing().GetVisible());
