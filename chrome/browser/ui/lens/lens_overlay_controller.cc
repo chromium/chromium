@@ -1870,11 +1870,16 @@ void LensOverlayController::IssueSearchBoxRequest(
       lens_selection_type_ = lens::MULTIMODAL_SUGGEST_TYPEAHEAD;
     }
 
+    std::optional<SkBitmap> selected_region_bitmap =
+        initialization_data_->selected_region_bitmap_.drawsNothing()
+            ? std::nullopt
+            : std::make_optional<SkBitmap>(
+                  initialization_data_->selected_region_bitmap_);
     lens_overlay_query_controller_->SendMultimodalRequest(
         initialization_data_->selected_region_.Clone(), search_box_text,
         lens_selection_type_,
         initialization_data_->additional_search_query_params_,
-        std::make_optional(initialization_data_->selected_region_bitmap_));
+        selected_region_bitmap);
   }
   results_side_panel_coordinator_->RegisterEntryAndShow();
   CloseSearchBubble();
