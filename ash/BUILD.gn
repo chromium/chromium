@@ -3775,6 +3775,7 @@ test("ash_unittests") {
     "keyboard/keyboard_controller_impl_unittest.cc",
     "keyboard/virtual_keyboard_controller_unittest.cc",
     "keyboard/virtual_keyboard_unittest.cc",
+    "lobster/lobster_session_impl_unittest.cc",
     "lock_screen_action/lock_screen_action_background_controller_impl_unittest.cc",
     "lock_screen_action/lock_screen_note_display_state_handler_unittest.cc",
     "lock_screen_action/lock_screen_note_launcher_unittest.cc",

@@ -10,6 +10,7 @@
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace manta {
 
@@ -31,10 +32,14 @@ class ImageFetcher {
                                 ash::RequestCandidatesCallback);
 
  private:
-  void OnRequestPreviewCandidates(
-      ash::RequestCandidatesCallback,
-      std::unique_ptr<manta::proto::Response> response,
-      manta::MantaStatus status);
+  void OnCandidatesRequested(ash::RequestCandidatesCallback callback,
+                             std::unique_ptr<manta::proto::Response> response,
+                             manta::MantaStatus status);
+
+  void OnImagesSanitized(
+      ash::RequestCandidatesCallback callback,
+      const std::vector<std::optional<ash::LobsterImageCandidate>>&
+          sanitized_images);
 
   raw_ptr<manta::SnapperProvider> provider_;
 

@@ -35,6 +35,7 @@ static_library("lobster") {
     "//components/variations/service",
     "//content/public/browser",
     "//net/traffic_annotation:traffic_annotation",
+    "//services/data_decoder/public/cpp:cpp",
   ]
 }
 
@@ -51,7 +52,9 @@ static_library("test_support") {
     "//base/test:test_support",
     "//components/manta",
     "//net/traffic_annotation:traffic_annotation",
+    "//services/data_decoder/public/cpp:test_support",
     "//testing/gmock",
+    "//ui/gfx:test_support",
   ]
 }
 
@@ -65,7 +68,9 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//services/data_decoder/public/cpp:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx:test_support",
   ]
 }
