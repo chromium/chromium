@@ -16,6 +16,7 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -728,8 +729,7 @@ class PerformanceInterventionMixedProfileTest
 
 // We can only have one non-off record profile open at a time on ChromeOS so
 // users will not encounter this case.
-// TODO(crbug.com/352446083): Investigate test failure on linux64-rel-ready bot
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionMixedProfileTest,
                        SuggestTabsForMultipleProfiles) {
   // Create two browser windows with tabs and ensure the second browser window
@@ -753,6 +753,11 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionMixedProfileTest,
   second_browser_window->Activate();
   ASSERT_TRUE(second_browser_window->IsActive());
   ASSERT_FALSE(first_browser_window->IsActive());
+  ASSERT_EQ(second_browser, chrome::FindLastActive());
+
+  PrefService* const pref_service = g_browser_process->local_state();
+  ASSERT_TRUE(performance_manager::user_tuning::prefs::
+                  ShouldShowPerformanceInterventionNotification(pref_service));
 
   ToolbarButton* const first_button =
       BrowserView::GetBrowserViewForBrowser(first_browser)
@@ -772,6 +777,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionMixedProfileTest,
   histogram_tester.ExpectBucketCount(kMessageTriggerResultHistogram,
                                      InterventionMessageTriggerResult::kShown,
                                      0);
+  histogram_tester.ExpectBucketCount(
+      kMessageTriggerResultHistogram,
+      InterventionMessageTriggerResult::kRateLimited, 0);
 
   // We should show the toolbar button on the second browser because it is the
   // last active browser even though all actionable tabs belong to the first
@@ -779,6 +787,10 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionMixedProfileTest,
   NotifyActionableTabListChange({0, 1}, first_browser);
   EXPECT_FALSE(first_button->GetVisible());
   EXPECT_TRUE(second_button->GetVisible());
+
+  histogram_tester.ExpectBucketCount(
+      kMessageTriggerResultHistogram,
+      InterventionMessageTriggerResult::kRateLimited, 0);
   histogram_tester.ExpectBucketCount(
       kMessageTriggerResultHistogram,
       InterventionMessageTriggerResult::kMixedProfile, 0);
