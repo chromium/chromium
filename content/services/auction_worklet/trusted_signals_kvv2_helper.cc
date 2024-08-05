@@ -187,15 +187,12 @@ base::expected<
               std::vector<uint8_t>>,
     TrustedSignalsKVv2ResponseParser::ErrorInfo>
 ExtractCompressionSchemaAndCborStringFromResponseBody(
-    const std::vector<uint8_t> response_body) {
-  base::span<const uint8_t> body_span =
-      base::as_bytes(base::make_span(response_body));
-
-  if (body_span.size() <= kCompressionFormatSize + kCborStringLengthSize) {
+    base::span<const uint8_t> response_body) {
+  if (response_body.size() <= kCompressionFormatSize + kCborStringLengthSize) {
     return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
         "Response shorter than framing header."));
   }
-  base::SpanReader reader(body_span);
+  base::SpanReader reader(response_body);
 
   // TODO(crbug.com/337917489): Add decryption here for compression scheme, CBOR
   // string length and CBOR string later.
@@ -558,7 +555,7 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::AddTrustedSignalsRequest(
   return IsolationIndex(compression_group_id, partition_id);
 }
 
-TrustedSignalsKVv2RequestHelper
+std::unique_ptr<TrustedSignalsKVv2RequestHelper>
 TrustedBiddingSignalsKVv2RequestHelperBuilder::Build() {
   cbor::Value::MapValue request_map_value;
   AddPostRequestConstants(request_map_value);
@@ -581,7 +578,8 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::Build() {
                                 cbor::Value(std::move(partition_array)));
   std::string request_body = CreateRequestBody(std::move(request_map_value));
 
-  return TrustedSignalsKVv2RequestHelper(std::move(request_body));
+  return std::make_unique<TrustedSignalsKVv2RequestHelper>(
+      std::move(request_body));
 }
 
 cbor::Value::MapValue
@@ -636,9 +634,10 @@ CompressionGroupResult::~CompressionGroupResult() = default;
 
 TrustedSignalsKVv2ResponseParser::SignalsFetchResult
 TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
-    std::vector<uint8_t> body_bytes) {
+    std::string_view body_string) {
+  base::span<const uint8_t> body_span = base::as_byte_span(body_string);
   auto extract_result =
-      ExtractCompressionSchemaAndCborStringFromResponseBody(body_bytes);
+      ExtractCompressionSchemaAndCborStringFromResponseBody(body_span);
 
   if (!extract_result.has_value()) {
     return base::unexpected(std::move(extract_result).error());
@@ -707,8 +706,7 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
     const std::optional<std::set<std::string>>& interest_group_names,
     const std::optional<std::set<std::string>>& keys,
     const TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap&
-        compression_group_result_map,
-    std::optional<uint32_t> data_version) {
+        compression_group_result_map) {
   TrustedSignalsResultMap result_map;
 
   for (const auto& group : compression_group_result_map) {
@@ -725,8 +723,8 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
       bool is_decompressed = compression::GzipUncompress(group.second.content,
                                                          &decompressed_string);
       if (!is_decompressed) {
-        return base::unexpected(
-            ErrorInfo("Failed to decompress content string with Gzip."));
+        return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+            "Failed to decompress content string with Gzip."));
       }
       content_bytes = base::as_bytes(base::make_span(decompressed_string));
     }
@@ -780,6 +778,26 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
       }
       int id = static_cast<int>(id_value.GetInteger());
 
+      // Try to find "dataVersion".
+      std::optional<uint32_t> data_version;
+      auto data_version_it = partition.find(cbor::Value("dataVersion"));
+      if (data_version_it != partition.end()) {
+        const cbor::Value& data_version_value = data_version_it->second;
+        if (!data_version_value.is_integer()) {
+          return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+              "DataVersion is not type of Integer."));
+        }
+
+        // "dataVersion" field must be a valid 32-bit unsigned integer.
+        if (!base::IsValueInRangeForNumericType<uint32_t>(
+                data_version_value.GetInteger())) {
+          return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+              "DataVersion field is out of range for uint32."));
+        }
+        data_version = static_cast<uint32_t>(data_version_value.GetInteger());
+      }
+
+      // Parse keyGroupOutputs to a map.
       const cbor::Value& key_group_outputs_value = key_group_outputs_it->second;
       if (!key_group_outputs_value.is_array()) {
         return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
@@ -796,7 +814,7 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
         return base::unexpected(std::move(key_group_outputs_map).error());
       }
 
-      // Try to find interest group name tag and parse the map.
+      // Try to find `kTagInterestGroupName` tag and parse the map.
       auto tag_interest_group_name_it =
           key_group_outputs_map->find(kTagInterestGroupName);
       if (tag_interest_group_name_it != key_group_outputs_map->end()) {
@@ -855,7 +873,7 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
         }
       }
 
-      // Try to find interest group name tag and parse the map.
+      // Try to find `kTagKey` tag and parse the map.
       auto tag_key_it = key_group_outputs_map->find(kTagKey);
       if (tag_key_it != key_group_outputs_map->end()) {
         DCHECK(keys.has_value());
@@ -875,8 +893,8 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
           std::move(per_interest_group_data_map), std::move(bidding_data_map),
           data_version);
       result_map->try_emplace(
-          TrustedBiddingSignalsKVv2RequestHelperBuilder::IsolationIndex(
-              group.first, id),
+          TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(group.first,
+                                                                 id),
           result);
     }
   }
