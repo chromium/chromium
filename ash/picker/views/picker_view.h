@@ -149,6 +149,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
 
   // Starts a search with the current query, with search results being returned
   // to `PublishSearchResults` and `PublishEmojiResults`.
+  // Sets the active page to the search view after a delay via
+  // `OnClearResultsTimerFired` and `PublishSearchResults`.
   // If the query is empty, this calls `StopSearch` instead.
   void StartSearch();
 
@@ -159,10 +161,10 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // Displays `results` in the emoji bar.
   void PublishEmojiResults(std::vector<PickerSearchResult> results);
 
-  // Clears the search results.
+  // Clears the search results and sets the active page to the search view.
   void OnClearResultsTimerFired();
 
-  // Displays `results` in the search view.
+  // Displays `results` in the search view and sets it as the active page.
   // If `results` is empty and no results were previously published, then a "no
   // results found" view is shown instead of a blank view.
   void PublishSearchResults(std::vector<PickerSearchResultsSection> results);
@@ -220,6 +222,10 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // (e.g. to re-align the Picker search field after results have changed).
   void SetWidgetBoundsNeedsUpdate();
 
+  // The currently selected category.
+  // Should only be set to `std::nullopt` through `OnSearchBackButtonPressed`.
+  // Should only be set to a value through `SelectCategory` and
+  // `SelectCategoryWithQuery`.
   std::optional<PickerCategory> selected_category_;
 
   PickerKeyEventHandler key_event_handler_;
