@@ -16,6 +16,7 @@ class FontUtilWin {
   static float ClampGamma(float value);
   static float GetContrastFromRegistry();
   static float GetGammaFromRegistry();
+  static float TextGammaContrast();
 };
 
 }  // namespace gfx

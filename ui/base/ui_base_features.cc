@@ -514,6 +514,9 @@ BASE_FEATURE(kCr2023MacFontSmoothing,
 BASE_FEATURE(kUseGammaContrastRegistrySettings,
              "UseGammaContrastRegistrySettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIncreaseWindowsTextContrast,
+             "IncreaseWindowsTextContrast",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 BASE_FEATURE(kBubbleFrameViewTitleIsHeading,

@@ -92,7 +92,7 @@ class CachedFontRenderParams {
       params_->text_contrast = FontUtilWin::GetContrastFromRegistry();
       params_->text_gamma = FontUtilWin::GetGammaFromRegistry();
     } else {
-      params_->text_contrast = SK_GAMMA_CONTRAST;
+      params_->text_contrast = FontUtilWin::TextGammaContrast();
       params_->text_gamma = SK_GAMMA_EXPONENT;
     }
 
