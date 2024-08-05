@@ -410,7 +410,7 @@ export class AudioWaveform extends ReactiveLitElement {
     const x = Math.max(startX, viewBox.x);
     const y = -SPEAKER_LABEL_LINE_HEIGHT / 2 - maxHeight;
     const shortLabel = assertExists(speakerLabels[speakerLabelIndex]);
-    const fullLabel = i18n.transcriptionSpeakerIdLabel(shortLabel);
+    const fullLabel = i18n.transcriptionSpeakerLabelLabel(shortLabel);
 
     // clang-format off
     // The width/height on foreignObject is necessary for the div to be shown,

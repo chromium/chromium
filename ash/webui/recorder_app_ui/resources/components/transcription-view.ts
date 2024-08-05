@@ -349,7 +349,7 @@ export class TranscriptionView extends ReactiveLitElement {
     return html`<div
       class="speaker-label ${getSpeakerLabelClass(speakerLabelIdx)}"
     >
-      ${i18n.transcriptionSpeakerIdLabel(speakerLabel)}
+      ${i18n.transcriptionSpeakerLabelLabel(speakerLabel)}
     </div>`;
   }
 
@@ -450,7 +450,7 @@ export class TranscriptionView extends ReactiveLitElement {
     // TODO(pihsun): @click on #transcript is a performance optimization to
     // only have the click handler on the container. Need to adjust this
     // accordingly when we have other clickable things inside the container
-    // (speaker ID).
+    // (speaker label).
     return html`<div
         id="container"
         class=${classMap(classes)}

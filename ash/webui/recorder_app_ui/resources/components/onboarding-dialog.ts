@@ -4,7 +4,7 @@
 
 import './cra/cra-button.js';
 import './cra/cra-image.js';
-import './speaker-id-consent-dialog-content.js';
+import './speaker-label-consent-dialog-content.js';
 
 import {
   css,
@@ -19,7 +19,7 @@ import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {
   settings,
-  SpeakerIdEnableState,
+  SpeakerLabelEnableState,
   TranscriptionEnableState,
 } from '../core/state/settings.js';
 import {assertExhaustive, assertInstanceof} from '../core/utils/assert.js';
@@ -219,40 +219,40 @@ export class OnboardingDialog extends ReactiveLitElement {
         );
       }
       case 2: {
-        const disableSpeakerId = () => {
+        const disableSpeakerLabel = () => {
           settings.mutate((s) => {
-            s.speakerIdEnabled = SpeakerIdEnableState.DISABLED_FIRST;
+            s.speakerLabelEnabled = SpeakerLabelEnableState.DISABLED_FIRST;
           });
           this.close();
         };
 
-        const enableSpeakerId = () => {
+        const enableSpeakerLabel = () => {
           settings.mutate((s) => {
-            s.speakerIdEnabled = SpeakerIdEnableState.ENABLED;
+            s.speakerLabelEnabled = SpeakerLabelEnableState.ENABLED;
           });
           this.close();
         };
 
         return this.renderDialog(
-          'onboarding_speaker_id',
-          i18n.onboardingDialogSpeakerIdHeader,
-          html`<speaker-id-consent-dialog-content>
-          </speaker-id-consent-dialog-content>`,
+          'onboarding_speaker_label',
+          i18n.onboardingDialogSpeakerLabelHeader,
+          html`<speaker-label-consent-dialog-content>
+          </speaker-label-consent-dialog-content>`,
           html`
             <cra-button
-              .label=${i18n.onboardingDialogSpeakerIdDeferButton}
+              .label=${i18n.onboardingDialogSpeakerLabelDeferButton}
               class="left"
               button-style="secondary"
               @click=${this.close}
             ></cra-button>
             <cra-button
-              .label=${i18n.onboardingDialogSpeakerIdDisallowButton}
+              .label=${i18n.onboardingDialogSpeakerLabelDisallowButton}
               button-style="secondary"
-              @click=${disableSpeakerId}
+              @click=${disableSpeakerLabel}
             ></cra-button>
             <cra-button
-              .label=${i18n.onboardingDialogSpeakerIdAllowButton}
-              @click=${enableSpeakerId}
+              .label=${i18n.onboardingDialogSpeakerLabelAllowButton}
+              @click=${enableSpeakerLabel}
             ></cra-button>
           `,
         );

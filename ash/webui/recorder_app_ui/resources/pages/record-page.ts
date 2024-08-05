@@ -44,7 +44,7 @@ import {RecordingSession} from '../core/recording_session.js';
 import {navigateTo} from '../core/state/route.js';
 import {
   settings,
-  SpeakerIdEnableState,
+  SpeakerLabelEnableState,
   TranscriptionEnableState,
 } from '../core/state/settings.js';
 import {
@@ -350,8 +350,8 @@ export class RecordPage extends ReactiveLitElement {
         micId: assertExists(this.micId),
         includeSystemAudio: this.includeSystemAudio,
         platformHandler: this.platformHandler,
-        speakerIdEnabled:
-          settings.value.speakerIdEnabled === SpeakerIdEnableState.ENABLED,
+        speakerLabelEnabled: settings.value.speakerLabelEnabled ===
+          SpeakerLabelEnableState.ENABLED,
       });
     } catch (e) {
       if (e instanceof DOMException &&

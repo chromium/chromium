@@ -69,7 +69,7 @@ function parseTimingInfo(
 function flattenEvent(
   ev: FinalResult|PartialResult,
   offsetMs: number,
-  speakerIdEnabled: boolean,
+  speakerLabelEnabled: boolean,
 ): TextPart[] {
   const {hypothesisPart, timingEvent} = ev;
 
@@ -109,7 +109,7 @@ function flattenEvent(
       text: assertExists(part.text[0]),
       timeRange,
       leadingSpace: part.leadingSpace,
-      speakerLabel: speakerIdEnabled ? part.speakerLabel : null,
+      speakerLabel: speakerLabelEnabled ? part.speakerLabel : null,
     });
   }
   return result;
@@ -122,7 +122,7 @@ export class SodaEventTransformer {
   // The last tokens from the PartialResult in SodaEvent with partial result.
   private partialResultTokens: TextToken[]|null = null;
 
-  constructor(private readonly speakerIdEnabled: boolean) {}
+  constructor(private readonly speakerLabelEnabled: boolean) {}
 
   getTranscription(): Transcription {
     const tokens = [...this.tokens];
@@ -141,7 +141,7 @@ export class SodaEventTransformer {
   ) {
     const {hypothesisParts} = ev;
     for (const correctionPart of hypothesisParts) {
-      const speakerId = correctionPart.speakerLabel ?? null;
+      const speakerLabel = correctionPart.speakerLabel ?? null;
       const startMs = toMs(correctionPart.alignment);
       if (startMs === null) {
         console.error('speaker label correction event without timestamp', ev);
@@ -164,7 +164,7 @@ export class SodaEventTransformer {
           // immutable update, or signal/proxy with nested change detection, or
           // have a clearer boundary on which values (especially object/array)
           // should be immutably updated for lit change detection.
-          token.speakerLabel = speakerId;
+          token.speakerLabel = speakerLabel;
           found = true;
           break;
         }
@@ -191,7 +191,7 @@ export class SodaEventTransformer {
       this.partialResultTokens = flattenEvent(
         event.partialResult,
         offsetMs,
-        this.speakerIdEnabled,
+        this.speakerLabelEnabled,
       );
       // Don't update tokens since it'll be added in getTokens.
       return;
@@ -204,7 +204,7 @@ export class SodaEventTransformer {
         this.tokens.push(textSeparator);
       }
       this.tokens.push(
-        ...flattenEvent(finalResult, offsetMs, this.speakerIdEnabled),
+        ...flattenEvent(finalResult, offsetMs, this.speakerLabelEnabled),
       );
       return;
     }
@@ -267,13 +267,13 @@ export class Transcription {
    *
    * TODO(pihsun): Have a different function for exporting to text format and
    * when exporting representation used for summary input.
-   * TODO(pihsun): Include speaker ID in the output.
+   * TODO(pihsun): Include speaker label in the output.
    */
   toPlainText = lazyInit((): string => {
     const ret: string[] = [];
     let startOfParagraph = true;
-    // TODO(pihsun): This currently don't include the speaker ID, but since the
-    // speaker ID is a little bit not accurate on the start of sentence,
+    // TODO(pihsun): This currently don't include the speaker label, but since
+    // the speaker label is a little bit not accurate on the start of sentence,
     // including it might make the result weird.
     for (const token of this.textTokens) {
       if (token.kind === 'textSeparator') {
@@ -320,7 +320,7 @@ export class Transcription {
   /**
    * Splits the transcription into several paragraphs.
    *
-   * Each paragraph have continuous timestamp, and a single speaker ID.
+   * Each paragraph have continuous timestamp, and a single speaker label.
    */
   getParagraphs = lazyInit((): TextPart[][] => {
     const slicedTokens = sliceWhen(this.textTokens, (a, b) => {

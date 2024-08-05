@@ -55,7 +55,7 @@ icons = [
 images = [
   "genai_error_general.svg",
   "genai_error_unsafe.svg",
-  "onboarding_speaker_id.svg",
+  "onboarding_speaker_label.svg",
   "onboarding_transcription.svg",
   "onboarding_welcome.svg",
   "recording_list_empty.svg",

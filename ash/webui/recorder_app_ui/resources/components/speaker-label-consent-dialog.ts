@@ -4,21 +4,21 @@
 
 import './cra/cra-button.js';
 import './cra/cra-feature-tour-dialog.js';
-import './speaker-id-consent-dialog-content.js';
+import './speaker-label-consent-dialog-content.js';
 
 import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {settings, SpeakerIdEnableState} from '../core/state/settings.js';
+import {settings, SpeakerLabelEnableState} from '../core/state/settings.js';
 
 import {CraFeatureTourDialog} from './cra/cra-feature-tour-dialog.js';
 
 /**
- * Dialog for asking speaker ID consent from user.
+ * Dialog for asking speaker label consent from user.
  *
  * Note that this is different from onboarding dialog and is only used when
- * user defers speaker ID consent on onboarding, and then enable it later.
+ * user defers speaker label consent on onboarding, and then enable it later.
  *
  * The main difference to the onboarding dialog is that onboarding dialog is
  * not dismissable from user by clicking outside / pressing ESC, but this
@@ -28,7 +28,7 @@ import {CraFeatureTourDialog} from './cra/cra-feature-tour-dialog.js';
  *
  * TODO(pihsun): Consider other way to share part of the implementation.
  */
-export class SpeakerIdConsentDialog extends ReactiveLitElement {
+export class SpeakerLabelConsentDialog extends ReactiveLitElement {
   static override styles = css`
     :host {
       display: contents;
@@ -53,16 +53,16 @@ export class SpeakerIdConsentDialog extends ReactiveLitElement {
     this.dialog.value?.hide();
   }
 
-  private disableSpeakerId() {
+  private disableSpeakerLabel() {
     settings.mutate((s) => {
-      s.speakerIdEnabled = SpeakerIdEnableState.DISABLED_FIRST;
+      s.speakerLabelEnabled = SpeakerLabelEnableState.DISABLED_FIRST;
     });
     this.hide();
   }
 
-  private enableSpeakerId() {
+  private enableSpeakerLabel() {
     settings.mutate((s) => {
-      s.speakerIdEnabled = SpeakerIdEnableState.ENABLED;
+      s.speakerLabelEnabled = SpeakerLabelEnableState.ENABLED;
     });
     this.hide();
   }
@@ -71,26 +71,26 @@ export class SpeakerIdConsentDialog extends ReactiveLitElement {
     // TODO: b/336963138 - Add correct link
     return html`<cra-feature-tour-dialog
       ${ref(this.dialog)}
-      illustrationName="onboarding_speaker_id"
-      header=${i18n.onboardingDialogSpeakerIdHeader}
+      illustrationName="onboarding_speaker_label"
+      header=${i18n.onboardingDialogSpeakerLabelHeader}
     >
-      <speaker-id-consent-dialog-content slot="content">
-      </speaker-id-consent-dialog-content>
+      <speaker-label-consent-dialog-content slot="content">
+      </speaker-label-consent-dialog-content>
       <div slot="actions">
         <cra-button
-          .label=${i18n.onboardingDialogSpeakerIdDeferButton}
+          .label=${i18n.onboardingDialogSpeakerLabelDeferButton}
           class="left"
           button-style="secondary"
           @click=${this.hide}
         ></cra-button>
         <cra-button
-          .label=${i18n.onboardingDialogSpeakerIdDisallowButton}
+          .label=${i18n.onboardingDialogSpeakerLabelDisallowButton}
           button-style="secondary"
-          @click=${this.disableSpeakerId}
+          @click=${this.disableSpeakerLabel}
         ></cra-button>
         <cra-button
-          .label=${i18n.onboardingDialogSpeakerIdAllowButton}
-          @click=${this.enableSpeakerId}
+          .label=${i18n.onboardingDialogSpeakerLabelAllowButton}
+          @click=${this.enableSpeakerLabel}
         ></cra-button>
       </div>
     </cra-feature-tour-dialog>`;
@@ -98,12 +98,12 @@ export class SpeakerIdConsentDialog extends ReactiveLitElement {
 }
 
 window.customElements.define(
-  'speaker-id-consent-dialog',
-  SpeakerIdConsentDialog,
+  'speaker-label-consent-dialog',
+  SpeakerLabelConsentDialog,
 );
 
 declare global {
   interface HTMLElementTagNameMap {
-    'speaker-id-consent-dialog': SpeakerIdConsentDialog;
+    'speaker-label-consent-dialog': SpeakerLabelConsentDialog;
   }
 }

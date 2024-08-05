@@ -167,24 +167,24 @@ class SodaSessionDev implements SodaSession {
       audioStartTime: timeDelta(lineStartTimeMs),
       eventEndTime: timeDelta(this.fakeTimeMs),
     };
-    // Speaker ID starts from "1".
-    const lineSpeakerId = (this.currentLineIdx % MAX_NUM_SPEAKER) + 1;
+    // Speaker label starts from "1".
+    const lineSpeakerLabel = (this.currentLineIdx % MAX_NUM_SPEAKER) + 1;
     const hypothesisPart =
       currentLine.slice(0, this.currentWordIdx + 1).map((w, i) => {
-        let speakerId = lineSpeakerId;
+        let speakerLabel = lineSpeakerLabel;
         if (i === 0 && this.currentLineIdx > 0 && !finishLine) {
-          // Change speaker ID of first word of each line to "wrong" speaker
+          // Change speaker label of first word of each line to "wrong" speaker
           // ID, to simulate speaker label correction event.
-          speakerId--;
-          if (speakerId === 0) {
-            speakerId = MAX_NUM_SPEAKER;
+          speakerLabel--;
+          if (speakerLabel === 0) {
+            speakerLabel = MAX_NUM_SPEAKER;
           }
         }
         return {
           text: [w],
           alignment: timeDelta(i * WORD_INTERVAL_MS),
           leadingSpace: true,
-          speakerLabel: speakerId.toString(),
+          speakerLabel: speakerLabel.toString(),
         } satisfies HypothesisPart;
       });
 
@@ -205,7 +205,7 @@ class SodaSessionDev implements SodaSession {
         text: [assertExists(currentLine[0])],
         alignment: timeDelta(lineStartTimeMs),
         leadingSpace: true,
-        speakerLabel: lineSpeakerId.toString(),
+        speakerLabel: lineSpeakerLabel.toString(),
       };
       this.observers.notify({
         finalResult: {
