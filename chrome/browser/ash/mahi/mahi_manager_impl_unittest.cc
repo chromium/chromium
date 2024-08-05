@@ -94,6 +94,8 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
   // NoSessionAshTestBase::
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kMahiRestrictionsOverride);
 
     magic_boost_state_ = std::make_unique<MagicBoostStateAsh>();
     mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();

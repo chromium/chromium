@@ -30,6 +30,8 @@ class MahiUiBrowserTestBase : public SystemWebAppBrowserTestBase {
   MahiUiBrowserTestBase& operator=(const MahiUiBrowserTestBase&) = delete;
   ~MahiUiBrowserTestBase() override;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override;
+
  protected:
   // SystemWebAppBrowserTestBase:
   void SetUpOnMainThread() override;

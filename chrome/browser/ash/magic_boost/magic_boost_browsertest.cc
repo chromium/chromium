@@ -99,6 +99,12 @@ class MagicBoostBrowserTest
     InProcessBrowserTest::SetUp();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kMahiRestrictionsOverride);
+
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+  }
+
  protected:
   ui::test::EventGenerator& event_generator() { return *event_generator_; }
 

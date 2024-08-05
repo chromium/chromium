@@ -29,6 +29,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
+#include "ash/system/mahi/fake_mahi_manager.h"
 #include "ash/system/mahi/test/mock_mahi_media_app_events_proxy.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
@@ -50,6 +51,10 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
     scoped_mahi_web_contents_manager_ =
         std::make_unique<::mahi::ScopedMahiWebContentsManagerForTesting>(
             &fake_mahi_web_contents_manager_);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    fake_mahi_manager_ = std::make_unique<ash::FakeMahiManager>();
+#endif
     // Sets the focused page's distillability to true so that it does not block
     // the menu widget's display.
     ChangePageDistillability(true);
@@ -87,11 +92,14 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
   base::test::ScopedFeatureList feature_list_{features::kMahi};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Providing a mock MahiMediaAppEvnetsProxy to satisfy MahiMenuController.
+  // Providing a mock MahiMediaAppEvnetsProxy and a fake mahi manager to satisfy
+  // MahiMenuController.
   testing::NiceMock<::ash::MockMahiMediaAppEventsProxy>
       mock_mahi_media_app_events_proxy_;
   chromeos::ScopedMahiMediaAppEventsProxySetter
       scoped_mahi_media_app_events_proxy_{&mock_mahi_media_app_events_proxy_};
+
+  std::unique_ptr<ash::FakeMahiManager> fake_mahi_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::unique_ptr<MahiMenuController> menu_controller_;

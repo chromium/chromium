@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
+#include "chrome/browser/ash/mahi/mahi_availability.h"
 #include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
@@ -470,7 +471,8 @@ void MahiManagerImpl::OpenMahiPanel(int64_t display_id,
 
 bool MahiManagerImpl::IsEnabled() {
   return chromeos::features::IsMahiEnabled() &&
-         chromeos::MagicBoostState::Get()->hmr_enabled().value_or(false);
+         chromeos::MagicBoostState::Get()->hmr_enabled().value_or(false) &&
+         CanUseMahiService();
 }
 
 void MahiManagerImpl::SetMediaAppPDFFocused() {
