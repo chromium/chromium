@@ -31,14 +31,8 @@ enum NativeLibraryType {
   BUNDLE,
   DYNAMIC_LIB
 };
-enum NativeLibraryObjCStatus {
-  OBJC_UNKNOWN,
-  OBJC_PRESENT,
-  OBJC_NOT_PRESENT,
-};
 struct NativeLibraryStruct {
   NativeLibraryType type;
-  NativeLibraryObjCStatus objc_status;
   union {
     CFBundleRef bundle;
     //// This field is not a raw_ptr<> because it was filtered by the rewriter
