@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_TYPES_H_
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_TYPES_H_
 
+#include <iosfwd>
 #include <map>
 #include <optional>
 #include <string>
@@ -136,6 +137,12 @@ enum class PlusAddressNetworkRequestType {
   kCreate = 3,
   kMaxValue = kCreate,
 };
+
+std::ostream& operator<<(std::ostream& os, PlusAddressRequestErrorType type);
+std::ostream& operator<<(std::ostream& os,
+                         const PlusAddressRequestError& error);
+std::ostream& operator<<(std::ostream& os, const PlusProfile& profile);
+std::ostream& operator<<(std::ostream& os, const PlusProfileOrError& profile);
 
 }  // namespace plus_addresses
 

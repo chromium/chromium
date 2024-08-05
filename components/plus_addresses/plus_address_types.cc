@@ -5,6 +5,9 @@
 #include "components/plus_addresses/plus_address_types.h"
 
 #include <memory>
+#include <ostream>
+
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace plus_addresses {
 
@@ -27,5 +30,47 @@ PlusAddressDataChange::PlusAddressDataChange(
 PlusAddressDataChange& PlusAddressDataChange::operator=(
     const PlusAddressDataChange& change) = default;
 PlusAddressDataChange::~PlusAddressDataChange() = default;
+
+std::ostream& operator<<(std::ostream& os, PlusAddressRequestErrorType type) {
+  return os << [&]() -> std::string_view {
+    switch (type) {
+      case PlusAddressRequestErrorType::kParsingError:
+        return "ParsingError";
+      case PlusAddressRequestErrorType::kNetworkError:
+        return "NetworkError";
+      case PlusAddressRequestErrorType::kOAuthError:
+        return "OAuthError";
+      case PlusAddressRequestErrorType::kRequestNotSupportedError:
+        return "RequestNotSupportedError";
+      case PlusAddressRequestErrorType::kMaxRefreshesReached:
+        return "MaxRefreshesReached";
+      case PlusAddressRequestErrorType::kUserSignedOut:
+        return "UserSignedOut";
+    }
+  }();
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const PlusAddressRequestError& error) {
+  os << "PlusAddressRequestError(" << error.type();
+  if (error.http_response_code()) {
+    os << ",http_response_code=" << *error.http_response_code();
+  }
+  return os << ")";
+}
+
+std::ostream& operator<<(std::ostream& os, const PlusProfile& profile) {
+  os << "PlusProfile(profile_id=" << profile.profile_id << ",facet=";
+  absl::visit([&](const auto& f) { os << f; }, profile.facet);
+  return os << ",plus_address=" << profile.plus_address
+            << ",is_confirmed=" << profile.is_confirmed << ")";
+}
+
+std::ostream& operator<<(std::ostream& os, const PlusProfileOrError& profile) {
+  if (profile.has_value()) {
+    return os << profile.value();
+  }
+  return os << profile.error();
+}
 
 }  // namespace plus_addresses
