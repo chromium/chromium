@@ -31,7 +31,9 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -99,6 +101,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     @DisabledTest(message = "crbug.com/347214230")
     public void testDeviceLockView_preExistingLock_showsAppropriateTexts() {
         mViewModel.set(PREEXISTING_DEVICE_LOCK, true);
@@ -111,7 +114,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
                 "The description text should match the version for a pre-existing device lock.",
                 getActivity()
                         .getResources()
-                        .getString(R.string.device_lock_existing_lock_description),
+                        .getString(R.string.device_lock_existing_lock_description_for_signin),
                 mView.getDescription().getText());
         assertEquals(
                 "The notice text should match the version for a pre-existing device lock..",
@@ -195,6 +198,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void
             testDeviceLockView_inSignInFlowWithPreExistingLock_dismissButtonHasDismissedSignInText() {
         mViewModel.set(SOURCE, DeviceLockActivityLauncher.Source.SYNC_CONSENT);
@@ -262,6 +266,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testDeviceLockView_userUnderstandsButtonClicked_triggersOnClick() {
         mViewModel.set(PREEXISTING_DEVICE_LOCK, true);
         mUserUnderstandsButtonClicked.set(false);

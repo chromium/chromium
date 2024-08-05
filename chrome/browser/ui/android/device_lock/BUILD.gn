@@ -59,6 +59,7 @@ android_library("javatests") {
     "//chrome/android:chrome_java",
     "//chrome/browser/autofill/android:java",
     "//chrome/browser/device_reauth/android:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",

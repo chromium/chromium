@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.ui.device_lock;
 
 import android.view.View;
 
+import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics;
 import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics.DeviceLockDialogAction;
@@ -53,7 +55,13 @@ public class DeviceLockViewBinder {
 
     private static void setDescription(PropertyModel model, DeviceLockView view) {
         if (model.get(DeviceLockProperties.PREEXISTING_DEVICE_LOCK)) {
-            view.getDescription().setText(R.string.device_lock_existing_lock_description);
+            @StringRes
+            int stringId =
+                    ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                            ? R.string.device_lock_existing_lock_description_for_signin
+                            : R.string.device_lock_existing_lock_description;
+            view.getDescription().setText(stringId);
             return;
         }
         view.getDescription().setText(R.string.device_lock_description);
