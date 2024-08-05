@@ -3851,18 +3851,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.UnenrolledFromUPMDueToErrors" enum="Boolean"
-    expires_after="2024-12-08">
-  <owner>kazinova@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
-  <summary>
-    Records true when a client's profile is being unenrolled from UPM. This
-    happens when a password store request to GMS Core fails with an error that
-    is deemed unrecoverable.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.UnifiedPasswordManager.ActiveStatus2"
     enum="UnifiedPasswordManagerActiveStatus" expires_after="2024-12-29">
   <owner>kazinova@google.com</owner>
@@ -4030,16 +4018,6 @@ chromium-metrics-reviews@google.com.
     enum="PasswordManagerUIDismissalReason" expires_after="2025-01-26">
   <owner>vasilii@chromium.org</owner>
   <summary>Why was the update password UI (bubble or infobar) closed?</summary>
-</histogram>
-
-<histogram name="PasswordManager.UPMUnenrollmentReason"
-    enum="PasswordStoreAndroidBackendAPIError" expires_after="2024-12-08">
-  <owner>ioanap@chromium.org</owner>
-  <owner>izuzic@google.com</owner>
-  <summary>
-    Records the error code returned by the GMS Password Checkup 1P API which
-    caused unenrollment. This is recorded when the user is evicted from UPM.
-  </summary>
 </histogram>
 
 <histogram name="PasswordManager.UPMUpdateSignInCredentialsSucces"

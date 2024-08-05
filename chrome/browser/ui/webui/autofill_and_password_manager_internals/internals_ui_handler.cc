@@ -167,9 +167,20 @@ void InternalsUIHandler::OnResetUpmEviction(const base::Value::List& args) {
   bool is_user_unenrolled =
       password_manager_upm_eviction::IsCurrentUserEvicted(prefs);
   if (is_user_unenrolled) {
-    password_manager_upm_eviction::ReenrollCurrentUser(prefs);
+    prefs->ClearPref(password_manager::prefs::
+                         kUnenrolledFromGoogleMobileServicesDueToErrors);
+    prefs->ClearPref(
+        password_manager::prefs::kTimesReenrolledToGoogleMobileServices);
+    prefs->ClearPref(password_manager::prefs::
+                         kTimesAttemptedToReenrollToGoogleMobileServices);
   } else {
-    password_manager_upm_eviction::EvictCurrentUser(-1, prefs);
+    prefs->SetBoolean(
+        password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+        true);
+    prefs->SetInteger(
+        password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
+        0);
+    prefs->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt, 0.0);
   }
   FireWebUIListener("enable-reset-upm-eviction-button",
                     base::Value(!is_user_unenrolled));

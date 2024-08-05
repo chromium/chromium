@@ -94,8 +94,6 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
     prefs_.registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
     prefs_.registry()->RegisterIntegerPref(
-        prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode, 0);
-    prefs_.registry()->RegisterIntegerPref(
         prefs::kTimesReenrolledToGoogleMobileServices, 0);
     prefs_.registry()->RegisterIntegerPref(
         prefs::kTimesAttemptedToReenrollToGoogleMobileServices, 0);
@@ -1112,8 +1110,6 @@ class BuiltInBackendToAndroidBackendMigratorTestMetrics
         ::prefs::kGoogleServicesLastSyncingUsername, "testaccount@gmail.com");
     prefs()->registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
-    prefs()->registry()->RegisterIntegerPref(
-        prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode, 0);
     prefs()->registry()->RegisterIntegerPref(
         prefs::kTimesReenrolledToGoogleMobileServices, 0);
     prefs()->registry()->RegisterIntegerPref(

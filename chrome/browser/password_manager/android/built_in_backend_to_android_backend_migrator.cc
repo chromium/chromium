@@ -101,8 +101,6 @@ std::string BackendOperationToString(
 void ResetUnenrollmentStatus(PrefService* prefs) {
   prefs->ClearPref(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
-  prefs->ClearPref(password_manager::prefs::
-                       kUnenrolledFromGoogleMobileServicesAfterApiErrorCode);
   prefs->SetInteger(
       prefs::kTimesReenrolledToGoogleMobileServices,
       prefs->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices) + 1);

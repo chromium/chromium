@@ -149,12 +149,6 @@ inline constexpr char kRequiresMigrationAfterSyncStatusChange[] =
 inline constexpr char kUnenrolledFromGoogleMobileServicesDueToErrors[] =
     "unenrolled_from_google_mobile_services_due_to_errors";
 
-// Integer value indicating the Google Mobile Services API error code that
-// caused the last unenrollment from the UPM experience. Only set if
-// |kUnenrolledFromGoogleMobileServicesDueToErrors| is true.
-inline constexpr char kUnenrolledFromGoogleMobileServicesAfterApiErrorCode[] =
-    "unenrolled_from_google_mobile_services_after_api_error_code";
-
 // Integer value indicating the version of the ignored/retriable error list
 // during the last unenrollment from the UPM experience. User will not be
 // re-enrolled if this value is set and is not less than the in the current

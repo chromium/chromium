@@ -1038,6 +1038,12 @@ inline constexpr char kStandaloneWindowMigrationNudgeShown[] =
     "standalone_window_migration_nudge_shown";
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+// Deprecated 08/24.
+constexpr char kObsoleteUnenrolledFromGoogleMobileServicesAfterApiErrorCode[] =
+    "unenrolled_from_google_mobile_services_after_api_error_code";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1426,6 +1432,12 @@ void RegisterProfilePrefsForMigration(
 // Deprecated 08/2024
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(kStandaloneWindowMigrationNudgeShown, false);
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  // Deprecated 08/2024.
+  registry->RegisterIntegerPref(
+      kObsoleteUnenrolledFromGoogleMobileServicesAfterApiErrorCode, 0);
 #endif
 }
 
@@ -2724,6 +2736,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 // Added 08/2024
 #if BUILDFLAG(IS_CHROMEOS)
   profile_prefs->ClearPref(kStandaloneWindowMigrationNudgeShown);
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  // Added 08/2024.
+  profile_prefs->ClearPref(
+      kObsoleteUnenrolledFromGoogleMobileServicesAfterApiErrorCode);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
