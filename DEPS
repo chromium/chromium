@@ -512,10 +512,11 @@ vars = {
   'gn_version': 'git_revision:1b41f0502f87b2056cee5cc9b48f9242693d497b',
 
   # ninja CIPD package.
-  'ninja_package': 'infra/3pp/build_support/ninja-1_11_1/',
+  'ninja_package': 'infra/3pp/tools/ninja/',
 
   # ninja CIPD package version.
-  'ninja_version': 'version:2@1.11.1.chromium.2',
+  # https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/ninja
+  'ninja_version': 'version:2@1.12.1.chromium.4',
 
   # 'magic' variable to tell depot_tools that git submodules should be accepted
   # but parity with DEPS file is expected.
