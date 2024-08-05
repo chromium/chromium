@@ -506,42 +506,46 @@ void PickerView::UpdateSearchQueryAndActivePage(std::u16string query) {
 void PickerView::UpdateActivePage() {
   std::u16string_view query = search_field_view_->GetQueryText();
 
-  if (query.empty()) {
-    delegate_->GetSessionMetrics().UpdateSearchQuery(u"");
-    if (selected_category_.has_value()) {
-      SetActivePage(category_results_view_);
-      if (last_suggested_results_category_ != selected_category_) {
-        // Getting suggested results for a category can be slow, so show a
-        // loading animation.
-        category_results_view_->ShowLoadingAnimation();
-        delegate_->GetResultsForCategory(
-            *selected_category_,
-            base::BindRepeating(&PickerView::PublishCategoryResults,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                *selected_category_));
-        last_suggested_results_category_ = selected_category_;
-      }
-    } else {
-      SetActivePage(zero_state_view_);
-    }
-    delegate_->StopSearch();
-    clear_results_timer_.Stop();
-    search_results_view_->ClearSearchResults();
-    ResetEmojiBarToZeroState();
+  delegate_->GetSessionMetrics().UpdateSearchQuery(query);
+
+  if (!query.empty()) {
+    // Don't switch the active page immediately to the search view - this will
+    // be done when the clear results timer fires, or when
+    // `PublishSearchResults` is called.
+    clear_results_timer_.Start(
+        FROM_HERE, kClearResultsTimeout,
+        base::BindOnce(&PickerView::OnClearResultsTimerFired,
+                       weak_ptr_factory_.GetWeakPtr()));
+    delegate_->StartEmojiSearch(query,
+                                base::BindOnce(&PickerView::PublishEmojiResults,
+                                               weak_ptr_factory_.GetWeakPtr()));
+    delegate_->StartSearch(
+        query, selected_category_,
+        base::BindRepeating(&PickerView::PublishSearchResults,
+                            weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
-  delegate_->GetSessionMetrics().UpdateSearchQuery(query);
-  clear_results_timer_.Start(
-      FROM_HERE, kClearResultsTimeout,
-      base::BindOnce(&PickerView::OnClearResultsTimerFired,
-                     weak_ptr_factory_.GetWeakPtr()));
-  delegate_->StartEmojiSearch(query,
-                              base::BindOnce(&PickerView::PublishEmojiResults,
-                                             weak_ptr_factory_.GetWeakPtr()));
-  delegate_->StartSearch(query, selected_category_,
-                         base::BindRepeating(&PickerView::PublishSearchResults,
-                                             weak_ptr_factory_.GetWeakPtr()));
+  if (selected_category_.has_value()) {
+    SetActivePage(category_results_view_);
+    if (last_suggested_results_category_ != selected_category_) {
+      // Getting suggested results for a category can be slow, so show a
+      // loading animation.
+      category_results_view_->ShowLoadingAnimation();
+      delegate_->GetResultsForCategory(
+          *selected_category_,
+          base::BindRepeating(&PickerView::PublishCategoryResults,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              *selected_category_));
+      last_suggested_results_category_ = selected_category_;
+    }
+  } else {
+    SetActivePage(zero_state_view_);
+  }
+  delegate_->StopSearch();
+  clear_results_timer_.Stop();
+  search_results_view_->ClearSearchResults();
+  ResetEmojiBarToZeroState();
 }
 
 void PickerView::PublishEmojiResults(std::vector<PickerSearchResult> results) {
