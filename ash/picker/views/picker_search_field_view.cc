@@ -140,6 +140,13 @@ void PickerSearchFieldView::OnPaint(gfx::Canvas* canvas) {
 void PickerSearchFieldView::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
+  ContentsChangedInternal(new_contents);
+
+  search_callback_.Run(new_contents);
+}
+
+void PickerSearchFieldView::ContentsChangedInternal(
+    std::u16string_view new_contents) {
   performance_metrics_->MarkContentsChanged();
 
   // Show the clear button only when the query is not empty.
@@ -147,8 +154,6 @@ void PickerSearchFieldView::ContentsChanged(
   UpdateTextfieldBorder();
 
   ScheduleNotifyInitialActiveDescendantForA11y();
-
-  search_callback_.Run(new_contents);
 }
 
 bool PickerSearchFieldView::HandleKeyEvent(views::Textfield* sender,
@@ -203,7 +208,10 @@ std::u16string_view PickerSearchFieldView::GetQueryText() const {
 }
 
 void PickerSearchFieldView::SetQueryText(std::u16string text) {
-  textfield_->SetText(std::move(text));
+  if (text != GetQueryText()) {
+    textfield_->SetText(std::move(text));
+    ContentsChangedInternal(GetQueryText());
+  }
 }
 
 void PickerSearchFieldView::SetBackButtonVisible(bool visible) {

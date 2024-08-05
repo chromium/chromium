@@ -2754,6 +2754,7 @@ TEST_F(PickerViewTest, ResetsToZeroStateWhenClickingOnBackButton) {
 
   EXPECT_TRUE(view->zero_state_view_for_testing().GetVisible());
   EXPECT_EQ(search_field_view.textfield_for_testing().GetText(), u"");
+  EXPECT_FALSE(search_field_view.clear_button_for_testing().GetVisible());
 }
 
 TEST_F(PickerViewTest, ResetsToZeroStateAfterPressingBrowserBack) {
@@ -2788,6 +2789,9 @@ TEST_F(PickerViewTest, ResetsToZeroStateAfterPressingBrowserBack) {
   EXPECT_EQ(
       view->search_field_view_for_testing().textfield_for_testing().GetText(),
       u"");
+  EXPECT_FALSE(view->search_field_view_for_testing()
+                   .clear_button_for_testing()
+                   .GetVisible());
 }
 
 }  // namespace

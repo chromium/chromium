@@ -77,6 +77,10 @@ class ASH_EXPORT PickerSearchFieldView : public views::BoxLayoutView,
   void OnWillChangeFocus(View* focused_before, View* focused_now) override;
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
+  // Should be called every time the contents of the text field changes, even
+  // if the search callback should not be called.
+  void ContentsChangedInternal(std::u16string_view new_contents);
+
   // Gets or sets the placeholder text to show when the textfield is empty.
   const std::u16string& GetPlaceholderText() const;
   void SetPlaceholderText(const std::u16string& new_placeholder_text);
@@ -86,8 +90,9 @@ class ASH_EXPORT PickerSearchFieldView : public views::BoxLayoutView,
   // cleared.
   void SetTextfieldActiveDescendant(views::View* view);
 
-  // Gets or sets the current search query text.
+  // Gets the current search query text.
   std::u16string_view GetQueryText() const;
+  // Sets the current search query text. Does not call the search callback.
   void SetQueryText(std::u16string text);
 
   // Sets whether the back button is visible.

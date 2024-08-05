@@ -195,6 +195,33 @@ TEST_F(PickerSearchFieldViewTest, HidesClearButtonWithEmptyQuery) {
   EXPECT_TRUE(view->clear_button_for_testing().GetVisible());
 }
 
+TEST_F(PickerSearchFieldViewTest, ShowsClearButtonWithSetQueryText) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  PickerKeyEventHandler key_event_handler;
+  PickerPerformanceMetrics metrics;
+  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
+      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+
+  view->SetQueryText(u"a");
+
+  EXPECT_TRUE(view->clear_button_for_testing().GetVisible());
+}
+
+TEST_F(PickerSearchFieldViewTest, HidesClearButtonWithEmptySetQueryText) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  PickerKeyEventHandler key_event_handler;
+  PickerPerformanceMetrics metrics;
+  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
+      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
+
+  view->SetQueryText(u"a");
+  view->SetQueryText(u"");
+
+  EXPECT_FALSE(view->clear_button_for_testing().GetVisible());
+}
+
 TEST_F(PickerSearchFieldViewTest,
        ClickingClearButtonResetsQueryAndHidesButton) {
   std::unique_ptr<views::Widget> widget =
