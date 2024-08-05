@@ -111,6 +111,7 @@ std::vector<CreditCard> GetOrderedCardsToSuggestForTest(
     FieldType trigger_field_type,
     bool suppress_disused_cards,
     bool prefix_match,
+    bool require_non_empty_value_on_trigger_field,
     bool include_virtual_cards,
     bool use_legacy_algorithm = false);
 

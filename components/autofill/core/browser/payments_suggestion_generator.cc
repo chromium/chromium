@@ -790,6 +790,7 @@ std::vector<CreditCard> GetOrderedCardsToSuggest(
     FieldType trigger_field_type,
     bool suppress_disused_cards,
     bool prefix_match,
+    bool require_non_empty_value_on_trigger_field,
     bool include_virtual_cards,
     bool use_legacy_algorithm = false) {
   std::vector<CreditCard*> available_cards =
@@ -822,7 +823,7 @@ std::vector<CreditCard> GetOrderedCardsToSuggest(
     std::u16string suggested_value = credit_card->GetInfo(
         trigger_field_type,
         client.GetPersonalDataManager()->payments_data_manager().app_locale());
-    if (prefix_match && suggested_value.empty()) {
+    if (require_non_empty_value_on_trigger_field && suggested_value.empty()) {
       continue;
     }
     if (prefix_match &&
@@ -957,11 +958,16 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
           AutofillSuggestionTriggerSource::kManualFallbackPayments;
   bool should_prefix_match =
       is_trigger_field_a_credit_card_field && !allow_payment_swapping;
+  bool require_non_empty_value_on_trigger_field =
+      (is_trigger_field_a_credit_card_field && !allow_payment_swapping) ||
+      (trigger_field_type == CREDIT_CARD_VERIFICATION_CODE);
   std::vector<CreditCard> cards_to_suggest =
       GetOrderedCardsToSuggest(client, trigger_field, trigger_field_type,
                                /*suppress_disused_cards=*/
                                suppress_disused_cards,
                                /*prefix_match=*/should_prefix_match,
+                               /*require_non_empty_value_on_trigger_field=*/
+                               require_non_empty_value_on_trigger_field,
                                /*include_virtual_cards=*/true);
 
   // If autofill for cards is triggered from the context menu on a credit card
@@ -993,6 +999,8 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     cards_ranked_by_legacy_algorithm = GetOrderedCardsToSuggest(
         client, trigger_field, trigger_field_type, suppress_disused_cards,
         /*prefix_match=*/should_prefix_match,
+        /*require_non_empty_value_on_trigger_field=*/
+        require_non_empty_value_on_trigger_field,
         /*include_virtual_cards=*/true, /*use_legacy_algorithm=*/true);
   }
   summary.metadata_logging_context =
@@ -1051,6 +1059,7 @@ std::vector<Suggestion> GetSuggestionsForVirtualCardStandaloneCvc(
   std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
       client, trigger_field, CREDIT_CARD_VERIFICATION_CODE,
       /*suppress_disused_cards=*/true, /*prefix_match=*/false,
+      /*require_non_empty_value_on_trigger_field=*/false,
       /*include_virtual_cards=*/false);
   metadata_logging_context =
       autofill_metrics::GetMetadataLoggingContext(cards_to_suggest);
@@ -1115,6 +1124,7 @@ std::vector<CreditCard> GetTouchToFillCardsToSuggest(
   std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
       client, trigger_field, trigger_field_type,
       /*suppress_disused_cards=*/true, /*prefix_match=*/false,
+      /*require_non_empty_value_on_trigger_field=*/false,
       /*include_virtual_cards=*/true);
   return base::ranges::any_of(cards_to_suggest,
                               &CreditCard::IsCompleteValidCard)
@@ -1256,10 +1266,12 @@ std::vector<CreditCard> GetOrderedCardsToSuggestForTest(
     FieldType trigger_field_type,
     bool suppress_disused_cards,
     bool prefix_match,
+    bool require_non_empty_value_on_trigger_field,
     bool include_virtual_cards,
     bool use_legacy_algorithm) {
   return GetOrderedCardsToSuggest(client, trigger_field, trigger_field_type,
                                   suppress_disused_cards, prefix_match,
+                                  require_non_empty_value_on_trigger_field,
                                   include_virtual_cards, use_legacy_algorithm);
 }
 

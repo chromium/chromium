@@ -617,7 +617,9 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggestForTest(
       *autofill_client(), FormFieldData(), UNKNOWN_TYPE,
       /*suppress_disused_cards=*/true,
-      /*prefix_match=*/false, /*include_virtual_cards=*/false);
+      /*prefix_match=*/false,
+      /*require_non_empty_value_on_trigger_field=*/false,
+      /*include_virtual_cards=*/false);
 
   // Expect that only the last card (disused, expired and local) is removed.
   credit_cards.pop_back();
@@ -645,11 +647,12 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   auto get_cards = [&](std::u16string field_value) {
     FormFieldData field;
     field.set_value(std::move(field_value));
-    return GetOrderedCardsToSuggestForTest(*autofill_client(), field,
-                                           CREDIT_CARD_NUMBER,
-                                           /*suppress_disused_cards=*/false,
-                                           /*prefix_match=*/true,
-                                           /*include_virtual_cards=*/false);
+    return GetOrderedCardsToSuggestForTest(
+        *autofill_client(), field, CREDIT_CARD_NUMBER,
+        /*suppress_disused_cards=*/false,
+        /*prefix_match=*/true,
+        /*require_non_empty_value_on_trigger_field=*/true,
+        /*include_virtual_cards=*/false);
   };
 
   EXPECT_THAT(get_cards(u""), UnorderedElementsAre(card1, card2));
@@ -678,11 +681,12 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   auto get_cards = [&](std::u16string field_value) {
     FormFieldData field;
     field.set_value(std::move(field_value));
-    return GetOrderedCardsToSuggestForTest(*autofill_client(), field,
-                                           CREDIT_CARD_VERIFICATION_CODE,
-                                           /*suppress_disused_cards=*/false,
-                                           /*prefix_match=*/true,
-                                           /*include_virtual_cards=*/false);
+    return GetOrderedCardsToSuggestForTest(
+        *autofill_client(), field, CREDIT_CARD_VERIFICATION_CODE,
+        /*suppress_disused_cards=*/false,
+        /*prefix_match=*/true,
+        /*require_non_empty_value_on_trigger_field=*/true,
+        /*include_virtual_cards=*/false);
   };
 
   EXPECT_THAT(get_cards(u""), ElementsAre(credit_card));
@@ -723,10 +727,12 @@ TEST_F(PaymentsSuggestionGeneratorTest, PaymentsFieldSwapping) {
     FormFieldData field;
     field.set_is_autofilled(is_autofilled);
     field.set_value(std::move(field_value));
-    return GetOrderedCardsToSuggestForTest(*autofill_client(), field, type,
-                                           /*suppress_disused_cards=*/false,
-                                           /*prefix_match=*/true,
-                                           /*include_virtual_cards=*/false);
+    return GetOrderedCardsToSuggestForTest(
+        *autofill_client(), field, type,
+        /*suppress_disused_cards=*/false,
+        /*prefix_match=*/true,
+        /*require_non_empty_value_on_trigger_field=*/true,
+        /*include_virtual_cards=*/false);
   };
 
   EXPECT_THAT(get_cards(u"", CREDIT_CARD_NUMBER, false),
