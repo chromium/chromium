@@ -34,10 +34,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
-#endif
-
 namespace web_app {
 namespace test {
 
@@ -100,14 +96,6 @@ webapps::AppId InstallWebApp(Profile* profile,
   // The sync system requires that sync entity name is never empty.
   if (web_app_info->title.empty())
     web_app_info->title = u"WebAppInstallInfo App Name";
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // In Shortstand, user-installed web app should always have a scope.
-  if (chromeos::features::IsCrosShortstandEnabled() &&
-      web_app_info->scope.is_empty()) {
-    web_app_info->scope = web_app_info->start_url().GetWithoutFilename();
-  }
-#endif
 
   webapps::AppId app_id;
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
@@ -207,14 +195,6 @@ webapps::AppId InstallShortcut(Profile* profile,
   if (web_app_info->title.empty()) {
     web_app_info->title = u"WebAppInstallInfo Shortcut Name";
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // In Shortstand, user-installed web app should always have a scope.
-  if (chromeos::features::IsCrosShortstandEnabled() &&
-      web_app_info->scope.is_empty()) {
-    web_app_info->scope = web_app_info->start_url().GetWithoutFilename();
-  }
-#endif
 
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       future;

@@ -6275,14 +6275,6 @@ const char kCaptureModeGifRecordingName[] =
 const char kCaptureModeGifRecordingDescription[] =
     "Enables the ability to record the screen into animated GIFs.";
 
-const char kCrosShortstandName[] =
-    "Differentiate behaviour between web apps and browser created shortcuts";
-const char kCrosShortstandDescription[] =
-    "Enables the behaviour difference between web apps and browser created "
-    "shortcut backed by the web app system on Chrome OS. Turning on this flag"
-    "is equivalent of turning on #cros-web-app-shortcut-ui-update and"
-    "#separate-web-app-shortcut-badge-icon.";
-
 const char kDeskButtonName[] = "Desk button in shelf";
 const char kDeskButtonDescription[] =
     "Show a desk button that provides quick access to the desk menu in the "

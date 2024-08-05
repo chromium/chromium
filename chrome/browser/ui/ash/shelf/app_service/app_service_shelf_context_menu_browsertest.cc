@@ -96,13 +96,10 @@ class AppServiceShelfContextMenuWebAppBrowserTest
       public testing::WithParamInterface<bool> {
  public:
   AppServiceShelfContextMenuWebAppBrowserTest() {
-    base::flat_map<base::test::FeatureRef, bool> features;
-    features.insert({blink::features::kDesktopPWAsTabStrip, true});
-    features.insert({features::kDesktopPWAsTabStripSettings, true});
-    features.insert(
-        {chromeos::features::kCrosShortstand, IsShortstandEnabled()});
-
-    scoped_feature_list_.InitWithFeatureStates(features);
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kDesktopPWAsTabStrip,
+         features::kDesktopPWAsTabStripSettings},
+        {});
   }
   ~AppServiceShelfContextMenuWebAppBrowserTest() override = default;
 

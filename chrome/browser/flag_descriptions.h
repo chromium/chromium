@@ -3632,9 +3632,6 @@ extern const char kCrosBatterySaverAlwaysOnDescription[];
 extern const char kCrosBatterySaverName[];
 extern const char kCrosBatterySaverDescription[];
 
-extern const char kCrosShortstandName[];
-extern const char kCrosShortstandDescription[];
-
 extern const char kCrosSoulName[];
 extern const char kCrosSoulDescription[];
 

@@ -30,10 +30,6 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
-#endif
-
 namespace {
 constexpr char kCalculatorAppUrl[] = "https://calculator.apps.chrome/";
 
@@ -85,13 +81,6 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
 
 IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
                        PreventCloseEnforcedByPolicyTabbedAppShallBeClosable) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::features::IsCrosShortstandEnabled()) {
-    GTEST_SKIP()
-        << "Cannot launch web apps in a tab when Shortstand is enabled.";
-  }
-#endif
-
   const absl::Cleanup policy_cleanup = [this] {
     SetPolicies(/*web_app_settings=*/"[]", /*web_app_install_force_list=*/"[]");
   };

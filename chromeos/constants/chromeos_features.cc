@@ -89,12 +89,6 @@ BASE_FEATURE(kCrosMall, "CrosMall", base::FEATURE_DISABLED_BY_DEFAULT);
 // when CrosMall is enabled. This flag will be enabled with Finch.
 BASE_FEATURE(kCrosMallSwa, "CrosMallSwa", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the behaviour difference between web apps and browser created
-// shortcut backed by the web app system on Chrome OS.
-BASE_FEATURE(kCrosShortstand,
-             "CrosShortstand",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables denying file access to dlp protected files in MyFiles.
 BASE_FEATURE(kDataControlsFileAccessDefaultDeny,
              "DataControlsFileAccessDefaultDeny",
@@ -344,14 +338,6 @@ bool IsCrosMallWebAppEnabled() {
 bool IsCrosMallSwaEnabled() {
   return base::FeatureList::IsEnabled(kCrosMall) &&
          base::FeatureList::IsEnabled(kCrosMallSwa);
-}
-
-bool IsCrosShortstandEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return false;
-#else
-  return base::FeatureList::IsEnabled(kCrosShortstand);
-#endif
 }
 
 bool IsDataControlsFileAccessDefaultDenyEnabled() {
