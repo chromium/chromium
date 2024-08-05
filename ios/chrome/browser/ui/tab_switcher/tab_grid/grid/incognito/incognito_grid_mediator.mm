@@ -177,7 +177,7 @@
           initWithPage:TabGridPageIncognitoTabs];
   toolbarsConfiguration.mode = self.currentMode;
 
-  if (self.currentMode == TabGridModeSelection) {
+  if (self.currentMode == TabGridMode::kSelection) {
     [self configureButtonsInSelectionMode:toolbarsConfiguration];
   } else {
     toolbarsConfiguration.closeAllButton = !self.webStateList->empty();
@@ -266,7 +266,7 @@
   }
   if (_selected) {
     if (isRequired) {
-      self.currentMode = TabGridModeNormal;
+      self.currentMode = TabGridMode::kNormal;
     }
     [self configureToolbarsButtons];
   }

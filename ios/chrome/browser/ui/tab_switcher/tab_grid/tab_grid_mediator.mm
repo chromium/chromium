@@ -211,7 +211,7 @@
 }
 
 - (void)quitSearchMode {
-  [self setModeOnCurrentPage:TabGridModeNormal];
+  [self setModeOnCurrentPage:TabGridMode::kNormal];
 }
 
 @end

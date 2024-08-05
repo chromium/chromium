@@ -74,7 +74,7 @@ class WebStateID;
 
 // Tells the delegate that the inactive tabs button was tapped in
 // `gridViewController`, i.e., there was an intention to show inactive tabs (in
-// TabGridModeNormal).
+// TabGridMode::kNormal).
 - (void)didTapInactiveTabsButtonInGridViewController:
     (BaseGridViewController*)gridViewController;
 

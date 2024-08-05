@@ -170,7 +170,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
         std::make_unique<base::ScopedMultiSourceObservation<
             web::WebState, web::WebStateObserver>>(
             _webStateObserverBridge.get());
-    _currentMode = TabGridModeNormal;
+    _currentMode = TabGridMode::kNormal;
   }
   return self;
 }
@@ -218,8 +218,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)setCurrentMode:(TabGridMode)mode {
-  if (_currentMode != mode && (_currentMode == TabGridModeSelection ||
-                               _currentMode == TabGridModeSearch)) {
+  if (_currentMode != mode && (_currentMode == TabGridMode::kSelection ||
+                               _currentMode == TabGridMode::kSearch)) {
     // Clear selections.
     [_selectedEditingItems removeAllItems];
   }
@@ -445,7 +445,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
     // should be a search result from a different window. Since this item is not
     // from the current browser, no UI updates will be sent to the current grid.
     // Notify the current grid consumer about the change.
-    CHECK(self.currentMode == TabGridModeSearch, base::NotFatalUntil::M130);
+    CHECK(self.currentMode == TabGridMode::kSearch, base::NotFatalUntil::M130);
     GridItemIdentifier* identifierToRemove =
         [GridItemIdentifier groupIdentifier:group
                            withWebStateList:groupWebStateList];
@@ -484,7 +484,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
     // should be a search result from a different window. Since this item is not
     // from the current browser, no UI updates will be sent to the current grid.
     // Notify the current grid consumer about the change.
-    CHECK(self.currentMode == TabGridModeSearch, base::NotFatalUntil::M130);
+    CHECK(self.currentMode == TabGridMode::kSearch, base::NotFatalUntil::M130);
     GridItemIdentifier* identifierToRemove =
         [GridItemIdentifier groupIdentifier:group
                            withWebStateList:groupWebStateList];
@@ -515,7 +515,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 
   // When the deleted tab is showing as an item (i.e. when it's not
   // grouped or shown as a search result), remove it from the grid.
-  if (!detachChange.group() || self.currentMode == TabGridModeSearch) {
+  if (!detachChange.group() || self.currentMode == TabGridMode::kSearch) {
     // Get the identifier to remove.
     web::WebState* detachedWebState = detachChange.detached_web_state();
     GridItemIdentifier* identifierToRemove =
@@ -1529,9 +1529,10 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 
 // Updates toolbars when the number of web state might be changed.
 - (void)updateToolbarAfterNumberOfItemsChanged {
-  if (self.currentMode == TabGridModeSelection && self.webStateList->empty()) {
+  if (self.currentMode == TabGridMode::kSelection &&
+      self.webStateList->empty()) {
     // Exit selection mode if there are no more tabs.
-    self.currentMode = TabGridModeNormal;
+    self.currentMode = TabGridMode::kNormal;
   } else {
     // Update toolbar's buttons as the number of tabs have probably changed so
     // the options changed (ex: "Undo" may be available now).
@@ -1670,8 +1671,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 - (void)doneButtonTapped:(id)sender {
   // Tapping Done when in selection mode, should only return back to the normal
   // mode.
-  if (self.currentMode == TabGridModeSelection) {
-    self.currentMode = TabGridModeNormal;
+  if (self.currentMode == TabGridMode::kSelection) {
+    self.currentMode = TabGridMode::kNormal;
     // Records action when user exit the selection mode.
     base::RecordAction(base::UserMetricsAction("MobileTabGridSelectionDone"));
   } else {
@@ -1707,13 +1708,13 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)searchButtonTapped:(id)sender {
-  self.currentMode = TabGridModeSearch;
+  self.currentMode = TabGridMode::kSearch;
   base::RecordAction(base::UserMetricsAction("MobileTabGridSearchTabs"));
 }
 
 - (void)cancelSearchButtonTapped:(id)sender {
   base::RecordAction(base::UserMetricsAction("MobileTabGridCancelSearchTabs"));
-  self.currentMode = TabGridModeNormal;
+  self.currentMode = TabGridMode::kNormal;
 }
 
 - (void)closeSelectedTabs:(id)sender {
@@ -1761,7 +1762,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)selectTabsButtonTapped:(id)sender {
-  self.currentMode = TabGridModeSelection;
+  self.currentMode = TabGridMode::kSelection;
   [self configureToolbarsButtons];
   base::RecordAction(base::UserMetricsAction("MobileTabGridSelectTabs"));
 }
@@ -1772,7 +1773,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   CHECK(itemID.type == GridItemType::kInactiveTabsButton ||
         itemID.type == GridItemType::kGroup ||
         itemID.type == GridItemType::kTab);
-  if (self.currentMode == TabGridModeSelection) {
+  if (self.currentMode == TabGridMode::kSelection) {
     CHECK(itemID.type != GridItemType::kInactiveTabsButton);
     if ([self isItemSelected:itemID]) {
       [self removeFromSelectionItemID:itemID];
@@ -1785,7 +1786,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 - (void)addToSelectionItemID:(GridItemIdentifier*)itemID {
   CHECK(itemID.type == GridItemType::kTab ||
         itemID.type == GridItemType::kGroup);
-  if (self.currentMode != TabGridModeSelection) {
+  if (self.currentMode != TabGridMode::kSelection) {
     base::debug::DumpWithoutCrashing();
     return;
   }
@@ -1796,7 +1797,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 - (void)removeFromSelectionItemID:(GridItemIdentifier*)itemID {
   CHECK(itemID.type == GridItemType::kTab ||
         itemID.type == GridItemType::kGroup);
-  if (self.currentMode != TabGridModeSelection) {
+  if (self.currentMode != TabGridMode::kSelection) {
     return;
   }
 

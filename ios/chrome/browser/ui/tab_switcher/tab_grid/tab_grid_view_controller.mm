@@ -483,7 +483,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Sets the current search terms on `page`. This allows the content to update
 // while the page is still hidden before the page change animation begins.
 - (void)updatePageWithCurrentSearchTerms:(TabGridPage)page {
-  if (self.tabGridMode != TabGridModeSearch ||
+  if (self.tabGridMode != TabGridMode::kSearch ||
       self.currentPage == TabGridPageIncognitoTabs) {
     // No need to update search term if not in search mode or currently on the
     // incognito page.
@@ -606,7 +606,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // changing the mode in the controllers so when they do the cleanup for the
     // new mode they will have the correct items (tabs).
   }
-  if (previousMode == TabGridModeSearch) {
+  if (previousMode == TabGridMode::kSearch) {
     self.remoteTabsViewController.searchTerms = nil;
     self.regularTabsViewController.searchText = nil;
     self.incognitoTabsViewController.searchText = nil;
@@ -620,7 +620,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     self.regularTabsViewController.mode = self.tabGridMode;
     self.incognitoTabsViewController.mode = self.tabGridMode;
   }
-  self.scrollView.scrollEnabled = (self.tabGridMode == TabGridModeNormal);
+  self.scrollView.scrollEnabled = (self.tabGridMode == TabGridMode::kNormal);
 }
 
 #pragma mark - Private
@@ -755,7 +755,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   _currentPage = currentPage;
   self.currentPageViewController.view.accessibilityElementsHidden = NO;
 
-  if (self.tabGridMode == TabGridModeSearch) {
+  if (self.tabGridMode == TabGridMode::kSearch) {
     // `UIAccessibilityLayoutChangedNotification` doesn't change the current
     // item focused by the voiceOver if the notification argument provided with
     // it is `nil`. In search mode, the item focused by the voiceOver needs to
@@ -783,7 +783,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (IsPinnedTabsEnabled()) {
     const BOOL pinnedTabsAvailable =
         currentPage == TabGridPage::TabGridPageRegularTabs &&
-        self.tabGridMode == TabGridModeNormal;
+        self.tabGridMode == TabGridMode::kNormal;
     [self.pinnedTabsViewController pinnedTabsAvailable:pinnedTabsAvailable];
   }
   [self updateToolbarsAppearance];
@@ -1026,7 +1026,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)configureViewControllerForCurrentSizeClassesAndPage {
   self.configuration = TabGridConfigurationFloatingButton;
   if ([self shouldUseCompactLayout] ||
-      self.tabGridMode == TabGridModeSelection) {
+      self.tabGridMode == TabGridMode::kSelection) {
     // The bottom toolbar configuration is applied when the UI is narrow but
     // vertically long or the selection mode is enabled.
     self.configuration = TabGridConfigurationBottomToolbar;
@@ -1541,8 +1541,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)updateScrimVisibilityForText:(NSString*)searchText {
-  if (_tabGridMode != TabGridModeSearch)
+  if (_tabGridMode != TabGridMode::kSearch) {
     return;
+  }
   if (searchText.length == 0) {
     self.isPerformingSearch = NO;
     [self showScrim];
@@ -1617,17 +1618,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)searchHistoryForText:(NSString*)searchText {
-  DCHECK(self.tabGridMode == TabGridModeSearch);
+  DCHECK(self.tabGridMode == TabGridMode::kSearch);
   [self.delegate showHistoryFilteredBySearchText:searchText];
 }
 
 - (void)searchWebForText:(NSString*)searchText {
-  DCHECK(self.tabGridMode == TabGridModeSearch);
+  DCHECK(self.tabGridMode == TabGridMode::kSearch);
   [self.delegate openSearchResultsPageForSearchText:searchText];
 }
 
 - (void)searchRecentTabsForText:(NSString*)searchText {
-  DCHECK(self.tabGridMode == TabGridModeSearch);
+  DCHECK(self.tabGridMode == TabGridMode::kSearch);
   [self setCurrentPageAndPageControl:TabGridPageRemoteTabs animated:YES];
 }
 
@@ -1714,7 +1715,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     return;
   }
 
-  if (self.tabGridMode == TabGridModeSelection) {
+  if (self.tabGridMode == TabGridMode::kSelection) {
     return;
   }
 
@@ -1722,7 +1723,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (gridViewController == self.regularTabsViewController) {
     tabsDelegate = self.regularGridHandler;
     base::RecordAction(base::UserMetricsAction("MobileTabGridOpenRegularTab"));
-    if (self.tabGridMode == TabGridModeSearch) {
+    if (self.tabGridMode == TabGridMode::kSearch) {
       base::RecordAction(
           base::UserMetricsAction("MobileTabGridOpenRegularTabSearchResult"));
     }
@@ -1730,7 +1731,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     tabsDelegate = self.incognitoGridHandler;
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridOpenIncognitoTab"));
-    if (self.tabGridMode == TabGridModeSearch) {
+    if (self.tabGridMode == TabGridMode::kSearch) {
       base::RecordAction(
           base::UserMetricsAction("MobileTabGridOpenIncognitoTabSearchResult"));
     }
@@ -1749,7 +1750,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
   }
 
-  if (self.tabGridMode == TabGridModeSearch) {
+  if (self.tabGridMode == TabGridMode::kSearch) {
     if (![tabsDelegate isItemWithIDSelected:itemID]) {
       // That can happen when the search result that was selected is from
       // another window. In that case don't change the active page for this
@@ -1783,7 +1784,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     return;
   }
 
-  if (self.tabGridMode == TabGridModeSelection) {
+  if (self.tabGridMode == TabGridMode::kSelection) {
     return;
   }
 
@@ -1792,7 +1793,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     tabsDelegate = self.regularGridHandler;
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridOpenRegularTabGroup"));
-    if (self.tabGridMode == TabGridModeSearch) {
+    if (self.tabGridMode == TabGridMode::kSearch) {
       base::RecordAction(base::UserMetricsAction(
           "MobileTabGridOpenRegularTabGroupSearchResult"));
     }
@@ -1800,7 +1801,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     tabsDelegate = self.incognitoGridHandler;
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridOpenIncognitoTabGroup"));
-    if (self.tabGridMode == TabGridModeSearch) {
+    if (self.tabGridMode == TabGridMode::kSearch) {
       base::RecordAction(base::UserMetricsAction(
           "MobileTabGridOpenIncognitoTabGroupSearchResult"));
     }
@@ -1810,7 +1811,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [tabsDelegate selectTabGroup:group];
 
-  if (self.tabGridMode == TabGridModeSearch) {
+  if (self.tabGridMode == TabGridMode::kSearch) {
     // Make sure that the keyboard is dismissed.
     [self.view endEditing:YES];
   }

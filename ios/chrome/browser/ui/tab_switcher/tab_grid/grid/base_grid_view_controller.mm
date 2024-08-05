@@ -155,7 +155,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     _dropAnimationInProgress = NO;
     _localDragActionInProgress = NO;
     _notSelectedTabCellOpacity = 1.0;
-    _mode = TabGridModeNormal;
+    _mode = TabGridMode::kNormal;
 
     // Register for VoiceOver notifications.
     [[NSNotificationCenter defaultCenter]
@@ -351,7 +351,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       [self shouldEnableDrapAndDropInteraction];
   self.emptyStateView.tabGridMode = _mode;
 
-  if (mode == TabGridModeSearch && self.suggestedActionsDelegate) {
+  if (mode == TabGridMode::kSearch && self.suggestedActionsDelegate) {
     if (!self.suggestedActionsViewController) {
       self.suggestedActionsViewController =
           [[SuggestedActionsViewController alloc] initWithDelegate:self];
@@ -368,7 +368,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   [self.gridLayout invalidateLayout];
 
   NSUInteger selectedIndex = self.selectedIndex;
-  if (previousMode != TabGridModeSelection && mode == TabGridModeNormal &&
+  if (previousMode != TabGridMode::kSelection && mode == TabGridMode::kNormal &&
       selectedIndex != NSNotFound &&
       static_cast<NSInteger>(selectedIndex) < [self numberOfTabs]) {
     // Scroll to the selected item here, so the action of reloading and
@@ -379,7 +379,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                        animated:NO];
   }
 
-  if (mode == TabGridModeNormal) {
+  if (mode == TabGridMode::kNormal) {
     // After transition from other modes to the normal mode, the selection
     // border doesn't show around the selected item, because reloading
     // operations lose the selected items. The collection view needs to be
@@ -387,10 +387,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
 
     self.searchText = nil;
-  } else if (mode == TabGridModeSelection) {
-    // The selected state is not visible in TabGridModeSelection mode, but
+  } else if (mode == TabGridMode::kSelection) {
+    // The selected state is not visible in TabGridMode::kSelection mode, but
     // VoiceOver surfaces it. Deselects all the collection view items.
-    // The selection will be reinstated when moving off of TabGridModeSelection.
+    // The selection will be reinstated when moving off of
+    // TabGridMode::kSelection.
     NSArray<NSIndexPath*>* indexPathsForSelectedItems =
         [self.collectionView indexPathsForSelectedItems];
     for (NSIndexPath* itemIndexPath in indexPathsForSelectedItems) {
@@ -626,7 +627,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
                                          point:(CGPoint)point {
   // Context menu shouldn't appear in the selection mode.
-  if (_mode == TabGridModeSelection) {
+  if (_mode == TabGridMode::kSelection) {
     return nil;
   }
 
@@ -763,7 +764,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // Don't support dragging items if the drag&drop handler is not set.
     return @[];
   }
-  if (_mode == TabGridModeSearch) {
+  if (_mode == TabGridMode::kSearch) {
     // TODO(crbug.com/40824160): Enable dragging items from search results.
     return @[];
   }
@@ -777,7 +778,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   }
   GridItemIdentifier* draggedItem =
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
-  if (_mode != TabGridModeSelection) {
+  if (_mode != TabGridMode::kSelection) {
     UIDragItem* dragItem;
     _draggedItemIdentifier = draggedItem;
     switch (_draggedItemIdentifier.type) {
@@ -845,7 +846,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     return NO;
   }
   // Prevent dropping tabs into grid while displaying search results.
-  return (_mode != TabGridModeSearch);
+  return (_mode != TabGridMode::kSearch);
 }
 
 - (UICollectionViewDropProposal*)
@@ -988,7 +989,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   // Record when a tab is closed via the X.
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridCloseControlTapped"));
-  if (_mode == TabGridModeSearch) {
+  if (_mode == TabGridMode::kSearch) {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridCloseControlTappedDuringSearch"));
   }
@@ -1077,7 +1078,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     [self removeEmptyStateAnimated:YES];
   }
 
-  if (_mode == TabGridModeSearch) {
+  if (_mode == TabGridMode::kSearch) {
     if (_searchText.length) {
       [self updateSearchResultsHeader];
     }
@@ -1092,7 +1093,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 - (void)insertItem:(GridItemIdentifier*)item
               beforeItemID:(GridItemIdentifier*)nextItemIdentifier
     selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
-  if (_mode == TabGridModeSearch) {
+  if (_mode == TabGridMode::kSearch) {
     // Prevent inserting items while viewing search results.
     return;
   }
@@ -1136,7 +1137,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                       removedItem.tabSwitcherItem.identifier];
       }];
 
-  if (_mode == TabGridModeSearch && _searchText.length) {
+  if (_mode == TabGridMode::kSearch && _searchText.length) {
     [self updateSearchResultsHeader];
   }
 }
@@ -1183,7 +1184,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)moveItem:(GridItemIdentifier*)item
       beforeItem:(GridItemIdentifier*)nextItemIdentifier {
-  if (_mode == TabGridModeSearch) {
+  if (_mode == TabGridMode::kSearch) {
     // Prevent moving items while viewing search results.
     return;
   }
@@ -1252,7 +1253,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   // actions section is not yet added, add it. Otherwise remove the section if
   // it exists and the search mode is not active.
   GridSnapshot* snapshot = self.diffableDataSource.snapshot;
-  if (self.mode == TabGridModeSearch && self.searchText.length) {
+  if (self.mode == TabGridMode::kSearch && self.searchText.length) {
     if (!self.showingSuggestedActions) {
       [snapshot appendSectionsWithIdentifiers:@[
         kSuggestedActionsSectionIdentifier
@@ -1475,15 +1476,15 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     (NSIndexPath*)indexPath {
   UICollectionViewSupplementaryRegistration* registration;
   switch (_mode) {
-    case TabGridModeNormal:
+    case TabGridMode::kNormal:
       if (IsInactiveTabButtonRefactoringEnabled()) {
         return nil;
       } else {
         NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
       }
-    case TabGridModeSelection:
+    case TabGridMode::kSelection:
       NOTREACHED_NORETURN() << "Should not happen.";
-    case TabGridModeSearch:
+    case TabGridMode::kSearch:
       registration = _gridHeaderRegistration;
       break;
   }
@@ -1561,10 +1562,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (TabsSectionHeaderType)tabsSectionHeaderTypeForMode:(TabGridMode)mode {
   switch (mode) {
-    case TabGridModeNormal:
-    case TabGridModeSelection:
+    case TabGridMode::kNormal:
+    case TabGridMode::kSelection:
       return TabsSectionHeaderType::kNone;
-    case TabGridModeSearch:
+    case TabGridMode::kSearch:
       if (_searchText.length == 0) {
         return TabsSectionHeaderType::kNone;
       }
@@ -1582,10 +1583,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (MenuScenarioHistogram)scenarioForContextMenu {
   switch (_mode) {
-    case TabGridModeSearch:
+    case TabGridMode::kSearch:
       return kMenuScenarioHistogramTabGridSearchResult;
-    case TabGridModeNormal:
-    case TabGridModeSelection:
+    case TabGridMode::kNormal:
+    case TabGridMode::kSelection:
       return kMenuScenarioHistogramTabGridEntry;
   }
 }
@@ -1609,9 +1610,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
          // Dragging multiple tabs to reorder them is not supported. So there is
          // no need to enable dragging when multiple items are selected in
          // devices that don't support multiple windows.
-         && ((self.mode == TabGridModeSelection &&
+         && ((self.mode == TabGridMode::kSelection &&
               base::ios::IsMultipleScenesSupported()) ||
-             self.mode == TabGridModeNormal);
+             self.mode == TabGridMode::kNormal);
 }
 
 // Configures `groupCell`'s identifier and title synchronously, and pass the
@@ -1632,7 +1633,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   cell.tabsCount = item.numberOfTabsInGroup;
   cell.title = item.title;
   cell.accessibilityIdentifier = GroupGridCellAccessibilityIdentifier(index);
-  if (self.mode == TabGridModeSelection) {
+  if (self.mode == TabGridMode::kSelection) {
     if ([self.gridProvider isItemSelected:groupItemIdentifier]) {
       cell.state = GridCellStateEditingSelected;
     } else {
@@ -1668,7 +1669,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   cell.title = item.title;
   cell.titleHidden = item.hidesTitle;
   cell.accessibilityIdentifier = GridCellAccessibilityIdentifier(index);
-  if (self.mode == TabGridModeSelection) {
+  if (self.mode == TabGridMode::kSelection) {
     if ([self.gridProvider isItemSelected:itemIdentifier]) {
       cell.state = GridCellStateEditingSelected;
     } else {
@@ -1743,7 +1744,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
         itemIdentifier.type == GridItemType::kTab);
 
   [self.mutator userTappedOnItemID:itemIdentifier];
-  if (_mode == TabGridModeSelection) {
+  if (_mode == TabGridMode::kSelection) {
     // Reconfigure the item.
     [self reconfigureItem:itemIdentifier];
   }
@@ -1830,7 +1831,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 // Updates the number of results found on the search open tabs section header.
 - (void)updateSearchResultsHeader {
-  CHECK_EQ(_mode, TabGridModeSearch, base::NotFatalUntil::M129);
+  CHECK_EQ(_mode, TabGridMode::kSearch, base::NotFatalUntil::M129);
   CHECK_GT(_searchText.length, 0ul, base::NotFatalUntil::M129);
   NSInteger tabSectionIndex = [self.diffableDataSource
       indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];

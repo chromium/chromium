@@ -145,7 +145,7 @@ TEST_P(BaseGridMediatorTest, DragAndDropClosedItem) {
   browser_->GetWebStateList()->InsertWebState(
       std::move(web_state), WebStateList::InsertionParams::AtIndex(1));
 
-  [mediator_ switchToMode:TabGridModeSelection];
+  [mediator_ switchToMode:TabGridMode::kSelection];
   [mediator_
       addToSelectionItemID:[GridItemIdentifier tabIdentifier:web_state_ptr]];
 
@@ -811,7 +811,7 @@ TEST_P(BaseGridMediatorTest, UnGroup) {
 TEST_P(BaseGridMediatorTest, UnGroupFromAnotherBrowser) {
   scoped_feature_list_.InitWithFeatures(
       {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
-  mediator_.currentMode = TabGridModeSearch;
+  mediator_.currentMode = TabGridMode::kSearch;
 
   WebStateList* other_web_state_list = other_browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(other_web_state_list);
@@ -840,7 +840,7 @@ TEST_P(BaseGridMediatorTest, CloseSelectedGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   web_state_list->CreateGroup({1}, {}, TabGroupId::GenerateNew());
   const TabGroup* group = web_state_list->GetGroupOfWebStateAt(1);
-  [mediator_ switchToMode:TabGridModeSelection];
+  [mediator_ switchToMode:TabGridMode::kSelection];
   [mediator_
       addToSelectionItemID:[GridItemIdentifier groupIdentifier:group
                                               withWebStateList:web_state_list]];
@@ -884,7 +884,7 @@ TEST_P(BaseGridMediatorTest, CloseGroupLocally) {
 TEST_P(BaseGridMediatorTest, CloseGroupFromAnotherBrowser) {
   scoped_feature_list_.InitWithFeatures(
       {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
-  mediator_.currentMode = TabGridModeSearch;
+  mediator_.currentMode = TabGridMode::kSearch;
 
   WebStateList* other_web_state_list = other_browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(other_web_state_list);
@@ -918,7 +918,7 @@ TEST_P(BaseGridMediatorTest, CloseSelectedGroupInBatch) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   web_state_list->CreateGroup({1}, {}, TabGroupId::GenerateNew());
   const TabGroup* group = web_state_list->GetGroupOfWebStateAt(1);
-  [mediator_ switchToMode:TabGridModeSelection];
+  [mediator_ switchToMode:TabGridMode::kSelection];
   [mediator_
       addToSelectionItemID:[GridItemIdentifier groupIdentifier:group
                                               withWebStateList:web_state_list]];

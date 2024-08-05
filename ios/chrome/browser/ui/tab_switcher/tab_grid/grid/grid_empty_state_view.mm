@@ -34,7 +34,7 @@ UIImage* ImageForPage(TabGridPage page) {
 
 // Returns the title to display for the given grid `page` and `mode`.
 NSString* TitleForPageAndMode(TabGridPage page, TabGridMode mode) {
-  if (mode == TabGridModeSearch) {
+  if (mode == TabGridMode::kSearch) {
     return l10n_util::GetNSString(IDS_IOS_TAB_GRID_SEARCH_RESULTS_EMPTY_TITLE);
   }
 
@@ -56,7 +56,7 @@ NSString* TitleForPageAndMode(TabGridPage page, TabGridMode mode) {
 
 // Returns the message to display for the given grid `page` and `mode`.
 NSString* BodyTextForPageAndMode(TabGridPage page, TabGridMode mode) {
-  if (mode == TabGridModeSearch) {
+  if (mode == TabGridMode::kSearch) {
     return nil;
   }
 
@@ -97,7 +97,7 @@ NSString* BodyTextForPageAndMode(TabGridPage page, TabGridMode mode) {
 - (instancetype)initWithPage:(TabGridPage)page {
   if (self = [super initWithFrame:CGRectZero]) {
     _activePage = page;
-    _tabGridMode = TabGridModeNormal;
+    _tabGridMode = TabGridMode::kNormal;
   }
   return self;
 }

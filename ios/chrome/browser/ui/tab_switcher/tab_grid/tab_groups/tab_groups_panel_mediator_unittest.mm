@@ -158,7 +158,7 @@ TEST_F(TabGroupsPanelMediatorTest, DisabledByPolicy_DisabledToolbarsConfig) {
             static_cast<id<TabGridToolbarsGridDelegate>>(mediator));
   EXPECT_NE(toolbars_mutator.configuration, nil);
   EXPECT_EQ(TabGridPageTabGroups, toolbars_mutator.configuration.page);
-  EXPECT_EQ(TabGridModeNormal, toolbars_mutator.configuration.mode);
+  EXPECT_EQ(TabGridMode::kNormal, toolbars_mutator.configuration.mode);
 
   // All buttons are disabled.
   EXPECT_FALSE(toolbars_mutator.configuration.doneButton);
@@ -198,7 +198,7 @@ TEST_F(TabGroupsPanelMediatorTest,
             static_cast<id<TabGridToolbarsGridDelegate>>(mediator));
   EXPECT_NE(toolbars_mutator.configuration, nil);
   EXPECT_EQ(TabGridPageTabGroups, toolbars_mutator.configuration.page);
-  EXPECT_EQ(TabGridModeNormal, toolbars_mutator.configuration.mode);
+  EXPECT_EQ(TabGridMode::kNormal, toolbars_mutator.configuration.mode);
 
   // Done button is disabled.
   EXPECT_FALSE(toolbars_mutator.configuration.doneButton);
@@ -245,7 +245,7 @@ TEST_F(TabGroupsPanelMediatorTest,
             static_cast<id<TabGridToolbarsGridDelegate>>(mediator));
   EXPECT_NE(toolbars_mutator.configuration, nil);
   EXPECT_EQ(TabGridPageTabGroups, toolbars_mutator.configuration.page);
-  EXPECT_EQ(TabGridModeNormal, toolbars_mutator.configuration.mode);
+  EXPECT_EQ(TabGridMode::kNormal, toolbars_mutator.configuration.mode);
 
   // Done button is enabled.
   EXPECT_TRUE(toolbars_mutator.configuration.doneButton);

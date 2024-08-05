@@ -359,7 +359,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 }
 
 - (void)switchToMode:(TabGridMode)mode {
-  CHECK(mode == TabGridModeNormal || mode == TabGridModeSearch)
+  CHECK(mode == TabGridMode::kNormal || mode == TabGridMode::kSearch)
       << "remote tabs should only support normal and search modes.";
   self.currentMode = mode;
 }
@@ -388,12 +388,12 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
 - (void)searchButtonTapped:(id)sender {
   base::RecordAction(base::UserMetricsAction("MobileTabGridSearchTabs"));
-  self.currentMode = TabGridModeSearch;
+  self.currentMode = TabGridMode::kSearch;
 }
 
 - (void)cancelSearchButtonTapped:(id)sender {
   base::RecordAction(base::UserMetricsAction("MobileTabGridCancelSearchTabs"));
-  self.currentMode = TabGridModeNormal;
+  self.currentMode = TabGridMode::kNormal;
 }
 
 - (void)closeSelectedTabs:(id)sender {

@@ -97,7 +97,7 @@ TEST_F(IncognitoGridMediatorTest, TestToolbarsNormalModeWithoutWebstates) {
 
   EXPECT_EQ(TabGridPageIncognitoTabs,
             fake_toolbars_mediator_.configuration.page);
-  EXPECT_EQ(TabGridModeNormal, fake_toolbars_mediator_.configuration.mode);
+  EXPECT_EQ(TabGridMode::kNormal, fake_toolbars_mediator_.configuration.mode);
 
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.newTabButton);
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.searchButton);

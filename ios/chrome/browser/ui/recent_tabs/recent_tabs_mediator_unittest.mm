@@ -32,7 +32,7 @@ TEST_F(RecentTabsMediatorTest, disabledConfiguration) {
   [mediator currentlySelectedGrid:YES];
 
   EXPECT_EQ(TabGridPageRemoteTabs, fake_toolbars_mediator.configuration.page);
-  EXPECT_EQ(TabGridModeNormal, fake_toolbars_mediator.configuration.mode);
+  EXPECT_EQ(TabGridMode::kNormal, fake_toolbars_mediator.configuration.mode);
 
   EXPECT_FALSE(fake_toolbars_mediator.configuration.selectAllButton);
   EXPECT_FALSE(fake_toolbars_mediator.configuration.doneButton);

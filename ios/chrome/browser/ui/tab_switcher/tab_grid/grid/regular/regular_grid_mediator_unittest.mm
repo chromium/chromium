@@ -186,7 +186,7 @@ TEST_F(RegularGridMediatorTest, TestToolbarsNormalModeWithoutWebstates) {
   EXPECT_EQ(0UL, consumer_.items.size());
 
   EXPECT_EQ(TabGridPageRegularTabs, fake_toolbars_mediator_.configuration.page);
-  EXPECT_EQ(TabGridModeNormal, fake_toolbars_mediator_.configuration.mode);
+  EXPECT_EQ(TabGridMode::kNormal, fake_toolbars_mediator_.configuration.mode);
 
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.newTabButton);
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.searchButton);

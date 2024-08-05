@@ -173,7 +173,7 @@
           initWithPage:TabGridPageRegularTabs];
   toolbarsConfiguration.mode = self.currentMode;
 
-  if (self.currentMode == TabGridModeSelection) {
+  if (self.currentMode == TabGridMode::kSelection) {
     [self configureButtonsInSelectionMode:toolbarsConfiguration];
   } else {
     toolbarsConfiguration.closeAllButton = [self canCloseRegularOrInactiveTabs];

@@ -3942,7 +3942,7 @@ using UserFeedbackDataCallback =
 - (void)showTabSwitcher {
   DCHECK(self.mainCoordinator);
   [self.mainCoordinator setActivePage:self.activePage];
-  [self.mainCoordinator setActiveMode:TabGridModeNormal];
+  [self.mainCoordinator setActiveMode:TabGridMode::kNormal];
   [self.mainCoordinator showTabGrid];
 }
 

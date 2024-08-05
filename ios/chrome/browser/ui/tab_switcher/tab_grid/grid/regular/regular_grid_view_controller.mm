@@ -27,7 +27,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   // Tracks if the Inactive Tabs button is being animated out.
   BOOL _inactiveTabsHeaderHideAnimationInProgress;
   // The number of currently inactive tabs. If there are (inactiveTabsCount > 0)
-  // and the grid is in TabGridModeNormal, a button is displayed at the top,
+  // and the grid is in TabGridMode::kNormal, a button is displayed at the top,
   // advertizing them.
   NSInteger _inactiveTabsCount;
   // The number of days after which tabs are considered inactive. This is
@@ -55,7 +55,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
     return [super headerForSectionAtIndexPath:indexPath];
   }
 
-  if (self.mode == TabGridModeNormal) {
+  if (self.mode == TabGridMode::kNormal) {
     CHECK(IsInactiveTabsAvailable());
     // The Regular Tabs grid has a button to inform about the hidden inactive
     // tabs.
@@ -119,7 +119,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
     return [super tabsSectionHeaderTypeForMode:mode];
   }
 
-  if (mode == TabGridModeNormal) {
+  if (mode == TabGridMode::kNormal) {
     if (!IsInactiveTabsAvailable()) {
       return TabsSectionHeaderType::kNone;
     }
@@ -222,7 +222,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 
   BOOL isEnabled = _inactiveTabsDaysThreshold != kInactiveTabsDisabledByUser;
   BOOL hasInactiveTabs = _inactiveTabsCount != 0;
-  BOOL isInNormalMode = self.mode == TabGridModeNormal;
+  BOOL isInNormalMode = self.mode == TabGridMode::kNormal;
 
   BOOL visible = isEnabled && hasInactiveTabs && isInNormalMode;
 
