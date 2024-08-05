@@ -34,7 +34,6 @@ TEST_F(CSSStyleSheetTest,
   CSSStyleSheetInit* init = CSSStyleSheetInit::Create();
   init->setMedia(
       MakeGarbageCollected<V8UnionMediaListOrString>("screen, print"));
-  init->setTitle("test");
   init->setAlternate(true);
   init->setDisabled(true);
   CSSStyleSheet* sheet =
@@ -46,7 +45,6 @@ TEST_F(CSSStyleSheetTest,
   EXPECT_EQ(sheet->ownerRule(), nullptr);
   EXPECT_EQ(sheet->media()->length(), 2U);
   EXPECT_EQ(sheet->media()->mediaText(nullptr), init->media()->GetAsString());
-  EXPECT_EQ(sheet->title(), init->title());
   EXPECT_TRUE(sheet->AlternateFromConstructor());
   EXPECT_TRUE(sheet->disabled());
   EXPECT_EQ(sheet->cssRules(exception_state)->length(), 0U);

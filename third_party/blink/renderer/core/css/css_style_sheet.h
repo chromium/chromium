@@ -176,7 +176,9 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
   }
   bool HasViewportDependentMediaQueries() const;
   bool HasDynamicViewportDependentMediaQueries() const;
-  void SetTitle(const String& title) { title_ = title; }
+  void SetTitle(const String& title) {
+    title_ = title.empty() ? String() : title;
+  }
 
   void AddedAdoptedToTreeScope(TreeScope& tree_scope);
   void RemovedAdoptedFromTreeScope(TreeScope& tree_scope);
