@@ -19,10 +19,7 @@ Typical usage:
         parsed_cmdline_args, list_of_all_test_names)
 """
 
-import argparse
-import os
 import re
-import sys
 
 
 class _TestFilter:

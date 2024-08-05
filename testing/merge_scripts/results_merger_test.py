@@ -4,15 +4,10 @@
 # found in the LICENSE file.
 
 import copy
-import os
-import six
-import sys
 import unittest
 
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+import six
 
-# For results_merger.
-sys.path.insert(0, os.path.join(THIS_DIR, '..', 'resources'))
 import results_merger
 
 GOOD_JSON_TEST_RESULT_0 = {

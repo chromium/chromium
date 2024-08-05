@@ -11,12 +11,10 @@ Works better for text formats or protocols. For binary ones may be useless.
 
 import argparse
 import HTMLParser
-import io
 import logging
 import os
 import re
 import shutil
-import string
 import subprocess
 import sys
 import tempfile

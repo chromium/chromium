@@ -5,17 +5,13 @@
 """Tests for query_optimal_shard_counts.py."""
 
 import datetime
-import sys
 import os
 import json
-import mock
 import platform
 import subprocess
 import tempfile
 import unittest
-
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                '..'))
+from unittest import mock
 
 import query_optimal_shard_counts
 

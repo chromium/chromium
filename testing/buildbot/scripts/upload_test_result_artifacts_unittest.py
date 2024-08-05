@@ -3,15 +3,12 @@
 # found in the LICENSE file.
 """Tests for upload_test_result_artifacts."""
 
-from __future__ import print_function
-
-import json
-import mock
 import os
 import random
 import string
 import tempfile
 import unittest
+from unitttest import mock
 
 import upload_test_result_artifacts
 

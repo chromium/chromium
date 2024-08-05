@@ -18,6 +18,9 @@ docstring-quote = double
 # Disable the message, report, category or checker with the given id(s).
 # TODO(crbug.com/353942917): Burn down this list to the minimal reasonable
 # amount by fixing issues or doing inline-disables where appropriate.
+# Intentionally kept:
+#   wrong-import-position: We often need to add directories to PATH before
+#     importing, which causes this check to fail.
 disable=abstract-method,
         anomalous-backslash-in-string,
         bad-indentation,
@@ -57,8 +60,6 @@ disable=abstract-method,
         ungrouped-imports,
         undefined-variable,
         unneeded-not,
-        unused-import,
-        wrong-import-order,
         wrong-import-position,
 
 [REPORTS]

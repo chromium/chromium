@@ -5,9 +5,10 @@
 # found in the LICENSE file.
 
 import os
-from pyfakefs import fake_filesystem_unittest
 import tempfile
 import unittest
+
+from pyfakefs import fake_filesystem_unittest
 
 from generate_script import _parse_args
 from generate_script import _generate_script

@@ -38,27 +38,29 @@ $ cd tools/perf
 $ ./run_tests ScriptsSmokeTest.testRunPerformanceTests
 """
 
-from __future__ import print_function
-
 import argparse
+from collections import OrderedDict
 import json
 import os
 import pathlib
-import requests
 import shutil
 import sys
 import time
 import tempfile
 import traceback
+
 import six
 
-from collections import OrderedDict
+import requests
+
+import common
 
 CHROMIUM_SRC_DIR = pathlib.Path(__file__).absolute().parents[2]
 RELEASE_DIR = CHROMIUM_SRC_DIR / 'out/Release'
 
 PERF_DIR = CHROMIUM_SRC_DIR / 'tools/perf'
 sys.path.append(str(PERF_DIR))
+# //tools/perf imports.
 if (PERF_DIR / 'crossbench_result_converter.py').exists():
   # Optional import needed to run crossbench.
   import crossbench_result_converter
@@ -69,17 +71,18 @@ from core import path_util
 
 PERF_CORE_DIR = PERF_DIR / 'core'
 sys.path.append(str(PERF_CORE_DIR))
+# //tools/perf/core imports.
 import results_merger
 
-# Add src/testing/ into sys.path for importing xvfb, test_env, and common.
 sys.path.append(str(CHROMIUM_SRC_DIR / 'testing'))
+# //testing imports.
 import xvfb
 import test_env
-from scripts import common
 
 THIRD_PARTY_DIR = CHROMIUM_SRC_DIR / 'third_party'
 CATAPULT_DIR = THIRD_PARTY_DIR / 'catapult'
 TELEMETRY_DIR = CATAPULT_DIR / 'telemetry'
+# //third_party/catapult/telemetry imports.
 if TELEMETRY_DIR.exists() and (CATAPULT_DIR / 'common').exists():
   # Telemetry is required on perf infra, but not present on some environments.
   sys.path.append(str(TELEMETRY_DIR))
