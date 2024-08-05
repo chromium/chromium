@@ -39,7 +39,7 @@ void FakeDlcserviceClient::Install(
       base::BindOnce(std::move(callback), std::move(install_result)));
 }
 
-void FakeDlcserviceClient::Uninstall(std::string_view dlc_id,
+void FakeDlcserviceClient::Uninstall(const std::string& dlc_id,
                                      UninstallCallback callback) {
   VLOG(1) << "Requesting to uninstall DLC=" << dlc_id;
   for (auto iter = dlcs_with_content_.dlc_infos().begin();
@@ -56,7 +56,7 @@ void FakeDlcserviceClient::Uninstall(std::string_view dlc_id,
       base::BindOnce(std::move(callback), std::string_view(uninstall_err_)));
 }
 
-void FakeDlcserviceClient::Purge(std::string_view dlc_id,
+void FakeDlcserviceClient::Purge(const std::string& dlc_id,
                                  PurgeCallback callback) {
   VLOG(1) << "Requesting to purge DLC=" << dlc_id;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -64,7 +64,7 @@ void FakeDlcserviceClient::Purge(std::string_view dlc_id,
       base::BindOnce(std::move(callback), std::string_view(purge_err_)));
 }
 
-void FakeDlcserviceClient::GetDlcState(std::string_view dlc_id,
+void FakeDlcserviceClient::GetDlcState(const std::string& dlc_id,
                                        GetDlcStateCallback callback) {
   VLOG(1) << "Requesting to get DLC state of: " << dlc_id;
   std::string error = dlcservice::kErrorNone;

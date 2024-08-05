@@ -232,7 +232,9 @@ void AppendBasicTypeValueData(MessageWriter* writer, base::ValueView value) {
 
     void operator()(double value) { writer->AppendDouble(value); }
 
-    void operator()(std::string_view value) { writer->AppendString(value); }
+    void operator()(std::string_view value) {
+      writer->AppendString(std::string(value));
+    }
 
     void operator()(const base::Value::BlobStorage&) {
       DLOG(ERROR) << "Unexpected type: " << base::Value::Type::BINARY;

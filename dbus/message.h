@@ -288,7 +288,13 @@ class CHROME_DBUS_EXPORT MessageWriter {
   void AppendInt64(int64_t value);
   void AppendUint64(uint64_t value);
   void AppendDouble(double value);
-  void AppendString(std::string_view value);
+  // This function intentionally takes a `std::string` to ensure the data that
+  // should be appended is correctly null-terminated; other data types, e.g.
+  // `std::string_view`, do not necessarily have the same end as the
+  // `std::string` that owns the underlying data. This can result in more data
+  // than intended being appended since the end of the `std::string` is used
+  // instead of the end of the `std::string_view`.
+  void AppendString(const std::string& value);
   void AppendObjectPath(const ObjectPath& value);
 
   // Appends a file descriptor to the message.

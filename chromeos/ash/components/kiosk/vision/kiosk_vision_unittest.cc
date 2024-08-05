@@ -64,7 +64,7 @@ DlcserviceClient::InstallResult InstallKioskVisionDlc(
     FakeDlcserviceClient& service) {
   base::test::TestFuture<const DlcserviceClient::InstallResult&> future;
   dlcservice::InstallRequest request;
-  request.set_id(std::string(kKioskVisionDlcId));
+  request.set_id(kKioskVisionDlcId);
   service.Install(request, future.GetCallback(), base::DoNothing());
   return future.Take();
 }
