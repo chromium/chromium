@@ -167,7 +167,7 @@ class EnterpriseCompanionStatus {
  private:
   StatusVariant status_variant_;
 
-  explicit EnterpriseCompanionStatus(StatusVariant&& status_variant);
+  explicit EnterpriseCompanionStatus(StatusVariant status_variant);
 
   template <size_t I, typename T>
   static EnterpriseCompanionStatus From(T&& status) {

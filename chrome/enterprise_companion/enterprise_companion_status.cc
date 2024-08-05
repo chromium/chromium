@@ -148,7 +148,7 @@ EnterpriseCompanionStatus::EnterpriseCompanionStatus(ApplicationError error)
     : EnterpriseCompanionStatus(StatusVariant(error)) {}
 
 EnterpriseCompanionStatus::EnterpriseCompanionStatus(
-    StatusVariant&& status_variant)
+    StatusVariant status_variant)
     : status_variant_(std::move(status_variant)) {}
 
 }  // namespace enterprise_companion
