@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -30,8 +25,9 @@ extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::span<const uint8_t> stream(data, size);
-  safe_browsing::dmg::MemoryReadStream input(stream);
+  // SAFETY: libfuzzer guarantees a valid pointer and size pair.
+  safe_browsing::dmg::MemoryReadStream input(
+      UNSAFE_BUFFERS(base::span(data, size)));
   safe_browsing::dmg::UDIFParser udif_parser(&input);
 
   if (!udif_parser.Parse())
