@@ -15,6 +15,11 @@
     z-index: 1;
   }
 
+  #topContainer:has(sea-pen-input-query) {
+    position: static;
+    z-index: auto;
+  }
+
   #bottomContainer {
     display: grid;
     grid-template-areas:
@@ -24,6 +29,10 @@
     min-height: calc(var(--sea-pen-router-min-height) - var(--sea-pen-top-container-min-height));
     position: relative;
     width: 100%;
+  }
+
+  #bottomContainer:has(sea-pen-freeform) {
+    position: static;
   }
 
   sea-pen-input-query,
