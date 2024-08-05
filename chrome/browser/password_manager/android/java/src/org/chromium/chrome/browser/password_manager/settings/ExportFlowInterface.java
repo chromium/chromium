@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.pwd_migration;
+package org.chromium.chrome.browser.password_manager.settings;
 
 import android.app.Activity;
 import android.content.Intent;

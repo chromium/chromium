@@ -23,12 +23,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.password_manager.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.HistogramExportResult;
-import org.chromium.chrome.browser.pwd_migration.ExportFlowInterface;
-import org.chromium.chrome.browser.pwd_migration.NonCancelableProgressBar;
 import org.chromium.ui.widget.Toast;
 
 import java.io.File;

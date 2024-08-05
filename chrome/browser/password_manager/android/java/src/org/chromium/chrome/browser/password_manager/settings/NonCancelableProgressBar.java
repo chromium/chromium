@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.pwd_migration;
+package org.chromium.chrome.browser.password_manager.settings;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import org.chromium.components.browser_ui.widget.MaterialProgressBar;
+import org.chromium.chrome.browser.password_manager.R;
 
 /**
  * Shows the dialog that informs the user that some operation is ongoing without indicating the

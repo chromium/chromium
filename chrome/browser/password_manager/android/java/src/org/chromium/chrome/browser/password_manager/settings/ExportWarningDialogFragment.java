@@ -11,7 +11,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.password_manager.R;
 
 /**
  * Shows the dialog that gives the user some tips for how to treat the exported passwords securely.

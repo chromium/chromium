@@ -40,7 +40,7 @@
 #include "url/gurl.h"
 
 // Must come after other includes, because FromJniType() uses Profile.
-#include "chrome/android/chrome_jni_headers/PasswordUIView_jni.h"
+#include "chrome/browser/password_manager/android/jni_headers/PasswordUIView_jni.h"
 
 namespace {
 
