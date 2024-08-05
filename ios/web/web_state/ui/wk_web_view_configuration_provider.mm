@@ -37,7 +37,6 @@ const char kWKWebViewConfigProviderKeyName[] = "wk_web_view_config_provider";
 // static
 WKWebViewConfigurationProvider&
 WKWebViewConfigurationProvider::FromBrowserState(BrowserState* browser_state) {
-  DCHECK([NSThread isMainThread]);
   DCHECK(browser_state);
   if (!browser_state->GetUserData(kWKWebViewConfigProviderKeyName)) {
     browser_state->SetUserData(
@@ -50,6 +49,7 @@ WKWebViewConfigurationProvider::FromBrowserState(BrowserState* browser_state) {
 
 base::WeakPtr<WKWebViewConfigurationProvider>
 WKWebViewConfigurationProvider::AsWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
   return weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -59,12 +59,13 @@ WKWebViewConfigurationProvider::WKWebViewConfigurationProvider(
       content_rule_list_provider_(
           std::make_unique<WKContentRuleListProvider>()) {}
 
-WKWebViewConfigurationProvider::~WKWebViewConfigurationProvider() = default;
+WKWebViewConfigurationProvider::~WKWebViewConfigurationProvider() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
+}
 
 void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
     WKWebViewConfiguration* configuration) {
-  DCHECK([NSThread isMainThread]);
-
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
   if (configuration_) {
     Purge();
   }
@@ -172,7 +173,7 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
 
 WKWebViewConfiguration*
 WKWebViewConfigurationProvider::GetWebViewConfiguration() {
-  DCHECK([NSThread isMainThread]);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
   if (!configuration_) {
     ResetWithWebViewConfiguration(nil);
   }
@@ -182,12 +183,8 @@ WKWebViewConfigurationProvider::GetWebViewConfiguration() {
   return [configuration_ copy];
 }
 
-WKContentRuleListProvider*
-WKWebViewConfigurationProvider::GetContentRuleListProvider() {
-  return content_rule_list_provider_.get();
-}
-
 void WKWebViewConfigurationProvider::UpdateScripts() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
   [configuration_.userContentController removeAllUserScripts];
 
   JavaScriptFeatureManager* java_script_feature_manager =
@@ -217,13 +214,14 @@ void WKWebViewConfigurationProvider::UpdateScripts() {
 }
 
 void WKWebViewConfigurationProvider::Purge() {
-  DCHECK([NSThread isMainThread]);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
   configuration_ = nil;
 }
 
 base::CallbackListSubscription
 WKWebViewConfigurationProvider::RegisterConfigurationCreatedCallback(
     ConfigurationCreatedCallbackList::CallbackType callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
   return configuration_created_callbacks_.Add(std::move(callback));
 }
 

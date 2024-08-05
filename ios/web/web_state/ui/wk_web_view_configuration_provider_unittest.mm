@@ -215,13 +215,6 @@ TEST_F(WKWebViewConfigurationProviderTest, ResetConfiguration) {
   EXPECT_NE(config, recorded_configuration);
 }
 
-TEST_F(WKWebViewConfigurationProviderTest, GetContentRuleListProvider) {
-  auto browser_state = std::make_unique<FakeBrowserState>();
-  WKWebViewConfigurationProvider& provider = GetProvider(browser_state.get());
-
-  EXPECT_NE(nil, provider.GetContentRuleListProvider());
-}
-
 // Tests that WKWebViewConfiguration has a different data store if browser state
 // returns a different storage ID.
 TEST_F(WKWebViewConfigurationProviderTest, DifferentDataStore) {

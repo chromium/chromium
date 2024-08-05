@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 
 @class CRWWebUISchemeHandler;
@@ -66,10 +67,6 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
   // Callers must not retain the returned object.
   WKWebViewConfiguration* GetWebViewConfiguration();
 
-  // Returns WKContentRuleListProvider associated with WKWebViewConfiguration.
-  // Callers must not retain the returned object.
-  WKContentRuleListProvider* GetContentRuleListProvider();
-
   // Recreates and re-adds all injected Javascript into the current
   // configuration. This will only affect WebStates that are loaded after a call
   // to this function. All current WebStates will keep their existing Javascript
@@ -89,6 +86,9 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
  private:
   explicit WKWebViewConfigurationProvider(BrowserState* browser_state);
   WKWebViewConfigurationProvider() = delete;
+
+  SEQUENCE_CHECKER(_sequence_checker_);
+
   CRWWebUISchemeHandler* scheme_handler_ = nil;
   WKWebViewConfiguration* configuration_ = nil;
   raw_ptr<BrowserState> browser_state_;
