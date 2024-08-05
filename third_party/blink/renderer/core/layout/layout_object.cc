@@ -3237,10 +3237,12 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
     SetNeedsLayoutAndIntrinsicWidthsRecalc(
         layout_invalidation_reason::kStyleChange);
   } else if (diff.NeedsPositionedMovementLayout()) {
-    if (StyleRef().HasOutOfFlowPosition()) {
-      ContainingBlock()->SetNeedsSimplifiedLayout();
-    } else {
-      ContainingBlock()->SetChildNeedsLayout();
+    if (auto* containing_block = ContainingBlock()) {
+      if (StyleRef().HasOutOfFlowPosition()) {
+        containing_block->SetNeedsSimplifiedLayout();
+      } else {
+        containing_block->SetChildNeedsLayout();
+      }
     }
   }
 
