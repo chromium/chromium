@@ -3537,6 +3537,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.NumericQuantity.DidTriggerSuggestions" enum="Boolean"
+    expires_after="M130">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs whether a field with a NUMERIC_QUANTITY heuristic prediction and
+    non-empty server prediction triggered suggestions or not. The metric is
+    emitted on form submission.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.NumericQuantityCollidesWithServerPrediction"
     enum="Boolean" expires_after="2024-12-12">
   <owner>koerber@google.com</owner>
