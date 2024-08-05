@@ -539,6 +539,10 @@ void ProfileImportProcess::CollectMetrics(
           UserAccepted() ? *confirmed_import_candidate_ : *import_candidate_,
           existing_profiles, app_locale_);
     }
+    if (user_decision_ ==
+        AutofillClient::AddressPromptUserDecision::kAccepted) {
+      autofill_metrics::LogNewProfileStorage(*confirmed_import_candidate_);
+    }
   } else if (is_confirmable_update()) {
     autofill_metrics::LogProfileUpdateImportDecision(
         user_decision_, existing_profiles,
