@@ -219,7 +219,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
        DoesNotAttemptToPopulateFillIntoEditWithFeatureDisabled) {
   base::test::ScopedFeatureList features;
   // Clear the TemplateURLService. Observe crash, if we attempt to use it.
-  mock_client_.set_template_url_service(std::unique_ptr<TemplateURLService>());
+  mock_client_.set_template_url_service(nullptr);
 
   std::string url("https://www.wider.com/");
   AutocompleteInput input(std::u16string(),  // Note: empty input.
@@ -292,7 +292,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   search_engines::SearchEnginesTestEnvironment test_environment(
       {.template_url_service_initializer = other_engines});
   mock_client_.set_template_url_service(
-      test_environment.ReleaseTemplateURLService());
+      test_environment.template_url_service());
   mock_client_.GetTemplateURLService()->ApplyDefaultSearchChangeForTesting(
       engine.get(), DefaultSearchManager::FROM_USER);
 
@@ -310,9 +310,9 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
     ASSERT_EQ(u"title", provider_->matches()[0].description);
   }
 
-  // Some dependencies of `mock_client_`'s `TemplateURLService` are owned by
-  // `test_environment`, which is going out of scope here. Destroy it to
-  // avoid dangling pointers.
+  // `mock_client_` points to the `TemplateURLService` found in
+  // `test_environment`, which is going out of scope here.
+  // Destroy it to avoid dangling pointers.
   mock_client_.set_template_url_service(nullptr);
 }
 #endif

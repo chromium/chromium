@@ -105,8 +105,6 @@ class BuiltinProviderTest : public testing::Test {
 
   void SetUp() override {
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
-    client_->set_template_url_service(
-        search_engines_test_environment_.ReleaseTemplateURLService());
     provider_ = new BuiltinProvider(client_.get());
   }
   void TearDown() override { provider_ = nullptr; }

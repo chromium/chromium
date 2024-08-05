@@ -22,7 +22,6 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
-#include "components/search_engines/search_engines_test_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -66,7 +65,6 @@ class BookmarkScoringSignalsAnnotatorTest : public testing::Test {
 
   base::ScopedTempDir history_dir_;
   base::test::TaskEnvironment task_environment_;
-  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   std::unique_ptr<BookmarkScoringSignalsAnnotator> annotator_;
   std::unique_ptr<AutocompleteResult> result_;
@@ -78,8 +76,6 @@ void BookmarkScoringSignalsAnnotatorTest::SetUp() {
   client_->set_history_service(history::CreateHistoryService(
       history_dir_.GetPath(), /*create_db=*/true));
   client_->set_bookmark_model(bookmarks::TestBookmarkClient::CreateModel());
-  client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
   annotator_ = std::make_unique<BookmarkScoringSignalsAnnotator>(client_.get());
   FillBookmarkModelData();
   CreateAutocompleteResult();

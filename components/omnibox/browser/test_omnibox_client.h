@@ -16,6 +16,7 @@
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/sessions/core/session_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/window_open_disposition.h"
@@ -88,7 +89,7 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
  private:
   SessionID session_id_;
   TestLocationBarModel location_bar_model_;
-  raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   TestSchemeClassifier scheme_classifier_;
   AutocompleteClassifier autocomplete_classifier_;
   WindowOpenDisposition last_log_disposition_;

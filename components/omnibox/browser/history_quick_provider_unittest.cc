@@ -37,7 +37,6 @@
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -199,7 +198,6 @@ class HistoryQuickProviderTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir history_dir_;
-  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
 
   ACMatches ac_matches_;  // The resulting matches after running RunTest.
@@ -218,9 +216,6 @@ void HistoryQuickProviderTest::SetUp() {
   ASSERT_NO_FATAL_FAILURE(FillData());
 
   client_->set_bookmark_model(bookmarks::TestBookmarkClient::CreateModel());
-  client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
-
   client_->set_in_memory_url_index(std::make_unique<InMemoryURLIndex>(
       client_->GetBookmarkModel(), client_->GetHistoryService(), nullptr,
       history_dir_.GetPath(), SchemeSet()));

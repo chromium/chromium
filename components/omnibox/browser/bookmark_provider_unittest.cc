@@ -206,7 +206,7 @@ void BookmarkProviderTest::SetUp() {
       .WillByDefault(testing::ReturnRef(classifier_));
 
   provider_client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
+      search_engines_test_environment_.template_url_service());
 
   ResetProvider();
 

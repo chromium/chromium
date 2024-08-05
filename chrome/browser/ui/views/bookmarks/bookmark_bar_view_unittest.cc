@@ -163,7 +163,7 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
         search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
             profile);
     return std::make_unique<TemplateURLService>(
-        profile->GetPrefs(), search_engine_choice_service,
+        *profile->GetPrefs(), *search_engine_choice_service,
         std::make_unique<SearchTermsData>(),
         nullptr /* KeywordWebDataService */,
         nullptr /* TemplateURLServiceClient */, base::RepeatingClosure()

@@ -47,8 +47,8 @@ std::unique_ptr<KeyedService> CreateTemplateURLService(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<TemplateURLService>(
-      profile->GetPrefs(),
-      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile),
+      *profile->GetPrefs(),
+      *search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile),
       std::make_unique<UIThreadSearchTermsData>(),
       WebDataServiceFactory::GetKeywordWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),

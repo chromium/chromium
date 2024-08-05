@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 
+#import "base/check_deref.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/no_destructor.h"
@@ -42,8 +43,9 @@ std::unique_ptr<KeyedService> BuildTemplateURLService(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<TemplateURLService>(
-      browser_state->GetPrefs(),
-      ios::SearchEngineChoiceServiceFactory::GetForBrowserState(browser_state),
+      CHECK_DEREF(browser_state->GetPrefs()),
+      CHECK_DEREF(ios::SearchEngineChoiceServiceFactory::GetForBrowserState(
+          browser_state)),
       std::make_unique<ios::UIThreadSearchTermsData>(),
       ios::WebDataServiceFactory::GetKeywordWebDataForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS),

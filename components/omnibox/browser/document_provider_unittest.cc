@@ -51,7 +51,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
  public:
   FakeAutocompleteProviderClient() {
     set_template_url_service(
-        search_engines_test_environment_.ReleaseTemplateURLService());
+        search_engines_test_environment_.template_url_service());
     search_engines_test_environment_.pref_service()
         .registry()
         ->RegisterBooleanPref(omnibox::kDocumentSuggestEnabled, true);
