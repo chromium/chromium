@@ -304,6 +304,10 @@ ShoppingService::ShoppingService(
                               base::Unretained(this)));
     }
   }
+
+  if (history_service) {
+    history_service_observation_.Observe(history_service);
+  }
 }
 
 AccountChecker* ShoppingService::GetAccountChecker() {
@@ -1849,6 +1853,15 @@ void ShoppingService::OnGetOnDemandProductInfo(
   }
 
   on_demand_product_info_callbacks_.erase(url);
+}
+
+void ShoppingService::OnHistoryDeletions(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  // Since history deals with "visits" rather than "views", we don't have a
+  // reliable way to clear entries from the revently viewed list. If a user is
+  // deleting items from history, clear the whole list.
+  recently_visited_tabs_.clear();
 }
 
 base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {
