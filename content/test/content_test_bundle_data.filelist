@@ -5612,8 +5612,6 @@ data/accessibility/regression/language-changed-on-html-expected-blink.txt
 data/accessibility/regression/language-changed-on-html.html
 data/accessibility/regression/missing-parent-expected-blink.txt
 data/accessibility/regression/missing-parent.html
-data/accessibility/regression/null-object-on-hypertext-offset-computation-expected-auralinux.txt
-data/accessibility/regression/null-object-on-hypertext-offset-computation.html
 data/accessibility/regression/option-accessible-name-is-select-expected-blink.txt
 data/accessibility/regression/option-accessible-name-is-select.html
 data/accessibility/regression/progress-with-background-exposes-values-expected-blink.txt
