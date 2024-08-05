@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/common/safe_browsing/disk_image_type_sniffer_mac.h"
 #include "base/threading/scoped_blocking_call.h"
 
@@ -32,17 +27,16 @@ bool DiskImageTypeSnifferMac::IsAppleDiskImage(const base::FilePath& dmg_file) {
   if (!file.IsValid())
     return false;
 
-  char data[kSizeKolySignatureInBytes];
+  uint8_t data[kSizeKolySignatureInBytes];
 
   if (file.Seek(base::File::FROM_END, -1 * kAppleDiskImageTrailerSize) == -1)
     return false;
 
-  if (file.ReadAtCurrentPos(data, kSizeKolySignatureInBytes) !=
-      kSizeKolySignatureInBytes)
+  if (file.ReadAtCurrentPos(data) != kSizeKolySignatureInBytes) {
     return false;
+  }
 
-  return IsAppleDiskImageTrailer(base::span<uint8_t>(
-      reinterpret_cast<uint8_t*>(data), kSizeKolySignatureInBytes));
+  return IsAppleDiskImageTrailer(data);
 }
 
 // static
