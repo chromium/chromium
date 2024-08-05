@@ -96,10 +96,32 @@ class CONTENT_EXPORT StorageInterestGroups
 // not be accessed outside of this class. InterestGroupCachingStorage provides a
 // pointer to in-memory values for GetInterestGroupsForOwner when available and
 // invalidates the cached values when necessary (when an update to the values
-// occurs).
+// occurs). It also provides cached values of the owner and bidding signals
+// origins so that they can be prefetched before loading interest groups.
 class CONTENT_EXPORT InterestGroupCachingStorage {
  public:
   static constexpr base::TimeDelta kMinimumCacheHoldTime = base::Seconds(10);
+  struct CONTENT_EXPORT CachedOriginsInfo {
+    CachedOriginsInfo();
+    explicit CachedOriginsInfo(const blink::InterestGroup& group);
+
+    CachedOriginsInfo(const CachedOriginsInfo& other) = delete;
+    CachedOriginsInfo& operator=(const CachedOriginsInfo& other) = delete;
+    CachedOriginsInfo(CachedOriginsInfo&& other);
+    CachedOriginsInfo& operator=(CachedOriginsInfo&& other);
+
+    ~CachedOriginsInfo();
+
+    // The name of an owner's latest expiring interest group (of the interest
+    // groups encountered by the cache via a join or load).
+    std::string interest_group_name;
+    // The expiry of the interest group.
+    base::Time expiry = base::Time::Min();
+    // The bidding signals origin of the interest group, if it's non-null and
+    // different from the owner.
+    std::optional<url::Origin> bidding_signals_origin;
+  };
+
   explicit InterestGroupCachingStorage(const base::FilePath& path,
                                        bool in_memory);
   ~InterestGroupCachingStorage();
@@ -117,6 +139,24 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   void GetInterestGroupsForOwner(
       const url::Origin& owner,
       base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback);
+
+  // For a given `owner`, return whether the owner origin and bidding signal
+  // origin were cached in-memory in previous calls to
+  // GetInterestGroupsForOwner and JoinInterestGroup. If the `owner` origin was
+  // cached, update `signals_origin` to the one that was cached -- or set to
+  // nullopt if no bidding signals origin was cached or if it would be the same
+  // as the owner origin. The cache includes at most one entry per origin, and
+  // may not reflect the results of interest group updates. It's intended to be
+  // used for best-effort preconnecting, and should not be considered
+  // authoritative. It is guaranteed not to contain interest groups that have
+  // are beyond the max expiration time limit, so preconnecting should not leak
+  // data the bidder would otherwise have access to, if it so desired. That is,
+  // manual voluntarily removing or expiring of an interest group may not be
+  // reflected in the result, but hitting the the global interest group lifetime
+  // cap will be respected.
+  bool GetCachedOwnerAndSignalsOrigins(
+      const url::Origin& owner,
+      std::optional<url::Origin>& signals_origin);
 
   // Joins an interest group. If the interest group does not exist, a new one
   // is created based on the provided group information. If the interest group
@@ -276,6 +316,15 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
       base::RepeatingCallback<void(base::Time)> callback) const;
 
  private:
+  // Once JoinInterestGroup completes successfully, maybe cache the associated
+  // CachedOriginsInfo and run the callback.
+  void OnJoinInterestGroup(
+      const url::Origin& owner,
+      CachedOriginsInfo cached_origins_info,
+      base::OnceCallback<void(std::optional<InterestGroupKanonUpdateParameter>)>
+          callback,
+      std::optional<InterestGroupKanonUpdateParameter> update);
+
   // After the async call to load interest groups from storage, cache the result
   // in a StorageInterestGroups. Also call
   // callbacks in outstanding_interest_group_for_owner_callbacks_ with a
@@ -286,7 +335,10 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
       uint32_t version,
       std::vector<StorageInterestGroup> interest_groups);
 
-  void OnLoadInterestGroupsForOwnerNoCaching(
+  // This callback is used once interest groups are loaded if
+  // kFledgeUseInterestGroupCache is disabled. Information may still be cached
+  // if kFledgeUsePreconnectCache is enabled.
+  void OnLoadInterestGroupsForOwnerNoCachingIGs(
       const url::Origin& owner,
       base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback,
       std::vector<StorageInterestGroup> interest_groups);
@@ -312,6 +364,12 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
       scoped_refptr<StorageInterestGroups> groups) {
     timed_holds_of_interest_groups_.erase(owner);
   }
+
+  // Update `cached_owners_and_signals_origins_` for an owner's interest groups
+  // if kFledgeUsePreconnectCache is enabled.
+  void UpdateCachedOriginsIfEnabled(
+      const url::Origin& owner,
+      const std::vector<StorageInterestGroup>& interest_groups);
 
   base::SequenceBound<InterestGroupStorage> interest_group_storage_;
 
@@ -341,6 +399,17 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   // invalidated. The versions are reset when
   // interest_groups_sequenced_callbacks_ becomes empty.
   std::map<url::Origin, uint32_t> valid_interest_group_versions_;
+
+  // For each owner for which we've loaded or joined interest groups,
+  // hold onto the owner origin and origin of the bidding signals url for the
+  // purpose of preconnecting to them in later auctions. CachedOriginsInfo
+  // tracks the latest expiring interest group that we know about to prevent
+  // preconnecting to origins no longer in the database. Owners may be cleared
+  // from the map if the corresponding interest group is left or expired.
+  // A flat map is used because the number of interest group owners is expected
+  // to be relatively small.
+  base::flat_map<url::Origin, CachedOriginsInfo>
+      cached_owners_and_signals_origins_;
 
   base::WeakPtrFactory<InterestGroupCachingStorage> weak_factory_{this};
 };

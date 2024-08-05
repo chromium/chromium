@@ -58,6 +58,7 @@
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/http/http_response_headers.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_client.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -486,6 +487,31 @@ void AdAuctionServiceImpl::RunAdAuction(
                           base::Unretained(this));
 
   base::trace_event::EmitNamedTrigger("fledge-top-level-auction-start");
+
+  // Try to preconnect to owner and bidding signals origins if this is an
+  // on-device auction.
+  if (base::FeatureList::IsEnabled(features::kFledgeUsePreconnectCache) &&
+      !config.server_response.has_value() &&
+      config.non_shared_params.interest_group_buyers.has_value()) {
+    for (const auto& buyer : *config.non_shared_params.interest_group_buyers) {
+      std::optional<url::Origin> signals_origin;
+      if (GetInterestGroupManager().GetCachedOwnerAndSignalsOrigins(
+              buyer, signals_origin)) {
+        net::NetworkAnonymizationKey network_anonymization_key =
+            net::NetworkAnonymizationKey::CreateSameSite(
+                net::SchemefulSite(buyer));
+        PreconnectSocket(buyer.GetURL(), network_anonymization_key);
+        if (signals_origin) {
+          // We preconnect to the signals origin and not the full signals URL so
+          // that we do not need to store the full URL in memory. Preconnecting
+          // to the origin will be roughly equivalent to preconnecting to the
+          // full URL.
+          PreconnectSocket(signals_origin->GetURL(), network_anonymization_key);
+        }
+      }
+    }
+  }
+
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
       auction_metrics_recorder_manager_.CreateAuctionMetricsRecorder(),
       &auction_worklet_manager_, auction_nonce_manager_.get(),

@@ -67,6 +67,7 @@
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 #include "content/browser/interest_group/additional_bids_test_util.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/test_interest_group_observer.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
@@ -114,7 +115,6 @@
 #include "services/network/test/test_network_context.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
@@ -25066,6 +25066,232 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingDisabledTest, FeatureDetection) {
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(false, EvalJs(shell(), kTestExpression));
+}
+
+class InterestGroupPreconnectOwnerAndSignalsOriginsTest
+    : public InterestGroupBrowserTest {
+ public:
+  InterestGroupPreconnectOwnerAndSignalsOriginsTest() {
+    feature_list_.InitWithFeatures(/*enabled_features=*/
+                                   {blink::features::
+                                        kFledgePermitCrossOriginTrustedSignals,
+                                    features::kFledgeUsePreconnectCache},
+                                   /*disabled_features=*/{});
+  }
+
+  ~InterestGroupPreconnectOwnerAndSignalsOriginsTest() override = default;
+
+  class PreconnectListener
+      : public net::test_server::EmbeddedTestServerConnectionListener {
+   public:
+    PreconnectListener() = default;
+    ~PreconnectListener() override = default;
+
+    // net::test_server::EmbeddedTestServerConnectionListener implementation:
+    std::unique_ptr<net::StreamSocket> AcceptedSocket(
+        std::unique_ptr<net::StreamSocket> connection) override {
+      base::AutoLock auto_lock(socket_count_lock_);
+      num_accepted_sockets_++;
+      if (waiting_for_accepted_socket_loop_ &&
+          num_accepted_sockets_ == waiting_for_accepted_socket_count_) {
+        waiting_for_accepted_socket_loop_->Quit();
+      }
+      return connection;
+    }
+    void ReadFromSocket(const net::StreamSocket& connection, int rv) override {}
+
+    // Wait until at least `count` connections have occurred. Cause an EXPECT
+    // failure if more than `count` connections have been observed.
+    void WaitForAcceptedSockets(size_t count) {
+      base::RunLoop run_loop;
+      {
+        base::AutoLock auto_lock(socket_count_lock_);
+        DCHECK(!waiting_for_accepted_socket_loop_);
+        if (num_accepted_sockets_ >= count) {
+          EXPECT_EQ(num_accepted_sockets_, count);
+          return;
+        }
+        waiting_for_accepted_socket_count_ = count;
+        waiting_for_accepted_socket_loop_ = &run_loop;
+      }
+
+      // Can't do this while holding the lock, since we're waiting on a method
+      // that grabs the lock off thread.
+      run_loop.Run();
+
+      {
+        base::AutoLock autolock(socket_count_lock_);
+        EXPECT_EQ(num_accepted_sockets_, count);
+        waiting_for_accepted_socket_loop_ = nullptr;
+      }
+    }
+
+   private:
+    base::Lock socket_count_lock_;
+    size_t num_accepted_sockets_ GUARDED_BY(socket_count_lock_) = 0;
+    size_t waiting_for_accepted_socket_count_ GUARDED_BY(socket_count_lock_) =
+        0;
+    raw_ptr<base::RunLoop> waiting_for_accepted_socket_loop_
+        GUARDED_BY(socket_count_lock_);
+  };
+
+  std::unique_ptr<net::test_server::EmbeddedTestServer> SetUpEmbeddedServer(
+      PreconnectListener& preconnect_listener) {
+    std::unique_ptr<net::test_server::EmbeddedTestServer> server =
+        std::make_unique<net::EmbeddedTestServer>(
+            net::EmbeddedTestServer::Type::TYPE_HTTPS);
+    server->SetConnectionListener(&preconnect_listener);
+    server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    server->AddDefaultHandlers(GetTestDataFilePath());
+    return server;
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> HandleSignalsRequest(
+      const url::Origin owner_origin,
+      const net::test_server::HttpRequest& request) {
+    base::AutoLock auto_lock(requests_lock_);
+    if (!base::StartsWith(request.relative_url,
+                          "/interest_group/trusted_bidding_signals.json")) {
+      return nullptr;
+    }
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_content_type("application/json");
+    const char kJson[] = R"({ "keys": { "key1": "1" } })";
+    response->set_content(kJson);
+    response->AddCustomHeader("Access-Control-Allow-Origin",
+                              owner_origin.Serialize());
+    response->AddCustomHeader(kFledgeHeader, "true");
+    response->AddCustomHeader("Ad-Auction-Bidding-Signals-Format-Version", "2");
+    num_signals_requests_++;
+    return response;
+  }
+
+  void IncrementOwnerRequests(const net::test_server::HttpRequest& request) {
+    base::AutoLock auto_lock(requests_lock_);
+    num_owner_requests_++;
+  }
+
+  size_t GetNumOwnerRequests() {
+    base::AutoLock auto_lock(requests_lock_);
+    return num_owner_requests_;
+  }
+
+  size_t GetNumSignalsRequests() {
+    base::AutoLock auto_lock(requests_lock_);
+    return num_signals_requests_;
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  size_t num_owner_requests_ GUARDED_BY(requests_lock_) = 0;
+  size_t num_signals_requests_ GUARDED_BY(requests_lock_) = 0;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
+                       PreconnectsToOwnerAndSignalsOrigins) {
+  GURL joining_url = embedded_https_test_server().GetURL("c.test", "/echo");
+  url::Origin joining_origin = url::Origin::Create(joining_url);
+  ASSERT_TRUE(NavigateToURL(shell(), joining_url));
+
+  // Set up owner and bidding signals servers with listeners for preconnections.
+  PreconnectListener owner_connection_listener;
+  std::unique_ptr<net::test_server::EmbeddedTestServer> owner_test_server =
+      SetUpEmbeddedServer(owner_connection_listener);
+  owner_test_server->RegisterRequestMonitor(
+      base::BindRepeating(&InterestGroupPreconnectOwnerAndSignalsOriginsTest::
+                              IncrementOwnerRequests,
+                          base::Unretained(this)));
+  EXPECT_TRUE(owner_test_server->Start());
+  // Use a bidding script that does not bid to prevent the auction from having a
+  // winner. If the auction has a winner, there will be a race condition where a
+  // new bidder worklet will be created for reporting, causing an extra
+  // preconnect.
+  GURL script_url = owner_test_server->GetURL(
+      "a.test", "/interest_group/bidding_logic_do_not_bid.js");
+  url::Origin owner_origin = url::Origin::Create(script_url);
+
+  PreconnectListener signals_connection_listener;
+  std::unique_ptr<net::test_server::EmbeddedTestServer> signals_test_server =
+      SetUpEmbeddedServer(signals_connection_listener);
+  signals_test_server->RegisterRequestHandler(base::BindRepeating(
+      &InterestGroupPreconnectOwnerAndSignalsOriginsTest::HandleSignalsRequest,
+      base::Unretained(this), owner_origin));
+  EXPECT_TRUE(signals_test_server->Start());
+  GURL trusted_bidding_signals_url = signals_test_server->GetURL(
+      "b.test", "/interest_group/trusted_bidding_signals.json");
+  url::Origin signals_origin = url::Origin::Create(trusted_bidding_signals_url);
+
+  content_browser_client_->AddToAllowList({signals_origin, owner_origin});
+
+  // Create the interest group we'll be using throughout the test.
+  GURL ad_url = owner_test_server->GetURL("a.test", "/echo?render_winner");
+  blink::InterestGroup interest_group =
+      blink::TestInterestGroupBuilder(
+          /*owner=*/url::Origin::Create(script_url),
+          /*name=*/"interest_group")
+          .SetBiddingUrl(script_url)
+          .SetTrustedBiddingSignalsUrl(trusted_bidding_signals_url)
+          .SetTrustedBiddingSignalsKeys({{"key1"}})
+          .SetAds({{{ad_url, std::nullopt}}})
+          .Build();
+
+  // Join the interest group with no ads so that when we run an auction, it will
+  // get filtered after it's loaded -- but we'll still preconnect to the server.
+  // This join will cache the bidding signals and owner origins.
+  blink::InterestGroup interest_group_without_ads = interest_group;
+  interest_group_without_ads.ads = std::nullopt;
+  AttachInterestGroupObserver();
+  manager_->JoinInterestGroup(interest_group_without_ads, joining_url);
+  WaitForAccessObserved({{"global", TestInterestGroupObserver::kJoin,
+                          interest_group_without_ads.owner, "interest_group"}});
+  std::optional<url::Origin> cached_signals_origin;
+  EXPECT_TRUE(manager_->GetCachedOwnerAndSignalsOrigins(
+      interest_group_without_ads.owner, cached_signals_origin));
+  EXPECT_EQ(cached_signals_origin, signals_origin);
+
+  const char kConfigTemplate[] = R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$3],
+    sellerTimeout: 3000,
+  })";
+
+  std::string auction_config =
+      JsReplace(kConfigTemplate, joining_origin,
+                embedded_https_test_server().GetURL(
+                    "c.test", "/interest_group/decision_logic.js"),
+                owner_origin);
+
+  base::HistogramTester histogram_tester;
+  auto result = RunAuctionAndWait(auction_config);
+  histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
+                                      AuctionResult::kNoInterestGroups, 1);
+
+  // We've preconnected to each server but received no requests.
+  owner_connection_listener.WaitForAcceptedSockets(1u);
+  signals_connection_listener.WaitForAcceptedSockets(1u);
+  EXPECT_EQ(GetNumOwnerRequests(), 0u);
+  EXPECT_EQ(GetNumSignalsRequests(), 0u);
+
+  // Now update our IG to have ads & rerun the auction. It will no longer be
+  // filtered in the auction. We will expect no new connections. We will use the
+  // existing connections to fetch trusted signals and code.
+  AttachInterestGroupObserver();
+  manager_->JoinInterestGroup(interest_group, joining_url);
+  WaitForAccessObserved({{"global", TestInterestGroupObserver::kJoin,
+                          interest_group.owner, "interest_group"}});
+
+  auto result2 = RunAuctionAndWait(auction_config);
+  histogram_tester.ExpectTotalCount("Ads.InterestGroup.Auction.Result", 2);
+  histogram_tester.ExpectBucketCount("Ads.InterestGroup.Auction.Result",
+                                     AuctionResult::kNoInterestGroups, 1);
+
+  // We *did not* open any new connections. However, we've requested code and
+  // signals, implying we've used the existing connections.
+  owner_connection_listener.WaitForAcceptedSockets(1u);
+  signals_connection_listener.WaitForAcceptedSockets(1u);
+  EXPECT_EQ(GetNumOwnerRequests(), 1u);
+  EXPECT_EQ(GetNumSignalsRequests(), 1u);
 }
 
 }  // namespace

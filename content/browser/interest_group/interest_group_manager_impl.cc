@@ -496,6 +496,13 @@ void InterestGroupManagerImpl::GetInterestGroupsForOwner(
                      devtools_auction_id));
 }
 
+bool InterestGroupManagerImpl::GetCachedOwnerAndSignalsOrigins(
+    const url::Origin& owner,
+    std::optional<url::Origin>& signals_origin) {
+  return caching_storage_.GetCachedOwnerAndSignalsOrigins(owner,
+                                                          signals_origin);
+}
+
 void InterestGroupManagerImpl::DeleteInterestGroupData(
     StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
     base::OnceClosure completion_callback) {

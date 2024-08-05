@@ -305,6 +305,24 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const url::Origin& owner,
       base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback);
 
+  // For a given `owner`, return whether the owner origin and bidding signal
+  // origin were cached in-memory in previous calls to
+  // GetInterestGroupsForOwner and JoinInterestGroup. If the `owner` origin was
+  // cached, update `signals_origin` to the one that was cached -- or set to
+  // nullopt if no bidding signals origin was cached or if it would be the same
+  // as the owner origin. The cache includes at most one entry per origin, and
+  // may not reflect the results of interest group updates. It's intended to be
+  // used for best-effort preconnecting, and should not be considered
+  // authoritative. It is guaranteed not to contain interest groups that have
+  // are beyond the max expiration time limit, so preconnecting should not leak
+  // data the bidder would otherwise have access to, if it so desired. That is,
+  // manual voluntarily removing or expiring of an interest group may not be
+  // reflected in the result, but hitting the the global interest group lifetime
+  // cap will be respected.
+  bool GetCachedOwnerAndSignalsOrigins(
+      const url::Origin& owner,
+      std::optional<url::Origin>& signals_origin);
+
   // Clear out storage for the matching owning storage key. If the matcher is
   // empty then apply to all storage keys.
   void DeleteInterestGroupData(

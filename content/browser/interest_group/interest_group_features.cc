@@ -36,6 +36,12 @@ BASE_FEATURE(kFledgeStoreBandAKeysInDB,
              "FledgeStoreBandAKeysInDB",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables preconnecting to interest group owner origins and a bidding signals
+// URL origin at the start of an auction.
+BASE_FEATURE(kFledgeUsePreconnectCache,
+             "FledgeUsePreconnectCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable detecting inconsistency in the `PageImpl` used in the auction. Abort
 // the auction when detected.
 BASE_FEATURE(kDetectInconsistentPageImpl,
