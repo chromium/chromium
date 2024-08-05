@@ -11,6 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/version_info/channel.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -107,6 +108,31 @@ class EndpointFetcherTest : public testing::Test {
     status.decoded_body_length = response_data.size();
     test_url_loader_factory_.AddResponse(request_url, std::move(head),
                                          response_data, status);
+  }
+
+  EndpointFetcher GetAPIKeyEndpointFetcherWithCredentialMode(
+      const std::optional<CredentialsMode> mode) {
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            test_url_loader_factory());
+    if (mode.has_value()) {
+      return EndpointFetcher(loader_factory, GURL("https://example.com"), "GET",
+                             "", base::Milliseconds(3000), "", {}, {},
+                             TRAFFIC_ANNOTATION_FOR_TESTS,
+                             version_info::Channel::CANARY,
+                             EndpointFetcher::RequestParams::Builder()
+                                 .SetCredentialsMode(mode.value())
+                                 .Build());
+    }
+    return EndpointFetcher(loader_factory, GURL("https://example.com"), "GET",
+                           "", base::Milliseconds(3000), "", {}, {},
+                           TRAFFIC_ANNOTATION_FOR_TESTS,
+                           version_info::Channel::CANARY);
+  }
+
+  network::mojom::CredentialsMode GetCredentialsMode(
+      EndpointFetcher& endpoint_fetcher) {
+    return endpoint_fetcher.GetCredentialsMode();
   }
 
  private:
@@ -264,4 +290,25 @@ TEST_F(EndpointFetcherTest, FetchNonJsonResponse) {
       });
   endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
   run_loop.Run();
+}
+
+TEST_F(EndpointFetcherTest, TestCredentialsModeUnspecified) {
+  EndpointFetcher fetcher =
+      GetAPIKeyEndpointFetcherWithCredentialMode(std::nullopt);
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
+            GetCredentialsMode(fetcher));
+}
+
+TEST_F(EndpointFetcherTest, TestOmitCredentialsMode) {
+  EndpointFetcher fetcher =
+      GetAPIKeyEndpointFetcherWithCredentialMode(CredentialsMode::kOmit);
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
+            GetCredentialsMode(fetcher));
+}
+
+TEST_F(EndpointFetcherTest, TestIncludeCredentialsMode) {
+  EndpointFetcher fetcher =
+      GetAPIKeyEndpointFetcherWithCredentialMode(CredentialsMode::kInclude);
+  EXPECT_EQ(network::mojom::CredentialsMode::kInclude,
+            GetCredentialsMode(fetcher));
 }

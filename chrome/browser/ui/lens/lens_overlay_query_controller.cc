@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_proto_converter.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/common/channel_info.h"
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
@@ -796,7 +797,14 @@ void LensOverlayQueryController::FetchEndpoint(
           /*post_data=*/request_data_string,
           /*headers=*/headers,
           /*cors_exempt_headers=*/cors_exempt_headers,
-          /*annotation_tag=*/kTrafficAnnotationTag, chrome::GetChannel());
+          /*annotation_tag=*/kTrafficAnnotationTag, chrome::GetChannel(),
+          /*request_params=*/
+          EndpointFetcher::RequestParams::Builder()
+              .SetCredentialsMode(
+                  lens::features::UseOauthForLensOverlayRequests()
+                      ? CredentialsMode::kOmit
+                      : CredentialsMode::kInclude)
+              .Build());
   EndpointFetcher* fetcher = endpoint_fetcher.get();
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(fetcher_created_callback),
