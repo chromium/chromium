@@ -17324,6 +17324,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     for the Google Lens button in the CTRL+F dialog.">
       Google Lens
     </message>
+    <message name="IDS_LENS_OVERLAY_AUTO_DETECT_LANGUAGE_LABEL" desc="Label for the language picker button denoting that source language of the page will be automatically detected.">
+      Auto-detect
+    </message>
     <message name="IDS_LENS_SEND_FEEDBACK" desc="Text that is shown in the more options menu to open the feedback dialog.">
       Send feedback
     </message>
