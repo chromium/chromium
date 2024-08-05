@@ -24,6 +24,7 @@ static_library("input_device_settings") {
     "//chrome/browser/apps/almanac_api_client",
     "//chrome/browser/apps/almanac_api_client/proto",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service/app_install",
     "//chrome/browser/apps/peripherals/proto",
     "//components/services/app_service/public/cpp:app_types",
     "//components/version_info",

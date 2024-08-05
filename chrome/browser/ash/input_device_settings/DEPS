@@ -15,6 +15,7 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/apps",
+  "+chrome/browser/apps/app_service/app_install/app_install_types.h",
   "+chrome/browser/profiles",
   "+chrome/test/base",
 ]

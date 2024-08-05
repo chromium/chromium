@@ -31,11 +31,11 @@
         label="$i18n{mouseSwapButtonsLabel}" pref="{{primaryRightPref}}">
     </settings-toggle-button>
   </template>
+  <template is="dom-if" if="[[showInstallAppRow(mouse.appInfo)]]">
+    <per-device-install-row app-info="[[mouse.appInfo]]">
+    </per-device-install-row>
+  </template>
   <div class="subsection">
-    <template is="dom-if" if="[[showInstallAppRow(mouse.appInfo)]]">
-      <per-device-install-row app-info="[[mouse.appInfo]]">
-      </per-device-install-row>
-    </template>
     <template is="dom-if" if="[[allowScrollSettings_]]">
       <h2 class="subsection-subtitle">$i18n{mouseCursor}</h2>
     </template>
