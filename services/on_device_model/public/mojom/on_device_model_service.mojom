@@ -66,6 +66,14 @@ enum PlatformModelState {
   kInvalidBaseModelDescriptor,
 };
 
+[Stable, Extensible]
+enum FormatFeature {
+  [Default] kNone = 0,
+  kPrompt = 1,
+  kAudioSummary = 2,
+  kAudioTitle = 3,
+};
+
 // A service which allows loading trusted models which are stored on-device and
 // which may process untrustworthy data.
 [ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
@@ -102,6 +110,20 @@ interface OnDeviceModelPlatformService {
       => (PlatformModelState result);
 
   // Returns the performance class based on benchmarks run on the device.
-  [MinVersion=1]
+  [MinVersion=2]
   GetEstimatedPerformanceClass@2() => (PerformanceClass performance_class);
+
+  // Formats the input fields with the model uuid and feature combination.
+  // The `fields` will represent the corresponding input key value pairs for
+  // different model uuid and feature combinations.
+  // The `result` can be nullopt if the model uuid and feature combination is
+  // invalid or not supported.
+  //
+  // For example, a feature may need "name" & "something" & "action" to complete
+  // the following string: "I'm {name}, I have {something}, please {action} for
+  // me.". And different feature may require different sets of key value pairs.
+  [MinVersion=3]
+  FormatInput@3(mojo_base.mojom.Uuid uuid,
+                FormatFeature feature,
+                map<string, string> fields) => (string? result);
 };
