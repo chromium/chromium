@@ -250,6 +250,12 @@ class LensOverlayController : public LensSearchboxClient,
     // Showing an overlay with results.
     kOverlayAndResults,
 
+    // Showing results with the overlay hidden and live page showing.
+    // TODO(b/357121367): Live page with results is no longer related to the
+    // overlay and therefore should not exist as a state of the overlay
+    // controller. Remove once we have a parent class that can handle this flow.
+    kLivePageAndResults,
+
     // The UI has been made inactive / backgrounded and is hidden. This differs
     // from kSuspended as the overlay and web view are not freed and could be
     // immediately reshown.

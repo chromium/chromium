@@ -2607,6 +2607,13 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       base::UmaHistogramBoolean("Omnibox.Search.OffTheRecord", is_incognito);
     }
 
+    BookmarkModel* bookmark_model = controller_->client()->GetBookmarkModel();
+    if (bookmark_model && bookmark_model->IsBookmarked(destination_url)) {
+      controller_->client()->OnBookmarkLaunched();
+    }
+
+    // This block should be the last call in OpenMatch, because controller_ is
+    // not guaranteed to exist after client()->OnAutocompleteAccept is called.
     if (destination_url.is_valid()) {
       // This calls RevertAll again.
       base::AutoReset<bool> tmp(&in_revert_, true);
@@ -2625,11 +2632,6 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
               autocomplete_controller()->autocomplete_provider_client(),
               alternate_input, alternate_nav_url, false),
           deviation_char_in_hostname);
-    }
-
-    BookmarkModel* bookmark_model = controller_->client()->GetBookmarkModel();
-    if (bookmark_model && bookmark_model->IsBookmarked(destination_url)) {
-      controller_->client()->OnBookmarkLaunched();
     }
   }
 }

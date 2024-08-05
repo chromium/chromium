@@ -607,9 +607,7 @@ bool LensOverlayController::IsOverlayClosing() {
 }
 
 void LensOverlayController::LoadURLInResultsFrame(const GURL& url) {
-  // TODO(b/337114915): If the new URL has a text query parameter and came from
-  // the renderer, we need to update the searchbox text.
-  if (!IsOverlayShowing()) {
+  if (!IsOverlayShowing() && state() != State::kLivePageAndResults) {
     return;
   }
 
@@ -1608,6 +1606,12 @@ void LensOverlayController::TabWillEnterBackground(tabs::TabInterface* tab) {
     return;
   }
 
+  // If the live page is showing, we don't need to do anything since the side
+  // panel will hide itself.
+  if (state_ == State::kLivePageAndResults) {
+    return;
+  }
+
   // If the overlay was currently showing, then we should background the UI.
   if (IsOverlayShowing()) {
     BackgroundUI();
@@ -1876,7 +1880,21 @@ void LensOverlayController::IssueSearchBoxRequest(
   CloseSearchBubble();
   RecordTimeToFirstInteraction();
   search_performed_in_session_ = true;
-  state_ = State::kOverlayAndResults;
+
+  // If we are in the zero state, this request must have come from CSB. In that
+  // case, hide the overlay to allow live page to show through.
+  // IsLensOverlaySearchBubbleEnabled is a sanity check to not break anything
+  // and wil be removed once we move away from State::kLivePageAndResults.
+  if (state_ == State::kOverlay &&
+      lens::features::IsLensOverlaySearchBubbleEnabled()) {
+    BackgroundUI();
+  }
+
+  // If this a search query from the side panel search box with the overlay
+  // showing, keep the state as kOverlayAndResults. Else, we are in our
+  // contextual flow and the state needs to stay as State::kLivePageAndResults.
+  state_ = state_ == State::kOverlayAndResults ? State::kOverlayAndResults
+                                               : State::kLivePageAndResults;
 }
 
 void LensOverlayController::HandleStartQueryResponse(
