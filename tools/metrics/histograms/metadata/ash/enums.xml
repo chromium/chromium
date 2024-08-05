@@ -1956,6 +1956,11 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="About"/>
 </enum>
 
+<enum name="SeaPenFreeformTab">
+  <int value="0" label="kResults"/>
+  <int value="1" label="kSamplePrompts"/>
+</enum>
+
 <enum name="SeaPenTemplateId">
 <!-- Defined in ash/webui/common/mojom/sea_pen_generated.mojom -->
 

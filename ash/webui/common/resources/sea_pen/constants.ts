@@ -10,6 +10,12 @@ import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_
 export type Query = 'Query';
 export const QUERY: Query = 'Query';
 
+/** Enumeration of supported tabs. */
+export enum FreeformTab {
+  SAMPLE_PROMPTS = 'sample_prompts',
+  RESULTS = 'results',
+}
+
 // SeaPen images are identified by a positive integer. For a newly generated
 // thumbnail, this is `SeaPenThumbnail.id`.
 export type SeaPenImageId = number;

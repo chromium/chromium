@@ -13,19 +13,13 @@ import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 
-import {SeaPenSamplePrompt} from './constants.js';
+import {FreeformTab, SeaPenSamplePrompt} from './constants.js';
 import {MantaStatusCode, SeaPenQuery} from './sea_pen.mojom-webui.js';
 import {getTemplate} from './sea_pen_freeform_element.html.js';
-import {logSamplePromptShuffleClicked} from './sea_pen_metrics_logger.js';
+import {logSamplePromptShuffleClicked, logSeaPenFreeformTabClicked} from './sea_pen_metrics_logger.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {SEA_PEN_SAMPLES} from './sea_pen_untranslated_constants.js';
 import {isArrayEqual, shuffle} from './sea_pen_utils.js';
-
-/** Enumeration of supported tabs. */
-export enum FreeformTab {
-  SAMPLE_PROMPTS = 'sample_prompts',
-  RESULTS = 'results',
-}
 
 export class SeaPenFreeformElement extends WithSeaPenStore {
   static get is() {
@@ -89,6 +83,7 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
       default:
         assertNotReached();
     }
+    logSeaPenFreeformTabClicked(this.freeformTab_);
   }
 
   private onSeaPenQueryChanged_(query: SeaPenQuery|null) {

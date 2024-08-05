@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {QUERY, Query} from './constants.js';
+import {FreeformTab, QUERY, Query} from './constants.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {SeaPenPaths} from './sea_pen_router_element.js';
 import {isPersonalizationApp} from './sea_pen_utils.js';
@@ -23,6 +23,7 @@ const enum HistogramName {
   SEA_PEN_SAMPLE_PROMPT_CLICKED = `Ash.SeaPen.Freeform.SamplePrompt.Clicked`,
   SEA_PEN_SAMPLE_PROMPT_SHUFFLE_CLICKED =
       `Ash.SeaPen.Freeform.SamplePrompt.Shuffle.Clicked`,
+  SEA_PEN_FREEFORM_TAB_CLICKED = `Ash.SeaPen.Freeform.Tab.Clicked`,
 }
 
 function getTemplateIdForMetrics(templateId: SeaPenTemplateId|Query): number {
@@ -129,4 +130,18 @@ export function logSamplePromptClicked() {
 export function logSamplePromptShuffleClicked() {
   chrome.metricsPrivate.recordBoolean(
       HistogramName.SEA_PEN_SAMPLE_PROMPT_SHUFFLE_CLICKED, true);
+}
+
+export function logSeaPenFreeformTabClicked(freeformTab: FreeformTab) {
+  let enumValue;
+  switch (freeformTab) {
+    case FreeformTab.RESULTS:
+      enumValue = 0;
+      break;
+    case FreeformTab.SAMPLE_PROMPTS:
+      enumValue = 1;
+      break;
+  }
+  chrome.metricsPrivate.recordEnumerationValue(
+      HistogramName.SEA_PEN_FREEFORM_TAB_CLICKED, enumValue, /*enumSize=*/ 2);
 }
