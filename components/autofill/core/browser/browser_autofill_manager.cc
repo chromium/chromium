@@ -2630,7 +2630,12 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
                 CalculateFieldSignatureForField(trigger_field), form.url());
     base::UmaHistogramBoolean("Autofill.Suggestion.StrikeSuppression.Address",
                               should_suppress);
-    if (should_suppress) {
+    if (should_suppress &&
+        !base::FeatureList::IsEnabled(
+            features::test::kAutofillDisableSuggestionStrikeDatabase)) {
+      LOG_AF(log_manager())
+          << LoggingScope::kFilling << LogMessage::kSuggestionSuppressed
+          << " Reason: strike limit reached.";
       // If the user already reached the strike limit on this particular field,
       // address suggestions are suppressed.
       return {};

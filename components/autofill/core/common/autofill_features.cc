@@ -902,6 +902,12 @@ BASE_FEATURE(kAutofillDisableSilentProfileUpdates,
              "AutofillDisableSilentProfileUpdates",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch for disabling suppressing suggestions based on the strike
+// database.
+BASE_FEATURE(kAutofillDisableSuggestionStrikeDatabase,
+             "AutofillDisableSuggestionStrikeDatabase",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables logging the content of chrome://autofill-internals to the terminal.
 BASE_FEATURE(kAutofillLogToTerminal,
              "AutofillLogToTerminal",
