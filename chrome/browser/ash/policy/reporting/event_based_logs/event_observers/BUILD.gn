@@ -25,3 +25,46 @@ static_library("event_observers") {
     "//chrome/browser/support_tool:support_tool_proto",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "fatal_crash_event_log_observer_browsertest.cc",
+    "os_update_event_observer_browsertest.cc",
+  ]
+
+  deps = [
+    ":event_observers",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/affiliation:test_support",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/reporting/event_based_logs",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
+    "//chrome/browser/support_tool:support_tool_proto",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/update_engine",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/reporting/util:status",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

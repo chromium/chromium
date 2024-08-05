@@ -218,3 +218,54 @@ source_set("unit_tests") {
     "//ui/message_center/public/cpp",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "curtain_mode_chromeos_browsertest.cc",
+    "device_command_fetch_support_packet_job_browsertest.cc",
+    "device_command_reboot_job_browsertest.cc",
+    "device_command_set_volume_job_browsertest.cc",
+  ]
+
+  deps = [
+    ":remote_commands",
+    ":test_support",
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/app_mode/test:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/test_support",
+    "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
+    "//chrome/browser/support_tool:support_tool_proto",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
+    "//chromeos/components/kiosk",
+    "//chromeos/dbus/power",
+    "//components/nacl/common:minimal_content_dummy",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto",
+    "//components/reporting/storage:test_support",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//remoting/host:common",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/views",
+    "//ui/views:view_pixel_diff_test_support",
+  ]
+}

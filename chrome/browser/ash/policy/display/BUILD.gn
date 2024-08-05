@@ -26,3 +26,38 @@ static_library("display") {
     "//ui/display",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "device_display_cros_browser_test.cc",
+    "device_display_cros_browser_test.h",
+    "display_resolution_handler_browsertest.cc",
+    "display_rotation_default_handler_browsertest.cc",
+  ]
+
+  deps = [
+    ":display",
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/login/ui",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/settings",
+    "//components/policy/proto",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/common/api",
+    "//testing/gtest",
+    "//ui/display",
+    "//ui/display:display_manager_test_api",
+    "//ui/display/manager",
+  ]
+}

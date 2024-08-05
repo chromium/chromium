@@ -46,3 +46,32 @@ static_library("dialogs") {
     "//content/public/common:interfaces",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "files_policy_dialog_browsertest.cc" ]
+
+  deps = [
+    ":dialogs",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/file_manager:test_support",
+    "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/chromeos",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support_ui",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/strings:components_strings",
+    "//content/test:test_support",
+    "//ui/base",
+    "//ui/base:types",
+    "//ui/views",
+  ]
+}
