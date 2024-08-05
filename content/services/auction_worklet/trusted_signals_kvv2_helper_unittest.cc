@@ -89,7 +89,8 @@ void CheckBiddingResult(
   v8::Local<v8::Value> value =
       result->GetBiddingSignals(v8_helper, context, keys);
   std::string bidding_signals_json;
-  if (v8_helper->ExtractJson(context, value, &bidding_signals_json) !=
+  if (v8_helper->ExtractJson(context, value, /*script_timeout=*/nullptr,
+                             &bidding_signals_json) !=
       AuctionV8Helper::Result::kSuccess) {
     bidding_signals_json = "JSON extraction failed.";
   }

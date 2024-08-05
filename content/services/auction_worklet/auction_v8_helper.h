@@ -258,6 +258,7 @@ class CONTENT_EXPORT AuctionV8Helper
   // Attempts to convert |value| to JSON and write it to |out|.
   Result ExtractJson(v8::Local<v8::Context> context,
                      v8::Local<v8::Value> value,
+                     TimeLimit* script_timeout,
                      std::string* out);
 
   // Serializes |value| via v8::ValueSerializer and returns it. This is faster

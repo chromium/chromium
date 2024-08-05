@@ -398,6 +398,24 @@ bool SetDataVersion(
   }
 }
 
+// Remove worklet latency contributions if the worklet execution time is
+// within the threshold.
+std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>
+FilterRealtimeContributions(
+    std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>
+        real_time_contributions,
+    base::TimeDelta elapsed) {
+  std::erase_if(
+      real_time_contributions,
+      [elapsed](const auction_worklet::mojom::RealTimeReportingContributionPtr&
+                    contribution) {
+        return contribution->latency_threshold.has_value() &&
+               elapsed.InMilliseconds() <=
+                   contribution->latency_threshold.value();
+      });
+  return real_time_contributions;
+}
+
 }  // namespace
 
 SellerWorklet::SellerWorklet(
@@ -1071,23 +1089,12 @@ void SellerWorklet::V8State::ScoreAd(
       maybe_score_ad_result.ToLocal(&score_ad_result);
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "score_ad", trace_id);
-  base::TimeDelta elapsed = elapsed_timer.Elapsed();
-  base::UmaHistogramTimes("Ads.InterestGroup.Auction.ScoreAdTime", elapsed);
+  base::UmaHistogramTimes("Ads.InterestGroup.Auction.ScoreAdTime",
+                          elapsed_timer.Elapsed());
 
   std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>
       real_time_contributions = context_recycler->real_time_reporting_bindings()
                                     ->TakeRealTimeReportingContributions();
-
-  // Remove worklet latency contributions if the worklet execution time is
-  // within the threshold.
-  std::erase_if(
-      real_time_contributions,
-      [elapsed](const auction_worklet::mojom::RealTimeReportingContributionPtr&
-                    contribution) {
-        return contribution->latency_threshold.has_value() &&
-               elapsed.InMilliseconds() <=
-                   contribution->latency_threshold.value();
-      });
 
   // Add platform contributions if there are any.
   MaybeAddRealTimeReportingPlatformContributions(
@@ -1098,6 +1105,7 @@ void SellerWorklet::V8State::ScoreAd(
     // Keep debug loss reports, Private Aggregation API requests, and real time
     // reporting contributions since `scoreAd()` might use them to detect script
     // timeout or failures.
+    base::TimeDelta elapsed = elapsed_timer.Elapsed();
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0,
         /*reject_reason=*/mojom::RejectReason::kNotAvailable,
@@ -1109,7 +1117,8 @@ void SellerWorklet::V8State::ScoreAd(
         /*debug_win_report_url=*/std::nullopt,
         context_recycler->private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
-        std::move(real_time_contributions),
+        FilterRealtimeContributions(std::move(real_time_contributions),
+                                    elapsed),
         /*scoring_latency=*/elapsed, std::move(errors_out));
     return;
   }
@@ -1168,12 +1177,14 @@ void SellerWorklet::V8State::ScoreAd(
         !convert_score_ad.GetOptional("rejectReason",
                                       result_idl.reject_reason)) {
       errors_out.push_back(convert_score_ad.ErrorMessage());
+      base::TimeDelta elapsed = elapsed_timer.Elapsed();
       PostScoreAdCallbackToUserThreadOnError(
           std::move(callback),
           /*scoring_latency=*/elapsed, std::move(errors_out),
           context_recycler->private_aggregation_bindings()
               ->TakePrivateAggregationRequests(),
-          std::move(real_time_contributions));
+          FilterRealtimeContributions(std::move(real_time_contributions),
+                                      elapsed));
       return;
     }
 
@@ -1208,12 +1219,14 @@ void SellerWorklet::V8State::ScoreAd(
         ok = false;
       }
       if (!ok) {
+        base::TimeDelta elapsed = elapsed_timer.Elapsed();
         PostScoreAdCallbackToUserThreadOnError(
             std::move(callback),
             /*scoring_latency=*/elapsed, std::move(errors_out),
             context_recycler->private_aggregation_bindings()
                 ->TakePrivateAggregationRequests(),
-            std::move(real_time_contributions));
+            FilterRealtimeContributions(std::move(real_time_contributions),
+                                        elapsed));
         return;
       }
       bid_in_seller_currency = result_idl.incoming_bid_in_seller_currency;
@@ -1240,13 +1253,38 @@ void SellerWorklet::V8State::ScoreAd(
       component_auction_modified_bid_params =
           mojom::ComponentAuctionModifiedBidParams::New();
 
-      // TODO(crbug.com/40947242): is this the right thing to do on
-      // timeout?
-      if (!result_idl.ad.has_value() ||
-          v8_helper_->ExtractJson(context, *result_idl.ad,
-                                  &component_auction_modified_bid_params->ad) !=
-              AuctionV8Helper::Result::kSuccess) {
-        component_auction_modified_bid_params->ad = "null";
+      component_auction_modified_bid_params->ad = "null";
+      if (result_idl.ad.has_value()) {
+        std::string candidate_ad;
+        // Can pass null for timeout here since we already have a TimeLimitScope
+        // active.
+        AuctionV8Helper::Result result = v8_helper_->ExtractJson(
+            context, *result_idl.ad, /*script_timeout=*/nullptr, &candidate_ad);
+        if (result == AuctionV8Helper::Result::kSuccess) {
+          component_auction_modified_bid_params->ad = std::move(candidate_ad);
+        } else if (result == AuctionV8Helper::Result::kTimeout) {
+          errors_out.push_back(base::StrCat(
+              {decision_logic_url_.spec(),
+               " timeout serializing `ad` field of scoreAd() return value."}));
+          base::TimeDelta elapsed = elapsed_timer.Elapsed();
+          PostScoreAdCallbackToUserThread(
+              std::move(callback), /*score=*/0,
+              /*reject_reason=*/mojom::RejectReason::kNotAvailable,
+              /*component_auction_modified_bid_params=*/nullptr,
+              /*bid_in_seller_currency=*/std::nullopt,
+              /*scoring_signals_data_version=*/std::nullopt,
+              /*debug_loss_report_url=*/
+              context_recycler->for_debugging_only_bindings()
+                  ->TakeLossReportUrl(),
+              /*debug_win_report_url=*/std::nullopt,
+              context_recycler->private_aggregation_bindings()
+                  ->TakePrivateAggregationRequests(),
+              FilterRealtimeContributions(std::move(real_time_contributions),
+                                          elapsed),
+              /*scoring_latency=*/elapsed, std::move(errors_out));
+          return;
+        }
+        // else, it's a regular failure; leave at "null".
       }
 
       component_auction_modified_bid_params->bid = result_idl.bid;
@@ -1290,18 +1328,21 @@ void SellerWorklet::V8State::ScoreAd(
   if (std::isnan(score) || !std::isfinite(score)) {
     errors_out.push_back(base::StrCat(
         {decision_logic_url_.spec(), " scoreAd() returned an invalid score."}));
+    base::TimeDelta elapsed = elapsed_timer.Elapsed();
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed, std::move(errors_out),
         context_recycler->private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
-        std::move(real_time_contributions));
+        FilterRealtimeContributions(std::move(real_time_contributions),
+                                    elapsed));
     return;
   }
 
   if (score <= 0) {
     // Keep debug report URLs because we want to send debug loss reports if
     // seller rejected all bids.
+    base::TimeDelta elapsed = elapsed_timer.Elapsed();
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0, reject_reason,
         /*component_auction_modified_bid_params=*/nullptr,
@@ -1310,7 +1351,8 @@ void SellerWorklet::V8State::ScoreAd(
         context_recycler->for_debugging_only_bindings()->TakeWinReportUrl(),
         context_recycler->private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
-        std::move(real_time_contributions),
+        FilterRealtimeContributions(std::move(real_time_contributions),
+                                    elapsed),
         /*scoring_latency=*/elapsed, std::move(errors_out));
     return;
   }
@@ -1325,12 +1367,14 @@ void SellerWorklet::V8State::ScoreAd(
         {decision_logic_url_.spec(),
          " scoreAd() return value does not have allowComponentAuction set to "
          "true. Ad dropped from component auction."}));
+    base::TimeDelta elapsed = elapsed_timer.Elapsed();
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed, std::move(errors_out),
         context_recycler->private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
-        std::move(real_time_contributions));
+        FilterRealtimeContributions(std::move(real_time_contributions),
+                                    elapsed));
     return;
   }
 
@@ -1347,12 +1391,14 @@ void SellerWorklet::V8State::ScoreAd(
     if (!IsValidBid(component_auction_modified_bid_params->bid.value())) {
       errors_out.push_back(base::StrCat(
           {decision_logic_url_.spec(), " scoreAd() returned an invalid bid."}));
+      base::TimeDelta elapsed = elapsed_timer.Elapsed();
       PostScoreAdCallbackToUserThreadOnError(
           std::move(callback),
           /*scoring_latency=*/elapsed, std::move(errors_out),
           context_recycler->private_aggregation_bindings()
               ->TakePrivateAggregationRequests(),
-          std::move(real_time_contributions));
+          FilterRealtimeContributions(std::move(real_time_contributions),
+                                      elapsed));
       return;
     }
   } else if (browser_signals_other_seller &&
@@ -1371,6 +1417,7 @@ void SellerWorklet::V8State::ScoreAd(
     }
   }
 
+  base::TimeDelta elapsed = elapsed_timer.Elapsed();
   PostScoreAdCallbackToUserThread(
       std::move(callback), score, reject_reason,
       std::move(component_auction_modified_bid_params), bid_in_seller_currency,
@@ -1379,7 +1426,7 @@ void SellerWorklet::V8State::ScoreAd(
       context_recycler->for_debugging_only_bindings()->TakeWinReportUrl(),
       context_recycler->private_aggregation_bindings()
           ->TakePrivateAggregationRequests(),
-      std::move(real_time_contributions),
+      FilterRealtimeContributions(std::move(real_time_contributions), elapsed),
       /*scoring_latency=*/elapsed, std::move(errors_out));
 }
 
@@ -1596,6 +1643,23 @@ void SellerWorklet::V8State::ReportResult(
           errors_out) == AuctionV8Helper::Result::kSuccess &&
       maybe_signals_for_winner_value.ToLocal(&signals_for_winner_value);
 
+  std::string signals_for_winner;
+  if (success) {
+    // Consider lack of error but no return value type, or a return value that
+    // can't be converted to JSON a valid result.
+    AuctionV8Helper::Result json_result =
+        v8_helper_->ExtractJson(context, signals_for_winner_value,
+                                total_timeout.get(), &signals_for_winner);
+    if (json_result == AuctionV8Helper::Result::kFailure) {
+      signals_for_winner = "null";
+    } else if (json_result == AuctionV8Helper::Result::kTimeout) {
+      errors_out.push_back(
+          base::StrCat({decision_logic_url_.spec(),
+                        " timeout serializing reportResult() return value."}));
+      success = false;
+    }
+  }
+
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_result", trace_id);
   base::TimeDelta elapsed = elapsed_timer.Elapsed();
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.ReportResultTime",
@@ -1611,16 +1675,6 @@ void SellerWorklet::V8State::ReportResult(
             ->TakePrivateAggregationRequests(),
         elapsed, std::move(errors_out));
     return;
-  }
-
-  // Consider lack of error but no return value type, or a return value that
-  // can't be converted to JSON a valid result.
-  // TODO(crbug.com/40947242): is this the right thing to do on timeout?
-  std::string signals_for_winner;
-  if (v8_helper_->ExtractJson(context, signals_for_winner_value,
-                              &signals_for_winner) !=
-      AuctionV8Helper::Result::kSuccess) {
-    signals_for_winner = "null";
   }
 
   PostReportResultCallbackToUserThread(

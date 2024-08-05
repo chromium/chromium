@@ -819,6 +819,7 @@ class SellerWorkletTest : public testing::Test {
   void OnDisconnectWithReason(uint32_t custom_reason,
                               const std::string& description) {
     DCHECK(!disconnect_reason_);
+    LOG(WARNING) << "Worklet disconnect with reason: " << description;
 
     disconnect_reason_ = description;
     if (disconnect_run_loop_) {
@@ -6045,6 +6046,42 @@ TEST_F(SellerWorkletRealTimeTest, ScoreAdSellerTimeoutFromAuctionConfig) {
   run_loop.Run();
 }
 
+TEST_F(SellerWorkletRealTimeTest, ScoreAdJsonTimeout) {
+  seller_timeout_ = base::Milliseconds(20);
+  const char kReturnVal[] = R"({
+    allowComponentAuction: true,
+    desirability: 5,
+    ad: {
+      get field() { while(true) {} }
+    }
+  })";
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateScoreAdScript(kReturnVal));
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+  base::RunLoop run_loop;
+  browser_signals_other_seller_ =
+      mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
+          url::Origin::Create(GURL("https://top.seller.test")));
+  RunScoreAdOnWorkletAsync(seller_worklet.get(), /*expected_score=*/0,
+                           /*expected_errors=*/
+                           {"https://url.test/ timeout serializing `ad` field "
+                            "of scoreAd() return value."},
+                           mojom::ComponentAuctionModifiedBidParamsPtr(),
+                           /*expected_data_version=*/std::nullopt,
+                           /*expected_debug_loss_report_url=*/std::nullopt,
+                           /*expected_debug_win_report_url=*/std::nullopt,
+                           mojom::RejectReason::kNotAvailable,
+                           /*expected_pa_requests=*/{},
+                           /*expected_real_time_contributions=*/{},
+                           /*expected_bid_in_seller_currency=*/std::nullopt,
+                           /*expected_score_ad_timeout=*/true,
+                           /*expected_signals_fetch_latency=*/std::nullopt,
+                           /*expected_code_ready_latency=*/std::nullopt,
+                           run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 // Tests both reporting latency, and default reporting timeout.
 TEST_F(SellerWorkletRealTimeTest, ReportResultLatency) {
   // We use an infinite loop since we have some notion of how long a timeout
@@ -6105,6 +6142,27 @@ TEST_F(SellerWorkletRealTimeTest, ReportResultTimeoutFromAuctionConfig) {
       /*expected_reporting_latency_timeout=*/true,
       /*expected_errors=*/
       {"https://url.test/ execution of `reportResult` timed out."});
+}
+
+TEST_F(SellerWorkletRealTimeTest, ReportResultJsonTimeout) {
+  const char kReturnVal[] = R"({
+    desirability: 5,
+    ad: {
+      get field() { while(true) {} }
+    }
+  })";
+  auction_ad_config_non_shared_params_.reporting_timeout =
+      base::Milliseconds(30);
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateReportToScript(kReturnVal));
+  RunReportResultExpectingResult(
+      /*expected_signals_for_winner=*/std::nullopt,
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/true,
+      /*expected_errors=*/
+      {"https://url.test/ timeout serializing reportResult() return value."});
 }
 
 class SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest
