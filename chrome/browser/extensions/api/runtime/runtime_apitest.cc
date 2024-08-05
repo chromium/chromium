@@ -14,12 +14,14 @@
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -645,6 +647,7 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
              "side_panel": {
                "default_path": "side_panel.html"
              },
+             "devtools_page": "devtools.html",
              "action": {},
              "background": {
                "service_worker": "background.js"
@@ -664,6 +667,13 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
                            </html>)");
     test_dir_.WriteFile(FILE_PATH_LITERAL("side_panel.js"),
                         "chrome.test.sendMessage('panel opened');");
+    test_dir_.WriteFile(FILE_PATH_LITERAL("devtools.html"),
+                        R"(<html>
+                             Hello, developer tools!
+                             <script src="devtools.js"></script>
+                           </html>)");
+    test_dir_.WriteFile(FILE_PATH_LITERAL("devtools.js"),
+                        "chrome.test.sendMessage('devtools page opened');");
     extension_ = LoadExtension(test_dir_.UnpackedPath());
     ASSERT_TRUE(extension_);
   }
@@ -921,6 +931,68 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, GetTabContext) {
       kExpectedTemplate, expected_context_id.c_str(), expected_tab_id,
       expected_window_id, expected_frame_id, expected_document_id.c_str(),
       expected_frame_url.c_str(), expected_origin.c_str());
+  EXPECT_THAT(background_contexts, base::test::IsJson(expected));
+}
+
+// Tests retrieving contexts when docked developer tools are opened. Regression
+// test for crbug.com/355625882.
+IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest,
+                       GetContextsWithDockedDeveloperToolsOpened) {
+  // Open the developer tools and wait for the extension page to be loaded.
+  ExtensionTestMessageListener listener("devtools page opened");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  DevToolsWindow* devtools_window =
+      DevToolsWindowTesting::OpenDevToolsWindowSync(web_contents,
+                                                    true /* is_docked */);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  // Assert that the developer tools are docked.
+  content::WebContents* devtools_web_contents =
+      DevToolsWindowTesting::Get(devtools_window)->main_web_contents();
+  ASSERT_EQ(devtools_web_contents->GetTopLevelNativeWindow(),
+            browser()->window()->GetNativeWindow());
+
+  // Extract the extension host from the devtools web contents.
+  GURL expected_frame_url = extension().GetResourceURL("devtools.html");
+  auto is_extension_frame =
+      [expected_frame_url](content::RenderFrameHost* rfh) {
+        return rfh->GetLastCommittedURL() == expected_frame_url;
+      };
+  content::RenderFrameHost* extension_host = content::FrameMatchingPredicate(
+      devtools_web_contents->GetPrimaryPage(),
+      base::BindLambdaForTesting(is_extension_frame));
+
+  int expected_tab_id = ExtensionTabUtil::GetTabId(devtools_web_contents);
+  int expected_window_id =
+      ExtensionTabUtil::GetWindowIdOfTab(devtools_web_contents);
+  int expected_frame_id = ExtensionApiFrameIdMap::GetFrameId(extension_host);
+  std::string expected_context_id =
+      ExtensionApiFrameIdMap::GetContextId(extension_host).AsLowercaseString();
+  std::string expected_document_id =
+      ExtensionApiFrameIdMap::GetDocumentId(extension_host).ToString();
+  std::string expected_origin = extension().origin().Serialize();
+
+  // Query for tab-based contexts. There should only be one.
+  base::Value background_contexts = GetContexts(R"({"contextTypes": ["TAB"]})");
+
+  // Verify the properties of the returned context.
+  static constexpr char kExpectedTemplate[] =
+      R"([{
+            "contextType": "TAB",
+            "contextId": "%s",
+            "tabId": %d,
+            "windowId": %d,
+            "frameId": %d,
+            "documentId": "%s",
+            "documentUrl": "%s",
+            "documentOrigin": "%s",
+            "incognito": false
+         }])";
+  std::string expected = base::StringPrintf(
+      kExpectedTemplate, expected_context_id.c_str(), expected_tab_id,
+      expected_window_id, expected_frame_id, expected_document_id.c_str(),
+      expected_frame_url.spec().c_str(), expected_origin.c_str());
   EXPECT_THAT(background_contexts, base::test::IsJson(expected));
 }
 
