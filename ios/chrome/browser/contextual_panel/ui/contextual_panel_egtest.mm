@@ -110,4 +110,37 @@
       performAction:grey_tap()];
 }
 
+// Test that the Contextual Panel can still be closed after rotating to
+// landscape.
+- (void)testContextualPanelLandscape {
+  // This test is not relevant on iPads as iPads aren't compact height in
+  // landscape.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad");
+  }
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   @"ContextualPanelEntrypointImageViewAXID")]
+      performAction:grey_tap()];
+
+  // Check that the contextual panel opened up.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(@"PanelContentViewAXID")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Switch to landscape.
+  GREYAssert(
+      [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
+                                    error:nil],
+      @"Could not rotate device to Landscape Left");
+
+  // Make sure that panel can still be closed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(@"PanelCloseButtonAXID")]
+      performAction:grey_tap()];
+}
+
 @end

@@ -44,6 +44,11 @@ const CGFloat kTopCornerRadius = 10;
 
   // The height of the sheet's content.
   CGFloat _contentHeight;
+
+  // Constraints for the width of the sheet. The second constraint constraints
+  // the sheet to half its parent's width and is used in compact height.
+  NSLayoutConstraint* _widthConstraint;
+  NSLayoutConstraint* _halfWidthConstraint;
 }
 
 - (void)viewDidLoad {
@@ -67,13 +72,37 @@ const CGFloat kTopCornerRadius = 10;
   }
 
   // Position the view inside its parent.
-  AddSameConstraintsToSides(
-      self.view.superview, self.view,
-      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
+  [NSLayoutConstraint activateConstraints:@[
+    [self.view.bottomAnchor
+        constraintEqualToAnchor:self.view.superview.bottomAnchor],
+    [self.view.centerXAnchor
+        constraintEqualToAnchor:self.view.superview.centerXAnchor],
+  ]];
+
+  _widthConstraint = [self.view.widthAnchor
+      constraintEqualToAnchor:self.view.superview.widthAnchor];
+  _widthConstraint.active =
+      self.traitCollection.verticalSizeClass != UIUserInterfaceSizeClassCompact;
+
+  _halfWidthConstraint = [self.view.widthAnchor
+      constraintEqualToAnchor:self.view.superview.widthAnchor
+                   multiplier:0.5];
+  _halfWidthConstraint.active =
+      self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
 
   _heightConstraint = [self.view.heightAnchor
       constraintEqualToConstant:[self mediumDetentHeight]];
   _heightConstraint.active = YES;
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  [self animateHeightConstraintToConstant:[self restingHeight]];
+
+  _widthConstraint.active =
+      self.traitCollection.verticalSizeClass != UIUserInterfaceSizeClassCompact;
+  _halfWidthConstraint.active =
+      self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
 }
 
 // Returns the calculated detent of the medium height sheet. If the content
@@ -96,6 +125,18 @@ const CGFloat kTopCornerRadius = 10;
 // position. Returns 0 to indicate the sheet should be closed.
 - (CGFloat)restingHeight {
   CGFloat superviewHeight = self.view.superview.frame.size.height;
+
+  // Compact height devices only use the large detent.
+  if (self.traitCollection.verticalSizeClass ==
+      UIUserInterfaceSizeClassCompact) {
+    CGFloat height = superviewHeight - kLargeDetentTopMargin;
+    CGFloat closeThreshold = height / 2;
+    if (_heightConstraint.constant < closeThreshold) {
+      return 0;
+    } else {
+      return height;
+    }
+  }
 
   // TODO(crbug.com/349856760): Use half the medium detent as the threshold for
   // now.
@@ -135,7 +176,14 @@ const CGFloat kTopCornerRadius = 10;
   // Make sure the view is laid out offscreen to prepare for the animation in.
   [self.view.superview layoutIfNeeded];
 
-  [self animateHeightConstraintToConstant:[self mediumDetentHeight]];
+  CGFloat superviewHeight = self.view.superview.frame.size.height;
+
+  CGFloat initialHeight = (self.traitCollection.verticalSizeClass ==
+                           UIUserInterfaceSizeClassCompact)
+                              ? superviewHeight - kLargeDetentTopMargin
+                              : [self mediumDetentHeight];
+
+  [self animateHeightConstraintToConstant:initialHeight];
 }
 
 - (void)animateHeightConstraintToConstant:(CGFloat)constant {
