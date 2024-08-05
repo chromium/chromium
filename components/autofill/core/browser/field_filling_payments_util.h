@@ -27,17 +27,21 @@ std::u16string GetFillingValueForCreditCard(
     const AutofillField& field,
     std::string* failure_to_fill = nullptr);
 
-// Determines whether the `autofill_fields` contains a credit card number
-// field, which is empty and hasn't been autofilled before. `form_fields`
-// represents the fields obtained from the renderer. They are the most up to
-// date version of the form and can be different from the
-// `autofill_fields`. `form_fields` are used to check if the cached field
-// is still present in the form on the renderer side.
+// Determines whether the `autofill_fields` or `trigger_autofill_field` is
+// either a credit card number or a CVC field. If either, is the
+// `trigger_autofill_field`, then return true otherwise check if the field is
+// empty and haven't been autofilled before, to return true.
+// `fields` represents the fields obtained from the renderer. They are the most
+// up to date version of the form and can be different from the
+// `autofill_fields`. `fields` are used to check if the cached field is still
+// present in the form on the renderer side. When `card_has_cvc` is false,
+// ignore the CVC field.
 // TODO(crbug.com/40227496): Remove FormFieldData parameter.
-bool WillFillCreditCardNumber(
+bool WillFillCreditCardNumberOrCvc(
     base::span<const FormFieldData> fields,
     base::span<const std::unique_ptr<AutofillField>> autofill_fields,
-    const AutofillField& trigger_autofill_field);
+    const AutofillField& trigger_autofill_field,
+    bool card_has_cvc);
 
 }  // namespace autofill
 
