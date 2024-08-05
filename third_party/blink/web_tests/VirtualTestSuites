@@ -1059,7 +1059,7 @@
       "wpt_internal/html/rendering/the-details-element"
     ],
     "args": ["--disable-blink-features=DetailsStyling"],
-    "expires": "Aug 1, 2024"
+    "expires": "Dec 1, 2024"
   },
   {
     "prefix": "backface-visibility-interop",
