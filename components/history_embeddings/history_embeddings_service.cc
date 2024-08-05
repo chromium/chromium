@@ -40,6 +40,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/content_extraction/inner_text.mojom.h"
+#include "url/gurl.h"
 
 namespace history_embeddings {
 
@@ -199,6 +200,17 @@ SearchResult& SearchResult::operator=(SearchResult&&) = default;
 
 const std::string& SearchResult::AnswerText() const {
   return answerer_result.answer.text();
+}
+
+size_t SearchResult::AnswerIndex() const {
+  for (size_t i = 0; i < scored_url_rows.size(); i++) {
+    // Note, the spec isn't used because there may be minor differences between
+    // the strings, for example "http://other.com" versus "http://other.com/".
+    if (scored_url_rows[i].row.url() == GURL(answerer_result.url)) {
+      return i;
+    }
+  }
+  return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

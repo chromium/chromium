@@ -110,6 +110,10 @@ struct SearchResult {
   // Gets the answer text from within the `answerer_result`.
   const std::string& AnswerText() const;
 
+  // Finds the index in `scored_url_rows` that has the URL selected by the
+  // `answerer_result`, indicating where the answer came from.
+  size_t AnswerIndex() const;
+
   // Session ID to associate query with answers.
   std::string session_id;
 

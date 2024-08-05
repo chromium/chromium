@@ -96,7 +96,8 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{history_embeddings::kHistoryEmbeddings,
-                               {{"UseMlEmbedder", "false"}}},
+                               {{"UseMlEmbedder", "false"},
+                                {"EnableAnswers", "true"}}},
                               {feature_engagement::kIPHHistorySearchFeature,
                                {}},
 #if BUILDFLAG(IS_CHROMEOS)
@@ -183,10 +184,18 @@ TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
   scored_url_row.row = history::URLRow{GURL{"https://google.com"}};
   scored_url_row.row.set_title(u"my title");
   scored_url_row.row.set_last_visit(base::Time::Now() - base::Hours(1));
+  history_embeddings::ScoredUrlRow other_scored_url_row = scored_url_row;
+  other_scored_url_row.row = history::URLRow(GURL("http://other.com"));
+
   history_embeddings::SearchResult embeddings_result;
-  embeddings_result.scored_url_rows = {scored_url_row};
+  embeddings_result.scored_url_rows = {
+      scored_url_row,
+      other_scored_url_row,
+  };
   embeddings_result.query = "search query";
   embeddings_result.answerer_result.answer.set_text("the answer");
+  embeddings_result.answerer_result.url = "http://other.com";
+  embeddings_result.answerer_result.text_directives = {"text fragment"};
 
   base::test::TestFuture<history_embeddings::mojom::SearchResultPtr> future;
   EXPECT_CALL(page_, SearchResultChanged)
@@ -196,7 +205,7 @@ TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
   auto mojo_result = future.Take();
   EXPECT_EQ(mojo_result->query, "search query");
   EXPECT_EQ(mojo_result->answer, "the answer");
-  ASSERT_EQ(mojo_result->items.size(), 1u);
+  ASSERT_EQ(mojo_result->items.size(), 2u);
   EXPECT_EQ(mojo_result->items[0]->title, "my title");
   EXPECT_EQ(mojo_result->items[0]->url.spec(), "https://google.com/");
   EXPECT_EQ(mojo_result->items[0]->relative_time,
@@ -206,6 +215,14 @@ TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
   EXPECT_EQ(mojo_result->items[0]->last_url_visit_timestamp,
             scored_url_row.row.last_visit().InMillisecondsFSinceUnixEpoch());
   EXPECT_EQ(mojo_result->items[0]->url_for_display, "google.com");
+  EXPECT_EQ(mojo_result->items[0]->answer_data.is_null(), true);
+  EXPECT_EQ(mojo_result->items[1]->url.spec(), "http://other.com/");
+  EXPECT_EQ(mojo_result->items[1]->url_for_display, "other.com");
+  EXPECT_EQ(mojo_result->items[1]->answer_data.is_null(), false);
+  EXPECT_EQ(mojo_result->items[1]->answer_data->answer_text_directives.size(),
+            1u);
+  EXPECT_EQ(mojo_result->items[1]->answer_data->answer_text_directives[0],
+            "text fragment");
 }
 
 TEST_F(HistoryEmbeddingsHandlerTest, RecordsMetrics) {
