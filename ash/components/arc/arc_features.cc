@@ -34,7 +34,7 @@ BASE_FEATURE(kArcVmGki,
 // Controls block IO schedulers in ARCVM.
 BASE_FEATURE(kBlockIoScheduler,
              "ArcBlockIoScheduler",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to enable block IO scheduler for virtio-blk /data.
 const base::FeatureParam<bool> kEnableDataBlockIoScheduler{
