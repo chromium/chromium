@@ -308,8 +308,9 @@ void LensOverlayController::ShowUI(
     return;
   }
 
-  // The UI should only show if the tab is in the foreground.
-  if (!tab_->IsInForeground()) {
+  // The UI should only show if the tab is in the foreground or if the tab web
+  // contents is not in a crash state.
+  if (!tab_->IsInForeground() || tab_->GetContents()->IsCrashed()) {
     return;
   }
 
