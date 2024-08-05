@@ -151,23 +151,34 @@ class GifsButton : public views::LabelButton {
         .SetText(l10n_util::GetStringUTF16(IDS_PICKER_GIFS_BUTTON_LABEL))
         .SetCallback(std::move(pressed_callback))
         .SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface)
-        .SetBackground(views::CreateThemedRoundedRectBackground(
-            cros_tokens::kCrosSysSystemOnBase, kGifsButtonCornerRadius))
         .BuildChildren();
     label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
         TypographyToken::kCrosLabel1));
     label()->SetLineHeight(ash::TypographyProvider::Get()->ResolveLineHeight(
         ash::TypographyToken::kCrosLabel1));
     label()->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
-    StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
-                                     /*highlight_on_hover=*/true,
-                                     /*highlight_on_focus=*/true);
+    StyleUtil::SetUpInkDropForButton(this);
     StyleUtil::InstallRoundedCornerHighlightPathGenerator(
         this, gfx::RoundedCornersF(kGifsButtonCornerRadius));
+    UpdateBackground();
   }
   GifsButton(const GifsButton&) = delete;
   GifsButton& operator=(const GifsButton&) = delete;
   ~GifsButton() override = default;
+
+  // views::LabelButton:
+  void StateChanged(ButtonState old_state) override {
+    views::LabelButton::StateChanged(old_state);
+    UpdateBackground();
+  }
+
+  void UpdateBackground() {
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        GetState() == views::Button::ButtonState::STATE_HOVERED
+            ? cros_tokens::kCrosSysHoverOnSubtle
+            : cros_tokens::kCrosSysSystemOnBase,
+        kGifsButtonCornerRadius));
+  }
 };
 
 BEGIN_METADATA(GifsButton)
