@@ -21,4 +21,7 @@ message StudentGroup {
 
 message UserIdentity {
   string gaia_id = 1;
+  string email = 2;
+  string full_name = 3;
+  string photo_url = 4;
 }
