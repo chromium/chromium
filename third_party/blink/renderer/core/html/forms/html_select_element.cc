@@ -426,6 +426,13 @@ void HTMLSelectElement::OptionElementChildrenChanged(
             GetLayoutObject()->GetDocument().ExistingAXObjectCache())
       cache->ChildrenChanged(this);
   }
+
+  if (option.Selected()) {
+    for (HTMLSelectedOptionElement* selectedoption :
+         descendant_selectedoptions_) {
+      selectedoption->CloneContentsFromOptionElement(&option);
+    }
+  }
 }
 
 void HTMLSelectElement::AccessKeyAction(
@@ -954,7 +961,7 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
   if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
     for (HTMLSelectedOptionElement* selectedoption :
          descendant_selectedoptions_) {
-      selectedoption->SelectedOptionElementChanged(element);
+      selectedoption->CloneContentsFromOptionElement(element);
     }
   }
 }
@@ -1654,11 +1661,13 @@ bool HTMLSelectElement::IsAppearanceBaseSelect() const {
 void HTMLSelectElement::SelectedOptionElementInserted(
     HTMLSelectedOptionElement* selectedoption) {
   descendant_selectedoptions_.insert(selectedoption);
+  selectedoption->CloneContentsFromOptionElement(SelectedOption());
 }
 
 void HTMLSelectElement::SelectedOptionElementRemoved(
     HTMLSelectedOptionElement* selectedoption) {
   descendant_selectedoptions_.erase(selectedoption);
+  selectedoption->CloneContentsFromOptionElement(nullptr);
 }
 
 bool HTMLSelectElement::SupportsFocus(UpdateBehavior update_behavior) const {

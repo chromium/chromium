@@ -63,6 +63,9 @@ class OptionTextObserver : public MutationObserver::Delegate {
     init->setCharacterData(true);
     init->setChildList(true);
     init->setSubtree(true);
+    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+      init->setAttributes(true);
+    }
     observer_->observe(option_, init, ASSERT_NO_EXCEPTION);
   }
 
