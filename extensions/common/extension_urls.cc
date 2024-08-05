@@ -76,7 +76,7 @@ std::string GetWebstoreExtensionsCategoryURL() {
 }
 
 std::string GetWebstoreItemDetailURLPrefix() {
-  return GetWebstoreLaunchURL().spec() + "/detail/";
+  return GetNewWebstoreLaunchURL().spec() + "detail/";
 }
 
 GURL GetWebstoreItemJsonDataURL(const extensions::ExtensionId& extension_id) {

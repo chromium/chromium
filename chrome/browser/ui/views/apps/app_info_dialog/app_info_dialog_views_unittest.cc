@@ -25,6 +25,7 @@
 #include "components/app_constants/constants.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/extension_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/test/scoped_views_test_helper.h"
@@ -328,7 +329,7 @@ TEST_F(AppInfoDialogViewsTest, ViewInStore) {
   EXPECT_EQ(1, tabs->count());
   content::WebContents* web_contents = tabs->GetWebContentsAt(0);
 
-  std::string url = "https://chrome.google.com/webstore/detail/";
+  std::string url = extension_urls::GetWebstoreItemDetailURLPrefix();
   url += kTestExtensionId;
   url += "?utm_source=chrome-app-launcher-info-dialog";
   EXPECT_EQ(GURL(url), web_contents->GetURL());
