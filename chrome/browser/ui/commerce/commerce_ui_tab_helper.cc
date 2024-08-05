@@ -547,12 +547,13 @@ bool CommerceUiTabHelper::IsShowingDiscountsIcon() {
 }
 
 void CommerceUiTabHelper::ComputePageActionToExpand() {
-  CHECK(!page_action_icon_compute_start_time_.is_null());
-  base::UmaHistogramTimes(
-      "Commerce.IconComputationTime",
-      base::TimeTicks::Now() - page_action_icon_compute_start_time_);
+  if (!page_action_icon_compute_start_time_.is_null()) {
+    base::UmaHistogramTimes(
+        "Commerce.IconComputationTime",
+        base::TimeTicks::Now() - page_action_icon_compute_start_time_);
+    page_action_to_expand_ = std::nullopt;
+  }
 
-  page_action_to_expand_ = std::nullopt;
   page_action_icon_compute_start_time_ = base::TimeTicks();
 
   if (!web_contents() || !web_contents()->GetBrowserContext()) {
