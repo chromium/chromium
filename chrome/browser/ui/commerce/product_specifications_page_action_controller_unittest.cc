@@ -58,6 +58,12 @@ class ProductSpecificationsPageActionControllerUnittest : public testing::Test {
     shopping_service_ = std::make_unique<MockShoppingService>();
     base::RepeatingCallback<void()> callback = notify_host_callback_.Get();
     account_checker_ = std::make_unique<MockAccountChecker>();
+    account_checker_->SetCountry("us");
+    account_checker_->SetLocale("en-us");
+    account_checker_->SetSignedIn(true);
+    account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
+    ON_CALL(*account_checker_, IsSyncingType)
+        .WillByDefault(testing::Return(true));
     shopping_service_->SetAccountChecker(account_checker_.get());
     mock_cluster_manager_ = static_cast<commerce::MockClusterManager*>(
         shopping_service_->GetClusterManager());

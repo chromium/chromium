@@ -36,7 +36,7 @@ std::optional<bool>
 ProductSpecificationsPageActionController::ShouldShowForNavigation() {
   // If the user isn't eligible for the feature, don't block.
   if (!shopping_service_ || !shopping_service_->GetAccountChecker() ||
-      !commerce::IsProductSpecificationsEnabled(
+      !commerce::CanFetchProductSpecificationsData(
           shopping_service_->GetAccountChecker())) {
     return false;
   }
@@ -59,7 +59,7 @@ bool ProductSpecificationsPageActionController::WantsExpandedUi() {
 void ProductSpecificationsPageActionController::ResetForNewNavigation(
     const GURL& url) {
   if (!shopping_service_ || !shopping_service_->GetAccountChecker() ||
-      !commerce::IsProductSpecificationsEnabled(
+      !commerce::CanFetchProductSpecificationsData(
           shopping_service_->GetAccountChecker())) {
     return;
   }

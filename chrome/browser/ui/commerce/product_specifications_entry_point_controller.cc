@@ -15,6 +15,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/shopping_service.h"
 #include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
@@ -323,6 +324,11 @@ void ProductSpecificationsEntryPointController::
 
 void ProductSpecificationsEntryPointController::ShowEntryPointWithTitle(
     std::optional<EntryPointInfo> entry_point_info) {
+  if (!CanFetchProductSpecificationsData(
+          shopping_service_->GetAccountChecker())) {
+    return;
+  }
+
   auto* prefs = browser_->profile()->GetPrefs();
   int current_gap_time = prefs->GetInteger(
       commerce::kProductSpecificationsEntryPointShowIntervalInDays);

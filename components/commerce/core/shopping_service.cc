@@ -293,7 +293,7 @@ ShoppingService::ShoppingService(
             &commerce_info_cache_, product_specifications_service_);
 
     if (identity_manager &&
-        IsProductSpecificationsEnabled(account_checker_.get())) {
+        CanLoadProductSpecificationsFullPageUi(account_checker_.get())) {
       cluster_manager_ = std::make_unique<ClusterManager>(
           product_specifications_service_,
           std::make_unique<ClusterServerProxy>(identity_manager,

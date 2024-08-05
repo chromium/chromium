@@ -16,7 +16,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -93,6 +92,11 @@ bool AccountChecker::IsSyncingBookmarks() {
          syncer::GetUploadToGoogleState(sync_service_,
                                         syncer::ModelType::BOOKMARKS) !=
              syncer::UploadState::NOT_ACTIVE;
+}
+
+bool AccountChecker::IsSyncingType(syncer::ModelType type) {
+  return sync_service_ && syncer::GetUploadToGoogleState(sync_service_, type) ==
+                              syncer::UploadState::ACTIVE;
 }
 
 bool AccountChecker::IsAnonymizedUrlDataCollectionEnabled() {

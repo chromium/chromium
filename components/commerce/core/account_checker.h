@@ -11,6 +11,7 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -40,6 +41,9 @@ class AccountChecker {
   // cases where sync is still initializing, but the sync feature itself is
   // enabled.
   virtual bool IsSyncingBookmarks();
+
+  // Check whether a specific sync entity is active/enabled.
+  virtual bool IsSyncingType(syncer::ModelType type);
 
   virtual bool IsAnonymizedUrlDataCollectionEnabled();
 

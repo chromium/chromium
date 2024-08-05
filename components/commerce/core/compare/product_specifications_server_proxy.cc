@@ -219,7 +219,7 @@ ProductSpecificationsServerProxy::~ProductSpecificationsServerProxy() = default;
 void ProductSpecificationsServerProxy::GetProductSpecificationsForClusterIds(
     std::vector<uint64_t> cluster_ids,
     ProductSpecificationsCallback callback) {
-  if (!IsProductSpecificationsEnabled(account_checker_)) {
+  if (!CanFetchProductSpecificationsData(account_checker_)) {
     std::move(callback).Run(cluster_ids, std::nullopt);
     return;
   }

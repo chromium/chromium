@@ -238,9 +238,10 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   // Product specifications:
   commerce::ShoppingService* service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
-  source->AddBoolean(
-      "productSpecificationsListsEnabled",
-      commerce::IsProductSpecificationsEnabled(service->GetAccountChecker()));
+  source->AddBoolean("productSpecificationsListsEnabled",
+                     commerce::CanManageProductSpecificationsSets(
+                         service->GetAccountChecker(),
+                         service->GetProductSpecificationsService()));
 
   return source;
 }

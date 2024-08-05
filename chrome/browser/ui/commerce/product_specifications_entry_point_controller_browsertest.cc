@@ -14,6 +14,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_cluster_manager.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/pref_names.h"
@@ -53,12 +54,22 @@ class MockObserver
 class ProductSpecificationsEntryPointControllerBrowserTest
     : public InProcessBrowserTest {
  public:
-  ProductSpecificationsEntryPointControllerBrowserTest() = default;
+  ProductSpecificationsEntryPointControllerBrowserTest()
+      : account_checker_(std::make_unique<commerce::MockAccountChecker>()) {
+    test_features_.InitAndEnableFeature(commerce::kProductSpecifications);
+    account_checker_->SetCountry("us");
+    account_checker_->SetLocale("en-us");
+    account_checker_->SetSignedIn(true);
+    account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
+    ON_CALL(*account_checker_, IsSyncingType)
+        .WillByDefault(testing::Return(true));
+  }
 
   void SetUpOnMainThread() override {
     mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserContext(
             browser()->profile()));
+    mock_shopping_service_->SetAccountChecker(account_checker_.get());
     mock_cluster_manager_ = static_cast<commerce::MockClusterManager*>(
         mock_shopping_service_->GetClusterManager());
     mock_product_spec_service_ =
@@ -101,6 +112,7 @@ class ProductSpecificationsEntryPointControllerBrowserTest
   }
 
  protected:
+  std::unique_ptr<commerce::MockAccountChecker> account_checker_;
   raw_ptr<commerce::MockShoppingService, AcrossTasksDanglingUntriaged>
       mock_shopping_service_;
   raw_ptr<commerce::MockClusterManager, AcrossTasksDanglingUntriaged>
@@ -116,6 +128,7 @@ class ProductSpecificationsEntryPointControllerBrowserTest
   bool is_browser_context_services_created{false};
 
  private:
+  base::test::ScopedFeatureList test_features_;
   base::WeakPtrFactory<ProductSpecificationsEntryPointControllerBrowserTest>
       weak_ptr_factory_{this};
 };

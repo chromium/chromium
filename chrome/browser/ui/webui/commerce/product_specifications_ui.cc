@@ -45,8 +45,8 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
   Profile* const profile = Profile::FromWebUI(web_ui);
   commerce::ShoppingService* shopping_service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
-  if (!shopping_service ||
-      !IsProductSpecificationsEnabled(shopping_service->GetAccountChecker())) {
+  if (!shopping_service || !CanLoadProductSpecificationsFullPageUi(
+                               shopping_service->GetAccountChecker())) {
     return;
   }
   // Add ThemeSource to serve the chrome logo.

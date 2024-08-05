@@ -4562,6 +4562,7 @@ if (!is_android) {
         "//chrome/browser/ui/actions:actions_headers",
         "//chrome/browser/ui/lens",
         "//chrome/browser/ui/lens:browser_tests",
+        "//components/commerce/core:account_checker_test_support",
         "//components/commerce/core:shopping_service_test_support",
         "//components/commerce/core:utils",
         "//components/page_info/core:proto",
