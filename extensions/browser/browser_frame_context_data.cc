@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -22,11 +23,7 @@ BrowserFrameContextData::CloneFrameContextData() const {
 }
 
 bool BrowserFrameContextData::HasIsolatedContextCapability() const {
-  return frame_ &&
-         content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
-             frame_->GetBrowserContext()) &&
-         frame_->GetWebExposedIsolationLevel() ==
-             content::WebExposedIsolationLevel::kIsolatedApplication;
+  return frame_ && content::HasIsolatedContextCapability(frame_);
 }
 
 std::unique_ptr<FrameContextData>

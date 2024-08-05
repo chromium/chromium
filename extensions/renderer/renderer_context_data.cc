@@ -14,9 +14,7 @@ namespace extensions {
 
 // static
 bool RendererContextData::IsIsolatedWebAppContextAndEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kEnableIsolatedWebAppsInRenderer) &&
-         blink::IsIsolatedContext();
+  return blink::IsIsolatedContext();
 }
 
 std::unique_ptr<ContextData> RendererContextData::Clone() const {
