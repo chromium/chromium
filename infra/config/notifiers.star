@@ -124,6 +124,7 @@ TREE_CLOSING_STEPS_REGEXP = "\\b({})\\b".format("|".join([
     "bot_update",
     "compile",
     "gclient runhooks",
+    "generate_build_files",
     "runhooks",
     "update",
     "\\w*nocompile_test",
