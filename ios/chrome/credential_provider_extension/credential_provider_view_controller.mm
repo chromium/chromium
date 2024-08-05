@@ -344,9 +344,22 @@ UIColor* BackgroundColor() {
               credentialRequest);
       // TODO(crbug.com/330355124): Handle
       // passkeyCredentialRequest.userVerificationPreference.
-      ASPasskeyAssertionCredential* passkeyCredential = PerformPasskeyAssertion(
-          credential, passkeyCredentialRequest.clientDataHash, nil);
-      [self userSelectedPasskey:passkeyCredential];
+
+      __weak __typeof(self) weakSelf = self;
+      FetchKeyCompletionBlock completion = ^(NSData* securityDomainSecret) {
+        CredentialProviderViewController* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+
+        ASPasskeyAssertionCredential* passkeyCredential =
+            PerformPasskeyAssertion(credential,
+                                    passkeyCredentialRequest.clientDataHash,
+                                    nil, securityDomainSecret);
+        [strongSelf userSelectedPasskey:passkeyCredential];
+      };
+
+      FetchSecurityDomainSecret(completion);
       return;
     }
   }

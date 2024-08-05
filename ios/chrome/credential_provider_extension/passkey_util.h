@@ -10,11 +10,19 @@
 
 @protocol Credential;
 
+// The completion block called after fetching the vault key.
+using FetchKeyCompletionBlock = void (^)(NSData* sds);
+
+// Fetches the Security Domain Secret and calls the completion block
+// with the Security Domain Secret as the input argument.
+void FetchSecurityDomainSecret(FetchKeyCompletionBlock completion);
+
 // On a success, returns a valid passkey assertion structure.
 // Returns nil otherwise.
 ASPasskeyAssertionCredential* PerformPasskeyAssertion(
     id<Credential> credential,
-    NSData* clientDataHash,
-    NSArray<NSData*>* allowedCredentials) API_AVAILABLE(ios(17.0));
+    NSData* client_data_hash,
+    NSArray<NSData*>* allowed_credentials,
+    NSData* security_domain_secret) API_AVAILABLE(ios(17.0));
 
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_UTIL_H_

@@ -48,9 +48,8 @@ NSData* MakeAuthenticatorDataForAssertion(NSString* rp_id) {
 NSData* GenerateSignature(NSData* encrypted_private_key,
                           NSData* encrypted_message,
                           NSData* authenticator_data,
-                          NSData* client_data_hash) {
-  // Retrieve the security domain secret.
-  NSData* security_domain_secret = GetSecurityDomainSecret();
+                          NSData* client_data_hash,
+                          NSData* security_domain_secret) {
   if (!security_domain_secret) {
     return nil;
   }
@@ -95,22 +94,28 @@ NSData* GenerateSignature(NSData* encrypted_private_key,
 
 }  // namespace
 
+void FetchSecurityDomainSecret(FetchKeyCompletionBlock completion) {
+  NSData* security_domain_secret = GetSecurityDomainSecret();
+  completion(security_domain_secret);
+}
+
 ASPasskeyAssertionCredential* PerformPasskeyAssertion(
     id<Credential> credential,
-    NSData* clientDataHash,
-    NSArray<NSData*>* allowedCredentials) API_AVAILABLE(ios(17.0)) {
+    NSData* client_data_hash,
+    NSArray<NSData*>* allowed_credentials,
+    NSData* security_domain_secret) API_AVAILABLE(ios(17.0)) {
   // If the array is empty, then the relying party accepts any passkey
   // credential.
-  if (allowedCredentials.count > 0 &&
-      ![allowedCredentials containsObject:credential.credentialId]) {
+  if (allowed_credentials.count > 0 &&
+      ![allowed_credentials containsObject:credential.credentialId]) {
     return nil;
   }
 
   NSData* authenticatorData =
       MakeAuthenticatorDataForAssertion(credential.rpId);
-  NSData* signature =
-      GenerateSignature(credential.privateKey, credential.encrypted,
-                        authenticatorData, clientDataHash);
+  NSData* signature = GenerateSignature(
+      credential.privateKey, credential.encrypted, authenticatorData,
+      client_data_hash, security_domain_secret);
 
   // Update the credential's last used time.
   credential.lastUsedTime =
@@ -122,7 +127,7 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
       credentialWithUserHandle:credential.userId
                   relyingParty:credential.rpId
                      signature:signature
-                clientDataHash:clientDataHash
+                clientDataHash:client_data_hash
              authenticatorData:authenticatorData
                   credentialID:credential.credentialId];
 }

@@ -6,6 +6,7 @@
 
 #import <CommonCrypto/CommonCrypto.h>
 
+#import "base/strings/string_number_conversions.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -28,6 +29,13 @@ NSData* Sha256(NSData* data) {
 
 NSData* ClientDataHash() {
   return Sha256(StringToData("ClientDataHash"));
+}
+
+NSData* SecurityDomainSecret() {
+  std::vector<uint8_t> sds;
+  base::HexStringToBytes(
+      "1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF", &sds);
+  return [NSData dataWithBytes:sds.data() length:sds.size()];
 }
 
 ArchivableCredential* TestPasskeyCredential() {
@@ -81,7 +89,8 @@ TEST_F(PasskeyUtilTest, AssertionAuthenticatorDataIsValid) {
         Sha256([credential.rpId dataUsingEncoding:NSUTF8StringEncoding]);
 
     ASPasskeyAssertionCredential* passkeyAssertionCredential =
-        PerformPasskeyAssertion(credential, clientDataHash, allowedCredentials);
+        PerformPasskeyAssertion(credential, clientDataHash, allowedCredentials,
+                                SecurityDomainSecret());
 
     ASSERT_NSEQ(clientDataHash, passkeyAssertionCredential.clientDataHash);
     ASSERT_NSEQ(credential.credentialId,
@@ -106,7 +115,8 @@ TEST_F(PasskeyUtilTest, AssertionFailsOnCredentialId) {
     NSArray<NSData*>* allowedCredentials =
         [NSArray arrayWithObject:StringToData("otherCredentialId")];
     ASPasskeyAssertionCredential* passkeyAssertionCredential =
-        PerformPasskeyAssertion(credential, clientDataHash, allowedCredentials);
+        PerformPasskeyAssertion(credential, clientDataHash, allowedCredentials,
+                                SecurityDomainSecret());
     ASSERT_NSEQ(passkeyAssertionCredential, nil);
   }
 }
@@ -120,7 +130,8 @@ TEST_F(PasskeyUtilTest, AssertionSucceedsOnCredentialId) {
     NSArray<NSData*>* allowedCredentials =
         [NSArray arrayWithObject:credential.credentialId];
     ASPasskeyAssertionCredential* passkeyAssertionCredential =
-        PerformPasskeyAssertion(credential, clientDataHash, allowedCredentials);
+        PerformPasskeyAssertion(credential, clientDataHash, allowedCredentials,
+                                SecurityDomainSecret());
     ASSERT_NSNE(passkeyAssertionCredential, nil);
   }
 }
