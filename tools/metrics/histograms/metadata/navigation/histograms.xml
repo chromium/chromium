@@ -1706,6 +1706,20 @@ chromium-metrics-reviews@google.com.
   <token key="FrameType" variants="FrameTypes"/>
 </histogram>
 
+<histogram
+    name="Navigation.RendererRunLoopStartToFirstCommitNavigation.{FrameType}"
+    units="ms" expires_after="2025-01-12">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the duration between a) the start timing of the renderer's RunLoop
+    and b) the first CommitNavigation. Recorded on the first navigation commit
+    in the renderer process. If the first navigation does not commit http or
+    https, this is not recorded.
+  </summary>
+  <token key="FrameType" variants="FrameTypes"/>
+</histogram>
+
 <histogram name="Navigation.RenderFrameHostConstructor" units="ms"
     expires_after="2024-12-24">
   <owner>rakina@chromium.org</owner>

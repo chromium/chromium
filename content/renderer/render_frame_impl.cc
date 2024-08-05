@@ -1195,7 +1195,9 @@ void CallClientDeferMediaLoad(base::WeakPtr<RenderFrameImpl> frame,
       frame.get(), has_played_media_before, std::move(closure));
 }
 
-void LogCommitHistograms(base::TimeTicks commit_sent, bool is_main_frame) {
+void LogCommitHistograms(base::TimeTicks commit_sent,
+                         bool is_main_frame,
+                         const GURL& new_page_url) {
   if (!base::TimeTicks::IsConsistentAcrossProcesses())
     return;
 
@@ -1222,6 +1224,29 @@ void LogCommitHistograms(base::TimeTicks commit_sent, bool is_main_frame) {
     base::UmaHistogramTimes(
         base::StrCat({"Navigation.RendererCommitProcessWaitTime.", frame_type}),
         run_loop_start_time - commit_sent);
+  }
+
+  // We want to record the following metric just one time per process.
+  static bool is_first_commit = true;
+  if (is_first_commit) {
+    is_first_commit = false;
+    if (run_loop_start_time <= now && new_page_url.is_valid() &&
+        new_page_url.SchemeIsHTTPOrHTTPS()) {
+      const char* const name =
+          is_main_frame
+              ? "Navigation.RendererRunLoopStartToFirstCommitNavigation."
+                "MainFrame"
+              : "Navigation.RendererRunLoopStartToFirstCommitNavigation."
+                "Subframe";
+      const auto trace_id = TRACE_ID_WITH_SCOPE(
+          name, TRACE_ID_LOCAL(RenderThreadImpl::current()));
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+          "navigation", name, trace_id, run_loop_start_time, "url",
+          new_page_url);
+      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("navigation", name,
+                                                     trace_id, now);
+      base::UmaHistogramTimes(name, now - run_loop_start_time);
+    }
   }
 }
 
@@ -2687,7 +2712,8 @@ void RenderFrameImpl::CommitNavigation(
   // navigations.
   CHECK(!commit_params->origin_to_commit ||
         common_params->url.SchemeIs(url::kDataScheme));
-  LogCommitHistograms(commit_params->commit_sent, is_main_frame_);
+  LogCommitHistograms(commit_params->commit_sent, is_main_frame_,
+                      common_params->url);
 
   AssertNavigationCommits assert_navigation_commits(
       this, kMayReplaceInitialEmptyDocument);
