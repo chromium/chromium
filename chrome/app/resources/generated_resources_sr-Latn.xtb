@@ -6408,7 +6408,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5727728807527375859">Dodaci, aplikacije i teme mogu da oštete računar. Želite li stvarno da nastavite?</translation>
 <translation id="5728072125198221967">Povezane Google usluge</translation>
 <translation id="5728290366864286776">Ovaj dodatak može da čita i menja informacije o sajtovima ili da se pokreće u pozadini</translation>
-<translation id="5728450728039149624">Opcije zaključavanja ekrana za Smart Lock</translation>
+<translation id="5728450728039149624">Opcije otključavanja ekrana za Smart Lock</translation>
 <translation id="572914206753951782">Uverite se da je Chromebook ažuriran na najnoviju verziju. Zatim restartujte Chromebook i probajte ponovo.</translation>
 <translation id="5729712731028706266">&amp;Prikaži</translation>
 <translation id="5731247495086897348">Na&amp;lepi i idi</translation>
@@ -11092,7 +11092,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="9200339982498053969"><ph name="ORIGIN" /> će moći da menja fajlove u folderu <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Pretraži <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">Pregledali ste ranije</translation>
-<translation id="9201220332032049474">Opcije zaključavanja ekrana</translation>
+<translation id="9201220332032049474">Opcije otključavanja ekrana</translation>
 <translation id="9201842707396338580">Došlo je do greške. Obratite se vlasniku uređaja ili administratoru. Kôd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">Crveno-zelena, slaba zelena (deuteranomalija)</translation>
 <translation id="9203398526606335860">&amp;Profilisanje je omogućeno</translation>
