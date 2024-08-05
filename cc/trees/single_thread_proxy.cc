@@ -1204,6 +1204,8 @@ DrawResult SingleThreadProxy::ScheduledActionDrawIfPossible() {
       scheduler_on_impl_thread_->CurrentBeginFrameAckForActiveTree();
   frame.origin_begin_main_frame_args =
       scheduler_on_impl_thread_->last_activate_origin_frame_args();
+  frame.set_needs_redraw_reasons =
+      scheduler_on_impl_thread_->GetRedrawReasons();
   return DoComposite(&frame);
 }
 

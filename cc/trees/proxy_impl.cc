@@ -944,6 +944,7 @@ DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
   frame.begin_frame_ack = scheduler_->CurrentBeginFrameAckForActiveTree();
   frame.origin_begin_main_frame_args =
       scheduler_->last_activate_origin_frame_args();
+  frame.set_needs_redraw_reasons = scheduler_->GetRedrawReasons();
   bool draw_frame = false;
 
   DrawResult result;

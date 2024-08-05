@@ -230,6 +230,7 @@ class CC_EXPORT SchedulerStateMachine {
   // |did_invalidate_layer_tree_frame_sink()|.
   void SetNeedsRedraw(RedrawReason reason);
   bool needs_redraw() const { return needs_redraw_; }
+  RedrawReasonSet GetRedrawReasons() const;
 
   // Indicates that the display tree needs an update, implying that the active
   // tree has changed in some meaningful way since the last update.
@@ -424,6 +425,10 @@ class CC_EXPORT SchedulerStateMachine {
   void DidDrawInternal(DrawResult draw_result);
 
   const SchedulerSettings settings_;
+
+  RedrawReasonSet impl_side_invalidation_reasons_;
+  RedrawReasonSet activate_reasons_;
+  RedrawReasonSet redraw_reasons_;
 
   LayerTreeFrameSinkState layer_tree_frame_sink_state_ =
       LayerTreeFrameSinkState::NONE;

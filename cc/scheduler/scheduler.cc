@@ -1064,6 +1064,10 @@ viz::BeginFrameAck Scheduler::CurrentBeginFrameAckForActiveTree() const {
   return viz::BeginFrameAck(begin_main_frame_args_, true);
 }
 
+RedrawReasonSet Scheduler::GetRedrawReasons() const {
+  return state_machine_.GetRedrawReasons();
+}
+
 void Scheduler::ClearHistory() {
   // Ensure we reset decisions based on history from the previous navigation.
   compositor_timing_history_->ClearHistory();

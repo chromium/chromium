@@ -2849,15 +2849,23 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   metadata.frame_interval_inputs.has_input =
       frame_rate_estimator_.input_priority_mode();
 
-  std::optional<ImageAnimationController::ConsistentFrameDuration>
-      animating_image_duration =
-          image_animation_controller_.GetConsistentContentFrameDuration();
-  if (animating_image_duration) {
-    metadata.frame_interval_inputs.content_interval_info.push_back(
-        {viz::ContentFrameIntervalType::kAnimatingImage,
-         animating_image_duration->frame_duration,
-         animating_image_duration->num_images - 1u});
+  if (frame->set_needs_redraw_reasons.Has(RedrawReason::kAnimatedImage)) {
+    std::optional<ImageAnimationController::ConsistentFrameDuration>
+        animating_image_duration =
+            image_animation_controller_.GetConsistentContentFrameDuration();
+    if (animating_image_duration) {
+      metadata.frame_interval_inputs.content_interval_info.push_back(
+          {viz::ContentFrameIntervalType::kAnimatingImage,
+           animating_image_duration->frame_duration,
+           animating_image_duration->num_images - 1u});
+      frame->set_needs_redraw_reasons.Remove(RedrawReason::kAnimatedImage);
+    }
   }
+
+  // If all RedrawReasons have been recorded in `content_interval_info` and
+  // removed, then can set `has_only_content_frame_interval_updates`.
+  metadata.frame_interval_inputs.has_only_content_frame_interval_updates =
+      frame->set_needs_redraw_reasons.empty();
 
   base::TimeDelta preferred_frame_interval;
   static const bool feature_allowed =
@@ -5487,7 +5495,7 @@ void LayerTreeHostImpl::RequestInvalidationForAnimatedImages() {
   // before a new tree is activated.
   bool needs_first_draw_on_activation = true;
   client_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
-                                        RedrawReason::kUntracked);
+                                        RedrawReason::kAnimatedImage);
 }
 
 bool LayerTreeHostImpl::IsReadyToActivate() const {

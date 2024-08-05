@@ -3226,6 +3226,85 @@ TEST(SchedulerStateMachineTest,
       SchedulerStateMachine::Action::PERFORM_IMPL_SIDE_INVALIDATION);
 }
 
+TEST(SchedulerStateMachineTest, RedrawReasonFromSetNeedsRedraw) {
+  SchedulerSettings default_scheduler_settings;
+  StateMachine state(default_scheduler_settings);
+  SET_UP_STATE(state);
+
+  static_cast<SchedulerStateMachine&>(state).SetNeedsRedraw(
+      RedrawReason::kUntracked);
+
+  EXPECT_EQ(state.GetRedrawReasons(),
+            RedrawReasonSet{RedrawReason::kUntracked});
+
+  state.OnBeginImplFrameDeadline();
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::DRAW_IF_POSSIBLE);
+  state.DidSubmitCompositorFrame();
+
+  EXPECT_TRUE(state.GetRedrawReasons().empty());
+}
+
+TEST(SchedulerStateMachineTest, RedrawReasonFromImplSideInvalidation) {
+  SchedulerSettings default_scheduler_settings;
+  StateMachine state(default_scheduler_settings);
+  SET_UP_STATE(state);
+
+  bool needs_first_draw_on_activation = true;
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kAnimatedImage);
+
+  viz::BeginFrameId frame_id = viz::BeginFrameId(0, 1);
+  state.OnBeginImplFrame(frame_id, kAnimateOnly);
+  state.OnBeginImplFrameDeadline();
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::PERFORM_IMPL_SIDE_INVALIDATION);
+  state.NotifyReadyToActivate();
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::ACTIVATE_SYNC_TREE);
+
+  EXPECT_EQ(state.GetRedrawReasons(),
+            RedrawReasonSet{RedrawReason::kAnimatedImage});
+
+  state.OnBeginImplFrameDeadline();
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::DRAW_IF_POSSIBLE);
+  state.DidSubmitCompositorFrame();
+
+  EXPECT_TRUE(state.GetRedrawReasons().empty());
+}
+
+TEST(SchedulerStateMachineTest, UntrackedRedrawReasonFromCommit) {
+  SchedulerSettings default_scheduler_settings;
+  StateMachine state(default_scheduler_settings);
+  SET_UP_STATE(state);
+
+  state.set_should_defer_invalidation_for_fast_main_frame(true);
+  state.SetNeedsBeginMainFrame();
+  bool needs_first_draw_on_activation = true;
+  state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
+                                     RedrawReason::kAnimatedImage);
+
+  state.IssueNextBeginImplFrame();
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  state.NotifyReadyToCommit();
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::COMMIT);
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::POST_COMMIT);
+  state.NotifyReadyToActivate();
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::ACTIVATE_SYNC_TREE);
+
+  {
+    // kAnimatedImage from SetNeedsImplSideInvalidation. kUntracked from commit.
+    RedrawReasonSet expected_reasons{RedrawReason::kAnimatedImage,
+                                     RedrawReason::kUntracked};
+    EXPECT_EQ(state.GetRedrawReasons(), expected_reasons);
+  }
+
+  state.OnBeginImplFrameDeadline();
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::DRAW_IF_POSSIBLE);
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
+
+  EXPECT_TRUE(state.GetRedrawReasons().empty());
+}
+
 // Text fixture class for the SchedulerStateMachine tests. Parameterized to
 // include a boolean which indicates whether frame rate limits are enabled
 // or not i.e. whether the disable_frame_rate_limit flag is set.

@@ -272,6 +272,8 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   viz::BeginFrameAck CurrentBeginFrameAckForActiveTree() const;
 
+  RedrawReasonSet GetRedrawReasons() const;
+
   const viz::BeginFrameArgs& last_dispatched_begin_main_frame_args() const {
     return last_dispatched_begin_main_frame_args_;
   }

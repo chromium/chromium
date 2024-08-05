@@ -241,6 +241,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     // The original BeginFrameArgs that triggered the latest update from the
     // main thread.
     viz::BeginFrameArgs origin_begin_main_frame_args;
+    RedrawReasonSet set_needs_redraw_reasons;
     // Indicates if there are SharedElementDrawQuads in this frame.
     bool has_shared_element_resources = false;
     // Indicates if this frame has a save directive which will add copy requests
