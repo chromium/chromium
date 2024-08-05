@@ -275,6 +275,9 @@ enum OptimizationType {
   AUTOFILL_ABLATION_SITES_LIST4 = 63;
   AUTOFILL_ABLATION_SITES_LIST5 = 64;
   AUTOFILL_ABLATION_SITES_LIST6 = 65;
+  // This optimization helps determine if this merchant page is a good candidate
+  // for enabling price/amount extraction.
+  AMOUNT_EXTRACTION_ALLOWLIST = 67;
 }
 
 // Presents semantics for how page load URLs should be matched.
