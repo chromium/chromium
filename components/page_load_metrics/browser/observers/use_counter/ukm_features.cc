@@ -398,6 +398,10 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::
               kSharedStorageAPI_CreateWorklet_CrossOriginScriptDefaultDataOrigin,
           WebFeature::kSharedStorageAPI_AddModule_CrossOriginScript,
+          WebFeature::kSharedStorageWriteFromBidderGenerateBid,
+          WebFeature::kSharedStorageWriteFromBidderReportWin,
+          WebFeature::kSharedStorageWriteFromSellerScoreAd,
+          WebFeature::kSharedStorageWriteFromSellerReportResult,
           WebFeature::kIdentityDigitalCredentials,
           WebFeature::kIdentityDigitalCredentialsDeepLink,
           WebFeature::kV8FileSystemObserver_Observe_Method,

@@ -1074,6 +1074,7 @@ void SellerWorklet::V8State::ScoreAd(
           shared_storage_host_remote_.is_bound()
               ? shared_storage_host_remote_.get()
               : nullptr,
+          mojom::AuctionWorkletFunction::kSellerScoreAd,
           permissions_policy_state_->shared_storage_allowed);
     }
   }
@@ -1631,6 +1632,7 @@ void SellerWorklet::V8State::ReportResult(
         shared_storage_host_remote_.is_bound()
             ? shared_storage_host_remote_.get()
             : nullptr,
+        mojom::AuctionWorkletFunction::kSellerReportResult,
         permissions_policy_state_->shared_storage_allowed);
   }
 

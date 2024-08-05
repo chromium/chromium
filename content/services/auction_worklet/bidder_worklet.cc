@@ -1065,6 +1065,7 @@ void BidderWorklet::V8State::ReportWin(
         shared_storage_host_remote_.is_bound()
             ? shared_storage_host_remote_.get()
             : nullptr,
+        mojom::AuctionWorkletFunction::kBidderReportWin,
         permissions_policy_state_->shared_storage_allowed);
   }
 
@@ -1783,6 +1784,7 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
         shared_storage_host_remote_.is_bound()
             ? shared_storage_host_remote_.get()
             : nullptr,
+        mojom::AuctionWorkletFunction::kBidderGenerateBid,
         permissions_policy_state_->shared_storage_allowed);
   }
 

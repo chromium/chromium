@@ -400,6 +400,11 @@ class AllowlistedOriginContentBrowserClient
     return allow_list_.contains(destination_origin);
   }
 
+  MOCK_METHOD(void,
+              LogWebFeatureForCurrentPage,
+              (content::RenderFrameHost*, blink::mojom::WebFeature),
+              (override));
+
  private:
   base::flat_set<url::Origin> allow_list_;
 };
@@ -18251,6 +18256,65 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ExecutionModeGroupByOrigin) {
           test_origin,
           embedded_https_test_server().GetURL(
               "a.test", "/interest_group/decision_logic.js"))));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       SharedStorageWriteFromGenerateBid) {
+  const char kScript[] = R"(
+    if (!('count' in globalThis))
+      globalThis.count = 0;
+    function generateBid() {
+      sharedStorage.set('key0', 'value0');
+
+      ++count;
+      return {ad: ["ad"], bid:count, render:$1 + count};
+    }
+    function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+                       browserSignals) {
+    }
+  )";
+
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  network_responder_->RegisterNetworkResponse(
+      "/interest_group/bidding_logic.js",
+      JsReplace(kScript,
+                embedded_https_test_server().GetURL("c.test", "/echo?")),
+      "application/javascript");
+
+  std::vector<blink::InterestGroup::Ad> ads;
+  ads.emplace_back(embedded_https_test_server().GetURL("c.test", "/echo?1"),
+                   /*metadata=*/std::nullopt);
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/test_origin,
+                    /*name=*/"cars0")
+                    .SetBiddingUrl(embedded_https_test_server().GetURL(
+                        test_url.host(), "/interest_group/bidding_logic.js"))
+                    .SetAds(ads)
+                    .Build()));
+
+  EXPECT_CALL(
+      *content_browser_client_,
+      LogWebFeatureForCurrentPage(
+          shell()->web_contents()->GetPrimaryMainFrame(),
+          blink::mojom::WebFeature::kSharedStorageWriteFromBidderGenerateBid));
+
+  EXPECT_EQ(embedded_https_test_server().GetURL("c.test", "/echo?1"),
+            RunAuctionAndWaitForUrl(JsReplace(
+                R"({
+                  seller: $1,
+                  decisionLogicURL: $2,
+                  interestGroupBuyers: [$1],
+                })",
+                test_origin,
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/decision_logic.js"))));
 }
 
 enum FetchMethod {

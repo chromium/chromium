@@ -898,7 +898,8 @@ AuctionWorkletManager::MaybeBindAuctionSharedStorageHost(
           blink::mojom::PermissionsPolicyFeature::kSharedStorage,
           worklet_origin)) {
     auction_shared_storage_host_->BindNewReceiver(
-        worklet_origin, remote.InitWithNewPipeAndPassReceiver());
+        auction_runner_rfh, worklet_origin,
+        remote.InitWithNewPipeAndPassReceiver());
   }
 
   return remote;

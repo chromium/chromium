@@ -10728,6 +10728,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5053" label="V8AISummarizer_Destroy_Method"/>
   <int value="5054" label="V8AISummarizerFactory_Capabilities_Method"/>
   <int value="5055" label="V8AISummarizerFactory_Create_Method"/>
+  <int value="5056" label="SharedStorageWriteFromBidderGenerateBid"/>
+  <int value="5057" label="SharedStorageWriteFromBidderReportWin"/>
+  <int value="5058" label="SharedStorageWriteFromSellerScoreAd"/>
+  <int value="5059" label="SharedStorageWriteFromSellerReportResult"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

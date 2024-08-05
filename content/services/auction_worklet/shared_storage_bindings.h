@@ -23,6 +23,7 @@ class CONTENT_EXPORT SharedStorageBindings : public Bindings {
   explicit SharedStorageBindings(
       AuctionV8Helper* v8_helper,
       mojom::AuctionSharedStorageHost* shared_storage_host,
+      mojom::AuctionWorkletFunction source_auction_worklet_function,
       bool shared_storage_permissions_policy_allowed);
   SharedStorageBindings(const SharedStorageBindings&) = delete;
   SharedStorageBindings& operator=(const SharedStorageBindings&) = delete;
@@ -42,6 +43,8 @@ class CONTENT_EXPORT SharedStorageBindings : public Bindings {
   const raw_ptr<AuctionV8Helper> v8_helper_;
 
   const raw_ptr<mojom::AuctionSharedStorageHost> shared_storage_host_;
+
+  mojom::AuctionWorkletFunction source_auction_worklet_function_;
 
   bool shared_storage_permissions_policy_allowed_;
 };

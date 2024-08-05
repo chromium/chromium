@@ -4422,6 +4422,10 @@ enum WebFeature {
   kV8AISummarizer_Destroy_Method = 5053,
   kV8AISummarizerFactory_Capabilities_Method = 5054,
   kV8AISummarizerFactory_Create_Method = 5055,
+  kSharedStorageWriteFromBidderGenerateBid = 5056,
+  kSharedStorageWriteFromBidderReportWin = 5057,
+  kSharedStorageWriteFromSellerScoreAd = 5058,
+  kSharedStorageWriteFromSellerReportResult = 5059,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

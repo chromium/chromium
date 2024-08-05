@@ -5778,27 +5778,39 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest, SharedStorageWriteInScoreAd) {
         auction_worklet::TestAuctionSharedStorageHost::RequestType;
     using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
 
-    EXPECT_THAT(test_shared_storage_host.observed_requests(),
-                testing::ElementsAre(Request{.type = RequestType::kSet,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kSet,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = true},
-                                     Request{.type = RequestType::kAppend,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kDelete,
-                                             .key = u"a",
-                                             .value = std::u16string(),
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kClear,
-                                             .key = std::u16string(),
-                                             .value = std::u16string(),
-                                             .ignore_if_present = false}));
+    EXPECT_THAT(
+        test_shared_storage_host.observed_requests(),
+        testing::ElementsAre(
+            Request{.type = RequestType::kSet,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerScoreAd},
+            Request{.type = RequestType::kSet,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = true,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerScoreAd},
+            Request{.type = RequestType::kAppend,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerScoreAd},
+            Request{.type = RequestType::kDelete,
+                    .key = u"a",
+                    .value = std::u16string(),
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerScoreAd},
+            Request{.type = RequestType::kClear,
+                    .key = std::u16string(),
+                    .value = std::u16string(),
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerScoreAd}));
   }
 
   {
@@ -5863,27 +5875,39 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest,
         auction_worklet::TestAuctionSharedStorageHost::RequestType;
     using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
 
-    EXPECT_THAT(test_shared_storage_host.observed_requests(),
-                testing::ElementsAre(Request{.type = RequestType::kSet,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kSet,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = true},
-                                     Request{.type = RequestType::kAppend,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kDelete,
-                                             .key = u"a",
-                                             .value = std::u16string(),
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kClear,
-                                             .key = std::u16string(),
-                                             .value = std::u16string(),
-                                             .ignore_if_present = false}));
+    EXPECT_THAT(
+        test_shared_storage_host.observed_requests(),
+        testing::ElementsAre(
+            Request{.type = RequestType::kSet,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerReportResult},
+            Request{.type = RequestType::kSet,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = true,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerReportResult},
+            Request{.type = RequestType::kAppend,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerReportResult},
+            Request{.type = RequestType::kDelete,
+                    .key = u"a",
+                    .value = std::u16string(),
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerReportResult},
+            Request{.type = RequestType::kClear,
+                    .key = std::u16string(),
+                    .value = std::u16string(),
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerReportResult}));
   }
 
   {
@@ -5957,10 +5981,13 @@ TEST_F(SellerWorkletTwoThreadsSharedStorageAPIEnabledTest,
   using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
 
   EXPECT_THAT(test_shared_storage_host0.observed_requests(),
-              testing::ElementsAre(Request{.type = RequestType::kSet,
-                                           .key = u"a",
-                                           .value = u"b",
-                                           .ignore_if_present = false}));
+              testing::ElementsAre(
+                  Request{.type = RequestType::kSet,
+                          .key = u"a",
+                          .value = u"b",
+                          .ignore_if_present = false,
+                          .source_auction_worklet_function =
+                              mojom::AuctionWorkletFunction::kSellerScoreAd}));
 }
 
 class SellerWorkletRealTimeTest : public SellerWorkletTest {
