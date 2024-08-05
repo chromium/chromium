@@ -34,6 +34,8 @@ extern NSString* const kQuickDeleteBrowsingDataConfirmButtonIdentifier;
 extern NSString* const kQuickDeleteBrowsingDataHistoryIdentifier;
 // The accessibility identifier for site data row on browsing data page.
 extern NSString* const kQuickDeleteBrowsingDataSiteDataIdentifier;
+// The accessibility identifier for cache row on browsing data page.
+extern NSString* const kQuickDeleteBrowsingDataCacheIdentifier;
 // The accessibility identifier for passwords row on browsing data page.
 extern NSString* const kQuickDeleteBrowsingDataPasswordsIdentifier;
 // The accessibility identifier for autofill row on browsing data page.

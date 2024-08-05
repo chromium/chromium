@@ -21,6 +21,74 @@ namespace {
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
 
+// Returns a matcher for the title of the Quick Delete bottom sheet.
+id<GREYMatcher> quickDeleteTitleMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kConfirmationAlertTitleAccessibilityIdentifier),
+      grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE)),
+      nil);
+}
+
+// Returns a matcher for the Quick Delete Browsing Data button on the main page.
+id<GREYMatcher> quickDeleteBrowsingDataButtonMatcher() {
+  return grey_accessibilityID(kQuickDeleteBrowsingDataButtonIdentifier);
+}
+
+// Returns a matcher for the title of the Quick Delete Browsing Data page.
+id<GREYMatcher> quickDeleteBrowsingDataPageTitleMatcher() {
+  return chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
+      IDS_IOS_DELETE_BROWSING_DATA_TITLE);
+}
+
+// Returns a matcher for the confirm button on the navigation bar.
+id<GREYMatcher> navigationBarConfirmButtonMatcher() {
+  return grey_accessibilityID(kQuickDeleteBrowsingDataConfirmButtonIdentifier);
+}
+
+// Returns matcher for an element with or without the
+// UIAccessibilityTraitSelected accessibility trait depending on `selected`.
+id<GREYMatcher> elementIsSelectedMatcher(bool selected) {
+  return selected
+             ? grey_accessibilityTrait(UIAccessibilityTraitSelected)
+             : grey_not(grey_accessibilityTrait(UIAccessibilityTraitSelected));
+}
+
+// Returns a matcher for the passwords cell.
+id<GREYMatcher> historyCellMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kQuickDeleteBrowsingDataHistoryIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+// Returns a matcher for the site data cell.
+id<GREYMatcher> siteDataCellMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kQuickDeleteBrowsingDataSiteDataIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+// Returns a matcher for the cache cell.
+id<GREYMatcher> cacheCellMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kQuickDeleteBrowsingDataCacheIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+// Returns a matcher for the passwords cell.
+id<GREYMatcher> passwordsCellMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kQuickDeleteBrowsingDataPasswordsIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+// Returns a matcher for the autofill cell.
+id<GREYMatcher> autofillCellMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kQuickDeleteBrowsingDataAutofillIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
 }  // namespace
 
 // Tests the Quick Delete Browsing Data page.
@@ -51,67 +119,6 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
   return config;
 }
 
-// Returns a matcher for the title of the Quick Delete bottom sheet.
-- (id<GREYMatcher>)quickDeleteTitle {
-  return grey_allOf(
-      grey_accessibilityID(kConfirmationAlertTitleAccessibilityIdentifier),
-      grey_accessibilityLabel(
-          l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE)),
-      nil);
-}
-
-// Returns a matcher for the Quick Delete Browsing Data button on the main page.
-- (id<GREYMatcher>)quickDeleteBrowsingDataButton {
-  return grey_accessibilityID(kQuickDeleteBrowsingDataButtonIdentifier);
-}
-
-// Returns a matcher for the title of the Quick Delete Browsing Data page.
-- (id<GREYMatcher>)quickDeleteBrowsingDataPageTitle {
-  return chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
-      IDS_IOS_DELETE_BROWSING_DATA_TITLE);
-}
-
-// Returns a matcher for the confirm button on the navigation bar.
-- (id<GREYMatcher>)navigationBarConfirmButton {
-  return grey_accessibilityID(kQuickDeleteBrowsingDataConfirmButtonIdentifier);
-}
-
-// Returns matcher for an element with or without the
-// UIAccessibilityTraitSelected accessibility trait depending on `selected`.
-- (id<GREYMatcher>)elementIsSelected:(BOOL)selected {
-  return selected
-             ? grey_accessibilityTrait(UIAccessibilityTraitSelected)
-             : grey_not(grey_accessibilityTrait(UIAccessibilityTraitSelected));
-}
-
-// Returns a matcher for the passwords cell.
-- (id<GREYMatcher>)historyCell {
-  return grey_allOf(
-      grey_accessibilityID(kQuickDeleteBrowsingDataHistoryIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
-// Returns a matcher for the site data cell.
-- (id<GREYMatcher>)siteDataCell {
-  return grey_allOf(
-      grey_accessibilityID(kQuickDeleteBrowsingDataSiteDataIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
-// Returns a matcher for the passwords cell.
-- (id<GREYMatcher>)passwordsCell {
-  return grey_allOf(
-      grey_accessibilityID(kQuickDeleteBrowsingDataPasswordsIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
-// Returns a matcher for the autofill cell.
-- (id<GREYMatcher>)autofillCell {
-  return grey_allOf(
-      grey_accessibilityID(kQuickDeleteBrowsingDataAutofillIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
 // Opens Quick Delete browsing data page.
 - (void)openQuickDeleteBrowsingDataPage {
   [ChromeEarlGreyUI openToolsMenu];
@@ -122,25 +129,25 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
                                        IDS_IOS_CLEAR_BROWSING_DATA_TITLE))]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteBrowsingDataButton]]
+  [[EarlGrey selectElementWithMatcher:quickDeleteBrowsingDataButtonMatcher()]
       performAction:grey_tap()];
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      [self quickDeleteBrowsingDataPageTitle]];
+                      quickDeleteBrowsingDataPageTitleMatcher()];
 }
 
 // Dismisses Quick Delete bottom sheet.
 - (void)dismissQuickDelete {
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:quickDeleteTitleMatcher()]
       assertWithMatcher:grey_notNil()];
 
   // Swipe the bottom sheet down.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:quickDeleteTitleMatcher()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   // Check that Quick Delete has been dismissed.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:quickDeleteTitleMatcher()]
       assertWithMatcher:grey_nil()];
 }
 
@@ -156,9 +163,9 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 
   // Ensure the browsing data page is closed while quick delete bottom sheet is
   // still open.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteBrowsingDataPageTitle]]
+  [[EarlGrey selectElementWithMatcher:quickDeleteBrowsingDataPageTitleMatcher()]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:quickDeleteTitleMatcher()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -168,13 +175,13 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
   [self openQuickDeleteBrowsingDataPage];
 
   // Tap confirm button.
-  [[EarlGrey selectElementWithMatcher:[self navigationBarConfirmButton]]
+  [[EarlGrey selectElementWithMatcher:navigationBarConfirmButtonMatcher()]
       performAction:grey_tap()];
 
   // Ensure the page is closed while quick delete bottom sheet is still open.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteBrowsingDataPageTitle]]
+  [[EarlGrey selectElementWithMatcher:quickDeleteBrowsingDataPageTitleMatcher()]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:quickDeleteTitleMatcher()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -186,6 +193,8 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteCookies];
   [ChromeEarlGrey setBoolValue:NO
+                   forUserPref:browsing_data::prefs::kDeleteCache];
+  [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeletePasswords];
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteFormData];
@@ -194,34 +203,40 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
   [self openQuickDeleteBrowsingDataPage];
 
   // Assert all browsing data rows are not selected.
-  [[EarlGrey selectElementWithMatcher:[self historyCell]]
-      assertWithMatcher:[self elementIsSelected:NO]];
-  [[EarlGrey selectElementWithMatcher:[self siteDataCell]]
-      assertWithMatcher:[self elementIsSelected:NO]];
-  [[EarlGrey selectElementWithMatcher:[self passwordsCell]]
-      assertWithMatcher:[self elementIsSelected:NO]];
-  [[EarlGrey selectElementWithMatcher:[self autofillCell]]
-      assertWithMatcher:[self elementIsSelected:NO]];
+  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(false)];
+  [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(false)];
+  [[EarlGrey selectElementWithMatcher:cacheCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(false)];
+  [[EarlGrey selectElementWithMatcher:passwordsCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(false)];
+  [[EarlGrey selectElementWithMatcher:autofillCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(false)];
 
   // Tap on the browsing data cells to toggle the selection.
-  [[EarlGrey selectElementWithMatcher:[self historyCell]]
+  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:[self siteDataCell]]
+  [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:[self passwordsCell]]
+  [[EarlGrey selectElementWithMatcher:cacheCellMatcher()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:[self autofillCell]]
+  [[EarlGrey selectElementWithMatcher:passwordsCellMatcher()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:autofillCellMatcher()]
       performAction:grey_tap()];
 
   // Assert all browsing data rows are selected.
-  [[EarlGrey selectElementWithMatcher:[self historyCell]]
-      assertWithMatcher:[self elementIsSelected:YES]];
-  [[EarlGrey selectElementWithMatcher:[self siteDataCell]]
-      assertWithMatcher:[self elementIsSelected:YES]];
-  [[EarlGrey selectElementWithMatcher:[self passwordsCell]]
-      assertWithMatcher:[self elementIsSelected:YES]];
-  [[EarlGrey selectElementWithMatcher:[self autofillCell]]
-      assertWithMatcher:[self elementIsSelected:YES]];
+  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(true)];
+  [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(true)];
+  [[EarlGrey selectElementWithMatcher:cacheCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(true)];
+  [[EarlGrey selectElementWithMatcher:passwordsCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(true)];
+  [[EarlGrey selectElementWithMatcher:autofillCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(true)];
 
   // Tap cancel button.
   [[EarlGrey
@@ -230,9 +245,9 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 
   // Ensure the browsing data page is closed while quick delete bottom sheet is
   // still open.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteBrowsingDataPageTitle]]
+  [[EarlGrey selectElementWithMatcher:quickDeleteBrowsingDataPageTitleMatcher()]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:quickDeleteTitleMatcher()]
       assertWithMatcher:grey_notNil()];
 
   // Assert that the pref remains false on cancel.
@@ -243,6 +258,9 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
   GREYAssertEqual(
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteCookies], NO,
       @"Site data pref changed on cancel.");
+  GREYAssertEqual(
+      [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteCache], NO,
+      @"Cache pref changed on cancel.");
   GREYAssertEqual(
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeletePasswords],
       NO, @"Passwords pref changed on cancel.");
@@ -259,6 +277,8 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteCookies];
   [ChromeEarlGrey setBoolValue:NO
+                   forUserPref:browsing_data::prefs::kDeleteCache];
+  [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeletePasswords];
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteFormData];
@@ -267,44 +287,50 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
   [self openQuickDeleteBrowsingDataPage];
 
   // Assert all browsing data rows are not selected.
-  [[EarlGrey selectElementWithMatcher:[self historyCell]]
-      assertWithMatcher:[self elementIsSelected:NO]];
-  [[EarlGrey selectElementWithMatcher:[self siteDataCell]]
-      assertWithMatcher:[self elementIsSelected:NO]];
-  [[EarlGrey selectElementWithMatcher:[self passwordsCell]]
-      assertWithMatcher:[self elementIsSelected:NO]];
-  [[EarlGrey selectElementWithMatcher:[self autofillCell]]
-      assertWithMatcher:[self elementIsSelected:NO]];
+  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(false)];
+  [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(false)];
+  [[EarlGrey selectElementWithMatcher:cacheCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(false)];
+  [[EarlGrey selectElementWithMatcher:passwordsCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(false)];
+  [[EarlGrey selectElementWithMatcher:autofillCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(false)];
 
   // Tap on the browsing data cells to toggle the selection.
-  [[EarlGrey selectElementWithMatcher:[self historyCell]]
+  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:[self siteDataCell]]
+  [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:[self passwordsCell]]
+  [[EarlGrey selectElementWithMatcher:cacheCellMatcher()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:[self autofillCell]]
+  [[EarlGrey selectElementWithMatcher:passwordsCellMatcher()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:autofillCellMatcher()]
       performAction:grey_tap()];
 
   // Assert all browsing data rows are selected.
-  [[EarlGrey selectElementWithMatcher:[self historyCell]]
-      assertWithMatcher:[self elementIsSelected:YES]];
-  [[EarlGrey selectElementWithMatcher:[self siteDataCell]]
-      assertWithMatcher:[self elementIsSelected:YES]];
-  [[EarlGrey selectElementWithMatcher:[self passwordsCell]]
-      assertWithMatcher:[self elementIsSelected:YES]];
-  [[EarlGrey selectElementWithMatcher:[self autofillCell]]
-      assertWithMatcher:[self elementIsSelected:YES]];
+  [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(true)];
+  [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(true)];
+  [[EarlGrey selectElementWithMatcher:cacheCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(true)];
+  [[EarlGrey selectElementWithMatcher:passwordsCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(true)];
+  [[EarlGrey selectElementWithMatcher:autofillCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(true)];
 
   // Tap confirm button.
-  [[EarlGrey selectElementWithMatcher:[self navigationBarConfirmButton]]
+  [[EarlGrey selectElementWithMatcher:navigationBarConfirmButtonMatcher()]
       performAction:grey_tap()];
 
   // Ensure the browsing data page is closed while quick delete bottom sheet is
   // still open.
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteBrowsingDataPageTitle]]
+  [[EarlGrey selectElementWithMatcher:quickDeleteBrowsingDataPageTitleMatcher()]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+  [[EarlGrey selectElementWithMatcher:quickDeleteTitleMatcher()]
       assertWithMatcher:grey_notNil()];
 
   // Assert that the pref was updated to true on confirm.
@@ -316,8 +342,10 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteCookies],
       YES, @"Failed to save site data pref change on confirm.");
   GREYAssertEqual(
-      [ChromeEarlGrey
-          userBooleanPref:browsing_data::prefs::kDeleteBrowsingHistory],
+      [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteCache], YES,
+      @"Failed to save cache pref change on confirm.");
+  GREYAssertEqual(
+      [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeletePasswords],
       YES, @"Failed to save passwords pref change on confirm.");
   GREYAssertEqual(
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteFormData],

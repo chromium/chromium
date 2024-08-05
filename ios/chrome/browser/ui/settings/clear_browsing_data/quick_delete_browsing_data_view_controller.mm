@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -14,6 +13,7 @@
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_mutator.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -32,6 +32,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 typedef NS_ENUM(NSInteger, ItemIdentifier) {
   ItemIdentifierHistory = kItemTypeEnumZero,
   ItemIdentifierSiteData,
+  ItemIdentifierCache,
   ItemIdentifierPasswords,
   ItemIdentifierAutofill,
 };
@@ -40,11 +41,14 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 @implementation QuickDeleteBrowsingDataViewController {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
+  browsing_data::TimePeriod _timeRange;
   NSString* _historySummary;
+  NSString* _cacheSummary;
   NSString* _passwordsSummary;
   NSString* _autofillSummary;
   BOOL _historySelected;
   BOOL _siteDataSelected;
+  BOOL _cacheSelected;
   BOOL _passwordsSelected;
   BOOL _autofillSelected;
 }
@@ -89,7 +93,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [snapshot
       appendSectionsWithIdentifiers:@[ @(SectionIdentifierBrowsingData) ]];
   [snapshot appendItemsWithIdentifiers:@[
-    @(ItemIdentifierHistory), @(ItemIdentifierSiteData),
+    @(ItemIdentifierHistory), @(ItemIdentifierSiteData), @(ItemIdentifierCache),
     @(ItemIdentifierPasswords), @(ItemIdentifierAutofill)
   ]
              intoSectionWithIdentifier:@(SectionIdentifierBrowsingData)];
@@ -114,8 +118,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 #pragma mark - QuickDeleteConsumer
 
 - (void)setTimeRange:(browsing_data::TimePeriod)timeRange {
-  // TODO(crbug.com/341107834): Decide whether this is required to be
-  // implemented here or skipped.
+  if (_timeRange == timeRange) {
+    return;
+  }
+  _timeRange = timeRange;
 }
 
 - (void)setBrowsingDataSummary:(NSString*)summary {
@@ -129,19 +135,29 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 - (void)updateHistoryWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result {
-  _historySummary = [self counterTextFromResult:result];
+  _historySummary =
+      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
   [self updateSnapshotForItemIdentifier:ItemIdentifierHistory];
+}
+
+- (void)updateCacheWithResult:
+    (const browsing_data::BrowsingDataCounter::Result&)result {
+  _cacheSummary =
+      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
+  [self updateSnapshotForItemIdentifier:ItemIdentifierCache];
 }
 
 - (void)updatePasswordsWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result {
-  _passwordsSummary = [self counterTextFromResult:result];
+  _passwordsSummary =
+      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
   [self updateSnapshotForItemIdentifier:ItemIdentifierPasswords];
 }
 
 - (void)updateAutofillWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result {
-  _autofillSummary = [self counterTextFromResult:result];
+  _autofillSummary =
+      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
   [self updateSnapshotForItemIdentifier:ItemIdentifierAutofill];
 }
 
@@ -153,6 +169,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 - (void)setSiteDataSelection:(BOOL)selected {
   _siteDataSelected = selected;
   [self updateSnapshotForItemIdentifier:ItemIdentifierSiteData];
+}
+
+- (void)setCacheSelection:(BOOL)selected {
+  _cacheSelected = selected;
+  [self updateSnapshotForItemIdentifier:ItemIdentifierCache];
 }
 
 - (void)setPasswordsSelection:(BOOL)selected {
@@ -206,20 +227,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 - (void)onConfirm:(id)sender {
   [_mutator updateHistorySelection:_historySelected];
   [_mutator updateSiteDataSelection:_siteDataSelected];
+  [_mutator updateCacheSelection:_cacheSelected];
   [_mutator updatePasswordsSelection:_passwordsSelected];
   [_mutator updateAutofillSelection:_autofillSelected];
   // TODO(crbug.com/341107834): Update changes in data types selection here.
   [_delegate dismissBrowsingDataPage];
-}
-
-// Returns the appropriate summary subtitle for the given counter result.
-// TODO(crbug.com/341107834): Move this to a helper util file and implement
-// cache & tabs types string handling as it's different on iOS than other
-// platforms.
-- (NSString*)counterTextFromResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  return base::SysUTF16ToNSString(
-      browsing_data::GetCounterTextFromResult(&result));
 }
 
 // Creates the browsing data cell.
@@ -270,6 +282,14 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                          selected:_siteDataSelected
           accessibilityIdentifier:kQuickDeleteBrowsingDataSiteDataIdentifier];
     }
+    case ItemIdentifierCache: {
+      return [self
+              createCellWithTitle:l10n_util::GetNSString(IDS_IOS_CLEAR_CACHE)
+                          summary:_cacheSummary
+                             icon:[self iconForItemIdentifier:itemIdentifier]
+                         selected:_cacheSelected
+          accessibilityIdentifier:kQuickDeleteBrowsingDataCacheIdentifier];
+    }
     case ItemIdentifierPasswords: {
       return [self
               createCellWithTitle:l10n_util::GetNSString(
@@ -309,6 +329,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       _siteDataSelected = !_siteDataSelected;
       break;
     }
+    case ItemIdentifierCache: {
+      _cacheSelected = !_cacheSelected;
+      break;
+    }
     case ItemIdentifierPasswords: {
       _passwordsSelected = !_passwordsSelected;
       break;
@@ -331,6 +355,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
     }
     case ItemIdentifierSiteData: {
       return DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
+                                                kDefaultSymbolSize);
+    }
+    case ItemIdentifierCache: {
+      return DefaultSymbolTemplateWithPointSize(kCachedDataSymbol,
                                                 kDefaultSymbolSize);
     }
     case ItemIdentifierPasswords: {

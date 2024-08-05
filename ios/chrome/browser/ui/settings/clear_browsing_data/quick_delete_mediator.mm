@@ -112,6 +112,8 @@
                               browsing_data::prefs::kDeleteBrowsingHistory)];
   [_consumer setSiteDataSelection:_prefs->GetBoolean(
                                       browsing_data::prefs::kDeleteCookies)];
+  [_consumer
+      setCacheSelection:_prefs->GetBoolean(browsing_data::prefs::kDeleteCache)];
   [_consumer setPasswordsSelection:_prefs->GetBoolean(
                                        browsing_data::prefs::kDeletePasswords)];
   [_consumer setAutofillSelection:_prefs->GetBoolean(
@@ -201,6 +203,10 @@
   _prefs->SetBoolean(browsing_data::prefs::kDeleteCookies, selected);
 }
 
+- (void)updateCacheSelection:(BOOL)selected {
+  _prefs->SetBoolean(browsing_data::prefs::kDeleteCache, selected);
+}
+
 - (void)updatePasswordsSelection:(BOOL)selected {
   _prefs->SetBoolean(browsing_data::prefs::kDeletePasswords, selected);
 }
@@ -256,6 +262,7 @@
 - (void)createCounters {
   [self createCounter:browsing_data::prefs::kDeleteBrowsingHistory];
   [self createCounter:browsing_data::prefs::kCloseTabs];
+  [self createCounter:browsing_data::prefs::kDeleteCache];
   [self createCounter:browsing_data::prefs::kDeletePasswords];
   [self createCounter:browsing_data::prefs::kDeleteFormData];
 }
@@ -346,6 +353,11 @@
     _addressesSummary = [self addressesSummary:autofillResult];
     _paymentMethodsSummary = [self paymentMethodsSummary:autofillResult];
     _suggestionsSummary = [self suggestionsSummary:autofillResult];
+  } else if (prefName == browsing_data::prefs::kDeleteCache) {
+    // Do nothing as we don't display the calculated cache result in the summary
+    // on the bottom sheet.
+    // TODO(crbug.com/353211728): Construct the summary on the VC using the new
+    // result methods provided on the mediator.
   } else {
     NOTREACHED();
   }
@@ -544,6 +556,11 @@
 
   if (prefName == browsing_data::prefs::kDeleteBrowsingHistory) {
     [_consumer updateHistoryWithResult:*result];
+    return;
+  }
+
+  if (prefName == browsing_data::prefs::kDeleteCache) {
+    [_consumer updateCacheWithResult:*result];
     return;
   }
 

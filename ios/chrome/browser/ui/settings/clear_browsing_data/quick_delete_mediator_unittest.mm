@@ -65,6 +65,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
     OCMStub([consumer_ setShouldShowFooter:NO]);
     OCMStub([consumer_ setHistorySelection:NO]);
     OCMStub([consumer_ setSiteDataSelection:NO]);
+    OCMStub([consumer_ setCacheSelection:NO]);
     OCMStub([consumer_ setPasswordsSelection:NO]);
     OCMStub([consumer_ setAutofillSelection:NO]);
 

@@ -39,6 +39,7 @@ source_set("clear_browsing_data") {
   ]
   deps = [
     ":clear_browsing_data_ui_constants",
+    ":util",
     "//components/browsing_data/core",
     "//components/feature_engagement/public",
     "//components/history/core/browser",
@@ -106,11 +107,13 @@ source_set("unit_tests") {
   sources = [
     "clear_browsing_data_manager_unittest.mm",
     "quick_delete_mediator_unittest.mm",
+    "quick_delete_util_unittest.mm",
     "time_range_selector_table_view_controller_unittest.mm",
   ]
   deps = [
     ":clear_browsing_data",
     ":test_support",
+    ":util",
     "//base",
     "//base/test:test_support",
     "//components/browsing_data/core",
@@ -214,4 +217,17 @@ source_set("features") {
     "features.mm",
   ]
   public_deps = [ "//base" ]
+}
+
+source_set("util") {
+  sources = [
+    "quick_delete_util.h",
+    "quick_delete_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/browsing_data/core",
+    "//components/strings",
+    "//ui/base",
+  ]
 }
