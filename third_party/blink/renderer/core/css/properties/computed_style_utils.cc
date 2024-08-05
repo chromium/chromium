@@ -3654,10 +3654,9 @@ CSSValueList* ComputedStyleUtils::ValuesForShorthandProperty(
     bool allow_visited_style,
     CSSValuePhase value_phase) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  for (unsigned i = 0; i < shorthand.length(); ++i) {
-    const CSSValue* value =
-        shorthand.properties()[i]->CSSValueFromComputedStyle(
-            style, layout_object, allow_visited_style, value_phase);
+  for (const CSSProperty* const longhand : shorthand.properties()) {
+    const CSSValue* value = longhand->CSSValueFromComputedStyle(
+        style, layout_object, allow_visited_style, value_phase);
     DCHECK(value);
     list->Append(*value);
   }
@@ -3949,16 +3948,14 @@ CSSValue* ComputedStyleUtils::ValuesForFontVariantProperty(
   };
   StylePropertyShorthand shorthand = fontVariantShorthand();
   VariantShorthandCases shorthand_case = kAllNormal;
-  for (unsigned i = 0; i < shorthand.length(); ++i) {
-    const CSSValue* value =
-        shorthand.properties()[i]->CSSValueFromComputedStyle(
-            style, layout_object, allow_visited_style, value_phase);
+  for (const CSSProperty* const longhand : shorthand.properties()) {
+    const CSSValue* value = longhand->CSSValueFromComputedStyle(
+        style, layout_object, allow_visited_style, value_phase);
 
     auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
     if (shorthand_case == kAllNormal && identifier_value &&
         identifier_value->GetValueID() == CSSValueID::kNone &&
-        shorthand.properties()[i]->IDEquals(
-            CSSPropertyID::kFontVariantLigatures)) {
+        longhand->IDEquals(CSSPropertyID::kFontVariantLigatures)) {
       shorthand_case = kNoneLigatures;
     } else if (!(identifier_value &&
                  identifier_value->GetValueID() == CSSValueID::kNormal)) {
@@ -3975,10 +3972,9 @@ CSSValue* ComputedStyleUtils::ValuesForFontVariantProperty(
       return CSSIdentifierValue::Create(CSSValueID::kNone);
     case kConcatenateNonNormal: {
       CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-      for (unsigned i = 0; i < shorthand.length(); ++i) {
-        const CSSValue* value =
-            shorthand.properties()[i]->CSSValueFromComputedStyle(
-                style, layout_object, allow_visited_style, value_phase);
+      for (const CSSProperty* const longhand : shorthand.properties()) {
+        const CSSValue* value = longhand->CSSValueFromComputedStyle(
+            style, layout_object, allow_visited_style, value_phase);
         DCHECK(value);
         auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
         if (identifier_value &&
@@ -4007,21 +4003,17 @@ CSSValue* ComputedStyleUtils::ValuesForFontSynthesisProperty(
   enum FontSynthesisShorthandCases { kAllNone, kConcatenateAuto };
   StylePropertyShorthand shorthand = fontSynthesisShorthand();
   FontSynthesisShorthandCases shorthand_case = kAllNone;
-  for (unsigned i = 0; i < shorthand.length(); ++i) {
-    const CSSValue* value =
-        shorthand.properties()[i]->CSSValueFromComputedStyle(
-            style, layout_object, allow_visited_style, value_phase);
+  for (const CSSProperty* const longhand : shorthand.properties()) {
+    const CSSValue* value = longhand->CSSValueFromComputedStyle(
+        style, layout_object, allow_visited_style, value_phase);
     auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-    if (shorthand.properties()[i]->IDEquals(
-            CSSPropertyID::kFontSynthesisWeight) &&
+    if (longhand->IDEquals(CSSPropertyID::kFontSynthesisWeight) &&
         identifier_value->GetValueID() == CSSValueID::kAuto) {
       shorthand_case = kConcatenateAuto;
-    } else if (shorthand.properties()[i]->IDEquals(
-                   CSSPropertyID::kFontSynthesisStyle) &&
+    } else if (longhand->IDEquals(CSSPropertyID::kFontSynthesisStyle) &&
                identifier_value->GetValueID() == CSSValueID::kAuto) {
       shorthand_case = kConcatenateAuto;
-    } else if (shorthand.properties()[i]->IDEquals(
-                   CSSPropertyID::kFontSynthesisSmallCaps) &&
+    } else if (longhand->IDEquals(CSSPropertyID::kFontSynthesisSmallCaps) &&
                identifier_value->GetValueID() == CSSValueID::kAuto) {
       shorthand_case = kConcatenateAuto;
     }
@@ -4032,21 +4024,17 @@ CSSValue* ComputedStyleUtils::ValuesForFontSynthesisProperty(
       return CSSIdentifierValue::Create(CSSValueID::kNone);
     case kConcatenateAuto: {
       CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-      for (unsigned i = 0; i < shorthand.length(); ++i) {
-        const CSSValue* value =
-            shorthand.properties()[i]->CSSValueFromComputedStyle(
-                style, layout_object, allow_visited_style, value_phase);
+      for (const CSSProperty* const longhand : shorthand.properties()) {
+        const CSSValue* value = longhand->CSSValueFromComputedStyle(
+            style, layout_object, allow_visited_style, value_phase);
         auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-        if (shorthand.properties()[i]->IDEquals(
-                CSSPropertyID::kFontSynthesisWeight) &&
+        if (longhand->IDEquals(CSSPropertyID::kFontSynthesisWeight) &&
             identifier_value->GetValueID() == CSSValueID::kAuto) {
           list->Append(*CSSIdentifierValue::Create(CSSValueID::kWeight));
-        } else if (shorthand.properties()[i]->IDEquals(
-                       CSSPropertyID::kFontSynthesisStyle) &&
+        } else if (longhand->IDEquals(CSSPropertyID::kFontSynthesisStyle) &&
                    identifier_value->GetValueID() == CSSValueID::kAuto) {
           list->Append(*CSSIdentifierValue::Create(CSSValueID::kStyle));
-        } else if (shorthand.properties()[i]->IDEquals(
-                       CSSPropertyID::kFontSynthesisSmallCaps) &&
+        } else if (longhand->IDEquals(CSSPropertyID::kFontSynthesisSmallCaps) &&
                    identifier_value->GetValueID() == CSSValueID::kAuto) {
           list->Append(*CSSIdentifierValue::Create(CSSValueID::kSmallCaps));
         }

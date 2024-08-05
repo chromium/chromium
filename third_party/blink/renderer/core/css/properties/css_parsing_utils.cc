@@ -4389,8 +4389,8 @@ bool ConsumeShorthandVia2Longhands(
     const CSSParserContext& context,
     CSSParserTokenStream& stream,
     HeapVector<CSSPropertyValue, 64>& properties) {
-  DCHECK_EQ(shorthand.length(), 2u);
-  const CSSProperty** longhands = shorthand.properties();
+  const StylePropertyShorthand::Properties& longhands = shorthand.properties();
+  DCHECK_EQ(longhands.size(), 2u);
 
   const CSSValue* start = ParseLonghand(longhands[0]->PropertyID(),
                                         shorthand.id(), context, stream);
@@ -4423,8 +4423,8 @@ bool ConsumeShorthandVia4Longhands(
     const CSSParserContext& context,
     CSSParserTokenStream& stream,
     HeapVector<CSSPropertyValue, 64>& properties) {
-  DCHECK_EQ(shorthand.length(), 4u);
-  const CSSProperty** longhands = shorthand.properties();
+  const StylePropertyShorthand::Properties& longhands = shorthand.properties();
+  DCHECK_EQ(longhands.size(), 4u);
   const CSSValue* top = ParseLonghand(longhands[0]->PropertyID(),
                                       shorthand.id(), context, stream);
 
@@ -4479,7 +4479,8 @@ bool ConsumeShorthandGreedilyViaLonghands(
   DCHECK_LE(shorthand.length(), 6u);
   const CSSValue* longhands[6] = {nullptr, nullptr, nullptr,
                                   nullptr, nullptr, nullptr};
-  const CSSProperty** shorthand_properties = shorthand.properties();
+  const StylePropertyShorthand::Properties& shorthand_properties =
+      shorthand.properties();
   bool found_any = false;
   bool found_longhand;
   do {
@@ -4525,11 +4526,10 @@ void AddExpandedPropertyForValue(CSSPropertyID property,
                                  bool important,
                                  HeapVector<CSSPropertyValue, 64>& properties) {
   const StylePropertyShorthand& shorthand = shorthandForProperty(property);
-  unsigned shorthand_length = shorthand.length();
-  DCHECK(shorthand_length);
-  const CSSProperty** longhands = shorthand.properties();
-  for (unsigned i = 0; i < shorthand_length; ++i) {
-    AddProperty(longhands[i]->PropertyID(), property, value, important,
+  const StylePropertyShorthand::Properties& longhands = shorthand.properties();
+  DCHECK(longhands.size());
+  for (const CSSProperty* const longhand : longhands) {
+    AddProperty(longhand->PropertyID(), property, value, important,
                 IsImplicitProperty::kNotImplicit, properties);
   }
 }

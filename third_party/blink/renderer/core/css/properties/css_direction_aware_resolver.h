@@ -27,7 +27,7 @@ class CSSDirectionAwareResolver {
     bool Contains(CSSPropertyID) const;
 
    private:
-    const CSSProperty** properties_;
+    const CSSProperty* const* properties_;
   };
 
  public:

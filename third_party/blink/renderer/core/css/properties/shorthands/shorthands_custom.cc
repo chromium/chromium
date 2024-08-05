@@ -202,8 +202,8 @@ bool ParseBackgroundOrMaskPosition(
           three_value_position, result_x, result_y)) {
     return false;
   }
-  const CSSProperty** longhands = shorthand.properties();
-  DCHECK_EQ(2u, shorthand.length());
+  const StylePropertyShorthand::Properties& longhands = shorthand.properties();
+  DCHECK_EQ(2u, longhands.size());
   css_parsing_utils::AddProperty(
       longhands[0]->PropertyID(), shorthand.id(), *result_x, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
@@ -3464,15 +3464,13 @@ const CSSValue* TextDecoration::CSSValueFromComputedStyleInternal(
       shorthandForProperty(CSSPropertyID::kTextDecoration);
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  for (unsigned i = 0; i < shorthand.length(); ++i) {
-    const CSSValue* value =
-        shorthand.properties()[i]->CSSValueFromComputedStyle(
-            style, layout_object, allow_visited_style, value_phase);
+  for (const CSSProperty* const longhand : shorthand.properties()) {
+    const CSSValue* value = longhand->CSSValueFromComputedStyle(
+        style, layout_object, allow_visited_style, value_phase);
     // Do not include initial value 'auto' for thickness.
     // TODO(https://crbug.com/1093826): general shorthand serialization issues
     // remain, in particular for text-decoration.
-    if (shorthand.properties()[i]->PropertyID() ==
-        CSSPropertyID::kTextDecorationThickness) {
+    if (longhand->PropertyID() == CSSPropertyID::kTextDecorationThickness) {
       if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
         CSSValueID value_id = identifier_value->GetValueID();
         if (value_id == CSSValueID::kAuto) {

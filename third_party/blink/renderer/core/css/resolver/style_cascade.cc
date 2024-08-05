@@ -725,9 +725,8 @@ void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {
       LookupAndApply(webkit_border_image, resolver);
 
       const auto& shorthand = borderImageShorthand();
-      const CSSProperty** longhands = shorthand.properties();
-      for (unsigned i = 0; i < shorthand.length(); ++i) {
-        maybe_skip(*longhands[i], *priority);
+      for (const CSSProperty* const longhand : shorthand.properties()) {
+        maybe_skip(*longhand, *priority);
       }
     }
   }

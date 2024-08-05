@@ -43,10 +43,7 @@ class StylePropertyShorthand {
     DCHECK_LE(properties.size(), std::numeric_limits<unsigned>::max());
   }
 
-  const CSSProperty** properties() const {
-    // TODO(crbug.com/351564777): The `const_cast` should be removed.
-    return const_cast<const CSSProperty**>(properties_.data());
-  }
+  const Properties& properties() const { return properties_; }
   unsigned length() const { return static_cast<unsigned>(properties_.size()); }
   CSSPropertyID id() const { return shorthand_id_; }
 
