@@ -56,9 +56,6 @@ class CC_EXPORT PrioritizedTile {
  private:
   // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
   // stacks.
-  //
-  // TODO(crbug.com/40283905): These members were marked `DanglingUntriaged`
-  // before being unrewritten.
   RAW_PTR_EXCLUSION Tile* tile_ = nullptr;
   RAW_PTR_EXCLUSION const PictureLayerTiling* source_tiling_ = nullptr;
   TilePriority priority_;
