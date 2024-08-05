@@ -3298,10 +3298,6 @@ static_library("ui") {
       "//third_party/omnibox_proto",
       "//ui/webui",
     ]
-
-    # TODO(crbug.com/339497734): Remove circular dependencies.
-    # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
-    allow_circular_includes_from += [ "//chrome/browser/ui/lens" ]
   }
 
   if (is_win || is_mac || is_linux) {

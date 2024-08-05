@@ -1943,6 +1943,7 @@ if (!is_android) {
       "//components/language/core/common",
       "//components/lens",
       "//components/lens:buildflags",
+      "//components/lens:enterprise_policy",
       "//components/live_caption",
       "//components/live_caption:constants",
       "//components/lookalikes/core",

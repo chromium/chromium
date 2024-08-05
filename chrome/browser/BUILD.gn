@@ -4358,9 +4358,6 @@ static_library("browser") {
       # //chrome/browser instead.
       "//chrome/browser/smart_card",
 
-      # TODO(crbug.com/339497734): Remove circular dependencies.
-      "//chrome/browser/ui/lens",
-
       # TODO(crbug.com/345487716): Remove this circular dependency.
       "//chrome/browser/ui/views/side_panel",
 

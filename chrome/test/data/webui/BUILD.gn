@@ -192,6 +192,7 @@ source_set("browser_tests") {
     "//components/history_clusters/core",
     "//components/history_clusters/history_clusters_internals/webui:constants",
     "//components/history_embeddings",
+    "//components/lens:enterprise_policy",
     "//components/lens:features",
     "//components/optimization_guide/core",
     "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
