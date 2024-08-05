@@ -55,9 +55,10 @@ class NetworkTransaction(object):
     def run(self, request):
         self._total_sleep = 0
         self._backoff_seconds = self._initial_backoff_seconds
+        retry_index = 0
         while True:
             try:
-                return request()
+                return request(retry_index=retry_index)
             except requests.exceptions.RequestException as error:
                 response = getattr(error, 'response', None)
                 if response is not None:
@@ -72,6 +73,7 @@ class NetworkTransaction(object):
                              self._backoff_seconds)
                 self._check_for_timeout()
                 self._sleep()
+            retry_index += 1
 
     def _check_for_timeout(self):
         if self._total_sleep + self._backoff_seconds > self._timeout_seconds:
