@@ -1045,11 +1045,11 @@ void LogMessage::HandleFatal(size_t stack_start,
         GetLogAssertHandlerStack().top();
 
     if (log_assert_handler) {
+      auto newline_view = std::string_view(str_newline);
       log_assert_handler.Run(
           file_, line_,
-          std::string_view(str_newline.c_str() + message_start_,
-                           stack_start - message_start_),
-          std::string_view(str_newline.c_str() + stack_start));
+          newline_view.substr(message_start_, stack_start - message_start_),
+          newline_view.substr(stack_start));
     }
   } else {
     // Don't use the string with the newline, get a fresh version to send to

@@ -495,8 +495,8 @@ ComponentResult IDNToUnicodeOneComponent(
     // be safely displayed to the user.
     out->resize(original_length + output_length);
     result.spoof_check_result = SpoofCheckIDNComponent(
-        std::u16string_view(out->data() + original_length,
-                            base::checked_cast<size_t>(output_length)),
+        std::u16string_view(*out).substr(
+            original_length, base::checked_cast<size_t>(output_length)),
         top_level_domain, top_level_domain_unicode);
     DCHECK_NE(IDNSpoofChecker::Result::kNone, result.spoof_check_result);
     if (ignore_spoof_check_results ||

@@ -129,8 +129,7 @@ bool UserScriptLoader::ParseMetadataHeader(std::string_view script_text,
     if (line_end == std::string::npos)
       line_end = script_text.length() - 1;
 
-    line = std::string_view(script_text.data() + line_start,
-                            line_end - line_start);
+    line = script_text.substr(line_start, line_end - line_start);
 
     if (!in_metadata) {
       if (base::StartsWith(line, kUserScriptBegin))

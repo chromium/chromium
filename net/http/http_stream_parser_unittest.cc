@@ -2357,17 +2357,17 @@ TEST(HttpStreamParser, ReadAfterUnownedObjectsDestroyed) {
 
 // Case where one byte is received at a time.
 TEST(HttpStreamParser, ReceiveOneByteAtATime) {
-  const std::string kResponseHeaders =
+  constexpr std::string_view kResponseHeaders =
       "HTTP/1.0 200 OK\r\n"
       "Foo: Bar\r\n\r\n";
-  const std::string kResponseBody = "hi";
+  constexpr std::string_view kResponseBody = "hi";
 
   SimpleGetRunner get_runner;
   for (size_t i = 0; i < kResponseHeaders.length(); ++i) {
-    get_runner.AddRead(std::string_view(kResponseHeaders.data() + i, 1));
+    get_runner.AddRead(kResponseHeaders.substr(i, 1));
   }
   for (size_t i = 0; i < kResponseBody.length(); ++i) {
-    get_runner.AddRead(std::string_view(kResponseBody.data() + i, 1));
+    get_runner.AddRead(kResponseBody.substr(i, 1));
   }
   // EOF
   get_runner.AddRead("");

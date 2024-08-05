@@ -37,11 +37,12 @@ bool ParseCommaSeparatedIntegers(const std::string& str,
                                  int* ret_num1,
                                  int* ret_num2) {
   const size_t comma = str.find(',');
-  return (comma != std::string::npos) &&
-         base::StringToInt(std::string_view(str.data(), comma), ret_num1) &&
-         base::StringToInt(
-             std::string_view(str.data() + comma + 1, str.size() - comma - 1),
-             ret_num2);
+  if (comma == std::string::npos) {
+    return false;
+  }
+  auto view = std::string_view(str);
+  return base::StringToInt(view.substr(0, comma), ret_num1) &&
+         base::StringToInt(view.substr(comma + 1), ret_num2);
 }
 
 }  // namespace

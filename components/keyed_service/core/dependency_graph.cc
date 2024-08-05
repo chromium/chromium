@@ -33,12 +33,12 @@ std::string Escape(std::string_view id) {
   size_t after_last_quot = 0;
   size_t next_quot = id.find('"');
   while (next_quot != std::string_view::npos) {
-    result.append(id.data() + after_last_quot, next_quot - after_last_quot);
+    result.append(id.substr(after_last_quot, next_quot - after_last_quot));
     result.append("\"");
     after_last_quot = next_quot + 1;
     next_quot = id.find('"', after_last_quot);
   }
-  result.append(id.data() + after_last_quot, id.size() - after_last_quot);
+  result.append(id.substr(after_last_quot, id.size() - after_last_quot));
   result.append("\"");
   return result;
 }

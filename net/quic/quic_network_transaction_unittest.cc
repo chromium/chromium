@@ -1596,7 +1596,7 @@ TEST_P(QuicNetworkTransactionTest, LargeResponseHeaders) {
     mock_quic_data.AddRead(
         ASYNC, ConstructServerDataPacket(
                    packet_number++, stream_id, false,
-                   std::string_view(response_data.data() + offset, len)));
+                   std::string_view(response_data).substr(offset, len)));
   }
 
   mock_quic_data.AddRead(
@@ -1657,7 +1657,7 @@ TEST_P(QuicNetworkTransactionTest, TooLargeResponseHeaders) {
     mock_quic_data.AddRead(
         ASYNC, ConstructServerDataPacket(
                    packet_number++, stream_id, false,
-                   std::string_view(response_data.data() + offset, len)));
+                   std::string_view(response_data).substr(offset, len)));
   }
 
   mock_quic_data.AddRead(
