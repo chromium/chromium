@@ -7,7 +7,9 @@
 
 #include <string>
 
+#include "base/functional/function_ref.h"
 #include "base/memory/ref_counted.h"
+#include "chrome/updater/util/util.h"
 
 class PrefService;
 
@@ -67,6 +69,9 @@ class GlobalPrefs : virtual public UpdaterPrefs {
 // Open the global prefs. These prefs are protected by a mutex, and shared by
 // all updaters on the system. Returns nullptr if the mutex cannot be acquired.
 scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope);
+
+// Similar to `CreateGlobalPrefs`, but bypasses the `WrongUser` check for tests.
+scoped_refptr<GlobalPrefs> CreateGlobalPrefsForTesting(UpdaterScope scope);
 
 // Open the version-specific prefs. These prefs are not protected by any mutex
 // and not shared with other versions of the updater.

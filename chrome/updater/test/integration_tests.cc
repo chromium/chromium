@@ -3931,19 +3931,71 @@ class IntegrationTestUserInSystem : public IntegrationTest {
         target_url);
   }
 
+  void ExpectUserInstallSequence(ScopedServer* test_server,
+                                 const std::string& app_id,
+                                 const std::string& install_data_index,
+                                 UpdateService::Priority priority,
+                                 const base::Version& from_version,
+                                 const base::Version& to_version) {
+    user_test_commands_->ExpectInstallSequence(test_server, app_id,
+                                               install_data_index, priority,
+                                               from_version, to_version);
+  }
+
+  void InstallUserUpdaterAndApp(
+      const std::string& app_id,
+      const bool is_silent_install,
+      const std::string& tag,
+      const std::string& child_window_text_to_find = {},
+      const bool always_launch_cmd = false,
+      const bool verify_app_logo_loaded = false) {
+    user_test_commands_->InstallUpdaterAndApp(
+        app_id, is_silent_install, tag, child_window_text_to_find,
+        always_launch_cmd, verify_app_logo_loaded);
+  }
+
   scoped_refptr<IntegrationTestCommands> user_test_commands_ =
       CreateIntegrationTestCommandsUser(UpdaterScope::kUser);
   std::unique_ptr<ScopedServer> test_server_;
 
  private:
-  // The test can't run on Windows with UAC on because installing per-user
-  // applications by code running at high integrity levels, such as the
-  // integration test driver is not supported.
+  // Even though the updater itself supports installing per-user applications at
+  // high integrity, most of the tests in the `IntegrationTestUserInSystem` test
+  // suite cannot run on Windows with UAC on, because the integration test
+  // driver does not fully support installing per-user applications at high
+  // integrity. For instance, it functions as a COM client running at high
+  // integrity to create the user updater COM server, which is not supported on
+  // Windows with UAC on.
   bool SkipTest() const {
     return !IsSystemInstall(GetUpdaterScopeForTesting()) ||
-           WrongUser(UpdaterScope::kUser);
+           (WrongUser(UpdaterScope::kUser) &&
+            (GetTestName() !=
+             "IntegrationTestUserInSystem.ElevatedInstallOfUserUpdaterAndApp"));
   }
 };
+
+// Tests the updater's functionality of installing per-user applications at high
+// integrity. This test uses integration test driver APIs that support
+// installing per-user applications at high integrity. For instance, it runs
+// `UpdaterSetup --install --app-id=test` and `UpdaterSetup --uninstall`
+// elevated via the command line, so that it directly uses the updater's
+// functionality of de-elevating.
+TEST_F(IntegrationTestUserInSystem, ElevatedInstallOfUserUpdaterAndApp) {
+  const std::string kAppId("test");
+  const base::Version v1("1");
+  ASSERT_NO_FATAL_FAILURE(ExpectUserInstallSequence(
+      test_server_.get(), kAppId, "", UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), v1));
+
+  ASSERT_NO_FATAL_FAILURE(InstallUserUpdaterAndApp(
+      kAppId, /*is_silent_install=*/true, "usagestats=1"));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUserAppVersion(kAppId, v1));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUserUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(UninstallUserUpdater());
+}
 
 TEST_F(IntegrationTestUserInSystem, TagNonInterference) {
   ASSERT_NO_FATAL_FAILURE(InstallUserUpdater());
