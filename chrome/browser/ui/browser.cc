@@ -144,6 +144,7 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/unload_controller.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -1184,6 +1185,7 @@ bool Browser::IsLockedForOnTask() {
 
 void Browser::SetLockedForOnTask(bool locked) {
   on_task_locked_ = locked;
+  OnLockedForOnTaskUpdated();
 }
 #endif
 
@@ -2900,6 +2902,15 @@ void Browser::OnDevToolsAvailabilityChanged() {
       agent_host->ForceDetachAllSessions();
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void Browser::OnLockedForOnTaskUpdated() {
+  bool is_locked = IsLockedForOnTask();
+  BrowserView* const browser_view = static_cast<BrowserView*>(window());
+  browser_view->SetCanMinimize(!is_locked);
+  browser_view->SetShowCloseButton(!is_locked);
+}
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, UI update coalescing and handling (private):

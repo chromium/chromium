@@ -186,7 +186,21 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabsStartWithActive) {
   BrowserView::GetBrowserViewForBrowser(browser2)->GetWidget()->CloseNow();
 }
 
-// Verifies that page and devtools WebViews are being correctly layed out
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, OnTaskLockedBrowserView) {
+  browser()->SetLockedForOnTask(true);
+  EXPECT_FALSE(browser_view()->CanMinimize());
+  EXPECT_FALSE(browser_view()->ShouldShowCloseButton());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, OnTaskUnlockedBrowserView) {
+  browser()->SetLockedForOnTask(false);
+  EXPECT_TRUE(browser_view()->CanMinimize());
+  EXPECT_TRUE(browser_view()->ShouldShowCloseButton());
+}
+#endif
+
+// Verifies that page and devtools WebViews are being correctly laid out
 // when DevTools is opened/closed/updated/undocked.
 // TODO(crbug.com/40834238): Re-enable; currently failing on multiple platforms.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, DISABLED_DevToolsUpdatesBrowserWindow) {

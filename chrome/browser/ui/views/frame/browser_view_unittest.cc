@@ -165,6 +165,22 @@ TEST_F(BrowserViewTest, BrowserView) {
   EXPECT_EQ(customize_chrome_action->GetEnabled(), true);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(BrowserViewTest, OnTaskLockedBrowserView) {
+  ASSERT_TRUE(browser_view()->browser());
+  browser_view()->browser()->SetLockedForOnTask(true);
+  EXPECT_FALSE(browser_view()->CanMinimize());
+  EXPECT_FALSE(browser_view()->ShouldShowCloseButton());
+}
+
+TEST_F(BrowserViewTest, OnTaskUnlockedBrowserView) {
+  ASSERT_TRUE(browser_view()->browser());
+  browser_view()->browser()->SetLockedForOnTask(false);
+  EXPECT_TRUE(browser_view()->CanMinimize());
+  EXPECT_TRUE(browser_view()->ShouldShowCloseButton());
+}
+#endif
+
 namespace {
 // A thin wrapper around `Browser` to ensure that it's destructed in the right
 // order.
