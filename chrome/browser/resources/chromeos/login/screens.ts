@@ -12,7 +12,6 @@ import './screens/common/ai_intro.js';
 import './screens/common/app_downloading.js';
 import './screens/common/app_launch_splash.js';
 import './screens/common/assistant_optin.js';
-import './screens/common/autolaunch.js';
 import './screens/common/categories_selection.js';
 import './screens/common/choobe.js';
 import './screens/common/consolidated_consent.js';
@@ -109,7 +108,6 @@ export const commonScreensList: OobeTypes.ScreensList = [
     tag: 'apply-online-password-element',
     id: 'apply-online-password',
   },
-  {tag: 'autolaunch-element', id: 'autolaunch'},
   {
     tag: 'categories-selection-element',
     id: 'categories-selection',

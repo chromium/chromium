@@ -29,7 +29,7 @@ chromium-metrics-reviews@google.com.
   <variant name="App-downloading"/>
   <variant name="Apply-online-password"/>
   <variant name="Assistant-optin-flow"/>
-  <variant name="Autolaunch"/>
+  <variant name="Autolaunch" summary="(obsolete) Not used since M-129"/>
   <variant name="Categories-selection"/>
   <variant name="Choobe"/>
   <variant name="Consolidated-consent"/>
@@ -114,7 +114,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Apply-online-password"/>
   <variant name="Assistant-optin-flow"/>
   <variant name="Auto-enrollment-check"/>
-  <variant name="Autolaunch"/>
+  <variant name="Autolaunch" summary="(obsolete) Not used since M-129"/>
   <variant name="Categories-selection"/>
   <variant name="Choobe"/>
   <variant name="Consolidated-consent"/>
@@ -248,8 +248,10 @@ chromium-metrics-reviews@google.com.
   <variant name="Apply-online-password.Success"/>
   <variant name="Assistant-optin-flow.Next"/>
   <variant name="Auto-enrollment-check.Next"/>
-  <variant name="Autolaunch.Canceled"/>
-  <variant name="Autolaunch.Completed"/>
+  <variant name="Autolaunch.Canceled"
+      summary="(obsolete) Not used since M-129"/>
+  <variant name="Autolaunch.Completed"
+      summary="(obsolete) Not used since M-129"/>
   <variant name="Categories-selection.DataMalformed"/>
   <variant name="Categories-selection.Error"/>
   <variant name="Categories-selection.Next"/>

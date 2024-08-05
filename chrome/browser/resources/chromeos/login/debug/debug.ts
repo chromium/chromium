@@ -639,11 +639,6 @@ const KNOWN_SCREENS: ScreenDefType[] = [
     ],
   },
   {
-    id: 'autolaunch',
-    kind: ScreenKind.OTHER,
-    suffix: 'kiosk',
-  },
-  {
     id: 'app-launch-splash',
     kind: ScreenKind.OTHER,
     suffix: 'kiosk',

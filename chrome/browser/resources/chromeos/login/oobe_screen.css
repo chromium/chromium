@@ -53,8 +53,6 @@
   transition: outline-color 200ms;
 }
 
-#oobe.autolaunch #autolaunch-confirm-button,
-#oobe.autolaunch #autolaunch-cancel-button,
 #oobe.connect #continue-button,
 #oobe.eula #accept-button,
 #oobe.eula #back-button,
@@ -64,7 +62,6 @@
   display: block;
 }
 
-#autolaunch-confirm-button,
 #back-button,
 #kiosk-enable-button,
 #reset-button,

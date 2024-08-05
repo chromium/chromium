@@ -86,7 +86,6 @@
 #include "chrome/browser/ui/webui/ash/login/hardware_data_collection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/install_attributes_error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/kiosk_enable_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
@@ -454,7 +453,6 @@ void OobeUI::ConfigureOobeDisplay() {
     AddScreenHandler(std::make_unique<WelcomeScreenHandler>());
 
     AddScreenHandler(std::make_unique<DemoPreferencesScreenHandler>());
-
   }
 
   AddScreenHandler(std::make_unique<QuickStartScreenHandler>());
@@ -466,8 +464,6 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<EnableDebuggingScreenHandler>());
 
   AddScreenHandler(std::make_unique<ResetScreenHandler>());
-
-  AddScreenHandler(std::make_unique<KioskAutolaunchScreenHandler>());
 
   AddScreenHandler(std::make_unique<KioskEnableScreenHandler>());
 
