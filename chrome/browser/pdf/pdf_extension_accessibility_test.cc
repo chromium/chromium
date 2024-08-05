@@ -1186,7 +1186,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityNavigationTest,
 
 // TODO(crbug.com/289010799): Revisit using `crosapi` in `PdfOcrUmaTest` for
 // Lacros.
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // This test suite contains simple tests for the PDF OCR feature.
 class PdfOcrUmaTest : public PDFExtensionAccessibilityTest,
                       public ::testing::WithParamInterface<bool> {
@@ -1317,7 +1317,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return base::StringPrintf(
                                "OOPIF_%s", info.param ? "Enabled" : "Disabled");
                          });
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.

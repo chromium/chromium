@@ -182,7 +182,6 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 #include "services/service_manager/public/cpp/service.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -216,9 +215,12 @@
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #else
+#include "chrome/browser/accessibility/ax_main_node_annotator_controller_factory.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/guest_profile_creation_logger.h"
 #include "content/public/common/page_zoom.h"
+#include "ui/accessibility/accessibility_features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
@@ -240,12 +242,6 @@
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/accessibility/ax_main_node_annotator_controller_factory.h"
-#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
-#include "ui/accessibility/accessibility_features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -865,9 +861,7 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   // The password settings service needs to start listening to settings
   // changes from Google Mobile Services, as early as possible.
   PasswordManagerSettingsServiceFactory::GetForProfile(this);
-#endif
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#else
   if (features::IsPdfOcrEnabled()) {
     // Create the PDF OCR controller so that it can self-activate as needed.
     screen_ai::PdfOcrControllerFactory::GetForProfile(this);

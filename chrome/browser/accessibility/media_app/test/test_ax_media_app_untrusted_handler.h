@@ -13,7 +13,6 @@
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_handler.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/accessibility/ax_tree_manager.h"
 
 namespace content {
@@ -88,10 +87,8 @@ class TestAXMediaAppUntrustedHandler : public AXMediaAppUntrustedHandler {
 
   void DisablePostamblePageForTesting() { has_postamble_page_ = false; }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void CreateFakeOpticalCharacterRecognizerForTesting(bool return_empty);
   void FlushForTesting();
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   void PushDirtyPageForTesting(const std::string& dirty_page_id);
   std::string PopDirtyPageForTesting();

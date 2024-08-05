@@ -762,7 +762,7 @@
 #include "base/win/windows_h_disallowed.h"
 #endif  // defined(_WINDOWS_)
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #endif
 
@@ -5019,9 +5019,7 @@ std::wstring ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
 #endif
     case sandbox::mojom::Sandbox::kPrintCompositor:
     case sandbox::mojom::Sandbox::kAudio:
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     case sandbox::mojom::Sandbox::kScreenAI:
-#endif
     case sandbox::mojom::Sandbox::kSpeechRecognition:
     case sandbox::mojom::Sandbox::kPdfConversion:
     case sandbox::mojom::Sandbox::kService:
@@ -5121,7 +5119,7 @@ bool ChromeContentBrowserClient::PreSpawnChild(
     case sandbox::mojom::Sandbox::kPrintBackend:
 #endif
     case sandbox::mojom::Sandbox::kPrintCompositor:
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if !BUILDFLAG(IS_ANDROID)
     case sandbox::mojom::Sandbox::kScreenAI:
 #endif
     case sandbox::mojom::Sandbox::kAudio:
@@ -8020,7 +8018,6 @@ bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
     CHECK(compiler->SetParameter(sandbox::policy::kParamSodaLanguagePackPath,
                                  soda_language_pack_path.value()));
     return true;
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   } else if (sandbox_type == sandbox::mojom::Sandbox::kScreenAI) {
     // ScreenAI service needs read access to ScreenAI component binary path to
     // load it.
@@ -8033,7 +8030,6 @@ bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
     }
     return compiler->SetParameter(sandbox::policy::kParamScreenAiComponentPath,
                                   screen_ai_binary_path.value());
-#endif
   }
 
   return false;

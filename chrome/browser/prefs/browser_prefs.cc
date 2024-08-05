@@ -199,7 +199,6 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 #include "chrome/browser/background/background_mode_manager.h"
@@ -245,10 +244,6 @@
 #include "chrome/browser/pdf/pdf_pref_names.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/screen_ai/pref_names.h"
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
@@ -289,6 +284,7 @@
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_page_handler.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
+#include "chrome/browser/screen_ai/pref_names.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
@@ -923,10 +919,8 @@ inline constexpr char kTrackingProtectionOnboardingNoticeLastRequested[] =
 #if !BUILDFLAG(IS_ANDROID)
 inline constexpr char kAccessibilityReadAnythingOmniboxIconLabelShownCount[] =
     "settings.a11y.read_anything.omnibox_icon_label_shown_count";
-#endif
 
 // Deprecated 06/2024.
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 inline constexpr char kAccessibilityPdfOcrAlwaysActive[] =
     "settings.a11y.pdf_ocr_always_active";
 #endif
@@ -1361,10 +1355,8 @@ void RegisterProfilePrefsForMigration(
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(
       kAccessibilityReadAnythingOmniboxIconLabelShownCount, 0);
-#endif
 
-// Deprecated 06/2024.
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Deprecated 06/2024.
   registry->RegisterBooleanPref(kAccessibilityPdfOcrAlwaysActive, true);
 #endif
 
@@ -1729,9 +1721,9 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   DeviceOAuth2TokenStoreDesktop::RegisterPrefs(registry);
 #endif
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if !BUILDFLAG(IS_ANDROID)
   screen_ai::RegisterLocalStatePrefs(registry);
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   PlatformAuthPolicyObserver::RegisterPrefs(registry);
@@ -2172,18 +2164,15 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterIntegerPref(prefs::kMemorySaverChipExpandedCount, 0);
   registry->RegisterTimePref(prefs::kLastMemorySaverChipExpandedTimestamp,
                              base::Time());
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityMainNodeAnnotationsEnabled, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kVirtualKeyboardResizesLayoutByDefault,
                                 false);
 #endif
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  registry->RegisterBooleanPref(
-      prefs::kAccessibilityMainNodeAnnotationsEnabled, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   registry->RegisterBooleanPref(
       prefs::kManagedPrivateNetworkAccessRestrictionsEnabled, false);
@@ -2661,10 +2650,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if !BUILDFLAG(IS_ANDROID)
   profile_prefs->ClearPref(
       kAccessibilityReadAnythingOmniboxIconLabelShownCount);
-#endif
 
-// Added 06/2024.
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Added 06/2024.
   profile_prefs->ClearPref(kAccessibilityPdfOcrAlwaysActive);
 #endif
 

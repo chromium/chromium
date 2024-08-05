@@ -49,7 +49,6 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -68,6 +67,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/component_updater/real_time_url_checks_allowlist_component_installer.h"
+#else
+#include "chrome/browser/component_updater/screen_ai_component_installer.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -88,10 +89,6 @@
 #if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
 #include "chrome/browser/component_updater/widevine_cdm_component_installer.h"
 #endif  // BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/component_updater/screen_ai_component_installer.h"
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
@@ -209,9 +206,9 @@ void RegisterComponentsForUpdate() {
 
   RegisterAutofillStatesComponent(cus, g_browser_process->local_state());
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   ManageScreenAIComponentRegistration(cus, g_browser_process->local_state());
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
   RegisterCommerceHeuristicsComponent(cus);
 

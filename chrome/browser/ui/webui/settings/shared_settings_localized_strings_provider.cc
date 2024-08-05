@@ -31,7 +31,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
 #include "media/base/media_switches.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -61,7 +60,6 @@ std::u16string GetHelpUrlWithBoard(const std::u16string& original_url) {
 #endif
 
 void AddAxAnnotationsSectionStrings(content::WebUIDataSource* html_source) {
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"mainNodeAnnotationsDownloadErrorLabel",
        IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOAD_ERROR},
@@ -77,7 +75,6 @@ void AddAxAnnotationsSectionStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "mainNodeAnnotationsEnabled",
       base::FeatureList::IsEnabled(features::kMainNodeAnnotations));
-#endif  // BULDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
 void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {

@@ -6,14 +6,11 @@
 
 #include <utility>
 
+#include "chrome/browser/screen_ai/public/test/fake_optical_character_recognizer.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update.h"
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/screen_ai/public/test/fake_optical_character_recognizer.h"
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace ash::test {
 
@@ -39,7 +36,6 @@ void TestAXMediaAppUntrustedHandler::
       std::make_unique<std::vector<ui::AXTreeUpdate>>();
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void TestAXMediaAppUntrustedHandler::
     CreateFakeOpticalCharacterRecognizerForTesting(bool return_empty) {
   ocr_.reset();
@@ -49,7 +45,6 @@ void TestAXMediaAppUntrustedHandler::
 void TestAXMediaAppUntrustedHandler::FlushForTesting() {
   ocr_->FlushForTesting();  // IN-TEST
 }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 bool TestAXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {
   return is_ocr_service_enabled_for_testing_ ||
