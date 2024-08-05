@@ -179,13 +179,21 @@ export class LensOverlayAppElement extends PolymerElement {
     this.browserProxy.handler.closeRequestedByOverlayCloseButton();
   }
 
-  private onFeedbackClick() {
+  private onFeedbackClick(event: MouseEvent|KeyboardEvent) {
+    if (event instanceof KeyboardEvent &&
+        !(event.key === 'Enter' || event.key === ' ')) {
+      return;
+    }
     this.browserProxy.handler.feedbackRequestedByOverlay();
     this.moreOptionsMenuVisible = false;
     recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kSendFeedback);
   }
 
   private onLearnMoreClick(event: MouseEvent|KeyboardEvent) {
+    if (event instanceof KeyboardEvent &&
+        !(event.key === 'Enter' || event.key === ' ')) {
+      return;
+    }
     this.browserProxy.handler.infoRequestedByOverlay({
       middleButton: (event as MouseEvent).button === 1,
       altKey: event.altKey,
@@ -202,6 +210,10 @@ export class LensOverlayAppElement extends PolymerElement {
   }
 
   private onMyActivityClick(event: MouseEvent|KeyboardEvent) {
+    if (event instanceof KeyboardEvent &&
+        !(event.key === 'Enter' || event.key === ' ')) {
+      return;
+    }
     this.browserProxy.handler.activityRequestedByOverlay({
       middleButton: (event as MouseEvent).button === 1,
       altKey: event.altKey,

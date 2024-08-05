@@ -52,7 +52,7 @@ suite('OverlayFeedbackButton', () => {
   test('verify clicking my activity calls browser proxy', async () => {
     // My activity button
     lensOverlayElement.shadowRoot!
-        .querySelector<HTMLElement>('[aria-label="My Activity"]')!
+        .querySelector<HTMLElement>('[aria-labelledby="myActivity"]')!
         .dispatchEvent(new MouseEvent('click', {
           button: 1,
           altKey: false,
@@ -85,14 +85,14 @@ suite('OverlayFeedbackButton', () => {
   test('verify clicking learn more calls browser proxy', async () => {
     // Learn more button
     lensOverlayElement.shadowRoot!
-        .querySelector<HTMLElement>('[aria-label="Learn more"]')!.dispatchEvent(
-            new MouseEvent('click', {
-              button: 1,
-              altKey: false,
-              ctrlKey: true,
-              metaKey: false,
-              shiftKey: true,
-            }));
+        .querySelector<HTMLElement>('[aria-labelledby="learnMore"]')!
+        .dispatchEvent(new MouseEvent('click', {
+          button: 1,
+          altKey: false,
+          ctrlKey: true,
+          metaKey: false,
+          shiftKey: true,
+        }));
     const clickModifiers =
         await testBrowserProxy.handler.whenCalled('infoRequestedByOverlay');
     assertTrue(clickModifiers.middleButton);
@@ -118,7 +118,8 @@ suite('OverlayFeedbackButton', () => {
   test('verify clicking send feedback calls browser proxy', async () => {
     // Send feedback button
     lensOverlayElement.shadowRoot!
-        .querySelector<HTMLElement>('[aria-label="Send feedback"]')!.click();
+        .querySelector<HTMLElement>(
+            '[aria-labelledby="sendFeedback"]')!.click();
     assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
     assertEquals(
         1,
