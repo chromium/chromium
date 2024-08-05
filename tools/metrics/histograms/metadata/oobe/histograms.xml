@@ -52,7 +52,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Gesture-navigation"/>
   <variant name="Guest-tos"/>
   <variant name="Hw-data-collection"/>
-  <variant name="Kiosk-enable"/>
+  <variant name="Kiosk-enable" summary="(obsolete) Not used since M-129"/>
   <variant name="Local-data-loss-warning"/>
   <variant name="Local-password-setup"/>
   <variant name="Local-state-error"/>
@@ -143,7 +143,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Guest-tos"/>
   <variant name="Hid-detection"/>
   <variant name="Hw-data-collection"/>
-  <variant name="Kiosk-enable"/>
+  <variant name="Kiosk-enable" summary="(obsolete) Not used since M-129"/>
   <variant name="Local-data-loss-warning"/>
   <variant name="Local-password-setup"/>
   <variant name="Local-state-error"/>
@@ -338,7 +338,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Hid-detection.Next"/>
   <variant name="Hw-data-collection.AcceptedWithHWDataUsage"/>
   <variant name="Hw-data-collection.AcceptedWithoutHWDataUsage"/>
-  <variant name="Kiosk-enable.Next"/>
+  <variant name="Kiosk-enable.Next" summary="(obsolete) Not used since M-129"/>
   <variant name="Local-data-loss-warning.Back"/>
   <variant name="Local-data-loss-warning.Cancel"/>
   <variant name="Local-data-loss-warning.CryptohomeError"/>

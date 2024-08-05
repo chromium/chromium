@@ -18,7 +18,6 @@ import './screens/common/consolidated_consent.js';
 import './screens/common/device_disabled.js';
 import './screens/common/display_size.js';
 import './screens/common/drive_pinning.js';
-import './screens/common/enable_kiosk.js';
 import './screens/common/error_message.js';
 import './screens/common/family_link_notice.js';
 import './screens/common/gaia_info.js';
@@ -132,7 +131,6 @@ export const commonScreensList: OobeTypes.ScreensList = [
     id: 'drive-pinning',
     condition: 'isDrivePinningEnabled',
   },
-  {tag: 'enable-kiosk-element', id: 'kiosk-enable'},
   {
     tag: 'enter-old-password-element',
     id: 'enter-old-password',

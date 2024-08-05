@@ -76,8 +76,6 @@ static_library("screens") {
     "hid_detection_screen.h",
     "install_attributes_error_screen.cc",
     "install_attributes_error_screen.h",
-    "kiosk_enable_screen.cc",
-    "kiosk_enable_screen.h",
     "lacros_data_backward_migration_screen.cc",
     "lacros_data_backward_migration_screen.h",
     "lacros_data_migration_screen.cc",
