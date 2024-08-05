@@ -778,82 +778,6 @@ TEST_F(PasswordManagerAndroidUtilTest,
       password_manager::kLoginDataForAccountFileName)));
 }
 
-// TODO: crbug.com/40265507 - Clean up when M4 feature flag is removed.
-TEST_F(PasswordManagerAndroidUtilTest,
-       SetUsesSplitStoresAndUPMForLocal_SyncingButUnenrolled) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList disable_m4;
-  disable_m4.InitAndDisableFeature(
-      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
-  SetPasswordSyncEnabledPref(true);
-  pref_service()->SetInteger(
-      password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
-      1);
-  pref_service()->SetBoolean(
-      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
-      true);
-  ASSERT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-  ASSERT_TRUE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForProfileFileName)));
-  ASSERT_FALSE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForAccountFileName)));
-
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // Nothing should've happened, the user was unenrolled.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-  EXPECT_TRUE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForProfileFileName)));
-  EXPECT_FALSE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForAccountFileName)));
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationError.Syncing",
-      ActivationError::kUnenrolled, 1);
-  histogram_tester.ExpectUniqueSample("PasswordManager.LocalUpmActivated",
-                                      false, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationStatus", kOff, 1);
-}
-
-// TODO: crbug.com/40265507 - Clean up when M4 feature flag is removed.
-TEST_F(PasswordManagerAndroidUtilTest,
-       SetUsesSplitStoresAndUPMForLocal_SyncingButInitialMigrationNotFinished) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList disable_m4;
-  disable_m4.InitAndDisableFeature(
-      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
-  SetPasswordSyncEnabledPref(true);
-  ASSERT_EQ(pref_service()->GetInteger(
-                password_manager::prefs::
-                    kCurrentMigrationVersionToGoogleMobileServices),
-            0);
-  ASSERT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-  ASSERT_TRUE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForProfileFileName)));
-  ASSERT_FALSE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForAccountFileName)));
-
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // Nothing should've happened, the initial UPM migration wasn't finished.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-  EXPECT_TRUE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForProfileFileName)));
-  EXPECT_FALSE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForAccountFileName)));
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationError.Syncing",
-      ActivationError::kInitialUpmMigrationMissing, 1);
-  histogram_tester.ExpectUniqueSample("PasswordManager.LocalUpmActivated",
-                                      false, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationStatus", kOff, 1);
-}
-
 TEST_F(PasswordManagerAndroidUtilTest,
        SetUsesSplitStoresAndUPMForLocal_StaysActivatedIfEnabledSyncLater) {
   // Set up a user that got activated while being signed out and later enabled
@@ -1370,9 +1294,6 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, SyncingButUnenrolledAndM4Enabled) {
     // Prevent activation before sync is enabled, by faking an outdated GmsCore.
     base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
         base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
-    base::test::ScopedFeatureList disable_m4;
-    disable_m4.InitAndDisableFeature(
-        password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
     CreateProfile();
     profile_password_store()->AddLogin(MakeExampleForm());
     SignInAndEnableSync();
@@ -1392,8 +1313,6 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, SyncingButUnenrolledAndM4Enabled) {
     // Now GmsCore was upgraded and activation can proceed.
     base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
         base::NumberToString(GetLocalUpmMinGmsVersion()));
-    base::test::ScopedFeatureList enable_m4{
-        password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore};
     CreateProfile();
 
     // The migration is pending.
@@ -1421,9 +1340,6 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest,
     // Prevent activation before sync is enabled, by faking an outdated GmsCore.
     base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
         base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
-    base::test::ScopedFeatureList disable_m4;
-    disable_m4.InitAndDisableFeature(
-        password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
     CreateProfile();
     profile_password_store()->AddLogin(MakeExampleForm());
     SignInAndEnableSync();
@@ -1440,8 +1356,6 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest,
     // Now GmsCore was upgraded and activation can proceed.
     base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
         base::NumberToString(GetLocalUpmMinGmsVersion()));
-    base::test::ScopedFeatureList enable_m4{
-        password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore};
     CreateProfile();
 
     // The migration is pending.

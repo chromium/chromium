@@ -125,8 +125,6 @@ TEST_F(PasswordManagerEvictionUtilTest, SplitStoresPrefOverrideEviction) {
 }
 
 TEST_F(PasswordManagerEvictionUtilTest, EmptyLoginDatabaseOverridesEviction) {
-  base::test::ScopedFeatureList features(
-      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
   pref_service()->SetBoolean(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
       true);

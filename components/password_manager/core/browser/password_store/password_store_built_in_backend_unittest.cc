@@ -910,8 +910,6 @@ TEST_P(PasswordStoreBuiltInBackendTest,
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 TEST_P(PasswordStoreBuiltInBackendTest, NotAbleToSavePasswordsEmptyDB) {
-  base::test::ScopedFeatureList features(
-      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
   pref_service()->SetBoolean(
       password_manager::prefs::kEmptyProfileStoreLoginDatabase, true);
   PasswordStoreBackend* backend = Initialize();
@@ -919,18 +917,6 @@ TEST_P(PasswordStoreBuiltInBackendTest, NotAbleToSavePasswordsEmptyDB) {
 }
 
 TEST_P(PasswordStoreBuiltInBackendTest, IsAbleToSavePasswords) {
-  base::test::ScopedFeatureList features(
-      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
-  pref_service()->SetBoolean(
-      password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
-  PasswordStoreBackend* backend = Initialize();
-  EXPECT_TRUE(backend->IsAbleToSavePasswords());
-}
-
-TEST_P(PasswordStoreBuiltInBackendTest, AbleToSavePasswordsFeatureDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
   pref_service()->SetBoolean(
       password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
   PasswordStoreBackend* backend = Initialize();
