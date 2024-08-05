@@ -317,9 +317,10 @@ TEST(OSMetricsTest, TestWinModuleReading) {
 namespace {
 
 void CheckMachORegions(const std::vector<mojom::VmRegionPtr>& maps) {
-  uint32_t size = 100;
-  char full_path[size];
-  int result = _NSGetExecutablePath(full_path, &size);
+  constexpr uint32_t kSize = 100;
+  char full_path[kSize];
+  uint32_t buf_size = kSize;
+  int result = _NSGetExecutablePath(full_path, &buf_size);
   ASSERT_EQ(0, result);
   std::string name = basename(full_path);
 
