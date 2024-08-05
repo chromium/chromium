@@ -11,9 +11,11 @@ static_library("user_annotations") {
     "user_annotations_types.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
+    "//components/autofill/core/common",
     "//components/keyed_service/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
   ]
 }
 

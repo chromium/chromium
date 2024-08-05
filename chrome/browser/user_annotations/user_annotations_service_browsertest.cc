@@ -4,14 +4,21 @@
 
 #include "components/user_annotations/user_annotations_service.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/user_annotations/user_annotations_features.h"
+#include "components/user_annotations/user_annotations_types.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -86,9 +93,26 @@ class UserAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        "components/test/data/autofill");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  testing::AssertionResult SubmitForm(content::RenderFrameHost* rfh) {
+    return content::ExecJs(rfh, R"(document.forms[0].submit();)");
+  }
+
  protected:
   UserAnnotationsService* service() {
     return UserAnnotationsServiceFactory::GetForProfile(browser()->profile());
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
   virtual void InitializeFeatureList() {
@@ -107,6 +131,28 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest,
   Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
   EXPECT_EQ(nullptr, UserAnnotationsServiceFactory::GetForProfile(
                          otr_browser->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest, FormSubmissionFlow) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(
+      embedded_test_server()->GetURL("a.com", "/autofill_address_form.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  ASSERT_TRUE(SubmitForm(web_contents()->GetPrimaryMainFrame()));
+
+  EXPECT_EQ(1,
+            optimization_guide::RetryForHistogramUntilCountReached(
+                &histogram_tester, "UserAnnotations.DidAddFormSubmission", 1));
+  histogram_tester.ExpectUniqueSample("UserAnnotations.DidAddFormSubmission",
+                                      true, 1);
+
+  base::test::TestFuture<std::vector<Entry>> test_future;
+  service()->RetrieveAllEntries(test_future.GetCallback());
+
+  auto entries = test_future.Take();
+  EXPECT_FALSE(entries.empty());
 }
 
 }  // namespace user_annotations

@@ -13,6 +13,12 @@ struct Entry {
   // The row ID of this entry from the user annotations database. This is
   // immutable except when retrieving the row from the database.
   EntryID entry_id;
+
+  // The key for this entry. Not necessarily unique.
+  std::u16string key;
+
+  // The value for this entry.
+  std::u16string value;
 };
 
 }  // namespace user_annotations

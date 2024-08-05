@@ -7,6 +7,15 @@
 
 #include "base/functional/callback.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/proto/features/compose.pb.h"
+
+namespace autofill {
+class FormData;
+}  // namespace autofill
+
+namespace optimization_guide::proto {
+class ComposeAXTreeUpdate;
+}  // namespace optimization_guide::proto
 
 namespace user_annotations {
 
@@ -19,6 +28,11 @@ class UserAnnotationsService : public KeyedService {
   UserAnnotationsService& operator=(const UserAnnotationsService&) = delete;
   ~UserAnnotationsService() override;
 
+  // Adds a form submission to the user annotations.
+  void AddFormSubmission(
+      const optimization_guide::proto::ComposeAXTreeUpdate& ax_tree_update,
+      const autofill::FormData& form_data);
+
   // Retrieves all entries from the database. Invokes `callback` when complete.
   void RetrieveAllEntries(
       base::OnceCallback<void(std::vector<Entry>)> callback);
@@ -29,6 +43,8 @@ class UserAnnotationsService : public KeyedService {
  private:
   // An in-memory representation of the "database" of user annotation entries.
   std::vector<Entry> entries_;
+
+  int64_t entry_id_counter_ = 0;
 };
 
 }  // namespace user_annotations

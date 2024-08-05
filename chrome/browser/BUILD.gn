@@ -1747,6 +1747,8 @@ static_library("browser") {
     "usb/web_usb_histograms.h",
     "user_annotations/user_annotations_service_factory.cc",
     "user_annotations/user_annotations_service_factory.h",
+    "user_annotations/user_annotations_web_contents_observer.cc",
+    "user_annotations/user_annotations_web_contents_observer.h",
     "user_bypass/user_bypass_web_contents_observer.cc",
     "user_bypass/user_bypass_web_contents_observer.h",
     "v8_compile_hints/v8_compile_hints_tab_helper.cc",

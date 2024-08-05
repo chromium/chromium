@@ -2069,6 +2069,7 @@ if (!is_android) {
       "//components/tpcd/metadata/browser",
       "//components/tpcd/metadata/browser:test_support",
       "//components/tpcd/metadata/common/proto",
+      "//components/user_annotations",
       "//components/variations/service",
       "//services/screen_ai:test_support",
       "//services/screen_ai/public/cpp:utilities",

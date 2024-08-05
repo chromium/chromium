@@ -26,6 +26,10 @@ namespace enterprise_data_protection {
 class DataProtectionNavigationController;
 }
 
+namespace user_annotations {
+class UserAnnotationsWebContentsObserver;
+}  // namespace user_annotations
+
 namespace tabs {
 
 class TabInterface;
@@ -103,6 +107,9 @@ class TabFeatures {
 
   std::unique_ptr<DipsNavigationFlowDetectorWrapper>
       dips_navigation_flow_detector_wrapper_;
+
+  std::unique_ptr<user_annotations::UserAnnotationsWebContentsObserver>
+      user_annotations_web_contents_observer_;
 };
 
 }  // namespace tabs

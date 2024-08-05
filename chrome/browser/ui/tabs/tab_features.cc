@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_controller.h"
+#include "chrome/browser/user_annotations/user_annotations_web_contents_observer.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/permissions/permission_indicators_tab_data.h"
 namespace tabs {
@@ -74,6 +75,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
     dips_navigation_flow_detector_wrapper_ =
         std::make_unique<DipsNavigationFlowDetectorWrapper>(tab);
+
+    user_annotations_web_contents_observer_ =
+        user_annotations::UserAnnotationsWebContentsObserver::
+            MaybeCreateForWebContents(tab.GetContents());
   }
   fedcm_account_selection_view_controller_ =
       std::make_unique<FedCmAccountSelectionViewController>(&tab);
