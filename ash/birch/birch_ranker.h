@@ -13,6 +13,7 @@ namespace ash {
 
 class BirchAttachmentItem;
 class BirchCalendarItem;
+class BirchCoralItem;
 class BirchFileItem;
 class BirchTabItem;
 class BirchWeatherItem;
@@ -41,6 +42,7 @@ class ASH_EXPORT BirchRanker {
   void RankLostMediaItems(std::vector<BirchLostMediaItem>* items);
   void RankWeatherItems(std::vector<BirchWeatherItem>* items);
   void RankReleaseNotesItems(std::vector<BirchReleaseNotesItem>* items);
+  void RankCoralItems(std::vector<BirchCoralItem>* items);
 
   // Returns whether `now_` is before noon today. Public for testing.
   bool IsMorning() const;

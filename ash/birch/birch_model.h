@@ -105,6 +105,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void SetReleaseNotesItems(
       const std::vector<BirchReleaseNotesItem>& release_notes_items);
   void SetWeatherItems(const std::vector<BirchWeatherItem>& weather_items);
+  void SetCoralItems(const std::vector<BirchCoralItem>& coral_items);
 
   // Sets the BirchClient and begins initializing the BirchItemRemover.
   void SetClientAndInit(BirchClient* client);
@@ -144,6 +145,10 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   const std::vector<BirchWeatherItem>& GetWeatherForTest() const {
     return weather_data_.items;
   }
+  std::vector<BirchCoralItem>& GetCoralItemsForTest() {
+    return coral_data_.items;
+  }
+
   BirchItemRemover* GetItemRemoverForTest() { return item_remover_.get(); }
 
   // Returns all items, sorted by ranking. Includes unranked items.
@@ -167,6 +172,10 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   BirchDataProvider* GetWeatherProviderForTest();
   void OverrideWeatherProviderForTest(
       std::unique_ptr<BirchDataProvider> weather_provider);
+  BirchDataProvider* GetCoralProviderForTest();
+  void OverrideCoralProviderForTest(
+      std::unique_ptr<BirchDataProvider> coral_provider);
+
   void OverrideClockForTest(base::Clock* clock);
   void SetDataFetchCallbackForTest(base::OnceClosure callback);
 
@@ -209,6 +218,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void OnLostMediaPrefChanged();
   void OnWeatherPrefChanged();
   void OnReleaseNotesPrefChanged();
+  void OnCoralPrefChanged();
 
   // Records metrics on which providers are hidden based on prefs.
   void RecordProviderHiddenHistograms();
@@ -248,12 +258,14 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   DataTypeInfo<BirchLostMediaItem> lost_media_data_;
   DataTypeInfo<BirchReleaseNotesItem> release_notes_data_;
   DataTypeInfo<BirchWeatherItem> weather_data_;
+  DataTypeInfo<BirchCoralItem> coral_data_;
 
   raw_ptr<BirchClient> birch_client_ = nullptr;
 
   std::unique_ptr<BirchIconCache> icon_cache_;
 
   std::unique_ptr<BirchDataProvider> weather_provider_;
+  std::unique_ptr<BirchDataProvider> coral_provider_;
 
   // When set, this clock is used to ensure a consistent current time is used
   // for testing.
@@ -269,6 +281,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   PrefChangeRegistrar lost_media_pref_registrar_;
   PrefChangeRegistrar weather_pref_registrar_;
   PrefChangeRegistrar release_notes_pref_registrar_;
+  PrefChangeRegistrar coral_pref_registrar_;
 
   // Used to filter out items which have previously been removed by the user.
   std::unique_ptr<BirchItemRemover> item_remover_;

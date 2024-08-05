@@ -34,8 +34,9 @@ enum class BirchItemType {
   kSelfShare = 7,     // Tabs shared to self from ChromeSync API.
   kMostVisited = 8,   // Most frequently visited URLs.
   kLastActive = 9,    // Last active URL.
-  kLostMedia = 10,
-  kMaxValue = kLostMedia,
+  kLostMedia = 10,    // Tab that is currently playing media.
+  kCoral = 11,        // Coral provider.
+  kMaxValue = kCoral,
 };
 
 // These values are used to determine which secondary icon to load for the items
@@ -483,7 +484,29 @@ class ASH_EXPORT BirchWeatherItem : public BirchItem {
   ui::ImageModel icon_;
 };
 
-struct ASH_EXPORT BirchReleaseNotesItem : public BirchItem {
+class ASH_EXPORT BirchCoralItem : public BirchItem {
+ public:
+  BirchCoralItem(const std::u16string& coral_title,
+                 const std::u16string& coral_text);
+  BirchCoralItem(BirchCoralItem&&);
+  BirchCoralItem(const BirchCoralItem&);
+  BirchCoralItem& operator=(const BirchCoralItem&);
+  bool operator==(const BirchCoralItem& rhs) const;
+  ~BirchCoralItem() override;
+
+  // BirchItem:
+  BirchItemType GetType() const override;
+  std::string ToString() const override;
+  void PerformAction() override;
+  void PerformSecondaryAction() override;
+  void LoadIcon(LoadIconCallback callback) const override;
+
+ private:
+  // TODO(yulunwu):Add coral data to `BirchCoralItem`
+};
+
+class ASH_EXPORT BirchReleaseNotesItem : public BirchItem {
+ public:
   BirchReleaseNotesItem(const std::u16string& release_notes_title,
                         const std::u16string& release_notes_text,
                         const GURL& url,

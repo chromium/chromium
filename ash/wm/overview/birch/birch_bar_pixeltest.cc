@@ -121,6 +121,11 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
           /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideo,
           /*activation_callback=*/base::DoNothing()));
       break;
+    case BirchItemType::kCoral:
+      items.push_back(std::make_unique<BirchCoralItem>(
+          /*coral_title=*/u"coral_title",
+          /*coral_text=*/u"coral_text"));
+      break;
     case BirchItemType::kTest:
       break;
   }

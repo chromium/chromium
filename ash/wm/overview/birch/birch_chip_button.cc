@@ -96,6 +96,8 @@ BirchSuggestionType GetSuggestionTypeFromItemType(BirchItemType item_type) {
       return BirchSuggestionType::kMedia;
     case BirchItemType::kReleaseNotes:
       return BirchSuggestionType::kExplore;
+    case BirchItemType::kCoral:
+      return BirchSuggestionType::kCoral;
     default:
       return BirchSuggestionType::kUndefined;
   }
@@ -255,6 +257,7 @@ void BirchChipButton::StylizeIconForItemType(
     case BirchItemType::kMostVisited:
     case BirchItemType::kLastActive:
     case BirchItemType::kLostMedia:
+    case BirchItemType::kCoral:
       icon_size = kFaviconSize;
       rounded_corners = kFaviconCornerRadius;
       background_color_id = kIconBackgroundColorId;

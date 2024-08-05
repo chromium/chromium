@@ -1,0 +1,32 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_BIRCH_BIRCH_CORAL_PROVIDER_H_
+#define ASH_BIRCH_BIRCH_CORAL_PROVIDER_H_
+
+#include "ash/ash_export.h"
+#include "ash/birch/birch_data_provider.h"
+#include "base/memory/raw_ptr.h"
+
+namespace ash {
+
+class BirchModel;
+
+class ASH_EXPORT BirchCoralProvider : public BirchDataProvider {
+ public:
+  explicit BirchCoralProvider(BirchModel* birch_model);
+  BirchCoralProvider(const BirchCoralProvider&) = delete;
+  BirchCoralProvider& operator=(const BirchCoralProvider&) = delete;
+  ~BirchCoralProvider() override;
+
+  // Called from birch model to request coral information to be displayed.
+  void RequestBirchDataFetch() override;
+
+ private:
+  const raw_ptr<BirchModel> birch_model_;
+};
+
+}  // namespace ash
+
+#endif  // ASH_BIRCH_BIRCH_CORAL_PROVIDER_H_

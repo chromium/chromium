@@ -257,6 +257,14 @@ void BirchRanker::RankReleaseNotesItems(
   }
 }
 
+void BirchRanker::RankCoralItems(std::vector<BirchCoralItem>* items) {
+  CHECK(items);
+  for (BirchCoralItem& item : *items) {
+    // TODO(yulunwu) Set ranking for coral items
+    item.set_ranking(100.0f);
+  }
+}
+
 float BirchRanker::GetReleaseNotesItemRanking(
     const BirchReleaseNotesItem& item) const {
   const base::TimeDelta elapsed_time = now_ - item.first_seen();

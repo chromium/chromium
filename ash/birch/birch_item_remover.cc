@@ -78,6 +78,10 @@ void BirchItemRemover::RemoveItem(BirchItem* item) {
                       removed_items_proto_->mutable_removed_file_items());
       return;
     }
+    case ash::BirchItemType::kCoral: {
+      // TODO(yulunwu): implement coral birch item removal once defined.
+      return;
+    }
     case ash::BirchItemType::kReleaseNotes:
     case ash::BirchItemType::kWeather:
     case ash::BirchItemType::kLostMedia:

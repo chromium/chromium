@@ -978,6 +978,42 @@ std::u16string BirchLostMediaItem::GetSubtitle(bool is_video_conference_tab) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+BirchCoralItem::BirchCoralItem(const std::u16string& coral_title,
+                               const std::u16string& coral_text)
+    : BirchItem(coral_title, coral_text) {}
+
+BirchCoralItem::BirchCoralItem(BirchCoralItem&&) = default;
+
+BirchCoralItem::BirchCoralItem(const BirchCoralItem&) = default;
+
+BirchCoralItem& BirchCoralItem::operator=(const BirchCoralItem&) = default;
+
+bool BirchCoralItem::operator==(const BirchCoralItem& rhs) const = default;
+
+BirchCoralItem::~BirchCoralItem() = default;
+
+BirchItemType BirchCoralItem::GetType() const {
+  return BirchItemType::kCoral;
+}
+
+std::string BirchCoralItem::ToString() const {
+  std::stringstream ss;
+  ss << "coral_item: <METADATA>";
+  return ss.str();
+}
+
+void BirchCoralItem::PerformAction() {
+  // TODO(yulunwu) add actions
+}
+void BirchCoralItem::PerformSecondaryAction() {
+  // TODO(yulunwu) add actions
+}
+void BirchCoralItem::LoadIcon(LoadIconCallback callback) const {
+  // TODO(yulunwu) load icons
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 BirchReleaseNotesItem::BirchReleaseNotesItem(
     const std::u16string& release_notes_title,
     const std::u16string& release_notes_text,

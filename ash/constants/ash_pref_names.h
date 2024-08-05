@@ -2391,6 +2391,9 @@ inline constexpr char kBirchUseWeather[] = "ash.birch.use_weather";
 // A boolean pref indicating whether Birch should use release notes data.
 inline constexpr char kBirchUseReleaseNotes[] = "ash.birch.use_release_notes";
 
+// A boolean pref indicating whether Birch should use coral data.
+inline constexpr char kBirchUseCoral[] = "ash.birch.use_coral";
+
 // LINT.ThenChange(/chrome/browser/ui/ash/birch/birch_browsertest.cc)
 
 // A boolean pref that holds whether the user dismissed the extended updates
