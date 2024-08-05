@@ -900,6 +900,10 @@ bool DesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
 
 void DesktopWindowTreeHostWin::GetMinMaxSize(gfx::Size* min_size,
                                              gfx::Size* max_size) const {
+  if (!native_widget_delegate_) {
+    return;
+  }
+
   *min_size = native_widget_delegate_->GetMinimumSize();
   *max_size = native_widget_delegate_->GetMaximumSize();
 }
