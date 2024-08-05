@@ -5,6 +5,7 @@
 assert(is_win || is_mac || is_linux || is_chromeos)
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//components/nacl/features.gni")
 
 # The public interface for task_manager does not allow circular dependencies.
 source_set("task_manager") {
@@ -208,10 +209,10 @@ source_set("impl") {
     sources += [ "sampling/shared_sampler_stub.cc" ]
   }
   if (is_chromeos) {
-    deps += [
-      "//components/nacl/browser",
-      "//components/nacl/common:buildflags",
-    ]
+    deps += [ "//components/nacl/common:buildflags" ]
+  }
+  if (enable_nacl) {
+    deps += [ "//components/nacl/browser" ]
   }
   if (is_chromeos_ash) {
     sources += [
