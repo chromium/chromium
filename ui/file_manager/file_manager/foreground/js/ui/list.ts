@@ -636,7 +636,6 @@ export abstract class List extends HTMLUListElement {
       const listItem = this.getListItemByIndex(change.index);
       if (listItem) {
         listItem.selected = change.selected;
-        listItem.setAttribute('aria-selected', String(listItem.selected));
         if (change.selected) {
           listItem.setAttribute('aria-posinset', String(change.index + 1));
           listItem.setAttribute('aria-setsize', String(this.dataModel!.length));
