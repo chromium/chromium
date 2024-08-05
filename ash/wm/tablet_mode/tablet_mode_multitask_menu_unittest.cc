@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
+
 #include <memory>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
@@ -14,7 +16,6 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_util.h"
@@ -883,15 +884,14 @@ TEST_F(TabletModeMultitaskMenuTest, HidesWhenMinimized) {
   EXPECT_FALSE(GetMultitaskMenu());
 }
 
-TEST_F(TabletModeMultitaskMenuTest, NotShownInKioskMode) {
-  // Enter kiosk mode and try swiping down. The multitask menu and cue should
-  // not show.
+TEST_F(TabletModeMultitaskMenuTest, NoTabletModeWindowManagerInKiosk) {
   SimulateKioskMode(user_manager::UserType::kKioskApp);
   auto window = CreateAppWindow(gfx::Rect(800, 600));
-  EXPECT_FALSE(
-      GetMultitaskMenuController()->multitask_cue_controller()->cue_layer());
-  ShowMultitaskMenu(*window);
-  EXPECT_FALSE(GetMultitaskMenu());
+
+  // In Kiosk session there is no `TabletModeWindowManager` since the UI tablet
+  // mode is blocked.
+  EXPECT_EQ(TabletModeControllerTestApi().tablet_mode_window_manager(),
+            nullptr);
 }
 
 namespace {

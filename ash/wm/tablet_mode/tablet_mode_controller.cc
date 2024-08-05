@@ -10,6 +10,7 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/login_status.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -63,6 +64,10 @@
 #define ENABLED_VLOG_LEVEL 1
 
 namespace ash {
+
+BASE_FEATURE(kBlockUiTabletModeInKiosk,
+             "BlockUiTabletModeInKiosk",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -289,6 +294,10 @@ void ReportTrasitionSmoothness(bool enter_tablet_mode, int smoothness) {
   } else {
     UMA_HISTOGRAM_PERCENTAGE(kTabletModeExitHistogram, smoothness);
   }
+}
+
+bool ShouldBlockUiTabletModeInKiosk() {
+  return base::FeatureList::IsEnabled(kBlockUiTabletModeInKiosk);
 }
 
 }  // namespace
@@ -594,6 +603,19 @@ void TabletModeController::OnDidApplyDisplayChanges() {
   // which case the availability of an active internal display changes.
   // Therefore we update the physical tablet state of the device.
   SetIsInTabletPhysicalState(CalculateIsInTabletPhysicalState());
+}
+
+void TabletModeController::OnLoginStatusChanged(LoginStatus login_status) {
+  if (login_status == LoginStatus::KIOSK_APP &&
+      ShouldBlockUiTabletModeInKiosk()) {
+    // Tablet mode is not allowed during the kiosk session. No need to reset the
+    // `forced_ui_mode_` to the previous state because on kiosk exit Chrome
+    // restarts, so the `TabletModeController` will be reset.`
+    // If the device is currently in the UI tablet mode, it will be forced to
+    // switch to the clamshell UI mode.
+    forced_ui_mode_ = UiMode::kClamshell;
+    UpdateUiTabletState();
+  }
 }
 
 void TabletModeController::OnChromeTerminating() {

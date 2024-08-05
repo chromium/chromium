@@ -111,7 +111,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
-#include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -393,8 +392,9 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip,
   // This test doesn't make sense in non-touch mode since it expects the WebUI
   // tab strip to be active. This test is instantiated with and without touch
   // mode.
-  if (!ui::TouchUiController::Get()->touch_ui())
+  if (!ui::TouchUiController::Get()->touch_ui()) {
     return;
+  }
 
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
@@ -1487,47 +1487,6 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());
 }
 
-// TODO(crbug.com/40286309): Port this kiosk test to Lacros?
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace {
-
-class KioskBrowserNonClientFrameViewChromeOSTest
-    : public TopChromeMdParamTest<ash::WebKioskBaseTest> {
- public:
-  KioskBrowserNonClientFrameViewChromeOSTest() = default;
-  KioskBrowserNonClientFrameViewChromeOSTest(
-      const KioskBrowserNonClientFrameViewChromeOSTest&) = delete;
-  KioskBrowserNonClientFrameViewChromeOSTest& operator=(
-      const KioskBrowserNonClientFrameViewChromeOSTest&) = delete;
-  ~KioskBrowserNonClientFrameViewChromeOSTest() override = default;
-};
-
-}  // namespace
-
-IN_PROC_BROWSER_TEST_P(KioskBrowserNonClientFrameViewChromeOSTest,
-                       ToggleTabletModeBrowserCaptionVisibilityTest) {
-  InitializeRegularOnlineKiosk();
-
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  auto* browser_view =
-      BrowserView::GetBrowserViewForBrowser(BrowserList::GetInstance()->get(0));
-  auto* frame_view = ChromeOSBrowserUITest::GetFrameViewChromeOS(browser_view);
-  EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
-
-  auto* widget = browser_view->GetWidget();
-  auto* immersive_controller = chromeos::ImmersiveFullscreenController::Get(
-      views::Widget::GetWidgetForNativeView(widget->GetNativeWindow()));
-  EXPECT_FALSE(immersive_controller->IsEnabled());
-
-  // Enter tablet mode.
-  ASSERT_NO_FATAL_FAILURE(
-      ash::ShellTestApi().SetTabletModeEnabledForTest(true));
-
-  EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
-  EXPECT_FALSE(immersive_controller->IsEnabled());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 using LockedFullscreenBrowserNonClientFrameViewChromeOSTest =
     TopChromeMdParamTest<ChromeOSBrowserUITest>;
 
@@ -1869,5 +1828,4 @@ INSTANTIATE_TEST_SUITE(WebAppNonClientFrameViewChromeOSTest);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewAshTestNoWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewAshTest);
-INSTANTIATE_TEST_SUITE(KioskBrowserNonClientFrameViewChromeOSTest);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
