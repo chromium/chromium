@@ -26,6 +26,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
@@ -1056,6 +1057,35 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // The SavedTabGroupTab should still be at the good URL not the bad one.
   EXPECT_EQ(saved_group->saved_tabs().at(0).url(), good_gurl);
+}
+
+TEST_F(SavedTabGroupKeyedServiceUnitTest, FormSubmissionDoesntUpdateModel) {
+  Browser* browser_1 = AddBrowser();
+
+  // Create a saved tab group with one good tab.
+  ASSERT_EQ(0, browser_1->tab_strip_model()->count());
+  content::WebContents* added_tab = AddTabToBrowser(browser_1, 0);
+  GURL good_url = GURL("http://www.foo.com");
+  GURL form_url = GURL("http://www.fooform.com");
+
+  auto* tester = content::WebContentsTester::For(added_tab);
+  tester->NavigateAndCommit(good_url);
+  tab_groups::TabGroupId group_id =
+      browser_1->tab_strip_model()->AddToNewGroup({0});
+  service()->SaveGroup(group_id);
+  const SavedTabGroup* const saved_group = service()->model()->Get(group_id);
+
+  content::RenderFrameHost* render_frame_host =
+      added_tab->GetPrimaryMainFrame();
+  std::unique_ptr<content::NavigationSimulator> navigation =
+      content::NavigationSimulator::CreateRendererInitiated(form_url,
+                                                            render_frame_host);
+  navigation->SetIsFormSubmission(true);
+  navigation->Start();
+  navigation->Commit();
+
+  // The SavedTabGroupTab should still be at the good URL not the bad one.
+  EXPECT_EQ(saved_group->saved_tabs().at(0).url(), good_url);
 }
 
 // Save group in front of others when `is_pinned` is true.

@@ -23,7 +23,10 @@ namespace {
 
 bool IsSaveableNavigation(content::NavigationHandle* navigation_handle) {
   ui::PageTransition page_transition = navigation_handle->GetPageTransition();
-  if (navigation_handle->IsPost()) {
+
+  // NavigationHandle::IsPost() may not catch all POST request if there is a
+  // server side redirection. So we ignore all form submissions.
+  if (navigation_handle->IsPost() || navigation_handle->IsFormSubmission()) {
     return false;
   }
   if (!ui::IsValidPageTransitionType(page_transition)) {
