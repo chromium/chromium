@@ -16,7 +16,7 @@ namespace syncer {
 FakeDataTypeController::FakeDataTypeController(
     ModelType type,
     bool enable_transport_mode,
-    std::unique_ptr<ModelTypeLocalDataBatchUploader> uploader)
+    std::unique_ptr<DataTypeLocalDataBatchUploader> uploader)
     : DataTypeController(
           type,
           /*delegate_for_full_sync_mode=*/

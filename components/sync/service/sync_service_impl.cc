@@ -2492,7 +2492,7 @@ void SyncServiceImpl::GetLocalDataDescriptions(
   for (ModelType type : types) {
     data_type_manager_->GetControllerMap()
         .at(type)
-        ->GetModelTypeLocalDataBatchUploader()
+        ->GetLocalDataBatchUploader()
         ->GetLocalDataDescription(
             base::BindOnce(&JoinTypeAndLocalDataDescription, type)
                 .Then(barrier_callback));
@@ -2519,7 +2519,7 @@ void SyncServiceImpl::TriggerLocalDataMigration(ModelTypeSet types) {
   for (ModelType type : types) {
     data_type_manager_->GetControllerMap()
         .at(type)
-        ->GetModelTypeLocalDataBatchUploader()
+        ->GetLocalDataBatchUploader()
         ->TriggerLocalDataMigration();
   }
 }
@@ -2528,7 +2528,7 @@ ModelTypeSet SyncServiceImpl::GetModelTypesWithLocalDataBatchUploader() const {
   ModelTypeSet types;
   for (const auto& [type, controller] :
        data_type_manager_->GetControllerMap()) {
-    if (controller->GetModelTypeLocalDataBatchUploader()) {
+    if (controller->GetLocalDataBatchUploader()) {
       types.Put(type);
     }
   }

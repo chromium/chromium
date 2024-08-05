@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/sync/service/model_type_local_data_batch_uploader.h"
+#include "components/sync/service/data_type_local_data_batch_uploader.h"
 
 namespace bookmarks {
 class BookmarkModel;
@@ -18,7 +18,7 @@ namespace sync_bookmarks {
 class BookmarkModelView;
 
 class BookmarkLocalDataBatchUploader
-    : public syncer::ModelTypeLocalDataBatchUploader {
+    : public syncer::DataTypeLocalDataBatchUploader {
  public:
   // `bookmark_model` must either be null or non-null and outlive this object.
   explicit BookmarkLocalDataBatchUploader(
@@ -31,7 +31,7 @@ class BookmarkLocalDataBatchUploader
 
   ~BookmarkLocalDataBatchUploader() override;
 
-  // syncer::ModelTypeLocalDataBatchUploader implementation.
+  // syncer::DataTypeLocalDataBatchUploader implementation.
   void GetLocalDataDescription(
       base::OnceCallback<void(syncer::LocalDataDescription)> callback) override;
   void TriggerLocalDataMigration() override;

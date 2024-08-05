@@ -35,14 +35,14 @@ PasswordDataTypeController::PasswordDataTypeController(
         delegate_for_full_sync_mode,
     std::unique_ptr<syncer::DataTypeControllerDelegate>
         delegate_for_transport_mode,
-    std::unique_ptr<syncer::ModelTypeLocalDataBatchUploader> batch_uploader,
+    std::unique_ptr<syncer::DataTypeLocalDataBatchUploader> batch_uploader,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service)
     : DataTypeController(syncer::PASSWORDS,
-                          std::move(delegate_for_full_sync_mode),
-                          std::move(delegate_for_transport_mode),
-                          std::move(batch_uploader)),
+                         std::move(delegate_for_full_sync_mode),
+                         std::move(delegate_for_transport_mode),
+                         std::move(batch_uploader)),
       pref_service_(pref_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service) {

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "components/sync/service/data_type_controller.h"
-#include "components/sync/service/model_type_local_data_batch_uploader.h"
+#include "components/sync/service/data_type_local_data_batch_uploader.h"
 
 namespace sync_bookmarks {
 
@@ -19,7 +19,7 @@ class BookmarkDataTypeController : public syncer::DataTypeController {
           delegate_for_full_sync_mode,
       std::unique_ptr<syncer::DataTypeControllerDelegate>
           delegate_for_transport_mode,
-      std::unique_ptr<syncer::ModelTypeLocalDataBatchUploader> batch_uploader);
+      std::unique_ptr<syncer::DataTypeLocalDataBatchUploader> batch_uploader);
 
   BookmarkDataTypeController(const BookmarkDataTypeController&) = delete;
   BookmarkDataTypeController& operator=(const BookmarkDataTypeController&) =

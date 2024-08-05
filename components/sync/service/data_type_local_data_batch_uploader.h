@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_SERVICE_MODEL_TYPE_LOCAL_DATA_BATCH_UPLOADER_H_
-#define COMPONENTS_SYNC_SERVICE_MODEL_TYPE_LOCAL_DATA_BATCH_UPLOADER_H_
+#ifndef COMPONENTS_SYNC_SERVICE_DATA_TYPE_LOCAL_DATA_BATCH_UPLOADER_H_
+#define COMPONENTS_SYNC_SERVICE_DATA_TYPE_LOCAL_DATA_BATCH_UPLOADER_H_
 
 #include "base/functional/callback_forward.h"
 
@@ -14,9 +14,9 @@ struct LocalDataDescription;
 // Data types possessing the distinction between "local" and "account" storages
 // can implement this interface to allow moving data from the former to the
 // latter. In other words, to upload the local data.
-class ModelTypeLocalDataBatchUploader {
+class DataTypeLocalDataBatchUploader {
  public:
-  virtual ~ModelTypeLocalDataBatchUploader() = default;
+  virtual ~DataTypeLocalDataBatchUploader() = default;
 
   // Retrieves information about the existing local data.
   virtual void GetLocalDataDescription(
@@ -29,4 +29,4 @@ class ModelTypeLocalDataBatchUploader {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_SERVICE_MODEL_TYPE_LOCAL_DATA_BATCH_UPLOADER_H_
+#endif  // COMPONENTS_SYNC_SERVICE_DATA_TYPE_LOCAL_DATA_BATCH_UPLOADER_H_

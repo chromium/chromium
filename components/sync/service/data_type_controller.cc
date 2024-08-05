@@ -64,14 +64,14 @@ std::string DataTypeController::StateToString(State state) {
 
 DataTypeController::DataTypeController(
     ModelType type,
-    std::unique_ptr<ModelTypeLocalDataBatchUploader> batch_uploader)
+    std::unique_ptr<DataTypeLocalDataBatchUploader> batch_uploader)
     : type_(type), batch_uploader_(std::move(batch_uploader)) {}
 
 DataTypeController::DataTypeController(
     ModelType type,
     std::unique_ptr<DataTypeControllerDelegate> delegate_for_full_sync_mode,
     std::unique_ptr<DataTypeControllerDelegate> delegate_for_transport_mode,
-    std::unique_ptr<ModelTypeLocalDataBatchUploader> batch_uploader)
+    std::unique_ptr<DataTypeLocalDataBatchUploader> batch_uploader)
     : DataTypeController(type, std::move(batch_uploader)) {
   InitDataTypeController(std::move(delegate_for_full_sync_mode),
                           std::move(delegate_for_transport_mode));
@@ -312,8 +312,8 @@ void DataTypeController::RecordMemoryUsageAndCountsHistograms() {
   }
 }
 
-ModelTypeLocalDataBatchUploader*
-DataTypeController::GetModelTypeLocalDataBatchUploader() {
+DataTypeLocalDataBatchUploader*
+DataTypeController::GetLocalDataBatchUploader() {
   return batch_uploader_.get();
 }
 

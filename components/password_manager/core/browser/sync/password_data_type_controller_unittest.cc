@@ -23,7 +23,7 @@
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/test/mock_data_type_controller_delegate.h"
-#include "components/sync/test/mock_model_type_local_data_batch_uploader.h"
+#include "components/sync/test/mock_data_type_local_data_batch_uploader.h"
 #include "components/sync/test/test_sync_service.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,7 +50,7 @@ class PasswordDataTypeControllerTest : public ::testing::Test {
     transport_only_delegate_ = transport_only_delegate.get();
     controller_ = std::make_unique<PasswordDataTypeController>(
         std::move(full_sync_delegate), std::move(transport_only_delegate),
-        std::make_unique<syncer::MockModelTypeLocalDataBatchUploader>(),
+        std::make_unique<syncer::MockDataTypeLocalDataBatchUploader>(),
         &pref_service_, identity_test_env_.identity_manager(), &sync_service_);
   }
 

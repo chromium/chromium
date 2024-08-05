@@ -43,7 +43,7 @@
 #include "components/sync/test/fake_data_type_controller.h"
 #include "components/sync/test/fake_sync_engine.h"
 #include "components/sync/test/fake_sync_engine_factory.h"
-#include "components/sync/test/mock_model_type_local_data_batch_uploader.h"
+#include "components/sync/test/mock_data_type_local_data_batch_uploader.h"
 #include "components/sync/test/sync_client_mock.h"
 #include "components/sync/test/sync_service_impl_bundle.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -74,7 +74,7 @@ constexpr char kTestUser[] = "test_user@gmail.com";
 struct FakeControllerInitParams {
   ModelType model_type;
   bool enable_transport_mode = false;
-  std::unique_ptr<ModelTypeLocalDataBatchUploader> batch_uploader;
+  std::unique_ptr<DataTypeLocalDataBatchUploader> batch_uploader;
 };
 
 MATCHER_P(ContainsDataType, type, "") {
@@ -2120,9 +2120,9 @@ TEST_F(SyncServiceImplTest,
   // but only DEVICE_INFO is enabled in transport mode. So only the DEVICE_INFO
   // uploader should be queried.
   auto device_info_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
   auto autofill_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
   EXPECT_CALL(*device_info_uploader, GetLocalDataDescription);
   EXPECT_CALL(*autofill_uploader, GetLocalDataDescription).Times(0);
 
@@ -2149,9 +2149,8 @@ TEST_F(SyncServiceImplTest,
   // GetLocalDataDescription(), but AUTOFILL_WALLET_DATA will be in an error
   // state. So only the DEVICE_INFO uploader should be queried.
   auto device_info_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
-  auto wallet_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
+  auto wallet_uploader = std::make_unique<MockDataTypeLocalDataBatchUploader>();
   EXPECT_CALL(*device_info_uploader, GetLocalDataDescription);
   EXPECT_CALL(*wallet_uploader, GetLocalDataDescription).Times(0);
 
@@ -2179,7 +2178,7 @@ TEST_F(SyncServiceImplTest,
   // DEVICE_INFO will be passed to GetLocalDataDescription(), but sync is
   // disabled by policy. So the uploader should not be queried.
   auto device_info_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
   EXPECT_CALL(*device_info_uploader, GetLocalDataDescription).Times(0);
 
   std::vector<FakeControllerInitParams> params;
@@ -2203,7 +2202,7 @@ TEST_F(SyncServiceImplTest,
   // DEVICE_INFO will be passed to GetLocalDataDescription(), but the user is
   // signed out. So the uploader should not be queried.
   auto device_info_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
   EXPECT_CALL(*device_info_uploader, GetLocalDataDescription).Times(0);
 
   std::vector<FakeControllerInitParams> params;
@@ -2225,7 +2224,7 @@ TEST_F(SyncServiceImplTest,
   // DEVICE_INFO will be passed to GetLocalDataDescription(), but the user is
   // syncing. So the uploader should not be queried.
   auto device_info_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
   EXPECT_CALL(*device_info_uploader, GetLocalDataDescription).Times(0);
 
   std::vector<FakeControllerInitParams> params;
@@ -2252,9 +2251,9 @@ TEST_F(SyncServiceImplTest,
   // but only DEVICE_INFO is enabled in transport mode. So only DEVICE_INFO
   // should be uploaded.
   auto device_info_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
   auto autofill_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
   EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration);
   EXPECT_CALL(*autofill_uploader, TriggerLocalDataMigration).Times(0);
 
@@ -2283,9 +2282,8 @@ TEST_F(
   // TriggerLocalDataMigration(), but AUTOFILL_WALLET_DATA will be in an error
   // state. So only DEVICE_INFO should be uploaded.
   auto device_info_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
-  auto wallet_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
+  auto wallet_uploader = std::make_unique<MockDataTypeLocalDataBatchUploader>();
   EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration);
   EXPECT_CALL(*wallet_uploader, TriggerLocalDataMigration).Times(0);
 
@@ -2313,7 +2311,7 @@ TEST_F(
   // DEVICE_INFO will be passed to TriggerLocalDataMigration(), but sync is
   // disabled by policy. So data should not be uploaded.
   auto device_info_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
   EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration).Times(0);
 
   std::vector<FakeControllerInitParams> params;
@@ -2337,7 +2335,7 @@ TEST_F(SyncServiceImplTest,
   // DEVICE_INFO will be passed to TriggerLocalDataMigration(), but the user is
   // signed out. So data should not be uploaded.
   auto device_info_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
   EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration).Times(0);
 
   std::vector<FakeControllerInitParams> params;
@@ -2359,7 +2357,7 @@ TEST_F(SyncServiceImplTest,
   // DEVICE_INFO will be passed to TriggerLocalDataMigration(), but the user is
   // syncing. So data should not be uploaded.
   auto device_info_uploader =
-      std::make_unique<MockModelTypeLocalDataBatchUploader>();
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
   EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration).Times(0);
 
   std::vector<FakeControllerInitParams> params;

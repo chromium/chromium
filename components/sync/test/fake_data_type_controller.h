@@ -24,7 +24,7 @@ class FakeDataTypeController : public DataTypeController {
   explicit FakeDataTypeController(
       ModelType type,
       bool enable_transport_mode = false,
-      std::unique_ptr<ModelTypeLocalDataBatchUploader> uploader = nullptr);
+      std::unique_ptr<DataTypeLocalDataBatchUploader> uploader = nullptr);
   ~FakeDataTypeController() override;
 
   void SetPreconditionState(PreconditionState state);

@@ -19,11 +19,11 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
-#include "components/sync/model/model_error.h"
 #include "components/sync/model/data_type_controller_delegate.h"
+#include "components/sync/model/model_error.h"
 #include "components/sync/model/sync_error.h"
 #include "components/sync/service/configure_context.h"
-#include "components/sync/service/model_type_local_data_batch_uploader.h"
+#include "components/sync/service/data_type_local_data_batch_uploader.h"
 
 namespace syncer {
 
@@ -69,14 +69,13 @@ class DataTypeController {
   // THIS IS NOT SUPPORTED for new data types. When introducing a new data type,
   // you must consider how it should work in transport mode.
   // For types having both "local" and "account" storages, `batch_uploader`
-  // can be passed and will be exposed via GetModelTypeLocalDataBatchUploader()
+  // can be passed and will be exposed via GetLocalDataBatchUploader()
   // to allow moving local data to the account.
   DataTypeController(
       ModelType type,
       std::unique_ptr<DataTypeControllerDelegate> delegate_for_full_sync_mode,
       std::unique_ptr<DataTypeControllerDelegate> delegate_for_transport_mode,
-      std::unique_ptr<ModelTypeLocalDataBatchUploader> batch_uploader =
-          nullptr);
+      std::unique_ptr<DataTypeLocalDataBatchUploader> batch_uploader = nullptr);
 
   DataTypeController(const DataTypeController&) = delete;
   DataTypeController& operator=(const DataTypeController&) = delete;
@@ -152,7 +151,7 @@ class DataTypeController {
   virtual void RecordMemoryUsageAndCountsHistograms();
 
   // Returns the uploader passed on construction.
-  ModelTypeLocalDataBatchUploader* GetModelTypeLocalDataBatchUploader();
+  DataTypeLocalDataBatchUploader* GetLocalDataBatchUploader();
 
   // Reports model type error to simulate the error reported by the bridge.
   virtual void ReportBridgeErrorForTest();
@@ -161,9 +160,9 @@ class DataTypeController {
 
  protected:
   // Subclasses that use this constructor must call InitDataTypeController().
-  explicit DataTypeController(ModelType type,
-                               std::unique_ptr<ModelTypeLocalDataBatchUploader>
-                                   batch_uploader = nullptr);
+  explicit DataTypeController(
+      ModelType type,
+      std::unique_ptr<DataTypeLocalDataBatchUploader> batch_uploader = nullptr);
 
   // |delegate_for_transport_mode| may be null if the type does not run in
   // transport mode.
@@ -190,7 +189,7 @@ class DataTypeController {
   const ModelType type_;
 
   // Null if the ModelType does not support batch upload.
-  const std::unique_ptr<ModelTypeLocalDataBatchUploader> batch_uploader_;
+  const std::unique_ptr<DataTypeLocalDataBatchUploader> batch_uploader_;
 
   // Used to check that functions are called on the correct sequence.
   base::SequenceChecker sequence_checker_;

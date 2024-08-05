@@ -373,7 +373,7 @@ class SyncServiceImpl : public SyncService,
   // passphrase type.
   void RegisterTrustedVaultSyntheticFieldTrialsIfNecessary();
 
-  // Returns the types that have a non-null ModelTypeLocalDataBatchUploader.
+  // Returns the types that have a non-null DataTypeLocalDataBatchUploader.
   ModelTypeSet GetModelTypesWithLocalDataBatchUploader() const;
 
   // This profile's SyncClient.
