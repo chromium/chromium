@@ -1233,6 +1233,9 @@ constexpr base::FeatureParam<base::TimeDelta>
 // Enables or disables Focus Mode feature on ChromeOS.
 BASE_FEATURE(kFocusMode, "FocusMode", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables Focus Mode YTM integration on ChromeOS.
+BASE_FEATURE(kFocusModeYTM, "FocusModeYTM", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, makes the Projector app use server side speech
 // recognition instead of on-device speech recognition.
 BASE_FEATURE(kForceEnableServerSideSpeechRecognitionForDev,
@@ -3825,6 +3828,10 @@ bool IsFloatingWorkspaceV2Enabled() {
 
 bool IsFocusModeEnabled() {
   return base::FeatureList::IsEnabled(kFocusMode);
+}
+
+bool IsFocusModeYTMEnabled() {
+  return base::FeatureList::IsEnabled(kFocusModeYTM);
 }
 
 bool ShouldForceEnableServerSideSpeechRecognitionForDev() {

@@ -6981,7 +6981,11 @@ const char kFocusFollowsCursorDescription[] =
 
 const char kFocusModeName[] = "Focus Mode on ChromeOS";
 const char kFocusModeDescription[] =
-    "Focus mode on the OS with timer and task management functionalities.";
+    "Focus mode on the OS with timer, music, and task management "
+    "functionalities.";
+
+const char kFocusModeYTMName[] = "Focus Mode YTM on ChromeOS";
+const char kFocusModeYTMDescription[] = "Focus mode YouTube Music integration.";
 
 const char kForceReSyncDriveName[] = "Force resync drive";
 const char kForceReSyncDriveDescription[] =

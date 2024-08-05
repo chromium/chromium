@@ -1705,9 +1705,17 @@
     "name": "cros-focus-mode",
     "owners": [
       "richui@chromium.org",
-      "nupurjain@chromium.org"
+      "chromeos-wms@google.com"
     ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
+  },
+  {
+    "name": "cros-focus-mode-ytm",
+    "owners": [
+      "richui@chromium.org",
+      "chromeos-wms@google.com"
+    ],
+    "expiry_milestone": 140
   },
   {
     "name": "cros-labs-continuous-overview-animation",

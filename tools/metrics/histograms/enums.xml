@@ -16077,6 +16077,7 @@ from previous Chrome versions.
       label="AllowEapDefaultCasWithoutSubjectVerification:enabled"/>
   <int value="-1816807065" label="LowLatencyWebGLImageChromium:disabled"/>
   <int value="-1816654207" label="SharedZstd:disabled"/>
+  <int value="-1816215700" label="FocusModeYTM:disabled"/>
   <int value="-1816066138" label="CastAllowAllIPs:enabled"/>
   <int value="-1814266088" label="ContextualPageActionShareModel:enabled"/>
   <int value="-1813120536" label="MlUrlPiecewiseMappedSearchBlending:disabled"/>
@@ -16534,6 +16535,7 @@ from previous Chrome versions.
   <int value="-1612418793"
       label="ExperimentalAccessibilitySwitchAccessSetupGuide:enabled"/>
   <int value="-1612253158" label="HardwareSecureDecryptionExperiment:enabled"/>
+  <int value="-1611828357" label="FocusModeYTM:enabled"/>
   <int value="-1611758030" label="AndroidWebContentsDarkMode:disabled"/>
   <int value="-1611614160" label="HiddenNetworkMigration:disabled"/>
   <int value="-1611387314"

@@ -4034,6 +4034,9 @@ extern const char kFocusFollowsCursorDescription[];
 extern const char kFocusModeName[];
 extern const char kFocusModeDescription[];
 
+extern const char kFocusModeYTMName[];
+extern const char kFocusModeYTMDescription[];
+
 extern const char kForceReSyncDriveName[];
 extern const char kForceReSyncDriveDescription[];
 
