@@ -3389,7 +3389,7 @@
           Shuffle
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_INPUT_PLACEHOLDER" desc="Default text for an input field that is used to generate AI images.">
-        Describe the wallpaper you want to create or use a sample prompt
+        Describe the wallpaper you want to create
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_ERROR_NO_INTERNET" desc="Error message displayed when there is no internet connection.">
           Make sure you're connected to the internet and try again.
