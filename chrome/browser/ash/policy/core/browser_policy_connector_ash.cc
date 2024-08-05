@@ -75,6 +75,7 @@
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/onc/onc_certificate_importer_impl.h"
+#include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
@@ -355,6 +356,9 @@ void BrowserPolicyConnectorAsh::Init(
 
   device_dlc_predownload_list_policy_handler_ =
       DeviceDlcPredownloadListPolicyHandler::Create();
+
+  device_restriction_schedule_controller_ =
+      std::make_unique<DeviceRestrictionScheduleController>();
 }
 
 void BrowserPolicyConnectorAsh::OnBrowserStarted() {
@@ -388,6 +392,7 @@ void BrowserPolicyConnectorAsh::PreShutdown() {
 }
 
 void BrowserPolicyConnectorAsh::Shutdown() {
+  device_restriction_schedule_controller_.reset();
   device_cert_provisioning_scheduler_.reset();
   system_proxy_handler_.reset();
 

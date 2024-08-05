@@ -14,6 +14,14 @@ namespace policy {
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
     DeviceRestrictionScheduleController {
  public:
+  DeviceRestrictionScheduleController();
+  ~DeviceRestrictionScheduleController();
+
+  DeviceRestrictionScheduleController(
+      const DeviceRestrictionScheduleController&) = delete;
+  DeviceRestrictionScheduleController& operator=(
+      const DeviceRestrictionScheduleController&) = delete;
+
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 };
 

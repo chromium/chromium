@@ -99,6 +99,7 @@ static_library("core") {
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/components/policy",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
     "//chromeos/constants",

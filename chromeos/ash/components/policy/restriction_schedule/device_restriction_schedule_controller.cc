@@ -9,6 +9,12 @@
 
 namespace policy {
 
+DeviceRestrictionScheduleController::DeviceRestrictionScheduleController() =
+    default;
+
+DeviceRestrictionScheduleController::~DeviceRestrictionScheduleController() =
+    default;
+
 // static
 void DeviceRestrictionScheduleController::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
