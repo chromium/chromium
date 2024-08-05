@@ -1074,6 +1074,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("MojoUseBinder"),
         Flag.baseFeature(
                 ContentFeatures.WEB_PERMISSIONS_API, "Enables navigator.permissions.query()"),
+        Flag.baseFeature(
+                MediaFeatures.BUILT_IN_H264_DECODER, "Controls use of FFmpeg for H.264 decoding"),
+
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
