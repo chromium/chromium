@@ -259,6 +259,8 @@ public class LaunchIntentDispatcher {
         newIntent.setAction(Intent.ACTION_VIEW);
         newIntent.setData(uri);
         newIntent.setClassName(context, CustomTabActivity.class.getName());
+        // Make sure the result of the CustomTabActivity is forwarded to the client.
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
 
         // Since configureIntentForResizableCustomTab() might change the componenet/class
         // associated with the passed intent, it needs to be called after #setClassName(context,
