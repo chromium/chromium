@@ -172,6 +172,13 @@
                 "domain": "DeviceAccess",
                 "include": ["enable", "disable", "selectPrompt", "cancelPrompt"],
                 "include_events": ["deviceRequestPrompted"]
+            },
+            {
+                "domain": "BluetoothEmulation",
+                "async": [
+                    "simulatePreconnectedPeripheral",
+                    "simulateAdvertisement"
+                ]
             }
         ]
     },

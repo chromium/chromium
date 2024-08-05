@@ -2369,3 +2369,8 @@ crbug.com/346991169 [ Mac ] external/wpt/file-system-access/local_FileSystemWrit
 crbug.com/346991169 [ Mac ] external/wpt/file-system-access/local_FileSystemWritableFileStream-write-manual.https.html [ Skip ]
 crbug.com/346991169 [ Mac ] external/wpt/file-system-access/showDirectoryPicker-manual.https.html [ Skip ]
 crbug.com/346991169 [ Mac ] external/wpt/file-system-access/showOpenFilePicker-manual.https.html [ Skip ]
+
+# Web Bluetooth Emulation is not supported on Android, Fuchsia and iOS due to binary size constraints.
+crbug.com/342191615 [ Android ] inspector-protocol/bluetooth/* [ Skip ]
+crbug.com/342191615 [ Fuchsia ] inspector-protocol/bluetooth/* [ Skip ]
+crbug.com/342191615 [ iOS17-simulator ] inspector-protocol/bluetooth/* [ Skip ]

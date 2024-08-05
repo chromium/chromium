@@ -47,6 +47,12 @@ needed for tests.
 Design Doc:
 https://docs.google.com/document/d/1Nhv_oVDCodd1pEH_jj9k8gF4rPGb_84VYaZ9IG8M_WY
 
+## BluetoothEmulation support in Chrome Devtools Protocol
+
+The `BluetoothEmulation` domain in
+[Chrome Devtools Protocol](third_party/blink/public/devtools_protocol/browser_protocol.pdl)
+now supports Bluetooth Device Emulation via the FakeBluetooth backend implemented in
+content/browser/devtools/protocol/bluetooth_emulation_handler.h.
 
 ## Implementation Testing
 

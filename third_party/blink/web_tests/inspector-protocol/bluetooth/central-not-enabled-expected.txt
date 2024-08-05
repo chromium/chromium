@@ -1,0 +1,10 @@
+Tests that Bluetooth.simulateCentral is executable only after Enable
+{
+    code : -32000
+    message : BluetoothEmulation not enabled
+}
+{
+    code : -32000
+    message : BluetoothEmulation not enabled
+}
+

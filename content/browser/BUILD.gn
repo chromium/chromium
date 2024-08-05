@@ -15,6 +15,7 @@ import("//chromeos/ash/components/assistant/assistant.gni")
 import("//components/viz/common/debugger/viz_debugger.gni")
 import("//content/common/features.gni")
 import("//content/public/common/zygote/features.gni")
+import("//device/bluetooth/emulation/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/media_options.gni")
@@ -2366,6 +2367,20 @@ source_set("browser") {
     "worker_host/worker_script_loader_factory.cc",
     "worker_host/worker_script_loader_factory.h",
   ]
+
+  if (enable_bluetooth_emulation) {
+    deps += [
+      "//device/bluetooth:fake_bluetooth",
+      "//device/bluetooth/public/mojom:fake_bluetooth_interfaces",
+    ]
+
+    sources += [
+      "$target_gen_dir/devtools/protocol/bluetooth_emulation.cc",
+      "$target_gen_dir/devtools/protocol/bluetooth_emulation.h",
+      "devtools/protocol/bluetooth_emulation_handler.cc",
+      "devtools/protocol/bluetooth_emulation_handler.h",
+    ]
+  }
 
   # TODO(crbug.com/40226169): Remove `permissions_common`.
   # DO NOT add unrelated entries to this block.
