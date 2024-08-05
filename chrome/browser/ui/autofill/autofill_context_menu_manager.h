@@ -154,11 +154,9 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   void ExecuteFallbackForAddressesCommand(
       ContentAutofillDriver& autofill_driver);
 
-  // Gets the `AutofillField` described by the `params_` from the `manager`.
-  // The `frame_token` is used to map from the `params_` renderer id to a global
-  // id.
-  AutofillField* GetAutofillField(AutofillManager& manager,
-                                  const LocalFrameToken& frame_token) const;
+  // Gets the `AutofillField` described by the `params_` from the
+  // `autofill_driver`'s manager.
+  AutofillField* GetAutofillField(AutofillDriver& autofill_driver) const;
 
   // Dangling on linux-lacros-rel in:
   // AutofillContextMenuManagerFeedbackUILacrosBrowserTest

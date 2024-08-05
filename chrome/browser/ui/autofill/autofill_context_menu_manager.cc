@@ -486,8 +486,7 @@ bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(
   // cleaned up. At that point, we can only check whether a profile exists or if
   // the user is not in incognito mode. Whether the field can be filled will be
   // irrelevant.
-  AutofillField* field = GetAutofillField(autofill_driver.GetAutofillManager(),
-                                          autofill_driver.GetFrameToken());
+  AutofillField* field = GetAutofillField(autofill_driver);
   if (field && FieldTypeGroupToFormType(field->Type().group()) ==
                    FormType::kAddressForm) {
     // Show the context menu entry for address fields, which can be filled
@@ -592,8 +591,7 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
 
 void AutofillContextMenuManager::LogAddressManualFallbackContextMenuEntryShown(
     ContentAutofillDriver& autofill_driver) {
-  AutofillField* field = GetAutofillField(autofill_driver.GetAutofillManager(),
-                                          autofill_driver.GetFrameToken());
+  AutofillField* field = GetAutofillField(autofill_driver);
   const bool address_option_shown_for_field_not_classified_as_address =
       !IsAddressType(field ? field->Type().GetStorableType() : UNKNOWN_TYPE);
 
@@ -614,8 +612,7 @@ void AutofillContextMenuManager::LogAddressManualFallbackContextMenuEntryShown(
 
 void AutofillContextMenuManager::LogPaymentsManualFallbackContextMenuEntryShown(
     ContentAutofillDriver& autofill_driver) {
-  AutofillField* field = GetAutofillField(autofill_driver.GetAutofillManager(),
-                                          autofill_driver.GetFrameToken());
+  AutofillField* field = GetAutofillField(autofill_driver);
   const bool payments_option_shown_for_field_not_classified_as_payments =
       !field || !FieldTypeGroupSet({FieldTypeGroup::kCreditCard,
                                     FieldTypeGroup::kStandaloneCvcField})
@@ -643,22 +640,21 @@ void AutofillContextMenuManager::
         AutofillDriver& autofill_driver) {
   BrowserAutofillManager& manager = static_cast<BrowserAutofillManager&>(
       autofill_driver.GetAutofillManager());
-  AutofillField* field =
-      GetAutofillField(manager, autofill_driver.GetFrameToken());
+  AutofillField* field = GetAutofillField(autofill_driver);
 
-      const bool is_address_field =
-          field && IsAddressType(field->Type().GetStorableType());
-      if (is_address_field) {
-        // Address manual fallback was triggered from a classified address
-        // field.
-        manager.GetAutocompleteUnrecognizedFallbackEventLogger()
-            .ContextMenuEntryAccepted(
-                /*address_field_has_ac_unrecognized=*/field
-                    ->ShouldSuppressSuggestionsAndFillingByDefault());
-      } else {
-        manager.GetManualFallbackEventLogger().ContextMenuEntryAccepted(
-            FillingProduct::kAddress);
-      }
+  const bool is_address_field =
+      field && IsAddressType(field->Type().GetStorableType());
+  if (is_address_field) {
+    // Address manual fallback was triggered from a classified address
+    // field.
+    manager.GetAutocompleteUnrecognizedFallbackEventLogger()
+        .ContextMenuEntryAccepted(
+            /*address_field_has_ac_unrecognized=*/field
+                ->ShouldSuppressSuggestionsAndFillingByDefault());
+  } else {
+    manager.GetManualFallbackEventLogger().ContextMenuEntryAccepted(
+        FillingProduct::kAddress);
+  }
 }
 
 void AutofillContextMenuManager::
@@ -666,8 +662,7 @@ void AutofillContextMenuManager::
         AutofillDriver& autofill_driver) {
   BrowserAutofillManager& manager = static_cast<BrowserAutofillManager&>(
       autofill_driver.GetAutofillManager());
-  AutofillField* field =
-      GetAutofillField(manager, autofill_driver.GetFrameToken());
+  AutofillField* field = GetAutofillField(autofill_driver);
 
   if (!field || !FieldTypeGroupSet{FieldTypeGroup::kCreditCard,
                                    FieldTypeGroup::kStandaloneCvcField}
@@ -753,9 +748,7 @@ void AutofillContextMenuManager::ExecuteFallbackForSelectPasswordCommand(
 
 void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
     ContentAutofillDriver& autofill_driver) {
-  AutofillManager& manager = autofill_driver.GetAutofillManager();
-  AutofillField* field =
-      GetAutofillField(manager, autofill_driver.GetFrameToken());
+  AutofillField* field = GetAutofillField(autofill_driver);
   if (!field && !base::FeatureList::IsEnabled(
                     features::kAutofillForUnclassifiedFieldsAvailable)) {
     // The field should generally exist, since the fallback option is only shown
@@ -839,12 +832,11 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
       features::kAutofillForUnclassifiedFieldsAvailable);
 }
 
-// TODO(crbug.com/321678141): Pass the driver instead of the manager.
 AutofillField* AutofillContextMenuManager::GetAutofillField(
-    AutofillManager& manager,
-    const LocalFrameToken& frame_token) const {
+    AutofillDriver& autofill_driver) const {
   CHECK(ShouldShowAutofillContextMenu(params_));
-  FormStructure* form = manager.FindCachedFormById(
+  const LocalFrameToken frame_token = autofill_driver.GetFrameToken();
+  FormStructure* form = autofill_driver.GetAutofillManager().FindCachedFormById(
       {frame_token, FormRendererId(params_.form_renderer_id)});
   return form ? form->GetFieldById(
                     {frame_token, FieldRendererId(params_.field_renderer_id)})
