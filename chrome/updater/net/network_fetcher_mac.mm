@@ -12,6 +12,8 @@
 
 #import "base/apple/foundation_util.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -25,6 +27,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/net/fallback_net_fetcher.h"
 #include "chrome/updater/net/network.h"
+#include "chrome/updater/net/network_file_fetcher.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/util/util.h"
 #include "components/update_client/network.h"
@@ -38,6 +41,15 @@ using PostRequestCompleteCallback =
     update_client::NetworkFetcher::PostRequestCompleteCallback;
 using DownloadToFileCompleteCallback =
     update_client::NetworkFetcher::DownloadToFileCompleteCallback;
+
+namespace {
+
+base::span<const uint8_t> AsByteSpan(NSData* data) {
+  return base::span<const uint8_t>(static_cast<const uint8_t*>(data.bytes),
+                                   data.length);
+}
+
+}  // namespace
 
 @interface CRUUpdaterNetworkController : NSObject <NSURLSessionDelegate>
 - (instancetype)initWithResponseStartedCallback:
@@ -273,9 +285,99 @@ using DownloadToFileCompleteCallback =
 
 @end
 
-namespace base {
-class SequencedTaskRunner;
+@interface CRUUpdaterNetworkDownloadDataDelegate
+    : CRUUpdaterNetworkController <NSURLSessionDataDelegate>
+- (instancetype)
+    initWithResponseStartedCallback:
+        (ResponseStartedCallback)responseStartedCallback
+                   progressCallback:(ProgressCallback)progressCallback
+                             output:(base::File)output
+     downloadToFileCompleteCallback:
+         (DownloadToFileCompleteCallback)downloadToFileCompleteCallback;
+@end
+
+@implementation CRUUpdaterNetworkDownloadDataDelegate {
+  base::File _output;
+  DownloadToFileCompleteCallback _downloadToFileCompleteCallback;
 }
+
+- (instancetype)
+    initWithResponseStartedCallback:
+        (ResponseStartedCallback)responseStartedCallback
+                   progressCallback:(ProgressCallback)progressCallback
+                             output:(base::File)output
+     downloadToFileCompleteCallback:
+         (DownloadToFileCompleteCallback)downloadToFileCompleteCallback {
+  if (self = [super
+          initWithResponseStartedCallback:std::move(responseStartedCallback)
+                         progressCallback:progressCallback]) {
+    _output = std::move(output);
+    _downloadToFileCompleteCallback = std::move(downloadToFileCompleteCallback);
+  }
+  return self;
+}
+
+#pragma mark - NSURLSessionDataDelegate
+
+// Write the downloaded contents to the file. Cancels the download if there's
+// write error. It's up to the caller to handle the partially written file.
+- (void)URLSession:(NSURLSession*)session
+          dataTask:(NSURLSessionDataTask*)dataTask
+    didReceiveData:(NSData*)data {
+  if (_output.WriteAtCurrentPosAndCheck(AsByteSpan(data))) {
+    _callbackRunner->PostTask(
+        FROM_HERE, base::BindOnce(_progressCallback, _output.GetLength()));
+    [dataTask resume];
+  } else {
+    VLOG(1) << __func__ << ": File write error, download job cancelled.";
+    _callbackRunner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(_downloadToFileCompleteCallback),
+                                  updater::kErrorFailedToWriteFile, -1));
+    [dataTask cancel];
+  }
+}
+
+// Tells the delegate that the data task received the initial reply from the
+// server.
+- (void)URLSession:(NSURLSession*)session
+              dataTask:(NSURLSessionDataTask*)dataTask
+    didReceiveResponse:(NSURLResponse*)response
+     completionHandler:
+         (void (^)(NSURLSessionResponseDisposition))completionHandler {
+  _callbackRunner->PostTask(
+      FROM_HERE, base::BindOnce(std::move(_responseStartedCallback),
+                                [(NSHTTPURLResponse*)response statusCode],
+                                dataTask.countOfBytesExpectedToReceive));
+  if (completionHandler) {
+    completionHandler(NSURLSessionResponseAllow);
+  }
+  [dataTask resume];
+}
+
+#pragma mark - NSURLSessionDelegate
+
+- (void)URLSession:(NSURLSession*)session
+                    task:(NSURLSessionTask*)task
+    didCompleteWithError:(NSError*)error {
+  [super URLSession:session task:task didCompleteWithError:error];
+
+  NSInteger result;
+  if (error) {
+    result = error.code;
+    DLOG(ERROR) << "NSError code: " << result
+                << ". NSErrorDomain: " << base::SysNSStringToUTF8(error.domain)
+                << ". NSError description: "
+                << base::SysNSStringToUTF8(error.description);
+  } else {
+    NSHTTPURLResponse* response = (NSHTTPURLResponse*)task.response;
+    result = response.statusCode == 200 ? 0 : response.statusCode;
+  }
+  _callbackRunner->PostTask(
+      FROM_HERE, base::BindOnce(std::move(_downloadToFileCompleteCallback),
+                                result, [task countOfBytesReceived]));
+}
+
+@end
 
 namespace updater {
 namespace {
@@ -395,6 +497,40 @@ base::OnceClosure NetworkFetcher::DownloadToFile(
 }
 
 }  // namespace
+
+base::OnceClosure NetworkFileFetcher::Download(
+    const GURL& url,
+    base::File output,
+    update_client::NetworkFetcher::ResponseStartedCallback
+        response_started_callback,
+    update_client::NetworkFetcher::ProgressCallback progress_callback,
+    update_client::NetworkFetcher::DownloadToFileCompleteCallback
+        download_to_file_complete_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CRUUpdaterNetworkDownloadDataDelegate* delegate =
+      [[CRUUpdaterNetworkDownloadDataDelegate alloc]
+          initWithResponseStartedCallback:std::move(response_started_callback)
+                         progressCallback:progress_callback
+                                   output:std::move(output)
+           downloadToFileCompleteCallback:
+               std::move(download_to_file_complete_callback)];
+
+  NSURLSession* session =
+      [NSURLSession sessionWithConfiguration:NSURLSessionConfiguration
+                                                 .defaultSessionConfiguration
+                                    delegate:delegate
+                               delegateQueue:nil];
+
+  NSMutableURLRequest* urlRequest =
+      [[NSMutableURLRequest alloc] initWithURL:net::NSURLWithGURL(url)];
+  [urlRequest setValue:base::SysUTF8ToNSString(GetUpdaterUserAgent())
+      forHTTPHeaderField:@"User-Agent"];
+
+  NSURLSessionDataTask* dataTask = [session dataTaskWithRequest:urlRequest];
+  [dataTask resume];
+  return base::DoNothing();
+}
 
 class NetworkFetcherFactory::Impl {};
 

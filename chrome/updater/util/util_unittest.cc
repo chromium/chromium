@@ -4,6 +4,7 @@
 
 #include "chrome/updater/util/util.h"
 
+#include <cstdint>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -200,6 +201,19 @@ TEST(WinUtil, GetDownloadProgress) {
   EXPECT_EQ(GetDownloadProgress(0, -1), -1);
   EXPECT_EQ(GetDownloadProgress(-1, -1), -1);
   EXPECT_EQ(GetDownloadProgress(50, 0), -1);
+}
+
+TEST(Util, ToSignedIntegral) {
+  EXPECT_EQ(ToSignedIntegral(uint8_t{0}), 0);
+  EXPECT_EQ(ToSignedIntegral(uint8_t{0x7F}), 0x7F);
+  EXPECT_EQ(ToSignedIntegral(uint8_t{0x80}), -1);
+  EXPECT_EQ(ToSignedIntegral(uint32_t{0}), 0);
+  EXPECT_EQ(ToSignedIntegral(uint32_t{1357}), 1357);
+  EXPECT_EQ(ToSignedIntegral(uint32_t{0x7FFFFFFF}), 0x7FFFFFFF);
+  EXPECT_EQ(ToSignedIntegral(uint32_t{0x80000000}), -1);
+  EXPECT_EQ(ToSignedIntegral(uint32_t{0xFFFFFFFF}), -1);
+  EXPECT_EQ(ToSignedIntegral(uint64_t{0x7FFFFFFFFFFFFFFF}), 0x7FFFFFFFFFFFFFFF);
+  EXPECT_EQ(ToSignedIntegral(uint64_t{0x8000000000000000}), -1);
 }
 
 }  // namespace updater

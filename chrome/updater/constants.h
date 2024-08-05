@@ -93,6 +93,9 @@ inline constexpr char kCrashHandlerSwitch[] = "crash-handler";
 // Updates the updater.
 inline constexpr char kUpdateSwitch[] = "update";
 
+// Run as a network worker.
+inline constexpr char kNetWorkerSwitch[] = "net-worker";
+
 // Installs the updater. Takes an optional argument for the meta installer tag.
 // The tag is a string of arguments, separated by a delimiter (in this case, the
 // delimiter is `&`). The tag is typically embedded in the program image of the
@@ -505,6 +508,12 @@ inline constexpr int kErrorPathOwnershipMismatch = kUpdaterErrorBase + 74;
 // A setup process could not acquire the lock needed to run.
 inline constexpr int kErrorFailedToLockSetupMutex = kUpdaterErrorBase + 75;
 
+// Cannot establish a Mojo connection.
+inline constexpr int kErrorMojoConnectionFailure = kUpdaterErrorBase + 76;
+
+// Mojo server rejected the request.
+inline constexpr int kErrorMojoRequestRejected = kUpdaterErrorBase + 77;
+
 // Policy Management constants.
 // The maximum value allowed for policy AutoUpdateCheckPeriodMinutes.
 inline constexpr int kMaxAutoUpdateCheckPeriodMinutes = 43200;
@@ -555,6 +564,9 @@ inline constexpr int kUninstallPingReasonNeverHadApps = 3;
 
 // The file downloaded to a temporary location could not be moved.
 inline constexpr int kErrorFailedToMoveDownloadedFile = 5;
+
+// Error occurred during file writing.
+inline constexpr int kErrorFailedToWriteFile = 6;
 
 inline constexpr base::TimeDelta kInitialDelay = base::Minutes(1);
 inline constexpr base::TimeDelta kServerKeepAliveTime = base::Seconds(10);
