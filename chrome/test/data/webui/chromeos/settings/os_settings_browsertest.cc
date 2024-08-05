@@ -1991,8 +1991,9 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsSettingsUiPrefSync) {
   RunSettingsTest("os_settings_ui/os_settings_ui_pref_sync_test.js");
 }
 
+// TODO(b/354464273) Fix this flaky test.
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
-                       OsSettingsUiScrollRestoration) {
+                       DISABLED_OsSettingsUiScrollRestoration) {
   RunSettingsTest("os_settings_ui/scroll_restoration_test.js");
 }
 
