@@ -2500,6 +2500,8 @@ base::Value SiteSettingsHandler::GetOSGlobalPermissionStatus() {
   // TODO(b/331784136): Make the settings link clickable.
   base::Value::Dict block_messages_dict;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // This functionality is targeting cros.
   if (system_permission_settings::IsDenied(
           ContentSettingsType::MEDIASTREAM_CAMERA)) {
     block_messages_dict.Set(
@@ -2529,6 +2531,7 @@ base::Value SiteSettingsHandler::GetOSGlobalPermissionStatus() {
             l10n_util::GetStringUTF16(
                 IDS_PAGE_INFO_SETTINGS_OF_A_SYSTEM_LINK))));
   }
+#endif
 
   return base::Value(std::move(block_messages_dict));
 }

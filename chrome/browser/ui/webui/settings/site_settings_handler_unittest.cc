@@ -6421,6 +6421,7 @@ TEST_F(SiteSettingsHandlerTest, IsolatedWebAppClearUnpartitionedUsage) {
       /*expected_fps_member_count_string=*/"", /*expected_fps_policy=*/false);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 class SiteSettingsGlobalPermissionTest
     : public SiteSettingsHandlerBaseTest,
       public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
@@ -6475,5 +6476,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Combine(testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
+#endif
 
 }  // namespace settings
