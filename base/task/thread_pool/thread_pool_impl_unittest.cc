@@ -970,7 +970,7 @@ TEST_P(ThreadPoolImplTest, FileDescriptorWatcherNoOpsAfterShutdown) {
   thread_pool_->Shutdown();
 
   constexpr char kByte = '!';
-  ASSERT_TRUE(WriteFileDescriptor(pipes[1], as_bytes(span_from_ref(kByte))));
+  ASSERT_TRUE(WriteFileDescriptor(pipes[1], byte_span_from_ref(kByte)));
 
   // Give a chance for the file watcher to fire before closing the handles.
   PlatformThread::Sleep(TestTimeouts::tiny_timeout());

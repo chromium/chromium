@@ -239,7 +239,7 @@ class StreamingUtf8ValidatorSingleSequenceTest : public ::testing::Test {
       std::string_view sequence = *it;
       StreamingUtf8Validator::State state = VALID_ENDPOINT;
       for (const auto& cit : sequence) {
-        state = validator.AddBytes(base::as_bytes(base::span_from_ref(cit)));
+        state = validator.AddBytes(base::byte_span_from_ref(cit));
       }
       EXPECT_EQ(expected, state) << "Failed for \"" << sequence << "\"";
     }

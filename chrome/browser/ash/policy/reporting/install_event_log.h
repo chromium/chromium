@@ -169,14 +169,13 @@ void InstallEventLog<T, C>::Store() {
   }
 
   if (!file.WriteAtCurrentPosAndCheck(
-          base::as_bytes(base::span_from_ref(kLogFileVersion)))) {
+          base::byte_span_from_ref(kLogFileVersion))) {
     LOG(WARNING) << "Unable to store install log.";
     return;
   }
 
   ssize_t entries = logs_.size();
-  if (!file.WriteAtCurrentPosAndCheck(
-          base::as_bytes(base::span_from_ref(entries)))) {
+  if (!file.WriteAtCurrentPosAndCheck(base::byte_span_from_ref(entries))) {
     LOG(WARNING) << "Unable to store install log.";
     return;
   }

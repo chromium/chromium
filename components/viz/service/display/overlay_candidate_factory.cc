@@ -405,7 +405,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
       // Intentionally throwing away the high bits (assuming that hash entropy
       // is uniformly spread across all the bits).
       size_t original_hash =
-          base::FastHash(base::as_bytes(base::span_from_ref(track_data)));
+          base::FastHash(base::byte_span_from_ref(track_data));
       uint32_t narrow_hash = static_cast<uint32_t>(original_hash);
       candidate.tracking_id = narrow_hash;
     }

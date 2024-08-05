@@ -27,7 +27,7 @@ namespace internal {
 
 struct HandleHash {
   size_t operator()(const HANDLE& handle) const {
-    return base::FastHash(as_bytes(span_from_ref(handle)));
+    return base::FastHash(byte_span_from_ref(handle));
   }
 };
 

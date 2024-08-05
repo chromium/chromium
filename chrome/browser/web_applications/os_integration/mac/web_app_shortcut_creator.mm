@@ -183,8 +183,7 @@ bool AddPathToRPath(const base::FilePath& executable_path,
       header.sizeofcmds += new_rpath_command.cmdsize;
 
       // Write the updated header and commands back to the file.
-      if (!executable_file.WriteAndCheck(
-              0, base::as_bytes(base::span_from_ref(header))) ||
+      if (!executable_file.WriteAndCheck(0, base::byte_span_from_ref(header)) ||
           !executable_file.WriteAndCheck(sizeof header,
                                          base::make_span(commands))) {
         LOG(ERROR) << "Failed to write updated load commands to "

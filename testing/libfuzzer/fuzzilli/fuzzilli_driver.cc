@@ -90,8 +90,7 @@ int LLVMFuzzerRunDriverImpl(int* argc,
 
     // Fuzzilli status is similar to the Linux return status. Lower 8 bits are
     // used for signals, and higher 8 bits for return code.
-    ctrl_write_file.WriteAtCurrentPosAndCheck(
-        base::as_bytes(base::span_from_ref(status)));
+    ctrl_write_file.WriteAtCurrentPosAndCheck(base::byte_span_from_ref(status));
 
     // After every iteration, we reset the coverage edges so that we can mark
     // which edges are hit in the next iteration. This is needed by Fuzzilli

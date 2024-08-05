@@ -72,8 +72,7 @@ void SaveMD5Sum(const base::FilePath& path,
   base::MD5Digest digest = ComputeMD5Sum(*frame_buffer);
 
   // Write sum to disk.
-  ASSERT_TRUE(
-      base::WriteFile(path, base::as_bytes(base::span_from_ref(digest))));
+  ASSERT_TRUE(base::WriteFile(path, base::byte_span_from_ref(digest)));
 }
 #endif
 
