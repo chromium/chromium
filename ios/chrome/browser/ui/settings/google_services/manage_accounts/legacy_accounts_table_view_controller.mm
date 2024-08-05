@@ -152,6 +152,8 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   DismissViewCallback _accountDetailsControllerDismissCallback;
 }
 
+@synthesize modelIdentityDataSource;
+
 - (instancetype)initWithBrowser:(Browser*)browser
               closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount
              applicationCommandsHandler:
@@ -175,7 +177,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.tableView.accessibilityIdentifier = kSettingsAccountsTableViewId;
+  self.tableView.accessibilityIdentifier = kSettingsLegacyAccountsTableViewId;
 
   [self loadModel];
 }

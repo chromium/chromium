@@ -758,7 +758,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)settingsAccountsCollectionView {
-  return grey_accessibilityID(kSettingsAccountsTableViewId);
+  return grey_accessibilityID(kSettingsLegacyAccountsTableViewId);
 }
 
 + (id<GREYMatcher>)settingsSafetyCheckTableView {

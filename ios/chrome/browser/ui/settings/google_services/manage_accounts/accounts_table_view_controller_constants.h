@@ -7,8 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+// The accessibility identifier of the view controller's legacy view.
+extern NSString* const kSettingsLegacyAccountsTableViewId;
 // The accessibility identifier of the view controller's view.
-extern NSString* const kSettingsAccountsTableViewId;
+extern NSString* const kSettingsEditAccountListTableViewId;
 // The accessibility identifier of the add account cell.
 extern NSString* const kSettingsAccountsTableViewAddAccountCellId;
 // The accessibility identifier of the signout cell.

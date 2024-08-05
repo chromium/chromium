@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_ACCOUNTS_LEGACY_ACCOUNTS_TABLE_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_consumer.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/with_overridable_model_identity_data_source.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
@@ -18,7 +19,8 @@ class Browser;
 // to Chrome.
 @interface LegacyAccountsTableViewController
     : SettingsRootTableViewController <AccountsConsumer,
-                                       SettingsControllerProtocol>
+                                       SettingsControllerProtocol,
+                                       WithOverridableModelIdentityDataSource>
 
 // Model delegate.
 @property(nonatomic, weak) id<AccountsModelIdentityDataSource>

@@ -233,7 +233,7 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
       performAction:grey_tap()];
   // Checks the account settings is shown
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSettingsAccountsTableViewId)]
+                                          kSettingsEditAccountListTableViewId)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
