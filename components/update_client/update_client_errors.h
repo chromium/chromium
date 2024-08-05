@@ -44,6 +44,9 @@ enum class CrxDownloaderError {
   NO_HASH = 11,
   BAD_HASH = 12,  // The downloaded file fails the hash verification.
   DISK_FULL = 13,
+  CANCELLED = 14,
+  NO_DOWNLOAD_DIR = 15,
+
   // The Windows BITS queue contains to many update client jobs. The value is
   // chosen so that it can be reported as a custom COM error on this platform.
   BITS_TOO_MANY_JOBS = 0x0200,
