@@ -1817,6 +1817,9 @@ if (!is_android) {
       "//chrome/browser/resource_coordinator:tab_manager_features",
       "//chrome/browser/safe_browsing:advanced_protection",
       "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
+      "//chrome/browser/screen_ai:screen_ai_install_state",
+      "//chrome/browser/screen_ai:screen_ai_service_router_factory",
+      "//chrome/browser/screen_ai/public:test_support",
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/browser/segmentation_platform:test_utils",
@@ -2067,6 +2070,9 @@ if (!is_android) {
       "//components/tpcd/metadata/browser:test_support",
       "//components/tpcd/metadata/common/proto",
       "//components/variations/service",
+      "//services/screen_ai:test_support",
+      "//services/screen_ai/public/cpp:utilities",
+      "//services/screen_ai/public/mojom",
 
       # TODO(b/287255120) : Also add this as a dependency on Android for building test code.
       "//components/optimization_guide/core:test_support",
@@ -2440,10 +2446,12 @@ if (!is_android) {
 
     sources = [
       "../browser/accessibility/accessibility_labels_service_browsertest.cc",
+      "../browser/accessibility/ax_main_node_annotator_controller_browsertest.cc",
       "../browser/accessibility/browser_accessibility_state_browsertest.cc",
       "../browser/accessibility/image_annotation_browsertest.cc",
       "../browser/accessibility/interstitial_accessibility_browsertest.cc",
       "../browser/accessibility/page_colors_browsertest.cc",
+      "../browser/accessibility/pdf_ocr_controller_browsertest.cc",
       "../browser/attribution_reporting/chrome_attribution_browsertest.cc",
       "../browser/autocomplete/autocomplete_browsertest.cc",
       "../browser/autofill/content_autofill_shared_storage_handler_browsertest.cc",
@@ -2593,6 +2601,8 @@ if (!is_android) {
       "../browser/media/webrtc/tab_desktop_media_list_browsertest.cc",
       "../browser/media/webrtc/test_stats_dictionary_unittest.cc",
       "../browser/performance_manager/persistence/site_data/site_data_cache_facade_browsertest.cc",
+      "../browser/screen_ai/optical_character_recognizer_browsertest.cc",
+      "../browser/screen_ai/screen_ai_service_router_browsertest.cc",
       "../browser/webapps/installable/installable_manager_browsertest.cc",
       "../browser/webapps/installable/ml_promotion_browsertest.cc",
 
@@ -3234,34 +3244,14 @@ if (!is_android) {
       sources += [ "../browser/net/reporting_browsertest.cc" ]
     }
 
-    if (enable_screen_ai_service) {
-      sources += [
-        "../browser/accessibility/ax_main_node_annotator_controller_browsertest.cc",
-        "../browser/accessibility/pdf_ocr_controller_browsertest.cc",
-        "../browser/screen_ai/optical_character_recognizer_browsertest.cc",
-        "../browser/screen_ai/screen_ai_service_router_browsertest.cc",
-      ]
+    if (enable_screen_ai_browsertests) {
+      sources +=
+          [ "../browser/screen_ai/main_content_extraction_browsertest.cc" ]
 
-      if (enable_screen_ai_browsertests) {
-        sources +=
-            [ "../browser/screen_ai/main_content_extraction_browsertest.cc" ]
-      }
-
-      deps += [
-        "//chrome/browser/screen_ai:screen_ai_install_state",
-        "//chrome/browser/screen_ai:screen_ai_service_router_factory",
-        "//chrome/browser/screen_ai/public:test_support",
-        "//services/screen_ai:test_support",
-        "//services/screen_ai/public/cpp:utilities",
-        "//services/screen_ai/public/mojom",
-      ]
-
-      if (enable_screen_ai_browsertests) {
-        # Add a data dependency for screen_ai_service_router_browsertest.cc to
-        # notify testing builders that this test needs this library, which will
-        # need to be downloaded from CIPD as defined in //DEPS.
-        data_deps += [ "//third_party/screen-ai:screen_ai" ]
-      }
+      # Add a data dependency for screen_ai_service_router_browsertest.cc to
+      # notify testing builders that this test needs this library, which will
+      # need to be downloaded from CIPD as defined in //DEPS.
+      data_deps += [ "//third_party/screen-ai:screen_ai" ]
     }
 
     if (enable_allocation_trace_recorder_integration_tests) {
@@ -6376,6 +6366,7 @@ test("unit_tests") {
       "../browser/picture_in_picture/auto_pip_setting_view_unittest.cc",
       "../browser/picture_in_picture/picture_in_picture_occlusion_tracker_unittest.cc",
       "../browser/policy/messaging_layer/util/reporting_server_connector_unittest.cc",
+      "../browser/screen_ai/screen_ai_install_state_unittest.cc",
       "../browser/search_engine_choice/search_engine_choice_dialog_service_unittest.cc",
       "../browser/segmentation_platform/client_util/local_tab_handler_unittest.cc",
       "../browser/ssl/generated_https_first_mode_pref_unittest.cc",
@@ -6436,10 +6427,6 @@ test("unit_tests") {
       "../browser/notifications/notification_ui_manager_unittest.cc",
       "../browser/notifications/popups_only_ui_controller_unittest.cc",
     ]
-  }
-
-  if (enable_screen_ai_service) {
-    sources += [ "../browser/screen_ai/screen_ai_install_state_unittest.cc" ]
   }
 
   if (enable_webui_certificate_viewer) {
@@ -7317,13 +7304,6 @@ test("unit_tests") {
     ]
   }
 
-  if (enable_screen_ai_service) {
-    deps += [
-      "../browser/screen_ai:screen_ai_install_state",
-      "//services/screen_ai:test_support",
-    ]
-  }
-
   if (enable_soda_integration_tests) {
     deps += [ "//chrome/services/speech/soda:unit_tests" ]
   }
@@ -8190,6 +8170,7 @@ test("unit_tests") {
 
     # Non-android deps for "unit_tests" target.
     deps += [
+      "../browser/screen_ai:screen_ai_install_state",
       "//chrome:packed_resources_integrity_header",
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/apps/app_service",
@@ -8297,6 +8278,7 @@ test("unit_tests") {
       "//services/device/public/cpp/bluetooth",
       "//services/metrics/public/cpp:ukm_builders",
       "//services/network:test_support",
+      "//services/screen_ai:test_support",
       "//services/video_effects/test:test_support",
       "//third_party/crashpad/crashpad/util",
       "//third_party/libaddressinput",

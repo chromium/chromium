@@ -2018,6 +2018,8 @@ static_library("ui") {
       "//chrome/browser/new_tab_page/chrome_colors",
       "//chrome/browser/safe_browsing",
       "//chrome/browser/safe_browsing:advanced_protection",
+      "//chrome/browser/screen_ai:screen_ai_install_state",
+      "//chrome/browser/screen_ai:screen_ai_service_router_factory",
       "//chrome/browser/task_manager:impl",
       "//chrome/browser/themes",
       "//chrome/browser/ui/browser_window",
@@ -5593,13 +5595,6 @@ static_library("ui") {
 
     if (is_chromeos_lacros) {
       sources += [ "views/web_apps/isolated_web_apps/pref_observer_lacros.cc" ]
-    }
-
-    if (enable_screen_ai_service) {
-      deps += [
-        "//chrome/browser/screen_ai:screen_ai_install_state",
-        "//chrome/browser/screen_ai:screen_ai_service_router_factory",
-      ]
     }
 
     if (enable_compose) {

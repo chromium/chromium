@@ -2531,46 +2531,6 @@ static_library("browser") {
     "//ui/webui",
   ]
 
-  if (enable_screen_ai_service) {
-    sources += [
-      "accessibility/ax_main_node_annotator_controller.cc",
-      "accessibility/ax_main_node_annotator_controller.h",
-      "accessibility/ax_main_node_annotator_controller_factory.cc",
-      "accessibility/ax_main_node_annotator_controller_factory.h",
-      "accessibility/pdf_ocr_controller.cc",
-      "accessibility/pdf_ocr_controller.h",
-      "accessibility/pdf_ocr_controller_factory.cc",
-      "accessibility/pdf_ocr_controller_factory.h",
-    ]
-    deps += [
-      "//chrome/browser/screen_ai:prefs",
-      "//chrome/browser/screen_ai:screen_ai_install_state",
-      "//chrome/browser/screen_ai:screen_ai_service_router_factory",
-      "//chrome/browser/screen_ai/public:optical_character_recognizer",
-      "//services/screen_ai",
-      "//services/screen_ai/public/cpp:utilities",
-      "//services/screen_ai/public/mojom",
-    ]
-
-    if (is_chromeos) {
-      sources += [
-        "screen_ai/screen_ai_downloader_chromeos.cc",
-        "screen_ai/screen_ai_downloader_chromeos.h",
-      ]
-    } else {
-      sources += [
-        "component_updater/screen_ai_component_installer.cc",
-        "component_updater/screen_ai_component_installer.h",
-        "screen_ai/screen_ai_downloader_non_chromeos.cc",
-        "screen_ai/screen_ai_downloader_non_chromeos.h",
-      ]
-    }
-
-    if (is_chromeos_ash) {
-      deps += [ "//chrome/browser/screen_ai:screen_ai_dlc_installer" ]
-    }
-  }
-
   if (!is_chromeos) {
     deps += [
       "//components/reporting/storage:storage_configuration",
@@ -3559,11 +3519,19 @@ static_library("browser") {
   } else {
     #!is_android
     sources += [
+      "accessibility/ax_main_node_annotator_controller.cc",
+      "accessibility/ax_main_node_annotator_controller.h",
+      "accessibility/ax_main_node_annotator_controller_factory.cc",
+      "accessibility/ax_main_node_annotator_controller_factory.h",
       "accessibility/caption_bubble_context_browser.h",
       "accessibility/invert_bubble_prefs.cc",
       "accessibility/invert_bubble_prefs.h",
       "accessibility/live_translate_controller_factory.cc",
       "accessibility/live_translate_controller_factory.h",
+      "accessibility/pdf_ocr_controller.cc",
+      "accessibility/pdf_ocr_controller.h",
+      "accessibility/pdf_ocr_controller_factory.cc",
+      "accessibility/pdf_ocr_controller_factory.h",
       "apps/intent_helper/intent_chip_display_prefs.cc",
       "apps/intent_helper/intent_chip_display_prefs.h",
       "autocomplete/tab_matcher_desktop.cc",
@@ -4269,6 +4237,10 @@ static_library("browser") {
       "//chrome/browser/new_tab_page/chrome_colors",
       "//chrome/browser/policy:path_parser",
       "//chrome/browser/resources:component_extension_resources",
+      "//chrome/browser/screen_ai:prefs",
+      "//chrome/browser/screen_ai:screen_ai_install_state",
+      "//chrome/browser/screen_ai:screen_ai_service_router_factory",
+      "//chrome/browser/screen_ai/public:optical_character_recognizer",
       "//chrome/browser/search/background",
       "//chrome/browser/smart_card",
       "//chrome/browser/task_manager",
@@ -4335,6 +4307,9 @@ static_library("browser") {
       "//components/webauthn/core/browser:passkey_model",
       "//services/device/public/cpp/bluetooth",
       "//services/device/public/cpp/hid",
+      "//services/screen_ai",
+      "//services/screen_ai/public/cpp:utilities",
+      "//services/screen_ai/public/mojom",
       "//third_party/crashpad/crashpad/client:common",
       "//third_party/zxcvbn-cpp",
       "//ui/web_dialogs",
@@ -4377,6 +4352,8 @@ static_library("browser") {
     #!is_android
     if (!is_chromeos) {
       sources += [
+        "component_updater/screen_ai_component_installer.cc",
+        "component_updater/screen_ai_component_installer.h",
         "device_notifications/device_status_icon_renderer.cc",
         "device_notifications/device_status_icon_renderer.h",
         "external_protocol/auto_launch_protocols_policy_handler.cc",
@@ -4393,6 +4370,8 @@ static_library("browser") {
         "policy/chrome_browser_cloud_management_register_watcher.h",
         "policy/file_selection_dialogs_policy_handler.cc",
         "policy/file_selection_dialogs_policy_handler.h",
+        "screen_ai/screen_ai_downloader_non_chromeos.cc",
+        "screen_ai/screen_ai_downloader_non_chromeos.h",
         "usb/usb_status_icon.cc",
         "usb/usb_status_icon.h",
       ]
@@ -5101,6 +5080,7 @@ static_library("browser") {
       "//chrome/browser/push_notification:push_notification",
       "//chrome/browser/resources:app_icon_resources",
       "//chrome/browser/scalable_iph:scalable_iph_factory",
+      "//chrome/browser/screen_ai:screen_ai_dlc_installer",
       "//chrome/browser/ui/ash",
       "//chrome/browser/ui/ash/accessibility",
       "//chrome/browser/ui/ash/ambient",
@@ -5957,6 +5937,8 @@ static_library("browser") {
       "policy/system_features_disable_list_policy_handler.h",
       "renderer_context_menu/read_write_card_observer.cc",
       "renderer_context_menu/read_write_card_observer.h",
+      "screen_ai/screen_ai_downloader_chromeos.cc",
+      "screen_ai/screen_ai_downloader_chromeos.h",
       "speech/tts_crosapi_util.cc",
       "speech/tts_crosapi_util.h",
       "supervised_user/chromeos/chromeos_utils.cc",
