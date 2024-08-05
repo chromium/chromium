@@ -619,6 +619,24 @@ def GitApplyCherryPicks():
     GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
                   '14947b410ad23a09251180af50486e247f70b465')
 
+    # TODO(crbug.com/350341587): Remove once
+    # https://github.com/rust-lang/rust/pull/127025 or a similar fix has been
+    # merged.
+    GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                  '56d589b5bea75d08d21d7d6efb34e8527aec7635')
+
+    # TODO(https://crbug.com/357125724): Remove once compiler_builtins is fixed
+    RunCommand([
+        'git',
+        '-C',
+        RUST_SRC_DIR,
+        'revert',
+        '--no-edit',
+        '-m',
+        '1',
+        '80d8270d8488957f62fbf0df7a19dfe596be92ac',
+    ])
+
     print('Finished applying cherry-picks.')
 
 

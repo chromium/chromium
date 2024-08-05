@@ -425,6 +425,19 @@ template("cargo_crate") {
           rust_abi_target,
         ]
       }
+      if (current_cpu == "arm64" || current_cpu == "x64") {
+        args += [
+          "--pointer-width",
+          "64",
+        ]
+      } else if (current_cpu == "arm" || current_cpu == "x86") {
+        args += [
+          "--pointer-width",
+          "32",
+        ]
+      } else {
+        assert(false, "Architecture not supported")
+      }
       if (defined(invoker.features)) {
         args += [ "--features" ]
         args += invoker.features

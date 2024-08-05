@@ -76,6 +76,7 @@ def main():
                       required=True,
                       help='where to write output rustc flags')
   parser.add_argument('--target', help='rust target triple')
+  parser.add_argument('--pointer-width', help='rust target pointer width')
   parser.add_argument('--features', help='features', nargs='+')
   parser.add_argument('--env', help='environment variable', nargs='+')
   parser.add_argument('--rust-prefix', required=True, help='rust path prefix')
@@ -103,6 +104,7 @@ def main():
     env["OUT_DIR"] = tempdir
     env["CARGO_MANIFEST_DIR"] = os.path.abspath(args.src_dir)
     env["HOST"] = host_triple(rustc_path)
+    env["CARGO_CFG_TARGET_POINTER_WIDTH"] = args.pointer_width
     if args.target is None:
       env["TARGET"] = env["HOST"]
     else:
@@ -132,6 +134,7 @@ def main():
       env["CARGO_CFG_TARGET_OS"] = "android"
     elif env["CARGO_CFG_TARGET_OS"] == "darwin":
       env["CARGO_CFG_TARGET_OS"] = "macos"
+    env["CARGO_CFG_TARGET_POINTER_WIDTH"] = args.pointer_width
     if args.features:
       for f in args.features:
         feature_name = f.upper().replace("-", "_")
