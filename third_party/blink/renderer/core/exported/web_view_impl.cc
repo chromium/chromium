@@ -4073,6 +4073,10 @@ bool WebViewImpl::SupportsDraggableRegions() {
 }
 
 void WebViewImpl::DraggableRegionsChanged() {
+  if (!MainFrameImpl()) {
+    return;
+  }
+
   WebVector<WebDraggableRegion> web_regions =
       MainFrameImpl()->GetDocument().DraggableRegions();
 
