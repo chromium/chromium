@@ -2618,7 +2618,7 @@ BASE_FEATURE(kExpandCompositedCullRect,
 const base::FeatureParam<int>
     kCullRectPixelDistanceToExpand(&kExpandCompositedCullRect, "pixels", 4000);
 const base::FeatureParam<double>
-    kCullRectExpansionDPRCoef(&kExpandCompositedCullRect, "dpr-coef", 0);
+    kCullRectExpansionDPRCoef(&kExpandCompositedCullRect, "dpr_coef", 0);
 BASE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink,
              "TreatHTTPExpiresHeaderValueZeroAsExpiredInBlink",
              base::FEATURE_ENABLED_BY_DEFAULT);
