@@ -4752,13 +4752,25 @@ void Document::ProcessBaseElement() {
     }
   }
 
-  if (base_element_url != base_element_url_ &&
-      !base_element_url.ProtocolIsData() &&
-      !base_element_url.ProtocolIsJavaScript() && GetExecutionContext() &&
-      GetExecutionContext()->GetContentSecurityPolicy()->AllowBaseURI(
-          base_element_url)) {
-    base_element_url_ = base_element_url;
-    UpdateBaseURL();
+  if (base_element_url != base_element_url_) {
+    // https://html.spec.whatwg.org/multipage/semantics.html#the-base-element
+    // > If any of the following are true:
+    // > - urlRecord is failure;
+    // > - urlRecord's scheme is "data" or "javascript"; or
+    // > - running Is base allowed for Document? on urlRecord and document
+    // >   returns "Blocked"
+    // > then set element's frozen base URL to document's fallback base URL and
+    // > return.
+    if (!base_element_url.ProtocolIsData() &&
+        !base_element_url.ProtocolIsJavaScript() && GetExecutionContext() &&
+        GetExecutionContext()->GetContentSecurityPolicy()->AllowBaseURI(
+            base_element_url)) {
+      base_element_url_ = base_element_url;
+      UpdateBaseURL();
+    } else if (RuntimeEnabledFeatures::BaseElementUrlUseFallbackEnabled()) {
+      base_element_url_ = FallbackBaseURL();
+      UpdateBaseURL();
+    }
   }
 
   AtomicString old_base_target = base_target_;
