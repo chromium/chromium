@@ -32,7 +32,7 @@ extern const char kTranslateCompactInfobarEvent[];
 // server provided Content-Language matches to a language the model determined.
 // This enum is used for recording metrics. This enum should remain synchronized
 // with the enum "TranslateLanguageVerification" in enums.xml.
-enum LanguageVerificationType {
+enum LanguageVerificationType : int {
   DEPRECATED_LANGUAGE_VERIFICATION_MODEL_DISABLED,  // obsolete
   LANGUAGE_VERIFICATION_MODEL_ONLY,
   LANGUAGE_VERIFICATION_MODEL_UNKNOWN,
@@ -40,6 +40,8 @@ enum LanguageVerificationType {
   LANGUAGE_VERIFICATION_MODEL_DISAGREES,
   LANGUAGE_VERIFICATION_MODEL_OVERRIDES,
   LANGUAGE_VERIFICATION_MODEL_COMPLEMENTS_COUNTRY,
+  LANGUAGE_VERIFICATION_NO_PAGE_CONTENT,
+  LANGUAGE_VERIFICATION_MODEL_NOT_AVAILABLE,
   LANGUAGE_VERIFICATION_MAX,
 };
 
