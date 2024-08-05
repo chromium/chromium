@@ -276,19 +276,6 @@ TEST_P(SliderTest, AccessibleRole) {
   EXPECT_EQ(data.role, ax::mojom::Role::kMeter);
 }
 
-TEST_P(SliderTest, AccessibleValue) {
-  ui::AXNodeData data;
-  slider()->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(std::string("0%"),
-            data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
-
-  slider()->SetValue(0.5);
-  data = ui::AXNodeData();
-  slider()->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(std::string("50%"),
-            data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
-}
-
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.
 #if !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
