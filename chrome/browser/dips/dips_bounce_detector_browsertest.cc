@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -34,6 +35,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_storage.h"
@@ -55,17 +57,21 @@
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "content/public/browser/attribution_data_model.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cookie_access_details.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -4040,3 +4046,290 @@ IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          DIPSDataDeletionBrowserTest,
                          ::testing::Values(&kCookieStorage, &kLocalStorage));
+
+class DIPSBounceDetectorBFCacheTest : public DIPSBounceDetectorBrowserTest,
+                                      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    if (IsBFCacheEnabled() &&
+        !base::FeatureList::IsEnabled(features::kBackForwardCache)) {
+      GTEST_SKIP() << "BFCache disabled";
+    }
+    DIPSBounceDetectorBrowserTest::SetUp();
+  }
+  bool IsBFCacheEnabled() const { return GetParam(); }
+  void SetUpOnMainThread() override {
+    if (!IsBFCacheEnabled()) {
+      content::DisableBackForwardCacheForTesting(
+          GetActiveWebContents(),
+          content::BackForwardCache::DisableForTestingReason::
+              TEST_REQUIRES_NO_CACHING);
+    }
+
+    DIPSBounceDetectorBrowserTest::SetUpOnMainThread();
+  }
+};
+
+// Confirm that DIPS records a bounce that writes a cookie as stateful, even if
+// the user immediately navigates away.
+IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, LateCookieAccessTest) {
+  const GURL bounce_url =
+      embedded_test_server()->GetURL("b.test", "/empty.html");
+  const GURL final_url =
+      embedded_test_server()->GetURL("c.test", "/empty.html");
+
+  WebContents* const web_contents = GetActiveWebContents();
+  RedirectChainDetector* wco =
+      RedirectChainDetector::FromWebContents(web_contents);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("a.test", "/empty.html")));
+
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, bounce_url));
+  ASSERT_TRUE(content::ExecJs(web_contents, "document.cookie = 'bounce=true';",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                                   final_url));
+  URLCookieAccessObserver cookie_observer(web_contents, final_url,
+                                          CookieOperation::kChange);
+
+  ASSERT_TRUE(content::ExecJs(web_contents, "document.cookie = 'final=yes';",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  cookie_observer.Wait();
+  // Since cookies are reported serially, both cookie writes should have been
+  // reported by now.
+
+  const DIPSRedirectContext& context = wco->CommittedRedirectContext();
+  ASSERT_EQ(context.size(), 1u);
+  const DIPSRedirectInfo& redirect = context.AtForTesting(0);
+  EXPECT_EQ(redirect.url.url, bounce_url);
+  // A request to /favicon.ico may cause a cookie read in addition to the write
+  // we explicitly performed.
+  EXPECT_THAT(redirect.access_type,
+              testing::AnyOf(SiteDataAccessType::kWrite,
+                             SiteDataAccessType::kReadWrite));
+}
+
+// Confirm that WCO::OnCookiesAccessed() is always called even if the user
+// immediately navigates away.
+IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, CookieAccessReported) {
+  const GURL url1 = embedded_test_server()->GetURL("a.test", "/empty.html");
+  const GURL url2 = embedded_test_server()->GetURL("b.test", "/empty.html");
+  const GURL url3 = embedded_test_server()->GetURL("c.test", "/empty.html");
+
+  WebContents* const web_contents = GetActiveWebContents();
+  WCOCallbackLogger::CreateForWebContents(web_contents);
+  auto* logger = WCOCallbackLogger::FromWebContents(web_contents);
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url1));
+  ASSERT_TRUE(content::ExecJs(web_contents, "document.cookie = 'initial=true';",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url2));
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url3));
+  URLCookieAccessObserver cookie_observer(web_contents, url3,
+                                          CookieOperation::kChange);
+  ASSERT_TRUE(content::ExecJs(web_contents, "document.cookie = 'final=yes';",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  cookie_observer.Wait();
+
+  EXPECT_THAT(
+      logger->log(),
+      testing::Contains(
+          "OnCookiesAccessed(RenderFrameHost, Change: a.test/empty.html)"));
+}
+
+// Confirm that DIPS records an interaction, even if the user immediately
+// navigates away.
+IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, LateInteractionTest) {
+  const GURL bounce_url =
+      embedded_test_server()->GetURL("b.test", "/empty.html");
+  const GURL final_url =
+      embedded_test_server()->GetURL("c.test", "/empty.html");
+  WebContents* const web_contents = GetActiveWebContents();
+  RedirectChainDetector* wco =
+      RedirectChainDetector::FromWebContents(web_contents);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("a.test", "/empty.html")));
+
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, bounce_url));
+  content::SimulateMouseClick(web_contents, 0,
+                              blink::WebMouseEvent::Button::kLeft);
+  // Consume the transient user activation so the next navigation is not
+  // considered to be user-initiated and will be judged a bounce.
+  if (content::EvalJs(web_contents, "!open('about:blank')",
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+          .ExtractBool()) {
+    // Due to a race condition, the open() call might be executed before the
+    // click is processed, causing open() to fail and leaving the window with
+    // transient user activation. In such a case, just skip the test. (If we
+    // used UserActivationObserver::Wait() here, it would defeat the purpose of
+    // this test, which is to verify that DIPS sees the interaction even if the
+    // test doesn't wait for it.)
+    GTEST_SKIP();
+  }
+  ASSERT_FALSE(
+      web_contents->GetPrimaryMainFrame()->HasTransientUserActivation());
+
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                                   final_url));
+  UserActivationObserver interaction_observer(
+      web_contents, web_contents->GetPrimaryMainFrame());
+  content::SimulateMouseClick(web_contents, 0,
+                              blink::WebMouseEvent::Button::kLeft);
+  interaction_observer.Wait();
+
+  const DIPSRedirectContext& context = wco->CommittedRedirectContext();
+  ASSERT_EQ(context.size(), 1u);
+  const DIPSRedirectInfo& redirect = context.AtForTesting(0);
+  EXPECT_EQ(redirect.url.url, bounce_url);
+  EXPECT_THAT(redirect.has_sticky_activation, true);
+}
+
+IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, IsOrWasInPrimaryPage) {
+  WebContents* const web_contents = GetActiveWebContents();
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("a.test", "/empty.html")));
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  EXPECT_TRUE(IsInPrimaryPage(rfh));
+  EXPECT_TRUE(dips::IsOrWasInPrimaryPage(rfh));
+  const content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("b.test", "/empty.html")));
+  // Attempt to get a pointer to the RFH of the a.test page, although
+  rfh = content::RenderFrameHost::FromID(rfh_id);
+  if (IsBFCacheEnabled()) {
+    // If the bfcache is enabled, the RFH should be in the cache.
+    ASSERT_TRUE(rfh);
+    EXPECT_TRUE(rfh->IsInLifecycleState(
+        content::RenderFrameHost::LifecycleState::kInBackForwardCache));
+    // The page is no longer primary, but it used to be:
+    EXPECT_FALSE(IsInPrimaryPage(rfh));
+    EXPECT_TRUE(dips::IsOrWasInPrimaryPage(rfh));
+  } else {
+    // If the bfcache is disabled, the RFH may or may not be in memory. If it
+    // still is, it's only because it's pending deletion.
+    if (rfh) {
+      EXPECT_TRUE(rfh->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPendingDeletion));
+      // The page is no longer primary, but it used to be:
+      EXPECT_FALSE(IsInPrimaryPage(rfh));
+      EXPECT_TRUE(dips::IsOrWasInPrimaryPage(rfh));
+    }
+  }
+}
+
+// For waiting until prerendering starts.
+class PrerenderingObserver : public content::WebContentsObserver {
+ public:
+  explicit PrerenderingObserver(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  void Wait() { run_loop_.Run(); }
+
+  content::GlobalRenderFrameHostId rfh_id() const {
+    CHECK(rfh_id_.has_value());
+    return rfh_id_.value();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  std::optional<content::GlobalRenderFrameHostId> rfh_id_;
+
+  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
+};
+
+void PrerenderingObserver::RenderFrameCreated(
+    content::RenderFrameHost* render_frame_host) {
+  if (render_frame_host->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPrerendering)) {
+    rfh_id_ = render_frame_host->GetGlobalId();
+    run_loop_.Quit();
+  }
+}
+
+// Confirm that IsOrWasInPrimaryPage() returns false for prerendered pages that
+// are never activated.
+IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest,
+                       PrerenderedPagesAreNotPrimary) {
+  WebContents* const web_contents = GetActiveWebContents();
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("a.test", "/empty.html?primary")));
+
+  PrerenderingObserver observer(web_contents);
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+    const elt = document.createElement('script');
+    elt.setAttribute('type', 'speculationrules');
+    elt.textContent = JSON.stringify({
+      prerender: [{'urls': ['empty.html?prerendered']}]
+    });    document.body.appendChild(elt);
+  )"));
+  observer.Wait();
+  ASSERT_FALSE(testing::Test::HasFailure())
+      << "Failed waiting for prerendering";
+
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(observer.rfh_id());
+  ASSERT_TRUE(rfh);
+  EXPECT_FALSE(dips::IsOrWasInPrimaryPage(rfh));
+
+  // Navigating to another site may trigger destruction of the frame.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("b.test", "/empty.html")));
+
+  rfh = content::RenderFrameHost::FromID(observer.rfh_id());
+  if (rfh) {
+    // Even if it's still in memory, it was never primary.
+    EXPECT_FALSE(dips::IsOrWasInPrimaryPage(rfh));
+  }
+}
+
+// Confirm that IsOrWasInPrimaryPage() returns true for prerendered pages that
+// get activated.
+IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest,
+                       PrerenderedPagesCanBecomePrimary) {
+  WebContents* const web_contents = GetActiveWebContents();
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("a.test", "/empty.html?primary")));
+
+  PrerenderingObserver observer(web_contents);
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+    const elt = document.createElement('script');
+    elt.setAttribute('type', 'speculationrules');
+    elt.textContent = JSON.stringify({
+      prerender: [{'urls': ['empty.html?prerendered']}]
+    });
+    document.body.appendChild(elt);
+  )"));
+  observer.Wait();
+  ASSERT_FALSE(testing::Test::HasFailure())
+      << "Failed waiting for prerendering";
+
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(observer.rfh_id());
+  ASSERT_TRUE(rfh);
+  EXPECT_FALSE(dips::IsOrWasInPrimaryPage(rfh));
+
+  // Navigate to the prerendered page.
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+      web_contents,
+      embedded_test_server()->GetURL("a.test", "/empty.html?prerendered")));
+  // Navigate to another page, so the prerendered page is no longer active.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("b.test", "/empty.html")));
+
+  rfh = content::RenderFrameHost::FromID(observer.rfh_id());
+  if (rfh) {
+    EXPECT_FALSE(IsInPrimaryPage(rfh));
+    EXPECT_TRUE(dips::IsOrWasInPrimaryPage(rfh));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All, DIPSBounceDetectorBFCacheTest, ::testing::Bool());

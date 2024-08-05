@@ -84,6 +84,20 @@ std::vector<DIPSRedirectInfoPtr> CloneRedirects(
   return clones;
 }
 
+// If a PrimaryPageMarker is attached to a page, then it is or was the primary
+// page of its WebContents. We use it to determine whether late cookie access
+// notifications were from the primary page and so should be attributed to the
+// RedirectChainDetector's committed redirect context.
+class PrimaryPageMarker : public content::PageUserData<PrimaryPageMarker> {
+ private:
+  friend class content::PageUserData<PrimaryPageMarker>;
+  explicit PrimaryPageMarker(content::Page& page)
+      : content::PageUserData<PrimaryPageMarker>(page) {}
+  PAGE_USER_DATA_KEY_DECL();
+};
+
+PAGE_USER_DATA_KEY_IMPL(PrimaryPageMarker);
+
 }  // namespace
 
 /* static */
@@ -119,7 +133,9 @@ RedirectChainDetector::RedirectChainDetector(content::WebContents* web_contents)
       content::WebContentsUserData<RedirectChainDetector>(*web_contents),
       detector_(this,
                 base::DefaultTickClock::GetInstance(),
-                base::DefaultClock::GetInstance()) {}
+                base::DefaultClock::GetInstance()) {
+  PrimaryPageMarker::CreateForPage(web_contents->GetPrimaryPage());
+}
 
 RedirectChainDetector::~RedirectChainDetector() = default;
 
@@ -172,9 +188,6 @@ DIPSRedirectContext::~DIPSRedirectContext() = default;
 void DIPSRedirectContext::AppendClientRedirect(
     DIPSRedirectInfoPtr client_redirect) {
   DCHECK_EQ(client_redirect->redirect_type, DIPSRedirectType::kClient);
-  if (client_redirect->access_type > SiteDataAccessType::kNone) {
-    update_offset_ = redirects_.size();
-  }
   if (client_redirect->access_type > SiteDataAccessType::kRead) {
     redirectors_.insert(client_redirect->site);
   }
@@ -186,9 +199,6 @@ void DIPSRedirectContext::AppendServerRedirects(
     std::vector<DIPSRedirectInfoPtr> server_redirects) {
   for (auto& redirect : server_redirects) {
     DCHECK_EQ(redirect->redirect_type, DIPSRedirectType::kServer);
-    if (redirect->access_type > SiteDataAccessType::kNone) {
-      update_offset_ = redirects_.size();
-    }
     if (redirect->access_type > SiteDataAccessType::kRead) {
       redirectors_.insert(redirect->site);
     }
@@ -204,8 +214,6 @@ void DIPSRedirectContext::TrimRedirectsFromFront() {
   }
 
   TrimAndHandleRedirects(trim_count);
-
-  update_offset_ = base::ClampSub(update_offset_, trim_count);
 }
 
 void DIPSRedirectContext::ReportIssue(const GURL& final_url) {
@@ -417,24 +425,23 @@ void DIPSRedirectContext::EndChain(UrlAndSourceId final_url,
   initial_url_had_user_activation_ = current_page_has_sticky_activation;
   initial_url_ = std::move(final_url);
   redirects_.clear();
-  update_offset_ = 0;
 }
 
 bool DIPSRedirectContext::AddLateCookieAccess(GURL url, CookieOperation op) {
-  while (update_offset_ < redirects_.size()) {
-    if (redirects_[update_offset_]->url.url == url) {
-      redirects_[update_offset_]->access_type =
-          redirects_[update_offset_]->access_type | ToSiteDataAccessType(op);
+  const size_t kMaxLookback = 5;
+  const size_t lookback = std::min(kMaxLookback, redirects_.size());
+  for (size_t i = 1; i <= lookback; i++) {
+    const size_t offset = redirects_.size() - i;
+    if (redirects_[offset]->url.url == url) {
+      redirects_[offset]->access_type =
+          redirects_[offset]->access_type | ToSiteDataAccessType(op);
 
       // This cookie access might indicate a stateful bounce and ideally we'd
       // report an issue to notify the user, but the navigation already
       // committed and any relevant notifications were already emitted, so it's
       // too late.
-
       return true;
     }
-
-    update_offset_++;
   }
 
   return false;
@@ -673,22 +680,36 @@ void RedirectChainDetector::OnSiteDataAccessed(
 
 void RedirectChainDetector::OnStatefulBounceDetected() {}
 
+void RedirectChainDetector::PrimaryPageChanged(content::Page& page) {
+  PrimaryPageMarker::CreateForPage(page);
+}
+
+namespace dips {
+
+bool IsOrWasInPrimaryPage(content::RenderFrameHost* render_frame_host) {
+  return IsInPrimaryPage(render_frame_host) ||
+         PrimaryPageMarker::GetForPage(render_frame_host->GetPage());
+}
+
+}  // namespace dips
+
 void RedirectChainDetector::OnCookiesAccessed(
     content::RenderFrameHost* render_frame_host,
     const content::CookieAccessDetails& details) {
   // Discard all notifications that are:
   // - From other page types like FencedFrames and Prerendered.
   // - Blocked by policies.
-  if (!IsInPrimaryPage(render_frame_host) || details.blocked_by_policy) {
+  if (details.blocked_by_policy ||
+      !dips::IsOrWasInPrimaryPage(render_frame_host)) {
     return;
   }
 
   // We might be called for "late" server cookie accesses, not just client
-  // cookies. Before completing other checks, attempt to attribute the cookie
-  // access to the current redirect chain to handle that case.
+  // cookies. Before completing other checks, attempt to attribute the
+  // cookie access to the current redirect chain to handle that case.
   //
-  // TODO(rtarpine): Is it possible for cookie accesses to be reported late for
-  // uncommitted navigations?
+  // TODO(rtarpine): Is it possible for cookie accesses to be reported late
+  // for uncommitted navigations?
   if (detector_.AddLateCookieAccess(details.url, details.type)) {
     return;
   }
@@ -1085,11 +1106,15 @@ void DIPSBounceDetector::OnClientBounceDetectionTimeout() {
 WEB_CONTENTS_USER_DATA_KEY_IMPL(RedirectChainDetector);
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DIPSWebContentsObserver);
 
+namespace dips {
+
 ukm::SourceId GetInitialRedirectSourceId(
     content::NavigationHandle* navigation_handle) {
   DIPSNavigationHandleImpl handle(navigation_handle);
   return handle.GetRedirectSourceId(0);
 }
+
+}  // namespace dips
 
 void RedirectChainDetector::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
