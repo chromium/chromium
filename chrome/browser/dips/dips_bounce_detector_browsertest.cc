@@ -3101,11 +3101,14 @@ class DIPSPrivacySandboxApiInteractionTest : public PlatformBrowserTest {
  public:
   DIPSPrivacySandboxApiInteractionTest()
       : embedded_https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    enabled_features.emplace_back(features::kPrivacySandboxAdsAPIsOverride);
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    enabled_features.push_back({features::kPrivacySandboxAdsAPIsOverride, {}});
+    enabled_features.push_back(
+        {features::kDIPS, {{"triggering_action", "stateful_bounce"}}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 
   void SetUpOnMainThread() override {

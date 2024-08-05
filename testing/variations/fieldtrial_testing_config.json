@@ -6871,7 +6871,7 @@
             ]
         }
     ],
-    "DIPSStatefulBounceEnforcement": [
+    "DIPSOnHTTPCache": [
         {
             "platforms": [
                 "android",
@@ -6882,10 +6882,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_v0",
+                    "name": "AnyBounceTrigger",
                     "params": {
-                        "delete": "true",
-                        "triggering_action": "stateful_bounce"
+                        "triggering_action": "bounce"
                     },
                     "enable_features": [
                         "DIPS"
