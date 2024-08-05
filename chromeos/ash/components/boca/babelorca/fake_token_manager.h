@@ -31,7 +31,8 @@ class FakeTokenManager : public TokenManager {
 
   void SetTokenString(std::unique_ptr<std::string> token_string);
   void SetFetchedVersion(int version);
-  void WaitForForceFetchAndExecuteCallback(bool success);
+  void WaitForForceFetchRequest();
+  void ExecuteFetchCallback(bool success);
 
  private:
   std::unique_ptr<std::string> token_string_;

@@ -39,6 +39,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "fake_tachyon_client.cc",
+    "fake_tachyon_client.h",
     "fake_token_fetcher.cc",
     "fake_token_fetcher.h",
     "fake_token_manager.cc",

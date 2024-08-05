@@ -42,13 +42,17 @@ void FakeTokenManager::SetFetchedVersion(int version) {
   version_ = version;
 }
 
-void FakeTokenManager::WaitForForceFetchAndExecuteCallback(bool success) {
-  if (!success_callback_) {
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-    run_loop_.reset();
+void FakeTokenManager::WaitForForceFetchRequest() {
+  if (success_callback_) {
+    return;
   }
-  std::move(success_callback_).Run(success);
+  run_loop_ = std::make_unique<base::RunLoop>();
+  run_loop_->Run();
+  run_loop_.reset();
+}
+
+void FakeTokenManager::ExecuteFetchCallback(bool success) {
+  return std::move(success_callback_).Run(success);
 }
 
 }  // namespace babelorca
