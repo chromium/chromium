@@ -4,6 +4,7 @@
 
 #include "components/security_interstitials/core/https_only_mode_ui_util.h"
 
+#include "components/feature_engagement/public/feature_list.h"
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "components/strings/grit/components_strings.h"
@@ -14,17 +15,18 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
     base::Value::Dict& load_time_data,
     const GURL& url,
     const security_interstitials::https_only_mode::HttpInterstitialState&
-        interstitial_state) {
+        interstitial_state,
+    bool balanced_mode) {
   load_time_data.Set("tabTitle",
                      l10n_util::GetStringUTF16(IDS_HTTPS_ONLY_MODE_TITLE));
-  load_time_data.Set(
-      "heading",
-      l10n_util::GetStringFUTF16(
-          IDS_HTTPS_ONLY_MODE_HEADING,
-          security_interstitials::common_string_util::GetFormattedHostName(
-              url)));
 
+  int heading_id = IDS_HTTPS_ONLY_MODE_HEADING;
   int primary_paragraph_id = IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH;
+  if (balanced_mode) {
+    heading_id = IDS_HTTPS_ONLY_BALANCED_MODE_HEADING;
+    primary_paragraph_id = IDS_HTTPS_ONLY_BALANCED_MODE_PRIMARY_PARAGRAPH;
+  }
+
   // Multiple interstitial flags might be true here, but we assign higher
   // priority to Site Engagement heuristic because we expect SE interstitials
   // to be rare. Advanced Protection locks the HTTPS-First Mode UI setting so
@@ -51,7 +53,12 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
   // in to full HTTPS-First Mode and no other feature applies.)
   // TODO(crbug.com/349860796): Consider customizing interstitial strings for
   // balanced mode.
-
+  load_time_data.Set(
+      "heading",
+      l10n_util::GetStringFUTF16(
+          heading_id,
+          security_interstitials::common_string_util::GetFormattedHostName(
+              url)));
   load_time_data.Set("primaryParagraph",
                      l10n_util::GetStringUTF16(primary_paragraph_id));
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 
 #include "base/strings/stringprintf.h"
+#include "chrome/common/chrome_features.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/controller_client.h"
@@ -98,8 +99,13 @@ HFMInterstitialType GetHFMInterstitialType(content::WebContents* tab) {
                                    "you are in Incognito mode")) {
     return HFMInterstitialType::kIncognito;
   }
-  if (IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(),
-                                   "this site does not support HTTPS.")) {
+  bool balanced_mode =
+      base::FeatureList::IsEnabled(features::kHttpsFirstBalancedMode);
+  std::string substring =
+      balanced_mode
+          ? "is preventing Chrome from establishing a secure connection"
+          : "this site does not support HTTPS.";
+  if (IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(), substring)) {
     return HFMInterstitialType::kStandard;
   }
   return HFMInterstitialType::kNone;

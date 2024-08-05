@@ -66,7 +66,8 @@ void HttpsOnlyModeBlockingPage::PopulateInterstitialStrings(
   PopulateHttpsOnlyModeStringsForSharedHTML(load_time_data);
   PopulateHttpsOnlyModeStringsForBlockingPage(
       load_time_data, request_url(),
-      security_interstitials::https_only_mode::HttpInterstitialState{});
+      security_interstitials::https_only_mode::HttpInterstitialState{},
+      /*balanced_mode=*/false);
 }
 
 bool HttpsOnlyModeBlockingPage::ShouldDisplayURL() const {

@@ -317,7 +317,8 @@ ChromeSecurityBlockingPageFactory::CreateHttpsOnlyModeBlockingPage(
       base::FeatureList::IsEnabled(features::kHttpsFirstModeV2ForEngagedSites);
   auto page =
       std::make_unique<security_interstitials::HttpsOnlyModeBlockingPage>(
-          web_contents, request_url, std::move(client), interstitial_state);
+          web_contents, request_url, std::move(client), interstitial_state,
+          base::FeatureList::IsEnabled(features::kHttpsFirstBalancedMode));
   return page;
 }
 

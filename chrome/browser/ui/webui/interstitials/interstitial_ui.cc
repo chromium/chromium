@@ -276,7 +276,8 @@ CreateHttpsOnlyModePage(content::WebContents* web_contents) {
       web_contents, request_url,
       std::make_unique<HttpsOnlyModeControllerClient>(web_contents,
                                                       request_url),
-      security_interstitials::https_only_mode::HttpInterstitialState{});
+      security_interstitials::https_only_mode::HttpInterstitialState{},
+      /*balanced_mode=*/true);
 }
 
 std::unique_ptr<security_interstitials::SecurityInterstitialPage>
