@@ -358,9 +358,10 @@ class PrerenderHostBuilder {
   // Public only for exceptional case.
   // TODO(crbug.com/40904828): Make this private again.
   void Drop();
-  bool IsDropped();
 
  private:
+  bool IsDropped() const;
+
   // Use raw pointer as PrerenderHostBuilder is alive only during
   // PrerenderHostRegistry::CreateAndStartHost(), and PreloadingAttempt should
   // outlive the function.
@@ -381,7 +382,7 @@ void PrerenderHostBuilder::Drop() {
   devtools_attempt_.reset();
 }
 
-bool PrerenderHostBuilder::IsDropped() {
+bool PrerenderHostBuilder::IsDropped() const {
   return devtools_attempt_ == nullptr;
 }
 
