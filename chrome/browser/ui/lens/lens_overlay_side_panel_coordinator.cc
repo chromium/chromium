@@ -108,6 +108,10 @@ void LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
   lens_overlay_controller_->NotifyResultsPanelOpened();
 }
 
+void LensOverlaySidePanelCoordinator::OnEntryWillHide(SidePanelEntry* entry) {
+  lens_overlay_controller_->OnSidePanelWillHide();
+}
+
 void LensOverlaySidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
   // We cannot distinguish between:
   //   (1) A teardown during the middle of the async close process from

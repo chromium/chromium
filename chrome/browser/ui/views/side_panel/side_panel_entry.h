@@ -58,6 +58,7 @@ class SidePanelEntry final : public ui::PropertyHandler {
 
   // Called when the entry has been shown/hidden in the side panel.
   void OnEntryShown();
+  void OnEntryWillHide();
   void OnEntryHidden();
 
   const Key& key() const { return key_; }

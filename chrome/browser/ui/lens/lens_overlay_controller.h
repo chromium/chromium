@@ -355,6 +355,10 @@ class LensOverlayController : public LensSearchboxClient,
   // Sets whether the side panel should show a full error page.
   virtual void SetSidePanelShowErrorPage(bool should_show_error_page);
 
+  // Called before the lens results panel begins hiding. This is called before
+  // any side panel closing animations begin.
+  void OnSidePanelWillHide();
+
   // Called when the lens side panel has been hidden.
   void OnSidePanelHidden();
 

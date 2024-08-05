@@ -806,23 +806,29 @@ void LensOverlayController::SetSidePanelShowErrorPage(
   pending_side_panel_should_show_error_page_ = should_show_error_page;
 }
 
-void LensOverlayController::OnSidePanelHidden() {
-  // If we're already in the process of closing, continue to do so.
-  if (state_ == State::kClosingSidePanel) {
-    CHECK(last_dismissal_source_.has_value());
-    CloseUIPart2(*last_dismissal_source_);
-    last_dismissal_source_.reset();
-    return;
-  }
-
+void LensOverlayController::OnSidePanelWillHide() {
   // If the tab is not in the foreground, this is not relevant.
   if (!tab_->IsInForeground()) {
     return;
   }
 
-  // The user clicks the close button on the side panel. Begin to close the UI
-  // asynchronously.
-  CloseUIAsync(lens::LensOverlayDismissalSource::kSidePanelCloseButton);
+  // If the overlay isn't already closing, the side panel closing is
+  // caused by the user clicking on the side panel's close button,
+  // or another side panel entry opening in the current tab.
+  // TODO(b/355221804): distinguish between the close button and another
+  // side panel being opened.
+  if (!IsOverlayClosing()) {
+    CloseUIAsync(lens::LensOverlayDismissalSource::kSidePanelCloseButton);
+  }
+}
+
+void LensOverlayController::OnSidePanelHidden() {
+  if (state_ != State::kClosingSidePanel) {
+    return;
+  }
+  CHECK(last_dismissal_source_.has_value());
+  CloseUIPart2(*last_dismissal_source_);
+  last_dismissal_source_.reset();
 }
 
 tabs::TabInterface* LensOverlayController::GetTabInterface() {

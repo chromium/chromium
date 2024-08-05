@@ -75,10 +75,13 @@
 
   #selectionElements {
     background-color: rgba(var(--color-scrim-rgb), .05);
+  }
+
+  #selectionOverlay :not(#backgroundImage) {
     transition: opacity 150ms linear;
   }
 
-  :host([is-closing]) #selectionElements{
+  :host([is-closing]) #selectionOverlay :not(#backgroundImage) {
     opacity: 0;
   }
 
@@ -140,6 +143,12 @@
   }
 
   #cursor.hidden {
+    visibility: hidden;
+  }
+
+  :host([is-closing]) #cursor {
+    /* Immediately hide the cursor so that it doesn't reappear if the
+     * mouse hovers over the selection overlay as the side panel closes. */
     visibility: hidden;
   }
 

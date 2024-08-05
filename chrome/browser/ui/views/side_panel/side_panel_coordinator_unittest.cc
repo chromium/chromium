@@ -1123,6 +1123,12 @@ class TestSidePanelObserver : public SidePanelEntryObserver {
     registry_->Deregister(entry->key());
   }
 
+  void OnEntryWillHide(SidePanelEntry* entry) override {
+    last_on_before_entry_hidden_entry_id_ = entry->key().id();
+  }
+
+  std::optional<SidePanelEntry::Id> last_on_before_entry_hidden_entry_id_;
+
  private:
   raw_ptr<SidePanelRegistry> registry_;
 };
@@ -1144,7 +1150,9 @@ TEST_F(SidePanelCoordinatorTest,
   // Switch to another entry.
   coordinator_->Show(SidePanelEntry::Id::kReadingList);
 
-  // Verify that the previous entry has deregistered.
+  // Verify that the previous entry has deregistered and is hidden.
+  EXPECT_THAT(observer->last_on_before_entry_hidden_entry_id_,
+              testing::Optional(SidePanelEntry::Id::kAboutThisSite));
   EXPECT_FALSE(contextual_registries_[0]->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite)));
 }
@@ -1166,7 +1174,9 @@ TEST_F(SidePanelCoordinatorTest,
   // Close the side panel.
   coordinator_->Close();
 
-  // Verify that the previous entry has deregistered.
+  // Verify that the previous entry has deregistered and is hidden.
+  EXPECT_THAT(observer->last_on_before_entry_hidden_entry_id_,
+              testing::Optional(SidePanelEntry::Id::kAboutThisSite));
   EXPECT_FALSE(contextual_registries_[0]->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite)));
 }
