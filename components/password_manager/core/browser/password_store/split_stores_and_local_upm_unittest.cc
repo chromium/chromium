@@ -115,9 +115,10 @@ TEST_P(SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired,
           : p.expected_is_update_required
 #endif
       ;
-  EXPECT_EQ(
-      expected_is_update_required,
-      IsGmsCoreUpdateRequired(pref_service(), &sync_service, p.gms_version));
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      p.gms_version);
+  EXPECT_EQ(expected_is_update_required,
+            IsGmsCoreUpdateRequired(pref_service(), &sync_service));
 }
 
 INSTANTIATE_TEST_SUITE_P(

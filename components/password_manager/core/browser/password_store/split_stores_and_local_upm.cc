@@ -41,12 +41,13 @@ bool UsesSplitStoresAndUPMForLocal(const PrefService* pref_service) {
 }
 
 bool IsGmsCoreUpdateRequired(const PrefService* pref_service,
-                             const syncer::SyncService* sync_service,
-                             const std::string& gms_version_str) {
+                             const syncer::SyncService* sync_service) {
   if (!features::IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled()) {
     return false;
   }
 
+  std::string gms_version_str =
+      base::android::BuildInfo::GetInstance()->gms_version_code();
   int gms_version = 0;
   // GMSCore version could not be parsed, probably no GMSCore installed.
   if (!base::StringToInt(gms_version_str, &gms_version)) {

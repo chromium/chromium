@@ -432,7 +432,6 @@ void SetUsesSplitStoresAndUPMForLocal(
 }
 
 PasswordAccessLossWarningType GetPasswordAccessLossWarningType(
-    const std::string& gms_version_str,
     PrefService* pref_service) {
   // No warning should be displayed to the users, who don't have any passwords
   // in the profile store.
@@ -440,6 +439,8 @@ PasswordAccessLossWarningType GetPasswordAccessLossWarningType(
     return PasswordAccessLossWarningType::kNone;
   }
 
+  std::string gms_version_str =
+      base::android::BuildInfo::GetInstance()->gms_version_code();
   int gms_version = 0;
   // GMSCore version could not be parsed, probably no GMSCore installed.
   if (!base::StringToInt(gms_version_str, &gms_version)) {

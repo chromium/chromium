@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ANDROID_UTIL_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ANDROID_UTIL_H_
 
-#include <memory>
-
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 
 class PrefService;
@@ -67,7 +65,6 @@ void SetUsesSplitStoresAndUPMForLocal(PrefService* pref_service,
 // is returned.
 // - Otherwise no warning is shown.
 PasswordAccessLossWarningType GetPasswordAccessLossWarningType(
-    const std::string& gms_version_str,
     PrefService* pref_service);
 
 }  // namespace password_manager_android_util

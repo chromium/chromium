@@ -1420,8 +1420,10 @@ TEST_P(GetPasswordAccessLossWarningTypeTest, GetPasswordAccessLossWarningType) {
   // This call is needed to set the variable whether the migration is failed.
   SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
 
-  PasswordAccessLossWarningType result = GetPasswordAccessLossWarningType(
-      GetParam().gms_core_version, pref_service());
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      GetParam().gms_core_version);
+  PasswordAccessLossWarningType result =
+      GetPasswordAccessLossWarningType(pref_service());
 
   EXPECT_EQ(GetParam().expected_result, result);
 }

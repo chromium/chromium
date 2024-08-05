@@ -129,9 +129,7 @@ bool PasswordFeatureManagerImpl::ShouldChangeDefaultPasswordStore() const {
 
 #if BUILDFLAG(IS_ANDROID)
 bool PasswordFeatureManagerImpl::ShouldUpdateGmsCore() {
-  std::string gms_version_str =
-      base::android::BuildInfo::GetInstance()->gms_version_code();
-  return IsGmsCoreUpdateRequired(pref_service_, sync_service_, gms_version_str);
+  return IsGmsCoreUpdateRequired(pref_service_, sync_service_);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
