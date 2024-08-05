@@ -53,20 +53,23 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="NavigationAbandonReason">
-  <variant name="AppBackgrounded"/>
-  <variant name="ErrorPage"/>
-  <variant name="ExplicitCancellation"/>
-  <variant name="FailedSecurityCheck"/>
-  <variant name="FrameRemoved"/>
-  <variant name="Hidden"/>
-  <variant name="InternalCancellation"/>
-  <variant name="NeverStarted"/>
-  <variant name="NewHistoryNavigation"/>
-  <variant name="NewOtherNavigationBrowserInitiated"/>
-  <variant name="NewOtherNavigationRendererInitiated"/>
-  <variant name="NewReloadNavigation"/>
-  <variant name="Other"/>
-  <variant name="RenderProcessGone"/>
+  <variant name="" summary="any reason"/>
+  <variant name=".AppBackgrounded" summary="AppBackgrounded"/>
+  <variant name=".ErrorPage" summary="ErrorPage"/>
+  <variant name=".ExplicitCancellation" summary="ExplicitCancellation"/>
+  <variant name=".FailedSecurityCheck" summary="FailedSecurityCheck"/>
+  <variant name=".FrameRemoved" summary="FrameRemoved"/>
+  <variant name=".Hidden" summary="Hidden"/>
+  <variant name=".InternalCancellation" summary="InternalCancellation"/>
+  <variant name=".NeverStarted" summary="NeverStarted"/>
+  <variant name=".NewHistoryNavigation" summary="NewHistoryNavigation"/>
+  <variant name=".NewOtherNavigationBrowserInitiated"
+      summary="NewOtherNavigationBrowserInitiated"/>
+  <variant name=".NewOtherNavigationRendererInitiated"
+      summary="NewOtherNavigationRendererInitiated"/>
+  <variant name=".NewReloadNavigation" summary="NewReloadNavigation"/>
+  <variant name=".Other" summary="Other"/>
+  <variant name=".RenderProcessGone" summary="RenderProcessGone"/>
 </variants>
 
 <!-- LINT.IfChange(NavigationMilestone) -->
@@ -2001,7 +2004,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients{ObservedNavigation}.Leakage2.LastMilestoneBeforeAbandon.{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
+    name="PageLoad.Clients{ObservedNavigation}.Leakage2.LastMilestoneBeforeAbandon{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
     enum="NavigationMilestoneEnum2" expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -2102,7 +2105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients{ObservedNavigation}.Leakage2.{NavigationMilestone}ToAbandon.{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
+    name="PageLoad.Clients{ObservedNavigation}.Leakage2.{NavigationMilestone}ToAbandon{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
     units="ms" expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>

@@ -387,7 +387,9 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
                       GetLastMilestoneBeforeAbandonHistogramName()),
                   testing::UnorderedElementsAreArray(ExpandHistograms(
                       {GetLastMilestoneBeforeAbandonHistogramName(
-                          abandon_reason, histogram_suffix)})));
+                           abandon_reason, histogram_suffix),
+                       GetLastMilestoneBeforeAbandonHistogramName(
+                           std::nullopt, histogram_suffix)})));
     } else {
       EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
                       GetLastMilestoneBeforeAbandonHistogramName()),
@@ -396,6 +398,11 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
                            abandon_reason, histogram_suffix),
                        GetLastMilestoneBeforeAbandonHistogramName(
                            abandon_after_hiding_reason,
+                           internal::kSuffixWasHidden + histogram_suffix),
+                       GetLastMilestoneBeforeAbandonHistogramName(
+                           std::nullopt, histogram_suffix),
+                       GetLastMilestoneBeforeAbandonHistogramName(
+                           std::nullopt,
                            internal::kSuffixWasHidden + histogram_suffix)})));
     }
 
@@ -404,9 +411,11 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
         // Check that the milestone to abandonment time is recorded.
         EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
                         GetMilestoneToAbandonHistogramName(milestone)),
-                    testing::UnorderedElementsAreArray(
-                        ExpandHistograms({GetMilestoneToAbandonHistogramName(
-                            milestone, abandon_reason, histogram_suffix)})));
+                    testing::UnorderedElementsAreArray(ExpandHistograms(
+                        {GetMilestoneToAbandonHistogramName(
+                             milestone, abandon_reason, histogram_suffix),
+                         GetMilestoneToAbandonHistogramName(
+                             milestone, std::nullopt, histogram_suffix)})));
         // Check that the abandonment reason at the milestone is recorded.
         EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
                         GetAbandonReasonAtMilestoneHistogramName(milestone)),
@@ -427,10 +436,13 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
         // a suffix indicating that it was previously hidden.
         EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
                         GetMilestoneToAbandonHistogramName(milestone)),
-                    testing::UnorderedElementsAreArray(
-                        ExpandHistograms({GetMilestoneToAbandonHistogramName(
-                            milestone, abandon_after_hiding_reason,
-                            internal::kSuffixWasHidden + histogram_suffix)})));
+                    testing::UnorderedElementsAreArray(ExpandHistograms(
+                        {GetMilestoneToAbandonHistogramName(
+                             milestone, abandon_after_hiding_reason,
+                             internal::kSuffixWasHidden + histogram_suffix),
+                         GetMilestoneToAbandonHistogramName(
+                             milestone, std::nullopt,
+                             internal::kSuffixWasHidden + histogram_suffix)})));
         EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
                         GetAbandonReasonAtMilestoneHistogramName(milestone)),
                     testing::UnorderedElementsAreArray(ExpandHistograms(

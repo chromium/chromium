@@ -329,22 +329,27 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
     // There should be a new entry for exactly one of the abandonment
     // histograms, indicating that the navigation is abandoned just after
     // `abandon_milestone` because of the `WebContents::Stop()` call.
-    EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                    GetLastMilestoneBeforeAbandonHistogramName()),
-                testing::ElementsAre(
-                    testing::Pair(GetLastMilestoneBeforeAbandonHistogramName(
-                                      AbandonReason::kExplicitCancellation),
-                                  1)));
+    EXPECT_THAT(
+        histogram_tester.GetTotalCountsForPrefix(
+            GetLastMilestoneBeforeAbandonHistogramName()),
+        testing::ElementsAre(
+            testing::Pair(GetLastMilestoneBeforeAbandonHistogramName(), 1),
+            testing::Pair(GetLastMilestoneBeforeAbandonHistogramName(
+                              AbandonReason::kExplicitCancellation),
+                          1)));
 
     for (auto milestone : all_milestones()) {
       if (abandon_milestone == milestone) {
         // Check that the milestone to abandonment time is recorded.
-        EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                        GetMilestoneToAbandonHistogramName(milestone)),
-                    testing::ElementsAre(testing::Pair(
-                        GetMilestoneToAbandonHistogramName(
-                            milestone, AbandonReason::kExplicitCancellation),
-                        1)));
+        EXPECT_THAT(
+            histogram_tester.GetTotalCountsForPrefix(
+                GetMilestoneToAbandonHistogramName(milestone)),
+            testing::ElementsAre(
+                testing::Pair(GetMilestoneToAbandonHistogramName(milestone), 1),
+                testing::Pair(
+                    GetMilestoneToAbandonHistogramName(
+                        milestone, AbandonReason::kExplicitCancellation),
+                    1)));
         // Check that the abandonment reason at the milestone is recorded.
         EXPECT_THAT(
             histogram_tester.GetTotalCountsForPrefix(
