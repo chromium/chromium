@@ -485,8 +485,7 @@ Otherwise submit an issue for a project maintainer.
 2. Update the mapper version:
 
 ```shell
-third_party/bidimapper/pull.sh
-third_party/bidimapper/build.sh
+third_party/bidimapper/roll_bidmapper
 ```
 
 3. Submit a CL with bug `chromedriver:4226`.
