@@ -40,6 +40,8 @@
 
 @property(nonatomic, assign) BOOL contextualPanelIsOpen;
 
+@property(nonatomic, assign) BOOL entrypointIsColored;
+
 @property(nonatomic, assign) base::WeakPtr<ContextualPanelItemConfiguration>
     currentConfiguration;
 
@@ -73,6 +75,10 @@
 }
 
 - (void)setInfobarBadgesCurrentlyShown:(BOOL)infobarBadgesCurrentlyShown {
+}
+
+- (void)setEntrypointColored:(BOOL)colored {
+  self.entrypointIsColored = colored;
 }
 
 @end
@@ -442,12 +448,14 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
   // At first, the small entrypoint should be displayed.
   EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
   EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
+  EXPECT_FALSE(entrypoint_consumer_.entrypointIsColored);
 
   // Advance time so that the IPH entrypoint is displayed.
   task_environment_.FastForwardBy(
       base::Seconds(LargeContextualPanelEntrypointDelayInSeconds()));
   EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
   EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
+  EXPECT_TRUE(entrypoint_consumer_.entrypointIsColored);
 
   [[mocked_entrypoint_help_handler_ expect]
       dismissContextualPanelEntrypointIPHAnimated:YES];
@@ -457,6 +465,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
       base::Seconds(LargeContextualPanelEntrypointDisplayedInSeconds()));
   EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
   EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
+  EXPECT_FALSE(entrypoint_consumer_.entrypointIsColored);
 
   [mocked_entrypoint_help_handler_ verify];
 

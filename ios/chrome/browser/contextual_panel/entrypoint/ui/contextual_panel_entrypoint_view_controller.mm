@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/common/material_timing.h"
@@ -383,6 +384,18 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   _separator.hidden = !_infobarBadgesCurrentlyShown;
 }
 
+// Applies the correct color to the entrypoint (highlighted blue when the
+// in-product help is present), otherwise back to the normal colorset.
+- (void)styleEntrypointForColoredState:(BOOL)colored {
+  _imageView.tintColor =
+      colored ? [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor]
+              : [UIColor colorNamed:kBlue600Color];
+
+  _entrypointContainer.backgroundColor =
+      colored ? [UIColor colorNamed:kBlue600Color]
+              : [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor];
+}
+
 #pragma mark - ContextualPanelEntrypointConsumer
 
 - (void)setEntrypointConfig:
@@ -509,6 +522,23 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   _entrypointTapped = opened;
   [self refreshEntrypointVisualElements];
   [self transitionToSmallEntrypoint];
+}
+
+- (void)setEntrypointColored:(BOOL)colored {
+  if (!ShouldHighlightContextualPanelEntrypointDuringIPH()) {
+    return;
+  }
+
+  __weak ContextualPanelEntrypointViewController* weakSelf = self;
+
+  [UIView animateWithDuration:kEntrypointDisplayingAnimationTime
+                        delay:0
+                      options:(UIViewAnimationOptionCurveEaseOut |
+                               UIViewAnimationOptionAllowUserInteraction)
+                   animations:^{
+                     [weakSelf styleEntrypointForColoredState:colored];
+                   }
+                   completion:nil];
 }
 
 #pragma mark - ContextualPanelEntrypointMutator

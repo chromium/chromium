@@ -394,6 +394,8 @@
     return;
   }
 
+  [self.consumer setEntrypointColored:YES];
+
   std::optional<ContextualPanelTabHelper::EntrypointMetricsData>& metricsData =
       [self metricsData];
   if (metricsData) {
@@ -450,6 +452,7 @@
 
 - (void)dismissEntrypointIPHAnimated:(BOOL)animated {
   [_entrypointHelpHandler dismissContextualPanelEntrypointIPHAnimated:animated];
+  [self.consumer setEntrypointColored:NO];
 }
 
 - (BOOL)canShowLargeEntrypointWithConfig:

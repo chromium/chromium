@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 
 @interface ContextualPanelEntrypointCoordinator () <
+    ContextualPanelEntrypointCommands,
     ContextualPanelEntrypointMediatorDelegate> {
   // Observer that updates ContextualPanelEntrypointViewController for
   // fullscreen events.
@@ -45,6 +47,10 @@
 
   WebStateList* webStateList = self.browser->GetWebStateList();
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+
+  [dispatcher
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(ContextualPanelEntrypointCommands)];
 
   id<ContextualSheetCommands> contextualSheetHandler =
       HandlerForProtocol(dispatcher, ContextualSheetCommands);
@@ -77,7 +83,7 @@
   [super stop];
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  [dispatcher stopDispatchingToTarget:_mediator];
+  [dispatcher stopDispatchingToTarget:self];
 
   _animatedFullscreenDisabler = nullptr;
 
@@ -122,6 +128,13 @@
 
 - (CGPoint)helpAnchorUsingBottomOmnibox:(BOOL)isBottomOmnibox {
   return [self.viewController helpAnchorUsingBottomOmnibox:isBottomOmnibox];
+}
+
+#pragma mark - ContextualPanelEntrypointCommands
+
+- (void)contextualPanelEntrypointIPHWasDismissed {
+  [self enableFullscreen];
+  [_mediator.consumer setEntrypointColored:NO];
 }
 
 @end

@@ -144,6 +144,7 @@
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
@@ -1639,6 +1640,9 @@ enum class ToolbarKind {
                                           dismissalReason:
                                               (IPHDismissalReasonType)
                                                   IPHDismissalReasonType {
+  [HandlerForProtocol(self.dispatcher, ContextualPanelEntrypointCommands)
+      contextualPanelEntrypointIPHWasDismissed];
+
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   feature_engagement::Tracker* engagementTracker =
       feature_engagement::TrackerFactory::GetForBrowserState(browserState);
