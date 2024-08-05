@@ -9,7 +9,10 @@
 #include <string_view>
 
 #include "ash/ash_export.h"
+#include "ash/lobster/lobster_candidate_store.h"
+#include "ash/lobster/lobster_session_impl.h"
 #include "ash/public/cpp/lobster/lobster_enums.h"
+#include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
 
@@ -29,7 +32,15 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
                          RequestCandidatesCallback) override;
 
  private:
+  void OnRequestCandidates(
+      RequestCandidatesCallback callback,
+      const std::vector<LobsterImageCandidate>& image_candidates);
+
   std::unique_ptr<LobsterClient> client_;
+
+  LobsterCandidateStore candidate_store_;
+
+  base::WeakPtrFactory<LobsterSessionImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

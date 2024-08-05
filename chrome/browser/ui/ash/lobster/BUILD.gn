@@ -10,6 +10,8 @@ static_library("lobster") {
   sources = [
     "image_fetcher.cc",
     "image_fetcher.h",
+    "lobster_candidate_id_generator.cc",
+    "lobster_candidate_id_generator.h",
     "lobster_client_factory_impl.cc",
     "lobster_client_factory_impl.h",
     "lobster_client_impl.cc",

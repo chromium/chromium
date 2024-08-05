@@ -25,20 +25,30 @@ namespace {
 constexpr gfx::Size kPreviewImageSize = gfx::Size(512, 512);
 
 std::optional<ash::LobsterImageCandidate> ToLobsterImageCandidate(
+    uint32_t id,
+    uint32_t seed,
+    std::string_view query,
     const SkBitmap& decoded_bitmap) {
   base::AssertLongCPUWorkAllowed();
   std::vector<unsigned char> data;
+
   if (!gfx::JPEGCodec::Encode(decoded_bitmap, /*quality=*/100, &data)) {
     return std::nullopt;
   }
-  // TODO: b:348282335 - Add logic to generate image candidate id.
-  return ash::LobsterImageCandidate(
-      /*id=*/0, std::string(data.begin(), data.end()));
+
+  return ash::LobsterImageCandidate(/*id=*/id, /*image_bytes=*/
+                                    std::string(data.begin(), data.end()),
+                                    /*seed=*/seed,
+                                    /*query=*/query.data());
 }
 
-void EncodeBitmap(base::OnceCallback<
-                      void(std::optional<ash::LobsterImageCandidate>)> callback,
-                  const SkBitmap& decoded_bitmap) {
+void EncodeBitmap(
+    uint32_t id,
+    uint32_t seed,
+    std::string_view query,
+    base::OnceCallback<void(std::optional<ash::LobsterImageCandidate>)>
+        callback,
+    const SkBitmap& decoded_bitmap) {
   if (decoded_bitmap.empty()) {
     LOG(ERROR) << "Failed to decode jpg bytes";
     std::move(callback).Run(std::nullopt);
@@ -46,26 +56,30 @@ void EncodeBitmap(base::OnceCallback<
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&ToLobsterImageCandidate, decoded_bitmap),
+      base::BindOnce(&ToLobsterImageCandidate, id, seed, query, decoded_bitmap),
       std::move(callback));
 }
 
 void SanitizePreviewJpgBytes(
     const manta::proto::OutputData& output_data,
     data_decoder::DataDecoder* data_decoder,
+    uint32_t id,
+    std::string_view query,
     base::OnceCallback<void(std::optional<ash::LobsterImageCandidate>)>
         callback) {
   data_decoder::DecodeImage(
       data_decoder, base::as_byte_span(output_data.image().serialized_bytes()),
       data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes, gfx::Size(),
-      base::BindOnce(&EncodeBitmap, std::move(callback)));
+      base::BindOnce(&EncodeBitmap, id, output_data.generation_seed(), query,
+                     std::move(callback)));
 }
 
 }  // namespace
 
-ImageFetcher::ImageFetcher(manta::SnapperProvider* provider)
-    : provider_(provider) {}
+ImageFetcher::ImageFetcher(manta::SnapperProvider* provider,
+                           LobsterCandidateIdGenerator* id_generator)
+    : provider_(provider), id_generator_(id_generator) {}
 
 ImageFetcher::~ImageFetcher() = default;
 
@@ -94,13 +108,14 @@ void ImageFetcher::RequestPreviewCandidates(
 
   // TODO(b:354620949): MISSING_TRAFFIC_ANNOTATION should be resolved before
   // launch.
-  provider_->Call(
-      request, MISSING_TRAFFIC_ANNOTATION,
-      base::BindOnce(&ImageFetcher::OnCandidatesRequested,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  provider_->Call(request, MISSING_TRAFFIC_ANNOTATION,
+                  base::BindOnce(&ImageFetcher::OnCandidatesRequested,
+                                 weak_ptr_factory_.GetWeakPtr(), query,
+                                 std::move(callback)));
 }
 
 void ImageFetcher::OnCandidatesRequested(
+    std::string_view query,
     ash::RequestCandidatesCallback callback,
     std::unique_ptr<manta::proto::Response> response,
     manta::MantaStatus status) {
@@ -113,7 +128,9 @@ void ImageFetcher::OnCandidatesRequested(
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
   for (auto& data : *response->mutable_output_data()) {
-    SanitizePreviewJpgBytes(data, data_decoder.get(), barrier_callback);
+    SanitizePreviewJpgBytes(data, data_decoder.get(),
+                            id_generator_->GenerateNextId(), query,
+                            barrier_callback);
   }
 }
 

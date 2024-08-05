@@ -8,12 +8,13 @@
 
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "chrome/browser/ui/ash/lobster/image_fetcher.h"
+#include "chrome/browser/ui/ash/lobster/lobster_candidate_id_generator.h"
 #include "components/manta/snapper_provider.h"
 
 LobsterService::LobsterService(
     std::unique_ptr<manta::SnapperProvider> snapper_provider)
     : image_provider_(std::move(snapper_provider)),
-      image_fetcher_(image_provider_.get()) {}
+      image_fetcher_(image_provider_.get(), &candidate_id_generator_) {}
 
 LobsterService::~LobsterService() = default;
 

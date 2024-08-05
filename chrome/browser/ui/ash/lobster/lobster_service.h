@@ -11,6 +11,7 @@
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ash/lobster/image_fetcher.h"
+#include "chrome/browser/ui/ash/lobster/lobster_candidate_id_generator.h"
 #include "chrome/browser/ui/ash/lobster/lobster_system_state_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -36,6 +37,8 @@ class LobsterService : public KeyedService {
  private:
   // Not owned by this class
   raw_ptr<ash::LobsterSession> active_session_;
+
+  LobsterCandidateIdGenerator candidate_id_generator_;
 
   std::unique_ptr<manta::SnapperProvider> image_provider_;
 

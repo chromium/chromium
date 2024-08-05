@@ -10,6 +10,7 @@
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/ash/lobster/lobster_candidate_id_generator.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace manta {
@@ -24,7 +25,8 @@ struct MantaStatus;
 
 class ImageFetcher {
  public:
-  explicit ImageFetcher(manta::SnapperProvider* provider);
+  explicit ImageFetcher(manta::SnapperProvider* provider,
+                        LobsterCandidateIdGenerator* id_generator);
   ~ImageFetcher();
 
   void RequestPreviewCandidates(std::string_view query,
@@ -32,16 +34,19 @@ class ImageFetcher {
                                 ash::RequestCandidatesCallback);
 
  private:
-  void OnCandidatesRequested(ash::RequestCandidatesCallback callback,
+  void OnCandidatesRequested(std::string_view query,
+                             ash::RequestCandidatesCallback callback,
                              std::unique_ptr<manta::proto::Response> response,
                              manta::MantaStatus status);
 
   void OnImagesSanitized(
       ash::RequestCandidatesCallback callback,
       const std::vector<std::optional<ash::LobsterImageCandidate>>&
-          sanitized_images);
+          sanitized_image_candidates);
 
+  // Not owned by this class
   raw_ptr<manta::SnapperProvider> provider_;
+  raw_ptr<LobsterCandidateIdGenerator> id_generator_;
 
   base::WeakPtrFactory<ImageFetcher> weak_ptr_factory_{this};
 };

@@ -16,9 +16,12 @@ namespace ash {
 struct ASH_PUBLIC_EXPORT LobsterImageCandidate {
   uint32_t id;
   std::string image_bytes;
+  uint32_t seed;
+  std::string query;
 
   bool operator==(const LobsterImageCandidate& other) const {
-    return id == other.id && image_bytes == other.image_bytes;
+    return id == other.id && image_bytes == other.image_bytes &&
+           seed == other.seed && query == other.query;
   }
 };
 

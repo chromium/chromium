@@ -21,6 +21,7 @@
 namespace {
 
 constexpr int kPreviewImageDimensionSize = 512;
+constexpr int kFakeBaseGenerationSeed = 10;
 
 // Forked from c/b/a/wallpaper_handlers/sea_pen_fetcher_unittest.cc
 const SkBitmap CreateTestBitmap() {
@@ -44,20 +45,33 @@ std::unique_ptr<manta::proto::Response> CreateFakeMantaResponse(
     auto* output_data = response->add_output_data();
     output_data->mutable_image()->set_serialized_bytes(
         std::string(GetTestJpgBytes()));
+    output_data->set_generation_seed(kFakeBaseGenerationSeed + i);
   }
   return response;
 }
 
-bool AreJpgBytesClose(const SkBitmap& expected_bitmap,
-                      const std::string& actual_image_bytes) {
+MATCHER_P(AreJpgBytesClose, expected_bitmap, "") {
   std::unique_ptr<SkBitmap> actual_bitmap = gfx::JPEGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(actual_image_bytes.data()),
-      actual_image_bytes.size());
+      reinterpret_cast<const unsigned char*>(arg.data()), arg.size());
   // Use `AreBitmapsClose` because JPG encoding/decoding can alter the color
   // slightly.
   return actual_bitmap != nullptr &&
          gfx::test::AreBitmapsClose(expected_bitmap, *actual_bitmap,
                                     /*max_deviation=*/1);
+}
+
+testing::Matcher<ash::LobsterImageCandidate> EqLobsterImageCandidate(
+    int expected_id,
+    const SkBitmap& expected_bitmap,
+    uint32_t expected_generation_seed,
+    std::string_view expected_query) {
+  return testing::AllOf(
+      testing::Field(&ash::LobsterImageCandidate::id, expected_id),
+      testing::Field(&ash::LobsterImageCandidate::image_bytes,
+                     AreJpgBytesClose(expected_bitmap)),
+      testing::Field(&ash::LobsterImageCandidate::seed,
+                     expected_generation_seed),
+      testing::Field(&ash::LobsterImageCandidate::query, expected_query));
 }
 
 class ImageFetcherTest : public testing::Test {
@@ -75,7 +89,8 @@ class ImageFetcherTest : public testing::Test {
 
 TEST_F(ImageFetcherTest, RequestCandidatesCallSnapperProvider) {
   MockSnapperProvider snapper_provider;
-  ImageFetcher image_fetcher(&snapper_provider);
+  LobsterCandidateIdGenerator id_generator;
+  ImageFetcher image_fetcher(&snapper_provider, &id_generator);
 
   manta::proto::Request expected;
   manta::proto::RequestConfig& request_config =
@@ -107,19 +122,24 @@ TEST_F(ImageFetcherTest, RequestCandidatesCallSnapperProvider) {
   image_fetcher.RequestPreviewCandidates("a lovely cake", 2,
                                          future.GetCallback());
 
-  const std::vector<ash::LobsterImageCandidate>& actual_image_candidates =
-      future.Get();
-  EXPECT_EQ(actual_image_candidates.size(), 2u);
-  EXPECT_TRUE(AreJpgBytesClose(CreateTestBitmap(),
-                               actual_image_candidates[0].image_bytes));
-  EXPECT_TRUE(AreJpgBytesClose(CreateTestBitmap(),
-                               actual_image_candidates[1].image_bytes));
+  EXPECT_THAT(
+      future.Get(),
+      testing::ElementsAre(
+          EqLobsterImageCandidate(/*expected_id=*/0,
+                                  /*expected_bitmap=*/CreateTestBitmap(),
+                                  /*expected_generation_seed=*/10,
+                                  /*expected_query=*/"a lovely cake"),
+          EqLobsterImageCandidate(/*expected_id=*/1,
+                                  /*expected_bitmap=*/CreateTestBitmap(),
+                                  /*expected_generation_seed=*/11,
+                                  /*expected_query=*/"a lovely cake")));
 }
 
 TEST_F(ImageFetcherTest,
        RequestCandidatesReturnsEmptyResponseIfMantaProviderHasAGenericError) {
   MockSnapperProvider snapper_provider;
-  ImageFetcher image_fetcher(&snapper_provider);
+  LobsterCandidateIdGenerator id_generator;
+  ImageFetcher image_fetcher(&snapper_provider, &id_generator);
 
   manta::proto::Request expected;
   manta::proto::RequestConfig& request_config =
