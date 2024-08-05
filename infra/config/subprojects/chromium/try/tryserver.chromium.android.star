@@ -705,6 +705,7 @@ try_.builder(
 
 try_.builder(
     name = "android-oreo-arm64-dbg",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/Android arm64 Builder (dbg)",
         "ci/Oreo Phone Tester",
