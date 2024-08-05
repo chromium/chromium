@@ -77,8 +77,7 @@
 +chrome/browser/win/
 +chrome/utility/safe_browsing/
 -chromecast/
--chromeos/ash/components/memory/userspace_swap/
--chromeos/ash/services/libassistant/
+-chromeos/
 -clank/
 -codelabs/
 -components/allocation_recorder/
@@ -144,19 +143,6 @@
 # with the build flag: use_internal_isolated_origins. There are none on the CQ
 # by default. See file components/site_isolation/preloaded_isolated_origins.cc
 -components/site_isolation/
-
-# Before clearing this directory, make sure to run against a bot similar to:
-# ci/Libfuzzer Upload Chrome OS ASan
--chrome/services/sharing/nearby/decoder/
--chromeos/ash/components/system/
-
-# Before clearing this directory, make sure to check against a bot similar to:
-# ci/ToTLinuxOfficial
--sandbox/linux/syscall_broker/
-
-# Before clearing this directory, make sure to check against a bot similar to:
-# ci/linux-cfm-rel
--chrome/browser/ash/chromebox_for_meetings/
 
 # TODO(crbug.com/41497066#comment22) The Win SDK headers don't get categorized
 # as system headers when building with DEPOT_TOOLS_WIN_TOOLCHAIN=0 ?
