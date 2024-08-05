@@ -1364,7 +1364,9 @@ void LineBreaker::HandleText(const InlineItem& item,
           IsBreakableSpace(Text()[item_result->EndOffset() - 1])) {
         unsigned end_index = base::checked_cast<unsigned>(
             item_result - line_info->Results().data());
-        Rewind(end_index, line_info);
+        if (!parent_breaker_ || end_index > 0u) {
+          Rewind(end_index, line_info);
+        }
       }
       return;
     }
@@ -3330,6 +3332,9 @@ bool LineBreaker::HandleRuby(LineInfo* line_info, LayoutUnit retry_size) {
                                : retry_size - 1;
   base_line_info = CreateSubLineInfo(base_start, base_end_index, mode_,
                                      base_target, trailing_whitespace_);
+  // We assume a base LineInfo contains at least one InlineItemResult.
+  // If it's zero, we can't adjust LogicalRubyColumns on bidi reorder.
+  CHECK_GT(base_line_info.Results().size(), 0u);
 
   bool annotation_is_broken = false;
   for (wtf_size_t i = 0; i < number_of_annotations; ++i) {
