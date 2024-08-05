@@ -1315,6 +1315,8 @@ enum HeaderBehaviour {
       _fakeStatusBarView.overrideUserInterfaceStyle =
           _isOffTheRecord ? UIUserInterfaceStyleDark
                           : UIUserInterfaceStyleUnspecified;
+      const bool canShowTabStrip = IsRegularXRegularSizeClass(self);
+      _fakeStatusBarView.hidden = !canShowTabStrip;
     } else {
       _fakeStatusBarView.backgroundColor = UIColor.blackColor;
     }
