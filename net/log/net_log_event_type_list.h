@@ -1388,12 +1388,32 @@ EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ALIVE)
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_GROUP_REQUEST_STREAM)
 
+// Emitted when a group is requested a preconnect. The event parameter is:
+//   {
+//      "num_streams": <The number of streams requested>
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_PRECONNECT)
+
 // Records on the caller's NetLog to indicate that an HttpStreamPool::Group is
 // servicing the request.
 EVENT_TYPE(HTTP_STREAM_POOL_GROUP_REQUEST_BOUND)
 
-// Emitted when an HttpStreamPool::Job created a StreamAttempt.
+// Emitted when an HttpStreamPool::Job is created. Used to add a reference to
+// HttpStreamPool::Group's net log.
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_JOB_CREATED)
+
+// Emitted when an HttpStreamPool::Job is destroyed. Used to add a reference to
+// HttpStreamPool::Group's net log.
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_JOB_DESTROYED)
+
+// Marks the start/end of a HttpStreamPool::Job.
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_ALIVE)
+
+// Emitted when an HttpStreamPool::Job started a StreamAttempt.
 EVENT_TYPE(HTTP_STREAM_POOL_JOB_ATTEMPT_START)
+
+// Emitted when an HttpStreamPool::Job received completion from a StreamAttempt.
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_ATTEMPT_END)
 
 // ------------------------------------------------------------------------
 // HttpNetworkTransaction

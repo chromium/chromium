@@ -108,6 +108,11 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
 
 int HttpStreamPool::Group::Preconnect(size_t num_streams,
                                       CompletionOnceCallback callback) {
+  net_log_.AddEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_PRECONNECT, [&] {
+    base::Value::Dict dict;
+    dict.Set("num_streams", static_cast<int>(num_streams));
+    return dict;
+  });
   EnsureInFlightJob();
   return in_flight_job_->Preconnect(num_streams, std::move(callback));
 }

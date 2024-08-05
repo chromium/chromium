@@ -279,6 +279,8 @@ class HttpStreamPool::Job
 
   const raw_ptr<Group> group_;
 
+  const NetLogWithSource net_log_;
+
   ProxyInfo proxy_info_;
 
   bool enable_ip_based_pooling_ = true;

@@ -117,12 +117,23 @@ struct HttpStreamPool::Job::PreconnectEntry {
 };
 
 HttpStreamPool::Job::Job(Group* group, NetLog* net_log)
-    : group_(group), requests_(NUM_PRIORITIES) {
+    : group_(group),
+      net_log_(NetLogWithSource::Make(net_log,
+                                      NetLogSourceType::HTTP_STREAM_POOL_JOB)),
+      requests_(NUM_PRIORITIES) {
+  net_log_.BeginEventReferencingSource(
+      NetLogEventType::HTTP_STREAM_POOL_JOB_ALIVE, group_->net_log().source());
+  group_->net_log().AddEventReferencingSource(
+      NetLogEventType::HTTP_STREAM_POOL_GROUP_JOB_CREATED, net_log_.source());
   proxy_info_.UseDirect();
   CHECK(group_);
 }
 
-HttpStreamPool::Job::~Job() = default;
+HttpStreamPool::Job::~Job() {
+  net_log().EndEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_ALIVE);
+  group_->net_log().AddEventReferencingSource(
+      NetLogEventType::HTTP_STREAM_POOL_GROUP_JOB_DESTROYED, net_log_.source());
+}
 
 std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
     HttpStreamRequest::Delegate* delegate,
@@ -309,7 +320,7 @@ const HttpStreamPool* HttpStreamPool::Job::pool() const {
 }
 
 const NetLogWithSource& HttpStreamPool::Job::net_log() {
-  return group_->net_log();
+  return net_log_;
 }
 
 bool HttpStreamPool::Job::UsingTls() const {
@@ -537,13 +548,22 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
           /*ssl_config_provider=*/this);
     } else {
       attempt = std::make_unique<TcpStreamAttempt>(
-          pool()->stream_attempt_params(), *ip_endpoint, &net_log());
+          pool()->stream_attempt_params(), *ip_endpoint);
     }
     net_log().AddEventReferencingSource(
         NetLogEventType::HTTP_STREAM_POOL_JOB_ATTEMPT_START,
         attempt->net_log().source());
-    attempt->net_log().AddEventReferencingSource(
-        NetLogEventType::STREAM_ATTEMPT_BOUND_TO_POOL, net_log().source());
+    net_log().AddEvent(
+        NetLogEventType::HTTP_STREAM_POOL_JOB_ATTEMPT_START, [&] {
+          base::Value::Dict dict;
+          dict.Set("num_requests", static_cast<int>(requests_.size()));
+          dict.Set("num_preconnects", static_cast<int>(preconnects_.size()));
+          dict.Set("num_inflight_attempts",
+                   static_cast<int>(in_flight_attempts_.size()));
+          dict.Set("num_slow_attempts", static_cast<int>(slow_attempt_count_));
+          attempt->net_log().source().AddToEventParameters(dict);
+          return dict;
+        });
 
     auto in_flight_attempt =
         std::make_unique<InFlightAttempt>(std::move(attempt));
@@ -553,6 +573,10 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
 
     int rv = raw_attempt->attempt->Start(base::BindOnce(
         &Job::OnInFlightAttemptComplete, base::Unretained(this), raw_attempt));
+    // Add NetLog dependency after Start() so that the first event of the
+    // attempt can have meaningful description in the NetLog viewer.
+    raw_attempt->attempt->net_log().AddEventReferencingSource(
+        NetLogEventType::STREAM_ATTEMPT_BOUND_TO_POOL, net_log().source());
     if (rv != ERR_IO_PENDING) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&Job::OnInFlightAttemptComplete,
@@ -925,6 +949,9 @@ void HttpStreamPool::Job::OnRequestComplete(RequestEntry* entry) {
 void HttpStreamPool::Job::OnInFlightAttemptComplete(
     InFlightAttempt* raw_attempt,
     int rv) {
+  net_log().AddEventReferencingSource(
+      NetLogEventType::HTTP_STREAM_POOL_JOB_ATTEMPT_END,
+      raw_attempt->attempt->net_log().source());
   raw_attempt->slow_timer.Stop();
   if (raw_attempt->is_slow) {
     CHECK_GT(slow_attempt_count_, 0u);
