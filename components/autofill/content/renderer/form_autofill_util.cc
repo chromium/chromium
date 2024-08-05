@@ -2645,7 +2645,9 @@ void ClearPreviewedElements(
     // Clearing the suggested value in the focused node can cause the selection
     // to be lost. We force-set selection range in order to restore the text
     // cursor.
-    if (control_element.Focused()) {
+    if (control_element.Focused() &&
+        !base::FeatureList::IsEnabled(
+            features::kAutofillDontUpdateSelectionRangeOnPreviewClearing)) {
       auto length =
           base::checked_cast<unsigned>(control_element.Value().length());
       control_element.SetSelectionRange(length, length);
