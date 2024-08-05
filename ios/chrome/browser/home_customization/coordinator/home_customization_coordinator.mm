@@ -78,7 +78,8 @@
 
 #pragma mark - Public
 
-- (void)presentCustomizationMenuAtPage:(CustomizationMenuPage)page {
+- (void)presentCustomizationMenuAtPage:(CustomizationMenuPage)page
+                              animated:(BOOL)animated {
   [self.mediator configureMainPageData];
 
   // Configure the navigation controller.
@@ -104,29 +105,29 @@
 
   // Handle navigation if the initial page isn't the main one.
   if (page != CustomizationMenuPage::kMain) {
-    [self navigateToPage:page];
+    [self navigateToPage:page animated:animated];
   }
 }
 
 #pragma mark - HomeCustomizationNavigationDelegate
 
-- (void)navigateToPage:(CustomizationMenuPage)page {
+- (void)navigateToPage:(CustomizationMenuPage)page animated:(BOOL)animated {
   switch (page) {
     case CustomizationMenuPage::kMain:
       [self.navigationController pushViewController:self.mainViewController
-                                           animated:YES];
+                                           animated:animated];
       break;
     case CustomizationMenuPage::kMagicStack:
       [self expandMenu];
       [self.navigationController
           pushViewController:self.magicStackViewController
-                    animated:YES];
+                    animated:animated];
       [self.mediator configureMagicStackPageData];
       break;
     case CustomizationMenuPage::kDiscover:
       [self expandMenu];
       [self.navigationController pushViewController:self.discoverViewController
-                                           animated:YES];
+                                           animated:animated];
       [self.mediator configureDiscoverPageData];
       break;
     case CustomizationMenuPage::kUnknown:

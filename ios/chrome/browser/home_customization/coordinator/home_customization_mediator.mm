@@ -155,7 +155,8 @@
 
 - (void)navigateToSubmenuForType:(CustomizationToggleType)type {
   [self.navigationDelegate
-      navigateToPage:[HomeCustomizationHelper menuPageForToggleType:type]];
+      navigateToPage:[HomeCustomizationHelper menuPageForToggleType:type]
+            animated:YES];
 }
 
 - (void)navigateToLinkForType:(CustomizationLinkType)type {

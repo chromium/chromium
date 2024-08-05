@@ -878,15 +878,7 @@
 }
 
 - (void)customizationMenuWasTapped:(UIView*)customizationMenu {
-  if (!_customizationCoordinator) {
-    _customizationCoordinator = [[HomeCustomizationCoordinator alloc]
-        initWithBaseViewController:self.NTPViewController
-                           browser:self.browser];
-    _customizationCoordinator.delegate = self;
-    [_customizationCoordinator start];
-  }
-  [_customizationCoordinator
-      presentCustomizationMenuAtPage:CustomizationMenuPage::kMain];
+  [self openCustomizationMenuAtPage:CustomizationMenuPage::kMain animated:YES];
 }
 
 #pragma mark - FeedMenuCoordinatorDelegate
@@ -1056,6 +1048,11 @@
                           params:params
                       originView:view];
   [_sharingCoordinator start];
+}
+
+- (void)openMagicStackCustomizationMenu {
+  [self openCustomizationMenuAtPage:CustomizationMenuPage::kMagicStack
+                           animated:NO];
 }
 
 #pragma mark - FeedSignInPromoDelegate
@@ -1744,6 +1741,20 @@
 // necessary.
 - (void)restoreNTPState {
   [self.NTPMediator restoreNTPStateForWebState:self.webState];
+}
+
+// Opens the Home customization menu at a specific `page`.
+- (void)openCustomizationMenuAtPage:(CustomizationMenuPage)page
+                           animated:(BOOL)animated {
+  if (!_customizationCoordinator) {
+    _customizationCoordinator = [[HomeCustomizationCoordinator alloc]
+        initWithBaseViewController:self.NTPViewController
+                           browser:self.browser];
+    _customizationCoordinator.delegate = self;
+    [_customizationCoordinator start];
+  }
+  [_customizationCoordinator presentCustomizationMenuAtPage:page
+                                                   animated:animated];
 }
 
 #pragma mark - AccountMenuCoordinatorDelegate

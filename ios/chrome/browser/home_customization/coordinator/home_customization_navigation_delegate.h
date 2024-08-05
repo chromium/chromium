@@ -11,7 +11,7 @@ class GURL;
 @protocol HomeCustomizationNavigationDelegate
 
 // Navigates to a given page within the customization menu.
-- (void)navigateToPage:(CustomizationMenuPage)page;
+- (void)navigateToPage:(CustomizationMenuPage)page animated:(BOOL)animated;
 
 // Navigates to a given `URL` and closes the customization menu.
 - (void)navigateToURL:(GURL)URL;

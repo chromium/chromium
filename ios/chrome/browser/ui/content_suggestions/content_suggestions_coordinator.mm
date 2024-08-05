@@ -475,32 +475,37 @@
 
 - (void)didTapMagicStackEditButton {
   base::RecordAction(base::UserMetricsAction("IOSMagicStackSettingsOpened"));
-  _magicStackHalfSheetTableViewController =
-      [[MagicStackHalfSheetTableViewController alloc] init];
+  if (IsHomeCustomizationEnabled()) {
+    [self.delegate openMagicStackCustomizationMenu];
+  } else {
+    _magicStackHalfSheetTableViewController =
+        [[MagicStackHalfSheetTableViewController alloc] init];
 
-  _magicStackHalfSheetMediator = [[MagicStackHalfSheetMediator alloc]
-      initWithPrefService:GetApplicationContext()->GetLocalState()];
-  _magicStackHalfSheetMediator.consumer =
-      _magicStackHalfSheetTableViewController;
-  _magicStackHalfSheetTableViewController.delegate = self;
-  _magicStackHalfSheetTableViewController.modelDelegate =
-      _magicStackHalfSheetMediator;
+    _magicStackHalfSheetMediator = [[MagicStackHalfSheetMediator alloc]
+        initWithPrefService:GetApplicationContext()->GetLocalState()];
+    _magicStackHalfSheetMediator.consumer =
+        _magicStackHalfSheetTableViewController;
+    _magicStackHalfSheetTableViewController.delegate = self;
+    _magicStackHalfSheetTableViewController.modelDelegate =
+        _magicStackHalfSheetMediator;
 
-  UINavigationController* navViewController = [[UINavigationController alloc]
-      initWithRootViewController:_magicStackHalfSheetTableViewController];
+    UINavigationController* navViewController = [[UINavigationController alloc]
+        initWithRootViewController:_magicStackHalfSheetTableViewController];
 
-  navViewController.modalPresentationStyle = UIModalPresentationPageSheet;
-  UISheetPresentationController* presentationController =
-      navViewController.sheetPresentationController;
-  presentationController.prefersEdgeAttachedInCompactHeight = YES;
-  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
-  presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent
-  ];
-  [_magicStackCollectionView presentViewController:navViewController
-                                          animated:YES
-                                        completion:nil];
+    navViewController.modalPresentationStyle = UIModalPresentationPageSheet;
+    UISheetPresentationController* presentationController =
+        navViewController.sheetPresentationController;
+    presentationController.prefersEdgeAttachedInCompactHeight = YES;
+    presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached =
+        YES;
+    presentationController.detents = @[
+      UISheetPresentationControllerDetent.mediumDetent,
+      UISheetPresentationControllerDetent.largeDetent
+    ];
+    [_magicStackCollectionView presentViewController:navViewController
+                                            animated:YES
+                                          completion:nil];
+  }
 }
 
 - (void)showMagicStackParcelList {
