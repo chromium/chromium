@@ -2186,7 +2186,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.CanceledForInactivePageRestriction.DisallowActivationReason{PreloadingTriggerType}"
-    enum="InactiveFrameDisallowActivationReason" expires_after="2024-09-01">
+    enum="InactiveFrameDisallowActivationReason" expires_after="2024-12-01">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@chromium.org</owner>
   <summary>
@@ -2284,11 +2284,14 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Prerender.Experimental.CrossOriginRedirectionProtocolChange{PreloadingTriggerType}"
     enum="PrerenderCrossOriginRedirectionProtocolChange"
-    expires_after="2024-06-01">
+    expires_after="2024-12-01">
   <owner>lingqi@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
+    Warning: this histogram was expired from 2024-06-01 to 2024-08-06; data may
+    be missing.
+
     A breakdown metric for analyzing cross-origin redirection cases during
     embedder-triggered prerendering, Recorded when redirections were caused due
     to HTTP protocol upgrades.
@@ -2385,11 +2388,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.PrerenderCrossOriginRedirectionMismatch{PreloadingTriggerType}"
-    enum="PrerenderCrossOriginRedirectionMismatch" expires_after="2024-06-01">
+    enum="PrerenderCrossOriginRedirectionMismatch" expires_after="2024-12-01">
   <owner>lingqi@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
+    Warning: this histogram was expired from 2024-06-01 to 2024-08-06; data may
+    be missing.
+
     A breakdown metric for analyzing cross-origin redirection cases during
     embedder-triggered prerendering. Recorded when the embedder-triggered
     prerendering was redirected to another origin that differs from the initial
