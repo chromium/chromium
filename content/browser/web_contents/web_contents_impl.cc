@@ -6221,9 +6221,10 @@ bool WebContentsImpl::GotResponseToKeyboardLockRequest(bool allowed) {
   if (!keyboard_lock_widget_) {
     return false;
   }
+  // Exits early here if GotResponseToKeyboardLockRequest() was called from
+  // the dtor for `this`.
   if (WebContentsImpl::FromRenderWidgetHostImpl(keyboard_lock_widget_) !=
       this) {
-    NOTREACHED_IN_MIGRATION();
     return false;
   }
   // KeyboardLock is only supported when called by the top-level browsing
