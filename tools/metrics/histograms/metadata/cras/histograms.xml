@@ -23,7 +23,9 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="CrasDlcType">
+  <variant name="IntelligoBeamforming" summary="the intelligo beamforming DLC"/>
   <variant name="NcAp" summary="the AP Noise Cancellation DLC"/>
+  <variant name="Nuance" summary="the nuance DLC"/>
   <variant name="SrBt" summary="the Bluetooth Super Resolution DLC"/>
 </variants>
 
