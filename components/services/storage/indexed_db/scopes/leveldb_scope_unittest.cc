@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
+#include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 
 #include <limits>
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -15,7 +17,7 @@
 #include "base/test/bind.h"
 #include "components/services/storage/indexed_db/leveldb/fake_leveldb_factory.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
-#include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
+#include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
@@ -50,13 +52,28 @@ class LevelDBScopeTest : public LevelDBScopesTestBase {
     return base::StrCat(
         {base::StringPrintf("%05d", num), "value", large_string_});
   }
+
+  void CommitAndWaitForCleanup(
+      LevelDBScopes& scopes,
+      std::unique_ptr<LevelDBScope> scope,
+      base::OnceClosure on_commit_complete = base::OnceClosure()) {
+    base::RunLoop cleanup_loop;
+    leveldb::Status s = scopes.Commit(
+        std::move(scope), /*sync_on_commit=*/false,
+        std::move(on_commit_complete),
+        base::BindLambdaForTesting([&cleanup_loop]() { cleanup_loop.Quit(); }));
+    EXPECT_TRUE(s.ok());
+
+    // Wait until the cleanup task completes.
+    cleanup_loop.Run();
+  }
 };
 
 TEST_F(LevelDBScopeTest, BasicUsage) {
   SetUpRealDatabase();
   PartitionedLockManager lock_manager;
 
-  leveldb::Status failure_status = leveldb::Status::OK();
+  std::optional<leveldb::Status> failure_status;
   LevelDBScopes scopes(
       metadata_prefix_, kWriteBatchSizeForTesting, leveldb_, &lock_manager,
       base::BindLambdaForTesting(
@@ -72,9 +89,10 @@ TEST_F(LevelDBScopeTest, BasicUsage) {
   std::string key = CreateKey(0);
   s = scope->Put(key, value);
   EXPECT_TRUE(s.ok());
+  // We don't expect a cleanup task to run since this is an in-memory scope.
   s = scopes.Commit(std::move(scope), /*sync_on_commit=*/false);
   EXPECT_TRUE(s.ok());
-  EXPECT_TRUE(failure_status.ok());
+  EXPECT_FALSE(failure_status.has_value());
 
   leveldb::ReadOptions options;
   options.verify_checksums = true;
@@ -87,7 +105,7 @@ TEST_F(LevelDBScopeTest, InMemoryAbort) {
   SetUpRealDatabase();
   PartitionedLockManager lock_manager;
 
-  leveldb::Status failure_status = leveldb::Status::OK();
+  std::optional<leveldb::Status> failure_status;
   LevelDBScopes scopes(
       metadata_prefix_, kWriteBatchSizeForTesting, leveldb_, &lock_manager,
       base::BindLambdaForTesting(
@@ -104,6 +122,7 @@ TEST_F(LevelDBScopeTest, InMemoryAbort) {
   std::string key = CreateKey(0);
   s = scope->Put(key, value);
   EXPECT_TRUE(s.ok());
+  // We don't expect a cleanup task to run since this is an in-memory scope.
   s = scopes.Commit(std::move(scope), /*sync_on_commit=*/false);
   EXPECT_TRUE(s.ok());
 
@@ -122,14 +141,14 @@ TEST_F(LevelDBScopeTest, InMemoryAbort) {
   s = leveldb_->db()->Get(options, key, &value);
   EXPECT_TRUE(s.ok());
   EXPECT_EQ("12345", value);
-  EXPECT_TRUE(failure_status.ok());
+  EXPECT_FALSE(failure_status.has_value());
 }
 
 TEST_F(LevelDBScopeTest, AbortWithRevertTask) {
   SetUpRealDatabase();
   PartitionedLockManager lock_manager;
 
-  leveldb::Status failure_status = leveldb::Status::OK();
+  std::optional<leveldb::Status> failure_status;
   LevelDBScopes scopes(
       metadata_prefix_, kWriteBatchSizeForTesting, leveldb_, &lock_manager,
       base::BindLambdaForTesting(
@@ -164,13 +183,13 @@ TEST_F(LevelDBScopeTest, AbortWithRevertTask) {
   s = leveldb_->db()->Get(options, key, &value);
   EXPECT_TRUE(s.ok());
   EXPECT_EQ("12345", value);
-  EXPECT_TRUE(failure_status.ok());
+  EXPECT_FALSE(failure_status.has_value());
 }
 
 TEST_F(LevelDBScopeTest, ManyScopes) {
   SetUpRealDatabase();
   PartitionedLockManager lock_manager;
-  leveldb::Status failure_status;
+  std::optional<leveldb::Status> failure_status;
   LevelDBScopes scopes(
       metadata_prefix_, kWriteBatchSizeForTesting, leveldb_, &lock_manager,
       base::BindLambdaForTesting(
@@ -192,7 +211,7 @@ TEST_F(LevelDBScopeTest, ManyScopes) {
     EXPECT_TRUE(s.ok());
   }
 
-  // Wait until cleanup task runs.
+  // Wait until all the cleanup tasks complete.
   task_env_.RunUntilIdle();
 
   ScopesEncoder encoder;
@@ -203,13 +222,13 @@ TEST_F(LevelDBScopeTest, ManyScopes) {
   EXPECT_TRUE(
       IsPrefixedRangeEmptyInDB(encoder.ScopeMetadataPrefix(metadata_prefix_)));
 
-  EXPECT_TRUE(failure_status.ok());
+  EXPECT_FALSE(failure_status.has_value());
 }
 
 TEST_F(LevelDBScopeTest, DeleteRangeExclusive) {
   SetUpRealDatabase();
   PartitionedLockManager lock_manager;
-  leveldb::Status failure_status;
+  std::optional<leveldb::Status> failure_status;
   LevelDBScopes scopes(
       metadata_prefix_, kWriteBatchSizeForTesting, leveldb_, &lock_manager,
       base::BindLambdaForTesting(
@@ -229,8 +248,8 @@ TEST_F(LevelDBScopeTest, DeleteRangeExclusive) {
     s = scope->Put(key, value);
     EXPECT_TRUE(s.ok());
   }
-  s = scopes.Commit(std::move(scope), /*sync_on_commit=*/false);
-  EXPECT_TRUE(s.ok());
+  CommitAndWaitForCleanup(scopes, std::move(scope));
+  EXPECT_FALSE(failure_status.has_value());
 
   // Do a exclusive range delete, so we should not delete 20.
   scope = scopes.CreateScope(
@@ -239,8 +258,8 @@ TEST_F(LevelDBScopeTest, DeleteRangeExclusive) {
       CreateKey(0), CreateKey(20),
       LevelDBScopeDeletionMode::kImmediateWithRangeEndExclusive);
   EXPECT_TRUE(s.ok());
-  s = scopes.Commit(std::move(scope), /*sync_on_commit=*/false);
-  EXPECT_TRUE(s.ok());
+  CommitAndWaitForCleanup(scopes, std::move(scope));
+  EXPECT_FALSE(failure_status.has_value());
 
   // Check that keys 0-20 (exclusive) are gone, but 20 still exists.
   auto locks = AcquireLocksSync(&lock_manager, {CreateSimpleSharedLock()});
@@ -263,7 +282,7 @@ TEST_F(LevelDBScopeTest, DeleteRangeExclusive) {
 TEST_F(LevelDBScopeTest, DeleteRangeInclusive) {
   SetUpRealDatabase();
   PartitionedLockManager lock_manager;
-  leveldb::Status failure_status;
+  std::optional<leveldb::Status> failure_status;
   LevelDBScopes scopes(
       metadata_prefix_, kWriteBatchSizeForTesting, leveldb_, &lock_manager,
       base::BindLambdaForTesting(
@@ -283,8 +302,8 @@ TEST_F(LevelDBScopeTest, DeleteRangeInclusive) {
     s = scope->Put(key, value);
     EXPECT_TRUE(s.ok());
   }
-  s = scopes.Commit(std::move(scope), /*sync_on_commit=*/false);
-  EXPECT_TRUE(s.ok());
+  CommitAndWaitForCleanup(scopes, std::move(scope));
+  EXPECT_FALSE(failure_status.has_value());
 
   // Do an inclusive delete range, so key 20 should be deleted.
   scope = scopes.CreateScope(
@@ -293,8 +312,8 @@ TEST_F(LevelDBScopeTest, DeleteRangeInclusive) {
       CreateKey(0), CreateKey(20),
       LevelDBScopeDeletionMode::kImmediateWithRangeEndInclusive);
   EXPECT_TRUE(s.ok());
-  s = scopes.Commit(std::move(scope), /*sync_on_commit=*/false);
-  EXPECT_TRUE(s.ok());
+  CommitAndWaitForCleanup(scopes, std::move(scope));
+  EXPECT_FALSE(failure_status.has_value());
 
   // Check that keys 0-20 (inclusive) are gone, including 20.
   auto locks = AcquireLocksSync(&lock_manager, {CreateSimpleSharedLock()});
@@ -311,7 +330,7 @@ TEST_F(LevelDBScopeTest, DeleteRangeInclusive) {
 TEST_F(LevelDBScopeTest, DeleteRangeDeferred) {
   SetUpRealDatabase();
   PartitionedLockManager lock_manager;
-  leveldb::Status failure_status;
+  std::optional<leveldb::Status> failure_status;
   LevelDBScopes scopes(
       metadata_prefix_, kWriteBatchSizeForTesting, leveldb_, &lock_manager,
       base::BindLambdaForTesting(
@@ -330,19 +349,16 @@ TEST_F(LevelDBScopeTest, DeleteRangeDeferred) {
     s = scope->Put(key, value);
     EXPECT_TRUE(s.ok());
   }
-  s = scopes.Commit(std::move(scope), /*sync_on_commit=*/false);
-  EXPECT_TRUE(s.ok());
+  CommitAndWaitForCleanup(scopes, std::move(scope));
+  EXPECT_FALSE(failure_status.has_value());
 
   scope = scopes.CreateScope(
       AcquireLocksSync(&lock_manager, {CreateSimpleExclusiveLock()}));
   s = scope->DeleteRange(CreateKey(0), CreateKey(20),
                          LevelDBScopeDeletionMode::kDeferred);
   EXPECT_TRUE(s.ok());
-  s = scopes.Commit(std::move(scope), /*sync_on_commit=*/false);
-  EXPECT_TRUE(s.ok());
-
-  // Wait until cleanup task runs.
-  task_env_.RunUntilIdle();
+  CommitAndWaitForCleanup(scopes, std::move(scope));
+  EXPECT_FALSE(failure_status.has_value());
 
   // Be a good citizen and acquire read locks.
   auto locks = AcquireLocksSync(&lock_manager, {CreateSimpleSharedLock()});
@@ -353,13 +369,13 @@ TEST_F(LevelDBScopeTest, DeleteRangeDeferred) {
     s = leveldb_->db()->Get(options, key, &value);
     EXPECT_TRUE(s.IsNotFound()) << i;
   }
-  EXPECT_TRUE(failure_status.ok());
+  EXPECT_FALSE(failure_status.has_value());
 }
 
 TEST_F(LevelDBScopeTest, DeleteRangeCompact) {
   SetUpRealDatabase();
   PartitionedLockManager lock_manager;
-  leveldb::Status failure_status;
+  std::optional<leveldb::Status> failure_status;
   LevelDBScopes scopes(
       metadata_prefix_, kWriteBatchSizeForTesting, leveldb_, &lock_manager,
       base::BindLambdaForTesting(
@@ -378,19 +394,15 @@ TEST_F(LevelDBScopeTest, DeleteRangeCompact) {
     s = scope->Put(key, value);
     EXPECT_TRUE(s.ok());
   }
-  s = scopes.Commit(std::move(scope), /*sync_on_commit=*/false);
-  EXPECT_TRUE(s.ok());
+  CommitAndWaitForCleanup(scopes, std::move(scope));
+  EXPECT_FALSE(failure_status.has_value());
 
   scope = scopes.CreateScope(
       AcquireLocksSync(&lock_manager, {CreateSimpleExclusiveLock()}));
   s = scope->DeleteRange(CreateKey(0), CreateKey(20),
                          LevelDBScopeDeletionMode::kDeferredWithCompaction);
-  EXPECT_TRUE(s.ok());
-  s = scopes.Commit(std::move(scope), /*sync_on_commit=*/false);
-  EXPECT_TRUE(s.ok());
-
-  // Wait until cleanup task runs.
-  task_env_.RunUntilIdle();
+  CommitAndWaitForCleanup(scopes, std::move(scope));
+  EXPECT_FALSE(failure_status.has_value());
 
   // Be a good citizen and acquire read locks.
   auto locks = AcquireLocksSync(&lock_manager, {CreateSimpleSharedLock()});
@@ -401,13 +413,13 @@ TEST_F(LevelDBScopeTest, DeleteRangeCompact) {
     s = leveldb_->db()->Get(options, key, &value);
     EXPECT_TRUE(s.IsNotFound()) << i;
   }
-  EXPECT_TRUE(failure_status.ok());
+  EXPECT_FALSE(failure_status.has_value());
 }
 
 TEST_F(LevelDBScopeTest, RevertWithDeferredDelete) {
   SetUpRealDatabase();
   PartitionedLockManager lock_manager;
-  leveldb::Status failure_status;
+  std::optional<leveldb::Status> failure_status;
   LevelDBScopes scopes(
       metadata_prefix_, kWriteBatchSizeForTesting, leveldb_, &lock_manager,
       base::BindLambdaForTesting(
@@ -429,8 +441,8 @@ TEST_F(LevelDBScopeTest, RevertWithDeferredDelete) {
     s = scope->Put(key, value);
     EXPECT_TRUE(s.ok());
   }
-  s = scopes.Commit(std::move(scope), /*sync_on_commit=*/false);
-  EXPECT_TRUE(s.ok());
+  CommitAndWaitForCleanup(scopes, std::move(scope));
+  EXPECT_FALSE(failure_status.has_value());
 
   // Do a deferred delete & a write large enough to make this a log-based scope,
   // and then revert it.
@@ -445,10 +457,10 @@ TEST_F(LevelDBScopeTest, RevertWithDeferredDelete) {
 
   // Wait until cleanup task runs.
   task_env_.RunUntilIdle();
+  EXPECT_FALSE(failure_status.has_value());
 
   // If the cleanup correctly ignored the tasks, then the values should still
   // exist.
-
   auto locks = AcquireLocksSync(&lock_manager, {CreateSimpleSharedLock()});
   leveldb::ReadOptions options;
   options.verify_checksums = true;
@@ -459,7 +471,7 @@ TEST_F(LevelDBScopeTest, RevertWithDeferredDelete) {
   }
   s = leveldb_->db()->Get(options, CreateKey(20), &value);
   EXPECT_TRUE(s.IsNotFound());
-  EXPECT_TRUE(failure_status.ok());
+  EXPECT_FALSE(failure_status.has_value());
 }
 
 TEST_F(LevelDBScopeTest, BrokenDBForInitialize) {
@@ -467,7 +479,7 @@ TEST_F(LevelDBScopeTest, BrokenDBForInitialize) {
   leveldb_ = FakeLevelDBFactory::GetBrokenLevelDB(error, base::FilePath());
   PartitionedLockManager lock_manager;
 
-  leveldb::Status failure_status = leveldb::Status::OK();
+  std::optional<leveldb::Status> failure_status;
   LevelDBScopes scopes(
       metadata_prefix_, kWriteBatchSizeForTesting, leveldb_, &lock_manager,
       base::BindLambdaForTesting(
@@ -476,6 +488,7 @@ TEST_F(LevelDBScopeTest, BrokenDBForInitialize) {
   leveldb::Status s = scopes.Initialize();
   EXPECT_FALSE(s.ok());
   EXPECT_EQ(s.ToString(), error.ToString());
+  EXPECT_FALSE(failure_status.has_value());
 }
 
 TEST_F(LevelDBScopeTest, BrokenDBForCommit) {
@@ -483,7 +496,7 @@ TEST_F(LevelDBScopeTest, BrokenDBForCommit) {
   SetUpBreakableDB(&break_db);
   PartitionedLockManager lock_manager;
 
-  leveldb::Status failure_status = leveldb::Status::OK();
+  std::optional<leveldb::Status> failure_status;
   LevelDBScopes scopes(
       metadata_prefix_, kWriteBatchSizeForTesting, leveldb_, &lock_manager,
       base::BindLambdaForTesting(
@@ -503,7 +516,7 @@ TEST_F(LevelDBScopeTest, BrokenDBForCommit) {
   EXPECT_TRUE(s.ok());
   s = scopes.Commit(std::move(scope), /*sync_on_commit=*/false);
   EXPECT_EQ(s.ToString(), error.ToString());
-  EXPECT_TRUE(failure_status.ok());
+  EXPECT_FALSE(failure_status.has_value());
 }
 
 TEST_F(LevelDBScopeTest, BrokenDBForCleanup) {
@@ -511,7 +524,7 @@ TEST_F(LevelDBScopeTest, BrokenDBForCleanup) {
   SetUpBreakableDB(&break_db);
   PartitionedLockManager lock_manager;
 
-  leveldb::Status failure_status = leveldb::Status::OK();
+  std::optional<leveldb::Status> failure_status;
   LevelDBScopes scopes(
       metadata_prefix_, kWriteBatchSizeForTesting, leveldb_, &lock_manager,
       base::BindLambdaForTesting(
@@ -522,22 +535,22 @@ TEST_F(LevelDBScopeTest, BrokenDBForCleanup) {
   scopes.StartRecoveryAndCleanupTasks();
   auto scope = scopes.CreateScope(
       AcquireLocksSync(&lock_manager, {CreateSimpleExclusiveLock()}));
-
-  leveldb::Status error = leveldb::Status::IOError("test");
   std::string value = CreateLargeValue(0);
   std::string key = CreateKey(0);
   s = scope->Put(key, value);
   EXPECT_TRUE(s.ok());
-  s = scopes.Commit(std::move(scope), /*sync_on_commit=*/false);
-  // Break the database, which should hopefully effect the cleanup task.
-  std::move(break_db).Run(error);
-  EXPECT_TRUE(s.ok());
 
-  // Wait until cleanup task runs.
-  task_env_.RunUntilIdle();
+  leveldb::Status error = leveldb::Status::IOError("test");
+  // Commit the scopes and break the DB after the commit completes but before
+  // the cleanup task is scheduled.
+  CommitAndWaitForCleanup(scopes, std::move(scope),
+                          base::BindLambdaForTesting([&break_db, &error]() {
+                            std::move(break_db).Run(error);
+                          }));
 
-  EXPECT_FALSE(failure_status.ok());
-  EXPECT_EQ(failure_status.ToString(), error.ToString());
+  EXPECT_TRUE(failure_status.has_value());
+  EXPECT_FALSE(failure_status->ok());
+  EXPECT_EQ(failure_status->ToString(), error.ToString());
 }
 
 TEST_F(LevelDBScopeTest, BrokenDBForRevert) {
@@ -545,7 +558,7 @@ TEST_F(LevelDBScopeTest, BrokenDBForRevert) {
   SetUpBreakableDB(&break_db);
   PartitionedLockManager lock_manager;
 
-  leveldb::Status failure_status = leveldb::Status::OK();
+  std::optional<leveldb::Status> failure_status;
   LevelDBScopes scopes(
       metadata_prefix_, kWriteBatchSizeForTesting, leveldb_, &lock_manager,
       base::BindLambdaForTesting(
@@ -568,15 +581,16 @@ TEST_F(LevelDBScopeTest, BrokenDBForRevert) {
   // Wait until revert task reports failure.
   task_env_.RunUntilIdle();
 
-  EXPECT_FALSE(failure_status.ok());
-  EXPECT_EQ(failure_status.ToString(), error.ToString());
+  EXPECT_TRUE(failure_status.has_value());
+  EXPECT_FALSE(failure_status->ok());
+  EXPECT_EQ(failure_status->ToString(), error.ToString());
 }
 
 TEST_F(LevelDBScopeTest, DeleteNonExistentRangeDoesNotWrite) {
   SetUpRealDatabase();
   PartitionedLockManager lock_manager;
 
-  leveldb::Status failure_status = leveldb::Status::OK();
+  std::optional<leveldb::Status> failure_status;
   LevelDBScopes scopes(
       metadata_prefix_, kWriteBatchSizeForTesting, leveldb_, &lock_manager,
       base::BindLambdaForTesting(
@@ -592,9 +606,10 @@ TEST_F(LevelDBScopeTest, DeleteNonExistentRangeDoesNotWrite) {
   s = scope->DeleteRange(
       "b1", "b2", LevelDBScopeDeletionMode::kImmediateWithRangeEndInclusive);
   EXPECT_TRUE(s.ok());
+  // We don't expect a cleanup task to run since this is an in-memory scope.
   s = scopes.Commit(std::move(scope), /*sync_on_commit=*/false);
   EXPECT_TRUE(s.ok());
-  EXPECT_TRUE(failure_status.ok());
+  EXPECT_FALSE(failure_status.has_value());
 }
 
 }  // namespace

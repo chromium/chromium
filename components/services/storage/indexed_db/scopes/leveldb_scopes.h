@@ -57,14 +57,15 @@ class LevelDBScopes {
 
   std::unique_ptr<LevelDBScope> CreateScope(std::vector<PartitionedLock> locks);
 
-  leveldb::Status Commit(std::unique_ptr<LevelDBScope> scope,
-                         bool sync_on_commit);
-
-  // |on_complete| will be called when the cleanup task for the scope has
-  // finished operating.
-  leveldb::Status Commit(std::unique_ptr<LevelDBScope> scope,
-                         bool sync_on_commit,
-                         base::OnceClosure on_complete);
+  // `on_commit_complete` will be called after the commit for `scope` completes
+  // but before the cleanup task (if applicable) is scheduled.
+  // `on_cleanup_complete` will be called when the cleanup task completes. It
+  // will not be called if the task was not scheduled at all.
+  leveldb::Status Commit(
+      std::unique_ptr<LevelDBScope> scope,
+      bool sync_on_commit,
+      base::OnceClosure on_commit_complete = base::OnceClosure(),
+      base::OnceClosure on_cleanup_complete = base::OnceClosure());
 
   const std::vector<uint8_t>& metadata_key_prefix() const {
     return metadata_key_prefix_;

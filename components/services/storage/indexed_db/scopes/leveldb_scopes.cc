@@ -241,16 +241,15 @@ std::unique_ptr<LevelDBScope> LevelDBScopes::CreateScope(
 }
 
 leveldb::Status LevelDBScopes::Commit(std::unique_ptr<LevelDBScope> scope,
-                                      bool sync_on_commit) {
-  return Commit(std::move(scope), sync_on_commit, base::OnceClosure());
-}
-
-leveldb::Status LevelDBScopes::Commit(std::unique_ptr<LevelDBScope> scope,
                                       bool sync_on_commit,
-                                      base::OnceClosure on_complete) {
+                                      base::OnceClosure on_commit_complete,
+                                      base::OnceClosure on_cleanup_complete) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(recovery_finished_);
   auto [status, scopes_mode] = scope->Commit(sync_on_commit);
+  if (on_commit_complete) {
+    std::move(on_commit_complete).Run();
+  }
   if (scopes_mode == LevelDBScope::Mode::kUndoLogOnDisk) {
     auto task = std::make_unique<CleanupScopeTask>(
         level_db_, metadata_key_prefix_, scope->scope_id(),
@@ -260,7 +259,8 @@ leveldb::Status LevelDBScopes::Commit(std::unique_ptr<LevelDBScope> scope,
         FROM_HERE, kCleanupTaskTraits,
         base::BindOnce(&CleanupScopeTask::Run, std::move(task)),
         base::BindOnce(&LevelDBScopes::OnCleanupTaskResult,
-                       weak_factory_.GetWeakPtr(), std::move(on_complete)));
+                       weak_factory_.GetWeakPtr(),
+                       std::move(on_cleanup_complete)));
   }
   return status;
 }
