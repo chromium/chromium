@@ -97,6 +97,8 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
     NOTREACHED_NORETURN();
   }
 
+  const std::string& CurrentGeoForTesting() override { NOTREACHED_NORETURN(); }
+
   std::vector<net::ProxyChain> GetProxyChainList() override {
     return *proxy_list_;
   }

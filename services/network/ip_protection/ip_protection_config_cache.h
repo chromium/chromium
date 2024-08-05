@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/component_export.h"
 #include "services/network/ip_protection/ip_protection_data_types.h"
@@ -61,6 +62,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
   // Fetch the proxy chain list manager.
   virtual IpProtectionProxyListManager*
   GetIpProtectionProxyListManagerForTesting() = 0;
+
+  // Returns the current geo of the config cache.
+  virtual const std::string& CurrentGeoForTesting() = 0;
 
   // Check whether a proxy chain list is available.
   virtual bool IsProxyListAvailable() = 0;

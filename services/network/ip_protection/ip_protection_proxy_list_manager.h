@@ -30,15 +30,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManager {
   // if `IsProxyListAvailable()` returned true.
   virtual const std::vector<net::ProxyChain>& ProxyList() = 0;
 
-  // Return the `GeoId` string which is the geo for which the current list is
-  // valid.
+  // Returns the current geo id. If no current geo id has been sent, an empty
+  // string will be returned. If token caching by geo is disabled, this will
+  // always return "EARTH".
+  virtual const std::string& CurrentGeo() = 0;
 
-  // This is a formatted version of the `GeoHint`. It consists
-  // of a concatenation of the country region, iso region, and city name
-  // (separated by commas). If there are fields missing, they are omitted, and
-  // there is no trailing comma. String can be empty if a successful request
-  // fetching proxy lists has not occurred.
-  virtual const std::string& GeoId() = 0;
+  // Set the "current" geo of the proxy list manager. This function should only
+  // be called by the `IpProtectionConfigCache` for when a geo change has been
+  // observed.
+  virtual void SetCurrentGeo(const std::string& geo_id) = 0;
 
   // Request a refresh of the proxy list. Call this when it's likely that the
   // proxy list is out of date.

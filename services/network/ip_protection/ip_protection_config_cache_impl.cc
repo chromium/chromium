@@ -26,6 +26,9 @@ namespace network {
 
 namespace {
 
+// Default Geo used until caching by geo is enabled.
+constexpr char kDefaultGeo[] = "EARTH";
+
 // Rewrite the proxy list to use SCHEME_QUIC. In order to fall back to HTTPS
 // quickly if QUIC is broken, the first chain is included once with
 // SCHEME_QUIC and once with SCHEME_HTTPS. The remaining chains are included
@@ -66,7 +69,15 @@ std::vector<net::ProxyChain> MakeQuicProxyList(
 
 IpProtectionConfigCacheImpl::IpProtectionConfigCacheImpl(
     std::unique_ptr<IpProtectionConfigGetter> config_getter)
-    : ipp_over_quic_(net::features::kIpPrivacyUseQuicProxies.Get()) {
+    : ipp_over_quic_(net::features::kIpPrivacyUseQuicProxies.Get()),
+      enable_token_caching_by_geo_(
+          net::features::kIpPrivacyCacheTokensByGeo.Get()) {
+  // If caching by geo is disabled, the current geo will be resolved to
+  // `kDefaultGeo` and should not be modified.
+  if (!enable_token_caching_by_geo_) {
+    current_geo_id_ = kDefaultGeo;
+  }
+
   // Proxy list is null upon cache creation.
   ipp_proxy_list_manager_ = nullptr;
 
@@ -77,8 +88,8 @@ IpProtectionConfigCacheImpl::IpProtectionConfigCacheImpl(
     config_getter_ = std::move(config_getter);
 
     ipp_proxy_list_manager_ =
-        std::make_unique<IpProtectionProxyListManagerImpl>(
-            config_getter_.get());
+        std::make_unique<IpProtectionProxyListManagerImpl>(this,
+                                                           *config_getter_);
 
     ipp_token_cache_managers_[IpProtectionProxyLayer::kProxyA] =
         std::make_unique<IpProtectionTokenCacheManagerImpl>(
@@ -149,6 +160,10 @@ IpProtectionConfigCacheImpl::GetIpProtectionProxyListManagerForTesting() {
   return ipp_proxy_list_manager_.get();
 }
 
+const std::string& IpProtectionConfigCacheImpl::CurrentGeoForTesting() {
+  return current_geo_id_;
+}
+
 bool IpProtectionConfigCacheImpl::IsProxyListAvailable() {
   return (ipp_proxy_list_manager_ != nullptr)
              ? ipp_proxy_list_manager_->IsProxyListAvailable()
@@ -182,9 +197,14 @@ void IpProtectionConfigCacheImpl::RequestRefreshProxyList() {
 }
 
 void IpProtectionConfigCacheImpl::GeoChangeObserved(const std::string& geo_id) {
+  // If token caching by geo is disabled, short-circuit and don't do anything.
+  if (!enable_token_caching_by_geo_) {
+    return;
+  }
+
   if (ipp_proxy_list_manager_ != nullptr &&
-      ipp_proxy_list_manager_->GeoId() != geo_id) {
-    RequestRefreshProxyList();
+      ipp_proxy_list_manager_->CurrentGeo() != geo_id) {
+    ipp_proxy_list_manager_->SetCurrentGeo(geo_id);
   }
 
   for (auto& [_, token_manager] : ipp_token_cache_managers_) {

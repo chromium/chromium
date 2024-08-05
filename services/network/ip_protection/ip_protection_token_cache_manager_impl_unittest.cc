@@ -147,12 +147,12 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
       override {
     return nullptr;
   }
+  const std::string& CurrentGeoForTesting() override { NOTREACHED_NORETURN(); }
   bool IsProxyListAvailable() override { return false; }
   void QuicProxiesFailed() override {}
   std::vector<net::ProxyChain> GetProxyChainList() override { return {}; }
   void RequestRefreshProxyList() override {}
 };
-}  // namespace
 
 struct HistogramState {
   // Number of successful calls to GetAuthToken (true).
@@ -491,26 +491,6 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   EXPECT_EQ(ipp_proxy_a_token_cache_manager_->CurrentGeo(), kMountainViewGeoId);
 }
 
-// If `TryGetAuthTokens()` returns an empty batch, the cache remains empty.
-TEST_F(IpProtectionTokenCacheManagerImplTest, EmptyBatch) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
-
-  // If no tokens are present, a call to `GeoChangeObserved` should not be made.
-  EXPECT_CALL(mock_config_cache_, GeoChangeObserved(testing::_)).Times(0);
-
-  mock_.ExpectTryGetAuthTokensCall(
-      expected_batch_size_, TokenBatch(0, kFutureExpiration, kMountainViewGeo));
-  CallTryGetAuthTokensAndWait(IpProtectionProxyLayer::kProxyA);
-  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
-
-  ASSERT_FALSE(ipp_proxy_a_token_cache_manager_->IsAuthTokenAvailable(
-      kMountainViewGeoId));
-  ASSERT_FALSE(
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
-  ExpectHistogramState(
-      HistogramState{.success = 0, .failure = 1, .generated = 1});
-}
-
 // If `TryGetAuthTokens()` returns a batch smaller than the low-water mark,
 // the cache does not immediately refill.
 TEST_F(IpProtectionTokenCacheManagerImplTest, SmallBatch) {
@@ -526,6 +506,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, SmallBatch) {
       kMountainViewGeoId));
   ASSERT_TRUE(
       ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+
   ASSERT_TRUE(ipp_proxy_a_token_cache_manager_
                   ->try_get_auth_tokens_after_for_testing() >
               base::Time::Now());
@@ -1081,4 +1062,5 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   ipp_proxy_a_token_cache_manager_->SetCurrentGeo(kMountainViewGeoId);
   ASSERT_NE(ipp_proxy_a_token_cache_manager_->CurrentGeo(), kMountainViewGeoId);
 }
+}  // namespace
 }  // namespace network

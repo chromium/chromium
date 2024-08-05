@@ -38,7 +38,7 @@ constexpr base::TimeDelta kImmediateTokenRefillDelay = base::Minutes(1);
 constexpr base::TimeDelta kTokenLimitExceededDelay = base::Minutes(10);
 
 // Default Geo used until caching by geo is enabled.
-constexpr std::string kDefaultGeo = "EARTH";
+constexpr char kDefaultGeo[] = "EARTH";
 
 }  // namespace
 
@@ -86,6 +86,10 @@ bool IpProtectionTokenCacheManagerImpl::IsAuthTokenAvailable() {
 bool IpProtectionTokenCacheManagerImpl::IsAuthTokenAvailable(
     const std::string& geo_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (geo_id == "") {
+    return false;
+  }
 
   RemoveExpiredTokens();
 
@@ -175,7 +179,6 @@ void IpProtectionTokenCacheManagerImpl::ScheduleMaybeRefillCache() {
       delay = try_get_auth_tokens_after_ - now;
     }
   } else {
-    // Conditional above ensures token entry exists in map for current geo.
     // Delay refill to when the next token expires.
     delay = cache_by_geo_[current_geo_id_].front().expiration - now;
   }
@@ -194,7 +197,22 @@ void IpProtectionTokenCacheManagerImpl::ScheduleMaybeRefillCache() {
 // number of tokens in the latest geo is below the low water mark.
 bool IpProtectionTokenCacheManagerImpl::NeedsRefill(
     const std::string& geo_id) const {
+  if (cache_by_geo_.empty()) {
+    return true;
+  }
+
+  // There are two states where geo id can be "":
+  // 1. The token cache manager was just initialized and has not retrieved any
+  // tokens yet but the condition above should not allow this to be reached.
+  // 2. The current geo has been set to "" because there is no available proxy
+  //    list and we are falling back to DIRECT. In this case we should not
+  //    refill tokens.
+  if (geo_id == "") {
+    return false;
+  }
+
   auto it = cache_by_geo_.find(geo_id);
+
   if (it == cache_by_geo_.end()) {
     return true;
   }
@@ -226,6 +244,7 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Failed Call - Short circuit and schedule refill.
+  // If `tokens.has_value()` is true, a non-empty list of valid tokens exists.
   if (!tokens.has_value()) {
     fetching_auth_tokens_ = false;
     VLOG(2) << "IPPATC::OnGotAuthTokens back off until " << *try_again_after;
@@ -242,41 +261,41 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
   VLOG(2) << "IPPATC::OnGotAuthTokens got " << tokens->size() << " tokens";
   try_get_auth_tokens_after_ = base::Time();
 
-  std::string geo_id_from_token;
+  // Ensure token list is not empty.
+  CHECK(!tokens->empty());
 
-  if (!tokens->empty()) {
-    // Randomize the expiration time of the tokens, applying the same "fuzz" to
-    // all tokens in the batch.
-    if (enable_token_expiration_fuzzing_for_testing_) {
-      base::TimeDelta fuzz_limit =
-          net::features::kIpPrivacyExpirationFuzz.Get();
-      base::TimeDelta fuzz =
-          base::RandTimeDelta(kMinimumFuzzInterval, fuzz_limit);
-      for (auto& token : *tokens) {
-        token.expiration -= fuzz;
-      }
+  // Randomize the expiration time of the tokens, applying the same "fuzz" to
+  // all tokens in the batch.
+  if (enable_token_expiration_fuzzing_for_testing_) {
+    base::TimeDelta fuzz_limit = net::features::kIpPrivacyExpirationFuzz.Get();
+    base::TimeDelta fuzz =
+        base::RandTimeDelta(kMinimumFuzzInterval, fuzz_limit);
+    for (auto& token : *tokens) {
+      token.expiration -= fuzz;
     }
-
-    geo_id_from_token =
-        enable_token_caching_by_geo_
-            ? network::GetGeoIdFromGeoHint(tokens->front().geo_hint)
-            : kDefaultGeo;
-
-    // The latest tokens should be placed into the map of caches.
-    if (!cache_by_geo_.contains(geo_id_from_token)) {
-      cache_by_geo_.emplace(geo_id_from_token,
-                            std::deque<BlindSignedAuthToken>());
-    }
-
-    std::deque<BlindSignedAuthToken>& cache = cache_by_geo_[geo_id_from_token];
-
-    cache.insert(cache.end(), std::make_move_iterator(tokens->begin()),
-                 std::make_move_iterator(tokens->end()));
-    std::sort(cache.begin(), cache.end(),
-              [](BlindSignedAuthToken& a, BlindSignedAuthToken& b) {
-                return a.expiration < b.expiration;
-              });
   }
+
+  // TODO: crbug.com/357439021 - Refactor so that each TryAuthTokensCallback
+  // contains a single `geo_hint`.
+  std::string geo_id_from_token =
+      enable_token_caching_by_geo_
+          ? network::GetGeoIdFromGeoHint(tokens->front().geo_hint)
+          : kDefaultGeo;
+
+  // The latest tokens should be placed into the map of caches.
+  if (!cache_by_geo_.contains(geo_id_from_token)) {
+    cache_by_geo_.emplace(geo_id_from_token,
+                          std::deque<BlindSignedAuthToken>());
+  }
+
+  std::deque<BlindSignedAuthToken>& cache = cache_by_geo_[geo_id_from_token];
+
+  cache.insert(cache.end(), std::make_move_iterator(tokens->begin()),
+               std::make_move_iterator(tokens->end()));
+  std::sort(cache.begin(), cache.end(),
+            [](BlindSignedAuthToken& a, BlindSignedAuthToken& b) {
+              return a.expiration < b.expiration;
+            });
 
   // If a refill is still needed, we do not want to immediately re-request
   // tokens, lest we overwhelm the server. This is unlikely to happen in
@@ -293,8 +312,7 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
 
   fetching_auth_tokens_ = false;
 
-  bool has_geo_id_changed =
-      geo_id_from_token != "" && geo_id_from_token != current_geo_id_;
+  bool has_geo_id_changed = geo_id_from_token != current_geo_id_;
   if (enable_token_caching_by_geo_ && has_geo_id_changed) {
     ip_protection_config_cache_->GeoChangeObserved(geo_id_from_token);
   }
@@ -318,10 +336,15 @@ IpProtectionTokenCacheManagerImpl::GetAuthToken() {
 std::optional<BlindSignedAuthToken>
 IpProtectionTokenCacheManagerImpl::GetAuthToken(const std::string& geo_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::optional<BlindSignedAuthToken> result;
+  if (geo_id == "") {
+    return result;
+  }
+
   RemoveExpiredTokens();
 
   size_t tokens_in_cache = 0;
-  std::optional<BlindSignedAuthToken> result;
   // Checks to see if the geo is available in the map and then checks if the
   // cache itself is not empty.
   if (auto it = cache_by_geo_.find(enable_token_caching_by_geo_ ? geo_id

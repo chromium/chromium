@@ -51,6 +51,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
       override;
   IpProtectionProxyListManager* GetIpProtectionProxyListManagerForTesting()
       override;
+  const std::string& CurrentGeoForTesting() override;
   bool IsProxyListAvailable() override;
   void QuicProxiesFailed() override;
   std::vector<net::ProxyChain> GetProxyChainList() override;
@@ -80,6 +81,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   // Once this value becomes false, it stays false until a network change or
   // browser restart.
   bool ipp_over_quic_;
+
+  // Feature flag to safely introduce token caching by geo.
+  const bool enable_token_caching_by_geo_;
 
   base::WeakPtrFactory<IpProtectionConfigCacheImpl> weak_ptr_factory_{this};
 };
