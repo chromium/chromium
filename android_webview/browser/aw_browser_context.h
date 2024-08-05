@@ -35,10 +35,6 @@
 class GURL;
 class PrefService;
 
-namespace autofill {
-class AutocompleteHistoryManager;
-}
-
 namespace content {
 class ClientHintsControllerDelegate;
 class SSLHostStateDelegate;
@@ -199,8 +195,6 @@ class AwBrowserContext : public content::BrowserContext,
 
   scoped_refptr<AwQuotaManagerBridge> quota_manager_bridge_;
   std::unique_ptr<AwFormDatabaseService> form_database_service_;
-  std::unique_ptr<autofill::AutocompleteHistoryManager>
-      autocomplete_history_manager_;
 
   std::unique_ptr<visitedlink::VisitedLinkWriter> visitedlink_writer_;
 
