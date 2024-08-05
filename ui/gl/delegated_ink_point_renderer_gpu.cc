@@ -115,10 +115,7 @@ void DelegatedInkPointRendererGpu::ReportPointsDrawn() {
                         now - timestamp);
     most_recent_timestamp = std::max(timestamp, most_recent_timestamp);
   }
-  // TODO(crbug.com/40784171): Understand why we are being sent points from
-  // browser process that break this assertion so frequently and prevent it from
-  // happening.
-  // CHECK_GE(most_recent_timestamp, metadata_->timestamp());
+  CHECK_GE(most_recent_timestamp, metadata_->timestamp());
   base::UmaHistogramTimes(
       "Renderer.DelegatedInkTrail.LatencyImprovement.OS.WithoutPrediction",
       most_recent_timestamp - metadata_->timestamp());
@@ -188,6 +185,15 @@ void DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint(
           // the next valid |metadata| is guaranteed to be after it.
           token_map.erase(token_map.begin(),
                           std::next(point_matching_metadata_it));
+          // Ensure that points that are being removed from the trail are not
+          // being reported as painted in `ReportPointsDrawn()`.
+          points_to_be_drawn_.erase(
+              std::remove_if(points_to_be_drawn_.begin(),
+                             points_to_be_drawn_.end(),
+                             [&](const base::TimeTicks& x) {
+                               return metadata->timestamp() > x;
+                             }),
+              points_to_be_drawn_.end());
           metadata_ = std::move(metadata);
           return;
         }
@@ -208,6 +214,7 @@ void DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint(
     return;
   }
 
+  points_to_be_drawn_.clear();
   wait_for_new_trail_to_draw_ = false;
   metadata_ = std::move(metadata);
   DrawSavedTrailPoints();

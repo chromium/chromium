@@ -44,8 +44,8 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
   }
 
   void SendDelegatedInkPointBasedOnPrevious(uint32_t pointer_id) {
-    DCHECK(stored_points_.find(pointer_id) != stored_points_.end());
-    DCHECK(!stored_points_[pointer_id].empty());
+    EXPECT_TRUE(stored_points_.find(pointer_id) != stored_points_.end());
+    EXPECT_TRUE(!stored_points_[pointer_id].empty());
 
     auto last_point = stored_points_[pointer_id].back();
     SendDelegatedInkPoint(gfx::DelegatedInkPoint(
@@ -56,7 +56,7 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
   }
 
   void SendDelegatedInkPointBasedOnPrevious() {
-    DCHECK_EQ(stored_points_.size(), 1u);
+    EXPECT_EQ(stored_points_.size(), 1u);
     SendDelegatedInkPointBasedOnPrevious(stored_points_.begin()->first);
   }
 
@@ -65,10 +65,31 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
         std::make_unique<gfx::DelegatedInkMetadata>(metadata));
   }
 
+  // Sends a DelegatedInkMetadata that starts a new trail. this assumes that
+  // there is only one `stored_points_` pointer id and that the points are
+  // stored ordered by their timestamp.
+  void SendNewTrailMetadata() {
+    EXPECT_EQ(stored_points_.size(), 1u);
+    auto points_it = stored_points_.find(stored_points_.begin()->first);
+    EXPECT_TRUE(points_it != stored_points_.end());
+    auto points_vec = points_it->second;
+    EXPECT_GT(points_vec.size(), 0u);
+    auto& last_point = points_vec.back();
+    gfx::DelegatedInkMetadata metadata(
+        last_point.point() + gfx::Vector2dF(5, 5), /*diameter=*/3,
+        SK_ColorBLACK,
+        last_point.timestamp() +
+            base::Microseconds(kMicrosecondsBetweenEachPoint),
+        gfx::RectF(0, 0, 100, 100), /*hovering=*/false);
+
+    ink_renderer()->SetDelegatedInkTrailStartPoint(
+        std::make_unique<gfx::DelegatedInkMetadata>(metadata));
+  }
+
   gfx::DelegatedInkMetadata SendMetadataBasedOnStoredPoint(int32_t pointer_id,
                                                            uint64_t point) {
-    DCHECK(stored_points_.find(pointer_id) != stored_points_.end());
-    DCHECK_GE(stored_points_[pointer_id].size(), point);
+    EXPECT_TRUE(stored_points_.find(pointer_id) != stored_points_.end());
+    EXPECT_GE(stored_points_[pointer_id].size(), point);
 
     const gfx::DelegatedInkPoint& ink_point = stored_points_[pointer_id][point];
     gfx::DelegatedInkMetadata metadata(
@@ -79,7 +100,7 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
   }
 
   gfx::DelegatedInkMetadata SendMetadataBasedOnStoredPoint(uint64_t point) {
-    DCHECK_EQ(stored_points_.size(), 1u);
+    EXPECT_EQ(stored_points_.size(), 1u);
     return SendMetadataBasedOnStoredPoint(stored_points_.begin()->first, point);
   }
 
@@ -455,6 +476,30 @@ TEST_F(DelegatedInkPointRendererGpuTest, ReportTimeToDraw) {
   // been cleared.
   histogram_tester.ExpectTotalCount(kHistogramName, 2);
   EXPECT_TRUE(ink_renderer()->PointstoBeDrawnForTesting().empty());
+}
+// Test that stale points get removed from `points_to_be_drawn_` when a newer
+// metadata is added.
+TEST_F(DelegatedInkPointRendererGpuTest,
+       PointsToBeDrawnIsClearedWithNewMetadata) {
+  constexpr int32_t kPointerId = 1u;
+  const base::TimeTicks timestamp = base::TimeTicks::Now();
+  SendDelegatedInkPoint(
+      gfx::DelegatedInkPoint(gfx::PointF(20, 20), timestamp, kPointerId));
+  SendMetadataBasedOnStoredPoint(0);
+  EXPECT_EQ(ink_renderer()->PointstoBeDrawnForTesting().size(), 1u);
+  // Test that sending a metadata with a timestamp larger than some points will
+  // remove those points from the points to be drawn vector.
+  SendDelegatedInkPointBasedOnPrevious();
+  SendDelegatedInkPointBasedOnPrevious();
+  SendDelegatedInkPointBasedOnPrevious();
+  SendMetadataBasedOnStoredPoint(3);
+  // The new metadata should cause all points but the last one to be deleted.
+  EXPECT_EQ(ink_renderer()->PointstoBeDrawnForTesting().size(), 1u);
+
+  // A metadata that starts a new trail should clear all the points in the
+  // vector.
+  SendNewTrailMetadata();
+  EXPECT_EQ(ink_renderer()->PointstoBeDrawnForTesting().size(), 0u);
 }
 
 TEST_F(DelegatedInkPointRendererGpuTest, ReportLatencyImprovement) {
