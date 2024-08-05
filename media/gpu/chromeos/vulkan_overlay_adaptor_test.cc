@@ -809,8 +809,7 @@ int main(int argc, char** argv) {
   ui::OzonePlatform::InitializeForUI(ozone_param);
   ui::OzonePlatform::InitializeForGPU(ozone_param);
   gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
-      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
-      /*fallback_to_software_gl=*/false);
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
 
   return RUN_ALL_TESTS();
 }
