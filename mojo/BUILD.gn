@@ -55,6 +55,10 @@ test("mojo_unittests") {
     "//mojo/public/cpp/system/tests",
     "//mojo/public/js/ts/bindings/tests",
   ]
+
+  if (is_linux) {
+    deps += [ "//mojo/proxy:tests" ]
+  }
 }
 
 test("mojo_perftests") {
