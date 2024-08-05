@@ -759,6 +759,37 @@ TEST_F(PickerViewTest, EmptySearchFieldSwitchesBackToCategoryView) {
   EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
 }
 
+TEST_F(PickerViewTest, EmptySearchFieldSwitchesToCategoryViewFromSeeMore) {
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [](FakePickerViewDelegate::SearchResultsCallback callback) {
+            callback.Run({
+                PickerSearchResultsSection(PickerSectionType::kLinks, {},
+                                           /*has_more_results=*/true),
+            });
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  // Type something into the search field.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  // See more results.
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  views::View* trailing_link = picker_view->search_results_view_for_testing()
+                                   .section_views_for_testing()[0]
+                                   ->title_trailing_link_for_testing();
+  ViewDrawnWaiter().Wait(trailing_link);
+  LeftClickOn(trailing_link);
+  // Clear the search field.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
+
+  EXPECT_TRUE(picker_view->category_results_view_for_testing().GetVisible());
+  EXPECT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
+  EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
+  // The category view here currently does not display any results.
+  // TODO: b/356554503 - Fix this and write a test for it.
+}
+
 TEST_F(PickerViewTest,
        SearchingFromZeroStateDoesNotImmediatelySwitchToResults) {
   base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
