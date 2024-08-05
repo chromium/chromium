@@ -324,6 +324,9 @@ void ProductSpecificationsEntryPointController::
 
 void ProductSpecificationsEntryPointController::ShowEntryPointWithTitle(
     std::optional<EntryPointInfo> entry_point_info) {
+  // Using the entry point UI will initiate a data fetch for the product
+  // specifications feature. If we're not allowed to fetch this data, don't
+  // offer the entry point.
   if (!CanFetchProductSpecificationsData(
           shopping_service_->GetAccountChecker())) {
     return;
