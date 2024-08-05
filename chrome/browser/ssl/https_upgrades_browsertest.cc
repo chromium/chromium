@@ -61,6 +61,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
 
+using chrome_browser_interstitials::HFMInterstitialType;
 using security_interstitials::https_only_mode::Event;
 using security_interstitials::https_only_mode::InterstitialReason;
 using security_interstitials::https_only_mode::kEventHistogram;
@@ -447,13 +448,8 @@ class HttpsUpgradesBrowserTest
 
   // Verifies that an HFM interstitial is shown.
   void ExpectInterstitial(content::WebContents* contents) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
-    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-        contents->GetPrimaryMainFrame(),
-        "You are seeing this warning because this site does not support "
-        "HTTPS."));
+    EXPECT_EQ(HFMInterstitialType::kStandard,
+              chrome_browser_interstitials::GetHFMInterstitialType(contents));
   }
 
   // Verifies that an HFM interstitial is shown only if the HFM-pref is enabled
@@ -778,13 +774,12 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
   if (IsHttpsFirstModePrefEnabled()) {
-    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-        contents->GetPrimaryMainFrame(), "this site does not support HTTPS."));
+    EXPECT_EQ(HFMInterstitialType::kStandard,
+              chrome_browser_interstitials::GetHFMInterstitialType(contents));
   } else if (IsIncognito()) {
     // Test that HFM-in-Incognito overrides the default interstitial text.
-    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-        contents->GetPrimaryMainFrame(),
-        "this site does not support HTTPS and you are in Incognito mode."));
+    EXPECT_EQ(HFMInterstitialType::kIncognito,
+              chrome_browser_interstitials::GetHFMInterstitialType(contents));
   }
 }
 
@@ -883,16 +878,13 @@ IN_PROC_BROWSER_TEST_P(
     bool is_interstitial_due_to_se_heuristic =
         IsSiteEngagementHeuristicEnabled() && !IsHttpsFirstModePrefEnabled() &&
         !InBalancedMode();
-    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-        contents->GetPrimaryMainFrame(),
-        is_interstitial_due_to_se_heuristic
-            ? "You usually connect to this site securely"
-            : "You are seeing this warning because this site does not support "
-              "HTTPS."));
+    EXPECT_EQ(is_interstitial_due_to_se_heuristic
+                  ? HFMInterstitialType::kSiteEngagement
+                  : HFMInterstitialType::kStandard,
+              chrome_browser_interstitials::GetHFMInterstitialType(contents));
   } else {
-    EXPECT_FALSE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
+    EXPECT_EQ(HFMInterstitialType::kNone,
+              chrome_browser_interstitials::GetHFMInterstitialType(contents));
   }
 
   // Verify that navigation event metrics were correctly recorded.
@@ -1088,17 +1080,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(navigated_url, contents->GetLastCommittedURL());
 
   if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
-    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-        contents->GetPrimaryMainFrame(),
-        "You are seeing this warning because this site does not support "
-        "HTTPS."));
+    EXPECT_EQ(HFMInterstitialType::kStandard,
+              chrome_browser_interstitials::GetHFMInterstitialType(contents));
   } else {
-    EXPECT_FALSE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
+    EXPECT_EQ(HFMInterstitialType::kNone,
+              chrome_browser_interstitials::GetHFMInterstitialType(contents));
   }
 
   // Verify that navigation event metrics were correctly recorded.
@@ -1294,15 +1280,10 @@ IN_PROC_BROWSER_TEST_P(
 
   ExpectedInterstitialReasons expected_reasons;
   if (expect_interstitial) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
-    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-        contents->GetPrimaryMainFrame(),
-        expect_typically_secure_user_interstitial_text
-            ? "You usually connect to sites securely"
-            : "You are seeing this warning because this site does not support "
-              "HTTPS."));
+    EXPECT_EQ(expect_typically_secure_user_interstitial_text
+                  ? HFMInterstitialType::kTypicallySecure
+                  : HFMInterstitialType::kStandard,
+              chrome_browser_interstitials::GetHFMInterstitialType(contents));
 
     if (expect_typically_secure_user_interstitial_text) {
       expected_reasons.typically_secure_user++;
@@ -1329,15 +1310,10 @@ IN_PROC_BROWSER_TEST_P(
             hfm_service->GetRecentNavigationCount());
 
   if (expect_interstitial) {
-    EXPECT_TRUE(
-        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-            contents));
-    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-        contents->GetPrimaryMainFrame(),
-        expect_typically_secure_user_interstitial_text
-            ? "You usually connect to sites securely"
-            : "You are seeing this warning because this site does not support "
-              "HTTPS."));
+    EXPECT_EQ(expect_typically_secure_user_interstitial_text
+                  ? HFMInterstitialType::kTypicallySecure
+                  : HFMInterstitialType::kStandard,
+              chrome_browser_interstitials::GetHFMInterstitialType(contents));
 
     if (expect_typically_secure_user_interstitial_text) {
       expected_reasons.typically_secure_user++;
@@ -1378,12 +1354,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(initial_navigation_count + 4u,
             hfm_service->GetRecentNavigationCount());
 
-  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
-      contents));
-  EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
-      contents->GetPrimaryMainFrame(),
-      "You are seeing this warning because this site does not support "
-      "HTTPS."));
+  EXPECT_EQ(HFMInterstitialType::kStandard,
+            chrome_browser_interstitials::GetHFMInterstitialType(contents));
   expected_reasons.pref++;
 
   CheckInterstitialReasonHistogram(expected_reasons);
