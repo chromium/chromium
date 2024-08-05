@@ -23,7 +23,8 @@
 
 .row:first-child,
 .row[expanded] + .row:not(.double-booked),
-.double-booked + .row:not(.double-booked) {
+.double-booked + .row:not(.double-booked),
+.row[expanded] {
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
   margin-top: 8px;
