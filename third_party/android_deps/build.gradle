@@ -78,6 +78,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:20.1.0'
     compile "com.google.android.gms:play-services-cast:${castGmsVersion}"
     compile "com.google.android.gms:play-services-cast-framework:${castGmsVersion}"
+    compile "com.google.android.gms:play-services-identity-credentials:16.0.0-alpha02"
     compile "com.google.android.gms:play-services-iid:${gcmGmsVersion}"
     compile "com.google.android.gms:play-services-instantapps:${baseGmsVersion}"
     compile "com.google.android.gms:play-services-gcm:${gcmGmsVersion}"
