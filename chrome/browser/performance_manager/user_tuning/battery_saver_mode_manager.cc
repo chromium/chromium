@@ -629,11 +629,8 @@ void BatterySaverModeManager::NotifyOnBatterySaverActiveChanged(
     }
   }
 
-  if (base::FeatureList::IsEnabled(::features::kBatterySaverModeAlignWakeUps) ||
-      base::FeatureList::IsEnabled(::features::kBatterySaverModeRenderTuning)) {
-    child_process_tuning_delegate_->SetBatterySaverModeForAllChildProcessHosts(
-        battery_saver_mode_active);
-  }
+  child_process_tuning_delegate_->SetBatterySaverModeForAllChildProcessHosts(
+      battery_saver_mode_active);
 
   freezing_delegate_->ToggleFreezingOnBatterySaverMode(
       battery_saver_mode_active);
