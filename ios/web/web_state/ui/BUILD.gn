@@ -158,6 +158,5 @@ source_set("wk_web_view_configuration_provider") {
     "wk_content_rule_list_util.h",
     "wk_content_rule_list_util.mm",
     "wk_web_view_configuration_provider.mm",
-    "wk_web_view_configuration_provider_observer.h",
   ]
 }

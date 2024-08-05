@@ -4,6 +4,8 @@
 
 #import "ios/web/net/cookies/wk_http_system_cookie_store.h"
 
+#import <objc/runtime.h>
+
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
@@ -18,7 +20,6 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
-#import "ios/web/web_state/ui/wk_web_view_configuration_provider_observer.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/cookies/canonical_cookie.h"
 #import "net/cookies/cookie_constants.h"
@@ -37,7 +38,60 @@ using CookiesBlock = void (^)(NSArray<NSHTTPCookie*>*);
 
 using ScopedSequencedTaskRunnerPtr = scoped_refptr<base::SequencedTaskRunner>;
 
+// Key used to attach the associated object.
+const char kWKHTTPSystemCookieCallbackConfigCreatedRegistrationKey = '\0';
+
 }  // namespace
+
+// Holds a base::CallbackListSubscription and destroy it when deallocated.
+//
+// This allow attaching a base::CallbackListSubscription as an associated
+// object to CRWWKHTTPCookieStore. This ensures the subscription lives as
+// long as the object it forwards the notification to and it is destroyed
+// on the correct sequence.
+@interface WKHTTPSystemCookieCallbackConfigCreatedRegistration : NSObject
+
++ (void)registerCookieStore:(CRWWKHTTPCookieStore*)store
+               withProvider:(web::WKWebViewConfigurationProvider*)provider;
+
+@end
+
+@implementation WKHTTPSystemCookieCallbackConfigCreatedRegistration {
+  base::CallbackListSubscription _subscription;
+  SEQUENCE_CHECKER(_sequenceChecker);
+}
+
+- (instancetype)initWithSubscription:
+    (base::CallbackListSubscription)subscription {
+  if ((self = [super init])) {
+    _subscription = std::move(subscription);
+  }
+  return self;
+}
+
+- (void)dealloc {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+}
+
++ (void)registerCookieStore:(CRWWKHTTPCookieStore*)store
+               withProvider:(web::WKWebViewConfigurationProvider*)provider {
+  __weak CRWWKHTTPCookieStore* weak_store = store;
+  base::CallbackListSubscription subscription =
+      provider->RegisterConfigurationCreatedCallback(
+          base::BindRepeating(^(WKWebViewConfiguration* configuration) {
+            weak_store.websiteDataStore = configuration.websiteDataStore;
+          }));
+
+  WKHTTPSystemCookieCallbackConfigCreatedRegistration* wrapper =
+      [[WKHTTPSystemCookieCallbackConfigCreatedRegistration alloc]
+          initWithSubscription:std::move(subscription)];
+
+  objc_setAssociatedObject(
+      store, &kWKHTTPSystemCookieCallbackConfigCreatedRegistrationKey, wrapper,
+      OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+@end
 
 // Represents a pending operation that can be cancelled.
 //
@@ -299,60 +353,6 @@ base::OnceClosure ChainClosure(base::OnceClosure one, base::OnceClosure two) {
       std::move(one), std::move(two));
 }
 
-#pragma mark - WKHTTPSystemCookieStoreObserver
-
-// Class observing the WKWebViewConfigurationProvider and forwarding
-// the DidCreateNewConfiguration(...) event to CRWWKHTTPCookieStore.
-// It is required because WKWebViewConfigurationProvider notifies its
-// observer in the main sequence but WKHTTPSystemCookieStore lives on
-// the IO sequence.
-class WKHTTPSystemCookieStoreObserver final
-    : public WKWebViewConfigurationProviderObserver {
- public:
-  // Callback invoked when the DidCreateNewConfiguration(...) event
-  // is received. The callback must ensure to post to the correct
-  // sequence as it will be invoked on the UI sequence.
-  using ConfigurationChangedCallback =
-      base::RepeatingCallback<void(WKWebViewConfiguration*)>;
-
-  WKHTTPSystemCookieStoreObserver(WKWebViewConfigurationProvider* provider,
-                                  ConfigurationChangedCallback callback);
-
-  ~WKHTTPSystemCookieStoreObserver() final;
-
-  // WKWebViewConfigurationProviderObserver implementation.
-  void DidCreateNewConfiguration(WKWebViewConfigurationProvider* provider,
-                                 WKWebViewConfiguration* configuration) final;
-
- private:
-  ConfigurationChangedCallback callback_;
-
-  base::ScopedObservation<WKWebViewConfigurationProvider,
-                          WKWebViewConfigurationProviderObserver>
-      scoped_observer_{this};
-
-  SEQUENCE_CHECKER(sequence_checker_);
-};
-
-WKHTTPSystemCookieStoreObserver::WKHTTPSystemCookieStoreObserver(
-    WKWebViewConfigurationProvider* provider,
-    ConfigurationChangedCallback callback)
-    : callback_(callback) {
-  DCHECK(!callback_.is_null());
-  scoped_observer_.Observe(provider);
-}
-
-WKHTTPSystemCookieStoreObserver::~WKHTTPSystemCookieStoreObserver() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void WKHTTPSystemCookieStoreObserver::DidCreateNewConfiguration(
-    WKWebViewConfigurationProvider* provider,
-    WKWebViewConfiguration* configuration) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  callback_.Run(configuration);
-}
-
 }  // namespace
 
 #pragma mark - WKHTTPSystemCookieStore::Helper
@@ -400,14 +400,6 @@ class WKHTTPSystemCookieStore::Helper {
   void FetchCookies(FetchCookiesCallback callback);
 
  private:
-  // Owning-pointer to a WKHTTPSystemCookieStoreObserver which deletes the
-  // observer on a specific sequence. Required as WKHTTPSystemCookieStore
-  // lives on the IO thread but WKWebViewConfigurationProvider lives on the
-  // UI thread.
-  using WKHTTPSystemCookieStoreObserverPtr =
-      std::unique_ptr<WKHTTPSystemCookieStoreObserver,
-                      base::OnTaskRunnerDeleter>;
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The TaskRunner used to post message to the CRWWKHTTPCookieStore
@@ -416,19 +408,17 @@ class WKHTTPSystemCookieStore::Helper {
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   __strong WKHTTPSystemCookieStoreCancelableTaskHelper* helper_ = nil;
 
-  // The CRWWKHTTPCookieStore and the observer responsible to update
-  // the -webSiteDataStore property when the WKWebViewConfiguration*
-  // is changed.
+  // The CRWWKHTTPCookieStore used to store the cookies. Should only
+  // be accessed on the UI sequence (thus by posting tasks on the
+  // `ui_task_runner_`).
   __strong CRWWKHTTPCookieStore* crw_cookie_store_ = nil;
-  WKHTTPSystemCookieStoreObserverPtr observer_;
 
   base::WeakPtrFactory<Helper> weak_factory_{this};
 };
 
 WKHTTPSystemCookieStore::Helper::Helper(
     WKWebViewConfigurationProvider* provider)
-    : ui_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-      observer_(nullptr, base::OnTaskRunnerDeleter(ui_task_runner_)) {
+    : ui_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   scoped_refptr<base::SequencedTaskRunner> io_task_runner =
       web::GetIOThreadTaskRunner({});
 
@@ -439,18 +429,16 @@ WKHTTPSystemCookieStore::Helper::Helper(
   helper_ = [[WKHTTPSystemCookieStoreCancelableTaskHelper alloc]
       initWithTaskRunner:io_task_runner];
 
-  // Creates the observer, passing it the callback and ensuring it will be
-  // destroyed on the UI sequence. The callback set the websiteDataStore
-  // property of CRWWKHTTPCookieStore directly since both objects live on
-  // the UI sequence (this avoid adding two PostTask to do UI -> IO -> UI
-  // sequence hopping if going through WKHTTPSystemCookieStore::Helper).
-  __weak CRWWKHTTPCookieStore* weak_cookie_store = crw_cookie_store_;
-  observer_ = WKHTTPSystemCookieStoreObserverPtr(
-      new WKHTTPSystemCookieStoreObserver(
-          provider, base::BindRepeating(^(WKWebViewConfiguration* config) {
-            weak_cookie_store.websiteDataStore = config.websiteDataStore;
-          })),
-      base::OnTaskRunnerDeleter(ui_task_runner_));
+  // Register a callback to update the WKWebViewConfiguration directly in the
+  // CRWWKHTTPCookieStore when the WKWebViewConfigurationProvider creates a
+  // new configuration (both object lives on the UI sequence, so this is safe).
+  //
+  // Store the subscription in Objective-C object and attach as an associated
+  // object of the CRWWKHTTPCookieStore, ensuring it has the same lifetime and
+  // is destroyed on the correct sequence.
+  [WKHTTPSystemCookieCallbackConfigCreatedRegistration
+      registerCookieStore:crw_cookie_store_
+             withProvider:provider];
 
   // The object is created on the UI sequence but then moves to the IO
   // sequence. Detach from the current sequence, it will be reattached
@@ -460,6 +448,15 @@ WKHTTPSystemCookieStore::Helper::Helper(
 
 WKHTTPSystemCookieStore::Helper::~Helper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Delete the CRWWKHTTPCookieStore on the UI sequence by posting a
+  // task that takes ownership of the object. This is okay because
+  // the current object is detroyed on IO sequence which is always
+  // outlived by the UI sequence.
+  ui_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce([](CRWWKHTTPCookieStore*) {},
+                                std::exchange(crw_cookie_store_, nil)));
+
   [helper_ cancel];
 }
 

@@ -23,7 +23,6 @@
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/web_state/ui/wk_content_rule_list_provider.h"
-#import "ios/web/web_state/ui/wk_web_view_configuration_provider_observer.h"
 #import "ios/web/webui/crw_web_ui_scheme_handler.h"
 
 namespace web {
@@ -159,8 +158,7 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
   content_rule_list_provider_->SetUserContentController(
       configuration_.userContentController);
 
-  for (auto& observer : observers_)
-    observer.DidCreateNewConfiguration(this, configuration_);
+  configuration_created_callbacks_.Notify(configuration_);
 
   // Workaround to force the creation of the WKWebsiteDataStore. This
   // workaround need to be done here, because this method returns a copy of
@@ -223,14 +221,10 @@ void WKWebViewConfigurationProvider::Purge() {
   configuration_ = nil;
 }
 
-void WKWebViewConfigurationProvider::AddObserver(
-    WKWebViewConfigurationProviderObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void WKWebViewConfigurationProvider::RemoveObserver(
-    WKWebViewConfigurationProviderObserver* observer) {
-  observers_.RemoveObserver(observer);
+base::CallbackListSubscription
+WKWebViewConfigurationProvider::RegisterConfigurationCreatedCallback(
+    ConfigurationCreatedCallbackList::CallbackType callback) {
+  return configuration_created_callbacks_.Add(std::move(callback));
 }
 
 }  // namespace web
