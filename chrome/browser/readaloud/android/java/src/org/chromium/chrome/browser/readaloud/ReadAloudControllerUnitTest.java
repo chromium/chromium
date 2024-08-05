@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.translate.FakeTranslateBridgeJni;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
@@ -575,6 +576,16 @@ public class ReadAloudControllerUnitTest {
         checkURLNotReadAloudSupported(new GURL("https://www.google.com/search?q=weather"));
         checkURLNotReadAloudSupported(new GURL("https://myaccount.google.com/"));
         checkURLNotReadAloudSupported(new GURL("https://myactivity.google.com/"));
+    }
+
+    @Test
+    public void checkReadability_TabError() {
+        TabTestUtils.setIsShowingErrorPage(mTab, true);
+        assertFalse(mController.isReadable(mTab));
+        verify(mHooksImpl, never())
+                .isPageReadable(
+                        Mockito.anyString(),
+                        Mockito.any(ReadAloudReadabilityHooks.ReadabilityCallback.class));
     }
 
     @Test
