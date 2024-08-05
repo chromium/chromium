@@ -2494,6 +2494,11 @@ BASE_FEATURE(kPhoneHubShortQuickActionPodsTitles,
 // Enables the new picker feature.
 BASE_FEATURE(kPicker, "Picker", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Always show the feature tour for Picker for debugging purposes.
+BASE_FEATURE(kPickerAlwaysShowFeatureTour,
+             "PickerAlwaysShowFeatureTour",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Uses cloud search instead of local search.
 BASE_FEATURE(kPickerCloud, "PickerCloud", base::FEATURE_DISABLED_BY_DEFAULT);
 

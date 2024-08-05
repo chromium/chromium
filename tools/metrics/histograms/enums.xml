@@ -15957,6 +15957,7 @@ from previous Chrome versions.
   <int value="-1859437916"
       label="enable-experimental-accessibility-dictation-offline"/>
   <int value="-1859421131" label="BackForwardCache:disabled"/>
+  <int value="-1859281135" label="PickerAlwaysShowFeatureTour:enabled"/>
   <int value="-1859244524" label="NtpRealboxCr23ExpandedStateIcons:disabled"/>
   <int value="-1859095876" label="Previews:disabled"/>
   <int value="-1858742756" label="FirmwareUpdateUIV2:disabled"/>
@@ -22839,6 +22840,7 @@ from previous Chrome versions.
   <int value="1065451331" label="NtpRealboxPedals:disabled"/>
   <int value="1065481614" label="SystemEmojiPickerGIFSupport:disabled"/>
   <int value="1065547630" label="EnableInputNoiseCancellationUi:disabled"/>
+  <int value="1065759064" label="PickerAlwaysShowFeatureTour:disabled"/>
   <int value="1067488139" label="NtpRealboxCr23HoverFillShape:enabled"/>
   <int value="1067618884" label="enable-experimental-input-view-features"/>
   <int value="1067990299" label="enable-ui-devtools"/>

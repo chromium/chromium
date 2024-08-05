@@ -6073,6 +6073,10 @@ const char kAshModifierSplitFeatureKeyDescription[] =
 const char kAshPickerName[] = "Picker feature";
 const char kAshPickerDescription[] = "Enable new Picker feature on ChromeOS.";
 
+const char kAshPickerAlwaysShowFeatureTourName[] = "Picker feature tour";
+const char kAshPickerAlwaysShowFeatureTourDescription[] =
+    "Always show the feature tour for debugging.";
+
 const char kAshPickerCloudName[] = "Picker cloud search";
 const char kAshPickerCloudDescription[] =
     "Enable cloud-based search for the Picker feature on ChromeOS.";

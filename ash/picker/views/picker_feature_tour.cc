@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/system_dialog_delegate_view.h"
@@ -112,7 +113,9 @@ bool PickerFeatureTour::MaybeShowForFirstUse(
   auto* pref = prefs->FindPreference(kFeatureTourCompletedPref);
   // Don't show if `pref` is null (this happens in unit tests that don't call
   // `RegisterProfilePrefs`).
-  if (pref == nullptr || pref->GetValue()->GetBool()) {
+  if (!base::FeatureList::IsEnabled(
+          ash::features::kPickerAlwaysShowFeatureTour) &&
+      (pref == nullptr || pref->GetValue()->GetBool())) {
     return false;
   }
 
