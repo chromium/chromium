@@ -40,7 +40,6 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/search/ntp_features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -199,11 +198,7 @@ void CartService::RestoreHidden() {
 }
 
 bool CartService::IsHidden() {
-  return !ntp_features::IsNtpModulesRedesignedEnabled(
-             g_browser_process->GetApplicationLocale(),
-             GetVariationsServiceCountryCode(
-                 g_browser_process->variations_service())) &&
-         profile_->GetPrefs()->GetBoolean(prefs::kCartModuleHidden);
+  return profile_->GetPrefs()->GetBoolean(prefs::kCartModuleHidden);
 }
 
 void CartService::LoadCart(const std::string& domain,

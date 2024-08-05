@@ -2723,20 +2723,6 @@ TEST_F(CartServiceCouponTest, TestModuleFeatureStatusUpdate) {
   profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, true);
 }
 
-class CartServiceModulesRedesignedTest : public CartServiceTest {
- public:
-  CartServiceModulesRedesignedTest() {
-    features_.InitAndEnableFeature(ntp_features::kNtpModulesRedesigned);
-  }
-};
-
-// Verifies the hide status is ignored.
-TEST_F(CartServiceModulesRedesignedTest, TestIgnoresHidden) {
-  ASSERT_FALSE(service_->IsHidden());
-  service_->Hide();
-  ASSERT_FALSE(service_->IsHidden());
-}
-
 class CartServiceDiscountConsentV2Test : public CartServiceTest {
  public:
   // Features need to be initialized before CartServiceTest::SetUp runs, in
