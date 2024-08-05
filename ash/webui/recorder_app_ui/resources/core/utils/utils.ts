@@ -107,6 +107,19 @@ export function downloadFile(filename: string, blob: Blob): void {
 const UNINITIALIZED = Symbol('UNINITIALIZED');
 
 /**
+ * Cache function return value so the function would only be called once.
+ */
+export function lazyInit<T>(fn: () => T): () => T {
+  let output: T|typeof UNINITIALIZED = UNINITIALIZED;
+  return () => {
+    if (output === UNINITIALIZED) {
+      output = fn();
+    }
+    return output;
+  };
+}
+
+/**
  * Cache function return value so the function would only be called when the
  * input changes.
  *

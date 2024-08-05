@@ -4,6 +4,7 @@
 
 import {assertExists} from '../utils/assert.js';
 import {Infer, z} from '../utils/schema.js';
+import {lazyInit, sliceWhen} from '../utils/utils.js';
 
 import {
   FinalResult,
@@ -267,9 +268,8 @@ export class Transcription {
    * TODO(pihsun): Have a different function for exporting to text format and
    * when exporting representation used for summary input.
    * TODO(pihsun): Include speaker ID in the output.
-   * TODO(pihsun): Cache this.
    */
-  toPlainText(): string {
+  toPlainText = lazyInit((): string => {
     const ret: string[] = [];
     let startOfParagraph = true;
     // TODO(pihsun): This currently don't include the speaker ID, but since the
@@ -288,9 +288,9 @@ export class Transcription {
       startOfParagraph = false;
     }
     return ret.join('');
-  }
+  });
 
-  toShortDescription(): string {
+  toShortDescription = lazyInit((): string => {
     if (this.textTokens === null) {
       return '';
     }
@@ -299,7 +299,7 @@ export class Transcription {
       return transcription;
     }
     return transcription.substring(0, MAX_DESCRIPTION_LENGTH - 3) + '...';
-  }
+  });
 
   /**
    * Gets the list of speaker label in the transcription.
@@ -307,7 +307,7 @@ export class Transcription {
    * The returned label is ordered by the first appearance of the label in the
    * transcription.
    */
-  getSpeakerLabels(): string[] {
+  getSpeakerLabels = lazyInit((): string[] => {
     const speakerLabels = new Set<string>();
     for (const token of this.textTokens) {
       if (token.kind === 'textPart' && token.speakerLabel !== null) {
@@ -315,5 +315,35 @@ export class Transcription {
       }
     }
     return Array.from(speakerLabels);
-  }
+  });
+
+  /**
+   * Splits the transcription into several paragraphs.
+   *
+   * Each paragraph have continuous timestamp, and a single speaker ID.
+   */
+  getParagraphs = lazyInit((): TextPart[][] => {
+    const slicedTokens = sliceWhen(this.textTokens, (a, b) => {
+      if (a.kind === 'textSeparator' || b.kind === 'textSeparator') {
+        return true;
+      }
+      if (a.timeRange === null && b.timeRange === null) {
+        return false;
+      }
+      if (a.timeRange?.endMs !== b.timeRange?.startMs) {
+        // TODO(pihsun): This currently is not used since we already
+        // split across result border, and within the same result the
+        // time ranges are always continuous.
+        return true;
+      }
+      if (a.speakerLabel !== b.speakerLabel) {
+        return true;
+      }
+      return false;
+    });
+
+    return slicedTokens.filter((tokens) => {
+      return tokens.every((t) => t.kind === 'textPart');
+    });
+  });
 }

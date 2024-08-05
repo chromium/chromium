@@ -131,8 +131,8 @@ involved at chromium.org.
 Lastly, here is a short video that explains why we're so excited about Google
 Chrome OS.`.split('\n\n').map((line) => line.split(/\s+/));
 
-// Emit one word per 300 ms.
-const WORD_INTERVAL_MS = 100;
+// Emit one word per 200 ms.
+const WORD_INTERVAL_MS = 200;
 
 const MAX_NUM_SPEAKER = 3;
 

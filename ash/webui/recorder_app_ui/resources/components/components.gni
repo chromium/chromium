@@ -33,6 +33,7 @@ component_files = [
   "settings-row.ts",
   "speaker-id-consent-dialog-content.ts",
   "speaker-id-consent-dialog.ts",
+  "styles/speaker_label.ts",
   "summarization-view.ts",
   "summary-consent-card.ts",
   "transcription-consent-dialog.ts",

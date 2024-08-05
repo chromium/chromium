@@ -446,6 +446,7 @@ export class PlaybackPage extends ReactiveLitElement {
       <audio-waveform
         .values=${this.powers.value}
         .currentTime=${this.currentTime.value}
+        .transcription=${this.transcription.value}
       >
       </audio-waveform>
     `;
