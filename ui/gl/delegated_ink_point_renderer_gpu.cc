@@ -122,6 +122,10 @@ void DelegatedInkPointRendererGpu::ReportPointsDrawn() {
   base::UmaHistogramTimes(
       "Renderer.DelegatedInkTrail.LatencyImprovement.OS.WithoutPrediction",
       most_recent_timestamp - metadata_->timestamp());
+  base::UmaHistogramCounts100(
+      "Renderer.DelegatedInkTrail.OS.OutstandingPointsToDraw",
+      points_to_be_drawn_.size());
+
   points_to_be_drawn_.clear();
 }
 

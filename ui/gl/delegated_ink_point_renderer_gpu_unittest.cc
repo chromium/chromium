@@ -494,5 +494,34 @@ TEST_F(DelegatedInkPointRendererGpuTest, ReportLatencyImprovement) {
   EXPECT_TRUE(ink_renderer()->PointstoBeDrawnForTesting().empty());
 }
 
+TEST_F(DelegatedInkPointRendererGpuTest, ReportOutstandingPointsToDraw) {
+  const std::string kHistogramName =
+      "Renderer.DelegatedInkTrail.OS.OutstandingPointsToDraw";
+  const base::HistogramTester histogram_tester;
+  constexpr int32_t kPointerId = 1u;
+
+  // No histogram should be fired when `metadata_paint_time_` is not set.
+  histogram_tester.ExpectTotalCount(kHistogramName, 0);
+
+  SendDelegatedInkPoint(gfx::DelegatedInkPoint(
+      gfx::PointF(10, 10), base::TimeTicks::Now(), kPointerId));
+  ink_renderer()->ReportPointsDrawn();
+  SendMetadataBasedOnStoredPoint(0);
+  ink_renderer()->ReportPointsDrawn();
+  histogram_tester.ExpectUniqueSample(kHistogramName, 1, 1);
+  SendDelegatedInkPointBasedOnPrevious();
+  SendDelegatedInkPointBasedOnPrevious();
+  ink_renderer()->ReportPointsDrawn();
+  histogram_tester.ExpectBucketCount(kHistogramName, 2, 1);
+  histogram_tester.ExpectBucketCount(kHistogramName, 1, 1);
+  SendDelegatedInkPointBasedOnPrevious();
+  SendDelegatedInkPointBasedOnPrevious();
+  SendDelegatedInkPointBasedOnPrevious();
+  ink_renderer()->ReportPointsDrawn();
+  histogram_tester.ExpectBucketCount(kHistogramName, 3, 1);
+  histogram_tester.ExpectBucketCount(kHistogramName, 2, 1);
+  histogram_tester.ExpectBucketCount(kHistogramName, 1, 1);
+}
+
 }  // namespace
 }  // namespace gl

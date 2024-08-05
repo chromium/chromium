@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="DelegatedInkRenderer">
+  <variant name="OS" summary="using the native OS Delegated Ink API"/>
+  <variant name="Skia"
+      summary="using the Skia implementation for Delegated Ink"/>
+</variants>
+
 <variants name="RendererHostedContentType">
   <variant name="" summary="all renderers"/>
   <variant name=".Empty"
@@ -122,11 +128,7 @@ chromium-metrics-reviews@google.com.
     compared to the last API drawn point. The bigger the histogram's value, the
     closer Delegated Ink got us to the last pointer position.
   </summary>
-  <token key="Renderer">
-    <variant name="OS" summary="using the native OS Delegated Ink API"/>
-    <variant name="Skia"
-        summary="using the Skia implementation for Delegated Ink"/>
-  </token>
+  <token key="Renderer" variants="DelegatedInkRenderer"/>
   <token key="Prediction">
     <variant name="WithoutPrediction" summary="without point prediction"/>
     <variant name="WithPrediction" summary="using point draw prediction"/>
@@ -315,6 +317,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Renderer.DelegatedInkTrail.{Renderer}.OutstandingPointsToDraw"
+    units="count" expires_after="2025-08-01">
+  <owner>jonross@chromium.org</owner>
+  <owner>gastonr@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
+  <summary>
+    Amount of points that are drawn per frame by the Delegated Ink API
+    {Renderer}. This metric can be used as a measurement of how much improvement
+    using the Delegated Ink API by telling us how many points ahead the
+    Delegated Ink API is from the JS API.
+  </summary>
+  <token key="Renderer" variants="DelegatedInkRenderer"/>
+</histogram>
+
 <histogram name="Renderer.DelegatedInkTrail.{Renderer}.TimeToDrawPointsMillis"
     units="ms" expires_after="2025-08-01">
   <owner>jonross@chromium.org</owner>
@@ -324,12 +341,9 @@ chromium-metrics-reviews@google.com.
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Span of time in milliseconds between the creation of pointer events in the
-    browser process and sending the draw operation to the OS.
+    browser process and sending the draw operation to the OS {Renderer}.
   </summary>
-  <token key="Renderer">
-    <variant name="OS" summary="OS backed DelegatedInk renderer."/>
-    <variant name="Skia" summary="Skia backed DelegatedInk renderer."/>
-  </token>
+  <token key="Renderer" variants="DelegatedInkRenderer"/>
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.DomContentLoaded" units="ms"
