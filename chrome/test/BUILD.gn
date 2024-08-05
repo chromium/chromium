@@ -1275,6 +1275,7 @@ if (is_chromeos && is_chromeos_device) {
         # Gather tests from other build files:
         "//chrome/browser/ash:integration_tests",
         "//chrome/browser/ui/ash:integration_tests",
+        "//chrome/browser/ui/webui/ash:integration_tests",
       ]
 
       data_deps += [
