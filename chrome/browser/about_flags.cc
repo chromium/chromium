@@ -10374,6 +10374,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabStripGroupIndicatorsAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabStripGroupIndicatorsAndroid)},
 
+    {"tab-strip-incognito-migration",
+     flag_descriptions::kTabStripIncognitoMigrationName,
+     flag_descriptions::kTabStripIncognitoMigrationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabStripIncognitoMigration)},
+
     {"tab-strip-layout-optimization",
      flag_descriptions::kTabStripLayoutOptimizationName,
      flag_descriptions::kTabStripLayoutOptimizationDescription, kOsAndroid,
@@ -10384,7 +10389,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabStripTransitionInDesktopWindowDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabStripTransitionInDesktopWindow)},
-
 #endif
 
     {"use-dmsaa-for-tiles", flag_descriptions::kUseDMSAAForTilesName,

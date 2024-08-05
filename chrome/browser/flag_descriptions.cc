@@ -4876,6 +4876,12 @@ const char kTabStripGroupIndicatorsAndroidDescription[] =
     "for selected tab, tab group title indicator and bottom indicator. This is "
     "M1 for Tab Group Parity";
 
+const char kTabStripIncognitoMigrationName[] =
+    "Tab Strip Incognito switcher migration to toolbar";
+const char kTabStripIncognitoMigrationDescription[] =
+    "Migrates tab strip incognito switcher to toolbar and adds options to tab "
+    "switcher context menu.";
+
 const char kTabStripLayoutOptimizationName[] = "Tab Strip Layout Optimization";
 const char kTabStripLayoutOptimizationDescription[] =
     "Allows adding horizontal and vertical margin to the tab strip.";

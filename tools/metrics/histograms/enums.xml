@@ -16577,6 +16577,7 @@ from previous Chrome versions.
   <int value="-1596489715" label="AutoScreenBrightness:enabled"/>
   <int value="-1595456861" label="FullscreenPopupWindows:disabled"/>
   <int value="-1594298767" label="FullscreenToolbarReveal:enabled"/>
+  <int value="-1594067749" label="TabStripIncognitoMigration:disabled"/>
   <int value="-1593946814"
       label="AccountReauthenticationRecentTimeWindow:enabled"/>
   <int value="-1591974904"
@@ -21183,6 +21184,7 @@ from previous Chrome versions.
   <int value="348854923" label="v8-cache-strategies-for-cache-storage"/>
   <int value="348887417" label="HandwritingLibraryDlc:enabled"/>
   <int value="349469694" label="WebGPUService:disabled"/>
+  <int value="350393063" label="TabStripIncognitoMigration:enabled"/>
   <int value="350399958" label="ModuleScriptsImportMetaUrl:disabled"/>
   <int value="350611185" label="SharingDesktopScreenshotsEdit:enabled"/>
   <int value="350635266" label="TabGroupsContinuationAndroid:enabled"/>
