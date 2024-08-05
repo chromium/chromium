@@ -240,13 +240,13 @@
   },
   {
     "name": "apn-policies",
-    "owners": [ "gordonseto@google.com", "hsuregan@google.com", "cros-connectivity@google.com" ],
+    "owners": [ "nikhilcn@google.com", "hsuregan@google.com", "cros-connectivity@google.com" ],
     "expiry_milestone": 134
   },
   {
     "name": "apn-revamp",
-    "owners": [ "gordonseto@google.com", "cros-connectivity@google.com" ],
-    "expiry_milestone": 128
+    "owners": [ "nikhilcn@google.com", "cros-connectivity@google.com" ],
+    "expiry_milestone": 134
   },
   {
     "name": "app-background-refresh-ios",
