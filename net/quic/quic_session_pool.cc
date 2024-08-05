@@ -490,6 +490,8 @@ QuicSessionPool::QuicSessionPool(
           kQuicYieldAfterDurationMilliseconds)),
       default_network_(handles::kInvalidNetworkHandle),
       connectivity_monitor_(default_network_),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+      tick_clock_(base::DefaultTickClock::GetInstance()),
       ssl_config_service_(ssl_config_service),
       use_network_anonymization_key_for_crypto_configs_(
           NetworkAnonymizationKey::IsPartitioningEnabled()),
@@ -573,16 +575,6 @@ int QuicSessionPool::RequestSession(
     active_job->second->AssociateWithNetLogSource(net_log);
     active_job->second->AddRequest(request);
     return ERR_IO_PENDING;
-  }
-
-  // TODO(rtenneti): |task_runner_| is used by the Job. Initialize task_runner_
-  // in the constructor after WebRequestActionWithThreadsTest.* tests are fixed.
-  if (!task_runner_) {
-    task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
-  }
-
-  if (!tick_clock_) {
-    tick_clock_ = base::DefaultTickClock::GetInstance();
   }
 
   // If a proxy is in use, then a traffic annotation is required.
