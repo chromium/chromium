@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/search/ntp_logging_events.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/search_engines/template_url_service_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -34,6 +35,7 @@ class WebContents;
 }  // namespace content
 
 class Profile;
+class TemplateURLService;
 
 /**
  * Places where the chrome web store can be opened from in Customize Chrome.
@@ -57,6 +59,7 @@ class CustomizeChromePageHandler
       public ui::NativeThemeObserver,
       public ThemeServiceObserver,
       public NtpCustomBackgroundServiceObserver,
+      public TemplateURLServiceObserver,
       public ui::SelectFileDialog::Listener {
  public:
   CustomizeChromePageHandler(
@@ -111,12 +114,15 @@ class CustomizeChromePageHandler
   void UpdateModulesSettings() override;
   void UpdateScrollToSection() override;
   void UpdateAttachedTabState() override;
+  void UpdateNtpManagedByName() override;
 
  private:
   void LogEvent(NTPLoggingEventType event);
 
   bool IsCustomLinksEnabled() const;
   bool IsShortcutsVisible() const;
+
+  std::u16string GetManagingThirdPartyName() const;
 
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
@@ -133,6 +139,10 @@ class CustomizeChromePageHandler
   void OnNextCollectionImageAvailable() override;
   void OnNtpBackgroundServiceShuttingDown() override;
 
+  // TemplateURLServiceObserver:
+  void OnTemplateURLServiceChanged() override;
+  void OnTemplateURLServiceShuttingDown() override;
+
   // SelectFileDialog::Listener:
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
   void FileSelectionCanceled() override;
@@ -148,6 +158,7 @@ class CustomizeChromePageHandler
   std::string images_request_collection_id_;
   GetBackgroundImagesCallback background_images_callback_;
   base::TimeTicks background_images_request_start_time_;
+  raw_ptr<TemplateURLService> template_url_service_;
   raw_ptr<ThemeService> theme_service_;
   const std::vector<std::pair<const std::string, int>> module_id_names_;
 

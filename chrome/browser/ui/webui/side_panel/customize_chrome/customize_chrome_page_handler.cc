@@ -14,10 +14,12 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/escape.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -33,6 +35,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -53,6 +56,7 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
       web_contents_(web_contents),
       ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile_)),
+      template_url_service_(TemplateURLServiceFactory::GetForProfile(profile_)),
       theme_service_(ThemeServiceFactory::GetForProfile(profile_)),
       module_id_names_(module_id_names),
       page_(std::move(pending_page)),
@@ -86,12 +90,21 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
 
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
+
+  if (template_url_service_) {
+    template_url_service_->AddObserver(this);
+  }
 }
 
 CustomizeChromePageHandler::~CustomizeChromePageHandler() {
-  ntp_background_service_->RemoveObserver(this);
+  if (ntp_background_service_) {
+    ntp_background_service_->RemoveObserver(this);
+  }
   if (select_file_dialog_) {
     select_file_dialog_->ListenerDestroyed();
+  }
+  if (template_url_service_) {
+    template_url_service_->RemoveObserver(this);
   }
 }
 
@@ -444,6 +457,11 @@ void CustomizeChromePageHandler::UpdateAttachedTabState() {
   AttachedTabStateUpdated(last_is_source_tab_first_party_ntp_);
 }
 
+void CustomizeChromePageHandler::UpdateNtpManagedByName() {
+  page_->NtpManagedByNameUpdated(
+      base::UTF16ToUTF8(GetManagingThirdPartyName()));
+}
+
 void CustomizeChromePageHandler::LogEvent(NTPLoggingEventType event) {
   switch (event) {
     case NTP_BACKGROUND_UPLOAD_CANCEL:
@@ -475,6 +493,27 @@ bool CustomizeChromePageHandler::IsCustomLinksEnabled() const {
 
 bool CustomizeChromePageHandler::IsShortcutsVisible() const {
   return profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible);
+}
+
+std::u16string CustomizeChromePageHandler::GetManagingThirdPartyName() const {
+  if (!template_url_service_) {
+    return std::u16string();
+  }
+
+  const TemplateURL* template_url =
+      template_url_service_->GetDefaultSearchProvider();
+  if (!template_url) {
+    return std::u16string();
+  }
+
+  // If the TemplateURL has google URLs then its a first party default search
+  // manager  and should not be returned.
+  if (template_url->HasGoogleBaseURLs(
+          template_url_service_->search_terms_data())) {
+    return std::u16string();
+  }
+
+  return template_url->short_name();
 }
 
 void CustomizeChromePageHandler::OnNativeThemeUpdated(
@@ -566,6 +605,16 @@ void CustomizeChromePageHandler::OnNextCollectionImageAvailable() {}
 void CustomizeChromePageHandler::OnNtpBackgroundServiceShuttingDown() {
   ntp_background_service_->RemoveObserver(this);
   ntp_background_service_ = nullptr;
+}
+
+void CustomizeChromePageHandler::OnTemplateURLServiceChanged() {
+  UpdateNtpManagedByName();
+}
+
+void CustomizeChromePageHandler::OnTemplateURLServiceShuttingDown() {
+  CHECK(template_url_service_);
+  template_url_service_->RemoveObserver(this);
+  template_url_service_ = nullptr;
 }
 
 void CustomizeChromePageHandler::FileSelected(const ui::SelectedFileInfo& file,
