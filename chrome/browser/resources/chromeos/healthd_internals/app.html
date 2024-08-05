@@ -26,26 +26,42 @@
     display: flex;
     justify-content: center;
   }
+
+  #sidebarContainer {
+    display: flex;
+  }
+
+  #sidebarToggleButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 16px;
+    padding: 5px;
+  }
 </style>
 
 <healthd-internals-settings-dialog id="settingsDialog">
 </healthd-internals-settings-dialog>
 
-<div id="sidebar">
-  <h1 id="pageTitle">Healthd Internals</h1>
-  <cr-menu-selector id="selector"
-      selectable="a"
-      selected="{{selectedIndex}}"
-      selected-attribute="selected">
-    <template is="dom-repeat" items="[[pageList]]">
-      <a role="menuitem" href="[[item.path]]" class="cr-nav-menu-item">
-        [[item.name]]
-      </a>
-    </template>
-  </cr-menu-selector>
-  <div id="settingsButtonContainer">
-    <cr-button on-click="openSettingsDialog">Settings</cr-button>
+<div id="sidebarContainer">
+  <div id="sidebar">
+    <h1 id="pageTitle">Healthd Internals</h1>
+    <cr-menu-selector id="selector"
+        selectable="a"
+        selected="{{selectedIndex}}"
+        selected-attribute="selected">
+      <template is="dom-repeat" items="[[pageList]]">
+        <a role="menuitem" href="[[item.path]]" class="cr-nav-menu-item">
+          [[item.name]]
+        </a>
+      </template>
+    </cr-menu-selector>
+    <div id="settingsButtonContainer">
+      <cr-button on-click="openSettingsDialog">Settings</cr-button>
+    </div>
   </div>
+  <div id="sidebarToggleButton" on-click="toggleSidebar">&lt;</div>
 </div>
 
 <iron-location path="{{currentPath}}"></iron-location>

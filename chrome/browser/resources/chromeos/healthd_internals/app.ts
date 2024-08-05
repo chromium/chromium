@@ -50,6 +50,8 @@ export interface HealthdInternalsAppElement {
     memoryUsageChart: HealthdInternalsMemoryChartElement,
     thermalChart: HealthdInternalsThermalChartElement,
     settingsDialog: HealthdInternalsSettingsDialogElement,
+    sidebar: HTMLElement,
+    sidebarToggleButton: HTMLElement,
   };
 }
 
@@ -238,6 +240,11 @@ export class HealthdInternalsAppElement extends PolymerElement {
 
     const duration: number = this.$.settingsDialog.getDataRetentionDuration();
     this.dataManager.updateDataRetentionDuration(duration);
+  }
+
+  private toggleSidebar() {
+    this.$.sidebar.hidden = !this.$.sidebar.hidden;
+    this.$.sidebarToggleButton.innerText = this.$.sidebar.hidden ? '>' : '<';
   }
 }
 

@@ -63,4 +63,30 @@ suite('healthdInternalsTestSuite', function() {
     assertEquals('powerCard', cardElements[3]!.id);
     assertEquals('thermalCard', cardElements[4]!.id);
   });
+
+  // Check if the sidebar can be controlled by clicking the toggle button.
+  test('SidebarHideAndShow', async () => {
+    await initializePage();
+
+    const sidebar =
+        strictQuery('#sidebar', healthdInternalsApp.shadowRoot, HTMLElement);
+    const sidebarToggleButton = strictQuery(
+        '#sidebarToggleButton', healthdInternalsApp.shadowRoot, HTMLElement);
+
+    // Sidebar is displyed by default.
+    assertEquals(sidebar.hidden, false);
+    assertEquals(sidebarToggleButton.innerText, '<');
+
+    for (let index = 0; index < 10; index++) {
+      // Hide the sidebar and check.
+      sidebarToggleButton.click();
+      assertEquals(sidebar.hidden, true);
+      assertEquals(sidebarToggleButton.innerText, '>');
+
+      // Show the sidebar and check.
+      sidebarToggleButton.click();
+      assertEquals(sidebar.hidden, false);
+      assertEquals(sidebarToggleButton.innerText, '<');
+    }
+  });
 });
