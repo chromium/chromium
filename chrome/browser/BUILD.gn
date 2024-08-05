@@ -2023,7 +2023,6 @@ static_library("browser") {
     "//chrome/browser/ui/omnibox:impl",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/webui:configs",
-    "//chrome/browser/ui/webui/top_chrome",
     "//chrome/browser/updater:scheduler",
     "//chrome/browser/updates/announcement_notification",
     "//chrome/browser/web_share_target",
@@ -4280,6 +4279,8 @@ static_library("browser") {
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/ui/webui/privacy_sandbox/related_website_sets:mojo_bindings",
       "//chrome/browser/ui/webui/searchbox",
+      "//chrome/browser/ui/webui/top_chrome",
+      "//chrome/browser/ui/webui/top_chrome:impl",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/app_service",
       "//chrome/common/importer:interfaces",
@@ -4366,6 +4367,7 @@ static_library("browser") {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui/searchbox",
+      "//chrome/browser/ui/webui/top_chrome:impl",
     ]
 
     #!is_android

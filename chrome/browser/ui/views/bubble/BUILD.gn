@@ -30,7 +30,10 @@ source_set("bubble") {
     # obj/chrome/browser/ui/views/bubble/bubble/webui_bubble_manager.o.
     "//chrome/browser/ui:webui_name_variants",
   ]
-  deps = [ "//components/input" ]
+  deps = [
+    "//chrome/browser/ui/webui/top_chrome",
+    "//components/input",
+  ]
 
   if (use_aura) {
     sources += [

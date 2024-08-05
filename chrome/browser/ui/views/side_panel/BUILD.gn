@@ -161,6 +161,7 @@ source_set("side_panel") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
     "//chrome/common:constants",
     "//components/accessibility:reading",

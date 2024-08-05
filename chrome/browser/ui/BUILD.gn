@@ -2029,6 +2029,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/ui/webui/searchbox",
+      "//chrome/browser/ui/webui/top_chrome",
+      "//chrome/browser/ui/webui/top_chrome:impl",
       "//chrome/browser/ui/webui/util",
       "//chrome/browser/web_applications",
       "//chrome/common:buildflags",
@@ -2139,6 +2141,7 @@ static_library("ui") {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui/searchbox",
+      "//chrome/browser/ui/webui/top_chrome:impl",
     ]
 
     if (use_ozone && !is_chromeos_ash) {
@@ -5313,18 +5316,6 @@ static_library("ui") {
       "webauthn/webauthn_ui_helpers.cc",
       "webauthn/webauthn_ui_helpers.h",
       "webui/side_panel/customize_chrome/customize_chrome_section.h",
-      "webui/top_chrome/webui_contents_preload_manager.cc",
-      "webui/top_chrome/webui_contents_preload_manager.h",
-      "webui/top_chrome/webui_contents_warmup_level.cc",
-      "webui/top_chrome/webui_contents_warmup_level.h",
-      "webui/top_chrome/webui_contents_warmup_level_recorder.cc",
-      "webui/top_chrome/webui_contents_warmup_level_recorder.h",
-      "webui/top_chrome/webui_contents_wrapper.cc",
-      "webui/top_chrome/webui_contents_wrapper.h",
-      "webui/top_chrome/webui_contents_wrapper_service.cc",
-      "webui/top_chrome/webui_contents_wrapper_service.h",
-      "webui/top_chrome/webui_contents_wrapper_service_factory.cc",
-      "webui/top_chrome/webui_contents_wrapper_service_factory.h",
       "window_name_prompt/window_name_prompt.cc",
     ]
 
@@ -5346,7 +5337,6 @@ static_library("ui") {
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/bubble",
-      "//chrome/browser/ui/webui/top_chrome",
       "//components/commerce/core:metrics",
       "//components/commerce/core:pref_names",
       "//components/commerce/core:public",
