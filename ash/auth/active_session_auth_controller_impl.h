@@ -92,7 +92,6 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   void MoveToTheCenter();
   void Close();
 
- private:
   // Tracks the authentication flow for the active session.
   enum class ActiveSessionAuthState {
     kWaitForInit,            // Initial state, awaiting session start.
@@ -102,8 +101,9 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
     kPinAuthStarted,         // User submitted PIN, awaiting verification.
     kPinAuthSucceeded,       // Successful PIN authentication.
     // Note: On authentication failure, the state reverts to kInitialized.
-  } state_ = ActiveSessionAuthState::kWaitForInit;
+  };
 
+ private:
   // Set the state of the class, if it necessary disable/enable the input area
   // of the UI. Validates the transitions.
   void SetState(ActiveSessionAuthState state);
@@ -140,6 +140,7 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   std::unique_ptr<UserContext> user_context_;
 
   AuthFactorSet available_factors_;
+  ActiveSessionAuthState state_ = ActiveSessionAuthState::kWaitForInit;
 
   base::WeakPtrFactory<ActiveSessionAuthControllerImpl> weak_ptr_factory_{this};
 };

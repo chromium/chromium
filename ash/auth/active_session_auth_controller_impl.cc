@@ -82,6 +82,39 @@ std::unique_ptr<views::Widget> CreateAuthDialogWidget(
   return widget;
 }
 
+const char* ReasonToString(ActiveSessionAuthController::Reason reason) {
+  switch (reason) {
+    case ActiveSessionAuthController::kPasswordManager:
+      return "PasswordManager";
+    case ActiveSessionAuthController::kSettings:
+      return "Settings";
+  }
+  NOTREACHED();
+}
+
+const char* ActiveSessionAuthStateToString(
+    ActiveSessionAuthControllerImpl::ActiveSessionAuthState state) {
+  switch (state) {
+    case ActiveSessionAuthControllerImpl::ActiveSessionAuthState::kWaitForInit:
+      return "WaitForInit";
+    case ActiveSessionAuthControllerImpl::ActiveSessionAuthState::kInitialized:
+      return "Initialized";
+    case ActiveSessionAuthControllerImpl::ActiveSessionAuthState::
+        kPasswordAuthStarted:
+      return "PasswordAuthStarted";
+    case ActiveSessionAuthControllerImpl::ActiveSessionAuthState::
+        kPasswordAuthSucceeded:
+      return "PasswordAuthSucceeded";
+    case ActiveSessionAuthControllerImpl::ActiveSessionAuthState::
+        kPinAuthStarted:
+      return "PinAuthStarted";
+    case ActiveSessionAuthControllerImpl::ActiveSessionAuthState::
+        kPinAuthSucceeded:
+      return "PinAuthSucceeded";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 ActiveSessionAuthControllerImpl::TestApi::TestApi(
@@ -115,6 +148,7 @@ ActiveSessionAuthControllerImpl::~ActiveSessionAuthControllerImpl() = default;
 bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
     Reason reason,
     AuthCompletionCallback on_auth_complete) {
+  LOG(WARNING) << "Show is requested with reason: " << ReasonToString(reason);
   if (IsShown()) {
     LOG(ERROR) << "ActiveSessionAuthController widget is already exists.";
     std::move(on_auth_complete)
@@ -208,6 +242,8 @@ void ActiveSessionAuthControllerImpl::OnAuthFactorsListed(
 }
 
 void ActiveSessionAuthControllerImpl::Close() {
+  LOG(WARNING) << "Close with : " << ActiveSessionAuthStateToString(state_)
+               << " state.";
   contents_view_observer_.Reset();
   CHECK(contents_view_);
   contents_view_->RemoveObserver(this);
@@ -316,6 +352,10 @@ void ActiveSessionAuthControllerImpl::OnClose() {
 }
 
 void ActiveSessionAuthControllerImpl::SetState(ActiveSessionAuthState state) {
+  LOG(WARNING) << "SetState is requested from: "
+               << ActiveSessionAuthStateToString(state_)
+               << " state to : " << ActiveSessionAuthStateToString(state)
+               << "state.";
   switch (state) {
     case ActiveSessionAuthState::kWaitForInit:
       break;
