@@ -2382,6 +2382,10 @@ extern const char kPromptAPIForGeminiNanoName[];
 extern const char kPromptAPIForGeminiNanoDescription[];
 extern const char* const kPromptAPIForGeminiNanoLinks[2];
 
+extern const char kSummarizationAPIForGeminiNanoName[];
+extern const char kSummarizationAPIForGeminiNanoDescription[];
+extern const char* const kSummarizationAPIForGeminiNanoLinks[2];
+
 // Android --------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)

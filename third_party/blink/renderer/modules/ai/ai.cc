@@ -36,6 +36,7 @@ void AI::Trace(Visitor* visitor) const {
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(ai_remote_);
   visitor->Trace(text_session_factory_);
+  visitor->Trace(ai_summarizer_factory_);
 }
 
 HeapMojoRemote<mojom::blink::AIManager>& AI::GetAIRemote() {
@@ -152,6 +153,14 @@ ScriptPromise<AITextModelInfo> AI::textModelInfo(
       },
       WrapPersistent(resolver)));
   return promise;
+}
+
+AISummarizerFactory* AI::summarizer() {
+  if (!ai_summarizer_factory_) {
+    ai_summarizer_factory_ = MakeGarbageCollected<AISummarizerFactory>(
+        GetExecutionContext(), task_runner_);
+  }
+  return ai_summarizer_factory_.Get();
 }
 
 }  // namespace blink

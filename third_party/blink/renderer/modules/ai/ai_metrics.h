@@ -29,8 +29,10 @@ class AIMetrics {
     kSessionDestroy = 5,
     kSessionClone = 6,
     kTextModelInfo = 7,
+    kSessionSummarize = 8,
+    kSessionSummarizeStreaming = 9,
 
-    kMaxValue = kTextModelInfo,
+    kMaxValue = kSessionSummarizeStreaming,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIAPI)
 

@@ -175,8 +175,7 @@ AITextSession::GetModelSessionReceiver() {
 bool AITextSession::ThrowExceptionIfIsDestroyed(
     ExceptionState& exception_state) {
   if (is_destroyed_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kExceptionMessageSessionDestroyed);
+    ThrowSessionDestroyedException(exception_state);
   }
   return is_destroyed_;
 }

@@ -10722,6 +10722,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5047" label="V8LanguageDetector_Detect_Method"/>
   <int value="5048" label="V8Translation_CanDetect_Method"/>
   <int value="5049" label="V8Translation_CreateDetector_Method"/>
+  <int value="5050" label="V8AI_Summarizer_AttributeGetter"/>
+  <int value="5051" label="V8AISummarizer_Summarize_Method"/>
+  <int value="5052" label="V8AISummarizer_SummarizeStreaming_Method"/>
+  <int value="5053" label="V8AISummarizer_Destroy_Method"/>
+  <int value="5054" label="V8AISummarizerFactory_Capabilities_Method"/>
+  <int value="5055" label="V8AISummarizerFactory_Create_Method"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
@@ -17258,6 +17264,7 @@ from previous Chrome versions.
   <int value="-1309205592" label="SideSearchDSESupport:disabled"/>
   <int value="-1309066678" label="ServiceWorkerOnUI:enabled"/>
   <int value="-1308991487" label="CrosWebAppShortcutUiUpdate:enabled"/>
+  <int value="-1308984721" label="EnableAISummarizationAPI:enabled"/>
   <int value="-1308600417" label="NewNetErrorPageUI:disabled"/>
   <int value="-1308390072"
       label="ImageServiceOptimizationGuideSalientImages:disabled"/>
@@ -21692,6 +21699,7 @@ from previous Chrome versions.
   <int value="571349694" label="AllowAllSitesToInitiateMirroring:enabled"/>
   <int value="571562912" label="InstallableAmbientBadgeMessage:disabled"/>
   <int value="573385109" label="SharedClipboardUI:enabled"/>
+  <int value="573558859" label="EnableAISummarizationAPI:disabled"/>
   <int value="574090181" label="SidePanelPinning:disabled"/>
   <int value="574535845"
       label="HistoryClustersNavigationContextClustering:disabled"/>

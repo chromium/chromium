@@ -4079,6 +4079,21 @@ const char* const kPromptAPIForGeminiNanoLinks[2] = {
     "https://goo.gle/chrome-ai-dev-preview",
     "https://policies.google.com/terms/generative-ai/use-policy"};
 
+const char kSummarizationAPIForGeminiNanoName[] =
+    "Summarization API for Gemini Nano";
+const char kSummarizationAPIForGeminiNanoDescription[] =
+    "Enables the Summarization API, allowing you to summarize a piece "
+    "of text with a built-in large language model (Gemini Nano in Chrome)."
+    "The API may be subject to changes including the supported options."
+    "Please refer to the built-in AI article [1] for details. "
+    "This API It is NOT suitable for use cases that require factual accuracy "
+    "(e.g. answering knowledge questions). "
+    "You must comply with our Prohibited Use Policy [2] which provides "
+    "additional details about appropriate use of Generative AI.";
+const char* const kSummarizationAPIForGeminiNanoLinks[2] = {
+    "https://goo.gle/chrome-ai-dev-preview",
+    "https://policies.google.com/terms/generative-ai/use-policy"};
+
 // Android ---------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)

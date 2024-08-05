@@ -8373,6 +8373,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "summarization-api-for-gemini-nano",
+    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai@chromium.org"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "support-f11-and-f12-shortcuts",
     "owners": [ "michaelcheco@chromium.org", "cros-peripherals@google.com"],
     "expiry_milestone": 140

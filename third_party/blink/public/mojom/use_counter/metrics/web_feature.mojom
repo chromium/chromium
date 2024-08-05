@@ -4416,6 +4416,12 @@ enum WebFeature {
   kV8LanguageDetector_Detect_Method = 5047,
   kV8Translation_CanDetect_Method = 5048,
   kV8Translation_CreateDetector_Method = 5049,
+  kV8AI_Summarizer_AttributeGetter = 5050,
+  kV8AISummarizer_Summarize_Method = 5051,
+  kV8AISummarizer_SummarizeStreaming_Method = 5052,
+  kV8AISummarizer_Destroy_Method = 5053,
+  kV8AISummarizerFactory_Capabilities_Method = 5054,
+  kV8AISummarizerFactory_Create_Method = 5055,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

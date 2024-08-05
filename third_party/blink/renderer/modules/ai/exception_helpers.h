@@ -21,6 +21,8 @@ extern const char kExceptionMessageUnableToCloneSession[];
 
 void ThrowInvalidContextException(ExceptionState& exception_state);
 
+void ThrowSessionDestroyedException(ExceptionState& exception_state);
+
 void RejectPromiseWithInternalError(ScriptPromiseResolverBase* resolver);
 
 DOMException* CreateInternalErrorException();

@@ -41,6 +41,11 @@ void ThrowInvalidContextException(ExceptionState& exception_state) {
                                     kExceptionMessageExecutionContextInvalid);
 }
 
+void ThrowSessionDestroyedException(ExceptionState& exception_state) {
+  exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                    kExceptionMessageSessionDestroyed);
+}
+
 void RejectPromiseWithInternalError(ScriptPromiseResolverBase* resolver) {
   resolver->Reject(CreateInternalErrorException());
 }

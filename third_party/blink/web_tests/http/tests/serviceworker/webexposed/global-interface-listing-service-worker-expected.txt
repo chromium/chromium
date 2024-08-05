@@ -1,10 +1,26 @@
 [INTERFACES]
 interface AI
     attribute @@toStringTag
+    getter summarizer
     method canCreateTextSession
     method constructor
     method createTextSession
     method textModelInfo
+interface AISummarizer
+    attribute @@toStringTag
+    method constructor
+    method destroy
+    method summarize
+    method summarizeStreaming
+interface AISummarizerCapabilities
+    attribute @@toStringTag
+    getter available
+    method constructor
+interface AISummarizerFactory
+    attribute @@toStringTag
+    method capabilities
+    method constructor
+    method create
 interface AITextSession
     attribute @@toStringTag
     method clone

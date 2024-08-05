@@ -37,4 +37,9 @@ interface AI {
     RaisesException
   ]
   Promise<AITextModelInfo> textModelInfo();
+  [
+    Measure,
+    RuntimeEnabled=AISummarizationAPI
+  ]
+  readonly attribute AISummarizerFactory summarizer;
 };
