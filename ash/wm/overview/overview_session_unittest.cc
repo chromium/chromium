@@ -3358,8 +3358,8 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
   auto* item_widget2 = GetOverviewItemForWindow(window2.get())->item_widget();
   auto* item_widget3 = GetOverviewItemForWindow(window3.get())->item_widget();
 
-  // With forest, there are is no saved desk save desk container.
-  if (features::IsForestFeatureEnabled()) {
+  // With this flag enabled, there are is no saved desk save desk container.
+  if (features::IsSavedDeskUiRevampEnabled()) {
     // Order should be [focus_widget, item_widget1, item_widget2, item_widget3,
     // desk_widget, save_widget].
     CheckA11yOverrides("focus", focus_widget, desk_widget, item_widget1);
@@ -5325,7 +5325,7 @@ TEST_P(OverviewRasterScaleTest,
   ASSERT_EQ(3u, desks_bar_view->mini_views().size());
   auto* mini_view = desks_bar_view->mini_views()[2].get();
   EXPECT_EQ(desk3, mini_view->desk());
-  if (features::IsForestFeatureEnabled()) {
+  if (features::IsSavedDeskUiRevampEnabled()) {
     views::MenuItemView* combine_item_view =
         DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
             Shell::GetPrimaryRootWindow(), DeskBarViewBase::Type::kOverview,
@@ -5346,7 +5346,7 @@ TEST_P(OverviewRasterScaleTest,
   EXPECT_EQ(2u, overview_grid->item_list().size());
   mini_view = desks_bar_view->mini_views()[0];
   EXPECT_EQ(desk1, mini_view->desk());
-  if (features::IsForestFeatureEnabled()) {
+  if (features::IsSavedDeskUiRevampEnabled()) {
     views::MenuItemView* combine_item_view =
         DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
             Shell::GetPrimaryRootWindow(), DeskBarViewBase::Type::kOverview,

@@ -3304,9 +3304,9 @@ using SaveAndRecallBrowserTest = DesksClientTest;
 
 IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
                        SystemUIBlockingDialogAccepted) {
-  // TODO(http://b/328779923): This test tests clicking a notification that will
-  // not be shown if this feature is enabled. Remove this test once this feature
-  // can no longer be disabled.
+  // TODO(http://b/350771229): This test tests clicking the "Save desk for
+  // later" button that will not be shown if the feature is enabled. This test
+  // will be fixed before the button change is no longer hidden behind the flag.
   if (ash::features::IsSavedDeskUiRevampEnabled()) {
     GTEST_SKIP() << "Skipping test body for saved desk revamp feature.";
   }
@@ -3343,9 +3343,9 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
                        SystemUIBlockingDialogRejected) {
-  // TODO(http://b/328779923): This test tests clicking a notification that will
-  // not be shown if this feature is enabled. Remove this test once this feature
-  // can no longer be disabled.
+  // TODO(http://b/350771229): This test tests clicking the "Save desk for
+  // later" button that will not be shown if the feature is enabled. This test
+  // will be fixed before the button change is no longer hidden behind the flag.
   if (ash::features::IsSavedDeskUiRevampEnabled()) {
     GTEST_SKIP() << "Skipping test body for saved desk revamp feature.";
   }

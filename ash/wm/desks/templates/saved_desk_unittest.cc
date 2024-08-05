@@ -1010,7 +1010,7 @@ TEST_F(SavedDeskTest, SaveDeskOptionsEnabledDisabled) {
 
     // Open overview and expect the option to be disabled.
     ToggleOverview();
-    if (features::IsForestFeatureEnabled()) {
+    if (features::IsSavedDeskUiRevampEnabled()) {
       auto* template_item = GetActiveDeskActionContextMenuItem(
           root_window, DeskActionContextMenu::kSaveAsTemplate);
       ASSERT_TRUE(template_item);
@@ -1045,7 +1045,7 @@ TEST_F(SavedDeskTest, SaveDeskOptionsEnabledDisabled) {
 
     EXPECT_FALSE(GetOverviewGridList()[0]->IsShowingSavedDeskLibrary());
 
-    if (features::IsForestFeatureEnabled()) {
+    if (features::IsSavedDeskUiRevampEnabled()) {
       auto* template_item = GetActiveDeskActionContextMenuItem(
           root_window, DeskActionContextMenu::kSaveAsTemplate);
       ASSERT_TRUE(template_item);
@@ -1070,7 +1070,7 @@ TEST_F(SavedDeskTest, SaveDeskOptionsEnabledDisabled) {
 
     // Open overview and expect the button to be disabled.
     ToggleOverview();
-    if (features::IsForestFeatureEnabled()) {
+    if (features::IsSavedDeskUiRevampEnabled()) {
       auto* save_later_item = GetActiveDeskActionContextMenuItem(
           root_window, DeskActionContextMenu::kSaveForLater);
       ASSERT_TRUE(save_later_item);
@@ -1106,7 +1106,7 @@ TEST_F(SavedDeskTest, SaveDeskOptionsEnabledDisabled) {
 
     EXPECT_FALSE(GetOverviewGridList()[0]->IsShowingSavedDeskLibrary());
 
-    if (features::IsForestFeatureEnabled()) {
+    if (features::IsSavedDeskUiRevampEnabled()) {
       auto* save_later_item = GetActiveDeskActionContextMenuItem(
           root_window, DeskActionContextMenu::kSaveForLater);
       ASSERT_TRUE(save_later_item);
@@ -2117,7 +2117,7 @@ TEST_F(SavedDeskTest, AllUnsupportedAppsDisablesSaveDeskButtons) {
   EXPECT_EQ(2, GetOverviewGridList()[0]->num_unsupported_windows());
 
   auto* root = Shell::Get()->GetPrimaryRootWindow();
-  if (features::IsForestFeatureEnabled()) {
+  if (features::IsSavedDeskUiRevampEnabled()) {
     auto* template_item = GetActiveDeskActionContextMenuItem(
         root, DeskActionContextMenu::kSaveAsTemplate);
     auto* save_later_item = GetActiveDeskActionContextMenuItem(
