@@ -289,42 +289,51 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 - (void)updateHistoryWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result {
-  // TODO(crbug.com/341107834): Refactor summary using this result.
+  // TODO(crbug.com/353211728): Refactor summary using this result.
+}
+
+- (void)updateTabsWithResult:
+    (const browsing_data::BrowsingDataCounter::Result&)result {
+  // TODO(crbug.com/353211728): Refactor summary using this result.
 }
 
 - (void)updateCacheWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result {
-  // TODO(crbug.com/341107834): Refactor summary using this result.
+  // TODO(crbug.com/353211728): Refactor summary using this result.
 }
 
 - (void)updatePasswordsWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result {
-  // TODO(crbug.com/341107834): Refactor summary using this result.
+  // TODO(crbug.com/353211728): Refactor summary using this result.
 }
 
 - (void)updateAutofillWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result {
-  // TODO(crbug.com/341107834): Refactor summary using this result.
+  // TODO(crbug.com/353211728): Refactor summary using this result.
 }
 
 - (void)setHistorySelection:(BOOL)selected {
-  // TODO(crbug.com/341107834): Refactor summary using this type selection.
+  // TODO(crbug.com/353211728): Refactor summary using this type selection.
+}
+
+- (void)setTabsSelection:(BOOL)selected {
+  // TODO(crbug.com/353211728): Refactor summary using this type selection.
 }
 
 - (void)setSiteDataSelection:(BOOL)selected {
-  // TODO(crbug.com/341107834): Refactor summary using this type selection.
+  // TODO(crbug.com/353211728): Refactor summary using this type selection.
 }
 
 - (void)setCacheSelection:(BOOL)selected {
-  // TODO(crbug.com/341107834): Refactor summary using this type selection.
+  // TODO(crbug.com/353211728): Refactor summary using this type selection.
 }
 
 - (void)setPasswordsSelection:(BOOL)selected {
-  // TODO(crbug.com/341107834): Refactor summary using this type selection.
+  // TODO(crbug.com/353211728): Refactor summary using this type selection.
 }
 
 - (void)setAutofillSelection:(BOOL)selected {
-  // TODO(crbug.com/341107834): Refactor summary using this type selection.
+  // TODO(crbug.com/353211728): Refactor summary using this type selection.
 }
 
 - (void)deletionInProgress {

@@ -11,12 +11,16 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/browsing_data/model/cache_counter.h"
+#import "ios/chrome/browser/browsing_data/model/tabs_counter.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 class QuickDeleteUtilTest : public PlatformTest {
@@ -130,6 +134,44 @@ TEST_F(QuickDeleteUtilTest, TestCacheCounterFormattingForLessThanAllTime) {
   for (const TestCase& test_case : kTestCases) {
     browsing_data::BrowsingDataCounter::FinishedResult result(
         &counter, test_case.cache_size);
+    NSString* output = quick_delete_util::GetCounterTextFromResult(
+        result, browsing_data::TimePeriod::LAST_HOUR);
+    EXPECT_NSEQ(test_case.expected_output, output);
+  }
+}
+
+// Tests the construction of the counter string for tabs in single window and
+// multiwindow formats.
+TEST_F(QuickDeleteUtilTest, TestTabsCounter) {
+  PrefService* prefs = browser_state_->GetPrefs();
+  prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
+                    static_cast<int>(browsing_data::TimePeriod::LAST_HOUR));
+  std::u16string two_tabs = l10n_util::GetPluralStringFUTF16(IDS_TABS_COUNT, 2);
+  std::u16string two_windows =
+      l10n_util::GetPluralStringFUTF16(IDS_WINDOWS_COUNT, 2);
+
+  const struct TestCase {
+    int num_tabs;
+    int num_windows;
+    NSString* expected_output;
+  } kTestCases[] = {
+      {0, 1, l10n_util::GetPluralNSStringF(IDS_DEL_TABS_COUNTER, 0)},
+      {0, 2, l10n_util::GetPluralNSStringF(IDS_DEL_TABS_COUNTER, 0)},
+      {1, 1, l10n_util::GetPluralNSStringF(IDS_DEL_TABS_COUNTER, 1)},
+      {2, 1, l10n_util::GetPluralNSStringF(IDS_DEL_TABS_COUNTER, 2)},
+      {2, 2,
+       l10n_util::GetNSStringF(IDS_DEL_TABS_MULTIWINDOW_COUNTER, two_tabs,
+                               two_windows)},
+  };
+
+  TabsCounter counter(
+      BrowserListFactory::GetForBrowserState(browser_state_.get()),
+      SessionRestorationServiceFactory::GetForBrowserState(
+          browser_state_.get()));
+
+  for (const TestCase& test_case : kTestCases) {
+    const TabsCounter::TabsResult result(&counter, test_case.num_tabs,
+                                         test_case.num_windows, {});
     NSString* output = quick_delete_util::GetCounterTextFromResult(
         result, browsing_data::TimePeriod::LAST_HOUR);
     EXPECT_NSEQ(test_case.expected_output, output);

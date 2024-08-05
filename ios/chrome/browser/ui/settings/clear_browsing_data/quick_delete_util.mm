@@ -9,6 +9,8 @@
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browsing_data/model/tabs_counter.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -58,7 +60,22 @@ NSString* GetCounterTextFromResult(
   }
 
   if (prefName == browsing_data::prefs::kCloseTabs) {
-    // TODO(crbug.com/341107834): Add tabs summary string here.
+    const TabsCounter::TabsResult* tabsResult =
+        static_cast<const TabsCounter::TabsResult*>(&result);
+    browsing_data::BrowsingDataCounter::ResultInt tabsCount =
+        tabsResult->Value();
+    int windowsCount = tabsResult->window_count();
+    if (tabsCount > 0 && windowsCount > 1) {
+      std::u16string tabs_counter_string =
+          l10n_util::GetPluralStringFUTF16(IDS_TABS_COUNT, tabsCount);
+      std::u16string windows_counter_string =
+          l10n_util::GetPluralStringFUTF16(IDS_WINDOWS_COUNT, windowsCount);
+      return l10n_util::GetNSStringF(IDS_DEL_TABS_MULTIWINDOW_COUNTER,
+                                     tabs_counter_string,
+                                     windows_counter_string);
+    } else {
+      return l10n_util::GetPluralNSStringF(IDS_DEL_TABS_COUNTER, tabsCount);
+    }
   }
 
   return base::SysUTF16ToNSString(

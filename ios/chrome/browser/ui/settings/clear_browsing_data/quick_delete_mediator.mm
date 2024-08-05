@@ -110,6 +110,8 @@
   [_consumer
       setHistorySelection:_prefs->GetBoolean(
                               browsing_data::prefs::kDeleteBrowsingHistory)];
+  [_consumer
+      setTabsSelection:_prefs->GetBoolean(browsing_data::prefs::kCloseTabs)];
   [_consumer setSiteDataSelection:_prefs->GetBoolean(
                                       browsing_data::prefs::kDeleteCookies)];
   [_consumer
@@ -197,6 +199,10 @@
 
 - (void)updateHistorySelection:(BOOL)selected {
   _prefs->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistory, selected);
+}
+
+- (void)updateTabsSelection:(BOOL)selected {
+  _prefs->SetBoolean(browsing_data::prefs::kCloseTabs, selected);
 }
 
 - (void)updateSiteDataSelection:(BOOL)selected {
@@ -461,8 +467,7 @@
 
 // Returns the tabs summary based on `result`. If the count of tabs in
 // `result ` is less than 1, then returns an empty string.
-- (NSString*)tabsSummary:
-    (const browsing_data::PasswordsCounter::FinishedResult*)result {
+- (NSString*)tabsSummary:(const TabsCounter::TabsResult*)result {
   browsing_data::BrowsingDataCounter::ResultInt tabsCount = result->Value();
 
   if (tabsCount < 1) {
@@ -559,6 +564,11 @@
     return;
   }
 
+  if (prefName == browsing_data::prefs::kCloseTabs) {
+    [_consumer updateTabsWithResult:*result];
+    return;
+  }
+
   if (prefName == browsing_data::prefs::kDeleteCache) {
     [_consumer updateCacheWithResult:*result];
     return;
@@ -573,8 +583,6 @@
     [_consumer updateAutofillWithResult:*result];
     return;
   }
-
-  // TODO(crbug.com/341107834): Update other pref results here.
 }
 
 @end

@@ -61,6 +61,13 @@ id<GREYMatcher> historyCellMatcher() {
       grey_sufficientlyVisible(), nil);
 }
 
+// Returns a matcher for the tabs cell.
+id<GREYMatcher> tabsCellMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kQuickDeleteBrowsingDataTabsIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
 // Returns a matcher for the site data cell.
 id<GREYMatcher> siteDataCellMatcher() {
   return grey_allOf(
@@ -190,6 +197,7 @@ id<GREYMatcher> autofillCellMatcher() {
   // Set all prefs to false.
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteBrowsingHistory];
+  [ChromeEarlGrey setBoolValue:NO forUserPref:browsing_data::prefs::kCloseTabs];
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteCookies];
   [ChromeEarlGrey setBoolValue:NO
@@ -205,6 +213,8 @@ id<GREYMatcher> autofillCellMatcher() {
   // Assert all browsing data rows are not selected.
   [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
+  [[EarlGrey selectElementWithMatcher:tabsCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(false)];
   [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
   [[EarlGrey selectElementWithMatcher:cacheCellMatcher()]
@@ -217,6 +227,8 @@ id<GREYMatcher> autofillCellMatcher() {
   // Tap on the browsing data cells to toggle the selection.
   [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
       performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:tabsCellMatcher()]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:cacheCellMatcher()]
@@ -228,6 +240,8 @@ id<GREYMatcher> autofillCellMatcher() {
 
   // Assert all browsing data rows are selected.
   [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(true)];
+  [[EarlGrey selectElementWithMatcher:tabsCellMatcher()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
   [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
@@ -256,6 +270,9 @@ id<GREYMatcher> autofillCellMatcher() {
           userBooleanPref:browsing_data::prefs::kDeleteBrowsingHistory],
       NO, @"History pref changed on cancel.");
   GREYAssertEqual(
+      [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kCloseTabs], NO,
+      @"Tabs pref changed on cancel.");
+  GREYAssertEqual(
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteCookies], NO,
       @"Site data pref changed on cancel.");
   GREYAssertEqual(
@@ -274,6 +291,7 @@ id<GREYMatcher> autofillCellMatcher() {
   // Set all prefs to false.
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteBrowsingHistory];
+  [ChromeEarlGrey setBoolValue:NO forUserPref:browsing_data::prefs::kCloseTabs];
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteCookies];
   [ChromeEarlGrey setBoolValue:NO
@@ -289,6 +307,8 @@ id<GREYMatcher> autofillCellMatcher() {
   // Assert all browsing data rows are not selected.
   [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
+  [[EarlGrey selectElementWithMatcher:tabsCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(false)];
   [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
       assertWithMatcher:elementIsSelectedMatcher(false)];
   [[EarlGrey selectElementWithMatcher:cacheCellMatcher()]
@@ -301,6 +321,8 @@ id<GREYMatcher> autofillCellMatcher() {
   // Tap on the browsing data cells to toggle the selection.
   [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
       performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:tabsCellMatcher()]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:cacheCellMatcher()]
@@ -312,6 +334,8 @@ id<GREYMatcher> autofillCellMatcher() {
 
   // Assert all browsing data rows are selected.
   [[EarlGrey selectElementWithMatcher:historyCellMatcher()]
+      assertWithMatcher:elementIsSelectedMatcher(true)];
+  [[EarlGrey selectElementWithMatcher:tabsCellMatcher()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
   [[EarlGrey selectElementWithMatcher:siteDataCellMatcher()]
       assertWithMatcher:elementIsSelectedMatcher(true)];
@@ -338,6 +362,9 @@ id<GREYMatcher> autofillCellMatcher() {
       [ChromeEarlGrey
           userBooleanPref:browsing_data::prefs::kDeleteBrowsingHistory],
       YES, @"Failed to save history pref change on confirm.");
+  GREYAssertEqual(
+      [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kCloseTabs], YES,
+      @"Failed to save tabs pref change on confirm.");
   GREYAssertEqual(
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteCookies],
       YES, @"Failed to save site data pref change on confirm.");

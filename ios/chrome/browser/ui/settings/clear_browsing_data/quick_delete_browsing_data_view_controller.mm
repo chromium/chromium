@@ -31,6 +31,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // Item identifiers in the browsing data page table view.
 typedef NS_ENUM(NSInteger, ItemIdentifier) {
   ItemIdentifierHistory = kItemTypeEnumZero,
+  ItemIdentifierTabs,
   ItemIdentifierSiteData,
   ItemIdentifierCache,
   ItemIdentifierPasswords,
@@ -43,10 +44,12 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
   browsing_data::TimePeriod _timeRange;
   NSString* _historySummary;
+  NSString* _tabsSummary;
   NSString* _cacheSummary;
   NSString* _passwordsSummary;
   NSString* _autofillSummary;
   BOOL _historySelected;
+  BOOL _tabsSelected;
   BOOL _siteDataSelected;
   BOOL _cacheSelected;
   BOOL _passwordsSelected;
@@ -93,8 +96,9 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [snapshot
       appendSectionsWithIdentifiers:@[ @(SectionIdentifierBrowsingData) ]];
   [snapshot appendItemsWithIdentifiers:@[
-    @(ItemIdentifierHistory), @(ItemIdentifierSiteData), @(ItemIdentifierCache),
-    @(ItemIdentifierPasswords), @(ItemIdentifierAutofill)
+    @(ItemIdentifierHistory), @(ItemIdentifierTabs), @(ItemIdentifierSiteData),
+    @(ItemIdentifierCache), @(ItemIdentifierPasswords),
+    @(ItemIdentifierAutofill)
   ]
              intoSectionWithIdentifier:@(SectionIdentifierBrowsingData)];
 
@@ -140,6 +144,13 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [self updateSnapshotForItemIdentifier:ItemIdentifierHistory];
 }
 
+- (void)updateTabsWithResult:
+    (const browsing_data::BrowsingDataCounter::Result&)result {
+  _tabsSummary =
+      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
+  [self updateSnapshotForItemIdentifier:ItemIdentifierTabs];
+}
+
 - (void)updateCacheWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result {
   _cacheSummary =
@@ -164,6 +175,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 - (void)setHistorySelection:(BOOL)selected {
   _historySelected = selected;
   [self updateSnapshotForItemIdentifier:ItemIdentifierHistory];
+}
+
+- (void)setTabsSelection:(BOOL)selected {
+  _tabsSelected = selected;
+  [self updateSnapshotForItemIdentifier:ItemIdentifierTabs];
 }
 
 - (void)setSiteDataSelection:(BOOL)selected {
@@ -226,11 +242,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 // selection.
 - (void)onConfirm:(id)sender {
   [_mutator updateHistorySelection:_historySelected];
+  [_mutator updateTabsSelection:_tabsSelected];
   [_mutator updateSiteDataSelection:_siteDataSelected];
   [_mutator updateCacheSelection:_cacheSelected];
   [_mutator updatePasswordsSelection:_passwordsSelected];
   [_mutator updateAutofillSelection:_autofillSelected];
-  // TODO(crbug.com/341107834): Update changes in data types selection here.
   [_delegate dismissBrowsingDataPage];
 }
 
@@ -270,6 +286,14 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                              icon:[self iconForItemIdentifier:itemIdentifier]
                          selected:_historySelected
           accessibilityIdentifier:kQuickDeleteBrowsingDataHistoryIdentifier];
+    }
+    case ItemIdentifierTabs: {
+      return [self
+              createCellWithTitle:l10n_util::GetNSString(IDS_IOS_CLOSE_TABS)
+                          summary:_tabsSummary
+                             icon:[self iconForItemIdentifier:itemIdentifier]
+                         selected:_tabsSelected
+          accessibilityIdentifier:kQuickDeleteBrowsingDataTabsIdentifier];
     }
     case ItemIdentifierSiteData: {
       // Because there is no counter for site data, an explanatory text is
@@ -325,6 +349,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       _historySelected = !_historySelected;
       break;
     }
+    case ItemIdentifierTabs: {
+      _tabsSelected = !_tabsSelected;
+      break;
+    }
     case ItemIdentifierSiteData: {
       _siteDataSelected = !_siteDataSelected;
       break;
@@ -341,8 +369,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       _autofillSelected = !_autofillSelected;
       break;
     }
-      // TODO(crbug.com/341107834): Update other data types selection state
-      // here.
   }
 }
 
@@ -351,6 +377,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   switch (itemIdentifier) {
     case ItemIdentifierHistory: {
       return DefaultSymbolTemplateWithPointSize(kHistorySymbol,
+                                                kDefaultSymbolSize);
+    }
+    case ItemIdentifierTabs: {
+      return DefaultSymbolTemplateWithPointSize(kTabsSymbol,
                                                 kDefaultSymbolSize);
     }
     case ItemIdentifierSiteData: {
@@ -369,7 +399,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       return DefaultSymbolTemplateWithPointSize(kAutofillDataSymbol,
                                                 kDefaultSymbolSize);
     }
-      // TODO(crbug.com/341107834): Add other icons for remaining types here.
   }
 }
 
