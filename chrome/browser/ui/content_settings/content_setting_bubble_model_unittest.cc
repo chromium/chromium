@@ -40,6 +40,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -343,6 +344,12 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubble) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
+  // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
+  // setting bubble.
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndDisableFeature(
+      content_settings::features::kLeftHandSideActivityIndicators);
+
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
@@ -406,6 +413,12 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
+  // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
+  // setting bubble.
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndDisableFeature(
+      content_settings::features::kLeftHandSideActivityIndicators);
+
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
@@ -470,6 +483,12 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
+  // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
+  // setting bubble.
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndDisableFeature(
+      content_settings::features::kLeftHandSideActivityIndicators);
+
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.

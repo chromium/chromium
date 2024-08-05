@@ -1395,8 +1395,9 @@ TEST_F(PageSpecificContentSettingsTest, GetLastUsedReturnCorrectTimeTest) {
 // Tests that a permission blocked indicator is visible only for 60 seconds.
 TEST_F(PageSpecificContentSettingsTest, MediaBlockedIndicatorsDismissDelay) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      content_settings::features::kImprovedSemanticsActivityIndicators);
+  scoped_feature_list_.InitWithFeatures(
+      {content_settings::features::kImprovedSemanticsActivityIndicators},
+      {content_settings::features::kLeftHandSideActivityIndicators});
 
   NavigateAndCommit(GURL("http://google.com"));
 

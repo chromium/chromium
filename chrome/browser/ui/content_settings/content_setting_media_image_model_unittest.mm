@@ -17,6 +17,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
@@ -71,6 +72,11 @@ class ContentSettingMediaImageModelTest
 };
 
 TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
+  // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
+  // setting bubble.
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndDisableFeature(
+      content_settings::features::kLeftHandSideActivityIndicators);
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),
       std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
