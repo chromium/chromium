@@ -314,14 +314,12 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
 
   std::string url_string;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
   bool is_global_emoji_preferences_enabled = base::FeatureList::IsEnabled(
       features::kVirtualKeyboardGlobalEmojiPreferences);
   GURL url = extensions::Extension::GetResourceURL(
       extensions::Extension::GetBaseURLFromExtensionId(component_extension.id),
       "inputview.html");
-  url = net::AppendOrReplaceQueryParameter(url, "jelly",
-                                           is_jelly_enabled ? "true" : "false");
+  url = net::AppendOrReplaceQueryParameter(url, "jelly", "true");
   url = net::AppendOrReplaceQueryParameter(
       url, "globalemojipreferences",
       is_global_emoji_preferences_enabled ? "true" : "false");
