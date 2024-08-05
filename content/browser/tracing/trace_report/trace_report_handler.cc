@@ -106,6 +106,7 @@ void TraceReportHandler::GetAllPresetScenarios(
     GetAllPresetScenariosCallback callback) {
   auto scenarios = background_tracing_manager_->GetAllPresetScenarios();
   std::vector<trace_report::mojom::ScenarioPtr> all_config_scenarios;
+
   for (const auto& scenario : scenarios) {
     auto new_scenario = trace_report::mojom::Scenario::New();
     new_scenario->hash = scenario.first;
