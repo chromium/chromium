@@ -74,7 +74,12 @@ ManagePasswordsBubbleController::ManagePasswordsBubbleController(
                   delegate_
                       ->GetManagePasswordsSingleCredentialDetailsModeCredential()
               ? BubbleMode::kSingleCredentialDetails
-              : BubbleMode::kCredentialList) {}
+              : BubbleMode::kCredentialList),
+      details_bubble_credential_(
+          delegate_
+              ? delegate_
+                    ->GetManagePasswordsSingleCredentialDetailsModeCredential()
+              : std::nullopt) {}
 
 ManagePasswordsBubbleController::~ManagePasswordsBubbleController() {
   OnBubbleClosing();

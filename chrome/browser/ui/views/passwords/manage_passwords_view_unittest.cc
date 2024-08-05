@@ -85,6 +85,17 @@ TEST_F(ManagePasswordsViewTest, HasTitle) {
   EXPECT_TRUE(view()->ShouldShowWindowTitle());
 }
 
+TEST_F(ManagePasswordsViewTest,
+       BubbleHasDetailsLayoutInSingleCredentialDetailsMode) {
+  std::optional details_bubble_credentail{password_manager::PasswordForm()};
+  ON_CALL(*model_delegate_mock(),
+          GetManagePasswordsSingleCredentialDetailsModeCredential)
+      .WillByDefault(ReturnRef(details_bubble_credentail));
+  CreateViewAndShow();
+
+  EXPECT_TRUE(view()->HasPasswordDetailsViewForTesting());
+}
+
 TEST_F(ManagePasswordsViewTest, DetailsBubbleIsClosedAfterAuthExpiration) {
   std::optional details_bubble_credentail{password_manager::PasswordForm()};
   ON_CALL(*model_delegate_mock(),
