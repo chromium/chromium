@@ -378,8 +378,7 @@ bool CookieSettings::IsThirdPartyPhaseoutEnabled() const {
 }
 
 bool CookieSettings::MitigationsEnabledFor3pcd() const {
-  return net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
-         mitigations_enabled_for_3pcd_;
+  return mitigations_enabled_for_3pcd_;
 }
 
 void CookieSettings::AugmentInclusionStatus(
