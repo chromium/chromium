@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -89,6 +90,7 @@ ManagementToolbarButton::ManagementToolbarButton(BrowserView* browser_view,
       prefs::kEnterpriseLogoUrl,
       base::BindRepeating(&ManagementToolbarButton::UpdateManagementInfo,
                           base::Unretained(this)));
+  SetVisible(false);
   UpdateManagementInfo();
 }
 
@@ -99,7 +101,13 @@ void ManagementToolbarButton::UpdateManagementInfo() {
   std::string label;
   std::string icon_url;
   bool show_management_toolbar_button = CanShowManagementToolbarButton(*prefs);
+  bool button_becoming_visible =
+      !GetVisible() && show_management_toolbar_button;
   SetVisible(show_management_toolbar_button);
+  if (button_becoming_visible && browser_ && browser_->window()) {
+    browser_->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHToolbarManagementButtonFeature);
+  }
   SetManagementLabel(prefs->GetString(prefs::kEnterpriseCustomLabel));
   if (show_management_toolbar_button) {
     chrome::enterprise_util::GetManagementIcon(

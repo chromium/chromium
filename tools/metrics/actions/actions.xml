@@ -44493,6 +44493,8 @@ should be able to be added at any place in this file.
   <suffix name="TabSwitcherButton" label="For tab switcher button."/>
   <suffix name="TabSwitcherFloatingActionButton"
       label="For tab switcher new tab floating action button."/>
+  <suffix name="ToolbarManagementButton"
+      label="For the toolbar managmeent button."/>
   <suffix name="TrackingProtectionOffboarding"
       label="for tracking protection offboarding notice (obsolete)"/>
   <suffix name="TrackingProtectionOnboarding"

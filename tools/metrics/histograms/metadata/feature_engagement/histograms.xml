@@ -543,6 +543,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_TabSwitcherButton" summary="tab switcher button"/>
   <variant name="IPH_TabSwitcherFloatingActionButton"
       summary="tab switcher floating action button"/>
+  <variant name="IPH_ToolbarManagementButton"
+      summary="toolbar management button"/>
   <variant name="IPH_TrackingProtectionOffboarding"
       summary="(obsolete) tracking protection offboarding notice"/>
   <variant name="IPH_TrackingProtectionOnboarding"
