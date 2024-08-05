@@ -173,6 +173,12 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   // Called after the removing chip fade-out animation is done.
   void OnRemovingChipFadeOutEnded(BirchChipButtonBase* removing_chip);
 
+  // Called when remove a chip from the bar with the single row.
+  void RemoveChipFromOneRowBar(BirchChipButtonBase* removing_chip);
+
+  // Called when remove a chip from the bar with two rows.
+  void RemoveChipFromTwoRowsBar(BirchChipButtonBase* removing_chip);
+
   // Possibly show the privacy nudge about context menu options for
   // controlling suggestion types.
   void MaybeShowPrivacyNudge();

@@ -410,25 +410,32 @@ void BirchBarView::AttachChip(std::unique_ptr<BirchChipButtonBase> chip) {
 
   // Attach the chip to the secondary row if it is not empty, otherwise, to the
   // primary row.
-  chips_.emplace_back((secondary_row_ ? secondary_row_ : primary_row_)
+  const bool attach_to_primary = !secondary_row_;
+  chips_.emplace_back((attach_to_primary ? primary_row_ : secondary_row_)
                           ->AddChildView(std::move(chip)));
   Relayout(RelayoutReason::kAddRemoveChip);
 
-  // Perform sliding-in and fading-in animation.
-  chip_layer->SetTransform(
-      gfx::Transform::MakeTranslation(kChipSpacing + chip_size_.width(), 0));
-  views::AnimationBuilder sliding_fading_in_animation;
-  sliding_fading_in_animation
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .Once()
-      .At(kSlidingChipDelayOnAttachment)
-      .SetDuration(kSlidingChipDurationOnAttachment)
-      .SetTransform(chip_layer, gfx::Transform(),
-                    gfx::Tween::ACCEL_LIN_DECEL_100_3)
-      .At(kFadeInChipDelayOnAttachment)
-      .SetDuration(kFadeInChipDurationOnAttachment)
-      .SetOpacity(chip_layer, 1.0f);
+  if (attach_to_primary) {
+    // Perform sliding-in and fading-in animation if the chip was originally
+    // attached to the primary row.
+    chip_layer->SetTransform(
+        gfx::Transform::MakeTranslation(kChipSpacing + chip_size_.width(), 0));
+    views::AnimationBuilder sliding_fading_in_animation;
+    sliding_fading_in_animation
+        .SetPreemptionStrategy(
+            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .Once()
+        .At(kSlidingChipDelayOnAttachment)
+        .SetDuration(kSlidingChipDurationOnAttachment)
+        .SetTransform(chip_layer, gfx::Transform(),
+                      gfx::Tween::ACCEL_LIN_DECEL_100_3)
+        .At(kFadeInChipDelayOnAttachment)
+        .SetDuration(kFadeInChipDurationOnAttachment)
+        .SetOpacity(chip_layer, 1.0f);
+  } else {
+    // TODO(zxdan): implement the animation when the motion spec is ready.
+    chip_layer->SetOpacity(1.0f);
+  }
 }
 
 void BirchBarView::Clear() {
@@ -441,8 +448,9 @@ void BirchBarView::Clear() {
 
   chip_to_attach_.reset();
 
-  Relayout(state_ == State::kShuttingDown ? RelayoutReason::kClearOnDisabled
-                                          : RelayoutReason::kAddRemoveChip);
+  if (state_ == State::kShuttingDown) {
+    Relayout(RelayoutReason::kClearOnDisabled);
+  }
 }
 
 gfx::Size BirchBarView::GetChipSize(aura::Window* root_window) const {
@@ -678,6 +686,20 @@ void BirchBarView::OnSetupEnded() {
 
 void BirchBarView::OnRemovingChipFadeOutEnded(
     BirchChipButtonBase* removing_chip) {
+  const LayoutType previous_layout_type =
+      secondary_row_ ? LayoutType::kTwoByTwo : LayoutType::kOneByFour;
+
+  switch (previous_layout_type) {
+    case LayoutType::kOneByFour:
+      RemoveChipFromOneRowBar(removing_chip);
+      break;
+    case LayoutType::kTwoByTwo:
+      RemoveChipFromTwoRowsBar(removing_chip);
+      break;
+  }
+}
+
+void BirchBarView::RemoveChipFromOneRowBar(BirchChipButtonBase* removing_chip) {
   // Cache the old chips' bounds for animation.
   base::flat_map<BirchChipButtonBase*, gfx::Rect> old_chip_bounds;
   for (const auto& chip : chips_) {
@@ -687,17 +709,23 @@ void BirchBarView::OnRemovingChipFadeOutEnded(
   // Remove the chip from its owner.
   removing_chip->parent()->RemoveChildViewT(removing_chip);
 
-  Relayout(RelayoutReason::kAddRemoveChip);
-
   if (chip_to_attach_) {
     AttachChip(std::move(chip_to_attach_));
+    // Attaching a chip after removing will not change the bar widget bounds
+    // such that chips bounds will not get updated immediately. However, to
+    // perform sliding animation, we need to get the chips target bounds to
+    // calculate the transform. Here, we manually set bounds to the bar view to
+    // trigger layout.
+    SizeToPreferredSize();
+  } else {
+    Relayout(RelayoutReason::kAddRemoveChip);
   }
 
   // Apply sliding animations to the remaining chips.
-  for (auto& chip : chips_) {
-    chip->layer()->SetTransform(
-        gfx::TransformBetweenRects(gfx::RectF(chip->GetBoundsInScreen()),
-                                   gfx::RectF(old_chip_bounds[chip])));
+  for (auto& chip_bounds : old_chip_bounds) {
+    auto* chip = chip_bounds.first;
+    chip->layer()->SetTransform(gfx::TransformBetweenRects(
+        gfx::RectF(chip->GetBoundsInScreen()), gfx::RectF(chip_bounds.second)));
   }
 
   views::AnimationBuilder sliding_animations;
@@ -710,6 +738,17 @@ void BirchBarView::OnRemovingChipFadeOutEnded(
         .SetDuration(kSlidingChipsDurationOnRemoving)
         .SetTransform(chip->layer(), gfx::Transform(),
                       gfx::Tween::Type::ACCEL_LIN_DECEL_100_3);
+  }
+}
+
+void BirchBarView::RemoveChipFromTwoRowsBar(
+    BirchChipButtonBase* removing_chip) {
+  // TODO(zxdan): implement the animation when the motion spec is ready.
+  removing_chip->parent()->RemoveChildViewT(removing_chip);
+  if (chip_to_attach_) {
+    AttachChip(std::move(chip_to_attach_));
+  } else {
+    Relayout(RelayoutReason::kAddRemoveChip);
   }
 }
 

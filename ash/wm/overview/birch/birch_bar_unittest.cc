@@ -37,20 +37,18 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
-#include "base/run_loop.h"
-#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/models/image_model.h"
-#include "ui/compositor/layer_animation_observer.h"
-#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -298,41 +296,6 @@ class TestBirchClient : public BirchClient {
   std::unique_ptr<TestBirchDataProvider<BirchReleaseNotesItem>>
       release_notes_provider_;
   base::ScopedTempDir test_dir_;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-// LayerAnimationWaiter:
-class LayerAnimationWaiter : public ui::LayerAnimationObserver {
- public:
-  explicit LayerAnimationWaiter(ui::Layer* layer) {
-    animation_observation_.Observe(layer->GetAnimator());
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  // ui::LayerAnimationObserver:
-  void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {
-    Stop();
-  }
-
-  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {
-    Stop();
-  }
-
-  void OnLayerAnimationScheduled(
-      ui::LayerAnimationSequence* sequence) override {}
-
- private:
-  void Stop() {
-    if (!animation_observation_.GetSource()->is_animating()) {
-      run_loop_.Quit();
-      animation_observation_.Reset();
-    }
-  }
-
-  base::ScopedObservation<ui::LayerAnimator, ui::LayerAnimationObserver>
-      animation_observation_{this};
-  base::RunLoop run_loop_;
 };
 
 }  // namespace
@@ -804,14 +767,63 @@ TEST_F(BirchBarMenuTest, NoCrashOnRemovingChip) {
             base::to_underlying(
                 BirchChipContextMenuModel::CommandId::kHideSuggestion));
 
-  LayerAnimationWaiter waiter(chips[2]->layer());
+  ui::LayerAnimationStoppedWaiter animation_waiter;
   ui::ScopedAnimationDurationScaleMode non_zero_duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   LeftClickOn(hide_suggestion_item);
-  waiter.Wait();
+  animation_waiter.Wait(chips[2]->layer());
 
   // There should be 3 chips on the bar after animation without crash.
   EXPECT_EQ(3u, chips.size());
+}
+
+// Regression test to confirm there is no crash when removing a chip from a two
+// rows bar.
+TEST_F(BirchBarMenuTest, NoCrashOnRemovingChipFromTwoRowsBar) {
+  // Set a narrow display whose short side can only hold two chips.
+  UpdateDisplay("640x1080");
+
+  // Add 5 calendar items.
+  SetCalendarItems(/*num=*/5);
+
+  EnterOverview();
+  OverviewGridTestApi test_api =
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow());
+  auto* birch_bar_view = test_api.birch_bar_view();
+
+  // There should be 4 chips on two rows.
+  EXPECT_EQ(4, birch_bar_view->GetChipsNum());
+  EXPECT_EQ(2u, birch_bar_view->children().size());
+
+  // Remove the second chip.
+  RightClickOn(test_api.GetBirchChips()[1]);
+
+  auto* model_adapter = GetBirchBarChipMenuModelAdaper();
+  EXPECT_TRUE(model_adapter->IsShowingMenu());
+
+  // Hiding the third suggestion by selecting the corresponding menu item.
+  const auto* hide_suggestion_item =
+      model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(0);
+  EXPECT_EQ(hide_suggestion_item->GetCommand(),
+            base::to_underlying(
+                BirchChipContextMenuModel::CommandId::kHideSuggestion));
+
+  LeftClickOn(hide_suggestion_item);
+
+  // There should still be 4 chips on two rows since the 5th item is filled in.
+  EXPECT_EQ(4, birch_bar_view->GetChipsNum());
+  EXPECT_EQ(2u, birch_bar_view->children().size());
+
+  // Continue to remove the second chip.
+  RightClickOn(test_api.GetBirchChips()[1]);
+
+  model_adapter = GetBirchBarChipMenuModelAdaper();
+  LeftClickOn(
+      model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(0));
+
+  // There should be 3 chips on two rows.
+  EXPECT_EQ(3, birch_bar_view->GetChipsNum());
+  EXPECT_EQ(2u, birch_bar_view->children().size());
 }
 
 // Tests showing/hiding suggestions from context menu.
@@ -1351,6 +1363,9 @@ TEST_F(BirchBarMenuTest, HideSuggestionTypes) {
 
     SCOPED_TRACE(testing::Message()
                  << "Hide type of suggestion: " << chip->GetItem()->ToString());
+
+    // Manually set birch bar bounds to trigger layout.
+    views::test::RunScheduledLayout(grid_test_api.birch_bar_view());
 
     // Right clicking on a chip to show the chip menu.
     RightClickOn(chip);
