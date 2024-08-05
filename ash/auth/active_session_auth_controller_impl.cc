@@ -165,6 +165,7 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
     return;
   }
 
+  SetState(ActiveSessionAuthState::kInitialized);
   auth_factor_editor_->GetAuthFactorsConfiguration(
       std::move(user_context),
       base::BindOnce(&ActiveSessionAuthControllerImpl::OnAuthFactorsListed,
@@ -211,6 +212,7 @@ void ActiveSessionAuthControllerImpl::Close() {
   CHECK(contents_view_);
   contents_view_->RemoveObserver(this);
   contents_view_ = nullptr;
+  SetState(ActiveSessionAuthState::kWaitForInit);
 
   if (auth_performer_) {
     auth_performer_->InvalidateCurrentAttempts();
@@ -246,6 +248,7 @@ void ActiveSessionAuthControllerImpl::MoveToTheCenter() {
 
 void ActiveSessionAuthControllerImpl::OnPasswordSubmit(
     const std::u16string& password) {
+  SetState(ActiveSessionAuthState::kPasswordAuthStarted);
   CHECK(user_context_);
   const auto* password_factor =
       user_context_->GetAuthFactorsData().FindAnyPasswordFactor();
@@ -260,6 +263,7 @@ void ActiveSessionAuthControllerImpl::OnPasswordSubmit(
 }
 
 void ActiveSessionAuthControllerImpl::OnPinSubmit(const std::u16string& pin) {
+  SetState(ActiveSessionAuthState::kPinAuthStarted);
   CHECK(user_context_);
   user_manager::KnownUser known_user(Shell::Get()->local_state());
   const std::string salt = GetUserSalt(account_id_);
@@ -280,7 +284,11 @@ void ActiveSessionAuthControllerImpl::OnAuthComplete(
         input_type == AuthInputType::kPassword
             ? IDS_ASH_IN_SESSION_AUTH_PASSWORD_INCORRECT
             : IDS_ASH_IN_SESSION_AUTH_PIN_INCORRECT));
+    SetState(ActiveSessionAuthState::kInitialized);
   } else {
+    SetState(input_type == AuthInputType::kPassword
+                 ? ActiveSessionAuthState::kPasswordAuthSucceeded
+                 : ActiveSessionAuthState::kPinAuthSucceeded);
     ExchangeForToken(
         std::move(user_context),
         base::BindOnce(&ActiveSessionAuthControllerImpl::NotifySuccess,
@@ -305,6 +313,38 @@ void ActiveSessionAuthControllerImpl::NotifySuccess(const AuthProofToken& token,
 
 void ActiveSessionAuthControllerImpl::OnClose() {
   Close();
+}
+
+void ActiveSessionAuthControllerImpl::SetState(ActiveSessionAuthState state) {
+  switch (state) {
+    case ActiveSessionAuthState::kWaitForInit:
+      break;
+    case ActiveSessionAuthState::kInitialized:
+      CHECK(state_ == ActiveSessionAuthState::kWaitForInit ||
+            state_ == ActiveSessionAuthState::kPasswordAuthStarted ||
+            state_ == ActiveSessionAuthState::kPinAuthStarted);
+      if (contents_view_) {
+        contents_view_->SetInputEnabled(true);
+      }
+      break;
+    case ActiveSessionAuthState::kPasswordAuthStarted:
+      // Disable the UI while we are waiting for the response, except the close
+      // button.
+      CHECK_EQ(state_, ActiveSessionAuthState::kInitialized);
+      contents_view_->SetInputEnabled(false);
+      break;
+    case ActiveSessionAuthState::kPasswordAuthSucceeded:
+      CHECK_EQ(state_, ActiveSessionAuthState::kPasswordAuthStarted);
+      break;
+    case ActiveSessionAuthState::kPinAuthStarted:
+      CHECK_EQ(state_, ActiveSessionAuthState::kInitialized);
+      contents_view_->SetInputEnabled(false);
+      break;
+    case ActiveSessionAuthState::kPinAuthSucceeded:
+      CHECK_EQ(state_, ActiveSessionAuthState::kPinAuthStarted);
+      break;
+  }
+  state_ = state;
 }
 
 }  // namespace ash

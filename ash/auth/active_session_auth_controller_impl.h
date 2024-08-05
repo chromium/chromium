@@ -93,6 +93,21 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   void Close();
 
  private:
+  // Tracks the authentication flow for the active session.
+  enum class ActiveSessionAuthState {
+    kWaitForInit,            // Initial state, awaiting session start.
+    kInitialized,            // Session started, ready for user input.
+    kPasswordAuthStarted,    // User submitted password, awaiting verification.
+    kPasswordAuthSucceeded,  // Successful password authentication.
+    kPinAuthStarted,         // User submitted PIN, awaiting verification.
+    kPinAuthSucceeded,       // Successful PIN authentication.
+    // Note: On authentication failure, the state reverts to kInitialized.
+  } state_ = ActiveSessionAuthState::kWaitForInit;
+
+  // Set the state of the class, if it necessary disable/enable the input area
+  // of the UI. Validates the transitions.
+  void SetState(ActiveSessionAuthState state);
+
   // Internal methods for authentication.
   void OnAuthSessionStarted(
       bool user_exists,
