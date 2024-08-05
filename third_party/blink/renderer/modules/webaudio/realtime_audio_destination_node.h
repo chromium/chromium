@@ -46,7 +46,8 @@ class ExceptionState;
 class WebAudioLatencyHint;
 class WebAudioSinkDescriptor;
 
-class RealtimeAudioDestinationNode final : public AudioDestinationNode {
+class MODULES_EXPORT RealtimeAudioDestinationNode final
+    : public AudioDestinationNode {
  public:
   static RealtimeAudioDestinationNode* Create(AudioContext*,
                                               const WebAudioSinkDescriptor&,

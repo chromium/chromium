@@ -25,8 +25,9 @@ class ExceptionState;
 class WebAudioLatencyHint;
 class WebAudioSinkDescriptor;
 
-class RealtimeAudioDestinationHandler final : public AudioDestinationHandler,
-                                              public AudioIOCallback {
+class MODULES_EXPORT RealtimeAudioDestinationHandler final
+    : public AudioDestinationHandler,
+      public AudioIOCallback {
  public:
   static scoped_refptr<RealtimeAudioDestinationHandler> Create(
       AudioNode&,
@@ -89,6 +90,7 @@ class RealtimeAudioDestinationHandler final : public AudioDestinationHandler,
 
   // Methods for unit tests.
   void invoke_onrendererror_from_platform_for_testing();
+  bool get_platform_destination_is_playing_for_testing();
 
  private:
   explicit RealtimeAudioDestinationHandler(AudioNode&,

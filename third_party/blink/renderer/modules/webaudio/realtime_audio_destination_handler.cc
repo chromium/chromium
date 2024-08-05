@@ -133,9 +133,12 @@ void RealtimeAudioDestinationHandler::SetChannelCount(
   }
 
   // Stop, re-create and start the destination to apply the new channel count.
+  const bool was_playing = platform_destination_->IsPlaying();
   StopPlatformDestination();
   CreatePlatformDestination();
-  StartPlatformDestination();
+  if (was_playing) {
+    StartPlatformDestination();
+  }
 }
 
 void RealtimeAudioDestinationHandler::StartRendering() {
@@ -461,10 +464,13 @@ void RealtimeAudioDestinationHandler::SetSinkDescriptor(
   media::OutputDeviceStatus status =
       pending_platform_destination->MaybeCreateSinkAndGetStatus();
   if (status == media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
+    const bool was_playing = platform_destination_->IsPlaying();
     StopPlatformDestination();
     platform_destination_ = pending_platform_destination;
     sink_descriptor_ = sink_descriptor;
-    StartPlatformDestination();
+    if (was_playing) {
+      StartPlatformDestination();
+    }
   }
 
   std::move(callback).Run(status);
@@ -473,6 +479,11 @@ void RealtimeAudioDestinationHandler::SetSinkDescriptor(
 void RealtimeAudioDestinationHandler::
     invoke_onrendererror_from_platform_for_testing() {
   platform_destination_->OnRenderError();
+}
+
+bool RealtimeAudioDestinationHandler::
+    get_platform_destination_is_playing_for_testing() {
+  return platform_destination_->IsPlaying();
 }
 
 }  // namespace blink

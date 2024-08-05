@@ -1043,7 +1043,7 @@ void AudioContext::NotifySetSinkIdBegins() {
 
   // This performs step 5 to 9 from the second part of setSinkId() algorithm:
   // https://webaudio.github.io/web-audio-api/#dom-audiocontext-setsinkid-domstring-or-audiosinkoptions-sinkid
-  sink_transition_flag_was_running_ = ContextState() != kSuspended;
+  sink_transition_flag_was_running_ = ContextState() == kRunning;
   destination()->GetAudioDestinationHandler().StopRendering();
   if (sink_transition_flag_was_running_) {
     SetContextState(kSuspended);
@@ -1075,6 +1075,7 @@ void AudioContext::NotifySetSinkIdIsDone(
   UpdateV8SinkId();
   DispatchEvent(*Event::Create(event_type_names::kSinkchange));
   if (sink_transition_flag_was_running_) {
+    destination()->GetAudioDestinationHandler().StartRendering();
     SetContextState(kRunning);
     sink_transition_flag_was_running_ = false;
   }
