@@ -4,8 +4,15 @@
 
 #include "components/soda/soda_util.h"
 
+#include <string>
+
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/soda/constants.h"
+#include "components/soda/soda_installer.h"
+#include "media/base/media_switches.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -83,6 +90,40 @@ bool IsOnDeviceSpeechRecognitionSupported() {
 #else
   return true;
 #endif
+}
+
+bool IsOnDeviceSpeechRecognitionAvailable(const std::string& language) {
+  if (!base::FeatureList::IsEnabled(media::kOnDeviceWebSpeech) ||
+      !IsOnDeviceSpeechRecognitionSupported()) {
+    return false;
+  }
+
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  DCHECK(soda_installer);
+
+  // Check whether the language supported.
+  bool is_language_supported = false;
+  speech::LanguageCode lang_code = speech::LanguageCode::kNone;
+  for (auto const& available_lang : soda_installer->GetAvailableLanguages()) {
+    if (l10n_util::GetLanguage(available_lang) ==
+        l10n_util::GetLanguage(language)) {
+      is_language_supported = true;
+      lang_code = speech::GetLanguageCode(available_lang);
+      break;
+    }
+  }
+
+  if (!is_language_supported) {
+    return false;
+  }
+
+  if (!soda_installer->IsSodaInstalled(lang_code)) {
+    return false;
+  }
+
+  // TODO(crbug.com/40286514): Check other params.
+
+  return true;
 }
 
 }  // namespace speech

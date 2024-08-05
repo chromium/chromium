@@ -100,6 +100,13 @@ void SpeechRecognitionController::Start(
   GetSpeechRecognizer()->Start(std::move(msg_params));
 }
 
+void SpeechRecognitionController::OnDeviceWebSpeechAvailable(
+    String language,
+    base::OnceCallback<void(bool)> callback) {
+  GetSpeechRecognizer()->OnDeviceWebSpeechAvailable(language,
+                                                    std::move(callback));
+}
+
 void SpeechRecognitionController::Trace(Visitor* visitor) const {
   Supplement::Trace(visitor);
   visitor->Trace(speech_recognizer_);

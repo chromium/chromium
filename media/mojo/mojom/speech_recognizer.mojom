@@ -53,11 +53,16 @@ struct StartSpeechRecognitionRequestParams {
   int32 sample_rate;
 };
 
-// API for the renderer process to start a speech recognition session in the
-// browser process.
+// API for the renderer process to manage speech recognition in the browser
+// process. The remote lives in the renderer process and the receiver lives in
+// the browser process.
 interface SpeechRecognizer {
   // Requests the speech recognition service to start speech recognition.
   Start(StartSpeechRecognitionRequestParams params);
+
+  // Returns whether on-device speech recognition is available for a given
+  // language.
+  OnDeviceWebSpeechAvailable(string language) => (bool available);
 };
 
 // API for the renderer process to stop or abort an existing speech recognition

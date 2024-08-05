@@ -2941,6 +2941,9 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      name: "OnDeviceWebSpeechAvailable",
+    },
+    {
       name: "OrientationEvent",
       status: {"Android": "stable"},
     },

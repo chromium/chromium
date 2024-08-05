@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "components/soda/soda_util.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
@@ -51,11 +52,9 @@
 #include "content/browser/speech/speech_recognizer_impl_android.h"
 #elif !BUILDFLAG(IS_FUCHSIA)
 #include "components/soda/constants.h"
-#include "components/soda/soda_installer.h"
 #include "components/soda/soda_util.h"
 #include "content/browser/speech/soda_speech_recognition_engine_impl.h"
 #include "media/base/media_switches.h"
-#include "ui/base/l10n/l10n_util.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
@@ -160,37 +159,7 @@ SpeechRecognitionManagerImpl* SpeechRecognitionManagerImpl::GetInstance() {
 bool SpeechRecognitionManagerImpl::IsOnDeviceSpeechRecognitionAvailable(
     const SpeechRecognitionSessionConfig& config) {
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(media::kOnDeviceWebSpeech) ||
-      !speech::IsOnDeviceSpeechRecognitionSupported()) {
-    return false;
-  }
-
-  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  DCHECK(soda_installer);
-
-  // Check whether the language supported.
-  bool is_language_supported = false;
-  speech::LanguageCode lang_code = speech::LanguageCode::kNone;
-  const std::string language = l10n_util::GetLanguage(config.language);
-  for (auto const& available_lang : soda_installer->GetAvailableLanguages()) {
-    if (l10n_util::GetLanguage(available_lang) == language) {
-      is_language_supported = true;
-      lang_code = speech::GetLanguageCode(available_lang);
-      break;
-    }
-  }
-
-  if (!is_language_supported) {
-    return false;
-  }
-
-  if (!soda_installer->IsSodaInstalled(lang_code)) {
-    return false;
-  }
-
-  // TODO(crbug.com/40286514): Check other params.
-
-  return true;
+  return speech::IsOnDeviceSpeechRecognitionAvailable(config.language);
 #else
   return false;
 #endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
@@ -259,7 +228,7 @@ int SpeechRecognitionManagerImpl::CreateSession(
 
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_FUCHSIA)
-  if (UseOnDeviceSpeechRecognition(config) &&
+  if (IsOnDeviceSpeechRecognitionAvailable(config) &&
       audio_forwarder_config.has_value()) {
     CHECK_GT(audio_forwarder_config.value().channel_count, 0);
     CHECK_GT(audio_forwarder_config.value().sample_rate, 0);
@@ -675,8 +644,9 @@ SpeechRecognitionSessionContext SpeechRecognitionManagerImpl::GetSessionContext(
 bool SpeechRecognitionManagerImpl::UseOnDeviceSpeechRecognition(
     const SpeechRecognitionSessionConfig& config) {
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
-  return config.on_device && (IsOnDeviceSpeechRecognitionAvailable(config) ||
-                              !config.allow_cloud_fallback);
+  return config.on_device &&
+         (speech::IsOnDeviceSpeechRecognitionAvailable(config.language) ||
+          !config.allow_cloud_fallback);
 #else
   return false;
 #endif

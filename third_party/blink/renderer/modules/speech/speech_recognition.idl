@@ -47,6 +47,11 @@
     [RaisesException, Measure, RuntimeEnabled=MediaStreamTrackWebSpeech] void start(MediaStreamTrack track);
     [ImplementedAs=stopFunction] void stop();
     void abort();
+    [
+        CallWith=ScriptState,
+        RaisesException,
+        RuntimeEnabled=OnDeviceWebSpeechAvailable
+    ] Promise<boolean> onDeviceWebSpeechAvailable(DOMString lang);
 
     // event methods
     attribute EventHandler onaudiostart;
