@@ -8,6 +8,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/omnibox/text_field_view_containing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -44,6 +45,9 @@ const CGFloat kWebContainerTopPadding = 8;
 /// Web view in `_webViewContainer`.
 @property(nonatomic, strong) UIView* webView;
 
+/// Edit view contained in `_omniboxContainer`.
+@property(nonatomic, strong) UIView<TextFieldViewContaining>* editView;
+
 @end
 
 @implementation LensResultPageViewController {
@@ -55,6 +59,8 @@ const CGFloat kWebContainerTopPadding = 8;
   UIButton* _cancelButton;
   /// StackView for the `_backButton`, `_omniboxContainer` and `_cancelButton`.
   UIStackView* _horizontalStackView;
+  /// Container for the omnibox popup.
+  UIView* _omniboxPopupContainer;
 }
 
 - (instancetype)init {
@@ -77,11 +83,11 @@ const CGFloat kWebContainerTopPadding = 8;
   [self.view addSubview:self.webViewContainer];
 
   // Omnibox popup container.
-  self.omniboxPopupContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  self.omniboxPopupContainer.hidden = YES;
-  self.omniboxPopupContainer.layer.zPosition = 1;
-  self.omniboxPopupContainer.clipsToBounds = YES;
-  [self.view addSubview:self.omniboxPopupContainer];
+  _omniboxPopupContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  _omniboxPopupContainer.hidden = YES;
+  _omniboxPopupContainer.layer.zPosition = 1;
+  _omniboxPopupContainer.clipsToBounds = YES;
+  [self.view addSubview:_omniboxPopupContainer];
 
   // Back Button.
   _backButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -162,15 +168,25 @@ const CGFloat kWebContainerTopPadding = 8;
     [_webViewContainer.topAnchor
         constraintEqualToAnchor:_horizontalStackView.bottomAnchor
                        constant:kWebContainerTopPadding],
-    [self.omniboxPopupContainer.topAnchor
+    [_omniboxPopupContainer.topAnchor
         constraintEqualToAnchor:_horizontalStackView.bottomAnchor],
   ]];
   AddSameConstraintsToSides(
       self.webViewContainer, self.view,
       LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
   AddSameConstraintsToSides(
-      self.omniboxPopupContainer, self.view,
+      _omniboxPopupContainer, self.view,
       LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
+}
+
+- (void)setEditView:(UIView<TextFieldViewContaining>*)editView {
+  CHECK(!_editView, kLensOverlayNotFatalUntil);
+  CHECK(editView, kLensOverlayNotFatalUntil);
+  CHECK(_omniboxContainer, kLensOverlayNotFatalUntil);
+  _editView = editView;
+  _editView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_omniboxContainer addSubview:_editView];
+  AddSameConstraints(_editView, _omniboxContainer);
 }
 
 #pragma mark - LensResultPageConsumer
@@ -196,6 +212,29 @@ const CGFloat kWebContainerTopPadding = 8;
 
 - (void)setBackgroundColor:(UIColor*)backgroundColor {
   self.view.backgroundColor = backgroundColor;
+}
+
+#pragma mark - OmniboxPopupPresenterDelegate
+
+- (UIView*)popupParentViewForPresenter:(OmniboxPopupPresenter*)presenter {
+  return _omniboxPopupContainer;
+}
+
+- (UIViewController*)popupParentViewControllerForPresenter:
+    (OmniboxPopupPresenter*)presenter {
+  return self;
+}
+
+- (GuideName*)omniboxGuideNameForPresenter:(OmniboxPopupPresenter*)presenter {
+  return nil;
+}
+
+- (void)popupDidOpenForPresenter:(OmniboxPopupPresenter*)presenter {
+  _omniboxPopupContainer.hidden = NO;
+}
+
+- (void)popupDidCloseForPresenter:(OmniboxPopupPresenter*)presenter {
+  _omniboxPopupContainer.hidden = YES;
 }
 
 #pragma mark - Private

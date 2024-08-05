@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
@@ -22,6 +25,9 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/ui/omnibox/chrome_omnibox_client_ios.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
@@ -51,6 +57,9 @@
 
   /// The tab helper associated with the current UI.
   LensOverlayTabHelper* _associatedTabHelper;
+
+  /// Coordinator of the omnibox.
+  OmniboxCoordinator* _omniboxCoordinator;
 }
 
 #pragma mark - properties
@@ -218,14 +227,16 @@
 
 - (void)startResultPage {
   Browser* browser = self.browser;
+  ChromeBrowserState* browserState = browser->GetBrowserState();
+
   web::WebState::CreateParams params =
-      web::WebState::CreateParams(browser->GetBrowserState());
+      web::WebState::CreateParams(browserState);
   web::WebStateDelegate* browserWebStateDelegate =
       WebStateDelegateBrowserAgent::FromBrowser(browser);
   _resultMediator = [[LensResultPageMediator alloc]
        initWithWebStateParams:params
       browserWebStateDelegate:browserWebStateDelegate
-                  isIncognito:browser->GetBrowserState()->IsOffTheRecord()];
+                  isIncognito:browserState->IsOffTheRecord()];
   _resultMediator.applicationHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
   _mediator.resultConsumer = _resultMediator;
@@ -250,6 +261,33 @@
   [_containerViewController presentViewController:_resultViewController
                                          animated:YES
                                        completion:nil];
+
+  // TODO(crbug.com/355179986): Implement omnibox navigation with
+  // omnibox_delegate.
+  auto omniboxClient = std::make_unique<LensOmniboxClient>(
+      browserState,
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState),
+      /*web_provider=*/_resultMediator,
+      /*omnibox_delegate=*/nil);
+
+  _omniboxCoordinator = [[OmniboxCoordinator alloc]
+      initWithBaseViewController:nil
+                         browser:browser
+                   omniboxClient:std::move(omniboxClient)];
+
+  // TODO(crbug.com/355179721): Add omnibox focus delegate.
+  _omniboxCoordinator.presenterDelegate = _resultViewController;
+  [_omniboxCoordinator start];
+
+  [_omniboxCoordinator.managedViewController
+      willMoveToParentViewController:_resultViewController];
+  [_resultViewController
+      addChildViewController:_omniboxCoordinator.managedViewController];
+  [_resultViewController setEditView:_omniboxCoordinator.editView];
+  [_omniboxCoordinator.managedViewController
+      didMoveToParentViewController:_resultViewController];
+
+  [_omniboxCoordinator updateOmniboxState];
 }
 
 - (void)stopResultPage {
@@ -260,6 +298,8 @@
   [_resultMediator disconnect];
   _resultMediator = nil;
   _mediator.resultConsumer = self;
+  [_omniboxCoordinator stop];
+  _omniboxCoordinator = nil;
 }
 
 - (BOOL)isUICreated {

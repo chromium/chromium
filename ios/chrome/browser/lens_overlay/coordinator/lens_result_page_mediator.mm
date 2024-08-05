@@ -207,6 +207,15 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   return _browserWebStateDelegate->GetResponderInputView(webState);
 }
 
+#pragma mark - LensWebProvider
+
+- (web::WebState*)webState {
+  if (!_webState) {
+    return nullptr;
+  }
+  return _webState.get();
+}
+
 #pragma mark - Private
 
 /// Detaches and returns the current web state.
