@@ -547,12 +547,15 @@ public class MainSettings extends ChromeBaseSettingsFragment
         // SignOutCoordinator.startSignOutFlow(), in other words SignOutCoordinator.showSnackbar()
         // should be private method.
 
-        // Show the signout snackbar, or wait until `onStart()` if the fragment is not in the
-        // `STARTED` state.
-        if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
-            showSignoutSnackbar();
-        } else {
-            mShouldShowSnackbar = true;
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            // Show the signout snackbar, or wait until `onStart()` if the fragment is not in the
+            // `STARTED` state.
+            if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
+                showSignoutSnackbar();
+            } else {
+                mShouldShowSnackbar = true;
+            }
         }
 
         updatePreferences();
