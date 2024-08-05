@@ -357,12 +357,6 @@ BASE_FEATURE(kAutofillFixCachingOnJavaScriptChanges,
              "AutofillFixCachingOnJavaScriptChanges",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Killswitch for not running logic in `AutofillAgent::ApplyFieldsAction` that
-// is responsible for updating `AutofillAgent::last_queried_element_`.
-BASE_FEATURE(kAutofillDontUpdateLastQueriedElementOnFill,
-             "AutofillDontUpdateLastQueriedElementOnFill",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Killswitch for not trying to find a cached AutofillField from a FormFieldData
 // by using FormFieldData::SameFieldAs, but only by comparing FieldGlobalIds.
 BASE_FEATURE(kAutofillFindCachedFieldsByIdOnly,
