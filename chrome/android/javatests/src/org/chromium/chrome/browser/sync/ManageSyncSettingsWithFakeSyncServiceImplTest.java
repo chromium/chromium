@@ -10,8 +10,10 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -28,6 +30,7 @@ import android.app.Instrumentation.ActivityResult;
 import android.app.PendingIntent;
 
 import androidx.preference.Preference;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.LargeTest;
@@ -69,6 +72,9 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.sync.ModelType;
+
+import java.util.Set;
 
 /** Test for ManageSyncSettings with FakeSyncServiceImpl. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -376,6 +382,27 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         clickPreference(encryption);
 
         CriteriaHelper.pollUiThread(() -> backend.isSuccess());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testSignOutUnsavedDataDialogShown() {
+        final FakeSyncServiceImpl fakeSyncService =
+                (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
+        fakeSyncService.setTypesWithUnsyncedData(Set.of(ModelType.BOOKMARKS));
+        // Sign in and open settings.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        ManageSyncSettings fragment = startManageSyncPreferences();
+        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withText(R.string.sign_out)).perform(click());
+
+        onView(withText(R.string.sign_out_unsaved_data_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
     }
 
     private ManageSyncSettings startManageSyncPreferences() {
