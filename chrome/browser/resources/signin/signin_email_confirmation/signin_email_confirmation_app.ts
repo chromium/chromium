@@ -5,15 +5,16 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import './signin_shared.css.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getCss} from './signin_email_confirmation_app.css.js';
-import {getHtml} from './signin_email_confirmation_app.html.js';
+import {getTemplate} from './signin_email_confirmation_app.html.js';
 
-export interface SigninEmailConfirmationAppElement {
+interface SigninEmailConfirmationAppElement {
   $: {
     dialogTitle: HTMLElement,
     createNewUserRadioButtonSubtitle: HTMLElement,
@@ -21,20 +22,18 @@ export interface SigninEmailConfirmationAppElement {
   };
 }
 
-export class SigninEmailConfirmationAppElement extends CrLitElement {
+class SigninEmailConfirmationAppElement extends PolymerElement {
   static get is() {
     return 'signin-email-confirmation-app';
   }
 
-  static override get styles() {
-    return getCss();
+  static get template() {
+    return getTemplate();
   }
 
-  override render() {
-    return getHtml.bind(this)();
-  }
+  override ready() {
+    super.ready();
 
-  override firstUpdated() {
     const args = JSON.parse(chrome.getVariableValue('dialogArguments'));
     const {lastEmail, newEmail} = args;
     this.$.dialogTitle.textContent =
@@ -46,12 +45,12 @@ export class SigninEmailConfirmationAppElement extends CrLitElement {
         'signinEmailConfirmationStartSyncButtonSubtitle', newEmail);
   }
 
-  protected onConfirm_() {
+  private onConfirm_() {
     const action = this.shadowRoot!.querySelector('cr-radio-group')!.selected;
     chrome.send('dialogClose', [JSON.stringify({'action': action})]);
   }
 
-  protected onCancel_() {
+  private onCancel_() {
     chrome.send('dialogClose', [JSON.stringify({'action': 'cancel'})]);
   }
 }

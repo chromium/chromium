@@ -3,44 +3,44 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import './signin_shared.css.js';
 import './strings.m.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SyncConfirmationBrowserProxy} from './sync_confirmation_browser_proxy.js';
 import {ScreenMode, SyncConfirmationBrowserProxyImpl} from './sync_confirmation_browser_proxy.js';
-import {getCss} from './sync_disabled_confirmation_app.css.js';
-import {getHtml} from './sync_disabled_confirmation_app.html.js';
+import {getTemplate} from './sync_disabled_confirmation_app.html.js';
 
-export interface SyncDisabledConfirmationAppElement {
+interface SyncDisabledConfirmationAppElement {
   $: {
     confirmButton: HTMLElement,
   };
 }
 
-export class SyncDisabledConfirmationAppElement extends CrLitElement {
+class SyncDisabledConfirmationAppElement extends PolymerElement {
   static get is() {
     return 'sync-disabled-confirmation-app';
   }
 
-  static override get styles() {
-    return getCss();
+  static get template() {
+    return getTemplate();
   }
 
-  override render() {
-    return getHtml.bind(this)();
-  }
-
-  static override get properties() {
+  static get properties() {
     return {
-      signoutDisallowed_: {type: Boolean},
+      signoutDisallowed_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('signoutDisallowed');
+        },
+      },
     };
   }
 
-  protected signoutDisallowed_: boolean =
-      loadTimeData.getBoolean('signoutDisallowed');
+  private signoutDisallowed_: boolean;
   private syncConfirmationBrowserProxy_: SyncConfirmationBrowserProxy =
       SyncConfirmationBrowserProxyImpl.getInstance();
 
@@ -51,7 +51,7 @@ export class SyncDisabledConfirmationAppElement extends CrLitElement {
         'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
   }
 
-  protected onConfirm_(e: Event) {
+  private onConfirm_(e: Event) {
     this.syncConfirmationBrowserProxy_.confirm(
         this.getConsentDescription_(),
         this.getConsentConfirmation_(e.composedPath() as HTMLElement[]),
@@ -95,7 +95,7 @@ export class SyncDisabledConfirmationAppElement extends CrLitElement {
     }
   }
 
-  protected onUndo_() {
+  private onUndo_() {
     this.syncConfirmationBrowserProxy_.undo(ScreenMode.UNSUPPORTED);
   }
 }
