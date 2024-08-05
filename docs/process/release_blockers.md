@@ -46,12 +46,12 @@ due to other work (e.g. tasks) as they see fit.
 Issues should be evaluated for release blocking status using the following
 matrix based on the issue's severity and prevalence:
 
-              | Low Impact          | Medium              | High                | Critical
-------------- | ------------------- | ------------------- | ------------------- | --------
-**Few Users** |                     |                     | ReleaseBlock:Stable | ReleaseBlock:Dev
-**Some**      |                     | ReleaseBlock:Stable | ReleaseBlock:Beta   | ReleaseBlock:Dev
-**Most**      | ReleaseBlock:Stable | ReleaseBlock:Beta   | ReleaseBlock:Beta   | ReleaseBlock:Dev
-**All**       | ReleaseBlock:Stable | ReleaseBlock:Beta   | ReleaseBlock:Dev    | ReleaseBlock:Dev
+|               | Low Impact          | Medium              | High                | Critical         |
+| ------------- | ------------------- | ------------------- | ------------------- | ---------------- |
+| **Few Users** |                     |                     | ReleaseBlock:Stable | ReleaseBlock:Dev |
+| **Some**      |                     | ReleaseBlock:Stable | ReleaseBlock:Beta   | ReleaseBlock:Dev |
+| **Most**      | ReleaseBlock:Stable | ReleaseBlock:Beta   | ReleaseBlock:Beta   | ReleaseBlock:Dev |
+| **All**       | ReleaseBlock:Stable | ReleaseBlock:Beta   | ReleaseBlock:Dev    | ReleaseBlock:Dev |
 
 ### Severity
 
