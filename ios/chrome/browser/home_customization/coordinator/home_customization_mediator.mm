@@ -56,11 +56,9 @@
 
 - (void)configureMagicStackPageData {
   std::map<CustomizationToggleType, BOOL> toggleMap = {};
-  if (set_up_list_utils::IsSetUpListActive(_prefService, false)) {
-    toggleMap.insert({CustomizationToggleType::kSetUpList,
-                      [self isMagicStackCardEnabledForType:
-                                CustomizationToggleType::kSetUpList]});
-  }
+  toggleMap.insert({CustomizationToggleType::kSetUpList,
+                    [self isMagicStackCardEnabledForType:
+                              CustomizationToggleType::kSetUpList]});
   toggleMap.insert({CustomizationToggleType::kSafetyCheck,
                     [self isMagicStackCardEnabledForType:
                               CustomizationToggleType::kSafetyCheck]});

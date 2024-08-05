@@ -241,8 +241,7 @@ bool DefaultBrowserPromoCompleted() {
 }
 
 - (BOOL)shouldShowSetUpList {
-  if (!set_up_list_utils::IsSetUpListActive(
-          IsHomeCustomizationEnabled() ? _prefService : _localState)) {
+  if (!set_up_list_utils::IsSetUpListActive(_localState, _prefService)) {
     return NO;
   }
 

@@ -290,8 +290,7 @@
   self.contentSuggestionsMediator.shortcutsMediator = _shortcutsMediator;
 
   BOOL isSetupListEnabled = set_up_list_utils::IsSetUpListActive(
-      IsHomeCustomizationEnabled() ? prefs
-                                   : GetApplicationContext()->GetLocalState());
+      GetApplicationContext()->GetLocalState(), prefs);
   if (isSetupListEnabled) {
     const TemplateURL* defaultSearchURLTemplate =
         ios::TemplateURLServiceFactory::GetForBrowserState(

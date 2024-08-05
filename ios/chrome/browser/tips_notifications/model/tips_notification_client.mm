@@ -359,12 +359,10 @@ bool TipsNotificationClient::ShouldSendSignin() {
 }
 
 bool TipsNotificationClient::ShouldSendSetUpListContinuation() {
-  PrefService* pref_service = IsHomeCustomizationEnabled()
-                                  ? GetSceneLevelForegroundActiveBrowser()
-                                        ->GetBrowserState()
-                                        ->GetPrefs()
-                                  : GetApplicationContext()->GetLocalState();
-  if (!set_up_list_utils::IsSetUpListActive(pref_service)) {
+  PrefService* local_prefs = GetApplicationContext()->GetLocalState();
+  PrefService* user_prefs =
+      GetSceneLevelForegroundActiveBrowser()->GetBrowserState()->GetPrefs();
+  if (!set_up_list_utils::IsSetUpListActive(local_prefs, user_prefs)) {
     return false;
   }
 
@@ -374,7 +372,7 @@ bool TipsNotificationClient::ShouldSendSetUpListContinuation() {
   if (!IsFirstRunRecent(base::Days(14) - TipsNotificationTriggerDelta())) {
     return false;
   }
-  return !set_up_list_prefs::AllItemsComplete(pref_service);
+  return !set_up_list_prefs::AllItemsComplete(local_prefs);
 }
 
 bool TipsNotificationClient::ShouldSendDocking() {
