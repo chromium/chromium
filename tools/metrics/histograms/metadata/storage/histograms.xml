@@ -703,28 +703,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.IndexedDB.PutBlobSizeKB" units="KB"
-    expires_after="2024-08-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Records the size of a blob used in an IndexedDB add/put operation. Recorded
-    for every put operation that contains a blob. This histogram has expired
-    between M95-M106.
-  </summary>
-</histogram>
-
-<histogram name="Storage.IndexedDB.PutValidBlob" enum="Boolean"
-    expires_after="2024-08-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Records if a blob intended to be used in an IndexedDB add/put operation is a
-    valid blob. Recorded for every put operation that contains a blob. This
-    histogram has expired between M95-M106.
-  </summary>
-</histogram>
-
 <histogram name="Storage.InterestGroup.AdComponentRenderURLSize" units="bytes"
     expires_after="2025-01-05">
   <owner>caraitto@chromium.org</owner>
