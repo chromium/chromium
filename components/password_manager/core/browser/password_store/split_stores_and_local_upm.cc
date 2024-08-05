@@ -14,7 +14,6 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 
-using password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore;
 using password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices;
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
 

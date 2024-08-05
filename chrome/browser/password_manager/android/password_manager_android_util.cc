@@ -51,11 +51,11 @@ enum class UserType {
 // enum in tools/metrics/histograms/metadata/password/enums.xml.
 enum class ActivationError {
   kNone = 0,
-  kUnenrolled = 1,
-  kInitialUpmMigrationMissing = 2,
+  // (Deprecated) kUnenrolled = 1,
+  // (Deprecated) kInitialUpmMigrationMissing = 2,
   kLoginDbFileMoveFailed = 3,
   kOutdatedGmsCore = 4,
-  kFlagDisabled = 5,
+  // (Deprecated) kFlagDisabled = 5,
   kMigrationWarningUnacknowledged = 6,
   kMaxValue = kMigrationWarningUnacknowledged,
 };
@@ -82,34 +82,14 @@ bool IsPasswordSyncEnabled(PrefService* pref_service) {
   }
 }
 
-ActivationError CheckMinGmsVersion() {
+bool HasMinGmsVersion() {
   std::string gms_version_str =
       base::android::BuildInfo::GetInstance()->gms_version_code();
   int gms_version = 0;
   // gms_version_code() must be converted to int for comparison, because it can
   // have legacy values "3(...)" and those evaluate > "2023(...)".
-  if (!base::StringToInt(gms_version_str, &gms_version)) {
-    return ActivationError::kOutdatedGmsCore;
-  }
-
-  if (gms_version < password_manager::GetLocalUpmMinGmsVersion()) {
-    return ActivationError::kOutdatedGmsCore;
-  }
-
-  return ActivationError::kNone;
-}
-
-// WARNING: Use this function rather than base::FeatureList::IsEnabled(), it
-// defers the base::Feature checks to avoid adding ineligible users to the A/B
-// experiment.
-ActivationError CheckMinGmsVersionAndFlagEnabled(const base::Feature& feature) {
-  ActivationError error = CheckMinGmsVersion();
-  if (error != ActivationError::kNone) {
-    return error;
-  }
-
-  return base::FeatureList::IsEnabled(feature) ? ActivationError::kNone
-                                               : ActivationError::kFlagDisabled;
+  return base::StringToInt(gms_version_str, &gms_version) &&
+         gms_version >= password_manager::GetLocalUpmMinGmsVersion();
 }
 
 bool ShouldDelayMigrationUntillMigrationWarningIsAcknowledged(
@@ -207,12 +187,16 @@ void MaybeActivateSplitStoresAndLocalUpm(
     const base::FilePath& login_db_directory) {
   CHECK_EQ(GetSplitStoresAndLocalUpmPrefValue(pref_service), kOff);
 
+  UserType user_type = GetUserType(pref_service, login_db_directory);
+  if (!HasMinGmsVersion()) {
+    RecordActivationError(user_type, ActivationError::kOutdatedGmsCore);
+    return;
+  }
+
   UseUpmLocalAndSeparateStoresState state_to_set_on_success = kOn;
   ActivationError error = ActivationError::kNone;
-  UserType user_type = GetUserType(pref_service, login_db_directory);
   switch (user_type) {
     case UserType::kNonSyncingAndNoMigrationNeeded:
-      error = CheckMinGmsVersion();
       break;
     case UserType::kNonSyncingAndMigrationNeeded:
       if (ShouldDelayMigrationUntillMigrationWarningIsAcknowledged(
@@ -220,22 +204,16 @@ void MaybeActivateSplitStoresAndLocalUpm(
         error = ActivationError::kMigrationWarningUnacknowledged;
         break;
       }
-      error = CheckMinGmsVersion();
       state_to_set_on_success = kOffAndMigrationPending;
       break;
     case UserType::kSyncing: {
-      if (password_manager_upm_eviction::IsCurrentUserEvicted(pref_service)) {
-        error = ActivationError::kUnenrolled;
-        break;
-      }
       // kCurrentMigrationVersionToGoogleMobileServices is only 0 or 1.
-      if (pref_service->GetInteger(
+      if (password_manager_upm_eviction::IsCurrentUserEvicted(pref_service) ||
+          pref_service->GetInteger(
               kCurrentMigrationVersionToGoogleMobileServices) == 0) {
-        error = ActivationError::kInitialUpmMigrationMissing;
-        break;
-      }
-      error = CheckMinGmsVersion();
-      if (error != ActivationError::kNone) {
+        // Initial UPM was not activated properly. Attempt to migrate passwords
+        // to local GMSCore.
+        state_to_set_on_success = kOffAndMigrationPending;
         break;
       }
       // Move the "profile" login DB to the "account" path, the latter is the
@@ -255,15 +233,6 @@ void MaybeActivateSplitStoresAndLocalUpm(
     }
   }
   RecordActivationError(user_type, error);
-
-  if (ActivationError::kUnenrolled == error ||
-      ActivationError::kInitialUpmMigrationMissing == error) {
-    // Initial UPM was not activated properly. Attempt to migrate passwords
-    // to local GMSCore.
-    state_to_set_on_success = kOffAndMigrationPending;
-    error = CheckMinGmsVersionAndFlagEnabled(
-        password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
-  }
 
   if (error == ActivationError::kNone) {
     pref_service->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
@@ -328,26 +297,28 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
     // if the GmsCore version is no longer suitable. This provides an escape
     // hatch for users who fail the migration every time and would otherwise
     // stay with sync supppressed forever.
-    ActivationError error = CheckMinGmsVersion();
     // See comment in the other RecordActivationError() call below.
-    RecordActivationError(GetUserType(pref_service, login_db_directory), error);
-    if (error != ActivationError::kNone) {
+    RecordActivationError(GetUserType(pref_service, login_db_directory),
+                          HasMinGmsVersion()
+                              ? ActivationError::kNone
+                              : ActivationError::kOutdatedGmsCore);
+    if (!HasMinGmsVersion()) {
       pref_service->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
                                static_cast<int>(kOff));
     }
     return;
   }
 
-  // Check if GmsCore was downgraded.
-  ActivationError error = CheckMinGmsVersion();
   // Continue recording the metric for previously activated users. so they show
   // up on the dashboard no matter the aggregation window. One caveat is the
   // state recorded now might not be the same one where the user got activated
   // E.g. they might have gone from syncing to non-syncing. Also the recording
   // here ignores the possibility that rollback fails due to base::ReplaceFile()
   // below, but that should be negligible.
-  RecordActivationError(GetUserType(pref_service, login_db_directory), error);
-  if (error == ActivationError::kNone) {
+  RecordActivationError(GetUserType(pref_service, login_db_directory),
+                        HasMinGmsVersion() ? ActivationError::kNone
+                                           : ActivationError::kOutdatedGmsCore);
+  if (HasMinGmsVersion()) {
     if (base::FeatureList::IsEnabled(
             password_manager::features::
                 kClearLoginDatabaseForAllMigratedUPMUsers)) {

@@ -24,7 +24,6 @@
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 #include "chrome/browser/password_manager/android/android_backend_with_double_deletion.h"
-#include "chrome/browser/password_manager/android/legacy_password_store_backend_migration_decorator.h"
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_store_android_account_backend.h"
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
@@ -153,23 +152,9 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
           password_manager::PasswordStoreAndroidAccountBackend>(
           prefs, &password_affiliation_adapter,
           password_manager::kProfileStore);
-      if (base::FeatureList::IsEnabled(
-              password_manager::features::
-                  kUnifiedPasswordManagerSyncOnlyInGMSCore)) {
-        // M4 feature flag is enabled. Chrome stops trying to migrate passwords
-        // to the account GMSCore storage. Only PasswordStoreProxyBackend is
-        // created.
-        return std::make_unique<password_manager::PasswordStoreProxyBackend>(
-            CreateProfilePasswordStoreBuiltInBackend(login_db_directory, prefs,
-                                                     os_crypt_async),
-            std::move(android_account_backend), prefs);
-      }
-      // The password store migration decorator is created as backend.
-      // There are no split stores at this stage, and the decorator is expected
-      // to migrate the passwords from the built in profile store to the GMS
-      // core account store.
-      return std::make_unique<
-          password_manager::LegacyPasswordStoreBackendMigrationDecorator>(
+      // Chrome stopped trying to migrate passwords to the account GMSCore
+      // storage. Only PasswordStoreProxyBackend is created.
+      return std::make_unique<password_manager::PasswordStoreProxyBackend>(
           CreateProfilePasswordStoreBuiltInBackend(login_db_directory, prefs,
                                                    os_crypt_async),
           std::move(android_account_backend), prefs);

@@ -379,11 +379,11 @@ chromium-metrics-reviews@google.com.
 <enum name="LocalUpmActivationError">
   <int value="0"
       label="None (activated / migration scheduled / previously activated)"/>
-  <int value="1" label="Unenrolled from UPM"/>
-  <int value="2" label="Initial UPM migration missing"/>
+  <int value="1" label="(obsolete) Unenrolled from UPM"/>
+  <int value="2" label="(obsolete) Initial UPM migration missing"/>
   <int value="3" label="Login DB file move failed"/>
   <int value="4" label="Outdated GmsCore"/>
-  <int value="5" label="Flag disabled"/>
+  <int value="5" label="(obsolete) Flag disabled"/>
   <int value="6" label="Migration warning unacknowledged"/>
 </enum>
 

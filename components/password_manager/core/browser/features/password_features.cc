@@ -124,10 +124,6 @@ BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
              "UnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUnifiedPasswordManagerSyncOnlyInGMSCore,
-             "UnifiedPasswordManagerSyncOnlyInGMSCore",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers,
              "ClearLoginDatabaseForAllMigratedUPMUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -137,11 +133,8 @@ BASE_FEATURE(kClearLoginDatabaseForUPMUsers,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled() {
-#if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-  return false;
-#else
-  return base::FeatureList::IsEnabled(kUnifiedPasswordManagerSyncOnlyInGMSCore);
-#endif
+  // TODO(crbug.com/346556567): Inline.
+  return !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND);
 }
 #endif
 

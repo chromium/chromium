@@ -24,13 +24,9 @@ bool IsCurrentUserEvicted(const PrefService* prefs) {
   }
 
   // Users without any passwords saved, can use UPM regardless of unenrollment
-  // status when `kUnifiedPasswordManagerSyncOnlyInGMSCore` is enabled because
-  // there is no re-enrollment.
+  // status because there is no re-enrollment after M4.
   if (prefs->GetBoolean(
-          password_manager::prefs::kEmptyProfileStoreLoginDatabase) &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerSyncOnlyInGMSCore)) {
+          password_manager::prefs::kEmptyProfileStoreLoginDatabase)) {
     return false;
   }
 

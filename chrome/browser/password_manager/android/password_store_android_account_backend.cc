@@ -58,9 +58,9 @@ void LogUPMActiveStatus(syncer::SyncService* sync_service, PrefService* prefs) {
                                 UnifiedPasswordManagerActiveStatus::kActive);
 }
 
+// TODO(crbug.com/346556567): This enum can probably be replaced with something
+// simpler now.
 enum class ActionOnApiError {
-  // See password_manager_upm_eviction::EvictCurrentUser().
-  kEvict,
   // See prefs::kSavePasswordsSuspendedByError.
   kDisableSaving,
   // See syncer::SyncService::SendExplicitPassphraseToPlatformClient().
@@ -72,29 +72,7 @@ ActionOnApiError GetRecoveryActionForPassphraseRequiredError(
   if (supports_passphrase_error_fix) {
     return ActionOnApiError::kDisableSavingAndTryFixPassphraseError;
   }
-  if (base::FeatureList::IsEnabled(
-          features::kUnifiedPasswordManagerSyncOnlyInGMSCore)) {
-    return ActionOnApiError::kDisableSaving;
-  }
-  return ActionOnApiError::kEvict;
-}
-
-bool CanRemoveUnenrollment(PrefService* pref_service) {
-  switch (static_cast<prefs::UseUpmLocalAndSeparateStoresState>(
-      pref_service->GetInteger(
-          prefs::kPasswordsUseUPMLocalAndSeparateStores))) {
-    case prefs::UseUpmLocalAndSeparateStoresState::kOff:
-      // If split stores is not enabled remove unenrollment only if
-      // `kUnifiedPasswordManagerSyncOnlyInGMSCore` is enabled.
-      return base::FeatureList::IsEnabled(
-          features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
-    case prefs::UseUpmLocalAndSeparateStoresState::kOn:
-    case prefs::UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending:
-      // Remove unenrollment completely since user is now part of split stores
-      // experiment.
-      return true;
-  }
-  NOTREACHED_NORETURN();
+  return ActionOnApiError::kDisableSaving;
 }
 
 ActionOnApiError GetRecoveryActionOnApiError(
@@ -129,8 +107,7 @@ ActionOnApiError GetRecoveryActionOnApiError(
     case AndroidBackendAPIErrorCode::kLeakCheckServiceResourceExhausted:
       break;
   }
-  return CanRemoveUnenrollment(pref_service) ? ActionOnApiError::kDisableSaving
-                                             : ActionOnApiError::kEvict;
+  return ActionOnApiError::kDisableSaving;
 }
 
 template <typename Response, typename CallbackType>
@@ -376,18 +353,6 @@ PasswordStoreAndroidAccountBackend::RecoverOnErrorAndReturnResult(
   switch (GetRecoveryActionOnApiError(
       error, sync_service_->SupportsExplicitPassphrasePlatformClient(),
       prefs())) {
-    case ActionOnApiError::kEvict: {
-      // if `kUnifiedPasswordManagerSyncOnlyInGMSCore` is enabled eviction
-      // should not happen.
-      CHECK(!base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerSyncOnlyInGMSCore));
-      if (!password_manager_upm_eviction::IsCurrentUserEvicted(prefs())) {
-        password_manager_upm_eviction::EvictCurrentUser(static_cast<int>(error),
-                                                        prefs());
-      }
-      return PasswordStoreBackendErrorRecoveryType::kUnrecoverable;
-    }
     case ActionOnApiError::kDisableSavingAndTryFixPassphraseError:
       CHECK(sync_service_->SupportsExplicitPassphrasePlatformClient());
       sync_service_->SendExplicitPassphraseToPlatformClient();
@@ -468,9 +433,7 @@ void PasswordStoreAndroidAccountBackend::
 void PasswordStoreAndroidAccountBackend::OnPasswordsSyncStateChanged() {
   // Invoke `sync_enabled_or_disabled_cb_` only if M4 feature flag is enabled
   // since Chrome no longer actively syncs passwords post M4.
-  if (sync_enabled_or_disabled_cb_ &&
-      base::FeatureList::IsEnabled(
-          features::kUnifiedPasswordManagerSyncOnlyInGMSCore)) {
+  if (sync_enabled_or_disabled_cb_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, sync_enabled_or_disabled_cb_);
   }

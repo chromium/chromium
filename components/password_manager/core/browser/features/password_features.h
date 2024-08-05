@@ -116,9 +116,6 @@ BASE_DECLARE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords);
 BASE_DECLARE_FEATURE(
     kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning);
 
-// Enables UPM M4 that no longer needs Password sync engine to sync passwords.
-BASE_DECLARE_FEATURE(kUnifiedPasswordManagerSyncOnlyInGMSCore);
-
 // Enables clearing the login database for the users who already migrated their
 // credentials to GMS Core.
 BASE_DECLARE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers);

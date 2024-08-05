@@ -128,7 +128,6 @@ class PasswordStoreProxyBackend final : public PasswordStoreBackend,
 
   // Clears all passwords from `built_in_backend_` if all conditions bellow are
   // satisfied:
-  // - `kUnifiedPasswordManagerSyncOnlyInGMSCore` feature flag is enabled
   // - Password sync is enabled
   // - initial UPM migration was finished and there was no unenrollment
   void MaybeClearBuiltInBackend();
