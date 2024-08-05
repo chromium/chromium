@@ -249,7 +249,7 @@ void BackgroundReadback::OnARGBPixelsFrameReadCompleted(
 
   result_frame->set_color_space(txt_frame->ColorSpace());
   result_frame->metadata().MergeMetadataFrom(txt_frame->metadata());
-  result_frame->metadata().ClearTextureFrameMedatada();
+  result_frame->metadata().ClearTextureFrameMetadata();
   std::move(result_cb).Run(success ? std::move(result_frame) : nullptr);
 }
 

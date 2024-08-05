@@ -681,7 +681,7 @@ scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
                  txt_frame.natural_size(), txt_frame.timestamp());
   result->set_color_space(txt_frame.ColorSpace());
   result->metadata().MergeMetadataFrom(txt_frame.metadata());
-  result->metadata().ClearTextureFrameMedatada();
+  result->metadata().ClearTextureFrameMetadata();
 
   // NOTE: Iterating over the number of planes of the readback format (rather
   // than `txt_frame`) ensures that frames with external

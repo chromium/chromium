@@ -960,7 +960,7 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
         return result_frame;
       result_frame->set_timestamp(txt_frame->timestamp());
       result_frame->metadata().MergeMetadataFrom(txt_frame->metadata());
-      result_frame->metadata().ClearTextureFrameMedatada();
+      result_frame->metadata().ClearTextureFrameMetadata();
       return result_frame;
     };
 
