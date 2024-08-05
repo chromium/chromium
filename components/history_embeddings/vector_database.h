@@ -24,6 +24,7 @@ struct UrlPassages {
   UrlPassages& operator=(const UrlPassages&);
   UrlPassages(UrlPassages&&);
   UrlPassages& operator=(UrlPassages&&);
+  bool operator==(const UrlPassages&) const;
 
   history::URLID url_id;
   history::VisitID visit_id;
@@ -53,7 +54,8 @@ class Embedding {
   void Normalize();
 
   // Compares one embedding with another and returns a similarity measure.
-  float ScoreWith(const Embedding& other) const;
+  float ScoreWith(const std::string& other_passage,
+                  const Embedding& other_embedding) const;
 
   // Const accessor used for storage.
   const std::vector<float>& GetData() const { return data_; }
@@ -82,8 +84,11 @@ struct UrlEmbeddings {
   UrlEmbeddings& operator=(const UrlEmbeddings&);
   bool operator==(const UrlEmbeddings&) const;
 
-  // Finds score of embedding nearest to query.
+  // Finds score of embedding nearest to query, also taking passages
+  // into consideration since some should be skipped. The passages
+  // correspond to the embeddings 1:1 by index.
   float BestScoreWith(const Embedding& query,
+                      const proto::PassagesValue& passages,
                       size_t search_minimum_word_count) const;
 
   history::URLID url_id;
@@ -137,6 +142,7 @@ struct UrlPassagesEmbeddings {
                         base::Time visit_time);
   UrlPassagesEmbeddings(const UrlPassagesEmbeddings&);
   UrlPassagesEmbeddings& operator=(const UrlPassagesEmbeddings&);
+  bool operator==(const UrlPassagesEmbeddings&) const;
 
   UrlPassages url_passages;
   UrlEmbeddings url_embeddings;
@@ -147,13 +153,13 @@ struct UrlPassagesEmbeddings {
 // flat files, or whatever kinds of storage will work efficiently.
 class VectorDatabase {
  public:
-  struct EmbeddingsIterator {
-    virtual ~EmbeddingsIterator() = default;
+  struct UrlDataIterator {
+    virtual ~UrlDataIterator() = default;
 
     // Returns nullptr if none remain; otherwise advances the iterator
     // and returns a pointer to the next instance (which may be owned
     // by the iterator itself).
-    virtual const UrlEmbeddings* Next() = 0;
+    virtual const UrlPassagesEmbeddings* Next() = 0;
   };
 
   virtual ~VectorDatabase() = default;
@@ -163,11 +169,11 @@ class VectorDatabase {
 
   // Insert or update all embeddings for a URL's full set of passages.
   // Returns true on success.
-  virtual bool AddUrlEmbeddings(const UrlEmbeddings& url_embeddings) = 0;
+  virtual bool AddUrlData(UrlPassagesEmbeddings url_passages_embeddings) = 0;
 
   // Create an iterator that steps through database items.
   // Null may be returned if there are none.
-  virtual std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator(
+  virtual std::unique_ptr<UrlDataIterator> MakeUrlDataIterator(
       std::optional<base::Time> time_range_start) = 0;
 
   // Searches the database for embeddings near given `query` and returns
@@ -192,12 +198,12 @@ class VectorDatabaseInMemory : public VectorDatabase {
 
   // VectorDatabase:
   size_t GetEmbeddingDimensions() const override;
-  bool AddUrlEmbeddings(const UrlEmbeddings& url_embeddings) override;
-  std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator(
+  bool AddUrlData(UrlPassagesEmbeddings url_passages_embeddings) override;
+  std::unique_ptr<UrlDataIterator> MakeUrlDataIterator(
       std::optional<base::Time> time_range_start) override;
 
  private:
-  std::vector<UrlEmbeddings> data_;
+  std::vector<UrlPassagesEmbeddings> data_;
 };
 
 }  // namespace history_embeddings

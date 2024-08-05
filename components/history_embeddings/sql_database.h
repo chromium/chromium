@@ -48,6 +48,9 @@ class SqlDatabase : public VectorDatabase {
   // whether this operation was successful.
   bool InsertOrReplacePassages(const UrlPassages& url_passages);
 
+  // Store embeddings; this is part of the implementation for `AddUrlData`.
+  bool InsertOrReplaceEmbeddings(const UrlEmbeddings& url_embeddings);
+
   // Gets the passages associated with `url_id`. Returns nullopt if there's
   // nothing available.
   std::optional<proto::PassagesValue> GetPassages(history::URLID url_id);
@@ -61,8 +64,8 @@ class SqlDatabase : public VectorDatabase {
 
   // VectorDatabase:
   size_t GetEmbeddingDimensions() const override;
-  bool AddUrlEmbeddings(const UrlEmbeddings& url_embeddings) override;
-  std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator(
+  bool AddUrlData(UrlPassagesEmbeddings url_passages_embeddings) override;
+  std::unique_ptr<UrlDataIterator> MakeUrlDataIterator(
       std::optional<base::Time> time_range_start) override;
 
   // These three methods are used to keep the on-disk persistence in sync with

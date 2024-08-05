@@ -196,6 +196,43 @@ bool SqlDatabase::InsertOrReplacePassages(const UrlPassages& url_passages) {
   return statement.Run();
 }
 
+bool SqlDatabase::InsertOrReplaceEmbeddings(
+    const UrlEmbeddings& url_embeddings) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (url_embeddings.embeddings.size() == 0) {
+    return false;
+  }
+
+  if (!LazyInit()) {
+    return false;
+  }
+
+  constexpr char kSqlInsertOrReplaceEmbeddings[] =
+      "INSERT OR REPLACE INTO embeddings "
+      "(url_id, visit_id, visit_time, embeddings_blob) "
+      "VALUES (?,?,?,?)";
+  DCHECK(db_.IsSQLValid(kSqlInsertOrReplaceEmbeddings));
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertOrReplaceEmbeddings));
+  statement.BindInt64(0, url_embeddings.url_id);
+  statement.BindInt64(1, url_embeddings.visit_id);
+  statement.BindTime(2, url_embeddings.visit_time);
+
+  proto::EmbeddingsValue value;
+  for (const Embedding& embedding : url_embeddings.embeddings) {
+    CHECK_EQ(GetEmbeddingDimensions(), embedding.Dimensions());
+    proto::EmbeddingVector* vector = value.add_vectors();
+    for (float f : embedding.GetData()) {
+      vector->add_floats(f);
+    }
+    vector->set_passage_word_count(embedding.GetPassageWordCount());
+  }
+  statement.BindBlob(3, value.SerializeAsString());
+
+  return statement.Run();
+}
+
 // Gets the passages associated with `url_id`. Returns nullopt if there's
 // nothing available.
 std::optional<proto::PassagesValue> SqlDatabase::GetPassages(
@@ -319,101 +356,82 @@ size_t SqlDatabase::GetEmbeddingDimensions() const {
   return embedder_metadata_->output_size;
 }
 
-bool SqlDatabase::AddUrlEmbeddings(const UrlEmbeddings& url_embeddings) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (url_embeddings.embeddings.size() == 0) {
-    return false;
-  }
-
-  if (!LazyInit()) {
-    return false;
-  }
-
-  constexpr char kSqlInsertOrReplaceEmbeddings[] =
-      "INSERT OR REPLACE INTO embeddings "
-      "(url_id, visit_id, visit_time, embeddings_blob) "
-      "VALUES (?,?,?,?)";
-  DCHECK(db_.IsSQLValid(kSqlInsertOrReplaceEmbeddings));
-  sql::Statement statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertOrReplaceEmbeddings));
-  statement.BindInt64(0, url_embeddings.url_id);
-  statement.BindInt64(1, url_embeddings.visit_id);
-  statement.BindTime(2, url_embeddings.visit_time);
-
-  proto::EmbeddingsValue value;
-  for (const Embedding& embedding : url_embeddings.embeddings) {
-    CHECK_EQ(GetEmbeddingDimensions(), embedding.Dimensions());
-    proto::EmbeddingVector* vector = value.add_vectors();
-    for (float f : embedding.GetData()) {
-      vector->add_floats(f);
-    }
-    vector->set_passage_word_count(embedding.GetPassageWordCount());
-  }
-  statement.BindBlob(3, value.SerializeAsString());
-
-  return statement.Run();
+bool SqlDatabase::AddUrlData(UrlPassagesEmbeddings url_data) {
+  return InsertOrReplacePassages(url_data.url_passages) &&
+         InsertOrReplaceEmbeddings(url_data.url_embeddings);
 }
 
-constexpr char kSqlSelectEmbeddings[] =
-    "SELECT url_id, visit_id, visit_time, embeddings_blob FROM embeddings";
-constexpr char kSqlSelectEmbeddingsWithinTimeRange[] =
-    "SELECT url_id, visit_id, visit_time, embeddings_blob FROM embeddings "
-    "WHERE visit_time >= ?";
+constexpr char kSqlSelectPassagesAndEmbeddings[] =
+    "SELECT passages.url_id, passages.visit_id, passages.visit_time, "
+    "passages.passages_blob, embeddings.embeddings_blob "
+    "FROM passages "
+    "INNER JOIN embeddings ON passages.url_id = embeddings.url_id";
+constexpr char kSqlSelectPassagesAndEmbeddingsWithinTimeRange[] =
+    "SELECT passages.url_id, passages.visit_id, passages.visit_time, "
+    "passages.passages_blob, embeddings.embeddings_blob "
+    "FROM passages "
+    "INNER JOIN embeddings ON passages.url_id = embeddings.url_id "
+    "WHERE passages.visit_time >= ?";
 
-std::unique_ptr<VectorDatabase::EmbeddingsIterator>
-SqlDatabase::MakeEmbeddingsIterator(
-    std::optional<base::Time> time_range_start) {
+std::unique_ptr<VectorDatabase::UrlDataIterator>
+SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!LazyInit()) {
     return nullptr;
   }
 
-  DCHECK(db_.IsSQLValid(kSqlSelectEmbeddings));
-  DCHECK(db_.IsSQLValid(kSqlSelectEmbeddingsWithinTimeRange));
+  DCHECK(db_.IsSQLValid(kSqlSelectPassagesAndEmbeddings));
+  DCHECK(db_.IsSQLValid(kSqlSelectPassagesAndEmbeddingsWithinTimeRange));
 
-  struct RowEmbeddingsIterator : public EmbeddingsIterator {
-    explicit RowEmbeddingsIterator(base::WeakPtr<SqlDatabase> sql_database,
-                                   std::optional<base::Time> time_range_start)
-        : sql_database(sql_database) {
+  struct RowDataIterator : public UrlDataIterator {
+    explicit RowDataIterator(base::WeakPtr<SqlDatabase> sql_database,
+                             std::optional<base::Time> time_range_start)
+        : sql_database(sql_database), data(0, 0, base::Time()) {
       CHECK(!sql_database->iteration_statement_);
       if (time_range_start.has_value()) {
         sql_database->iteration_statement_ = std::make_unique<sql::Statement>(
             sql_database->db_.GetCachedStatement(
-                SQL_FROM_HERE, kSqlSelectEmbeddingsWithinTimeRange));
+                SQL_FROM_HERE, kSqlSelectPassagesAndEmbeddingsWithinTimeRange));
         sql_database->iteration_statement_->BindTime(0,
                                                      time_range_start.value());
       } else {
         sql_database->iteration_statement_ = std::make_unique<sql::Statement>(
-            sql_database->db_.GetCachedStatement(SQL_FROM_HERE,
-                                                 kSqlSelectEmbeddings));
+            sql_database->db_.GetCachedStatement(
+                SQL_FROM_HERE, kSqlSelectPassagesAndEmbeddings));
       }
     }
-    ~RowEmbeddingsIterator() override {
+    ~RowDataIterator() override {
       if (sql_database) {
         sql_database->iteration_statement_.reset();
       }
     }
 
-    const UrlEmbeddings* Next() override {
+    const UrlPassagesEmbeddings* Next() override {
       if (!sql_database) {
         return nullptr;
       }
       sql::Statement* statement = sql_database->iteration_statement_.get();
       CHECK(statement);
       if (statement->Step()) {
-        data = UrlEmbeddings(/*url_id=*/statement->ColumnInt64(0),
-                             /*visit_id=*/statement->ColumnInt64(1),
-                             /*visit_time=*/statement->ColumnTime(2));
-        base::span<const uint8_t> blob = statement->ColumnBlob(3);
-
+        data = UrlPassagesEmbeddings(/*url_id=*/statement->ColumnInt64(0),
+                                     /*visit_id=*/statement->ColumnInt64(1),
+                                     /*visit_time=*/statement->ColumnTime(2));
+        // Passages
+        std::optional<proto::PassagesValue> passages_value =
+            PassagesBlobToProto(statement->ColumnBlob(3),
+                                *sql_database->encryptor_);
+        if (passages_value.has_value()) {
+          data.url_passages.passages = std::move(passages_value.value());
+        }
+        // Embeddings
+        base::span<const uint8_t> blob = statement->ColumnBlob(4);
         proto::EmbeddingsValue value;
         if (!value.ParseFromArray(blob.data(), blob.size())) {
           return nullptr;
         }
         for (const proto::EmbeddingVector& vector : value.vectors()) {
-          data.embeddings.emplace_back(
+          data.url_embeddings.embeddings.emplace_back(
               std::vector(vector.floats().cbegin(), vector.floats().cend()),
               vector.passage_word_count());
         }
@@ -425,11 +443,11 @@ SqlDatabase::MakeEmbeddingsIterator(
     }
 
     base::WeakPtr<SqlDatabase> sql_database;
-    UrlEmbeddings data;
+    UrlPassagesEmbeddings data;
   };
 
-  return std::make_unique<RowEmbeddingsIterator>(weak_ptr_factory_.GetWeakPtr(),
-                                                 time_range_start);
+  return std::make_unique<RowDataIterator>(weak_ptr_factory_.GetWeakPtr(),
+                                           time_range_start);
 }
 
 bool SqlDatabase::DeleteDataForUrlId(history::URLID url_id) {

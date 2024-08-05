@@ -512,20 +512,22 @@ void HistoryEmbeddingsService::Storage::SetEmbedderMetadata(
 
 void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(
     UrlPassages url_passages,
-    std::vector<Embedding> passages_embeddings) {
-  // Compute and save embeddings vectors.
-  UrlEmbeddings url_embeddings(url_passages);
-  url_embeddings.embeddings = std::move(passages_embeddings);
+    std::vector<Embedding> embeddings) {
+  UrlPassagesEmbeddings url_data(url_passages.url_id, url_passages.visit_id,
+                                 url_passages.visit_time);
+  // Construct embeddings, including some information from passages.
+  url_data.url_embeddings.embeddings = std::move(embeddings);
   CHECK_EQ(url_passages.passages.passages_size(),
-           static_cast<int>(url_embeddings.embeddings.size()));
+           static_cast<int>(url_data.url_embeddings.embeddings.size()));
   for (int i = 0; i < url_passages.passages.passages_size(); i++) {
-    url_embeddings.embeddings[i].SetPassageWordCount(
+    url_data.url_embeddings.embeddings[i].SetPassageWordCount(
         CountWords(url_passages.passages.passages(i)));
   }
-  vector_database.AddUrlEmbeddings(std::move(url_embeddings));
-  vector_database.SaveTo(&sql_database);
+  url_data.url_passages = std::move(url_passages);
 
-  sql_database.InsertOrReplacePassages(url_passages);
+  // Store all embeddings and passages.
+  vector_database.AddUrlData(url_data);
+  vector_database.SaveTo(&sql_database);
 }
 
 std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
@@ -573,13 +575,14 @@ std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
     scored_url_row.passages_embeddings =
         sql_database.GetUrlData(scored_url_row.scored_url.url_id).value();
     // Save scores for logging.
-    std::transform(
-        scored_url_row.passages_embeddings.url_embeddings.embeddings.begin(),
-        scored_url_row.passages_embeddings.url_embeddings.embeddings.end(),
-        std::back_inserter(scored_url_row.scores),
-        [&](const Embedding& embedding) {
-          return embedding.ScoreWith(query_embedding);
-        });
+    size_t n =
+        scored_url_row.passages_embeddings.url_embeddings.embeddings.size();
+    scored_url_row.scores.reserve(n);
+    for (size_t i = 0; i < n; i++) {
+      scored_url_row.scores.push_back(query_embedding.ScoreWith(
+          scored_url_row.passages_embeddings.url_passages.passages.passages(i),
+          scored_url_row.passages_embeddings.url_embeddings.embeddings[i]));
+    }
   }
 
   for (const auto& sr : scored_url_rows) {

@@ -135,8 +135,8 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     base::RunLoop loop;
     service_->storage_.PostTaskWithThisObject(base::BindLambdaForTesting(
         [&](HistoryEmbeddingsServicePublic::Storage* storage) {
-          std::unique_ptr<SqlDatabase::EmbeddingsIterator> iterator =
-              storage->sql_database.MakeEmbeddingsIterator({});
+          std::unique_ptr<SqlDatabase::UrlDataIterator> iterator =
+              storage->sql_database.MakeUrlDataIterator({});
           if (!iterator) {
             return;
           }
