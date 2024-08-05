@@ -323,6 +323,11 @@ void AutofillPopupControllerImpl::PinView() {
   is_view_pinned_ = true;
 }
 
+bool AutofillPopupControllerImpl::IsViewVisibilityAcceptingThresholdEnabled()
+    const {
+  return !disable_threshold_for_testing_;
+}
+
 void AutofillPopupControllerImpl::Hide(SuggestionHidingReason reason) {
   // If the reason for hiding is only stale data or a user interacting with
   // native Chrome UI (kFocusChanged/kEndEditing), the popup might be kept open.

@@ -626,4 +626,48 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PopupRowPosInSetViewTest,
                          ::testing::ValuesIn(kPosInSetTestcases));
 
+TEST_F(PopupRowViewTest, NoQuickSuggestionAccepting_ReturnKeyPress) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillPopupDontAcceptNonVisibleEnoughSuggestion);
+  ON_CALL(controller(), IsViewVisibilityAcceptingThresholdEnabled())
+      .WillByDefault(Return(true));
+
+  ShowView(/*line_number=*/0, /*has_control=*/false);
+  row_view().SetSelectedCell(CellType::kContent);
+  EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
+  EXPECT_FALSE(SimulateKeyPress(ui::VKEY_RETURN));
+}
+
+TEST_F(PopupRowViewTest, NoQuickSuggestionAccepting_LeftClick) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillPopupDontAcceptNonVisibleEnoughSuggestion);
+  ON_CALL(controller(), IsViewVisibilityAcceptingThresholdEnabled())
+      .WillByDefault(Return(true));
+  ShowView(/*line_number=*/0, /*has_control=*/false);
+
+  generator().MoveMouseTo(kOutOfBounds);
+  Paint();
+  generator().MoveMouseTo(
+      row_view().GetContentView().GetBoundsInScreen().CenterPoint());
+  EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
+  generator().ClickLeftButton();
+}
+
+// Gestures are not supported on MacOS.
+#if !BUILDFLAG(IS_MAC)
+TEST_F(PopupRowViewTest, NoQuickSuggestionAccepting_GestureEvents) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillPopupDontAcceptNonVisibleEnoughSuggestion);
+  ON_CALL(controller(), IsViewVisibilityAcceptingThresholdEnabled())
+      .WillByDefault(Return(true));
+  EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
+      .WillOnce(Return(true));
+  ShowView(/*line_number=*/0, /*has_control=*/false);
+
+  EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
+  generator().GestureTapAt(
+      row_view().GetContentView().GetBoundsInScreen().CenterPoint());
+}
+#endif  // !BUILDFLAG(IS_MAC)
+
 }  // namespace autofill

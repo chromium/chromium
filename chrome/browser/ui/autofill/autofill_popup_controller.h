@@ -98,6 +98,12 @@ class AutofillPopupController : public AutofillSuggestionController {
   // a no-op.
   virtual void OnPopupPainted() = 0;
 
+  // Indicates if the view should prevent accepting suggestions that are not
+  // easily seen or noticed. The specific criteria for determining what's poorly
+  // visible is up to the view's implementation. To avoid timer specific issues,
+  // this method should return `false` in the test environment.
+  virtual bool IsViewVisibilityAcceptingThresholdEnabled() const = 0;
+
   virtual base::WeakPtr<AutofillPopupController> GetWeakPtr() = 0;
 };
 

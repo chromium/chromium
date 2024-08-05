@@ -571,6 +571,13 @@ BASE_FEATURE(kAutofillPopupDisablePaintChecks,
              "AutofillPopupDisablePaintChecks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If the feature is enabled, before triggering suggestion acceptance, the row
+// view checks that a substantial portion of its content was visible for some
+// minimum required period.
+BASE_FEATURE(kAutofillPopupDontAcceptNonVisibleEnoughSuggestion,
+             "AutofillPopupDontAcceptNonVisibleEnoughSuggestion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If the feature is enabled, the time measurement for when the popup was shown
 // is only made after the popup view has been painted once.
 // TODO: crbug.com/40279821 - Clean up when launched.
