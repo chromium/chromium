@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -430,10 +431,12 @@ void RootCompositorFrameSinkImpl::UpdateRefreshRate(float refresh_rate) {
 
 void RootCompositorFrameSinkImpl::SetSupportedRefreshRates(
     const std::vector<float>& supported_refresh_rates) {
+  exact_supported_refresh_rates_.clear();
   base::flat_set<base::TimeDelta> supported_frame_intervals;
-  for (size_t i = 0; i < supported_refresh_rates.size(); ++i) {
-    supported_frame_intervals.insert(
-        base::Seconds(1 / supported_refresh_rates[i]));
+  for (float rate : supported_refresh_rates) {
+    const base::TimeDelta interval = base::Hertz(rate);
+    exact_supported_refresh_rates_[interval] = rate;
+    supported_frame_intervals.insert(interval);
   }
 
   display_->SetSupportedFrameIntervals(supported_frame_intervals);
@@ -713,10 +716,22 @@ void RootCompositorFrameSinkImpl::SetWideColorEnabled(bool enabled) {
 void RootCompositorFrameSinkImpl::SetPreferredFrameInterval(
     base::TimeDelta interval) {
 #if BUILDFLAG(IS_ANDROID)
-  float refresh_rate =
-      interval.InSecondsF() == 0 ? 0 : (1 / interval.InSecondsF());
-  if (display_client_)
+  if (display_client_) {
+    float refresh_rate;
+    if (interval.is_zero()) {
+      refresh_rate = 0;
+    } else {
+      auto it = exact_supported_refresh_rates_.find(interval);
+      if (it != exact_supported_refresh_rates_.end()) {
+        refresh_rate = it->second;
+      } else {
+        refresh_rate = 1 / interval.InSecondsF();
+        LOG(WARNING) << "Requested unsupported preferred frame interval "
+                     << interval << " (=" << refresh_rate << "Hz)";
+      }
+    }
     display_client_->SetPreferredRefreshRate(refresh_rate);
+  }
 #else
   preferred_frame_interval_ = interval;
   UpdateVSyncParameters();

@@ -234,6 +234,10 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   // Let client control whether it wants `DidCompleteSwapWithSize`.
   bool enable_swap_completion_callback_ = false;
 #endif
+
+  // Map which retains the exact supported refresh rates, keyed by their
+  // interval conversion value which may be subject to precision loss.
+  base::flat_map<base::TimeDelta, float> exact_supported_refresh_rates_;
 };
 
 }  // namespace viz
