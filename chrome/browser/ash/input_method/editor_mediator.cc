@@ -32,6 +32,11 @@
 #include "ui/display/tablet_state.h"
 
 namespace ash::input_method {
+namespace {
+
+constexpr std::u16string_view kAnnouncementViewName = u"Orca";
+
+}
 
 EditorMediator::EditorMediator(
     Profile* profile,
@@ -47,7 +52,8 @@ EditorMediator::EditorMediator(
                                                   GetEditorOpportunityMode())),
       consent_store_(
           std::make_unique<EditorConsentStore>(profile->GetPrefs(),
-                                               metrics_recorder_.get())) {
+                                               metrics_recorder_.get())),
+      announcer_(kAnnouncementViewName) {
   editor_context_.OnTabletModeUpdated(
       display::Screen::GetScreen()->InTabletMode());
 }

@@ -7542,6 +7542,9 @@ New install
       <message name="IDS_PICKER_RESULTS_PREVIEW_ACCESSIBILITY_ANNOUNCEMENT_TEXT" translateable="false" desc="The accessibility announcement for the preview bubble text.">
         Last action: <ph name="ACTION">$1<ex>You opened · Dec 10</ex></ph>
       </message>
+      <message name="IDS_PICKER_INSERTION_ANNOUNCEMENT_TEXT" translateable="false" desc="The accessibility announcement when a result is inserted.">
+        Inserting selected result
+      </message>
 
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">

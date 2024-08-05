@@ -13,6 +13,7 @@
 #include <variant>
 #include <vector>
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -43,6 +44,7 @@
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
@@ -68,6 +70,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -95,6 +98,10 @@ constexpr std::string_view kPickerFeatureTestKeyHash(
 enum class PickerFeatureKeyType { kNone, kDev, kTest };
 
 constexpr base::TimeDelta kCapsLockStateViewDisplayTime = base::Seconds(3);
+
+// When spoken feedback is enabled, closing the widget after an insert is
+// delayed by this amount.
+constexpr base::TimeDelta kCloseWidgetDelay = base::Milliseconds(200);
 
 PickerFeatureKeyType MatchPickerFeatureKeyHash() {
   // Command line looks like:
@@ -424,8 +431,17 @@ void PickerController::StartEmojiSearch(std::u16string_view query,
 void PickerController::CloseWidgetThenInsertResultOnNextFocus(
     const PickerSearchResult& result) {
   InsertResultOnNextFocus(result);
-  if (widget_) {
-    widget_->Close();
+
+  client_->Announce(
+      l10n_util::GetStringUTF16(IDS_PICKER_INSERTION_ANNOUNCEMENT_TEXT));
+
+  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+    close_widget_delay_timer_.Start(
+        FROM_HERE, kCloseWidgetDelay,
+        base::BindOnce(&PickerController::CloseWidget,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    CloseWidget();
   }
 }
 
@@ -639,6 +655,10 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp) {
 }
 
 void PickerController::CloseWidget() {
+  if (!widget_) {
+    return;
+  }
+
   session_metrics_->SetOutcome(
       PickerSessionMetrics::SessionOutcome::kAbandoned);
   widget_->Close();
