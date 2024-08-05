@@ -250,6 +250,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                     new BrandingController(
                             activity, appId, browserName, new ChromePureJavaExceptionReporter());
         }
+        // TODO(353517557): Do initialization necessary for ActivityType.AUTH_VIEW
+
         mTabController = tabController;
         mMinimizeDelegateSupplier = minimizeDelegateSupplier;
         mFeatureOverridesManagerSupplier = featureOverridesManagerSupplier;

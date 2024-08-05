@@ -109,6 +109,8 @@ sync_pb::SyncEnums::BrowserType BrowserTypeToProto(
       return sync_pb::SyncEnums_BrowserType_TYPE_POPUP;
     case VisitContextAnnotations::BrowserType::kCustomTab:
       return sync_pb::SyncEnums_BrowserType_TYPE_CUSTOM_TAB;
+    case VisitContextAnnotations::BrowserType::kAuthView:
+      return sync_pb::SyncEnums_BrowserType_TYPE_AUTH_VIEW;
   }
   return sync_pb::SyncEnums_BrowserType_BROWSER_TYPE_UNKNOWN;
 }
@@ -124,6 +126,8 @@ VisitContextAnnotations::BrowserType BrowserTypeFromProto(
       return VisitContextAnnotations::BrowserType::kPopup;
     case sync_pb::SyncEnums_BrowserType_TYPE_CUSTOM_TAB:
       return VisitContextAnnotations::BrowserType::kCustomTab;
+    case sync_pb::SyncEnums_BrowserType_TYPE_AUTH_VIEW:
+      return VisitContextAnnotations::BrowserType::kAuthView;
   }
   return VisitContextAnnotations::BrowserType::kUnknown;
 }

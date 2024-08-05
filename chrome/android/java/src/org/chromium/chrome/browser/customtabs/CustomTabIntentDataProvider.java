@@ -573,7 +573,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                                 TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY,
                                 false);
 
-        mActivityType = isTwa ? ActivityType.TRUSTED_WEB_ACTIVITY : ActivityType.CUSTOM_TAB;
+        mActivityType =
+                isTwa
+                        ? ActivityType.TRUSTED_WEB_ACTIVITY
+                        : isAuthView() ? ActivityType.AUTH_VIEW : ActivityType.CUSTOM_TAB;
         mTrustedWebActivityAdditionalOrigins =
                 IntentUtils.safeGetStringArrayListExtra(
                         intent, TrustedWebActivityIntentBuilder.EXTRA_ADDITIONAL_TRUSTED_ORIGINS);

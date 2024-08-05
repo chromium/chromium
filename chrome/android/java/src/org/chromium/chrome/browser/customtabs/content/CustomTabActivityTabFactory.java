@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
@@ -61,6 +62,7 @@ public class CustomTabActivityTabFactory {
     private final Lazy<AsyncTabParamsManager> mAsyncTabParamsManager;
 
     @Nullable private CustomTabsTabModelOrchestrator mTabModelOrchestrator;
+    @ActivityType int mActivityType;
 
     @Inject
     public CustomTabActivityTabFactory(
@@ -88,6 +90,10 @@ public class CustomTabActivityTabFactory {
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
     }
 
+    public void setActivityType(int activityType) {
+        mActivityType = activityType;
+    }
+
     /** Creates a {@link TabModelOrchestrator} for the custom tab. */
     public TabModelOrchestrator createTabModelOrchestrator() {
         mTabModelOrchestrator = new CustomTabsTabModelOrchestrator();
@@ -107,6 +113,7 @@ public class CustomTabActivityTabFactory {
                 mTabCreatorManager,
                 mTabModelFilterFactory,
                 mPersistencePolicy,
+                mActivityType,
                 mAsyncTabParamsManager.get());
     }
 

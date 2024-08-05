@@ -88,7 +88,8 @@ public abstract class LaunchCauseMetrics
         LaunchCause.WEBAPK_OTHER_DISTRIBUTOR,
         LaunchCause.HOME_SCREEN_SHORTCUT,
         LaunchCause.SHARE_INTENT,
-        LaunchCause.NFC
+        LaunchCause.NFC,
+        LaunchCause.AUTH_VIEW,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LaunchCause {
@@ -111,13 +112,14 @@ public abstract class LaunchCauseMetrics
         int HOME_SCREEN_SHORTCUT = 16;
         int SHARE_INTENT = 17;
         int NFC = 18;
+        int AUTH_VIEW = 19;
 
-        int NUM_ENTRIES = 19;
+        int NUM_ENTRIES = 20;
     }
 
     /**
      * @param activity The Activity context to compute LaunchCause for, used for getting the correct
-     *         Display, etc.
+     *     Display, etc.
      */
     public LaunchCauseMetrics(final Activity activity) {
         mActivity = activity;

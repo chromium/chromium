@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -517,6 +518,7 @@ public class CustomTabTabPersistencePolicyTest {
                 customTabActivity,
                 new ChromeTabModelFilterFactory(customTabActivity),
                 buildTestPersistencePolicy(),
+                ActivityType.CUSTOM_TAB,
                 AsyncTabParamsManagerSingleton.getInstance());
         TabModelSelectorImpl selector = (TabModelSelectorImpl) orchestrator.getTabModelSelector();
         selector.initializeForTesting(normalTabModel, incognitoTabModel);

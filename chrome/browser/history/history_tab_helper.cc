@@ -120,6 +120,8 @@ history::VisitContextAnnotations::BrowserType GetBrowserType(
       return history::VisitContextAnnotations::BrowserType::kTabbed;
     case chrome::android::ActivityType::kCustomTab:
       return history::VisitContextAnnotations::BrowserType::kCustomTab;
+    case chrome::android::ActivityType::kAuthView:
+      return history::VisitContextAnnotations::BrowserType::kAuthView;
     case chrome::android::ActivityType::kTrustedWebActivity:
     case chrome::android::ActivityType::kWebapp:
     case chrome::android::ActivityType::kWebApk:

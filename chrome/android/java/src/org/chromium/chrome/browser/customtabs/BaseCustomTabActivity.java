@@ -355,7 +355,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         mMinimizationManagerHolder = component.resolveCustomTabMinimizationManagerHolder();
         mFeatureOverridesManager = component.resolveCustomTabFeatureOverridesManager();
-
+        mTabFactory.setActivityType(getActivityType());
         return component;
     }
 

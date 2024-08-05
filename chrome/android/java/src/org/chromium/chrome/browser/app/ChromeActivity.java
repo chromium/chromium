@@ -1387,6 +1387,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      */
     public boolean isCustomTab() {
         return getActivityType() == ActivityType.CUSTOM_TAB
+                || getActivityType() == ActivityType.AUTH_VIEW
                 || getActivityType() == ActivityType.TRUSTED_WEB_ACTIVITY;
     }
 
@@ -1795,9 +1796,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * @return True if tab modal dialog is supported.
      */
     protected boolean supportsTabModalDialogs() {
-        return getActivityType() == ActivityType.TABBED
-                || (getActivityType() == ActivityType.CUSTOM_TAB
-                        && ChromeFeatureList.sCctTabModalDialog.isEnabled());
+        return switch (getActivityType()) {
+            case ActivityType.TABBED -> true;
+            case ActivityType.CUSTOM_TAB, ActivityType.AUTH_VIEW -> ChromeFeatureList
+                    .sCctTabModalDialog
+                    .isEnabled();
+            default -> false;
+        };
     }
 
     @Nullable
