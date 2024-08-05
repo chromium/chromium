@@ -112,8 +112,10 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
 
   // Recursive prefetch from a cross-origin main resource prefetch.
   if (resource_request.recursive_prefetch_token) {
-    CHECK(!(resource_request.load_flags &
-            net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME));
+    // TODO(crbug.com/357325599): This condition is not mutually exclusive with
+    // the one above, which means that we will overwrite the IsolationInfo
+    // computed above with one that might be different. Investigate whether this
+    // behavior should be corrected.
 
     // TODO(crbug.com/40150754): Figure out why we're seeing this condition
     // hold true in the field.
