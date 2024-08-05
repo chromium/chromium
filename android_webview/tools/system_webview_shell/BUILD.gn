@@ -67,6 +67,7 @@ android_library("system_webview_shell_apk_java") {
   deps = [
     ":system_webview_shell_apk_resources",
     "//base:base_java",
+    "//net/android:net_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
