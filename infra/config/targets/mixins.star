@@ -1915,7 +1915,7 @@ targets.mixin(
             "screen_scaling_percent": "100",
             "cpu": "arm64",
             "gpu": "qcom:043a-27.20.1870.0",
-            "os": "Windows-11-22621.3007",
+            "os": "Windows-11-22631.3880",
             "pool": "chromium.tests",
         },
     ),
