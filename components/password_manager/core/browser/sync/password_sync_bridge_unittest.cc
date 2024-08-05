@@ -441,10 +441,10 @@ class PasswordSyncBridgeTest : public testing::Test {
   void RecreateBridge(syncer::WipeModelUponSyncDisabledBehavior
                           wipe_model_upon_sync_disabled_behavior) {
     bridge_ = std::make_unique<PasswordSyncBridge>(
-        mock_processor_.CreateForwardingProcessor(), &mock_password_store_sync_,
-        wipe_model_upon_sync_disabled_behavior,
-        sync_enabled_or_disabled_cb_.Get());
-
+        mock_processor_.CreateForwardingProcessor(),
+        wipe_model_upon_sync_disabled_behavior);
+    bridge_->Init(&mock_password_store_sync_,
+                  sync_enabled_or_disabled_cb_.Get());
     bool is_account_store = wipe_model_upon_sync_disabled_behavior ==
                             syncer::WipeModelUponSyncDisabledBehavior::kAlways;
     ON_CALL(mock_password_store_sync_, IsAccountStore())
@@ -898,8 +898,9 @@ TEST_F(
                                     /*state=*/syncer::HasNotInitialSyncDone(),
                                     /*entities=*/testing::SizeIs(0))));
   auto bridge = std::make_unique<PasswordSyncBridge>(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
+      mock_processor().CreateForwardingProcessor(),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
+  bridge->Init(mock_password_store_sync(), base::DoNothing());
 }
 
 // This tests that if reading logins from the store fails,
@@ -921,9 +922,10 @@ TEST_F(PasswordSyncBridgeTest, ShouldNotDeleteSyncMetadataWhenDoesNotExist) {
               GetAllSyncMetadata(syncer::PASSWORDS));
   EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata).Times(0);
 
-  auto bridge = PasswordSyncBridge(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
+  auto bridge =
+      PasswordSyncBridge(mock_processor().CreateForwardingProcessor(),
+                         syncer::WipeModelUponSyncDisabledBehavior::kAlways);
+  bridge.Init(mock_password_store_sync(), base::DoNothing());
 
   histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
                                       /*kNone*/ 0, 1);
@@ -959,9 +961,9 @@ TEST_F(PasswordSyncBridgeTest,
                                     /*entities=*/testing::SizeIs(0))));
 
   auto bridge = std::make_unique<PasswordSyncBridge>(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
-
+      mock_processor().CreateForwardingProcessor(),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
+  bridge->Init(mock_password_store_sync(), base::DoNothing());
   histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
                                       4, 1);
 }
@@ -993,8 +995,9 @@ TEST_F(
   EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata).Times(0);
 
   auto bridge = std::make_unique<PasswordSyncBridge>(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
+      mock_processor().CreateForwardingProcessor(),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
+  bridge->Init(mock_password_store_sync(), base::DoNothing());
 }
 
 TEST_F(PasswordSyncBridgeTest,
@@ -1020,9 +1023,9 @@ TEST_F(PasswordSyncBridgeTest,
                                     /*entities=*/testing::SizeIs(0))));
 
   auto bridge = std::make_unique<PasswordSyncBridge>(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
-
+      mock_processor().CreateForwardingProcessor(),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
+  bridge->Init(mock_password_store_sync(), base::DoNothing());
   histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
                                       5, 1);
 }
@@ -1052,8 +1055,9 @@ TEST_F(
   EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata).Times(0);
 
   auto bridge = std::make_unique<PasswordSyncBridge>(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
+      mock_processor().CreateForwardingProcessor(),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
+  bridge->Init(mock_password_store_sync(), base::DoNothing());
 }
 
 TEST_F(PasswordSyncBridgeTest,
@@ -1075,8 +1079,9 @@ TEST_F(PasswordSyncBridgeTest,
   EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata).Times(0);
 
   auto bridge = std::make_unique<PasswordSyncBridge>(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
+      mock_processor().CreateForwardingProcessor(),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
+  bridge->Init(mock_password_store_sync(), base::DoNothing());
 }
 #endif
 
@@ -1095,9 +1100,10 @@ TEST_F(PasswordSyncBridgeTest,
               DeleteAllSyncMetadata(syncer::PASSWORDS))
       .Times(0);
 
-  auto bridge = PasswordSyncBridge(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
+  auto bridge =
+      PasswordSyncBridge(mock_processor().CreateForwardingProcessor(),
+                         syncer::WipeModelUponSyncDisabledBehavior::kAlways);
+  bridge.Init(mock_password_store_sync(), base::DoNothing());
 
   histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
                                       0, 1);
@@ -1119,9 +1125,10 @@ TEST_F(PasswordSyncBridgeTest,
   EXPECT_CALL(*mock_sync_metadata_store_sync(),
               DeleteAllSyncMetadata(syncer::PASSWORDS));
 
-  auto bridge = PasswordSyncBridge(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
+  auto bridge =
+      PasswordSyncBridge(mock_processor().CreateForwardingProcessor(),
+                         syncer::WipeModelUponSyncDisabledBehavior::kAlways);
+  bridge.Init(mock_password_store_sync(), base::DoNothing());
 
   histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
                                       3, 1);
@@ -1141,9 +1148,10 @@ TEST_F(PasswordSyncBridgeTest,
   EXPECT_CALL(*mock_sync_metadata_store_sync(),
               DeleteAllSyncMetadata(syncer::PASSWORDS));
 
-  auto bridge = PasswordSyncBridge(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
+  auto bridge =
+      PasswordSyncBridge(mock_processor().CreateForwardingProcessor(),
+                         syncer::WipeModelUponSyncDisabledBehavior::kAlways);
+  bridge.Init(mock_password_store_sync(), base::DoNothing());
 
   histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
                                       3, 1);
@@ -1168,9 +1176,10 @@ TEST_F(
               DeleteAllSyncMetadata(syncer::PASSWORDS))
       .Times(0);
 
-  auto bridge = PasswordSyncBridge(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
+  auto bridge =
+      PasswordSyncBridge(mock_processor().CreateForwardingProcessor(),
+                         syncer::WipeModelUponSyncDisabledBehavior::kAlways);
+  bridge.Init(mock_password_store_sync(), base::DoNothing());
 
   histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
                                       0, 1);
@@ -1277,9 +1286,9 @@ TEST_F(PasswordSyncBridgeTest,
                                     /*state=*/syncer::HasInitialSyncDone(),
                                     /*entities=*/testing::SizeIs(1))));
 
-  PasswordSyncBridge bridge(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
+  PasswordSyncBridge bridge(mock_processor().CreateForwardingProcessor(),
+                            syncer::WipeModelUponSyncDisabledBehavior::kNever);
+  bridge.Init(mock_password_store_sync(), base::DoNothing());
 }
 
 // Tests that in case ReadAllCredentials() during initial merge returns
@@ -1828,9 +1837,10 @@ TEST_F(PasswordSyncBridgeAccountStoreTest,
   EXPECT_CALL(*mock_sync_metadata_store_sync(),
               DeleteAllSyncMetadata(syncer::PASSWORDS));
 
-  auto bridge = PasswordSyncBridge(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kAlways, base::DoNothing());
+  auto bridge =
+      PasswordSyncBridge(mock_processor().CreateForwardingProcessor(),
+                         syncer::WipeModelUponSyncDisabledBehavior::kAlways);
+  bridge.Init(mock_password_store_sync(), base::DoNothing());
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.SyncMetadataReadError2",
@@ -1877,9 +1887,10 @@ TEST_F(
   EXPECT_CALL(*mock_sync_metadata_store_sync(),
               DeleteAllSyncMetadata(syncer::PASSWORDS));
 
-  auto bridge = PasswordSyncBridge(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kAlways, base::DoNothing());
+  auto bridge =
+      PasswordSyncBridge(mock_processor().CreateForwardingProcessor(),
+                         syncer::WipeModelUponSyncDisabledBehavior::kAlways);
+  bridge.Init(mock_password_store_sync(), base::DoNothing());
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.SyncMetadataReadError2",
@@ -1930,8 +1941,9 @@ TEST_F(
   EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata).Times(0);
 
   auto bridge = std::make_unique<PasswordSyncBridge>(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kAlways, base::DoNothing());
+      mock_processor().CreateForwardingProcessor(),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
+  bridge->Init(mock_password_store_sync(), base::DoNothing());
 }
 
 TEST_F(
@@ -1965,8 +1977,9 @@ TEST_F(
   EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata).Times(0);
 
   auto bridge = std::make_unique<PasswordSyncBridge>(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kAlways, base::DoNothing());
+      mock_processor().CreateForwardingProcessor(),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
+  bridge->Init(mock_password_store_sync(), base::DoNothing());
 }
 
 TEST_F(
@@ -1995,8 +2008,9 @@ TEST_F(
   EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata).Times(0);
 
   auto bridge = std::make_unique<PasswordSyncBridge>(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kAlways, base::DoNothing());
+      mock_processor().CreateForwardingProcessor(),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
+  bridge->Init(mock_password_store_sync(), base::DoNothing());
 }
 
 TEST_F(
@@ -2024,8 +2038,9 @@ TEST_F(
   EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata).Times(0);
 
   auto bridge = std::make_unique<PasswordSyncBridge>(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
+      mock_processor().CreateForwardingProcessor(),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
+  bridge->Init(mock_password_store_sync(), base::DoNothing());
 }
 
 TEST_F(PasswordSyncBridgeTest,

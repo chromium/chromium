@@ -39,10 +39,14 @@ class PasswordSyncBridge : public syncer::DataTypeSyncBridge {
   // |password_store_sync| must not be null and must outlive this object.
   PasswordSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-      PasswordStoreSync* password_store_sync,
       syncer::WipeModelUponSyncDisabledBehavior
-          wipe_model_upon_sync_disabled_behavior,
-      const base::RepeatingClosure& sync_enabled_or_disabled_cb);
+          wipe_model_upon_sync_disabled_behavior);
+
+  // Completes initialization and invokes ModelReadyToSync() or ReportError() on
+  // |change_processor|. Only after Init() call PasswordSyncBridge can
+  // read passwords/metadata from the disk.
+  void Init(PasswordStoreSync* password_store_sync,
+            const base::RepeatingClosure& sync_enabled_or_disabled_cb);
 
   PasswordSyncBridge(const PasswordSyncBridge&) = delete;
   PasswordSyncBridge& operator=(const PasswordSyncBridge&) = delete;
@@ -101,7 +105,7 @@ class PasswordSyncBridge : public syncer::DataTypeSyncBridge {
       const syncer::EntityMetadataMap& metadata_map) const;
 
   // Password store responsible for persistence.
-  const raw_ptr<PasswordStoreSync> password_store_sync_;
+  raw_ptr<PasswordStoreSync> password_store_sync_;
 
   syncer::WipeModelUponSyncDisabledBehavior
       wipe_model_upon_sync_disabled_behavior_ =

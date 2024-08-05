@@ -50,6 +50,26 @@ LoginDatabaseAsyncHelper::~LoginDatabaseAsyncHelper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void LoginDatabaseAsyncHelper::CreateSyncBackend() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Sync bridge must be constructed immediately to accommodate
+  // GetSyncControllerDelegate() call.
+  password_sync_bridge_ =
+#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+      features::IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled()
+          // This ensures all the changes to the passwords made while M4 feature
+          // flag is enabled won't propagate to the sync server even if the
+          // feature gets disabled.
+          ? nullptr
+          :
+#endif
+          std::make_unique<PasswordSyncBridge>(
+              std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+                  syncer::PASSWORDS, base::DoNothing()),
+              wipe_model_upon_sync_disabled_behavior_);
+}
+
 bool LoginDatabaseAsyncHelper::Initialize(
     base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>, bool)>
         remote_form_changes_received,
@@ -82,22 +102,9 @@ bool LoginDatabaseAsyncHelper::Initialize(
                        weak_ptr_factory_.GetWeakPtr()),
         base::Seconds(30));
   }
-
-  password_sync_bridge_ =
-#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-      features::IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled()
-          // This ensures all the changes to the passwords made while M4 feature
-          // flag is enabled won't propagate to the sync server even if the
-          // feature gets disabled.
-          ? nullptr
-          :
-#endif
-          std::make_unique<PasswordSyncBridge>(
-              std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-                  syncer::PASSWORDS, base::DoNothing()),
-              static_cast<PasswordStoreSync*>(this),
-              wipe_model_upon_sync_disabled_behavior_,
-              std::move(sync_enabled_or_disabled_cb));
+  if (password_sync_bridge_) {
+    password_sync_bridge_->Init(this, sync_enabled_or_disabled_cb);
+  }
 
 // On Windows encryption capability is expected to be available by default.
 // On MacOS encrpytion is also expected to be available unless the user didn't

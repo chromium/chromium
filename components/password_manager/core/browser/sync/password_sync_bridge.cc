@@ -313,17 +313,18 @@ class ScopedStoreTransaction {
 
 PasswordSyncBridge::PasswordSyncBridge(
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
-    PasswordStoreSync* password_store_sync,
     syncer::WipeModelUponSyncDisabledBehavior
-        wipe_model_upon_sync_disabled_behavior,
-    const base::RepeatingClosure& sync_enabled_or_disabled_cb)
+        wipe_model_upon_sync_disabled_behavior)
     : DataTypeSyncBridge(std::move(change_processor)),
-      password_store_sync_(password_store_sync),
       wipe_model_upon_sync_disabled_behavior_(
-          wipe_model_upon_sync_disabled_behavior),
-      sync_enabled_or_disabled_cb_(sync_enabled_or_disabled_cb) {
-  DCHECK(password_store_sync_);
-  DCHECK(sync_enabled_or_disabled_cb_);
+          wipe_model_upon_sync_disabled_behavior) {}
+
+void PasswordSyncBridge::Init(
+    PasswordStoreSync* password_store_sync,
+    const base::RepeatingClosure& sync_enabled_or_disabled_cb) {
+  password_store_sync_ = password_store_sync;
+  sync_enabled_or_disabled_cb_ = sync_enabled_or_disabled_cb;
+
   // The metadata store could be null if the login database initialization
   // fails.
   SyncMetadataReadError sync_metadata_read_error = SyncMetadataReadError::kNone;
@@ -421,6 +422,7 @@ void PasswordSyncBridge::ActOnPasswordStoreChanges(
     const base::Location& location,
     const PasswordStoreChangeList& local_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(password_store_sync_);
   // It's the responsibility of the callers to call this method within the same
   // transaction as the data changes to fulfill atomic writes of data and
   // metadata constraint.
@@ -480,6 +482,8 @@ PasswordSyncBridge::CreateMetadataChangeList() {
 std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(password_store_sync_);
   // This method merges the local and remote passwords based on their client
   // tags. For a form |F|, there are three cases to handle:
   // 1. |F| exists only in the local model --> |F| should be Put() in the change
@@ -763,6 +767,8 @@ std::optional<syncer::ModelError>
 PasswordSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(password_store_sync_);
   base::AutoReset<bool> processing_changes(&is_processing_remote_sync_changes_,
                                            true);
 
@@ -922,6 +928,8 @@ PasswordSyncBridge::ApplyIncrementalSyncChanges(
 
 std::unique_ptr<syncer::DataBatch> PasswordSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(password_store_sync_);
   // This method is called only when there are uncommitted changes on startup.
   // There are more efficient implementations, but since this method is rarely
   // called, simplicity is preferred over efficiency.
@@ -949,6 +957,7 @@ std::unique_ptr<syncer::DataBatch> PasswordSyncBridge::GetDataForCommit(
 std::unique_ptr<syncer::DataBatch>
 PasswordSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(password_store_sync_);
 
   PrimaryKeyToPasswordSpecificsDataMap key_to_specifics_map;
   if (password_store_sync_->ReadAllCredentials(&key_to_specifics_map) !=
@@ -998,6 +1007,8 @@ bool PasswordSyncBridge::SupportsGetStorageKey() const {
 
 void PasswordSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(password_store_sync_);
   switch (wipe_model_upon_sync_disabled_behavior_) {
     case syncer::WipeModelUponSyncDisabledBehavior::kNever:
       CHECK(!password_store_sync_->IsAccountStore());
@@ -1128,8 +1139,10 @@ bool PasswordSyncBridge::SyncMetadataCacheContainsSupportedFields(
 }
 
 std::set<FormPrimaryKey> PasswordSyncBridge::GetUnsyncedPasswordsStorageKeys() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(password_store_sync_);
+
   std::set<FormPrimaryKey> storage_keys;
-  DCHECK(password_store_sync_);
   PasswordStoreSync::MetadataStore* metadata_store =
       password_store_sync_->GetMetadataStore();
   // The metadata store could be null if the login database initialization

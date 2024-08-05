@@ -223,6 +223,10 @@ void PasswordStoreBuiltInBackend::InitBackend(
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  background_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&LoginDatabaseAsyncHelper::CreateSyncBackend,
+                                base::Unretained(helper_.get())));
+
   auto init_database_callback = base::BindOnce(
       &PasswordStoreBuiltInBackend::OnEncryptorReceived,
       weak_ptr_factory_.GetWeakPtr(),
