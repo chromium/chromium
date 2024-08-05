@@ -212,9 +212,8 @@ class ExpandableItemsFinder {
   STACK_ALLOCATED();
 
  public:
-  void Find(LogicalLineItems::iterator begin, LogicalLineItems::iterator end) {
-    for (auto iter = begin; iter != end; ++iter) {
-      LogicalLineItem& item = *iter;
+  void Find(base::span<LogicalLineItem> items) {
+    for (auto& item : items) {
       if ((item.shape_result && item.shape_result->NumGlyphs() > 0) ||
           item.layout_result) {
         last_item_ = &item;
@@ -357,13 +356,12 @@ std::optional<LayoutUnit> ComputeRubyBaseInset(LayoutUnit space,
 
 bool ApplyLeftAndRightExpansion(LayoutUnit left_expansion,
                                 LayoutUnit right_expansion,
-                                LogicalLineItems::iterator begin,
-                                LogicalLineItems::iterator end) {
+                                base::span<LogicalLineItem> items) {
   if (!left_expansion && !right_expansion) {
     return true;
   }
   ExpandableItemsFinder finder;
-  finder.Find(begin, end);
+  finder.Find(items);
   LogicalLineItem* first_expandable = finder.FirstExpandable();
   LogicalLineItem* last_expandable = finder.LastExpandable();
   if (first_expandable && last_expandable) {

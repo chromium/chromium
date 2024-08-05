@@ -85,10 +85,10 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
 
   for (auto& logical_column : box_states_->RubyColumnList()) {
     std::pair<LayoutUnit, LayoutUnit>& insets = logical_column->base_insets;
-    LogicalLineItems::iterator start =
-        line_box->begin() + logical_column->start_index;
-    ApplyLeftAndRightExpansion(insets.first, insets.second, start,
-                               start + logical_column->size);
+    ApplyLeftAndRightExpansion(
+        insets.first, insets.second,
+        line_box->MakeSpan().subspan(logical_column->start_index,
+                                     logical_column->size));
   }
 }
 
@@ -530,8 +530,8 @@ void LogicalLineBuilder::PlaceRubyAnnotation(
   }
   annotation_builder.CreateLine(&annotation_line, line_items,
                                 /* main_line_helper */ nullptr);
-  ApplyLeftAndRightExpansion(insets.first, insets.second, line_items->begin(),
-                             line_items->end());
+  ApplyLeftAndRightExpansion(insets.first, insets.second,
+                             line_items->MakeSpan());
 
   logical_column.state_stack.ComputeInlinePositions(
       line_items, LayoutUnit(), /* ignore_box_margin_border_padding */ false);
@@ -633,11 +633,11 @@ void LogicalLineBuilder::BidiReorder(
       // Base items in a ruby column are placed consecutively even after the
       // reorder because they are isolated.
       //
-      // std::min_element() below doesn't return the end iterator because we
+      // min_element() below doesn't return the end iterator because we
       // ensure there is at least one item in the range.
-      auto begin = logical_to_visual.begin();
-      column->start_index = *std::min_element(begin + column->start_index,
-                                              begin + column->EndIndex());
+      column->start_index =
+          *base::ranges::min_element(logical_to_visual.MakeSpan().subspan(
+              column->start_index, column->size));
     }
     // The order is important for RubyBlockPositionCalculator::HandleRubyLine().
     std::stable_sort(

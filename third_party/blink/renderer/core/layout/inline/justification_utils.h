@@ -37,8 +37,7 @@ std::optional<LayoutUnit> ComputeRubyBaseInset(LayoutUnit space,
 // for now. Returns false if we couldn't expand the line.
 bool ApplyLeftAndRightExpansion(LayoutUnit leading_expansion,
                                 LayoutUnit trailing_expansion,
-                                LogicalLineItems::iterator begin,
-                                LogicalLineItems::iterator end);
+                                base::span<LogicalLineItem> items);
 
 }  // namespace blink
 
