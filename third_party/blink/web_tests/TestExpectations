@@ -7228,7 +7228,6 @@ crbug.com/626703 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_ap
 [ Mac14 ] media/video-source.html [ Failure Pass ]
 [ Mac14 ] storage/indexeddb/objectstore-cursor.html [ Failure Timeout ]
 [ Mac14 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/background-sync.https.html [ Timeout ]
-[ Mac14 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/document-activeelement.https.html [ Failure Pass ]
 [ Mac14 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/sandbox-attribute.https.html [ Failure Pass ]
 [ Mac14 ] virtual/pna-workers-disabled/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Timeout ]
 [ Mac14 ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idb-partitioned-coverage.sub.html [ Skip Timeout ]
@@ -7544,3 +7543,6 @@ crbug.com/356566702 [ Win11-arm64 ] external/wpt/css/css-color/parsing/color-val
 
 # Gardener 2024-08-02
 crbug.com/356963272 [ Linux ] external/wpt/webrtc/RTCDataChannel-send-close.html [ Failure Pass Timeout ]
+
+# Gardener 2024-08-05
+crbug.com/353256758 virtual/fenced-frame-mparch/external/wpt/fenced-frame/document-activeelement.https.html [ Failure Pass ]
