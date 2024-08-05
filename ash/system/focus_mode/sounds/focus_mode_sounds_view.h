@@ -56,10 +56,10 @@ class ASH_EXPORT FocusModeSoundsView
   void UpdateStateForSelectedPlaylist(
       const focus_mode_util::SelectedPlaylist& selected_playlist);
 
-  // Creates `soundscape_button_` and `youtube_music_button_`.
-  void CreateTabSliderButtons(
-      const base::flat_set<focus_mode_util::SoundType>& sections,
-      bool is_network_connected);
+  // Creates `soundscape_button_` and `youtube_music_button_` if the YouTube
+  // Music playlists exist; otherwise, creates a lebel as the header.
+  void CreateHeader(const base::flat_set<focus_mode_util::SoundType>& sections,
+                    bool is_network_connected);
 
   // Creates `soundscape_container_` and `youtube_music_container_`.
   void CreatesSoundSectionViews(
@@ -74,6 +74,11 @@ class ASH_EXPORT FocusModeSoundsView
 
   // Called to show personalized YouTube Music playlists.
   void OnYouTubeMusicButtonToggled();
+
+  // If `show` is true, `soundscape_container_` will be visible instead of
+  // `youtube_music_container_`; also, we will update the a11y state for two
+  // `TabSliderButton` based on which container is visible if they exists.
+  void MayShowSoundscapeContainer(bool show);
 
   // The slider buttons on the sound view.
   raw_ptr<TabSliderButton> soundscape_button_ = nullptr;

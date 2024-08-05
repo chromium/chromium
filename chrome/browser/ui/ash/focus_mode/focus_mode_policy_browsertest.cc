@@ -90,8 +90,10 @@ IN_PROC_BROWSER_TEST_F(FocusModePolicyTest, FocusModeSounds_FocusSoundsOnly) {
   ClickOnFocusTile(quick_settings);
   FocusModeSoundsView* sounds_view = GetSoundsView(quick_settings);
   EXPECT_THAT(sounds_view->GetVisible(), testing::Eq(true));
+  // For this case, we will show a label for the soundscape playlists instead of
+  // a `TabSliderButton`.
   EXPECT_THAT(sounds_view->soundscape_views(),
-              testing::Pair(testing::NotNull(), testing::NotNull()));
+              testing::Pair(testing::IsNull(), testing::NotNull()));
   EXPECT_THAT(sounds_view->youtube_music_views(),
               testing::Pair(testing::IsNull(), testing::IsNull()));
 }
