@@ -50,18 +50,46 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #import "ios/web/public/thread/web_thread.h"
 
-enum class BrowserStateCreationResult {
-  kCreated,
-  kExisting,
-  kFailed,
+// Helper class to create the ChromeBrowserState directory.
+//
+// This is a separate class to limit how much code can be allowed to block
+// the main sequence. It is required to block the sequence because we need
+// to synchronously create the directories used to store the BrowserState
+// data.
+class BrowserStateDirectoryBuilder {
+ public:
+  // Stores the result of creating the directories.
+  struct [[nodiscard]] Result {
+    static Result Success(bool is_new_browser_state, base::FilePath cache) {
+      return Result{
+          .success = true,
+          .created = is_new_browser_state,
+          .cache_path = std::move(cache),
+      };
+    }
+
+    static Result Failure() {
+      return Result{
+          .success = false,
+          .created = false,
+      };
+    }
+
+    const bool success;
+    const bool created;
+    const base::FilePath cache_path;
+  };
+
+  // Creates the directories if possible.
+  static Result CreateDirectories(const base::FilePath& state_path,
+                                  const base::FilePath& otr_path);
 };
 
-// Returns an integer corresponded to a BrowserStateCreationResult enum
-// indicating if the necessary directories were newly created, already existed,
-// or failed to be created.
-int EnsureBrowserStateDirectoriesCreated(const base::FilePath& path,
-                                         const base::FilePath& otr_path,
-                                         const base::FilePath& cache_path) {
+// static
+BrowserStateDirectoryBuilder::Result
+BrowserStateDirectoryBuilder::CreateDirectories(
+    const base::FilePath& state_path,
+    const base::FilePath& otr_path) {
   // Create the browser state directory synchronously otherwise we would need to
   // sequence every otherwise independent I/O operation inside the browser state
   // directory with this operation. base::CreateDirectory() should be a
@@ -70,13 +98,12 @@ int EnsureBrowserStateDirectoriesCreated(const base::FilePath& path,
   // thread.
   base::ScopedAllowBlocking allow_blocking_to_create_directory;
 
-  BrowserStateCreationResult result = BrowserStateCreationResult::kExisting;
-
-  if (!base::PathExists(path)) {
-    result = BrowserStateCreationResult::kCreated;
-    if (!base::CreateDirectory(path)) {
-      return static_cast<int>(BrowserStateCreationResult::kFailed);
+  bool created = false;
+  if (!base::PathExists(state_path)) {
+    if (!base::CreateDirectory(state_path)) {
+      return Result::Failure();
     }
+    created = true;
   }
 
   // Create the directory for the OTR stash state now, even though it won't
@@ -84,28 +111,26 @@ int EnsureBrowserStateDirectoriesCreated(const base::FilePath& path,
   // synchronously on an as-needed basis on the UI thread, so creation of its
   // stash state directory cannot easily be done at that point.
   if (!base::PathExists(otr_path)) {
-    result = BrowserStateCreationResult::kCreated;
+    DCHECK(created);
     if (!base::CreateDirectory(otr_path)) {
-      return static_cast<int>(BrowserStateCreationResult::kFailed);
+      return Result::Failure();
     }
   }
   base::apple::SetBackupExclusion(otr_path);
-  if (!base::PathExists(cache_path)) {
-    result = BrowserStateCreationResult::kCreated;
-    if (!base::CreateDirectory(cache_path)) {
-      return static_cast<int>(BrowserStateCreationResult::kFailed);
+
+  base::FilePath base_cache_path;
+  ios::GetUserCacheDirectory(state_path, &base_cache_path);
+
+  if (!base::PathExists(base_cache_path)) {
+    DCHECK(created);
+    if (!base::CreateDirectory(base_cache_path)) {
+      return Result::Failure();
     }
   }
-  return static_cast<int>(result);
+
+  return Result::Success(created,
+                         base_cache_path.Append(kIOSChromeCacheDirname));
 }
-
-namespace {
-
-base::FilePath GetCachePath(const base::FilePath& base) {
-  return base.Append(kIOSChromeCacheDirname);
-}
-
-}  // namespace
 
 // static
 std::unique_ptr<ChromeBrowserState> ChromeBrowserState::CreateBrowserState(
@@ -146,17 +171,10 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
     delegate_->OnChromeBrowserStateCreationStarted(this, creation_mode);
   }
 
-  // It would be nice to use PathService for fetching this directory, but
-  // the cache directory depends on the browser state stash directory, which
-  // isn't available to PathService.
-  base::FilePath base_cache_path;
-  ios::GetUserCacheDirectory(state_path, &base_cache_path);
-
-  BrowserStateCreationResult directories_created =
-      static_cast<BrowserStateCreationResult>(
-          EnsureBrowserStateDirectoriesCreated(
-              state_path, GetOffTheRecordStatePath(), base_cache_path));
-  DCHECK_NE(directories_created, BrowserStateCreationResult::kFailed);
+  const BrowserStateDirectoryBuilder::Result directories_creation_result =
+      BrowserStateDirectoryBuilder::CreateDirectories(
+          state_path, GetOffTheRecordStatePath());
+  DCHECK(directories_creation_result.success);
 
   // Bring up the policy system before creating `prefs_`.
   BrowserPolicyConnectorIOS* connector =
@@ -221,16 +239,14 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
                          std::move(supervised_provider));
 
   base::FilePath cookie_path = state_path.Append(kIOSChromeCookieFilename);
-  base::FilePath cache_path = GetCachePath(base_cache_path);
+  base::FilePath cache_path = directories_creation_result.cache_path;
   int cache_max_size = 0;
 
   // Make sure we initialize the io_data_ after everything else has been
   // initialized that we might be reading from the IO thread.
   io_data_->Init(cookie_path, cache_path, cache_max_size, state_path);
 
-  const bool is_new_browser_state =
-      directories_created == BrowserStateCreationResult::kCreated;
-
+  const bool is_new_browser_state = directories_creation_result.created;
   if (creation_mode == CreationMode::kAsynchronous) {
     // It is safe to use base::Unretained(...) here since `this` owns the
     // PrefService and the callback will not be invoked after destruction
