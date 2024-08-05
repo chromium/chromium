@@ -294,8 +294,15 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   UIImageView* chromeLogo = [[UIImageView alloc] initWithImage:image];
   chromeLogo.translatesAutoresizingMaskIntoConstraints = NO;
+  chromeLogo.contentMode = UIViewContentModeCenter;
   chromeLogo.accessibilityIdentifier =
       manual_fill::kExpandedManualFillChromeLogoID;
+
+  [chromeLogo setContentHuggingPriority:UILayoutPriorityRequired
+                                forAxis:UILayoutConstraintAxisHorizontal];
+  [chromeLogo
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
 
   return chromeLogo;
 }
@@ -305,15 +312,28 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   ExtendedTouchTargetButton* closeButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  closeButton.contentMode = UIViewContentModeCenter;
   closeButton.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_EXPANDED_MANUAL_FILL_CLOSE_BUTTON_ACCESSIBILITY_LABEL);
 
+  UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kCloseButtonSize
+                          weight:UIImageSymbolWeightRegular
+                           scale:UIImageSymbolScaleMedium];
   UIImage* buttonImage = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseButtonSize), @[
+      DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
+                                     symbolConfiguration),
+      @[
         [[UIColor secondaryLabelColor] colorWithAlphaComponent:0.6],
         [UIColor tertiarySystemFillColor]
       ]);
   [closeButton setImage:buttonImage forState:UIControlStateNormal];
+
+  [closeButton setContentHuggingPriority:UILayoutPriorityRequired
+                                 forAxis:UILayoutConstraintAxisHorizontal];
+  [closeButton
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
 
   [closeButton addTarget:self
                   action:@selector(onCloseButtonPressed:)
@@ -442,14 +462,6 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
 
   // Constraints that are common to both layouts.
   [NSLayoutConstraint activateConstraints:@[
-    // `chromeLogo` constraints.
-    [chromeLogo.heightAnchor constraintEqualToConstant:kChromeLogoSize],
-    [chromeLogo.widthAnchor constraintEqualToConstant:kChromeLogoSize],
-
-    // `closeButton` constraints.
-    [closeButton.heightAnchor constraintEqualToConstant:kCloseButtonSize],
-    [closeButton.widthAnchor constraintEqualToConstant:kCloseButtonSize],
-
     // `segmentedControl` constraints.
     [segmentedControl.heightAnchor
         constraintEqualToConstant:kSegmentedControlHeight],

@@ -506,6 +506,7 @@ UIButton* CreateOverflowMenuButton() {
   ExtendedTouchTargetButton* menu_button =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   menu_button.translatesAutoresizingMaskIntoConstraints = NO;
+  menu_button.contentMode = UIViewContentModeCenter;
   menu_button.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
 
@@ -517,14 +518,11 @@ UIButton* CreateOverflowMenuButton() {
       ]);
   [menu_button setImage:menu_image forState:UIControlStateNormal];
 
-  [menu_button setContentHuggingPriority:UILayoutPriorityDefaultHigh
+  [menu_button setContentHuggingPriority:UILayoutPriorityRequired
                                  forAxis:UILayoutConstraintAxisHorizontal];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [menu_button.heightAnchor
-        constraintEqualToConstant:kOverflowMenuButtonSize],
-    [menu_button.widthAnchor constraintEqualToConstant:kOverflowMenuButtonSize],
-  ]];
+  [menu_button
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
 
   menu_button.showsMenuAsPrimaryAction = YES;
 
