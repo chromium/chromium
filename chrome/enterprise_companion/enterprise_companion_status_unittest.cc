@@ -103,6 +103,21 @@ TEST(EnterpriseCompanionStatusTest, FromMojomStatusEqualsOtherType) {
   EXPECT_EQ(status1, status2);
 }
 
+TEST(EnterpriseCompanionStatusTest, FromPosixErrno) {
+  EnterpriseCompanionStatus status =
+      EnterpriseCompanionStatus::FromPosixErrno(4);
+  EXPECT_FALSE(status.ok());
+  EXPECT_TRUE(status.EqualsPosixErrno(4));
+}
+
+TEST(EnterpriseCompanionStatusTest, PosixErrnosEqual) {
+  EnterpriseCompanionStatus status1 =
+      EnterpriseCompanionStatus::FromPosixErrno(7);
+  EnterpriseCompanionStatus status2 =
+      EnterpriseCompanionStatus::FromPosixErrno(7);
+  EXPECT_EQ(status1, status2);
+}
+
 TEST(EnterpriseCompanionStatusTest, DifferentSuccessesEqual) {
   std::vector<EnterpriseCompanionStatus> successes = {
       EnterpriseCompanionStatus::Success(),

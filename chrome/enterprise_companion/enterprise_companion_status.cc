@@ -8,8 +8,16 @@
 #include <variant>
 
 #include "base/functional/overloaded.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
+
+#if BUILDFLAG(IS_POSIX)
+#include "base/posix/safe_strerror.h"
+#else
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#endif
 
 namespace enterprise_companion {
 
@@ -92,6 +100,14 @@ constexpr std::string ApplicationErrorToString(ApplicationError error) {
   }
 }
 
+std::string PosixErrnoToString(EnterpriseCompanionStatus::PosixErrno error) {
+#if BUILDFLAG(IS_POSIX)
+  return base::safe_strerror(error);
+#else
+  return base::StrCat({"Posix error code ", base::NumberToString(error), "."});
+#endif
+}
+
 }  // namespace
 
 PersistedError::PersistedError(int space,
@@ -119,6 +135,7 @@ std::string EnterpriseCompanionStatus::description() const {
           [](ApplicationError error) {
             return ApplicationErrorToString(error);
           },
+          [](PosixErrno error) { return PosixErrnoToString(error); },
       },
       status_variant_);
 }

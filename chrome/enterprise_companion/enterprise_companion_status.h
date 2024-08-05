@@ -64,6 +64,7 @@ struct PersistedError {
 class EnterpriseCompanionStatus {
  public:
   using Ok = std::monostate;
+  using PosixErrno = int;
   // The indices of the underlying variant are used by this implementation and
   // are transmitted across RPC boundaries. Existing entries should not be
   // reordered.
@@ -71,7 +72,8 @@ class EnterpriseCompanionStatus {
                                      policy::DeviceManagementStatus,
                                      policy::CloudPolicyValidatorBase::Status,
                                      ApplicationError,
-                                     PersistedError>;
+                                     PersistedError,
+                                     PosixErrno>;
   EnterpriseCompanionStatus() = delete;
   EnterpriseCompanionStatus(const EnterpriseCompanionStatus&);
   ~EnterpriseCompanionStatus();
@@ -152,6 +154,14 @@ class EnterpriseCompanionStatus {
   explicit EnterpriseCompanionStatus(ApplicationError error);
   bool EqualsApplicationError(ApplicationError other) const {
     return operator==(From<3>(other));
+  }
+
+  // PosixErrno:
+  static EnterpriseCompanionStatus FromPosixErrno(PosixErrno error) {
+    return From<5>(error);
+  }
+  bool EqualsPosixErrno(PosixErrno other) const {
+    return operator==(From<5>(other));
   }
 
  private:

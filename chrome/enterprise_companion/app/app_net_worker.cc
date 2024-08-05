@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <sys/errno.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
@@ -18,6 +23,11 @@
 
 namespace enterprise_companion {
 
+namespace {
+
+constexpr uid_t kNobodyUid = -2;
+constexpr gid_t kNobodyGid = -2;
+
 // AppNetWorker runs networking tasks for the companion app in a dedicated
 // process.
 class AppNetWorker : public App {
@@ -30,6 +40,21 @@ class AppNetWorker : public App {
 
  private:
   void FirstTaskRun() override {
+    // If running as root, drop down to "nobody".
+    if (getuid() == 0) {
+      if (setgid(kNobodyGid)) {
+        PLOG(ERROR) << "Failed to set gid " << kNobodyGid;
+        Shutdown(EnterpriseCompanionStatus::FromPosixErrno(errno));
+        return;
+      }
+
+      if (setuid(kNobodyUid)) {
+        PLOG(ERROR) << "Failed to set uid " << kNobodyUid;
+        Shutdown(EnterpriseCompanionStatus::FromPosixErrno(errno));
+        return;
+      }
+    }
+
     mojo::PlatformChannelEndpoint endpoint =
         mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
             *base::CommandLine::ForCurrentProcess());
@@ -61,6 +86,8 @@ class AppNetWorker : public App {
   base::SequenceBound<URLLoaderFactoryProvider> url_loader_factory_provider_;
   base::WeakPtrFactory<AppNetWorker> weak_ptr_factory_{this};
 };
+
+}  // namespace
 
 std::unique_ptr<App> CreateAppNetWorker() {
   return std::make_unique<AppNetWorker>();

@@ -53,7 +53,9 @@ std::unique_ptr<App> CreateAppInstall(
     base::OnceCallback<bool()> install_task = base::BindOnce(&Install));
 
 #if BUILDFLAG(IS_MAC)
-// Creates an App which handles network requests for another process.
+// Creates an App which handles network requests for another process. If
+// the current process is running as root, the app will set the process' uid and
+// gid to nobody.
 std::unique_ptr<App> CreateAppNetWorker();
 #endif
 
