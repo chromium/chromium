@@ -122,7 +122,7 @@ void TranslateIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& TranslateIconView::GetVectorIcon() const {
-  return vector_icons::kTranslateChromeRefreshIcon;
+  return vector_icons::kTranslateIcon;
 }
 
 BEGIN_METADATA(TranslateIconView)

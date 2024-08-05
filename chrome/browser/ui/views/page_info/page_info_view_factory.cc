@@ -310,9 +310,8 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       break;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
-      icon = show_blocked_badge
-                 ? &vector_icons::kCertificateOffChromeRefreshIcon
-                 : &vector_icons::kCertificateChromeRefreshIcon;
+      icon = show_blocked_badge ? &vector_icons::kCertificateOffIcon
+                                : &vector_icons::kCertificateIcon;
       break;
 #endif
     case ContentSettingsType::MIDI_SYSEX:
@@ -332,9 +331,8 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                                 : &vector_icons::kVolumeUpChromeRefreshIcon;
       break;
     case ContentSettingsType::CLIPBOARD_READ_WRITE:
-      icon = show_blocked_badge
-                 ? &vector_icons::kContentPasteOffChromeRefreshIcon
-                 : &vector_icons::kContentPasteChromeRefreshIcon;
+      icon = show_blocked_badge ? &vector_icons::kContentPasteOffIcon
+                                : &vector_icons::kContentPasteIcon;
       break;
     case ContentSettingsType::SENSORS:
       icon = show_blocked_badge ? &vector_icons::kSensorsOffChromeRefreshIcon
@@ -385,7 +383,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                  : &vector_icons::kVideogameAssetChromeRefreshIcon;
       break;
     case ContentSettingsType::IDLE_DETECTION:
-      icon = show_blocked_badge ? &vector_icons::kDevicesOffChromeRefreshIcon
+      icon = show_blocked_badge ? &vector_icons::kDevicesOffIcon
                                 : &vector_icons::kDevicesIcon;
       break;
     case ContentSettingsType::STORAGE_ACCESS:
@@ -575,14 +573,13 @@ const ui::ImageModel PageInfoViewFactory::GetChosenObjectIcon(
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetValidCertificateIcon() {
-  return GetImageModel(vector_icons::kCertificateChromeRefreshIcon);
+  return GetImageModel(vector_icons::kCertificateIcon);
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetInvalidCertificateIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kCertificateOffChromeRefreshIcon, ui::kColorIcon,
-      GetIconSize());
+  return ui::ImageModel::FromVectorIcon(vector_icons::kCertificateOffIcon,
+                                        ui::kColorIcon, GetIconSize());
 }
 
 // static
@@ -617,7 +614,7 @@ const ui::ImageModel PageInfoViewFactory::GetConnectionDangerousIcon() {
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetConnectionSecureIcon() {
-  return GetImageModel(vector_icons::kHttpsValidChromeRefreshIcon);
+  return GetImageModel(vector_icons::kHttpsValidIcon);
 }
 
 // static

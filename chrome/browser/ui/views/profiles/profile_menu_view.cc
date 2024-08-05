@@ -997,8 +997,7 @@ void ProfileMenuView::BuildProfileManagementFeatureButtons() {
     }
     if (profiles::IsProfileCreationAllowed()) {
       AddProfileManagementFeatureButton(
-          vector_icons::kAddChromeRefreshIcon,
-          l10n_util::GetStringUTF16(IDS_ADD),
+          vector_icons::kAddIcon, l10n_util::GetStringUTF16(IDS_ADD),
           base::BindRepeating(&ProfileMenuView::OnAddNewProfileButtonClicked,
                               base::Unretained(this)));
     }

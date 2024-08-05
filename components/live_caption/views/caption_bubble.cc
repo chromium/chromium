@@ -1316,14 +1316,13 @@ void CaptionBubble::SetTextColor() {
     language_label_->SetBaseColor();
     language_label_->SetImageModel(
         views::Button::ButtonState::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(
-            vector_icons::kTranslateChromeRefreshIcon, icon_color,
-            kLiveTranslateImageWidthDip));
+        ui::ImageModel::FromVectorIcon(vector_icons::kTranslateIcon, icon_color,
+                                       kLiveTranslateImageWidthDip));
     language_label_->SetImageModel(
         views::Button::ButtonState::STATE_HOVERED,
-        ui::ImageModel::FromVectorIcon(
-            vector_icons::kTranslateChromeRefreshIcon, primary_color,
-            kLiveTranslateImageWidthDip));
+        ui::ImageModel::FromVectorIcon(vector_icons::kTranslateIcon,
+                                       primary_color,
+                                       kLiveTranslateImageWidthDip));
     language_label_->SetTextColor(views::Button::ButtonState::STATE_NORMAL,
                                   icon_color);
     language_label_->SetTextColor(views::Button::ButtonState::STATE_HOVERED,
