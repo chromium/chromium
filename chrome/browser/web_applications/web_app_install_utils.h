@@ -131,6 +131,9 @@ void SetWebAppProductIconFields(const WebAppInstallInfo& web_app_info,
                                 WebApp& web_app);
 
 // Update |web_app_info| using |install_params|.
+// TODO(crbug.com/354981650): Remove this method after moving fields that modify
+// the web app definition from WebAppInstallParams, and remove install-config
+// information from WebAppInstallInfo.
 void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,
                                     WebAppInstallInfo& web_app_info);
 

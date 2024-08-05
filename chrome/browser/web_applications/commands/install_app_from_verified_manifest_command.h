@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_APP_FROM_VERIFIED_MANIFEST_COMMAND_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -61,6 +62,8 @@ class InstallAppFromVerifiedManifestCommand
   // `verified_manifest_contents`: JSON string of a web app manifest to install.
   // `expected_id`: Expected hashed App ID for the installed app. If the ID does
   // not match, installation will abort with an error.
+  // `install_params`: Additional optional params applied to customize the
+  // installed app.
   // `callback`: Called when installation completes.
   InstallAppFromVerifiedManifestCommand(
       webapps::WebappInstallSource install_source,
@@ -68,6 +71,7 @@ class InstallAppFromVerifiedManifestCommand
       GURL verified_manifest_url,
       std::string verified_manifest_contents,
       webapps::AppId expected_id,
+      std::optional<WebAppInstallParams> install_params,
       OnceInstallCallback callback);
 
   ~InstallAppFromVerifiedManifestCommand() override;
@@ -94,6 +98,7 @@ class InstallAppFromVerifiedManifestCommand
   GURL verified_manifest_url_;
   std::string verified_manifest_contents_;
   webapps::AppId expected_id_;
+  std::optional<WebAppInstallParams> install_params_;
 
   // SharedWebContentsLock is held while parsing the manifest.
   std::unique_ptr<SharedWebContentsLock> web_contents_lock_;

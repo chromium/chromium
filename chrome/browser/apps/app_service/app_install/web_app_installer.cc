@@ -246,7 +246,7 @@ void WebAppInstaller::OnManifestRetrieved(
             /*document_url=*/web_app_data.document_url,
             /*verified_manifest_url=*/web_app_data.original_manifest_url,
             /*verified_manifest_contents=*/std::move(*response),
-            expected_app_id,
+            expected_app_id, /*install_params=*/std::nullopt,
             base::BindOnce(&WebAppInstaller::OnAppInstalled,
                            weak_ptr_factory_.GetWeakPtr(), surface,
                            std::move(callback))));
