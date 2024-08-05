@@ -47,19 +47,23 @@ RealtimeAudioDestinationNode::RealtimeAudioDestinationNode(
     AudioContext& context,
     const WebAudioSinkDescriptor& sink_descriptor,
     const WebAudioLatencyHint& latency_hint,
-    std::optional<float> sample_rate)
+    std::optional<float> sample_rate,
+    bool update_echo_cancellation_on_first_start)
     : AudioDestinationNode(context) {
   SetHandler(RealtimeAudioDestinationHandler::Create(
-      *this, sink_descriptor, latency_hint, sample_rate));
+      *this, sink_descriptor, latency_hint, sample_rate,
+      update_echo_cancellation_on_first_start));
 }
 
 RealtimeAudioDestinationNode* RealtimeAudioDestinationNode::Create(
     AudioContext* context,
     const WebAudioSinkDescriptor& sink_descriptor,
     const WebAudioLatencyHint& latency_hint,
-    std::optional<float> sample_rate) {
+    std::optional<float> sample_rate,
+    bool update_echo_cancellation_on_first_start) {
   return MakeGarbageCollected<RealtimeAudioDestinationNode>(
-      *context, sink_descriptor, latency_hint, sample_rate);
+      *context, sink_descriptor, latency_hint, sample_rate,
+      update_echo_cancellation_on_first_start);
 }
 
 RealtimeAudioDestinationHandler& RealtimeAudioDestinationNode::GetOwnHandler()

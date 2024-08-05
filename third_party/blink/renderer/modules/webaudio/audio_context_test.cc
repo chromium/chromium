@@ -56,6 +56,7 @@ constexpr char kFakeAudioOutput2[] = "fake_audio_output_2";
 constexpr char kInvalidAudioOutput[] = "INVALID_AUDIO_OUTPUT";
 constexpr char kSecurityOrigin[] = "https://example.com";
 constexpr char kTestData[] = "simple_div.html";
+constexpr char kDefaultDeviceId[] = "";
 
 bool web_audio_device_paused_;
 
@@ -210,6 +211,12 @@ class AudioContextTestPlatform : public TestingPlatformSupport {
   double AudioHardwareSampleRate() override { return 44100; }
   size_t AudioHardwareBufferSize() override { return 128; }
 };
+
+String GetAecDevice(ExecutionContext* execution_context) {
+  return PeerConnectionDependencyFactory::From(*execution_context)
+      .GetWebRtcAudioDevice()
+      ->GetOutputDeviceForAecForTesting();
+}
 
 }  // namespace
 
@@ -867,6 +874,192 @@ TEST_F(AudioContextTest, SetSinkIdSuspended) {
   EXPECT_TRUE(context->GetRealtimeAudioDestinationNode()
                   ->GetOwnHandler()
                   .get_platform_destination_is_playing_for_testing());
+}
+
+TEST_F(AudioContextTest, AecConstructor) {
+  // Constructing AudioContexts with different sinkId values should update the
+  // acoustic echo cancellation output device.
+  ExecutionContext* execution_context = GetFrame().DomWindow();
+  SecurityContext& security_context = execution_context->GetSecurityContext();
+  security_context.SetSecurityOriginForTesting(nullptr);
+  security_context.SetSecurityOrigin(
+      SecurityOrigin::CreateFromString(kSecurityOrigin));
+
+  // Creating an AudioContext with no options should not change the AEC device.
+  const String initial_aec_device = GetAecDevice(execution_context);
+  AudioContextOptions* options_empty = AudioContextOptions::Create();
+  AudioContext::Create(execution_context, options_empty, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(GetAecDevice(execution_context), initial_aec_device);
+
+  // Creating an AudioContext with a null sink should not change the AEC device.
+  AudioContextOptions* options_null = AudioContextOptions::Create();
+  options_null->setSinkId(MakeGarbageCollected<V8UnionAudioSinkOptionsOrString>(
+      MakeGarbageCollected<AudioSinkOptions>()));
+  AudioContext::Create(execution_context, options_null, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(GetAecDevice(execution_context), initial_aec_device);
+
+  // A specific valid ID should change the AEC device.
+  AudioContextOptions* options_a = AudioContextOptions::Create();
+  options_a->setSinkId(
+      MakeGarbageCollected<V8UnionAudioSinkOptionsOrString>(kFakeAudioOutput1));
+  AudioContext::Create(execution_context, options_a, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(GetAecDevice(execution_context), kFakeAudioOutput1);
+
+  // A different specific valid ID on a different AudioContext should change the
+  // AEC device again.
+  AudioContextOptions* options_b = AudioContextOptions::Create();
+  options_b->setSinkId(
+      MakeGarbageCollected<V8UnionAudioSinkOptionsOrString>(kFakeAudioOutput2));
+  AudioContext::Create(execution_context, options_b, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(GetAecDevice(execution_context), kFakeAudioOutput2);
+
+  // An explicit default will set the AEC device to default.
+  AudioContextOptions* options_explicit_default = AudioContextOptions::Create();
+  options_explicit_default->setSinkId(
+      MakeGarbageCollected<V8UnionAudioSinkOptionsOrString>(kDefaultDeviceId));
+  AudioContext::Create(execution_context, options_explicit_default,
+                       ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(GetAecDevice(execution_context), kDefaultDeviceId);
+}
+
+TEST_F(AudioContextTest, AecSetSinkIdSuspended) {
+  // Calling setSinkId on suspended AudioContexts should not update the acoustic
+  // echo cancellation output device until the contexts are resumed.
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+  ExecutionContext* execution_context = GetFrame().DomWindow();
+  SecurityContext& security_context = execution_context->GetSecurityContext();
+  security_context.SetSecurityOriginForTesting(nullptr);
+  security_context.SetSecurityOrigin(
+      SecurityOrigin::CreateFromString(kSecurityOrigin));
+
+  // Creating AudioContexts with no options should not change the AEC device.
+  const String initial_aec_device = GetAecDevice(execution_context);
+  AudioContextOptions* options_empty = AudioContextOptions::Create();
+  AudioContext* context_a = AudioContext::Create(
+      execution_context, options_empty, ASSERT_NO_EXCEPTION);
+  context_a->suspendContext(script_state, ASSERT_NO_EXCEPTION);
+  AudioContext* context_b = AudioContext::Create(
+      execution_context, options_empty, ASSERT_NO_EXCEPTION);
+  context_b->suspendContext(script_state, ASSERT_NO_EXCEPTION);
+  FlushMediaDevicesDispatcherHost();
+  EXPECT_EQ(GetAecDevice(execution_context), initial_aec_device);
+
+  // Calling setSinkId with a valid device ID on a suspended context should not
+  // change the AEC device.
+  context_a->setSinkId(
+      script_state,
+      MakeGarbageCollected<V8UnionAudioSinkOptionsOrString>(kFakeAudioOutput1),
+      ASSERT_NO_EXCEPTION);
+  FlushMediaDevicesDispatcherHost();
+  EXPECT_EQ(GetAecDevice(execution_context), initial_aec_device);
+
+  // Calling setSinkId on a different suspended context with a valid device ID
+  // should not change the AEC device.
+  context_b->setSinkId(
+      script_state,
+      MakeGarbageCollected<V8UnionAudioSinkOptionsOrString>(kFakeAudioOutput2),
+      ASSERT_NO_EXCEPTION);
+  FlushMediaDevicesDispatcherHost();
+  EXPECT_EQ(GetAecDevice(execution_context), initial_aec_device);
+
+  // Resuming a suspended AudioContext changes the AEC device.
+  context_b->resumeContext(script_state, ASSERT_NO_EXCEPTION);
+  FlushMediaDevicesDispatcherHost();
+  EXPECT_EQ(GetAecDevice(execution_context), kFakeAudioOutput2);
+
+  // Resuming the other suspended AudioContext should also change the AEC
+  // device.
+  context_a->resumeContext(script_state, ASSERT_NO_EXCEPTION);
+  FlushMediaDevicesDispatcherHost();
+  EXPECT_EQ(GetAecDevice(execution_context), kFakeAudioOutput1);
+
+  // Suspending the first audio context should not change the AEC reference
+  // again.
+  context_b->suspendContext(script_state, ASSERT_NO_EXCEPTION);
+  FlushMediaDevicesDispatcherHost();
+  EXPECT_EQ(GetAecDevice(execution_context), kFakeAudioOutput1);
+
+  // Resuming the first audio context should not change the AEC reference again.
+  context_b->resumeContext(script_state, ASSERT_NO_EXCEPTION);
+  FlushMediaDevicesDispatcherHost();
+  EXPECT_EQ(GetAecDevice(execution_context), kFakeAudioOutput1);
+}
+
+TEST_F(AudioContextTest, AecSetSinkIdMultiple) {
+  // Calling setSinkId multiple times on the same AudioContext should update the
+  // acoustic echo cancellation output device each time.
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+  ExecutionContext* execution_context = GetFrame().DomWindow();
+  SecurityContext& security_context = execution_context->GetSecurityContext();
+  security_context.SetSecurityOriginForTesting(nullptr);
+  security_context.SetSecurityOrigin(
+      SecurityOrigin::CreateFromString(kSecurityOrigin));
+
+  // Creating an AudioContext with no options should not change the AEC device.
+  const String initial_aec_device = GetAecDevice(execution_context);
+  AudioContextOptions* options_empty = AudioContextOptions::Create();
+  AudioContext* context = AudioContext::Create(execution_context, options_empty,
+                                               ASSERT_NO_EXCEPTION);
+  FlushMediaDevicesDispatcherHost();
+  EXPECT_EQ(GetAecDevice(execution_context), initial_aec_device);
+
+  // Calling setSinkId with a valid device ID should change the AEC device.
+  context->setSinkId(
+      script_state,
+      MakeGarbageCollected<V8UnionAudioSinkOptionsOrString>(kFakeAudioOutput1),
+      ASSERT_NO_EXCEPTION);
+  FlushMediaDevicesDispatcherHost();
+  EXPECT_EQ(GetAecDevice(execution_context), kFakeAudioOutput1);
+
+  // Calling setSinkId with an invalid device ID should not change the AEC
+  // device.
+  context->setSinkId(script_state,
+                     MakeGarbageCollected<V8UnionAudioSinkOptionsOrString>(
+                         kInvalidAudioOutput),
+                     ASSERT_NO_EXCEPTION);
+  FlushMediaDevicesDispatcherHost();
+  EXPECT_EQ(GetAecDevice(execution_context), kFakeAudioOutput1);
+
+  // Calling setSinkId with another valid device ID on the same context should
+  // change the AEC device again.
+  context->setSinkId(
+      script_state,
+      MakeGarbageCollected<V8UnionAudioSinkOptionsOrString>(kFakeAudioOutput2),
+      ASSERT_NO_EXCEPTION);
+  FlushMediaDevicesDispatcherHost();
+  EXPECT_EQ(GetAecDevice(execution_context), kFakeAudioOutput2);
+}
+
+TEST_F(AudioContextTest, AecSetSinkIdAfterConstructor) {
+  // Calling setSinkId after constructing an AudioContext with an explicit
+  // device ID should update the acoustic echo cancellation output device each
+  // time.
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+  ExecutionContext* execution_context = GetFrame().DomWindow();
+  SecurityContext& security_context = execution_context->GetSecurityContext();
+  security_context.SetSecurityOriginForTesting(nullptr);
+  security_context.SetSecurityOrigin(
+      SecurityOrigin::CreateFromString(kSecurityOrigin));
+
+  // Creating an AudioContext with a specific ID should change the AEC device.
+  AudioContextOptions* options = AudioContextOptions::Create();
+  options->setSinkId(
+      MakeGarbageCollected<V8UnionAudioSinkOptionsOrString>(kFakeAudioOutput1));
+  AudioContext* context =
+      AudioContext::Create(execution_context, options, ASSERT_NO_EXCEPTION);
+  FlushMediaDevicesDispatcherHost();
+  EXPECT_EQ(GetAecDevice(execution_context), kFakeAudioOutput1);
+
+  // Calling setSinkId with a valid device ID should change the AEC device.
+  context->setSinkId(
+      script_state,
+      MakeGarbageCollected<V8UnionAudioSinkOptionsOrString>(kFakeAudioOutput2),
+      ASSERT_NO_EXCEPTION);
+  FlushMediaDevicesDispatcherHost();
+  EXPECT_EQ(GetAecDevice(execution_context), kFakeAudioOutput2);
 }
 
 }  // namespace blink

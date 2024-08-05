@@ -33,7 +33,8 @@ class MODULES_EXPORT RealtimeAudioDestinationHandler final
       AudioNode&,
       const WebAudioSinkDescriptor&,
       const WebAudioLatencyHint&,
-      std::optional<float> sample_rate);
+      std::optional<float> sample_rate,
+      bool update_echo_cancellation_on_first_start);
   ~RealtimeAudioDestinationHandler() override;
 
   // For AudioHandler.
@@ -93,10 +94,12 @@ class MODULES_EXPORT RealtimeAudioDestinationHandler final
   bool get_platform_destination_is_playing_for_testing();
 
  private:
-  explicit RealtimeAudioDestinationHandler(AudioNode&,
-                                           const WebAudioSinkDescriptor&,
-                                           const WebAudioLatencyHint&,
-                                           std::optional<float> sample_rate);
+  explicit RealtimeAudioDestinationHandler(
+      AudioNode&,
+      const WebAudioSinkDescriptor&,
+      const WebAudioLatencyHint&,
+      std::optional<float> sample_rate,
+      bool update_echo_cancellation_on_first_start);
 
   // Sets the detect silence flag for the platform destination.
   void SetDetectSilence(bool detect_silence);
@@ -147,6 +150,10 @@ class MODULES_EXPORT RealtimeAudioDestinationHandler final
   // Represents the current condition of silence detection. By default, the
   // silence detection is active.
   bool is_detecting_silence_ = true;
+
+  // If true, attempt to update the echo cancellation reference the next time
+  // the platform destination is started.
+  bool update_echo_cancellation_on_next_start_ = false;
 
   base::WeakPtrFactory<RealtimeAudioDestinationHandler> weak_ptr_factory_{this};
 };
