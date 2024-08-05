@@ -116,7 +116,7 @@ const char kHttpsFirstModeServiceName[] = "HttpsFirstModeService";
 const char kHttpsFirstModeSyntheticFieldTrialName[] =
     "HttpsFirstModeClientSetting";
 const char kHttpsFirstModeSyntheticFieldTrialEnabledGroup[] = "Enabled";
-const char kHttpsFirstModeSyntheticFieldTrialIncognitoGroup[] = "Incognito";
+const char kHttpsFirstModeSyntheticFieldTrialBalancedGroup[] = "Balanced";
 const char kHttpsFirstModeSyntheticFieldTrialDisabledGroup[] = "Disabled";
 
 // We don't need to protect this with a lock since it's only set while
@@ -209,8 +209,8 @@ std::string GetSyntheticFieldTrialGroupName(HttpsFirstModeSetting setting) {
   switch (setting) {
     case HttpsFirstModeSetting::kEnabledFull:
       return kHttpsFirstModeSyntheticFieldTrialEnabledGroup;
-    case HttpsFirstModeSetting::kEnabledIncognito:
-      return kHttpsFirstModeSyntheticFieldTrialIncognitoGroup;
+    case HttpsFirstModeSetting::kEnabledBalanced:
+      return kHttpsFirstModeSyntheticFieldTrialBalancedGroup;
     case HttpsFirstModeSetting::kDisabled:
       return kHttpsFirstModeSyntheticFieldTrialDisabledGroup;
     default:
@@ -232,7 +232,7 @@ HttpsFirstModeService::HttpsFirstModeService(Profile* profile,
       base::BindRepeating(&HttpsFirstModeService::OnHttpsFirstModePrefChanged,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kHttpsFirstModeIncognito,
+      prefs::kHttpsFirstBalancedMode,
       base::BindRepeating(&HttpsFirstModeService::OnHttpsFirstModePrefChanged,
                           base::Unretained(this)));
 
@@ -253,7 +253,7 @@ HttpsFirstModeService::HttpsFirstModeService(Profile* profile,
   // Make sure the pref state is logged and the synthetic field trial state is
   // created at startup (as the pref may never change over the session).
   HttpsFirstModeSetting setting = GetCurrentSetting();
-  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
+  if (IsBalancedModeAvailable()) {
     base::UmaHistogramEnumeration(
         "Security.HttpsFirstMode.SettingEnabledAtStartup2", setting);
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
@@ -297,6 +297,7 @@ void HttpsFirstModeService::
     CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode() {
   // If HFM or the auto-enable prefs were previously set, do not modify them.
   if (profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled) ||
+      profile_->GetPrefs()->HasPrefPath(prefs::kHttpsFirstBalancedMode) ||
       profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled)) {
     return;
   }
@@ -305,6 +306,8 @@ void HttpsFirstModeService::
   }
   // The prefs must be set in this order, as setting kHttpsOnlyModeEnabled
   // will cause kHttpsOnlyModeAutoEnabled to be reset to false.
+  // TODO(crbug.com/349860796): Consider having the typically-secure heuristic
+  // turn on Balanced Mode instead.
   keep_http_allowlist_on_next_pref_change_ = true;
   profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
   profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeAutoEnabled, true);
@@ -314,7 +317,7 @@ HttpsFirstModeService::~HttpsFirstModeService() = default;
 
 void HttpsFirstModeService::OnHttpsFirstModePrefChanged() {
   HttpsFirstModeSetting setting = GetCurrentSetting();
-  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
+  if (IsBalancedModeAvailable()) {
     base::UmaHistogramEnumeration("Security.HttpsFirstMode.SettingChanged2",
                                   setting);
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
@@ -466,7 +469,7 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForEngagedSites(
   // If HFM or the auto-enable prefs were previously set, do not modify HFM
   // status.
   if (profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled) ||
-      IsBalancedModeEnabled() ||
+      profile_->GetPrefs()->HasPrefPath(prefs::kHttpsFirstBalancedMode) ||
       profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled)) {
     if (!done_callback.is_null()) {
       std::move(done_callback).Run();
@@ -568,10 +571,9 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(
 HttpsFirstModeSetting HttpsFirstModeService::GetCurrentSetting() const {
   if (profile_->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
     return HttpsFirstModeSetting::kEnabledFull;
-  } else if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
-             profile_->GetPrefs()->GetBoolean(
-                 prefs::kHttpsFirstModeIncognito)) {
-    return HttpsFirstModeSetting::kEnabledIncognito;
+  }
+  if (IsBalancedModeEnabled(profile_->GetPrefs())) {
+    return HttpsFirstModeSetting::kEnabledBalanced;
   }
   return HttpsFirstModeSetting::kDisabled;
 }

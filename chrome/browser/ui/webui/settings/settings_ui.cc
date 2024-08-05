@@ -37,6 +37,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -385,8 +386,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                               IsHashRealTimeLookupEligibleInSession());
 
   html_source->AddBoolean("enableHttpsFirstModeNewSettings",
-                          base::FeatureList::IsEnabled(
-                              features::kHttpsFirstModeIncognitoNewSettings));
+                          IsBalancedModeAvailable());
 
   html_source->AddBoolean(
       "enableKeyboardAndPointerLockPrompt",

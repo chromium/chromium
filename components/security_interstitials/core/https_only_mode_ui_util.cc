@@ -16,13 +16,13 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
     const GURL& url,
     const security_interstitials::https_only_mode::HttpInterstitialState&
         interstitial_state,
-    bool balanced_mode) {
+    bool new_interstitial_enabled) {
   load_time_data.Set("tabTitle",
                      l10n_util::GetStringUTF16(IDS_HTTPS_ONLY_MODE_TITLE));
 
   int heading_id = IDS_HTTPS_ONLY_MODE_HEADING;
   int primary_paragraph_id = IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH;
-  if (balanced_mode) {
+  if (new_interstitial_enabled) {
     heading_id = IDS_HTTPS_ONLY_BALANCED_MODE_HEADING;
     primary_paragraph_id = IDS_HTTPS_ONLY_BALANCED_MODE_PRIMARY_PARAGRAPH;
   }
@@ -47,10 +47,7 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
              !interstitial_state.enabled_in_balanced_mode) {
     primary_paragraph_id = IDS_HTTPS_ONLY_MODE_FOR_INCOGNITO_PRIMARY_PARAGRAPH;
   }
-  // TODO(crbug.com/40937027): Customize interstitial strings for
-  // HFM-in-Incognito here. (HTTPS-First Mode in Incognito is the least
-  // specific, so the customizations should only apply if the user has not opted
-  // in to full HTTPS-First Mode and no other feature applies.)
+
   // TODO(crbug.com/349860796): Consider customizing interstitial strings for
   // balanced mode.
   load_time_data.Set(

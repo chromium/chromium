@@ -14,7 +14,7 @@
 
 // The generated pref for HTTPS-First Mode. Only used for managing the setting
 // in the Security UI settings page. The actual HTTPS-First Mode is controlled
-// by prefs::kHttpsOnlyModeEnabled and prefs::kHttpsFirstModeIncognito.
+// by prefs::kHttpsOnlyModeEnabled and prefs::kHttpsFirstBalancedMode.
 extern const char kGeneratedHttpsFirstModePref[];
 
 class GeneratedHttpsFirstModePref

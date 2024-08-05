@@ -306,8 +306,8 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
                                             storage_partition)) {
     interstitial_state_->enabled_by_engagement_heuristic = true;
   }
-  if (IsBalancedModeEnabled() &&
-      (state && !state->HttpsFirstBalancedModeSuppressedForTesting())) {
+  if (IsBalancedModeEnabled(prefs) && state &&
+      !state->HttpsFirstBalancedModeSuppressedForTesting()) {
     interstitial_state_->enabled_in_balanced_mode = true;
   }
 

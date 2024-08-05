@@ -30,7 +30,7 @@ GeneratedHttpsFirstModePref::GeneratedHttpsFirstModePref(Profile* profile)
           &GeneratedHttpsFirstModePref::OnSourcePreferencesChanged,
           base::Unretained(this)));
   user_prefs_registrar_.Add(
-      prefs::kHttpsFirstModeIncognito,
+      prefs::kHttpsFirstBalancedMode,
       base::BindRepeating(
           &GeneratedHttpsFirstModePref::OnSourcePreferencesChanged,
           base::Unretained(this)));
@@ -74,19 +74,20 @@ GeneratedHttpsFirstModePref::SetPref(const base::Value* value) {
   auto selection = static_cast<HttpsFirstModeSetting>(value->GetInt());
 
   if (selection != HttpsFirstModeSetting::kDisabled &&
-      selection != HttpsFirstModeSetting::kEnabledIncognito &&
+      selection != HttpsFirstModeSetting::kEnabledBalanced &&
       selection != HttpsFirstModeSetting::kEnabledFull) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          features::kHttpsFirstModeIncognitoNewSettings) &&
-      selection == HttpsFirstModeSetting::kEnabledIncognito) {
+  if (!base::FeatureList::IsEnabled(features::kHttpsFirstBalancedMode) &&
+      selection == HttpsFirstModeSetting::kEnabledBalanced) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_UNSUPPORTED;
   }
 
   // kHttpsOnlyModeEnabled is considered the canonical source for HFM
   // management. Policy enforcement turns it fully on or fully off.
+  // TODO(crbug.com/349860796): Update this work with the new policy value for
+  // `force_balanced`.
   const PrefService::Preference* enabled_pref =
       profile_->GetPrefs()->FindPreference(prefs::kHttpsOnlyModeEnabled);
   if (!enabled_pref->IsUserModifiable()) {
@@ -95,24 +96,31 @@ GeneratedHttpsFirstModePref::SetPref(const base::Value* value) {
 
   // Update both HTTPS-First Mode preferences to match the selection.
   //
-  // Note that the HttpsFirstModeSetting::kEnabledIncognito is not available by
+  // Note that the HttpsFirstModeSetting::kEnabledBalanced is not available by
   // default. If the feature flag is disabled, then the kEnabledFull and
   // kDisabled settings will only be mapped to the kHttpsOnlyModeEnabled pref.
-  //
-  // Additionally, if kHttpsFirstModeIncognitoNewSettings is disabled, then the
-  // HFM-in-Incognito pref should not be controlled by the user setting. (The
-  // pref will be set to its default `true` regardless of the HFM boolean
-  // setting toggle.)
-  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
-      base::FeatureList::IsEnabled(
-          features::kHttpsFirstModeIncognitoNewSettings)) {
+  if (base::FeatureList::IsEnabled(features::kHttpsFirstBalancedMode)) {
+    switch (selection) {
+      case HttpsFirstModeSetting::kDisabled:
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode, false);
+        break;
+      case HttpsFirstModeSetting::kEnabledBalanced:
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode, true);
+        break;
+      case HttpsFirstModeSetting::kEnabledFull:
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode, false);
+        break;
+    }
+  } else {
+    // TODO(crbug.com/349860796): Remove old settings path once Balanced Mode
+    // is launched.
     profile_->GetPrefs()->SetBoolean(
-        prefs::kHttpsFirstModeIncognito,
-        selection != HttpsFirstModeSetting::kDisabled);
+        prefs::kHttpsOnlyModeEnabled,
+        selection == HttpsFirstModeSetting::kEnabledFull);
   }
-  profile_->GetPrefs()->SetBoolean(
-      prefs::kHttpsOnlyModeEnabled,
-      selection == HttpsFirstModeSetting::kEnabledFull);
 
   return extensions::settings_private::SetPrefResult::SUCCESS;
 }
@@ -126,21 +134,20 @@ settings_api::PrefObject GeneratedHttpsFirstModePref::GetPrefObject() const {
 
   // prefs::kHttpsOnlyModeEnabled is the backing pref that can be controlled by
   // enterprise policy.
+  // TODO(crbug.com/349860796): Update this work with the new policy value for
+  // `force_balanced`.
   auto* hfm_fully_enabled_pref =
       profile_->GetPrefs()->FindPreference(prefs::kHttpsOnlyModeEnabled);
 
-  // The HttpsFirstModeSetting::kEnabledIncognito setting is not available by
-  // default -- if the kHttpsFirstModeIncognitoNewSettings feature flag is
-  // disabled, then the kEnabledFull and kDisabled settings will be mapped to
-  // the kHttpsOnlyModeEnabled pref on its own.
-  bool hfm_incognito_enabled =
-      base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
-      base::FeatureList::IsEnabled(
-          features::kHttpsFirstModeIncognitoNewSettings) &&
-      profile_->GetPrefs()->GetBoolean(prefs::kHttpsFirstModeIncognito);
-
   bool fully_enabled = hfm_fully_enabled_pref->GetValue()->GetBool() ||
                        is_advanced_protection_enabled;
+
+  // Balanced Mode is not available by default -- if the kHttpsFirstBalancedMode
+  // feature flag is disabled, then only the kHttpsOnlyMode pref will be mapped
+  // to the kEnabledFull and kDisabled settings states.
+  bool balanced_enabled =
+      base::FeatureList::IsEnabled(features::kHttpsFirstBalancedMode) &&
+      profile_->GetPrefs()->GetBoolean(prefs::kHttpsFirstBalancedMode);
 
   settings_api::PrefObject pref_object;
   pref_object.key = kGeneratedHttpsFirstModePref;
@@ -150,9 +157,9 @@ settings_api::PrefObject GeneratedHttpsFirstModePref::GetPrefObject() const {
   if (fully_enabled) {
     pref_object.value =
         base::Value(static_cast<int>(HttpsFirstModeSetting::kEnabledFull));
-  } else if (hfm_incognito_enabled) {
+  } else if (balanced_enabled) {
     pref_object.value =
-        base::Value(static_cast<int>(HttpsFirstModeSetting::kEnabledIncognito));
+        base::Value(static_cast<int>(HttpsFirstModeSetting::kEnabledBalanced));
   } else {
     pref_object.value =
         base::Value(static_cast<int>(HttpsFirstModeSetting::kDisabled));
@@ -160,6 +167,8 @@ settings_api::PrefObject GeneratedHttpsFirstModePref::GetPrefObject() const {
 
   pref_object.user_control_disabled = is_advanced_protection_enabled;
 
+  // TODO(crbug.com/349860796): Update this work with the new policy value for
+  // `force_balanced`.
   if (!hfm_fully_enabled_pref->IsUserModifiable()) {
     // The pref was controlled by the enterprise policy.
     pref_object.enforcement = settings_api::Enforcement::kEnforced;
@@ -173,8 +182,8 @@ settings_api::PrefObject GeneratedHttpsFirstModePref::GetPrefObject() const {
       pref_object.recommended_value =
           base::Value(static_cast<int>(HttpsFirstModeSetting::kEnabledFull));
     } else {
-      // TODO(crbug.com/40937027): Consider supporting a recommended value of
-      // kEnabledIncognito after the enterprise policy support is updated.
+      // TODO(crbug.com/349860796): Consider supporting a recommended value of
+      // kEnabledBalanced after the enterprise policy support is updated.
       pref_object.recommended_value =
           base::Value(static_cast<int>(HttpsFirstModeSetting::kDisabled));
     }

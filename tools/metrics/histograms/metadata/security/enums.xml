@@ -145,11 +145,16 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange -->
+
 <enum name="HttpsFirstModeSetting">
   <int value="0" label="Disabled"/>
-  <int value="1" label="Enabled in Incognito"/>
+  <int value="1" label="(Deprecated) Enabled in Incognito"/>
   <int value="2" label="Fully enabled"/>
+  <int value="3" label="Balanced mode enabled"/>
 </enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ssl/https_first_mode_settings_tracker.h) -->
 
 <enum name="JsonParserExtension">
   <int value="0" label="C style comment (/**/)"/>

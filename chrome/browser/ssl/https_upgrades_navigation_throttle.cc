@@ -68,8 +68,8 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
       static_cast<StatefulSSLHostStateDelegate*>(
           profile->GetSSLHostStateDelegate());
 
-  if (IsBalancedModeEnabled() &&
-      (state && !state->HttpsFirstBalancedModeSuppressedForTesting())) {
+  if (IsBalancedModeEnabled(prefs) && state &&
+      !state->HttpsFirstBalancedModeSuppressedForTesting()) {
     interstitial_state.enabled_in_balanced_mode = true;
   }
 

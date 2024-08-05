@@ -56,10 +56,13 @@ void ClearHttpAllowlistForHostnamesForTesting(PrefService* prefs) {
   prefs->SetList(prefs::kHttpAllowlist, std::move(empty_list));
 }
 
-bool IsBalancedModeEnabled() {
-  // TODO(crbug.com/349860796): Initially, balanced mode is controlled directly
-  // by the feature, but it may be controlled via pref or setting in the future.
+bool IsBalancedModeAvailable() {
   return base::FeatureList::IsEnabled(features::kHttpsFirstBalancedMode);
+}
+
+bool IsBalancedModeEnabled(PrefService* prefs) {
+  return IsBalancedModeAvailable() && prefs &&
+         prefs->GetBoolean(prefs::kHttpsFirstBalancedMode);
 }
 
 bool IsBalancedModeUniquelyEnabled(const HttpInterstitialState& state) {
@@ -84,7 +87,7 @@ bool IsBalancedModeUniquelyEnabled(const HttpInterstitialState& state) {
   }
 
   // ...then ensure balanced mode is enabled.
-  return IsBalancedModeEnabled() && state.enabled_in_balanced_mode;
+  return IsBalancedModeAvailable() && state.enabled_in_balanced_mode;
 }
 
 bool IsInterstitialEnabled(const HttpInterstitialState& state) {
@@ -93,7 +96,7 @@ bool IsInterstitialEnabled(const HttpInterstitialState& state) {
     return true;
   }
   // ...or when balanced mode is enabled.
-  return (IsBalancedModeEnabled() && state.enabled_in_balanced_mode);
+  return (IsBalancedModeAvailable() && state.enabled_in_balanced_mode);
 }
 
 bool IsStrictInterstitialEnabled(const HttpInterstitialState& state) {
@@ -138,7 +141,7 @@ bool ShouldExemptNonUniqueHostnames(const HttpInterstitialState& state) {
     return true;
   }
   // Balanced mode HFM exempts non-unique hostnames to reduce warning volume.
-  if (IsBalancedModeEnabled() && state.enabled_in_balanced_mode) {
+  if (IsBalancedModeAvailable() && state.enabled_in_balanced_mode) {
     return true;
   }
   // If no interstitial state is set, then the default is HTTPS-Upgrades which
@@ -147,7 +150,7 @@ bool ShouldExemptNonUniqueHostnames(const HttpInterstitialState& state) {
 }
 
 bool ShouldExcludeHostnameFromInterstitial(const HttpInterstitialState& state,
-                                           const std::string hostname) {
+                                           const std::string& hostname) {
   // Exclude single-label domains in balanced mode.
   return IsBalancedModeUniquelyEnabled(state) &&
          net::GetSuperdomain(hostname).empty();

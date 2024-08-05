@@ -123,34 +123,59 @@ suite('Main', function() {
     assertFalse(isChildVisible(page, '#security-keys-phones-subpage-trigger'));
   });
 
-  // Tests that changing the HTTPS-First Mode setting sets the associated pref.
-  test('HttpsFirstModeRadioButtons', async () => {
-    let radioButton = page.shadowRoot!.querySelector<HTMLElement>(
-        '#httpsFirstModeEnabledFull');
+  // Tests that changing the HTTPS-First Mode setting sets the associated pref,
+  // and that the radio options are correctly shown/hidden based on the top
+  // level toggle.
+  test('HttpsFirstModeControls', async () => {
+    const toggleButton =
+        page.shadowRoot!.querySelector<HTMLElement>('#httpsOnlyModeToggle');
+    const collapse = page.shadowRoot!.querySelector<HTMLElement>(
+        '#httpsFirstModeRadioGroupCollapse');
     const radioGroup = page.shadowRoot!.querySelector<HTMLElement>(
         '#httpsFirstModeRadioGroup');
-    assertTrue(!!radioButton);
+    assertTrue(!!toggleButton);
+    assertTrue(!!collapse);
     assertTrue(!!radioGroup);
+
+    assertEquals(
+        HttpsFirstModeSetting.DISABLED,
+        page.getPref('generated.https_first_mode_enabled').value);
+    assertFalse(isChildVisible(page, '#httpsFirstModeRadioGroup'));
+
+    // Toggling on the button should (1) expand the cr-collapse, and (2) select
+    // the "balanced mode" radio button and set the pref to "balanced".
+    toggleButton.click();
+    await eventToPromise('transitionend', collapse);
+    assertTrue(isChildVisible(page, '#httpsFirstModeRadioGroup'));
+    assertEquals(
+        HttpsFirstModeSetting.ENABLED_BALANCED,
+        page.getPref('generated.https_first_mode_enabled').value);
+
+    // Select the "Strict Mode" radio button.
+    let radioButton = page.shadowRoot!.querySelector<HTMLElement>(
+        '#httpsFirstModeEnabledStrict');
+    assertTrue(!!radioButton);
     radioButton.click();
     await eventToPromise('selected-changed', radioGroup);
     assertEquals(
         HttpsFirstModeSetting.ENABLED_FULL,
         page.getPref('generated.https_first_mode_enabled').value);
 
+    // Select the "Balanced Mode" radio button again.
     radioButton = page.shadowRoot!.querySelector<HTMLElement>(
-        '#httpsFirstModeEnabledIncognito');
+        '#httpsFirstModeEnabledBalanced');
     assertTrue(!!radioButton);
     radioButton.click();
     await eventToPromise('selected-changed', radioGroup);
     assertEquals(
-        HttpsFirstModeSetting.ENABLED_INCOGNITO,
+        HttpsFirstModeSetting.ENABLED_BALANCED,
         page.getPref('generated.https_first_mode_enabled').value);
 
-    radioButton =
-        page.shadowRoot!.querySelector<HTMLElement>('#httpsFirstModeDisabled');
-    assertTrue(!!radioButton);
-    radioButton.click();
-    await eventToPromise('selected-changed', radioGroup);
+    // Toggling on the button off should (1) hide the cr-collapse, and (2) fully
+    // turn off HTTPS-First Mode.
+    toggleButton.click();
+    await eventToPromise('transitionend', collapse);
+    assertFalse(isChildVisible(page, '#httpsFirstModeRadioGroup'));
     assertEquals(
         HttpsFirstModeSetting.DISABLED,
         page.getPref('generated.https_first_mode_enabled').value);

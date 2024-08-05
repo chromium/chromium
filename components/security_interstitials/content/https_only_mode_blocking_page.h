@@ -42,7 +42,7 @@ class HttpsOnlyModeBlockingPage : public SecurityInterstitialPage {
   bool user_made_decision_ = false;
   const security_interstitials::https_only_mode::HttpInterstitialState
       interstitial_state_;
-  bool balanced_mode_ = false;
+  bool new_interstitial_enabled_ = false;
 };
 
 }  // namespace security_interstitials

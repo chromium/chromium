@@ -1781,6 +1781,17 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_FULL_LABEL},
       {"httpsFirstModeEnabledFullSubLabel",
        IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_FULL_SUBLABEL},
+      {"httpsFirstModeSectionTitle", IDS_SETTINGS_HTTPS_FIRST_MODE_TITLE},
+      {"httpsFirstModeSectionDescription",
+       IDS_SETTINGS_HTTPS_FIRST_MODE_DESCRIPTION},
+      {"httpsFirstModeEnabledStrictLabel",
+       IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_STRICT_LABEL},
+      {"httpsFirstModeEnabledStrictSubLabel",
+       IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_STRICT_SUBLABEL},
+      {"httpsFirstModeEnabledBalancedLabel",
+       IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_BALANCED_LABEL},
+      {"httpsFirstModeEnabledBalancedSubLabel",
+       IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_BALANCED_SUBLABEL},
       {"httpsFirstModeEnabledIncognitoLabel",
        IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_INCOGNITO_LABEL},
       {"httpsFirstModeEnabledIncognitoSubLabel",
@@ -1981,6 +1992,9 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
                               omnibox::kDocumentProviderNoSyncRequirement));
   html_source->AddString("enhancedProtectionHelpCenterURL",
                          chrome::kSafeBrowsingInChromeHelpCenterURL);
+
+  // TODO(crbug.com/349860796): Add a learn-more link for HTTPS-First Mode for
+  // the new Settings UI, which can be used by the settings-toggle-button.
 
   bool link_secure_dns = ShouldLinkSecureDnsOsSettings();
   html_source->AddBoolean("showSecureDnsSetting", !link_secure_dns);

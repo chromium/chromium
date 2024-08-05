@@ -58,8 +58,10 @@ export enum SafeBrowsingSetting {
  */
 export enum HttpsFirstModeSetting {
   DISABLED = 0,
-  ENABLED_INCOGNITO = 1,
+  // DEPRECATED: A separate Incognito setting never shipped.
+  // ENABLED_INCOGNITO = 1,
   ENABLED_FULL = 2,
+  ENABLED_BALANCED = 3,
 }
 
 export interface SettingsSecurityPageElement {
@@ -147,6 +149,14 @@ export class SettingsSecurityPageElement extends
       httpsFirstModeSettingEnum_: {
         type: Object,
         value: HttpsFirstModeSetting,
+      },
+
+      /**
+       * Setting for HTTPS-First Mode when the toggle is off.
+       */
+      httpsFirstModeUncheckedValues_: {
+        type: Array,
+        value: () => [HttpsFirstModeSetting.DISABLED],
       },
 
       enableHttpsFirstModeNewSettings_: {
@@ -311,11 +321,11 @@ export class SettingsSecurityPageElement extends
       this.safeBrowsingStateOnOpen_ = prefValue;
 
       // The HTTPS-First Mode generated pref should never be set to
-      // ENABLED_INCOGNITO if the feature flag is not enabled.
+      // ENABLED_BALANCED if the feature flag is not enabled.
       if (!loadTimeData.getBoolean('enableHttpsFirstModeNewSettings')) {
         assert(
             this.getPref('generated.https_first_mode_enabled').value !==
-            HttpsFirstModeSetting.ENABLED_INCOGNITO);
+            HttpsFirstModeSetting.ENABLED_BALANCED);
       }
     });
 
@@ -525,6 +535,10 @@ export class SettingsSecurityPageElement extends
         generatedPref.userControlDisabled ?
             'httpsOnlyModeDescriptionAdvancedProtection' :
             'httpsOnlyModeDescription');
+  }
+
+  private isHttpsFirstModeEnabled_(value: number): boolean {
+    return value !== HttpsFirstModeSetting.DISABLED;
   }
 
   private onManageCertificatesClick_() {
