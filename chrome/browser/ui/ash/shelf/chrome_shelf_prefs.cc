@@ -529,8 +529,7 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
     }
 
     if (ash::DemoSession::Get() &&
-        !ash::DemoSession::Get()->ShouldShowAndroidOrChromeAppInShelf(
-            *policy_entry)) {
+        !ash::DemoSession::Get()->ShouldShowAppInShelf(*policy_entry)) {
       continue;
     }
 

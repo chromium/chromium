@@ -74,8 +74,7 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
 
   if (ash::DemoSession::Get() &&
       base::ranges::none_of(*policy_ids, [](const auto& policy_id) {
-        return ash::DemoSession::Get()->ShouldShowAndroidOrChromeAppInShelf(
-            policy_id);
+        return ash::DemoSession::Get()->ShouldShowAppInShelf(policy_id);
       })) {
     return AppListControllerDelegate::PIN_EDITABLE;
   }

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_SESSION_H_
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -154,11 +155,10 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // `load_callback` will be run once the resource load finishes.
   void EnsureResourcesLoaded(base::OnceClosure load_callback);
 
-  // Returns false if the Chrome app or ARC++ package, which is normally pinned
-  // by policy, should actually not be force-pinned because the device is
-  // in Demo Mode and offline.
-  bool ShouldShowAndroidOrChromeAppInShelf(
-      const std::string& app_id_or_package);
+  // Returns false if the app, which is normally pinned by policy, should
+  // actually not be force-pinned because the device is in Demo Mode and
+  // offline.
+  bool ShouldShowAppInShelf(const std::string& app_id_or_package);
 
   // Sets `extensions_external_loader_` and starts installing the screensaver.
   void SetExtensionsExternalLoader(
@@ -246,6 +246,9 @@ class DemoSession : public session_manager::SessionManagerObserver,
   std::unique_ptr<DemoModeWindowCloser> window_closer_;
 
   bool splash_screen_activated_ = false;
+
+  // Keep track of which app has been installed in demo mode.
+  std::set<std::string> installed_app_;
 
   base::WeakPtrFactory<DemoSession> weak_ptr_factory_{this};
 };

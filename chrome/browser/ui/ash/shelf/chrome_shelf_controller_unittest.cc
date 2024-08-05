@@ -5520,13 +5520,7 @@ class ChromeShelfControllerDemoModeTest : public ChromeShelfControllerTestBase {
   std::unique_ptr<ash::DemoModeTestHelper> demo_mode_test_helper_;
 };
 
-// TODO(crbug.com/40865068): PinnedAppsOnline is flaky on linux-chromeos-rel.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_PinnedAppsOnline DISABLED_PinnedAppsOnline
-#else
-#define MAYBE_PinnedAppsOnline PinnedAppsOnline
-#endif
-TEST_F(ChromeShelfControllerDemoModeTest, MAYBE_PinnedAppsOnline) {
+TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOnline) {
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_ETHERNET);
 
