@@ -304,8 +304,7 @@ chromium-metrics-reviews@google.com.
   <owner>bttk@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
-    Reports the variant of the optional toolbar button that was clicked. Reports
-    only when the feature AdaptiveButtonInTopToolbar is active.
+    Reports the variant of the optional toolbar button that was clicked.
   </summary>
 </histogram>
 
@@ -315,8 +314,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
     Reports the variant of the optional toolbar button used during the session.
-    Reports only when the feature AdaptiveButtonInTopToolbar is active, the
-    button is placed in the toolbar, and is clickable.
+    The button is placed in the toolbar, and is clickable.
   </summary>
 </histogram>
 
