@@ -97,6 +97,9 @@ class MODULES_EXPORT RTCDataChannel final
 
   void close();
 
+  bool IsTransferable();
+  rtc::scoped_refptr<webrtc::DataChannelInterface> TransferUnderlyingChannel();
+
   DEFINE_ATTRIBUTE_EVENT_LISTENER(open, kOpen)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(bufferedamountlow, kBufferedamountlow)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(error, kError)
@@ -165,6 +168,8 @@ class MODULES_EXPORT RTCDataChannel final
     WeakPersistent<RTCDataChannel> blink_channel_;
     const rtc::scoped_refptr<webrtc::DataChannelInterface> webrtc_channel_;
   };
+
+  void RegisterObserver();
 
   void OnStateChange(webrtc::DataChannelInterface::DataState state);
   void OnBufferedAmountChange(unsigned previous_amount);
@@ -261,6 +266,9 @@ class MODULES_EXPORT RTCDataChannel final
     Member<BlobReader> blob_reader_;
   };
   HeapDeque<Member<PendingMessage>> pending_messages_;
+
+  bool was_transferred_ = false;
+  bool is_transferable_ = true;
   // Keep the `observer_` reference const to make it clear that we don't want
   // to free the underlying channel (or callback observer) until the
   // `RTCDataChannel` instance goes away. This allows properties to be queried

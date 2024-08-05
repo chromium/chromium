@@ -4230,6 +4230,10 @@
       status: "experimental",
       base_feature: "none",
     },
+    {
+      name: "TransferableRTCDataChannel",
+      status: "experimental",
+    },
     // This is conditionally set if the platform supports translation.
     {
       name: "TranslateService",
