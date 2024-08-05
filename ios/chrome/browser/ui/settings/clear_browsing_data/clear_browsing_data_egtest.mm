@@ -6,6 +6,8 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
+#import "components/browsing_data/core/pref_names.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/shared/ui/elements/elements_constants.h"
@@ -337,6 +339,38 @@ using chrome_test_util::WindowWithNumber;
   [self openCBDAndClearData];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that if the time range pref is set to 15 minutes, then the clear
+// browsing data button is disabled to make the user chose a different time
+// range.
+- (void)testDisabledClearButtonWith15MinutesTimeRange {
+  // Set pref to the last 15 minutes.
+  [ChromeEarlGrey
+      setIntegerValue:static_cast<int>(
+                          browsing_data::TimePeriod::LAST_15_MINUTES)
+          forUserPref:browsing_data::prefs::kDeleteTimePeriod];
+
+  [self openClearBrowsingDataDialog];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ClearBrowsingDataButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+}
+
+// Tests that if the time range pref is not set to 15 minutes, for example last
+// hour, then the clear browsing data button is enabled.
+- (void)testEnabledClearButtonWithLastHourTimeRange {
+  // Set pref to the last hour.
+  [ChromeEarlGrey
+      setIntegerValue:static_cast<int>(browsing_data::TimePeriod::LAST_HOUR)
+          forUserPref:browsing_data::prefs::kDeleteTimePeriod];
+
+  [self openClearBrowsingDataDialog];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ClearBrowsingDataButton()]
+      assertWithMatcher:grey_enabled()];
 }
 
 @end
