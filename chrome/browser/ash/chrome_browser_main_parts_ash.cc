@@ -166,7 +166,6 @@
 #include "chrome/browser/ash/video_conference/video_conference_ash_feature_client.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chrome/browser/chromeos/kcer/kcer_factory.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/printing/print_preview/print_preview_webcontents_manager.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client.h"
@@ -1712,10 +1711,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   // NOTE: Closes ash and destroys `Shell`.
   ChromeBrowserMainPartsLinux::PostMainMessageLoopRun();
-
-  // Contains a raw_ptr to ChapsService (an object owned by `crosapi_manager_`)
-  // and should be shut down before `crosapi_manager_`.
-  kcer::KcerFactory::Shutdown();
 
   // BrowserManager and CrosapiManager need to outlive the Profile, which
   // is destroyed inside ChromeBrowserMainPartsLinux::PostMainMessageLoopRun().
