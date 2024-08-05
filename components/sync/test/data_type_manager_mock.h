@@ -20,7 +20,7 @@ class DataTypeManagerMock : public DataTypeManager {
               ClearMetadataWhileStoppedExceptFor,
               (ModelTypeSet),
               (override));
-  MOCK_METHOD(void, SetConfigurer, (ModelTypeConfigurer*), (override));
+  MOCK_METHOD(void, SetConfigurer, (DataTypeConfigurer*), (override));
   MOCK_METHOD(void,
               Configure,
               (ModelTypeSet, const ConfigureContext&),

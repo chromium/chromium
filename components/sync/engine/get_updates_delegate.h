@@ -10,8 +10,8 @@
 #include "base/memory/raw_ref.h"
 #include "components/sync/engine/cycle/nudge_tracker.h"
 #include "components/sync/engine/cycle/status_controller.h"
+#include "components/sync/engine/data_type_registry.h"
 #include "components/sync/engine/events/protocol_event.h"
-#include "components/sync/engine/model_type_registry.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 
 namespace sync_pb {

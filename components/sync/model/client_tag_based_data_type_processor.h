@@ -164,7 +164,7 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncModelTypeErrorSite)
 
  private:
-  friend class ModelTypeDebugInfo;
+  friend class DataTypeDebugInfo;
   friend class ClientTagBasedDataTypeProcessorTest;
 
   // Directs the bridge to clear the persisted metadata as known to the entity

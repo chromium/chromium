@@ -432,7 +432,7 @@ BookmarkRemoteUpdatesHandler::ReorderValidUpdates(
   // Normally there shouldn't be multiple updates for the same UUID, but let's
   // avoiding dedupping here just in case (e.g. the could in theory be a
   // combination of client-tagged and non-client-tagged updated that
-  // ModelTypeWorker failed to deduplicate.
+  // DataTypeWorker failed to deduplicate.
   std::unordered_multimap<base::Uuid, const syncer::UpdateResponseData*,
                           base::UuidHash>
       uuid_to_updates;

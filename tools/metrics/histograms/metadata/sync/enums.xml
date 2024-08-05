@@ -106,7 +106,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Failed to parse decrypted invitation"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync/engine/model_type_worker.cc:CrossUserSharingDecryptionResult) -->
+<!-- LINT.ThenChange(/components/sync/engine/data_type_worker.cc:CrossUserSharingDecryptionResult) -->
 
 <!-- LINT.IfChange(CrossUserSharingKeyPairState) -->
 
@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="ModelType is not connected"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync/engine/model_type_worker.h:PendingInvalidationStatus) -->
+<!-- LINT.ThenChange(/components/sync/engine/data_type_worker.h:PendingInvalidationStatus) -->
 
 <!-- LINT.IfChange(RemoteBookmarkUpdateError) -->
 
@@ -1059,7 +1059,7 @@ chromium-metrics-reviews@google.com.
       label="Notes field is set only in the backup but not decryptable"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync/engine/model_type_worker.h:SyncPasswordNotesStateInUpdate) -->
+<!-- LINT.ThenChange(/components/sync/engine/data_type_worker.h:SyncPasswordNotesStateInUpdate) -->
 
 <!-- LINT.IfChange(SyncPlaceholderTabResyncResult) -->
 

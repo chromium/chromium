@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/commit.h"
-#include "components/sync/engine/model_type_registry.h"
+#include "components/sync/engine/data_type_registry.h"
 
 namespace syncer {
 

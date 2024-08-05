@@ -36,7 +36,7 @@ using TypeSyncEntityMap = std::map<ModelType, SyncEntityList>;
 using TypeToIndexMap = std::map<ModelType, size_t>;
 
 bool ShouldRequestEncryptionKey(SyncCycleContext* context) {
-  return context->model_type_registry()
+  return context->data_type_registry()
       ->keystore_keys_handler()
       ->NeedKeystoreKey();
 }
@@ -66,7 +66,7 @@ bool HandleGetEncryptionKeyResponse(
       ExtractKeystoreKeys(update_response);
 
   bool success =
-      context->model_type_registry()->keystore_keys_handler()->SetKeystoreKeys(
+      context->data_type_registry()->keystore_keys_handler()->SetKeystoreKeys(
           keystore_keys);
 
   DVLOG(1) << "GetUpdates returned "

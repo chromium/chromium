@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine/model_type_worker.h"
+#include "components/sync/engine/data_type_worker.h"
 
 #include <stdint.h>
 
@@ -163,7 +163,7 @@ MATCHER_P(HasPreferenceClientTag,
 
 }  // namespace
 
-// Tests the ModelTypeWorker.
+// Tests the DataTypeWorker.
 //
 // This class passes messages between the model thread and sync server.
 // As such, its code is subject to lots of different race conditions. This
@@ -190,21 +190,21 @@ MATCHER_P(HasPreferenceClientTag,
 // The interface with the server is built around "pulling" data from this
 // class, so we don't have to mock out any of it. We wrap it with some
 // convenience functions so we can emulate server behavior.
-class ModelTypeWorkerTest : public ::testing::Test {
+class DataTypeWorkerTest : public ::testing::Test {
  protected:
   const ClientTagHash kHash1 = GeneratePreferenceTagHash(kTag1);
   const ClientTagHash kHash2 = GeneratePreferenceTagHash(kTag2);
   const ClientTagHash kHash3 = GeneratePreferenceTagHash(kTag3);
 
-  ModelTypeWorkerTest()
-      : ModelTypeWorkerTest(PREFERENCES, /*is_encrypted_type=*/false) {}
+  DataTypeWorkerTest()
+      : DataTypeWorkerTest(PREFERENCES, /*is_encrypted_type=*/false) {}
 
-  ModelTypeWorkerTest(ModelType model_type, bool is_encrypted_type)
+  DataTypeWorkerTest(ModelType model_type, bool is_encrypted_type)
       : model_type_(model_type),
         is_encrypted_type_(is_encrypted_type),
         mock_server_(std::make_unique<SingleTypeMockServer>(model_type)) {}
 
-  ~ModelTypeWorkerTest() override = default;
+  ~DataTypeWorkerTest() override = default;
 
   // One of these Initialize functions should be called at the beginning of
   // each test.
@@ -272,7 +272,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
   // Initialize with a custom initial ModelTypeState and pending updates.
   void InitializeWithState(const ModelType type, const ModelTypeState& state) {
     DCHECK(!worker_);
-    worker_ = std::make_unique<ModelTypeWorker>(
+    worker_ = std::make_unique<DataTypeWorker>(
         type, state, &cryptographer_, is_encrypted_type_,
         PassphraseType::kImplicitPassphrase, &mock_nudge_handler_,
         &cancelation_signal_);
@@ -281,7 +281,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
     auto processor = std::make_unique<MockDataTypeProcessor>();
     mock_type_processor_ = processor.get();
     processor->SetDisconnectCallback(base::BindOnce(
-        &ModelTypeWorkerTest::DisconnectProcessor, base::Unretained(this)));
+        &DataTypeWorkerTest::DisconnectProcessor, base::Unretained(this)));
     worker_->ConnectSync(std::move(processor));
   }
 
@@ -535,7 +535,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
 
   FakeCryptographer* cryptographer() { return &cryptographer_; }
   MockDataTypeProcessor* processor() { return mock_type_processor_; }
-  ModelTypeWorker* worker() { return worker_.get(); }
+  DataTypeWorker* worker() { return worker_.get(); }
   SingleTypeMockServer* server() { return mock_server_.get(); }
   MockNudgeHandler* nudge_handler() { return &mock_nudge_handler_; }
   StatusController* status_controller() { return &status_controller_; }
@@ -564,11 +564,11 @@ class ModelTypeWorkerTest : public ::testing::Test {
 
   CancelationSignal cancelation_signal_;
 
-  // The ModelTypeWorker being tested.
-  std::unique_ptr<ModelTypeWorker> worker_;
+  // The DataTypeWorker being tested.
+  std::unique_ptr<DataTypeWorker> worker_;
 
   // Non-owned, possibly null pointer. This object belongs to the
-  // ModelTypeWorker under test.
+  // DataTypeWorker under test.
   raw_ptr<MockDataTypeProcessor, DanglingUntriaged> mock_type_processor_ =
       nullptr;
 
@@ -594,7 +594,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
 // and the |worker_| doesn't mess up its simple task of moving around these
 // values. It makes sense to have one or two tests that are this thorough, but
 // we shouldn't be this verbose in all tests.
-TEST_F(ModelTypeWorkerTest, SimpleCommit) {
+TEST_F(DataTypeWorkerTest, SimpleCommit) {
   base::HistogramTester histogram_tester;
   NormalInitialize();
 
@@ -657,7 +657,7 @@ TEST_F(ModelTypeWorkerTest, SimpleCommit) {
   EXPECT_FALSE(commit_response.specifics_hash.empty());
 }
 
-TEST_F(ModelTypeWorkerTest, SimpleDelete) {
+TEST_F(DataTypeWorkerTest, SimpleDelete) {
   base::HistogramTester histogram_tester;
   NormalInitialize();
 
@@ -722,7 +722,7 @@ TEST_F(ModelTypeWorkerTest, SimpleDelete) {
 }
 
 // Verifies the sending of an "initial sync done" signal.
-TEST_F(ModelTypeWorkerTest, SendInitialSyncDone) {
+TEST_F(DataTypeWorkerTest, SendInitialSyncDone) {
   FirstInitialize();  // Initialize with no saved sync state.
   EXPECT_EQ(0U, processor()->GetNumUpdateResponses());
   EXPECT_EQ(1, nudge_handler()->GetNumInitialDownloadNudges());
@@ -747,7 +747,7 @@ TEST_F(ModelTypeWorkerTest, SendInitialSyncDone) {
 }
 
 // Commit two new entities in two separate commit messages.
-TEST_F(ModelTypeWorkerTest, TwoNewItemsCommittedSeparately) {
+TEST_F(DataTypeWorkerTest, TwoNewItemsCommittedSeparately) {
   NormalInitialize();
 
   // Commit the first of two entities.
@@ -781,7 +781,7 @@ TEST_F(ModelTypeWorkerTest, TwoNewItemsCommittedSeparately) {
 }
 
 // Test normal update receipt code path.
-TEST_F(ModelTypeWorkerTest, ReceiveUpdates) {
+TEST_F(DataTypeWorkerTest, ReceiveUpdates) {
   base::HistogramTester histogram_tester;
   NormalInitialize();
 
@@ -819,14 +819,14 @@ TEST_F(ModelTypeWorkerTest, ReceiveUpdates) {
       ModelTypeEntityChange::kRemoteNonInitialUpdate, 1);
 }
 
-TEST_F(ModelTypeWorkerTest,
+TEST_F(DataTypeWorkerTest,
        ReceiveUpdates_ShouldNotPopulateUpdatedTypesOnTombstone) {
   NormalInitialize();
   TriggerTombstoneFromServer(10, kTag1);
   EXPECT_EQ(status_controller()->get_updated_types(), ModelTypeSet());
 }
 
-TEST_F(ModelTypeWorkerTest, ReceiveUpdates_NoDuplicateHash) {
+TEST_F(DataTypeWorkerTest, ReceiveUpdates_NoDuplicateHash) {
   NormalInitialize();
 
   TriggerPartialUpdateFromServer(10, kTag1, kValue1, kTag2, kValue2);
@@ -850,7 +850,7 @@ TEST_F(ModelTypeWorkerTest, ReceiveUpdates_NoDuplicateHash) {
             result[2]->entity.client_tag_hash);
 }
 
-TEST_F(ModelTypeWorkerTest, ReceiveUpdates_DuplicateHashWithinPartialUpdate) {
+TEST_F(DataTypeWorkerTest, ReceiveUpdates_DuplicateHashWithinPartialUpdate) {
   NormalInitialize();
 
   // Note that kTag1 appears twice.
@@ -869,7 +869,7 @@ TEST_F(ModelTypeWorkerTest, ReceiveUpdates_DuplicateHashWithinPartialUpdate) {
   EXPECT_EQ(kValue2, result[0]->entity.specifics.preference().value());
 }
 
-TEST_F(ModelTypeWorkerTest, ReceiveUpdates_DuplicateHashAcrossPartialUpdates) {
+TEST_F(DataTypeWorkerTest, ReceiveUpdates_DuplicateHashAcrossPartialUpdates) {
   NormalInitialize();
 
   // Note that kTag1 appears in both partial updates.
@@ -889,7 +889,7 @@ TEST_F(ModelTypeWorkerTest, ReceiveUpdates_DuplicateHashAcrossPartialUpdates) {
   EXPECT_EQ(kValue2, result[0]->entity.specifics.preference().value());
 }
 
-TEST_F(ModelTypeWorkerTest,
+TEST_F(DataTypeWorkerTest,
        ReceiveUpdates_EmptyHashNotConsideredDuplicateIfForDistinctServerIds) {
   NormalInitialize();
   // First create two entities with different tags, so they get assigned
@@ -922,7 +922,7 @@ TEST_F(ModelTypeWorkerTest,
   EXPECT_EQ(entity2.id_string(), result[1]->entity.id);
 }
 
-TEST_F(ModelTypeWorkerTest, ReceiveUpdates_MultipleDuplicateHashes) {
+TEST_F(DataTypeWorkerTest, ReceiveUpdates_MultipleDuplicateHashes) {
   NormalInitialize();
 
   TriggerPartialUpdateFromServer(10, kTag1, kValue3);
@@ -957,7 +957,7 @@ TEST_F(ModelTypeWorkerTest, ReceiveUpdates_MultipleDuplicateHashes) {
 
 // Covers the scenario where updates have the same client tag hash but
 // different server IDs. This scenario is considered a bug on the server.
-TEST_F(ModelTypeWorkerTest,
+TEST_F(DataTypeWorkerTest,
        ReceiveUpdates_DuplicateClientTagHashesForDistinctServerIds) {
   NormalInitialize();
 
@@ -998,7 +998,7 @@ TEST_F(ModelTypeWorkerTest,
 // Covers the scenario where updates have the same GUID as originator client
 // item ID but different server IDs. This scenario is considered a bug on the
 // server.
-TEST_F(ModelTypeWorkerTest,
+TEST_F(DataTypeWorkerTest,
        ReceiveUpdates_DuplicateOriginatorClientIdForDistinctServerIds) {
   const std::string kOriginatorClientItemId =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
@@ -1052,7 +1052,7 @@ TEST_F(ModelTypeWorkerTest,
 // but different originator cache GUIDs. This is only possible for legacy
 // bookmarks created before 2015.
 TEST_F(
-    ModelTypeWorkerTest,
+    DataTypeWorkerTest,
     ReceiveUpdates_DuplicateOriginatorClientIdForDistinctOriginatorCacheGuids) {
   const std::string kOriginatorClientItemId = "1";
   const std::string kURL1 = "http://url1";
@@ -1090,7 +1090,7 @@ TEST_F(
 
 // Test that an update download coming in multiple parts gets accumulated into
 // one call to the processor.
-TEST_F(ModelTypeWorkerTest, ReceiveMultiPartUpdates) {
+TEST_F(DataTypeWorkerTest, ReceiveMultiPartUpdates) {
   NormalInitialize();
 
   // A partial update response doesn't pass anything to the processor.
@@ -1123,7 +1123,7 @@ TEST_F(ModelTypeWorkerTest, ReceiveMultiPartUpdates) {
 }
 
 // Test that updates with no entities behave correctly.
-TEST_F(ModelTypeWorkerTest, EmptyUpdates) {
+TEST_F(DataTypeWorkerTest, EmptyUpdates) {
   NormalInitialize();
 
   server()->SetProgressMarkerToken("token2");
@@ -1135,7 +1135,7 @@ TEST_F(ModelTypeWorkerTest, EmptyUpdates) {
 }
 
 // Test commit of encrypted updates.
-TEST_F(ModelTypeWorkerTest, EncryptedCommit) {
+TEST_F(DataTypeWorkerTest, EncryptedCommit) {
   NormalInitialize();
 
   EXPECT_EQ(0U, processor()->GetNumUpdateResponses());
@@ -1167,7 +1167,7 @@ TEST_F(ModelTypeWorkerTest, EncryptedCommit) {
 }
 
 // Test commit of encrypted tombstone.
-TEST_F(ModelTypeWorkerTest, EncryptedDelete) {
+TEST_F(DataTypeWorkerTest, EncryptedDelete) {
   NormalInitialize();
 
   EXPECT_EQ(0U, processor()->GetNumUpdateResponses());
@@ -1195,7 +1195,7 @@ TEST_F(ModelTypeWorkerTest, EncryptedDelete) {
 
 // Test that updates are not delivered to the processor when encryption is
 // required but unavailable.
-TEST_F(ModelTypeWorkerTest, EncryptionBlocksUpdates) {
+TEST_F(DataTypeWorkerTest, EncryptionBlocksUpdates) {
   NormalInitialize();
 
   // Update encryption key name, should be blocked.
@@ -1222,7 +1222,7 @@ TEST_F(ModelTypeWorkerTest, EncryptionBlocksUpdates) {
 
 // Test that local changes are not committed when encryption is required but
 // unavailable.
-TEST_F(ModelTypeWorkerTest, EncryptionBlocksCommits) {
+TEST_F(DataTypeWorkerTest, EncryptionBlocksCommits) {
   NormalInitialize();
 
   AddPendingKey();
@@ -1253,7 +1253,7 @@ TEST_F(ModelTypeWorkerTest, EncryptionBlocksCommits) {
 }
 
 // Test the receipt of decryptable entities.
-TEST_F(ModelTypeWorkerTest, ReceiveDecryptableEntities) {
+TEST_F(DataTypeWorkerTest, ReceiveDecryptableEntities) {
   NormalInitialize();
 
   // Create a new Nigori and allow the cryptographer to decrypt it.
@@ -1286,7 +1286,7 @@ TEST_F(ModelTypeWorkerTest, ReceiveDecryptableEntities) {
 
 // Test the receipt of decryptable entities, and that the worker will keep the
 // entities until the decryption key arrives.
-TEST_F(ModelTypeWorkerTest,
+TEST_F(DataTypeWorkerTest,
        ReceiveDecryptableEntitiesShouldWaitTillKeyArrives) {
   NormalInitialize();
 
@@ -1313,7 +1313,7 @@ TEST_F(ModelTypeWorkerTest,
 }
 
 // Test initializing a CommitQueue with a cryptographer at startup.
-TEST_F(ModelTypeWorkerTest, InitializeWithCryptographer) {
+TEST_F(DataTypeWorkerTest, InitializeWithCryptographer) {
   // Set up some encryption state.
   AddPendingKey();
   DecryptPendingKey();
@@ -1330,7 +1330,7 @@ TEST_F(ModelTypeWorkerTest, InitializeWithCryptographer) {
 }
 
 // Test initialzing with a cryptographer that is not ready.
-TEST_F(ModelTypeWorkerTest, InitializeWithPendingCryptographer) {
+TEST_F(DataTypeWorkerTest, InitializeWithPendingCryptographer) {
   // Only add a pending key, cryptographer will not be ready.
   AddPendingKey();
 
@@ -1348,7 +1348,7 @@ TEST_F(ModelTypeWorkerTest, InitializeWithPendingCryptographer) {
 }
 
 // Test initializing with a cryptographer on first startup.
-TEST_F(ModelTypeWorkerTest, FirstInitializeWithCryptographer) {
+TEST_F(DataTypeWorkerTest, FirstInitializeWithCryptographer) {
   // Set up a Cryptographer that's good to go.
   AddPendingKey();
   DecryptPendingKey();
@@ -1366,7 +1366,7 @@ TEST_F(ModelTypeWorkerTest, FirstInitializeWithCryptographer) {
             processor()->GetNthUpdateState(0).encryption_key_name());
 }
 
-TEST_F(ModelTypeWorkerTest, CryptographerDuringInitialization) {
+TEST_F(DataTypeWorkerTest, CryptographerDuringInitialization) {
   // Initialize with initial sync done to false.
   FirstInitialize();
 
@@ -1387,7 +1387,7 @@ TEST_F(ModelTypeWorkerTest, CryptographerDuringInitialization) {
 // Receive updates that are initially undecryptable, then ensure they get
 // delivered to the model thread upon ApplyUpdates() after decryption becomes
 // possible.
-TEST_F(ModelTypeWorkerTest, ReceiveUndecryptableEntries) {
+TEST_F(DataTypeWorkerTest, ReceiveUndecryptableEntries) {
   NormalInitialize();
 
   // Receive a new foreign encryption key that we can't decrypt.
@@ -1411,7 +1411,7 @@ TEST_F(ModelTypeWorkerTest, ReceiveUndecryptableEntries) {
   EXPECT_EQ(default_encryption_key_name(), update.encryption_key_name);
 }
 
-TEST_F(ModelTypeWorkerTest, OverwriteUndecryptableUpdateWithDecryptableOne) {
+TEST_F(DataTypeWorkerTest, OverwriteUndecryptableUpdateWithDecryptableOne) {
   NormalInitialize();
 
   // The cryptographer can decrypt data encrypted with key 1.
@@ -1432,7 +1432,7 @@ TEST_F(ModelTypeWorkerTest, OverwriteUndecryptableUpdateWithDecryptableOne) {
 }
 
 // Verify that corrupted encrypted updates don't cause crashes.
-TEST_F(ModelTypeWorkerTest, ReceiveCorruptEncryption) {
+TEST_F(DataTypeWorkerTest, ReceiveCorruptEncryption) {
   // Initialize the worker with basic encryption state.
   NormalInitialize();
   AddPendingKey();
@@ -1468,7 +1468,7 @@ TEST_F(ModelTypeWorkerTest, ReceiveCorruptEncryption) {
 }
 
 // See crbug.com/1178418 for more context.
-TEST_F(ModelTypeWorkerTest, DecryptUpdateIfPossibleDespiteEncryptionDisabled) {
+TEST_F(DataTypeWorkerTest, DecryptUpdateIfPossibleDespiteEncryptionDisabled) {
   // Make key 1 available to the underlying cryptographer without actually
   // enabling encryption for the worker.
   AddPendingKeyWithoutEnablingEncryption();
@@ -1492,7 +1492,7 @@ TEST_F(ModelTypeWorkerTest, DecryptUpdateIfPossibleDespiteEncryptionDisabled) {
   EXPECT_EQ(1u, processor()->GetNthUpdateResponse(0).size());
 }
 
-TEST_F(ModelTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
+TEST_F(DataTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
   base::HistogramTester histogram_tester;
   NormalInitialize();
   int get_updates_while_should_have_been_known = 0;
@@ -1549,7 +1549,7 @@ TEST_F(ModelTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
       get_updates_while_should_have_been_known, 1);
 }
 
-TEST_F(ModelTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
+TEST_F(DataTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
   base::HistogramTester histogram_tester;
 
   NormalInitialize();
@@ -1595,7 +1595,7 @@ TEST_F(ModelTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
 
 // Test that processor has been disconnected from Sync when worker got
 // disconnected.
-TEST_F(ModelTypeWorkerTest, DisconnectProcessorFromSyncTest) {
+TEST_F(DataTypeWorkerTest, DisconnectProcessorFromSyncTest) {
   // Initialize the worker with basic state.
   NormalInitialize();
   EXPECT_FALSE(IsProcessorDisconnected());
@@ -1604,7 +1604,7 @@ TEST_F(ModelTypeWorkerTest, DisconnectProcessorFromSyncTest) {
 }
 
 // Test that deleted entity can be recreated again.
-TEST_F(ModelTypeWorkerTest, RecreateDeletedEntity) {
+TEST_F(DataTypeWorkerTest, RecreateDeletedEntity) {
   NormalInitialize();
 
   // Create, then delete entity.
@@ -1630,7 +1630,7 @@ TEST_F(ModelTypeWorkerTest, RecreateDeletedEntity) {
   }
 }
 
-TEST_F(ModelTypeWorkerTest, CommitOnly) {
+TEST_F(DataTypeWorkerTest, CommitOnly) {
   base::HistogramTester histogram_tester;
   ModelType model_type = USER_EVENTS;
   InitializeCommitOnly(model_type);
@@ -1672,7 +1672,7 @@ TEST_F(ModelTypeWorkerTest, CommitOnly) {
   EXPECT_FALSE(commit_response.specifics_hash.empty());
 }
 
-TEST_F(ModelTypeWorkerTest, ShouldPropagateCommitFailure) {
+TEST_F(DataTypeWorkerTest, ShouldPropagateCommitFailure) {
   NormalInitialize();
   processor()->SetCommitRequest(GenerateCommitRequest(kTag1, kValue1));
 
@@ -1682,7 +1682,7 @@ TEST_F(ModelTypeWorkerTest, ShouldPropagateCommitFailure) {
   EXPECT_EQ(0U, processor()->GetNumCommitResponses());
 }
 
-TEST_F(ModelTypeWorkerTest, ShouldKeepGcDirectiveDuringSyncCycle) {
+TEST_F(DataTypeWorkerTest, ShouldKeepGcDirectiveDuringSyncCycle) {
   NormalInitialize();
 
   // The first GetUpdates returns entities with GC directive for download-only
@@ -1707,7 +1707,7 @@ TEST_F(ModelTypeWorkerTest, ShouldKeepGcDirectiveDuringSyncCycle) {
   EXPECT_FALSE(processor()->GetNthGcDirective(1).has_version_watermark());
 }
 
-TEST_F(ModelTypeWorkerTest, ShouldCleanUpPendingUpdatesOnGcDirective) {
+TEST_F(DataTypeWorkerTest, ShouldCleanUpPendingUpdatesOnGcDirective) {
   NormalInitialize();
 
   // The first GetUpdates returns entities with GC directive for download-only
@@ -1730,7 +1730,7 @@ TEST_F(ModelTypeWorkerTest, ShouldCleanUpPendingUpdatesOnGcDirective) {
   EXPECT_TRUE(processor()->GetNthGcDirective(0).has_version_watermark());
 }
 
-TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
      NonBookmarkNorWalletSucceeds) {
   sync_pb::SyncEntity entity;
 
@@ -1746,8 +1746,8 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
 
   base::HistogramTester histogram_tester;
 
-  EXPECT_EQ(ModelTypeWorker::SUCCESS,
-            ModelTypeWorker::PopulateUpdateResponseData(
+  EXPECT_EQ(DataTypeWorker::SUCCESS,
+            DataTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), PREFERENCES, entity, &response_data));
   const EntityData& data = response_data.entity;
   EXPECT_FALSE(data.id.empty());
@@ -1759,7 +1759,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
   EXPECT_EQ(kValue1, data.specifics.preference().value());
 }
 
-TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkTombstone) {
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest, BookmarkTombstone) {
   sync_pb::SyncEntity entity;
   // Production server sets the name to be "tombstone" for all tombstones.
   entity.set_name("tombstone");
@@ -1776,8 +1776,8 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkTombstone) {
   entity.mutable_specifics()->mutable_bookmark();
 
   UpdateResponseData response_data;
-  EXPECT_EQ(ModelTypeWorker::SUCCESS,
-            ModelTypeWorker::PopulateUpdateResponseData(
+  EXPECT_EQ(DataTypeWorker::SUCCESS,
+            DataTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
 
   const EntityData& data = response_data.entity;
@@ -1785,7 +1785,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkTombstone) {
   EXPECT_TRUE(data.is_deleted());
 }
 
-TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
      BookmarkWithUniquePositionInSyncEntity) {
   const UniquePosition kUniquePosition =
       UniquePosition::InitialPosition(UniquePosition::RandomSuffix());
@@ -1797,8 +1797,8 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
 
   UpdateResponseData response_data;
 
-  EXPECT_EQ(ModelTypeWorker::SUCCESS,
-            ModelTypeWorker::PopulateUpdateResponseData(
+  EXPECT_EQ(DataTypeWorker::SUCCESS,
+            DataTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
   const EntityData& data = response_data.entity;
   EXPECT_TRUE(syncer::UniquePosition::FromProto(
@@ -1806,7 +1806,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
                   .Equals(kUniquePosition));
 }
 
-TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
      BookmarkWithPositionInParent) {
   sync_pb::SyncEntity entity;
   entity.set_position_in_parent(5);
@@ -1816,8 +1816,8 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
 
   UpdateResponseData response_data;
 
-  EXPECT_EQ(ModelTypeWorker::SUCCESS,
-            ModelTypeWorker::PopulateUpdateResponseData(
+  EXPECT_EQ(DataTypeWorker::SUCCESS,
+            DataTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
   const EntityData& data = response_data.entity;
   EXPECT_TRUE(syncer::UniquePosition::FromProto(
@@ -1825,7 +1825,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
                   .IsValid());
 }
 
-TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
      BookmarkWithInsertAfterItemId) {
   sync_pb::SyncEntity entity;
   entity.set_insert_after_item_id("ITEM_ID");
@@ -1835,8 +1835,8 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
 
   UpdateResponseData response_data;
 
-  EXPECT_EQ(ModelTypeWorker::SUCCESS,
-            ModelTypeWorker::PopulateUpdateResponseData(
+  EXPECT_EQ(DataTypeWorker::SUCCESS,
+            DataTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
   const EntityData& data = response_data.entity;
   EXPECT_TRUE(syncer::UniquePosition::FromProto(
@@ -1844,7 +1844,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
                   .IsValid());
 }
 
-TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
      BookmarkWithMissingPositionFallsBackToRandom) {
   sync_pb::SyncEntity entity;
   entity.set_client_tag_hash("CLIENT_TAG");
@@ -1853,8 +1853,8 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
 
   UpdateResponseData response_data;
 
-  EXPECT_EQ(ModelTypeWorker::SUCCESS,
-            ModelTypeWorker::PopulateUpdateResponseData(
+  EXPECT_EQ(DataTypeWorker::SUCCESS,
+            DataTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
   const EntityData& data = response_data.entity;
   EXPECT_TRUE(syncer::UniquePosition::FromProto(
@@ -1862,7 +1862,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
                   .IsValid());
 }
 
-TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkWithGUID) {
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest, BookmarkWithGUID) {
   const std::string kGuid1 = base::Uuid::GenerateRandomV4().AsLowercaseString();
   const std::string kGuid2 = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
@@ -1876,8 +1876,8 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkWithGUID) {
 
   UpdateResponseData response_data;
 
-  EXPECT_EQ(ModelTypeWorker::SUCCESS,
-            ModelTypeWorker::PopulateUpdateResponseData(
+  EXPECT_EQ(DataTypeWorker::SUCCESS,
+            DataTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
 
   const EntityData& data = response_data.entity;
@@ -1886,7 +1886,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkWithGUID) {
   EXPECT_EQ(kGuid2, data.originator_client_item_id);
 }
 
-TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkWithMissingGUID) {
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest, BookmarkWithMissingGUID) {
   const std::string kGuid1 = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   sync_pb::SyncEntity entity;
@@ -1899,8 +1899,8 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkWithMissingGUID) {
 
   UpdateResponseData response_data;
 
-  EXPECT_EQ(ModelTypeWorker::SUCCESS,
-            ModelTypeWorker::PopulateUpdateResponseData(
+  EXPECT_EQ(DataTypeWorker::SUCCESS,
+            DataTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
 
   const EntityData& data = response_data.entity;
@@ -1909,7 +1909,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkWithMissingGUID) {
   EXPECT_EQ(kGuid1, data.specifics.bookmark().guid());
 }
 
-TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
      BookmarkWithMissingGUIDAndInvalidOCII) {
   const std::string kInvalidOCII = "INVALID OCII";
 
@@ -1924,8 +1924,8 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
 
   UpdateResponseData response_data;
 
-  EXPECT_EQ(ModelTypeWorker::SUCCESS,
-            ModelTypeWorker::PopulateUpdateResponseData(
+  EXPECT_EQ(DataTypeWorker::SUCCESS,
+            DataTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
 
   const EntityData& data = response_data.entity;
@@ -1935,7 +1935,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
       base::Uuid::ParseLowercase(data.specifics.bookmark().guid()).is_valid());
 }
 
-TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
      WalletDataWithMissingClientTagHash) {
   UpdateResponseData response_data;
 
@@ -1946,15 +1946,15 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
       sync_pb::AutofillWalletSpecifics::POSTAL_ADDRESS);
 
   ASSERT_EQ(
-      ModelTypeWorker::SUCCESS,
-      ModelTypeWorker::PopulateUpdateResponseData(
+      DataTypeWorker::SUCCESS,
+      DataTypeWorker::PopulateUpdateResponseData(
           FakeCryptographer(), AUTOFILL_WALLET_DATA, entity, &response_data));
 
   // The client tag hash gets filled in by the worker.
   EXPECT_FALSE(response_data.entity.client_tag_hash.value().empty());
 }
 
-TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
      OfferDataWithMissingClientTagHash) {
   UpdateResponseData response_data;
 
@@ -1964,15 +1964,15 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
   entity.mutable_specifics()->mutable_autofill_offer()->set_id(1234567);
 
   ASSERT_EQ(
-      ModelTypeWorker::SUCCESS,
-      ModelTypeWorker::PopulateUpdateResponseData(
+      DataTypeWorker::SUCCESS,
+      DataTypeWorker::PopulateUpdateResponseData(
           FakeCryptographer(), AUTOFILL_WALLET_OFFER, entity, &response_data));
 
   // The client tag hash gets filled in by the worker.
   EXPECT_FALSE(response_data.entity.client_tag_hash.value().empty());
 }
 
-TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
      WebAuthnCredentialWithLegacyClientTagHash) {
   // Older Play Services clients set the `client_tag_hash` to be the
   // hex-encoding of the 16-byte `sync_id`. Expect the worker to change this to
@@ -1987,15 +1987,15 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
   *entity.mutable_client_tag_hash() = base::HexEncode(sync_id);
 
   ASSERT_EQ(
-      ModelTypeWorker::SUCCESS,
-      ModelTypeWorker::PopulateUpdateResponseData(
+      DataTypeWorker::SUCCESS,
+      DataTypeWorker::PopulateUpdateResponseData(
           FakeCryptographer(), WEBAUTHN_CREDENTIAL, entity, &response_data));
 
   EXPECT_EQ(response_data.entity.client_tag_hash,
             ClientTagHash::FromUnhashed(WEBAUTHN_CREDENTIAL, sync_id));
 }
 
-TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
      WebAuthnCredentialWithLegacyClientTagHashForDeletion) {
   UpdateResponseData response_data;
 
@@ -2004,8 +2004,8 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
   update_entity.set_client_tag_hash("7c37c66ec1f6febff2afc15638803a79");
   update_entity.set_deleted(true);
 
-  ASSERT_EQ(ModelTypeWorker::SUCCESS,
-            ModelTypeWorker::PopulateUpdateResponseData(
+  ASSERT_EQ(DataTypeWorker::SUCCESS,
+            DataTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), WEBAUTHN_CREDENTIAL, update_entity,
                 &response_data));
 
@@ -2115,17 +2115,17 @@ TEST_F(GetLocalChangesRequestTest, SuccessfulRequest) {
 
 // Analogous test fixture but uses PASSWORDS instead of PREFERENCES, in order
 // to test some special encryption requirements for PASSWORDS.
-class ModelTypeWorkerPasswordsTest : public ModelTypeWorkerTest {
+class DataTypeWorkerPasswordsTest : public DataTypeWorkerTest {
  protected:
   const std::string kPassword = "SomePassword";
 
-  ModelTypeWorkerPasswordsTest()
-      : ModelTypeWorkerTest(PASSWORDS, /*is_encrypted_type=*/true) {}
+  DataTypeWorkerPasswordsTest()
+      : DataTypeWorkerTest(PASSWORDS, /*is_encrypted_type=*/true) {}
 };
 
 // Similar to EncryptedCommit but tests PASSWORDS specifically, which use a
 // different encryption mechanism.
-TEST_F(ModelTypeWorkerPasswordsTest, PasswordCommit) {
+TEST_F(DataTypeWorkerPasswordsTest, PasswordCommit) {
   NormalInitialize();
 
   EXPECT_EQ(0U, processor()->GetNumUpdateResponses());
@@ -2169,7 +2169,7 @@ TEST_F(ModelTypeWorkerPasswordsTest, PasswordCommit) {
 
 // Same as above but uses custom passphrase. In this case, field
 // |unencrypted_metadata| should be cleared.
-TEST_F(ModelTypeWorkerPasswordsTest, PasswordCommitWithCustomPassphrase) {
+TEST_F(DataTypeWorkerPasswordsTest, PasswordCommitWithCustomPassphrase) {
   NormalInitializeWithCustomPassphrase();
 
   EXPECT_EQ(0U, processor()->GetNumUpdateResponses());
@@ -2213,7 +2213,7 @@ TEST_F(ModelTypeWorkerPasswordsTest, PasswordCommitWithCustomPassphrase) {
 
 // Similar to ReceiveDecryptableEntities but for PASSWORDS, which have a custom
 // encryption mechanism.
-TEST_F(ModelTypeWorkerPasswordsTest, ReceiveDecryptablePasswordEntities) {
+TEST_F(DataTypeWorkerPasswordsTest, ReceiveDecryptablePasswordEntities) {
   NormalInitialize();
 
   // Create a new Nigori and allow the cryptographer to decrypt it.
@@ -2247,7 +2247,7 @@ TEST_F(ModelTypeWorkerPasswordsTest, ReceiveDecryptablePasswordEntities) {
 
 // Similar to ReceiveDecryptableEntities but for PASSWORDS, which have a custom
 // encryption mechanism.
-TEST_F(ModelTypeWorkerPasswordsTest,
+TEST_F(DataTypeWorkerPasswordsTest,
        ReceiveDecryptablePasswordShouldWaitTillKeyArrives) {
   NormalInitialize();
 
@@ -2284,7 +2284,7 @@ TEST_F(ModelTypeWorkerPasswordsTest,
 
 // Analogous to ReceiveUndecryptableEntries but for PASSWORDS, which have a
 // custom encryption mechanism.
-TEST_F(ModelTypeWorkerPasswordsTest, ReceiveUndecryptablePasswordEntries) {
+TEST_F(DataTypeWorkerPasswordsTest, ReceiveUndecryptablePasswordEntries) {
   NormalInitialize();
 
   // Receive a new foreign encryption key that we can't decrypt.
@@ -2324,7 +2324,7 @@ TEST_F(ModelTypeWorkerPasswordsTest, ReceiveUndecryptablePasswordEntries) {
 
 // Similar to ReceiveDecryptableEntities but for PASSWORDS, which have a custom
 // encryption mechanism.
-TEST_F(ModelTypeWorkerPasswordsTest, ReceiveCorruptedPasswordEntities) {
+TEST_F(DataTypeWorkerPasswordsTest, ReceiveCorruptedPasswordEntities) {
   NormalInitialize();
 
   sync_pb::PasswordSpecificsData unencrypted_password;
@@ -2360,13 +2360,13 @@ TEST_F(ModelTypeWorkerPasswordsTest, ReceiveCorruptedPasswordEntities) {
 
 // Analogous test fixture but uses BOOKMARKS instead of PREFERENCES, in order
 // to test some special encryption requirements for BOOKMARKS.
-class ModelTypeWorkerBookmarksTest : public ModelTypeWorkerTest {
+class DataTypeWorkerBookmarksTest : public DataTypeWorkerTest {
  protected:
-  ModelTypeWorkerBookmarksTest()
-      : ModelTypeWorkerTest(BOOKMARKS, /*is_encrypted_type=*/false) {}
+  DataTypeWorkerBookmarksTest()
+      : DataTypeWorkerTest(BOOKMARKS, /*is_encrypted_type=*/false) {}
 };
 
-TEST_F(ModelTypeWorkerBookmarksTest, CanDecryptUpdateWithMissingBookmarkGUID) {
+TEST_F(DataTypeWorkerBookmarksTest, CanDecryptUpdateWithMissingBookmarkGUID) {
   const std::string kGuid1 = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   // Initialize the worker with basic encryption state.
@@ -2415,7 +2415,7 @@ TEST_F(ModelTypeWorkerBookmarksTest, CanDecryptUpdateWithMissingBookmarkGUID) {
                         .guid());
 }
 
-TEST_F(ModelTypeWorkerBookmarksTest,
+TEST_F(DataTypeWorkerBookmarksTest,
        CanDecryptUpdateWithMissingBookmarkGUIDAndInvalidOCII) {
   const std::string kInvalidOCII = "INVALID OCII";
 
@@ -2467,7 +2467,7 @@ TEST_F(ModelTypeWorkerBookmarksTest,
                   .is_valid());
 }
 
-TEST_F(ModelTypeWorkerBookmarksTest,
+TEST_F(DataTypeWorkerBookmarksTest,
        CannotDecryptUpdateWithMissingBookmarkGUID) {
   const std::string kGuid1 = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
@@ -2508,7 +2508,7 @@ TEST_F(ModelTypeWorkerBookmarksTest,
                         .guid());
 }
 
-TEST_F(ModelTypeWorkerBookmarksTest,
+TEST_F(DataTypeWorkerBookmarksTest,
        CannotDecryptUpdateWithMissingBookmarkGUIDAndInvalidOCII) {
   const std::string kInvalidOCII = "INVALID OCII";
 
@@ -2551,7 +2551,7 @@ TEST_F(ModelTypeWorkerBookmarksTest,
                   .is_valid());
 }
 
-TEST_F(ModelTypeWorkerTest, ShouldNotHaveLocalChangesOnSuccessfulLastCommit) {
+TEST_F(DataTypeWorkerTest, ShouldNotHaveLocalChangesOnSuccessfulLastCommit) {
   const size_t kMaxEntities = 5;
 
   NormalInitialize();
@@ -2574,7 +2574,7 @@ TEST_F(ModelTypeWorkerTest, ShouldNotHaveLocalChangesOnSuccessfulLastCommit) {
   EXPECT_FALSE(worker()->HasLocalChanges());
 }
 
-TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesOnCommitFailure) {
+TEST_F(DataTypeWorkerTest, ShouldHaveLocalChangesOnCommitFailure) {
   NormalInitialize();
 
   ASSERT_FALSE(worker()->HasLocalChanges());
@@ -2586,7 +2586,7 @@ TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesOnCommitFailure) {
   EXPECT_TRUE(worker()->HasLocalChanges());
 }
 
-TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesOnSuccessfulNotLastCommit) {
+TEST_F(DataTypeWorkerTest, ShouldHaveLocalChangesOnSuccessfulNotLastCommit) {
   const size_t kMaxEntities = 2;
   NormalInitialize();
 
@@ -2614,7 +2614,7 @@ TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesOnSuccessfulNotLastCommit) {
   EXPECT_FALSE(worker()->HasLocalChanges());
 }
 
-TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesWhenNudgedWhileInFlight) {
+TEST_F(DataTypeWorkerTest, ShouldHaveLocalChangesWhenNudgedWhileInFlight) {
   const size_t kMaxEntities = 5;
   NormalInitialize();
 
@@ -2645,7 +2645,7 @@ TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesWhenNudgedWhileInFlight) {
   EXPECT_FALSE(worker()->HasLocalChanges());
 }
 
-TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesWhenContributedMaxEntities) {
+TEST_F(DataTypeWorkerTest, ShouldHaveLocalChangesWhenContributedMaxEntities) {
   const size_t kMaxEntities = 2;
   NormalInitialize();
   ASSERT_FALSE(worker()->HasLocalChanges());
@@ -2671,7 +2671,7 @@ TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesWhenContributedMaxEntities) {
   EXPECT_FALSE(worker()->HasLocalChanges());
 }
 
-TEST_F(ModelTypeWorkerPasswordsTest,
+TEST_F(DataTypeWorkerPasswordsTest,
        ShouldIgnoreTheEncryptedNotesBackupWhenNotesInPasswordSpecificsData) {
   base::HistogramTester histogram_tester;
   const std::string kPasswordInSpecificsNote = "Note Value";
@@ -2720,7 +2720,7 @@ TEST_F(ModelTypeWorkerPasswordsTest,
       syncer::PasswordNotesStateForUMA::kSetInSpecificsData, 1);
 }
 
-TEST_F(ModelTypeWorkerPasswordsTest,
+TEST_F(DataTypeWorkerPasswordsTest,
        ShouldUseTheEncryptedNotesBackupWhenMissingInPasswordSpecificsData) {
   base::HistogramTester histogram_tester;
   const std::string kPasswordNoteBackup = "Note Backup";
@@ -2765,7 +2765,7 @@ TEST_F(ModelTypeWorkerPasswordsTest,
       syncer::PasswordNotesStateForUMA::kSetOnlyInBackup, 1);
 }
 
-TEST_F(ModelTypeWorkerPasswordsTest, ShouldEmitUnsetWhenNoNotesInUpdate) {
+TEST_F(DataTypeWorkerPasswordsTest, ShouldEmitUnsetWhenNoNotesInUpdate) {
   base::HistogramTester histogram_tester;
   NormalInitialize();
 
@@ -2792,7 +2792,7 @@ TEST_F(ModelTypeWorkerPasswordsTest, ShouldEmitUnsetWhenNoNotesInUpdate) {
                                       1);
 }
 
-TEST_F(ModelTypeWorkerPasswordsTest, ShouldEmitNotesBackupCorrupted) {
+TEST_F(DataTypeWorkerPasswordsTest, ShouldEmitNotesBackupCorrupted) {
   base::HistogramTester histogram_tester;
   const std::string kPasswordNoteBackup = "Note Backup";
   NormalInitialize();
@@ -2833,7 +2833,7 @@ TEST_F(ModelTypeWorkerPasswordsTest, ShouldEmitNotesBackupCorrupted) {
       syncer::PasswordNotesStateForUMA::kSetOnlyInBackupButCorrupted, 1);
 }
 
-TEST_F(ModelTypeWorkerPasswordsTest, ShouldPopulatePasswordNotesBackup) {
+TEST_F(DataTypeWorkerPasswordsTest, ShouldPopulatePasswordNotesBackup) {
   const std::string kPasswordInSpecificsNote = "Note Value";
   NormalInitialize();
 
@@ -2866,7 +2866,7 @@ TEST_F(ModelTypeWorkerPasswordsTest, ShouldPopulatePasswordNotesBackup) {
   EXPECT_EQ(kPasswordInSpecificsNote, decrypted_notes.note(0).value());
 }
 
-TEST_F(ModelTypeWorkerPasswordsTest,
+TEST_F(DataTypeWorkerPasswordsTest,
        ShouldPopulatePasswordNotesBackupWhenNoLocalNotes) {
   NormalInitialize();
 
@@ -2894,7 +2894,7 @@ TEST_F(ModelTypeWorkerPasswordsTest,
 }
 
 // Verifies persisting invalidations load from the DataTypeProcessor.
-TEST_F(ModelTypeWorkerTest, LoadInvalidations) {
+TEST_F(DataTypeWorkerTest, LoadInvalidations) {
   InitializeWithInvalidations();
 
   sync_pb::GetUpdateTriggers gu_trigger_1;
@@ -2904,9 +2904,9 @@ TEST_F(ModelTypeWorkerTest, LoadInvalidations) {
 }
 
 // Verifies StorePendingInvalidations() calls for every incoming invalidation.
-TEST_F(ModelTypeWorkerTest, StoreInvalidationsCallCount) {
+TEST_F(DataTypeWorkerTest, StoreInvalidationsCallCount) {
   NormalInitialize();
-  for (size_t i = 0; i < ModelTypeWorker::kMaxPendingInvalidations + 2u; ++i) {
+  for (size_t i = 0; i < DataTypeWorker::kMaxPendingInvalidations + 2u; ++i) {
     worker()->RecordRemoteInvalidation(BuildInvalidation(i + 1, "hint"));
     EXPECT_EQ(static_cast<int>(i + 1),
               processor()->GetStoreInvalidationsCallCount());
@@ -2914,7 +2914,7 @@ TEST_F(ModelTypeWorkerTest, StoreInvalidationsCallCount) {
 }
 
 // Verifies the management of invalidation hints and GU trigger fields.
-TEST_F(ModelTypeWorkerTest, HintCoalescing) {
+TEST_F(DataTypeWorkerTest, HintCoalescing) {
   // Easy case: record one hint.
   NormalInitialize();
 
@@ -2943,7 +2943,7 @@ TEST_F(ModelTypeWorkerTest, HintCoalescing) {
 }
 
 // Verifies the management of pending invalidations and ModelTypeState.
-TEST_F(ModelTypeWorkerTest, ModelTypeStateAfterApplyUpdates) {
+TEST_F(DataTypeWorkerTest, ModelTypeStateAfterApplyUpdates) {
   NormalInitialize();
 
   worker()->RecordRemoteInvalidation(BuildInvalidation(1, "bm_hint_1"));
@@ -2981,15 +2981,15 @@ TEST_F(ModelTypeWorkerTest, ModelTypeStateAfterApplyUpdates) {
 
 // Test the dropping of invalidation hints.  Receives invalidations one by one.
 // Pending invalidation vector buffer size is 10.
-TEST_F(ModelTypeWorkerTest, DropHintsLocally_OneAtATime) {
+TEST_F(DataTypeWorkerTest, DropHintsLocally_OneAtATime) {
   NormalInitialize();
-  for (size_t i = 0; i < ModelTypeWorker::kMaxPendingInvalidations; ++i) {
+  for (size_t i = 0; i < DataTypeWorker::kMaxPendingInvalidations; ++i) {
     worker()->RecordRemoteInvalidation(BuildInvalidation(i, "hint"));
   }
   {
     sync_pb::GetUpdateTriggers gu_trigger;
     worker()->CollectPendingInvalidations(&gu_trigger);
-    EXPECT_EQ(ModelTypeWorker::kMaxPendingInvalidations,
+    EXPECT_EQ(DataTypeWorker::kMaxPendingInvalidations,
               static_cast<size_t>(gu_trigger.notification_hint_size()));
     EXPECT_FALSE(gu_trigger.client_dropped_hints());
   }
@@ -3001,12 +3001,12 @@ TEST_F(ModelTypeWorkerTest, DropHintsLocally_OneAtATime) {
     sync_pb::GetUpdateTriggers gu_trigger;
     worker()->CollectPendingInvalidations(&gu_trigger);
     EXPECT_TRUE(gu_trigger.client_dropped_hints());
-    ASSERT_EQ(ModelTypeWorker::kMaxPendingInvalidations,
+    ASSERT_EQ(DataTypeWorker::kMaxPendingInvalidations,
               static_cast<size_t>(gu_trigger.notification_hint_size()));
 
     // Verify the newest hint was not dropped and is the last in the list.
     EXPECT_EQ("new_hint", gu_trigger.notification_hint(
-                              ModelTypeWorker::kMaxPendingInvalidations - 1));
+                              DataTypeWorker::kMaxPendingInvalidations - 1));
 
     // Verify the oldest hint, too.
     EXPECT_EQ("hint", gu_trigger.notification_hint(0));
@@ -3014,7 +3014,7 @@ TEST_F(ModelTypeWorkerTest, DropHintsLocally_OneAtATime) {
 }
 
 // Tests the receipt of 'unknown version' invalidations.
-TEST_F(ModelTypeWorkerTest, DropHintsAtServer_Alone) {
+TEST_F(DataTypeWorkerTest, DropHintsAtServer_Alone) {
   NormalInitialize();
   // Record the unknown version invalidation.
   worker()->RecordRemoteInvalidation(BuildUnknownVersionInvalidation());
@@ -3039,7 +3039,7 @@ TEST_F(ModelTypeWorkerTest, DropHintsAtServer_Alone) {
 
 // Tests the receipt of 'unknown version' invalidations.  This test also
 // includes a known version invalidation to mix things up a bit.
-TEST_F(ModelTypeWorkerTest, DropHintsAtServer_WithOtherInvalidations) {
+TEST_F(DataTypeWorkerTest, DropHintsAtServer_WithOtherInvalidations) {
   NormalInitialize();
   // Record the two invalidations, one with unknown version, the other known.
   worker()->RecordRemoteInvalidation(BuildUnknownVersionInvalidation());
@@ -3065,7 +3065,7 @@ TEST_F(ModelTypeWorkerTest, DropHintsAtServer_WithOtherInvalidations) {
   }
 }
 
-TEST_F(ModelTypeWorkerTest, ShouldEncryptOutgoingPasswordSharingInvitation) {
+TEST_F(DataTypeWorkerTest, ShouldEncryptOutgoingPasswordSharingInvitation) {
   InitializeCommitOnly(OUTGOING_PASSWORD_SHARING_INVITATION);
 
   EntitySpecifics specifics;
@@ -3089,15 +3089,15 @@ TEST_F(ModelTypeWorkerTest, ShouldEncryptOutgoingPasswordSharingInvitation) {
                    .has_client_only_unencrypted_data());
 }
 
-class ModelTypeWorkerIncomingPasswordSharingInvitationTest
-    : public ModelTypeWorkerTest {
+class DataTypeWorkerIncomingPasswordSharingInvitationTest
+    : public DataTypeWorkerTest {
  public:
-  ModelTypeWorkerIncomingPasswordSharingInvitationTest()
-      : ModelTypeWorkerTest(INCOMING_PASSWORD_SHARING_INVITATION,
+  DataTypeWorkerIncomingPasswordSharingInvitationTest()
+      : DataTypeWorkerTest(INCOMING_PASSWORD_SHARING_INVITATION,
                             /*is_encrypted_type=*/false) {}
 };
 
-TEST_F(ModelTypeWorkerIncomingPasswordSharingInvitationTest,
+TEST_F(DataTypeWorkerIncomingPasswordSharingInvitationTest,
        ShouldDecryptIncomingPasswordSharingInvitation) {
   const std::string kSignonRealm = "http://www.example.com";
   const std::string kUsernameValue = "good username";
@@ -3155,7 +3155,7 @@ TEST_F(ModelTypeWorkerIncomingPasswordSharingInvitationTest,
             kSignonRealm);
 }
 
-TEST_F(ModelTypeWorkerIncomingPasswordSharingInvitationTest,
+TEST_F(DataTypeWorkerIncomingPasswordSharingInvitationTest,
        ShouldIgnoreCorruptedInvitation) {
   NormalInitialize();
 
@@ -3183,9 +3183,9 @@ TEST_F(ModelTypeWorkerIncomingPasswordSharingInvitationTest,
   EXPECT_FALSE(worker()->BlockForEncryption());
 }
 
-class ModelTypeWorkerAckTrackingTest : public ModelTypeWorkerTest {
+class DataTypeWorkerAckTrackingTest : public DataTypeWorkerTest {
  public:
-  ModelTypeWorkerAckTrackingTest() = default;
+  DataTypeWorkerAckTrackingTest() = default;
 
   bool IsInvalidationUnacknowledged(int tracking_id) {
     return tracker_.IsUnacked(tracking_id);
@@ -3205,7 +3205,7 @@ class ModelTypeWorkerAckTrackingTest : public ModelTypeWorkerTest {
         tracker_.IssueInvalidation(version, hint);
     int id = inv->GetTrackingId();
 
-    // Send it to the ModelTypeWorker.
+    // Send it to the DataTypeWorker.
     worker()->RecordRemoteInvalidation(std::move(inv));
 
     // Return its ID to the test framework for use in assertions.
@@ -3218,7 +3218,7 @@ class ModelTypeWorkerAckTrackingTest : public ModelTypeWorkerTest {
         tracker_.IssueUnknownVersionInvalidation();
     int id = inv->GetTrackingId();
 
-    // Send it to the ModelTypeWorker.
+    // Send it to the DataTypeWorker.
     worker()->RecordRemoteInvalidation(std::move(inv));
 
     // Return its ID to the test framework for use in assertions.
@@ -3234,7 +3234,7 @@ class ModelTypeWorkerAckTrackingTest : public ModelTypeWorkerTest {
 };
 
 // Test the acknowledgement of a single invalidation.
-TEST_F(ModelTypeWorkerAckTrackingTest, SimpleAcknowledgement) {
+TEST_F(DataTypeWorkerAckTrackingTest, SimpleAcknowledgement) {
   NormalInitialize();
   int inv_id = SendInvalidation(10, "hint");
   EXPECT_TRUE(IsInvalidationUnacknowledged(inv_id));
@@ -3252,7 +3252,7 @@ TEST_F(ModelTypeWorkerAckTrackingTest, SimpleAcknowledgement) {
 }
 
 // Test the acknowledgement of many invalidations.
-TEST_F(ModelTypeWorkerAckTrackingTest, ManyAcknowledgements) {
+TEST_F(DataTypeWorkerAckTrackingTest, ManyAcknowledgements) {
   NormalInitialize();
   int inv1_id = SendInvalidation(10, "hint");
   int inv2_id = SendInvalidation(14, "hint2");
@@ -3271,12 +3271,12 @@ TEST_F(ModelTypeWorkerAckTrackingTest, ManyAcknowledgements) {
 }
 
 // Test dropping when the buffer overflows and subsequent drop recovery.
-TEST_F(ModelTypeWorkerAckTrackingTest, OverflowAndRecover) {
+TEST_F(DataTypeWorkerAckTrackingTest, OverflowAndRecover) {
   NormalInitialize();
   std::vector<int> invalidation_ids;
 
   int inv10_id = SendInvalidation(10, "hint");
-  for (size_t i = 1; i < ModelTypeWorker::kMaxPendingInvalidations; ++i) {
+  for (size_t i = 1; i < DataTypeWorker::kMaxPendingInvalidations; ++i) {
     invalidation_ids.push_back(SendInvalidation(i + 10, "hint"));
   }
 
@@ -3308,7 +3308,7 @@ TEST_F(ModelTypeWorkerAckTrackingTest, OverflowAndRecover) {
 }
 
 // Test receipt of an unknown version invalidation from the server.
-TEST_F(ModelTypeWorkerAckTrackingTest, UnknownVersionFromServer_Simple) {
+TEST_F(DataTypeWorkerAckTrackingTest, UnknownVersionFromServer_Simple) {
   NormalInitialize();
   int inv_id = SendUnknownVersionInvalidation();
   EXPECT_TRUE(IsInvalidationUnacknowledged(inv_id));
@@ -3320,7 +3320,7 @@ TEST_F(ModelTypeWorkerAckTrackingTest, UnknownVersionFromServer_Simple) {
 }
 
 // Test receipt of multiple unknown version invalidations from the server.
-TEST_F(ModelTypeWorkerAckTrackingTest, UnknownVersionFromServer_Complex) {
+TEST_F(DataTypeWorkerAckTrackingTest, UnknownVersionFromServer_Complex) {
   NormalInitialize();
   int inv1_id = SendUnknownVersionInvalidation();
   int inv2_id = SendInvalidation(10, "hint");
@@ -3351,7 +3351,7 @@ TEST_F(ModelTypeWorkerAckTrackingTest, UnknownVersionFromServer_Complex) {
   EXPECT_TRUE(AllInvalidationsAccountedFor());
 }
 
-TEST_F(ModelTypeWorkerAckTrackingTest, AckInvalidationsAddedDuringSyncCycle) {
+TEST_F(DataTypeWorkerAckTrackingTest, AckInvalidationsAddedDuringSyncCycle) {
   NormalInitialize();
   // Invalidations that are not used in CollectPendingInvalidations() persist
   // until next ApplyUpdates().
@@ -3389,7 +3389,7 @@ TEST_F(ModelTypeWorkerAckTrackingTest, AckInvalidationsAddedDuringSyncCycle) {
 }
 
 // Test invalidations that are used in several proto messages.
-TEST_F(ModelTypeWorkerAckTrackingTest, MultipleGetUpdates) {
+TEST_F(DataTypeWorkerAckTrackingTest, MultipleGetUpdates) {
   NormalInitialize();
   int inv1_id = SendInvalidation(1, "hint1");
   int inv2_id = SendInvalidation(2, "hint2");
@@ -3418,18 +3418,18 @@ TEST_F(ModelTypeWorkerAckTrackingTest, MultipleGetUpdates) {
   EXPECT_TRUE(AllInvalidationsAccountedFor());
 }
 
-// Analogous test fixture to ModelTypeWorkerTest but uses HISTORY instead of
+// Analogous test fixture to DataTypeWorkerTest but uses HISTORY instead of
 // PREFERENCES, in order to test special ApplyUpdatesImmediatelyTypes()
 // behavior.
-class ModelTypeWorkerHistoryTest : public ModelTypeWorkerTest {
+class DataTypeWorkerHistoryTest : public DataTypeWorkerTest {
  protected:
-  ModelTypeWorkerHistoryTest()
-      : ModelTypeWorkerTest(HISTORY, /*is_encrypted_type=*/false) {
+  DataTypeWorkerHistoryTest()
+      : DataTypeWorkerTest(HISTORY, /*is_encrypted_type=*/false) {
     CHECK(ApplyUpdatesImmediatelyTypes().Has(HISTORY));
   }
 };
 
-TEST_F(ModelTypeWorkerHistoryTest, AppliesPartialUpdateImmediately) {
+TEST_F(DataTypeWorkerHistoryTest, AppliesPartialUpdateImmediately) {
   FirstInitialize();  // Initialize with no saved sync state.
   // This did not send anything to the processor yet.
   ASSERT_EQ(0u, processor()->GetNumUpdateResponses());
@@ -3466,7 +3466,7 @@ TEST_F(ModelTypeWorkerHistoryTest, AppliesPartialUpdateImmediately) {
   EXPECT_TRUE(worker()->IsInitialSyncEnded());
 }
 
-TEST_F(ModelTypeWorkerHistoryTest, KeepsInitialSyncMarkedAsDone) {
+TEST_F(DataTypeWorkerHistoryTest, KeepsInitialSyncMarkedAsDone) {
   FirstInitialize();  // Initialize with no saved sync state.
   // This did not send anything to the processor yet.
   ASSERT_EQ(0u, processor()->GetNumUpdateResponses());
@@ -3524,18 +3524,18 @@ TEST_F(ModelTypeWorkerHistoryTest, KeepsInitialSyncMarkedAsDone) {
   EXPECT_TRUE(worker()->IsInitialSyncEnded());
 }
 
-// Analogous test fixture to ModelTypeWorkerTest but uses SHARED_TAB_GROUP_DATA
+// Analogous test fixture to DataTypeWorkerTest but uses SHARED_TAB_GROUP_DATA
 // instead of PREFERENCES, in order to test special shared types behavior.
-class ModelTypeWorkerSharedTabGroupDataTest : public ModelTypeWorkerTest {
+class DataTypeWorkerSharedTabGroupDataTest : public DataTypeWorkerTest {
  protected:
-  ModelTypeWorkerSharedTabGroupDataTest()
-      : ModelTypeWorkerTest(SHARED_TAB_GROUP_DATA,
+  DataTypeWorkerSharedTabGroupDataTest()
+      : DataTypeWorkerTest(SHARED_TAB_GROUP_DATA,
                             /*is_encrypted_type=*/false) {
     CHECK(SharedTypes().Has(SHARED_TAB_GROUP_DATA));
   }
 };
 
-TEST_F(ModelTypeWorkerSharedTabGroupDataTest,
+TEST_F(DataTypeWorkerSharedTabGroupDataTest,
        ShouldClearUpdatesForInactiveCollaborationsDuringSyncCycle) {
   NormalInitialize();
 

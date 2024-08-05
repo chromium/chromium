@@ -16,7 +16,7 @@
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
-#include "components/sync/test/fake_model_type_connector.h"
+#include "components/sync/test/fake_data_type_connector.h"
 
 class GURL;
 
@@ -156,13 +156,13 @@ void FakeSyncManager::ShutdownOnSyncThread() {
   DCHECK(sync_task_runner_->RunsTasksInCurrentSequence());
 }
 
-ModelTypeConnector* FakeSyncManager::GetModelTypeConnector() {
-  return &fake_model_type_connector_;
+DataTypeConnector* FakeSyncManager::GetDataTypeConnector() {
+  return &fake_data_type_connector_;
 }
 
-std::unique_ptr<ModelTypeConnector>
-FakeSyncManager::GetModelTypeConnectorProxy() {
-  return std::make_unique<FakeModelTypeConnector>();
+std::unique_ptr<DataTypeConnector>
+FakeSyncManager::GetDataTypeConnectorProxy() {
+  return std::make_unique<FakeDataTypeConnector>();
 }
 
 std::string FakeSyncManager::cache_guid() {

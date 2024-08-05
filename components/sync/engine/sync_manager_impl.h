@@ -30,7 +30,7 @@
 namespace syncer {
 
 class Cryptographer;
-class ModelTypeRegistry;
+class DataTypeRegistry;
 class SyncCycleContext;
 
 // Lives on the sync sequence.
@@ -72,8 +72,8 @@ class SyncManagerImpl
   void AddObserver(SyncManager::Observer* observer) override;
   void RemoveObserver(SyncManager::Observer* observer) override;
   void ShutdownOnSyncThread() override;
-  ModelTypeConnector* GetModelTypeConnector() override;
-  std::unique_ptr<ModelTypeConnector> GetModelTypeConnectorProxy() override;
+  DataTypeConnector* GetDataTypeConnector() override;
+  std::unique_ptr<DataTypeConnector> GetDataTypeConnectorProxy() override;
   std::string cache_guid() override;
   std::string birthday() override;
   std::string bag_of_chips() override;
@@ -142,7 +142,7 @@ class SyncManagerImpl
 
   // Maintains state that affects the way we interact with different sync types.
   // This state changes when entering or exiting a configuration cycle.
-  std::unique_ptr<ModelTypeRegistry> model_type_registry_;
+  std::unique_ptr<DataTypeRegistry> data_type_registry_;
 
   // A container of various bits of information used by the SyncScheduler to
   // create SyncCycles.  Must outlive the SyncScheduler.

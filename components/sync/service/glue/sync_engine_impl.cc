@@ -297,7 +297,7 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
   active_devices_provider_->SetActiveDevicesChangedCallback(
       base::RepeatingClosure());
 
-  model_type_connector_.reset();
+  data_type_connector_.reset();
 
   // Shut down and destroy SyncManager.
   sync_task_runner_->PostTask(
@@ -329,11 +329,11 @@ void SyncEngineImpl::ConnectDataType(
     ModelType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {
   DCHECK(ProtocolTypes().Has(type));
-  model_type_connector_->ConnectDataType(type, std::move(activation_response));
+  data_type_connector_->ConnectDataType(type, std::move(activation_response));
 }
 
 void SyncEngineImpl::DisconnectDataType(ModelType type) {
-  model_type_connector_->DisconnectDataType(type);
+  data_type_connector_->DisconnectDataType(type);
 }
 
 const SyncStatus& SyncEngineImpl::GetDetailedStatus() const {
@@ -400,14 +400,14 @@ void SyncEngineImpl::FinishConfigureDataTypesOnFrontendLoop(
 }
 
 void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
-    std::unique_ptr<ModelTypeConnector> model_type_connector,
+    std::unique_ptr<DataTypeConnector> data_type_connector,
     const std::string& birthday,
     const std::string& bag_of_chips) {
   TRACE_EVENT0("sync",
                "SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  model_type_connector_ = std::move(model_type_connector);
+  data_type_connector_ = std::move(data_type_connector);
 
   initialized_ = true;
 

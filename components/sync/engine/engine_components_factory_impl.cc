@@ -44,14 +44,14 @@ std::unique_ptr<SyncCycleContext> EngineComponentsFactoryImpl::BuildContext(
     ExtensionsActivity* extensions_activity,
     const std::vector<SyncEngineEventListener*>& listeners,
     DebugInfoGetter* debug_info_getter,
-    ModelTypeRegistry* model_type_registry,
+    DataTypeRegistry* data_type_registry,
     const std::string& cache_guid,
     const std::string& store_birthday,
     const std::string& bag_of_chips,
     base::TimeDelta poll_interval) {
   return std::make_unique<SyncCycleContext>(
       connection_manager, extensions_activity, listeners, debug_info_getter,
-      model_type_registry, cache_guid, store_birthday, bag_of_chips,
+      data_type_registry, cache_guid, store_birthday, bag_of_chips,
       poll_interval);
 }
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_MODEL_TYPE_REGISTRY_H_
-#define COMPONENTS_SYNC_ENGINE_MODEL_TYPE_REGISTRY_H_
+#ifndef COMPONENTS_SYNC_ENGINE_DATA_TYPE_REGISTRY_H_
+#define COMPONENTS_SYNC_ENGINE_DATA_TYPE_REGISTRY_H_
 
 #include <map>
 #include <memory>
@@ -15,7 +15,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
-#include "components/sync/engine/model_type_connector.h"
+#include "components/sync/engine/data_type_connector.h"
 #include "components/sync/engine/nudge_handler.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/update_handler.h"
@@ -25,7 +25,7 @@ namespace syncer {
 class CancelationSignal;
 class CommitContributor;
 class SyncEncryptionHandler;
-class ModelTypeWorker;
+class DataTypeWorker;
 class UpdateHandler;
 
 using UpdateHandlerMap = std::map<ModelType, UpdateHandler*>;
@@ -33,21 +33,21 @@ using CommitContributorMap = std::map<ModelType, CommitContributor*>;
 
 // Keeps track of the sets of active update handlers and commit contributors.
 // Lives on the sync sequence.
-class ModelTypeRegistry : public ModelTypeConnector,
+class DataTypeRegistry : public DataTypeConnector,
                           public SyncEncryptionHandler::Observer {
  public:
   // |nudge_handler|, |cancelation_signal| and |sync_encryption_handler| must
   // outlive this object.
-  ModelTypeRegistry(NudgeHandler* nudge_handler,
+  DataTypeRegistry(NudgeHandler* nudge_handler,
                     CancelationSignal* cancelation_signal,
                     SyncEncryptionHandler* sync_encryption_handler);
 
-  ModelTypeRegistry(const ModelTypeRegistry&) = delete;
-  ModelTypeRegistry& operator=(const ModelTypeRegistry&) = delete;
+  DataTypeRegistry(const DataTypeRegistry&) = delete;
+  DataTypeRegistry& operator=(const DataTypeRegistry&) = delete;
 
-  ~ModelTypeRegistry() override;
+  ~DataTypeRegistry() override;
 
-  // Implementation of ModelTypeConnector.
+  // Implementation of DataTypeConnector.
   void ConnectDataType(
       ModelType type,
       std::unique_ptr<DataTypeActivationResponse> activation_response) override;
@@ -91,13 +91,13 @@ class ModelTypeRegistry : public ModelTypeConnector,
 
   bool HasUnsyncedItems() const;
 
-  const std::vector<std::unique_ptr<ModelTypeWorker>>&
-  GetConnectedModelTypeWorkersForTest() const;
+  const std::vector<std::unique_ptr<DataTypeWorker>>&
+  GetConnectedDataTypeWorkersForTest() const;
 
-  base::WeakPtr<ModelTypeConnector> AsWeakPtr();
+  base::WeakPtr<DataTypeConnector> AsWeakPtr();
 
  private:
-  std::vector<std::unique_ptr<ModelTypeWorker>> connected_model_type_workers_;
+  std::vector<std::unique_ptr<DataTypeWorker>> connected_data_type_workers_;
 
   // Maps of UpdateHandlers and CommitContributors.
   // They do not own any of the objects they point to.
@@ -107,14 +107,14 @@ class ModelTypeRegistry : public ModelTypeConnector,
   const raw_ptr<NudgeHandler> nudge_handler_;
 
   // CancelationSignal is signalled on engine shutdown. It is passed to
-  // ModelTypeWorker to cancel blocking operation.
+  // DataTypeWorker to cancel blocking operation.
   const raw_ptr<CancelationSignal> cancelation_signal_;
 
   const raw_ptr<SyncEncryptionHandler> sync_encryption_handler_;
 
-  base::WeakPtrFactory<ModelTypeRegistry> weak_ptr_factory_{this};
+  base::WeakPtrFactory<DataTypeRegistry> weak_ptr_factory_{this};
 };
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_MODEL_TYPE_REGISTRY_H_
+#endif  // COMPONENTS_SYNC_ENGINE_DATA_TYPE_REGISTRY_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_MODEL_TYPE_WORKER_H_
-#define COMPONENTS_SYNC_ENGINE_MODEL_TYPE_WORKER_H_
+#ifndef COMPONENTS_SYNC_ENGINE_DATA_TYPE_WORKER_H_
+#define COMPONENTS_SYNC_ENGINE_DATA_TYPE_WORKER_H_
 
 #include <stddef.h>
 
@@ -98,7 +98,7 @@ enum class PendingInvalidationStatus {
 // cancel the pending commit.
 //
 // Lives on the sync sequence.
-class ModelTypeWorker : public UpdateHandler,
+class DataTypeWorker : public UpdateHandler,
                         public CommitContributor,
                         public CommitQueue {
  public:
@@ -122,7 +122,7 @@ class ModelTypeWorker : public UpdateHandler,
   // |cryptographer|, |nudge_handler| and |cancelation_signal| must be non-null
   // and outlive the worker. Calling this will construct the object but not
   // more, ConnectSync() must be called immediately afterwards.
-  ModelTypeWorker(ModelType type,
+  DataTypeWorker(ModelType type,
                   const sync_pb::ModelTypeState& initial_state,
                   Cryptographer* cryptographer,
                   bool encryption_enabled,
@@ -130,10 +130,10 @@ class ModelTypeWorker : public UpdateHandler,
                   NudgeHandler* nudge_handler,
                   CancelationSignal* cancelation_signal);
 
-  ModelTypeWorker(const ModelTypeWorker&) = delete;
-  ModelTypeWorker& operator=(const ModelTypeWorker&) = delete;
+  DataTypeWorker(const DataTypeWorker&) = delete;
+  DataTypeWorker& operator=(const DataTypeWorker&) = delete;
 
-  ~ModelTypeWorker() override;
+  ~DataTypeWorker() override;
 
   // Public for testing.
   // |response_data| must be not null.
@@ -145,8 +145,8 @@ class ModelTypeWorker : public UpdateHandler,
 
   static void LogPendingInvalidationStatus(PendingInvalidationStatus status);
 
-  // Initializes the two relevant communication channels: ModelTypeWorker ->
-  // DataTypeProcessor (GetUpdates) and DataTypeProcessor -> ModelTypeWorker
+  // Initializes the two relevant communication channels: DataTypeWorker ->
+  // DataTypeProcessor (GetUpdates) and DataTypeProcessor -> DataTypeWorker
   // (Commit). Both channels are closed when the worker is destroyed. This is
   // done outside of the constructor to avoid the object being used while it's
   // still being built.
@@ -390,7 +390,7 @@ class ModelTypeWorker : public UpdateHandler,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<ModelTypeWorker> weak_ptr_factory_{this};
+  base::WeakPtrFactory<DataTypeWorker> weak_ptr_factory_{this};
 };
 
 // GetLocalChangesRequest is a container for GetLocalChanges call response. It
@@ -442,4 +442,4 @@ class GetLocalChangesRequest
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_MODEL_TYPE_WORKER_H_
+#endif  // COMPONENTS_SYNC_ENGINE_DATA_TYPE_WORKER_H_

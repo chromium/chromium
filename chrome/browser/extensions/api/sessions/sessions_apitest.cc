@@ -45,7 +45,7 @@
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
-#include "components/sync/test/mock_model_type_worker.h"
+#include "components/sync/test/mock_data_type_worker.h"
 #include "components/sync_sessions/session_store.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -213,8 +213,8 @@ void ExtensionSessionsTest::CreateSessionModels() {
       sync_start_future;
   service->GetControllerDelegate()->OnSyncStarting(
       request, sync_start_future.GetCallback());
-  std::unique_ptr<syncer::MockModelTypeWorker> worker =
-      syncer::MockModelTypeWorker::CreateWorkerAndConnectSync(
+  std::unique_ptr<syncer::MockDataTypeWorker> worker =
+      syncer::MockDataTypeWorker::CreateWorkerAndConnectSync(
           sync_start_future.Take());
 
   const base::Time time_now = base::Time::Now();
@@ -234,7 +234,7 @@ void ExtensionSessionsTest::CreateSessionModels() {
 
     // We need to provide a recent timestamp to prevent garbage collection of
     // sessions (anything older than 14 days), so we cannot use
-    // MockModelTypeWorker's convenience functions, which internally use very
+    // MockDataTypeWorker's convenience functions, which internally use very
     // old timestamps.
     syncer::EntityData header_entity_data;
     header_entity_data.client_tag_hash =

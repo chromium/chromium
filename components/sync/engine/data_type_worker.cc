@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine/model_type_worker.h"
+#include "components/sync/engine/data_type_worker.h"
 
 #include <stdint.h>
 
@@ -301,7 +301,7 @@ bool DecryptIncomingPasswordSharingInvitationSpecifics(
 
 }  // namespace
 
-ModelTypeWorker::ModelTypeWorker(ModelType type,
+DataTypeWorker::DataTypeWorker(ModelType type,
                                  const sync_pb::ModelTypeState& initial_state,
                                  Cryptographer* cryptographer,
                                  bool encryption_enabled,
@@ -331,7 +331,7 @@ ModelTypeWorker::ModelTypeWorker(ModelType type,
       model_type_state_.clear_invalidations();
     }
     // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
-    // ModelTypeWorker::ctor(), but sync cycle is not scheduled. New sync
+    // DataTypeWorker::ctor(), but sync cycle is not scheduled. New sync
     // cycle has to be triggered right after we loaded persisted
     // invalidations.
     for (int i = 0; i < model_type_state_.invalidations_size(); ++i) {
@@ -365,20 +365,20 @@ ModelTypeWorker::ModelTypeWorker(ModelType type,
   }
 }
 
-ModelTypeWorker::PendingInvalidation::PendingInvalidation() = default;
-ModelTypeWorker::PendingInvalidation::PendingInvalidation(
+DataTypeWorker::PendingInvalidation::PendingInvalidation() = default;
+DataTypeWorker::PendingInvalidation::PendingInvalidation(
     PendingInvalidation&&) = default;
-ModelTypeWorker::PendingInvalidation&
-ModelTypeWorker::PendingInvalidation::operator=(PendingInvalidation&&) =
+DataTypeWorker::PendingInvalidation&
+DataTypeWorker::PendingInvalidation::operator=(PendingInvalidation&&) =
     default;
-ModelTypeWorker::PendingInvalidation::PendingInvalidation(
+DataTypeWorker::PendingInvalidation::PendingInvalidation(
     std::unique_ptr<SyncInvalidation> invalidation,
     bool is_processed)
     : pending_invalidation(std::move(invalidation)),
       is_processed(is_processed) {}
-ModelTypeWorker::PendingInvalidation::~PendingInvalidation() = default;
+DataTypeWorker::PendingInvalidation::~PendingInvalidation() = default;
 
-ModelTypeWorker::~ModelTypeWorker() {
+DataTypeWorker::~DataTypeWorker() {
   if (model_type_processor_) {
     // This will always be the case in production today.
     model_type_processor_->DisconnectSync();
@@ -388,12 +388,12 @@ ModelTypeWorker::~ModelTypeWorker() {
   }
 }
 
-void ModelTypeWorker::LogPendingInvalidationStatus(
+void DataTypeWorker::LogPendingInvalidationStatus(
     PendingInvalidationStatus status) {
   base::UmaHistogramEnumeration("Sync.PendingInvalidationStatus", status);
 }
 
-void ModelTypeWorker::ConnectSync(
+void DataTypeWorker::ConnectSync(
     std::unique_ptr<DataTypeProcessor> model_type_processor) {
   DCHECK(!model_type_processor_);
   DCHECK(model_type_processor);
@@ -424,12 +424,12 @@ void ModelTypeWorker::ConnectSync(
   }
 }
 
-ModelType ModelTypeWorker::GetModelType() const {
+ModelType DataTypeWorker::GetModelType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return type_;
 }
 
-void ModelTypeWorker::EnableEncryption() {
+void DataTypeWorker::EnableEncryption() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (encryption_enabled_) {
     // No-op.
@@ -445,7 +445,7 @@ void ModelTypeWorker::EnableEncryption() {
   }
 }
 
-void ModelTypeWorker::OnCryptographerChange() {
+void DataTypeWorker::OnCryptographerChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Always try to decrypt, regardless of |encryption_enabled_|. This might
   // add some elements to |pending_updates_|.
@@ -461,28 +461,28 @@ void ModelTypeWorker::OnCryptographerChange() {
   NudgeIfReadyToCommit();
 }
 
-void ModelTypeWorker::UpdatePassphraseType(PassphraseType type) {
+void DataTypeWorker::UpdatePassphraseType(PassphraseType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   passphrase_type_ = type;
 }
 
-bool ModelTypeWorker::IsInitialSyncEnded() const {
+bool DataTypeWorker::IsInitialSyncEnded() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsInitialSyncDone(model_type_state_.initial_sync_state());
 }
 
-const sync_pb::DataTypeProgressMarker& ModelTypeWorker::GetDownloadProgress()
+const sync_pb::DataTypeProgressMarker& DataTypeWorker::GetDownloadProgress()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return model_type_state_.progress_marker();
 }
 
-const sync_pb::DataTypeContext& ModelTypeWorker::GetDataTypeContext() const {
+const sync_pb::DataTypeContext& DataTypeWorker::GetDataTypeContext() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return model_type_state_.type_context();
 }
 
-void ModelTypeWorker::ProcessGetUpdatesResponse(
+void DataTypeWorker::ProcessGetUpdatesResponse(
     const sync_pb::DataTypeProgressMarker& progress_marker,
     const sync_pb::DataTypeContext& mutated_context,
     const SyncEntityList& applicable_updates,
@@ -614,7 +614,7 @@ void ModelTypeWorker::ProcessGetUpdatesResponse(
 
 // static
 // |response_data| must be not null.
-ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
+DataTypeWorker::DecryptionStatus DataTypeWorker::PopulateUpdateResponseData(
     const Cryptographer& cryptographer,
     ModelType model_type,
     const sync_pb::SyncEntity& update_entity,
@@ -630,7 +630,7 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
 
   response_data->encryption_key_name = GetEncryptionKeyName(update_entity);
   // Try to decrypt any encrypted data. Per crbug.com/1178418, in rare cases
-  // ModelTypeWorker receives some even though its type doesn't use encryption.
+  // DataTypeWorker receives some even though its type doesn't use encryption.
   // If so, still try to decrypt with the available keys regardless.
   if (specifics.password().has_encrypted()) {
     // Passwords use their own legacy encryption scheme.
@@ -720,7 +720,7 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
   return SUCCESS;
 }
 
-void ModelTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
+void DataTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Indicate the new initial-sync state to the processor: If the current sync
   // cycle was completed, the initial sync must be done. Otherwise, it's started
@@ -784,7 +784,7 @@ void ModelTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
   SendPendingUpdatesToProcessorIfReady();
 }
 
-void ModelTypeWorker::SendPendingUpdatesToProcessorIfReady() {
+void DataTypeWorker::SendPendingUpdatesToProcessorIfReady() {
   DCHECK(model_type_processor_);
 
   if (!IsInitialSyncAtLeastPartiallyDone(
@@ -823,13 +823,13 @@ void ModelTypeWorker::SendPendingUpdatesToProcessorIfReady() {
   pending_gc_directive_.reset();
 }
 
-void ModelTypeWorker::NudgeForCommit() {
+void DataTypeWorker::NudgeForCommit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   has_local_changes_state_ = kNewlyNudgedLocalChanges;
   NudgeIfReadyToCommit();
 }
 
-void ModelTypeWorker::NudgeIfReadyToCommit() {
+void DataTypeWorker::NudgeIfReadyToCommit() {
   // TODO(crbug.com/40173160): |kNoNudgedLocalChanges| is used to keep the
   // existing behaviour. But perhaps there is no need to nudge for commit if all
   // known changes are already in flight.
@@ -838,7 +838,7 @@ void ModelTypeWorker::NudgeIfReadyToCommit() {
   }
 }
 
-std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
+std::unique_ptr<CommitContribution> DataTypeWorker::GetContribution(
     size_t max_entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsInitialSyncAtLeastPartiallyDone(
@@ -903,18 +903,18 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
 
   return std::make_unique<CommitContributionImpl>(
       type_, model_type_state_.type_context(), std::move(response),
-      base::BindOnce(&ModelTypeWorker::OnCommitResponse,
+      base::BindOnce(&DataTypeWorker::OnCommitResponse,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&ModelTypeWorker::OnFullCommitFailure,
+      base::BindOnce(&DataTypeWorker::OnFullCommitFailure,
                      weak_ptr_factory_.GetWeakPtr()),
       passphrase_type_);
 }
 
-bool ModelTypeWorker::HasLocalChanges() const {
+bool DataTypeWorker::HasLocalChanges() const {
   return has_local_changes_state_ != kNoNudgedLocalChanges;
 }
 
-void ModelTypeWorker::OnCommitResponse(
+void DataTypeWorker::OnCommitResponse(
     const CommitResponseDataList& committed_response_list,
     const FailedCommitResponseDataList& error_response_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -931,13 +931,13 @@ void ModelTypeWorker::OnCommitResponse(
   }
 }
 
-void ModelTypeWorker::OnFullCommitFailure(SyncCommitError commit_error) {
+void DataTypeWorker::OnFullCommitFailure(SyncCommitError commit_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   model_type_processor_->OnCommitFailed(commit_error);
 }
 
-size_t ModelTypeWorker::EstimateMemoryUsage() const {
+size_t DataTypeWorker::EstimateMemoryUsage() const {
   using base::trace_event::EstimateMemoryUsage;
   size_t memory_usage = 0;
   memory_usage += EstimateMemoryUsage(model_type_state_);
@@ -946,7 +946,7 @@ size_t ModelTypeWorker::EstimateMemoryUsage() const {
   return memory_usage;
 }
 
-bool ModelTypeWorker::CanCommitItems() const {
+bool DataTypeWorker::CanCommitItems() const {
   // We can only commit if we've received the initial update response and aren't
   // blocked by missing encryption keys.
   return IsInitialSyncAtLeastPartiallyDone(
@@ -954,7 +954,7 @@ bool ModelTypeWorker::CanCommitItems() const {
          !BlockForEncryption();
 }
 
-bool ModelTypeWorker::BlockForEncryption() const {
+bool DataTypeWorker::BlockForEncryption() const {
   if (!entries_pending_decryption_.empty()) {
     return true;
   }
@@ -963,7 +963,7 @@ bool ModelTypeWorker::BlockForEncryption() const {
   return encryption_enabled_ && !cryptographer_->CanEncrypt();
 }
 
-bool ModelTypeWorker::UpdateTypeEncryptionKeyName() {
+bool DataTypeWorker::UpdateTypeEncryptionKeyName() {
   if (!encryption_enabled_) {
     // The type encryption key is expected to be empty.
     if (model_type_state_.encryption_key_name().empty()) {
@@ -992,7 +992,7 @@ bool ModelTypeWorker::UpdateTypeEncryptionKeyName() {
   return true;
 }
 
-void ModelTypeWorker::DecryptStoredEntities() {
+void DataTypeWorker::DecryptStoredEntities() {
   for (auto it = entries_pending_decryption_.begin();
        it != entries_pending_decryption_.end();) {
     const sync_pb::SyncEntity& encrypted_update = it->second;
@@ -1036,7 +1036,7 @@ void ModelTypeWorker::DecryptStoredEntities() {
   }
 }
 
-void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnServerId() {
+void DataTypeWorker::DeduplicatePendingUpdatesBasedOnServerId() {
   UpdateResponseDataList candidates;
   pending_updates_.swap(candidates);
   pending_updates_.reserve(candidates.size());
@@ -1067,7 +1067,7 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnServerId() {
   }
 }
 
-void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnClientTagHash() {
+void DataTypeWorker::DeduplicatePendingUpdatesBasedOnClientTagHash() {
   UpdateResponseDataList candidates;
   pending_updates_.swap(candidates);
   pending_updates_.reserve(candidates.size());
@@ -1100,7 +1100,7 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnClientTagHash() {
   }
 }
 
-void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnOriginatorClientItemId() {
+void DataTypeWorker::DeduplicatePendingUpdatesBasedOnOriginatorClientItemId() {
   UpdateResponseDataList candidates;
   pending_updates_.swap(candidates);
   pending_updates_.reserve(candidates.size());
@@ -1139,7 +1139,7 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnOriginatorClientItemId() {
   }
 }
 
-bool ModelTypeWorker::ShouldIgnoreUpdatesEncryptedWith(
+bool DataTypeWorker::ShouldIgnoreUpdatesEncryptedWith(
     const std::string& key_name) {
   return unknown_encryption_keys_by_name_.contains(key_name) &&
          unknown_encryption_keys_by_name_.at(key_name)
@@ -1147,7 +1147,7 @@ bool ModelTypeWorker::ShouldIgnoreUpdatesEncryptedWith(
              kMinGuResponsesToIgnoreKey;
 }
 
-void ModelTypeWorker::MaybeDropPendingUpdatesEncryptedWith(
+void DataTypeWorker::MaybeDropPendingUpdatesEncryptedWith(
     const std::string& key_name) {
   if (!ShouldIgnoreUpdatesEncryptedWith(key_name)) {
     return;
@@ -1171,8 +1171,8 @@ void ModelTypeWorker::MaybeDropPendingUpdatesEncryptedWith(
   }
 }
 
-std::vector<ModelTypeWorker::UnknownEncryptionKeyInfo>
-ModelTypeWorker::RemoveKeysNoLongerUnknown() {
+std::vector<DataTypeWorker::UnknownEncryptionKeyInfo>
+DataTypeWorker::RemoveKeysNoLongerUnknown() {
   std::set<std::string> keys_blocking_updates;
   for (const auto& [id, update] : entries_pending_decryption_) {
     const std::string key_name = GetEncryptionKeyName(update);
@@ -1180,7 +1180,7 @@ ModelTypeWorker::RemoveKeysNoLongerUnknown() {
     keys_blocking_updates.insert(key_name);
   }
 
-  std::vector<ModelTypeWorker::UnknownEncryptionKeyInfo> removed_keys;
+  std::vector<DataTypeWorker::UnknownEncryptionKeyInfo> removed_keys;
   for (const auto& [key_name, info] : unknown_encryption_keys_by_name_) {
     if (!keys_blocking_updates.contains(key_name)) {
       removed_keys.push_back(info);
@@ -1193,7 +1193,7 @@ ModelTypeWorker::RemoveKeysNoLongerUnknown() {
   return removed_keys;
 }
 
-bool ModelTypeWorker::HasNonDeletionUpdates() const {
+bool DataTypeWorker::HasNonDeletionUpdates() const {
   for (const UpdateResponseData& update : pending_updates_) {
     if (!update.entity.is_deleted()) {
       return true;
@@ -1202,7 +1202,7 @@ bool ModelTypeWorker::HasNonDeletionUpdates() const {
   return false;
 }
 
-void ModelTypeWorker::ExtractGcDirective() {
+void DataTypeWorker::ExtractGcDirective() {
   DCHECK(model_type_state_.has_progress_marker());
   // This is a workaround for multiple GetUpdates during one sync cycle. The
   // server returns gc_directive only if there are updates for the data type.
@@ -1246,7 +1246,7 @@ void ModelTypeWorker::ExtractGcDirective() {
   // cycle.
 }
 
-void ModelTypeWorker::RecordRemoteInvalidation(
+void DataTypeWorker::RecordRemoteInvalidation(
     std::unique_ptr<SyncInvalidation> incoming) {
   DCHECK(incoming);
   // Merge the incoming invalidation into our list of pending invalidations.
@@ -1313,7 +1313,7 @@ void ModelTypeWorker::RecordRemoteInvalidation(
   SendPendingInvalidationsToProcessor();
 }
 
-void ModelTypeWorker::CollectPendingInvalidations(
+void DataTypeWorker::CollectPendingInvalidations(
     sync_pb::GetUpdateTriggers* msg) {
   // Fill the list of payloads, if applicable.  The payloads must be ordered
   // oldest to newest, so we insert them in the same order as we've been storing
@@ -1333,11 +1333,11 @@ void ModelTypeWorker::CollectPendingInvalidations(
   msg->set_client_dropped_hints(has_dropped_invalidation_);
 }
 
-bool ModelTypeWorker::HasPendingInvalidations() const {
+bool DataTypeWorker::HasPendingInvalidations() const {
   return !pending_invalidations_.empty() || has_dropped_invalidation_;
 }
 
-void ModelTypeWorker::SendPendingInvalidationsToProcessor() {
+void DataTypeWorker::SendPendingInvalidationsToProcessor() {
   CHECK(model_type_processor_);
   DVLOG(1) << "Storing pending invalidations for "
            << ModelTypeToDebugString(type_);
@@ -1348,7 +1348,7 @@ void ModelTypeWorker::SendPendingInvalidationsToProcessor() {
           model_type_state_.invalidations().end()));
 }
 
-void ModelTypeWorker::UpdateModelTypeStateInvalidations() {
+void DataTypeWorker::UpdateModelTypeStateInvalidations() {
   model_type_state_.clear_invalidations();
   for (const auto& inv : pending_invalidations_) {
     SyncInvalidation* invalidation = inv.pending_invalidation.get();
@@ -1361,7 +1361,7 @@ void ModelTypeWorker::UpdateModelTypeStateInvalidations() {
   }
 }
 
-void ModelTypeWorker::EncryptPasswordSpecificsData(
+void DataTypeWorker::EncryptPasswordSpecificsData(
     CommitRequestDataList* request_data_list) {
   CHECK(cryptographer_);
   CHECK(encryption_enabled_);
@@ -1409,7 +1409,7 @@ void ModelTypeWorker::EncryptPasswordSpecificsData(
   }
 }
 
-void ModelTypeWorker::EncryptOutgoingPasswordSharingInvitations(
+void DataTypeWorker::EncryptOutgoingPasswordSharingInvitations(
     CommitRequestDataList* request_data_list) {
   CHECK(cryptographer_);
   CHECK_EQ(type_, OUTGOING_PASSWORD_SHARING_INVITATION);
@@ -1446,7 +1446,7 @@ void ModelTypeWorker::EncryptOutgoingPasswordSharingInvitations(
   }
 }
 
-void ModelTypeWorker::EncryptSpecifics(
+void DataTypeWorker::EncryptSpecifics(
     CommitRequestDataList* request_data_list) {
   CHECK(cryptographer_);
   CHECK(encryption_enabled_);

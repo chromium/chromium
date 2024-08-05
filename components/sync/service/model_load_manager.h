@@ -31,7 +31,7 @@ extern const base::TimeDelta kSyncLoadModelsTimeoutDuration;
 class ModelLoadManagerDelegate {
  public:
   // Called when all desired types are loaded, i.e. are ready to be configured
-  // with ModelTypeConfigurer. A data type is ready when its progress marker is
+  // with DataTypeConfigurer. A data type is ready when its progress marker is
   // available, which is the case once the local model has been loaded.
   // This function is called at most once after each call to
   // ModelLoadManager::Configure().

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_MODEL_TYPE_CONNECTOR_H_
-#define COMPONENTS_SYNC_ENGINE_MODEL_TYPE_CONNECTOR_H_
+#ifndef COMPONENTS_SYNC_ENGINE_DATA_TYPE_CONNECTOR_H_
+#define COMPONENTS_SYNC_ENGINE_DATA_TYPE_CONNECTOR_H_
 
 #include <memory>
 
@@ -16,15 +16,15 @@ struct DataTypeActivationResponse;
 // An interface into the core parts of sync for model types. By adding/removing
 // types through methods of this interface, consumers control which types will
 // be syncing (receiving updates and committing local changes).
-// In addition it handles creating the connection between the ModelTypeWorker
+// In addition it handles creating the connection between the DataTypeWorker
 // (CommitQueue) on the sync side and the DataTypeProcessor on the model type
 // side.
-// The real implementation (ModelTypeRegistry) lives on the sync sequence, but
+// The real implementation (DataTypeRegistry) lives on the sync sequence, but
 // there's a proxy object on the UI thread for use by the SyncEngine.
-class ModelTypeConnector {
+class DataTypeConnector {
  public:
-  ModelTypeConnector() = default;
-  virtual ~ModelTypeConnector() = default;
+  DataTypeConnector() = default;
+  virtual ~DataTypeConnector() = default;
 
   // Connect a worker on the sync sequence and |type|'s processor on the model
   // sequence. Note that in production |activation_response| actually
@@ -46,4 +46,4 @@ class ModelTypeConnector {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_MODEL_TYPE_CONNECTOR_H_
+#endif  // COMPONENTS_SYNC_ENGINE_DATA_TYPE_CONNECTOR_H_

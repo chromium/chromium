@@ -19,7 +19,7 @@ namespace syncer {
 
 // A light-weight container for sync entity data which represents either
 // local data created on the local model side or remote data created on
-// ModelTypeWorker.
+// DataTypeWorker.
 // EntityData is supposed to be wrapped and passed by reference.
 struct EntityData {
  public:

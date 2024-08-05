@@ -237,7 +237,7 @@ class SyncEngineImplTest : public testing::Test {
   }
 
   ModelTypeSet ConfigureDataTypesWithUnready(ModelTypeSet unready_types) {
-    ModelTypeConfigurer::ConfigureParams params;
+    DataTypeConfigurer::ConfigureParams params;
     params.reason = CONFIGURE_REASON_RECONFIGURATION;
     ModelTypeSet enabled_types = Difference(enabled_types_, unready_types);
     params.to_download = Difference(enabled_types, engine_types_);
@@ -516,10 +516,10 @@ TEST_F(SyncEngineImplTest, DisableThenPurgeType) {
   EXPECT_EQ(Difference(enabled_types_, error_types), ready_types);
 }
 
-// Tests that SyncEngineImpl retains ModelTypeConnector after call to
+// Tests that SyncEngineImpl retains DataTypeConnector after call to
 // StopSyncingForShutdown. This is needed for datatype deactivation during
 // DataTypeManager shutdown.
-TEST_F(SyncEngineImplTest, ModelTypeConnectorValidDuringShutdown) {
+TEST_F(SyncEngineImplTest, DataTypeConnectorValidDuringShutdown) {
   InitializeBackend();
   backend_->StopSyncingForShutdown();
   // Verify that call to DisconnectDataType doesn't assert.

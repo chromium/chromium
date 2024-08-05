@@ -18,7 +18,7 @@
 namespace syncer {
 
 struct ConfigureContext;
-class ModelTypeConfigurer;
+class DataTypeConfigurer;
 
 // This interface is for managing the start up and shut down life cycle
 // of many different syncable data types.
@@ -59,7 +59,7 @@ class DataTypeManager {
   // Sets or clears the configurer (aka the SyncEngine) to use for
   // connecting/disconnecting and configuring the data types. Must only be
   // called while the state is STOPPED.
-  virtual void SetConfigurer(ModelTypeConfigurer* configurer) = 0;
+  virtual void SetConfigurer(DataTypeConfigurer* configurer) = 0;
 
   // Begins asynchronous configuration of data types. Any currently running data
   // types that are not in the `preferred_types` set will be stopped. Any

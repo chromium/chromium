@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/test/mock_model_type_worker.h"
+#include "components/sync/test/mock_data_type_worker.h"
 
 #include <map>
 #include <set>
@@ -46,27 +46,27 @@ class ForwardingCommitQueue : public CommitQueue {
 }  // namespace
 
 // static
-std::unique_ptr<MockModelTypeWorker>
-MockModelTypeWorker::CreateWorkerAndConnectSync(
+std::unique_ptr<MockDataTypeWorker>
+MockDataTypeWorker::CreateWorkerAndConnectSync(
     std::unique_ptr<DataTypeActivationResponse> context) {
   // WrapUnique() used because the constructor is private.
-  auto worker = base::WrapUnique(new MockModelTypeWorker(std::move(context)));
+  auto worker = base::WrapUnique(new MockDataTypeWorker(std::move(context)));
   worker->processor_->ConnectSync(std::make_unique<ForwardingCommitQueue>(
       worker->weak_ptr_factory_.GetWeakPtr()));
   return worker;
 }
 
-MockModelTypeWorker::MockModelTypeWorker(
+MockDataTypeWorker::MockDataTypeWorker(
     std::unique_ptr<DataTypeActivationResponse> context)
     : model_type_state_(context->model_type_state),
       processor_(std::move(context->type_processor)) {}
 
-MockModelTypeWorker::~MockModelTypeWorker() = default;
+MockDataTypeWorker::~MockDataTypeWorker() = default;
 
-void MockModelTypeWorker::NudgeForCommit() {
+void MockDataTypeWorker::NudgeForCommit() {
   if (get_local_changes_upon_nudge_enabled_) {
     processor_->GetLocalChanges(
-        INT_MAX, base::BindRepeating(&MockModelTypeWorker::LocalChangesReceived,
+        INT_MAX, base::BindRepeating(&MockDataTypeWorker::LocalChangesReceived,
                                      weak_ptr_factory_.GetWeakPtr()));
     // Processors often use a proxy object to communicate with the worker, so it
     // is necessary to process posted tasks.
@@ -74,7 +74,7 @@ void MockModelTypeWorker::NudgeForCommit() {
   }
 }
 
-void MockModelTypeWorker::LocalChangesReceived(
+void MockDataTypeWorker::LocalChangesReceived(
     CommitRequestDataList&& commit_request) {
   if (commit_request.empty()) {
     return;
@@ -88,11 +88,11 @@ void MockModelTypeWorker::LocalChangesReceived(
   pending_commits_.push_back(std::move(commit_request));
 }
 
-size_t MockModelTypeWorker::GetNumPendingCommits() const {
+size_t MockDataTypeWorker::GetNumPendingCommits() const {
   return pending_commits_.size();
 }
 
-std::vector<const CommitRequestData*> MockModelTypeWorker::GetNthPendingCommit(
+std::vector<const CommitRequestData*> MockDataTypeWorker::GetNthPendingCommit(
     size_t n) const {
   EXPECT_LT(n, GetNumPendingCommits());
   if (n >= GetNumPendingCommits()) {
@@ -106,7 +106,7 @@ std::vector<const CommitRequestData*> MockModelTypeWorker::GetNthPendingCommit(
   return nth_pending_commits;
 }
 
-bool MockModelTypeWorker::HasPendingCommitForHash(
+bool MockDataTypeWorker::HasPendingCommitForHash(
     const ClientTagHash& tag_hash) const {
   for (const CommitRequestDataList& commit : pending_commits_) {
     for (const std::unique_ptr<CommitRequestData>& data : commit) {
@@ -118,7 +118,7 @@ bool MockModelTypeWorker::HasPendingCommitForHash(
   return false;
 }
 
-const CommitRequestData* MockModelTypeWorker::GetLatestPendingCommitForHash(
+const CommitRequestData* MockDataTypeWorker::GetLatestPendingCommitForHash(
     const ClientTagHash& tag_hash) const {
   // Iterate backward through the sets of commit requests to find the most
   // recent one that applies to the specified tag_hash.
@@ -134,7 +134,7 @@ const CommitRequestData* MockModelTypeWorker::GetLatestPendingCommitForHash(
   return nullptr;
 }
 
-void MockModelTypeWorker::VerifyNthPendingCommit(
+void MockDataTypeWorker::VerifyNthPendingCommit(
     size_t n,
     const std::vector<ClientTagHash>& tag_hashes,
     const std::vector<sync_pb::EntitySpecifics>& specifics_list) {
@@ -158,7 +158,7 @@ void MockModelTypeWorker::VerifyNthPendingCommit(
   }
 }
 
-void MockModelTypeWorker::VerifyPendingCommits(
+void MockDataTypeWorker::VerifyPendingCommits(
     const std::vector<std::vector<ClientTagHash>>& tag_hashes) {
   ASSERT_EQ(tag_hashes.size(), GetNumPendingCommits());
   for (size_t i = 0; i < tag_hashes.size(); i++) {
@@ -171,22 +171,22 @@ void MockModelTypeWorker::VerifyPendingCommits(
   }
 }
 
-void MockModelTypeWorker::UpdateModelTypeState(
+void MockDataTypeWorker::UpdateModelTypeState(
     const sync_pb::ModelTypeState& model_type_state) {
   model_type_state_ = model_type_state;
 }
 
-void MockModelTypeWorker::UpdateFromServer() {
+void MockDataTypeWorker::UpdateFromServer() {
   UpdateFromServer(UpdateResponseDataList());
 }
 
-void MockModelTypeWorker::UpdateFromServer(
+void MockDataTypeWorker::UpdateFromServer(
     const ClientTagHash& tag_hash,
     const sync_pb::EntitySpecifics& specifics) {
   UpdateFromServer(tag_hash, specifics, 1);
 }
 
-void MockModelTypeWorker::UpdateFromServer(
+void MockDataTypeWorker::UpdateFromServer(
     const ClientTagHash& tag_hash,
     const sync_pb::EntitySpecifics& specifics,
     int64_t version_offset) {
@@ -194,7 +194,7 @@ void MockModelTypeWorker::UpdateFromServer(
                    model_type_state_.encryption_key_name());
 }
 
-void MockModelTypeWorker::UpdateFromServer(
+void MockDataTypeWorker::UpdateFromServer(
     const ClientTagHash& tag_hash,
     const sync_pb::EntitySpecifics& specifics,
     int64_t version_offset,
@@ -205,7 +205,7 @@ void MockModelTypeWorker::UpdateFromServer(
   UpdateFromServer(std::move(updates));
 }
 
-void MockModelTypeWorker::UpdateFromServer(
+void MockDataTypeWorker::UpdateFromServer(
     UpdateResponseDataList updates,
     std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   model_type_state_.set_initial_sync_state(
@@ -217,7 +217,7 @@ void MockModelTypeWorker::UpdateFromServer(
   base::RunLoop().RunUntilIdle();
 }
 
-syncer::UpdateResponseData MockModelTypeWorker::GenerateUpdateData(
+syncer::UpdateResponseData MockDataTypeWorker::GenerateUpdateData(
     const ClientTagHash& tag_hash,
     const sync_pb::EntitySpecifics& specifics,
     int64_t version_offset,
@@ -249,14 +249,14 @@ syncer::UpdateResponseData MockModelTypeWorker::GenerateUpdateData(
   return response_data;
 }
 
-syncer::UpdateResponseData MockModelTypeWorker::GenerateUpdateData(
+syncer::UpdateResponseData MockDataTypeWorker::GenerateUpdateData(
     const ClientTagHash& tag_hash,
     const sync_pb::EntitySpecifics& specifics) {
   return GenerateUpdateData(tag_hash, specifics, 1,
                             model_type_state_.encryption_key_name());
 }
 
-syncer::UpdateResponseData MockModelTypeWorker::GenerateSharedUpdateData(
+syncer::UpdateResponseData MockDataTypeWorker::GenerateSharedUpdateData(
     const ClientTagHash& tag_hash,
     const sync_pb::EntitySpecifics& specifics,
     const std::string& collaboration_id) {
@@ -266,7 +266,7 @@ syncer::UpdateResponseData MockModelTypeWorker::GenerateSharedUpdateData(
   return response_data;
 }
 
-syncer::UpdateResponseData MockModelTypeWorker::GenerateTypeRootUpdateData(
+syncer::UpdateResponseData MockDataTypeWorker::GenerateTypeRootUpdateData(
     const ModelType& model_type) {
   syncer::EntityData data;
   data.id = syncer::ModelTypeToProtocolRootTag(model_type);
@@ -286,7 +286,7 @@ syncer::UpdateResponseData MockModelTypeWorker::GenerateTypeRootUpdateData(
   return response_data;
 }
 
-syncer::UpdateResponseData MockModelTypeWorker::GenerateTombstoneUpdateData(
+syncer::UpdateResponseData MockDataTypeWorker::GenerateTombstoneUpdateData(
     const ClientTagHash& tag_hash) {
   int64_t old_version = GetServerVersion(tag_hash);
   int64_t version = old_version + 1;
@@ -308,17 +308,17 @@ syncer::UpdateResponseData MockModelTypeWorker::GenerateTombstoneUpdateData(
   return response_data;
 }
 
-void MockModelTypeWorker::TombstoneFromServer(const ClientTagHash& tag_hash) {
+void MockDataTypeWorker::TombstoneFromServer(const ClientTagHash& tag_hash) {
   UpdateResponseDataList updates;
   updates.push_back(GenerateTombstoneUpdateData(tag_hash));
   UpdateFromServer(std::move(updates));
 }
 
-void MockModelTypeWorker::AckOnePendingCommit() {
+void MockDataTypeWorker::AckOnePendingCommit() {
   AckOnePendingCommit(1);
 }
 
-void MockModelTypeWorker::AckOnePendingCommit(int64_t version_offset) {
+void MockDataTypeWorker::AckOnePendingCommit(int64_t version_offset) {
   CommitResponseDataList list;
   ASSERT_FALSE(pending_commits_.empty());
   for (const std::unique_ptr<CommitRequestData>& data :
@@ -334,7 +334,7 @@ void MockModelTypeWorker::AckOnePendingCommit(int64_t version_offset) {
   base::RunLoop().RunUntilIdle();
 }
 
-void MockModelTypeWorker::FailOneCommit() {
+void MockDataTypeWorker::FailOneCommit() {
   FailedCommitResponseDataList list;
   ASSERT_FALSE(pending_commits_.empty());
   for (const std::unique_ptr<CommitRequestData>& data :
@@ -350,7 +350,7 @@ void MockModelTypeWorker::FailOneCommit() {
   base::RunLoop().RunUntilIdle();
 }
 
-void MockModelTypeWorker::FailFullCommitRequest() {
+void MockDataTypeWorker::FailFullCommitRequest() {
   pending_commits_.pop_front();
   processor_->OnCommitFailed(SyncCommitError::kBadServerResponse);
   // Processors often use a proxy object to communicate with the worker, so it
@@ -358,7 +358,7 @@ void MockModelTypeWorker::FailFullCommitRequest() {
   base::RunLoop().RunUntilIdle();
 }
 
-CommitResponseData MockModelTypeWorker::SuccessfulCommitResponse(
+CommitResponseData MockDataTypeWorker::SuccessfulCommitResponse(
     const CommitRequestData& request_data,
     int64_t version_offset) {
   const EntityData& entity = *request_data.entity;
@@ -389,7 +389,7 @@ CommitResponseData MockModelTypeWorker::SuccessfulCommitResponse(
   return response_data;
 }
 
-FailedCommitResponseData MockModelTypeWorker::FailedCommitResponse(
+FailedCommitResponseData MockDataTypeWorker::FailedCommitResponse(
     const CommitRequestData& request_data) {
   const EntityData& entity = *request_data.entity;
 
@@ -402,26 +402,26 @@ FailedCommitResponseData MockModelTypeWorker::FailedCommitResponse(
   return response_data;
 }
 
-void MockModelTypeWorker::UpdateWithEncryptionKey(const std::string& ekn) {
+void MockDataTypeWorker::UpdateWithEncryptionKey(const std::string& ekn) {
   UpdateWithEncryptionKey(ekn, UpdateResponseDataList());
 }
 
-void MockModelTypeWorker::UpdateWithEncryptionKey(
+void MockDataTypeWorker::UpdateWithEncryptionKey(
     const std::string& ekn,
     UpdateResponseDataList update) {
   model_type_state_.set_encryption_key_name(ekn);
   UpdateFromServer(std::move(update));
 }
 
-void MockModelTypeWorker::DisableGetLocalChangesUponNudge() {
+void MockDataTypeWorker::DisableGetLocalChangesUponNudge() {
   get_local_changes_upon_nudge_enabled_ = false;
 }
 
-std::string MockModelTypeWorker::GenerateId(const ClientTagHash& tag_hash) {
+std::string MockDataTypeWorker::GenerateId(const ClientTagHash& tag_hash) {
   return "FakeId:" + tag_hash.value();
 }
 
-int64_t MockModelTypeWorker::GetServerVersion(const ClientTagHash& tag_hash) {
+int64_t MockDataTypeWorker::GetServerVersion(const ClientTagHash& tag_hash) {
   auto it = server_versions_.find(tag_hash);
   if (it == server_versions_.end()) {
     return 0;
@@ -429,7 +429,7 @@ int64_t MockModelTypeWorker::GetServerVersion(const ClientTagHash& tag_hash) {
   return it->second;
 }
 
-void MockModelTypeWorker::SetServerVersion(const ClientTagHash& tag_hash,
+void MockDataTypeWorker::SetServerVersion(const ClientTagHash& tag_hash,
                                            int64_t version) {
   server_versions_[tag_hash] = version;
 }

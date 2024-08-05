@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_TEST_MOCK_MODEL_TYPE_WORKER_H_
-#define COMPONENTS_SYNC_TEST_MOCK_MODEL_TYPE_WORKER_H_
+#ifndef COMPONENTS_SYNC_TEST_MOCK_DATA_TYPE_WORKER_H_
+#define COMPONENTS_SYNC_TEST_MOCK_DATA_TYPE_WORKER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -31,20 +31,20 @@ class EntitySpecifics;
 
 namespace syncer {
 
-// Receives and records commit requests sent through the ModelTypeWorker.
+// Receives and records commit requests sent through the DataTypeWorker.
 //
 // This class also includes features intended to help mock out server behavior.
 // It has some basic functionality to keep track of server state and generate
 // plausible UpdateResponseData and CommitResponseData messages.
-class MockModelTypeWorker : public CommitQueue {
+class MockDataTypeWorker : public CommitQueue {
  public:
-  static std::unique_ptr<MockModelTypeWorker> CreateWorkerAndConnectSync(
+  static std::unique_ptr<MockDataTypeWorker> CreateWorkerAndConnectSync(
       std::unique_ptr<DataTypeActivationResponse> context);
 
-  MockModelTypeWorker(const MockModelTypeWorker&) = delete;
-  MockModelTypeWorker& operator=(const MockModelTypeWorker&) = delete;
+  MockDataTypeWorker(const MockDataTypeWorker&) = delete;
+  MockDataTypeWorker& operator=(const MockDataTypeWorker&) = delete;
 
-  ~MockModelTypeWorker() override;
+  ~MockDataTypeWorker() override;
 
   // Callback when local changes are received from the processor.
   void LocalChangesReceived(CommitRequestDataList&& commit_request);
@@ -159,7 +159,7 @@ class MockModelTypeWorker : public CommitQueue {
   void DisableGetLocalChangesUponNudge();
 
  private:
-  explicit MockModelTypeWorker(
+  explicit MockDataTypeWorker(
       std::unique_ptr<DataTypeActivationResponse> context);
 
   // Generate an ID string.
@@ -194,9 +194,9 @@ class MockModelTypeWorker : public CommitQueue {
   bool get_local_changes_upon_nudge_enabled_ = true;
 
   // WeakPtrFactory for this worker which will be sent to sync thread.
-  base::WeakPtrFactory<MockModelTypeWorker> weak_ptr_factory_{this};
+  base::WeakPtrFactory<MockDataTypeWorker> weak_ptr_factory_{this};
 };
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_TEST_MOCK_MODEL_TYPE_WORKER_H_
+#endif  // COMPONENTS_SYNC_TEST_MOCK_DATA_TYPE_WORKER_H_

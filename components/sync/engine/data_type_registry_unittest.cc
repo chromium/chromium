@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine/model_type_registry.h"
+#include "components/sync/engine/data_type_registry.h"
 
 #include <utility>
 
@@ -12,7 +12,7 @@
 #include "base/test/task_environment.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/engine/model_type_worker.h"
+#include "components/sync/engine/data_type_worker.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/fake_data_type_processor.h"
 #include "components/sync/test/fake_sync_encryption_handler.h"
@@ -23,16 +23,16 @@ namespace syncer {
 
 namespace {
 
-class ModelTypeRegistryTest : public ::testing::Test {
+class DataTypeRegistryTest : public ::testing::Test {
  public:
   void SetUp() override {
-    registry_ = std::make_unique<ModelTypeRegistry>(
+    registry_ = std::make_unique<DataTypeRegistry>(
         &mock_nudge_handler_, &cancelation_signal_, &encryption_handler_);
   }
 
   void TearDown() override { registry_.reset(); }
 
-  ModelTypeRegistry* registry() { return registry_.get(); }
+  DataTypeRegistry* registry() { return registry_.get(); }
 
   static sync_pb::ModelTypeState MakeInitialModelTypeState(ModelType type) {
     sync_pb::ModelTypeState state;
@@ -55,11 +55,11 @@ class ModelTypeRegistryTest : public ::testing::Test {
 
   FakeSyncEncryptionHandler encryption_handler_;
   CancelationSignal cancelation_signal_;
-  std::unique_ptr<ModelTypeRegistry> registry_;
+  std::unique_ptr<DataTypeRegistry> registry_;
   MockNudgeHandler mock_nudge_handler_;
 };
 
-TEST_F(ModelTypeRegistryTest, ConnectDataTypes) {
+TEST_F(DataTypeRegistryTest, ConnectDataTypes) {
   EXPECT_TRUE(registry()->GetConnectedTypes().empty());
 
   registry()->ConnectDataType(THEMES, MakeDataTypeActivationResponse(
@@ -74,12 +74,12 @@ TEST_F(ModelTypeRegistryTest, ConnectDataTypes) {
   registry()->DisconnectDataType(THEMES);
   EXPECT_EQ(ModelTypeSet({SESSIONS}), registry()->GetConnectedTypes());
 
-  // Allow ModelTypeRegistry destruction to delete the
+  // Allow DataTypeRegistry destruction to delete the
   // Sessions' ModelTypeSyncWorker.
 }
 
 // Tests correct result returned from GetInitialSyncEndedTypes.
-TEST_F(ModelTypeRegistryTest, GetInitialSyncEndedTypes) {
+TEST_F(DataTypeRegistryTest, GetInitialSyncEndedTypes) {
   // Themes has finished initial sync.
   sync_pb::ModelTypeState model_type_state = MakeInitialModelTypeState(THEMES);
   model_type_state.set_initial_sync_state(
@@ -95,7 +95,7 @@ TEST_F(ModelTypeRegistryTest, GetInitialSyncEndedTypes) {
   EXPECT_EQ(ModelTypeSet({THEMES}), registry()->GetInitialSyncEndedTypes());
 }
 
-TEST_F(ModelTypeRegistryTest, GetTypesWithUnsyncedData) {
+TEST_F(DataTypeRegistryTest, GetTypesWithUnsyncedData) {
   // Create workers for PREFERENCES and BOOKMARKS.
   registry()->ConnectDataType(
       PREFERENCES,
@@ -106,8 +106,8 @@ TEST_F(ModelTypeRegistryTest, GetTypesWithUnsyncedData) {
 
   // Simulate a local BOOKMARKS change. In production, the DataTypeProcessor
   // would call NudgeForCommit() on the worker.
-  for (const std::unique_ptr<ModelTypeWorker>& worker :
-       registry()->GetConnectedModelTypeWorkersForTest()) {
+  for (const std::unique_ptr<DataTypeWorker>& worker :
+       registry()->GetConnectedDataTypeWorkersForTest()) {
     if (worker->GetModelType() == BOOKMARKS) {
       worker->NudgeForCommit();
     }

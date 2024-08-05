@@ -1587,7 +1587,7 @@ TEST(BookmarkModelMergerTest, ShouldIgnoreRemoteUpdateWithInvalidUuid) {
       /*is_folder=*/false, /*unique_position=*/position2));
 
   // |originator_client_item_id| cannot itself be duplicated because
-  // ModelTypeWorker guarantees otherwise.
+  // DataTypeWorker guarantees otherwise.
   updates.back().entity.originator_client_item_id =
       kUnexpectedOriginatorItemId.AsLowercaseString();
   updates.back().entity.id =

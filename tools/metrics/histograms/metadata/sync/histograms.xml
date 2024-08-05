@@ -1144,7 +1144,7 @@ chromium-metrics-reviews@google.com.
   <owner>mastiz@chromium.org</owner>
   <summary>
     Records how long it took from the moment the first update encrypted with
-    this key was received by ModelTypeWorker, to the moment where the key was
+    this key was received by DataTypeWorker, to the moment where the key was
     available to the Cryptographer. The time is measured by the number of
     GetUpdates cycles performed by the worker *while* the Cryptographer didn't
     have pending keys (and thus the key should have been known in theory).

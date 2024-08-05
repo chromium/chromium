@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_MODEL_TYPE_CONFIGURER_H_
-#define COMPONENTS_SYNC_ENGINE_MODEL_TYPE_CONFIGURER_H_
+#ifndef COMPONENTS_SYNC_ENGINE_DATA_TYPE_CONFIGURER_H_
+#define COMPONENTS_SYNC_ENGINE_DATA_TYPE_CONFIGURER_H_
 
 #include <memory>
 
@@ -15,10 +15,10 @@ namespace syncer {
 
 struct DataTypeActivationResponse;
 
-// The ModelTypeConfigurer interface abstracts out the action of configuring a
+// The DataTypeConfigurer interface abstracts out the action of configuring a
 // set of new data types and cleaning up after a set of removed data types.
 // Lives on the UI thread.
-class ModelTypeConfigurer {
+class DataTypeConfigurer {
  public:
   // Utility struct for holding ConfigureDataTypes options.
   struct ConfigureParams {
@@ -43,8 +43,8 @@ class ModelTypeConfigurer {
     bool is_sync_feature_enabled = false;
   };
 
-  ModelTypeConfigurer();
-  virtual ~ModelTypeConfigurer();
+  DataTypeConfigurer();
+  virtual ~DataTypeConfigurer();
 
   // Changes the set of data types that are currently being synced.
   virtual void ConfigureDataTypes(ConfigureParams params) = 0;
@@ -65,4 +65,4 @@ class ModelTypeConfigurer {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_MODEL_TYPE_CONFIGURER_H_
+#endif  // COMPONENTS_SYNC_ENGINE_DATA_TYPE_CONFIGURER_H_

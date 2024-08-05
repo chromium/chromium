@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/sync/engine/model_type_configurer.h"
+#include "components/sync/engine/data_type_configurer.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/data_type_manager.h"
@@ -36,7 +36,7 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // DataTypeManager interface.
   void ClearMetadataWhileStoppedExceptFor(ModelTypeSet types) override;
-  void SetConfigurer(ModelTypeConfigurer* configurer) override;
+  void SetConfigurer(DataTypeConfigurer* configurer) override;
   void Configure(ModelTypeSet preferred_types,
                  const ConfigureContext& context) override;
   void DataTypePreconditionChanged(ModelType type) override;
@@ -90,7 +90,7 @@ class DataTypeManagerImpl : public DataTypeManager,
                                 DataTypeConfigStateMap* state_map);
 
   // Prepare the parameters for the configurer's configuration.
-  ModelTypeConfigurer::ConfigureParams PrepareConfigureParams();
+  DataTypeConfigurer::ConfigureParams PrepareConfigureParams();
 
   // Update precondition state of types in `data_type_status_table_` to match
   // value of DataTypeController::GetPreconditionState().
@@ -144,7 +144,7 @@ class DataTypeManagerImpl : public DataTypeManager,
   // The manager that loads the local models of the data types.
   ModelLoadManager model_load_manager_;
 
-  raw_ptr<ModelTypeConfigurer> configurer_ = nullptr;
+  raw_ptr<DataTypeConfigurer> configurer_ = nullptr;
 
   State state_ = DataTypeManager::STOPPED;
 

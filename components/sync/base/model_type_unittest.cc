@@ -105,7 +105,7 @@ TEST(ModelTypeTest, ModelTypeToProtocolRootTagValues) {
   }
 }
 
-TEST(ModelTypeTest, ModelTypeDebugStringIsNotEmpty) {
+TEST(ModelTypeTest, DataTypeDebugStringIsNotEmpty) {
   for (ModelType model_type : ModelTypeSet::All()) {
     EXPECT_NE("", ModelTypeToDebugString(model_type));
   }

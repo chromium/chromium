@@ -26,7 +26,7 @@ struct ModelTypeInfo {
   // String value for Model Type
   // This should be the same as the model type but space separated and the
   // first letter of every word capitalized.
-  const char* const model_type_debug_string = nullptr;
+  const char* const data_type_debug_string = nullptr;
   // Field number of the model type specifics in EntitySpecifics.
   const int specifics_field_number = -1;
   // Model type value from SyncModelTypes enum in enums.xml. Must always be in
@@ -682,7 +682,7 @@ ModelTypeSet EncryptableUserTypes() {
 
 const char* ModelTypeToDebugString(ModelType model_type) {
   // This is used for displaying debug information.
-  return kModelTypeInfoMap[model_type].model_type_debug_string;
+  return kModelTypeInfoMap[model_type].data_type_debug_string;
 }
 
 const char* ModelTypeToHistogramSuffix(ModelType model_type) {

@@ -161,7 +161,7 @@ void DataTypeManagerImpl::ClearMetadataWhileStoppedExceptFor(
   }
 }
 
-void DataTypeManagerImpl::SetConfigurer(ModelTypeConfigurer* configurer) {
+void DataTypeManagerImpl::SetConfigurer(DataTypeConfigurer* configurer) {
   CHECK_EQ(state_, STOPPED);
 
   CHECK(!weak_ptr_factory_.HasWeakPtrs());
@@ -614,7 +614,7 @@ void DataTypeManagerImpl::StartNextConfiguration() {
   configurer_->ConfigureDataTypes(PrepareConfigureParams());
 }
 
-ModelTypeConfigurer::ConfigureParams
+DataTypeConfigurer::ConfigureParams
 DataTypeManagerImpl::PrepareConfigureParams() {
   // Divide up the types into their corresponding actions:
   // - Types which are newly enabled are downloaded.
@@ -674,7 +674,7 @@ DataTypeManagerImpl::PrepareConfigureParams() {
   DVLOG(1) << "Types " << ModelTypeSetToDebugString(types_to_download)
            << " added; calling ConfigureDataTypes";
 
-  ModelTypeConfigurer::ConfigureParams params;
+  DataTypeConfigurer::ConfigureParams params;
   params.reason = last_requested_context_.reason;
   params.to_download = types_to_download;
   params.to_purge = types_to_purge;

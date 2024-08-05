@@ -26,7 +26,7 @@ class MockSyncEngine : public SyncEngine {
   MockSyncEngine();
   ~MockSyncEngine() override;
 
-  // ModelTypeConfigurer:
+  // DataTypeConfigurer:
   MOCK_METHOD(void, ConfigureDataTypes, (ConfigureParams), (override));
   MOCK_METHOD(void,
               ConnectDataType,

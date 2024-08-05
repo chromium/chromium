@@ -18,7 +18,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/engine/model_type_configurer.h"
+#include "components/sync/engine/data_type_configurer.h"
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_credentials.h"
 #include "components/sync/engine/sync_encryption_handler.h"
@@ -37,7 +37,7 @@ struct SyncStatus;
 // The interface into the sync engine, which is the part of sync that performs
 // communication between model types and the sync server.
 // Lives on the UI thread.
-class SyncEngine : public ModelTypeConfigurer {
+class SyncEngine : public DataTypeConfigurer {
  public:
   using AllNodesCallback =
       base::OnceCallback<void(ModelType, base::Value::List)>;

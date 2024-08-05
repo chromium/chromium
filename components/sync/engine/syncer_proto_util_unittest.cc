@@ -14,9 +14,9 @@
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync/test/data_type_test_util.h"
 #include "components/sync/test/fake_sync_scheduler.h"
 #include "components/sync/test/mock_connection_manager.h"
-#include "components/sync/test/model_type_test_util.h"
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -102,7 +102,7 @@ class SyncerProtoUtilTest : public testing::Test {
         /*extensions_activity=*/nullptr,
         /*listeners=*/std::vector<SyncEngineEventListener*>(),
         /*debug_info_getter=*/nullptr,
-        /*model_type_registry=*/nullptr,
+        /*data_type_registry=*/nullptr,
         /*cache_guid=*/"",
         /*birthday=*/"",
         /*bag_of_chips=*/"",
@@ -271,7 +271,7 @@ TEST_F(SyncerProtoUtilTest, ShouldHandleGetUpdatesRetryDelay) {
                            /*extensions_activity=*/nullptr,
                            /*listeners=*/{},
                            /*debug_info_getter=*/nullptr,
-                           /*model_type_registry=*/nullptr, "cache_guid",
+                           /*data_type_registry=*/nullptr, "cache_guid",
                            "birthday",
                            /*bag_of_chips=*/"", base::Seconds(100));
   SyncCycle cycle(&context, &mock_sync_scheduler);
@@ -302,7 +302,7 @@ TEST_F(SyncerProtoUtilTest, ShouldIgnoreGetUpdatesRetryDelay) {
                            /*extensions_activity=*/nullptr,
                            /*listeners=*/{},
                            /*debug_info_getter=*/nullptr,
-                           /*model_type_registry=*/nullptr, "cache_guid",
+                           /*data_type_registry=*/nullptr, "cache_guid",
                            "birthday",
                            /*bag_of_chips=*/"", base::Seconds(100));
   SyncCycle cycle(&context, &mock_sync_scheduler);

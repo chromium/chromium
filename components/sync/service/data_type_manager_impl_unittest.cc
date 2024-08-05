@@ -95,12 +95,12 @@ MATCHER(IsUnreadyError, "") {
   return arg.error_type() == SyncError::UNREADY_ERROR;
 }
 
-// Fake ModelTypeConfigurer implementation that allows the test body to control
+// Fake DataTypeConfigurer implementation that allows the test body to control
 // when downloads complete and whether failures occurred.
-class FakeModelTypeConfigurer : public ModelTypeConfigurer {
+class FakeDataTypeConfigurer : public DataTypeConfigurer {
  public:
-  FakeModelTypeConfigurer() = default;
-  ~FakeModelTypeConfigurer() override = default;
+  FakeDataTypeConfigurer() = default;
+  ~FakeDataTypeConfigurer() override = default;
 
   void ConfigureDataTypes(ConfigureParams params) override {
     ASSERT_TRUE(last_params_.ready_task.is_null());
@@ -251,7 +251,7 @@ class DataTypeManagerImplTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
-  FakeModelTypeConfigurer configurer_;
+  FakeDataTypeConfigurer configurer_;
   testing::NiceMock<MockDataTypeManagerObserver> observer_;
   std::unique_ptr<DataTypeManagerImpl> dtm_;
   FakeDataTypeEncryptionHandler encryption_handler_;

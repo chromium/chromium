@@ -255,7 +255,7 @@ void SyncEngineBackend::DoInitialProcessControlTypes() {
 
   host_.Call(FROM_HERE,
              &SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop,
-             sync_manager_->GetModelTypeConnectorProxy(),
+             sync_manager_->GetDataTypeConnectorProxy(),
              sync_manager_->birthday(), sync_manager_->bag_of_chips());
 }
 
@@ -289,7 +289,7 @@ void SyncEngineBackend::DoShutdown(ShutdownReason reason) {
     // null or both non-null.
     DCHECK(nigori_controller_);
 
-    sync_manager_->GetModelTypeConnector()->DisconnectDataType(NIGORI);
+    sync_manager_->GetDataTypeConnector()->DisconnectDataType(NIGORI);
 
     if (reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
       nigori_controller_->Stop(ShutdownReasonToSyncStopMetadataFate(reason),
@@ -322,7 +322,7 @@ void SyncEngineBackend::DoPurgeDisabledTypes(const ModelTypeSet& to_purge) {
     // TODO(crbug.com/40154783): Evaluate whether this logic is necessary at
     // all. There's no "purging" logic for any other data type, so likely it's
     // not necessary for NIGORI either.
-    sync_manager_->GetModelTypeConnector()->DisconnectDataType(NIGORI);
+    sync_manager_->GetDataTypeConnector()->DisconnectDataType(NIGORI);
     nigori_controller_->Stop(SyncStopMetadataFate::CLEAR_METADATA,
                              base::DoNothing());
     LoadAndConnectNigoriController();
@@ -330,7 +330,7 @@ void SyncEngineBackend::DoPurgeDisabledTypes(const ModelTypeSet& to_purge) {
 }
 
 void SyncEngineBackend::DoConfigureSyncer(
-    ModelTypeConfigurer::ConfigureParams params) {
+    DataTypeConfigurer::ConfigureParams params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!params.ready_task.is_null());
 
@@ -493,7 +493,7 @@ void SyncEngineBackend::LoadAndConnectNigoriController() {
       .configuration_start_time = base::Time::Now()};
   nigori_controller_->LoadModels(configure_context, base::DoNothing());
   DCHECK_EQ(nigori_controller_->state(), DataTypeController::MODEL_LOADED);
-  sync_manager_->GetModelTypeConnector()->ConnectDataType(
+  sync_manager_->GetDataTypeConnector()->ConnectDataType(
       NIGORI, nigori_controller_->Connect());
 }
 

@@ -19,7 +19,7 @@ class CommitQueue;
 
 // Interface used by sync backend to issue requests to a synced data type.
 // Actual implementations live on the model sequence, but there's typically a
-// proxy object on the sync sequence for use by the ModelTypeWorker.
+// proxy object on the sync sequence for use by the DataTypeWorker.
 class DataTypeProcessor {
  public:
   DataTypeProcessor() = default;

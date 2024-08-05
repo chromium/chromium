@@ -24,12 +24,12 @@
 #include "components/sync/engine/backoff_delay_provider.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/data_type_activation_response.h"
+#include "components/sync/test/data_type_test_util.h"
 #include "components/sync/test/fake_data_type_processor.h"
 #include "components/sync/test/fake_sync_encryption_handler.h"
 #include "components/sync/test/mock_connection_manager.h"
 #include "components/sync/test/mock_invalidation.h"
 #include "components/sync/test/mock_nudge_handler.h"
-#include "components/sync/test/model_type_test_util.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -243,22 +243,22 @@ class SyncSchedulerImplTest : public testing::Test {
     connection_ = std::make_unique<MockConnectionManager>();
     connection_->SetServerReachable();
 
-    model_type_registry_ = std::make_unique<ModelTypeRegistry>(
+    data_type_registry_ = std::make_unique<DataTypeRegistry>(
         &mock_nudge_handler_, &cancelation_signal_, &encryption_handler_);
-    model_type_registry_->ConnectDataType(
+    data_type_registry_->ConnectDataType(
         HISTORY_DELETE_DIRECTIVES,
         MakeFakeActivationResponse(HISTORY_DELETE_DIRECTIVES));
-    model_type_registry_->ConnectDataType(NIGORI,
-                                          MakeFakeActivationResponse(NIGORI));
-    model_type_registry_->ConnectDataType(THEMES,
-                                          MakeFakeActivationResponse(THEMES));
-    model_type_registry_->ConnectDataType(HISTORY,
-                                          MakeFakeActivationResponse(HISTORY));
+    data_type_registry_->ConnectDataType(NIGORI,
+                                         MakeFakeActivationResponse(NIGORI));
+    data_type_registry_->ConnectDataType(THEMES,
+                                         MakeFakeActivationResponse(THEMES));
+    data_type_registry_->ConnectDataType(HISTORY,
+                                         MakeFakeActivationResponse(HISTORY));
 
     context_ = std::make_unique<SyncCycleContext>(
         connection_.get(), extensions_activity_.get(),
         std::vector<SyncEngineEventListener*>(), nullptr,
-        model_type_registry_.get(), "fake_cache_guid", "fake_birthday",
+        data_type_registry_.get(), "fake_cache_guid", "fake_birthday",
         "fake_bag_of_chips",
         /*poll_interval=*/base::Minutes(30));
     context_->set_notifications_enabled(true);
@@ -267,7 +267,7 @@ class SyncSchedulerImplTest : public testing::Test {
   }
 
   void DisconnectDataType(ModelType type) {
-    model_type_registry_->DisconnectDataType(type);
+    data_type_registry_->DisconnectDataType(type);
   }
 
   void RebuildScheduler() {
@@ -284,9 +284,7 @@ class SyncSchedulerImplTest : public testing::Test {
   MockSyncer* syncer() { return syncer_; }
   MockDelayProvider* delay() { return delay_; }
   MockConnectionManager* connection() { return connection_.get(); }
-  ModelTypeRegistry* model_type_registry() {
-    return model_type_registry_.get();
-  }
+  DataTypeRegistry* data_type_registry() { return data_type_registry_.get(); }
   base::TimeDelta default_delay() { return base::Seconds(0); }
   base::TimeDelta long_delay() { return base::Seconds(60); }
   base::TimeDelta timeout() { return TestTimeouts::action_timeout(); }
@@ -438,7 +436,7 @@ class SyncSchedulerImplTest : public testing::Test {
   FakeSyncEncryptionHandler encryption_handler_;
   CancelationSignal cancelation_signal_;
   std::unique_ptr<MockConnectionManager> connection_;
-  std::unique_ptr<ModelTypeRegistry> model_type_registry_;
+  std::unique_ptr<DataTypeRegistry> data_type_registry_;
   std::unique_ptr<SyncCycleContext> context_;
   std::unique_ptr<SyncSchedulerImpl> scheduler_;
   MockNudgeHandler mock_nudge_handler_;

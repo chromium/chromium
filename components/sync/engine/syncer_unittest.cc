@@ -167,7 +167,7 @@ class SyncerTest : public testing::Test,
     std::vector<SyncEngineEventListener*> listeners;
     listeners.push_back(this);
 
-    model_type_registry_ = std::make_unique<ModelTypeRegistry>(
+    data_type_registry_ = std::make_unique<DataTypeRegistry>(
         &mock_nudge_handler_, &cancelation_signal_, &encryption_handler_);
 
     EnableDatatype(BOOKMARKS);
@@ -177,8 +177,8 @@ class SyncerTest : public testing::Test,
 
     context_ = std::make_unique<SyncCycleContext>(
         mock_server_.get(), extensions_activity_.get(), listeners,
-        debug_info_getter_.get(), model_type_registry_.get(),
-        local_cache_guid(), mock_server_->store_birthday(), "fake_bag_of_chips",
+        debug_info_getter_.get(), data_type_registry_.get(), local_cache_guid(),
+        mock_server_->store_birthday(), "fake_bag_of_chips",
         /*poll_interval=*/base::Minutes(30));
     auto syncer = std::make_unique<Syncer>(&cancelation_signal_);
     // The syncer is destroyed with the scheduler that owns it.
@@ -217,14 +217,14 @@ class SyncerTest : public testing::Test,
 
   void EnableDatatype(ModelType model_type) {
     enabled_datatypes_.Put(model_type);
-    model_type_registry_->ConnectDataType(
+    data_type_registry_->ConnectDataType(
         model_type, MakeFakeActivationResponse(model_type));
     mock_server_->ExpectGetUpdatesRequestTypes(enabled_datatypes_);
   }
 
   void DisableDatatype(ModelType model_type) {
     enabled_datatypes_.Remove(model_type);
-    model_type_registry_->DisconnectDataType(model_type);
+    data_type_registry_->DisconnectDataType(model_type);
     mock_server_->ExpectGetUpdatesRequestTypes(enabled_datatypes_);
   }
 
@@ -252,7 +252,7 @@ class SyncerTest : public testing::Test,
 
   std::unique_ptr<SyncCycle> cycle_;
   MockNudgeHandler mock_nudge_handler_;
-  std::unique_ptr<ModelTypeRegistry> model_type_registry_;
+  std::unique_ptr<DataTypeRegistry> data_type_registry_;
   std::unique_ptr<SyncSchedulerImpl> scheduler_;
   std::unique_ptr<SyncCycleContext> context_;
   base::TimeDelta last_poll_interval_received_;
@@ -1112,12 +1112,12 @@ TEST_F(SyncerTest, ConfigureFailsDontApplyUpdates) {
   mock_server_->ClearUpdatesQueue();
 }
 
-// Tests that if type is not registered with ModelTypeRegistry (e.g. because
+// Tests that if type is not registered with DataTypeRegistry (e.g. because
 // type's LoadModels failed), Syncer::ConfigureSyncShare runs without triggering
 // DCHECK.
 TEST_F(SyncerTest, ConfigureFailedUnregisteredType) {
   // Simulate type being unregistered before configuration by including type
-  // that isn't registered with ModelTypeRegistry.
+  // that isn't registered with DataTypeRegistry.
   SyncShareConfigureTypes({APPS});
 
   // No explicit verification, DCHECK shouldn't have been triggered.
@@ -1125,7 +1125,7 @@ TEST_F(SyncerTest, ConfigureFailedUnregisteredType) {
 
 TEST_F(SyncerTest, GetKeySuccess) {
   KeystoreKeysHandler* keystore_keys_handler =
-      model_type_registry_->keystore_keys_handler();
+      data_type_registry_->keystore_keys_handler();
   EXPECT_TRUE(keystore_keys_handler->NeedKeystoreKey());
 
   SyncShareConfigure();
@@ -1136,7 +1136,7 @@ TEST_F(SyncerTest, GetKeySuccess) {
 
 TEST_F(SyncerTest, GetKeyEmpty) {
   KeystoreKeysHandler* keystore_keys_handler =
-      model_type_registry_->keystore_keys_handler();
+      data_type_registry_->keystore_keys_handler();
   EXPECT_TRUE(keystore_keys_handler->NeedKeystoreKey());
 
   mock_server_->SetKeystoreKey(std::string());

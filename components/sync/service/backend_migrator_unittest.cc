@@ -10,7 +10,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/sync/test/data_type_manager_mock.h"
-#include "components/sync/test/model_type_test_util.h"
+#include "components/sync/test/data_type_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

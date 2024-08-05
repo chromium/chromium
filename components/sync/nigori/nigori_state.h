@@ -56,7 +56,7 @@ struct NigoriState {
   bool NeedsGenerateCrossUserSharingKeyPair() const;
 
   // TODO(crbug.com/40141634): Make this const unique_ptr to avoid the object
-  // being destroyed after it's been injected to the ModelTypeWorker-s.
+  // being destroyed after it's been injected to the DataTypeWorker-s.
   std::unique_ptr<CryptographerImpl> cryptographer;
 
   // Pending keys represent a remote update that contained a keybag that cannot

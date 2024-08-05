@@ -20,9 +20,9 @@
 #include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/connection_status.h"
+#include "components/sync/engine/data_type_connector.h"
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/events/protocol_event.h"
-#include "components/sync/engine/model_type_connector.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/sync_credentials.h"
 #include "components/sync/engine/sync_encryption_handler.h"
@@ -170,14 +170,14 @@ class SyncManager {
 
   virtual void ShutdownOnSyncThread() = 0;
 
-  // Returns non-owning pointer to ModelTypeConnector. In contrast with
-  // ModelTypeConnectorProxy all calls are executed synchronously, thus the
+  // Returns non-owning pointer to DataTypeConnector. In contrast with
+  // DataTypeConnectorProxy all calls are executed synchronously, thus the
   // pointer should be used on sync sequence.
-  virtual ModelTypeConnector* GetModelTypeConnector() = 0;
+  virtual DataTypeConnector* GetDataTypeConnector() = 0;
 
   // Returns an instance of the main interface for registering sync types with
   // sync engine.
-  virtual std::unique_ptr<ModelTypeConnector> GetModelTypeConnectorProxy() = 0;
+  virtual std::unique_ptr<DataTypeConnector> GetDataTypeConnectorProxy() = 0;
 
   // Returns the cache_guid of the currently open database.
   // Requires that the SyncManager be initialized.

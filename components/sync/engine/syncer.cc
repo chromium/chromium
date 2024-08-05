@@ -139,7 +139,7 @@ bool Syncer::ConfigureSyncShare(const ModelTypeSet& request_types,
   base::AutoReset<bool> is_syncing(&is_syncing_, true);
 
   // It is possible during configuration that datatypes get unregistered from
-  // ModelTypeRegistry before scheduled configure sync cycle gets executed.
+  // DataTypeRegistry before scheduled configure sync cycle gets executed.
   // This happens either because DataTypeController::LoadModels fail and type
   // need to be stopped or during shutdown when all datatypes are stopped. When
   // it happens we should adjust set of types to download to only include
@@ -174,7 +174,7 @@ bool Syncer::DownloadAndApplyUpdates(ModelTypeSet* request_types,
   ModelTypeSet download_types =
       Difference(*request_types, requested_commit_only_types);
   GetUpdatesProcessor get_updates_processor(
-      cycle->context()->model_type_registry()->update_handler_map(), delegate);
+      cycle->context()->data_type_registry()->update_handler_map(), delegate);
   SyncerError download_result = SyncerError::Success();
   do {
     download_result =
@@ -214,7 +214,7 @@ SyncerError Syncer::BuildAndPostCommits(const ModelTypeSet& request_types,
 
   CommitProcessor commit_processor(
       request_types,
-      cycle->context()->model_type_registry()->commit_contributor_map());
+      cycle->context()->data_type_registry()->commit_contributor_map());
 
   // The ExitRequested() check is unnecessary, since we should start getting
   // errors from the ServerConnectionManager if an exist has been requested.

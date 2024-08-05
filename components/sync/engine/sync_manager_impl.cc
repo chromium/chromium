@@ -21,10 +21,10 @@
 #include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/configure_reason.h"
+#include "components/sync/engine/data_type_connector_proxy.h"
+#include "components/sync/engine/data_type_worker.h"
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/loopback_server/loopback_connection_manager.h"
-#include "components/sync/engine/model_type_connector_proxy.h"
-#include "components/sync/engine/model_type_worker.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/net/sync_server_connection_manager.h"
 #include "components/sync/engine/net/url_translator.h"
@@ -95,12 +95,12 @@ SyncManagerImpl::~SyncManagerImpl() {
 
 ModelTypeSet SyncManagerImpl::InitialSyncEndedTypes() {
   DCHECK(initialized_);
-  return model_type_registry_->GetInitialSyncEndedTypes();
+  return data_type_registry_->GetInitialSyncEndedTypes();
 }
 
 ModelTypeSet SyncManagerImpl::GetConnectedTypes() {
   DCHECK(initialized_);
-  return model_type_registry_->GetConnectedTypes();
+  return data_type_registry_->GetConnectedTypes();
 }
 
 void SyncManagerImpl::ConfigureSyncer(ConfigureReason reason,
@@ -173,7 +173,7 @@ void SyncManagerImpl::Init(InitArgs* args) {
   DVLOG(1) << "Setting sync client ID: " << args->cache_guid;
   sync_status_tracker_->SetCacheGuid(args->cache_guid);
 
-  model_type_registry_ = std::make_unique<ModelTypeRegistry>(
+  data_type_registry_ = std::make_unique<DataTypeRegistry>(
       this, args->cancelation_signal, sync_encryption_handler_);
 
   // Build a SyncCycleContext and store the worker in it.
@@ -182,7 +182,7 @@ void SyncManagerImpl::Init(InitArgs* args) {
       this, sync_status_tracker_.get()};
   cycle_context_ = args->engine_components_factory->BuildContext(
       connection_manager_.get(), args->extensions_activity, listeners,
-      &debug_info_event_listener_, model_type_registry_.get(), args->cache_guid,
+      &debug_info_event_listener_, data_type_registry_.get(), args->cache_guid,
       args->birthday, args->bag_of_chips, args->poll_interval);
   scheduler_ = args->engine_components_factory->BuildScheduler(
       name_, cycle_context_.get(), args->cancelation_signal,
@@ -294,7 +294,7 @@ void SyncManagerImpl::ShutdownOnSyncThread() {
   scheduler_.reset();
   cycle_context_.reset();
 
-  model_type_registry_.reset();
+  data_type_registry_.reset();
 
   if (sync_encryption_handler_) {
     sync_encryption_handler_->RemoveObserver(&debug_info_event_listener_);
@@ -438,11 +438,11 @@ void SyncManagerImpl::OnIncomingInvalidation(
     ModelType type,
     std::unique_ptr<SyncInvalidation> invalidation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  UpdateHandler* handler = model_type_registry_->GetMutableUpdateHandler(type);
+  UpdateHandler* handler = data_type_registry_->GetMutableUpdateHandler(type);
   if (handler) {
     handler->RecordRemoteInvalidation(std::move(invalidation));
   } else {
-    ModelTypeWorker::LogPendingInvalidationStatus(
+    DataTypeWorker::LogPendingInvalidationStatus(
         PendingInvalidationStatus::kDataTypeNotConnected);
   }
   sync_status_tracker_->IncrementNotificationsReceived();
@@ -453,24 +453,24 @@ void SyncManagerImpl::RefreshTypes(ModelTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const ModelTypeSet types_to_refresh =
-      Intersection(types, model_type_registry_->GetConnectedTypes());
+      Intersection(types, data_type_registry_->GetConnectedTypes());
 
   if (!types_to_refresh.empty()) {
     scheduler_->ScheduleLocalRefreshRequest(types_to_refresh);
   }
 }
 
-ModelTypeConnector* SyncManagerImpl::GetModelTypeConnector() {
+DataTypeConnector* SyncManagerImpl::GetDataTypeConnector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return model_type_registry_.get();
+  return data_type_registry_.get();
 }
 
-std::unique_ptr<ModelTypeConnector>
-SyncManagerImpl::GetModelTypeConnectorProxy() {
+std::unique_ptr<DataTypeConnector>
+SyncManagerImpl::GetDataTypeConnectorProxy() {
   DCHECK(initialized_);
-  return std::make_unique<ModelTypeConnectorProxy>(
+  return std::make_unique<DataTypeConnectorProxy>(
       base::SequencedTaskRunner::GetCurrentDefault(),
-      model_type_registry_->AsWeakPtr());
+      data_type_registry_->AsWeakPtr());
 }
 
 std::string SyncManagerImpl::cache_guid() {
@@ -491,11 +491,11 @@ std::string SyncManagerImpl::bag_of_chips() {
 }
 
 ModelTypeSet SyncManagerImpl::GetTypesWithUnsyncedData() {
-  return model_type_registry_->GetTypesWithUnsyncedData();
+  return data_type_registry_->GetTypesWithUnsyncedData();
 }
 
 bool SyncManagerImpl::HasUnsyncedItemsForTest() {
-  return model_type_registry_->HasUnsyncedItems();
+  return data_type_registry_->HasUnsyncedItems();
 }
 
 SyncEncryptionHandler* SyncManagerImpl::GetEncryptionHandler() {

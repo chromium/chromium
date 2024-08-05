@@ -32,7 +32,7 @@
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync/test/fake_data_type_sync_bridge.h"
-#include "components/sync/test/mock_model_type_worker.h"
+#include "components/sync/test/mock_data_type_worker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -281,7 +281,7 @@ class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
 // Tests the various functionality of ClientTagBasedDataTypeProcessor.
 //
 // The processor sits between the bridge (implemented by this test class) and
-// the worker, which is represented by a MockModelTypeWorker. This test suite
+// the worker, which is represented by a MockDataTypeWorker. This test suite
 // exercises the initialization flows (whether initial sync is done, performing
 // the initial merge, etc) as well as normal functionality:
 //
@@ -441,7 +441,7 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
 
   FakeDataTypeSyncBridge::Store* db() const { return bridge()->mutable_db(); }
 
-  MockModelTypeWorker* worker() const { return worker_.get(); }
+  MockDataTypeWorker* worker() const { return worker_.get(); }
 
   ClientTagBasedDataTypeProcessor* type_processor() const {
     return static_cast<ClientTagBasedDataTypeProcessor*>(
@@ -462,7 +462,7 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
 
   void OnReadyToConnect(std::unique_ptr<DataTypeActivationResponse> context) {
     worker_ =
-        MockModelTypeWorker::CreateWorkerAndConnectSync(std::move(context));
+        MockDataTypeWorker::CreateWorkerAndConnectSync(std::move(context));
 
     // The processor uses DataTypeProcessorProxy, which requires processing
     // tasks to complete.
@@ -511,7 +511,7 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
   std::unique_ptr<base::RunLoop> run_loop_;
 
   // The current mock queue.
-  std::unique_ptr<MockModelTypeWorker> worker_;
+  std::unique_ptr<MockDataTypeWorker> worker_;
 
   // Whether to expect an error from the processor (and from which site).
   std::optional<ClientTagBasedDataTypeProcessor::ErrorSite> expect_error_;

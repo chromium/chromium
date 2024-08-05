@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
 
   // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
-  // ModelTypeWorker::ctor(), but sync cycle is not scheduled. New sync cycle
+  // DataTypeWorker::ctor(), but sync cycle is not scheduled. New sync cycle
   // has to be triggered right after we loaded persisted invalidations.
   GetSyncService(0)->TriggerRefresh({syncer::BOOKMARKS});
   EXPECT_TRUE(NotificationHintChecker(syncer::BOOKMARKS).Wait());
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
 
   // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
-  // ModelTypeWorker::ctor(), but sync cycle is not scheduled. New sync cycle
+  // DataTypeWorker::ctor(), but sync cycle is not scheduled. New sync cycle
   // has to be triggered right after we loaded persisted invalidations.
   GetSyncService(0)->TriggerRefresh({syncer::DEVICE_INFO});
   EXPECT_TRUE(NotificationHintChecker(syncer::DEVICE_INFO).Wait());

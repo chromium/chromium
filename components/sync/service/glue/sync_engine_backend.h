@@ -16,7 +16,7 @@
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/cancelation_signal.h"
-#include "components/sync/engine/model_type_configurer.h"
+#include "components/sync/engine/data_type_configurer.h"
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_engine.h"
@@ -152,7 +152,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
   // Configuration methods that must execute on sync loop.
   void DoPurgeDisabledTypes(const ModelTypeSet& to_purge);
-  void DoConfigureSyncer(ModelTypeConfigurer::ConfigureParams params);
+  void DoConfigureSyncer(DataTypeConfigurer::ConfigureParams params);
   void DoFinishConfigureDataTypes(
       ModelTypeSet types_to_config,
       base::OnceCallback<void(ModelTypeSet, ModelTypeSet)> ready_task);

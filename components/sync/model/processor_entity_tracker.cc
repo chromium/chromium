@@ -140,7 +140,7 @@ std::vector<std::string> ProcessorEntityTracker::RemoveInactiveCollaborations(
     if (!active_collaborations.contains(
             entity->metadata().collaboration().collaboration_id())) {
       // The storage key should never be empty because there shouldn't be
-      // updates for inactive collaborations (ModelTypeWorker would filter them
+      // updates for inactive collaborations (DataTypeWorker would filter them
       // out).
       CHECK(!entity->storage_key().empty());
       removed_storage_keys.push_back(entity->storage_key());

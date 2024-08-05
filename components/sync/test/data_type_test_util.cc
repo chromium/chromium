@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/test/model_type_test_util.h"
+#include "components/sync/test/data_type_test_util.h"
 
 namespace syncer {
 

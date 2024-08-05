@@ -23,7 +23,7 @@ namespace syncer {
 // A sync type's contribution to an outgoing commit message.
 //
 // Helps build a commit message and process its response.  It collaborates
-// closely with the ModelTypeWorker.
+// closely with the DataTypeWorker.
 class CommitContributionImpl : public CommitContribution {
  public:
   // Only one of |on_commit_response_callback| and

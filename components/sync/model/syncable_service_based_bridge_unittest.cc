@@ -24,7 +24,7 @@
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/persisted_entity_data.pb.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
-#include "components/sync/test/mock_model_type_worker.h"
+#include "components/sync/test/mock_data_type_worker.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -151,7 +151,7 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
         GetTestActivationRequest(),
         base::BindLambdaForTesting(
             [&](std::unique_ptr<syncer::DataTypeActivationResponse> response) {
-              worker_ = MockModelTypeWorker::CreateWorkerAndConnectSync(
+              worker_ = MockDataTypeWorker::CreateWorkerAndConnectSync(
                   std::move(response));
               loop.Quit();
             }));
@@ -182,7 +182,7 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
   const std::unique_ptr<ModelTypeStore> store_;
   std::unique_ptr<syncer::ClientTagBasedDataTypeProcessor> real_processor_;
   std::unique_ptr<SyncableServiceBasedBridge> bridge_;
-  std::unique_ptr<MockModelTypeWorker> worker_;
+  std::unique_ptr<MockDataTypeWorker> worker_;
   // SyncChangeProcessor received via MergeDataAndStartSyncing(), or null if it
   // hasn't been called.
   std::unique_ptr<SyncChangeProcessor> start_syncing_sync_processor_;
