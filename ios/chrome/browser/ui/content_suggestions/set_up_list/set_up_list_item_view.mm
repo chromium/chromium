@@ -11,6 +11,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmented_default_browser_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/crossfade_label.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -78,10 +79,10 @@ struct ViewConfig {
 }
 
 - (instancetype)initWithData:(SetUpListItemViewData*)data {
-  self = [super init];
-  if (self) {
+  if (self = [super init]) {
     _type = data.type;
     _complete = data.complete;
+
     if (data.compactLayout) {
       // ViewConfig for a compact layout.
       int syncString =
@@ -90,11 +91,15 @@ struct ViewConfig {
           IsIOSTipsNotificationsEnabled()
               ? IDS_IOS_SET_UP_LIST_NOTIFICATIONS_SHORT_DESCRIPTION
               : IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_SHORT_DESCRIPTION;
+      int defaultBrowserString =
+          IsSegmentedDefaultBrowserPromoEnabled()
+              ? [self defaultBrowserDescriptionForSegment:data.userSegment]
+              : IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION;
       _config = {
           YES,
           NO,
           syncString,
-          IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION,
+          defaultBrowserString,
           IDS_IOS_SET_UP_LIST_AUTOFILL_SHORT_DESCRIPTION,
           notificationsString,
           UIFontTextStyleFootnote,
@@ -107,11 +112,15 @@ struct ViewConfig {
           IsIOSTipsNotificationsEnabled()
               ? IDS_IOS_SET_UP_LIST_NOTIFICATIONS_DESCRIPTION
               : IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION;
+      int defaultBrowserString =
+          IsSegmentedDefaultBrowserPromoEnabled()
+              ? [self defaultBrowserDescriptionForSegment:data.userSegment]
+              : IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_MAGIC_STACK_DESCRIPTION;
       _config = {
           NO,
           YES,
           syncString,
-          IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_MAGIC_STACK_DESCRIPTION,
+          defaultBrowserString,
           IDS_IOS_SET_UP_LIST_AUTOFILL_MAGIC_STACK_DESCRIPTION,
           notificationsString,
           UIFontTextStyleSubheadline,
@@ -125,11 +134,15 @@ struct ViewConfig {
           IsIOSTipsNotificationsEnabled()
               ? IDS_IOS_SET_UP_LIST_NOTIFICATIONS_DESCRIPTION
               : IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION;
+      int defaultBrowserString =
+          IsSegmentedDefaultBrowserPromoEnabled()
+              ? [self defaultBrowserDescriptionForSegment:data.userSegment]
+              : IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_DESCRIPTION;
       _config = {
           NO,
           NO,
           syncString,
-          IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_DESCRIPTION,
+          defaultBrowserString,
           IDS_IOS_SET_UP_LIST_AUTOFILL_DESCRIPTION,
           notificationsString,
           UIFontTextStyleSubheadline,
@@ -402,6 +415,21 @@ struct ViewConfig {
       return set_up_list::kAllSetItemID;
     case SetUpListItemType::kFollow:
       return set_up_list::kFollowItemID;
+  }
+}
+
+// Returns string ID for Set Up List Default Browser Item description, based on
+// user segment.
+- (int)defaultBrowserDescriptionForSegment:
+    (segmentation_platform::DefaultBrowserUserSegment)segment {
+  switch (segment) {
+    case segmentation_platform::DefaultBrowserUserSegment::kDesktopUser:
+    case segmentation_platform::DefaultBrowserUserSegment::kAndroidSwitcher:
+      return IDS_IOS_SET_UP_LIST_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_SHORT_DESCRIPTION;
+    case segmentation_platform::DefaultBrowserUserSegment::kShopper:
+      return IDS_IOS_SET_UP_LIST_SEGMENTED_DEFAULT_BROWSER_SHOPPER_SHORT_DESCRIPTION;
+    case segmentation_platform::DefaultBrowserUserSegment::kDefault:
+      return IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION;
   }
 }
 
