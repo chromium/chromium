@@ -86,7 +86,7 @@
     <cr-menu-selector id="menu" selectable="a" attr-for-selected="path"
         selected-attribute="selected"
         selected="[[getSelectedTopLevelPage_(selectedPage_)]]"
-        on-iron-select="onMenuItemSelect_">
+        on-iron-activate="onMenuItemActivate_">
       <a id="localMenuItem" role="menuitem" class="cr-nav-menu-item"
           path="localcerts" href="/localcerts" on-click="onMenuItemClick_">
         <cr-icon icon="cr:computer" class="menu-icon"></cr-icon>

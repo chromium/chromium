@@ -312,7 +312,7 @@ export class CertificateManagerV2Element extends
     }
   }
 
-  private onMenuItemSelect_(e: CustomEvent<{item: HTMLElement}>) {
+  private onMenuItemActivate_(e: CustomEvent<{item: HTMLElement}>) {
     const page = e.detail.item.getAttribute('path');
     assert(page, 'Page is not available');
     this.switchToPage_(page as Page);
