@@ -76,7 +76,8 @@
 -chrome/test/fuzzing/renderer_fuzzing/
 -chrome/tools/service_discovery_sniffer/
 -chromecast/
--chromeos/
+-chromeos/ash/components/memory/userspace_swap/
+-chromeos/ash/services/libassistant/
 -clank/
 -codelabs/
 -components/allocation_recorder/
