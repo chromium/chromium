@@ -45,6 +45,7 @@ WebMouseEvent WebMouseEventBuilder::Build(
   WebMouseEvent::Button button = WebMouseEvent::Button::kNoButton;
   switch (message) {
     case WM_MOUSEMOVE:
+    case WM_NCMOUSEMOVE:
       type = WebInputEvent::Type::kMouseMove;
       if (wparam & MK_LBUTTON)
         button = WebMouseEvent::Button::kLeft;
