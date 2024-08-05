@@ -14,8 +14,9 @@ try_.defaults.set(
     builder_group = "tryserver.chromium.android",
     pool = try_.DEFAULT_POOL,
     builderless = True,
-    cores = 8,
+    cores = 32,
     os = os.LINUX_DEFAULT,
+    ssd = True,
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
@@ -40,7 +41,6 @@ try_.builder(
             "release_try_builder",
         ],
     ),
-    cores = 32,
 )
 
 try_.builder(
@@ -54,7 +54,6 @@ try_.builder(
             "release_try_builder",
         ],
     ),
-    cores = 32,
 )
 
 try_.builder(
@@ -68,7 +67,6 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
-    cores = 32,
 )
 
 try_.builder(
@@ -82,5 +80,4 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
-    cores = 32,
 )
