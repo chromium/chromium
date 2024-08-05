@@ -111,6 +111,7 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   request->SetTrustTokenParams(original->TrustTokenParams());
   request->SetAttributionReportingEligibility(
       original->AttributionReportingEligibility());
+  request->SetAttributionReportingSupport(original->AttributionSupport());
   request->SetServiceWorkerRaceNetworkRequestToken(
       original->ServiceWorkerRaceNetworkRequestToken());
 

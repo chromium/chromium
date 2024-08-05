@@ -102,6 +102,7 @@ blink::mojom::FetchAPIRequestPtr TypeConverter<
       input.required_ip_address_space);
   output->attribution_reporting_eligibility =
       input.attribution_reporting_eligibility;
+  output->attribution_reporting_support = input.attribution_reporting_support;
   return output;
 }
 
