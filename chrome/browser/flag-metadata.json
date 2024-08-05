@@ -6041,7 +6041,7 @@
   {
     "name": "modern-tab-strip",
     "owners": [ "ewannpv@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 128
+    "expiry_milestone": 134
   },
   {
     "name": "mojo-linux-sharedmem",
@@ -8491,7 +8491,7 @@
   {
     "name": "tab-grid-new-transitions",
     "owners": [ "ewannpv@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 134
   },
   {
     "name": "tab-group-creation-dialog-android",
