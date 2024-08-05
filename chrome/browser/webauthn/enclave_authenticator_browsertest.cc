@@ -567,11 +567,20 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       run_loop_ = std::make_unique<base::RunLoop>();
       waiting_for_loading_enclave_timeout_ = true;
       run_loop_->Run();
+      Reset();
     }
 
     // Call this before the state transition you are looking to observe.
     void SetStepToObserve(AuthenticatorRequestDialogModel::Step step) {
+      ASSERT_FALSE(run_loop_);
       step_ = step;
+      run_loop_ = std::make_unique<base::RunLoop>();
+    }
+
+    // Call this to observer the next step change, whatever it might be.
+    void ObserveNextStep() {
+      ASSERT_FALSE(run_loop_);
+      observe_next_step_ = true;
       run_loop_ = std::make_unique<base::RunLoop>();
     }
 
@@ -581,16 +590,16 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       ASSERT_TRUE(run_loop_);
       run_loop_->Run();
       // When waiting for `kClosed` the model is deleted at this point.
-      if (step_ != AuthenticatorRequestDialogModel::Step::kClosed) {
+      if (!observe_next_step_ &&
+          step_ != AuthenticatorRequestDialogModel::Step::kClosed) {
         CHECK_EQ(step_, model_->step());
       }
-      step_ = AuthenticatorRequestDialogModel::Step::kNotStarted;
-      run_loop_.reset();
+      Reset();
     }
 
     // AuthenticatorRequestDialogModel::Observer:
     void OnStepTransition() override {
-      if (run_loop_ && step_ == model_->step()) {
+      if (run_loop_ && (observe_next_step_ || step_ == model_->step())) {
         run_loop_->QuitWhenIdle();
       }
     }
@@ -605,11 +614,18 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       model_ = nullptr;
     }
 
+    void Reset() {
+      step_ = AuthenticatorRequestDialogModel::Step::kNotStarted;
+      observe_next_step_ = false;
+      run_loop_.reset();
+    }
+
    private:
     raw_ptr<AuthenticatorRequestDialogModel> model_;
     AuthenticatorRequestDialogModel::Step step_ =
         AuthenticatorRequestDialogModel::Step::kNotStarted;
     bool waiting_for_loading_enclave_timeout_ = false;
+    bool observe_next_step_ = false;
     std::unique_ptr<base::RunLoop> run_loop_;
   };
 
@@ -3053,9 +3069,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   }
   model_observer()->WaitForStep();
 
-  model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kMechanismSelection);
-  dialog_model()->StartOver();
+  // The second time simulate pressing the "Use [phone]" button.
+  model_observer()->ObserveNextStep();
+  dialog_model()->ContactPriorityPhone();
   model_observer()->WaitForStep();
 
   // Cancel and send a new request so newly-enumerated credentials will be used.
