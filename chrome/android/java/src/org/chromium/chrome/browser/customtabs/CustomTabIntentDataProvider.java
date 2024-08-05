@@ -70,6 +70,7 @@ import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -197,9 +198,15 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                     "com.google.android.googlequicksearchbox");
 
     /** Pipe ("|") separated list of package names allowed to use the interactive Omnibox. */
+    // TODO(b/40239922): remove when no longer relevant.
+    private static final String DEFAULT_OMNIBOX_ALLOWED_PACKAGE_NAMES =
+            BuildConfig.IS_FOR_TEST ? "org.chromium.customtabsclient" : null;
+
     public static final StringCachedFieldTrialParameter OMNIBOX_ALLOWED_PACKAGE_NAMES =
             ChromeFeatureList.newStringCachedFieldTrialParameter(
-                    ChromeFeatureList.SEARCH_IN_CCT, "omnibox_allowed_package_names", null);
+                    ChromeFeatureList.SEARCH_IN_CCT,
+                    "omnibox_allowed_package_names",
+                    DEFAULT_OMNIBOX_ALLOWED_PACKAGE_NAMES);
 
     private static final String EXTRA_TWA_DISCLOSURE_UI =
             "androidx.browser.trusted.extra.DISCLOSURE_VERSION";
