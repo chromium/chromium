@@ -13,10 +13,6 @@ BASE_FEATURE(kLensStandalone,
              "LensStandalone",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensImageCompression,
-             "LensImageCompression",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensSearchOptimizations,
              "LensSearchOptimizations",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -241,26 +237,12 @@ constexpr base::FeatureParam<bool> kDismissLoadingStateOnDidFinishLoad{
 constexpr base::FeatureParam<bool> kDismissLoadingStateOnPrimaryPageChanged{
     &kLensStandalone, "dismiss-loading-state-on-primary-page-changed", false};
 
-constexpr base::FeatureParam<int> kMaxAreaForImageSearch{
-    &kLensImageCompression, "dimensions-max-area", 1000000};
-
-constexpr base::FeatureParam<int> kMaxPixelsForImageSearch{
-    &kLensImageCompression, "dimensions-max-pixels", 1000};
-
 const base::FeatureParam<bool> kEnableLensFullscreenSearch{
     &kLensSearchOptimizations, "enable-lens-fullscreen-search", false};
 
 bool GetEnableLatencyLogging() {
   return base::FeatureList::IsEnabled(kEnableLatencyLogging) &&
          base::FeatureList::IsEnabled(kLensStandalone);
-}
-
-int GetMaxAreaForImageSearch() {
-  return kMaxAreaForImageSearch.Get();
-}
-
-int GetMaxPixelsForImageSearch() {
-  return kMaxPixelsForImageSearch.Get();
 }
 
 std::string GetHomepageURLForLens() {

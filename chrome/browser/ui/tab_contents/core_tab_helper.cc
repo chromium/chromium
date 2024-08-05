@@ -27,6 +27,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/buildflags.h"
+#include "components/lens/lens_constants.h"
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_rendering_environment.h"
@@ -84,17 +85,15 @@ constexpr int kEncodingQualityJpeg = 40;
 constexpr int kEncodingQualityWebp = 45;
 
 bool NeedsDownscale(gfx::Image image) {
-  return (image.Height() * image.Width() >
-          lens::features::GetMaxAreaForImageSearch()) &&
-         (image.Width() > lens::features::GetMaxPixelsForImageSearch() ||
-          image.Height() > lens::features::GetMaxPixelsForImageSearch());
+  return (image.Height() * image.Width() > lens::kMaxAreaForImageSearch) &&
+         (image.Width() > lens::kMaxPixelsForImageSearch ||
+          image.Height() > lens::kMaxPixelsForImageSearch);
 }
 
 gfx::Image DownscaleImage(const gfx::Image& image) {
   return gfx::ResizedImageForMaxDimensions(
-      image, lens::features::GetMaxPixelsForImageSearch(),
-      lens::features::GetMaxPixelsForImageSearch(),
-      lens::features::GetMaxAreaForImageSearch());
+      image, lens::kMaxPixelsForImageSearch, lens::kMaxPixelsForImageSearch,
+      lens::kMaxAreaForImageSearch);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -266,8 +265,8 @@ void CoreTabHelper::SearchWithLens(content::RenderFrameHost* render_frame_host,
   bool use_side_panel =
       !force_open_in_new_tab && IsSidePanelEnabledForLens(web_contents());
   SearchByImageImpl(render_frame_host, src_url, kImageSearchThumbnailMinSize,
-                    lens::features::GetMaxPixelsForImageSearch(),
-                    lens::features::GetMaxPixelsForImageSearch(),
+                    lens::kMaxPixelsForImageSearch,
+                    lens::kMaxPixelsForImageSearch,
                     lens::GetQueryParametersForLensRequest(
                         entry_point, use_side_panel,
                         /*is_full_screen_request=*/false,

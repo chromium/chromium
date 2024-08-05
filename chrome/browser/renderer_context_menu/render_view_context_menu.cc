@@ -141,6 +141,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/language/core/browser/language_model_manager.h"
+#include "components/lens/lens_constants.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_metadata.mojom.h"
 #include "components/lens/lens_metrics.h"
@@ -4578,9 +4579,8 @@ void RenderViewContextMenu::ExecSearchForVideoFrame(int event_flags) {
 
   frame_host->RequestVideoFrameAtWithBoundsHint(
       gfx::Point(params_.x, params_.y),
-      gfx::Size(lens::features::GetMaxPixelsForImageSearch(),
-                lens::features::GetMaxPixelsForImageSearch()),
-      lens::features::GetMaxAreaForImageSearch(),
+      gfx::Size(lens::kMaxPixelsForImageSearch, lens::kMaxPixelsForImageSearch),
+      lens::kMaxAreaForImageSearch,
       base::BindOnce(&RenderViewContextMenu::SearchForVideoFrame,
                      weak_pointer_factory_.GetWeakPtr(), event_flags));
 }

@@ -17,10 +17,6 @@ namespace lens::features {
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensStandalone);
 
-// Feature that controls the compression of images before they are sent to Lens.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensImageCompression);
-
 // Enables a variety of changes aimed to improve user's engagement with current
 // Lens features.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -105,14 +101,6 @@ extern bool GetEnableLatencyLogging();
 // default search engines
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetEnableImageSearchUnifiedSidePanelFor3PDse();
-
-// Returns the max area for the image to be sent to Lens.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetMaxAreaForImageSearch();
-
-// Returns the max pixel width/height for the image to be sent to Lens.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetMaxPixelsForImageSearch();
 
 // The URL for the Lens home page.
 COMPONENT_EXPORT(LENS_FEATURES)
