@@ -360,7 +360,7 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
   } else if (const PickerSearchResult::SearchRequestData* search_request_data =
                  std::get_if<PickerSearchResult::SearchRequestData>(
                      &result.data())) {
-    StartSearchWithNewQuery(search_request_data->text);
+    UpdateSearchQueryAndActivePage(search_request_data->text);
   } else if (const PickerSearchResult::EditorData* editor_data =
                  std::get_if<PickerSearchResult::EditorData>(&result.data())) {
     delegate_->ShowEditor(
@@ -497,17 +497,37 @@ gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
                                  main_container_view_->bounds().y());
 }
 
-void PickerView::StartSearchWithNewQuery(std::u16string query) {
+void PickerView::UpdateSearchQueryAndActivePage(std::u16string query) {
   search_field_view_->SetQueryText(std::move(query));
   search_field_view_->RequestFocus();
-  StartSearch();
+  UpdateActivePage();
 }
 
-void PickerView::StartSearch() {
+void PickerView::UpdateActivePage() {
   std::u16string_view query = search_field_view_->GetQueryText();
 
   if (query.empty()) {
-    StopSearch();
+    delegate_->GetSessionMetrics().UpdateSearchQuery(u"");
+    if (selected_category_.has_value()) {
+      SetActivePage(category_results_view_);
+      if (last_suggested_results_category_ != selected_category_) {
+        // Getting suggested results for a category can be slow, so show a
+        // loading animation.
+        category_results_view_->ShowLoadingAnimation();
+        delegate_->GetResultsForCategory(
+            *selected_category_,
+            base::BindRepeating(&PickerView::PublishCategoryResults,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                *selected_category_));
+        last_suggested_results_category_ = selected_category_;
+      }
+    } else {
+      SetActivePage(zero_state_view_);
+    }
+    delegate_->StopSearch();
+    clear_results_timer_.Stop();
+    search_results_view_->ClearSearchResults();
+    ResetEmojiBarToZeroState();
     return;
   }
 
@@ -524,30 +544,6 @@ void PickerView::StartSearch() {
                                              weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PickerView::StopSearch() {
-  delegate_->GetSessionMetrics().UpdateSearchQuery(u"");
-  if (selected_category_.has_value()) {
-    SetActivePage(category_results_view_);
-    if (last_suggested_results_category_ != selected_category_) {
-      // Getting suggested results for a category can be slow, so show a loading
-      // animation.
-      category_results_view_->ShowLoadingAnimation();
-      delegate_->GetResultsForCategory(
-          *selected_category_,
-          base::BindRepeating(&PickerView::PublishCategoryResults,
-                              weak_ptr_factory_.GetWeakPtr(),
-                              *selected_category_));
-      last_suggested_results_category_ = selected_category_;
-    }
-  } else {
-    SetActivePage(zero_state_view_);
-  }
-  delegate_->StopSearch();
-  clear_results_timer_.Stop();
-  search_results_view_->ClearSearchResults();
-  ResetEmojiBarToZeroState();
-}
-
 void PickerView::PublishEmojiResults(std::vector<PickerSearchResult> results) {
   if (emoji_bar_view_ == nullptr) {
     return;
@@ -559,8 +555,8 @@ void PickerView::PublishEmojiResults(std::vector<PickerSearchResult> results) {
 }
 
 void PickerView::OnClearResultsTimerFired() {
-  // `PickerView::StopSearch` ensures that if the active page was set to the
-  // zero state or category view, the timer that this is called from is
+  // `PickerView::UpdateActivePage` ensures that if the active page was set to
+  // the zero state or category view, the timer that this is called from is
   // cancelled - which guarantees that this can't be called.
   SetActivePage(search_results_view_);
 
@@ -571,8 +567,8 @@ void PickerView::OnClearResultsTimerFired() {
 
 void PickerView::PublishSearchResults(
     std::vector<PickerSearchResultsSection> results) {
-  // `PickerView::StopSearch` ensures that if the active page was set to the
-  // zero state or category view, the delegate's search is stopped - which
+  // `PickerView::UpdateActivePage` ensures that if the active page was set to
+  // the zero state or category view, the delegate's search is stopped - which
   // guarantees that this can't be called.
   SetActivePage(search_results_view_);
 
@@ -654,7 +650,7 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
       GetSearchFieldPlaceholderTextForPickerCategory(category));
   search_field_view_->SetBackButtonVisible(true);
   SetEmojiBarVisibleIfEnabled(false);
-  StartSearchWithNewQuery(std::u16string(query));
+  UpdateSearchQueryAndActivePage(std::u16string(query));
 }
 
 void PickerView::PublishCategoryResults(
@@ -682,7 +678,7 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
       views::Builder<PickerSearchFieldView>(
           std::make_unique<PickerSearchFieldView>(
               base::IgnoreArgs<const std::u16string&>(base::BindRepeating(
-                  &PickerView::StartSearch, base::Unretained(this))),
+                  &PickerView::UpdateActivePage, base::Unretained(this))),
               base::BindRepeating(&PickerView::OnSearchBackButtonPressed,
                                   base::Unretained(this)),
               &key_event_handler_, &performance_metrics_))
@@ -793,9 +789,10 @@ void PickerView::OnSearchBackButtonPressed() {
   search_field_view_->SetBackButtonVisible(false);
   SetEmojiBarVisibleIfEnabled(true);
   selected_category_ = std::nullopt;
-  StartSearchWithNewQuery(u"");
+  UpdateSearchQueryAndActivePage(u"");
   CHECK_EQ(main_container_view_->active_page(), zero_state_view_)
-      << "StartSearchWithNewQuery did not set active page to zero state view";
+      << "UpdateSearchQueryAndActivePage did not set active page to zero state "
+         "view";
 }
 
 void PickerView::ResetEmojiBarToZeroState() {

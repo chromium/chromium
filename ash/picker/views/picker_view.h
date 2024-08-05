@@ -144,19 +144,18 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
 
  private:
   // Sets the search text field's query text to the query, focuses it, then
-  // starts a search.
-  void StartSearchWithNewQuery(std::u16string query);
+  // updates the active page - starting / ending a search if necessary.
+  void UpdateSearchQueryAndActivePage(std::u16string query);
 
-  // Starts a search with the current query, with search results being returned
-  // to `PublishSearchResults` and `PublishEmojiResults`.
-  // Sets the active page to the search view after a delay via
+  // Updates the active page based on the search text field's query text, as
+  // well as the active category.
+  // If the search text field's query text is non-empty, this starts a search
+  // and sets the active page to the search view after a delay via
   // `OnClearResultsTimerFired` and `PublishSearchResults`.
-  // If the query is empty, this calls `StopSearch` instead.
-  void StartSearch();
-
-  // Stops any previous searches and immediately sets the active page to the
-  // zero state / category results view, fetching category results if necessary.
-  void StopSearch();
+  // Otherwise, stops any previous searches and immediately sets the active page
+  // to the zero state / category results view, fetching category results if
+  // necessary.
+  void UpdateActivePage();
 
   // Displays `results` in the emoji bar.
   void PublishEmojiResults(std::vector<PickerSearchResult> results);
