@@ -372,6 +372,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kForceStartupSigninPromo,
     &switches::kForceDisableExtendedSyncPromos,
     &switches::kSearchEngineChoice,
+    &switches::kWaffleBlocking,
     &switches::kPersistentSearchEngineChoiceImport,
     &switches::kSeedAccountsRevamp,
     &sync_sessions::kOptimizeAssociateWindowsAndroid,

@@ -94,6 +94,11 @@ extern const base::FeatureParam<int> kSearchEngineChoiceMaximumSkipCount;
 // TODO(b/316859558): Not used for shipping purposes, remove this feature.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kSearchEngineChoice);
+
+// Enables the blocking dialog that directs users to complete their choice of
+// default apps (for Browser & Search) in Android.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kWaffleBlocking);
 #endif
 
 // Kill switch to revert the fix of using assistedQueryStats for prefetch source
