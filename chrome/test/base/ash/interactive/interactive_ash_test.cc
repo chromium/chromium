@@ -462,7 +462,21 @@ InteractiveAshTest::WaitForElementOpened(
   state_change.event = kElementOpened;
   state_change.where = element;
   state_change.type = StateChange::Type::kExistsAndConditionTrue;
-  state_change.test_function = "(el) => { return el.opened; }";
+  state_change.test_function = "(el) => { return el.opened || el.open; }";
+  return WaitForStateChange(element_id, state_change);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementUnopened(
+    const ui::ElementIdentifier& element_id,
+    WebContentsInteractionTestUtil::DeepQuery element) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementUnopened);
+
+  WebContentsInteractionTestUtil::StateChange state_change;
+  state_change.event = kElementUnopened;
+  state_change.where = element;
+  state_change.type = StateChange::Type::kExistsAndConditionTrue;
+  state_change.test_function = "(el) => { return !el.opened && !el.open; }";
   return WaitForStateChange(element_id, state_change);
 }
 

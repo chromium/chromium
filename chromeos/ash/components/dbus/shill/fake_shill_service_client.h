@@ -93,6 +93,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   ShillServiceClient::TestInterface* GetTestInterface() override;
 
   // ShillServiceClient::TestInterface overrides.
+  base::Value::Dict GetFakeDefaultModbApnDict() override;
   void AddService(const std::string& service_path,
                   const std::string& guid,
                   const std::string& name,

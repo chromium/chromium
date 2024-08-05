@@ -52,6 +52,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
                                         const std::string& state,
                                         const std::string& ipconfig_path,
                                         bool visible) = 0;
+
     // Sets the properties for a service but does not add it to the Manager
     // or Profile. Returns the properties for the service as a dictionary Value.
     virtual base::Value::Dict* SetServiceProperties(
@@ -100,6 +101,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
     // is found.
     virtual std::string FindSimilarService(
         const base::Value::Dict& template_service_properties) = 0;
+
+    // Gets the default Modb APN dict value that will be used to set on each
+    // cellular service.
+    virtual base::Value::Dict GetFakeDefaultModbApnDict() = 0;
 
     // Clears all Services from the Manager and Service stubs.
     virtual void ClearServices() = 0;

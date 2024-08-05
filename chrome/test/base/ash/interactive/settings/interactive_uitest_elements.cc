@@ -15,6 +15,14 @@ WebContentsInteractionTestUtil::DeepQuery InternetPage() {
   }});
 }
 
+WebContentsInteractionTestUtil::DeepQuery InternetPageErrorToast() {
+  return InternetPage() + "cr-toast";
+}
+
+WebContentsInteractionTestUtil::DeepQuery InternetPageErrorToastMessage() {
+  return InternetPage() + "span#errorToastMessage";
+}
+
 WebContentsInteractionTestUtil::DeepQuery InternetDetailsSubpage() {
   return InternetPage() + "settings-internet-detail-subpage";
 }
@@ -125,6 +133,26 @@ WebContentsInteractionTestUtil::DeepQuery ApnListNthItem(int n) {
 
 WebContentsInteractionTestUtil::DeepQuery ApnListNthItemName(int n) {
   return ApnListNthItem(n) + "div#apnName";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItemMenuButton(int n) {
+  return ApnListNthItem(n) + "cr-icon-button#actionMenuButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItemDotsMenu(int n) {
+  return ApnListNthItem(n) + "cr-action-menu#dotsMenu";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItemDisableButton(int n) {
+  return ApnListNthItem(n) + "button#disableButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItemRemoveButton(int n) {
+  return ApnListNthItem(n) + "button#removeButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItemEnableButton(int n) {
+  return ApnListNthItem(n) + "button#enableButton";
 }
 
 WebContentsInteractionTestUtil::DeepQuery ApnSelectionConfirmButton() {

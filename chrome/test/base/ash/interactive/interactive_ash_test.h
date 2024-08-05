@@ -190,6 +190,12 @@ class InteractiveAshTest
       const ui::ElementIdentifier& element_id,
       WebContentsInteractionTestUtil::DeepQuery query);
 
+  // Waits for an element identified by `query` to both exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and be unopened.
+  InteractiveTestApi::MultiStep WaitForElementUnopened(
+      const ui::ElementIdentifier& element_id,
+      WebContentsInteractionTestUtil::DeepQuery query);
+
   // Waits for an element identified by `query` to exist in the DOM of an
   // instrumented WebUI identified by `element_id` and be focused.
   ui::test::internal::InteractiveTestPrivate::MultiStep WaitForElementFocused(
