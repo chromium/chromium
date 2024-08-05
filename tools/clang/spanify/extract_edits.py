@@ -113,8 +113,7 @@ def DFS(visited: set, graph: dict, key: str, key_to_node: dict, changes: set):
       DFS(visited, graph, neighbour.replacement, key_to_node, changes)
 
 
-def SizeInfoAvailable(visited: dict, graph: dict, key: str,
-                      key_to_node: dict) -> str | None:
+def SizeInfoAvailable(visited: dict, graph: dict, key: str, key_to_node: dict):
   """
   Determines whether size information is available for a buffer node and its
   neighbors. Updates the node's size_info_available attribute.
