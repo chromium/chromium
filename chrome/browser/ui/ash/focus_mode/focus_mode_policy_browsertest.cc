@@ -29,7 +29,9 @@ namespace {
 class FocusModePolicyTest : public policy::PolicyTest {
  public:
   FocusModePolicyTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kFocusMode);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFocusMode, features::kFocusModeYTM},
+        /*disabled_features=*/{});
   }
   ~FocusModePolicyTest() override = default;
 

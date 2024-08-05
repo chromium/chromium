@@ -47,7 +47,8 @@ views::Widget* FindMediaWidget() {
 class FocusModeBrowserTest : public InProcessBrowserTest {
  public:
   FocusModeBrowserTest() {
-    feature_list_.InitWithFeatures({features::kFocusMode}, {});
+    feature_list_.InitWithFeatures(
+        {features::kFocusMode, features::kFocusModeYTM}, {});
   }
   ~FocusModeBrowserTest() override = default;
   FocusModeBrowserTest(const FocusModeBrowserTest&) = delete;

@@ -12,6 +12,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/session/session_types.h"
@@ -487,7 +488,8 @@ void FocusModeSoundsController::DownloadPlaylistsForType(
   } else {
     if (!base::Contains(enabled_sound_sections_,
                         focus_mode_util::SoundType::kYouTubeMusic)) {
-      LOG(WARNING) << "Playlist download for YouTube Music blocked by policy";
+      LOG(WARNING)
+          << "Playlist download for YouTube Music blocked by policy or flag";
       return;
     }
   }
@@ -638,6 +640,10 @@ void FocusModeSoundsController::OnPrefChanged() {
   PrefService* active_user_prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
   enabled_sound_sections_ = ReadSoundSectionPolicy(active_user_prefs);
+  // Hide the YTM sound section if the flag isn't enabled.
+  if (!features::IsFocusModeYTMEnabled()) {
+    enabled_sound_sections_.erase(focus_mode_util::SoundType::kYouTubeMusic);
+  }
 }
 
 }  // namespace ash
