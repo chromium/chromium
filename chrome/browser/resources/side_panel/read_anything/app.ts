@@ -24,7 +24,7 @@ import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeou
 import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {VoicePackStatus} from './voice_language_util.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getFilteredVoiceList, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, isWaitingForInstallLocally, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getFilteredVoiceList, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, isWaitingForInstallLocally, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -1102,9 +1102,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (!voicesForLanguage || (voicesForLanguage.length === 0)) {
       // Stay with the current voice if no voices are available for this
       // language.
-      return this.selectedVoice_ ?
-          this.selectedVoice_ :
-          this.getNaturalVoiceOrDefault_(allPossibleVoices);
+      return this.selectedVoice_ ? this.selectedVoice_ :
+                                   getNaturalVoiceOrDefault(allPossibleVoices);
     }
 
     // First try to choose a voice only from currently enabled locales for this
@@ -1123,23 +1122,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         // can disable the play button.
         return undefined;
       } else {
-        return this.getNaturalVoiceOrDefault_(allVoicesForEnabledLocales);
+        return getNaturalVoiceOrDefault(allVoicesForEnabledLocales);
       }
     }
 
-    return this.getNaturalVoiceOrDefault_(voicesForCurrentEnabledLocale);
-  }
-
-  private getNaturalVoiceOrDefault_(voices: SpeechSynthesisVoice[]):
-      SpeechSynthesisVoice {
-    const naturalVoice = voices.find(v => isNatural(v));
-    if (naturalVoice) {
-      return naturalVoice;
-    }
-
-    const defaultVoice =
-        voices.find(({default: isDefaultVoice}) => isDefaultVoice);
-    return defaultVoice ? defaultVoice : voices[0];
+    return getNaturalVoiceOrDefault(voicesForCurrentEnabledLocale);
   }
 
   // Attempt to get a new voice using the current language. In theory, the
