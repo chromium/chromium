@@ -128,12 +128,18 @@ void InSessionAuthDialogControllerImpl::ShowAuthDialog(
 
   if (reason == Reason::kAccessPasswordManager &&
       features::IsUseAuthPanelInSessionEnabled()) {
-    CreateAndShowAuthPanel(prompt, std::move(on_auth_complete), reason,
-                           account_id);
+    // CreateAndShowAuthPanel(prompt, std::move(on_auth_complete), reason,
+    //                        account_id);
+    Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
+        ActiveSessionAuthController::Reason::kPasswordManager,
+        std::move(on_auth_complete));
   } else if (reason == Reason::kAccessAuthenticationSettings &&
              features::IsUseAuthPanelInSessionEnabled()) {
-    CreateAndShowAuthPanel(prompt, std::move(on_auth_complete), reason,
-                           account_id);
+    // CreateAndShowAuthPanel(prompt, std::move(on_auth_complete), reason,
+    //                        account_id);
+    Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
+        ActiveSessionAuthController::Reason::kSettings,
+        std::move(on_auth_complete));
   } else {
     // We don't manage the lifetime of `AuthenticationDialog` here.
     // `AuthenticatonDialog` is-a View and it is instead owned by it's widget,
