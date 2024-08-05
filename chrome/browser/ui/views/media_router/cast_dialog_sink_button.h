@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -58,15 +57,13 @@ class CastDialogSinkButton : public HoverButton {
   FRIEND_TEST_ALL_PREFIXES(CastDialogSinkButtonTest,
                            SetStatusLabelForDialSinks);
 
-  void OnEnabledChanged();
+  // views::Button:
+  void OnEnabledChanged() override;
+
   void UpdateTitleTextStyle();
 
   const UIMediaSink sink_;
   std::optional<std::u16string> saved_status_text_;
-  base::CallbackListSubscription enabled_changed_subscription_ =
-      AddEnabledChangedCallback(
-          base::BindRepeating(&CastDialogSinkButton::OnEnabledChanged,
-                              base::Unretained(this)));
 };
 
 }  // namespace media_router

@@ -69,16 +69,13 @@ class ASH_EXPORT FeaturePodLabelButton : public views::Button {
   // Layout |child| in horizontal center with its vertical origin set to |y|.
   void LayoutInCenter(views::View* child, int y);
 
-  void OnEnabledChanged();
+  // views::Button:
+  void OnEnabledChanged() override;
 
   // Owned by views hierarchy.
   const raw_ptr<views::Label> label_;
   const raw_ptr<views::Label> sub_label_;
   const raw_ptr<views::ImageView> detailed_view_arrow_;
-  base::CallbackListSubscription enabled_changed_subscription_ =
-      AddEnabledChangedCallback(
-          base::BindRepeating(&FeaturePodLabelButton::OnEnabledChanged,
-                              base::Unretained(this)));
 };
 
 // A button in FeaturePodsView. These buttons are main entry points of features

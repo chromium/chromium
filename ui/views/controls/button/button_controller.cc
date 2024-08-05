@@ -143,7 +143,7 @@ void ButtonController::NotifyClick() {
   button_controller_delegate_->NotifyClick(fake_event);
 }
 
-void ButtonController::UpdateAccessibleNodeData(ui::AXNodeData* node_data) {}
+void ButtonController::UpdateButtonAccessibleDefaultActionVerb() {}
 
 bool ButtonController::IsTriggerableEvent(const ui::Event& event) {
   return event.type() == ui::EventType::kGestureTapDown ||

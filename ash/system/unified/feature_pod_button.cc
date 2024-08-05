@@ -190,6 +190,7 @@ void FeaturePodLabelButton::ShowDetailedViewArrow() {
 }
 
 void FeaturePodLabelButton::OnEnabledChanged() {
+  views::Button::OnEnabledChanged();
   const AshColorProvider* color_provider = AshColorProvider::Get();
   const SkColor primary_text_color =
       color_provider->GetContentLayerColor(ContentLayerType::kTextColorPrimary);

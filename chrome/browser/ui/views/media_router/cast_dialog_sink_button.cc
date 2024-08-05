@@ -143,6 +143,7 @@ void CastDialogSinkButton::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void CastDialogSinkButton::OnEnabledChanged() {
+  HoverButton::OnEnabledChanged();
   // Prevent a DCHECK failure seen at https://crbug.com/912687 by not having an
   // InkDrop if the button is disabled.
   views::InkDrop::Get(this)->SetMode(

@@ -318,6 +318,7 @@ void HoverHighlightView::AddSubRowContainer() {
 }
 
 void HoverHighlightView::OnEnabledChanged() {
+  views::Button::OnEnabledChanged();
   if (left_view_) {
     left_view_->SetEnabled(GetEnabled());
   }

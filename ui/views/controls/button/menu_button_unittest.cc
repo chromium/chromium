@@ -12,9 +12,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
 #include "ui/views/animation/test/test_ink_drop.h"
@@ -682,6 +685,25 @@ TEST_F(MenuButtonTest, DestroyButtonInGesture) {
       0, 0, 0, base::TimeTicks::Now(),
       ui::GestureEventDetails(ui::EventType::kGestureTap));
   button()->OnGestureEvent(&gesture_event);
+}
+
+TEST_F(MenuButtonTest, AccessibleDefaultActionVerb) {
+  ConfigureMenuButton(std::make_unique<TestMenuButton>());
+  ui::AXNodeData data;
+
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kOpen);
+
+  data = ui::AXNodeData();
+  button()->SetEnabled(false);
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(
+      data.HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
+
+  data = ui::AXNodeData();
+  button()->SetEnabled(true);
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kOpen);
 }
 
 }  // namespace views

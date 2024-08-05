@@ -53,8 +53,7 @@ class VIEWS_EXPORT ButtonController {
   // Cause the button to notify the listener that a click occurred.
   virtual void NotifyClick();
 
-  // Updates |node_data| for a button based on the functionality.
-  virtual void UpdateAccessibleNodeData(ui::AXNodeData* node_data);
+  virtual void UpdateButtonAccessibleDefaultActionVerb();
 
   // Methods that parallel respective methods in Button:
   virtual bool IsTriggerableEvent(const ui::Event& event);

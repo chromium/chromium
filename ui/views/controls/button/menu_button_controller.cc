@@ -13,6 +13,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller_delegate.h"
@@ -179,13 +180,12 @@ bool MenuButtonController::OnKeyReleased(const ui::KeyEvent& event) {
   return false;
 }
 
-void MenuButtonController::UpdateAccessibleNodeData(ui::AXNodeData* node_data) {
-  // TODO(crbug.com/325137417): This property needs to be updated whenever the
-  // button's enabled state changes. To do so, we could add the virtual function
-  // `ButtonController::OnButtonEnabledChanged` and override it in this class.
-  // This function would then be called from `Button::OnEnabledChanged`.
+void MenuButtonController::UpdateButtonAccessibleDefaultActionVerb() {
   if (button()->GetEnabled()) {
-    node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
+    button()->GetViewAccessibility().SetDefaultActionVerb(
+        ax::mojom::DefaultActionVerb::kOpen);
+  } else {
+    button()->GetViewAccessibility().RemoveDefaultActionVerb();
   }
 }
 

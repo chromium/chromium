@@ -84,6 +84,8 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
   ui::NativeTheme::Part GetThemePart() const override;
   void GetExtraParams(ui::NativeTheme::ExtraParams* params) const override;
 
+  void SetAndUpdateAccessibleDefaultActionVerb();
+
   // True if the checkbox is checked.
   bool checked_ = false;
 

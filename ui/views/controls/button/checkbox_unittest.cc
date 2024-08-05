@@ -133,6 +133,40 @@ TEST_F(CheckboxTest, TestCorrectContainerColor) {
   EXPECT_EQ(actual, expected);
 }
 
+TEST_F(CheckboxTest, AccessibleDefaultActionVerb) {
+  ui::AXNodeData data;
+
+  // Enabled
+  checkbox()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kCheck);
+
+  data = ui::AXNodeData();
+  checkbox()->SetChecked(true);
+  checkbox()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(),
+            ax::mojom::DefaultActionVerb::kUncheck);
+
+  data = ui::AXNodeData();
+  checkbox()->SetChecked(false);
+  checkbox()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kCheck);
+
+  // Disabled
+  checkbox()->SetEnabled(false);
+
+  data = ui::AXNodeData();
+  checkbox()->SetChecked(false);
+  checkbox()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(
+      data.HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
+
+  data = ui::AXNodeData();
+  checkbox()->SetChecked(true);
+  checkbox()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(
+      data.HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
+}
+
 using CheckboxActionViewControllerTest = CheckboxTest;
 
 TEST_F(CheckboxActionViewControllerTest, TestActionViewInterface) {
