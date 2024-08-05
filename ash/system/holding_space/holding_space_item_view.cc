@@ -126,10 +126,7 @@ HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
 
   // Background.
   SetBackground(views::CreateThemedRoundedRectBackground(
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase)
-          : kColorAshControlBackgroundColorInactive,
-      kHoldingSpaceCornerRadius));
+      cros_tokens::kCrosSysSystemOnBase, kHoldingSpaceCornerRadius));
 
   // Layer.
   SetPaintToLayer();

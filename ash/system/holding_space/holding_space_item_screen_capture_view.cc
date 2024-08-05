@@ -119,8 +119,7 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
                       views::MaximumFlexSizeRule::kUnbounded)))
               .AddChild(
                   CreatePrimaryActionBuilder(
-                      /*apply_accent_colors=*/chromeos::features::
-                          IsJellyEnabled(),
+                      /*apply_accent_colors=*/true,
                       /*min_size=*/kPrimaryActionSize)
                       .SetBackground(holding_space_util::CreateCircleBackground(
                           kColorAshShieldAndBase80))))

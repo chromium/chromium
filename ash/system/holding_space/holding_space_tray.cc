@@ -128,13 +128,7 @@ bool IsPreviewable(const std::unique_ptr<HoldingSpaceItem>& item) {
 // on changes to `tray` activation.
 ui::ImageModel CreateForegroundImageModel(const HoldingSpaceTray* tray,
                                           const gfx::VectorIcon& vector_icon) {
-  // When Jelly is disabled, `tray` activation does not affect color.
-  if (!chromeos::features::IsJellyEnabled()) {
-    return ui::ImageModel::FromVectorIcon(
-        vector_icon, kColorAshIconColorPrimary, kHoldingSpaceTrayIconSize);
-  }
-
-  // When Jelly is enabled, `tray` activation affects color.
+  // `tray` activation affects color.
   ui::ImageModel active = ui::ImageModel::FromVectorIcon(
       vector_icon, cros_tokens::kCrosSysSystemOnPrimaryContainer,
       kHoldingSpaceTrayIconSize);
