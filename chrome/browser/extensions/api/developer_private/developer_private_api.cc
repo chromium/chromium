@@ -2859,14 +2859,14 @@ DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::Run() {
         return AlreadyResponded();
       }
 
-      content::WebContents* web_contents = GetSenderWebContents();
-      if (!web_contents) {
+      Browser* browser = chrome::FindLastActiveWithProfile(
+          Profile::FromBrowserContext(browser_context()));
+      if (!browser) {
         return RespondNow(Error(kCouldNotFindWebContentsError));
       }
-      gfx::NativeWindow parent = web_contents->GetTopLevelNativeWindow();
 
       ShowMv2DeprecationKeepDialog(
-          browser_context(), parent, *extension,
+          browser, *extension,
           base::BindOnce(
               &DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
                   OnDialogAccepted,
