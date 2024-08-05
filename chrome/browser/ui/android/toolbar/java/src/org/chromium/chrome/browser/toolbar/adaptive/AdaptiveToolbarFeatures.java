@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.toolbar.adaptive;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -30,23 +29,6 @@ public class AdaptiveToolbarFeatures {
     /** Finch default group for voice search variation. */
     static final String VOICE = "voice";
 
-    /** Field trial params. */
-    private static final String VARIATION_PARAM_DEFAULT_SEGMENT = "default_segment";
-
-    private static final String VARIATION_PARAM_DISABLE_UI = "disable_ui";
-    private static final String VARIATION_PARAM_IGNORE_SEGMENTATION_RESULTS =
-            "ignore_segmentation_results";
-    private static final String VARIATION_PARAM_SHOW_UI_ONLY_AFTER_READY =
-            "show_ui_only_after_ready";
-    @VisibleForTesting static final String VARIATION_PARAM_MIN_VERSION = "min_version_adaptive";
-
-    /**
-     * Version number in the scope of this feature. If {@link
-     * AdaptiveToolbarFeatures#VARIATION_PARAM_MIN_VERSION} is set to a int value larger than this,
-     * feature config must be ignored (disabled).
-     */
-    @VisibleForTesting static final int VERSION = 4;
-
     /** Default minimum width to show the optional button. */
     public static final int DEFAULT_MIN_WIDTH_DP = 360;
 
@@ -68,9 +50,6 @@ public class AdaptiveToolbarFeatures {
     /** For testing only. */
     private static String sDefaultSegmentForTesting;
 
-    private static Boolean sIgnoreSegmentationResultsForTesting;
-    private static Boolean sDisableUiForTesting;
-    private static Boolean sShowUiOnlyAfterReadyForTesting;
     private static HashMap<Integer, Boolean> sActionChipOverridesForTesting;
     private static HashMap<Integer, Boolean> sAlternativeColorOverridesForTesting;
     private static HashMap<Integer, Boolean> sIsDynamicActionOverridesForTesting;
@@ -119,18 +98,12 @@ public class AdaptiveToolbarFeatures {
      * <p>Must be called with the {@link FeatureList} initialized.
      */
     public static boolean isCustomizationEnabled() {
-        if (!ChromeFeatureList.sAdaptiveButtonInTopToolbarCustomizationV2.isEnabled()) {
-            return false;
-        }
-        final int minVersion =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
-                        VARIATION_PARAM_MIN_VERSION,
-                        0);
-        return minVersion <= VERSION;
+        return ChromeFeatureList.sAdaptiveButtonInTopToolbarCustomizationV2.isEnabled();
     }
 
-    /** @return Whether the contextual page actions should show the action chip version. */
+    /**
+     * @return Whether the contextual page actions should show the action chip version.
+     */
     public static boolean shouldShowActionChip(@AdaptiveToolbarButtonVariant int buttonVariant) {
         if (!isDynamicAction(buttonVariant)) return false;
         if (sActionChipOverridesForTesting != null
@@ -311,81 +284,18 @@ public class AdaptiveToolbarFeatures {
     }
 
     /**
-     * Returns the default segment set by the finch experiment.
+     * Returns the default segment to be selected in absence of a valid segmentation result.
      *
      * @param context @{@link Context} to determine form-factor. Defaults defer by form-factor.
      */
     static String getDefaultSegment(Context context) {
         if (sDefaultSegmentForTesting != null) return sDefaultSegmentForTesting;
-
-        String defaultSegment =
-                ChromeFeatureList.getFieldTrialParamByFeature(
-                        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
-                        VARIATION_PARAM_DEFAULT_SEGMENT);
-        // Fallback if default segment is not set in finch.
-        if (TextUtils.isEmpty(defaultSegment)) {
-            return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context) ? SHARE : NEW_TAB;
-        }
-        return defaultSegment;
-    }
-
-    /** Returns whether we should ignore the segmentation backend results. */
-    static boolean ignoreSegmentationResults() {
-        if (sIgnoreSegmentationResultsForTesting != null) {
-            return sIgnoreSegmentationResultsForTesting;
-        }
-
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
-                VARIATION_PARAM_IGNORE_SEGMENTATION_RESULTS,
-                false);
-    }
-
-    /**
-     * Returns whether the UI should be disabled. If disabled, the UI will ignore the backend
-     * results.
-     */
-    static boolean disableUi() {
-        if (sDisableUiForTesting != null) return sDisableUiForTesting;
-
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
-                VARIATION_PARAM_DISABLE_UI,
-                false);
-    }
-
-    /**
-     * Returns whether the UI can be shown only after the backend is ready and has sufficient
-     * information for result computation.
-     * Default value is false, so the UI will be shown even if the model isn't ready.
-     */
-    static boolean showUiOnlyAfterReady() {
-        if (sShowUiOnlyAfterReadyForTesting != null) return sShowUiOnlyAfterReadyForTesting;
-
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
-                VARIATION_PARAM_SHOW_UI_ONLY_AFTER_READY,
-                false);
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context) ? SHARE : NEW_TAB;
     }
 
     static void setDefaultSegmentForTesting(String defaultSegment) {
         sDefaultSegmentForTesting = defaultSegment;
         ResettersForTesting.register(() -> sDefaultSegmentForTesting = null);
-    }
-
-    static void setIgnoreSegmentationResultsForTesting(boolean ignoreSegmentationResults) {
-        sIgnoreSegmentationResultsForTesting = ignoreSegmentationResults;
-        ResettersForTesting.register(() -> sIgnoreSegmentationResultsForTesting = null);
-    }
-
-    static void setDisableUiForTesting(boolean disableUi) {
-        sDisableUiForTesting = disableUi;
-        ResettersForTesting.register(() -> sDisableUiForTesting = null);
-    }
-
-    static void setShowUiOnlyAfterReadyForTesting(boolean showUiOnlyAfterReady) {
-        sShowUiOnlyAfterReadyForTesting = showUiOnlyAfterReady;
-        ResettersForTesting.register(() -> sShowUiOnlyAfterReadyForTesting = null);
     }
 
     public static void setActionChipOverrideForTesting(
@@ -418,9 +328,6 @@ public class AdaptiveToolbarFeatures {
     public static void clearParsedParamsForTesting() {
         sButtonVariant = null;
         sDefaultSegmentForTesting = null;
-        sIgnoreSegmentationResultsForTesting = null;
-        sDisableUiForTesting = null;
-        sShowUiOnlyAfterReadyForTesting = null;
     }
 
     private AdaptiveToolbarFeatures() {}

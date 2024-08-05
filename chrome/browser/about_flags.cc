@@ -688,28 +688,6 @@ const FeatureEntry::FeatureVariation
          std::size(kOptimizationGuidePersonalizedFetchingAllowPageInsights),
          nullptr}};
 
-const FeatureEntry::FeatureParam kAdaptiveButtonCustomization_NewTab[] = {
-    {"default_segment", "new-tab"},
-    {"show_ui_only_after_ready", "false"},
-    {"ignore_segmentation_results", "true"}};
-const FeatureEntry::FeatureParam kAdaptiveButtonCustomization_Share[] = {
-    {"default_segment", "share"},
-    {"show_ui_only_after_ready", "false"},
-    {"ignore_segmentation_results", "true"}};
-const FeatureEntry::FeatureParam kAdaptiveButtonCustomization_Voice[] = {
-    {"default_segment", "voice"},
-    {"show_ui_only_after_ready", "false"},
-    {"ignore_segmentation_results", "true"}};
-const FeatureEntry::FeatureVariation
-    kAdaptiveButtonInTopToolbarCustomizationVariations[] = {
-        {"New Tab", kAdaptiveButtonCustomization_NewTab,
-         std::size(kAdaptiveButtonCustomization_NewTab), nullptr},
-        {"Share", kAdaptiveButtonCustomization_Share,
-         std::size(kAdaptiveButtonCustomization_Share), nullptr},
-        {"Voice", kAdaptiveButtonCustomization_Voice,
-         std::size(kAdaptiveButtonCustomization_Voice), nullptr},
-};
-
 const FeatureEntry::FeatureParam kContextualPageActionsUiParams_Quiet[] = {
     {"action_chip", "false"},
 };
@@ -5048,14 +5026,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kAdaptiveButtonInTopToolbarAddToBookmarks)},
-    {"adaptive-button-in-top-toolbar-customization",
-     flag_descriptions::kAdaptiveButtonInTopToolbarCustomizationName,
-     flag_descriptions::kAdaptiveButtonInTopToolbarCustomizationDescription,
-     kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2,
-         kAdaptiveButtonInTopToolbarCustomizationVariations,
-         "OptionalToolbarButtonCustomization")},
     {"contextual-page-actions", flag_descriptions::kContextualPageActionsName,
      flag_descriptions::kContextualPageActionsDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
