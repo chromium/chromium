@@ -209,6 +209,11 @@ export class AppElement extends AppElementBase {
         reflect: true,
       },
 
+      wideModulesEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
+
       middleSlotPromoLoaded_: {type: Boolean},
       modulesLoaded_: {type: Boolean},
 
@@ -284,6 +289,7 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('modulesEnabled');
   protected modulesRedesignedEnabled_: boolean =
       loadTimeData.getBoolean('modulesRedesignedEnabled');
+  protected wideModulesEnabled_ = loadTimeData.getBoolean('wideModulesEnabled');
   private middleSlotPromoLoaded_: boolean = false;
   private modulesLoaded_: boolean = false;
   protected modulesShownToUser: boolean;
