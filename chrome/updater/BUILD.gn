@@ -212,6 +212,7 @@ if (is_win || is_mac || is_linux) {
 
       deps += [
         ":ks_ticket",
+        "//chrome/updater/net/mac/mojom",
         "//mojo/public/cpp/platform",
         "//net",
       ]
