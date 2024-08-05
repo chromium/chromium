@@ -1529,6 +1529,9 @@ namespace {
 bool HasPropagatedLayoutObjects(const LayoutObject* object) {
   if (auto* box = DynamicTo<LayoutBox>(object)) {
     for (const auto& fragment : box->PhysicalFragments()) {
+      if (fragment.IsLayoutObjectDestroyedOrMoved()) {
+        return true;
+      }
       if (fragment.HasPropagatedLayoutObjects()) {
         return true;
       }
