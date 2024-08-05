@@ -394,6 +394,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // networks are available on the device if |is_service_count_logged_| is true.
   void CheckForCellularServiceCountMetric();
 
+  // Tracks the state of the Allow APN Modification policy at login.
+  void CheckForApnPolicyMetric();
+
   // Handles eSIM Standard Feature Usage Logging metrics when the cellular usage
   // changes for an eSIM network.
   void HandleESimFeatureUsageChange(CellularUsage last_esim_cellular_usage,
@@ -454,6 +457,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
 
   // Tracks whether service count is already logged for this session.
   bool is_service_count_logged_ = false;
+
+  // Tracks whether apn policy state is already logged for this session.
+  bool is_apn_policy_logged_ = false;
 
   // Stores connection information for all cellular networks.
   base::flat_map<std::string, std::unique_ptr<ConnectionInfo>>

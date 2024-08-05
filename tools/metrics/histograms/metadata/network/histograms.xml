@@ -246,6 +246,13 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result of an attempt to enable a custom APN.</summary>
 </histogram>
 
+<histogram name="Network.Ash.Cellular.Apn.Login.AllowApnModification"
+    enum="BooleanSuccess" expires_after="2025-08-01">
+  <owner>nikhilcn@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>Tracks the state of AllowApnModification policy at login.</summary>
+</histogram>
+
 <histogram name="Network.Ash.Cellular.Apn.Managed.MigrationType"
     enum="ManagedApnMigrationType" expires_after="2025-02-20">
   <owner>hsuregan@google.com</owner>
