@@ -10,6 +10,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -47,6 +48,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/client_view.h"
 #include "ui/views/window/hit_test_utils.h"
 
@@ -78,11 +80,18 @@ bool ConvertedHitTest(views::View* src, views::View* dst, gfx::Point* point) {
 constexpr int BrowserViewLayout::kMainBrowserContentsMinimumWidth;
 
 class BrowserViewLayout::WebContentsModalDialogHostViews
-    : public WebContentsModalDialogHost {
+    : public WebContentsModalDialogHost,
+      public views::WidgetObserver {
  public:
   explicit WebContentsModalDialogHostViews(
       BrowserViewLayout* browser_view_layout)
-      : browser_view_layout_(browser_view_layout) {}
+      : browser_view_layout_(browser_view_layout) {
+    // browser_view might be nullptr in unit tests.
+    if (browser_view_layout->browser_view_) {
+      browser_widget_observation_.Observe(
+          browser_view_layout->browser_view_->GetWidget());
+    }
+  }
 
   WebContentsModalDialogHostViews(const WebContentsModalDialogHostViews&) =
       delete;
@@ -128,6 +137,20 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
         browser_view_layout_->delegate_->GetHostViewForAnchoring());
   }
 
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* browser_widget) override {
+    browser_widget_observation_.Reset();
+  }
+  void OnWidgetBoundsChanged(views::Widget* browser_widget,
+                             const gfx::Rect& new_bounds) override {
+    // Update the modal dialogs' position when the browser window bounds change.
+    // This is used to adjust the modal dialog's position when the browser
+    // window is being dragged across screen boundaries. We avoid having the
+    // modal dialog partially visible as it may display security-sensitive
+    // information.
+    NotifyPositionRequiresUpdate();
+  }
+
  private:
   gfx::NativeView GetHostView() const override {
     views::Widget* const host_widget = GetHostWidget();
@@ -143,6 +166,8 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
   }
 
   const raw_ptr<BrowserViewLayout> browser_view_layout_;
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      browser_widget_observation_{this};
 
   base::ObserverList<ModalDialogHostObserver>::Unchecked observer_list_;
 };
