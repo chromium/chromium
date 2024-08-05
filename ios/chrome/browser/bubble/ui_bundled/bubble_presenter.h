@@ -8,15 +8,12 @@
 #import <UIKit/UIKit.h>
 
 #import "base/memory/raw_ptr.h"
-#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 
 @protocol BubblePresenterDelegate;
 @class BubbleViewControllerPresenter;
-@class CommandDispatcher;
 class HostContentSettingsMap;
 @class LayoutGuideCenter;
 class OverlayPresenter;
-@class SceneState;
 @protocol TabStripCommands;
 @protocol ToolbarCommands;
 class WebStateList;
@@ -32,7 +29,7 @@ class DeviceSwitcherResultDispatcher;
 // TODO(crbug.com/40272358): refactor the class.
 // Object handling the presentation of the different bubbles tips. The class is
 // holding all the bubble presenters.
-@interface BubblePresenter : NSObject <HelpCommands>
+@interface BubblePresenter : NSObject
 
 // Initializes a BubblePresenter whose bubbles are presented on the
 // `rootViewController`.
@@ -61,33 +58,92 @@ class DeviceSwitcherResultDispatcher;
 @property(nonatomic, assign) raw_ptr<OverlayPresenter> infobarBannerPresenter;
 @property(nonatomic, assign) raw_ptr<OverlayPresenter> infobarModalPresenter;
 
-// Stops this presenter.
-- (void)stop;
-
-// Presents a bubble associated with the Discover feed's menu button.
+// Optionally presents a bubble associated with the Discover feed's menu button.
+// The eligibility can depend on the UI hierarchy at the moment, the
+// configuration and the display history of the bubble, etc.
 - (void)presentDiscoverFeedMenuTipBubble;
 
-// Shows a relevant Follow help bubble while browsing a site, if applicable.
+// Optionally presents a relevant Follow help bubble while browsing a site.
+// The eligibility can depend on the UI hierarchy at the moment, the
+// configuration and the display history of the bubble, etc.
 - (void)presentFollowWhileBrowsingTipBubble;
 
-// Shows a help bubble to let the user know that they can change the default
-// mode (Desktop/Mobile) of the websites.
+// Optionally presents a help bubble to let the user know that they can change
+// the default mode (Desktop/Mobile) of the websites. The eligibility can depend
+// on the UI hierarchy at the moment, the configuration and the display history
+// of the bubble, etc.
 - (void)presentDefaultSiteViewTipBubble;
 
-// Presents a help bubble for What's New, if applicable.
+// Optionally presents a help bubble for What's New.
+// The eligibility can depend on the UI hierarchy at the moment, the
+// configuration and the display history of the bubble, etc.
 - (void)presentWhatsNewBottomToolbarBubble;
 
-// Presents a help bubble to inform the user that they can track the price of
-// the item on the current website.
+// Optionally presents a help bubble to inform the user that they can track the
+// price of the item on the current website. The eligibility can depend on the
+// UI hierarchy at the moment, the configuration and the display history of the
+// bubble, etc.
 - (void)presentPriceNotificationsWhileBrowsingTipBubble;
 
-// Presents a help bubble to inform the user that they can tap the Lens
-// button in the omnibox keyboard to search with their camera.
+// Optionally presents a help bubble to inform the user that they can tap the
+// Lens button in the omnibox keyboard to search with their camera. The
+// eligibility can depend on the UI hierarchy at the moment, the configuration
+// and the display history of the bubble, etc.
 - (void)presentLensKeyboardTipBubble;
 
-// Presents a help bubble to inform the user that their tracked packages will
-// appear in the Magic Stack.
+// Optionally presents a help bubble to inform the user that their tracked
+// packages will appear in the Magic Stack. The eligibility can depend on the UI
+// hierarchy at the moment, the configuration and the display history of the
+// bubble, etc.
 - (void)presentParcelTrackingTipBubble;
+
+// Optionally presents a help bubble for the share button.
+// The eligibility can depend on the UI hierarchy at the moment, the
+// configuration and the display history of the bubble, etc.
+- (void)presentShareButtonHelpBubbleIfEligible;
+
+// Optionally presents a bubble associated with the tab grid iph.
+// The eligibility can depend on the UI hierarchy at the moment, the
+// configuration and the display history of the bubble, etc.
+- (void)presentTabGridToolbarItemBubble;
+
+// Optionally presents a bubble associated with the new tab iph.
+// The eligibility can depend on the UI hierarchy at the moment, the
+// configuration and the display history of the bubble, etc.
+- (void)presentNewTabToolbarItemBubble;
+
+// Optionally presents a gesture IPH associated with
+// the pull-to-refresh feature.
+// The eligibility can depend on the UI hierarchy at the moment, the
+// configuration and the display history of the bubble, etc.
+- (void)presentPullToRefreshGestureInProductHelp;
+
+// Optionally presents a full screen IPH associated with the swipe to navigate
+// back/forward feature.
+// The eligibility can depend on the UI hierarchy at the moment, the
+// configuration and the display history of the bubble, etc.
+- (void)presentBackForwardSwipeGestureInProductHelp;
+
+// Optionally presents a full screen IPH associated with the swipe to navigate
+// back/forward feature.
+// The eligibility can depend on the UI hierarchy at the moment, the
+// configuration and the display history of the bubble, etc.
+- (void)presentToolbarSwipeGestureInProductHelp;
+
+// Delegate method to be invoked when the user has performed a swipe on the
+// toolbar to switch tabs. Remove `toolbarSwipeGestureIPH` if visible.
+- (void)handleToolbarSwipeGesture;
+
+// Delegate method to be invoked when a gestural in-product help view is visible
+// but the user has tapped outside of it. Do nothing if invoked when there is no
+// IPH view.
+- (void)handleTapOutsideOfVisibleGestureInProductHelp;
+
+// Dismisses all bubbles.
+- (void)hideAllHelpBubbles;
+
+// Stops this presenter.
+- (void)stop;
 
 @end
 

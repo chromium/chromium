@@ -17,7 +17,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #import "components/commerce/core/shopping_service.h"
-#import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/infobars/core/infobar.h"
@@ -28,7 +27,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/safe_browsing/core/common/features.h"
-#import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
@@ -50,7 +48,7 @@
 #import "ios/chrome/browser/browser_view/ui_bundled/safe_area_provider.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/tab_events_mediator.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/tab_lifecycle_mediator.h"
-#import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_coordinator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
@@ -126,7 +124,6 @@
 #import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_legacy_coordinator.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_coordinator.h"
-#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
@@ -151,6 +148,7 @@
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/feed_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
@@ -574,7 +572,7 @@ enum class ToolbarKind {
 @implementation BrowserCoordinator {
   BrowserViewControllerDependencies _viewControllerDependencies;
   KeyCommandsProvider* _keyCommandsProvider;
-  BubblePresenter* _bubblePresenter;
+  BubblePresenterCoordinator* _bubblePresenterCoordinator;
   BubbleViewControllerPresenter* _contextualPanelEntrypointHelpPresenter;
   ToolbarAccessoryPresenter* _toolbarAccessoryPresenter;
   LensCoordinator* _lensCoordinator;
@@ -1001,15 +999,6 @@ enum class ToolbarKind {
 
   feature_engagement::Tracker* engagementTracker =
       feature_engagement::TrackerFactory::GetForBrowserState(browserState);
-  HostContentSettingsMap* settingsMap =
-      ios::HostContentSettingsMapFactory::GetForBrowserState(browserState);
-  segmentation_platform::DeviceSwitcherResultDispatcher*
-      deviceSwitcherResultDispatcher = nullptr;
-  if (!browserState->IsOffTheRecord()) {
-    deviceSwitcherResultDispatcher =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForBrowserState(browserState);
-  }
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (IsModernTabStripOrRaccoonEnabled()) {
@@ -1023,29 +1012,10 @@ enum class ToolbarKind {
     }
   }
 
-  id<TabStripCommands> tabStripCommandsHandler = nil;
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    // The -startDispatching for TabStripCommands will be called at a later
-    // point for tablet only, so cannot use `HandlerForProtocol`.
-    tabStripCommandsHandler = static_cast<id<TabStripCommands>>(_dispatcher);
-  }
-  _bubblePresenter = [[BubblePresenter alloc]
-      initWithDeviceSwitcherResultDispatcher:deviceSwitcherResultDispatcher
-                      hostContentSettingsMap:settingsMap
-                     tabStripCommandsHandler:tabStripCommandsHandler
-                                     tracker:engagementTracker
-                                webStateList:self.browser->GetWebStateList()];
-  _bubblePresenter.layoutGuideCenter = _layoutGuideCenter;
-  _bubblePresenter.webContentOverlayPresenter = OverlayPresenter::FromBrowser(
-      self.browser, OverlayModality::kWebContentArea);
-  _bubblePresenter.infobarBannerPresenter = OverlayPresenter::FromBrowser(
-      self.browser, OverlayModality::kInfobarBanner);
-  _bubblePresenter.infobarModalPresenter = OverlayPresenter::FromBrowser(
-      self.browser, OverlayModality::kInfobarModal);
-
-  _bubblePresenter.delegate = self;
-  [_dispatcher startDispatchingToTarget:_bubblePresenter
-                            forProtocol:@protocol(HelpCommands)];
+  _bubblePresenterCoordinator =
+      [[BubblePresenterCoordinator alloc] initWithBrowser:self.browser];
+  _bubblePresenterCoordinator.bubblePresenterDelegate = self;
+  [_bubblePresenterCoordinator start];
 
   _toolbarCoordinator =
       [[ToolbarCoordinator alloc] initWithBrowser:self.browser];
@@ -1061,7 +1031,8 @@ enum class ToolbarKind {
   _sideSwipeMediator.toolbarInteractionHandler = _toolbarCoordinator;
   _sideSwipeMediator.toolbarSnapshotProvider = _toolbarCoordinator;
   _sideSwipeMediator.engagementTracker = engagementTracker;
-  _sideSwipeMediator.helpHandler = _bubblePresenter;
+  _sideSwipeMediator.helpHandler =
+      HandlerForProtocol(_dispatcher, HelpCommands);
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
       !IsModernTabStripOrRaccoonEnabled()) {
     [_sideSwipeMediator setTabStripDelegate:_legacyTabStripCoordinator];
@@ -1098,7 +1069,6 @@ enum class ToolbarKind {
        initWithBrowser:self.browser
       componentFactory:[[NewTabPageComponentFactory alloc] init]];
   _NTPCoordinator.toolbarDelegate = _toolbarCoordinator;
-  _NTPCoordinator.bubblePresenter = _bubblePresenter;
   self.tabLifecycleMediator.NTPCoordinator = _NTPCoordinator;
 
   _lensCoordinator = [[LensCoordinator alloc] initWithBrowser:self.browser];
@@ -1106,7 +1076,6 @@ enum class ToolbarKind {
   _voiceSearchController =
       ios::provider::CreateVoiceSearchController(self.browser);
 
-  _viewControllerDependencies.bubblePresenter = _bubblePresenter;
   _viewControllerDependencies.toolbarAccessoryPresenter =
       _toolbarAccessoryPresenter;
   _viewControllerDependencies.popupMenuCoordinator = self.popupMenuCoordinator;
@@ -1144,7 +1113,6 @@ enum class ToolbarKind {
 
 - (void)updateViewControllerDependencies {
   _bookmarksCoordinator.baseViewController = self.viewController;
-  _bubblePresenter.rootViewController = self.viewController;
 
   _toolbarAccessoryPresenter.baseViewController = self.viewController;
 
@@ -1176,9 +1144,7 @@ enum class ToolbarKind {
   _legacyTabStripCoordinator.baseViewController = self.viewController;
   _tabStripCoordinator.baseViewController = self.viewController;
   _NTPCoordinator.baseViewController = self.viewController;
-
-  _bubblePresenter.toolbarCommandsHandler =
-      HandlerForProtocol(_dispatcher, ToolbarCommands);
+  _bubblePresenterCoordinator.baseViewController = self.viewController;
 
   [_dispatcher startDispatchingToTarget:self.viewController
                             forProtocol:@protocol(BrowserCommands)];
@@ -1186,7 +1152,6 @@ enum class ToolbarKind {
 
 // Destroys the browser view controller dependencies.
 - (void)destroyViewControllerDependencies {
-  _viewControllerDependencies.bubblePresenter = nil;
   _viewControllerDependencies.toolbarAccessoryPresenter = nil;
   _viewControllerDependencies.popupMenuCoordinator = nil;
   _viewControllerDependencies.ntpCoordinator = nil;
@@ -1216,6 +1181,9 @@ enum class ToolbarKind {
   [_bookmarksCoordinator stop];
   _bookmarksCoordinator = nil;
 
+  [_bubblePresenterCoordinator stop];
+  _bubblePresenterCoordinator = nil;
+
   _legacyTabStripCoordinator = nil;
   _tabStripCoordinator = nil;
   [_sideSwipeMediator disconnect];
@@ -1224,9 +1192,6 @@ enum class ToolbarKind {
   _loadQueryCommandsHandler = nil;
   _omniboxCommandsHandler = nil;
 
-  [_dispatcher stopDispatchingToTarget:_bubblePresenter];
-  [_bubblePresenter stop];
-  _bubblePresenter = nil;
   _toolbarAccessoryPresenter = nil;
 
   [_contextualPanelEntrypointHelpPresenter dismissAnimated:NO];
@@ -1947,14 +1912,6 @@ enum class ToolbarKind {
 - (void)showBookmarksManager {
   [IntentDonationHelper donateIntent:IntentType::kOpenBookmarks];
   [_bookmarksCoordinator presentBookmarks];
-}
-
-- (void)showFollowWhileBrowsingIPH {
-  [_bubblePresenter presentFollowWhileBrowsingTipBubble];
-}
-
-- (void)showDefaultSiteViewIPH {
-  [_bubblePresenter presentDefaultSiteViewTipBubble];
 }
 
 - (void)showDownloadsFolder {
@@ -2947,7 +2904,8 @@ enum class ToolbarKind {
 }
 
 - (void)showParcelTrackingIPH {
-  [_bubblePresenter presentParcelTrackingTipBubble];
+  [HandlerForProtocol(_dispatcher, HelpCommands)
+      presentInProductHelpWithType:InProductHelpType::kParcelTracking];
 }
 
 #pragma mark - ParcelTrackingOptInCommands helpers
@@ -3065,7 +3023,9 @@ enum class ToolbarKind {
 }
 
 - (void)presentPriceNotificationsWhileBrowsingIPH {
-  [_bubblePresenter presentPriceNotificationsWhileBrowsingTipBubble];
+  [HandlerForProtocol(_dispatcher, HelpCommands)
+      presentInProductHelpWithType:InProductHelpType::
+                                       kPriceNotificationsWhileBrowsing];
 }
 
 #pragma mark - PolicyChangeCommands
@@ -3568,23 +3528,19 @@ enum class ToolbarKind {
 #pragma mark - BubblePresenterDelegate
 
 - (BOOL)rootViewVisibleForBubblePresenter:(BubblePresenter*)bubblePresenter {
-  CHECK(bubblePresenter == _bubblePresenter);
   return self.viewController.viewVisible;
 }
 
 - (BOOL)isNTPActiveForBubblePresenter:(BubblePresenter*)bubblePresenter {
-  CHECK(bubblePresenter == _bubblePresenter);
   return self.NTPCoordinator.isNTPActiveForCurrentWebState;
 }
 
 - (BOOL)isNTPScrolledToTopForBubblePresenter:(BubblePresenter*)bubblePresenter {
-  CHECK(bubblePresenter == _bubblePresenter);
   return [self.NTPCoordinator isScrolledToTop];
 }
 
 - (BOOL)isOverscrollActionsSupportedForBubblePresenter:
     (BubblePresenter*)bubblePresenter {
-  CHECK(bubblePresenter == _bubblePresenter);
   return [self shouldAllowOverscrollActions];
 }
 
@@ -3857,7 +3813,8 @@ enum class ToolbarKind {
 }
 
 - (void)showWhatsNewIPH {
-  [_bubblePresenter presentWhatsNewBottomToolbarBubble];
+  [HandlerForProtocol(_dispatcher, HelpCommands)
+      presentInProductHelpWithType:InProductHelpType::kWhatsNew];
 }
 
 @end

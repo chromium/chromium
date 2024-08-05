@@ -935,7 +935,8 @@ void OnListFamilyMembersResponse(
     }
 
     [HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
-                        HelpCommands) presentTabGridToolbarItemBubble];
+                        HelpCommands)
+        presentInProductHelpWithType:InProductHelpType::kTabGridToolbarItem];
   }
   if (level == SceneActivationLevelBackground) {
     [self recordWindowCreationForSceneState:self.sceneState];

@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -298,12 +299,16 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   }
 
   void SetupCommandHandlerMocks() {
+    help_commands_handler_mock = OCMProtocolMock(@protocol(HelpCommands));
     omnibox_commands_handler_mock = OCMProtocolMock(@protocol(OmniboxCommands));
     snackbar_commands_handler_mock =
         OCMProtocolMock(@protocol(SnackbarCommands));
     fakebox_focuser_handler_mock = OCMProtocolMock(@protocol(FakeboxFocuser));
     parcel_tracking_commands_handler_mock_ =
         OCMProtocolMock(@protocol(ParcelTrackingOptInCommands));
+    [browser_.get()->GetCommandDispatcher()
+        startDispatchingToTarget:help_commands_handler_mock
+                     forProtocol:@protocol(HelpCommands)];
     [browser_.get()->GetCommandDispatcher()
         startDispatchingToTarget:omnibox_commands_handler_mock
                      forProtocol:@protocol(OmniboxCommands)];
@@ -376,6 +381,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   NewTabPageMetricsRecorder* NTPMetricsRecorder_;
   id component_factory_mock_;
   UIViewController* base_view_controller_;
+  id help_commands_handler_mock;
   id omnibox_commands_handler_mock;
   id snackbar_commands_handler_mock;
   id fakebox_focuser_handler_mock;

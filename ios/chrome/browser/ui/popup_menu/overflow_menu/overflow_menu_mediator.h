@@ -74,6 +74,7 @@ class WebStateList;
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>
     browserCoordinatorHandler;
 @property(nonatomic, weak) id<FindInPageCommands> findInPageHandler;
+@property(nonatomic, weak) id<HelpCommands> helpHandler;
 @property(nonatomic, weak) id<OverflowMenuCustomizationCommands>
     overflowMenuCustomizationHandler;
 @property(nonatomic, weak) id<PageInfoCommands> pageInfoHandler;

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activities/bookmark_activity.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activities/copy_activity.h"
@@ -49,6 +50,7 @@ class ActivityServiceMediatorTest : public PlatformTest {
     mocked_handler_ = OCMStrictProtocolMock(@protocol(HandlerProtocols));
     mocked_bookmarks_handler_ =
         OCMStrictProtocolMock(@protocol(BookmarksCommands));
+    mocked_help_handler_ = OCMStrictProtocolMock(@protocol(HelpCommands));
     mocked_qr_generation_handler_ =
         OCMStrictProtocolMock(@protocol(QRGenerationCommands));
     mocked_thumbnail_generator_ =
@@ -57,6 +59,7 @@ class ActivityServiceMediatorTest : public PlatformTest {
     mediator_ = [[ActivityServiceMediator alloc]
                 initWithHandler:mocked_handler_
                bookmarksHandler:mocked_bookmarks_handler_
+                    helpHandler:mocked_help_handler_
             qrGenerationHandler:mocked_qr_generation_handler_
                     prefService:pref_service_.get()
                   bookmarkModel:nil
@@ -81,6 +84,7 @@ class ActivityServiceMediatorTest : public PlatformTest {
 
   id mocked_handler_;
   id mocked_bookmarks_handler_;
+  id mocked_help_handler_;
   id mocked_qr_generation_handler_;
   id mocked_thumbnail_generator_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;

@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
@@ -278,6 +279,7 @@ using base::UserMetricsAction;
         HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
     mediator.findInPageHandler =
         HandlerForProtocol(dispatcher, FindInPageCommands);
+    mediator.helpHandler = HandlerForProtocol(dispatcher, HelpCommands);
     mediator.overflowMenuCustomizationHandler =
         HandlerForProtocol(dispatcher, OverflowMenuCustomizationCommands);
     mediator.pageInfoHandler = HandlerForProtocol(dispatcher, PageInfoCommands);
@@ -441,6 +443,8 @@ using base::UserMetricsAction;
       self.browser->GetCommandDispatcher(), PopupMenuCommands);
   self.actionHandler.qrScannerCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), QRScannerCommands);
+  self.actionHandler.helpHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
   self.actionHandler.delegate = self.mediator;
   self.actionHandler.navigationAgent =
       WebNavigationBrowserAgent::FromBrowser(self.browser);

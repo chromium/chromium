@@ -629,7 +629,7 @@
     // display depends on the location of the share button to anchor the IPH,
     // doing it in the middle of the animtion will lead to the anchoring point
     // being off.
-    [_helpHandler presentShareButtonHelpBubbleIfEligible];
+    [_helpHandler presentInProductHelpWithType:InProductHelpType::kShareButton];
     _showShareButtonIPHOnNextLocationBarUnfocus = NO;
   }
   if (completion) {

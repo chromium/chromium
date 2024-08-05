@@ -6,9 +6,9 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
@@ -44,6 +44,9 @@ constexpr base::TimeDelta kLensButtonIPHDelay = base::Seconds(1);
 // The text field that this view is an accessory to.
 @property(nonatomic, weak) UITextField* textField;
 
+// IPH bubble handler for displaying IPH bubbles relating to the omnibox.
+@property(nonatomic, weak) id<HelpCommands> helpHandler;
+
 // Called when a keyboard shortcut button is pressed.
 - (void)keyboardButtonPressed:(NSString*)title;
 // Creates a button shortcut for `title`.
@@ -63,7 +66,7 @@ constexpr base::TimeDelta kLensButtonIPHDelay = base::Seconds(1);
                     pasteTarget:(id<UIPasteConfigurationSupporting>)pasteTarget
              templateURLService:(TemplateURLService*)templateURLService
                       textField:(UITextField*)textField
-                bubblePresenter:(BubblePresenter*)bubblePresenter {
+                    helpHandler:(id<HelpCommands>)helpHandler {
   self = [super initWithFrame:CGRectZero
                inputViewStyle:UIInputViewStyleKeyboard];
   if (self) {
@@ -74,7 +77,7 @@ constexpr base::TimeDelta kLensButtonIPHDelay = base::Seconds(1);
     self.translatesAutoresizingMaskIntoConstraints = NO;
     self.allowsSelfSizing = YES;
     self.templateURLService = templateURLService;
-    self.bubblePresenter = bubblePresenter;
+    self.helpHandler = helpHandler;
     [self addSubviews];
   }
   return self;
@@ -230,10 +233,11 @@ constexpr base::TimeDelta kLensButtonIPHDelay = base::Seconds(1);
 
   UIButton* lensButton = _delegate.lensButton;
   if (lensButton) {
-    __weak __typeof(self) weakSelf = self;
+    id<HelpCommands> helpHandler = self.helpHandler;
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, base::BindOnce(^{
-          [weakSelf.bubblePresenter presentLensKeyboardTipBubble];
+          [helpHandler
+              presentInProductHelpWithType:InProductHelpType::kLensKeyboard];
         }),
         kLensButtonIPHDelay);
   }

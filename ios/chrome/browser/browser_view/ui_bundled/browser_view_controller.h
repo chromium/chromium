@@ -27,7 +27,6 @@
 @class BookmarksCoordinator;
 @class BrowserContainerViewController;
 @protocol BrowserViewVisibilityConsumer;
-@class BubblePresenter;
 @protocol DefaultPromoNonModalPresentationDelegate;
 @protocol FindInPageCommands;
 class FullscreenController;
@@ -53,7 +52,6 @@ class UrlLoadingBrowserAgent;
 @protocol VoiceSearchController;
 
 typedef struct {
-  BubblePresenter* bubblePresenter;
   ToolbarAccessoryPresenter* toolbarAccessoryPresenter;
   PopupMenuCoordinator* popupMenuCoordinator;
   NewTabPageCoordinator* ntpCoordinator;

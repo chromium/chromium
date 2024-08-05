@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
@@ -46,6 +47,8 @@
 
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksHandler;
 
+@property(nonatomic, weak) id<HelpCommands> helpHandler;
+
 @property(nonatomic, weak) id<QRGenerationCommands> qrGenerationHandler;
 
 @property(nonatomic, assign) PrefService* prefService;
@@ -68,6 +71,7 @@
 - (instancetype)initWithHandler:
                     (id<BrowserCoordinatorCommands, FindInPageCommands>)handler
                bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
+                    helpHandler:(id<HelpCommands>)helpHandler
             qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
                     prefService:(PrefService*)prefService
                   bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
@@ -78,6 +82,7 @@
   if (self = [super init]) {
     _handler = handler;
     _bookmarksHandler = bookmarksHandler;
+    _helpHandler = helpHandler;
     _qrGenerationHandler = qrGenerationHandler;
     _prefService = prefService;
     _bookmarkModel = bookmarkModel;
@@ -158,7 +163,7 @@
     RequestDesktopOrMobileSiteActivity* requestActivity =
         [[RequestDesktopOrMobileSiteActivity alloc]
             initWithUserAgent:data.userAgent
-                      handler:self.handler
+                  helpHandler:self.helpHandler
               navigationAgent:self.navigationAgent];
     [applicationActivities addObject:requestActivity];
   } else if (UrlIsDownloadedFile(data.shareURL) ||

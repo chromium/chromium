@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 class OmniboxClient;
-@class BubblePresenter;
 @protocol EditViewAnimatee;
 @class OmniboxPopupCoordinator;
 @protocol LocationBarOffsetProvider;
@@ -43,9 +42,6 @@ class OmniboxClient;
 
 /// Delegate for responding to focusing events.
 @property(nonatomic, weak) id<OmniboxFocusDelegate> focusDelegate;
-
-// Bubble presenter for displaying IPH bubbles relating to the omnibox.
-@property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
 //// The edit view, which contains a text field.
 @property(nonatomic, readonly) UIView<TextFieldViewContaining>* editView;
