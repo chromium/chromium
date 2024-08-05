@@ -895,6 +895,13 @@ bool PaymentsAutofillTable::GetCreditCards(
     std::unique_ptr<CreditCard> credit_card = GetCreditCard(guid);
     if (!credit_card)
       return false;
+    // Clear the CVC from the local `credit_card` entry if the CVC storage flag
+    // is disabled. This ensures CVC is not deleted if a user toggles flags back
+    // and forth, but is still inaccessible if the feature is disabled.
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillEnableCvcStorageAndFilling)) {
+      credit_card->clear_cvc();
+    }
     credit_cards->push_back(std::move(credit_card));
   }
 
@@ -959,7 +966,11 @@ bool PaymentsAutofillTable::GetServerCreditCards(
     card->set_card_art_url(GURL(s.ColumnString(index++)));
     card->set_product_description(s.ColumnString16(index++));
     card->set_product_terms_url(GURL(s.ColumnString(index++)));
-    card->set_cvc(instrument_to_cvc[card->instrument_id()]);
+    // Add CVC to the the `card` if the CVC storage flag is enabled.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableCvcStorageAndFilling)) {
+      card->set_cvc(instrument_to_cvc[card->instrument_id()]);
+    }
     credit_cards.push_back(std::move(card));
   }
   return s.Succeeded();

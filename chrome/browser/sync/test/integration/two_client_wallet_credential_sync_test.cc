@@ -7,6 +7,7 @@
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
@@ -27,7 +28,9 @@ class TwoClientWalletCredentialSyncTest : public SyncTest {
  public:
   TwoClientWalletCredentialSyncTest() : SyncTest(TWO_CLIENT) {
     features_.InitWithFeatures(
-        /*enabled_features=*/{kSyncAutofillWalletCredentialData},
+        /*enabled_features=*/{kSyncAutofillWalletCredentialData,
+                              autofill::features::
+                                  kAutofillEnableCvcStorageAndFilling},
         /*disabled_features=*/{});
   }
 

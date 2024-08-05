@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
@@ -109,7 +110,9 @@ class SingleClientWalletCredentialSyncTest : public SyncTest {
  public:
   SingleClientWalletCredentialSyncTest() : SyncTest(SINGLE_CLIENT) {
     features_.InitWithFeatures(
-        /*enabled_features=*/{kSyncAutofillWalletCredentialData},
+        /*enabled_features=*/{kSyncAutofillWalletCredentialData,
+                              autofill::features::
+                                  kAutofillEnableCvcStorageAndFilling},
         /*disabled_features=*/{});
   }
 
