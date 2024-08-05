@@ -48,6 +48,7 @@ source_set("profile") {
     "profile.h",
     "profile_keyed_service_factory.cc",
     "profile_keyed_service_factory.h",
+    "profile_manager_observer.h",
     "profile_observer.h",
     "profile_selections.cc",
     "profile_selections.h",

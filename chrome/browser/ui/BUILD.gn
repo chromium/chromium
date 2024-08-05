@@ -2018,6 +2018,7 @@ static_library("ui") {
       "//chrome/browser/new_tab_page/chrome_colors",
       "//chrome/browser/safe_browsing",
       "//chrome/browser/safe_browsing:advanced_protection",
+      "//chrome/browser/task_manager:impl",
       "//chrome/browser/themes",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:color_headers",
@@ -2109,7 +2110,10 @@ static_library("ui") {
       "//ui/webui/resources/js/browser_command:mojo_bindings",
       "//ui/webui/resources/js/metrics_reporter:mojo_bindings",
     ]
+
+    # Non-android public_deps for "ui" target.
     public_deps += [
+      "//chrome/browser/task_manager",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/views/side_panel",
     ]
@@ -2131,6 +2135,7 @@ static_library("ui") {
       # dependencies for controller are fixed.
       "//chrome/browser/lens/region_search",
 
+      "//chrome/browser/task_manager:impl",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui/searchbox",

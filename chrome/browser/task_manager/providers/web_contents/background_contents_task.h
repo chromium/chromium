@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_BACKGROUND_CONTENTS_TASK_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_BACKGROUND_CONTENTS_TASK_H_
 
-#include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/task_manager/providers/web_contents/renderer_task.h"
+
+class BackgroundContents;
 
 namespace task_manager {
 

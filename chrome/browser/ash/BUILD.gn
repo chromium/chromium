@@ -66,8 +66,6 @@ static_library("ash") {
     "os_url_handler.h",
     "preferences.cc",
     "preferences.h",
-    "process_snapshot_server.cc",
-    "process_snapshot_server.h",
     "report_controller_initializer.cc",
     "report_controller_initializer.h",
     "scheduler_configuration_manager.cc",
@@ -298,6 +296,7 @@ static_library("ash") {
     ":lock_unlock_event_proto",
     ":login_logout_event_proto",
     ":os_events_proto",
+    ":primitives",
     "//ash",
     "//ash/app_list",
     "//ash/components/arc",
@@ -1350,6 +1349,15 @@ static_library("ash") {
       "//chrome/browser/ash/chromebox_for_meetings/logger",
     ]
   }
+}
+
+# The core requirement for the target "primitives" is that it cannot depend on
+# any targets in //chrome/browser.
+source_set("primitives") {
+  public = [ "process_snapshot_server.h" ]
+  sources = [ "process_snapshot_server.cc" ]
+  public_deps = [ "//base" ]
+  deps = [ "//content/public/browser" ]
 }
 
 copy("mojo_service_manager_policy") {

@@ -148,6 +148,7 @@ static_library("devtools") {
       "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/task_manager",
       "//chrome/browser/themes",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/web_applications",
