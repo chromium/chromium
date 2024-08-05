@@ -29,27 +29,26 @@ void SetOrderedLabelsForTesting(
     DefaultBrowserUserSegment segment,
     std::vector<std::string>* device_switcher_labels,
     std::vector<std::string>* shopper_labels) {
-  if (shopper_labels) {
-    *shopper_labels = {kShoppingUserUmaName};
+  switch (segment) {
+    case DefaultBrowserUserSegment::kDesktopUser:
+      CHECK(device_switcher_labels);
+      *device_switcher_labels = {DeviceSwitcherModel::kOtherLabel,
+                                 DeviceSwitcherModel::kDesktopLabel,
+                                 DeviceSwitcherModel::kAndroidPhoneLabel};
+      return;
+    case DefaultBrowserUserSegment::kAndroidSwitcher:
+      CHECK(device_switcher_labels);
+      *device_switcher_labels = {DeviceSwitcherModel::kOtherLabel,
+                                 DeviceSwitcherModel::kAndroidPhoneLabel};
+      return;
+    case DefaultBrowserUserSegment::kShopper:
+      CHECK(shopper_labels);
+      *shopper_labels = {kShoppingUserUmaName};
+      return;
+    case DefaultBrowserUserSegment::kDefault:
+      return;
   }
-  if (device_switcher_labels) {
-    switch (segment) {
-      case DefaultBrowserUserSegment::kDesktopUser:
-        *device_switcher_labels = {DeviceSwitcherModel::kOtherLabel,
-                                   DeviceSwitcherModel::kDesktopLabel,
-                                   DeviceSwitcherModel::kAndroidPhoneLabel};
-        return;
-      case DefaultBrowserUserSegment::kAndroidSwitcher:
-        *device_switcher_labels = {DeviceSwitcherModel::kOtherLabel,
-                                   DeviceSwitcherModel::kAndroidPhoneLabel};
-        return;
-      case DefaultBrowserUserSegment::kShopper:
-      case DefaultBrowserUserSegment::kDefault:
-        *device_switcher_labels = {DeviceSwitcherModel::kOtherLabel};
-        return;
-    }
     NOTREACHED_NORETURN();
-  }
 }
 
 }  // namespace test
