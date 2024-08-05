@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_queue_type.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace base::sequence_manager {
 class SequenceManager;
@@ -31,7 +32,7 @@ using TaskQueue = base::sequence_manager::TaskQueue;
 class NonMainThreadSchedulerBase;
 
 class PLATFORM_EXPORT NonMainThreadTaskQueue
-    : public base::RefCountedThreadSafe<NonMainThreadTaskQueue> {
+    : public ThreadSafeRefCounted<NonMainThreadTaskQueue> {
  public:
   struct QueueCreationParams {
     QueueCreationParams() = default;
@@ -64,7 +65,6 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
       NonMainThreadSchedulerBase* non_main_thread_scheduler,
       QueueCreationParams params,
       scoped_refptr<base::SingleThreadTaskRunner> thread_task_runner);
-  ~NonMainThreadTaskQueue();
 
   void OnTaskCompleted(
       const base::sequence_manager::Task& task,
@@ -126,6 +126,9 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
   }
 
  private:
+  friend class ThreadSafeRefCounted<NonMainThreadTaskQueue>;
+  ~NonMainThreadTaskQueue();
+
   void OnWebSchedulingPriorityChanged();
 
   scoped_refptr<BlinkSchedulerSingleThreadTaskRunner> WrapTaskRunner(

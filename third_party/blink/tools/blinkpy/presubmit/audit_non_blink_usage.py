@@ -1675,20 +1675,27 @@ _CONFIG = [
         ],
         # Suppress almost all checks on platform since code in this directory is
         # meant to be a bridge between Blink and non-Blink code. However,
-        # base::RefCounted should still be explicitly blocked, since
-        # WTF::RefCounted should be used instead. base::RefCountedThreadSafe is
-        # still needed for cross_thread_copier.h though.
-        'allowed': ['base::RefCountedThreadSafe', '(?!base::RefCounted).+'],
-        # This is required to supplant less fine-grained inclass_disallows. We
-        # want to allow everything that the normal ones are allowing here, for
-        # the same reasons.
-        'inclass_allowed':
-        ['base::RefCountedThreadSafe::.+', '(?!base::RefCounted).+'],
+        # base::RefCounted and base::RefCountedThreadSafe should still be
+        # explicitly blocked.
+        # WTF::RefCounted and WTF::ThreadSafeRefCounted should be used instead.
+        'allowed': ['.+'],
+        'inclass_allowed': ['.+'],
         'disallowed': [
+            ('base::RefCounted', 'Use RefCounted'),
+            ('base::RefCountedThreadSafe', 'Use ThreadSafeRefCounted'),
             # TODO(https://crbug.com/1267866): this warning is shown twice for
             # renderer/platform/ violations.
             _DISALLOW_NON_BLINK_MOJOM,
         ]
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/platform/wtf/',
+        ],
+        # base::RefCounted and base::RefCountedThreadSafe are prohibited in
+        # platform/ as defined above, but wtf/ needs them to define their WTF
+        # subclasses and CrossThreadCopier.
+        'allowed': ['base::RefCounted', 'base::RefCountedThreadSafe'],
     },
     {
         'paths': [
@@ -1698,7 +1705,7 @@ _CONFIG = [
         # SingleThreadIdleTaskRunner needs to be constructed before WTF and
         # PartitionAlloc are initialized, which forces us to use
         # base::RefCountedThreadSafe for it.
-        'allowed': ['.+'],
+        'allowed': ['base::RefCountedThreadSafe'],
     },
     {
         'paths': [

@@ -10,10 +10,10 @@
 #include <optional>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/ip_address.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
 
@@ -25,7 +25,7 @@ class P2PSocketDispatcher;
 // to resolve addresses of STUN and relay servers. It is created and lives on
 // one of libjingle's threads.
 class P2PAsyncAddressResolver
-    : public base::RefCountedThreadSafe<P2PAsyncAddressResolver> {
+    : public ThreadSafeRefCounted<P2PAsyncAddressResolver> {
  public:
   using DoneCallback = base::OnceCallback<void(const Vector<net::IPAddress>&)>;
 
@@ -48,9 +48,7 @@ class P2PAsyncAddressResolver
   };
 
   friend class P2PSocketDispatcher;
-
-  friend class base::RefCountedThreadSafe<P2PAsyncAddressResolver>;
-
+  friend class ThreadSafeRefCounted<P2PAsyncAddressResolver>;
   virtual ~P2PAsyncAddressResolver();
 
   void OnResponse(const Vector<net::IPAddress>& address);

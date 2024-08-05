@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/webrtc/modules/video_coding/codecs/h264/include/h264.h"
@@ -177,7 +178,7 @@ class ScopedSignaledValue {
 
 // TODO(https://crbug.com/1448809): Move to base/memory/ref_counted_memory.h
 class RefCountedWritableSharedMemoryMapping
-    : public base::RefCountedThreadSafe<RefCountedWritableSharedMemoryMapping> {
+    : public ThreadSafeRefCounted<RefCountedWritableSharedMemoryMapping> {
  public:
   explicit RefCountedWritableSharedMemoryMapping(
       base::WritableSharedMemoryMapping mapping)
@@ -197,8 +198,7 @@ class RefCountedWritableSharedMemoryMapping
   size_t size() const { return mapping_.size(); }
 
  private:
-  friend class base::RefCountedThreadSafe<
-      RefCountedWritableSharedMemoryMapping>;
+  friend class ThreadSafeRefCounted<RefCountedWritableSharedMemoryMapping>;
   ~RefCountedWritableSharedMemoryMapping() = default;
 
   const base::WritableSharedMemoryMapping mapping_;

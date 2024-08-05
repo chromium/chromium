@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/instrumented_video_encoder_wrapper.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -104,7 +105,8 @@ webrtc::VideoFrame CreateFrame(int width = kWidth,
   auto frame = media::VideoFrame::CreateBlackFrame(gfx::Size(width, height));
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
       new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-          frame, new WebRtcVideoFrameAdapter::SharedResources(nullptr)));
+          frame, base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
+                     nullptr)));
   return webrtc::VideoFrame::Builder()
       .set_video_frame_buffer(std::move(frame_adapter))
       .set_rtp_timestamp(kTimestamp + 10)

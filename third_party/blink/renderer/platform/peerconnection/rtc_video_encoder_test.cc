@@ -14,7 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -1087,7 +1087,8 @@ TEST_F(RTCVideoEncoderEncodeTest, SoftwareFallbackOnBadEncodeInput) {
   frame->set_timestamp(base::Milliseconds(1));
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
       new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-          frame, new WebRtcVideoFrameAdapter::SharedResources(nullptr)));
+          frame, base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
+                     nullptr)));
   std::vector<webrtc::VideoFrameType> frame_types;
 
   // The frame type check is done in media thread asynchronously. The error is
@@ -1169,7 +1170,9 @@ TEST_F(RTCVideoEncoderEncodeTest, NonZeroCopyEncodingIfFirstFrameisShmem) {
       gfx::Rect(frame_size), frame_size, std::move(gmb), base::Milliseconds(1));
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
       new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-          gmb_frame, new WebRtcVideoFrameAdapter::SharedResources(nullptr)));
+          gmb_frame,
+          base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
+              nullptr)));
   std::vector<webrtc::VideoFrameType> frame_types;
   ExpectCreateInitAndDestroyVEA(
       media::PIXEL_FORMAT_NV12,
@@ -1281,7 +1284,8 @@ TEST_F(RTCVideoEncoderEncodeTest, AcceptsRepeatedWrappedMediaVideoFrame) {
   frame->set_timestamp(base::Milliseconds(1));
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
       new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-          frame, new WebRtcVideoFrameAdapter::SharedResources(nullptr)));
+          frame, base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
+                     nullptr)));
   std::vector<webrtc::VideoFrameType> frame_types;
   if (InitializeOnFirstFrameEnabled()) {
     ExpectCreateInitAndDestroyVEA();
@@ -2553,7 +2557,8 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeFrameWithAdapter) {
       gfx::Size(kInputFrameWidth, kInputFrameHeight));
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
       new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-          frame, new WebRtcVideoFrameAdapter::SharedResources(nullptr)));
+          frame, base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
+                     nullptr)));
   std::vector<webrtc::VideoFrameType> frame_types;
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
@@ -2569,7 +2574,8 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeFrameWithAdapter) {
   frame = media::VideoFrame::CreateBlackFrame(
       gfx::Size(kInputFrameWidth * 2, kInputFrameHeight * 2));
   frame_adapter = new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-      frame, new WebRtcVideoFrameAdapter::SharedResources(nullptr));
+      frame,
+      base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(nullptr));
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(frame_adapter)

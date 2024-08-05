@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,12 +24,9 @@ namespace blink {
 class ConvertToWebRtcVideoFrameBufferParamTest
     : public ::testing::TestWithParam<
           std::tuple<media::VideoFrame::StorageType, media::VideoPixelFormat>> {
- public:
-  ConvertToWebRtcVideoFrameBufferParamTest()
-      : resources_(new WebRtcVideoFrameAdapter::SharedResources(nullptr)) {}
-
  protected:
-  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources_;
+  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources_ =
+      base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(nullptr);
 };
 
 namespace {
@@ -80,8 +78,8 @@ TEST(ConvertToWebRtcVideoFrameBufferTest, ToI420ADownScale) {
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize(640, 360);
-  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources =
-      new WebRtcVideoFrameAdapter::SharedResources(nullptr);
+  auto resources =
+      base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(nullptr);
 
   // The adapter should report width and height from the natural size for
   // VideoFrame backed by owned memory.
@@ -108,8 +106,8 @@ TEST(ConvertToWebRtcVideoFrameBufferTest,
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   // Same size as visible rect so no scaling.
   const gfx::Size kNaturalSize = kVisibleRect.size();
-  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources =
-      new WebRtcVideoFrameAdapter::SharedResources(nullptr);
+  auto resources =
+      base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(nullptr);
 
   auto gmb_frame =
       CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
@@ -141,8 +139,8 @@ TEST(ConvertToWebRtcVideoFrameBufferTest, Nv12ScalesGmbWithFeature) {
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize(640, 360);
-  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources =
-      new WebRtcVideoFrameAdapter::SharedResources(nullptr);
+  auto resources =
+      base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(nullptr);
 
   auto gmb_frame =
       CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
@@ -174,8 +172,8 @@ TEST(ConvertToWebRtcVideoFrameBufferTest, Nv12OwnedMemoryFrame) {
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize = kVisibleRect.size();
-  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources =
-      new WebRtcVideoFrameAdapter::SharedResources(nullptr);
+  auto resources =
+      base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(nullptr);
 
   // The adapter should report width and height from the natural size for
   // VideoFrame backed by owned memory.
@@ -200,8 +198,8 @@ TEST(ConvertToWebRtcVideoFrameBufferTest, Nv12ScaleOwnedMemoryFrame) {
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize(640, 360);
-  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources =
-      new WebRtcVideoFrameAdapter::SharedResources(nullptr);
+  auto resources =
+      base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(nullptr);
 
   // The adapter should report width and height from the natural size for
   // VideoFrame backed by owned memory.

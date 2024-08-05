@@ -11,11 +11,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/input/browser_controls_offset_tags_info.h"
@@ -200,12 +202,11 @@ scoped_refptr<WidgetInputHandlerManager> WidgetInputHandlerManager::Create(
     base::PlatformThreadId io_thread_id,
     base::PlatformThreadId main_thread_id) {
   DCHECK(widget_scheduler);
-  scoped_refptr<WidgetInputHandlerManager> manager =
-      new WidgetInputHandlerManager(
-          std::move(widget), std::move(frame_widget_input_handler),
-          never_composited, compositor_thread_scheduler,
-          std::move(widget_scheduler), allow_scroll_resampling, io_thread_id,
-          main_thread_id);
+  auto manager = base::MakeRefCounted<WidgetInputHandlerManager>(
+      base::PassKey<WidgetInputHandlerManager>(), std::move(widget),
+      std::move(frame_widget_input_handler), never_composited,
+      compositor_thread_scheduler, std::move(widget_scheduler),
+      allow_scroll_resampling, io_thread_id, main_thread_id);
 
   manager->InitializeInputEventSuppressionStates();
   if (uses_input_handler)
@@ -223,6 +224,7 @@ scoped_refptr<WidgetInputHandlerManager> WidgetInputHandlerManager::Create(
 }
 
 WidgetInputHandlerManager::WidgetInputHandlerManager(
+    base::PassKey<WidgetInputHandlerManager>,
     base::WeakPtr<WidgetBase> widget,
     base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
         frame_widget_input_handler,
