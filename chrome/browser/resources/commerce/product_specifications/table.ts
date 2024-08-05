@@ -193,8 +193,17 @@ export class TableElement extends PolymerElement {
         column => column.productDetails && column.productDetails[rowIndex]);
 
     return rowDetails.some(detail => {
-      return detail && detail.title === title && detail.description &&
-          detail.description.length > 0 && detail.description !== 'N/A';
+      if (!detail || detail.title !== title) {
+        return false;
+      }
+      if (detail.text) {
+        // If we're showing text, we shouldn't have any description data.
+        assert(detail.description.length === 0);
+        return false;
+      }
+      return detail.description && detail.description.some(desc => {
+        return desc.description.length > 0 && desc.description !== 'N/A';
+      });
     });
   }
 

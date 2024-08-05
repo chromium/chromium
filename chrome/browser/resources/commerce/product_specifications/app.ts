@@ -47,15 +47,22 @@ interface LoadingState {
   urlCount: number;
 }
 
+interface Description {
+  label: string;
+  description: string;
+}
+
 interface ProductDetail {
   title: string;
-  description: string;
+  // Only one of `text` or `description` will be set at a time.
+  text: string|null;
+  description: Description[];
   summary: ProductSpecificationsDescriptionText[];
 }
 
 export interface TableColumn {
   selectedItem: UrlListEntry;
-  productDetails: ProductDetail[];
+  productDetails: ProductDetail[]|null;
 }
 
 export interface ProductSpecificationsElement {
@@ -82,7 +89,8 @@ function getProductDetails(
   // specifications backend.
   productDetails.push({
     title: loadTimeData.getString('priceRowTitle'),
-    description: (productInfo?.currentPrice || ''),
+    text: productInfo?.currentPrice || null,
+    description: [],
     summary: [],
   });
 
@@ -90,17 +98,22 @@ function getProductDetails(
     if (!product) {
       // Fill missing product details with strings to ensure uniform table row
       // count.
-      productDetails.push({title, description: '', summary: []});
+      productDetails.push({title, text: null, description: [], summary: []});
     } else {
       const value = product.productDimensionValues.get(key);
-      const description = (value?.specificationDescriptions || [])
-                              .flatMap(description => description.options)
-                              .flatMap(option => option.descriptions)
-                              .map(descText => descText.text)
-                              .join(', ') ||
-          '';
+      const description =
+          (value?.specificationDescriptions || []).flatMap(description => {
+            return {
+              label: description.label,
+              description:
+                  description.options.flatMap(option => option.descriptions)
+                      .flatMap(desc => desc.text)
+                      .join(', '),
+            };
+          }) ||
+          [];
       const summary = value?.summary || [];
-      productDetails.push({title, description, summary});
+      productDetails.push({title, text: null, description, summary});
     }
   });
   return productDetails;
