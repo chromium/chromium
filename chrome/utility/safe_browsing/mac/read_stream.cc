@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
 
 #include <string.h>
 #include <unistd.h>
 
 #include <algorithm>
+#include <array>
 
 #include "base/check.h"
 #include "base/notreached.h"
@@ -85,14 +81,14 @@ off_t MemoryReadStream::Seek(off_t offset, int whence) {
 
 std::optional<std::vector<uint8_t>> ReadEntireStream(ReadStream& stream) {
   std::vector<uint8_t> data;
-  uint8_t buffer[1024];
+  std::array<uint8_t, 1024> buffer;
   size_t bytes_read = 0;
   do {
     if (!stream.Read(buffer, &bytes_read)) {
       return std::nullopt;
     }
 
-    data.insert(data.end(), buffer, &buffer[bytes_read]);
+    data.insert(data.end(), buffer.begin(), buffer.begin() + bytes_read);
   } while (bytes_read != 0);
 
   return data;
@@ -100,13 +96,13 @@ std::optional<std::vector<uint8_t>> ReadEntireStream(ReadStream& stream) {
 
 bool CopyStreamToFile(ReadStream& source, base::File& dest) {
   dest.Seek(base::File::Whence::FROM_BEGIN, 0);
-  uint8_t buffer[1024];
+  std::array<uint8_t, 1024> buffer;
   size_t bytes_read = 0;
   do {
     if (!source.Read(buffer, &bytes_read)) {
       return false;
     }
-    if (!dest.WriteAtCurrentPosAndCheck(base::make_span(buffer, bytes_read))) {
+    if (!dest.WriteAtCurrentPosAndCheck(base::span(buffer).first(bytes_read))) {
       return false;
     }
   } while (bytes_read > 0);
