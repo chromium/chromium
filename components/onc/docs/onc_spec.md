@@ -1995,6 +1995,11 @@ that reference APNs contained in **AdminAPNList**.
     * The type(s) of the APN. If provided, must be a non-empty array.
       Possible values are "Default", "Attach", or "Tether".
 
+* **Source**
+    * (optional) - **string**
+    * The source of the APN. Possible values are "", "Modem", "Modb", "Ui", or
+      "Admin".
+
 ## Certificates
 
 Certificate data is stored in a separate section. Each certificate may be

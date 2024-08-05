@@ -90,6 +90,25 @@ chrome.networkingPrivate.ProxySettingsType = {
 };
 
 /**
+ * @enum {string}
+ */
+chrome.networkingPrivate.ApnType = {
+  DEFAULT: 'Default',
+  ATTACH: 'Attach',
+  TETHER: 'Tether',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.networkingPrivate.ApnSource = {
+  MODEM: 'Modem',
+  MODB: 'Modb',
+  UI: 'Ui',
+  ADMIN: 'Admin',
+};
+
+/**
  * @typedef {{
  *   Active: (boolean|undefined),
  *   Effective: (string|undefined),
@@ -181,7 +200,9 @@ chrome.networkingPrivate.ManagedProxySettingsType;
  *   LocalizedName: (string|undefined),
  *   Name: (string|undefined),
  *   Password: (string|undefined),
- *   Username: (string|undefined)
+ *   Username: (string|undefined),
+ *   ApnTypes: (!Array<!chrome.networkingPrivate.ApnType>|undefined),
+ *   Source: (!chrome.networkingPrivate.ApnSource|undefined)
  * }}
  */
 chrome.networkingPrivate.APNProperties;
