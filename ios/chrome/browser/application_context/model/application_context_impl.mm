@@ -62,6 +62,7 @@
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/update_client/model/ios_chrome_update_query_params_delegate.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_center.h"
 #import "ios/chrome/common/channel_info.h"
@@ -503,6 +504,24 @@ SystemIdentityManager* ApplicationContextImpl::GetSystemIdentityManager() {
     DCHECK(system_identity_manager_);
   }
   return system_identity_manager_.get();
+}
+
+AccountProfileMapper* ApplicationContextImpl::GetAccountProfileMapper() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (!account_profile_mapper_) {
+    ChromeBrowserStateManager* manager = GetChromeBrowserStateManager();
+    BrowserStateInfoCache* info_cache = manager->GetBrowserStateInfoCache();
+    size_t profile_count = info_cache->GetNumberOfBrowserStates();
+    if (profile_count == 0) {
+      // This case can happens on the first startup.
+      // TODO(crbug.com/331783685): AccountProfileMapper needs to listen for
+      // profiles being added and removed.
+      profile_count = 1;
+    }
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        GetSystemIdentityManager(), profile_count);
+  }
+  return account_profile_mapper_.get();
 }
 
 segmentation_platform::OTRWebStateObserver*

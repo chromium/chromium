@@ -64,6 +64,7 @@ namespace variations {
 class VariationsService;
 }
 
+class AccountProfileMapper;
 class ApplicationContext;
 class BrowserPolicyConnectorIOS;
 class ChromeBrowserStateManager;
@@ -170,6 +171,9 @@ class ApplicationContext {
 
   // Returns the SystemIdentityManager instance used by this application.
   virtual SystemIdentityManager* GetSystemIdentityManager() = 0;
+
+  // Returns the AccountProfileMapper instance used by this application.
+  virtual AccountProfileMapper* GetAccountProfileMapper() = 0;
 
   // Returns the application's OTRWebStateObserver for segmentation platform.
   virtual segmentation_platform::OTRWebStateObserver*

@@ -185,6 +185,8 @@ source_set("system_identity") {
 
 source_set("system_identity_manager") {
   sources = [
+    "account_profile_mapper.h",
+    "account_profile_mapper.mm",
     "refresh_access_token_error.h",
     "system_identity_interaction_manager.h",
     "system_identity_manager.h",
@@ -197,6 +199,8 @@ source_set("system_identity_manager") {
     ":capabilities_types",
     ":system_identity",
     "//components/signin/internal/identity_manager",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/public/features:system_flags",
   ]
 }
 
@@ -347,6 +351,7 @@ source_set("unit_tests") {
   sources = [
     "account_capabilities_fetcher_ios_unittest.mm",
     "account_consistency_browser_agent_unittest.mm",
+    "account_profile_mapper_unittest.mm",
     "authentication_service_observer_bridge_unittest.mm",
     "authentication_service_unittest.mm",
     "chrome_account_manager_service_observer_bridge_unittest.mm",

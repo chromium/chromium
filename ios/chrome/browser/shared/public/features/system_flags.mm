@@ -51,7 +51,6 @@ NSString* const kSafetyCheckCompromisedPasswordsCountOverride =
 NSString* const kSimulatePostDeviceRestore = @"SimulatePostDeviceRestore";
 NSString* const kShouldIgnoreHistorySyncDeclineLimits =
     @"ShouldIgnoreHistorySyncDeclineLimits";
-NSString* const kDisplaySwitchProfile = @"DisplaySwitchProfile";
 BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
              "EnableThirdPartyKeyboardWorkaround",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -59,6 +58,8 @@ BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
 }  // namespace
 
 namespace experimental_flags {
+
+NSString* const kDisplaySwitchProfile = @"DisplaySwitchProfile";
 
 bool AlwaysDisplayFirstRun() {
   return

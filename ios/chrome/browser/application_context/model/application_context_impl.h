@@ -81,6 +81,7 @@ class ApplicationContextImpl : public ApplicationContext {
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() override;
   id<SingleSignOnService> GetSingleSignOnService() override;
   SystemIdentityManager* GetSystemIdentityManager() override;
+  AccountProfileMapper* GetAccountProfileMapper() override;
   segmentation_platform::OTRWebStateObserver*
   GetSegmentationOTRWebStateObserver() override;
   PushNotificationService* GetPushNotificationService() override;
@@ -153,6 +154,7 @@ class ApplicationContextImpl : public ApplicationContext {
 
   __strong id<SingleSignOnService> single_sign_on_service_ = nil;
   std::unique_ptr<SystemIdentityManager> system_identity_manager_;
+  std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
 
   std::unique_ptr<segmentation_platform::OTRWebStateObserver>
       segmentation_otr_web_state_observer_;

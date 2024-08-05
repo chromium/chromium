@@ -20,6 +20,9 @@ enum class SafeBrowsingSafetyCheckState;
 
 namespace experimental_flags {
 
+// NSUserDefaults key to list the number of profile available.
+extern NSString* const kDisplaySwitchProfile;
+
 // Whether the First Run UI will always be displayed.
 bool AlwaysDisplayFirstRun();
 

@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
+#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
@@ -266,6 +267,15 @@ SystemIdentityManager* TestingApplicationContext::GetSystemIdentityManager() {
         ios::provider::CreateSystemIdentityManager(GetSingleSignOnService());
   }
   return system_identity_manager_.get();
+}
+
+AccountProfileMapper* TestingApplicationContext::GetAccountProfileMapper() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (!account_profile_mapper_) {
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        GetSystemIdentityManager(), /*profile_count=*/1);
+  }
+  return account_profile_mapper_.get();
 }
 
 segmentation_platform::OTRWebStateObserver*
