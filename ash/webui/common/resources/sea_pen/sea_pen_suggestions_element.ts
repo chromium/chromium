@@ -17,10 +17,9 @@ import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_butt
 import {assert} from 'chrome://resources/js/assert.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {logSuggestionClicked, logSuggestionShuffleClicked} from './sea_pen_metrics_logger.js';
-import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_suggestions_element.html.js';
 import {SEA_PEN_SUGGESTIONS} from './sea_pen_untranslated_constants.js';
 import {isArrayEqual, shuffle} from './sea_pen_utils.js';
@@ -50,7 +49,7 @@ export interface SeaPenSuggestionsElement {
   };
 }
 
-export class SeaPenSuggestionsElement extends WithSeaPenStore {
+export class SeaPenSuggestionsElement extends PolymerElement {
   static get is() {
     return 'sea-pen-suggestions';
   }
@@ -68,11 +67,6 @@ export class SeaPenSuggestionsElement extends WithSeaPenStore {
 
       hiddenSuggestions_: Object,
 
-      thumbnails_: {
-        type: Object,
-        observer: 'resetSuggestions_',
-      },
-
       /** The button currently highlighted by keyboard navigation. */
       ironSelectedSuggestion_: Object,
     };
@@ -80,7 +74,6 @@ export class SeaPenSuggestionsElement extends WithSeaPenStore {
 
   private suggestions_: string[];
   private hiddenSuggestions_: Set<string>;
-  private thumbnails_: SeaPenThumbnail[]|null;
   private ironSelectedSuggestion_: CrButtonElement;
 
   override ready() {
@@ -90,14 +83,8 @@ export class SeaPenSuggestionsElement extends WithSeaPenStore {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.watch<SeaPenSuggestionsElement['thumbnails_']>(
-        'thumbnails_', state => state.thumbnails);
     this.hiddenSuggestions_ = new Set();
     this.suggestions_ = [...SEA_PEN_SUGGESTIONS];
-  }
-
-  private resetSuggestions_() {
-    this.hiddenSuggestions_ = new Set();
     this.shuffleSuggestions_();
   }
 
