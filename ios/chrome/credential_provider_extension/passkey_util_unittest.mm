@@ -136,4 +136,22 @@ TEST_F(PasskeyUtilTest, AssertionSucceedsOnCredentialId) {
   }
 }
 
+// Tests that creating a passkey works properly.
+TEST_F(PasskeyUtilTest, CreationSucceeds) {
+  if (@available(iOS 17.0, *)) {
+    NSData* clientDataHash = ClientDataHash();
+    id<Credential> credential = TestPasskeyCredential();
+
+    ASPasskeyRegistrationCredential* passkeyRegistrationCredential =
+        PerformPasskeyCreation(clientDataHash, credential.rpId,
+                               credential.username, credential.userId,
+                               SecurityDomainSecret());
+
+    ASSERT_NSEQ(clientDataHash, passkeyRegistrationCredential.clientDataHash);
+    ASSERT_EQ(passkeyRegistrationCredential.credentialID.length, 16u);
+    ASSERT_NSEQ(credential.rpId, passkeyRegistrationCredential.relyingParty);
+    ASSERT_NSNE(passkeyRegistrationCredential.attestationObject, nil);
+  }
+}
+
 }  // namespace credential_provider_extension

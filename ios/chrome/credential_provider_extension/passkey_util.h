@@ -17,6 +17,15 @@ using FetchKeyCompletionBlock = void (^)(NSData* sds);
 // with the Security Domain Secret as the input argument.
 void FetchSecurityDomainSecret(FetchKeyCompletionBlock completion);
 
+// On a success, returns a newly created passkey.
+// Returns nil otherwise.
+ASPasskeyRegistrationCredential* PerformPasskeyCreation(
+    NSData* client_data_hash,
+    NSString* rp_id,
+    NSString* user_name,
+    NSData* user_handle,
+    NSData* security_domain_secret) API_AVAILABLE(ios(17.0));
+
 // On a success, returns a valid passkey assertion structure.
 // Returns nil otherwise.
 ASPasskeyAssertionCredential* PerformPasskeyAssertion(
