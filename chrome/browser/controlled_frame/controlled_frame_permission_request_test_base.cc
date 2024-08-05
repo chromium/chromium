@@ -171,19 +171,11 @@ void ControlledFramePermissionRequestTestBase::RunTestAndVerify(
     }
   }
 
-  web_app::IsolatedWebAppUrlInfo url_info =
-      CreateAndInstallEmptyApp(manifest_builder);
-  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
-
-  ASSERT_TRUE(CreateControlledFrame(
-      app_frame, embedded_https_test_server().GetURL(kPermissionAllowedHost,
-                                                     "/index.html")));
-
-  extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
-  ASSERT_TRUE(web_view_guest);
-
-  content::RenderFrameHost* controlled_frame =
-      web_view_guest->GetGuestMainFrame();
+  auto [app_frame, controlled_frame] =
+      InstallAndOpenIwaThenCreateControlledFrame(
+          /*controlled_frame_host_name=*/kPermissionAllowedHost,
+          /*controlled_frame_src_relative_url=*/"/index.html",
+          manifest_builder);
 
   // Focus <controlledframe> with a fake click.
   content::SimulateMouseClick(
@@ -197,8 +189,8 @@ void ControlledFramePermissionRequestTestBase::RunTestAndVerify(
        test_case.embedder_content_settings_type) {
     HostContentSettingsMapFactory::GetForProfile(profile())
         ->SetContentSettingDefaultScope(
-            url_info.origin().GetURL(), url_info.origin().GetURL(),
-            content_settings_type,
+            app_frame->GetLastCommittedOrigin().GetURL(),
+            app_frame->GetLastCommittedOrigin().GetURL(), content_settings_type,
             test_param.has_embedder_content_setting
                 ? ContentSetting::CONTENT_SETTING_ALLOW
                 : ContentSetting::CONTENT_SETTING_BLOCK);

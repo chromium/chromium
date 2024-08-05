@@ -6,10 +6,13 @@
 #define CHROME_BROWSER_CONTROLLED_FRAME_CONTROLLED_FRAME_TEST_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <string_view>
+#include <utility>
 
 #include "base/version_info/version_info.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "third_party/blink/public/common/features.h"
 
 class GURL;
@@ -66,6 +69,14 @@ class ControlledFrameTestBase
 
   [[nodiscard]] bool CreateControlledFrame(content::RenderFrameHost* frame,
                                            const GURL& src);
+
+  // If |controlled_frame_host_name| is null, then uses the default hostname of
+  // |embedded_https_test_server|
+  std::pair<content::RenderFrameHost*, content::RenderFrameHost*>
+  InstallAndOpenIwaThenCreateControlledFrame(
+      std::optional<std::string_view> controlled_frame_host_name,
+      std::string_view controlled_frame_src_relative_url,
+      web_app::ManifestBuilder manfest_buider = web_app::ManifestBuilder());
 
   extensions::WebViewGuest* GetWebViewGuest(
       content::RenderFrameHost* embedder_frame);
