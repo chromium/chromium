@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <memory>
 #include <optional>
 #include <string>
@@ -85,9 +80,7 @@ class HeadlessPDFPagesBrowserTest : public HeadlessDevTooledBrowserTest {
     ASSERT_TRUE(base::Base64Decode(pdf_data_base64, &pdf_data));
     EXPECT_GT(pdf_data.size(), 0U);
 
-    auto pdf_span = base::make_span(
-        reinterpret_cast<const uint8_t*>(pdf_data.data()), pdf_data.size());
-
+    auto pdf_span = base::as_byte_span(pdf_data);
     int num_pages;
     EXPECT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span, &num_pages, nullptr));
     EXPECT_EQ(std::ceil(kDocHeight / kPaperHeight), num_pages);
@@ -195,8 +188,7 @@ class HeadlessPDFStreamBrowserTest : public HeadlessDevTooledBrowserTest {
     ASSERT_TRUE(base::Base64Decode(base64_pdf_data_, &pdf_data));
     EXPECT_GT(pdf_data.size(), 0U);
 
-    auto pdf_span = base::make_span(
-        reinterpret_cast<const uint8_t*>(pdf_data.data()), pdf_data.size());
+    auto pdf_span = base::as_byte_span(pdf_data);
 
     int num_pages;
     EXPECT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span, &num_pages, nullptr));
@@ -254,8 +246,7 @@ class HeadlessPDFBrowserTestBase : public HeadlessDevTooledBrowserTest {
       ASSERT_TRUE(base::Base64Decode(pdf_data_base64, &pdf_data));
       ASSERT_GT(pdf_data.size(), 0U);
 
-      auto pdf_span = base::make_span(
-          reinterpret_cast<const uint8_t*>(pdf_data.data()), pdf_data.size());
+      auto pdf_span = base::as_byte_span(pdf_data);
       int num_pages;
       ASSERT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span, &num_pages, nullptr));
       OnPDFReady(pdf_span, num_pages);
