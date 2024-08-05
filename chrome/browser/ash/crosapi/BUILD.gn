@@ -591,7 +591,6 @@ static_library("test_support") {
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/printing",
     "//chrome/browser/ash/printing:test_support",
-    "//chrome/browser/chromeos/kcer",
     "//chrome/browser/ui/ash/desks",
     "//chrome/browser/ui/webui/ash/app_install",
     "//chrome/test:test_support",
