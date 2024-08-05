@@ -20,7 +20,6 @@ class RendererContextData : public ContextData {
   RendererContextData() = default;
   ~RendererContextData() override = default;
 
-  std::unique_ptr<ContextData> Clone() const override;
   bool HasIsolatedContextCapability() const override;
 };
 

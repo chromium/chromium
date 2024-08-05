@@ -25,7 +25,6 @@ class BrowserProcessContextData : public ProcessContextData {
 
   ~BrowserProcessContextData() override = default;
 
-  std::unique_ptr<ContextData> Clone() const override;
   std::unique_ptr<ProcessContextData> CloneProcessContextData() const override;
   bool HasIsolatedContextCapability() const override;
 

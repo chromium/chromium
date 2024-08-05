@@ -13,10 +13,6 @@
 
 namespace extensions {
 
-std::unique_ptr<ContextData> BrowserFrameContextData::Clone() const {
-  return CloneFrameContextData();
-}
-
 std::unique_ptr<FrameContextData>
 BrowserFrameContextData::CloneFrameContextData() const {
   return std::make_unique<BrowserFrameContextData>(frame_);

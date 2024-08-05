@@ -12,10 +12,6 @@
 
 namespace extensions {
 
-std::unique_ptr<ContextData> BrowserProcessContextData::Clone() const {
-  return CloneProcessContextData();
-}
-
 std::unique_ptr<ProcessContextData>
 BrowserProcessContextData::CloneProcessContextData() const {
   return std::make_unique<BrowserProcessContextData>(process_);

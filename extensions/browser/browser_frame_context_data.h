@@ -24,7 +24,6 @@ class BrowserFrameContextData : public FrameContextData {
 
   ~BrowserFrameContextData() override = default;
 
-  std::unique_ptr<ContextData> Clone() const override;
   std::unique_ptr<FrameContextData> CloneFrameContextData() const override;
   bool HasIsolatedContextCapability() const override;
 

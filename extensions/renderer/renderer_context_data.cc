@@ -17,10 +17,6 @@ bool RendererContextData::IsIsolatedWebAppContextAndEnabled() {
   return blink::IsIsolatedContext();
 }
 
-std::unique_ptr<ContextData> RendererContextData::Clone() const {
-  return std::make_unique<RendererContextData>();
-}
-
 bool RendererContextData::HasIsolatedContextCapability() const {
   return RendererContextData::IsIsolatedWebAppContextAndEnabled();
 }

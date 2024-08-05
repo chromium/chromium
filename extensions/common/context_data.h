@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_COMMON_CONTEXT_DATA_H_
 #define EXTENSIONS_COMMON_CONTEXT_DATA_H_
 
-#include <memory>
-
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -22,7 +20,6 @@ namespace extensions {
 class ContextData {
  public:
   virtual ~ContextData() = default;
-  virtual std::unique_ptr<ContextData> Clone() const = 0;
   virtual bool HasIsolatedContextCapability() const = 0;
 };
 

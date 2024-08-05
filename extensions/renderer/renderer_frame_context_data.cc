@@ -16,10 +16,6 @@
 
 namespace extensions {
 
-std::unique_ptr<ContextData> RendererFrameContextData::Clone() const {
-  return CloneFrameContextData();
-}
-
 std::unique_ptr<FrameContextData>
 RendererFrameContextData::CloneFrameContextData() const {
   // Note: Extension tests mock objects like ScriptContext and don't fill in
