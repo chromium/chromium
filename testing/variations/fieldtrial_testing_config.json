@@ -9299,7 +9299,8 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableExtensionsPermissionsForSupervisedUsersOnDesktop",
-                        "EnableSupervisedUserSkipParentApprovalToInstallExtensions"
+                        "EnableSupervisedUserSkipParentApprovalToInstallExtensions",
+                        "UpdatedSupervisedUserExtensionApprovalStrings"
                     ]
                 }
             ]
