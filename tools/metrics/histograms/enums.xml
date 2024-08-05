@@ -9649,8 +9649,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4072" label="WebCodecsVideoFrameFromBuffer"/>
   <int value="4073" label="OBSOLETE_OpenWebDatabaseInsecureContext"/>
   <int value="4074" label="ScriptWebBundle"/>
-  <int value="4075" label="RunAdAuction"/>
-  <int value="4076" label="JoinAdInterestGroup"/>
+  <int value="4075" label="OBSOLETE_kRunAdAuction"/>
+  <int value="4076" label="OBSOLETE_kJoinAdInterestGroup"/>
   <int value="4077" label="FileSystemUrlNavigation"/>
   <int value="4078" label="V8Navigator_AdAuctionComponents_Method"/>
   <int value="4079" label="ClientHintsUAFullVersionList"/>

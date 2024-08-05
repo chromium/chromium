@@ -3388,8 +3388,8 @@ enum WebFeature {
   kScriptWebBundle = 4074,
   // The items above roughly this point are available in the M97 branch.
 
-  kRunAdAuction = 4075,
-  kJoinAdInterestGroup = 4076,
+  kOBSOLETE_kRunAdAuction = 4075,
+  kOBSOLETE_kJoinAdInterestGroup = 4076,
   kFileSystemUrlNavigation = 4077,
   kV8Navigator_AdAuctionComponents_Method = 4078,
   kClientHintsUAFullVersionList = 4079,
