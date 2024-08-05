@@ -22,9 +22,6 @@
 
 namespace password_manager {
 
-using password_manager::features::
-    GetLocalPasswordsMigrationToAndroidBackendDelay;
-
 PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
     std::unique_ptr<PasswordStoreBackend> built_in_backend,
     std::unique_ptr<PasswordStoreBackend> android_backend,
@@ -77,7 +74,7 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
       base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
                          StartMigrationOfLocalPasswords,
                      migrator_->GetWeakPtr()),
-      base::Seconds(GetLocalPasswordsMigrationToAndroidBackendDelay()));
+      kLocalPasswordsMigrationToAndroidBackendDelay);
 }
 
 void PasswordStoreBackendMigrationDecorator::Shutdown(

@@ -116,14 +116,6 @@ BASE_DECLARE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords);
 BASE_DECLARE_FEATURE(
     kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning);
 
-// Enables use of Google Mobile services for non-synced password storage add for
-// users who have local passwords saved.
-BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
-
-// Helper function which returns the delay when the local passwords migration is
-// triggered after Chrome startup in seconds.
-int GetLocalPasswordsMigrationToAndroidBackendDelay();
-
 // Enables UPM M4 that no longer needs Password sync engine to sync passwords.
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerSyncOnlyInGMSCore);
 

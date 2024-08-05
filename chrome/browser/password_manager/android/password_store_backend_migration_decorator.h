@@ -19,6 +19,10 @@ namespace password_manager {
 
 class BuiltInBackendToAndroidBackendMigrator;
 
+// Exposed here for testing.
+inline constexpr base::TimeDelta kLocalPasswordsMigrationToAndroidBackendDelay =
+    base::Seconds(5);
+
 // This backend migrates local passwords from `built_in_backend` to
 // `android_backend`. Migration is scheduled after InitBackend() call. While
 // migration is ongoing password saving is suppressed. Before migration is

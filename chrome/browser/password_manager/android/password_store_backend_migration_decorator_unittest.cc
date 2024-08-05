@@ -559,9 +559,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   // Migration should be scheduled.
   EXPECT_EQ(1, GetPendingMainThreadTaskCount());
 
-  FastForwardBy(
-      base::Seconds(password_manager::features::
-                        GetLocalPasswordsMigrationToAndroidBackendDelay()));
+  FastForwardBy(kLocalPasswordsMigrationToAndroidBackendDelay);
   // Migration should be started by now.
   EXPECT_EQ(0, GetPendingMainThreadTaskCount());
 }
