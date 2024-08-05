@@ -232,6 +232,15 @@ BASE_FEATURE(kQuickAnswersMaterialNextUI,
              "QuickAnswersMaterialNextUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Quick Share v2, which defaults Quick Share to 'Your Devices'
+// visibility, removes the 'Selected Contacts' visibility, removes the Quick
+// Share On/Off toggle, and adds a visibility dialog menu to Quick Settings.
+BASE_FEATURE(kQuickShareV2, "QuickShareV2", base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsQuickShareV2Enabled() {
+  return base::FeatureList::IsEnabled(kQuickShareV2);
+}
+
 // Enables the Office files upload workflow to improve Office files support.
 BASE_FEATURE(kUploadOfficeToCloud,
              "UploadOfficeToCloud",

@@ -9,7 +9,6 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/multidevice/multidevice_section.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -795,7 +794,7 @@ void MultiDeviceSection::AddLoadTimeData(
       ash::features::IsFastPairSoftwareScanningSupportEnabled());
 
   html_source->AddBoolean("isQuickShareV2Enabled",
-                          ::features::IsQuickShareV2Enabled());
+                          chromeos::features::IsQuickShareV2Enabled());
 }
 
 void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {

@@ -15,6 +15,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 
 namespace ash {
 
@@ -43,12 +45,19 @@ class NearbyShareFeaturePodControllerTest : public NoSessionAshTestBase {
   void TearDown() override {
     tile_.reset();
     pod_controller_.reset();
+    scoped_feature_list_.Reset();
     NoSessionAshTestBase::TearDown();
   }
 
   bool IsButtonVisible() { return tile_->GetVisible(); }
 
   bool IsButtonToggled() { return tile_->IsToggled(); }
+
+  void EnableQuickShareV2() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kQuickShareV2},
+        /*disabled_features=*/{});
+  }
 
  protected:
   void SetUpButton() {
@@ -73,6 +82,8 @@ class NearbyShareFeaturePodControllerTest : public NoSessionAshTestBase {
   raw_ptr<TestNearbyShareDelegate, DanglingUntriaged> test_delegate_ = nullptr;
   raw_ptr<NearbyShareController, DanglingUntriaged> nearby_share_controller_ =
       nullptr;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisibilityNotLoggedIn) {
@@ -184,6 +195,70 @@ TEST_F(NearbyShareFeaturePodControllerTest, ButtonEnabledStateVisibility) {
   // If NearbyShareDelegate::IsEnabled() returns false, the button should
   // not be visible.
   EXPECT_FALSE(IsButtonVisible());
+}
+
+TEST_F(NearbyShareFeaturePodControllerTest,
+       QuickShareV2_ButtonToggledOnYourDevicesVisibility) {
+  EnableQuickShareV2();
+  CreateUserSessions(1);
+  // Default visibility is Your devices.
+  SetUpButton();
+  EXPECT_TRUE(IsButtonToggled());
+}
+
+TEST_F(NearbyShareFeaturePodControllerTest,
+       QuickShareV2_ButtonToggledOnContactsVisibility) {
+  EnableQuickShareV2();
+  CreateUserSessions(1);
+  test_delegate_->set_visibility(
+      ::nearby_share::mojom::Visibility::kAllContacts);
+  SetUpButton();
+  EXPECT_TRUE(IsButtonToggled());
+}
+
+TEST_F(NearbyShareFeaturePodControllerTest,
+       QuickShareV2_ButtonToggledOnSelectedContactsVisibility) {
+  EnableQuickShareV2();
+  CreateUserSessions(1);
+  test_delegate_->set_visibility(
+      ::nearby_share::mojom::Visibility::kSelectedContacts);
+  SetUpButton();
+  EXPECT_TRUE(IsButtonToggled());
+}
+
+TEST_F(NearbyShareFeaturePodControllerTest,
+       QuickShareV2_ButtonToggledOffHiddenVisibility) {
+  EnableQuickShareV2();
+  CreateUserSessions(1);
+  test_delegate_->set_visibility(::nearby_share::mojom::Visibility::kNoOne);
+  SetUpButton();
+  EXPECT_FALSE(IsButtonToggled());
+}
+
+TEST_F(NearbyShareFeaturePodControllerTest,
+       QuickShareV2_ButtonToggledOn_VisibilityChanged) {
+  EnableQuickShareV2();
+  CreateUserSessions(1);
+  test_delegate_->set_visibility(::nearby_share::mojom::Visibility::kNoOne);
+  SetUpButton();
+  EXPECT_FALSE(IsButtonToggled());
+
+  nearby_share_controller_->VisibilityChanged(
+      ::nearby_share::mojom::Visibility::kYourDevices);
+  EXPECT_TRUE(IsButtonToggled());
+}
+
+TEST_F(NearbyShareFeaturePodControllerTest,
+       QuickShareV2_ButtonToggledOff_VisibilityChanged) {
+  EnableQuickShareV2();
+  CreateUserSessions(1);
+  // Default visibility is Your devices.
+  SetUpButton();
+  EXPECT_TRUE(IsButtonToggled());
+
+  nearby_share_controller_->VisibilityChanged(
+      ::nearby_share::mojom::Visibility::kNoOne);
+  EXPECT_FALSE(IsButtonToggled());
 }
 
 }  // namespace ash

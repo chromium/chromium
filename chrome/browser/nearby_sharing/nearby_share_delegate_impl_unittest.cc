@@ -43,6 +43,10 @@ class MockSettingsOpener : public NearbyShareDelegateImpl::SettingsOpener {
 class MockNearbyShareController : public ash::NearbyShareController {
  public:
   MOCK_METHOD(void, HighVisibilityEnabledChanged, (bool), (override));
+  MOCK_METHOD(void,
+              VisibilityChanged,
+              (::nearby_share::mojom::Visibility),
+              (const override));
 };
 
 // TODO(crbug.com/1127940): Refactor these tests to avoid use of GMock.

@@ -22,6 +22,7 @@ source_set("common") {
   public_deps = [ "//base" ]
 
   deps = [
+    "//ash/constants",
     "//build:branding_buildflags",
     "//chrome/app:generated_resources",
     "//chromeos/ash/services/nearby/public/mojom",
