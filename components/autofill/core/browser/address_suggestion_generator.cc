@@ -770,14 +770,15 @@ std::optional<Suggestion> GetSuggestionForTestAddresses(
   }
   Suggestion suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_DEVELOPER_TOOLS),
                         SuggestionType::kDevtoolsTestAddresses);
+  suggestion.main_text.is_primary = Suggestion::Text::IsPrimary(false);
   suggestion.icon = Suggestion::Icon::kCode;
   suggestion.is_acceptable = false;
-  suggestion.apply_deactivated_style = true;
   suggestion.children.emplace_back(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_TEST_ADDRESS_BY_COUNTRY),
       SuggestionType::kDevtoolsTestAddressByCountry);
+  suggestion.children.back().main_text.is_primary =
+      Suggestion::Text::IsPrimary(false);
   suggestion.children.back().is_acceptable = false;
-  suggestion.children.back().apply_deactivated_style = true;
   suggestion.children.emplace_back(SuggestionType::kSeparator);
   for (const AutofillProfile& test_address : test_addresses) {
     const std::u16string test_address_country =
