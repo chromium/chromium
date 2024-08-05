@@ -74,7 +74,7 @@
 <translation id="1337912285145772892">Tilpas til scanningsområdet</translation>
 <translation id="1343442362630695901">saltsø</translation>
 <translation id="1367951781824006909">Vælg en fil</translation>
-<translation id="1371650399987522809">Feedback til baggrunde, der er baseret på Googles AI</translation>
+<translation id="1371650399987522809">Feedback til baggrunde, der er baseret på Google AI</translation>
 <translation id="1387854245479784695">Dette er den aggregerede værdi for alle kerner</translation>
 <translation id="1393206549145430405">et slot</translation>
 <translation id="1394661041439318933">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri i etuiet.</translation>
@@ -300,7 +300,7 @@
 <translation id="242825218556404975">Der blev ikke registreret indtaling</translation>
 <translation id="2446553403094072641">Nøjagtighed af flydende komma</translation>
 <translation id="2448312741937722512">Type</translation>
-<translation id="2472215337771558851">Brug "Hjælp mig med at skrive" til at oprette et udkast eller justere eksisterende tekstarbejde – baseret på Googles AI</translation>
+<translation id="2472215337771558851">Brug "Hjælp mig med at skrive" til at oprette et udkast eller justere eksisterende tekstarbejde – baseret på Google AI</translation>
 <translation id="2480572840229215612">krabber</translation>
 <translation id="248546197012830854">Enheden er offline. Opret forbindelse til et Wi-Fi-netværk for at se hjælpeindhold.</translation>
 <translation id="2486301288428798846">træ</translation>
@@ -355,7 +355,7 @@
 <translation id="2744221223678373668">Delte</translation>
 <translation id="2751739896257479635">EAP fase 2-godkendelse</translation>
 <translation id="2754757901767760034">en lampe</translation>
-<translation id="2780756493585863768">Seneste baggrunde baseret på Googles AI</translation>
+<translation id="2780756493585863768">Seneste baggrunde baseret på Google AI</translation>
 <translation id="2783010256799387990">GENNEMFØRT</translation>
 <translation id="2786429550992142861">linned</translation>
 <translation id="2787435249130282949">lysere tastatur</translation>
@@ -615,7 +615,7 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="4297501883039923494">Stoppet – Ukendt fejl</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> billeder</translation>
 <translation id="430786093962686457">chiffon</translation>
-<translation id="4310735698903592804">Nyeste baggrunde fra Googles AI</translation>
+<translation id="4310735698903592804">Nyeste baggrunde fra Google AI</translation>
 <translation id="4320904097188876154">neonlyserød</translation>
 <translation id="4333390807948134856">Du har trykket på tasten <ph name="KEY_NAME" /></translation>
 <translation id="4334293042716981313">Du kan også <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />skrive din egen prompt<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
@@ -1128,7 +1128,7 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
           Vælg "Lad mig inspirere" for at få mere unikke og varierede AI-billeder.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Når du opretter indhold ved hjælp af AI, sendes dine prompter til Googles AI-servere for at generere billeder og forbedre produktet i overensstemmelse med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles privatlivspolitik<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          Når du opretter indhold ved hjælp af AI, sendes dine prompter til Google AI-servere for at generere billeder og forbedre produktet i overensstemmelse med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles privatlivspolitik<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Generativ AI er eksperimentel, under udvikling og har i øjeblikket begrænset tilgængelighed.</translation>
@@ -1205,7 +1205,7 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="7331297744262591636">Du skal være mindst 18 år gammel, og du skal acceptere, at din brug af AI-baggrunde er underlagt <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Googles servicevilkår<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> og <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Yderligere servicevilkår for generativ AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Du kan kun oprette baggrunde med AI til personlig og ikke-kommerciel brug. Når du får hjælp til baggrunde, sendes teksten til Googles AI-servere for at generere forslag til baggrunde i overensstemmelse med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles privatlivspolitik<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
+          Du kan kun oprette baggrunde med AI til personlig og ikke-kommerciel brug. Når du får hjælp til baggrunde, sendes teksten til Google AI-servere for at generere forslag til baggrunde i overensstemmelse med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles privatlivspolitik<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tryk på søgetasten og mellemrumstasten for at se resultater i Google Søgning.</translation>
 <translation id="7343649194310845056">Netværksenheder</translation>
 <translation id="7344788170842919262">jordfarvede</translation>
@@ -1298,7 +1298,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="7849030488395653706">nordlys</translation>
 <translation id="7849737607196682401">blonde</translation>
 <translation id="7850320739366109486">Vil ikke forstyrres</translation>
-<translation id="7850847810298646851">Baggrund fra Googles AI</translation>
+<translation id="7850847810298646851">Baggrund fra Google AI</translation>
 <translation id="785170686607360576">tulipan</translation>
 <translation id="7856267634822906833">Bluetooth-touchskærm</translation>
 <translation id="7859006200041800233">kaktusblomst</translation>
@@ -1354,11 +1354,11 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">magisk</translation>
 <translation id="8162776280680283326">ræve</translation>
-<translation id="8167413449582155132">Baggrund baseret på Googles AI</translation>
-<translation id="8171020708598805594">Opret automatisk transskriptioner, få oversigter over optagelser ved hjælp af Googles AI, og søg efter lyd. Opret optagelser, selv når du ikke har forbindelse til internettet.</translation>
+<translation id="8167413449582155132">Baggrund baseret på Google AI</translation>
+<translation id="8171020708598805594">Opret automatisk transskriptioner, få oversigter over optagelser ved hjælp af Google AI, og søg efter lyd. Opret optagelser, selv når du ikke har forbindelse til internettet.</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">en strand</translation>
-<translation id="819278132617411009">Brug Googles AI til at blive mere produktiv</translation>
+<translation id="819278132617411009">Brug Google AI til at blive mere produktiv</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordele</translation>
 <translation id="8226628635270268143">Vælg dine foretrukne billeder og album</translation>
@@ -1407,7 +1407,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8431300646573772016">Nyt i ChromeOS</translation>
 <translation id="843568408673868420">Internetforbindelse</translation>
 <translation id="844521431886043384">DNS er ikke konfigureret</translation>
-<translation id="8456200178779628126">Brug Googles AI for at få hjælp til at læse og skrive</translation>
+<translation id="8456200178779628126">Brug Google AI for at få hjælp til at læse og skrive</translation>
 <translation id="8456761643544401578">Automatisk mørk tilstand</translation>
 <translation id="8461329675984532579">Navn på udbyder til hjem</translation>
 <translation id="8475690821716466388">Wi-Fi-netværket er beskyttet med den svage protokol WEP PSK</translation>
@@ -1426,7 +1426,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8522687886059337719">Du har nu adgang til nye <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />baggrunde<ph name="END_LINK_WALLPAPER_SUBPAGE" /> og <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />pauseskærme<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tehus</translation>
-<translation id="8538236298648811558">Baseret på Googles AI</translation>
+<translation id="8538236298648811558">Baseret på Google AI</translation>
 <translation id="8550364285433943656">Placer styringselementer på spilhandlinger, så du kan spille ved hjælp af tasterne</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Dit mobilselskab kræver muligvis denne tilladelse, for at du kan oprette forbindelse til mobilnetværket. Kontakt dit mobilselskab for at få flere oplysninger.</translation>
