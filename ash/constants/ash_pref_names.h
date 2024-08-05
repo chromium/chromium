@@ -2223,6 +2223,10 @@ inline constexpr char kDemoModeAppVersion[] = "demo_mode.app_version";
 inline constexpr char kDemoModeResourcesVersion[] =
     "demo_mode.resources_version";
 
+// A string list pref holding the collection of user intested perk IDs. The
+// values are used to filter campaign in growth framework.
+inline constexpr char kGrowthPerksInterested[] = "growth.perks";
+
 // A dictionary pref containing the set of touchpad settings for the user. This
 // is synced for all user devices.
 inline constexpr char kTouchpadInternalSettings[] =

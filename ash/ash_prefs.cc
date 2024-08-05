@@ -95,6 +95,7 @@
 #include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_util.h"
+#include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
@@ -189,6 +190,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   WallpaperTimeOfDayScheduler::RegisterProfilePrefs(registry);
   WallpaperPrefManager::RegisterProfilePrefs(registry);
   WindowCycleController::RegisterProfilePrefs(registry);
+  growth::CampaignsManager::RegisterProfilePrefs(registry);
 
   // Provide prefs registered in the browser for ash_unittests.
   if (for_test) {

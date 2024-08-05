@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/base64.h"
 #include "base/command_line.h"
@@ -22,6 +23,7 @@
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace growth {
@@ -115,6 +117,11 @@ base::Time GetOobeTimestampBackground() {
 CampaignsManager* CampaignsManager::Get() {
   DCHECK(g_instance);
   return g_instance;
+}
+
+// static
+void CampaignsManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterListPref(ash::prefs::kGrowthPerksInterested);
 }
 
 CampaignsManager::CampaignsManager(CampaignsManagerClient* client,
