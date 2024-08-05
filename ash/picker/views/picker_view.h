@@ -154,8 +154,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // If the query is empty, this calls `StopSearch` instead.
   void StartSearch();
 
-  // Stops any previous searches, and sets the active page to the zero state /
-  // category results view.
+  // Stops any previous searches and immediately sets the active page to the
+  // zero state / category results view, fetching category results if necessary.
   void StopSearch();
 
   // Displays `results` in the emoji bar.
@@ -227,6 +227,17 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // Should only be set to a value through `SelectCategory` and
   // `SelectCategoryWithQuery`.
   std::optional<PickerCategory> selected_category_;
+  // The category which `category_results_view_` has results for.
+  // Used for caching results if the user did not change their selected
+  // category.
+  // For example:
+  // - When a user starts a filtered search from a category's suggested results,
+  //   then clears the search query, the old suggested results are not cleared
+  //   as `last_suggested_results_category_ == selected_category_`.
+  // - When a user starts a non-filtered search from zero state, then filters
+  //   results to a category, then clears the search query, new results will be
+  //   fetched as the `last_suggested_results_category_ != selected_category_`.
+  std::optional<PickerCategory> last_suggested_results_category_;
 
   PickerKeyEventHandler key_event_handler_;
   PickerSubmenuController submenu_controller_;

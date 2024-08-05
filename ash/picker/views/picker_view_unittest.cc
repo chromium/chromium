@@ -43,7 +43,7 @@
 #include "ash/test/view_drawn_waiter.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -165,6 +165,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     std::vector<PickerSearchResult> zero_state_suggested_results;
     FakeSearchFunction search_function;
     base::RepeatingClosure stop_search_function;
+    FakeSearchFunction category_results_function;
     PickerActionType action_type = PickerActionType::kInsert;
     std::vector<PickerSearchResult> emoji_results;
     std::vector<std::string> suggested_emojis;
@@ -189,7 +190,11 @@ class FakePickerViewDelegate : public PickerViewDelegate {
 
   void GetResultsForCategory(PickerCategory category,
                              SearchResultsCallback callback) override {
-    callback.Run({});
+    if (options_.category_results_function.is_null()) {
+      std::move(callback).Run({});
+    } else {
+      options_.category_results_function.Run(std::move(callback));
+    }
   }
 
   void StartSearch(std::u16string_view query,
@@ -786,8 +791,51 @@ TEST_F(PickerViewTest, EmptySearchFieldSwitchesToCategoryViewFromSeeMore) {
   EXPECT_TRUE(picker_view->category_results_view_for_testing().GetVisible());
   EXPECT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
   EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
-  // The category view here currently does not display any results.
-  // TODO: b/356554503 - Fix this and write a test for it.
+}
+
+TEST_F(PickerViewTest, CategoryViewFromSeeMoreHasResults) {
+  FakePickerViewDelegate delegate(
+      {.search_function = base::BindLambdaForTesting(
+           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+             callback.Run({
+                 PickerSearchResultsSection(PickerSectionType::kLinks, {},
+                                            /*has_more_results=*/true),
+             });
+           }),
+       .category_results_function = base::BindLambdaForTesting(
+           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+             callback.Run({
+                 PickerSearchResultsSection(
+                     PickerSectionType::kLinks,
+                     {
+                         PickerSearchResult::Text(u"result"),
+                     },
+                     /*has_more_results=*/false),
+             });
+           })});
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  // Type something into the search field.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  // See more results.
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  views::View* trailing_link = picker_view->search_results_view_for_testing()
+                                   .section_views_for_testing()[0]
+                                   ->title_trailing_link_for_testing();
+  ViewDrawnWaiter().Wait(trailing_link);
+  LeftClickOn(trailing_link);
+  // Clear the search field.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
+
+  ASSERT_TRUE(picker_view->category_results_view_for_testing().GetVisible());
+  EXPECT_THAT(
+      picker_view->category_results_view_for_testing()
+          .section_views_for_testing(),
+      ElementsAre(Pointee(Property(
+          "item views", &PickerSectionView::item_views_for_testing,
+          ElementsAre(AsView<PickerListItemView>(Property(
+              "primary text", &PickerListItemView::GetPrimaryTextForTesting,
+              u"result")))))));
 }
 
 TEST_F(PickerViewTest,

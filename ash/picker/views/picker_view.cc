@@ -528,6 +528,17 @@ void PickerView::StopSearch() {
   delegate_->GetSessionMetrics().UpdateSearchQuery(u"");
   if (selected_category_.has_value()) {
     SetActivePage(category_results_view_);
+    if (last_suggested_results_category_ != selected_category_) {
+      // Getting suggested results for a category can be slow, so show a loading
+      // animation.
+      category_results_view_->ShowLoadingAnimation();
+      delegate_->GetResultsForCategory(
+          *selected_category_,
+          base::BindRepeating(&PickerView::PublishCategoryResults,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              *selected_category_));
+      last_suggested_results_category_ = selected_category_;
+    }
   } else {
     SetActivePage(zero_state_view_);
   }
@@ -644,19 +655,6 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
   search_field_view_->SetBackButtonVisible(true);
   SetEmojiBarVisibleIfEnabled(false);
   StartSearchWithNewQuery(std::u16string(query));
-
-  if (query.empty()) {
-    // Getting suggested results for a category can be slow, so show a loading
-    // animation.
-    category_results_view_->ShowLoadingAnimation();
-    CHECK_EQ(main_container_view_->active_page(), category_results_view_)
-        << "StartSearchWithNewQuery did not set active page to category "
-           "results";
-    delegate_->GetResultsForCategory(
-        category,
-        base::BindRepeating(&PickerView::PublishCategoryResults,
-                            weak_ptr_factory_.GetWeakPtr(), category));
-  }
 }
 
 void PickerView::PublishCategoryResults(
