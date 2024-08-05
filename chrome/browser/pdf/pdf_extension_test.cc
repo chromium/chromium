@@ -3841,11 +3841,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, DocumentBodyAppendIframe) {
 IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
                        PdfExtensionLoadedWhileOldPdfCloses) {
   const GURL main_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  auto* embedder_host1 = GetActiveWebContents()->GetPrimaryMainFrame();
 
   // Load a test PDF in the first tab.
   content::RenderFrameHost* extension_host1 = LoadPdfGetExtensionHost(main_url);
   ASSERT_TRUE(extension_host1);
+  auto* embedder_host1 = GetActiveWebContents()->GetPrimaryMainFrame();
   EXPECT_NE(embedder_host1, extension_host1);
 
   // Verify the extension loaded.
@@ -4035,7 +4035,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, MetricsPDFLoadStatusPartialLoad) {
                                PDFLoadStatus::kLoadedFullPagePdfWithPdfium, 0);
 
   auto* web_contents = GetActiveWebContents();
-  auto* primary_main_frame = web_contents->GetPrimaryMainFrame();
   const GURL main_url(embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
 
   // Delay the PDF extension navigation.
@@ -4048,6 +4047,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, MetricsPDFLoadStatusPartialLoad) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), main_url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  auto* primary_main_frame = web_contents->GetPrimaryMainFrame();
   test_pdf_viewer_stream_manager->WaitUntilPdfExtensionNavigationStarted(
       primary_main_frame);
 

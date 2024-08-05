@@ -8,6 +8,7 @@
 #include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -15,6 +16,7 @@
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
+
 namespace content {
 using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
 using NotRestoredReasons =
@@ -569,9 +571,17 @@ IN_PROC_BROWSER_TEST_F(
   // The reason is recorded and sent to the renderer.
   // TODO(crbug.com/40275090): BrowsingInstanceNotSwapped should not be reported
   // as internal-error.
+  std::optional<std::string> frame_attribute;
+  if (!ShouldCreateNewHostForAllFrames()) {
+    // Depending on whether the RenderFrameHost changed or not, the frame
+    // attributes will either be std::nullopt or an empty string, due to how the
+    // NotRestoredReasons object is created. Ultimately, this difference doesn't
+    // really matter that much as the difference is not web-exposed.
+    frame_attribute = "";
+  }
   auto reasons = MatchesNotRestoredReasons(
-      /*id=*/"",
-      /*name=*/"", /*src=*/"",
+      /*id=*/frame_attribute,
+      /*name=*/frame_attribute, /*src=*/frame_attribute,
       /*reasons=*/
       {MatchesDetailedReason("masked", /*source=*/std::nullopt)},
       MatchesSameOriginDetails(

@@ -329,8 +329,7 @@ TEST_F(PageSpecificContentSettingsTest, AllowlistJavaScript) {
 
   // PageSpecificContentSettingsDelegate::IsFrameAllowlistedForJavaScript() is
   // called once per navigation.
-  EXPECT_CALL(*mock_delegate, IsFrameAllowlistedForJavaScript(
-                                  web_contents()->GetPrimaryMainFrame()))
+  EXPECT_CALL(*mock_delegate, IsFrameAllowlistedForJavaScript(::testing::_))
       .Times(2)
       .WillOnce(testing::Return(false))
       .WillOnce(testing::Return(true));

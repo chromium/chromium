@@ -828,7 +828,9 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, DevtoolsEventsForEarlyHint) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   Attach();
-  SendCommandAsync("Network.enable");
+  // Send this synchronously, otherwise it might not be sent yet when the
+  // navigation start and the message sending gets suspended.
+  SendCommandSync("Network.enable");
   GURL target_url =
       net::QuicSimpleTestServer::GetFileURL(kPageWithHintedScriptPath);
   EXPECT_TRUE(NavigateToURL(shell(), target_url, target_url));

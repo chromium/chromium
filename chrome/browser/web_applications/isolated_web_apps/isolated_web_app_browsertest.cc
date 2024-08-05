@@ -729,9 +729,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
   app->TrustSigningKey();
   ASSERT_OK_AND_ASSIGN(auto url_info, app->Install(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
-
-  content::TestNavigationObserver navigation_observer(
-      content::WebContents::FromRenderFrameHost(app_frame));
+  content::WebContents* app_contents =
+      content::WebContents::FromRenderFrameHost(app_frame);
+  content::TestNavigationObserver navigation_observer(app_contents);
   ASSERT_TRUE(
       ExecJs(app_frame, content::JsReplace(R"(
           const blobSource = `
@@ -753,7 +753,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
   EXPECT_THAT(navigation_observer.last_net_error_code(), Eq(net::OK));
   EXPECT_THAT(navigation_observer.last_navigation_url().spec(),
               StartsWith("blob:" + url_info.origin().GetURL().spec()));
-
+  app_frame = app_contents->GetPrimaryMainFrame();
   EXPECT_THAT(EvalJs(app_frame, "location.href").ExtractString(),
               StartsWith("blob:"));
   EXPECT_THAT(EvalJs(app_frame, "window.origin"),
