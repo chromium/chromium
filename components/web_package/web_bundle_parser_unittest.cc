@@ -916,12 +916,11 @@ TEST_F(WebBundleParserTest, SignedBundleUnknownVersion) {
 }
 
 TEST_F(WebBundleParserTest, SignedBundleEmptySignatureStack) {
-  WebBundleBuilder builder;
-  std::vector<uint8_t> unsigned_bundle = builder.CreateBundle();
-  std::vector<uint8_t> signed_bundle(*cbor::Writer::Write(
-      WebBundleSigner::CreateIntegrityBlock(/*signature_stack=*/{})));
-  signed_bundle.insert(signed_bundle.end(), unsigned_bundle.begin(),
-                       unsigned_bundle.end());
+  std::vector<uint8_t> signed_bundle = WebBundleSigner::SignBundle(
+      WebBundleBuilder().CreateBundle(), /*key_pairs=*/{}, /*ib_attributes=*/{},
+      {/*integrity_block_errors=*/{
+           WebBundleSigner::IntegrityBlockErrorForTesting::kEmptySignatureList},
+       /*signatures_errors=*/{}});
   TestDataSource data_source(signed_bundle);
 
   EXPECT_THAT(ParseSignedBundleIntegrityBlock(&data_source),

@@ -193,21 +193,16 @@ class SignedWebBundleSignatureVerifierTestBase : public ::testing::Test {
     IdentityValidator::CreateInstanceForTesting();
   }
 
-  std::tuple<std::vector<uint8_t>, cbor::Value, size_t> CreateSignedWebBundle(
+  std::vector<uint8_t> CreateSignedWebBundle(
       const std::vector<WebBundleSigner::KeyPair>& key_pairs) {
     WebBundleBuilder builder;
     auto web_bundle = builder.CreateBundle();
-    auto integrity_block = WebBundleSigner::CreateIntegrityBlockForBundle(
+
+    return WebBundleSigner::SignBundle(
         web_bundle, key_pairs,
         /*ib_attributes=*/
         WebBundleSigner::IntegrityBlockAttributes(
             {.web_bundle_id = CreateForKeyPair(key_pairs[0]).id()}));
-    auto integrity_block_cbor = *cbor::Writer::Write(integrity_block);
-    std::vector<uint8_t> signed_web_bundle;
-    base::Extend(signed_web_bundle, integrity_block_cbor);
-    base::Extend(signed_web_bundle, web_bundle);
-    return std::make_tuple(signed_web_bundle, std::move(integrity_block),
-                           integrity_block_cbor.size());
   }
 
   base::FilePath WriteSignedWebBundleToDisk(
@@ -240,13 +235,12 @@ class SignedWebBundleSignatureVerifierTest
 
 TEST_P(SignedWebBundleSignatureVerifierTest, VerifySignatures) {
   const auto& key_pairs = std::get<0>(GetParam());
-  auto [signed_web_bundle, integrity_block, integrity_block_size] =
-      CreateSignedWebBundle(key_pairs);
+  auto signed_web_bundle = CreateSignedWebBundle(key_pairs);
   base::FilePath signed_web_bundle_path =
       WriteSignedWebBundleToDisk(signed_web_bundle);
   auto file = MakeWebBundleFile(signed_web_bundle_path);
-  auto parsed_integrity_block =
-      test::ParseIntegrityBlockFromValue(integrity_block);
+
+  auto parsed_integrity_block = test::ParseIntegrityBlock(signed_web_bundle);
 
   const auto& signatures = parsed_integrity_block.signature_stack().entries();
   ASSERT_EQ(signatures.size(), key_pairs.size());

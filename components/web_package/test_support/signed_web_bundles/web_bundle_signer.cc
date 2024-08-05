@@ -207,24 +207,11 @@ std::vector<uint8_t> SignMessage(
   return signature;
 }
 
-}  // namespace
-
-WebBundleSigner::ErrorsForTesting::ErrorsForTesting(
-    IntegrityBlockErrorsForTesting bundle_errors,
-    const std::vector<IntegritySignatureErrorsForTesting>& signatures_errors)
-    : integrity_block_errors(std::move(bundle_errors)),
-      signatures_errors(signatures_errors) {}
-
-WebBundleSigner::ErrorsForTesting::ErrorsForTesting(
-    const ErrorsForTesting& other) = default;
-WebBundleSigner::ErrorsForTesting& WebBundleSigner::ErrorsForTesting::operator=(
-    const ErrorsForTesting& other) = default;
-WebBundleSigner::ErrorsForTesting::~ErrorsForTesting() = default;
-
-cbor::Value WebBundleSigner::CreateIntegrityBlock(
+cbor::Value CreateIntegrityBlock(
     const cbor::Value::ArrayValue& signature_stack,
-    const std::optional<IntegrityBlockAttributes>& ib_attributes,
-    IntegrityBlockErrorsForTesting errors_for_testing) {
+    const std::optional<WebBundleSigner::IntegrityBlockAttributes>&
+        ib_attributes,
+    WebBundleSigner::IntegrityBlockErrorsForTesting errors_for_testing) {
   cbor::Value::ArrayValue integrity_block;
   // magic bytes
   integrity_block.emplace_back(kIntegrityBlockMagicBytes);
@@ -254,11 +241,12 @@ cbor::Value WebBundleSigner::CreateIntegrityBlock(
   return cbor::Value(integrity_block);
 }
 
-cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
+cbor::Value CreateIntegrityBlockForBundle(
     base::span<const uint8_t> unsigned_bundle,
-    const std::vector<KeyPair>& key_pairs,
-    const std::optional<IntegrityBlockAttributes>& ib_attributes,
-    ErrorsForTesting errors_for_testing) {
+    const std::vector<WebBundleSigner::KeyPair>& key_pairs,
+    const std::optional<WebBundleSigner::IntegrityBlockAttributes>&
+        ib_attributes,
+    WebBundleSigner::ErrorsForTesting errors_for_testing) {
   CHECK(errors_for_testing.signatures_errors.empty() ||
         errors_for_testing.signatures_errors.size() == key_pairs.size());
   auto use_signatures_errors = !errors_for_testing.signatures_errors.empty();
@@ -306,11 +294,31 @@ cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
                               errors_for_testing.integrity_block_errors);
 }
 
+}  // namespace
+
+WebBundleSigner::ErrorsForTesting::ErrorsForTesting(
+    IntegrityBlockErrorsForTesting bundle_errors,
+    const std::vector<IntegritySignatureErrorsForTesting>& signatures_errors)
+    : integrity_block_errors(std::move(bundle_errors)),
+      signatures_errors(signatures_errors) {}
+
+WebBundleSigner::ErrorsForTesting::ErrorsForTesting(
+    const ErrorsForTesting& other) = default;
+WebBundleSigner::ErrorsForTesting& WebBundleSigner::ErrorsForTesting::operator=(
+    const ErrorsForTesting& other) = default;
+WebBundleSigner::ErrorsForTesting::~ErrorsForTesting() = default;
+
 std::vector<uint8_t> WebBundleSigner::SignBundle(
     base::span<const uint8_t> unsigned_bundle,
     const std::vector<KeyPair>& key_pairs,
     const std::optional<IntegrityBlockAttributes>& ib_attributes,
     ErrorsForTesting errors_for_testing) {
+  CHECK(!key_pairs.empty() !=
+        errors_for_testing.integrity_block_errors.Has(
+            IntegrityBlockErrorForTesting::kEmptySignatureList))
+      << "At least one signing key must be specified unless overriden by "
+         "IntegrityBlockErrorForTesting::kEmptySignatureList.";
+
   std::optional<std::vector<uint8_t>> integrity_block =
       cbor::Writer::Write(CreateIntegrityBlockForBundle(
           unsigned_bundle, key_pairs, ib_attributes, errors_for_testing));

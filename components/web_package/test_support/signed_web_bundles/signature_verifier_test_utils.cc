@@ -4,10 +4,13 @@
 
 #include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 
+#include "base/check_op.h"
 #include "base/containers/map_util.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/test/test_future.h"
+#include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/constants.h"
@@ -125,6 +128,16 @@ SignedWebBundleIntegrityBlock ParseIntegrityBlockFromValue(
       web_bundle_id, *cbor::Writer::Write(cbor::Value(attributes)));
 
   return *SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block));
+}
+
+SignedWebBundleIntegrityBlock ParseIntegrityBlock(
+    base::span<const uint8_t> swbn) {
+  // The size of the bundle itself is written in big endian in the last 8 bytes.
+  uint32_t bundle_size =
+      base::checked_cast<uint32_t>(base::U64FromBigEndian(swbn.last<8>()));
+  CHECK_LT(bundle_size, swbn.size());
+  uint32_t ib_size = swbn.size() - bundle_size;
+  return ParseIntegrityBlockFromValue(*cbor::Reader::Read(swbn.first(ib_size)));
 }
 
 base::expected<void, SignedWebBundleSignatureVerifier::Error> VerifySignatures(

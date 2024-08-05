@@ -42,6 +42,9 @@ mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
 SignedWebBundleIntegrityBlock ParseIntegrityBlockFromValue(
     const cbor::Value& integrity_block);
 
+SignedWebBundleIntegrityBlock ParseIntegrityBlock(
+    base::span<const uint8_t> swbn);
+
 base::expected<void, SignedWebBundleSignatureVerifier::Error> VerifySignatures(
     const SignedWebBundleSignatureVerifier& signature_verifier,
     const base::File& file,

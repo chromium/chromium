@@ -26,7 +26,8 @@ class WebBundleSigner {
     kMinValue = 0,
     kInvalidIntegrityBlockStructure = kMinValue,
     kInvalidVersion,
-    kMaxValue = kInvalidVersion
+    kEmptySignatureList,
+    kMaxValue = kEmptySignatureList
   };
 
   enum class IntegritySignatureErrorForTesting {
@@ -117,19 +118,6 @@ class WebBundleSigner {
   struct IntegrityBlockAttributes {
     std::string web_bundle_id;
   };
-
-  // Creates an integrity block with the given signature stack entries.
-  static cbor::Value CreateIntegrityBlock(
-      const cbor::Value::ArrayValue& signature_stack,
-      const std::optional<IntegrityBlockAttributes>& ib_attributes = {},
-      IntegrityBlockErrorsForTesting errors_for_testing = {});
-
-  static cbor::Value CreateIntegrityBlockForBundle(
-      base::span<const uint8_t> unsigned_bundle,
-      const std::vector<KeyPair>& key_pairs,
-      const std::optional<IntegrityBlockAttributes>& ib_attributes = {},
-      ErrorsForTesting errors_for_testing = {/*integrity_block_errors=*/{},
-                                             /*signatures_errors=*/{}});
 
   // Signs an unsigned bundle with the given key pairs.
   // Signatures do not depend on each other and co-exist in parallel.
