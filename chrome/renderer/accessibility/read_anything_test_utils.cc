@@ -57,4 +57,11 @@ ui::AXNodeData ExplicitlyEmptyTextNode(int id) {
   return node;
 }
 
+ui::AXNodeData LinkNode(int id, std::string url) {
+  ui::AXNodeData node;
+  node.id = id;
+  node.AddStringAttribute(ax::mojom::StringAttribute::kUrl, url);
+  return node;
+}
+
 }  // namespace test

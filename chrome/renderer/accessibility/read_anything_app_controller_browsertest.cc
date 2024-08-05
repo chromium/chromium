@@ -121,6 +121,11 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   ReadAnythingAppControllerTest& operator=(
       const ReadAnythingAppControllerTest&) = delete;
 
+  const std::string DOCS_URL =
+      "https://docs.google.com/document/d/"
+      "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
+      "edit?ouid=103677288878638916900&usp=docs_home&ths=true";
+
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
     content::RenderFrame* render_frame =
@@ -934,13 +939,7 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_SvgReturnsDivIfGoogleDocs) {
   node.id = 2;
   node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, svg);
 
-  ui::AXNodeData root;
-  root.id = 1;
-  root.AddStringAttribute(
-      ax::mojom::StringAttribute::kUrl,
-      "https://docs.google.com/document/d/"
-      "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
-      "edit?ouid=103677288878638916900&usp=docs_home&ths=true");
+  ui::AXNodeData root = test::LinkNode(/* id= */ 1, DOCS_URL);
   root.child_ids = {node.id};
   update.nodes = {root, node};
   update.root_id = root.id;
@@ -969,14 +968,8 @@ TEST_F(ReadAnythingAppControllerTest,
   svg_node.id = 3;
   svg_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, g);
 
-  ui::AXNodeData root;
+  ui::AXNodeData root = test::LinkNode(/* id= */ 1, DOCS_URL);
   root.role = ax::mojom::Role::kParagraph;
-  root.id = 1;
-  root.AddStringAttribute(
-      ax::mojom::StringAttribute::kUrl,
-      "https://docs.google.com/document/d/"
-      "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
-      "edit?ouid=103677288878638916900&usp=docs_home&ths=true");
   root.child_ids = {paragraph_node.id, svg_node.id};
   update.root_id = root.id;
   update.nodes = {root, paragraph_node, svg_node};
@@ -1212,13 +1205,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXNodeData node1 = test::TextNode(/* id= */ 2, u"Hello");
   ui::AXNodeData node2 = test::ExplicitlyEmptyTextNode(/* id= */ 3);
 
-  ui::AXNodeData root;
-  root.id = 1;
-  root.AddStringAttribute(
-      ax::mojom::StringAttribute::kUrl,
-      "https://docs.google.com/document/d/"
-      "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
-      "edit?ouid=103677288878638916900&usp=docs_home&ths=true");
+  ui::AXNodeData root = test::LinkNode(/* id= */ 1, DOCS_URL);
   root.child_ids = {node1.id, node2.id};
   root.role = ax::mojom::Role::kParagraph;
   update.root_id = root.id;
@@ -1248,13 +1235,7 @@ TEST_F(ReadAnythingAppControllerTest,
   node2.id = 3;
   node2.AddStringAttribute(ax::mojom::StringAttribute::kName,
                            more_text_content);
-  ui::AXNodeData root;
-  root.id = 1;
-  root.AddStringAttribute(
-      ax::mojom::StringAttribute::kUrl,
-      "https://docs.google.com/document/d/"
-      "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
-      "edit?ouid=103677288878638916900&usp=docs_home&ths=true");
+  ui::AXNodeData root = test::LinkNode(/* id= */ 1, DOCS_URL);
   root.child_ids = {node1.id, node2.id};
   root.role = ax::mojom::Role::kParagraph;
   update.root_id = root.id;
@@ -1286,10 +1267,7 @@ TEST_F(ReadAnythingAppControllerTest,
   node2.AddStringAttribute(ax::mojom::StringAttribute::kName,
                            more_text_content);
 
-  ui::AXNodeData root;
-  root.id = 1;
-  root.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
-                          "https://www.google.com/");
+  ui::AXNodeData root = test::LinkNode(/* id= */ 1, "https://www.google.com");
   root.child_ids = {node1.id, node2.id};
   root.role = ax::mojom::Role::kParagraph;
   update.root_id = root.id;
@@ -1322,25 +1300,11 @@ TEST_F(ReadAnythingAppControllerTest, GetUrl) {
   std::string missing_url = "";
   std::string js = "javascript:alert(origin)";
 
-  ui::AXNodeData node1;
-  node1.id = 2;
-  node1.AddStringAttribute(ax::mojom::StringAttribute::kUrl, http_url);
-
-  ui::AXNodeData node2;
-  node2.id = 3;
-  node2.AddStringAttribute(ax::mojom::StringAttribute::kUrl, https_url);
-
-  ui::AXNodeData node3;
-  node3.id = 4;
-  node3.AddStringAttribute(ax::mojom::StringAttribute::kUrl, invalid_url);
-
-  ui::AXNodeData node4;
-  node4.id = 5;
-  node4.AddStringAttribute(ax::mojom::StringAttribute::kUrl, missing_url);
-
-  ui::AXNodeData node5;
-  node5.id = 6;
-  node5.AddStringAttribute(ax::mojom::StringAttribute::kUrl, js);
+  ui::AXNodeData node1 = test::LinkNode(/* id= */ 2, http_url);
+  ui::AXNodeData node2 = test::LinkNode(/*id= */ 3, https_url);
+  ui::AXNodeData node3 = test::LinkNode(/* id= */ 4, invalid_url);
+  ui::AXNodeData node4 = test::LinkNode(/* id= */ 5, missing_url);
+  ui::AXNodeData node5 = test::LinkNode(/* id= */ 6, js);
 
   ui::AXNodeData root;
   root.id = 1;
@@ -1513,13 +1477,7 @@ TEST_F(ReadAnythingAppControllerTest, Draw_DoNotRecomputeDisplayNodesForDocs) {
   ui::AXNodeData node;
   node.id = 2;
 
-  ui::AXNodeData root;
-  root.id = 1;
-  root.AddStringAttribute(
-      ax::mojom::StringAttribute::kUrl,
-      "https://docs.google.com/document/d/"
-      "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
-      "edit?ouid=103677288878638916900&usp=docs_home&ths=true");
+  ui::AXNodeData root = test::LinkNode(/* id= */ 1, DOCS_URL);
   root.child_ids = {node.id};
   update.nodes = {root, node};
   update.root_id = root.id;
@@ -1726,9 +1684,7 @@ TEST_F(ReadAnythingAppControllerTest, IsGoogleDocs) {
   test::SetUpdateTreeID(&update, id_1);
   update.root_id = 1;
 
-  ui::AXNodeData node;
-  node.id = 1;
-  node.AddStringAttribute(ax::mojom::StringAttribute::kUrl, "www.google.com");
+  ui::AXNodeData node = test::LinkNode(/*id = */ 1, "www.google.com");
   update.nodes = {node};
   AccessibilityEventReceived({update});
   EXPECT_TRUE(IsUrlInformationSet(id_1));
@@ -1741,13 +1697,7 @@ TEST_F(ReadAnythingAppControllerTest, IsGoogleDocs) {
 
   ui::AXTreeUpdate update_1;
   test::SetUpdateTreeID(&update_1, tree_id_);
-  ui::AXNodeData root;
-  root.id = 1;
-  root.AddStringAttribute(
-      ax::mojom::StringAttribute::kUrl,
-      "https://docs.google.com/document/d/"
-      "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
-      "edit?ouid=103677288878638916900&usp=docs_home&ths=true");
+  ui::AXNodeData root = test::LinkNode(/*id = */ 1, DOCS_URL);
   update_1.root_id = root.id;
   update_1.nodes = {root};
   AccessibilityEventReceived({update_1});

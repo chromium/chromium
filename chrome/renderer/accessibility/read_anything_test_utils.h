@@ -18,6 +18,7 @@ ui::AXNodeData TextNode(int id, std::u16string text_content);
 ui::AXNodeData TextNode(int id);
 ui::AXNodeData TextNodeWithTextFromId(int id);
 ui::AXNodeData ExplicitlyEmptyTextNode(int id);
+ui::AXNodeData LinkNode(int id, std::string url);
 
 }  // namespace test
 
