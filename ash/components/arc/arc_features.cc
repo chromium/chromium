@@ -8,6 +8,12 @@
 
 namespace arc {
 
+// When enabled, the versions of ChromeOS and ARC are exchanged during
+// handshake. This feature reduces unnecessary inter-process communications.
+BASE_FEATURE(kArcExchangeVersionOnMojoHandshake,
+             "ArcExchangeVersionOnMojoHandshake",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to always start ARC automatically, or wait for the user's
 // action to start it later in an on-demand manner. Already enabled by default
 // for managed users. In V2, it will be expand to more users such as unmanaged
