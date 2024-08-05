@@ -178,8 +178,7 @@ double ParseToDoubleForNumberType(const String& string, double fallback_value) {
 template <typename CharacterType>
 static bool ParseHTMLIntegerInternal(const CharacterType* position,
                                      const CharacterType* end,
-                                     int& value) {
-}
+                                     int& value) {}
 
 // http://www.whatwg.org/specs/web-apps/current-work/#rules-for-parsing-integers
 bool ParseHTMLInteger(const String& input, int& value) {
@@ -189,29 +188,30 @@ bool ParseHTMLInteger(const String& input, int& value) {
   if (length == 0)
     return false;
 
-  return WTF::VisitCharacters(
-      input, [&](const auto* position, unsigned length) {
-        using CharacterType = std::decay_t<decltype(*position)>;
-        const auto* end = position + length;
+  return WTF::VisitCharacters(input, [&](const auto* position,
+                                         unsigned length) {
+    using CharacterType = std::decay_t<decltype(*position)>;
+    const auto* end = position + length;
 
-        // Step 4
-        SkipWhile<CharacterType, IsHTMLSpace<CharacterType>>(position, end);
+    // Step 4
+    SkipWhile<CharacterType, IsHTMLSpace<CharacterType>>(position, end);
 
-        // Step 5
-        if (position == end)
-          return false;
-        DCHECK_LT(position, end);
+    // Step 5
+    if (position == end) {
+      return false;
+    }
+    DCHECK_LT(position, end);
 
-        bool ok;
-        constexpr auto kOptions = WTF::NumberParsingOptions()
-                                      .SetAcceptTrailingGarbage()
-                                      .SetAcceptLeadingPlus();
-        int wtf_value =
-            CharactersToInt(position, end - position, kOptions, &ok);
-        if (ok)
-          value = wtf_value;
-        return ok;
-      });
+    bool ok;
+    constexpr auto kOptions = WTF::NumberParsingOptions()
+                                  .SetAcceptTrailingGarbage()
+                                  .SetAcceptLeadingPlus();
+    int wtf_value = CharactersToInt(position, end - position, kOptions, &ok);
+    if (ok) {
+      value = wtf_value;
+    }
+    return ok;
+  });
 }
 
 static WTF::NumberParsingResult ParseHTMLNonNegativeIntegerInternal(
@@ -444,8 +444,9 @@ inline StringImpl* FindStringIfStatic(const CharType* characters,
   // We don't need to try hashing if we know the string is too long.
   if (length > StringImpl::HighestStaticStringLength())
     return nullptr;
-  // computeHashAndMaskTop8Bits is the function StringImpl::hash() uses.
-  unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(characters, length);
+  // ComputeHashAndMaskTop8Bits is the function StringImpl::Hash() uses.
+  unsigned hash =
+      StringHasher::ComputeHashAndMaskTop8Bits((const char*)characters, length);
   const WTF::StaticStringsTable& table = StringImpl::AllStaticStrings();
   DCHECK(!table.empty());
 

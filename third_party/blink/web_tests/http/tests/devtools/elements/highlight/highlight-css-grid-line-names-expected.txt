@@ -387,26 +387,6 @@ grid-with-line-names{
         {
           "x": 0,
           "y": 205,
-          "name": "article"
-        },
-        {
-          "x": 0,
-          "y": 0,
-          "name": "header"
-        },
-        {
-          "x": 0,
-          "y": 205,
-          "name": "main"
-        },
-        {
-          "x": 0,
-          "y": 830,
-          "name": "end"
-        },
-        {
-          "x": 0,
-          "y": 205,
           "name": "section"
         },
         {
@@ -421,15 +401,40 @@ grid-with-line-names{
         },
         {
           "x": 0,
+          "y": 830,
+          "name": "end"
+        },
+        {
+          "x": 0,
           "y": 205,
           "name": "images"
+        },
+        {
+          "x": 0,
+          "y": 205,
+          "name": "article"
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "name": "header"
+        },
+        {
+          "x": 0,
+          "y": 205,
+          "name": "main"
         }
       ],
       "columnLineNameOffsets": [
         {
-          "x": 105,
+          "x": 640,
           "y": 0,
-          "name": "header"
+          "name": "fullpage-end"
+        },
+        {
+          "x": 615,
+          "y": 0,
+          "name": "content-end"
         },
         {
           "x": 105,
@@ -437,19 +442,14 @@ grid-with-line-names{
           "name": "content-start"
         },
         {
-          "x": 640,
+          "x": 105,
           "y": 0,
-          "name": "fullpage-end"
+          "name": "header"
         },
         {
           "x": 0,
           "y": 0,
           "name": "fullpage-start"
-        },
-        {
-          "x": 615,
-          "y": 0,
-          "name": "content-end"
         }
       ],
       "gridBorder": [

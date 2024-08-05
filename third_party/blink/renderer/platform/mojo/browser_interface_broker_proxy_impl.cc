@@ -23,7 +23,7 @@ struct InterfaceNameHashTranslator {
   static unsigned GetHash(std::string_view s) {
     const LChar* data = reinterpret_cast<const LChar*>(s.data());
     unsigned size = base::checked_cast<unsigned>(s.size());
-    return StringHasher::ComputeHash<LChar>(data, size);
+    return StringHasher::HashMemory(data, size);
   }
 
   static bool Equal(const String& a, std::string_view b) {

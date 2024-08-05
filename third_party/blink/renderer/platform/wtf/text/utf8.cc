@@ -365,28 +365,26 @@ ConversionResult ConvertUTF8ToUTF16(const char** source_start,
   return result;
 }
 
-unsigned CalculateStringHashAndLengthFromUTF8MaskingTop8Bits(
-    const char* data,
-    const char* data_end,
-    unsigned& data_length,
-    unsigned& utf16_length) {
+unsigned CalculateStringLengthFromUTF8(const char* data,
+                                       const char*& data_end,
+                                       bool& seen_non_ascii,
+                                       bool& seen_non_latin1) {
+  seen_non_ascii = false;
+  seen_non_latin1 = false;
   if (!data)
     return 0;
 
-  StringHasher string_hasher;
-  data_length = 0;
-  utf16_length = 0;
+  unsigned utf16_length = 0;
 
   while (data < data_end || (!data_end && *data)) {
     if (IsASCII(*data)) {
-      string_hasher.AddCharacter(*data++);
-      data_length++;
+      ++data;
       utf16_length++;
       continue;
     }
 
+    seen_non_ascii = true;
     int utf8_sequence_length = InlineUTF8SequenceLengthNonASCII(*data);
-    data_length += utf8_sequence_length;
 
     if (!data_end) {
       for (int i = 1; i < utf8_sequence_length; ++i) {
@@ -404,22 +402,24 @@ unsigned CalculateStringHashAndLengthFromUTF8MaskingTop8Bits(
     UChar32 character = ReadUTF8Sequence(data, utf8_sequence_length);
     DCHECK(!IsASCII(character));
 
+    if (character > 0xff) {
+      seen_non_latin1 = true;
+    }
+
     if (U_IS_BMP(character)) {
       // UTF-16 surrogate values are illegal in UTF-32
       if (U_IS_SURROGATE(character))
         return 0;
-      string_hasher.AddCharacter(static_cast<UChar>(character));  // normal case
       utf16_length++;
     } else if (U_IS_SUPPLEMENTARY(character)) {
-      string_hasher.AddCharacters(static_cast<UChar>(U16_LEAD(character)),
-                                  static_cast<UChar>(U16_TRAIL(character)));
       utf16_length += 2;
     } else {
       return 0;
     }
   }
 
-  return string_hasher.HashWithTop8BitsMasked();
+  data_end = data;
+  return utf16_length;
 }
 
 template <typename CharType>

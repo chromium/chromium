@@ -253,8 +253,7 @@ StringImpl* StringImpl::CreateStatic(const char* string, wtf_size_t length) {
   DCHECK(string);
   DCHECK(length);
 
-  unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(
-      reinterpret_cast<const LChar*>(string), length);
+  unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(string, length);
 
   StaticStringsTable::const_iterator it = StaticStrings().find(hash);
   if (it != StaticStrings().end()) {
