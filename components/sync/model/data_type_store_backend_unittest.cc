@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/model/model_type_store_backend.h"
+#include "components/sync/model/data_type_store_backend.h"
 
 #include <utility>
 
@@ -10,7 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
-#include "components/sync/protocol/model_type_store_schema_descriptor.pb.h"
+#include "components/sync/protocol/data_type_store_schema_descriptor.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/env_chromium.h"

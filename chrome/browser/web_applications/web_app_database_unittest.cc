@@ -47,7 +47,7 @@
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"

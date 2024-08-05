@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/model/blocking_model_type_store_impl.h"
+#include "components/sync/model/blocking_data_type_store_impl.h"
 
 #include <optional>
 #include <utility>
@@ -14,7 +14,7 @@
 #include "base/strings/strcat.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_store_backend.h"
+#include "components/sync/model/data_type_store_backend.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "third_party/leveldatabase/src/include/leveldb/env.h"

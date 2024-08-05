@@ -9,7 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/service/data_type_controller.h"
 
 namespace syncer {

@@ -25,7 +25,7 @@
 #include "chromeos/ash/components/standalone_browser/fake_migration_progress_tracker.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/storage_type.h"
-#include "components/sync/model/blocking_model_type_store_impl.h"
+#include "components/sync/model/blocking_data_type_store_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"

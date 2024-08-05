@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_SERVICE_IMPL_H_
-#define COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_SERVICE_IMPL_H_
+#ifndef COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_SERVICE_IMPL_H_
+#define COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_SERVICE_IMPL_H_
 
 #include <optional>
 
@@ -12,8 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_store_service.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_service.h"
 
 class PrefService;
 
@@ -68,4 +68,4 @@ class ModelTypeStoreServiceImpl : public ModelTypeStoreService {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_SERVICE_IMPL_H_
+#endif  // COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_SERVICE_IMPL_H_

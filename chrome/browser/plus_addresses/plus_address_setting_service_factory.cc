@@ -9,10 +9,10 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "chrome/browser/sync/model_type_store_service_factory.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "components/plus_addresses/settings/plus_address_setting_service_impl.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_bridge.h"
-#include "components/sync/model/model_type_store_service.h"
+#include "components/sync/model/data_type_store_service.h"
 
 // static
 PlusAddressSettingServiceFactory*

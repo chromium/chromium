@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SYNC_MODEL_MODEL_TYPE_STORE_SERVICE_FACTORY_H_
-#define IOS_CHROME_BROWSER_SYNC_MODEL_MODEL_TYPE_STORE_SERVICE_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_SYNC_MODEL_DATA_TYPE_STORE_SERVICE_FACTORY_H_
+#define IOS_CHROME_BROWSER_SYNC_MODEL_DATA_TYPE_STORE_SERVICE_FACTORY_H_
 
 #include <memory>
 
@@ -38,4 +38,4 @@ class ModelTypeStoreServiceFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
 };
 
-#endif  // IOS_CHROME_BROWSER_SYNC_MODEL_MODEL_TYPE_STORE_SERVICE_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_SYNC_MODEL_DATA_TYPE_STORE_SERVICE_FACTORY_H_

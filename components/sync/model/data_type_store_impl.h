@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_IMPL_H_
-#define COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_IMPL_H_
+#ifndef COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_IMPL_H_
+#define COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_IMPL_H_
 
 #include <memory>
 
@@ -13,7 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/storage_type.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 
 namespace syncer {
 
@@ -91,4 +91,4 @@ class ModelTypeStoreImpl : public ModelTypeStore {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_IMPL_H_
+#endif  // COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_IMPL_H_

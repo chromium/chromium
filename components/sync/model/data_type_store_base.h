@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_BASE_H_
-#define COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_BASE_H_
+#ifndef COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_BASE_H_
+#define COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_BASE_H_
 
 #include <compare>
 #include <memory>
@@ -74,4 +74,4 @@ class ModelTypeStoreBase {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_BASE_H_
+#endif  // COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_BASE_H_

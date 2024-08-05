@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_H_
-#define COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_H_
+#ifndef COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_H_
+#define COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_H_
 
 #include <memory>
 #include <optional>
@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_store_base.h"
+#include "components/sync/model/data_type_store_base.h"
 
 namespace syncer {
 
@@ -117,4 +117,4 @@ using OnceModelTypeStoreFactory =
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_H_
+#endif  // COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_H_

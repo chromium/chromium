@@ -16,7 +16,7 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/browser_process.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/sync/model_type_store_service_factory.h",
+  "+chrome/browser/sync/data_type_store_service_factory.h",
   "+chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h",
   "+chrome/common/channel_info.h",
   "+chrome/common/pref_names.h",

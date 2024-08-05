@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_WITH_IN_MEMORY_CACHE_H_
-#define COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_WITH_IN_MEMORY_CACHE_H_
+#ifndef COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_WITH_IN_MEMORY_CACHE_H_
+#define COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_WITH_IN_MEMORY_CACHE_H_
 
 #include <map>
 #include <memory>
@@ -12,8 +12,8 @@
 #include "base/functional/callback_forward.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_store_base.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_base.h"
 
 namespace syncer {
 
@@ -109,4 +109,4 @@ class ModelTypeStoreWithInMemoryCache {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_WITH_IN_MEMORY_CACHE_H_
+#endif  // COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_WITH_IN_MEMORY_CACHE_H_

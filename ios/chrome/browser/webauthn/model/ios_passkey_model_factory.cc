@@ -9,12 +9,12 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/password_manager/core/browser/affiliation/passkey_affiliation_source_adapter.h"
 #include "components/sync/base/features.h"
-#include "components/sync/model/model_type_store_service.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "components/webauthn/core/browser/passkey_sync_bridge.h"
 #include "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
+#include "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #include "ios/web/public/browser_state.h"
 
 // static

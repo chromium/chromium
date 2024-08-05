@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/model/model_type_store_impl.h"
+#include "components/sync/model/data_type_store_impl.h"
 
 #include <map>
 #include <optional>
@@ -14,7 +14,7 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "components/sync/model/blocking_model_type_store_impl.h"
+#include "components/sync/model/blocking_data_type_store_impl.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
 

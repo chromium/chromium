@@ -15,8 +15,8 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_controller_delegate.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
-#include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/plus_address_setting_specifics.pb.h"
 
 namespace plus_addresses {

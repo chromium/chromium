@@ -17,7 +17,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/data_type_local_change_processor.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_util.h"
 

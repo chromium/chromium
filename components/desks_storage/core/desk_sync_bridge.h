@@ -21,8 +21,8 @@
 #include "components/account_id/account_id.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
-#include "components/sync/model/model_type_store.h"
 
 namespace syncer {
 class DataTypeLocalChangeProcessor;

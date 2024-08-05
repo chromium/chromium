@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/model/model_type_store_service_impl.h"
+#include "components/sync/model/data_type_store_service_impl.h"
 
 #include <memory>
 #include <string>
@@ -22,9 +22,9 @@
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/storage_type.h"
-#include "components/sync/model/blocking_model_type_store_impl.h"
-#include "components/sync/model/model_type_store_backend.h"
-#include "components/sync/model/model_type_store_impl.h"
+#include "components/sync/model/blocking_data_type_store_impl.h"
+#include "components/sync/model/data_type_store_backend.h"
+#include "components/sync/model/data_type_store_impl.h"
 
 namespace syncer {
 namespace {

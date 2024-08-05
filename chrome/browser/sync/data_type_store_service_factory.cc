@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/model_type_store_service_factory.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "components/sync/model/model_type_store_service_impl.h"
+#include "components/sync/model/data_type_store_service_impl.h"
 
 // static
 ModelTypeStoreServiceFactory* ModelTypeStoreServiceFactory::GetInstance() {

@@ -9,7 +9,7 @@
 
 #include "chrome/browser/android/webapk/webapk_database.h"
 #include "chrome/browser/android/webapk/webapk_database_factory.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 
 namespace webapk {
 

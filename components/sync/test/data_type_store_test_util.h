@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_TEST_MODEL_TYPE_STORE_TEST_UTIL_H_
-#define COMPONENTS_SYNC_TEST_MODEL_TYPE_STORE_TEST_UTIL_H_
+#ifndef COMPONENTS_SYNC_TEST_DATA_TYPE_STORE_TEST_UTIL_H_
+#define COMPONENTS_SYNC_TEST_DATA_TYPE_STORE_TEST_UTIL_H_
 
 #include <memory>
 
 #include "components/sync/base/storage_type.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 
 namespace syncer {
 
@@ -38,4 +38,4 @@ class ModelTypeStoreTestUtil {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_TEST_MODEL_TYPE_STORE_TEST_UTIL_H_
+#endif  // COMPONENTS_SYNC_TEST_DATA_TYPE_STORE_TEST_UTIL_H_

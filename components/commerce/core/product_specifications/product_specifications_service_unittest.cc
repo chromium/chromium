@@ -30,8 +30,8 @@
 #include "components/sync/base/unique_position.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
+#include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

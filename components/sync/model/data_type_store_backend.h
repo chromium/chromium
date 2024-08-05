@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_BACKEND_H_
-#define COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_BACKEND_H_
+#ifndef COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_BACKEND_H_
+#define COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_BACKEND_H_
 
 #include <memory>
 #include <optional>
@@ -16,7 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace leveldb {
@@ -188,4 +188,4 @@ class ModelTypeStoreBackend
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_BACKEND_H_
+#endif  // COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_BACKEND_H_

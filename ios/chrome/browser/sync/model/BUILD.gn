@@ -150,8 +150,8 @@ source_set("sync_invalidations_service_factory") {
 
 source_set("model_type_store_service_factory") {
   sources = [
-    "model_type_store_service_factory.cc",
-    "model_type_store_service_factory.h",
+    "data_type_store_service_factory.cc",
+    "data_type_store_service_factory.h",
   ]
   deps = [
     "//base",

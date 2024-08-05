@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
 #include "components/sync/invalidations/interested_data_types_handler.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 
 namespace syncer {

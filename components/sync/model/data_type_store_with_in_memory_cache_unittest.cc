@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/model/model_type_store_with_in_memory_cache.h"
+#include "components/sync/model/data_type_store_with_in_memory_cache.h"
 
 #include <memory>
 #include <tuple>
@@ -15,10 +15,10 @@
 #include "base/test/task_environment.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/protocol/security_event_specifics.pb.h"
-#include "components/sync/test/mock_model_type_store.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_store.h"
+#include "components/sync/test/data_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

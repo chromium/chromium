@@ -11,8 +11,8 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
-#include "components/sync/model/model_type_store.h"
 
 class GURL;
 class Profile;

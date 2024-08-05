@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_DATABASE_FACTORY_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 
 class Profile;
 

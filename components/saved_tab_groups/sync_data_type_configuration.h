@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 
 namespace syncer {
 class DataTypeLocalChangeProcessor;

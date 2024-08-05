@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/test/test_model_type_store_service.h"
+#include "components/sync/test/test_data_type_store_service.h"
 
 #include "base/task/sequenced_task_runner.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
 
 namespace syncer {
 

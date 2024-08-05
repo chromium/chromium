@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/model/model_type_store_service.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "components/version_info/channel.h"
 
 namespace syncer {

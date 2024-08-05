@@ -23,8 +23,8 @@
 #include "components/reading_list/core/reading_list_model_storage_impl.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/storage_type.h"
+#include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

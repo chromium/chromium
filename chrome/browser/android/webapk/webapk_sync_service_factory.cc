@@ -6,7 +6,7 @@
 
 #include "chrome/browser/android/webapk/webapk_sync_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/model_type_store_service_factory.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/base/features.h"
 

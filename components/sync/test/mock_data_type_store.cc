@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/test/mock_model_type_store.h"
+#include "components/sync/test/mock_data_type_store.h"
 
 namespace syncer {
 

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_TEST_MOCK_MODEL_TYPE_STORE_H_
-#define COMPONENTS_SYNC_TEST_MOCK_MODEL_TYPE_STORE_H_
+#ifndef COMPONENTS_SYNC_TEST_MOCK_DATA_TYPE_STORE_H_
+#define COMPONENTS_SYNC_TEST_MOCK_DATA_TYPE_STORE_H_
 
 #include <memory>
 
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace syncer {
@@ -49,4 +49,4 @@ class MockModelTypeStore : public ModelTypeStore {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_TEST_MOCK_MODEL_TYPE_STORE_H_
+#endif  // COMPONENTS_SYNC_TEST_MOCK_DATA_TYPE_STORE_H_

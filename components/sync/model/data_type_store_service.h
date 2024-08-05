@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_SERVICE_H_
-#define COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_SERVICE_H_
+#ifndef COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_SERVICE_H_
+#define COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_SERVICE_H_
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 
 namespace syncer {
 
@@ -37,4 +37,4 @@ class ModelTypeStoreService : public KeyedService {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_SERVICE_H_
+#endif  // COMPONENTS_SYNC_MODEL_DATA_TYPE_STORE_SERVICE_H_

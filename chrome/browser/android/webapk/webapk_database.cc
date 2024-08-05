@@ -16,10 +16,10 @@
 #include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_registry_update.h"
 #include "chrome/browser/android/webapk/webapk_sync_bridge.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/web_apk_specifics.pb.h"
 
 namespace webapk {

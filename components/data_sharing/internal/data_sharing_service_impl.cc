@@ -21,8 +21,8 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
-#include "components/sync/model/model_type_store.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 

@@ -11,7 +11,7 @@
 #include "components/desks_storage/core/desk_sync_bridge.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 
 namespace desks_storage {
 DeskSyncService::DeskSyncService() = default;

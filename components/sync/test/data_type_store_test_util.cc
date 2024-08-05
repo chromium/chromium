@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
 
 #include <utility>
 
@@ -12,9 +12,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model/blocking_model_type_store_impl.h"
-#include "components/sync/model/model_type_store_backend.h"
-#include "components/sync/model/model_type_store_impl.h"
+#include "components/sync/model/blocking_data_type_store_impl.h"
+#include "components/sync/model/data_type_store_backend.h"
+#include "components/sync/model/data_type_store_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {

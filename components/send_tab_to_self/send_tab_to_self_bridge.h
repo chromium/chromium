@@ -18,8 +18,8 @@
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
-#include "components/sync/model/model_type_store.h"
 #include "components/sync_device_info/device_info_tracker.h"
 
 namespace syncer {

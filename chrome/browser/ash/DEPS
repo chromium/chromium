@@ -398,7 +398,7 @@ include_rules = [
   "+chrome/browser/support_tool/support_tool_util.h",
   "+chrome/browser/sync/desk_sync_service_factory.h",
   "+chrome/browser/sync/glue/sync_start_util.h",
-  "+chrome/browser/sync/model_type_store_service_factory.h",
+  "+chrome/browser/sync/data_type_store_service_factory.h",
   "+chrome/browser/sync/session_sync_service_factory.h",
   "+chrome/browser/sync/sync_service_factory.h",
   "+chrome/browser/sync/sync_ui_util.h",

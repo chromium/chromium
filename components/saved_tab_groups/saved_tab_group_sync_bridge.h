@@ -17,8 +17,8 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
-#include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 
 class PrefService;

@@ -10,8 +10,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/test/data_type_store_test_util.h"
 #include "url/gurl.h"
 
 namespace webapk {
