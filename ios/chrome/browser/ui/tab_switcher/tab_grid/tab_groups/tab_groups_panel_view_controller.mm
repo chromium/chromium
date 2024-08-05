@@ -8,6 +8,8 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
@@ -186,7 +188,8 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
 #pragma mark UICollectionViewDelegate
 
 - (void)collectionView:(UICollectionView*)collectionView
-    didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
+    performPrimaryActionForItemAtIndexPath:(NSIndexPath*)indexPath {
+  base::RecordAction(base::UserMetricsAction("MobileGroupPanelOpenGroup"));
   TabGroupsPanelItem* item = [_dataSource itemIdentifierForIndexPath:indexPath];
   [self.mutator selectTabGroupsPanelItem:item];
 }

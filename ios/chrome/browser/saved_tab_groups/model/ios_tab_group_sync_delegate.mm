@@ -7,6 +7,8 @@
 #import <vector>
 
 #import "base/check.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
 #import "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -107,6 +109,8 @@ void IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
     target_browser = tab_group_info.browser;
 
     if (target_browser != origin_browser) {
+      base::RecordAction(
+          base::UserMetricsAction("MobileOpenGroupOpenInOtherBrowser"));
       // The group is in another window.
       SceneState* target_scene_state = target_browser->GetSceneState();
       UISceneActivationRequestOptions* options =
@@ -152,7 +156,10 @@ void IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
 
       return;
     }
+    base::RecordAction(base::UserMetricsAction("MobileOpenGroupOpenInBrowser"));
   } else {
+    base::RecordAction(base::UserMetricsAction("MobileOpenGroupClosed"));
+
     std::optional<LocalTabGroupID> tab_group_id =
         CreateLocalTabGroupImpl(*saved_tab_group, origin_browser);
     if (!tab_group_id) {

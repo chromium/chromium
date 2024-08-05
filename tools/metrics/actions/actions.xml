@@ -21856,6 +21856,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGroupPanelOpenGroup">
+  <owner>lpromero@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the Tab Group panel of the Tab Grid opened a saved group.
+  </description>
+</action>
+
 <action name="MobileHandoffSettingsBack">
   <owner>lpromero@google.com</owner>
   <owner>ajuma@chromium.org</owner>
@@ -23375,6 +23384,33 @@ should be able to be added at any place in this file.
 <action name="MobileOmniboxVoiceSearch">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="MobileOpenGroupClosed">
+  <owner>lpromero@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User tried to open a group that is currently closed.
+  </description>
+</action>
+
+<action name="MobileOpenGroupOpenInBrowser">
+  <owner>lpromero@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User tried to open a group that is currently opened in the same browser.
+  </description>
+</action>
+
+<action name="MobileOpenGroupOpenInOtherBrowser">
+  <owner>lpromero@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User tried to open a group that is currently opened in another browser.
+  </description>
 </action>
 
 <action name="MobilePageLoaded" not_user_triggered="true">
