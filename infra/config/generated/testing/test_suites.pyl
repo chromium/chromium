@@ -1635,58 +1635,6 @@
       },
     },
 
-    'chromium_wpt_tests_headful_isolated_scripts': {
-      'chrome_wpt_tests_headful': {
-        'test': 'chrome_wpt_tests',
-        'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--no-headless',
-          '--test-type',
-          'testharness',
-          'reftest',
-          'crashtest',
-          'print-reftest',
-        ],
-        'swarming': {
-          'shards': 1,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
-      },
-    },
-
-    'chromium_wpt_tests_isolated_scripts': {
-      'chrome_wpt_tests': {
-        'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'args': [
-          '--test-type',
-          'testharness',
-          'reftest',
-          'crashtest',
-          'print-reftest',
-        ],
-        'swarming': {
-          'shards': 1,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
-      },
-    },
-
     'clang_tot_gtests': {
       'base_unittests': {},
     },
@@ -5840,12 +5788,6 @@
       'chrome_private_code_test_isolated_scripts',
     ],
 
-    'chrome_wpt_tests_three_modes': [
-      'chromium_wpt_tests_headful_isolated_scripts',
-      'chromium_wpt_tests_isolated_scripts',
-      'headless_shell_wpt_tests_isolated_scripts',
-    ],
-
     'chromeos_device_no_gtests': [
       'chromeos_browser_all_tast_tests',
       'chromeos_browser_criticalstaging_tast_tests',
@@ -5981,7 +5923,6 @@
       'chromedriver_py_tests_isolated_scripts',
       'chromium_web_tests_brfetch_isolated_scripts',
       'chromium_web_tests_high_dpi_isolated_scripts',
-      'chromium_wpt_tests_isolated_scripts',
       'desktop_chromium_isolated_scripts',
       'desktop_once_isolated_scripts',
       'linux_specific_chromium_isolated_scripts',

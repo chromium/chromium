@@ -3999,7 +3999,7 @@
           'linux-jammy',
         ],
         'test_suites': {
-          'isolated_scripts': 'chrome_wpt_tests_three_modes',
+          'isolated_scripts': 'headless_shell_wpt_tests_isolated_scripts',
         },
       },
       'mac-fieldtrial-tester': {

@@ -1599,43 +1599,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chromium_wpt_tests_isolated_scripts",
-    tests = {
-        "chrome_wpt_tests": targets.legacy_test_config(
-            args = [
-                "--test-type",
-                "testharness",
-                "reftest",
-                "crashtest",
-                "print-reftest",
-            ],
-            swarming = targets.swarming(
-                shards = 1,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "chromium_wpt_tests_headful_isolated_scripts",
-    tests = {
-        "chrome_wpt_tests_headful": targets.legacy_test_config(
-            args = [
-                "--no-headless",
-                "--test-type",
-                "testharness",
-                "reftest",
-                "crashtest",
-                "print-reftest",
-            ],
-            swarming = targets.swarming(
-                shards = 1,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "headless_shell_wpt_tests_isolated_scripts",
     tests = {
         "headless_shell_wpt_tests": targets.legacy_test_config(
@@ -1837,6 +1800,9 @@ targets.legacy_basic_suite(
                 shards = 7,
             ),
         ),
+        # TODO(crbug.com/328079854): Once the runner is ready, reintroduce
+        # `chrome_wpt_tests` and (CI-only) `chrome_wpt_tests_headful` for all
+        # desktop platforms here.
         "content_shell_crash_test": targets.legacy_test_config(),
         "flatbuffers_unittests": targets.legacy_test_config(),
         "grit_python_unittests": targets.legacy_test_config(),

@@ -1533,36 +1533,6 @@
       },
       {
         "args": [
-          "--test-type",
-          "testharness",
-          "reftest",
-          "crashtest",
-          "print-reftest"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "chrome_wpt_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "results_handler": "layout tests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "chrome_wpt_tests",
-        "test_id_prefix": "ninja://:chrome_wpt_tests/"
-      },
-      {
-        "args": [
           "--test-type=integration"
         ],
         "isolate_profile_data": true,
