@@ -14,6 +14,8 @@ The script, by default, uploads every artifact stored on the local disk (a URI
 with the 'file' scheme) to google storage.
 """
 
+from __future__ import print_function
+
 import argparse
 import copy
 import json
@@ -25,8 +27,6 @@ import tempfile
 
 root_dir = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-
-# //build/android imports.
 sys.path.append(os.path.join(root_dir, 'build', 'android'))
 from pylib.utils import google_storage_helper
 

@@ -8,9 +8,13 @@ import os
 import shutil
 import tempfile
 import unittest
-from unittest import mock
+
+import mock
 
 import common_merge_script_tests
+
+THIS_DIR = os.path.dirname(__file__)
+
 import standard_isolated_script_merge
 
 TWO_COMPLETED_SHARDS = {

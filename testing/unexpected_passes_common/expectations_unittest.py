@@ -3,11 +3,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import datetime
 import os
+import sys
 import tempfile
 import unittest
-from unittest import mock
+
+if sys.version_info[0] == 2:
+  import mock
+else:
+  import unittest.mock as mock
 
 from pyfakefs import fake_filesystem_unittest
 

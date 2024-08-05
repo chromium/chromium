@@ -9,7 +9,8 @@ import os
 import subprocess
 import sys
 import unittest
-from unittest import mock
+
+import mock
 
 import merge_results
 import merge_steps

@@ -29,12 +29,10 @@ FuzzIL/TypeSystem.swift.
 from __future__ import annotations
 
 import argparse
-import functools
 import os
 import sys
 from typing import List, Optional, Dict, Tuple, Union, Sequence
-
-import dataclasses  # Built-in, but pylint treats it as a third party module.
+import dataclasses
 
 
 def _GetDirAbove(dirname: str):
@@ -58,6 +56,7 @@ sys.path.append(
 
 import jinja2
 import web_idl
+import functools
 
 
 class SwiftExpression:

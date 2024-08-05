@@ -7,6 +7,7 @@ import logging
 import multiprocessing
 import os
 import re
+import shutil
 import subprocess
 import sys
 

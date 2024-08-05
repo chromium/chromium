@@ -8,10 +8,13 @@ Called by merge_results.py
 """
 
 import argparse
+import json
 import logging
 import os
+import subprocess
 import sys
 
+import merge_lib as profile_merger
 import merge_js_lib as javascript_merger
 
 

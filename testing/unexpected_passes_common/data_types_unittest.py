@@ -6,10 +6,15 @@
 from __future__ import print_function
 
 import copy
+import sys
 import typing
 from typing import Dict, List
 import unittest
-from unittest import mock
+
+if sys.version_info[0] == 2:
+  import mock
+else:
+  import unittest.mock as mock
 
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types

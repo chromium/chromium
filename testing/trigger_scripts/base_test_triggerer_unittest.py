@@ -6,9 +6,10 @@
 
 import argparse
 import json
-import os
 import unittest
-from unittest import mock
+import os
+
+import mock
 
 from pyfakefs import fake_filesystem_unittest
 

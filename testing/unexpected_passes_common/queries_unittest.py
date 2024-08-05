@@ -3,9 +3,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from typing import Iterable, Optional
+import collections
+import copy
+import json
+import subprocess
+import sys
+from typing import (Iterable, List, Optional, Tuple)
 import unittest
-from unittest import mock
+
+import unittest.mock as mock
 
 from unexpected_passes_common import builders
 from unexpected_passes_common import constants

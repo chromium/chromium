@@ -5,12 +5,12 @@
 
 import json
 import os
-from pathlib import Path
 import shutil
 import tempfile
 import unittest
 
 import merge_js_lib as merger
+from pathlib import Path
 import node
 
 _HERE_DIR = Path(__file__).parent.resolve()

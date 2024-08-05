@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Methods related to test expectations/expectation files."""
 
+from __future__ import print_function
+
 import collections
 import copy
 import datetime
@@ -10,12 +12,14 @@ import logging
 import os
 import re
 import subprocess
+import sys
 from typing import Dict, FrozenSet, Iterable, List, Optional, Set, Tuple, Union
 
 import six
 
 from typ import expectations_parser
 from unexpected_passes_common import data_types
+from unexpected_passes_common import result_output
 
 FINDER_DISABLE_COMMENT_BASE = 'finder:disable'
 FINDER_ENABLE_COMMENT_BASE = 'finder:enable'

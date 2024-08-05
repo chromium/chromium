@@ -26,6 +26,7 @@ Example usage:
             test_executable_wrappers, parsed_cmdline_args, os.environ)
 """
 
+import argparse
 import time
 
 import test_filtering

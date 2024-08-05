@@ -4,9 +4,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import sys
-
+import argparse
+import json
+import os
 from pyfakefs import fake_filesystem_unittest
+import sys
+import tempfile
+import unittest
 
 import exe_util
 

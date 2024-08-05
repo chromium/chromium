@@ -11,7 +11,6 @@ import sys
 sys.path.append(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
                  'build'))
-# //build imports.
 import action_helpers
 
 

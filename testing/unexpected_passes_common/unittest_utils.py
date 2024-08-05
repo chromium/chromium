@@ -3,8 +3,11 @@
 # found in the LICENSE file.
 """Helper methods for unittests."""
 
+import typing
 from typing import Generator, Iterable, List, Optional, Set, Tuple, Type
+import unittest.mock as mock
 
+from google.cloud import bigquery
 import pandas
 
 from unexpected_passes_common import builders

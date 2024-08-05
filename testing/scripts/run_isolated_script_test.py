@@ -20,10 +20,14 @@ invoke an arbitrary executable.
 import argparse
 import json
 import os
+import pprint
 import sys
 import tempfile
 
-import common
+# Add src/testing/ into sys.path for importing common.
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from scripts import common
 
 # Some harnesses understand the --isolated-script-test arguments
 # directly and prefer that they be passed through.

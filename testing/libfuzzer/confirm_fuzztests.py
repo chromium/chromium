@@ -14,7 +14,7 @@ import re
 import subprocess
 import sys
 
-# //build imports.
+# Set up path to be able to import action_helpers
 sys.path.append(
     os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
