@@ -6780,11 +6780,10 @@ static_library("browser") {
       "first_run/upgrade_util_linux.cc",
       "first_run/upgrade_util_linux.h",
     ]
-    deps += [ "//chrome/app/theme:chrome_unscaled_resources_grit" ]
-
-    if (use_dbus) {
-      deps += [ "//components/dbus/thread_linux" ]
-    }
+    deps += [
+      "//chrome/app/theme:chrome_unscaled_resources_grit",
+      "//components/dbus/thread_linux",
+    ]
 
     if (is_chromeos_lacros) {
       sources += [
