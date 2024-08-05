@@ -294,7 +294,6 @@ suite('FlagsDisabled', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: false,
-      enableFriendlierSafeBrowsingSettings: false,
       enableHashPrefixRealTimeLookups: false,
       enableHttpsFirstModeNewSettings: false,
       enableCertManagementUIV2: false,
@@ -376,77 +375,6 @@ suite('FlagsDisabled', function() {
         routes.SECURITY_KEYS_PHONES, Router.getInstance().getCurrentRoute());
   });
   // </if>
-
-  // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings
-  // standard protection is launched.
-  test('NotUpdatedStandardProtectionDropdown', function() {
-    const standardProtection = page.$.safeBrowsingStandard;
-    const spSubLabel = loadTimeData.getString('safeBrowsingStandardDesc');
-    assertEquals(spSubLabel, standardProtection.subLabel);
-
-    const safeBrowsingStandardBulTwo =
-        page.shadowRoot!.querySelector<HTMLElement>(
-            '#safeBrowsingStandardBulTwo')!;
-    const subBulTwoLabel = loadTimeData.getString('safeBrowsingStandardBulTwo');
-    assertEquals(
-        subBulTwoLabel, safeBrowsingStandardBulTwo.textContent!.trim());
-
-    const passwordsLeakToggle = page.$.passwordsLeakToggle;
-    const passwordLeakLabel =
-        loadTimeData.getString('passwordsLeakDetectionLabel');
-    assertEquals(passwordLeakLabel, passwordsLeakToggle.label);
-
-    const passwordLeakSubLabel =
-        loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
-    assertEquals(passwordLeakSubLabel, passwordsLeakToggle.subLabel);
-  });
-
-  // TODO(crbug.com/40068815): Remove once friendlier safe browsing settings
-  // enhanced protection is launched.
-  test('NotUpdatedEnhancedProtectionDropdown', function() {
-    // Enhanced protection sublabel should not be the updated one.
-    const enhancedProtection = page.$.safeBrowsingEnhanced;
-    const epSubLabel = loadTimeData.getString('safeBrowsingEnhancedDesc');
-    assertEquals(epSubLabel, enhancedProtection.subLabel);
-
-    // The updated description container should not be visible.
-    assertFalse(isChildVisible(page, '#enhancedProtectionDescContainer'));
-
-    // No protection sublabel should not be the updated one.
-    const noProtection = page.$.safeBrowsingDisabled;
-    const npSubLabel = loadTimeData.getString('safeBrowsingNoneDesc');
-    assertEquals(npSubLabel, noProtection.subLabel);
-  });
-
-  // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings
-  // standard protection is launched.
-  test('NotUpdatedPasswordsLeakDetectionSubLabel', function() {
-    const toggle = page.$.passwordsLeakToggle;
-    const defaultSubLabel =
-        loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
-    const activeWhenSignedInSubLabel =
-        loadTimeData.getString('passwordsLeakDetectionGeneralDescription') +
-        ' ' +
-        loadTimeData.getString(
-            'passwordsLeakDetectionSignedOutEnabledDescription');
-    assertEquals(defaultSubLabel, toggle.subLabel);
-
-    page.set('prefs.profile.password_manager_leak_detection.value', true);
-    page.set(
-        'prefs.generated.password_leak_detection.userControlDisabled', true);
-    flush();
-    assertEquals(activeWhenSignedInSubLabel, toggle.subLabel);
-
-    page.set('prefs.generated.password_leak_detection.value', true);
-    page.set(
-        'prefs.generated.password_leak_detection.userControlDisabled', false);
-    flush();
-    assertEquals(defaultSubLabel, toggle.subLabel);
-
-    page.set('prefs.profile.password_manager_leak_detection.value', false);
-    flush();
-    assertEquals(defaultSubLabel, toggle.subLabel);
-  });
 
   // Tests that toggling the HTTPS-Only Mode setting sets the associated pref.
   test('HttpsOnlyModeToggle', function() {
@@ -641,11 +569,10 @@ suite('SafeBrowsing', function() {
 
   test('PasswordsLeakDetectionSubLabel', function() {
     const toggle = page.$.passwordsLeakToggle;
-    const defaultSubLabel = loadTimeData.getString(
-        'passwordsLeakDetectionGeneralDescriptionUpdated');
+    const defaultSubLabel =
+        loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
     const activeWhenSignedInSubLabel =
-        loadTimeData.getString(
-            'passwordsLeakDetectionGeneralDescriptionUpdated') +
+        loadTimeData.getString('passwordsLeakDetectionGeneralDescription') +
         ' ' +
         loadTimeData.getString(
             'passwordsLeakDetectionSignedOutEnabledDescription');
@@ -1000,34 +927,32 @@ suite('SafeBrowsing', function() {
     assertFalse(page.$.safeBrowsingStandard.expanded);
   });
 
-  test('UpdatedStandardProtectionDropdown', async () => {
+  test('StandardProtectionDropdown', async () => {
     loadTimeData.overrideValues({enableHashPrefixRealTimeLookups: false});
     resetRouterForTesting();
 
     await resetPage();
     const standardProtection = page.$.safeBrowsingStandard;
-    const updatedSpSubLabel =
-        loadTimeData.getString('safeBrowsingStandardDescUpdated');
-    assertEquals(updatedSpSubLabel, standardProtection.subLabel);
+    const spSubLabel = loadTimeData.getString('safeBrowsingStandardDesc');
+    assertEquals(spSubLabel, standardProtection.subLabel);
 
     const passwordsLeakToggle = page.$.passwordsLeakToggle;
-    const updatedPasswordLeakLabel =
-        loadTimeData.getString('passwordsLeakDetectionLabelUpdated');
-    assertEquals(updatedPasswordLeakLabel, passwordsLeakToggle.label);
+    const passwordLeakLabel =
+        loadTimeData.getString('passwordsLeakDetectionLabel');
+    assertEquals(passwordLeakLabel, passwordsLeakToggle.label);
 
-    const updatedPasswordLeakSubLabel = loadTimeData.getString(
-        'passwordsLeakDetectionGeneralDescriptionUpdated');
-    assertEquals(updatedPasswordLeakSubLabel, passwordsLeakToggle.subLabel);
+    const passwordLeakSubLabel =
+        loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
+    assertEquals(passwordLeakSubLabel, passwordsLeakToggle.subLabel);
   });
 
-  test('UpdatedEnhancedProtectionText', async () => {
+  test('EnhancedProtectionText', async () => {
     const enhancedProtection = page.$.safeBrowsingEnhanced;
-    const epSubLabel =
-        loadTimeData.getString('safeBrowsingEnhancedDescUpdated');
+    const epSubLabel = loadTimeData.getString('safeBrowsingEnhancedDesc');
     assertEquals(epSubLabel, enhancedProtection.subLabel);
 
     const noProtection = page.$.safeBrowsingDisabled;
-    const npSubLabel = loadTimeData.getString('safeBrowsingNoneDescUpdated');
+    const npSubLabel = loadTimeData.getString('safeBrowsingNoneDesc');
     assertEquals(npSubLabel, noProtection.subLabel);
 
     page.$.safeBrowsingEnhanced.click();
@@ -1073,60 +998,23 @@ suite('SafeBrowsing', function() {
 
     await resetPage();
     const standardProtection = page.$.safeBrowsingStandard;
-    const subLabel =
-        loadTimeData.getString('safeBrowsingStandardDescUpdatedProxy');
+    const subLabel = loadTimeData.getString('safeBrowsingStandardDescProxy');
     assertEquals(subLabel, standardProtection.subLabel);
   });
-
-  // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings
-  // standard protection is launched.
-  test(
-      'FriendlierSettingsDisabledStandardProtectionDropdownWithProxyString',
-      async () => {
-        loadTimeData.overrideValues({
-          enableFriendlierSafeBrowsingSettings: false,
-          enableHashPrefixRealTimeLookups: true,
-        });
-        resetRouterForTesting();
-
-        await resetPage();
-        const standardProtection = page.$.safeBrowsingStandard;
-        const subLabel = loadTimeData.getString('safeBrowsingStandardDesc');
-        assertEquals(subLabel, standardProtection.subLabel);
-        const safeBrowsingStandardBulTwo =
-            page.shadowRoot!.querySelector<HTMLElement>(
-                '#safeBrowsingStandardBulTwo')!;
-        const subBulTwoLabel =
-            loadTimeData.getString('safeBrowsingStandardBulTwoProxy');
-        assertEquals(
-            subBulTwoLabel, safeBrowsingStandardBulTwo.textContent!.trim());
-      });
   // </if>
+
   // <if expr="not _google_chrome">
   test('StandardProtectionDropdownNoProxyStringForChromium', function() {
     // If this test fails, it may be because hash-prefix real-time lookups have
     // been enabled for Chromium. The settings strings only currently support
     // Chrome, so this must be addressed to support Chromium as well.
     const standardProtection = page.$.safeBrowsingStandard;
-    const subLabel = loadTimeData.getString('safeBrowsingStandardDescUpdated');
+    const subLabel = loadTimeData.getString('safeBrowsingStandardDesc');
     assertEquals(subLabel, standardProtection.subLabel);
   });
   // </if>
 
   test('FriendlierSettingsPopulatedOnEsbOptIn', async function() {
-    loadTimeData.overrideValues({enableFriendlierSafeBrowsingSettings: false});
-    resetRouterForTesting();
-
-    await resetPage();
-    page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
-    assertFalse(
-        page.getPref('safebrowsing.esb_opt_in_with_friendlier_settings').value);
-
-    loadTimeData.overrideValues({enableFriendlierSafeBrowsingSettings: true});
-    resetRouterForTesting();
-
-    await resetPage();
     page.$.safeBrowsingEnhanced.click();
     await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
     assertTrue(

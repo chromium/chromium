@@ -1246,8 +1246,6 @@ class SettingsSecurityPageTest : public SettingsBrowserTest {
   SettingsSecurityPageTest() {
     scoped_feature_list_.InitWithFeatures(
         {
-            safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection,
-            safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection,
             features::kEnableCertManagementUIV2,
         },
         {});

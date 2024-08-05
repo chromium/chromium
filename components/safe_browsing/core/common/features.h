@@ -159,15 +159,6 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryPotentialPasswordTheft);
 // Extension Telemetry service reports.
 BASE_DECLARE_FEATURE(kExtensionTelemetryDisableOffstoreExtensions);
 
-// Enables the new text, layout, links, and icons on both the privacy guide
-// and on the security settings page for the enhanced protection security
-// option.
-BASE_DECLARE_FEATURE(kFriendlierSafeBrowsingSettingsEnhancedProtection);
-
-// Enables the new text and layout on both the privacy guide and on the
-// security settings page for the standard protection security option.
-BASE_DECLARE_FEATURE(kFriendlierSafeBrowsingSettingsStandardProtection);
-
 // Prompt users to re-enable Android app verification on APK download.
 BASE_DECLARE_FEATURE(kGooglePlayProtectPrompt);
 

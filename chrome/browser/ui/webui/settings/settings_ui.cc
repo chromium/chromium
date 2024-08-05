@@ -373,14 +373,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableCbdTimeframeRequired",
       base::FeatureList::IsEnabled(features::kCbdTimeframeRequired));
 
-  html_source->AddBoolean(
-      "enableFriendlierSafeBrowsingSettings",
-      base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection) &&
-          base::FeatureList::IsEnabled(
-              safe_browsing::
-                  kFriendlierSafeBrowsingSettingsStandardProtection));
-
   html_source->AddBoolean("enableHashPrefixRealTimeLookups",
                           safe_browsing::hash_realtime_utils::
                               IsHashRealTimeLookupEligibleInSession());

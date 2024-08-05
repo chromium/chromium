@@ -18,66 +18,9 @@
         pref="[[prefs.generated.safe_browsing]]"
         name="[[safeBrowsingSettingEnum_.ENHANCED]]"
         label="$i18n{safeBrowsingEnhanced}"
-        sub-label="[[getSafeBrowsingEnhancedSubLabel_(
-                    enableFriendlierSafeBrowsingSettings_)]]"
+        sub-label="$i18n{safeBrowsingEnhancedDesc}"
         expand-aria-label="$i18n{safeBrowsingEnhancedExpandA11yLabel}"
         on-click="onSafeBrowsingEnhancedClick_">
-        <!-- TODO(http://crbug.com/1470385): Remove the template element below when friendlier
-        settings is fully rolled out. -->
-        <template is="dom-if" if="[[!enableFriendlierSafeBrowsingSettings_]]">
-          <div slot="collapse" class="settings-columned-section">
-            <div class="column">
-              <h3 class="description-header">
-                $i18n{privacyGuideFeatureDescriptionHeader}
-              </h3>
-              <div role="list">
-                <privacy-guide-description-item
-                    role="listitem"
-                    icon="settings20:security"
-                    label="$i18n{safeBrowsingEnhancedBulOne}">
-                </privacy-guide-description-item>
-                <privacy-guide-description-item
-                    role="listitem"
-                    icon="settings20:googleg"
-                    label="$i18n{safeBrowsingEnhancedBulTwo}">
-                </privacy-guide-description-item>
-                <privacy-guide-description-item
-                    role="listitem"
-                    icon="settings20:public"
-                    label="$i18n{safeBrowsingEnhancedBulThree}">
-                </privacy-guide-description-item>
-                <privacy-guide-description-item
-                    role="listitem"
-                    icon="settings20:vpn-key"
-                    label="$i18n{safeBrowsingEnhancedBulFour}">
-                </privacy-guide-description-item>
-              </div>
-            </div>
-            <div class="column">
-              <h3 class="description-header">
-                $i18n{privacyGuideThingsToConsider}
-              </h3>
-              <div role="list">
-                <privacy-guide-description-item
-                    role="listitem"
-                    icon="settings20:data"
-                    label="$i18n{privacyGuideSafeBrowsingCardEnhancedProtectionPrivacyDescription1}">
-                </privacy-guide-description-item>
-                <privacy-guide-description-item
-                    role="listitem"
-                    icon="settings20:web-asset"
-                    label="$i18n{privacyGuideSafeBrowsingCardEnhancedProtectionPrivacyDescription2}">
-                </privacy-guide-description-item>
-                <privacy-guide-description-item
-                    role="listitem"
-                    icon="settings20:account-circle"
-                    label="$i18n{privacyGuideSafeBrowsingCardEnhancedProtectionPrivacyDescription3}">
-                </privacy-guide-description-item>
-              </div>
-            </div>
-          </div>
-        </template>
-        <template is="dom-if" if="[[enableFriendlierSafeBrowsingSettings_]]">
           <div slot="collapse" class="settings-columned-section">
             <div class="column">
               <h3 class="description-header">
@@ -134,56 +77,16 @@
               </div>
             </div>
           </div>
-        </template>
     </settings-collapse-radio-button>
     <settings-collapse-radio-button id="safeBrowsingRadioStandard"
-        no-collapse="[[enableFriendlierSafeBrowsingSettings_]]"
+        no-collapse
         pref="[[prefs.generated.safe_browsing]]"
         name="[[safeBrowsingSettingEnum_.STANDARD]]"
         label="$i18n{safeBrowsingStandard}"
         sub-label="[[getSafeBrowsingStandardSubLabel_(
-                    enableFriendlierSafeBrowsingSettings_,
                     enableHashPrefixRealTimeLookups_)]]"
         expand-aria-label="$i18n{safeBrowsingStandardExpandA11yLabel}"
         on-click="onSafeBrowsingStandardClick_">
-        <template is="dom-if" if="[[!enableFriendlierSafeBrowsingSettings_]]">
-          <div slot="collapse" class="settings-columned-section"
-            id="whenOnThingsToConsiderStandardProtection">
-            <div class="column">
-              <h3 class="description-header">
-                $i18n{privacyGuideFeatureDescriptionHeader}
-              </h3>
-              <div role="list">
-                <privacy-guide-description-item
-                    role="listitem"
-                    icon="settings20:security"
-                    label="$i18n{privacyGuideSafeBrowsingCardStandardProtectionFeatureDescription1}">
-                </privacy-guide-description-item>
-                <privacy-guide-description-item
-                    id="standardProtectionFeatureDescription2"
-                    role="listitem"
-                    icon="settings20:googleg"
-                    label="[[getStandardProtectionFeatureDescription2_(
-                            enableHashPrefixRealTimeLookups_)]]">
-                </privacy-guide-description-item>
-              </div>
-            </div>
-            <div class="column">
-              <h3 class="description-header">
-                $i18n{privacyGuideThingsToConsider}
-              </h3>
-              <div role="list">
-                <privacy-guide-description-item
-                    id="standardProtectionPrivacyDescription1"
-                    role="listitem"
-                    icon="settings20:data"
-                    label="[[getStandardProtectionPrivacyDescription1_(
-                            enableHashPrefixRealTimeLookups_)]]">
-                </privacy-guide-description-item>
-              </div>
-            </div>
-          </div>
-        </template>
     </settings-collapse-radio-button>
   </settings-radio-group>
 </div>

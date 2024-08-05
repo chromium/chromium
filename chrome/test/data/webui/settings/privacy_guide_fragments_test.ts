@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {PrivacyGuideCookiesFragmentElement, PrivacyGuideDescriptionItemElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideMsbbFragmentElement, PrivacyGuideSafeBrowsingFragmentElement, PrivacyGuideWelcomeFragmentElement, SettingsCollapseRadioButtonElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
+import type {PrivacyGuideCookiesFragmentElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideMsbbFragmentElement, PrivacyGuideSafeBrowsingFragmentElement, PrivacyGuideWelcomeFragmentElement, SettingsCollapseRadioButtonElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import {CookiePrimarySetting, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SyncPrefs} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, resetRouterForTesting, Router, routes, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
@@ -388,9 +388,6 @@ suite('SafeBrowsingFragment', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({enableFriendlierSafeBrowsingSettings: true});
-    resetRouterForTesting();
-
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -454,13 +451,12 @@ suite('SafeBrowsingFragment', function() {
     assertEquals(result, expectedMetric);
   }
 
-  test('UpdatedEnhancedProtectionPrivacyGuide', async () => {
+  test('EnhancedProtectionPrivacyGuide', async () => {
     const enhancedProtection =
         fragment.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
             '#safeBrowsingRadioEnhanced');
     assertTrue(!!enhancedProtection);
-    const epSubLabel =
-        loadTimeData.getString('safeBrowsingEnhancedDescUpdated');
+    const epSubLabel = loadTimeData.getString('safeBrowsingEnhancedDesc');
     assertEquals(epSubLabel, enhancedProtection.subLabel);
 
     const group = fragment.shadowRoot!.querySelector<HTMLElement>(
@@ -529,7 +525,6 @@ suite('SafeBrowsingFragment', function() {
   suite('HashPrefixRealTimeDisabled', function() {
     suiteSetup(function() {
       loadTimeData.overrideValues({
-        enableFriendlierSafeBrowsingSettings: true,
         enableHashPrefixRealTimeLookups: false,
       });
       resetRouterForTesting();
@@ -541,8 +536,7 @@ suite('SafeBrowsingFragment', function() {
               .querySelector<SettingsCollapseRadioButtonElement>(
                   '#safeBrowsingRadioStandard');
       assertTrue(!!standardProtection);
-      const spSubLabel =
-          loadTimeData.getString('safeBrowsingStandardDescUpdated');
+      const spSubLabel = loadTimeData.getString('safeBrowsingStandardDesc');
       assertEquals(spSubLabel, standardProtection.subLabel);
       assertTrue(standardProtection.noCollapse);
       assertFalse(isChildVisible(
@@ -554,7 +548,6 @@ suite('SafeBrowsingFragment', function() {
   suite('HashPrefixRealTimeEnabled', function() {
     suiteSetup(function() {
       loadTimeData.overrideValues({
-        enableFriendlierSafeBrowsingSettings: true,
         enableHashPrefixRealTimeLookups: true,
       });
       resetRouterForTesting();
@@ -567,116 +560,11 @@ suite('SafeBrowsingFragment', function() {
                   '#safeBrowsingRadioStandard');
       assertTrue(!!standardProtection);
       const spSubLabel =
-          loadTimeData.getString('safeBrowsingStandardDescUpdatedProxy');
+          loadTimeData.getString('safeBrowsingStandardDescProxy');
       assertEquals(spSubLabel, standardProtection.subLabel);
-    });
-  });
-
-  // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings
-  // standard protection is launched.
-  suite('HashPrefixRealTimeEnabled_FriendlierSettingsDisabled', function() {
-    suiteSetup(function() {
-      loadTimeData.overrideValues({
-        enableFriendlierSafeBrowsingSettings: false,
-        enableHashPrefixRealTimeLookups: true,
-      });
-      resetRouterForTesting();
-    });
-
-    test('NotUpdatedStandardProtectionDescription', function() {
-      const standardProtection =
-          fragment.shadowRoot!
-              .querySelector<SettingsCollapseRadioButtonElement>(
-                  '#safeBrowsingRadioStandard');
-      assertTrue(!!standardProtection);
-      const spSubLabel = loadTimeData.getString('safeBrowsingStandardDesc');
-      assertEquals(spSubLabel, standardProtection.subLabel);
-
-      const standardProtectionFeatureDescription2 =
-          fragment.shadowRoot!
-              .querySelector<PrivacyGuideDescriptionItemElement>(
-                  '#standardProtectionFeatureDescription2');
-      assertTrue(!!standardProtectionFeatureDescription2);
-      const featureDesc2Label = loadTimeData.getString(
-          'privacyGuideSafeBrowsingCardStandardProtectionFeatureDescription2Proxy');
-      assertEquals(
-          featureDesc2Label, standardProtectionFeatureDescription2.label);
-
-      const standardProtectionPrivacyDescription1 =
-          fragment.shadowRoot!
-              .querySelector<PrivacyGuideDescriptionItemElement>(
-                  '#standardProtectionPrivacyDescription1');
-      assertTrue(!!standardProtectionPrivacyDescription1);
-      const privacyDesc1Label = loadTimeData.getString(
-          'privacyGuideSafeBrowsingCardStandardProtectionPrivacyDescription1Proxy');
-      assertEquals(
-          privacyDesc1Label, standardProtectionPrivacyDescription1.label);
     });
   });
   // </if>
-
-  suite('FlagsDisabled', function() {
-    suiteSetup(function() {
-      loadTimeData.overrideValues({
-        enableFriendlierSafeBrowsingSettings: false,
-        enableHashPrefixRealTimeLookups: false,
-      });
-      resetRouterForTesting();
-    });
-
-    // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings
-    // standard protection is launched.
-    test('NotUpdatedStandardProtectionPrivacyGuide', function() {
-      const standardProtection =
-          fragment.shadowRoot!
-              .querySelector<SettingsCollapseRadioButtonElement>(
-                  '#safeBrowsingRadioStandard');
-      assertTrue(!!standardProtection);
-      const spSubLabel = loadTimeData.getString('safeBrowsingStandardDesc');
-      assertEquals(spSubLabel, standardProtection.subLabel);
-      assertFalse(standardProtection.noCollapse);
-      assertTrue(isChildVisible(
-          fragment, '#whenOnThingsToConsiderStandardProtection'));
-
-      const standardProtectionFeatureDescription2 =
-          fragment.shadowRoot!
-              .querySelector<PrivacyGuideDescriptionItemElement>(
-                  '#standardProtectionFeatureDescription2');
-      assertTrue(!!standardProtectionFeatureDescription2);
-      const featureDesc2Label = loadTimeData.getString(
-          'privacyGuideSafeBrowsingCardStandardProtectionFeatureDescription2');
-      assertEquals(
-          featureDesc2Label, standardProtectionFeatureDescription2.label);
-
-      const standardProtectionPrivacyDescription1 =
-          fragment.shadowRoot!
-              .querySelector<PrivacyGuideDescriptionItemElement>(
-                  '#standardProtectionPrivacyDescription1');
-      assertTrue(!!standardProtectionPrivacyDescription1);
-      const privacyDesc1Label = loadTimeData.getString(
-          'privacyGuideSafeBrowsingCardStandardProtectionPrivacyDescription1');
-      assertEquals(
-          privacyDesc1Label, standardProtectionPrivacyDescription1.label);
-    });
-
-    // TODO(crbug.com/40068815): Remove once friendlier safe browsing settings
-    // enhanced protection is launched.
-    test('NotUpdatedEnhancedProtectionPrivacyGuide', function() {
-      const enhancedProtection =
-          fragment.shadowRoot!
-              .querySelector<SettingsCollapseRadioButtonElement>(
-                  '#safeBrowsingRadioEnhanced');
-      assertTrue(!!enhancedProtection);
-      const epSubLabel = loadTimeData.getString('safeBrowsingEnhancedDesc');
-      assertEquals(epSubLabel, enhancedProtection.subLabel);
-
-      fragment.shadowRoot!
-          .querySelector<HTMLElement>('#safeBrowsingRadioEnhanced')!.click();
-      flush();
-      // The updated description item container should not be visible.
-      assertFalse(isChildVisible(fragment, '#updatedDescItemContainer'));
-    });
-  });
 });
 
 suite('CookiesFragment', function() {

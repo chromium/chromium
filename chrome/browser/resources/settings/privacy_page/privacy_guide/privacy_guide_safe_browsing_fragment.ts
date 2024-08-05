@@ -56,14 +56,6 @@ export class PrivacyGuideSafeBrowsingFragmentElement extends
         value: SafeBrowsingSetting,
       },
 
-      enableFriendlierSafeBrowsingSettings_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'enableFriendlierSafeBrowsingSettings');
-        },
-      },
-
       enableHashPrefixRealTimeLookups_: {
         type: Boolean,
         value() {
@@ -76,7 +68,6 @@ export class PrivacyGuideSafeBrowsingFragmentElement extends
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   private startStateEnhanced_: boolean;
-  private enableFriendlierSafeBrowsingSettings_: boolean;
   private enableHashPrefixRealTimeLookups_: boolean;
 
   override ready() {
@@ -129,19 +120,10 @@ export class PrivacyGuideSafeBrowsingFragmentElement extends
         'Settings.PrivacyGuide.ChangeSafeBrowsingStandard');
   }
 
-  private getSafeBrowsingEnhancedSubLabel_(): string {
-    return this.i18n(
-        this.enableFriendlierSafeBrowsingSettings_ ?
-            'safeBrowsingEnhancedDescUpdated' :
-            'safeBrowsingEnhancedDesc');
-  }
-
   private getSafeBrowsingStandardSubLabel_(): string {
     return this.i18n(
-        this.enableFriendlierSafeBrowsingSettings_ ?
-            this.enableHashPrefixRealTimeLookups_ ?
-            'safeBrowsingStandardDescUpdatedProxy' :
-            'safeBrowsingStandardDescUpdated' :
+        this.enableHashPrefixRealTimeLookups_ ?
+            'safeBrowsingStandardDescProxy' :
             'safeBrowsingStandardDesc');
   }
 

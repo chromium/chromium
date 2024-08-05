@@ -1180,12 +1180,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"passwords", IDS_SETTINGS_PASSWORD_MANAGER},
       {"passwordsLeakDetectionLabel",
        IDS_SETTINGS_PASSWORDS_LEAK_DETECTION_LABEL},
-      {"passwordsLeakDetectionLabelUpdated",
-       IDS_SETTINGS_PASSWORDS_LEAK_DETECTION_LABEL_UPDATED},
       {"passwordsLeakDetectionGeneralDescription",
        IDS_PASSWORD_MANAGER_LEAK_HELP_MESSAGE},
-      {"passwordsLeakDetectionGeneralDescriptionUpdated",
-       IDS_PASSWORD_MANAGER_LEAK_HELP_MESSAGE_UPDATED},
       {"passwordsLeakDetectionSignedOutEnabledDescription",
        IDS_SETTINGS_PASSWORDS_LEAK_DETECTION_SIGNED_OUT_ENABLED_DESC},
       {"editPasskeySiteLabel", IDS_SETTINGS_PASSKEYS_SITE_LABEL},
@@ -1816,8 +1812,6 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_SAFEBROWSING_ENABLE_REPORTING_DESC},
       {"safeBrowsingEnhanced", IDS_SETTINGS_SAFEBROWSING_ENHANCED},
       {"safeBrowsingEnhancedDesc", IDS_SETTINGS_SAFEBROWSING_ENHANCED_DESC},
-      {"safeBrowsingEnhancedDescUpdated",
-       IDS_SETTINGS_SAFEBROWSING_ENHANCED_DESC_UPDATED},
       {"safeBrowsingEnhancedExpandA11yLabel",
        IDS_SETTINGS_SAFEBROWSING_ENHANCED_EXPAND_ACCESSIBILITY_LABEL},
       {"safeBrowsingEnhancedBulOne",
@@ -1848,11 +1842,9 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_SAFEBROWSING_ENHANCED_THINGS_TO_CONSIDER_BULLET_THREE},
       {"safeBrowsingStandard", IDS_SETTINGS_SAFEBROWSING_STANDARD},
       {"safeBrowsingStandardDesc", IDS_SETTINGS_SAFEBROWSING_STANDARD_DESC},
-      {"safeBrowsingStandardDescUpdated",
-       IDS_SETTINGS_SAFEBROWSING_STANDARD_DESC_UPDATED},
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      {"safeBrowsingStandardDescUpdatedProxy",
-       IDS_SETTINGS_SAFEBROWSING_STANDARD_DESC_UPDATED_PROXY},
+      {"safeBrowsingStandardDescProxy",
+       IDS_SETTINGS_SAFEBROWSING_STANDARD_DESC_PROXY},
 #endif
       {"safeBrowsingStandardExpandA11yLabel",
        IDS_SETTINGS_SAFEBROWSING_STANDARD_EXPAND_ACCESSIBILITY_LABEL},
@@ -1868,8 +1860,6 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_SAFEBROWSING_STANDARD_HELP_IMPROVE},
       {"safeBrowsingNone", IDS_SETTINGS_SAFEBROWSING_NONE},
       {"safeBrowsingNoneDesc", IDS_SETTINGS_SAFEBROWSING_NONE_DESC},
-      {"safeBrowsingNoneDescUpdated",
-       IDS_SETTINGS_SAFEBROWSING_NONE_DESC_UPDATED},
       {"safeBrowsingDisableDialog",
        IDS_SETTINGS_SAFEBROWSING_DISABLE_DIALOG_TITLE},
       {"safeBrowsingDisableDialogDesc",
@@ -1960,18 +1950,8 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   html_source->AddString("firstPartySetsLearnMoreURL",
                          chrome::kFirstPartySetsLearnMoreURL);
 
-  bool are_friendlier_settings_enabled =
-      base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection) &&
-      base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection);
-  bool are_hash_realtime_lookups_enabled = safe_browsing::hash_realtime_utils::
-      IsHashRealTimeLookupEligibleInSession();
-  html_source->AddString(
-      "safeBrowsingHelpCenterURL",
-      are_friendlier_settings_enabled || are_hash_realtime_lookups_enabled
-          ? chrome::kSafeBrowsingHelpCenterUpdatedURL
-          : chrome::kSafeBrowsingHelpCenterURL);
+  html_source->AddString("safeBrowsingHelpCenterURL",
+                         chrome::kSafeBrowsingHelpCenterUpdatedURL);
 
   html_source->AddString("syncAndGoogleServicesLearnMoreURL",
                          chrome::kSyncAndGoogleServicesLearnMoreURL);

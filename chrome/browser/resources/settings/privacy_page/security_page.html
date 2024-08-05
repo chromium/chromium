@@ -81,47 +81,11 @@
             name="[[safeBrowsingSettingEnum_.ENHANCED]]"
             pref="[[prefs.generated.safe_browsing]]"
             label="$i18n{safeBrowsingEnhanced}"
-            sub-label="[[getSafeBrowsingEnhancedSubLabel_(
-                        enableFriendlierSafeBrowsingSettings_)]]"
+            sub-label="$i18n{safeBrowsingEnhancedDesc}"
             indicator-aria-label="$i18n{controlledSettingPolicy}"
             expand-aria-label="$i18n{safeBrowsingEnhancedExpandA11yLabel}"
             on-expand-clicked="onEnhancedProtectionExpandButtonClicked_"
             no-automatic-collapse>
-          <template is="dom-if" if="[[!enableFriendlierSafeBrowsingSettings_]]">
-            <div slot="collapse">
-              <div class="bullet-line">
-                <iron-icon icon="cr:security"></iron-icon>
-                <div class="cr-secondary-text">
-                  $i18n{safeBrowsingEnhancedBulOne}
-                </div>
-              </div>
-              <div class="bullet-line">
-                <iron-icon icon="settings20:googleg"></iron-icon>
-                <div class="cr-secondary-text">
-                  $i18n{safeBrowsingEnhancedBulTwo}
-                </div>
-              </div>
-              <div class="bullet-line">
-                <iron-icon icon="settings:public"></iron-icon>
-                <div class="cr-secondary-text">
-                  $i18n{safeBrowsingEnhancedBulThree}
-                </div>
-              </div>
-              <div class="bullet-line">
-                <iron-icon icon="settings20:vpn-key"></iron-icon>
-                <div class="cr-secondary-text">
-                  $i18n{safeBrowsingEnhancedBulFour}
-                </div>
-              </div>
-              <div class="bullet-line last-collapse-item">
-                <iron-icon icon="settings20:data"></iron-icon>
-                <div class="cr-secondary-text cr-padded-text">
-                  $i18n{safeBrowsingEnhancedBulFive}
-                </div>
-              </div>
-            </div>
-          </template>
-          <template is="dom-if" if="[[enableFriendlierSafeBrowsingSettings_]]">
             <div id="enhancedProtectionDescContainer" slot="collapse"
                 class="settings-columned-section">
               <div class="column">
@@ -195,38 +159,18 @@
                 </div>
               </div>
             </div>
-          </template>
         </settings-collapse-radio-button>
         <settings-collapse-radio-button id="safeBrowsingStandard"
             name="[[safeBrowsingSettingEnum_.STANDARD]]"
             pref="[[prefs.generated.safe_browsing]]"
             label="$i18n{safeBrowsingStandard}"
             sub-label="[[getSafeBrowsingStandardSubLabel_(
-                        enableFriendlierSafeBrowsingSettings_,
                         enableHashPrefixRealTimeLookups_)]]"
             indicator-aria-label="$i18n{controlledSettingPolicy}"
             expand-aria-label="$i18n{safeBrowsingStandardExpandA11yLabel}"
             info-opened="{{infoOpened_}}"
             on-expand-clicked="onStandardProtectionExpandButtonClicked_"
             no-automatic-collapse>
-          <template is="dom-if" if="[[!enableFriendlierSafeBrowsingSettings_]]">
-            <div slot="collapse">
-              <div class="bullet-line">
-                <iron-icon icon="cr:security"></iron-icon>
-                <div class="cr-secondary-text">
-                  $i18n{safeBrowsingStandardBulOne}
-                </div>
-              </div>
-              <div class="bullet-line">
-                <iron-icon icon="settings20:data"></iron-icon>
-                <div id="safeBrowsingStandardBulTwo"
-                    class="cr-secondary-text cr-padded-text">
-                  [[getSafeBrowsingStandardBulTwo_(
-                    enableHashPrefixRealTimeLookups_)]]
-                </div>
-              </div>
-            </div>
-          </template>
           <div slot="noSelectionCollapse">
             <template is="dom-if" if="[[!hideExtendedReportingRadioButton_]]">
               <settings-toggle-button id="safeBrowsingReportingToggle"
@@ -239,11 +183,9 @@
               </settings-toggle-button>
             </template>
             <settings-toggle-button id="passwordsLeakToggle"
-                label="[[getPasswordsLeakToggleLabel_(
-                        enableFriendlierSafeBrowsingSettings_)]]"
+                label="$i18n{passwordsLeakDetectionLabel}"
                 pref="{{prefs.generated.password_leak_detection}}"
                 sub-label="[[getPasswordsLeakToggleSubLabel_(
-                              enableFriendlierSafeBrowsingSettings_,
                               prefs.profile.password_manager_leak_detection.*,
                               prefs.generated.password_leak_detection.*)]]">
             </settings-toggle-button>
@@ -253,8 +195,7 @@
             name="[[safeBrowsingSettingEnum_.DISABLED]]"
             pref="[[prefs.generated.safe_browsing]]"
             label="$i18n{safeBrowsingNone}"
-            sub-label="[[getSafeBrowsingDisabledSubLabel_(
-                        enableFriendlierSafeBrowsingSettings_)]]"
+            sub-label="$i18n{safeBrowsingNoneDesc}"
             indicator-aria-label="$i18n{controlledSettingPolicy}">
         </settings-collapse-radio-button>
       </settings-radio-group>
