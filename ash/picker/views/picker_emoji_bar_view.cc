@@ -182,7 +182,9 @@ PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
   SetUseDefaultFillLayout(true);
   GetViewAccessibility().SetProperties(
       ax::mojom::Role::kGrid,
-      l10n_util::GetStringUTF16(IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME));
+      l10n_util::GetStringUTF16(
+          is_gifs_enabled ? IDS_PICKER_EMOJI_BAR_WITH_GIFS_GRID_ACCESSIBLE_NAME
+                          : IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME));
   SetProperty(views::kElementIdentifierKey, kPickerEmojiBarElementId);
   SetBackground(views::CreateThemedRoundedRectBackground(
       kPickerContainerBackgroundColor, kPickerContainerBorderRadius));
@@ -235,7 +237,9 @@ PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
               base::BindRepeating(&PickerEmojiBarView::OpenMoreEmojis,
                                   base::Unretained(this)),
               IconButton::Type::kSmallFloating, &kPickerMoreEmojisIcon,
-              IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME));
+              is_gifs_enabled
+                  ? IDS_PICKER_MORE_EMOJIS_AND_GIFS_BUTTON_ACCESSIBLE_NAME
+                  : IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME));
 
   StyleUtil::SetUpInkDropForButton(more_emojis_button_, gfx::Insets(),
                                    /*highlight_on_hover=*/true,

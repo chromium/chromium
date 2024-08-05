@@ -389,8 +389,8 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Call(
       [view]() { view->more_emojis_button_for_testing()->RequestFocus(); });
 
-  sm_.ExpectSpeechPattern(
-      l10n_util::GetStringUTF8(IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME));
+  sm_.ExpectSpeechPattern(l10n_util::GetStringUTF8(
+      IDS_PICKER_MORE_EMOJIS_AND_GIFS_BUTTON_ACCESSIBLE_NAME));
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("row 1 column 5");
 
