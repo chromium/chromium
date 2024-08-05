@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.4](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.6.3...chromium-bidi-v0.6.4) (2024-08-05)
+
+
+### Features
+
+* implement capabilities handling in session.new ([#2448](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2448)) ([9c74a9c](https://github.com/GoogleChromeLabs/chromium-bidi/commit/9c74a9cc31df5cc4dd45fba716e361adc7d0b995))
+
+
+### Bug Fixes
+
+* do not log env ([#2471](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2471)) ([048fed1](https://github.com/GoogleChromeLabs/chromium-bidi/commit/048fed10fe7d942d4992a201dad713f2f6b40adf))
+* improve capabilities matching ([#2464](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2464)) ([8181e44](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8181e4481e0a78b1263e4b7b57afc892a9ff3b9a))
+
 ## [0.6.3](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.6.2...chromium-bidi-v0.6.3) (2024-07-26)
 
 
