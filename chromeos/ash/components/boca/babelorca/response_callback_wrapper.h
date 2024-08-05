@@ -13,7 +13,12 @@ namespace babelorca {
 
 class ResponseCallbackWrapper {
  public:
-  enum class TachyonRequestError { kHttpError, kNetworkError, kInternalError };
+  enum class TachyonRequestError {
+    kHttpError,
+    kNetworkError,
+    kInternalError,
+    kAuthError
+  };
 
   ResponseCallbackWrapper(const ResponseCallbackWrapper&) = delete;
   ResponseCallbackWrapper& operator=(const ResponseCallbackWrapper&) = delete;
