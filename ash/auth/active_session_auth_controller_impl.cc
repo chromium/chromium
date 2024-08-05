@@ -11,6 +11,7 @@
 #include "ash/auth/views/auth_common.h"
 #include "ash/auth/views/auth_view_utils.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -115,6 +116,25 @@ const char* ActiveSessionAuthStateToString(
   NOTREACHED();
 }
 
+AuthSessionIntent IntentFromReason(
+    ActiveSessionAuthControllerImpl::Reason reason) {
+  switch (reason) {
+    case ActiveSessionAuthController::Reason::kPasswordManager:
+      return AuthSessionIntent::kVerifyOnly;
+    case ActiveSessionAuthController::Reason::kSettings:
+      return AuthSessionIntent::kDecrypt;
+  }
+}
+
+int MessageFromReason(ActiveSessionAuthControllerImpl::Reason reason) {
+  switch (reason) {
+    case ActiveSessionAuthController::Reason::kPasswordManager:
+      return IDS_ASH_IN_SESSION_AUTH_PASSWORD_MANAGER_PROMPT;
+    case ActiveSessionAuthController::Reason::kSettings:
+      return IDS_ASH_IN_SESSION_AUTH_SETTINGS_PROMPT;
+  }
+}
+
 }  // namespace
 
 ActiveSessionAuthControllerImpl::TestApi::TestApi(
@@ -157,10 +177,7 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
   }
 
   title_ = l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_TITLE);
-  description_ = l10n_util::GetStringUTF16(
-      reason == Reason::kSettings
-          ? IDS_ASH_IN_SESSION_AUTH_SETTINGS_PROMPT
-          : IDS_ASH_IN_SESSION_AUTH_PASSWORD_MANAGER_PROMPT);
+  description_ = l10n_util::GetStringUTF16(MessageFromReason(reason));
   CHECK(!on_auth_complete_);
   on_auth_complete_ = std::move(on_auth_complete);
   auth_factor_editor_ =
@@ -177,7 +194,7 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
           account_id_);
 
   auth_performer_->StartAuthSession(
-      std::move(user_context), ephemeral, ash::AuthSessionIntent::kVerifyOnly,
+      std::move(user_context), ephemeral, IntentFromReason(reason),
       base::BindOnce(&ActiveSessionAuthControllerImpl::OnAuthSessionStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 
