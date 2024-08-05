@@ -5,6 +5,7 @@
 #include "ash/lobster/lobster_session_impl.h"
 
 #include <memory>
+#include <string_view>
 
 #include "ash/public/cpp/lobster/lobster_client.h"
 
@@ -22,6 +23,12 @@ LobsterSessionImpl::~LobsterSessionImpl() {
 void LobsterSessionImpl::DownloadCandidate(int candidate_id,
                                            StatusCallback callback) {
   std::move(callback).Run(false);
+}
+
+void LobsterSessionImpl::RequestCandidates(std::string_view query,
+                                           int num_candidates,
+                                           RequestCandidatesCallback callback) {
+  client_->RequestCandidates(query, num_candidates, std::move(callback));
 }
 
 }  // namespace ash

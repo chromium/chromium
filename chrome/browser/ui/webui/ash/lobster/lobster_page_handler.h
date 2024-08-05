@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOBSTER_LOBSTER_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOBSTER_LOBSTER_PAGE_HANDLER_H_
 
+#include <string_view>
+
+#include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
@@ -21,6 +24,10 @@ class LobsterPageHandler {
   ~LobsterPageHandler();
 
   void DownloadCandidate(int candidate_id, DownloadCandidateCallback);
+
+  void RequestCandidates(std::string_view query,
+                         int num_candidates,
+                         RequestCandidatesCallback);
 
  private:
   // Not owned by this class

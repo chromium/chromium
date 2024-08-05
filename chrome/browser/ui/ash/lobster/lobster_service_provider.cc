@@ -12,6 +12,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/lobster/lobster_service.h"
+#include "components/manta/manta_service.h"
+#include "components/manta/snapper_provider.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -42,7 +44,11 @@ LobsterServiceProvider::~LobsterServiceProvider() = default;
 
 std::unique_ptr<KeyedService> LobsterServiceProvider::BuildInstanceFor(
     content::BrowserContext* context) {
-  return std::make_unique<LobsterService>();
+  Profile* profile = Profile::FromBrowserContext(context);
+  std::unique_ptr<manta::SnapperProvider> snapper_provider =
+      manta::MantaServiceFactory::GetForProfile(profile)
+          ->CreateSnapperProvider();
+  return std::make_unique<LobsterService>(std::move(snapper_provider));
 }
 
 std::unique_ptr<KeyedService>

@@ -5,7 +5,10 @@
 #ifndef ASH_PUBLIC_CPP_LOBSTER_LOBSTER_CLIENT_H_
 #define ASH_PUBLIC_CPP_LOBSTER_LOBSTER_CLIENT_H_
 
+#include <string_view>
+
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
 
@@ -17,6 +20,9 @@ class ASH_PUBLIC_EXPORT LobsterClient {
 
   virtual void SetActiveSession(LobsterSession* session) = 0;
   virtual LobsterSystemState GetSystemState() = 0;
+  virtual void RequestCandidates(std::string_view query,
+                                 int num_candidates,
+                                 RequestCandidatesCallback) = 0;
 };
 
 }  // namespace ash

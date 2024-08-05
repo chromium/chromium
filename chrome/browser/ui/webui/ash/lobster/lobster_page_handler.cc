@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/lobster/lobster_page_handler.h"
 
+#include <string_view>
+
 #include "ash/public/cpp/lobster/lobster_session.h"
 
 namespace ash {
@@ -16,6 +18,12 @@ LobsterPageHandler::~LobsterPageHandler() = default;
 void LobsterPageHandler::DownloadCandidate(int candidate_id,
                                            DownloadCandidateCallback callback) {
   session_->DownloadCandidate(candidate_id, std::move(callback));
+}
+
+void LobsterPageHandler::RequestCandidates(std::string_view query,
+                                           int num_candidates,
+                                           RequestCandidatesCallback callback) {
+  session_->RequestCandidates(query, num_candidates, std::move(callback));
 }
 
 }  // namespace ash

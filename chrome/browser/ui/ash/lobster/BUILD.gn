@@ -8,6 +8,8 @@ assert(is_chromeos_ash)
 
 static_library("lobster") {
   sources = [
+    "image_fetcher.cc",
+    "image_fetcher.h",
     "lobster_client_factory_impl.cc",
     "lobster_client_factory_impl.h",
     "lobster_client_impl.cc",
@@ -29,7 +31,41 @@ static_library("lobster") {
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
+    "//components/manta",
     "//components/variations/service",
     "//content/public/browser",
+    "//net/traffic_annotation:traffic_annotation",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock/mock_snapper_provider.cc",
+    "mock/mock_snapper_provider.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/manta",
+    "//net/traffic_annotation:traffic_annotation",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "image_fetcher_unittest.cc" ]
+
+  deps = [
+    ":lobster",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

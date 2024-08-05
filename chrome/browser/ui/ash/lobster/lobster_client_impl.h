@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ASH_LOBSTER_LOBSTER_CLIENT_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_LOBSTER_LOBSTER_CLIENT_IMPL_H_
 
+#include <string_view>
+
 #include "ash/public/cpp/lobster/lobster_client.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/memory/raw_ptr.h"
@@ -23,6 +25,9 @@ class LobsterClientImpl : public ash::LobsterClient {
   // LobsterClient overrides
   void SetActiveSession(ash::LobsterSession* session) override;
   ash::LobsterSystemState GetSystemState() override;
+  void RequestCandidates(std::string_view query,
+                         int num_candidates,
+                         ash::RequestCandidatesCallback) override;
 
  private:
   // Not owned by this class

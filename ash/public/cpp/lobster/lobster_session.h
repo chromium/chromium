@@ -5,8 +5,12 @@
 #ifndef ASH_PUBLIC_CPP_LOBSTER_LOBSTER_SESSION_H_
 #define ASH_PUBLIC_CPP_LOBSTER_LOBSTER_SESSION_H_
 
+#include <string_view>
+
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "base/functional/callback.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -17,6 +21,10 @@ class ASH_PUBLIC_EXPORT LobsterSession {
   virtual ~LobsterSession() = default;
 
   virtual void DownloadCandidate(int candidate_id, StatusCallback) = 0;
+
+  virtual void RequestCandidates(std::string_view query,
+                                 int num_candidates,
+                                 RequestCandidatesCallback) = 0;
 };
 
 }  // namespace ash
