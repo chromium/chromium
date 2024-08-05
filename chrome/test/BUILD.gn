@@ -1906,6 +1906,7 @@ if (!is_android) {
       "//components/cookie_config",
       "//components/country_codes",
       "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
+      "//components/data_sharing/public",
       "//components/dom_distiller/content/browser",
       "//components/dom_distiller/content/browser:test_support",
       "//components/dom_distiller/content/renderer",
@@ -2610,6 +2611,7 @@ if (!is_android) {
 
       # TODO(b/246519185) - Py3 incompatible, decide if to keep test.
       # "../browser/media/webrtc/webrtc_apprtc_browsertest.cc",
+      "../browser/data_sharing/desktop/data_sharing_service_browsertest.cc",
       "../browser/media/webrtc/webrtc_browsertest_perf.cc",
       "../browser/media/webrtc/webrtc_browsertest_perf.h",
       "../browser/media/webrtc/webrtc_browsertest_perf_unittest.cc",
@@ -7628,6 +7630,7 @@ test("unit_tests") {
       "../browser/component_updater/zxcvbn_data_component_installer_unittest.cc",
       "../browser/content_settings/generated_cookie_prefs_unittest.cc",
       "../browser/content_settings/generated_notification_pref_unittest.cc",
+      "../browser/data_sharing/desktop/data_sharing_conversion_utils_unittest.cc",
       "../browser/device_identity/device_oauth2_token_service_unittest.cc",
       "../browser/device_notifications/device_connection_tracker_unittest.cc",
       "../browser/device_notifications/device_connection_tracker_unittest.h",

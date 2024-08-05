@@ -4,6 +4,8 @@
 
 module data_sharing.mojom;
 
+import "components/data_sharing/public/protocol/group_data.mojom";
+
 // Factory ensures that the Page and PageHandler interfaces are always created
 // together without requiring an initialization call from the WebUI to the
 // handler.
@@ -18,6 +20,11 @@ interface PageHandler {
   // Ask the browser to show the UI. Called when the page is loaded and ready to
   // show.
   ShowUI();
+
+  // Called when the api page is fully initialized and authenticated.
+  // All other APIs on the Page such as ReadGroups should only be invoked
+  // after ApiInitComplete.
+  ApiInitComplete();
 };
 
 // WebUI-side handler for requests from the browser.
@@ -25,4 +32,7 @@ interface Page {
   // Called when the access token of the primary account is fetched.
   // The token is used by data sharing SDK to authenticate the current user.
   OnAccessTokenFetched(string access_token);
+
+  // Read groups given group_ids.
+  ReadGroups(array<string> group_ids) => (array<GroupData> groups);
 };

@@ -68,6 +68,8 @@ class DataSharingSDKDelegate {
       base::OnceCallback<
           void(const base::expected<data_sharing_pb::LookupGaiaIdByEmailResult,
                                     absl::Status>&)> callback) = 0;
+
+  virtual void Shutdown() {}
 };
 
 }  // namespace data_sharing

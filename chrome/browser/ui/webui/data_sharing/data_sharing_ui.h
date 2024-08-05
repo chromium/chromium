@@ -25,15 +25,25 @@ class DataSharingUIConfig : public DefaultTopChromeWebUIConfig<DataSharingUI> {
 class DataSharingUI : public UntrustedTopChromeWebUIController,
                       public data_sharing::mojom::PageHandlerFactory {
  public:
+  // Delegate for the DataSharingUI.
+  class Delegate {
+   public:
+    // Called when the api is fully initialized and authenticated.
+    virtual void ApiInitComplete() = 0;
+  };
   explicit DataSharingUI(content::WebUI* web_ui);
   ~DataSharingUI() override;
 
   void BindInterface(
       mojo::PendingReceiver<data_sharing::mojom::PageHandlerFactory> receiver);
 
+  void ApiInitComplete();
+
   DataSharingPageHandler* page_handler() { return page_handler_.get(); }
 
   static constexpr std::string GetWebUIName() { return "DataSharingBubble"; }
+
+  void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
 
  private:
   // data_sharing::mojom::PageHandlerFactory:
@@ -45,6 +55,8 @@ class DataSharingUI : public UntrustedTopChromeWebUIController,
 
   mojo::Receiver<data_sharing::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
+
+  raw_ptr<Delegate> delegate_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

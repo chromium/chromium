@@ -96,6 +96,12 @@ void DataSharingUI::BindInterface(
   page_factory_receiver_.Bind(std::move(receiver));
 }
 
+void DataSharingUI::ApiInitComplete() {
+  if (delegate_) {
+    delegate_->ApiInitComplete();
+  }
+}
+
 void DataSharingUI::CreatePageHandler(
     mojo::PendingRemote<data_sharing::mojom::Page> page,
     mojo::PendingReceiver<data_sharing::mojom::PageHandler> receiver) {

@@ -91,6 +91,7 @@ class DataSharingServiceImpl : public DataSharingService,
   void HandleShareURLNavigationIntercepted(const GURL& url) override;
   std::unique_ptr<GURL> GetDataSharingURL(const GroupData& group_data) override;
   ParseURLResult ParseDataSharingURL(const GURL& url) override;
+  void Shutdown() override;
 
   // CollaborationGroupSyncBridge::Observer implementation.
   void OnGroupsUpdated(const std::vector<GroupId>& added_group_ids,

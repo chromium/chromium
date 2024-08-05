@@ -370,6 +370,12 @@ void DataSharingServiceImpl::OnDataLoaded() {
           /*updated_group_ids=*/std::set<GroupId>()));
 }
 
+void DataSharingServiceImpl::Shutdown() {
+  if (sdk_delegate_) {
+    sdk_delegate_->Shutdown();
+  }
+}
+
 void DataSharingServiceImpl::OnReadSingleGroupCompleted(
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback,
     const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&

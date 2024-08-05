@@ -25,6 +25,7 @@
 #include "chrome/browser/data_sharing/data_sharing_service_factory_bridge.h"
 #include "chrome/browser/data_sharing/data_sharing_ui_delegate_android.h"
 #else  // BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/data_sharing/desktop/data_sharing_sdk_delegate_desktop.h"
 #include "chrome/browser/data_sharing/desktop/data_sharing_ui_delegate_desktop.h"
 #endif
 
@@ -73,6 +74,7 @@ KeyedService* DataSharingServiceFactory::BuildServiceInstanceFor(
       DataSharingServiceFactoryBridge::CreateJavaSDKDelegate(profile));
 #else
   ui_delegate = std::make_unique<DataSharingUIDelegateDesktop>(profile);
+  sdk_delegate = std::make_unique<DataSharingSDKDelegateDesktop>(context);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return new DataSharingServiceImpl(
