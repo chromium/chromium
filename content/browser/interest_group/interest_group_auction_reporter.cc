@@ -110,30 +110,6 @@ const base::FeatureParam<int> kFledgeScoreReportingBits{
 const base::FeatureParam<int> kFledgeAdCostReportingBits{
     &kFledgeRounding, "fledge_ad_cost_reporting_bits", 8};
 
-InterestGroupAuctionReporter::PrivateAggregationKey::PrivateAggregationKey(
-    url::Origin reporting_origin,
-    std::optional<url::Origin> aggregation_coordinator_origin)
-    : reporting_origin(std::move(reporting_origin)),
-      aggregation_coordinator_origin(
-          std::move(aggregation_coordinator_origin)) {}
-
-InterestGroupAuctionReporter::PrivateAggregationKey::PrivateAggregationKey(
-    const PrivateAggregationKey& other) = default;
-
-InterestGroupAuctionReporter::PrivateAggregationKey&
-InterestGroupAuctionReporter::PrivateAggregationKey::operator=(
-    const PrivateAggregationKey& other) = default;
-
-InterestGroupAuctionReporter::PrivateAggregationKey::PrivateAggregationKey(
-    PrivateAggregationKey&& other) = default;
-
-InterestGroupAuctionReporter::PrivateAggregationKey&
-InterestGroupAuctionReporter::PrivateAggregationKey::operator=(
-    PrivateAggregationKey&& other) = default;
-
-InterestGroupAuctionReporter::PrivateAggregationKey::~PrivateAggregationKey() =
-    default;
-
 InterestGroupAuctionReporter::SellerWinningBidInfo::SellerWinningBidInfo() =
     default;
 InterestGroupAuctionReporter::SellerWinningBidInfo::SellerWinningBidInfo(

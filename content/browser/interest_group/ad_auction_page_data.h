@@ -16,6 +16,7 @@
 #include "content/browser/interest_group/header_direct_from_seller_signals.h"
 #include "content/public/browser/page_user_data.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_client.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/origin.h"
 
 namespace data_decoder {
@@ -29,7 +30,9 @@ struct CONTENT_EXPORT AdAuctionRequestContext {
       url::Origin seller,
       base::flat_map<url::Origin, std::vector<std::string>> group_names,
       quiche::ObliviousHttpRequest::Context context,
-      base::TimeTicks start_time);
+      base::TimeTicks start_time,
+      base::flat_map<blink::InterestGroupKey, url::Origin>
+          group_pagg_coordinators);
   AdAuctionRequestContext(AdAuctionRequestContext&& other);
   ~AdAuctionRequestContext();
 
@@ -37,6 +40,7 @@ struct CONTENT_EXPORT AdAuctionRequestContext {
   base::flat_map<url::Origin, std::vector<std::string>> group_names;
   quiche::ObliviousHttpRequest::Context context;
   base::TimeTicks start_time;
+  base::flat_map<blink::InterestGroupKey, url::Origin> group_pagg_coordinators;
 };
 
 // Contains auction header responses within a page. This will only be created

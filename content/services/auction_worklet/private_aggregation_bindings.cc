@@ -15,13 +15,13 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_v8_logger.h"
+#include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -347,26 +347,6 @@ std::optional<uint64_t> ParseDebugKey(v8::Local<v8::BigInt> js_debug_key,
   return absl::Uint128Low64(maybe_debug_key.value());
 }
 
-constexpr auto kReservedEventTypes =
-    base::MakeFixedFlatMap<std::string_view,
-                           auction_worklet::mojom::ReservedEventType>(
-        {{"reserved.always",
-          auction_worklet::mojom::ReservedEventType::kReservedAlways},
-         {"reserved.win",
-          auction_worklet::mojom::ReservedEventType::kReservedWin},
-         {"reserved.loss",
-          auction_worklet::mojom::ReservedEventType::kReservedLoss}});
-
-std::optional<auction_worklet::mojom::ReservedEventType> ParseReservedEventType(
-    const std::string& type) {
-  auto it = kReservedEventTypes.find(type);
-  if (it != kReservedEventTypes.end()) {
-    return it->second;
-  } else {
-    return std::nullopt;
-  }
-}
-
 }  // namespace
 
 PrivateAggregationBindings::PrivateAggregationBindings(
@@ -634,27 +614,19 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
     return;
   }
 
-  auction_worklet::mojom::EventTypePtr event_type;
-  if (base::StartsWith(event_type_str, "reserved.")) {
-    std::optional<auction_worklet::mojom::ReservedEventType> maybe_reserved =
-        ParseReservedEventType(event_type_str);
-    if (!maybe_reserved.has_value()) {
-      // Don't throw an error if an invalid reserved event type is provided, to
-      // provide forward compatibility with new reserved event types added
-      // later.
-      return;
-    }
-    event_type =
-        auction_worklet::mojom::EventType::NewReserved(maybe_reserved.value());
-  } else {
-    event_type =
-        auction_worklet::mojom::EventType::NewNonReserved(event_type_str);
+  std::optional<auction_worklet::mojom::EventTypePtr> event_type =
+      ParsePrivateAggregationEventType(event_type_str);
+  if (!event_type.has_value()) {
+    // Don't throw an error if an invalid reserved event type is provided, to
+    // provide forward compatibility with new reserved event types added
+    // later.
+    return;
   }
 
   std::string error;
   auction_worklet::mojom::AggregatableReportForEventContributionPtr
       contribution = ParseForEventContribution(
-          isolate, std::move(event_type), std::move(bucket), std::move(value),
+          isolate, std::move(*event_type), std::move(bucket), std::move(value),
           std::move(filtering_id), &error);
 
   if (contribution.is_null()) {

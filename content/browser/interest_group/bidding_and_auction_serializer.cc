@@ -6,11 +6,13 @@
 
 #include <algorithm>
 #include <array>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/histogram_functions.h"
@@ -66,6 +68,9 @@ struct CompressedInterestGroups {
   size_t uncompressed_size;
   // `num_groups` is the number of interest groups included in the `data`.
   size_t num_groups;
+  // `group_pagg_coordinators` maps from interest group key to an aggregation
+  // coordinator origin, if the interest group has a not null coordinator.
+  base::flat_map<blink::InterestGroupKey, url::Origin> group_pagg_coordinators;
 };
 
 struct SerializedBiddersMap {
@@ -88,6 +93,9 @@ struct SerializedBiddersMap {
   // `bidders_elements_size` is the running size estimate for serializing the
   // `bidders` map.
   base::CheckedNumeric<size_t> bidders_elements_size;  // bytes
+  // `group_pagg_coordinators` maps from interest group key to an aggregation
+  // coordinator origin, if the interest group has a not null coordinator.
+  base::flat_map<blink::InterestGroupKey, url::Origin> group_pagg_coordinators;
 };
 
 constexpr std::size_t constexpr_strlen(const char* s) {
@@ -356,6 +364,7 @@ ValueAndSize SerializeInterestGroup(base::Time start_time,
 }
 
 CompressedInterestGroups CompressInterestGroups(
+    const url::Origin& owner,
     const std::vector<SingleStorageInterestGroup>& groups,
     base::Time start_time,
     std::optional<uint32_t> target_uncompressed_size) {
@@ -376,6 +385,12 @@ CompressedInterestGroups CompressInterestGroups(
     }
     groups_array.emplace_back(std::move(serialized_group.value));
     result.group_names.push_back(group->interest_group.name);
+    std::optional<url::Origin> maybe_coordinator =
+        group->interest_group.aggregation_coordinator_origin;
+    if (maybe_coordinator.has_value()) {
+      result.group_pagg_coordinators[blink::InterestGroupKey(
+          owner, group->interest_group.name)] = *maybe_coordinator;
+    }
     groups_elements_size += serialized_group.size;
     result.num_groups++;
   }
@@ -420,14 +435,14 @@ SerializedBiddersMap SerializeBidderGroupsWithConfig(
   all_bidders_full_compressed_groups.reserve(bidders_and_groups.size());
   for (size_t idx = 0; idx < bidders_and_groups.size(); ++idx) {
     const auto& bidder_groups = bidders_and_groups[idx];
-    all_bidders_full_compressed_groups.emplace_back(
-        CompressInterestGroups(bidder_groups.second, start_time, std::nullopt));
+    all_bidders_full_compressed_groups.emplace_back(CompressInterestGroups(
+        bidder_groups.first, bidder_groups.second, start_time, std::nullopt));
     estimator.UpdatePerBuyerMaxSize(
         bidder_groups.first,
         all_bidders_full_compressed_groups[idx].data.size());
   }
 
-  SerializedBiddersMap result{{}, {}, 0, 0, 0, 0};
+  SerializedBiddersMap result{{}, {}, 0, 0, 0, 0, {}};
   result.bidders.reserve(bidders_and_groups.size());
   result.group_names.reserve(bidders_and_groups.size());
   for (size_t idx = 0; idx < bidders_and_groups.size(); ++idx) {
@@ -491,7 +506,8 @@ SerializedBiddersMap SerializeBidderGroupsWithConfig(
             (current_uncompressed_target_size * 15) / 16;
 
         compressed_groups = CompressInterestGroups(
-            bidder_groups.second, start_time, current_uncompressed_target_size);
+            bidder_groups.first, bidder_groups.second, start_time,
+            current_uncompressed_target_size);
       }
 
       // Only record iteration count if we were trying to fit within a
@@ -514,6 +530,11 @@ SerializedBiddersMap SerializeBidderGroupsWithConfig(
         TaggedStringLength(compressed_groups.data.size());
     result.group_names.emplace(bidder_groups.first,
                                std::move(compressed_groups.group_names));
+    result.group_pagg_coordinators.insert(
+        std::make_move_iterator(
+            compressed_groups.group_pagg_coordinators.begin()),
+        std::make_move_iterator(
+            compressed_groups.group_pagg_coordinators.end()));
     result.bidders[cbor::Value(bidder_origin)] = cbor::Value(
         std::move(compressed_groups.data), cbor::Value::Type::BYTE_STRING);
   }
@@ -1011,6 +1032,7 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
 
   data.request = std::move(request);
   data.group_names = std::move(groups.group_names);
+  data.group_pagg_coordinators = std::move(groups.group_pagg_coordinators);
   return data;
 }
 

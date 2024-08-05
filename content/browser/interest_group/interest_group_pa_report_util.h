@@ -47,6 +47,62 @@ struct CONTENT_EXPORT PrivateAggregationTimings {
   base::TimeDelta signals_fetch_time;
 };
 
+// Key used to group Private aggregation signals.
+struct CONTENT_EXPORT PrivateAggregationKey {
+  PrivateAggregationKey(
+      url::Origin reporting_origin,
+      std::optional<url::Origin> aggregation_coordinator_origin);
+  PrivateAggregationKey(const PrivateAggregationKey&);
+  PrivateAggregationKey& operator=(const PrivateAggregationKey&);
+  PrivateAggregationKey(PrivateAggregationKey&&);
+  PrivateAggregationKey& operator=(PrivateAggregationKey&&);
+  ~PrivateAggregationKey();
+
+  bool operator<(const PrivateAggregationKey& other) const {
+    return std::tie(reporting_origin, aggregation_coordinator_origin) <
+           std::tie(other.reporting_origin,
+                    other.aggregation_coordinator_origin);
+  }
+
+  url::Origin reporting_origin;
+  std::optional<url::Origin> aggregation_coordinator_origin;
+};
+
+// Helps determine which level of worklet a particular PA request came from.
+enum class PrivateAggregationPhase {
+  kBidder,
+  kNonTopLevelSeller,  // Seller for a component auction.
+  kTopLevelSeller,     // Top-level seller, either with components or
+                       // as the sole seller in a single-seller auction.
+  kNumPhases
+};
+
+// Used as a key to group Private Aggregation API requests from worklets in
+// a map. The `reporting_origin` and `aggregation_coordinator_origin` are
+// passed into the Private Aggregation API.
+struct CONTENT_EXPORT PrivateAggregationPhaseKey {
+  PrivateAggregationPhaseKey(
+      url::Origin reporting_origin,
+      PrivateAggregationPhase phase,
+      std::optional<url::Origin> aggregation_coordinator_origin);
+  PrivateAggregationPhaseKey(const PrivateAggregationPhaseKey& other);
+  PrivateAggregationPhaseKey& operator=(
+      const PrivateAggregationPhaseKey& other);
+  PrivateAggregationPhaseKey(PrivateAggregationPhaseKey&& other);
+  PrivateAggregationPhaseKey& operator=(PrivateAggregationPhaseKey&& other);
+  ~PrivateAggregationPhaseKey();
+
+  bool operator<(const PrivateAggregationPhaseKey& other) const {
+    return std::tie(reporting_origin, phase, aggregation_coordinator_origin) <
+           std::tie(other.reporting_origin, other.phase,
+                    other.aggregation_coordinator_origin);
+  }
+
+  url::Origin reporting_origin;
+  PrivateAggregationPhase phase;
+  std::optional<url::Origin> aggregation_coordinator_origin;
+};
+
 // If request's contribution is an AggregatableReportForEventContribution, fills
 // the contribution in with post-auction signals such as winning_bid, converts
 // it to an AggregatableReportHistogramContribution and returns the resulting
@@ -73,9 +129,12 @@ CONTENT_EXPORT void SplitContributionsIntoBatchesThenSendToHost(
     std::optional<url::Origin> aggregation_coordinator_origin,
     const url::Origin& main_frame_origin);
 
-// Returns false if request has an invalid filtering ID.
+// Returns true if request has a valid filtering ID.
 CONTENT_EXPORT bool HasValidFilteringId(
     const auction_worklet::mojom::PrivateAggregationRequestPtr& request);
+
+// Returns true if filtering ID is valid.
+CONTENT_EXPORT bool IsValidFilteringId(std::optional<uint64_t> filtering_id);
 
 }  // namespace content
 

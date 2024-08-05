@@ -27,6 +27,7 @@
 #include "content/browser/interest_group/bidding_and_auction_response.h"
 #include "content/browser/interest_group/header_direct_from_seller_signals.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
+#include "content/browser/interest_group/interest_group_pa_report_util.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
@@ -94,27 +95,6 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     // `Start()` or `InitializeFromServerResponse()` are called.
     kNotStarted = 5,
     kMaxValue = kNotStarted
-  };
-
-  // Key used to group Private aggregation signals.
-  struct CONTENT_EXPORT PrivateAggregationKey {
-    PrivateAggregationKey(
-        url::Origin reporting_origin,
-        std::optional<url::Origin> aggregation_coordinator_origin);
-    PrivateAggregationKey(const PrivateAggregationKey&);
-    PrivateAggregationKey& operator=(const PrivateAggregationKey&);
-    PrivateAggregationKey(PrivateAggregationKey&&);
-    PrivateAggregationKey& operator=(PrivateAggregationKey&&);
-    ~PrivateAggregationKey();
-
-    bool operator<(const PrivateAggregationKey& other) const {
-      return std::tie(reporting_origin, aggregation_coordinator_origin) <
-             std::tie(other.reporting_origin,
-                      other.aggregation_coordinator_origin);
-    }
-
-    url::Origin reporting_origin;
-    std::optional<url::Origin> aggregation_coordinator_origin;
   };
 
   using PrivateAggregationRequests =

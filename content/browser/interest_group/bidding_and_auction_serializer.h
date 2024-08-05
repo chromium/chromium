@@ -15,6 +15,7 @@
 #include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/origin.h"
 
@@ -29,6 +30,7 @@ struct CONTENT_EXPORT BiddingAndAuctionData {
 
   std::vector<uint8_t> request;
   base::flat_map<url::Origin, std::vector<std::string>> group_names;
+  base::flat_map<blink::InterestGroupKey, url::Origin> group_pagg_coordinators;
 };
 
 // Serializes Bidding and Auction requests
