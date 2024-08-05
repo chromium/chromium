@@ -802,10 +802,11 @@ bool DesktopWindowTreeHostWin::HasNonClientView() const {
 }
 
 FrameMode DesktopWindowTreeHostWin::GetFrameMode() const {
-  if (!GetWidget())
-    return FrameMode::SYSTEM_DRAWN;
-  return GetWidget()->ShouldUseNativeFrame() ? FrameMode::SYSTEM_DRAWN
-                                             : FrameMode::CUSTOM_DRAWN;
+  if (const Widget* widget = GetWidget()) {
+    return widget->ShouldUseNativeFrame() ? FrameMode::SYSTEM_DRAWN
+                                          : FrameMode::CUSTOM_DRAWN;
+  }
+  return FrameMode::SYSTEM_DRAWN;
 }
 
 bool DesktopWindowTreeHostWin::HasFrame() const {
@@ -813,24 +814,37 @@ bool DesktopWindowTreeHostWin::HasFrame() const {
 }
 
 void DesktopWindowTreeHostWin::SchedulePaint() {
-  if (GetWidget())
-    GetWidget()->GetRootView()->SchedulePaint();
+  if (Widget* widget = GetWidget()) {
+    widget->GetRootView()->SchedulePaint();
+  }
 }
 
 bool DesktopWindowTreeHostWin::ShouldPaintAsActive() const {
-  return GetWidget() ? GetWidget()->ShouldPaintAsActive() : false;
+  if (const Widget* widget = GetWidget()) {
+    return widget->ShouldPaintAsActive();
+  }
+  return false;
 }
 
 bool DesktopWindowTreeHostWin::CanResize() const {
-  return GetWidget()->widget_delegate()->CanResize();
+  if (const Widget* widget = GetWidget(); widget->widget_delegate()) {
+    return widget->widget_delegate()->CanResize();
+  }
+  return false;
 }
 
 bool DesktopWindowTreeHostWin::CanMaximize() const {
-  return GetWidget()->widget_delegate()->CanMaximize();
+  if (const Widget* widget = GetWidget(); widget->widget_delegate()) {
+    return widget->widget_delegate()->CanMaximize();
+  }
+  return false;
 }
 
 bool DesktopWindowTreeHostWin::CanMinimize() const {
-  return GetWidget()->widget_delegate()->CanMinimize();
+  if (const Widget* widget = GetWidget(); widget->widget_delegate()) {
+    return widget->widget_delegate()->CanMinimize();
+  }
+  return false;
 }
 
 bool DesktopWindowTreeHostWin::CanActivate() const {
@@ -845,9 +859,13 @@ bool DesktopWindowTreeHostWin::WantsMouseEventsWhenInactive() const {
 }
 
 bool DesktopWindowTreeHostWin::WidgetSizeIsClientSize() const {
-  const Widget* widget =
-      GetWidget() ? GetWidget()->GetTopLevelWidget() : nullptr;
-  return IsMaximized() || (widget && widget->ShouldUseNativeFrame());
+  if (IsMaximized()) {
+    return true;
+  }
+  if (const Widget* widget = GetWidget()) {
+    return widget->ShouldUseNativeFrame();
+  }
+  return false;
 }
 
 bool DesktopWindowTreeHostWin::IsModal() const {
@@ -867,8 +885,8 @@ int DesktopWindowTreeHostWin::GetNonClientComponent(
 
 void DesktopWindowTreeHostWin::GetWindowMask(const gfx::Size& size,
                                              SkPath* path) {
-  if (GetWidget()->non_client_view()) {
-    GetWidget()->non_client_view()->GetWindowMask(
+  if (Widget* widget = GetWidget(); widget->non_client_view()) {
+    widget->non_client_view()->GetWindowMask(
         display::win::ScreenWin::ScreenToDIPSize(GetHWND(), size), path);
     // Convert path in DIPs to pixels.
     if (!path->isEmpty()) {
@@ -909,7 +927,10 @@ void DesktopWindowTreeHostWin::GetMinMaxSize(gfx::Size* min_size,
 }
 
 gfx::Size DesktopWindowTreeHostWin::GetRootViewSize() const {
-  return GetWidget()->GetRootView()->size();
+  if (const Widget* widget = GetWidget()) {
+    return widget->GetRootView()->size();
+  }
+  return gfx::Size();
 }
 
 gfx::Size DesktopWindowTreeHostWin::DIPToScreenSize(
@@ -918,15 +939,17 @@ gfx::Size DesktopWindowTreeHostWin::DIPToScreenSize(
 }
 
 void DesktopWindowTreeHostWin::ResetWindowControls() {
-  if (GetWidget()->non_client_view())
-    GetWidget()->non_client_view()->ResetWindowControls();
+  if (Widget* widget = GetWidget(); widget->non_client_view()) {
+    widget->non_client_view()->ResetWindowControls();
+  }
 }
 
 gfx::NativeViewAccessible DesktopWindowTreeHostWin::GetNativeViewAccessible() {
   // This function may be called during shutdown when the |RootView| is nullptr.
-  return GetWidget()->GetRootView()
-             ? GetWidget()->GetRootView()->GetNativeViewAccessible()
-             : nullptr;
+  if (Widget* widget = GetWidget()) {
+    return widget->GetRootView()->GetNativeViewAccessible();
+  }
+  return nullptr;
 }
 
 void DesktopWindowTreeHostWin::HandleActivationChanged(bool active) {
@@ -942,8 +965,10 @@ void DesktopWindowTreeHostWin::HandleActivationChanged(bool active) {
 bool DesktopWindowTreeHostWin::HandleAppCommand(int command) {
   // We treat APPCOMMAND ids as an extension of our command namespace, and just
   // let the delegate figure out what to do...
-  return GetWidget()->widget_delegate() &&
-         GetWidget()->widget_delegate()->ExecuteWindowsCommand(command);
+  if (Widget* widget = GetWidget(); widget->widget_delegate()) {
+    return widget->widget_delegate()->ExecuteWindowsCommand(command);
+  }
+  return false;
 }
 
 void DesktopWindowTreeHostWin::HandleCancelMode() {
@@ -955,16 +980,23 @@ void DesktopWindowTreeHostWin::HandleCaptureLost() {
 }
 
 void DesktopWindowTreeHostWin::HandleClose() {
-  GetWidget()->Close();
+  if (Widget* widget = GetWidget()) {
+    widget->Close();
+  }
 }
 
 bool DesktopWindowTreeHostWin::HandleCommand(int command) {
-  return GetWidget()->widget_delegate()->ExecuteWindowsCommand(command);
+  if (Widget* widget = GetWidget(); widget->widget_delegate()) {
+    return widget->widget_delegate()->ExecuteWindowsCommand(command);
+  }
+  return false;
 }
 
 void DesktopWindowTreeHostWin::HandleAccelerator(
     const ui::Accelerator& accelerator) {
-  GetWidget()->GetFocusManager()->ProcessAccelerator(accelerator);
+  if (Widget* widget = GetWidget()) {
+    widget->GetFocusManager()->ProcessAccelerator(accelerator);
+  }
 }
 
 void DesktopWindowTreeHostWin::HandleCreate() {
@@ -987,19 +1019,28 @@ void DesktopWindowTreeHostWin::HandleDestroyed() {
 
 bool DesktopWindowTreeHostWin::HandleInitialFocus(
     ui::WindowShowState show_state) {
-  return GetWidget()->SetInitialFocus(show_state);
+  if (Widget* widget = GetWidget()) {
+    return widget->SetInitialFocus(show_state);
+  }
+  return false;
 }
 
 void DesktopWindowTreeHostWin::HandleDisplayChange() {
-  GetWidget()->widget_delegate()->OnDisplayChanged();
+  if (Widget* widget = GetWidget(); widget->widget_delegate()) {
+    widget->widget_delegate()->OnDisplayChanged();
+  }
 }
 
 void DesktopWindowTreeHostWin::HandleBeginWMSizeMove() {
-  native_widget_delegate_->OnNativeWidgetBeginUserBoundsChange();
+  if (native_widget_delegate_) {
+    native_widget_delegate_->OnNativeWidgetBeginUserBoundsChange();
+  }
 }
 
 void DesktopWindowTreeHostWin::HandleEndWMSizeMove() {
-  native_widget_delegate_->OnNativeWidgetEndUserBoundsChange();
+  if (native_widget_delegate_) {
+    native_widget_delegate_->OnNativeWidgetEndUserBoundsChange();
+  }
 }
 
 void DesktopWindowTreeHostWin::HandleMove() {
@@ -1013,7 +1054,9 @@ void DesktopWindowTreeHostWin::HandleMove() {
 
 void DesktopWindowTreeHostWin::HandleWorkAreaChanged() {
   CheckForMonitorChange();
-  GetWidget()->widget_delegate()->OnWorkAreaChanged();
+  if (Widget* widget = GetWidget(); widget->widget_delegate()) {
+    widget->widget_delegate()->OnWorkAreaChanged();
+  }
 }
 
 void DesktopWindowTreeHostWin::HandleVisibilityChanged(bool visible) {
@@ -1044,8 +1087,9 @@ void DesktopWindowTreeHostWin::HandleClientSizeChanged(
 
 void DesktopWindowTreeHostWin::HandleFrameChanged() {
   // Replace the frame and layout the contents.
-  if (GetWidget()->non_client_view())
-    GetWidget()->non_client_view()->UpdateFrame();
+  if (Widget* widget = GetWidget(); widget->non_client_view()) {
+    widget->non_client_view()->UpdateFrame();
+  }
 }
 
 void DesktopWindowTreeHostWin::HandleNativeFocus(HWND last_focused_window) {
@@ -1073,9 +1117,10 @@ void DesktopWindowTreeHostWin::HandleKeyEvent(ui::KeyEvent* event) {
   if ((event->type() == ui::EventType::kKeyPressed) &&
       (event->key_code() == ui::VKEY_SPACE) &&
       (event->flags() & ui::EF_ALT_DOWN) &&
-      !(event->flags() & ui::EF_CONTROL_DOWN) &&
-      GetWidget()->non_client_view()) {
-    return;
+      !(event->flags() & ui::EF_CONTROL_DOWN)) {
+    if (Widget* widget = GetWidget(); widget->non_client_view()) {
+      return;
+    }
   }
 
   SendEventToSink(event);
@@ -1085,8 +1130,10 @@ void DesktopWindowTreeHostWin::HandleTouchEvent(ui::TouchEvent* event) {
   // HWNDMessageHandler asynchronously processes touch events. Because of this
   // it's possible for the aura::WindowEventDispatcher to have been destroyed
   // by the time we attempt to process them.
-  if (!GetWidget()->GetNativeView())
+  Widget* widget = GetWidget();
+  if (!widget || !widget->GetNativeView()) {
     return;
+  }
   if (in_touch_drag_) {
     POINT event_point;
     event_point.x = event->location().x();
@@ -1137,12 +1184,13 @@ bool DesktopWindowTreeHostWin::HandleIMEMessage(UINT message,
                                                 LPARAM l_param,
                                                 LRESULT* result) {
   // Show the system menu at an appropriate location on alt-space.
-  if ((message == WM_SYSCHAR) && (w_param == VK_SPACE) &&
-      GetWidget()->non_client_view()) {
-    const auto* frame = GetWidget()->non_client_view()->frame_view();
-    ShowSystemMenuAtScreenPixelLocation(
-        GetHWND(), frame->GetSystemMenuScreenPixelLocation());
-    return true;
+  if ((message == WM_SYSCHAR) && (w_param == VK_SPACE)) {
+    if (Widget* widget = GetWidget(); widget->non_client_view()) {
+      const auto* frame = GetWidget()->non_client_view()->frame_view();
+      ShowSystemMenuAtScreenPixelLocation(
+          GetHWND(), frame->GetSystemMenuScreenPixelLocation());
+      return true;
+    }
   }
 
   CHROME_MSG msg = {};
