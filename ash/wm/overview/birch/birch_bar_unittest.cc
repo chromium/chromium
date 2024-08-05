@@ -779,15 +779,7 @@ TEST_F(BirchBarMenuTest, NoCrashOnRemovingChip) {
 
 // Regression test to confirm there is no crash when removing a chip from a two
 // rows bar.
-// TODO(b/357494090): Test failing on ASAN and LSAN bot.
-#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
-#define MAYBE_NoCrashOnRemovingChipFromTwoRowsBar \
-  DISABLED_NoCrashOnRemovingChipFromTwoRowsBar
-#else
-#define MAYBE_NoCrashOnRemovingChipFromTwoRowsBar \
-  NoCrashOnRemovingChipFromTwoRowsBar
-#endif
-TEST_F(BirchBarMenuTest, MAYBE_NoCrashOnRemovingChipFromTwoRowsBar) {
+TEST_F(BirchBarMenuTest, NoCrashOnRemovingChipFromTwoRowsBar) {
   // Set a narrow display whose short side can only hold two chips.
   UpdateDisplay("640x1080");
 
