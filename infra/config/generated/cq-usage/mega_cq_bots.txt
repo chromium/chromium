@@ -100,6 +100,7 @@ chromium/try/linux-chromeos-dbg
 chromium/try/linux-chromeos-rel
 chromium/try/linux-clobber-rel
 chromium/try/linux-dawn-intel-exp-rel
+chromium/try/linux-dawn-nvidia-1660-exp-rel
 chromium/try/linux-dawn-rel
 chromium/try/linux-dcheck-off-rel
 chromium/try/linux-extended-tracing-rel
