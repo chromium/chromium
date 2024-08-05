@@ -7372,7 +7372,7 @@ New install
       </message>
       <message name="IDS_PICKER_UNITS_MATHS_CATEGORY_LABEL" translateable="false"
         desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page where users can enter mathematical calculations or unit conversions (e.g. '1 + 1' or '1 meter to feet').">
-        Calculator
+        Calculations
       </message>
       <message name="IDS_PICKER_CAPS_ON_CATEGORY_LABEL" translateable="false"
         desc="This string appears as a selectable menu item in a menu. When selected, it turns on the user's keyboard Caps Lock.">
@@ -7471,7 +7471,7 @@ New install
         Show all <ph name="SECTION_NAME">$1<ex>Drive Files</ex></ph>
       </message>
       <message name="IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible text for a button which opens a panel with more emojis, symbols and emoticons.">
-        Open emojis and more
+        Show more emojis and GIFs
       </message>
       <message name="IDS_PICKER_GIFS_BUTTON_LABEL" translateable="false" desc="The label of a button that opens a panel of GIFs.">
         GIFs
