@@ -587,7 +587,6 @@ TEST_F(CertProvisioningWorkerStaticTest, Success) {
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
   const std::string listener_type = MakeInvalidationListenerType(process_id);
-  EXPECT_LE(listener_type.size(), 128u);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       process_id, CertScope::kUser, kCertProfileId, kCertProfileVersion,
       GetPublicKeyBin());

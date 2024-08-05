@@ -359,15 +359,15 @@ platform_keys::KeyPermissionsManager* GetKeyPermissionsManager(
 }
 
 std::string GenerateCertProvisioningId() {
-  return base::UnguessableToken::Create().ToString();
+  std::string result = base::UnguessableToken::Create().ToString();
+  // Server-side stores the id and expects it to be <=32 characters long.
+  CHECK_LE(result.size(), 32u);
+  return result;
 }
 
 std::string MakeInvalidationListenerType(const std::string& cert_prov_id) {
   constexpr char kCertProvPrefix[] = "cert-";
-  std::string result = base::StrCat({kCertProvPrefix, cert_prov_id});
-  // Server-side stores the type and expects it to be <=128 characters long.
-  CHECK_LE(result.size(), 128u);
-  return result;
+  return base::StrCat({kCertProvPrefix, cert_prov_id});
 }
 
 bool ShouldOnlyUseInvalidations() {
