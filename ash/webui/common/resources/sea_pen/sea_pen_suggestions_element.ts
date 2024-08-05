@@ -10,8 +10,13 @@
 import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
+import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {logSuggestionClicked, logSuggestionShuffleClicked} from './sea_pen_metrics_logger.js';
@@ -38,6 +43,13 @@ declare global {
   }
 }
 
+export interface SeaPenSuggestionsElement {
+  $: {
+    keys: IronA11yKeysElement,
+    suggestionSelector: IronSelectorElement,
+  };
+}
+
 export class SeaPenSuggestionsElement extends WithSeaPenStore {
   static get is() {
     return 'sea-pen-suggestions';
@@ -49,7 +61,10 @@ export class SeaPenSuggestionsElement extends WithSeaPenStore {
 
   static get properties() {
     return {
-      suggestions_: Array,
+      suggestions_: {
+        type: Array,
+        observer: 'onSuggestionsChanged_',
+      },
 
       hiddenSuggestions_: Object,
 
@@ -57,12 +72,21 @@ export class SeaPenSuggestionsElement extends WithSeaPenStore {
         type: Object,
         observer: 'resetSuggestions_',
       },
+
+      /** The button currently highlighted by keyboard navigation. */
+      ironSelectedSuggestion_: Object,
     };
   }
 
   private suggestions_: string[];
   private hiddenSuggestions_: Set<string>;
   private thumbnails_: SeaPenThumbnail[]|null;
+  private ironSelectedSuggestion_: CrButtonElement;
+
+  override ready() {
+    super.ready();
+    this.$.keys.target = this.$.suggestionSelector;
+  }
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -82,8 +106,10 @@ export class SeaPenSuggestionsElement extends WithSeaPenStore {
     const suggestion = target.textContent?.trim();
     assert(suggestion);
     this.dispatchEvent(new SeaPenSuggestionSelectedEvent(suggestion));
-    this.splice('suggestions_', event.model.index, 1);
     this.hiddenSuggestions_.add(suggestion);
+    this.splice('suggestions_', event.model.index, 1);
+    // Manually calls observer since splicing doesn't trigger it.
+    this.onSuggestionsChanged_();
     logSuggestionClicked();
   }
 
@@ -109,6 +135,54 @@ export class SeaPenSuggestionsElement extends WithSeaPenStore {
       }
     }
     this.hiddenSuggestions_ = new Set();
+  }
+
+  private onSuggestionsChanged_() {
+    requestAnimationFrame(() => {
+      // The focused suggestion might be removed from the DOM once clicked. To
+      // allow keyboard users to focus on the suggestions again, we add the
+      // first suggestion back to tab order.
+      const suggestions = this.$.suggestionSelector.items as HTMLElement[];
+      const hasFocusableSuggestions =
+          suggestions.some(el => el.getAttribute('tabindex') === '0');
+
+      if (!hasFocusableSuggestions && suggestions.length > 0) {
+        this.$.suggestionSelector.selectIndex(0);
+        suggestions[0].setAttribute('tabindex', '0');
+        suggestions[0].focus();
+      }
+    });
+  }
+
+  /** Handle keyboard navigation. */
+  private onSuggestionKeyPressed_(
+      e: CustomEvent<{key: string, keyboardEvent: KeyboardEvent}>) {
+    const selector = this.$.suggestionSelector;
+    const prevSuggestion = this.ironSelectedSuggestion_;
+    switch (e.detail.key) {
+      case 'left':
+        selector.selectPrevious();
+        break;
+      case 'right':
+        selector.selectNext();
+        break;
+      default:
+        return;
+    }
+    // Remove focus state of previous button.
+    if (prevSuggestion) {
+      prevSuggestion.removeAttribute('tabindex');
+    }
+    // Add focus state for new button.
+    if (this.ironSelectedSuggestion_) {
+      this.ironSelectedSuggestion_.setAttribute('tabindex', '0');
+      this.ironSelectedSuggestion_.focus();
+    }
+    e.detail.keyboardEvent.preventDefault();
+  }
+
+  private getSuggestionTabIndex_(index: number): string {
+    return index === 0 ? '0' : '-1';
   }
 }
 

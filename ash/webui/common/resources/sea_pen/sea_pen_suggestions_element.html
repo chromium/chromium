@@ -43,14 +43,20 @@
   }
 </style>
 <div id="container">
+  <iron-a11y-keys id="keys" keys="left right"
+      on-keys-pressed="onSuggestionKeyPressed_">
+  </iron-a11y-keys>
   <iron-selector
       id="suggestionSelector"
       selected="0"
+      selected-item="{{ironSelectedSuggestion_}}"
       role="radiogroup">
     <template is="dom-repeat" items="[[suggestions_]]" as="suggestion">
       <cr-button
           class="suggestion"
-          on-click="onClickSuggestion_">
+          on-click="onClickSuggestion_"
+          role="radio"
+          tabindex$="[[getSuggestionTabIndex_(index)]]">
         [[suggestion]]
       </cr-button>
     </template>
