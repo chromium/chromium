@@ -11684,6 +11684,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(password_manager::features::
                             kClearLoginDatabaseForAllMigratedUPMUsers)},
+    {"clear-login-database-for-upm-users",
+     flag_descriptions::kClearLoginDatabaseForUPMUsersName,
+     flag_descriptions::kClearLoginDatabaseForUPMUsersDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kClearLoginDatabaseForUPMUsers)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"clear-undecryptable-passwords",
