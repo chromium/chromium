@@ -1203,15 +1203,15 @@ const InlineItem* LineBreaker::TryGetAtomicInlineItemAfter(
 
   // This kObjectReplacementCharacter can be any objects, such as a floating or
   // an OOF object. Check if it's really an atomic inline.
-  const HeapVector<InlineItem>& items = Items();
-  for (const InlineItem* next_item = std::next(&item); next_item != items.end();
-       ++next_item) {
-    DCHECK_EQ(next_item->StartOffset(), item.EndOffset());
-    if (next_item->Type() == InlineItem::kAtomicInline) {
-      return next_item;
+  for (const auto& next_item :
+       base::span(Items()).subspan(items_data_->ToItemIndex(item) + 1)) {
+    DCHECK_EQ(next_item.StartOffset(), item.EndOffset());
+    if (next_item.Type() == InlineItem::kAtomicInline) {
+      return &next_item;
     }
-    if (next_item->EndOffset() > item.EndOffset())
+    if (next_item.EndOffset() > item.EndOffset()) {
       return nullptr;
+    }
   }
   return nullptr;
 }
