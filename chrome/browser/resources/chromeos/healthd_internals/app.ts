@@ -10,10 +10,11 @@ import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-location/iron-location.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './healthd_internals_shared.css.js';
-import './pages/telemetry.js';
 import './pages/battery_chart.js';
 import './pages/cpu_frequency_chart.js';
 import './pages/cpu_usage_chart.js';
+import './pages/memory_chart.js';
+import './pages/telemetry.js';
 import './pages/thermal_chart.js';
 import './settings/settings_dialog.js';
 
@@ -27,6 +28,7 @@ import type {HealthdInternalsFeatureFlagResult} from './externs.js';
 import type {HealthdInternalsBatteryChartElement} from './pages/battery_chart.js';
 import type {HealthdInternalsCpuFrequencyChartElement} from './pages/cpu_frequency_chart.js';
 import type {HealthdInternalsCpuUsageChartElement} from './pages/cpu_usage_chart.js';
+import type {HealthdInternalsMemoryChartElement} from './pages/memory_chart.js';
 import type {HealthdInternalsTelemetryElement} from './pages/telemetry.js';
 import type {HealthdInternalsThermalChartElement} from './pages/thermal_chart.js';
 import {HealthdInternalsPage} from './pages/utils/page_interface.js';
@@ -45,6 +47,7 @@ export interface HealthdInternalsAppElement {
     batteryChart: HealthdInternalsBatteryChartElement,
     cpuFrequencyChart: HealthdInternalsCpuFrequencyChartElement,
     cpuUsageChart: HealthdInternalsCpuUsageChartElement,
+    memoryUsageChart: HealthdInternalsMemoryChartElement,
     thermalChart: HealthdInternalsThermalChartElement,
     settingsDialog: HealthdInternalsSettingsDialogElement,
   };
@@ -82,6 +85,7 @@ export class HealthdInternalsAppElement extends PolymerElement {
         this.$.batteryChart,
         this.$.cpuFrequencyChart,
         this.$.cpuUsageChart,
+        this.$.memoryUsageChart,
         this.$.thermalChart,
     );
 
@@ -124,6 +128,11 @@ export class HealthdInternalsAppElement extends PolymerElement {
               name: 'CPU Usage Chart',
               path: PagePath.CPU_USAGE,
               obj: this.$.cpuUsageChart,
+            },
+            {
+              name: 'Memory Chart',
+              path: PagePath.MEMORY,
+              obj: this.$.memoryUsageChart,
             },
             {
               name: 'Thermal Chart',
