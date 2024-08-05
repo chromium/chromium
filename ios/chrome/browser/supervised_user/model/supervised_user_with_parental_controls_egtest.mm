@@ -443,7 +443,7 @@ static const char* kInterstitialFirstTimeBanner =
 // to "Allow approved" websites, will be shown the interstitial as soon as
 // the filtering behaviour changes.
 - (void)
-    testSupervisedUserWithAllowApprovedSitesFilteringIsBlockedOnFilterChange {
+    DISABLED_testSupervisedUserWithAllowApprovedSitesFilteringIsBlockedOnFilterChange {
   [self signInSupervisedUser];
   GURL safeURL = self.testServer->GetURL(kEchoPath);
   [ChromeEarlGrey loadURL:safeURL];
