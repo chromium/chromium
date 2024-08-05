@@ -4,7 +4,7 @@
 
 [
     ImplementedAs=DOMTranslation,
-    RuntimeEnabled=TranslationAPI,
+    RuntimeEnabled=TranslationAPIEntryPoint,
     Exposed=(Window,Worker)
 ] partial interface mixin WindowOrWorkerGlobalScope {
     [Replaceable] readonly attribute Translation translation;

@@ -5651,6 +5651,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "language-detection-api",
+    "owners": [
+      "fergal@chromium.org",
+      "builtin-ai@chromium.org"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "language-packs-in-settings",
     "owners": ["mlcui@google.com", "claudiomagni@chromium.org", "cros-borders-eng@google.com"],
     "expiry_milestone": 126

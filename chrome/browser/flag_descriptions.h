@@ -1320,6 +1320,9 @@ extern const char kExtractRelatedSearchesFromPrefetchedZPSResponseDescription[];
 extern const char kLacrosExtensionPrintingName[];
 extern const char kLacrosExtensionPrintingDescription[];
 
+extern const char kLanguageDetectionAPIName[];
+extern const char kLanguageDetectionAPIDescription[];
+
 extern const char kLegacyTechReportEnableCookieIssueReportsName[];
 extern const char kLegacyTechReportEnableCookieIssueReportsDescription[];
 

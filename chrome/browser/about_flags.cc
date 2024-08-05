@@ -11995,6 +11995,10 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillRemovePaymentsButterDropdown)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+    {"language-detection-api", flag_descriptions::kLanguageDetectionAPIName,
+     flag_descriptions::kLanguageDetectionAPIDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kLanguageDetectionAPI)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
