@@ -13,9 +13,10 @@ export function getHtml(this: AppearanceElement) {
     @edit-theme-click="${this.onEditThemeClicked_}"
     ?hidden="${!this.showThemeSnapshot_}">
 </customize-chrome-theme-snapshot>
-<customize-chrome-hover-button id="thirdPartyLinkButton" class="theme-button"
+<customize-chrome-hover-button id="thirdPartyThemeLinkButton"
+    class="link-out-button theme-button"
     ?hidden="${!this.thirdPartyThemeId_}"
-    @click="${this.onThirdPartyLinkButtonClick_}"
+    @click="${this.onThirdPartyThemeLinkButtonClick_}"
     label="${this.thirdPartyThemeName_}"
     label-description="$i18n{currentTheme}">
 </customize-chrome-hover-button>
@@ -47,7 +48,16 @@ export function getHtml(this: AppearanceElement) {
     </cr-button>
   ` : ''}
 </div>
-<hr class="sp-hr">
+<hr class="sp-hr" ?hidden="${!this.isSourceTabFirstPartyNtp_}">
+${(!this.isSourceTabFirstPartyNtp_ && this.ntpManagedByName_ !== '') ? html`
+  <customize-chrome-hover-button id="thirdPartyManageLinkButton"
+      class="link-out-button theme-button"
+      @click="${this.onNewTabPageManageByButtonClicked_}"
+      label-description="${this.i18n('newTabPageManagedBy',
+                           this.ntpManagedByName_)}">
+  </customize-chrome-hover-button>
+  <hr class="sp-hr">
+  `: ''}
 <customize-color-scheme-mode></customize-color-scheme-mode>
 <cr-theme-color-picker id="chromeColors" ?hidden="${!this.showColorPicker_}">
 </cr-theme-color-picker>

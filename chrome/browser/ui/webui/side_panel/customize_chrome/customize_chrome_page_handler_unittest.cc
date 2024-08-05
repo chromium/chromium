@@ -45,7 +45,9 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "content/public/test/web_ui_browsertest_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -265,7 +267,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
     handler_ = std::make_unique<CustomizeChromePageHandler>(
         mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>(),
         mock_page_.BindAndGetRemote(), &mock_ntp_custom_background_service_,
-        web_contents_, module_id_names);
+        web_contents_, module_id_names, mock_open_url_callback_.Get());
     mock_page_.FlushForTesting();
     EXPECT_EQ(handler_.get(), ntp_background_service_observer_);
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);
@@ -321,6 +323,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   std::unique_ptr<TestBrowserWindow> browser_window_;
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
+  base::MockRepeatingCallback<void(const GURL& gurl)> mock_open_url_callback_;
   std::unique_ptr<CustomizeChromePageHandler> handler_;
   raw_ptr<NtpCustomBackgroundServiceObserver>
     ntp_custom_background_service_observer_;
@@ -656,10 +659,10 @@ TEST_F(CustomizeChromePageHandlerTest, SetBackgroundImage) {
 
 TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStore) {
   histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 0);
+  GURL url;
+  EXPECT_CALL(mock_open_url_callback_, Run).Times(1).WillOnce(SaveArg<0>(&url));
   handler().OpenChromeWebStore();
-  ASSERT_EQ(1, browser().tab_strip_model()->count());
-  ASSERT_EQ("https://chrome.google.com/webstore?category=theme",
-            browser().tab_strip_model()->GetWebContentsAt(0)->GetURL());
+  ASSERT_EQ(GURL("https://chrome.google.com/webstore?category=theme"), url);
   histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 1);
 
   ASSERT_EQ(
@@ -670,10 +673,10 @@ TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStore) {
 
 TEST_F(CustomizeChromePageHandlerTest, OpenThirdPartyThemePage) {
   histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 0);
+  GURL url;
+  EXPECT_CALL(mock_open_url_callback_, Run).Times(1).WillOnce(SaveArg<0>(&url));
   handler().OpenThirdPartyThemePage("foo");
-  ASSERT_EQ(1, browser().tab_strip_model()->count());
-  ASSERT_EQ("https://chrome.google.com/webstore/detail/foo",
-            browser().tab_strip_model()->GetWebContentsAt(0)->GetURL());
+  ASSERT_EQ(GURL("https://chrome.google.com/webstore/detail/foo"), url);
   histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 1);
   ASSERT_EQ(
       histogram_tester().GetBucketCount("NewTabPage.ChromeWebStoreOpen",
@@ -683,13 +686,15 @@ TEST_F(CustomizeChromePageHandlerTest, OpenThirdPartyThemePage) {
 
 TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStoreCategoryPage) {
   histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 0);
+  GURL url;
+  EXPECT_CALL(mock_open_url_callback_, Run).Times(1).WillOnce(SaveArg<0>(&url));
   handler().OpenChromeWebStoreCategoryPage(
       side_panel::mojom::ChromeWebStoreCategory::kWorkflowPlanning);
-  ASSERT_EQ(1, browser().tab_strip_model()->count());
+
   ASSERT_EQ(
-      "https://chromewebstore.google.com/category/extensions/"
-      "productivity/workflow?utm_source=chromeSidebarExtensionCards",
-      browser().tab_strip_model()->GetWebContentsAt(0)->GetURL());
+      GURL("https://chromewebstore.google.com/category/extensions/"
+           "productivity/workflow?utm_source=chromeSidebarExtensionCards"),
+      url);
   histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 1);
 
   ASSERT_EQ(histogram_tester().GetBucketCount(
@@ -700,13 +705,13 @@ TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStoreCategoryPage) {
 
 TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStoreCollectionPage) {
   histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 0);
+  GURL url;
+  EXPECT_CALL(mock_open_url_callback_, Run).Times(1).WillOnce(SaveArg<0>(&url));
   handler().OpenChromeWebStoreCollectionPage(
       side_panel::mojom::ChromeWebStoreCollection::kWritingEssentials);
-  ASSERT_EQ(1, browser().tab_strip_model()->count());
-  ASSERT_EQ(
-      "https://chromewebstore.google.com/collection/"
-      "writing_essentials?utm_source=chromeSidebarExtensionCards",
-      browser().tab_strip_model()->GetWebContentsAt(0)->GetURL());
+  ASSERT_EQ(GURL("https://chromewebstore.google.com/collection/"
+                 "writing_essentials?utm_source=chromeSidebarExtensionCards"),
+            url);
   histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 1);
 
   ASSERT_EQ(histogram_tester().GetBucketCount(
@@ -715,14 +720,23 @@ TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStoreCollectionPage) {
             1);
 }
 
+TEST_F(CustomizeChromePageHandlerTest, OpenSettingsSearchEnginePage) {
+  GURL url;
+  EXPECT_CALL(mock_open_url_callback_, Run).Times(1).WillOnce(SaveArg<0>(&url));
+  handler().OpenSettingsSearchEnginePage();
+
+  EXPECT_EQ(GURL(chrome::kBrowserSettingsSearchEngineURL), url);
+}
+
 TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStoreHomePage) {
   histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 0);
+  GURL url;
+  EXPECT_CALL(mock_open_url_callback_, Run).Times(1).WillOnce(SaveArg<0>(&url));
   handler().OpenChromeWebStoreHomePage();
-  ASSERT_EQ(1, browser().tab_strip_model()->count());
   ASSERT_EQ(
-      "https://"
-      "chromewebstore.google.com/?utm_source=chromeSidebarExtensionCards",
-      browser().tab_strip_model()->GetWebContentsAt(0)->GetURL());
+      GURL("https://"
+           "chromewebstore.google.com/?utm_source=chromeSidebarExtensionCards"),
+      url);
   histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 1);
 
   ASSERT_EQ(histogram_tester().GetBucketCount("NewTabPage.ChromeWebStoreOpen",

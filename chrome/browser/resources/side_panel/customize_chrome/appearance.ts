@@ -32,7 +32,7 @@ export interface AppearanceElement {
     editThemeButton: HTMLButtonElement,
     themeSnapshot: HTMLElement,
     setClassicChromeButton: HTMLButtonElement,
-    thirdPartyLinkButton: HTMLButtonElement,
+    thirdPartyThemeLinkButton: HTMLButtonElement,
     followThemeToggle: HTMLElement,
     followThemeToggleControl: CrToggleElement,
     uploadedImageButton: HTMLButtonElement,
@@ -106,9 +106,11 @@ export class AppearanceElement extends AppearanceElementBase {
   private wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
   protected isSourceTabFirstPartyNtp_: boolean = true;
+  protected ntpManagedByName_: string = '';
 
   private setThemeListenerId_: number|null = null;
   private attachedTabStateUpdatedId_: number|null = null;
+  private ntpManagedByNameUpdatedId_: number|null = null;
 
   private callbackRouter_: CustomizeChromePageCallbackRouter;
   private pageHandler_: CustomizeChromePageHandlerInterface;
@@ -135,8 +137,15 @@ export class AppearanceElement extends AppearanceElementBase {
                   this.isSourceTabFirstPartyNtp_ = isSourceTabFirstPartyNtp;
                 });
     this.pageHandler_.updateAttachedTabState();
-  }
 
+    this.ntpManagedByNameUpdatedId_ =
+        CustomizeChromeApiProxy.getInstance()
+            .callbackRouter.ntpManagedByNameUpdated.addListener(
+                (ntpManagedByName: string) => {
+                  this.ntpManagedByName_ = ntpManagedByName;
+                });
+    this.pageHandler_.updateNtpManagedByName();
+  }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
@@ -146,6 +155,10 @@ export class AppearanceElement extends AppearanceElementBase {
     assert(this.attachedTabStateUpdatedId_);
     CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
         this.attachedTabStateUpdatedId_);
+
+    assert(this.ntpManagedByNameUpdatedId_);
+    CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
+        this.ntpManagedByNameUpdatedId_);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -269,7 +282,7 @@ export class AppearanceElement extends AppearanceElementBase {
     this.dispatchEvent(new Event('wallpaper-search-click'));
   }
 
-  protected onThirdPartyLinkButtonClick_() {
+  protected onThirdPartyThemeLinkButtonClick_() {
     if (this.thirdPartyThemeId_) {
       this.pageHandler_.openThirdPartyThemePage(this.thirdPartyThemeId_);
     }
@@ -303,6 +316,10 @@ export class AppearanceElement extends AppearanceElementBase {
 
   protected onManagedDialogClosed_() {
     this.showManagedDialog_ = false;
+  }
+
+  protected onNewTabPageManageByButtonClicked_() {
+    this.pageHandler_.openSettingsSearchEnginePage();
   }
 
   private handleClickForManagedThemes_(): boolean {

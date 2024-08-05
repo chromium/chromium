@@ -53,6 +53,10 @@ inline constexpr char kAdvancedProtectionDownloadLearnMoreURL[] =
 inline constexpr char kAppNotificationsBrowserSettingsURL[] =
     "chrome://settings/content/notifications";
 
+// "Chrome Settings" URL for the appearance page.
+inline constexpr char kBrowserSettingsSearchEngineURL[] =
+    "chrome://settings/search";
+
 // "Learn more" URL for App Parental Controls.
 // char16_t is used here because this constant may be used to set the src
 // attribute of iframe elements.

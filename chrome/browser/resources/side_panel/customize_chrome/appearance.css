@@ -50,10 +50,6 @@
   --cr-icon-image: url(icons/reset.svg);
 }
 
-#thirdPartyLinkButton {
-  --cr-icon-image: url('chrome://resources/images/open_in_new.svg');
-}
-
 #uploadedImageButton {
   --cr-icon-image: url(icons/upload.svg);
 }
@@ -91,6 +87,10 @@ cr-theme-color-picker {
 
 .theme-button:not([hidden]) ~ #editButtonsContainer {
   margin: 20px 16px;
+}
+
+.link-out-button {
+  --cr-icon-image: url('chrome://resources/images/open_in_new.svg');
 }
 
 #followThemeToggle {
