@@ -615,4 +615,38 @@ suite('AppearanceTest', () => {
       });
     });
   });
+
+  test('isSourceTabFirstPartyNtp should update the content', async () => {
+    const idsControlledByIsSourceTabFirstPartyNtp = [
+      '#editButtonsContainer',
+      '#themeSnapshot',
+    ];
+
+    const idsNotControlledByIsSourceTabFirstPartyNtp = [
+      '#thirdPartyLinkButton',
+      '#uploadedImageButton',
+      '#searchedImageButton',
+      '#chromeColors',
+      '#followThemeToggle',
+      '#followThemeToggleControl',
+      '#setClassicChromeButton',
+      '#editThemeButton',
+      '#editThemeIcon',
+    ];
+
+    const checkIdsVisibility = (isSourceTabFirstPartyNtp: boolean) => {
+      idsControlledByIsSourceTabFirstPartyNtp.forEach(
+          id => assertEquals(
+              isSourceTabFirstPartyNtp,
+              !!appearanceElement.shadowRoot!.querySelector(id)));
+      idsNotControlledByIsSourceTabFirstPartyNtp.forEach(
+          id => assertTrue(!!appearanceElement.shadowRoot!.querySelector(id)));
+    };
+
+    await[true, false].forEach(async b => {
+      callbackRouterRemote.attachedTabStateUpdated(b);
+      await microtasksFinished();
+      checkIdsVisibility(b);
+    });
+  });
 });

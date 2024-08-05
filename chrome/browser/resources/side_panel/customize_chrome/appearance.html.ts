@@ -31,7 +31,7 @@ export function getHtml(this: AppearanceElement) {
     label="$i18n{yourSearchedImage}"
     label-description="$i18n{currentTheme}">
 </customize-chrome-hover-button>
-<div id="editButtonsContainer">
+<div id="editButtonsContainer" ?hidden="${!this.isSourceTabFirstPartyNtp_}">
   <cr-button id="editThemeButton" @click="${this.onEditThemeClicked_}"
       class="floating-button">
     <div id="editThemeIcon" class="cr-icon edit-theme-icon" slot="prefix-icon"

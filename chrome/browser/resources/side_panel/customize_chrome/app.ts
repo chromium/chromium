@@ -80,6 +80,7 @@ export class AppElement extends AppElementBase {
       extensionsCardEnabled_: {type: Boolean},
       wallpaperSearchEnabled_: {type: Boolean},
       toolbarCustomizationEnabled_: {type: Boolean},
+      isSourceTabFirstPartyNtp_: {type: Boolean},
     };
   }
 
@@ -100,7 +101,9 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('wallpaperSearchEnabled');
   protected toolbarCustomizationEnabled_: boolean =
       loadTimeData.getBoolean('toolbarCustomizationEnabled');
+  protected isSourceTabFirstPartyNtp_: boolean = true;
   private scrollToSectionListenerId_: number|null = null;
+  private attachedTabStateUpdatedId_: number|null = null;
   private pageHandler_: CustomizeChromePageHandlerInterface =
       CustomizeChromeApiProxy.getInstance().handler;
 
@@ -128,6 +131,27 @@ export class AppElement extends AppElementBase {
                   this.page_ = CustomizeChromePage.OVERVIEW;
                   element.scrollIntoView({behavior: 'auto'});
                 });
+
+    this.attachedTabStateUpdatedId_ =
+        CustomizeChromeApiProxy.getInstance()
+            .callbackRouter.attachedTabStateUpdated.addListener(
+                (isSourceTabFirstPartyNtp: boolean) => {
+                  if (this.isSourceTabFirstPartyNtp_ ===
+                      isSourceTabFirstPartyNtp) {
+                    return;
+                  }
+
+                  this.isSourceTabFirstPartyNtp_ = isSourceTabFirstPartyNtp;
+
+                  // Since some pages aren't supported in non first party mode,
+                  // change the section back to the overview.
+                  if (!this.isSourceTabFirstPartyNtp_ &&
+                      !this.pageSupportedOnNonFirstPartyNtps()) {
+                    this.page_ = CustomizeChromePage.OVERVIEW;
+                  }
+                });
+    this.pageHandler_.updateAttachedTabState();
+
     // We wait for load because `scrollIntoView` above requires the page to be
     // laid out.
     window.addEventListener('load', () => {
@@ -156,9 +180,14 @@ export class AppElement extends AppElementBase {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+
     assert(this.scrollToSectionListenerId_);
     CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
         this.scrollToSectionListenerId_);
+
+    assert(this.attachedTabStateUpdatedId_);
+    CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
+        this.attachedTabStateUpdatedId_);
   }
 
   protected async onBackClick_() {
@@ -244,6 +273,10 @@ export class AppElement extends AppElementBase {
     assert(page);
     await this.updateComplete;
     page.focusOnBackButton();
+  }
+
+  private pageSupportedOnNonFirstPartyNtps() {
+    return this.page_ === CustomizeChromePage.TOOLBAR;
   }
 }
 
