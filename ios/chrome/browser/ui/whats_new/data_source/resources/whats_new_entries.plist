@@ -6,34 +6,43 @@
 	<array>
 		<dict>
 			<key>Type</key>
-			<integer>15</integer>
+			<integer>18</integer>
 			<key>Title</key>
-			<string>IDS_IOS_WHATS_NEW_PWMWIDGET_TITLE</string>
+			<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_TITLE</string>
 			<key>Subtitle</key>
-			<string>IDS_IOS_WHATS_NEW_PWMWIDGET_SUBTITLE</string>
+			<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SUBTITLE</string>
 			<key>ImageName</key>
-			<string>PWMWidget</string>
+			<string>PackageTracking</string>
 			<key>ImageTexts</key>
 			<dict>
-				<key>Search Passwords</key>
-				<string>IDS_IOS_WHATS_NEW_PWMWIDGET_SCREENSHOT_TEXT_1</string>
+				<key>Track this Package? </key>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_1</string>
+				<key>Chrome can help you track this package on the New Tab page.</key>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_2</string>
+				<key>Track</key>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_3</string>
+				<key>Your Shipment</key>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_4</string>
+				<key>1ZX32F000348211000</key>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_5</string>
+				<key>Estimated delivery</key>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_6</string>
+				<key>Wednesday, May 01 by 7:00 P.M.</key>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_7</string>
 			</dict>
 			<key>IconImageName</key>
-			<string>password_manager</string>
+			<string>shippingbox</string>
 			<key>IconBackgroundColor</key>
-			<string>white</string>
+			<string>green</string>
 			<key>IsSymbol</key>
 			<true/>
-			<key>IsMulticolorSymbol</key>
-			<true/>
 			<key>IsSystemSymbol</key>
-			<false/>
+			<true/>
 			<key>InstructionSteps</key>
 			<array>
-				<string>IDS_IOS_WHATS_NEW_PWMWIDGET_INSTRUCTIONS_STEP_1</string>
-				<string>IDS_IOS_WHATS_NEW_PWMWIDGET_INSTRUCTIONS_STEP_2</string>
-				<string>IDS_IOS_WHATS_NEW_PWMWIDGET_INSTRUCTIONS_STEP_3</string>
-				<string>IDS_IOS_WHATS_NEW_PWMWIDGET_INSTRUCTIONS_STEP_4</string>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_INSTRUCTIONS_STEP_1</string>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_INSTRUCTIONS_STEP_2</string>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_INSTRUCTIONS_STEP_3</string>
 			</array>
 			<key>PrimaryAction</key>
 			<integer>0</integer>
@@ -42,56 +51,59 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<integer>16</integer>
+			<integer>19</integer>
 			<key>Title</key>
-			<string>IDS_IOS_WHATS_NEW_PINNEDTABS_TITLE</string>
+			<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_TITLE</string>
 			<key>Subtitle</key>
-			<string>IDS_IOS_WHATS_NEW_PINNEDTABS_SUBTITLE</string>
+			<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_SUBTITLE</string>
 			<key>ImageName</key>
-			<string>PinnedTabs</string>
+			<string>PasswordSharing</string>
 			<key>ImageTexts</key>
 			<dict>
-				<key>Drag tab here to pin it.</key>
-				<string>IDS_IOS_WHATS_NEW_PINNEDTABS_SCREENSHOT_TEXT_1</string>
+				<key>Share Passwords with your Family Group</key>
+				<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_SCREENSHOT_TEXT_1</string>
+				<key>Easily and securely share a copy of a password with your family group in Google Password Manager.</key>
+				<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_SCREENSHOT_TEXT_2</string>
 			</dict>
-			<key>IconImageName</key>
-			<string>pin</string>
-			<key>IconBackgroundColor</key>
-			<string>yellow</string>
-			<key>IsSymbol</key>
-			<true/>
-			<key>IsSystemSymbol</key>
-			<true/>
-			<key>InstructionSteps</key>
-			<array>
-				<string>IDS_IOS_WHATS_NEW_PINNEDTABS_INSTRUCTIONS_STEP_1</string>
-				<string>IDS_IOS_WHATS_NEW_PINNEDTABS_INSTRUCTIONS_STEP_2</string>
-				<string>IDS_IOS_WHATS_NEW_PINNEDTABS_INSTRUCTIONS_STEP_3</string>
-				<string>IDS_IOS_WHATS_NEW_PINNEDTABS_INSTRUCTIONS_STEP_4</string>
+         <key>IconImageName</key>
+         <string>multicolor_password</string>
+         <key>IsSymbol</key>
+         <true/>
+         <key>IsSystemSymbol</key>
+         <false/>
+         <key>IsMulticolorSymbol</key>
+         <true/>
+         <key>InstructionSteps</key>
+         <array>
+				<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_INSTRUCTIONS_STEP_1</string>
+				<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_INSTRUCTIONS_STEP_2</string>
+				<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_INSTRUCTIONS_STEP_3</string>
+				<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_INSTRUCTIONS_STEP_4</string>
+				<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_INSTRUCTIONS_STEP_5</string>
 			</array>
 			<key>PrimaryAction</key>
-			<integer>0</integer>
+			<integer>7</integer>
 			<key>LearnMoreUrlString</key>
 			<string></string>
 		</dict>
 		<dict>
 			<key>Type</key>
-			<integer>17</integer>
+			<integer>20</integer>
 			<key>Title</key>
-			<string>IDS_IOS_WHATS_NEW_INACTIVETABS_TITLE</string>
+			<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_TITLE</string>
 			<key>Subtitle</key>
-			<string>IDS_IOS_WHATS_NEW_INACTIVETABS_SUBTITLE</string>
+			<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_SUBTITLE</string>
 			<key>ImageName</key>
-			<string>InactiveTabs</string>
+			<string>CustomizableOverflowMenu</string>
 			<key>ImageTexts</key>
 			<dict>
-				<key>Inactive Tabs</key>
-				<string>IDS_IOS_WHATS_NEW_INACTIVETABS_SCREENSHOT_TEXT_1</string>
-				<key>Not used for 14 days or more</key>
-				<string>IDS_IOS_WHATS_NEW_INACTIVETABS_SCREENSHOT_TEXT_2</string>
+				<key>Hide</key>
+				<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_SCREENSHOT_TEXT_1</string>
+				<key>Customization</key>
+				<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_SCREENSHOT_TEXT_2</string>
 			</dict>
 			<key>IconImageName</key>
-			<string>square.on.square</string>
+			<string>filemenu.and.selection</string>
 			<key>IconBackgroundColor</key>
 			<string>pink</string>
 			<key>IsSymbol</key>
@@ -100,10 +112,10 @@
 			<true/>
 			<key>InstructionSteps</key>
 			<array>
-				<string>IDS_IOS_WHATS_NEW_INACTIVETABS_INSTRUCTIONS_STEP_1</string>
-				<string>IDS_IOS_WHATS_NEW_INACTIVETABS_INSTRUCTIONS_STEP_2</string>
-				<string>IDS_IOS_WHATS_NEW_INACTIVETABS_INSTRUCTIONS_STEP_3</string>
-				<string>IDS_IOS_WHATS_NEW_INACTIVETABS_INSTRUCTIONS_STEP_4</string>
+				<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_INSTRUCTIONS_STEP_1</string>
+				<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_INSTRUCTIONS_STEP_2</string>
+				<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_INSTRUCTIONS_STEP_3</string>
+				<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_INSTRUCTIONS_STEP_4</string>
 			</array>
 			<key>PrimaryAction</key>
 			<integer>0</integer>
