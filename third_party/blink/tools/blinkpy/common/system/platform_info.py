@@ -203,7 +203,7 @@ class PlatformInfo:
         minor_release = int(mac_version_string.split('.')[1])
         assert 11 <= major_release, 'Unsupported mac OS version: %s' % mac_version_string
         return 'mac{major_release}'.format(
-            major_release=min(14, major_release))
+            major_release=min(15, major_release))
 
     def _determine_linux_version(self, _):
         # Assume we only test against one Linux version at a time (see

@@ -1502,7 +1502,9 @@ if (use_blink && !is_cronet_build) {
         "//third_party/blink/web_tests/platform/mac-mac12-arm64/",
         "//third_party/blink/web_tests/platform/mac-mac13/",
         "//third_party/blink/web_tests/platform/mac-mac13-arm64/",
+        "//third_party/blink/web_tests/platform/mac-mac14/",
         "//third_party/blink/web_tests/platform/mac-mac14-arm64/",
+        "//third_party/blink/web_tests/platform/mac-mac15-arm64/",
       ]
     }
 
