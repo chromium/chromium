@@ -308,6 +308,7 @@ def create_address(symbol_node):
     TextNode("void* ${address} = ${base} + ${offset};"),
     CxxUnlikelyIfNode(
       cond="!${address}",
+      attribute=None,
       body=[
         TextNode("${exception_state}.ThrowRangeError(\"...\");"),
         TextNode("return;"),

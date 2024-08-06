@@ -244,7 +244,7 @@ def bind_blink_api_arguments(code_node, cg_context):
 const auto&& arg1_value_string =
     NativeValueTraits<IDLString>::NativeValue(
         ${isolate}, ${v8_property_value}, ${exception_state});
-if (UNLIKELY(${exception_state}.HadException())) {{
+if (${exception_state}.HadException()) [[unlikely]] {{
   return;
 }}
 // step 4.6.2. If S is not one of the enumeration's values, then return
@@ -578,6 +578,7 @@ def _make_throw_security_error():
 // _make_throw_security_error for details.\
 """),
         CxxUnlikelyIfNode(cond="true",
+                          attribute=None,
                           body=TextNode(
                               "BindingSecurity::FailedAccessCheckFor("
                               "${isolate}, "
@@ -863,14 +864,13 @@ def bind_return_value(code_node, cg_context, overriding_args=None):
                     assignment = _format("${return_value} = {};", api_call)
                 if index is not None:
                     branches.append(
-                        CxxLikelyIfNode(
-                            cond=_format(
-                                "${non_undefined_argument_length} <= {}",
-                                index),
-                            body=[
-                                T(assignment),
-                                T("break;"),
-                            ]))
+                        CxxLikelyIfNode(cond=_format(
+                            "${non_undefined_argument_length} <= {}", index),
+                                        attribute=None,
+                                        body=[
+                                            T(assignment),
+                                            T("break;"),
+                                        ]))
                 else:
                     branches.append(T(assignment))
 
@@ -884,9 +884,9 @@ def bind_return_value(code_node, cg_context, overriding_args=None):
             else:
                 error_exit_return_statement = "return;"
             nodes.append(
-                CxxUnlikelyIfNode(
-                    cond="UNLIKELY(${exception_state}.HadException())",
-                    body=T(error_exit_return_statement)))
+                CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                                  attribute="[[unlikely]]",
+                                  body=T(error_exit_return_statement)))
 
         if "ReflectOnly" in cg_context.member_like.extended_attributes:
             # [ReflectOnly]
@@ -958,8 +958,9 @@ def make_check_argument_length(cg_context):
     if num_of_required_args == 0:
         return None
 
-    return CxxUnlikelyIfNode(cond=_format("UNLIKELY(${info}.Length() < {})",
+    return CxxUnlikelyIfNode(cond=_format("${info}.Length() < {}",
                                           num_of_required_args),
+                             attribute="[[unlikely]]",
                              body=[
                                  F(("${exception_state}.ThrowTypeError("
                                     "ExceptionMessages::NotEnoughArguments"
@@ -977,6 +978,7 @@ def make_check_constructor_call(cg_context):
     node = SequenceNode([
         CxxUnlikelyIfNode(
             cond="!${info}.IsConstructCall()",
+            attribute=None,
             body=T("${exception_state}.ThrowTypeError("
                    "ExceptionMessages::ConstructorCalledAsFunction());\n"
                    "return;")),
@@ -986,6 +988,7 @@ def make_check_constructor_call(cg_context):
             CxxLikelyIfNode(
                 cond=("ConstructorMode::Current(${isolate}) == "
                       "ConstructorMode::kWrapExistingObject"),
+                attribute=None,
                 body=T("bindings::V8SetReturnValue(${info}, ${v8_receiver});\n"
                        "return;")))
     node.accumulate(
@@ -1024,8 +1027,9 @@ def make_check_coop_restrict_properties_access(cg_context):
         error_exit_return_statement = "return;"
 
     return CxxUnlikelyIfNode(
-        cond=("UNLIKELY(${blink_receiver}->"
-              "IsAccessBlockedByCoopRestrictProperties(${isolate}))"),
+        cond=("${blink_receiver}->"
+              "IsAccessBlockedByCoopRestrictProperties(${isolate})"),
+        attribute="[[unlikely]]",
         body=[
             T("""\
 ${exception_state}.ThrowSecurityError(
@@ -1050,6 +1054,7 @@ def make_check_receiver(cg_context):
             T("// [LegacyLenientThis]"),
             CxxUnlikelyIfNode(
                 cond="!${class_name}::HasInstance(${isolate}, ${v8_receiver})",
+                attribute=None,
                 body=T("return;")),
         ])
 
@@ -1059,6 +1064,7 @@ def make_check_receiver(cg_context):
               "Convert a TypeError to a reject promise."),
             CxxUnlikelyIfNode(
                 cond="!${class_name}::HasInstance(${isolate}, ${v8_receiver})",
+                attribute=None,
                 body=[
                     T("${exception_state}.ThrowTypeError("
                       "\"Illegal invocation\");"),
@@ -1094,7 +1100,7 @@ def make_check_security_of_return_value(cg_context):
     ]
     node = SequenceNode([
         T("// [CheckSecurity=ReturnValue]"),
-        CxxUnlikelyIfNode(cond=cond, body=body),
+        CxxUnlikelyIfNode(cond=cond, attribute=None, body=body),
     ])
     node.accumulate(
         CodeGenAccumulator.require_include_headers([
@@ -1155,7 +1161,7 @@ def make_log_activity(cg_context):
     body = _format(pattern, _1=_1, _2=_2, _3=_3, _4=_4)
 
     pattern = ("// [LogActivity], [LogAllWorlds]\n"
-               "if (UNLIKELY({_1})) {{ {_2} }}")
+               "if ({_1}) [[unlikely]] {{ {_2} }}")
     node = TextNode(_format(pattern, _1=cond, _2=body))
     node.accumulate(
         CodeGenAccumulator.require_include_headers([
@@ -1240,7 +1246,9 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
         node = make_node(pattern)
         conditional = expr_from_exposure(func_like.exposure)
         if not conditional.is_always_true:
-            node = CxxUnlikelyIfNode(cond=conditional, body=node)
+            node = CxxUnlikelyIfNode(cond=conditional,
+                                     attribute=None,
+                                     body=node)
         dispatcher_nodes.append(node)
         return expr is True and conditional.is_always_true
 
@@ -1321,9 +1329,9 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
                     "bindings::IsEsIterableObject"
                     "(${isolate}, {value}, ${exception_state})")
         dispatcher_nodes.append(
-            CxxUnlikelyIfNode(
-                cond="UNLIKELY(${exception_state}.HadException())",
-                body=TextNode("return;")))
+            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                              attribute="[[unlikely]]",
+                              body=TextNode("return;")))
 
     # 12.10. if Type(V) is Object and ...
     func_like = find(lambda t, u: u.is_callback_interface or u.is_dictionary or
@@ -1392,6 +1400,7 @@ def make_overload_dispatcher(cg_context):
         if arg_size > 0:
             node = CxxLikelyIfNode(
                 cond="arg_count == {}".format(arg_size),
+                attribute=None,
                 body=[node, T("break;") if can_fail else None])
             did_use_break = did_use_break or can_fail
 
@@ -1401,7 +1410,9 @@ def make_overload_dispatcher(cg_context):
                     lambda item: expr_from_exposure(item.function_like.exposure
                                                     ), items)))
         if not conditional.is_always_true:
-            node = CxxUnlikelyIfNode(cond=conditional, body=node)
+            node = CxxUnlikelyIfNode(cond=conditional,
+                                     attribute=None,
+                                     body=node)
 
         branches.append(node)
 
@@ -1717,9 +1728,11 @@ def make_steps_of_put_forwards(cg_context):
             cond=("!${v8_receiver}->Get(${current_context}, "
                   "V8AtomicString(${isolate}, ${property_name}))"
                   ".ToLocal(&target)"),
+            attribute=None,
             body=T(error_exit_return_statement),
         ),
         CxxUnlikelyIfNode(cond="!target->IsObject()",
+                          attribute=None,
                           body=[
                               T("${exception_state}.ThrowTypeError("
                                 "\"The attribute value is not an object\");"),
@@ -1732,6 +1745,7 @@ def make_steps_of_put_forwards(cg_context):
             "\"${attribute.extended_attributes.value_of(\"PutForwards\")}\""
             "), ${v8_property_value})"
             ".To(&did_set)"),
+                          attribute=None,
                           body=T(error_exit_return_statement)),
         T(return_statement)
     ])
@@ -1749,6 +1763,7 @@ def make_steps_of_replaceable(cg_context):
             cond=("!${v8_receiver}->CreateDataProperty(${current_context}, "
                   "V8AtomicString(${isolate}, ${property_name}), "
                   "${v8_property_value}).To(&did_create)"),
+            attribute=None,
             body=T("return;")),
     ])
 
@@ -1803,11 +1818,12 @@ def make_v8_set_return_value(cg_context):
                 "${blink_receiver}->contentWindow()->GetFrame()"),
             T("DCHECK(IsA<LocalFrame>(blink_frame));"),
             CxxUnlikelyIfNode(
-                cond=T("UNLIKELY(!blink_frame->IsAttached() && "
+                cond=T("!blink_frame->IsAttached() && "
                        "To<LocalFrame>(blink_frame)"
                        "->WindowProxyMaybeUninitialized("
                        "${script_state}->World())->ContextIfInitialized()"
-                       ".IsEmpty())"),
+                       ".IsEmpty()"),
+                attribute="[[unlikely]]",
                 body=[
                     T("""\
 // Don't wrap the return value if its frame is in the process of detaching and
@@ -2240,6 +2256,7 @@ def make_constructor_function_def(cg_context, function_name):
             body.append(
                 CxxUnlikelyIfNode(cond=expr_not(
                     expr_from_exposure(cg_context.constructor.exposure)),
+                                  attribute=None,
                                   body=[
                                       T("${exception_state}.ThrowTypeError("
                                         "\"Illegal constructor\");"),
@@ -2605,9 +2622,9 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
           blink_arguments=", ".join(blink_arguments)))
     if cg_context.may_throw_exception:
         body.append(
-            CxxUnlikelyIfNode(
-                cond="UNLIKELY(${exception_state}.HadException())",
-                body=T("return;")))
+            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                              attribute="[[unlikely]]",
+                              body=T("return;")))
 
     return func_def
 
@@ -2850,6 +2867,7 @@ return ${class_name}::NamedPropertyGetterCallback(
 // step 1.2. If index is a supported property index, then:\
 """),
         CxxUnlikelyIfNode(cond="${index} >= ${blink_receiver}->length()",
+                          attribute=None,
                           body=TextNode("""\
 // step 3. Return OrdinaryGetOwnProperty(O, P).
 // Do not intercept.  Fallback to OrdinaryGetOwnProperty.
@@ -2895,6 +2913,7 @@ return ${class_name}::NamedPropertySetterCallback(
 """),
             CxxLikelyIfNode(
                 cond="${info}.ShouldThrowOnError()",
+                attribute=None,
                 body=TextNode(
                     "${exception_state}.ThrowTypeError("
                     "\"Indexed property setter is not supported.\");")),
@@ -2921,6 +2940,7 @@ return ${class_name}::NamedPropertySetterCallback(
 // step 1. If O and Receiver are the same object, then:\
 """),
         CxxLikelyIfNode(cond="${info}.Holder() == ${info}.This()",
+                        attribute=None,
                         body=[
                             TextNode("""\
 // step 1.1.1. Invoke the indexed property setter with P and V.\
@@ -2974,6 +2994,7 @@ return ${class_name}::NamedPropertyDeleterCallback(
                  "${index} < ${blink_receiver}->length();"),
         TextNode("bindings::V8SetReturnValue(${info}, !is_supported);"),
         CxxLikelyIfNode(cond="is_supported && ${info}.ShouldThrowOnError()",
+                        attribute=None,
                         body=TextNode(
                             "${exception_state}.ThrowTypeError("
                             "\"Index property deleter is not supported.\");")),
@@ -3014,9 +3035,11 @@ return ${class_name}::NamedPropertyDefinerCallback(
 """),
         CxxUnlikelyIfNode(
             cond="v8_property_desc.has_get() || v8_property_desc.has_set()",
+            attribute=None,
             body=[
                 CxxLikelyIfNode(
                     cond="${info}.ShouldThrowOnError()",
+                    attribute=None,
                     body=TextNode(
                         "${exception_state}.ThrowTypeError("
                         " \"Accessor properties are not allowed.\");")),
@@ -3032,6 +3055,7 @@ return ${class_name}::NamedPropertyDefinerCallback(
 """),
             CxxLikelyIfNode(
                 cond="${info}.ShouldThrowOnError()",
+                attribute=None,
                 body=TextNode(
                     "${exception_state}.ThrowTypeError(\"Index property"
                     " setter is not supported.\");")),
@@ -3193,6 +3217,7 @@ def make_named_property_getter_callback(cg_context, function_name):
 //  algorithm with property name P and object O is true, then:"\
 """),
         CxxUnlikelyIfNode(cond=not_found_expr,
+                          attribute=None,
                           body=[
                               TextNode("""\
 // "Return OrdinaryGetOwnProperty(O, P)."
@@ -3238,6 +3263,7 @@ def make_named_property_setter_callback(cg_context, function_name):
         throw_error_nodes = [
             CxxLikelyIfNode(
                 cond="${info}.ShouldThrowOnError()",
+                attribute=None,
                 body=TextNode(
                     "${exception_state}.ThrowTypeError("
                     "\"Named property setter is not supported.\");")),
@@ -3274,10 +3300,12 @@ if (${info}.Holder()->GetRealNamedPropertyAttributesInPrototypeChain(
         body.extend([
             TextNode("bool does_exist = ${blink_receiver}->NamedPropertyQuery("
                      "${blink_property_name}, ${exception_state});"),
-            CxxUnlikelyIfNode(
-                cond="UNLIKELY(${exception_state}.HadException())",
-                body=TextNode("return v8::Intercepted::kYes;")),
-            CxxUnlikelyIfNode(cond="does_exist", body=throw_error_nodes),
+            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                              attribute="[[unlikely]]",
+                              body=TextNode("return v8::Intercepted::kYes;")),
+            CxxUnlikelyIfNode(cond="does_exist",
+                              attribute=None,
+                              body=throw_error_nodes),
             TextNode("""\
 // Do not intercept. Fallback and let it define a new own property.
 return v8::Intercepted::kNo;
@@ -3304,6 +3332,7 @@ return v8::Intercepted::kNo;
 // step 1. If O and Receiver are the same object, then:\
 """),
         CxxLikelyIfNode(cond="${info}.Holder() == ${info}.This()",
+                        attribute=None,
                         body=[
                             TextNode("""\
 // step 1.2.1. Invoke the named property setter with P and V.\
@@ -3353,6 +3382,7 @@ def make_named_property_deleter_callback(cg_context, function_name):
     throw_error_nodes = [
         TextNode("bindings::V8SetReturnValue(${info}, false);"),
         CxxLikelyIfNode(cond="${info}.ShouldThrowOnError()",
+                        attribute=None,
                         body=TextNode(
                             "${exception_state}.ThrowTypeError(\""
                             "Named property deleter is not supported.\");")),
@@ -3399,10 +3429,12 @@ return v8::Intercepted::kNo;
 """),
             TextNode("bool does_exist = ${blink_receiver}->NamedPropertyQuery("
                      "${blink_property_name}, ${exception_state});"),
-            CxxUnlikelyIfNode(
-                cond="UNLIKELY(${exception_state}.HadException())",
-                body=TextNode("return v8::Intercepted::kYes;")),
-            CxxUnlikelyIfNode(cond="does_exist", body=throw_error_nodes),
+            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                              attribute="[[unlikely]]",
+                              body=TextNode("return v8::Intercepted::kYes;")),
+            CxxUnlikelyIfNode(cond="does_exist",
+                              attribute=None,
+                              body=throw_error_nodes),
             EmptyNode(),
             TextNode("""\
 // Do not intercept.
@@ -3424,8 +3456,10 @@ return v8::Intercepted::kNo;\
         make_v8_set_return_value(cg_context),
         CxxUnlikelyIfNode(
             cond="${return_value} == NamedPropertyDeleterResult::kDidNotDelete",
+            attribute=None,
             body=[
                 CxxLikelyIfNode(cond="${info}.ShouldThrowOnError()",
+                                attribute=None,
                                 body=TextNode(
                                     "${exception_state}.ThrowTypeError("
                                     "\"Failed to delete a property.\");")),
@@ -3453,6 +3487,7 @@ def make_named_property_definer_callback(cg_context, function_name):
 
     throw_error_nodes = [
         CxxLikelyIfNode(cond="${info}.ShouldThrowOnError()",
+                        attribute=None,
                         body=TextNode(
                             "${exception_state}.ThrowTypeError("
                             "\"Named property setter is not supported.\");")),
@@ -3491,10 +3526,12 @@ return v8::Intercepted::kNo;
 """),
             TextNode("bool does_exist = ${blink_receiver}->NamedPropertyQuery("
                      "${blink_property_name}, ${exception_state});"),
-            CxxUnlikelyIfNode(
-                cond="UNLIKELY(${exception_state}.HadException())",
-                body=TextNode("return v8::Intercepted::kYes;")),
-            CxxUnlikelyIfNode(cond="does_exist", body=throw_error_nodes),
+            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                              attribute="[[unlikely]]",
+                              body=TextNode("return v8::Intercepted::kYes;")),
+            CxxUnlikelyIfNode(cond="does_exist",
+                              attribute=None,
+                              body=throw_error_nodes),
             EmptyNode(),
             TextNode("""\
 // Do not intercept. Fallback to OrdinaryDefineOwnProperty.
@@ -3513,9 +3550,11 @@ return v8::Intercepted::kNo;
 """),
             CxxUnlikelyIfNode(
                 cond="v8_property_desc.has_get() || v8_property_desc.has_set()",
+                attribute=None,
                 body=[
                     CxxLikelyIfNode(
                         cond="${info}.ShouldThrowOnError()",
+                        attribute=None,
                         body=[
                             TextNode(
                                 "${exception_state}.ThrowTypeError("
@@ -3661,6 +3700,7 @@ def make_named_property_query_callback(cg_context, function_name):
         TextNode("bool does_exist = ${blink_receiver}->NamedPropertyQuery("
                  "${blink_property_name}, ${exception_state});"),
         CxxLikelyIfNode(cond="!does_exist",
+                        attribute=None,
                         body=TextNode("return v8::Intercepted::kNo;")),
         TextNode(
             _format(
@@ -3699,7 +3739,8 @@ def make_named_property_enumerator_callback(cg_context, function_name):
         TextNode("Vector<String> blink_property_names;"),
         TextNode("${blink_receiver}->NamedPropertyEnumerator("
                  "blink_property_names, ${exception_state});"),
-        CxxUnlikelyIfNode(cond="UNLIKELY(${exception_state}.HadException())",
+        CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                          attribute="[[unlikely]]",
                           body=TextNode("return;")),
         TextNode("""\
 bindings::V8SetReturnValue(
@@ -3824,6 +3865,7 @@ def make_cross_origin_indexed_getter_callback(cg_context, function_name):
 
     body.extend([
         CxxLikelyIfNode(cond="${index} >= ${blink_receiver}->length()",
+                        attribute=None,
                         body=[
                             _make_throw_security_error(),
                             TextNode("return v8::Intercepted::kYes;"),
@@ -3921,9 +3963,11 @@ def make_cross_origin_named_getter_callback(cg_context, function_name):
             body=[
                 CxxLikelyIfNode(
                     cond="${blink_property_name} != attribute.name",
+                    attribute=None,
                     body=TextNode("continue;")),
                 CxxUnlikelyIfNode(
-                    cond="UNLIKELY(!attribute.get_value)",
+                    cond="!attribute.get_value",
+                    attribute="[[unlikely]]",
                     body=[
                         _make_throw_security_error(),
                         TextNode("return v8::Intercepted::kYes;"),
@@ -3937,6 +3981,7 @@ def make_cross_origin_named_getter_callback(cg_context, function_name):
             body=[
                 CxxLikelyIfNode(
                     cond="${blink_property_name} != operation.name",
+                    attribute=None,
                     body=TextNode("continue;")),
                 TextNode("v8::Local<v8::Function> function;"),
                 CxxLikelyIfNode(
@@ -3945,6 +3990,7 @@ def make_cross_origin_named_getter_callback(cg_context, function_name):
                     "operation.func_length,"
                     "${class_name}::GetWrapperTypeInfo())"
                     ".ToLocal(&function)",
+                    attribute=None,
                     body=TextNode(
                         "bindings::V8SetReturnValue(${info}, function);")),
                 TextNode("return v8::Intercepted::kYes;")
@@ -3964,6 +4010,7 @@ if (!return_value.IsEmpty()) {
 
     body.extend([
         CxxLikelyIfNode(cond="${v8_property_name}->IsString()",
+                        attribute=None,
                         body=string_case_body),
         EmptyNode(),
         TextNode("""\
@@ -4006,6 +4053,7 @@ for (const auto& attribute : kCrossOriginAttributeTable) {
 
     body.extend([
         CxxLikelyIfNode(cond="${v8_property_name}->IsString()",
+                        attribute=None,
                         body=string_case_body),
         EmptyNode(),
         _make_throw_security_error(),
@@ -4088,6 +4136,7 @@ if (!return_value.IsEmpty()) {
 
     body.extend([
         CxxLikelyIfNode(cond="${v8_property_name}->IsString()",
+                        attribute=None,
                         body=string_case_body),
         EmptyNode(),
         TextNode("""\
@@ -4147,6 +4196,7 @@ return v8::Intercepted::kNo;
 
     body.extend([
         CxxLikelyIfNode(cond="${v8_property_name}->IsString()",
+                        attribute=None,
                         body=string_case_body),
         EmptyNode(),
         TextNode("""\
@@ -5175,7 +5225,9 @@ ${prototype_object}->Delete(
                 for property in ("entries", "keys", "values", "forEach")
             ])
             nodes.append(
-                CxxUnlikelyIfNode(cond=expr_not(conditional), body=body))
+                CxxUnlikelyIfNode(cond=expr_not(conditional),
+                                  attribute=None,
+                                  body=body))
 
     # Install @@asyncIterator property.
     if interface and interface.async_iterable:
@@ -5371,7 +5423,9 @@ def make_install_interface_template(cg_context, function_name, class_name,
         if not (entry.exposure_conditional.is_always_true
                 or entry.is_context_dependent):
             nodes = [
-                CxxUnlikelyIfNode(cond=entry.exposure_conditional, body=nodes),
+                CxxUnlikelyIfNode(cond=entry.exposure_conditional,
+                                  attribute=None,
+                                  body=nodes),
             ]
         assert entry.world == CodeGenContext.ALL_WORLDS
         body.extend(nodes)
@@ -5467,6 +5521,7 @@ ${prototype_template}->SetIntrinsicDataProperty(
         body.append(
             CxxUnlikelyIfNode(
                 cond="RuntimeEnabledFeatures::TrustedTypesUseCodeLikeEnabled()",
+                attribute=None,
                 body=[
                     TextNode("// [IsCodeLike]"),
                     TextNode("${instance_object_template}->SetCodeLike();"),
@@ -5658,6 +5713,7 @@ def make_install_properties(cg_context, function_name, class_name,
             and "Global" in cg_context.class_like.extended_attributes):
         body.extend([
             CxxLikelyIfNode(cond="${instance_object}.IsEmpty()",
+                            attribute=None,
                             body=[
                                 TextNode("""\
 ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
@@ -5669,6 +5725,7 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
     if install_prototype_object_node:
         body.extend([
             CxxLikelyIfNode(cond="${feature_selector}.IsAll()",
+                            attribute=None,
                             body=[install_prototype_object_node]),
             EmptyNode(),
         ])
@@ -5697,12 +5754,12 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
             body.append(EmptyNode())
         for conditional, entries in conditional_to_entries.items():
             body.append(
-                CxxUnlikelyIfNode(
-                    cond=conditional,
-                    body=[
-                        make_table_func(table_name, entries),
-                        TextNode(installer_call_text),
-                    ]))
+                CxxUnlikelyIfNode(cond=conditional,
+                                  attribute=None,
+                                  body=[
+                                      make_table_func(table_name, entries),
+                                      TextNode(installer_call_text),
+                                  ]))
         body.append(EmptyNode())
 
     if is_per_context_install:

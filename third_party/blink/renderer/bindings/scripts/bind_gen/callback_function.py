@@ -248,6 +248,7 @@ if (!callback_relevant_script_state) {
                 cond=("!IsCallbackFunctionRunnable("
                       "callback_relevant_script_state, "
                       "IncumbentScriptState())"),
+                attribute=None,
                 body=[
                     T("v8::HandleScope handle_scope(${isolate});"),
                     T("v8::Context::Scope context_scope("
@@ -286,15 +287,17 @@ bindings::CallbackInvokeHelper<{template_params}> helper(
     this, ${class_like_name}, ${property_name});\
 """,
           template_params=", ".join(template_params)),
-        CxxUnlikelyIfNode(
-            cond="UNLIKELY(!helper.PrepareForCall(${arg0_receiver}))",
-            body=[
-                CxxLikelyIfNode(cond="helper.V8Result().IsEmpty()",
-                                body=[
-                                    T("return ${return_value_on_failure};"),
-                                ]),
-                T("return ${return_value_on_success};"),
-            ]),
+        CxxUnlikelyIfNode(cond="!helper.PrepareForCall(${arg0_receiver})",
+                          attribute="[[unlikely]]",
+                          body=[
+                              CxxLikelyIfNode(
+                                  cond="helper.V8Result().IsEmpty()",
+                                  attribute=None,
+                                  body=[
+                                      T("return ${return_value_on_failure};"),
+                                  ]),
+                              T("return ${return_value_on_success};"),
+                          ]),
     ])
 
     # The maximum number of arguments to a variadic function that we're willing
@@ -333,6 +336,7 @@ bindings::CallbackInvokeHelper<{template_params}> helper(
         body.append(
             CxxIfElseNode(
                 cond=T("argc <= {}".format(max_stack_array_length)),
+                attribute=None,
                 # If argc is small, just use argv-arr
                 then=SymbolScopeNode(
                     code_nodes=[T("argv = base::make_span(argv_arr, argc);")]),
@@ -385,6 +389,7 @@ bindings::CallbackInvokeHelper<{template_params}> helper(
     body.extend([
         CxxUnlikelyIfNode(
             cond="!helper.Call(static_cast<int>(argv.size()), argv.data())",
+            attribute=None,
             body=[
                 T("return ${return_value_on_failure};"),
             ]),
