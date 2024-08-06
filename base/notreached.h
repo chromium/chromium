@@ -16,27 +16,9 @@
 
 namespace logging {
 
-// Migration in progress: For new code call either NOTREACHED_NORETURN() or
-// NOTREACHED(base::NotFatalUntil::M*). Do not add new callers to NOTREACHED()
-// without a parameter until this comment is updated. Existing NOTREACHED()
-// instances will be renamed to NOTREACHED_IN_MIGRATION() ASAP, then
-// NOTREACHED() without a parameter will refer to the [[noreturn]]
-// always-fatal version which is currently spelled NOTREACHED_NORETURN().
-//
-// NOTREACHED() annotates should-be unreachable code. When a base::NotFatalUntil
-// milestone is provided the instance is non-fatal (dumps without crashing)
-// until that milestone is hit. That is: `NOTREACHED(base::NotFatalUntil::M120)`
-// starts crashing in M120. See base/check.h.
-//
-// Under the kNotReachedIsFatal experiment all NOTREACHED() without a milestone
-// argument are fatal. As of 2024-03-19 this experiment is 50/50 enabled on M124
-// Canary and Dev with intent to roll out to stable in M124 absent any blocking
-// issues that come up.
-//
-// TODO(crbug.com/40580068): After kNotReachedIsFatal is universally rolled out
-// then move callers without a non-fatal milestone argument to
-// NOTREACHED_NORETURN(). Then rename the [[noreturn]] version back to
-// NOTREACHED().
+// Migration in progress: For new code use NOTREACHED() or
+// NOTREACHED(base::NotFatalUntil::M*). NOTREACHED_IN_MIGRATION() is equally
+// fatal to NOTREACHED() without parameters but not annotated as [[noreturn]].
 #if CHECK_WILL_STREAM() || BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
 #define NOTREACHED_IN_MIGRATION() \
   LOGGING_CHECK_FUNCTION_IMPL(::logging::NotReachedError::NotReached(), false)
@@ -46,10 +28,8 @@ namespace logging {
          : EAT_CHECK_STREAM_PARAMS()
 #endif
 
-// NOTREACHED_NORETURN() annotates paths that are supposed to be unreachable.
-// They crash if they are ever hit.
-// TODO(crbug.com/40580068): Merge this with NOTREACHED() once
-// NOTREACHED_NORETURN() callers are renamed NOTREACHED().
+// Migration in progress: Use NOTREACHED() directly without parameters instead.
+// TODO(crbug.com/40580068): Merge this with NOTREACHED().
 #if CHECK_WILL_STREAM()
 #define NOTREACHED_NORETURN() ::logging::NotReachedNoreturnError()
 #else
@@ -64,6 +44,10 @@ namespace logging {
   (true) ? ::logging::NotReachedFailure() : EAT_CHECK_STREAM_PARAMS()
 #endif
 
+// NOTREACHED() annotates should-be unreachable code. When a base::NotFatalUntil
+// milestone is provided the instance is non-fatal (dumps without crashing)
+// until that milestone is hit. That is: `NOTREACHED(base::NotFatalUntil::M120)`
+// starts crashing in M120. See base/check.h.
 #define NOTREACHED(...)                                      \
   BASE_IF(BASE_IS_EMPTY(__VA_ARGS__), NOTREACHED_NORETURN(), \
           LOGGING_CHECK_FUNCTION_IMPL(                       \

@@ -10,8 +10,6 @@
 #include "base/check_version_internal.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
-#include "base/features.h"
 #include "base/logging.h"
 #include "base/thread_annotations.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -52,20 +50,6 @@ LogSeverity GetNotFatalUntilSeverity(base::NotFatalUntil fatal_milestone) {
 LogSeverity GetCheckSeverity(base::NotFatalUntil fatal_milestone) {
   // CHECKs are fatal unless `fatal_milestone` overrides it.
   if (fatal_milestone == base::NotFatalUntil::NoSpecifiedMilestoneInternal) {
-    return LOGGING_FATAL;
-  }
-  return GetNotFatalUntilSeverity(fatal_milestone);
-}
-
-LogSeverity GetNotReachedSeverity(base::NotFatalUntil fatal_milestone) {
-  // NOTREACHED severity is controlled by kNotReachedIsFatal unless
-  // `fatal_milestone` overrides it.
-  //
-  // NOTREACHED_IN_MIGRATION() instances may be hit before base::FeatureList is
-  // enabled.
-  if (fatal_milestone == base::NotFatalUntil::NoSpecifiedMilestoneInternal &&
-      base::FeatureList::GetInstance() &&
-      base::FeatureList::IsEnabled(base::features::kNotReachedIsFatal)) {
     return LOGGING_FATAL;
   }
   return GetNotFatalUntilSeverity(fatal_milestone);
@@ -362,7 +346,7 @@ CheckError::CheckError(LogMessage* log_message) : log_message_(log_message) {}
 NotReachedError NotReachedError::NotReached(base::NotFatalUntil fatal_milestone,
                                             const base::Location& location) {
   auto* const log_message = new NotReachedLogMessage(
-      location, GetNotReachedSeverity(fatal_milestone), fatal_milestone);
+      location, GetCheckSeverity(fatal_milestone), fatal_milestone);
 
   // TODO(pbos): Consider a better message for NotReached(), this is here to
   // match existing behavior + test expectations.
