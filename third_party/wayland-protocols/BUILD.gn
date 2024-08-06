@@ -207,3 +207,7 @@ wayland_protocol("xdg_shell_protocol") {
 wayland_protocol("xdg_toplevel_drag_protocol") {
   sources = [ "src/staging/xdg-toplevel-drag/xdg-toplevel-drag-v1.xml" ]
 }
+
+wayland_protocol("xdg_toplevel_icon_protocol") {
+  sources = [ "src/staging/xdg-toplevel-icon/xdg-toplevel-icon-v1.xml" ]
+}
