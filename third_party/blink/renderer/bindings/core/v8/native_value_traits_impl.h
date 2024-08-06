@@ -276,13 +276,14 @@ class CORE_EXPORT NativeValueTraitsStringAdapter {
  private:
   template <class StringType>
   StringType ToString() const {
-    if (LIKELY(!v8_string_.IsEmpty()))
+    if (!v8_string_.IsEmpty()) [[likely]] {
       return ToBlinkString<StringType>(isolate_, v8_string_, kExternalize);
+    }
     return StringType(wtf_string_);
   }
 
   StringView ToStringView() const& {
-    if (LIKELY(!v8_string_.IsEmpty())) {
+    if (!v8_string_.IsEmpty()) [[likely]] {
       return ToBlinkStringView(isolate_, v8_string_, string_view_backing_store_,
                                kExternalize);
     }
@@ -1836,7 +1837,7 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
     if constexpr (T::allow_sequence) {
       auto&& vec = NativeValueTraits<IDLSequence<typename Traits::IDLType>>::
           ArgumentValue(isolate, argument_index, value, exception_state);
-      if (LIKELY(!exception_state.HadException())) {
+      if (!exception_state.HadException()) [[likely]] {
         result.Assign(std::move(vec));
       }
       return result;

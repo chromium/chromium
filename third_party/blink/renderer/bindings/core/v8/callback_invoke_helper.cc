@@ -25,7 +25,7 @@ template <class CallbackBase,
 bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
     PrepareForCall(V8ValueOrScriptWrappableAdapter callback_this) {
   v8::Isolate* isolate = callback_->GetIsolate();
-  if (UNLIKELY(ScriptForbiddenScope::IsScriptForbidden())) {
+  if (ScriptForbiddenScope::IsScriptForbidden()) [[unlikely]] {
     ScriptForbiddenScope::ThrowScriptForbiddenException(isolate);
     return Abort();
   }

@@ -291,8 +291,9 @@ bool BindingSecurity::ShouldAllowAccessToV8Context(
   }
 
   // Fast path for the most likely case.
-  if (LIKELY(accessing_context == target_context))
+  if (accessing_context == target_context) [[likely]] {
     return true;
+  }
 
   v8::Isolate* isolate = accessing_context->GetIsolate();
   return ShouldAllowAccessToV8ContextInternal(

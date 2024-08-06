@@ -110,7 +110,7 @@ size_t ReadVersionEnvelope(SerializedScriptValue* serialized_script_value,
     if (i >= length)
       return 0;
     uint8_t byte = raw_data[i];
-    if (LIKELY(shift < 32)) {
+    if (shift < 32) [[likely]] {
       version |= static_cast<uint32_t>(byte & 0x7f) << shift;
       shift += 7;
     }

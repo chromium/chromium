@@ -162,7 +162,7 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
           String result =
               NativeValueTraits<IDLNullable<IDLString>>::NativeValue(
                   isolate, v8_return_value, exception_state);
-          if (UNLIKELY(exception_state.HadException())) {
+          if (exception_state.HadException()) [[unlikely]] {
             // TODO(crbug.com/1480485): Understand why we need to explicitly
             // report the exception. The TryCatch handler that is on the call
             // stack has setVerbose(true) but doesn't end up dispatching an

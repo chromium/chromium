@@ -945,7 +945,7 @@ namespace {
 DOMSharedArrayBuffer* ToSharedArrayBuffer(v8::Isolate* isolate,
                                           v8::Local<v8::Value> value,
                                           ExceptionState& exception_state) {
-  if (UNLIKELY(!value->IsSharedArrayBuffer())) {
+  if (!value->IsSharedArrayBuffer()) [[unlikely]] {
     exception_state.ThrowTypeError(
         ExceptionMessages::FailedToConvertJSValue("SharedArrayBuffer"));
     return nullptr;
