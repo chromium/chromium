@@ -207,6 +207,8 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "fake_tab_group_sync_service.cc",
+    "fake_tab_group_sync_service.h",
     "mock_tab_group_sync_delegate.cc",
     "mock_tab_group_sync_delegate.h",
     "mock_tab_group_sync_service.cc",
