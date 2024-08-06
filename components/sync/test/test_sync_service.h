@@ -97,11 +97,9 @@ class TestSyncService : public SyncService {
   void SetLocalDataDescriptions(
       const std::map<ModelType, LocalDataDescription>& local_data_descriptions);
 
-  // If the passed callback is non-null,
-  // SupportsExplicitPassphrasePlatformClient() will return true and every
+  // If the passed callback is non-null, every
   // SendExplicitPassphraseToPlatformClient() call will invoke it.
-  // Otherwise, SupportsExplicitPassphrasePlatformClient() will return false
-  // and SendExplicitPassphraseToPlatformClient() no-ops.
+  // Otherwise, the method no-ops.
   void SetPassphrasePlatformClientCallback(
       const base::RepeatingClosure& send_passphrase_to_platform_client_cb);
 
@@ -168,7 +166,6 @@ class TestSyncService : public SyncService {
       base::OnceCallback<void(base::Value::List)> callback) override;
   ModelTypeDownloadStatus GetDownloadStatusFor(ModelType type) const override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
-  bool SupportsExplicitPassphrasePlatformClient() override;
   void SendExplicitPassphraseToPlatformClient() override;
   void GetTypesWithUnsyncedData(
       ModelTypeSet requested_types,

@@ -86,8 +86,7 @@ class PasswordStoreAndroidLocalBackend : public PasswordStoreBackend,
 
  private:
   // PasswordStoreAndroidBackend implementation.
-  PasswordStoreBackendErrorRecoveryType RecoverOnErrorAndReturnResult(
-      AndroidBackendAPIErrorCode error) override;
+  void RecoverOnError(AndroidBackendAPIErrorCode error) override;
   void OnCallToGMSCoreSucceeded() override;
   std::string GetAccountToRetryOperation() override;
   PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType

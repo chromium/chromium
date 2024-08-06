@@ -856,10 +856,10 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
       reported_error.recovery_type =
           PasswordStoreBackendErrorRecoveryType::kRecoverable;
     } else {
-      // Either operation or error is not retriable. Decide recoverability based
-      // on error.
+      // Either the operation or error is not retriable.
+      RecoverOnError(api_error_code);
       reported_error.recovery_type =
-          RecoverOnErrorAndReturnResult(api_error_code);
+          PasswordStoreBackendErrorRecoveryType::kRecoverable;
       reported_error.type = APIErrorCodeToErrorType(api_error_code);
     }
   }

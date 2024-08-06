@@ -58,58 +58,6 @@ void LogUPMActiveStatus(syncer::SyncService* sync_service, PrefService* prefs) {
                                 UnifiedPasswordManagerActiveStatus::kActive);
 }
 
-// TODO(crbug.com/346556567): This enum can probably be replaced with something
-// simpler now.
-enum class ActionOnApiError {
-  // See prefs::kSavePasswordsSuspendedByError.
-  kDisableSaving,
-  // See syncer::SyncService::SendExplicitPassphraseToPlatformClient().
-  kDisableSavingAndTryFixPassphraseError,
-};
-
-ActionOnApiError GetRecoveryActionForPassphraseRequiredError(
-    bool supports_passphrase_error_fix) {
-  if (supports_passphrase_error_fix) {
-    return ActionOnApiError::kDisableSavingAndTryFixPassphraseError;
-  }
-  return ActionOnApiError::kDisableSaving;
-}
-
-ActionOnApiError GetRecoveryActionOnApiError(
-    AndroidBackendAPIErrorCode api_error_code,
-    bool supports_passphrase_error_fix,
-    PrefService* pref_service) {
-  switch (api_error_code) {
-    case AndroidBackendAPIErrorCode::kAuthErrorResolvable:
-    case AndroidBackendAPIErrorCode::kAuthErrorUnresolvable:
-      return ActionOnApiError::kDisableSaving;
-    case AndroidBackendAPIErrorCode::kPassphraseRequired:
-      return GetRecoveryActionForPassphraseRequiredError(
-          supports_passphrase_error_fix);
-    case AndroidBackendAPIErrorCode::kNetworkError:
-    case AndroidBackendAPIErrorCode::kApiNotConnected:
-    case AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall:
-    case AndroidBackendAPIErrorCode::kReconnectionTimedOut:
-    case AndroidBackendAPIErrorCode::kBackendGeneric:
-    case AndroidBackendAPIErrorCode::kInternalError:
-    case AndroidBackendAPIErrorCode::kDeveloperError:
-    case AndroidBackendAPIErrorCode::kAccessDenied:
-    case AndroidBackendAPIErrorCode::kBadRequest:
-    case AndroidBackendAPIErrorCode::kBackendResourceExhausted:
-    case AndroidBackendAPIErrorCode::kInvalidData:
-    case AndroidBackendAPIErrorCode::kUnmappedErrorCode:
-    case AndroidBackendAPIErrorCode::kUnexpectedError:
-    case AndroidBackendAPIErrorCode::kKeyRetrievalRequired:
-    case AndroidBackendAPIErrorCode::kChromeSyncAPICallError:
-    case AndroidBackendAPIErrorCode::kErrorWhileDoingLeakServiceGRPC:
-    case AndroidBackendAPIErrorCode::kRequiredSyncingAccountMissing:
-    case AndroidBackendAPIErrorCode::kLeakCheckServiceAuthError:
-    case AndroidBackendAPIErrorCode::kLeakCheckServiceResourceExhausted:
-      break;
-  }
-  return ActionOnApiError::kDisableSaving;
-}
-
 template <typename Response, typename CallbackType>
 void ReplyWithEmptyList(CallbackType callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -346,21 +294,13 @@ PasswordStoreAndroidAccountBackend::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-PasswordStoreBackendErrorRecoveryType
-PasswordStoreAndroidAccountBackend::RecoverOnErrorAndReturnResult(
+void PasswordStoreAndroidAccountBackend::RecoverOnError(
     AndroidBackendAPIErrorCode error) {
   CHECK(sync_service_);
-  switch (GetRecoveryActionOnApiError(
-      error, sync_service_->SupportsExplicitPassphrasePlatformClient(),
-      prefs())) {
-    case ActionOnApiError::kDisableSavingAndTryFixPassphraseError:
-      CHECK(sync_service_->SupportsExplicitPassphrasePlatformClient());
-      sync_service_->SendExplicitPassphraseToPlatformClient();
-      ABSL_FALLTHROUGH_INTENDED;
-    case ActionOnApiError::kDisableSaving:
-      should_disable_saving_due_to_error_ = true;
-      return PasswordStoreBackendErrorRecoveryType::kRecoverable;
+  if (error == AndroidBackendAPIErrorCode::kPassphraseRequired) {
+    sync_service_->SendExplicitPassphraseToPlatformClient();
   }
+  should_disable_saving_due_to_error_ = true;
 }
 
 void PasswordStoreAndroidAccountBackend::OnCallToGMSCoreSucceeded() {

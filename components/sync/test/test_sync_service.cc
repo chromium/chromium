@@ -385,12 +385,8 @@ SyncService::ModelTypeDownloadStatus TestSyncService::GetDownloadStatusFor(
 
 void TestSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 
-bool TestSyncService::SupportsExplicitPassphrasePlatformClient() {
-  return !!send_passphrase_to_platform_client_cb_;
-}
-
 void TestSyncService::SendExplicitPassphraseToPlatformClient() {
-  if (SupportsExplicitPassphrasePlatformClient()) {
+  if (send_passphrase_to_platform_client_cb_) {
     send_passphrase_to_platform_client_cb_.Run();
   }
 }
