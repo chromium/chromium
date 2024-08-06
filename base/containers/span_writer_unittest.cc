@@ -4,13 +4,18 @@
 
 #include "base/containers/span_writer.h"
 
+#include <array>
+#include <memory>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 namespace {
 
+using testing::ElementsAre;
 using testing::Optional;
+using testing::Pointee;
 
 TEST(SpanWriterTest, Construct) {
   std::array<int, 5u> kArray = {1, 2, 3, 4, 5};
@@ -21,7 +26,7 @@ TEST(SpanWriterTest, Construct) {
   EXPECT_EQ(r.remaining_span().size(), 5u);
 }
 
-TEST(SpanWriterTest, Write) {
+TEST(SpanWriterTest, WriteSpan) {
   // Dynamic size.
   {
     std::array<int, 5u> kArray = {1, 2, 3, 4, 5};
@@ -98,6 +103,24 @@ TEST(SpanWriterTest, Write) {
     EXPECT_EQ(r.num_written(), 2u);
     EXPECT_EQ(kArray, base::span({9, 8, 3, 4, 5}));
   }
+}
+
+TEST(SpanWriterTest, WriteValue) {
+  auto array = std::to_array<int>({1, 2});
+
+  auto r = SpanWriter(span(array));
+  EXPECT_TRUE(r.Write(10));
+  EXPECT_TRUE(r.Write(20));
+  EXPECT_THAT(array, ElementsAre(10, 20));
+}
+
+TEST(SpanWriterTest, WriteValueMoveOnly) {
+  std::array<std::unique_ptr<int>, 2> array;
+
+  auto r = SpanWriter(span(array));
+  EXPECT_TRUE(r.Write(std::make_unique<int>(23)));
+  EXPECT_TRUE(r.Write(std::make_unique<int>(88)));
+  EXPECT_THAT(array, ElementsAre(testing::Pointee(23), testing::Pointee(88)));
 }
 
 TEST(SpanWriterTest, Skip) {
