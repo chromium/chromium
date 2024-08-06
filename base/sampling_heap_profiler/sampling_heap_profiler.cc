@@ -232,15 +232,16 @@ void SamplingHeapProfiler::SampleAdded(void* address,
                                        const char* context) {
   // CaptureStack and allocation context tracking may use TLS.
   // Bail out if it has been destroyed.
-  if (UNLIKELY(base::ThreadLocalStorage::HasBeenDestroyed()))
+  if (base::ThreadLocalStorage::HasBeenDestroyed()) [[unlikely]] {
     return;
+  }
   DCHECK(PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted());
   Sample sample(size, total, ++last_sample_ordinal_);
   sample.allocator = type;
   CaptureNativeStack(context, &sample);
   AutoLock lock(mutex_);
-  if (UNLIKELY(PoissonAllocationSampler::AreHookedSamplesMuted() &&
-               type != AllocationSubsystem::kManualForTesting)) {
+  if (PoissonAllocationSampler::AreHookedSamplesMuted() &&
+      type != AllocationSubsystem::kManualForTesting) [[unlikely]] {
     // Throw away any non-test samples that were being collected before
     // ScopedMuteHookedSamplesForTesting was enabled. This is done inside the
     // lock to catch any samples that were being collected while

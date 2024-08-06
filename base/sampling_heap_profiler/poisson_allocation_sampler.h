@@ -229,7 +229,7 @@ ALWAYS_INLINE void PoissonAllocationSampler::OnAllocation(
   // because it's the most common case.
   const ProfilingStateFlagMask state =
       profiling_state_.load(std::memory_order_relaxed);
-  if (LIKELY(!(state & ProfilingStateFlag::kWasStarted))) {
+  if (!(state & ProfilingStateFlag::kWasStarted)) [[likely]] {
     return;
   }
 
@@ -239,9 +239,10 @@ ALWAYS_INLINE void PoissonAllocationSampler::OnAllocation(
   // RecordAlloc. (This doesn't need to be checked in RecordFree because muted
   // allocations won't be added to sampled_addresses_set(), so RecordFree
   // already skips them.)
-  if (UNLIKELY((state & ProfilingStateFlag::kHookedSamplesMutedForTesting) &&
-               type != base::allocator::dispatcher::AllocationSubsystem::
-                           kManualForTesting)) {
+  if ((state & ProfilingStateFlag::kHookedSamplesMutedForTesting) &&
+      type !=
+          base::allocator::dispatcher::AllocationSubsystem::kManualForTesting)
+      [[unlikely]] {
     return;
   }
 
@@ -250,7 +251,7 @@ ALWAYS_INLINE void PoissonAllocationSampler::OnAllocation(
   // only (please see docs of ReentryGuard for full details).
   allocator::dispatcher::ReentryGuard reentry_guard;
 
-  if (UNLIKELY(!reentry_guard)) {
+  if (!reentry_guard) [[unlikely]] {
     return;
   }
 
@@ -309,19 +310,19 @@ ALWAYS_INLINE void PoissonAllocationSampler::OnFree(
   //        outcome as the existing race.
   const ProfilingStateFlagMask state =
       profiling_state_.load(std::memory_order_relaxed);
-  if (LIKELY(!(state & ProfilingStateFlag::kWasStarted))) {
+  if (!(state & ProfilingStateFlag::kWasStarted)) [[likely]] {
     return;
   }
 
   void* const address = free_data.address();
 
-  if (UNLIKELY(address == nullptr)) {
+  if (address == nullptr) [[unlikely]] {
     return;
   }
-  if (LIKELY(!sampled_addresses_set().Contains(address))) {
+  if (!sampled_addresses_set().Contains(address)) [[likely]] {
     return;
   }
-  if (UNLIKELY(ScopedMuteThreadSamples::IsMuted())) {
+  if (ScopedMuteThreadSamples::IsMuted()) [[unlikely]] {
     return;
   }
 

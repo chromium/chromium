@@ -212,7 +212,7 @@ size_t PoissonAllocationSampler::SamplingInterval() const {
 
 // static
 size_t PoissonAllocationSampler::GetNextSampleInterval(size_t interval) {
-  if (UNLIKELY(g_deterministic)) {
+  if (g_deterministic) [[unlikely]] {
     return interval;
   }
 
@@ -233,10 +233,10 @@ size_t PoissonAllocationSampler::GetNextSampleInterval(size_t interval) {
   // huge gaps in the sampling stream. Probability of the upper bound gets hit
   // is exp(-20) ~ 2e-9, so it should not skew the distribution.
   size_t max_value = interval * 20;
-  if (UNLIKELY(value < min_value)) {
+  if (value < min_value) [[unlikely]] {
     return min_value;
   }
-  if (UNLIKELY(value > max_value)) {
+  if (value > max_value) [[unlikely]] {
     return max_value;
   }
   return static_cast<size_t>(value);
@@ -252,11 +252,11 @@ void PoissonAllocationSampler::DoRecordAllocation(
 
   thread_local_data->accumulated_bytes += size;
   intptr_t accumulated_bytes = thread_local_data->accumulated_bytes;
-  if (LIKELY(accumulated_bytes < 0)) {
+  if (accumulated_bytes < 0) [[likely]] {
     return;
   }
 
-  if (UNLIKELY(!(state & ProfilingStateFlag::kIsRunning))) {
+  if (!(state & ProfilingStateFlag::kIsRunning)) [[unlikely]] {
     // Sampling was in fact disabled when the hook was called. Reset the state
     // of the sampler. We do this check off the fast-path, because it's quite a
     // rare state when the sampler is stopped after it's started. (The most
@@ -268,12 +268,12 @@ void PoissonAllocationSampler::DoRecordAllocation(
   }
 
   // Failed allocation? Skip the sample.
-  if (UNLIKELY(!address)) {
+  if (!address) [[unlikely]] {
     return;
   }
 
   size_t mean_interval = g_sampling_interval.load(std::memory_order_relaxed);
-  if (UNLIKELY(!thread_local_data->sampling_interval_initialized)) {
+  if (!thread_local_data->sampling_interval_initialized) [[unlikely]] {
     thread_local_data->sampling_interval_initialized = true;
     // This is the very first allocation on the thread. It always makes it
     // passing the condition at |RecordAlloc|, because accumulated_bytes
@@ -299,7 +299,7 @@ void PoissonAllocationSampler::DoRecordAllocation(
 
   thread_local_data->accumulated_bytes = accumulated_bytes;
 
-  if (UNLIKELY(ScopedMuteThreadSamples::IsMuted())) {
+  if (ScopedMuteThreadSamples::IsMuted()) [[unlikely]] {
     return;
   }
 

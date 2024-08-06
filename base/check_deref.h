@@ -39,7 +39,7 @@ template <typename T>
   // Note: we can't just call `CHECK_NE(ptr, nullptr)` here, as that would
   // cause the error to be reported from this header, and we want the error
   // to be reported at the file and line of the caller.
-  if (UNLIKELY(ptr == nullptr)) {
+  if (ptr == nullptr) [[unlikely]] {
 #if !CHECK_WILL_STREAM()
     CheckFailure();
 #else

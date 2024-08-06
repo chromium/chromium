@@ -341,10 +341,15 @@ bool ThreadGroupImpl::WaitableEventWorkerDelegate::CanCleanupLockRequired(
   }
 
   const TimeTicks last_used_time = worker->GetLastUsedTime();
-  return !last_used_time.is_null() &&
-         subtle::TimeTicksNowIgnoringOverride() - last_used_time >=
-             outer()->after_start().suggested_reclaim_time &&
-         LIKELY(!outer()->worker_cleanup_disallowed_for_testing_);
+  if (last_used_time.is_null() ||
+      subtle::TimeTicksNowIgnoringOverride() - last_used_time <
+          outer()->after_start().suggested_reclaim_time) {
+    return false;
+  }
+  if (!outer()->worker_cleanup_disallowed_for_testing_) [[likely]] {
+    return true;
+  }
+  return false;
 }
 
 void ThreadGroupImpl::WaitableEventWorkerDelegate::CleanupLockRequired(
@@ -496,7 +501,10 @@ void ThreadGroupImpl::OnShutdownStarted() {
 void ThreadGroupImpl::EnsureEnoughWorkersLockRequired(
     BaseScopedCommandsExecutor* base_executor) {
   // Don't do anything if the thread group isn't started.
-  if (max_tasks_ == 0 || UNLIKELY(join_for_testing_started_)) {
+  if (max_tasks_ == 0) {
+    return;
+  }
+  if (join_for_testing_started_) [[unlikely]] {
     return;
   }
 

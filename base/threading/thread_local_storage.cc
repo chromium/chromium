@@ -517,7 +517,7 @@ void ThreadLocalStorage::Slot::Set(void* value) {
   const TlsVectorState state = GetTlsVectorStateAndValue(
       g_native_tls_key.load(std::memory_order_relaxed), &tls_data);
   DCHECK_NE(state, TlsVectorState::kDestroyed);
-  if (UNLIKELY(!tls_data)) {
+  if (!tls_data) [[unlikely]] {
     if (!value)
       return;
     tls_data = ConstructTlsVector();

@@ -637,7 +637,10 @@ void ThreadGroup::OnShutDownStartedImpl(BaseScopedCommandsExecutor* executor) {
   CheckedAutoLock auto_lock(lock_);
 
   // Don't do anything if the thread group isn't started.
-  if (max_tasks_ == 0 || UNLIKELY(join_for_testing_started_)) {
+  if (max_tasks_ == 0) {
+    return;
+  }
+  if (join_for_testing_started_) [[unlikely]] {
     return;
   }
 

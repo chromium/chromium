@@ -87,10 +87,10 @@ class BASE_EXPORT LockImpl {
 void LockImpl::Lock() {
   // Try the lock first to acquire it cheaply if it's not contended. Try() is
   // cheap on platforms with futex-type locks, as it doesn't call into the
-  // kernel. Not marked LIKELY(), as:
+  // kernel. Not marked `[[likely]]`, as:
   // 1. We don't know how much contention the lock would experience
   // 2. This may lead to weird-looking code layout when inlined into a caller
-  // with (UN)LIKELY() annotations.
+  // with `[[(un)likely]]` attributes.
   if (Try()) {
     return;
   }

@@ -118,8 +118,8 @@ class DataPipeProducerHandle : public Handle {
   // Completes a two-phase write to a data pipe. See |MojoEndWriteData()| for
   // complete documentation.
   MojoResult EndWriteData(size_t num_bytes_written) const {
-    if (BASE_NUMERICS_UNLIKELY(
-            !base::IsValueInRangeForNumericType<uint32_t>(num_bytes_written))) {
+    if (!base::IsValueInRangeForNumericType<uint32_t>(num_bytes_written))
+        [[unlikely]] {
       return MOJO_RESULT_INVALID_ARGUMENT;
     }
     uint32_t num_bytes_written_u32 =
@@ -234,8 +234,8 @@ class DataPipeConsumerHandle : public Handle {
   // Completes a two-phase read from a data pipe. See |MojoEndReadData()| for
   // complete documentation.
   MojoResult EndReadData(size_t num_bytes_read) const {
-    if (BASE_NUMERICS_UNLIKELY(
-            !base::IsValueInRangeForNumericType<uint32_t>(num_bytes_read))) {
+    if (!base::IsValueInRangeForNumericType<uint32_t>(num_bytes_read))
+        [[unlikely]] {
       return MOJO_RESULT_INVALID_ARGUMENT;
     }
     uint32_t num_bytes_read_u32 = base::checked_cast<uint32_t>(num_bytes_read);

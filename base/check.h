@@ -187,7 +187,7 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 //   CHECK(Foo());
 //
 // TODO(crbug.com/40244950): Remove the const bool when the blink-gc plugin has
-// been updated to accept `if (LIKELY(!field_))` as well as `if (!field_)`.
+// been updated to accept `if (!field_) [[likely]]` as well as `if (!field_)`.
 #define LOGGING_CHECK_FUNCTION_IMPL(check_stream, condition)              \
   switch (0)                                                              \
   case 0:                                                                 \
@@ -196,8 +196,8 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
     /* The optimizer can use this as a hint to place the failure path */  \
     /* out-of-line, e.g. at the tail of the function. */                  \
     if (const bool probably_true = static_cast<bool>(condition);          \
-        LIKELY(ANALYZER_ASSUME_TRUE(probably_true)))                      \
-      ;                                                                   \
+        ANALYZER_ASSUME_TRUE(probably_true))                              \
+      [[likely]];                                                         \
     else                                                                  \
       (check_stream)
 
@@ -212,6 +212,14 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
   base::ImmediateCrash();
 }
 
+// TODO(crbug.com/357081797): Use `[[unlikely]]` instead when there's a way to
+// switch the expression below to a statement without breaking
+// -Wthread-safety-analysis.
+#if HAS_BUILTIN(__builtin_expect)
+#define BASE_INTERNAL_EXPECT_FALSE(cond) __builtin_expect(!(cond), 0)
+#else
+#define BASE_INTERNAL_EXPECT_FALSE(cond) !(cond)
+#endif
 // Discard log strings to reduce code bloat when there is no NotFatalUntil
 // argument (which temporarily preserves logging both locally and in crash
 // reports).
@@ -221,12 +229,12 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 // compiler optimizations. Unlike the other check macros, this one does not use
 // LOGGING_CHECK_FUNCTION_IMPL(), since it is incompatible with
 // EAT_CHECK_STREAM_PARAMETERS().
-#define CHECK(condition, ...)                                 \
-  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__),                         \
-          UNLIKELY(!(condition)) ? logging::CheckFailure()    \
-                                 : EAT_CHECK_STREAM_PARAMS(), \
-          LOGGING_CHECK_FUNCTION_IMPL(                        \
-              logging::CheckError::Check(#condition, __VA_ARGS__), condition))
+#define CHECK(cond, ...)                                                \
+  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__),                                   \
+          BASE_INTERNAL_EXPECT_FALSE(cond) ? logging::CheckFailure()    \
+                                           : EAT_CHECK_STREAM_PARAMS(), \
+          LOGGING_CHECK_FUNCTION_IMPL(                                  \
+              logging::CheckError::Check(#cond, __VA_ARGS__), cond))
 
 #define CHECK_WILL_STREAM() false
 
@@ -296,7 +304,7 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 [[noreturn]] BASE_EXPORT void RawCheckFailure(const char* message);
 #define RAW_CHECK(condition)                                        \
   do {                                                              \
-    if (UNLIKELY(!(condition))) {                                   \
+    if (!(condition)) [[unlikely]] {                                \
       ::logging::RawCheckFailure("Check failed: " #condition "\n"); \
     }                                                               \
   } while (0)

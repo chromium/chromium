@@ -352,7 +352,13 @@ TimeDelta ThreadGroupSemaphore::SemaphoreWorkerDelegate::GetSleepTimeout() {
 bool ThreadGroupSemaphore::SemaphoreWorkerDelegate::CanCleanupLockRequired(
     const WorkerThread* worker) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  return is_excess_ && LIKELY(!outer()->worker_cleanup_disallowed_for_testing_);
+  if (!is_excess_) {
+    return false;
+  }
+  if (!outer()->worker_cleanup_disallowed_for_testing_) [[likely]] {
+    return true;
+  }
+  return false;
 }
 
 void ThreadGroupSemaphore::SemaphoreWorkerDelegate::CleanupLockRequired(
@@ -473,7 +479,10 @@ void ThreadGroupSemaphore::OnShutdownStarted() {
 void ThreadGroupSemaphore::EnsureEnoughWorkersLockRequired(
     BaseScopedCommandsExecutor* base_executor) {
   // Don't do anything if the thread group isn't started.
-  if (max_tasks_ == 0 || UNLIKELY(join_called_for_testing_.IsSet())) {
+  if (max_tasks_ == 0) {
+    return;
+  }
+  if (join_called_for_testing_.IsSet()) [[unlikely]] {
     return;
   }
 
