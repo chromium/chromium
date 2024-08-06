@@ -617,7 +617,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     const voiceMenu =
         this.$.toolbarContainer.querySelector('#voiceSelectionMenu');
     assert(voiceMenu, 'no voiceMenu element');
-    (voiceMenu as VoiceSelectionMenuElement).onVoiceSelectionMenuClick(event);
+    (voiceMenu as VoiceSelectionMenuElement)
+        .onVoiceSelectionMenuClick(event.target as HTMLElement);
   }
 
   private onMoreOptionsClick_(event: MouseEvent) {

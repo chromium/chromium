@@ -1,144 +1,70 @@
-<style include="cr-icons">
-  cr-icon {
-    --icon-size: 20px;
-    height: var(--icon-size);
-    margin: 0px 8px 0px 4px;
-    width: var(--icon-size);
-  }
-
-  cr-icon-button {
-    --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-size: 24px;
-    color: var(--color-sys-on-surface-subtle);
-    margin: 0 4px;
-  }
-
-  cr-icon-button.active {
-    background-color: var(--cr-active-background-color);
-  }
-
-  #voiceSelectionMenu::part(dialog) {
-    min-width: 304px;
-    width: fit-content;
-  }
-
-  cr-action-menu::part(dialog) {
-    max-height: calc(90% - 36px);
-    /* Prevent jank due to overscrolling from the dialog */
-    overscroll-behavior: contain;
-  }
-
-  .dropdown-voice-selection-button {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    padding: 0px 24px 0px 20px;
-    width: 100%;
-  }
-
-  .dropdown-voice-selection-button cr-icon-button {
-    margin: 0;
-  }
-
-  .dropdown-line {
-    align-items: center;
-    height: 32px;
-  }
-
-  .check-mark {
-    margin: 0;
-  }
-
-  .lang-group-title, .download-message {
-    color: var(--color-sys-on-surface-subtle);
-    display: grid;
-    font-size: 12px;
-    font-weight: 400;
-    padding-left: 20px;
-  }
-
-  .voice-name {
-    font-size: 13px;
-    font-weight: 500;
-    max-width: 100%;
-    overflow: hidden;
-    padding-inline-end: 16px;
-    text-overflow: ellipsis;
-  }
-
-  .item-invisible-true {
-    visibility: hidden;
-  }
-
-  .menu-divider {
-    border-top: 1px solid var(--color-side-panel-dialog-divider);
-  }
-
-  .language-menu-button {
-    font-size: 13px;
-    font-weight: 500;
-    height: 24px;
-    margin-bottom: 3px;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-</style>
-
-<cr-lazy-render id="voiceSelectionMenu">
-  <template>
-    <cr-action-menu on-close="onClose_" on-keydown="onVoiceMenuKeyDown_"
+<cr-lazy-render-lit
+  id="voiceSelectionMenu"
+  .template='${() => html`
+    <cr-action-menu
+        @close="${this.onClose_}"
+        @keydown="${this.onVoiceMenuKeyDown_}"
         accessibility-label="$i18n{voiceSelectionLabel}"
-        role-description="$i18n{menu}">
-      <template is="dom-repeat" items="[[downloadingMessages_]]"
-          initial-count="0">
-        <span class="dropdown-line download-message">[[item]]</span>
-      </template>
+        role-description="$i18n{menu}"
+    >
+      ${this.downloadingMessages_.map((item) => html`
+        <span class="dropdown-line download-message">${item}</span>
+      `)}
 
-      <template is="dom-repeat" items="[[voiceSelectionOptions_]]"
-          initial-count="20">
-        <span class="dropdown-line lang-group-title">[[item.language]]</span>
+      ${this.voiceGroups_.map((voiceGroup, groupIndex) => html`
+        <span class="dropdown-line lang-group-title">
+          ${voiceGroup.language}
+        </span>
 
-        <template is="dom-repeat" items="[[item.voices]]" initial-count="20">
-          <button data-test-id$="[[item.id]]"
-              class="dropdown-item dropdown-voice-selection-button"
-              on-click="onVoiceSelectClick_">
-            <span class="voice-name">
-              <cr-icon id="check-mark"
-                  class$="item-invisible-[[!item.selected]] check-mark"
-                  icon="read-anything-20:check-mark"
-                  aria-label="$i18n{selected}">
-              </cr-icon>
-              [[item.title]]
-            </span>
-            <cr-icon-button id="preview-icon" on-click="onVoicePreviewClick_"
-                title$="[[previewLabel_(item.previewPlaying,'')]]"
-                aria-label$="[[previewAriaLabel_(item.previewPlaying,item.title)]]"
-                iron-icon="[[previewIcon_(item.previewPlaying)]]">
-            </cr-icon-button>
-          </button>
-        </template>
-      </template>
+        ${voiceGroup.voices.map((voice, voiceIndex) => html`
+            <button data-test-id="${voice.id}"
+                class="dropdown-item dropdown-voice-selection-button"
+                data-group-index="${groupIndex}"
+                data-voice-index="${voiceIndex}"
+                @click="${this.onVoiceSelectClick_}">
+              <span class="voice-name">
+                <cr-icon id="check-mark"
+                    class="item-invisible-${!voice.selected} check-mark"
+                    icon="read-anything-20:check-mark"
+                    aria-label="$i18n{selected}">
+                </cr-icon>
+                ${voice.title}
+              </span>
+
+              <cr-icon-button id="preview-icon"
+                  @click="${this.onVoicePreviewClick_}"
+                  data-group-index="${groupIndex}"
+                  data-voice-index="${voiceIndex}"
+                  title="${this.previewLabel_(voice.previewPlaying)}"
+                  aria-label="${this.previewAriaLabel_(voice.previewPlaying,voice.title)}"
+                  iron-icon="${this.previewIcon_(voice.previewPlaying)}">
+              </cr-icon-button>
+            </button>
+        `)}
+      `)}
 
       <hr class="menu-divider">
-
       <button
           class="dropdown-item dropdown-voice-selection-button language-menu-button"
-          on-click="openLanguageMenu_">
+          @click="${this.openLanguageMenu_}">
         $i18n{readingModeLanguageMenu}
       </button>
+
     </cr-action-menu>
-  </template>
-</cr-lazy-render>
+  `}'>
+</cr-lazy-render-lit>
 
-
-<template is="dom-if" if="[[showLanguageMenuDialog_]]" restamp>
-  <language-menu id="languageMenu" enabled-langs="[[enabledLangs]]"
-      voice-pack-install-status="[[voicePackInstallStatus]]"
-      locale-to-display-name="[[localeToDisplayName]]"
-      last-downloaded-lang="[[lastDownloadedLang]]"
-      selected-lang="[[selectedVoice.lang]]"
-      available-voices="[[availableVoices]]"
-      on-close="onLanguageMenuClose_">
+${this.showLanguageMenuDialog_
+  ?  html`
+  <language-menu id="languageMenu"
+      .enabledLangs="${this.enabledLangs}"
+      .voicePackInstallStatus="${this.voicePackInstallStatus}"
+      .localeToDisplayName="${this.localeToDisplayName}"
+      .lastDownloadedLang="${this.lastDownloadedLang}"
+      .selectedLang="${this.selectedVoice?.lang}"
+      .availableVoices="${this.availableVoices}"
+      @close="${this.onLanguageMenuClose_}">
   </language-menu>
-</template>
+  `
+  : ''
+}
