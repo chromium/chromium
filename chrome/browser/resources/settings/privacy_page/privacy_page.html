@@ -410,11 +410,11 @@
           <settings-category-default-radio-group
               category="[[contentSettingsTypesEnum_.IMAGES]]"
               allow-option-label="$i18n{siteSettingsImagesAllowed}"
-              allow-option-icon="settings:photo"
+              allow-option-icon="privacy:imagesmode"
               block-option-label="$i18n{siteSettingsImagesBlocked}"
               block-option-sub-label=
                   "$i18n{siteSettingsImagesBlockedSubLabel}"
-              block-option-icon="settings:photo-off">
+              block-option-icon="privacy:hide-image">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.IMAGES]]"
@@ -459,10 +459,10 @@
                 category="[[contentSettingsTypesEnum_.FEDERATED_IDENTITY_API]]"
                 allow-option-label=
                     "$i18n{siteSettingsFederatedIdentityApiAllowed}"
-                allow-option-icon="settings:federated-identity-api"
+                allow-option-icon="privacy:account-circle"
                 block-option-label=
                     "$i18n{siteSettingsFederatedIdentityApiBlocked}"
-                block-option-icon="settings:federated-identity-api-off">
+                block-option-icon="privacy:account-circle-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[contentSettingsTypesEnum_.FEDERATED_IDENTITY_API]]"
@@ -619,9 +619,9 @@
           <settings-category-default-radio-group
               category="[[contentSettingsTypesEnum_.JAVASCRIPT]]"
               allow-option-label="$i18n{siteSettingsJavascriptAllowed}"
-              allow-option-icon="settings:code"
+              allow-option-icon="privacy:code"
               block-option-label="$i18n{siteSettingsJavascriptBlocked}"
-              block-option-icon="settings:code-off">
+              block-option-icon="privacy:code-off">
           </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.JAVASCRIPT]]"
@@ -641,10 +641,10 @@
           <settings-category-default-radio-group
               category="[[contentSettingsTypesEnum_.SOUND]]"
               allow-option-label="$i18n{siteSettingsSoundAllowed}"
-              allow-option-icon="settings:volume-up"
+              allow-option-icon="privacy:volume-up"
               block-option-label="$i18n{siteSettingsSoundBlocked}"
               block-option-sub-label="$i18n{siteSettingsSoundBlockedSubLabel}"
-              block-option-icon="settings:volume-up-off">
+              block-option-icon="privacy:volume-up-off">
           </settings-category-default-radio-group>
           <settings-toggle-button
               id="block-autoplay-setting"
@@ -870,9 +870,9 @@
             <settings-category-default-radio-group
                 category="[[contentSettingsTypesEnum_.ADS]]"
                 allow-option-label="$i18n{siteSettingsAdsAllowed}"
-                allow-option-icon="settings:ads"
+                allow-option-icon="privacy:web-asset"
                 block-option-label="$i18n{siteSettingsAdsBlocked}"
-                block-option-icon="settings:ads-off">
+                block-option-icon="privacy:web-asset-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[contentSettingsTypesEnum_.ADS]]"
@@ -1058,7 +1058,7 @@
                   label="$i18n{siteSettingsProtectedContentAllowed}"
                   name="true"
                   disabled$="[[isGuest_]]"
-                  icon="settings:protected-content">
+                  icon="privacy:sync-saved-locally">
               </settings-collapse-radio-button>
               <settings-collapse-radio-button no-collapse
                   pref="[[prefs.webkit.webprefs.encrypted_media_enabled]]"
@@ -1067,7 +1067,7 @@
                       "$i18n{siteSettingsProtectedContentBlockedSubLabel}"
                   name="false"
                   disabled$="[[isGuest_]]"
-                  icon="settings:protected-content-off">
+                  icon="privacy:web-asset-off">
               </settings-collapse-radio-button>
             </settings-radio-group>
           </div>
@@ -1081,14 +1081,14 @@
                 "$i18n{siteSettingsProtectedContentIdentifiersBlocked}"
             block-option-sub-label=
                 "$i18n{siteSettingsProtectedContentIdentifiersBlockedSubLabel}"
-            block-option-icon="settings:protected-content-off"
+            block-option-icon="privacy:web-asset-off"
             allow-option-label=
                 "$i18n{siteSettingsProtectedContentIdentifiersAllowed}"
 <if expr="is_win and _google_chrome">
             allow-option-sub-label=
                 "$i18n{siteSettingsProtectedContentIdentifiersAllowedSubLabel}"
 </if>
-            allow-option-icon="settings:protected-content"
+            allow-option-icon="privacy:sync-saved-locally"
             disabled$="[[isGuest_]]">
           </settings-category-default-radio-group>
           <category-setting-exceptions
