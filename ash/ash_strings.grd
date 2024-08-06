@@ -7495,10 +7495,12 @@ New install
       <message name="IDS_PICKER_RESULT_BADGE_LABEL_CREATE" translateable="false" desc="Label of the badge in a result that can be created.">
         Create
       </message>
-      <message name="IDS_PICKER_FEATURE_TOUR_LEARN_MORE_BUTTON_LABEL" translateable="false" desc="Button label in feature tour dialog to learn more about Picker.">
+      <message name="IDS_PICKER_FEATURE_TOUR_LEARN_MORE_BUTTON_LABEL"
+        desc="This string appears as the label of a button in a feature tour dialog. When selected, this button opens a help center article explaining the feature.">
         Learn more
       </message>
-      <message name="IDS_PICKER_FEATURE_TOUR_START_BUTTON_LABEL" translateable="false" desc="Button label in feature tour dialog to start using Picker.">
+      <message name="IDS_PICKER_FEATURE_TOUR_START_BUTTON_LABEL"
+        desc="This string appears as the label of a button in a feature tour dialog. When selected, this button closes the dialog and activates the feature.">
         Get started
       </message>
       <message name="IDS_PICKER_SEARCH_FIELD_CLEAR_BUTTON_TOOLTIP_TEXT" translateable="false" desc="Tooltip text for the button that clears all text from the Picker search field.">
