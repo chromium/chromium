@@ -29,7 +29,16 @@ impl fend_core::Interrupt for TimeoutInterrupt {
     }
 }
 
+fn is_allowed_byte(byte: u8) -> bool {
+    // All bytes of UTF-8 non-ASCII codepoints have an MSB of 1, which should
+    // never match any ASCII character.
+    matches!(byte, b' ' | b'0'..=b'9' | b'+' | b'-' | b'*' | b'/' | b'(' | b')')
+}
+
 pub fn evaluate_using_rust(query: &[u8], out_result: &mut String, timeout_in_ms: u32) -> bool {
+    if !query.iter().any(|c| is_allowed_byte(*c)) {
+        return false;
+    }
     let Ok(query) = std::str::from_utf8(query) else {
         return false;
     };
