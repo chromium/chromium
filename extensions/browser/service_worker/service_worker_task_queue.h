@@ -267,7 +267,8 @@ class ServiceWorkerTaskQueue
     virtual void WorkerUnregistered(const ExtensionId& extension_id) {}
 
     // Called when a service worker registered for the extension with the
-    // `extension_id` has been registered in the //content layer.
+    // `extension_id` has been registered in the //content layer. It is always
+    // called, even if the registration request fails.
     virtual void OnWorkerRegistered(const ExtensionId& extension_id) {}
   };
 

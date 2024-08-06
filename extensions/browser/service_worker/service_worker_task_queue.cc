@@ -653,9 +653,6 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
   const bool success = status_code == blink::ServiceWorkerStatusCode::kOk;
   base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground.WorkerRegistrationState", success);
-  if (g_test_observer) {
-    g_test_observer->OnWorkerRegistered(context_id.extension_id);
-  }
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
   const ExtensionId& extension_id = context_id.extension_id;
@@ -663,9 +660,15 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
   const Extension* extension =
       registry->enabled_extensions().GetByID(extension_id);
   if (!extension) {
+    if (g_test_observer) {
+      g_test_observer->OnWorkerRegistered(context_id.extension_id);
+    }
     return;
   }
   if (!IsCurrentActivation(extension_id, context_id.token)) {
+    if (g_test_observer) {
+      g_test_observer->OnWorkerRegistered(context_id.extension_id);
+    }
     return;
   }
 
@@ -702,6 +705,9 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
 
     ExtensionsBrowserClient::Get()->ReportError(browser_context_,
                                                 std::move(error));
+    if (g_test_observer) {
+      g_test_observer->OnWorkerRegistered(context_id.extension_id);
+    }
     return;
   }
   base::UmaHistogramTimes("Extensions.ServiceWorkerBackground.RegistrationTime",
@@ -717,6 +723,10 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     // not calling StartWorker. This should be straightforward now that service
     // worker's internal state is on the UI thread rather than the IO thread.
     RunTasksAfterStartWorker(context_id);
+  }
+
+  if (g_test_observer) {
+    g_test_observer->OnWorkerRegistered(context_id.extension_id);
   }
 }
 
