@@ -1880,7 +1880,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)didTapInactiveTabsButtonInGridViewController:
     (BaseGridViewController*)gridViewController {
   CHECK(IsInactiveTabsEnabled());
-  CHECK_EQ(self.currentPage, TabGridPageRegularTabs);
+  if (self.currentPage != TabGridPageRegularTabs) {
+    return;
+  }
   base::RecordAction(base::UserMetricsAction("MobileTabGridShowInactiveTabs"));
   [self.delegate showInactiveTabs];
   [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
