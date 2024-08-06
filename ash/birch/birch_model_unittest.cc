@@ -171,6 +171,29 @@ class BirchModelTest : public AshTestBase {
     Shell::Get()->birch_model()->RecordProviderHiddenHistograms();
   }
 
+  // Disables all data type prefs except the given exceptions.
+  void DisableAllDataTypePrefsExcept(std::vector<const char*> exceptions) {
+    PrefService* pref_service =
+        Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+    ASSERT_TRUE(pref_service);
+    const char* kDataPrefs[] = {
+        prefs::kBirchUseCalendar,     prefs::kBirchUseFileSuggest,
+        prefs::kBirchUseChromeTabs,   prefs::kBirchUseLostMedia,
+        prefs::kBirchUseReleaseNotes, prefs::kBirchUseWeather,
+        prefs::kBirchUseCoral,
+    };
+    for (const char* pref : kDataPrefs) {
+      bool enable = false;
+      for (const char* exception : exceptions) {
+        /*strcmp returns 0 when inputs are the same*/
+        if (0 == strcmp(pref, exception)) {
+          enable = true;
+        }
+      }
+      pref_service->SetBoolean(pref, enable);
+    }
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   StubBirchClient stub_birch_client_;
@@ -404,15 +427,7 @@ TEST_F(BirchModelTest, DisablingAllPrefsCausesNoFetch) {
   ASSERT_TRUE(model->IsDataFresh());
 
   // Disable all the prefs.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  ASSERT_TRUE(prefs);
-  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
-  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseChromeTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
-  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
-  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+  DisableAllDataTypePrefsExcept(std::vector<const char*>());
 
   // Install a stub weather provider.
   auto* weather_provider = stub_birch_client_.InstallStubWeatherDataProvider();
@@ -444,15 +459,8 @@ TEST_F(BirchModelTest, EnablingOnePrefsCausesFetch) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Disable all the prefs except calendar.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  ASSERT_TRUE(prefs);
-  prefs->SetBoolean(prefs::kBirchUseCalendar, true);
-  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseChromeTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
-  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
-  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+  DisableAllDataTypePrefsExcept(
+      std::vector<const char*>{prefs::kBirchUseCalendar});
 
   // Install a stub weather provider.
   auto* weather_provider = stub_birch_client_.InstallStubWeatherDataProvider();
@@ -511,15 +519,7 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   ASSERT_TRUE(model->IsDataFresh());
 
   // Disable all the prefs for data providers.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  ASSERT_TRUE(prefs);
-  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
-  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseChromeTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
-  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
-  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+  DisableAllDataTypePrefsExcept(std::vector<const char*>());
 
   // The model is now empty.
   EXPECT_TRUE(model->GetAllItems().empty());
@@ -539,15 +539,7 @@ TEST_F(BirchModelTest, GetAllItemsDoesNotReturnItemsWithDisabledPrefs) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Disable all the prefs for data providers.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  ASSERT_TRUE(prefs);
-  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
-  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseChromeTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
-  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
-  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+  DisableAllDataTypePrefsExcept(std::vector<const char*>());
 
   // Populate the model with every data type.
   model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
@@ -590,15 +582,7 @@ TEST_F(BirchModelTest, DisablingPrefsMarksDataFresh) {
   ASSERT_FALSE(model->IsDataFresh());
 
   // Disable all the prefs for data providers.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  ASSERT_TRUE(prefs);
-  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
-  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseChromeTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
-  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
-  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+  DisableAllDataTypePrefsExcept(std::vector<const char*>());
 
   // The data is reported as fresh.
   EXPECT_TRUE(model->IsDataFresh());
@@ -667,14 +651,8 @@ TEST_F(BirchModelTest, EnablePrefsDuringFetchCausesDataFetchRequest) {
 
   // Disable all the prefs except weather, so that a data fetch request creates
   // a pending request.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  ASSERT_TRUE(prefs);
-  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
-  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseChromeTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
-  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
+  DisableAllDataTypePrefsExcept(
+      std::vector<const char*>({prefs::kBirchUseWeather}));
 
   // Request a fetch, creating a pending fetch request.
   model->RequestBirchDataFetch(/*is_post_login=*/false, base::DoNothing());
@@ -691,12 +669,11 @@ TEST_F(BirchModelTest, EnablePrefsDuringFetchCausesDataFetchRequest) {
 
   // Enable prefs and then expect that data fetch requests are called for each
   // enabled data type.
-  prefs->SetBoolean(prefs::kBirchUseCalendar, true);
-  prefs->SetBoolean(prefs::kBirchUseFileSuggest, true);
-  prefs->SetBoolean(prefs::kBirchUseChromeTabs, true);
-  prefs->SetBoolean(prefs::kBirchUseLostMedia, true);
+  DisableAllDataTypePrefsExcept(std::vector<const char*>(
+      {prefs::kBirchUseCalendar, prefs::kBirchUseFileSuggest,
+       prefs::kBirchUseChromeTabs, prefs::kBirchUseLostMedia,
+       prefs::kBirchUseReleaseNotes}));
 
-  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, true);
   EXPECT_TRUE(client.DidRequestCalendarDataFetch());
   EXPECT_TRUE(client.DidRequestFileSuggestDataFetch());
   EXPECT_TRUE(client.DidRequestRecentTabsDataFetch());
@@ -1747,14 +1724,7 @@ TEST_F(BirchModelTest, RecordProviderHiddenHistograms) {
   base::HistogramTester histograms;
 
   // Disable all the prefs, as if the user had hidden each data type.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  ASSERT_TRUE(prefs);
-  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
-  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseChromeTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
-  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+  DisableAllDataTypePrefsExcept(std::vector<const char*>());
 
   // Record histograms.
   RecordProviderHiddenHistograms();

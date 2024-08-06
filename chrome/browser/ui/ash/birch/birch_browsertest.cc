@@ -277,8 +277,8 @@ void ClickOnView(views::View* target_view) {
   event_generator.ClickLeftButton();
 }
 
-// Disables all data type prefs except the one given.
-void DisableAllDataTypePrefsExcept(const char* exception) {
+// Disables all data type prefs except the given exceptions.
+void DisableAllDataTypePrefsExcept(std::vector<const char*> exceptions) {
   PrefService* pref_service =
       Shell::Get()->session_controller()->GetPrimaryUserPrefService();
   ASSERT_TRUE(pref_service);
@@ -286,12 +286,17 @@ void DisableAllDataTypePrefsExcept(const char* exception) {
       prefs::kBirchUseCalendar,     prefs::kBirchUseFileSuggest,
       prefs::kBirchUseChromeTabs,   prefs::kBirchUseLostMedia,
       prefs::kBirchUseReleaseNotes, prefs::kBirchUseWeather,
+      prefs::kBirchUseCoral,
   };
   for (const char* pref : kDataPrefs) {
-    if (strcmp(pref, exception)) {
-      // This isn't the exception pref, so set it to false.
-      pref_service->SetBoolean(pref, false);
+    bool enable = false;
+    for (const char* exception : exceptions) {
+      /*strcmp returns 0 when inputs are the same*/
+      if (0 == strcmp(pref, exception)) {
+        enable = true;
+      }
     }
+    pref_service->SetBoolean(pref, enable);
   }
 }
 
@@ -351,7 +356,8 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, WeatherChip) {
 
   // Disable the prefs for data providers other than weather. This ensures the
   // data is fresh once the weather provider replies.
-  DisableAllDataTypePrefsExcept(prefs::kBirchUseWeather);
+  DisableAllDataTypePrefsExcept(
+      std::vector<const char*>{prefs::kBirchUseWeather});
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -390,7 +396,8 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, CalendarChip) {
 
   // Disable the prefs for data providers other than calendar. This ensures the
   // data is fresh once the calendar provider replies.
-  DisableAllDataTypePrefsExcept(prefs::kBirchUseCalendar);
+  DisableAllDataTypePrefsExcept(
+      std::vector<const char*>{prefs::kBirchUseCalendar});
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -435,7 +442,8 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, AttachmentChip) {
   // Disable the prefs for data providers other than file suggest, which
   // controls attachments. This ensures the data is fresh once the attachment
   // provider replies.
-  DisableAllDataTypePrefsExcept(prefs::kBirchUseFileSuggest);
+  DisableAllDataTypePrefsExcept(
+      std::vector<const char*>{prefs::kBirchUseFileSuggest});
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -473,7 +481,8 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, FileSuggestChip) {
 
   // Disable the prefs for data providers other than file suggest. This ensures
   // the data is fresh once the calendar provider replies.
-  DisableAllDataTypePrefsExcept(prefs::kBirchUseFileSuggest);
+  DisableAllDataTypePrefsExcept(
+      std::vector<const char*>{prefs::kBirchUseFileSuggest});
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -512,7 +521,8 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, RecentTabsChip) {
 
   // Disable the prefs for data providers other than chrome tabs. This ensures
   // the data is fresh once the test provider replies.
-  DisableAllDataTypePrefsExcept(prefs::kBirchUseChromeTabs);
+  DisableAllDataTypePrefsExcept(
+      std::vector<const char*>{prefs::kBirchUseChromeTabs});
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -555,7 +565,8 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, LastActiveChip) {
 
   // Disable the prefs for data providers other than chrome tabs. This ensures
   // the data is fresh once the last active provider replies.
-  DisableAllDataTypePrefsExcept(prefs::kBirchUseChromeTabs);
+  DisableAllDataTypePrefsExcept(
+      std::vector<const char*>{prefs::kBirchUseChromeTabs});
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -599,7 +610,8 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, MostVisitedChip) {
 
   // Disable the prefs for data providers other than chrome tabs. This ensures
   // the data is fresh once the most visited provider replies.
-  DisableAllDataTypePrefsExcept(prefs::kBirchUseChromeTabs);
+  DisableAllDataTypePrefsExcept(
+      std::vector<const char*>{prefs::kBirchUseChromeTabs});
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -638,7 +650,8 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, SelfShareChip) {
 
   // Disable the prefs for data providers other than chrome tabs. This ensures
   // the data is fresh once the self share provider replies.
-  DisableAllDataTypePrefsExcept(prefs::kBirchUseChromeTabs);
+  DisableAllDataTypePrefsExcept(
+      std::vector<const char*>{prefs::kBirchUseChromeTabs});
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -677,7 +690,8 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, LostMediaChip) {
 
   // Disable the prefs for data providers other than lost media. This ensures
   // the data is fresh once the lost media provider replies.
-  DisableAllDataTypePrefsExcept(prefs::kBirchUseLostMedia);
+  DisableAllDataTypePrefsExcept(
+      std::vector<const char*>{prefs::kBirchUseLostMedia});
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -716,7 +730,8 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, ReleaseNotesChip) {
 
   // Disable the prefs for data providers other than release notes. This
   // ensures the data is fresh once the release notes provider replies.
-  DisableAllDataTypePrefsExcept(prefs::kBirchUseReleaseNotes);
+  DisableAllDataTypePrefsExcept(
+      std::vector<const char*>{prefs::kBirchUseReleaseNotes});
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
