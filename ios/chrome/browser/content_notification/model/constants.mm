@@ -8,3 +8,9 @@ const char kPriceTrackingNotificationEnabledKey[] =
     "PRICE_TRACKING_NOTIFICATION_ENABLED";
 const char kFeedActivityKey[] = "FEED_ACTIVITY";
 const char kNewUserKey[] = "NEW_USER";
+const char kEnrollmentTypePromoEnabled[] = "promo_enabled";
+const char kEnrollmentTypePromoRegistered[] = "promo_registered";
+const char kEnrollmentTypeProvisionalEnabled[] = "provisional_enabled";
+const char kEnrollmentTypeProvisionalRegistered[] = "provisional_registered";
+const char kEnrollmentTypeSetUpListEnabled[] = "setuplist_enabled";
+const char kEnrollmentTypeSetUpListRegistered[] = "setuplist_registered";
