@@ -84,7 +84,7 @@ class CONTENT_EXPORT FontUniqueNameLookup {
   // Override the internal font files enumeration with an explicit set of fonts
   // to be scanned in |font_file_paths|. Only used for testing.
   void SetFontFilePathsForTesting(
-      const std::vector<std::string> font_file_paths) {
+      const std::vector<base::FilePath> font_file_paths) {
     font_file_paths_for_testing_ = font_file_paths;
   }
 
@@ -110,7 +110,7 @@ class CONTENT_EXPORT FontUniqueNameLookup {
   // If an override is set through SetFontFilePathsForTesting() return those
   // fonts, otherwise enumerate font files in the the Android platform font
   // directories.
-  std::vector<std::string> GetFontFilePaths() const;
+  std::vector<base::FilePath> GetFontFilePaths() const;
 
   base::FilePath TableCacheFilePath();
 
@@ -128,8 +128,8 @@ class CONTENT_EXPORT FontUniqueNameLookup {
 
   base::FilePath cache_directory_;
   std::string android_build_fingerprint_for_testing_;
-  std::vector<std::string> font_file_paths_for_testing_ =
-      std::vector<std::string>();
+  std::vector<base::FilePath> font_file_paths_for_testing_ =
+      std::vector<base::FilePath>();
 
   struct CallbackOnTaskRunner {
     CallbackOnTaskRunner(

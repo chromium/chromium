@@ -28,8 +28,8 @@ static const char* const kRobotoCondensedBoldItalicNames[] = {
     "Roboto Condensed Bold Italic", "RobotoCondensed-BoldItalic",
     "RobotoCondensed-BoldItalic.ttf"};
 
-std::vector<std::string> AndroidFontFilesList() {
-  std::vector<std::string> font_files;
+std::vector<base::FilePath> AndroidFontFilesList() {
+  std::vector<base::FilePath> font_files;
   for (const char* font_dir_path : kAndroidFontPaths) {
     base::FileEnumerator files_enumerator(
         base::MakeAbsoluteFilePath(base::FilePath(font_dir_path)), true,
@@ -38,15 +38,15 @@ std::vector<std::string> AndroidFontFilesList() {
          name = files_enumerator.Next()) {
       if (name.Extension() == ".ttf" || name.Extension() == ".ttc" ||
           name.Extension() == ".otf") {
-        font_files.push_back(name.value());
+        font_files.push_back(name);
       }
     }
   }
   return font_files;
 }
 
-std::vector<std::string> SplitFontFilesList(
-    const std::vector<std::string> font_files,
+std::vector<base::FilePath> SplitFontFilesList(
+    const std::vector<base::FilePath> font_files,
     bool return_second_half) {
   CHECK_GT(font_files.size(), 2u);
   auto start_copy = font_files.begin();
@@ -55,7 +55,7 @@ std::vector<std::string> SplitFontFilesList(
     start_copy = end_copy;
     end_copy = font_files.end();
   }
-  return std::vector<std::string>(start_copy, end_copy);
+  return std::vector<base::FilePath>(start_copy, end_copy);
 }
 
 void TruncateFileToLength(const base::FilePath& file_path,
@@ -273,7 +273,7 @@ class FontFileCorruptor {
   }
 
   // Get the list of filenames copied to the temporary directory.
-  std::vector<std::string> GetFontFilesList() { return copied_files_; }
+  std::vector<base::FilePath> GetFontFilesList() { return copied_files_; }
 
  private:
   void ForEachCopiedFontFile(
@@ -287,18 +287,18 @@ class FontFileCorruptor {
   }
 
   void CopyPlatformFilesToTempDir() {
-    std::vector<std::string> platform_files = AndroidFontFilesList();
+    std::vector<base::FilePath> platform_files = AndroidFontFilesList();
     for (auto& font_file : platform_files) {
       base::FilePath source_path(font_file);
       base::FilePath destination_path(temp_dir_.GetPath());
       destination_path = destination_path.Append(source_path.BaseName());
       if (base::CopyFile(source_path, destination_path)) {
-        copied_files_.push_back(destination_path.value());
+        copied_files_.push_back(destination_path);
       }
     }
   }
   base::ScopedTempDir temp_dir_;
-  std::vector<std::string> copied_files_;
+  std::vector<base::FilePath> copied_files_;
 };
 
 class FaultInjectingFontUniqueNameLookupTest : public ::testing::Test {

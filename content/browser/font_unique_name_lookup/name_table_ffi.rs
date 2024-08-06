@@ -3,9 +3,6 @@
 // found in the LICENSE file.
 use read_fonts::{FileRef, FontRef, ReadError};
 use skrifa::{string::StringId, MetadataProvider};
-// Only built for Android.
-use std::os::unix::ffi::OsStrExt;
-use std::{ffi::OsStr, fs};
 
 fn make_font_ref_internal<'a>(font_data: &'a [u8], index: u32) -> Result<FontRef<'a>, ReadError> {
     match FileRef::new(font_data)? {
@@ -14,21 +11,18 @@ fn make_font_ref_internal<'a>(font_data: &'a [u8], index: u32) -> Result<FontRef
     }
 }
 
-fn english_unique_font_names<'a>(font_filename: &[u8], index: u32) -> Vec<String> {
-    let font_bytes = fs::read(OsStr::from_bytes(font_filename));
-    let font_ref = font_bytes.as_ref().map(|buffer| make_font_ref_internal(buffer, index));
-    match font_ref {
-        Ok(Ok(font_ref)) => {
-            let mut return_vec = Vec::new();
-            for id in [StringId::FULL_NAME, StringId::POSTSCRIPT_NAME] {
-                if let Some(font_name) = font_ref.localized_strings(id).english_or_first() {
-                    let name_added = font_name.to_string();
-                    return_vec.push(name_added);
-                }
+fn english_unique_font_names<'a>(font_bytes: &[u8], index: u32) -> Vec<String> {
+    if let Ok(font_ref) = make_font_ref_internal(font_bytes, index) {
+        let mut return_vec = Vec::new();
+        for id in [StringId::FULL_NAME, StringId::POSTSCRIPT_NAME] {
+            if let Some(font_name) = font_ref.localized_strings(id).english_or_first() {
+                let name_added = font_name.to_string();
+                return_vec.push(name_added);
             }
-            return_vec
         }
-        _ => Vec::new(),
+        return_vec
+    } else {
+        Vec::new()
     }
 }
 
@@ -51,12 +45,11 @@ unsafe fn offset_first_table(font_bytes: &[u8]) -> u64 {
     }
 }
 
-fn indexable_num_fonts<'a>(font_filename: &[u8]) -> u32 {
-    let font_bytes = fs::read(OsStr::from_bytes(font_filename));
-    let maybe_font_or_collection = font_bytes.as_ref().map(|buffer| FileRef::new(buffer));
+fn indexable_num_fonts<'a>(font_bytes: &[u8]) -> u32 {
+    let maybe_font_or_collection = FileRef::new(font_bytes);
     match maybe_font_or_collection {
-        Ok(Ok(FileRef::Collection(collection))) => collection.len(),
-        Ok(Ok(FileRef::Font(_))) => 1u32,
+        Ok(FileRef::Collection(collection)) => collection.len(),
+        Ok(FileRef::Font(_)) => 1u32,
         _ => 0u32,
     }
 }
@@ -69,8 +62,8 @@ pub mod ffi {
         /// ambiguous and means either a single font file
         /// or a collection, but since `english_unique_font_names` ignore the
         /// argument if the font is not a collection, this is ok.
-        unsafe fn indexable_num_fonts<'a>(font_filename: &[u8]) -> u32;
-        unsafe fn english_unique_font_names<'a>(font_filename: &[u8], index: u32) -> Vec<String>;
+        unsafe fn indexable_num_fonts<'a>(font_bytes: &[u8]) -> u32;
+        unsafe fn english_unique_font_names<'a>(font_bytes: &[u8], index: u32) -> Vec<String>;
         unsafe fn offset_first_table(font_bytes: &[u8]) -> u64;
     }
 }

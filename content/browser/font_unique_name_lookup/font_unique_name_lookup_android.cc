@@ -7,12 +7,13 @@
 #include <set>
 #include <vector>
 
-#include "build/build_config.h"
 #include "base/android/build_info.h"
 #include "base/check.h"
+#include "base/containers/span_rust.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -22,6 +23,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "content/browser/font_unique_name_lookup/name_table_ffi.rs.h"
 #include "content/common/features.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_table_matcher.h"
@@ -191,26 +193,27 @@ int32_t NumberOfFacesInFontFileFreeType(FT_Library ft_library,
   return probe_face.get()->num_faces;
 }
 
-void IndexFilesFreeType(const base::span<std::string> fonts_to_index,
+void IndexFilesFreeType(const base::span<base::FilePath> fonts_to_index,
                         blink::FontUniqueNameTable& font_table) {
   ScopedFtLibrary ft_library;
-  for (const auto& font_file : fonts_to_index) {
-    int32_t number_of_faces =
-        NumberOfFacesInFontFileFreeType(ft_library.get(), font_file);
+  for (const auto& font_file_name : fonts_to_index) {
+    int32_t number_of_faces = NumberOfFacesInFontFileFreeType(
+        ft_library.get(), font_file_name.value());
     for (int32_t i = 0; i < number_of_faces; ++i) {
       TRACE_EVENT0("fonts",
                    "FontUniqueNameLookup::UpdateTable - IndexFileFreeType");
-      IndexFileFreeType(ft_library.get(), font_table, font_file, i);
+      IndexFileFreeType(ft_library.get(), font_table, font_file_name.value(),
+                        i);
     }
   }
 }
 
 void IndexFileFontations(blink::FontUniqueNameTable& font_table,
                          std::string_view font_file_path,
+                         const rust::Slice<const uint8_t>& mapped_bytes,
                          uint32_t ttc_index) {
   rust::Vec<rust::String> english_unique_font_names =
-      name_table_access::english_unique_font_names(
-          base::StringPieceToRustSlice(font_file_path), ttc_index);
+      name_table_access::english_unique_font_names(mapped_bytes, ttc_index);
 
   if (english_unique_font_names.empty()) {
     return;
@@ -231,15 +234,27 @@ void IndexFileFontations(blink::FontUniqueNameTable& font_table,
   }
 }
 
-void IndexFilesFontations(const base::span<std::string>& fonts_to_index,
+void IndexFilesFontations(base::span<base::FilePath> fonts_to_index,
                           blink::FontUniqueNameTable& font_table) {
-  for (const auto& font_file : fonts_to_index) {
-    int32_t number_of_faces = name_table_access::indexable_num_fonts(
-        base::StringPieceToRustSlice(font_file));
+  for (const auto& font_file_path : fonts_to_index) {
+    base::MemoryMappedFile mapped_font_file;
+    // Files from kAndroidFontPaths are read-only, protected files on Android,
+    // only modified by means of a firmware update. At Chrome's lifetime,
+    // these files are not modifiable, which makes them safe to memory-map.
+    // For details, see discussion in
+    // https://crrev.com/c/5677302
+    if (!mapped_font_file.Initialize(font_file_path)) {
+      continue;
+    }
+    rust::Slice<const uint8_t> mapped_bytes(
+        base::SpanToRustSlice(mapped_font_file.bytes()));
+    int32_t number_of_faces =
+        name_table_access::indexable_num_fonts(mapped_bytes);
     for (int32_t ttc_index = 0; ttc_index < number_of_faces; ++ttc_index) {
       TRACE_EVENT0("fonts",
                    "FontUniqueNameLookup::UpdateTable - IndexFileFontations");
-      IndexFileFontations(font_table, font_file, ttc_index);
+      IndexFileFontations(font_table, font_file_path.value(), mapped_bytes,
+                          ttc_index);
     }
   }
 }
@@ -317,7 +332,7 @@ bool FontUniqueNameLookup::UpdateTableIfNeeded() {
 bool FontUniqueNameLookup::UpdateTable() {
   TRACE_EVENT0("fonts", "FontUniqueNameLookup::UpdateTable");
 
-  std::vector<std::string> font_files_to_index = GetFontFilePaths();
+  std::vector<base::FilePath> font_files_to_index = GetFontFilePaths();
 
   blink::FontUniqueNameTable font_table;
   font_table.set_stored_for_platform_version_identifier(
@@ -395,10 +410,10 @@ std::string FontUniqueNameLookup::GetAndroidBuildFingerprint() const {
                    std::string(kFingerprintSuffixForceUpdateCache);
 }
 
-std::vector<std::string> FontUniqueNameLookup::GetFontFilePaths() const {
+std::vector<base::FilePath> FontUniqueNameLookup::GetFontFilePaths() const {
   if (font_file_paths_for_testing_.size())
     return font_file_paths_for_testing_;
-  std::vector<std::string> font_files;
+  std::vector<base::FilePath> font_files;
   for (const char* font_dir_path : kAndroidFontPaths) {
     base::FileEnumerator files_enumerator(
         base::MakeAbsoluteFilePath(base::FilePath(font_dir_path)), true,
@@ -407,7 +422,7 @@ std::vector<std::string> FontUniqueNameLookup::GetFontFilePaths() const {
          name = files_enumerator.Next()) {
       if (name.Extension() == ".ttf" || name.Extension() == ".ttc" ||
           name.Extension() == ".otf") {
-        font_files.push_back(name.value());
+        font_files.push_back(name);
       }
     }
   }
