@@ -44,6 +44,7 @@
     "libs/com_google_android_gms_play_services_cloud_messaging",
     "libs/com_google_android_gms_play_services_flags",
     "libs/com_google_android_gms_play_services_gcm",
+    "libs/com_google_android_gms_play_services_identity_credentials",
     "libs/com_google_android_gms_play_services_iid",
     "libs/com_google_android_gms_play_services_instantapps",
     "libs/com_google_android_gms_play_services_location",

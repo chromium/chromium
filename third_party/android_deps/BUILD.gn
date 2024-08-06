@@ -831,7 +831,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_base_java") {
-      aar_path = "cipd/libs/com_google_android_gms_play_services_base/play-services-base-18.1.0.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_base/play-services-base-18.5.0.aar"
       info_path = "libs/com_google_android_gms_play_services_base/com_google_android_gms_play_services_base.info"
       enable_bytecode_checks = false
       deps = [
@@ -847,7 +847,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_basement_java") {
-      aar_path = "cipd/libs/com_google_android_gms_play_services_basement/play-services-basement-18.1.0.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_basement/play-services-basement-18.4.0.aar"
       info_path = "libs/com_google_android_gms_play_services_basement/com_google_android_gms_play_services_basement.info"
       enable_bytecode_checks = false
       deps = [
@@ -928,6 +928,21 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_identity_credentials_java") {
+      aar_path = "cipd/libs/com_google_android_gms_play_services_identity_credentials/play-services-identity-credentials-16.0.0-alpha02.aar"
+      info_path = "libs/com_google_android_gms_play_services_identity_credentials/com_google_android_gms_play_services_identity_credentials.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_iid_java") {
       aar_path = "cipd/libs/com_google_android_gms_play_services_iid/play-services-iid-17.0.0.aar"
       info_path = "libs/com_google_android_gms_play_services_iid/com_google_android_gms_play_services_iid.info"
@@ -974,7 +989,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_tasks_java") {
-      aar_path = "cipd/libs/com_google_android_gms_play_services_tasks/play-services-tasks-18.0.2.aar"
+      aar_path = "cipd/libs/com_google_android_gms_play_services_tasks/play-services-tasks-18.2.0.aar"
       info_path = "libs/com_google_android_gms_play_services_tasks/com_google_android_gms_play_services_tasks.info"
       enable_bytecode_checks = false
       deps =
