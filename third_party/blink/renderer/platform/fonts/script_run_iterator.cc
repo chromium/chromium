@@ -173,8 +173,10 @@ void ICUScriptData::GetScripts(UChar32 ch, UScriptCodeList& dst) const {
     auto it = std::find(dst.begin() + 1, dst.end(), primary_script);
     if (it == dst.end()) {
       dst.push_back(primary_script);
+      std::swap(dst.front(), dst.back());
+    } else {
+      std::swap(*dst.begin(), *it);
     }
-    std::swap(*dst.begin(), *it);
     return;
   }
 
