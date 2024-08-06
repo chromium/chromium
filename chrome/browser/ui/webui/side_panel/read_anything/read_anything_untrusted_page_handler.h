@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_tab_helper.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_snapshotter.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
@@ -198,14 +197,13 @@ class ReadAnythingUntrustedPageHandler :
   void LogTextStyle();
 
   // Adds this as an observer of the ReadAnythingSidePanelController tied to a
-  // WebContents.
-  void ObserveWebContentsSidePanelController(
-      content::WebContents* web_contents);
+  // tab.
+  void ObserveWebContentsSidePanelController(tabs::TabInterface* tab);
 
   void PerformActionInTargetTree(const ui::AXTreeID& target_tree_id,
                                  const ui::AXActionData& data);
 
-  raw_ptr<ReadAnythingTabHelper> tab_helper_;
+  raw_ptr<ReadAnythingSidePanelController> side_panel_controller_;
   const base::WeakPtr<Browser> browser_;
   const raw_ptr<content::WebUI> web_ui_;
 

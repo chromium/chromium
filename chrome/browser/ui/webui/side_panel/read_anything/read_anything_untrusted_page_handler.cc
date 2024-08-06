@@ -25,6 +25,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/accessibility/read_anything.mojom-forward.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
@@ -252,10 +253,9 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   ax_action_handler_observer_.Observe(
       ui::AXActionHandlerRegistry::GetInstance());
 
-  auto* active_web_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
-  if (active_web_contents) {
-    ObserveWebContentsSidePanelController(active_web_contents);
+  auto* tab = browser_->GetActiveTabInterface();
+  if (tab) {
+    ObserveWebContentsSidePanelController(tab);
   }
 
   PrefService* prefs = browser_->profile()->GetPrefs();
@@ -343,11 +343,12 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
   pdf_observer_.reset();
   LogTextStyle();
 
-  if (tab_helper_) {
+  if (side_panel_controller_) {
     // If |this| is destroyed before the |ReadAnythingSidePanelController|, then
     // remove |this| from the observer lists. In the cases where the coordinator
     // is destroyed first, these will have been destroyed before this call.
-    tab_helper_->RemovePageHandlerAsObserver(weak_factory_.GetWeakPtr());
+    side_panel_controller_->RemovePageHandlerAsObserver(
+        weak_factory_.GetWeakPtr());
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -643,7 +644,7 @@ void ReadAnythingUntrustedPageHandler::Activate(bool active) {
 }
 
 void ReadAnythingUntrustedPageHandler::OnSidePanelControllerDestroyed() {
-  tab_helper_ = nullptr;
+  side_panel_controller_ = nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -681,19 +682,19 @@ void ReadAnythingUntrustedPageHandler::OnTabStripModelDestroyed(
 ///////////////////////////////////////////////////////////////////////////////
 
 void ReadAnythingUntrustedPageHandler::OnActiveWebContentsChanged() {
-  content::WebContents* const web_contents =
-      active_ && browser_ ? browser_->tab_strip_model()->GetActiveWebContents()
-                          : nullptr;
+  tabs::TabInterface* const tab =
+      active_ && browser_ ? browser_->GetActiveTabInterface() : nullptr;
 
-  if (!tab_helper_ && web_contents) {
-    ObserveWebContentsSidePanelController(web_contents);
+  if (!side_panel_controller_ && tab) {
+    ObserveWebContentsSidePanelController(tab);
   }
 
   // Enable accessibility for the top level render frame and all descendants.
   // This causes AXTreeSerializer to reset and send accessibility events of
   // the AXTree when it is re-serialized.
   main_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
-      weak_factory_.GetSafeRef(), web_contents, kReadAnythingAXMode);
+      weak_factory_.GetSafeRef(), tab ? tab->GetContents() : nullptr,
+      kReadAnythingAXMode);
   SetUpPdfObserver();
   OnActiveAXTreeIDChanged();
 }
@@ -843,11 +844,10 @@ void ReadAnythingUntrustedPageHandler::LogTextStyle() {
 }
 
 void ReadAnythingUntrustedPageHandler::ObserveWebContentsSidePanelController(
-    content::WebContents* web_contents) {
-  tab_helper_ = ReadAnythingTabHelper::FromWebContents(web_contents);
-  if (tab_helper_) {
-    tab_helper_->AddPageHandlerAsObserver(weak_factory_.GetWeakPtr());
-  }
+    tabs::TabInterface* tab) {
+  side_panel_controller_ =
+      tab->GetTabFeatures()->read_anything_side_panel_controller();
+  side_panel_controller_->AddPageHandlerAsObserver(weak_factory_.GetWeakPtr());
 }
 
 // ash::SessionObserver

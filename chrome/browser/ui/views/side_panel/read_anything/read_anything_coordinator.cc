@@ -21,11 +21,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_web_view.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_tab_helper.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
@@ -99,10 +100,10 @@ void ReadAnythingCoordinator::CreateAndRegisterEntriesForExistingWebContents(
 void ReadAnythingCoordinator::CreateAndRegisterEntryForWebContents(
     content::WebContents* web_contents) {
   CHECK(web_contents);
-  ReadAnythingTabHelper* tab_helper =
-      ReadAnythingTabHelper::FromWebContents(web_contents);
-  CHECK(tab_helper);
-  tab_helper->CreateAndRegisterEntry();
+  tabs::TabInterface::GetFromContents(web_contents)
+      ->GetTabFeatures()
+      ->read_anything_side_panel_controller()
+      ->CreateAndRegisterEntry();
 }
 
 void ReadAnythingCoordinator::AddObserver(

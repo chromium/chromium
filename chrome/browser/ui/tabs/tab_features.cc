@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_controller.h"
 #include "chrome/browser/user_annotations/user_annotations_web_contents_observer.h"
 #include "components/browsing_topics/browsing_topics_service.h"
@@ -92,6 +93,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   data_protection_controller_ = std::make_unique<
       enterprise_data_protection::DataProtectionNavigationController>(&tab);
+
+  // TODO(https://crbug.com/355485153): Move this into the normal window block.
+  read_anything_side_panel_controller_ =
+      std::make_unique<ReadAnythingSidePanelController>(tab.GetContents());
 }
 
 TabFeatures::TabFeatures() = default;
@@ -111,6 +116,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
                                       content::WebContents* new_contents) {
   // This method is transiently used to reset features that do not handle tab
   // discarding themselves.
+  read_anything_side_panel_controller_ =
+      std::make_unique<ReadAnythingSidePanelController>(new_contents);
 }
 
 }  // namespace tabs

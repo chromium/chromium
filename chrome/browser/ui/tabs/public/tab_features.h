@@ -16,6 +16,7 @@ class DipsNavigationFlowDetectorWrapper;
 class FedCmAccountSelectionViewController;
 class LensOverlayController;
 class Profile;
+class ReadAnythingSidePanelController;
 
 namespace content {
 class WebContents;
@@ -83,6 +84,10 @@ class TabFeatures {
     return dips_navigation_flow_detector_wrapper_.get();
   }
 
+  ReadAnythingSidePanelController* read_anything_side_panel_controller() {
+    return read_anything_side_panel_controller_.get();
+  }
+
   // Called exactly once to initialize features.
   void Init(TabInterface& tab, Profile* profile);
 
@@ -124,6 +129,9 @@ class TabFeatures {
 
   std::unique_ptr<user_annotations::UserAnnotationsWebContentsObserver>
       user_annotations_web_contents_observer_;
+
+  std::unique_ptr<ReadAnythingSidePanelController>
+      read_anything_side_panel_controller_;
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
