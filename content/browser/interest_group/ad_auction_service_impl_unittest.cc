@@ -1576,6 +1576,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
          "metadata": {"new_a": "b"},
          "buyerReportingId": "new_brid",
          "buyerAndSellerReportingId": "new_shrid",
+         "selectableBuyerAndSellerReportingIds": ["new_selectable_id1",
+                                                  "new_selectable_id2"],
          "adRenderId": "123abc",
          "allowedReportingOrigins":
              ["https://g.test", "https://f.test", "https://g.test"]
@@ -1630,7 +1632,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
       /*size_group=*/"group_old",
       /*buyer_reporting_id=*/"old_brid",
       /*buyer_and_seller_reporting_id=*/"old_shrid",
-      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"selectable_id1", "selectable_id2"},
       /*ad_render_id=*/"123abc",
       /*allowed_reporting_origins=*/std::move(allowed_reporting_origins));
   interest_group.ads->emplace_back(std::move(ad));
@@ -1726,6 +1729,14 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   EXPECT_EQ(*group.ads.value()[0].buyer_reporting_id, "new_brid");
   ASSERT_TRUE(group.ads.value()[0].buyer_and_seller_reporting_id.has_value());
   EXPECT_EQ(*group.ads.value()[0].buyer_and_seller_reporting_id, "new_shrid");
+  ASSERT_TRUE(group.ads.value()[0]
+                  .selectable_buyer_and_seller_reporting_ids.has_value());
+  EXPECT_EQ(
+      group.ads.value()[0].selectable_buyer_and_seller_reporting_ids.value()[0],
+      "new_selectable_id1");
+  EXPECT_EQ(
+      group.ads.value()[0].selectable_buyer_and_seller_reporting_ids.value()[1],
+      "new_selectable_id2");
   ASSERT_TRUE(group.ads.value()[0].allowed_reporting_origins.has_value());
   EXPECT_THAT(group.ads.value()[0].allowed_reporting_origins.value(),
               ::testing::UnorderedElementsAre(kOriginF, kOriginG));
@@ -2456,7 +2467,7 @@ class AdAuctionServiceImplTestDisabledDealSupport
 // TODO (b/356654297) Test updating selectableBuyerAndSellerReportingIds, when
 // it is implemented.
 TEST_F(AdAuctionServiceImplTestDisabledDealSupport,
-       UpdateselectableBuyerAndSellerReportingIds) {
+       UpdateSelectableBuyerAndSellerReportingIds) {
   std::string kResponse = base::StringPrintf(
       R"({
             "ads": [{"renderURL": "https://example.com/render",
