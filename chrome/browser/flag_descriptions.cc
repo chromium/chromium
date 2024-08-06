@@ -4528,8 +4528,13 @@ const char kInterestFeedV2HeartsName[] = "Interest Feed v2 Hearts";
 const char kInterestFeedV2HeartsDescription[] = "Enable hearts on Feedv2.";
 
 const char kLogoPolishName[] = "Logo Polish";
-const char kLogoPolishDescription[] =
-    "Enable bigger logo size for Start surface and NTP.";
+const char kLogoPolishDescription[] = "Enable bigger doodle size for NTP.";
+
+const char kLogoPolishAnimationKillSwitchName[] =
+    "Logo Polish Animation Kill Switch";
+const char kLogoPolishAnimationKillSwitchDescription[] =
+    "Enable bigger doodle size with an animation for NTP, this is a kill "
+    "switch";
 
 const char kMagicStackAndroidName[] = "Magic Stack Android";
 const char kMagicStackAndroidDescription[] =

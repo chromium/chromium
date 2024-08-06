@@ -3521,6 +3521,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-logo-polish-animation-kill-switch",
+    "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-mac-ime-live-conversion-fix",
     "owners": [ "tkent@chromium.org" ],
     "expiry_milestone": 134
