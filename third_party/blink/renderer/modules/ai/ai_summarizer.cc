@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
+#include "third_party/blink/renderer/modules/ai/model_streaming_responder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace {
@@ -58,19 +59,17 @@ ScriptPromise<IDLString> AISummarizer::summarize(
                                  AIMetrics::AISessionType::kText),
                              int(input.CharactersSizeInBytes()));
 
-  AITextSession::Responder* responder =
-      MakeGarbageCollected<AITextSession::Responder>(script_state);
-
   if (!text_session_) {
     ThrowSessionDestroyedException(exception_state);
     return ScriptPromise<IDLString>();
-  } else {
-    text_session_->GetRemoteTextSession()->Prompt(
-        BuildPromptInput(input),
-        responder->BindNewPipeAndPassRemote(task_runner_));
   }
 
-  return responder->GetResolver()->Promise();
+  auto [promise, pending_remote] = CreateModelStreamingStringResponder(
+      script_state, /*signal=*/nullptr, task_runner_,
+      AIMetrics::AISessionType::kText);
+  text_session_->GetRemoteTextSession()->Prompt(BuildPromptInput(input),
+                                                std::move(pending_remote));
+  return promise;
 }
 
 ReadableStream* AISummarizer::summarizeStreaming(
@@ -92,22 +91,17 @@ ReadableStream* AISummarizer::summarizeStreaming(
                                  AIMetrics::AISessionType::kText),
                              int(input.CharactersSizeInBytes()));
 
-  AITextSession::StreamingResponder* streaming_responder =
-      MakeGarbageCollected<AITextSession::StreamingResponder>(script_state);
-
   if (!text_session_) {
     ThrowSessionDestroyedException(exception_state);
     return nullptr;
   }
 
-  text_session_->GetRemoteTextSession()->Prompt(
-      BuildPromptInput(input),
-      streaming_responder->BindNewPipeAndPassRemote(task_runner_));
-
-  // Set the high water mark to 1 so the backpressure will be applied on
-  // every enqueue.
-  return ReadableStream::CreateWithCountQueueingStrategy(
-      script_state, streaming_responder, 1);
+  auto [readable_stream, pending_remote] = CreateModelStreamingResponder(
+      script_state, /*signal=*/nullptr, task_runner_,
+      AIMetrics::AISessionType::kText);
+  text_session_->GetRemoteTextSession()->Prompt(BuildPromptInput(input),
+                                                std::move(pending_remote));
+  return readable_stream;
 }
 
 void AISummarizer::destroy(ScriptState* script_state,

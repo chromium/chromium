@@ -26,6 +26,8 @@ blink_modules_sources("ai") {
     "dom_ai.h",
     "exception_helpers.cc",
     "exception_helpers.h",
+    "model_streaming_responder.cc",
+    "model_streaming_responder.h",
   ]
 
   public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]
