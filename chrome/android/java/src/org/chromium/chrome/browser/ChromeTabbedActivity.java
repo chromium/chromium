@@ -2814,6 +2814,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         : getActivityTab();
         final Tab currentTab = activityTab;
 
+        if (currentTab == null) {
+            minimizeAppAndCloseTabOnBackPress(null);
+            return true;
+        }
+
         final WebContents webContents = currentTab.getWebContents();
         if (webContents != null) {
             RenderFrameHost focusedFrame = webContents.getFocusedFrame();
