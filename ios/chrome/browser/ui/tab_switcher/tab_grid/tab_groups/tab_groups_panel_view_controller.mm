@@ -68,6 +68,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
   _collectionView =
       [[UICollectionView alloc] initWithFrame:self.view.bounds
                          collectionViewLayout:[self createLayout]];
+  _collectionView.allowsSelection = NO;
   _collectionView.backgroundColor = UIColor.clearColor;
   // CollectionView, in contrast to TableView, doesn’t inset the
   // cell content to the safe area guide by default. We will just manage the
