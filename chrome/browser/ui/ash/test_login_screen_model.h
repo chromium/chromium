@@ -20,6 +20,8 @@ class TestLoginScreenModel : public ash::LoginScreenModel {
 
   // ash::LoginScreenModel:
   void SetUserList(const std::vector<ash::LoginUserInfo>& users) override;
+  void SetAuthFactorsForUser(const AccountId& user,
+                             cryptohome::AuthFactorsSet auth_factors) override;
   void SetPinEnabledForUser(const AccountId& account_id,
                             bool is_enabled) override;
   void SetAvatarForUser(const AccountId& account_id,

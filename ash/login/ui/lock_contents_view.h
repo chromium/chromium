@@ -144,6 +144,9 @@ class ASH_EXPORT LockContentsView
   void OnUsersChanged(const std::vector<LoginUserInfo>& users) override;
   void OnUserAvatarChanged(const AccountId& account_id,
                            const UserAvatar& avatar) override;
+  void OnUserAuthFactorsChanged(
+      const AccountId& user,
+      cryptohome::AuthFactorsSet auth_factors) override;
   void OnPinEnabledForUserChanged(const AccountId& user, bool enabled) override;
   void OnChallengeResponseAuthEnabledForUserChanged(const AccountId& user,
                                                     bool enabled) override;

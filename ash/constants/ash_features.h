@@ -1440,6 +1440,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTrilinearFilteringEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsUnmanagedDeviceDeviceTrustConnectorFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUseAuthPanelInSessionEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowPasswordlessSetupEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUserEducationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLiveCaptionUserMicrophoneEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUpstreamTrustedReportsFirmwareEnabled();

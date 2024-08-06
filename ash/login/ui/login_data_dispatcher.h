@@ -49,6 +49,13 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
     virtual void OnUserAvatarChanged(const AccountId& account_id,
                                      const UserAvatar& avatar);
 
+    // Called when auth factors availability changed for |user|. By
+    // default, password should be enabled, pin and challenge-response
+    // authentication should be disabled.
+    virtual void OnUserAuthFactorsChanged(
+        const AccountId& user,
+        cryptohome::AuthFactorsSet auth_factors);
+
     // Called when pin should be enabled or disabled for |user|. By default, pin
     // should be disabled.
     virtual void OnPinEnabledForUserChanged(const AccountId& user,
@@ -181,6 +188,8 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
   // LoginScreenModel is complete, separate out the methods that aren't
   // overrides.
   void SetUserList(const std::vector<LoginUserInfo>& users) override;
+  void SetAuthFactorsForUser(const AccountId& user,
+                             cryptohome::AuthFactorsSet auth_factors) override;
   void SetPinEnabledForUser(const AccountId& user, bool enabled) override;
   void SetChallengeResponseAuthEnabledForUser(const AccountId& user,
                                               bool enabled) override;

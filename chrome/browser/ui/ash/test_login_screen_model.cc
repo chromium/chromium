@@ -11,6 +11,9 @@ TestLoginScreenModel::~TestLoginScreenModel() = default;
 
 void TestLoginScreenModel::SetUserList(
     const std::vector<ash::LoginUserInfo>& users) {}
+void TestLoginScreenModel::SetAuthFactorsForUser(
+    const AccountId& user,
+    cryptohome::AuthFactorsSet auth_factors) {}
 void TestLoginScreenModel::SetPinEnabledForUser(const AccountId& account_id,
                                                 bool is_enabled) {}
 void TestLoginScreenModel::SetAvatarForUser(const AccountId& account_id,

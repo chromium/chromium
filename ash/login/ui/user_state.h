@@ -25,6 +25,7 @@ class UserState {
   ~UserState();
 
   AccountId account_id;
+  bool show_password = true;
   bool show_pin = false;
   bool show_challenge_response_auth = false;
   bool enable_tap_auth = false;

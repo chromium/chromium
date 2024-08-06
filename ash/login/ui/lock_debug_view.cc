@@ -124,6 +124,7 @@ struct UserMetadata {
 
   AccountId account_id;
   std::string display_name;
+  bool enable_password = true;
   bool enable_pin = false;
   bool pin_autosubmit = false;
   bool enable_tap_to_unlock = false;
@@ -628,12 +629,29 @@ class LockDebugView::DebugDataDispatcherTransformer
 
     on_users_received_.Run();
   }
+  void OnUserAuthFactorsChanged(
+      const AccountId& user,
+      cryptohome::AuthFactorsSet auth_factors) override {
+    // Forward notification only if the user is currently being shown.
+    for (auto& debug_user : debug_users_) {
+      if (debug_user.account_id == user) {
+        debug_user.enable_password =
+            auth_factors.Has(cryptohome::AuthFactorType::kPassword);
+        debug_user.enable_pin =
+            auth_factors.Has(cryptohome::AuthFactorType::kPin);
+        debug_user.enable_challenge_response =
+            auth_factors.Has(cryptohome::AuthFactorType::kSmartCard);
+        debug_dispatcher_.SetAuthFactorsForUser(user, auth_factors);
+        break;
+      }
+    }
+  }
   void OnPinEnabledForUserChanged(const AccountId& user,
                                   bool enabled) override {
     // Forward notification only if the user is currently being shown.
-    for (size_t i = 0u; i < debug_users_.size(); ++i) {
-      if (debug_users_[i].account_id == user) {
-        debug_users_[i].enable_pin = enabled;
+    for (auto& debug_user : debug_users_) {
+      if (debug_user.account_id == user) {
+        debug_user.enable_pin = enabled;
         debug_dispatcher_.SetPinEnabledForUser(user, enabled);
         break;
       }
@@ -642,9 +660,9 @@ class LockDebugView::DebugDataDispatcherTransformer
   void OnTapToUnlockEnabledForUserChanged(const AccountId& user,
                                           bool enabled) override {
     // Forward notification only if the user is currently being shown.
-    for (size_t i = 0u; i < debug_users_.size(); ++i) {
-      if (debug_users_[i].account_id == user) {
-        debug_users_[i].enable_tap_to_unlock = enabled;
+    for (auto& debug_user : debug_users_) {
+      if (debug_user.account_id == user) {
+        debug_user.enable_tap_to_unlock = enabled;
         debug_dispatcher_.SetTapToUnlockEnabledForUser(user, enabled);
         break;
       }
