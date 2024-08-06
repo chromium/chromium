@@ -628,54 +628,54 @@ cssvalue::CSSBasicShapeXYWHValue* ConsumeBasicShapeXYWH(
   return shape;
 }
 
-bool ConsumeNumbers(CSSParserTokenRange& args,
+bool ConsumeNumbers(CSSParserTokenStream& stream,
                     const CSSParserContext& context,
                     CSSFunctionValue*& transform_value,
                     unsigned number_of_arguments) {
   do {
     CSSValue* parsed_value =
-        ConsumeNumber(args, context, CSSPrimitiveValue::ValueRange::kAll);
+        ConsumeNumber(stream, context, CSSPrimitiveValue::ValueRange::kAll);
     if (!parsed_value) {
       return false;
     }
     transform_value->Append(*parsed_value);
-    if (--number_of_arguments && !ConsumeCommaIncludingWhitespace(args)) {
+    if (--number_of_arguments && !ConsumeCommaIncludingWhitespace(stream)) {
       return false;
     }
   } while (number_of_arguments);
   return true;
 }
 
-bool ConsumeNumbersOrPercents(CSSParserTokenRange& args,
+bool ConsumeNumbersOrPercents(CSSParserTokenStream& stream,
                               const CSSParserContext& context,
                               CSSFunctionValue*& transform_value,
                               unsigned number_of_arguments) {
   do {
     CSSValue* parsed_value = ConsumeNumberOrPercent(
-        args, context, CSSPrimitiveValue::ValueRange::kAll);
+        stream, context, CSSPrimitiveValue::ValueRange::kAll);
     if (!parsed_value) {
       return false;
     }
     transform_value->Append(*parsed_value);
-    if (--number_of_arguments && !ConsumeCommaIncludingWhitespace(args)) {
+    if (--number_of_arguments && !ConsumeCommaIncludingWhitespace(stream)) {
       return false;
     }
   } while (number_of_arguments);
   return true;
 }
 
-bool ConsumePerspective(CSSParserTokenRange& args,
+bool ConsumePerspective(CSSParserTokenStream& stream,
                         const CSSParserContext& context,
                         CSSFunctionValue*& transform_value,
                         bool use_legacy_parsing) {
-  CSSValue* parsed_value =
-      ConsumeLength(args, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+  CSSValue* parsed_value = ConsumeLength(
+      stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
   if (!parsed_value) {
-    parsed_value = ConsumeIdent<CSSValueID::kNone>(args);
+    parsed_value = ConsumeIdent<CSSValueID::kNone>(stream);
   }
   if (!parsed_value && use_legacy_parsing) {
     double perspective;
-    if (!ConsumeNumberRaw(args, context, perspective) || perspective < 0) {
+    if (!ConsumeNumberRaw(stream, context, perspective) || perspective < 0) {
       return false;
     }
     context.Count(WebFeature::kUnitlessPerspectiveInTransformProperty);
@@ -689,24 +689,24 @@ bool ConsumePerspective(CSSParserTokenRange& args,
   return true;
 }
 
-bool ConsumeTranslate3d(CSSParserTokenRange& args,
+bool ConsumeTranslate3d(CSSParserTokenStream& stream,
                         const CSSParserContext& context,
                         CSSFunctionValue*& transform_value) {
   unsigned number_of_arguments = 2;
   CSSValue* parsed_value = nullptr;
   do {
-    parsed_value = ConsumeLengthOrPercent(args, context,
+    parsed_value = ConsumeLengthOrPercent(stream, context,
                                           CSSPrimitiveValue::ValueRange::kAll);
     if (!parsed_value) {
       return false;
     }
     transform_value->Append(*parsed_value);
-    if (!ConsumeCommaIncludingWhitespace(args)) {
+    if (!ConsumeCommaIncludingWhitespace(stream)) {
       return false;
     }
   } while (--number_of_arguments);
   parsed_value =
-      ConsumeLength(args, context, CSSPrimitiveValue::ValueRange::kAll);
+      ConsumeLength(stream, context, CSSPrimitiveValue::ValueRange::kAll);
   if (!parsed_value) {
     return false;
   }
@@ -4175,30 +4175,16 @@ void AddProperty(CSSPropertyID resolved_property,
       shorthand_index, implicit == IsImplicitProperty::kImplicit));
 }
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeTransformValue(T& range, const CSSParserContext& context) {
+CSSValue* ConsumeTransformValue(CSSParserTokenStream& stream,
+                                const CSSParserContext& context) {
   bool use_legacy_parsing = false;
-  return ConsumeTransformValue(range, context, use_legacy_parsing);
+  return ConsumeTransformValue(stream, context, use_legacy_parsing);
 }
 
-template CSSValue* ConsumeTransformValue(CSSParserTokenStream& stream,
-                                         const CSSParserContext& context);
-template CSSValue* ConsumeTransformValue(CSSParserTokenRange& range,
-                                         const CSSParserContext& context);
-
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeTransformList(T& range, const CSSParserContext& context) {
-  return ConsumeTransformList(range, context, CSSParserLocalContext());
+CSSValue* ConsumeTransformList(CSSParserTokenStream& stream,
+                               const CSSParserContext& context) {
+  return ConsumeTransformList(stream, context, CSSParserLocalContext());
 }
-
-template CSSValue* ConsumeTransformList(CSSParserTokenRange& range,
-                                        const CSSParserContext& context);
-template CSSValue* ConsumeTransformList(CSSParserTokenStream& stream,
-                                        const CSSParserContext& context);
 
 CSSValue* ConsumeFilterFunctionList(CSSParserTokenStream& stream,
                                     const CSSParserContext& context) {
@@ -7937,153 +7923,151 @@ CSSValue* ConsumeSpacingTrim(CSSParserTokenStream& stream) {
                       CSSValueID::kSpaceFirst>(stream);
 }
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeTransformValue(T& range,
+CSSValue* ConsumeTransformValue(CSSParserTokenStream& stream,
                                 const CSSParserContext& context,
                                 bool use_legacy_parsing) {
-  CSSValueID function_id = range.Peek().FunctionId();
+  CSSValueID function_id = stream.Peek().FunctionId();
   if (!IsValidCSSValueID(function_id)) {
     return nullptr;
   }
-  CSSParserSavePoint savepoint(range);
-  CSSParserTokenRange args = ConsumeFunction(range);
-  if (args.AtEnd()) {
-    return nullptr;
-  }
-  auto* transform_value = MakeGarbageCollected<CSSFunctionValue>(function_id);
-  CSSValue* parsed_value = nullptr;
-  switch (function_id) {
-    case CSSValueID::kRotate:
-    case CSSValueID::kRotateX:
-    case CSSValueID::kRotateY:
-    case CSSValueID::kRotateZ:
-    case CSSValueID::kSkewX:
-    case CSSValueID::kSkewY:
-    case CSSValueID::kSkew:
-      parsed_value =
-          ConsumeAngle(args, context, WebFeature::kUnitlessZeroAngleTransform);
-      if (!parsed_value) {
-        return nullptr;
-      }
-      if (function_id == CSSValueID::kSkew &&
-          ConsumeCommaIncludingWhitespace(args)) {
-        transform_value->Append(*parsed_value);
-        parsed_value = ConsumeAngle(args, context,
+  CSSFunctionValue* transform_value = nullptr;
+  {
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+    if (stream.AtEnd()) {
+      return nullptr;
+    }
+    transform_value = MakeGarbageCollected<CSSFunctionValue>(function_id);
+    CSSValue* parsed_value = nullptr;
+    switch (function_id) {
+      case CSSValueID::kRotate:
+      case CSSValueID::kRotateX:
+      case CSSValueID::kRotateY:
+      case CSSValueID::kRotateZ:
+      case CSSValueID::kSkewX:
+      case CSSValueID::kSkewY:
+      case CSSValueID::kSkew:
+        parsed_value = ConsumeAngle(stream, context,
                                     WebFeature::kUnitlessZeroAngleTransform);
         if (!parsed_value) {
           return nullptr;
         }
-      }
-      break;
-    case CSSValueID::kScaleX:
-    case CSSValueID::kScaleY:
-    case CSSValueID::kScaleZ:
-    case CSSValueID::kScale:
-      parsed_value = ConsumeNumberOrPercent(
-          args, context, CSSPrimitiveValue::ValueRange::kAll);
-      if (!parsed_value) {
-        return nullptr;
-      }
-      if (function_id == CSSValueID::kScale &&
-          ConsumeCommaIncludingWhitespace(args)) {
-        transform_value->Append(*parsed_value);
+        if (function_id == CSSValueID::kSkew &&
+            ConsumeCommaIncludingWhitespace(stream)) {
+          transform_value->Append(*parsed_value);
+          parsed_value = ConsumeAngle(stream, context,
+                                      WebFeature::kUnitlessZeroAngleTransform);
+          if (!parsed_value) {
+            return nullptr;
+          }
+        }
+        break;
+      case CSSValueID::kScaleX:
+      case CSSValueID::kScaleY:
+      case CSSValueID::kScaleZ:
+      case CSSValueID::kScale:
         parsed_value = ConsumeNumberOrPercent(
-            args, context, CSSPrimitiveValue::ValueRange::kAll);
+            stream, context, CSSPrimitiveValue::ValueRange::kAll);
         if (!parsed_value) {
           return nullptr;
         }
-      }
-      break;
-    case CSSValueID::kPerspective:
-      if (!ConsumePerspective(args, context, transform_value,
-                              use_legacy_parsing)) {
-        return nullptr;
-      }
-      break;
-    case CSSValueID::kTranslateX:
-    case CSSValueID::kTranslateY:
-    case CSSValueID::kTranslate:
-      parsed_value = ConsumeLengthOrPercent(
-          args, context, CSSPrimitiveValue::ValueRange::kAll);
-      if (!parsed_value) {
-        return nullptr;
-      }
-      if (function_id == CSSValueID::kTranslate &&
-          ConsumeCommaIncludingWhitespace(args)) {
-        transform_value->Append(*parsed_value);
+        if (function_id == CSSValueID::kScale &&
+            ConsumeCommaIncludingWhitespace(stream)) {
+          transform_value->Append(*parsed_value);
+          parsed_value = ConsumeNumberOrPercent(
+              stream, context, CSSPrimitiveValue::ValueRange::kAll);
+          if (!parsed_value) {
+            return nullptr;
+          }
+        }
+        break;
+      case CSSValueID::kPerspective:
+        if (!ConsumePerspective(stream, context, transform_value,
+                                use_legacy_parsing)) {
+          return nullptr;
+        }
+        break;
+      case CSSValueID::kTranslateX:
+      case CSSValueID::kTranslateY:
+      case CSSValueID::kTranslate:
         parsed_value = ConsumeLengthOrPercent(
-            args, context, CSSPrimitiveValue::ValueRange::kAll);
+            stream, context, CSSPrimitiveValue::ValueRange::kAll);
         if (!parsed_value) {
           return nullptr;
         }
-      }
-      break;
-    case CSSValueID::kTranslateZ:
-      parsed_value =
-          ConsumeLength(args, context, CSSPrimitiveValue::ValueRange::kAll);
-      break;
-    case CSSValueID::kMatrix:
-    case CSSValueID::kMatrix3d:
-      if (!ConsumeNumbers(args, context, transform_value,
-                          (function_id == CSSValueID::kMatrix3d) ? 16 : 6)) {
+        if (function_id == CSSValueID::kTranslate &&
+            ConsumeCommaIncludingWhitespace(stream)) {
+          transform_value->Append(*parsed_value);
+          parsed_value = ConsumeLengthOrPercent(
+              stream, context, CSSPrimitiveValue::ValueRange::kAll);
+          if (!parsed_value) {
+            return nullptr;
+          }
+        }
+        break;
+      case CSSValueID::kTranslateZ:
+        parsed_value =
+            ConsumeLength(stream, context, CSSPrimitiveValue::ValueRange::kAll);
+        break;
+      case CSSValueID::kMatrix:
+      case CSSValueID::kMatrix3d:
+        if (!ConsumeNumbers(stream, context, transform_value,
+                            (function_id == CSSValueID::kMatrix3d) ? 16 : 6)) {
+          return nullptr;
+        }
+        break;
+      case CSSValueID::kScale3d:
+        if (!ConsumeNumbersOrPercents(stream, context, transform_value, 3)) {
+          return nullptr;
+        }
+        break;
+      case CSSValueID::kRotate3d:
+        if (!ConsumeNumbers(stream, context, transform_value, 3) ||
+            !ConsumeCommaIncludingWhitespace(stream)) {
+          return nullptr;
+        }
+        parsed_value = ConsumeAngle(stream, context,
+                                    WebFeature::kUnitlessZeroAngleTransform);
+        if (!parsed_value) {
+          return nullptr;
+        }
+        break;
+      case CSSValueID::kTranslate3d:
+        if (!ConsumeTranslate3d(stream, context, transform_value)) {
+          return nullptr;
+        }
+        break;
+      default:
         return nullptr;
-      }
-      break;
-    case CSSValueID::kScale3d:
-      if (!ConsumeNumbersOrPercents(args, context, transform_value, 3)) {
-        return nullptr;
-      }
-      break;
-    case CSSValueID::kRotate3d:
-      if (!ConsumeNumbers(args, context, transform_value, 3) ||
-          !ConsumeCommaIncludingWhitespace(args)) {
-        return nullptr;
-      }
-      parsed_value =
-          ConsumeAngle(args, context, WebFeature::kUnitlessZeroAngleTransform);
-      if (!parsed_value) {
-        return nullptr;
-      }
-      break;
-    case CSSValueID::kTranslate3d:
-      if (!ConsumeTranslate3d(args, context, transform_value)) {
-        return nullptr;
-      }
-      break;
-    default:
+    }
+    if (parsed_value) {
+      transform_value->Append(*parsed_value);
+    }
+    if (!stream.AtEnd()) {
       return nullptr;
+    }
+    guard.Release();
   }
-  if (parsed_value) {
-    transform_value->Append(*parsed_value);
-  }
-  if (!args.AtEnd()) {
-    return nullptr;
-  }
-  savepoint.Release();
+  stream.ConsumeWhitespace();
   return transform_value;
 }
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeTransformList(T& range,
+CSSValue* ConsumeTransformList(CSSParserTokenStream& stream,
                                const CSSParserContext& context,
                                const CSSParserLocalContext& local_context) {
-  if (range.Peek().Id() == CSSValueID::kNone) {
-    return ConsumeIdent(range);
+  if (stream.Peek().Id() == CSSValueID::kNone) {
+    return ConsumeIdent(stream);
   }
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   do {
     CSSValue* parsed_transform_value =
-        ConsumeTransformValue(range, context, local_context.UseAliasParsing());
+        ConsumeTransformValue(stream, context, local_context.UseAliasParsing());
     if (!parsed_transform_value) {
       break;
     }
     list->Append(*parsed_transform_value);
-  } while (!range.AtEnd());
+  } while (!stream.AtEnd());
 
   if (list->length() == 0) {
     return nullptr;
@@ -8091,13 +8075,6 @@ CSSValue* ConsumeTransformList(T& range,
 
   return list;
 }
-
-template CSSValue* ConsumeTransformList(CSSParserTokenStream&,
-                                        const CSSParserContext&,
-                                        const CSSParserLocalContext&);
-template CSSValue* ConsumeTransformList(CSSParserTokenRange&,
-                                        const CSSParserContext&,
-                                        const CSSParserLocalContext&);
 
 CSSValue* ConsumeTransitionProperty(CSSParserTokenStream& stream,
                                     const CSSParserContext& context) {

@@ -376,14 +376,8 @@ void AddExpandedPropertyForValue(CSSPropertyID prop_id,
                                  bool,
                                  HeapVector<CSSPropertyValue, 64>& properties);
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeTransformValue(T&, const CSSParserContext&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeTransformList(T&, const CSSParserContext&);
+CSSValue* ConsumeTransformValue(CSSParserTokenStream&, const CSSParserContext&);
+CSSValue* ConsumeTransformList(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumeFilterFunctionList(CSSParserTokenStream&,
                                     const CSSParserContext&);
 
@@ -714,16 +708,10 @@ CSSValue* ConsumeAutospace(CSSParserTokenStream&);
 // https://drafts.csswg.org/css-text-4/#typedef-spacing-trim
 CSSValue* ConsumeSpacingTrim(CSSParserTokenStream&);
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeTransformValue(T&,
+CSSValue* ConsumeTransformValue(CSSParserTokenStream&,
                                 const CSSParserContext&,
                                 bool use_legacy_parsing);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeTransformList(T&,
+CSSValue* ConsumeTransformList(CSSParserTokenStream&,
                                const CSSParserContext&,
                                const CSSParserLocalContext&);
 CSSValue* ConsumeTransitionProperty(CSSParserTokenStream&,
