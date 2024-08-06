@@ -99,12 +99,6 @@ namespace enterprise_management =
 using enterprise_management::ApplicationSettings;
 using enterprise_management::OmahaSettingsClientProto;
 
-// The project's position is that component builds are not portable outside of
-// the build directory. Therefore, installation of component builds is not
-// expected to work and these tests do not run on component builders.
-// See crbug.com/1112527.
-#if BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
-
 void ExpectNoUpdateSequence(ScopedServer* test_server,
                             const std::string& app_id) {
   test_server->ExpectOnce({request::GetUpdaterUserAgentMatcher(),
@@ -125,8 +119,6 @@ void ExpectNoUpdateSequence(ScopedServer* test_server,
                                              R"(}})",
                                              app_id.c_str()));
 }
-
-#endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
 
 base::FilePath GetInstallerPath(const std::string& installer) {
   return base::FilePath::FromASCII("test_installer").AppendASCII(installer);
@@ -720,8 +712,6 @@ class IntegrationTest : public ::testing::Test {
 #define MAYBE_UpdateServiceStress UpdateServiceStress
 #endif
 
-#if BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
-
 // Tests the setup and teardown of the fixture.
 TEST_F(IntegrationTest, DoNothing) {}
 
@@ -968,7 +958,7 @@ TEST_F(IntegrationTest, NoSelfUpdateIfNoEula) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-#if BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD)
+#if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTest, UninstallWithoutPingIfNoEula) {
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(
@@ -983,7 +973,7 @@ TEST_F(IntegrationTest, UninstallWithoutPingIfNoEula) {
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectClean());
 }
-#endif  // BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_LINUX)
 // InstallAppViaService does not work on Linux.
@@ -2254,7 +2244,7 @@ TEST_F(IntegrationTest, RecoveryNoUpdater) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-#if BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD)
+#if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTest, OfflineInstall) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
@@ -2330,7 +2320,7 @@ TEST_F(IntegrationTest, OfflineInstallOemMode) {
                                             /*is_silent_install=*/false));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
-#endif  // BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD)
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(IntegrationTest, RegisterApp) {
   ASSERT_NO_FATAL_FAILURE(Install());
@@ -2711,8 +2701,6 @@ TEST_F(IntegrationTestDeviceManagement, FallbackToOutOfProcessFetcher) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 #endif  // BUILDFLAG(IS_MAC)
-
-#if !defined(COMPONENT_BUILD)
 
 TEST_F(IntegrationTestDeviceManagement, AppInstall) {
   const base::Version kApp1Version = base::Version("1.0.0.0");
@@ -3367,8 +3355,6 @@ TEST_F(IntegrationTestDeviceManagement, PacScript) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 #endif  // BUILDFLAG(IS_WIN)
-
-#endif  // !defined(COMPONENT_BUILD)
 
 #if BUILDFLAG(IS_WIN)
 class IntegrationTestMsi : public IntegrationTest {
@@ -4406,7 +4392,5 @@ TEST_F(IntegrationTestKSAdminFourApps, XCPathMismatchUser) {
 }
 
 #endif  // BUILDFLAG(IS_MAC) && !defined(ADDRESS_SANITIZER)
-
-#endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
 
 }  // namespace updater::test

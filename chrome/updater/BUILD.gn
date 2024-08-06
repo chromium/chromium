@@ -48,8 +48,6 @@ group("all") {
   }
 }
 
-# Conditional build is needed, otherwise the analyze script on Linux
-# requires all targets and it is going to include the targets below.
 if (is_win || is_mac || is_linux) {
   source_set("base") {
     sources = [
@@ -780,7 +778,6 @@ if (is_win || is_mac || is_linux) {
       "test/integration_test_commands.h",
       "test/integration_test_commands_system.cc",
       "test/integration_test_commands_user.cc",
-      "test/integration_tests.cc",
       "test/integration_tests_impl.cc",
       "test/integration_tests_impl.h",
       "test/request_matcher.cc",
@@ -796,6 +793,9 @@ if (is_win || is_mac || is_linux) {
       "updater_unittest.cc",
       "util/util_unittest.cc",
     ]
+    if (!is_component_build) {
+      sources += [ "test/integration_tests.cc" ]
+    }
 
     deps = [
       ":base",
