@@ -270,7 +270,6 @@ void ColorEnhancementController::SetColorVisionCorrectionFilter(
   }
 }
 
-// TODO(b:341554143): Add tests.
 void ColorEnhancementController::FlashScreenForNotification(
     bool show_flash,
     const SkColor& color) {
