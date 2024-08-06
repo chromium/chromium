@@ -77,6 +77,7 @@ constexpr int kMaxHorizontalPaddingToFontSizeRatio = 5;
 // Needed to avoid IntersectionObserver false-positives caused by other elements
 // being too close.
 constexpr int kMinMargin = 4;
+constexpr float kIntersectionThreshold = 1.0f;
 
 PermissionDescriptorPtr CreatePermissionDescriptor(PermissionName name) {
   auto descriptor = PermissionDescriptor::New();
@@ -275,7 +276,7 @@ HTMLPermissionElement::HTMLPermissionElement(Document& document)
                          WrapWeakPersistent(this)),
       LocalFrameUkmAggregator::kPermissionElementIntersectionObserver,
       IntersectionObserver::Params{
-          .thresholds = {1.0f},
+          .thresholds = {kIntersectionThreshold},
           .semantics = IntersectionObserver::kFractionOfTarget,
           .behavior = IntersectionObserver::kDeliverDuringPostLifecycleSteps,
           .delay = base::Milliseconds(100),
@@ -425,10 +426,14 @@ String HTMLPermissionElement::DisableReasonToString(DisableReason reason) {
   switch (reason) {
     case DisableReason::kRecentlyAttachedToLayoutTree:
       return "being recently attached to layout tree";
-    case DisableReason::kIntersectionVisibilityChanged:
-      return "intersection visibility changed";
+    case DisableReason::kIntersectionRecentlyFullyVisible:
+      return "being recently fully visible";
     case DisableReason::kIntersectionWithViewportChanged:
       return "intersection with viewport changed";
+    case DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped:
+      return "intersection out of viewport or clipped";
+    case DisableReason::kIntersectionVisibilityOccludedOrDistorted:
+      return "intersection occluded or distorted";
     case DisableReason::kInvalidStyle:
       return "invalid style";
     case DisableReason::kUnknown:
@@ -443,10 +448,16 @@ HTMLPermissionElement::DisableReasonToUserInteractionDeniedReason(
   switch (reason) {
     case DisableReason::kRecentlyAttachedToLayoutTree:
       return UserInteractionDeniedReason::kRecentlyAttachedToLayoutTree;
-    case DisableReason::kIntersectionVisibilityChanged:
-      return UserInteractionDeniedReason::kIntersectionVisibilityChanged;
+    case DisableReason::kIntersectionRecentlyFullyVisible:
+      return UserInteractionDeniedReason::kIntersectionRecentlyFullyVisible;
     case DisableReason::kIntersectionWithViewportChanged:
       return UserInteractionDeniedReason::kIntersectionWithViewportChanged;
+    case DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped:
+      return UserInteractionDeniedReason::
+          kIntersectionVisibilityOutOfViewPortOrClipped;
+    case DisableReason::kIntersectionVisibilityOccludedOrDistorted:
+      return UserInteractionDeniedReason::
+          kIntersectionVisibilityOccludedOrDistorted;
     case DisableReason::kInvalidStyle:
       return UserInteractionDeniedReason::kInvalidStyle;
     case DisableReason::kUnknown:
@@ -460,10 +471,14 @@ AtomicString HTMLPermissionElement::DisableReasonToInvalidReasonString(
   switch (reason) {
     case DisableReason::kRecentlyAttachedToLayoutTree:
       return AtomicString("recently_attached");
-    case DisableReason::kIntersectionVisibilityChanged:
-      return AtomicString("intersection_changed");
+    case DisableReason::kIntersectionRecentlyFullyVisible:
+      return AtomicString("intersection_visible");
     case DisableReason::kIntersectionWithViewportChanged:
       return AtomicString("intersection_changed");
+    case DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped:
+      return AtomicString("intersection_out_of_viewport_or_clipped");
+    case DisableReason::kIntersectionVisibilityOccludedOrDistorted:
+      return AtomicString("intersection_occluded_or_distorted");
     case DisableReason::kInvalidStyle:
       return AtomicString("style_invalid");
     case DisableReason::kUnknown:
@@ -1059,18 +1074,42 @@ void HTMLPermissionElement::OnIntersectionChanged(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
   CHECK(!entries.empty());
   Member<IntersectionObserverEntry> latest_observation = entries.back();
-
   CHECK_EQ(this, latest_observation->target());
-  if (!latest_observation->isVisible() && is_fully_visible_) {
-    is_fully_visible_ = false;
-    DisableClickingIndefinitely(DisableReason::kIntersectionVisibilityChanged);
-    return;
+  IntersectionVisibility intersection_visibility =
+      IntersectionVisibility::kFullyVisible;
+  // `intersectionRatio` >= `kIntersectionThreshold` (1.0f) means the element is
+  // fully visible on the viewport (vs `intersectionRatio` < 1.0f means its
+  // bound is clipped by the viewport or styling effects). In this case, the
+  // `isVisible` false means the element is occluded by something else or has
+  // distorted visual effect applied.
+  if (!latest_observation->isVisible()) {
+    intersection_visibility =
+        latest_observation->intersectionRatio() >= kIntersectionThreshold
+            ? IntersectionVisibility::kOccludedOrDistorted
+            : IntersectionVisibility::kOutOfViewportOrClipped;
   }
 
-  if (latest_observation->isVisible() && !is_fully_visible_) {
-    is_fully_visible_ = true;
-    EnableClickingAfterDelay(DisableReason::kIntersectionVisibilityChanged,
-                             kDefaultDisableTimeout);
+  if (intersection_visibility_ == intersection_visibility) {
+    return;
+  }
+  intersection_visibility_ = intersection_visibility;
+  switch (intersection_visibility_) {
+    case IntersectionVisibility::kFullyVisible:
+      DisableClickingTemporarily(
+          DisableReason::kIntersectionRecentlyFullyVisible,
+          kDefaultDisableTimeout);
+      EnableClicking(DisableReason::kIntersectionVisibilityOccludedOrDistorted);
+      EnableClicking(
+          DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped);
+      break;
+    case IntersectionVisibility::kOccludedOrDistorted:
+      DisableClickingIndefinitely(
+          DisableReason::kIntersectionVisibilityOccludedOrDistorted);
+      break;
+    case IntersectionVisibility::kOutOfViewportOrClipped:
+      DisableClickingIndefinitely(
+          DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped);
+      break;
   }
 }
 

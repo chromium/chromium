@@ -74,18 +74,26 @@ class CORE_EXPORT HTMLPermissionElement final
   // HTMLElement overrides.
   bool IsHTMLPermissionElement() const final { return true; }
 
-  bool IsFullyVisibleForTesting() const { return is_fully_visible_; }
-
  private:
   // TODO(crbug.com/1315595): remove this friend class once migration
   // to blink_unittests_v2 completes.
   friend class DeferredChecker;
   friend class RegistrationWaiter;
+  friend class HTMLPemissionElementIntersectionTest;
+  friend class HTMLPemissionElementLayoutChangeTest;
 
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementClickingEnabledTest,
                            UnclickableBeforeRegistered);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
                            IntersectionChanged);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
+                           IntersectionChangedDisableEnableDisable);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
+                           ContainerDivRotates);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
+                           ContainerDivOpacity);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
+                           ContainerDivClipPath);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementFencedFrameTest,
                            NotAllowedInFencedFrame);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementSimTest,
@@ -121,7 +129,15 @@ class CORE_EXPORT HTMLPermissionElement final
     // This element is temporarily disabled for a short period
     // (`kDefaultDisableTimeout`) after its intersection status changed from
     // invisible to visible (observed by IntersectionObserver).
-    kIntersectionVisibilityChanged,
+    kIntersectionRecentlyFullyVisible,
+
+    // This element is disabled because it is outside the bounds of the
+    // viewport, or the element is clipped.
+    kIntersectionVisibilityOutOfViewPortOrClipped,
+
+    // This element is disabled because because it is covered by other element,
+    // or has distorted visual effect.
+    kIntersectionVisibilityOccludedOrDistorted,
 
     // This element is temporarily disabled for a short period
     // (`kDefaultDisableTimeout`) after its intersection rect with the viewport
@@ -138,11 +154,26 @@ class CORE_EXPORT HTMLPermissionElement final
     kInvalidType = 0,
     kFailedOrHasNotBeenRegistered = 1,
     kRecentlyAttachedToLayoutTree = 2,
-    kIntersectionVisibilityChanged = 3,
+    kIntersectionRecentlyFullyVisible = 3,
     kInvalidStyle = 4,
     kUntrustedEvent = 5,
     kIntersectionWithViewportChanged = 6,
-    kMaxValue = kIntersectionWithViewportChanged,
+    kIntersectionVisibilityOutOfViewPortOrClipped = 7,
+    kIntersectionVisibilityOccludedOrDistorted = 8,
+    kMaxValue = kIntersectionVisibilityOccludedOrDistorted,
+  };
+
+  // Define the different states of visibility depending on IntersectionObserver
+  // tells us why an element is visible/invisible.
+  enum class IntersectionVisibility {
+    // The element is not fully visible on the screen because it is outside the
+    // bounds of the viewport, or the element is clipped.
+    kOutOfViewportOrClipped,
+    // The element is not fully visible on the screen because it is covered by
+    // other element, or has distorted visual effect.
+    kOccludedOrDistorted,
+    // The element is fully visible on the screen.
+    kFullyVisible
   };
 
   // Customized HeapTaskRunnerTimer class to contain disable reason, firing to
@@ -354,6 +385,10 @@ class CORE_EXPORT HTMLPermissionElement final
   // Computes the intersection rect of the element with the viewport.
   gfx::Rect ComputeIntersectionRectWithViewport(const Page* page);
 
+  IntersectionVisibility IntersectionVisibilityForTesting() const {
+    return intersection_visibility_;
+  }
+
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 
   // Holds all `PermissionObserver` receivers connected with remotes in browser
@@ -396,9 +431,10 @@ class CORE_EXPORT HTMLPermissionElement final
   // attribute) are granted.
   bool permissions_granted_ = false;
 
-  // Set to true only if this element is fully visible on the viewport (observed
-  // by IntersectionObserver).
-  bool is_fully_visible_ = true;
+  // Observed by IntersectionObserver to indicate the fully visibility state of
+  // the element on the viewport.
+  IntersectionVisibility intersection_visibility_ =
+      IntersectionVisibility::kFullyVisible;
 
   // Store the up-to-date click state.
   ClickingEnabledState clicking_enabled_state_{false, AtomicString()};

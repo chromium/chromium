@@ -862,8 +862,8 @@ TEST_F(HTMLPemissionElementSimTest, FontSizeCanDisableElement) {
     checker.CheckClickingEnabledAfterDelay(kDefaultTimeout, test.enabled);
     permission_element->EnableClicking(
         HTMLPermissionElement::DisableReason::kRecentlyAttachedToLayoutTree);
-    permission_element->EnableClicking(
-        HTMLPermissionElement::DisableReason::kIntersectionVisibilityChanged);
+    permission_element->EnableClicking(HTMLPermissionElement::DisableReason::
+                                           kIntersectionRecentlyFullyVisible);
     permission_element->EnableClicking(
         HTMLPermissionElement::DisableReason::kInvalidStyle);
 
@@ -928,8 +928,8 @@ TEST_F(HTMLPemissionElementDispatchValidationEventTest, DisableEnableClicking) {
     HTMLPermissionElement::DisableReason reason;
     String expected_invalid_reason;
   } kTestData[] = {
-      {HTMLPermissionElement::DisableReason::kIntersectionVisibilityChanged,
-       String("intersection_changed")},
+      {HTMLPermissionElement::DisableReason::kIntersectionRecentlyFullyVisible,
+       String("intersection_visible")},
       {HTMLPermissionElement::DisableReason::kRecentlyAttachedToLayoutTree,
        String("recently_attached")},
       {HTMLPermissionElement::DisableReason::kInvalidStyle,
@@ -1043,13 +1043,13 @@ TEST_F(HTMLPemissionElementDispatchValidationEventTest,
       /*expected_count*/ 2u, "event dispatched");
   EXPECT_TRUE(permission_element->isValid());
   permission_element->DisableClickingTemporarily(
-      HTMLPermissionElement::DisableReason::kIntersectionVisibilityChanged,
+      HTMLPermissionElement::DisableReason::kIntersectionRecentlyFullyVisible,
       kDefaultTimeout);
   base::RunLoop().RunUntilIdle();
   checker.CheckConsoleMessage(
       /*expected_count*/ 3u, "event dispatched");
   EXPECT_FALSE(permission_element->isValid());
-  EXPECT_EQ(permission_element->invalidReason(), "intersection_changed");
+  EXPECT_EQ(permission_element->invalidReason(), "intersection_visible");
 
   // Disable indefinitely will stop the timer.
   permission_element->DisableClickingIndefinitely(
@@ -1064,7 +1064,7 @@ TEST_F(HTMLPemissionElementDispatchValidationEventTest,
   checker.CheckConsoleMessageAfterDelay(kDefaultTimeout,
                                         /*expected_count*/ 4u);
   permission_element->DisableClickingTemporarily(
-      HTMLPermissionElement::DisableReason::kIntersectionVisibilityChanged,
+      HTMLPermissionElement::DisableReason::kIntersectionRecentlyFullyVisible,
       kDefaultTimeout);
   EXPECT_FALSE(permission_element->isValid());
   EXPECT_EQ(permission_element->invalidReason(), "style_invalid");
@@ -1078,7 +1078,7 @@ TEST_F(HTMLPemissionElementDispatchValidationEventTest,
   checker.CheckConsoleMessage(
       /*expected_count*/ 5u, "event dispatched");
   EXPECT_FALSE(permission_element->isValid());
-  EXPECT_EQ(permission_element->invalidReason(), "intersection_changed");
+  EXPECT_EQ(permission_element->invalidReason(), "intersection_visible");
   checker.CheckConsoleMessageAfterDelay(kDefaultTimeout,
                                         /*expected_count*/ 6u,
                                         "event dispatched");
@@ -1195,20 +1195,23 @@ class HTMLPemissionElementIntersectionTest
     HTMLPemissionElementSimTest::TearDown();
   }
 
-  void WaitForFullyVisibleChanged(HTMLPermissionElement* element,
-                                  bool fully_visible) {
+  void WaitForIntersectionVisibilityChanged(
+      HTMLPermissionElement* element,
+      HTMLPermissionElement::IntersectionVisibility visibility) {
     // The intersection observer might only detect elements that enter/leave the
     // viewport after a cycle is complete.
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-    EXPECT_EQ(element->IsFullyVisibleForTesting(), fully_visible);
+    EXPECT_EQ(element->IntersectionVisibilityForTesting(), visibility);
   }
 
-  void TestContainerStyleAffectsVisibility(CSSPropertyID property_name,
-                                           const String& property_value) {
+  void TestContainerStyleAffectsVisibility(
+      CSSPropertyID property_name,
+      const String& property_value,
+      HTMLPermissionElement::IntersectionVisibility expect_visibility) {
     SimRequest main_resource("https://example.test/", "text/html");
     LoadURL("https://example.test/");
     main_resource.Complete(R"HTML(
-    <div id='container'>
+    <div id='container' style='position: fixed; left: 100px; top: 100px; width: 100px; height: 100px;'>
       <permission id='camera' type='camera'>
     </div>
     )HTML");
@@ -1219,14 +1222,16 @@ class HTMLPemissionElementIntersectionTest
     auto* div =
         To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
 
-    WaitForFullyVisibleChanged(permission_element, /*fully_visible*/ true);
+    WaitForIntersectionVisibilityChanged(
+        permission_element,
+        HTMLPermissionElement::IntersectionVisibility::kFullyVisible);
     DeferredChecker checker(permission_element);
     checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
                                            /*expected_enabled*/ true);
 
     div->SetInlineStyleProperty(property_name, property_value);
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-    WaitForFullyVisibleChanged(permission_element, /*fully_visible*/ false);
+    WaitForIntersectionVisibilityChanged(permission_element, expect_visibility);
     checker.CheckClickingEnabled(/*expected_enabled*/ false);
   }
 };
@@ -1243,13 +1248,17 @@ TEST_F(HTMLPemissionElementIntersectionTest, IntersectionChanged) {
   Compositor().BeginFrame();
   auto* permission_element = To<HTMLPermissionElement>(
       GetDocument().QuerySelector(AtomicString("permission")));
-  WaitForFullyVisibleChanged(permission_element, /*fully_visible*/ true);
+  WaitForIntersectionVisibilityChanged(
+      permission_element,
+      HTMLPermissionElement::IntersectionVisibility::kFullyVisible);
   DeferredChecker checker(permission_element);
   checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
                                          /*expected_enabled*/ true);
   GetDocument().View()->LayoutViewport()->ScrollBy(
       ScrollOffset(0, kViewportHeight), mojom::blink::ScrollType::kUser);
-  WaitForFullyVisibleChanged(permission_element, /*fully_visible*/ false);
+  WaitForIntersectionVisibilityChanged(
+      permission_element,
+      HTMLPermissionElement::IntersectionVisibility::kOutOfViewportOrClipped);
   EXPECT_FALSE(permission_element->IsClickingEnabled());
   checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
                                          /*expected_enabled*/ false);
@@ -1257,11 +1266,14 @@ TEST_F(HTMLPemissionElementIntersectionTest, IntersectionChanged) {
       ScrollOffset(0, -kViewportHeight), mojom::blink::ScrollType::kUser);
 
   // The element is fully visible now but unclickable for a short delay.
-  WaitForFullyVisibleChanged(permission_element, /*fully_visible*/ true);
+  WaitForIntersectionVisibilityChanged(
+      permission_element,
+      HTMLPermissionElement::IntersectionVisibility::kFullyVisible);
   EXPECT_FALSE(permission_element->IsClickingEnabled());
   checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
                                          /*expected_enabled*/ true);
-  EXPECT_TRUE(permission_element->IsFullyVisibleForTesting());
+  EXPECT_EQ(permission_element->IntersectionVisibilityForTesting(),
+            HTMLPermissionElement::IntersectionVisibility::kFullyVisible);
   EXPECT_TRUE(permission_element->IsClickingEnabled());
 }
 
@@ -1279,7 +1291,9 @@ TEST_F(HTMLPemissionElementIntersectionTest,
       GetDocument().QuerySelector(AtomicString("permission")));
   auto* div =
       To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
-  WaitForFullyVisibleChanged(permission_element, /*fully_visible*/ true);
+  WaitForIntersectionVisibilityChanged(
+      permission_element,
+      HTMLPermissionElement::IntersectionVisibility::kFullyVisible);
   DeferredChecker checker(permission_element);
   checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
                                          /*expected_enabled*/ true);
@@ -1287,7 +1301,9 @@ TEST_F(HTMLPemissionElementIntersectionTest,
   // Placing the div over the element disables it.
   div->SetInlineStyleProperty(CSSPropertyID::kTop, "0px");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  WaitForFullyVisibleChanged(permission_element, /*fully_visible*/ false);
+  WaitForIntersectionVisibilityChanged(
+      permission_element,
+      HTMLPermissionElement::IntersectionVisibility::kOccludedOrDistorted);
 
   // Moving the div again will re-enable the element after a delay. Deliberately
   // don't make any calls that result in calling
@@ -1298,24 +1314,30 @@ TEST_F(HTMLPemissionElementIntersectionTest,
 
   // Placing the div over the element disables it again.
   div->SetInlineStyleProperty(CSSPropertyID::kTop, "0px");
-  WaitForFullyVisibleChanged(permission_element, /*fully_visible*/ false);
+  WaitForIntersectionVisibilityChanged(
+      permission_element,
+      HTMLPermissionElement::IntersectionVisibility::kOccludedOrDistorted);
   checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
                                          /*expected_enabled*/ false);
 }
 
 TEST_F(HTMLPemissionElementIntersectionTest, ContainerDivRotates) {
-  TestContainerStyleAffectsVisibility(CSSPropertyID::kTransform,
-                                      "rotate(0.1turn)");
+  TestContainerStyleAffectsVisibility(
+      CSSPropertyID::kTransform, "rotate(0.1turn)",
+      HTMLPermissionElement::IntersectionVisibility::kOccludedOrDistorted);
 }
 
 TEST_F(HTMLPemissionElementIntersectionTest, ContainerDivOpacity) {
-  TestContainerStyleAffectsVisibility(CSSPropertyID::kOpacity, "0.9");
+  TestContainerStyleAffectsVisibility(
+      CSSPropertyID::kOpacity, "0.9",
+      HTMLPermissionElement::IntersectionVisibility::kOccludedOrDistorted);
 }
 
 TEST_F(HTMLPemissionElementIntersectionTest, ContainerDivClipPath) {
   // Set up a mask that covers a bit of the container.
-  TestContainerStyleAffectsVisibility(CSSPropertyID::kClipPath,
-                                      "circle(40%)");
+  TestContainerStyleAffectsVisibility(
+      CSSPropertyID::kClipPath, "circle(40%)",
+      HTMLPermissionElement::IntersectionVisibility::kOutOfViewportOrClipped);
 }
 
 class HTMLPemissionElementLayoutChangeTest
@@ -1343,7 +1365,8 @@ class HTMLPemissionElementLayoutChangeTest
     auto* permission_element =
         To<HTMLPermissionElement>(GetDocument().QuerySelector(element));
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-    EXPECT_EQ(permission_element->IsFullyVisibleForTesting(), true);
+    EXPECT_EQ(permission_element->IntersectionVisibilityForTesting(),
+              HTMLPermissionElement::IntersectionVisibility::kFullyVisible);
     DeferredChecker checker(permission_element);
     checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
                                            /*expected_enabled*/ true);
