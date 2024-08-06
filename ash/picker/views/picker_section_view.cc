@@ -107,11 +107,11 @@ std::u16string GetLabelForCaseTransformType(
     PickerSearchResult::CaseTransformData::Type type) {
   switch (type) {
     case PickerSearchResult::CaseTransformData::Type::kUpperCase:
-      return l10n_util::GetStringUTF16(IDS_PICKER_UPPER_CASE_CATEGORY_LABEL);
+      return l10n_util::GetStringUTF16(IDS_PICKER_UPPER_CASE_MENU_LABEL);
     case PickerSearchResult::CaseTransformData::Type::kLowerCase:
-      return l10n_util::GetStringUTF16(IDS_PICKER_LOWER_CASE_CATEGORY_LABEL);
+      return l10n_util::GetStringUTF16(IDS_PICKER_LOWER_CASE_MENU_LABEL);
     case PickerSearchResult::CaseTransformData::Type::kTitleCase:
-      return l10n_util::GetStringUTF16(IDS_PICKER_TITLE_CASE_CATEGORY_LABEL);
+      return l10n_util::GetStringUTF16(IDS_PICKER_TITLE_CASE_MENU_LABEL);
   }
 }
 

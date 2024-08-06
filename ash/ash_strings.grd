@@ -7390,13 +7390,16 @@ New install
         desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page showing the items in the user's clipboard.">
         Clipboard
       </message>
-      <message name="IDS_PICKER_UPPER_CASE_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to transform the selected text to upper case.">
+      <message name="IDS_PICKER_UPPER_CASE_MENU_LABEL"
+        desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'Change capitalization'. When selected, this item converts the selected text to uppercase. The casing for this string is used to illustrate the effect of this menu item, so retain the casing for languages where this makes sense.">
         UPPERCASE
       </message>
-      <message name="IDS_PICKER_LOWER_CASE_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to transform the selected text to lower case.">
+      <message name="IDS_PICKER_LOWER_CASE_MENU_LABEL"
+        desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'Change capitalization'. When selected, this item converts the selected text to lowercase. The casing for this string is used to illustrate the effect of this menu item, so retain the casing for languages where this makes sense.">
         lowercase
       </message>
-      <message name="IDS_PICKER_TITLE_CASE_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to transform the selected text to title case.">
+      <message name="IDS_PICKER_TITLE_CASE_MENU_LABEL"
+        desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'Change capitalization'. When selected, this item converts the selected text to title case. The casing for this string is used to illustrate the effect of this menu item, so retain the casing for languages where this makes sense.">
         Title Case
       </message>
       <message name="IDS_PICKER_LINKS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the browsing history category is selected.">

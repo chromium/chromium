@@ -26,9 +26,9 @@ using CaseTransformType = PickerSearchResult::CaseTransformData::Type;
 
 constexpr auto kTransformMessageIds =
     std::to_array<std::pair<int, CaseTransformType>>({
-        {IDS_PICKER_UPPER_CASE_CATEGORY_LABEL, CaseTransformType::kUpperCase},
-        {IDS_PICKER_LOWER_CASE_CATEGORY_LABEL, CaseTransformType::kLowerCase},
-        {IDS_PICKER_TITLE_CASE_CATEGORY_LABEL, CaseTransformType::kTitleCase},
+        {IDS_PICKER_UPPER_CASE_MENU_LABEL, CaseTransformType::kUpperCase},
+        {IDS_PICKER_LOWER_CASE_MENU_LABEL, CaseTransformType::kLowerCase},
+        {IDS_PICKER_TITLE_CASE_MENU_LABEL, CaseTransformType::kTitleCase},
     });
 
 bool IsMatch(const string_matching::TokenizedString& query,
