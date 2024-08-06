@@ -1849,6 +1849,12 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
             prefs->GetInteger(
                 prefs::kAccessibilityColorVisionCorrectionAmount));
     }
+
+    if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
+      base::UmaHistogramBoolean(
+          "Accessibility.CrosFlashNotifications",
+          prefs->GetBoolean(prefs::kAccessibilityFlashNotificationsEnabled));
+    }
   }
   base::UmaHistogramBoolean("Accessibility.CrosCaretHighlight",
                             IsCaretHighlightEnabled());

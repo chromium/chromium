@@ -984,6 +984,9 @@ void AccessibilityController::Feature::LogDurationMetric() {
     case FeatureType::kFaceGaze:
       feature_duration_metric += "CrosFaceGaze";
       break;
+    case FeatureType::kFlashNotifications:
+      feature_duration_metric += "CrosFlashNotifications";
+      break;
     case FeatureType::kFocusHighlight:
       feature_duration_metric += "CrosFocusHighlight";
       break;
