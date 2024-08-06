@@ -102,6 +102,7 @@ static_library("plugin_vm") {
     "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
     "//url",
   ]
+
   allow_circular_includes_from = [ "//chrome/browser/ash/file_manager" ]
 }
 
@@ -146,7 +147,15 @@ static_library("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "plugin_vm_manager_impl_unittest.cc" ]
+
+  sources = [
+    "plugin_vm_features_unittest.cc",
+    "plugin_vm_files_unittest.cc",
+    "plugin_vm_installer_unittest.cc",
+    "plugin_vm_manager_impl_unittest.cc",
+    "plugin_vm_util_unittest.cc",
+  ]
+
   deps = [
     ":plugin_vm",
     ":test_support",
@@ -154,6 +163,9 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash",
+    "//chrome/browser/ash/crostini:test_support",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/test:test_support",
@@ -163,7 +175,10 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/seneschal",
+    "//chromeos/ash/components/dbus/spaced",
     "//chromeos/ash/components/dbus/vm_plugin_dispatcher",
+    "//components/download/public/background_service/test:test_support",
+    "//components/drive:test_support",
     "//components/prefs",
     "//content/test:test_support",
     "//testing/gmock",
