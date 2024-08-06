@@ -6389,6 +6389,22 @@
             ]
         }
     ],
+    "CrOSLateBootHighResOffGlobalVariables": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootHighResOffGlobal"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootHighResOffVariables": [
         {
             "platforms": [
