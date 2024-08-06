@@ -1098,7 +1098,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     testing_profile_ = std::make_unique<TestingProfile>();
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, testing_profile_.get());
-    SetDeviceLocalAccounts(&owner_settings_service_, {account});
+    SetDeviceLocalAccountsForTesting(&owner_settings_service_, {account});
     user_manager->UserLoggedIn(account_id, user->username_hash(),
                                /*browser_restart=*/false,
                                /*is_child=*/false);
@@ -1127,7 +1127,7 @@ class DeviceStatusCollectorTest : public testing::Test {
 
     std::vector<DeviceLocalAccount> accounts;
     accounts.push_back(auto_launch_app_account);
-    SetDeviceLocalAccounts(&owner_settings_service_, accounts);
+    SetDeviceLocalAccountsForTesting(&owner_settings_service_, accounts);
 
     owner_settings_service_.SetString(
         ash::kAccountsPrefDeviceLocalAccountAutoLoginId,
@@ -1149,7 +1149,7 @@ class DeviceStatusCollectorTest : public testing::Test {
 
     std::vector<DeviceLocalAccount> accounts;
     accounts.push_back(auto_launch_app_account);
-    SetDeviceLocalAccounts(&owner_settings_service_, accounts);
+    SetDeviceLocalAccountsForTesting(&owner_settings_service_, accounts);
 
     owner_settings_service_.SetString(
         ash::kAccountsPrefDeviceLocalAccountAutoLoginId,

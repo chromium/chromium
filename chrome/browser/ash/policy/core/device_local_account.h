@@ -65,21 +65,21 @@ struct DeviceLocalAccount {
   DeviceLocalAccountType type;
   EphemeralMode ephemeral_mode;
   // A device-local account has two identifiers:
-  // * The |account_id| is chosen by the entity that defines the device-local
-  //   account. The only constraints are that the |account_id| be unique and,
+  // * The `account_id` is chosen by the entity that defines the device-local
+  //   account. The only constraints are that the `account_id` be unique and,
   //   for legacy reasons, it contain an @ symbol.
-  // * The |user_id| is a synthesized identifier that is guaranteed to be
-  //   unique, contain an @ symbol, not collide with the |user_id| of any other
+  // * The `user_id` is a synthesized identifier that is guaranteed to be
+  //   unique, contain an @ symbol, not collide with the `user_id` of any other
   //   user on the device (such as regular users or supervised users) and be
   //   identifiable as belonging to a device-local account by.
-  // The |account_id| is primarily used by policy code: If device policy defines
-  // a device-local account with a certain |account_id|, the user policy for
-  // that account has to be fetched by referencing the same |account_id|.
-  // The |user_id| is passed to the user_manager::UserManager where it becomes
+  // The `account_id` is primarily used by policy code: If device policy defines
+  // a device-local account with a certain `account_id`, the user policy for
+  // that account has to be fetched by referencing the same `account_id`.
+  // The `user_id` is passed to the user_manager::UserManager where it becomes
   // part
-  // of the global user list on the device. The |account_id| would not be safe
+  // of the global user list on the device. The `account_id` would not be safe
   // to use here as it is a free-form identifier that could conflict with
-  // another |user_id| on the device and cannot be easily identified as
+  // another `user_id` on the device and cannot be easily identified as
   // belonging to a device-local account.
   std::string account_id;
   std::string user_id;
@@ -89,16 +89,16 @@ struct DeviceLocalAccount {
   WebKioskAppBasicInfo web_kiosk_app_info;
 };
 
-// Stores a list of device-local accounts in |service|. The accounts are stored
-// as a list of dictionaries with each dictionary containing the information
-// about one |DeviceLocalAccount|.
-void SetDeviceLocalAccounts(ash::OwnerSettingsServiceAsh* service,
-                            const std::vector<DeviceLocalAccount>& accounts);
-
-// Retrieves a list of device-local accounts from |cros_settings|.
+// Retrieves a list of device-local accounts from `cros_settings`.
 std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
     ash::CrosSettings* cros_settings);
 
+// Stores a list of device-local accounts in `service`. The accounts are stored
+// as a list of dictionaries with each dictionary containing the information
+// about one `DeviceLocalAccount`.
+void SetDeviceLocalAccountsForTesting(
+    ash::OwnerSettingsServiceAsh* service,
+    const std::vector<DeviceLocalAccount>& accounts);
 }  // namespace policy
 
 #endif  // CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_LOCAL_ACCOUNT_H_

@@ -355,7 +355,7 @@ void KioskChromeAppManager::AddApp(const std::string& app_id,
       policy::DeviceLocalAccount::EphemeralMode::kUnset,
       GenerateKioskAppAccountId(app_id), app_id, /*update_url=*/std::string());
 
-  policy::SetDeviceLocalAccounts(service, device_local_accounts);
+  policy::SetDeviceLocalAccountsForTesting(service, device_local_accounts);
 }
 
 void KioskChromeAppManager::RemoveApp(const std::string& app_id,
@@ -382,7 +382,7 @@ void KioskChromeAppManager::RemoveApp(const std::string& app_id,
     }
   }
 
-  policy::SetDeviceLocalAccounts(service, device_local_accounts);
+  policy::SetDeviceLocalAccountsForTesting(service, device_local_accounts);
 }
 
 std::vector<KioskChromeAppManager::App> KioskChromeAppManager::GetApps() const {

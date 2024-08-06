@@ -317,8 +317,8 @@ class MetadataProcessorTest : public policy::DevicePolicyCrosBrowserTest,
 
     settings_ = std::make_unique<ScopedDeviceSettings>();
     int ui_update_count = LoginScreenTestApi::GetUiUpdateCount();
-    policy::SetDeviceLocalAccounts(settings_->owner_settings_service(),
-                                   device_local_accounts);
+    policy::SetDeviceLocalAccountsForTesting(
+        settings_->owner_settings_service(), device_local_accounts);
     // Wait for the Kiosk App configuration to reload.
     LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
   }
