@@ -24,6 +24,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/threading/platform_thread.h"
+#include "base/threading/scoped_blocking_call.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
 #include "components/update_client/component.h"
@@ -185,6 +188,30 @@ std::string GetArchitecture() {
 #else   // BUILDFLAG(IS_WIN)
   return base::SysInfo().OperatingSystemArchitecture();
 #endif  // BUILDFLAG(IS_WIN)
+}
+
+bool RetryDeletePathRecursively(const base::FilePath& path) {
+  return RetryDeletePathRecursivelyCustom(
+      path, /*tries=*/5,
+      /*seconds_between_tries=*/base::Seconds(1));
+}
+
+bool RetryDeletePathRecursivelyCustom(
+    const base::FilePath& path,
+    size_t tries,
+    const base::TimeDelta& seconds_between_tries) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+  for (size_t i = 0;;) {
+    if (base::DeletePathRecursively(path)) {
+      return true;
+    }
+    if (++i >= tries) {
+      break;
+    }
+    base::PlatformThread::Sleep(seconds_between_tries);
+  }
+  return false;
 }
 
 }  // namespace update_client

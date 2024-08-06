@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/update_client/update_client.h"
 
@@ -103,6 +104,20 @@ CrxInstaller::Result ToInstallerResult(const T& error, int extended_error = 0) {
 // If not, or not Windows, falls back to
 // `base::SysInfo().OperatingSystemArchitecture`.
 std::string GetArchitecture();
+
+// Retries recursively deleting the given path five times using
+// `base::DeletePathRecursively`, sleeping for a second between successive
+// tries. Returns true if successful, false otherwise. This function is used
+// when there is a likelihood that the files in `path` can be locked
+// temporarily, such as by antivirus software.
+bool RetryDeletePathRecursively(const base::FilePath& path);
+
+// Similar to `RetryDeletePathRecursively`above, but allows specifying the
+// number of `tries` and the `seconds_between_tries`.
+bool RetryDeletePathRecursivelyCustom(
+    const base::FilePath& path,
+    size_t tries,
+    const base::TimeDelta& seconds_between_tries);
 
 }  // namespace update_client
 

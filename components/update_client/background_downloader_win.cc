@@ -914,7 +914,7 @@ void BackgroundDownloader::CleanupStaleDownloads() {
         if (base::GetFileInfo(dir, &info) &&
             info.creation_time + base::Days(kPurgeStaleJobsAfterDays) < now) {
           metrics::RecordBDWStaleDownloadAge(now - info.creation_time);
-          base::DeletePathRecursively(dir);
+          RetryDeletePathRecursively(dir);
         }
       });
 }

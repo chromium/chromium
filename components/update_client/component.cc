@@ -26,8 +26,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/platform_thread.h"
-#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -133,14 +131,7 @@ void InstallComplete(scoped_refptr<base::SequencedTaskRunner> main_task_runner,
              InstallOnBlockingTaskRunnerCompleteCallback callback,
              const base::FilePath& unpack_path,
              const CrxInstaller::Result& installer_result) {
-            {
-              base::ScopedBlockingCall scoped_blocking_call(
-                  FROM_HERE, base::BlockingType::WILL_BLOCK);
-              for (size_t i = 0;
-                   i < 5 && !base::DeletePathRecursively(unpack_path); ++i) {
-                base::PlatformThread::Sleep(base::Seconds(1));
-              }
-            }
+            RetryDeletePathRecursively(unpack_path);
             main_task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(
