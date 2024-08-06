@@ -57,7 +57,10 @@ if [[ ! "$2" =~ ^[0-9]+$ ]]; then
   exit 1
 fi
 
-git diff-index --quiet HEAD --
+# Check for dirty files, mimicking what depot tools does.
+# https://source.chromium.org/chromium/chromium/src/+/main:third_party/depot_tools/git_common.py;l=963;drc=4c050c6f1a34c7b1aaf503d97b871afb8540e54f
+git update-index --refresh -q
+git diff-index --ignore-submodules --name-status HEAD --
 if [[ "$?" -ne 0 ]]; then
   echo 'Working directory has pending changes, aborting. Clean up first.'
   exit 1
