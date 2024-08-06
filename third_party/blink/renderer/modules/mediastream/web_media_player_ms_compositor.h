@@ -260,6 +260,7 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   // which case we need to do background rendering.
   base::TimeTicks last_deadline_max_;
   base::TimeDelta last_render_length_;
+  base::TimeTicks last_deadline_min_;
 
   size_t total_frame_count_;
   size_t dropped_frame_count_;

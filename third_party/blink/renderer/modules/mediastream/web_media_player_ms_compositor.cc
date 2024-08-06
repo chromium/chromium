@@ -498,6 +498,10 @@ bool WebMediaPlayerMSCompositor::UpdateCurrentFrame(
 
   base::AutoLock auto_lock(current_frame_lock_);
 
+  last_deadline_max_ = deadline_max;
+  last_deadline_min_ = deadline_min;
+  last_render_length_ = deadline_max - deadline_min;
+
   if (rendering_frame_buffer_)
     RenderUsingAlgorithm(deadline_min, deadline_max);
 
@@ -673,8 +677,6 @@ void WebMediaPlayerMSCompositor::RenderUsingAlgorithm(
     base::TimeTicks deadline_max) {
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
   current_frame_lock_.AssertAcquired();
-  last_deadline_max_ = deadline_max;
-  last_render_length_ = deadline_max - deadline_min;
 
   size_t frames_dropped = 0;
   scoped_refptr<media::VideoFrame> frame = rendering_frame_buffer_->Render(
@@ -729,7 +731,17 @@ void WebMediaPlayerMSCompositor::RenderWithoutAlgorithmOnCompositor(
         frame->timestamp() > current_frame_->timestamp()) {
       last_render_length_ = frame->timestamp() - current_frame_->timestamp();
     }
-    SetCurrentFrame(std::move(frame), is_copy, std::nullopt);
+
+    // Trace events to help with debugging frame presentation times.
+    const base::TimeTicks now = base::TimeTicks::Now();
+    base::TimeDelta diff_from_deadline_min = now - last_deadline_min_;
+    base::TimeDelta diff_from_deadline_max = now - last_deadline_max_;
+    TRACE_EVENT_INSTANT2("media",
+                         "RenderWithoutAlgorithm Difference From Deadline",
+                         TRACE_EVENT_SCOPE_THREAD, "diff_from_deadline_min",
+                         diff_from_deadline_min, "diff_from_deadline_max",
+                         diff_from_deadline_max);
+    SetCurrentFrame(std::move(frame), is_copy, last_deadline_max_);
   }
   if (video_frame_provider_client_)
     video_frame_provider_client_->DidReceiveFrame();
@@ -796,9 +808,17 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
   // we only use RenderWithoutAlgorithm.
   base::TimeTicks now = base::TimeTicks::Now();
   last_presentation_time_ = now;
-  last_expected_display_time_ = expected_display_time.value_or(now);
+  last_expected_display_time_ =
+      (expected_display_time.has_value() && !expected_display_time->is_null())
+          ? *expected_display_time
+          : now;
   last_preferred_render_interval_ = GetPreferredRenderInterval();
   ++presented_frames_;
+
+  TRACE_EVENT_INSTANT2("media", "SetCurrentFrame Timestamps",
+                       TRACE_EVENT_SCOPE_THREAD, "presentation_time",
+                       (last_presentation_time_), "last_expected_display_time",
+                       (last_expected_display_time_));
 
   OnNewFramePresentedCB presented_frame_cb;
   {

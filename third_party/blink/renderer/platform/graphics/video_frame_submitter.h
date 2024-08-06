@@ -237,6 +237,10 @@ class PLATFORM_EXPORT VideoFrameSubmitter
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
+  // The average delta between receiving a frame and presenting it. Can be used
+  // to estimate the expected display time of a frame.
+  base::TimeDelta average_delta_between_receive_and_present_;
+
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<VideoFrameSubmitter> weak_ptr_factory_{this};
