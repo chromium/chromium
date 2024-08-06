@@ -128,7 +128,21 @@ void ResolvedFrameData::ForceReleaseResource() {
   RegisterWithResourceProvider();
 }
 
-void ResolvedFrameData::UpdateForActiveFrame(
+void ResolvedFrameData::UpdateForAggregation(
+    AggregatedRenderPassId::Generator& render_pass_id_generator) {
+  CHECK(!used_in_aggregation_);
+  used_in_aggregation_ = true;
+
+  if (previous_frame_index() != surface_->GetActiveFrameIndex()) {
+    // There is a new active CompositorFrame.
+    UpdateActiveFrame(render_pass_id_generator);
+  } else if (is_valid()) {
+    // The same active CompositorFrame as last aggregation.
+    ReuseActiveFrame();
+  }
+}
+
+void ResolvedFrameData::UpdateActiveFrame(
     AggregatedRenderPassId::Generator& render_pass_id_generator) {
   // If there are modified render passes they need to be rebuilt based on
   // current active CompositorFrame.
@@ -346,10 +360,6 @@ void ResolvedFrameData::SetInvalid() {
   valid_ = false;
 }
 
-void ResolvedFrameData::MarkAsUsedInAggregation() {
-  used_in_aggregation_ = true;
-}
-
 bool ResolvedFrameData::WasUsedInAggregation() const {
   return used_in_aggregation_;
 }
@@ -441,7 +451,7 @@ const gfx::Rect& ResolvedFrameData::GetOutputRect() const {
   return resolved_passes_.back().render_pass().output_rect;
 }
 
-void ResolvedFrameData::SetRenderPassPointers() {
+void ResolvedFrameData::ReuseActiveFrame() {
   const CompositorRenderPassList& render_pass_list =
       surface_->GetActiveFrame().render_pass_list;
 

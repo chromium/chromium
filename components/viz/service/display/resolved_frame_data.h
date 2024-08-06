@@ -227,6 +227,12 @@ enum FrameDamageType {
 // CompositorFrame computed information will be updated whenever the active
 // frame for the surface has changed. On destruction any resources registered
 // with DisplayResourceProvider will be released.
+//
+// The first time a resolved frame is needed during aggregation
+// UpdateForAggregation() then UpdateOffsetTags() must be called. That will
+// populate all of the internal data. During aggregation the fixed data is
+// viewed and aggregation data can be modified. After aggregation is over
+// ResetAfterAggregation() will be called which resets aggregation data.
 class VIZ_SERVICE_EXPORT ResolvedFrameData {
  public:
   using OffsetTagLookupFn =
@@ -259,33 +265,22 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   // resources since resources (might) be missing on next draw.
   void ForceReleaseResource();
 
-  // Updates resolved frame data for a new active frame. This will recompute
-  // ResolvedPassData. It also updates surface client and display resource
-  // provider with resources used in new active frame.
-  //
-  // This performs the following validation on the active CompositorFrame.
-  // 1. Checks each ResourceId was registered with DisplayResourceProvider and
-  //    is in |child_to_parent_map|.
-  // 2. Checks that CompositorRenderPasses have unique ids.
-  // 3. Checks that CompositorRenderPassDrawQuads only embed render passes that
-  //    are drawn before. This has the side effect of disallowing any cycles.
-  //
-  // If validation fails then ResolvedPassData will be cleared and is_valid()
-  // will return false.
-  void UpdateForActiveFrame(
+  // This must be called once before using ResolvedFrameData during aggregation.
+  // If there is a new active CompositorFrame data will be fully updated, see
+  // UpdatedActiveFrame() for details, otherwise previous data will be reused.
+  void UpdateForAggregation(
       AggregatedRenderPassId::Generator& render_pass_id_generator);
 
-  // This should be called each aggregation, after UpdateForActiveFrame() if
-  // it's required, to update resolved frame for OffsetTags. If the active
-  // CompositorFrame defines any tags, the tag values will be found and the
-  // resolved frame will be modified.
+  // This should be called each aggregation after UpdateForAggregation() to
+  // update resolved frame for OffsetTags. If the active CompositorFrame defines
+  // any tags, the tag values will be found and the resolved frame will be
+  // modified.
   void UpdateOffsetTags(OffsetTagLookupFn lookup_value);
 
   // Sets frame index and marks as invalid. This also clears any existing
   // resolved pass data.
   void SetInvalid();
 
-  void MarkAsUsedInAggregation();
   bool WasUsedInAggregation() const;
 
   // Resets aggregation data and WasUsedInAggregation() will now return false.
@@ -327,11 +322,27 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   // Returns the root render pass output_rect.
   const gfx::Rect& GetOutputRect() const;
 
+ private:
+  // Updates ResolvedPassData for a new active frame. It also updates surface
+  // client and display resource provider with resources used in the new active
+  // frame.
+  //
+  // This performs the following validation on the active CompositorFrame.
+  // 1. Checks each ResourceId was registered with DisplayResourceProvider and
+  //    is in |child_to_parent_map|.
+  // 2. Checks that CompositorRenderPasses have unique ids.
+  // 3. Checks that CompositorRenderPassDrawQuads only embed render passes that
+  //    are drawn before. This has the side effect of disallowing any cycles.
+  //
+  // If validation fails then ResolvedPassData will be cleared and is_valid()
+  // will return false.
+  void UpdateActiveFrame(
+      AggregatedRenderPassId::Generator& render_pass_id_generator);
+
   // Set `CompositorRenderPass` for all `resolved_passes_`. Each
   // `ResolvedPassData` must have been aggregated before.
-  void SetRenderPassPointers();
+  void ReuseActiveFrame();
 
- private:
   void RegisterWithResourceProvider();
   void MovePersistentPassDataFromPreviousFrame(
       const std::vector<ResolvedPassData>& previoius_resolved_passes);

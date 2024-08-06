@@ -133,7 +133,7 @@ TEST_F(ResolvedFrameDataTest, UpdateActiveFrame) {
 
   // Resolved frame data should be valid after adding resolved render pass data
   // and have three render passes.
-  resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
   EXPECT_TRUE(resolved_frame.is_valid());
   EXPECT_THAT(resolved_frame.GetResolvedPasses(), testing::SizeIs(3));
 
@@ -147,6 +147,8 @@ TEST_F(ResolvedFrameDataTest, UpdateActiveFrame) {
   // Check invalidation also works.
   resolved_frame.SetInvalid();
   EXPECT_FALSE(resolved_frame.is_valid());
+
+  resolved_frame.ResetAfterAggregation();
 }
 
 // Constructs a CompositorFrame with two render passes that have the same id.
@@ -161,8 +163,10 @@ TEST_F(ResolvedFrameDataTest, DupliateRenderPassIds) {
   ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
                                    AggregatedRenderPassId());
 
-  resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
   EXPECT_FALSE(resolved_frame.is_valid());
+
+  resolved_frame.ResetAfterAggregation();
 }
 
 // Constructs a CompositorFrame with render pass that tries to embed itself
@@ -180,8 +184,10 @@ TEST_F(ResolvedFrameDataTest, RenderPassIdsSelfCycle) {
   ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
                                    AggregatedRenderPassId());
 
-  resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
   EXPECT_FALSE(resolved_frame.is_valid());
+
+  resolved_frame.ResetAfterAggregation();
 }
 
 // Constructs a CompositorFrame with two render pass that tries to embed each
@@ -204,8 +210,10 @@ TEST_F(ResolvedFrameDataTest, RenderPassIdsCycle) {
 
   // RenderPasses have duplicate IDs so the resolved frame should be marked as
   // invalid.
-  resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
   EXPECT_FALSE(resolved_frame.is_valid());
+
+  resolved_frame.ResetAfterAggregation();
 }
 
 // Check GetRectDamage() handles per quad damage correctly.
@@ -229,13 +237,13 @@ TEST_F(ResolvedFrameDataTest, RenderPassWithPerQuadDamage) {
   ResolvedFrameData resolved_frame(&resource_provider_, surface, 1u,
                                    AggregatedRenderPassId());
 
-  resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
   ASSERT_TRUE(resolved_frame.is_valid());
-
-  resolved_frame.MarkAsUsedInAggregation();
 
   // The damage rect should not include TextureDrawQuad's damage_rect.
   EXPECT_EQ(resolved_frame.GetSurfaceDamage(), pass_damage_rect);
+
+  resolved_frame.ResetAfterAggregation();
 }
 
 TEST_F(ResolvedFrameDataTest, MarkAsUsed) {
@@ -243,27 +251,21 @@ TEST_F(ResolvedFrameDataTest, MarkAsUsed) {
   ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
                                    AggregatedRenderPassId());
 
-  resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
   EXPECT_FALSE(resolved_frame.WasUsedInAggregation());
 
   // First aggregation.
-  resolved_frame.MarkAsUsedInAggregation();
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
   EXPECT_TRUE(resolved_frame.WasUsedInAggregation());
 
   // This is the first frame this aggregation.
   EXPECT_EQ(resolved_frame.GetFrameDamageType(), FrameDamageType::kFull);
-
-  // Nothing changes if MarkAsUsedInAggregation() is called more than once
-  // before reset.
-  resolved_frame.MarkAsUsedInAggregation();
-  EXPECT_TRUE(resolved_frame.WasUsedInAggregation());
 
   // Reset after aggregation.
   resolved_frame.ResetAfterAggregation();
   EXPECT_FALSE(resolved_frame.WasUsedInAggregation());
 
   // Don't submit a new frame for the next aggregation.
-  resolved_frame.MarkAsUsedInAggregation();
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
   EXPECT_TRUE(resolved_frame.WasUsedInAggregation());
   EXPECT_EQ(resolved_frame.GetFrameDamageType(), FrameDamageType::kNone);
 
@@ -271,8 +273,7 @@ TEST_F(ResolvedFrameDataTest, MarkAsUsed) {
 
   // Submit a new frame for the next aggregation.
   SubmitCompositorFrame(MakeSimpleFrame());
-  resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
-  resolved_frame.MarkAsUsedInAggregation();
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
 
   EXPECT_EQ(resolved_frame.GetFrameDamageType(), FrameDamageType::kFrame);
 
@@ -282,9 +283,10 @@ TEST_F(ResolvedFrameDataTest, MarkAsUsed) {
   // last frame aggregated
   SubmitCompositorFrame(MakeSimpleFrame());
   SubmitCompositorFrame(MakeSimpleFrame());
-  resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
-  resolved_frame.MarkAsUsedInAggregation();
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
   EXPECT_EQ(resolved_frame.GetFrameDamageType(), FrameDamageType::kFull);
+
+  resolved_frame.ResetAfterAggregation();
 }
 
 // Verifies that SetFullDamageForNextAggregation()
@@ -294,8 +296,7 @@ TEST_F(ResolvedFrameDataTest, SetFullDamageNextAggregation) {
                                    AggregatedRenderPassId());
 
   // First aggregation to setup existing state.
-  resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
-  resolved_frame.MarkAsUsedInAggregation();
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
   resolved_frame.ResetAfterAggregation();
 
   resolved_frame.SetFullDamageForNextAggregation();
@@ -303,14 +304,15 @@ TEST_F(ResolvedFrameDataTest, SetFullDamageNextAggregation) {
   // Second aggregation with a new frame that has smaller damage rect.
   constexpr gfx::Rect damage_rect(10, 10);
   SubmitCompositorFrame(MakeSimpleFrame(damage_rect));
-  resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
-  resolved_frame.MarkAsUsedInAggregation();
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
 
   // This is the next frame so normally it would use `damage_rect` for damage.
   // SetFullDamageForNextAggregation() changes that so the full output_rect is
   // damaged.
   EXPECT_EQ(resolved_frame.GetFrameDamageType(), FrameDamageType::kFull);
   EXPECT_EQ(resolved_frame.GetSurfaceDamage(), kOutputRect);
+
+  resolved_frame.ResetAfterAggregation();
 }
 
 // Verifies that the ResolvedFrameData will reuse a provided root pass ID
@@ -321,11 +323,12 @@ TEST_F(ResolvedFrameDataTest, ReusePreviousRootPassId) {
   ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
                                    prev_root_pass_id);
 
-  resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
-  resolved_frame.MarkAsUsedInAggregation();
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
 
   EXPECT_EQ(resolved_frame.GetRootRenderPassData().remapped_id(),
             prev_root_pass_id);
+
+  resolved_frame.ResetAfterAggregation();
 }
 
 // Verify OffsetTag creating a modified copy of original CompositorRenderPasses.
@@ -357,8 +360,7 @@ TEST_F(ResolvedFrameDataTest, OffsetTags) {
 
   {
     // First aggregation.
-    resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
-    resolved_frame.MarkAsUsedInAggregation();
+    resolved_frame.UpdateForAggregation(render_pass_id_generator_);
     EXPECT_TRUE(resolved_frame.is_valid());
 
     resolved_frame.UpdateOffsetTags(
@@ -389,8 +391,7 @@ TEST_F(ResolvedFrameDataTest, OffsetTags) {
 
   {
     // Next aggregation with no updated CompositorFrame.
-    resolved_frame.MarkAsUsedInAggregation();
-    resolved_frame.SetRenderPassPointers();
+    resolved_frame.UpdateForAggregation(render_pass_id_generator_);
 
     // Send the same OffsetTagValues. This should reuse the
     // same modified render passes as the last aggregation.
@@ -403,8 +404,7 @@ TEST_F(ResolvedFrameDataTest, OffsetTags) {
 
   {
     // Next aggregation with no updated CompositorFrame.
-    resolved_frame.MarkAsUsedInAggregation();
-    resolved_frame.SetRenderPassPointers();
+    resolved_frame.UpdateForAggregation(render_pass_id_generator_);
 
     // Change the offset. This should require a new copy of the render passes.
     resolved_frame.UpdateOffsetTags(
@@ -438,8 +438,7 @@ TEST_F(ResolvedFrameDataTest, OffsetTags) {
             .Build();
     SubmitCompositorFrame(std::move(new_frame));
 
-    resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
-    resolved_frame.MarkAsUsedInAggregation();
+    resolved_frame.UpdateForAggregation(render_pass_id_generator_);
     EXPECT_TRUE(resolved_frame.is_valid());
 
     resolved_frame.UpdateOffsetTags(
@@ -487,8 +486,7 @@ TEST_F(ResolvedFrameDataTest, OffsetTagValueIsClamped) {
   constexpr gfx::Vector2dF clamped_offset(10.0f, -10.0f);
   EXPECT_EQ(clamped_offset, tag_def.constraints.Clamp(offset));
 
-  resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
-  resolved_frame.MarkAsUsedInAggregation();
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
   EXPECT_TRUE(resolved_frame.is_valid());
 
   resolved_frame.UpdateOffsetTags(
@@ -524,8 +522,7 @@ TEST_F(ResolvedFrameDataTest, OffsetTagWithCopyRequest) {
   ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
                                    AggregatedRenderPassId());
 
-  resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
-  resolved_frame.MarkAsUsedInAggregation();
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
   EXPECT_TRUE(resolved_frame.is_valid());
   ASSERT_THAT(resolved_frame.GetResolvedPasses(), testing::SizeIs(1));
 
