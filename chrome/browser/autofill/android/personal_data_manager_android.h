@@ -23,7 +23,7 @@ namespace autofill {
 class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
  public:
   PersonalDataManagerAndroid(JNIEnv* env,
-                             const jni_zero::JavaRef<jobject>& obj,
+                             jobject obj,
                              PersonalDataManager* personal_data_manager,
                              PrefService* prefs);
 

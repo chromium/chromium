@@ -21,7 +21,7 @@ class WebContents;
 // or pre-connect. This class then takes the corresponding action.
 class OmniboxPrerender {
  public:
-  OmniboxPrerender(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj);
+  OmniboxPrerender(JNIEnv* env, jobject obj);
 
   OmniboxPrerender(const OmniboxPrerender&) = delete;
   OmniboxPrerender& operator=(const OmniboxPrerender&) = delete;

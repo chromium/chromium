@@ -268,7 +268,7 @@ class ClientMapEntryUpdater : public content::WebContentsObserver {
  public:
   ClientMapEntryUpdater(JNIEnv* env,
                         WebContents* web_contents,
-                        const jni_zero::JavaRef<jobject>& jdelegate);
+                        jobject jdelegate);
 
   void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
@@ -280,10 +280,9 @@ class ClientMapEntryUpdater : public content::WebContentsObserver {
   JavaObjectWeakGlobalRef jdelegate_;
 };
 
-ClientMapEntryUpdater::ClientMapEntryUpdater(
-    JNIEnv* env,
-    WebContents* web_contents,
-    const jni_zero::JavaRef<jobject>& jdelegate)
+ClientMapEntryUpdater::ClientMapEntryUpdater(JNIEnv* env,
+                                             WebContents* web_contents,
+                                             jobject jdelegate)
     : content::WebContentsObserver(web_contents), jdelegate_(env, jdelegate) {
   DCHECK(web_contents);
   DCHECK(jdelegate);
@@ -368,7 +367,7 @@ void AwContentsIoThreadClient::Associate(WebContents* web_contents,
                                          const JavaRef<jobject>& jclient) {
   JNIEnv* env = AttachCurrentThread();
   // The ClientMapEntryUpdater lifespan is tied to the WebContents.
-  new ClientMapEntryUpdater(env, web_contents, jclient);
+  new ClientMapEntryUpdater(env, web_contents, jclient.obj());
 }
 
 AwContentsIoThreadClient::AwContentsIoThreadClient(const JavaRef<jobject>& obj)
@@ -468,9 +467,9 @@ void AwContentsIoThreadClient::ShouldInterceptRequestAsync(
                                                                 java_object_));
   }
   if (bg_thread_client_object_) {
-    get_response =
-        base::BindOnce(&RunShouldInterceptRequest, std::move(request),
-                       JavaObjectWeakGlobalRef(env, bg_thread_client_object_));
+    get_response = base::BindOnce(
+        &RunShouldInterceptRequest, std::move(request),
+        JavaObjectWeakGlobalRef(env, bg_thread_client_object_.obj()));
   }
   sequenced_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, std::move(get_response), std::move(callback));

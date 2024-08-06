@@ -105,7 +105,8 @@ TabModalDialogViewAndroid::TabModalDialogViewAndroid(
 
   JNIEnv* env = AttachCurrentThread();
   jwindow_weak_ref_ = JavaObjectWeakGlobalRef(
-      env, parent_web_contents->GetTopLevelNativeWindow()->GetJavaObject());
+      env,
+      parent_web_contents->GetTopLevelNativeWindow()->GetJavaObject().obj());
 
   // Keep a strong ref to the parent window while we make the call to java to
   // display the dialog.

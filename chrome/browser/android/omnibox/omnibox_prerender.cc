@@ -30,8 +30,7 @@ using base::android::JavaParamRef;
 using predictors::AutocompleteActionPredictor;
 using predictors::AutocompleteActionPredictorFactory;
 
-OmniboxPrerender::OmniboxPrerender(JNIEnv* env,
-                                   const jni_zero::JavaRef<jobject>& obj)
+OmniboxPrerender::OmniboxPrerender(JNIEnv* env, jobject obj)
     : weak_java_omnibox_(env, obj) {}
 
 OmniboxPrerender::~OmniboxPrerender() {

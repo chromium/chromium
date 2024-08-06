@@ -28,7 +28,7 @@ namespace payments {
 class PaymentManifestWebDataServiceAndroid : public WebDataServiceConsumer {
  public:
   PaymentManifestWebDataServiceAndroid(JNIEnv* env,
-                                       const jni_zero::JavaRef<jobject>& obj,
+                                       jobject obj,
                                        content::WebContents* web_contents);
 
   PaymentManifestWebDataServiceAndroid(

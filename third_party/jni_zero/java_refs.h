@@ -431,6 +431,7 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaGlobalWeakRef {
   ScopedJavaGlobalWeakRef(ScopedJavaGlobalWeakRef&& orig) : obj_(orig.obj_) {
     orig.obj_ = nullptr;
   }
+  ScopedJavaGlobalWeakRef(JNIEnv* env, jobject obj);
   ScopedJavaGlobalWeakRef(JNIEnv* env, const JavaRef<jobject>& obj);
   ~ScopedJavaGlobalWeakRef() { reset(); }
 

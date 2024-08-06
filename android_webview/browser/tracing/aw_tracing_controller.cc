@@ -69,8 +69,7 @@ static jlong JNI_AwTracingController_Init(JNIEnv* env,
   return reinterpret_cast<intptr_t>(controller);
 }
 
-AwTracingController::AwTracingController(JNIEnv* env,
-                                         const jni_zero::JavaRef<jobject>& obj)
+AwTracingController::AwTracingController(JNIEnv* env, jobject obj)
     : weak_java_object_(env, obj) {}
 
 AwTracingController::~AwTracingController() {}

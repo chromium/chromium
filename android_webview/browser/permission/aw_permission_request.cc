@@ -41,7 +41,7 @@ AwPermissionRequest::AwPermissionRequest(
   *java_peer = Java_AwPermissionRequest_create(
       env, reinterpret_cast<jlong>(this),
       ConvertUTF8ToJavaString(env, GetOrigin().spec()), GetResources());
-  java_ref_ = JavaObjectWeakGlobalRef(env, *java_peer);
+  java_ref_ = JavaObjectWeakGlobalRef(env, java_peer->obj());
 }
 
 AwPermissionRequest::~AwPermissionRequest() {

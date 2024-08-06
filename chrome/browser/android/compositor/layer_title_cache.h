@@ -37,7 +37,7 @@ class LayerTitleCache {
       const base::android::JavaRef<jobject>& jobj);
 
   LayerTitleCache(JNIEnv* env,
-                  const jni_zero::JavaRef<jobject>& obj,
+                  jobject jobj,
                   jint fade_width,
                   jint favicon_start_padding,
                   jint favicon_end_padding,

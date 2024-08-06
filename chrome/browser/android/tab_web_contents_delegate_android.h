@@ -38,8 +38,7 @@ class TabWebContentsDelegateAndroid
     : public web_contents_delegate_android::WebContentsDelegateAndroid,
       public find_in_page::FindResultObserver {
  public:
-  TabWebContentsDelegateAndroid(JNIEnv* env,
-                                const jni_zero::JavaRef<jobject>& obj);
+  TabWebContentsDelegateAndroid(JNIEnv* env, jobject obj);
 
   TabWebContentsDelegateAndroid(const TabWebContentsDelegateAndroid&) = delete;
   TabWebContentsDelegateAndroid& operator=(

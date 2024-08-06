@@ -45,9 +45,7 @@ using content::WebContentsDelegate;
 
 namespace web_contents_delegate_android {
 
-WebContentsDelegateAndroid::WebContentsDelegateAndroid(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj)
+WebContentsDelegateAndroid::WebContentsDelegateAndroid(JNIEnv* env, jobject obj)
     : weak_java_delegate_(env, obj) {}
 
 WebContentsDelegateAndroid::~WebContentsDelegateAndroid() {}

@@ -16,9 +16,7 @@ namespace android_webview {
 class AwDarkMode : public content::WebContentsObserver,
                    public base::SupportsUserData::Data {
  public:
-  AwDarkMode(JNIEnv* env,
-             const jni_zero::JavaRef<jobject>& obj,
-             content::WebContents* web_contents);
+  AwDarkMode(JNIEnv* env, jobject obj, content::WebContents* web_contents);
   ~AwDarkMode() override;
 
   static AwDarkMode* FromWebContents(content::WebContents* contents);
