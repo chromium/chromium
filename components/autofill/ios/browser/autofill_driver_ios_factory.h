@@ -54,6 +54,8 @@ class AutofillDriverIOSFactory final
     return AutofillDriverFactory::observers();
   }
 
+  AutofillDriverRouter& router() { return router_; }
+
  private:
   friend class web::WebStateUserData<AutofillDriverIOSFactory>;
 

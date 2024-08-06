@@ -18,6 +18,7 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/ranges/algorithm.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -33,6 +34,7 @@
 #import "components/autofill/core/common/signatures.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_manager_observer_bridge.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
@@ -455,25 +457,51 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     return;
   }
 
-  auto& driver = static_cast<autofill::AutofillDriverIOS&>(manager.driver());
-  web::WebFrame* frame = driver.web_frame();
-  if (!frame) {
-    return;
-  }
-
   autofill::FormStructure* form_structure = manager.FindCachedFormById(form);
   if (!form_structure) {
     return;
   }
   autofill::FormDataAndServerPredictions forms_and_predictions =
       autofill::GetFormDataAndServerPredictions(*form_structure);
-  // `GetFormDataAndServerPredictions` returns the same number of `FormData` as
-  // `FormStructure` that are passed to it, i.e. one in this case. Therefore
-  // take the front.
-  _passwordManager->ProcessAutofillPredictions(
-      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
-                                                               frame),
-      forms_and_predictions.form_data, forms_and_predictions.predictions);
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAcrossIframesIos)) {
+    // Process the predictions for each renderer form that composes the browser
+    // form when Autofill across frames is enabled.
+
+    // Split the browser form into renderer forms.
+    const autofill::AutofillDriverRouter& router =
+        autofill::AutofillDriverIOSFactory::FromWebState(_webState)->router();
+    std::vector<FormData> renderer_forms =
+        router.GetRendererForms(forms_and_predictions.form_data);
+
+    // Process predictions for each renderer form.
+    web::WebFramesManager* webFramesManager = [self webFramesManager];
+    for (const FormData& renderer_form : renderer_forms) {
+      web::WebFrame* child_frame = webFramesManager->GetFrameWithId(
+          renderer_form.host_frame().ToString());
+      if (!child_frame) {
+        continue;
+      }
+      _passwordManager->ProcessAutofillPredictions(
+          IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
+                                                                   child_frame),
+          renderer_form, forms_and_predictions.predictions);
+    }
+  } else {
+    auto& driver = static_cast<autofill::AutofillDriverIOS&>(manager.driver());
+    web::WebFrame* frame = driver.web_frame();
+    if (!frame) {
+      return;
+    }
+    // `GetFormDataAndServerPredictions` returns the same number of `FormData`
+    // as `FormStructure` that are passed to it, i.e. one in this case.
+    // Therefore take the front.
+    _passwordManager->ProcessAutofillPredictions(
+        IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
+                                                                 frame),
+        forms_and_predictions.form_data, forms_and_predictions.predictions);
+  }
 }
 
 #pragma mark - FormSuggestionProvider

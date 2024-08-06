@@ -10,10 +10,13 @@
 #import <memory>
 #import <utility>
 
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
+#import "base/time/time.h"
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/browser/test_autofill_manager_waiter.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_field_data.h"
@@ -44,6 +47,12 @@ class TestAutofillManager : public BrowserAutofillManager {
       : BrowserAutofillManager(driver, "en-US") {}
 
   TestAutofillManagerWaiter& waiter() { return waiter_; }
+
+  const FormStructure* WaitForMatchingForm(
+      base::RepeatingCallback<bool(const FormStructure&)> pred) {
+    return autofill::WaitForMatchingForm(this, std::move(pred),
+                                         base::Seconds(2));
+  }
 
  private:
   TestAutofillManagerWaiter waiter_{*this, {AutofillManagerEvent::kFormsSeen}};
@@ -100,6 +109,8 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
     return autofill_manager_injector_->GetForMainFrame();
   }
 
+  web::WebState* web_state() { return web_state_.get(); }
+
  private:
   test::AutofillUnitTestEnvironment autofill_environment_{
       {.disable_server_communication = true}};
@@ -130,6 +141,91 @@ TEST_F(ChromeAutofillClientIOSTest, ClassifyAsPasswordForm) {
                                             form_data.global_id(),
                                             form_data.fields()[0].global_id()),
             expected);
+}
+
+// Tests that `ClassifyAsPasswordForm()` correctly classifies a login renderer
+// form that is part of a bigger browser form that stretches across multiple
+// frames. Also tests that non-login renderer forms aren't classified as such.
+TEST_F(ChromeAutofillClientIOSTest, ClassifyAsPasswordForm_AcrossFrames) {
+  base::test::ScopedFeatureList feature_list(
+      autofill::features::kAutofillAcrossIframesIos);
+
+  // Render a xframe form composed of one password form and one address form.
+  NSString* html =
+      @"<form>"
+       "<input name='username' autocomplete='username'>"
+       "<input type='password' name='password' autocomplete='current-password'>"
+       "<iframe srcdoc=\"<body><form><input type='text' name='address-level1' "
+       "autocomplete='address-level1'></form></body>\"></iframe>"
+       "</form>";
+  web::test::LoadHtml(html, web_state());
+
+  // Wait for any pending seen forms to be processed.
+  ASSERT_TRUE(main_frame_manager()->waiter().Wait());
+
+  // Wait on the browser form to be fully constructed.
+  const FormStructure* form =
+      main_frame_manager()->WaitForMatchingForm(base::BindRepeating(
+          [](size_t num_fields, const FormStructure& form) {
+            return num_fields == form.field_count();
+          },
+          3));
+  ASSERT_TRUE(form);
+  FormData browser_form = form->ToFormData();
+  ASSERT_THAT(browser_form.fields(), ::testing::SizeIs(3));
+
+  // Verify that the password renderer form is classified as a password form.
+  const auto expected = AutofillClient::PasswordFormClassification{
+      .type = AutofillClient::PasswordFormClassification::Type::kLoginForm,
+      .username_field = browser_form.fields()[0].global_id()};
+  EXPECT_EQ(client().ClassifyAsPasswordForm(
+                *main_frame_manager(), browser_form.global_id(),
+                browser_form.fields()[0].global_id()),
+            expected);
+}
+
+// Tests that `ClassifyAsPasswordForm()` doesn't classify non-login forms.
+TEST_F(ChromeAutofillClientIOSTest,
+       ClassifyAsPasswordForm_AcrossFrames_NonLoginForm) {
+  base::test::ScopedFeatureList feature_list(
+      autofill::features::kAutofillAcrossIframesIos);
+
+  // Render a xframe form composed of one password form and one address form.
+  NSString* html =
+      @"<form>"
+       "<input name='username' autocomplete='username'>"
+       "<input type='password' name='password' autocomplete='current-password'>"
+       "<iframe srcdoc=\"<body><form><input type='text' name='address-level1' "
+       "autocomplete='address-level1'></form></body>\"></iframe>"
+       "</form>";
+  web::test::LoadHtml(html, web_state());
+
+  // Wait for any pending seen forms to be processed.
+  ASSERT_TRUE(main_frame_manager()->waiter().Wait());
+
+  // Wait on the browser form to be fully constructed.
+  const FormStructure* form =
+      main_frame_manager()->WaitForMatchingForm(base::BindRepeating(
+          [](size_t num_fields, const FormStructure& form) {
+            return num_fields == form.field_count();
+          },
+          3));
+  ASSERT_TRUE(form);
+  FormData browser_form = form->ToFormData();
+  ASSERT_THAT(browser_form.fields(), ::testing::SizeIs(3));
+
+  // Verify that the address renderer form isn't classified as a password form.
+  EXPECT_EQ(client().ClassifyAsPasswordForm(
+                *main_frame_manager(), browser_form.global_id(),
+                browser_form.fields()[2].global_id()),
+            AutofillClient::PasswordFormClassification{});
+
+  // Verify that a field with no corresponding form isn't classified.
+  FieldGlobalId random_field_id = test::MakeFieldGlobalId();
+  EXPECT_EQ(
+      client().ClassifyAsPasswordForm(
+          *main_frame_manager(), browser_form.global_id(), random_field_id),
+      AutofillClient::PasswordFormClassification{});
 }
 
 }  // namespace autofill
