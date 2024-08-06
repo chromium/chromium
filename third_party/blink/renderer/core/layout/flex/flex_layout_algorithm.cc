@@ -748,7 +748,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
           MinMaxSizesFunc, max_property_in_main_axis);
       min_max_sizes_in_cross_axis_direction = ComputeMinMaxBlockSizes(
           flex_basis_space, child, border_padding_in_child_writing_mode,
-          BlockSizeFunc);
+          /* apply_automatic_min_size */ false, BlockSizeFunc);
     } else {
       min_max_sizes_in_main_axis_direction.max_size = ResolveMaxBlockLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,

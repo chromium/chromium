@@ -546,6 +546,7 @@ MinMaxSizes ComputeInitialMinMaxBlockSizes(const ConstraintSpace& space,
 MinMaxSizes ComputeMinMaxBlockSizes(const ConstraintSpace& space,
                                     const BlockNode& node,
                                     const BoxStrut& border_padding,
+                                    bool apply_automatic_min_size,
                                     BlockSizeFunctionRef block_size_func,
                                     LayoutUnit override_available_size) {
   const ComputedStyle& style = node.Style();
@@ -556,6 +557,15 @@ MinMaxSizes ComputeMinMaxBlockSizes(const ConstraintSpace& space,
       ResolveMaxBlockLength(space, style, border_padding,
                             style.LogicalMaxHeight(), block_size_func,
                             override_available_size)};
+
+  // Apply the automatic min-size if needed.
+  //
+  // TODO(40339056): For calc-size() we should pass a Length::MinIntrinsic()
+  // for the "auto_length".
+  if (apply_automatic_min_size && style.LogicalMinHeight().HasAuto()) {
+    sizes.Encompass(
+        std::min(block_size_func(SizeType::kIntrinsic), sizes.max_size));
+  }
 
   // Tables can't shrink below their min-intrinsic size.
   if (node.IsTable()) {
@@ -763,15 +773,13 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
     return extent;
   }
 
-  MinMaxSizes min_max = ComputeMinMaxBlockSizesDeprecated(
-      space, node, border_padding, override_available_size);
+  MinMaxSizes min_max = ComputeMinMaxBlockSizes(
+      space, node, border_padding, apply_automatic_min_size, BlockSizeFunc,
+      override_available_size);
 
   // When fragmentation is present often want to encompass the intrinsic size.
-  //
-  // TODO(40339056): For calc-size() we should pass a Length::MinIntrinsic()
-  // for the "auto_length".
-  if (space.MinBlockSizeShouldEncompassIntrinsicSize() ||
-      (apply_automatic_min_size && style.LogicalMinHeight().HasAuto())) {
+  if (space.MinBlockSizeShouldEncompassIntrinsicSize() &&
+      intrinsic_size != kIndefiniteSize) {
     min_max.Encompass(std::min(intrinsic_size, min_max.max_size));
   }
 

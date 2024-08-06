@@ -266,6 +266,7 @@ MinMaxSizes ComputeMinMaxBlockSizes(
     const ConstraintSpace&,
     const BlockNode&,
     const BoxStrut& border_padding,
+    bool apply_automatic_min_size,
     BlockSizeFunctionRef,
     LayoutUnit override_available_size = kIndefiniteSize);
 MinMaxSizes ComputeMinMaxBlockSizesDeprecated(
