@@ -12533,6 +12533,21 @@
             ]
         }
     ],
+    "KeyboardAccessoryUpgrade": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSKeyboardAccessoryUpgrade"
+                    ]
+                }
+            ]
+        }
+    ],
     "KeyboardFocusableScrollers": [
         {
             "platforms": [
