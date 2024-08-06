@@ -1269,13 +1269,13 @@ inline void Element::SynchronizeAttribute(const QualifiedName& name) const {
   if (!HasElementData()) {
     return;
   }
-  if (UNLIKELY(name == html_names::kStyleAttr &&
-               GetElementData()->style_attribute_is_dirty())) {
+  if (name == html_names::kStyleAttr &&
+      GetElementData()->style_attribute_is_dirty()) [[unlikely]] {
     DCHECK(IsStyledElement());
     SynchronizeStyleAttributeInternal();
     return;
   }
-  if (UNLIKELY(GetElementData()->svg_attributes_are_dirty())) {
+  if (GetElementData()->svg_attributes_are_dirty()) [[unlikely]] {
     // See comment in the AtomicString version of SynchronizeAttribute()
     // also.
     To<SVGElement>(this)->SynchronizeSVGAttribute(name);
@@ -2829,12 +2829,12 @@ void Element::ClassAttributeChanged(const AtomicString& new_class_string) {
   DCHECK(HasElementData());
   // Note that this is a copy-by-value of the class names.
   const SpaceSplitString old_classes = GetElementData()->ClassNames();
-  if (UNLIKELY(new_class_string.empty())) {
+  if (new_class_string.empty()) [[unlikely]] {
     GetDocument().GetStyleEngine().ClassChangedForElement(old_classes, *this);
     GetElementData()->ClearClass();
     return;
   }
-  if (UNLIKELY(GetDocument().InQuirksMode())) {
+  if (GetDocument().InQuirksMode()) [[unlikely]] {
     GetElementData()->SetClassFoldingCase(new_class_string);
   } else {
     GetElementData()->SetClass(new_class_string);
@@ -3184,7 +3184,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   }
 
   if (auto* const frame = document.GetFrame()) {
-    if (UNLIKELY(HasUndoStack())) {
+    if (HasUndoStack()) [[unlikely]] {
       frame->GetEditor().GetUndoStack().ElementRemoved(this);
     }
     frame->GetEditor().ElementRemoved(this);
@@ -3490,7 +3490,7 @@ const ComputedStyle* Element::StyleForLayoutObject(
   DisplayLockContext* context = GetDisplayLockContext();
   // The common case for most elements is that we don't have a context and have
   // the default (visible) content-visibility value.
-  if (UNLIKELY(context || !style->IsContentVisibilityVisible())) {
+  if (context || !style->IsContentVisibilityVisible()) [[unlikely]] {
     if (!context) {
       context = &EnsureDisplayLockContext();
     }
@@ -4168,8 +4168,8 @@ StyleRecalcChange Element::RecalcOwnStyle(
 
   if (LayoutObject* layout_object = GetLayoutObject()) {
     DCHECK(new_style);
-    if (UNLIKELY(layout_object->IsText()) &&
-        UNLIKELY(IsA<LayoutTextCombine>(layout_object->Parent()))) {
+    if (layout_object->IsText() &&
+        IsA<LayoutTextCombine>(layout_object->Parent())) [[unlikely]] {
       // Adjust style for <br> and <wbr> in combined text.
       // See http://crbug.com/1228058
       ComputedStyleBuilder adjust_builder(*new_style);
@@ -9853,10 +9853,10 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
 
 WTF::AtomicStringTable::WeakResult Element::WeakLowercaseIfNecessary(
     const AtomicString& name) const {
-  if (LIKELY(name.IsLowerASCII())) {
+  if (name.IsLowerASCII()) [[likely]] {
     return WTF::AtomicStringTable::WeakResult(name);
   }
-  if (LIKELY(IsHTMLElement() && IsA<HTMLDocument>(GetDocument()))) {
+  if (IsHTMLElement() && IsA<HTMLDocument>(GetDocument())) [[likely]] {
     return WTF::AtomicStringTable::Instance().WeakFindLowercase(name);
   }
   return WTF::AtomicStringTable::WeakResult(name);
@@ -10176,8 +10176,9 @@ void Element::RemoveAttributeHinted(const AtomicString& name,
 
   wtf_size_t index = GetElementData()->Attributes().FindIndexHinted(name, hint);
   if (index == kNotFound) {
-    if (UNLIKELY(hint == html_names::kStyleAttr.LocalName()) &&
-        GetElementData()->style_attribute_is_dirty() && IsStyledElement()) {
+    if (hint == html_names::kStyleAttr.LocalName() &&
+        GetElementData()->style_attribute_is_dirty() && IsStyledElement())
+        [[unlikely]] {
       RemoveAllInlineStyleProperties();
     }
     return;

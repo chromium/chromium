@@ -496,7 +496,7 @@ Node* TreeScope::FindAnchor(const String& fragment) {
 
 void TreeScope::AdoptIfNeeded(Node& node) {
   DCHECK(!node.IsDocumentNode());
-  if (LIKELY(&node.GetTreeScope() == this)) {
+  if (&node.GetTreeScope() == this) [[likely]] {
     return;
   }
 

@@ -1273,8 +1273,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   EnsureResizeObserverData();
 
   DisplayLockContext* GetDisplayLockContext() const {
-    if (LIKELY(!HasDisplayLockContext()))
+    if (!HasDisplayLockContext()) [[likely]] {
       return nullptr;
+    }
     return GetDisplayLockContextFromRareData();
   }
   DisplayLockContext& EnsureDisplayLockContext();

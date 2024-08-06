@@ -1078,7 +1078,7 @@ bool EventTarget::FireEventListeners(Event& event,
   bool fired_listener = false;
 
   for (auto& registered_listener : entry) {
-    if (UNLIKELY(registered_listener->Removed())) {
+    if (registered_listener->Removed()) [[unlikely]] {
       continue;
     }
 

@@ -596,7 +596,7 @@ static bool IsValidElementNamePerHTMLParser(const String& name) {
 static bool IsValidElementName(Document* document, const String& name) {
   bool is_valid_dom_name = Document::IsValidName(name);
   bool is_valid_html_name = IsValidElementNamePerHTMLParser(name);
-  if (UNLIKELY(is_valid_html_name != is_valid_dom_name)) {
+  if (is_valid_html_name != is_valid_dom_name) [[unlikely]] {
     // This is inaccurate because it will not report activity in
     // detached documents. However retrieving the frame from the
     // bindings is too slow.
