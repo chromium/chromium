@@ -47,6 +47,14 @@
   outline: none;
 }
 
+@media (forced-colors: active) {
+  /* Set outline on focus since box-shadow isn't visible in hcm. */
+  :host-context(.focus-outline-visible) #header:focus,
+  #header:focus-visible {
+    outline: var(--cr-border-hcm);
+  }
+}
+
 #startTime {
   display: inline-block;
   flex-shrink: 0;

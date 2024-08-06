@@ -11,3 +11,11 @@ ntp-module-header-v2 {
   background-color: var(--color-new-tab-page-module-background);
   margin: 8px;
 }
+
+@media (forced-colors: active) {
+  /* Set outline since background isn't visible in hcm */
+  ntp-module-header-v2 {
+    border-radius: var(--ntp-module-item-border-radius);
+    outline: var(--cr-border-hcm);
+  }
+}

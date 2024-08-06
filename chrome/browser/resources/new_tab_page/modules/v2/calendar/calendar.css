@@ -77,3 +77,36 @@ a:focus-visible {
   box-shadow: var(--ntp-focus-shadow);
   outline: none;
 }
+
+@media (forced-colors: active) {
+  /* Set outline on focus since box-shadow isn't visible in hcm. */
+  :host-context(.focus-outline-visible) a:focus,
+  a:focus-visible {
+    outline: var(--cr-border-hcm);
+  }
+
+  /* Create a border around groups of events, since background color
+  isn't visible in hcm.*/
+  .row {
+    border-color: var(--cr-border-hcm);
+    border-style: none solid;
+    border-width: 2px;
+  }
+
+  ntp-calendar-event:first-of-type,
+  .row[double-booked] + .row,
+  .row[expanded] + .row {
+    border-style: solid solid none;
+  }
+
+  .row:last-child,
+  .row:has(+ .row[double-booked]),
+  .row:has(+ .row[expanded]) {
+    border-style: none solid solid;
+  }
+
+  .row[double-booked],
+  .row[expanded] {
+    border-style: solid;
+  }
+}
