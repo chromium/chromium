@@ -35,10 +35,12 @@ class PinOptionsButton : public views::MdTextButtonWithDownArrow,
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
+  bool IsCommandIdChecked(int command_id) const override;
 
  private:
   void ButtonPressed();
 
+  const CommandId checked_command_id_;
   base::RepeatingCallback<void(bool)> callback_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
