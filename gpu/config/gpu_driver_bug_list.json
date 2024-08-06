@@ -3398,6 +3398,19 @@
       "features": [
         "disable_hevc_hmft_cbr_encoding"
       ]
+    },
+    {
+      "id": 435,
+      "cr_bugs": [356448335],
+      "description": "Disable video accelerated encoding on certain AMD GPUs using r600",
+      "os": {
+        "type": "chromeos"
+      },
+      "vendor_id": "0x1002",
+      "device_id": ["0x6821", "0x9900", "0x9992", "0x9997"],
+      "features": [
+        "disable_accelerated_h264_encode"
+      ]
     }
   ]
 }
