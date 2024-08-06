@@ -647,7 +647,6 @@ const char* const ATK_OBJECT_ATTRIBUTES[] = {
     "level",
     "link-target",
     "live",
-    "name-from",
     "placeholder",
     "posinset",
     "relevant",
