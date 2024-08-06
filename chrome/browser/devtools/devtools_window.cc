@@ -1649,7 +1649,7 @@ int DevToolsWindow::GetDockStateForLogging() {
   }
 
   gfx::Rect inspected_page_bounds = contents_resizing_strategy_.bounds();
-  if (inspected_page_bounds.x() >= 0) {
+  if (inspected_page_bounds.x() > 0) {
     return kLeft;
   }
   gfx::Rect devtools_bounds =
