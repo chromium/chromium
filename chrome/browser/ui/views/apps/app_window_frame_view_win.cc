@@ -129,6 +129,8 @@ gfx::Size AppWindowFrameViewWin::GetMaximumSize() const {
   gfx::Size max_size = widget_->client_view()->GetMaximumSize();
 
   gfx::Insets insets = GetFrameInsets();
+  insets += GetClientAreaInsets(
+      MonitorFromWindow(HWNDForView(this), MONITOR_DEFAULTTONEAREST));
   if (max_size.width()) {
     max_size.Enlarge(insets.left() + insets.right(), 0);
   }

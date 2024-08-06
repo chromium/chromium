@@ -287,6 +287,10 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   void DropRootViewReferences();
 
+  // Get the geometry of the window, in DIPs, clamped to specified
+  // minimum/maximum window size constraints.
+  gfx::Rect GetAdjustedContentBoundsInScreen();
+
   // NativeWidgetNSWindowHostHelper:
   id GetNativeViewAccessible() override;
   void DispatchKeyEvent(ui::KeyEvent* event) override;

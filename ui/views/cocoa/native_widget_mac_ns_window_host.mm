@@ -541,9 +541,7 @@ void NativeWidgetMacNSWindowHost::SetBoundsInScreen(const gfx::Rect& bounds) {
   if (remote_ns_window_remote_) {
     gfx::Rect window_in_screen =
         gfx::ScreenRectFromNSRect([in_process_ns_window_ frame]);
-    gfx::Rect content_in_screen =
-        gfx::ScreenRectFromNSRect([in_process_ns_window_
-            contentRectForFrameRect:[in_process_ns_window_ frame]]);
+    gfx::Rect content_in_screen = GetAdjustedContentBoundsInScreen();
 
     OnWindowGeometryChanged(window_in_screen, content_in_screen);
   }
@@ -570,9 +568,7 @@ void NativeWidgetMacNSWindowHost::SetSize(const gfx::Size& size) {
 
     gfx::Rect window_in_screen =
         gfx::ScreenRectFromNSRect([in_process_ns_window_ frame]);
-    gfx::Rect content_in_screen =
-        gfx::ScreenRectFromNSRect([in_process_ns_window_
-            contentRectForFrameRect:[in_process_ns_window_ frame]]);
+    gfx::Rect content_in_screen = GetAdjustedContentBoundsInScreen();
 
     OnWindowGeometryChanged(window_in_screen, content_in_screen);
   }
@@ -864,6 +860,27 @@ void NativeWidgetMacNSWindowHost::DropRootViewReferences() {
   root_view_ = nullptr;
   root_view_observation_.Reset();
   drag_drop_client_.reset();
+}
+
+gfx::Rect NativeWidgetMacNSWindowHost::GetAdjustedContentBoundsInScreen() {
+  gfx::Rect content_in_screen = gfx::ScreenRectFromNSRect([in_process_ns_window_
+      contentRectForFrameRect:[in_process_ns_window_ frame]]);
+  gfx::Size content_in_screen_size = content_in_screen.size();
+
+  const std::optional<gfx::Size> maximum_size =
+      native_widget_mac_->GetWidget()->GetMaximumSize();
+  if (maximum_size.has_value() && !maximum_size->IsEmpty()) {
+    content_in_screen_size.SetToMin(maximum_size.value());
+  }
+
+  const std::optional<gfx::Size> minimum_size =
+      native_widget_mac_->GetWidget()->GetMinimumSize();
+  if (minimum_size.has_value() && !minimum_size->IsEmpty()) {
+    content_in_screen_size.SetToMax(minimum_size.value());
+  }
+
+  content_in_screen.set_size(content_in_screen_size);
+  return content_in_screen;
 }
 
 std::unique_ptr<NativeWidgetMacEventMonitor>
