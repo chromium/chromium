@@ -93,7 +93,12 @@ void DOMSelection::UpdateFrameSelection(
 }
 
 VisibleSelection DOMSelection::GetVisibleSelection() const {
-  return Selection().ComputeVisibleSelectionInDOMTreeDeprecated();
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  See http://crbug.com/590369 for more details.
+  DomWindow()->document()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kSelection);
+
+  return Selection().ComputeVisibleSelectionInDOMTree();
 }
 
 bool DOMSelection::IsAnchorFirstInSelection() const {
@@ -163,10 +168,13 @@ unsigned DOMSelection::extentOffset() const {
 bool DOMSelection::isCollapsed() const {
   if (!IsAvailable())
     return true;
-  Node* node = Selection()
-                   .ComputeVisibleSelectionInDOMTreeDeprecated()
-                   .Anchor()
-                   .AnchorNode();
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  See http://crbug.com/590369 for more details.
+  DomWindow()->document()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kSelection);
+
+  Node* node =
+      Selection().ComputeVisibleSelectionInDOMTree().Anchor().AnchorNode();
   if (node && node->IsInShadowTree() &&
       DomWindow()->document()->AncestorInThisScope(node)) {
     return true;
@@ -198,8 +206,13 @@ String DOMSelection::direction() const {
   if (!IsAvailable()) {
     return "none";
   }
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  See http://crbug.com/590369 for more details.
+  DomWindow()->document()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kSelection);
+
   if (!Selection().IsDirectional() ||
-      Selection().ComputeVisibleSelectionInDOMTreeDeprecated().IsNone()) {
+      Selection().ComputeVisibleSelectionInDOMTree().IsNone()) {
     return "none";
   }
   if (IsAnchorFirstInSelection()) {
@@ -213,8 +226,15 @@ unsigned DOMSelection::rangeCount() const {
     return 0;
   if (DocumentCachedRange())
     return 1;
-  if (Selection().ComputeVisibleSelectionInDOMTreeDeprecated().IsNone())
+
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  See http://crbug.com/590369 for more details.
+  DomWindow()->document()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kSelection);
+
+  if (Selection().ComputeVisibleSelectionInDOMTree().IsNone()) {
     return 0;
+  }
   // Any selection can be adjusted to Range for Document.
   if (IsSelectionOfDocument())
     return 1;
@@ -772,10 +792,9 @@ bool DOMSelection::containsNode(const Node* n, bool allow_partial) const {
   DomWindow()->document()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
 
-  const EphemeralRange selected_range =
-      Selection()
-          .ComputeVisibleSelectionInDOMTreeDeprecated()
-          .ToNormalizedEphemeralRange();
+  const EphemeralRange selected_range = Selection()
+                                            .ComputeVisibleSelectionInDOMTree()
+                                            .ToNormalizedEphemeralRange();
   if (selected_range.IsNull())
     return false;
 
@@ -837,7 +856,7 @@ String DOMSelection::toString() {
       DomWindow()->document()->Lifecycle());
 
   const EphemeralRange range = Selection()
-                                   .ComputeVisibleSelectionInDOMTreeDeprecated()
+                                   .ComputeVisibleSelectionInDOMTree()
                                    .ToNormalizedEphemeralRange();
   return PlainText(
       range,
