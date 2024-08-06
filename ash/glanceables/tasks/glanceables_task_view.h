@@ -84,6 +84,7 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView,
 
   const views::ImageButton* GetCheckButtonForTest() const;
   bool GetCompletedForTest() const;
+  void SetCheckedForTest(bool checked);
 
   // Updates `tasks_title_view_` according to `state`.
   void UpdateTaskTitleViewForState(TaskTitleViewState state);
