@@ -1149,8 +1149,9 @@ class DBTracker::TrackedDBImpl : public base::LinkNode<TrackedDBImpl>,
   leveldb::Status Write(const leveldb::WriteOptions& options,
                         leveldb::WriteBatch* updates) override {
     leveldb::Status status = db_->Write(options, updates);
-    if (LIKELY(status.ok()))
+    if (status.ok()) [[likely]] {
       return status;
+    }
     if (on_write_error_)
       on_write_error_.Run(status);
     return status;
@@ -1160,8 +1161,9 @@ class DBTracker::TrackedDBImpl : public base::LinkNode<TrackedDBImpl>,
                       const leveldb::Slice& key,
                       std::string* value) override {
     leveldb::Status status = db_->Get(options, key, value);
-    if (LIKELY(status.ok() || status.IsNotFound()))
+    if (status.ok() || status.IsNotFound()) [[likely]] {
       return status;
+    }
     if (on_get_error_)
       on_get_error_.Run(status);
     return status;
