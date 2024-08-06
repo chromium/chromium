@@ -6989,6 +6989,21 @@
             ]
         }
     ],
+    "DTCKeyRotationUploadedBySharedAPIEnabled": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DTCKeyRotationUploadedBySharedAPIEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "DTCKeyUploadedBySharedAPIEnabled": [
         {
             "platforms": [

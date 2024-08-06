@@ -23,6 +23,14 @@ BASE_DECLARE_FEATURE(kDTCKeyUploadedBySharedAPIEnabled);
 // Return true if a shared API is used for uploading the public key.
 bool IsDTCKeyUploadedBySharedAPI();
 
+// Controls whether the public key is uploaded through a shared API when
+// creating/rotating keys.
+BASE_DECLARE_FEATURE(kDTCKeyRotationUploadedBySharedAPIEnabled);
+
+// Return true if a shared API is used for uploading the public key during
+// rotation/creation.
+bool IsDTCKeyRotationUploadedBySharedAPI();
+
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_FEATURES_H_
