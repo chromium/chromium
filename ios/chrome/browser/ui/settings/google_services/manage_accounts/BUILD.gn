@@ -57,6 +57,8 @@ source_set("manage_accounts_ui") {
     "accounts_model_identity_data_source.h",
     "accounts_table_view_controller.h",
     "accounts_table_view_controller.mm",
+    "identity_view_item.h",
+    "identity_view_item.mm",
     "legacy_accounts_table_view_controller.h",
     "legacy_accounts_table_view_controller.mm",
   ]

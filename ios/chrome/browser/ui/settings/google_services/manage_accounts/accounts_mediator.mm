@@ -27,9 +27,11 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_consumer.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/identity_view_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -119,10 +121,32 @@
   return _identityManager->GetAccountsWithRefreshTokens();
 }
 
+- (IdentityViewItem*)primaryIdentityViewItem {
+  return [self identityViewItemForIdentity:_authService->GetPrimaryIdentity(
+                                               signin::ConsentLevel::kSignin)];
+}
+
+- (std::vector<IdentityViewItem*>)identityViewItems {
+  std::vector<IdentityViewItem*> identityViewItemsForAccounts;
+  for (const auto& account : [self accountsWithRefreshTokens]) {
+    identityViewItemsForAccounts.push_back(
+        [self identityViewItemForIdentity:[self identityForAccount:account]]);
+  }
+  return identityViewItemsForAccounts;
+}
+
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  [self.consumer updateAccountIdentity:identity];
+  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
+    CHECK(
+        [self.consumer respondsToSelector:@selector(updateIdentityViewItem:)]);
+    [self.consumer
+        updateIdentityViewItem:[self identityViewItemForIdentity:identity]];
+  } else {
+    CHECK([self.consumer respondsToSelector:@selector(updateAccountIdentity:)]);
+    [self.consumer updateAccountIdentity:identity];
+  }
 }
 
 - (void)onChromeAccountManagerServiceShutdown:
@@ -152,6 +176,19 @@
 
 - (void)onSyncStateChanged {
   [self.consumer updateErrorSectionModelAndReloadViewIfNeeded:YES];
+}
+
+#pragma mark - Private
+
+- (IdentityViewItem*)identityViewItemForIdentity:(id<SystemIdentity>)identity {
+  IdentityViewItem* identityViewItem = [[IdentityViewItem alloc] init];
+  identityViewItem.userEmail = identity.userEmail;
+  identityViewItem.gaiaID = identity.gaiaID;
+  identityViewItem.avatar =
+      [self identityAvatarWithSizeForIdentity:identity
+                                         size:IdentityAvatarSize::Regular];
+  identityViewItem.accessibilityIdentifier = identity.userEmail;
+  return identityViewItem;
 }
 
 @end

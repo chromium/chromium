@@ -10,6 +10,7 @@
 @class AccountErrorUIInfo;
 struct CoreAccountInfo;
 enum class IdentityAvatarSize;
+@class IdentityViewItem;
 @class LegacyAccountsTableViewController;
 @protocol SystemIdentity;
 
@@ -32,6 +33,12 @@ enum class IdentityAvatarSize;
 
 // Provides the information of all accounts that have refresh tokens.
 - (std::vector<CoreAccountInfo>)accountsWithRefreshTokens;
+
+// Returns the primary identity view item.
+- (IdentityViewItem*)primaryIdentityViewItem;
+
+// Provides identity view items for all available identities.
+- (std::vector<IdentityViewItem*>)identityViewItems;
 
 @end
 

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 
 enum class AccountErrorUserActionableType;
+@class IdentityViewItem;
 @protocol SystemIdentity;
 
 // Consumer protocol for accounts.
@@ -21,11 +22,18 @@ enum class AccountErrorUserActionableType;
 // Updates error section.
 - (void)updateErrorSectionModelAndReloadViewIfNeeded:(BOOL)reloadViewIfNeeded;
 
-// Updates account identity.
-- (void)updateAccountIdentity:(id<SystemIdentity>)identity;
-
 // Pops the view.
 - (void)popView;
+
+@optional
+
+// TODO(crbug.com/349071402): Introduce separate consumers for each of the
+// legacy and the new view controllers. One of the following two methods needs
+// to be implemented.
+// Updates account identity.
+- (void)updateAccountIdentity:(id<SystemIdentity>)identity;
+// Updates identity view item.
+- (void)updateIdentityViewItem:(IdentityViewItem*)identityViewItem;
 
 @end
 
