@@ -1,0 +1,44 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+template("mac_pkg_installer") {
+  assert(defined(invoker.bundle_target), "A bundle target must be specified.")
+  assert(defined(invoker.bundle_identifier),
+         "A bundle identifier must be specified.")
+  assert(defined(invoker.install_location),
+         "An install location must be specified.")
+
+  _bundle_target_outputs = get_target_outputs(invoker.bundle_target)
+  _output_pkg_path = "$root_out_dir/$target_name.pkg"
+  _args = [
+    "--root-path",
+    rebase_path(_bundle_target_outputs[0], root_build_dir),
+    "--identifier",
+    invoker.bundle_identifier,
+    "--install-location",
+    invoker.install_location,
+    "--package-output-path",
+    rebase_path(_output_pkg_path, root_build_dir),
+  ]
+
+  if (defined(invoker.postinstall_script_target)) {
+    _postinstall_script_target_output =
+        get_target_outputs(invoker.postinstall_script_target)
+    _args += [
+      "--postinstall-script",
+      rebase_path(_postinstall_script_target_output[0], root_build_dir),
+    ]
+  }
+
+  action(target_name) {
+    script = "//chrome/enterprise_companion/mac/pkgbuild.py"
+    args = _args
+    outputs = [ _output_pkg_path ]
+    deps = [ invoker.bundle_target ]
+
+    if (defined(invoker.postinstall_script_target)) {
+      deps += [ invoker.postinstall_script_target ]
+    }
+  }
+}

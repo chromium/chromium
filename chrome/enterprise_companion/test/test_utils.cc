@@ -23,8 +23,8 @@ int WaitForProcess(base::Process& process) {
       ->PostTaskAndReply(
           FROM_HERE, base::BindLambdaForTesting([&] {
             base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
-            process_exited = base::WaitForMultiprocessTestChildExit(
-                process, TestTimeouts::action_timeout(), &exit_code);
+            process_exited = process.WaitForExitWithTimeout(
+                TestTimeouts::action_timeout(), &exit_code);
           }),
           wait_for_process_exit_loop.QuitClosure());
   wait_for_process_exit_loop.Run();

@@ -1,0 +1,19 @@
+#!/bin/bash -p
+
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+set -eu
+
+# Parameters:
+# $1 is the top-level package path
+# $2 is the target (installation) location
+# $3 is the target (installation) volume
+# $4 is the startup disk root
+
+"${2}/Contents/MacOS/@PRODUCT_FULLNAME@" "--install"
+
+# We don't need the temporarily staged app bundle anymore.
+set +e
+rm -rf "${2}"

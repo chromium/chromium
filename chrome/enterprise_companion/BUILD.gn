@@ -32,7 +32,11 @@ process_version("branding_header") {
     "-e",
     "DEVICE_MANAGEMENT_SERVER_URL=\"$device_management_server_url\"",
     "-e",
+    "ENTERPRISE_COMPANION_APPID=\"$enterprise_companion_appid\"",
+    "-e",
     "ENTERPRISE_COMPANION_EVENT_LOGGING_URL=\"$enterprise_companion_event_logging_url\"",
+    "-e",
+    "KEYSTONE_NAME=\"$keystone_app_name\"",
     "-e",
     "MAC_BUNDLE_IDENTIFIER_STRING=\"$mac_enterprise_companion_bundle_identifier\"",
     "-e",
@@ -95,6 +99,13 @@ source_set("base") {
     "//third_party/crashpad/crashpad/client",
     "//third_party/crashpad/crashpad/handler",
   ]
+
+  if (is_posix) {
+    sources += [
+      "installer_posix.cc",
+      "installer_posix.h",
+    ]
+  }
 
   if (is_linux) {
     sources += [ "installer_linux.cc" ]
@@ -164,6 +175,30 @@ test("enterprise_companion_tests") {
   }
 }
 
+test("enterprise_companion_integration_tests") {
+  testonly = true
+
+  sources = [
+    "test/run_all_integration_tests.cc",
+    "test/test_utils.cc",
+    "test/test_utils.h",
+  ]
+  deps = [
+    ":base",
+    ":branding_header",
+    ":installer_paths",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/updater:constants_test",
+    "//testing/gtest",
+  ]
+
+  if (is_mac) {
+    sources += [ "test/integration_tests_mac.cc" ]
+    data_deps = [ "//chrome/enterprise_companion/mac:enterprise_companion_installer_unsigned" ]
+  }
+}
+
 static_library("client") {
   sources = [
     "enterprise_companion_client.cc",
@@ -189,6 +224,7 @@ static_library("installer_paths") {
   visibility = [
     ":base",
     ":client",
+    ":enterprise_companion_integration_tests",
   ]
 
   if (is_linux) {
@@ -220,9 +256,14 @@ group("all") {
 
   deps = [
     ":client",
+    ":enterprise_companion_integration_tests",
     ":enterprise_companion_tests",
   ]
   if (!is_official_build) {
     deps += [ ":enterprise_companion" ]
+
+    if (is_mac) {
+      deps += [ "//chrome/enterprise_companion/mac" ]
+    }
   }
 }
