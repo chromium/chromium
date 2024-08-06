@@ -187,6 +187,9 @@ extern const char kTabHoverCardAdditionalMaxWidthDelay[];
 BASE_DECLARE_FEATURE(kTabOrganization);
 bool IsTabOrganization();
 
+BASE_DECLARE_FEATURE(kTabstripDeclutter);
+bool IsTabstripDeclutter();
+
 BASE_DECLARE_FEATURE(kMultiTabOrganization);
 
 BASE_DECLARE_FEATURE(kTabOrganizationAppMenuItem);

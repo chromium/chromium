@@ -300,6 +300,14 @@ bool IsTabOrganization() {
   return base::FeatureList::IsEnabled(features::kTabOrganization);
 }
 
+BASE_FEATURE(kTabstripDeclutter,
+             "TabstripDeclutter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsTabstripDeclutter() {
+  return base::FeatureList::IsEnabled(features::kTabstripDeclutter);
+}
+
 BASE_FEATURE(kMultiTabOrganization,
              "MultiTabOrganization",
              base::FEATURE_DISABLED_BY_DEFAULT);
