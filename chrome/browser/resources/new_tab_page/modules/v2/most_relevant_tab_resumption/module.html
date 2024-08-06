@@ -31,6 +31,7 @@
   #tabs {
     background-color: var(--color-new-tab-page-module-item-background);
     border-radius: var(--ntp-module-item-border-radius);
+    overflow: hidden;
     margin: 8px;
   }
 
@@ -67,12 +68,14 @@
     height: 48px;
     margin-inline: 8px;
     width: 48px;
+    z-index: 1;
   }
 
   .tab-info {
     color: var(--color-new-tab-page-secondary-foreground);
     min-width: 0;
     padding-inline-end: 16px;
+    z-index: 1;
   }
 
   .tab-title,
