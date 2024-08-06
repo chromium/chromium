@@ -8,11 +8,13 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "components/language_detection/core/language_detection_model.h"
 #include "partition_alloc/pointers/raw_ref.h"
 
 namespace translate {
+BASE_DECLARE_FEATURE(kTruncateLanguageDetectionSample);
 
 // A language detection model that will use a TFLite model to determine the
 // language of the content of the web page.

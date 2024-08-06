@@ -40,6 +40,11 @@ TEST_F(LanguageDetectionModelValidTest, DetectLanguageMetrics) {
   histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.ClassifyText.HighestConfidenceLanguage",
       base::HashMetricName("en"), 1);
+  histogram_tester_.ExpectTotalCount(
+      "LanguageDetection.TFLiteModel.DetectPageLanguage.Duration", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "LanguageDetection.TFLiteModel.DetectPageLanguage.Size",
+      contents.length(), 1);
 }
 
 TEST_F(LanguageDetectionModelValidTest, ReliableLanguageDetermination) {

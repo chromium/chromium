@@ -17,6 +17,13 @@ class NLClassifier;
 
 namespace language_detection {
 
+// Even though the model only looks at the first 128 characters of the string,
+// calls to ClassifyText have a run-time proportional to the size of the
+// input. So we expect better performance if we truncate the string.
+// We use 256 to keep in line with the existing code.
+// TODO(https://crbug.com/354070625): Figure out if we can drop this to 128.
+inline constexpr size_t kModelTruncationLength = 256;
+
 #if !BUILDFLAG(IS_WIN)
 // Controls whether mmap is used to load the language detection model.
 BASE_DECLARE_FEATURE(kMmapLanguageDetectionModel);
@@ -63,8 +70,13 @@ class LanguageDetectionModel {
 
   // Runs the TFLIte language detection model on the string. This will only look
   // at the first 128 unicode characters of the string. Return a vector of
-  // scored language predictions.
-  std::vector<Prediction> Predict(const std::u16string& sampled_str) const;
+  // scored language predictions. If `truncate` is `true`, this will truncate
+  // the string before passing to the TFLite model. Even though the model only
+  // considers a prefix of the input, the runtime is proportional to the total
+  // length of the input.
+  // TODO(https://crbug.com/352636753): Remove the option and always truncate.
+  std::vector<Prediction> Predict(const std::u16string& contents,
+                                  bool truncate = true) const;
 
   // Updates the language detection model for use by memory-mapping
   // |model_file| used to detect the language of the page.

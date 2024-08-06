@@ -77,6 +77,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LanguageDetection.TFLiteModel.ClassifyText.Size.PreTruncation"
+    units="characters" expires_after="2025-01-20">
+  <owner>fergal@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The size of the input to LanguageDetectionModel::Predict before truncation
+    for passing to the TFLite detection model.
+
+    This histogram is recorded once for each invocation of the model. The model
+    may be invoked multiple times after pageload, running against samples of
+    text from the page.
+  </summary>
+</histogram>
+
 <histogram name="LanguageDetection.TFLiteModel.Create.Duration" units="ms"
     expires_after="2025-01-20">
   <owner>fergal@google.com</owner>
@@ -87,6 +101,29 @@ chromium-metrics-reviews@google.com.
     MMAP.
 
     This histogram is recorded once for each successful creation of the model.
+  </summary>
+</histogram>
+
+<histogram name="LanguageDetection.TFLiteModel.DetectPageLanguage.Duration"
+    units="ms" expires_after="2025-01-20">
+  <owner>fergal@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The total time taken to prepare the input and run the TFLite detection model
+    possibly multiple times on samples of text from the page.
+
+    This histogram is recorded once for each pageload.
+  </summary>
+</histogram>
+
+<histogram name="LanguageDetection.TFLiteModel.DetectPageLanguage.Size"
+    units="characters" expires_after="2025-01-20">
+  <owner>fergal@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The total size in chracters of the page under consideration.
+
+    This histogram is recorded once for each pageload.
   </summary>
 </histogram>
 
