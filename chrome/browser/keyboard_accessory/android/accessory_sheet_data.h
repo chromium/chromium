@@ -21,19 +21,14 @@ namespace autofill {
 // code.
 class AccessorySheetField final {
  public:
-  AccessorySheetField(std::u16string display_text,
-                      std::u16string text_to_fill,
-                      std::u16string a11y_description,
-                      std::string id,
-                      bool is_obfuscated,
-                      bool selectable);
+  class Builder;
+
   AccessorySheetField(const AccessorySheetField&);
   AccessorySheetField& operator=(const AccessorySheetField&);
   AccessorySheetField(AccessorySheetField&&);
   AccessorySheetField& operator=(AccessorySheetField&&);
 
   ~AccessorySheetField();
-
 
   const std::u16string& display_text() const { return display_text_; }
 
@@ -50,6 +45,28 @@ class AccessorySheetField final {
   bool operator==(const AccessorySheetField&) const = default;
 
  private:
+  friend class Builder;
+
+  AccessorySheetField();
+
+  void set_display_text(std::u16string display_text) {
+    display_text_ = std::move(display_text);
+  }
+
+  void set_text_to_fill(std::u16string text_to_fill) {
+    text_to_fill_ = std::move(text_to_fill);
+  }
+
+  void set_a11y_description(std::u16string a11y_description) {
+    a11y_description_ = std::move(a11y_description);
+  }
+
+  void set_id(std::string id) { id_ = std::move(id); }
+
+  void set_is_obfuscated(bool is_obfuscated) { is_obfuscated_ = is_obfuscated; }
+
+  void set_selectable(bool selectable) { selectable_ = selectable; }
+
   std::u16string display_text_;
   // The string that would be used to fill in the form, for cases when it is
   // different from |display_text_|. For example: For unmasked credit cards,
@@ -58,8 +75,40 @@ class AccessorySheetField final {
   std::u16string text_to_fill_;
   std::u16string a11y_description_;
   std::string id_;  // Optional, if needed to complete filling.
-  bool is_obfuscated_;
-  bool selectable_;
+  bool is_obfuscated_ = false;
+  bool selectable_ = false;
+};
+
+class AccessorySheetField::Builder final {
+ public:
+  Builder();
+  Builder(const Builder&) = default;
+  Builder& operator=(const Builder&) = default;
+  Builder(Builder&&) = default;
+  Builder& operator=(Builder&&) = default;
+  ~Builder();
+
+  Builder&& SetDisplayText(std::u16string display_text) &&;
+
+  Builder&& SetTextToFill(std::u16string text_to_fill) &&;
+
+  Builder&& SetA11yDescription(std::u16string a11y_description) &&;
+
+  Builder&& SetId(std::string id) &&;
+
+  Builder&& SetIsObfuscated(bool is_obfuscated) &&;
+
+  Builder&& SetSelectable(bool selectable) &&;
+
+  // This class returns the constructed AccessorySheetField object. Since this
+  // would render the builder unusable, it's required to destroy the object
+  // afterwards. So if you hold the class in a variable, invoke like this:
+  //   AccessorySheetField::Builder b;
+  //   std::move(b).Build();
+  AccessorySheetField&& Build() &&;
+
+ private:
+  AccessorySheetField accessory_sheet_field_;
 };
 
 // Represents user data to be shown on the manual fallback UI (e.g. a Profile,
@@ -107,7 +156,7 @@ std::ostream& operator<<(std::ostream& out, const UserInfo& user_info);
 
 class PlusAddressSection final {
  public:
-  PlusAddressSection(std::string origin, const std::u16string& plus_address);
+  PlusAddressSection(std::string origin, std::u16string plus_address);
 
   PlusAddressSection(const PlusAddressSection&);
   PlusAddressSection& operator=(const PlusAddressSection&);

@@ -1032,10 +1032,10 @@ TEST_F(PasswordAccessoryControllerTest, FillsUsername) {
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
-  AccessorySheetField selected_field(
-      /*display_text=*/u"Ben", /*text_to_fill=*/u"Ben",
-      /*a11y_description=*/u"Ben", /*id=*/"", /*is_obfuscated=*/false,
-      /*selectable=*/true);
+  AccessorySheetField selected_field = AccessorySheetField::Builder()
+                                           .SetDisplayText(u"Ben")
+                                           .SetSelectable(true)
+                                           .Build();
   EXPECT_CALL(*driver(),
               FillIntoFocusedField(selected_field.is_obfuscated(),
                                    Eq(selected_field.display_text())));
@@ -1059,10 +1059,11 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfNoAuthAvailable) {
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
-  AccessorySheetField selected_field(
-      /*display_text=*/u"S3cur3", /*text_to_fill=*/u"S3cur3",
-      /*a11y_description=*/u"S3cur3", /*id=*/"", /*is_obfuscated=*/true,
-      /*selectable=*/true);
+  AccessorySheetField selected_field = AccessorySheetField::Builder()
+                                           .SetDisplayText(u"S3cur3")
+                                           .SetIsObfuscated(true)
+                                           .SetSelectable(true)
+                                           .Build();
 
   auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
 
@@ -1091,10 +1092,11 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
-  AccessorySheetField selected_field(
-      /*display_text=*/u"S3cur3", /*text_to_fill=*/u"S3cur3",
-      /*a11y_description=*/u"S3cur3", /*id=*/"", /*is_obfuscated=*/true,
-      /*selectable=*/true);
+  AccessorySheetField selected_field = AccessorySheetField::Builder()
+                                           .SetDisplayText(u"S3cur3")
+                                           .SetIsObfuscated(true)
+                                           .SetSelectable(true)
+                                           .Build();
 
   auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
 
@@ -1128,10 +1130,11 @@ TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
-  AccessorySheetField selected_field(
-      /*display_text=*/u"S3cur3", /*text_to_fill=*/u"S3cur3",
-      /*a11y_description=*/u"S3cur3", /*id=*/"", /*is_obfuscated=*/true,
-      /*selectable=*/true);
+  AccessorySheetField selected_field = AccessorySheetField::Builder()
+                                           .SetDisplayText(u"S3cur3")
+                                           .SetIsObfuscated(true)
+                                           .SetSelectable(true)
+                                           .Build();
 
   auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
 
@@ -1166,10 +1169,11 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
-  AccessorySheetField selected_field(
-      /*display_text=*/u"S3cur3", /*text_to_fill=*/u"S3cur3",
-      /*a11y_description=*/u"S3cur3", /*id=*/"", /*is_obfuscated=*/true,
-      /*selectable=*/true);
+  AccessorySheetField selected_field = AccessorySheetField::Builder()
+                                           .SetDisplayText(u"S3cur3")
+                                           .SetIsObfuscated(true)
+                                           .SetSelectable(true)
+                                           .Build();
 
   auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
   auto* mock_authenticator_ptr = mock_authenticator.get();
@@ -1441,10 +1445,11 @@ TEST_F(PasswordAccessoryControllerTest,
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
-  AccessorySheetField selected_field(
-      /*display_text=*/u"S3cur3", /*text_to_fill=*/u"S3cur3",
-      /*a11y_description=*/u"S3cur3", /*id=*/"", /*is_obfuscated=*/true,
-      /*selectable=*/true);
+  AccessorySheetField selected_field = AccessorySheetField::Builder()
+                                           .SetDisplayText(u"S3cur3")
+                                           .SetIsObfuscated(true)
+                                           .SetSelectable(true)
+                                           .Build();
   EXPECT_CALL(
       show_migration_warning_callback_,
       Run(_, _,
@@ -1480,10 +1485,11 @@ TEST_F(PasswordAccessoryControllerTest, DontShowMigrationSheetlIfDisabled) {
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
-  AccessorySheetField selected_field(
-      /*display_text=*/u"S3cur3", /*text_to_fill=*/u"S3cur3",
-      /*a11y_description=*/u"S3cur3", /*id=*/"", /*is_obfuscated=*/true,
-      /*selectable=*/true);
+  AccessorySheetField selected_field = AccessorySheetField::Builder()
+                                           .SetDisplayText(u"S3cur3")
+                                           .SetIsObfuscated(true)
+                                           .SetSelectable(true)
+                                           .Build();
   EXPECT_CALL(show_migration_warning_callback_, Run).Times(0);
   controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
 }

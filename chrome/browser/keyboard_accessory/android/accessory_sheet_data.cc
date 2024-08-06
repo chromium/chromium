@@ -11,18 +11,7 @@
 
 namespace autofill {
 
-AccessorySheetField::AccessorySheetField(std::u16string display_text,
-                                         std::u16string text_to_fill,
-                                         std::u16string a11y_description,
-                                         std::string id,
-                                         bool is_obfuscated,
-                                         bool selectable)
-    : display_text_(std::move(display_text)),
-      text_to_fill_(std::move(text_to_fill)),
-      a11y_description_(std::move(a11y_description)),
-      id_(std::move(id)),
-      is_obfuscated_(is_obfuscated),
-      selectable_(selectable) {}
+AccessorySheetField::AccessorySheetField() = default;
 
 AccessorySheetField::AccessorySheetField(const AccessorySheetField&) = default;
 
@@ -44,6 +33,59 @@ std::ostream& operator<<(std::ostream& os, const AccessorySheetField& field) {
      << "is " << (field.selectable() ? "" : "not ") << "selectable, "
      << "is " << (field.is_obfuscated() ? "" : "not ") << "obfuscated)";
   return os;
+}
+
+AccessorySheetField::Builder::Builder() = default;
+
+AccessorySheetField::Builder::~Builder() = default;
+
+AccessorySheetField::Builder&& AccessorySheetField::Builder::SetDisplayText(
+    std::u16string display_text) && {
+  // Calls SetDisplayText(...)& since |this| is an lvalue.
+  accessory_sheet_field_.set_display_text(std::move(display_text));
+  return std::move(*this);
+}
+
+AccessorySheetField::Builder&& AccessorySheetField::Builder::SetTextToFill(
+    std::u16string text_to_fill) && {
+  accessory_sheet_field_.set_text_to_fill(std::move(text_to_fill));
+  return std::move(*this);
+}
+
+AccessorySheetField::Builder&& AccessorySheetField::Builder::SetA11yDescription(
+    std::u16string a11y_description) && {
+  accessory_sheet_field_.set_a11y_description(std::move(a11y_description));
+  return std::move(*this);
+}
+
+AccessorySheetField::Builder&& AccessorySheetField::Builder::SetId(
+    std::string id) && {
+  accessory_sheet_field_.set_id(std::move(id));
+  return std::move(*this);
+}
+
+AccessorySheetField::Builder&& AccessorySheetField::Builder::SetIsObfuscated(
+    bool is_obfuscated) && {
+  accessory_sheet_field_.set_is_obfuscated(is_obfuscated);
+  return std::move(*this);
+}
+
+AccessorySheetField::Builder&& AccessorySheetField::Builder::SetSelectable(
+    bool selectable) && {
+  accessory_sheet_field_.set_selectable(selectable);
+  return std::move(*this);
+}
+
+AccessorySheetField&& AccessorySheetField::Builder::Build() && {
+  if (accessory_sheet_field_.text_to_fill().empty()) {
+    accessory_sheet_field_.set_text_to_fill(
+        accessory_sheet_field_.display_text());
+  }
+  if (accessory_sheet_field_.a11y_description().empty()) {
+    accessory_sheet_field_.set_a11y_description(
+        accessory_sheet_field_.display_text());
+  }
+  return std::move(accessory_sheet_field_);
 }
 
 UserInfo::UserInfo() = default;
@@ -87,14 +129,12 @@ std::ostream& operator<<(std::ostream& os, const UserInfo& user_info) {
 }
 
 PlusAddressSection::PlusAddressSection(std::string origin,
-                                       const std::u16string& plus_address)
+                                       std::u16string plus_address)
     : origin_(std::move(origin)),
-      plus_address_(AccessorySheetField(/*display_text=*/plus_address,
-                                        /*text_to_fill=*/plus_address,
-                                        /*a11y_description=*/plus_address,
-                                        /*id=*/std::string(),
-                                        /*is_obfuscated=*/false,
-                                        /*selectable=*/true)) {}
+      plus_address_(AccessorySheetField::Builder()
+                        .SetDisplayText(std::move(plus_address))
+                        .SetSelectable(true)
+                        .Build()) {}
 
 PlusAddressSection::PlusAddressSection(const PlusAddressSection&) = default;
 
@@ -140,12 +180,10 @@ std::ostream& operator<<(std::ostream& os,
 
 PromoCodeInfo::PromoCodeInfo(std::u16string promo_code,
                              std::u16string details_text)
-    : promo_code_(AccessorySheetField(/*display_text=*/promo_code,
-                                      /*text_to_fill=*/promo_code,
-                                      /*a11y_description=*/promo_code,
-                                      /*id=*/std::string(),
-                                      /*is_password=*/false,
-                                      /*selectable=*/true)),
+    : promo_code_(AccessorySheetField::Builder()
+                      .SetDisplayText(std::move(promo_code))
+                      .SetSelectable(true)
+                      .Build()),
       details_text_(details_text) {}
 
 PromoCodeInfo::PromoCodeInfo(const PromoCodeInfo&) = default;
@@ -168,12 +206,12 @@ std::ostream& operator<<(std::ostream& os,
 IbanInfo::IbanInfo(std::u16string value,
                    std::u16string text_to_fill,
                    std::string id)
-    : value_(AccessorySheetField(/*display_text=*/value,
-                                 /*text_to_fill=*/std::move(text_to_fill),
-                                 /*a11y_description=*/value,
-                                 /*id=*/id,
-                                 /*is_obfuscated=*/false,
-                                 /*selectable=*/true)) {}
+    : value_(AccessorySheetField::Builder()
+                 .SetDisplayText(std::move(value))
+                 .SetTextToFill(std::move(text_to_fill))
+                 .SetId(std::move(id))
+                 .SetSelectable(true)
+                 .Build()) {}
 
 IbanInfo::IbanInfo(const IbanInfo&) = default;
 
@@ -391,9 +429,13 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
     bool is_obfuscated,
     bool selectable) & {
   accessory_sheet_data_.mutable_user_info_list().back().add_field(
-      AccessorySheetField(std::move(display_text), std::move(text_to_fill),
-                          std::move(a11y_description), /*id=*/std::string(),
-                          is_obfuscated, selectable));
+      AccessorySheetField::Builder()
+          .SetDisplayText(std::move(display_text))
+          .SetTextToFill(std::move(text_to_fill))
+          .SetA11yDescription(std::move(a11y_description))
+          .SetIsObfuscated(is_obfuscated)
+          .SetSelectable(selectable)
+          .Build());
   return *this;
 }
 
@@ -418,9 +460,14 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
     bool is_obfuscated,
     bool selectable) & {
   accessory_sheet_data_.mutable_user_info_list().back().add_field(
-      AccessorySheetField(std::move(display_text), std::move(text_to_fill),
-                          std::move(a11y_description), std::move(id),
-                          is_obfuscated, selectable));
+      AccessorySheetField::Builder()
+          .SetDisplayText(std::move(display_text))
+          .SetTextToFill(std::move(text_to_fill))
+          .SetA11yDescription(std::move(a11y_description))
+          .SetId(std::move(id))
+          .SetIsObfuscated(is_obfuscated)
+          .SetSelectable(selectable)
+          .Build());
   return *this;
 }
 

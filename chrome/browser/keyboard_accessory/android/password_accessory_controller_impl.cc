@@ -82,20 +82,19 @@ autofill::UserInfo TranslateCredentials(bool current_field_is_password,
                    password_manager_util::GetLoginMatchType::kExact));
 
   std::u16string username = GetDisplayUsername(credential);
-  user_info.add_field(AccessorySheetField(
-      /*display_text=*/username, /*text_to_fill=*/username,
-      /*a11y_description=*/username, /*id=*/std::string(),
-      /*is_obfuscated=*/false,
-      /*selectable=*/!credential.username().empty()));
+  user_info.add_field(AccessorySheetField::Builder()
+                          .SetDisplayText(username)
+                          .SetSelectable(!credential.username().empty())
+                          .Build());
 
-  user_info.add_field(AccessorySheetField(
-      /*display_text=*/credential.password(),
-      /*text_to_fill=*/credential.password(),
-      /*a11y_description=*/
-      l10n_util::GetStringFUTF16(
-          IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_DESCRIPTION, username),
-      /*id=*/std::string(),
-      /*is_obfuscated=*/true, /*selectable=*/current_field_is_password));
+  user_info.add_field(
+      AccessorySheetField::Builder()
+          .SetDisplayText(credential.password())
+          .SetA11yDescription(l10n_util::GetStringFUTF16(
+              IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_DESCRIPTION, username))
+          .SetIsObfuscated(true)
+          .SetSelectable(current_field_is_password)
+          .Build());
 
   return user_info;
 }
