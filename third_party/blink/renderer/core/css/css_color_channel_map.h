@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COLOR_CHANNEL_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COLOR_CHANNEL_MAP_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
