@@ -84,8 +84,8 @@ syncer::SyncData CreateRemoteSyncData(const std::string& name,
   pref_specifics->set_name(name);
   pref_specifics->set_value(serialized);
   return syncer::SyncData::CreateRemoteData(
-      specifics, syncer::ClientTagHash::FromUnhashed(
-                     syncer::ModelType::PREFERENCES, name));
+      specifics,
+      syncer::ClientTagHash::FromUnhashed(syncer::DataType::PREFERENCES, name));
 }
 
 class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {

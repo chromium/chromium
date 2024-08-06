@@ -19,7 +19,7 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/data_type_processor_metrics.h"
 #include "components/sync/model/conflict_resolution.h"

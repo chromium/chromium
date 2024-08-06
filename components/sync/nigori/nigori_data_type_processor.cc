@@ -308,8 +308,8 @@ void NigoriDataTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
   size_t memory_usage = 0;
   memory_usage += EstimateMemoryUsage(model_type_state_);
   memory_usage += entity_ ? entity_->EstimateMemoryUsage() : 0;
-  SyncRecordModelTypeMemoryHistogram(ModelType::NIGORI, memory_usage);
-  SyncRecordModelTypeCountHistogram(ModelType::NIGORI, entity_ ? 1 : 0);
+  SyncRecordDataTypeMemoryHistogram(ModelType::NIGORI, memory_usage);
+  SyncRecordDataTypeCountHistogram(ModelType::NIGORI, entity_ ? 1 : 0);
 }
 
 void NigoriDataTypeProcessor::ModelReadyToSync(

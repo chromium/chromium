@@ -432,7 +432,7 @@ bool DualLayerUserPrefStore::ShouldSetValueInAccountStore(
   auto metadata = pref_model_associator_client_->GetSyncablePrefsDatabase()
                       .GetSyncablePrefMetadata(key);
   // Checks if the pref type is active.
-  if (!active_types_.contains(metadata->model_type()) &&
+  if (!active_types_.contains(metadata->data_type()) &&
       // Checks if the pref already exists in the account store.
       // This is to handle cases where a pref might pre-exist before sync is
       // initialized and the type is marked as active.
@@ -468,27 +468,27 @@ bool DualLayerUserPrefStore::ShouldGetValueFromAccountStore(
   return true;
 }
 
-void DualLayerUserPrefStore::EnableType(syncer::ModelType model_type) {
-  CHECK(model_type == syncer::PREFERENCES ||
-        model_type == syncer::PRIORITY_PREFERENCES
+void DualLayerUserPrefStore::EnableType(syncer::DataType data_type) {
+  CHECK(data_type == syncer::PREFERENCES ||
+        data_type == syncer::PRIORITY_PREFERENCES
 #if BUILDFLAG(IS_CHROMEOS)
-        || model_type == syncer::OS_PREFERENCES ||
-        model_type == syncer::OS_PRIORITY_PREFERENCES
+        || data_type == syncer::OS_PREFERENCES ||
+        data_type == syncer::OS_PRIORITY_PREFERENCES
 #endif
   );
-  active_types_.insert(model_type);
+  active_types_.insert(data_type);
 }
 
 void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
-    syncer::ModelType model_type) {
-  CHECK(model_type == syncer::PREFERENCES ||
-        model_type == syncer::PRIORITY_PREFERENCES
+    syncer::DataType data_type) {
+  CHECK(data_type == syncer::PREFERENCES ||
+        data_type == syncer::PRIORITY_PREFERENCES
 #if BUILDFLAG(IS_CHROMEOS)
-        || model_type == syncer::OS_PREFERENCES ||
-        model_type == syncer::OS_PRIORITY_PREFERENCES
+        || data_type == syncer::OS_PREFERENCES ||
+        data_type == syncer::OS_PRIORITY_PREFERENCES
 #endif
   );
-  active_types_.erase(model_type);
+  active_types_.erase(data_type);
 
   if (!pref_model_associator_client_) {
     // No pref is treated as syncable in this case. No need to clear the account
@@ -502,7 +502,7 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
         pref_model_associator_client_->GetSyncablePrefsDatabase()
             .GetSyncablePrefMetadata(pref_name);
     CHECK(metadata.has_value());
-    if (metadata->model_type() != model_type) {
+    if (metadata->data_type() != data_type) {
       continue;
     }
     const base::Value* value = nullptr;
@@ -678,7 +678,7 @@ std::vector<std::string> DualLayerUserPrefStore::GetPrefNamesInAccountStore()
                                 auto& recurse_and_insert_ref) -> void {
     // Checks if `key` is a pref name using syncable pref database. This is
     // different from ShouldSetValueInAccountStore() which checks whether or not
-    // a pref should synced right now based on enabled ModelTypes.
+    // a pref should synced right now based on enabled DataTypes.
     if (pref_model_associator_client_->GetSyncablePrefsDatabase()
             .IsPreferenceSyncable(key)) {
       keys.push_back(key);
@@ -696,8 +696,8 @@ std::vector<std::string> DualLayerUserPrefStore::GetPrefNamesInAccountStore()
   return keys;
 }
 
-base::flat_set<syncer::ModelType>
-DualLayerUserPrefStore::GetActiveTypesForTest() const {
+base::flat_set<syncer::DataType> DualLayerUserPrefStore::GetActiveTypesForTest()
+    const {
   return active_types_;
 }
 

@@ -233,7 +233,7 @@ void PrefServiceSyncable::RemoveObserver(
 }
 
 syncer::SyncableService* PrefServiceSyncable::GetSyncableService(
-    const syncer::ModelType& type) {
+    const syncer::DataType& type) {
   switch (type) {
     case syncer::PREFERENCES:
       return &pref_sync_associator_;
@@ -246,7 +246,7 @@ syncer::SyncableService* PrefServiceSyncable::GetSyncableService(
       return &os_priority_pref_sync_associator_;
 #endif
     default:
-      NOTREACHED_IN_MIGRATION() << "invalid model type: " << type;
+      NOTREACHED_IN_MIGRATION() << "invalid data type: " << type;
       return nullptr;
   }
 }

@@ -87,7 +87,7 @@ class BookmarkSyncService : public KeyedService {
   std::unique_ptr<BookmarkModelView> bookmark_model_view_;
   // BookmarkDataTypeProcessor handles communications between sync engine and
   // BookmarkModel/HistoryService.
-  BookmarkDataTypeProcessor bookmark_model_type_processor_;
+  BookmarkDataTypeProcessor bookmark_data_type_processor_;
   bool is_tracking_metadata_for_testing_ = false;
 };
 

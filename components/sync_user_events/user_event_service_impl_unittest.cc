@@ -9,7 +9,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"

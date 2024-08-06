@@ -28,7 +28,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -192,7 +192,7 @@ DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
       SpecificsToSharingInfo(specifics),
       SpecificsToPhoneAsASecurityKeyInfo(specifics),
       specifics.invalidation_fields().instance_id_token(),
-      GetModelTypeSetFromSpecificsFieldNumberList(
+      GetDataTypeSetFromSpecificsFieldNumberList(
           specifics.invalidation_fields().interested_data_type_ids()),
       SpecificsToFloatingWorkspaceLastSigninTime(specifics));
 }
@@ -296,9 +296,9 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
     specifics->mutable_invalidation_fields()->set_instance_id_token(
         info.fcm_registration_token());
   }
-  for (const ModelType data_type : info.interested_data_types()) {
+  for (const DataType data_type : info.interested_data_types()) {
     specifics->mutable_invalidation_fields()->add_interested_data_type_ids(
-        GetSpecificsFieldNumberFromModelType(data_type));
+        GetSpecificsFieldNumberFromDataType(data_type));
   }
 
   return specifics;
@@ -413,7 +413,7 @@ void DeviceInfoSyncBridge::RefreshLocalDeviceInfoIfNeeded() {
 }
 
 void DeviceInfoSyncBridge::SetCommittedAdditionalInterestedDataTypesCallback(
-    base::RepeatingCallback<void(const ModelTypeSet&)> callback) {
+    base::RepeatingCallback<void(const DataTypeSet&)> callback) {
   new_interested_data_types_callback_ = std::move(callback);
 }
 
@@ -893,7 +893,7 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
 
   // Initiate an additional GetUpdates request if there are new data types
   // enabled (on successful commit).
-  const ModelTypeSet new_data_types =
+  const DataTypeSet new_data_types =
       Difference(current_info->interested_data_types(),
                  previous_device_info.interested_data_types());
   if (new_interested_data_types_callback_ && !new_data_types.empty()) {

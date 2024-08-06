@@ -83,7 +83,7 @@ sync_pb::ModelTypeState GetModelTypeStateWithInitialSyncDone() {
   state.set_cache_guid(kLocalCacheGuid);
   state.set_authenticated_account_id(kAccountId);
   state.mutable_progress_marker()->set_data_type_id(
-      GetSpecificsFieldNumberFromModelType(syncer::SESSIONS));
+      GetSpecificsFieldNumberFromDataType(syncer::SESSIONS));
   return state;
 }
 

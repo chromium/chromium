@@ -57,7 +57,7 @@ DeviceInfoSyncServiceImpl::GetLocalDeviceInfoProvider() {
 
 void DeviceInfoSyncServiceImpl::
     SetCommittedAdditionalInterestedDataTypesCallback(
-        base::RepeatingCallback<void(const ModelTypeSet&)> callback) {
+        base::RepeatingCallback<void(const DataTypeSet&)> callback) {
   bridge_->SetCommittedAdditionalInterestedDataTypesCallback(
       std::move(callback));
 }

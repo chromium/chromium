@@ -23,7 +23,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -125,9 +125,8 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
     }
   }
 
-  ModelTypeSet expected_data_types =
-      GetModelTypeSetFromSpecificsFieldNumberList(
-          expected_specifics.invalidation_fields().interested_data_type_ids());
+  DataTypeSet expected_data_types = GetDataTypeSetFromSpecificsFieldNumberList(
+      expected_specifics.invalidation_fields().interested_data_type_ids());
   if (expected_data_types != arg.interested_data_types()) {
     return false;
   }
@@ -271,7 +270,7 @@ std::string SyncInvalidationsInstanceIdTokenForSuffix(int suffix) {
   return base::StringPrintf("instance id token %d", suffix);
 }
 
-ModelTypeSet SyncInvalidationsInterestedDataTypes() {
+DataTypeSet SyncInvalidationsInterestedDataTypes() {
   return {BOOKMARKS};
 }
 
@@ -320,9 +319,9 @@ DeviceInfoSpecifics CreateSpecifics(
 
   specifics.mutable_invalidation_fields()->set_instance_id_token(
       SyncInvalidationsInstanceIdTokenForSuffix(suffix));
-  for (const ModelType type : SyncInvalidationsInterestedDataTypes()) {
+  for (const DataType type : SyncInvalidationsInterestedDataTypes()) {
     specifics.mutable_invalidation_fields()->add_interested_data_type_ids(
-        GetSpecificsFieldNumberFromModelType(type));
+        GetSpecificsFieldNumberFromDataType(type));
   }
 
   return specifics;
@@ -389,7 +388,7 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
                   const std::string& full_hardware_class,
                   const DeviceInfo* device_info_restored_from_store) override {
     std::string last_fcm_registration_token;
-    ModelTypeSet last_interested_data_types;
+    DataTypeSet last_interested_data_types;
     if (device_info_restored_from_store) {
       last_fcm_registration_token =
           device_info_restored_from_store->fcm_registration_token();
@@ -469,7 +468,7 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
     fcm_registration_token_ = fcm_registration_token;
   }
 
-  void UpdateInterestedDataTypes(const ModelTypeSet& data_types) {
+  void UpdateInterestedDataTypes(const DataTypeSet& data_types) {
     interested_data_types_ = data_types;
   }
 
@@ -481,7 +480,7 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
  private:
   std::unique_ptr<DeviceInfo> local_device_info_;
   std::optional<std::string> fcm_registration_token_;
-  std::optional<ModelTypeSet> interested_data_types_;
+  std::optional<DataTypeSet> interested_data_types_;
   std::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info_;
 };  // namespace
 
@@ -709,7 +708,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
 
   int change_count_ = 0;
 
-  // In memory model type store needs to be able to post tasks.
+  // In memory data type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
 
   NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
@@ -1475,7 +1474,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
   local_device()->UpdateInterestedDataTypes({syncer::BOOKMARKS});
   EnableSyncAndMergeInitialData(SyncMode::kFull);
 
-  base::MockRepeatingCallback<void(const ModelTypeSet&)> callback;
+  base::MockRepeatingCallback<void(const DataTypeSet&)> callback;
   bridge()->SetCommittedAdditionalInterestedDataTypesCallback(callback.Get());
   local_device()->UpdateInterestedDataTypes(
       {syncer::BOOKMARKS, syncer::SESSIONS});
@@ -1485,7 +1484,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
   const std::string guid = local_device()->GetLocalDeviceInfo()->guid();
   EXPECT_CALL(*processor(), IsEntityUnsynced(guid)).WillOnce(Return(false));
 
-  EXPECT_CALL(callback, Run(ModelTypeSet({syncer::SESSIONS})));
+  EXPECT_CALL(callback, Run(DataTypeSet({syncer::SESSIONS})));
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                         EntityChangeList());
 }
@@ -1497,7 +1496,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
       {syncer::BOOKMARKS, syncer::SESSIONS});
   EnableSyncAndMergeInitialData(SyncMode::kFull);
 
-  base::MockRepeatingCallback<void(const ModelTypeSet&)> callback;
+  base::MockRepeatingCallback<void(const DataTypeSet&)> callback;
   bridge()->SetCommittedAdditionalInterestedDataTypesCallback(callback.Get());
   local_device()->UpdateInterestedDataTypes({syncer::BOOKMARKS});
 

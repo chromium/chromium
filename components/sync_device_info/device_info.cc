@@ -84,7 +84,7 @@ DeviceInfo::DeviceInfo(
     const std::optional<SharingInfo>& sharing_info,
     const std::optional<PhoneAsASecurityKeyInfo>& paask_info,
     const std::string& fcm_registration_token,
-    const ModelTypeSet& interested_data_types,
+    const DataTypeSet& interested_data_types,
     std::optional<base::Time> floating_workspace_last_signin_timestamp)
     : guid_(guid),
       client_name_(client_name),
@@ -188,7 +188,7 @@ const std::string& DeviceInfo::fcm_registration_token() const {
   return fcm_registration_token_;
 }
 
-const ModelTypeSet& DeviceInfo::interested_data_types() const {
+const DataTypeSet& DeviceInfo::interested_data_types() const {
   return interested_data_types_;
 }
 
@@ -233,7 +233,7 @@ void DeviceInfo::set_fcm_registration_token(const std::string& fcm_token) {
   fcm_registration_token_ = fcm_token;
 }
 
-void DeviceInfo::set_interested_data_types(const ModelTypeSet& data_types) {
+void DeviceInfo::set_interested_data_types(const DataTypeSet& data_types) {
   interested_data_types_ = data_types;
 }
 

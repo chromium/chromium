@@ -5,7 +5,7 @@
 #include "components/sync_device_info/fake_local_device_info_provider.h"
 
 #include "base/time/time.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_util.h"
@@ -35,7 +35,7 @@ FakeLocalDeviceInfoProvider::FakeLocalDeviceInfoProvider()
           /*sharing_info=*/std::nullopt,
           /*paask_info=*/std::nullopt,
           /*fcm_registration_token=*/std::string(),
-          /*interested_data_types=*/ModelTypeSet(),
+          /*interested_data_types=*/DataTypeSet(),
           /*floating_workspace_last_signin_timestamp=*/std::nullopt) {}
 
 FakeLocalDeviceInfoProvider::~FakeLocalDeviceInfoProvider() = default;

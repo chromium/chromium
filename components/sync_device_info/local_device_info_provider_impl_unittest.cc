@@ -8,7 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "build/chromeos_buildflags.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -70,7 +70,7 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
               GetFCMRegistrationToken,
               (),
               (const override));
-  MOCK_METHOD(std::optional<ModelTypeSet>,
+  MOCK_METHOD(std::optional<DataTypeSet>,
               GetInterestedDataTypes,
               (),
               (const override));
@@ -291,7 +291,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldPopulateInterestedDataTypes) {
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
   EXPECT_TRUE(provider_->GetLocalDeviceInfo()->interested_data_types().empty());
 
-  const ModelTypeSet kTypes = {BOOKMARKS};
+  const DataTypeSet kTypes = {BOOKMARKS};
   EXPECT_CALL(device_info_sync_client_, GetInterestedDataTypes())
       .WillRepeatedly(Return(kTypes));
 
@@ -300,7 +300,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldPopulateInterestedDataTypes) {
 
 TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
   const std::string kFCMRegistrationToken = "fcm_token";
-  const ModelTypeSet kInterestedDataTypes = {BOOKMARKS};
+  const DataTypeSet kInterestedDataTypes = {BOOKMARKS};
 
   DeviceInfo::PhoneAsASecurityKeyInfo paask_info =
       SamplePhoneAsASecurityKeyInfo();

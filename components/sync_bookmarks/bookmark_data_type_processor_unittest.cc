@@ -63,7 +63,7 @@ const char kOtherBookmarksId[] = "other_bookmarks_id";
 const char kMobileBookmarksId[] = "mobile_bookmarks_id";
 const char kBookmarksRootId[] = "root_id";
 const char kCacheGuid[] = "generated_id";
-const char kPersistentModelTypeConfigurationTimeMetricName[] =
+const char kPersistentDataTypeConfigurationTimeMetricName[] =
     "Sync.ModelTypeConfigurationTime.Persistent.BOOKMARK";
 
 struct BookmarkInfo {
@@ -393,7 +393,7 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldDoInitialMergeWithZeroBookmarks) {
   EXPECT_THAT(bookmark_model()->bookmark_bar_node()->children(), IsEmpty());
 
   histogram_tester.ExpectTotalCount(
-      kPersistentModelTypeConfigurationTimeMetricName,
+      kPersistentDataTypeConfigurationTimeMetricName,
       /*count=*/1);
 }
 
@@ -422,7 +422,7 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldDoInitialMergeWithOneBookmark) {
   EXPECT_THAT(bookmark_model()->bookmark_bar_node()->children(), SizeIs(1));
 
   histogram_tester.ExpectTotalCount(
-      kPersistentModelTypeConfigurationTimeMetricName,
+      kPersistentDataTypeConfigurationTimeMetricName,
       /*count=*/1);
 }
 
@@ -463,7 +463,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   EXPECT_THAT(bookmark_model()->bookmark_bar_node()->children(), SizeIs(1));
 
   histogram_tester.ExpectTotalCount(
-      kPersistentModelTypeConfigurationTimeMetricName,
+      kPersistentDataTypeConfigurationTimeMetricName,
       /*count=*/0);
 }
 
@@ -507,7 +507,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   EXPECT_THAT(bookmark_model()->bookmark_bar_node()->children(), IsEmpty());
 
   histogram_tester.ExpectTotalCount(
-      kPersistentModelTypeConfigurationTimeMetricName,
+      kPersistentDataTypeConfigurationTimeMetricName,
       /*count=*/0);
 }
 
@@ -544,7 +544,7 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldUpdateModelAfterRemoteCreation) {
 
   // Incremental updates to not contribute to Sync.ModelTypeConfigurationTime.
   histogram_tester.ExpectTotalCount(
-      kPersistentModelTypeConfigurationTimeMetricName,
+      kPersistentDataTypeConfigurationTimeMetricName,
       /*count=*/0);
 }
 
@@ -764,7 +764,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   EXPECT_FALSE(processor()->IsTrackingMetadata());
 }
 
-// Verifies that the model type state stored in the tracker gets
+// Verifies that the data type state stored in the tracker gets
 // updated upon handling remote updates by assigning a new encryption
 // key name.
 TEST_F(BookmarkDataTypeProcessorTest,
@@ -776,7 +776,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   // The encryption key name should be empty.
   ASSERT_TRUE(tracker->model_type_state().encryption_key_name().empty());
 
-  // Build a model type state with an encryption key name.
+  // Build a data type state with an encryption key name.
   const std::string kEncryptionKeyName = "new_encryption_key_name";
   sync_pb::ModelTypeState model_type_state(CreateModelTypeState());
   model_type_state.set_encryption_key_name(kEncryptionKeyName);
@@ -787,13 +787,13 @@ TEST_F(BookmarkDataTypeProcessorTest,
   processor()->OnUpdateReceived(model_type_state, std::move(empty_updates_list),
                                 /*gc_directive=*/std::nullopt);
 
-  // The model type state inside the tracker should have been updated, and
+  // The data type state inside the tracker should have been updated, and
   // carries the new encryption key name.
   EXPECT_THAT(tracker->model_type_state().encryption_key_name(),
               Eq(kEncryptionKeyName));
 }
 
-// Verifies that the model type state stored in the tracker gets
+// Verifies that the data type state stored in the tracker gets
 // updated upon handling remote updates by replacing new pending invalidations.
 TEST_F(BookmarkDataTypeProcessorTest,
        ShouldUpdateModelTypeStateUponHandlingInvalidations) {
@@ -811,7 +811,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
 
   processor()->StorePendingInvalidations({inv_1, inv_2});
 
-  // The model type state inside the tracker should have been updated, and
+  // The data type state inside the tracker should have been updated, and
   // carries the new invalidations.
   EXPECT_EQ(2, tracker->model_type_state().invalidations_size());
 
@@ -837,7 +837,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   // The encryption key name should be empty.
   ASSERT_TRUE(tracker->model_type_state().encryption_key_name().empty());
 
-  // Build a model type state with an encryption key name.
+  // Build a data type state with an encryption key name.
   const std::string kEncryptionKeyName = "new_encryption_key_name";
   sync_pb::ModelTypeState model_type_state(CreateModelTypeState());
   model_type_state.set_encryption_key_name(kEncryptionKeyName);
@@ -1373,7 +1373,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   // the current implementation still handles it.
   updates.push_back(CreateUpdateResponseData(
       {kBookmarksRootId, std::string(), std::string(), std::string(),
-       syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS)},
+       syncer::DataTypeToProtocolRootTag(syncer::BOOKMARKS)},
       kRandomPosition, /*response_version=*/0));
 
   // Add update for another node under the bookmarks bar.
@@ -1424,7 +1424,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   // the current implementation still handles it.
   updates.push_back(CreateUpdateResponseData(
       {kBookmarksRootId, std::string(), std::string(), std::string(),
-       syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS)},
+       syncer::DataTypeToProtocolRootTag(syncer::BOOKMARKS)},
       kRandomPosition, /*response_version=*/0));
 
   // Add update for another node under the bookmarks bar.
@@ -1482,7 +1482,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   // the current implementation still handles it.
   updates.push_back(CreateUpdateResponseData(
       {kBookmarksRootId, std::string(), std::string(), std::string(),
-       syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS)},
+       syncer::DataTypeToProtocolRootTag(syncer::BOOKMARKS)},
       kRandomPosition, /*response_version=*/0));
 
   // Add update for another node under the bookmarks bar.
@@ -1556,7 +1556,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   // the current implementation still handles it.
   updates.push_back(CreateUpdateResponseData(
       {kBookmarksRootId, std::string(), std::string(), std::string(),
-       syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS)},
+       syncer::DataTypeToProtocolRootTag(syncer::BOOKMARKS)},
       kRandomPosition, /*response_version=*/0));
 
   // Add update for another node under the bookmarks bar.

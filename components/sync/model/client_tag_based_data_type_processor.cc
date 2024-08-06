@@ -67,8 +67,8 @@ void RecordModelTypeNumUnsyncedEntitiesOnModelReady(
       num_unsynced_entities++;
     }
   }
-  SyncRecordModelTypeNumUnsyncedEntitiesOnModelReady(model_type,
-                                                     num_unsynced_entities);
+  SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(model_type,
+                                                    num_unsynced_entities);
 }
 
 // Returns true if the unique position for the `target_entity` should be reused.
@@ -897,8 +897,8 @@ void ClientTagBasedDataTypeProcessor::OnUpdateReceived(
   }
 
   if (is_initial_sync) {
-    LogModelTypeConfigurationTime(type_, activation_request_.sync_mode,
-                                  activation_request_.configuration_start_time);
+    LogDataTypeConfigurationTime(type_, activation_request_.sync_mode,
+                                 activation_request_.configuration_start_time);
   }
 
   DUMP_WILL_BE_CHECK(entity_tracker_);
@@ -1022,7 +1022,7 @@ ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
       continue;
     }
     if (update.entity.is_deleted()) {
-      SyncRecordModelTypeUpdateDropReason(
+      SyncRecordDataTypeUpdateDropReason(
           UpdateDropReason::kTombstoneInFullUpdate, type_);
       DLOG(WARNING) << "Ignoring tombstone found during initial update: "
                     << "client_tag_hash = " << client_tag_hash << " for "
@@ -1031,8 +1031,8 @@ ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
     }
 
     if (!bridge_->IsEntityDataValid(update.entity)) {
-      SyncRecordModelTypeUpdateDropReason(UpdateDropReason::kDroppedByBridge,
-                                          type_);
+      SyncRecordDataTypeUpdateDropReason(UpdateDropReason::kDroppedByBridge,
+                                         type_);
       DLOG(WARNING) << "Received entity with invalid update for "
                     << ModelTypeToDebugString(type_);
       continue;
@@ -1041,7 +1041,7 @@ ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
     if (bridge_->SupportsGetClientTag() &&
         client_tag_hash != ClientTagHash::FromUnhashed(
                                type_, bridge_->GetClientTag(update.entity))) {
-      SyncRecordModelTypeUpdateDropReason(
+      SyncRecordDataTypeUpdateDropReason(
           UpdateDropReason::kInconsistentClientTag, type_);
       DLOG(WARNING) << "Received unexpected client tag hash: "
                     << client_tag_hash << " for "
@@ -1056,7 +1056,7 @@ ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
       // keys should not be empty after IsEntityDataValid() has been implemented
       // by all bridges.
       if (storage_key.empty()) {
-        SyncRecordModelTypeUpdateDropReason(
+        SyncRecordDataTypeUpdateDropReason(
             UpdateDropReason::kCannotGenerateStorageKey, type_);
         DLOG(WARNING) << "Received entity with invalid update for "
                       << ModelTypeToDebugString(type_);
@@ -1455,11 +1455,11 @@ void ClientTagBasedDataTypeProcessor::GetTypeEntitiesCountForDebugging(
 }
 
 void ClientTagBasedDataTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
-  SyncRecordModelTypeMemoryHistogram(type_, EstimateMemoryUsage());
+  SyncRecordDataTypeMemoryHistogram(type_, EstimateMemoryUsage());
   const size_t non_tombstone_entries_count =
       entity_tracker_ == nullptr ? 0
                                  : entity_tracker_->CountNonTombstoneEntries();
-  SyncRecordModelTypeCountHistogram(type_, non_tombstone_entries_count);
+  SyncRecordDataTypeCountHistogram(type_, non_tombstone_entries_count);
 }
 
 const sync_pb::EntitySpecifics&

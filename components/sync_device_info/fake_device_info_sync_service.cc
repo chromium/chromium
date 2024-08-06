@@ -8,7 +8,7 @@ namespace syncer {
 
 FakeDeviceInfoSyncService::FakeDeviceInfoSyncService(
     bool skip_engine_connection)
-    : fake_data_type_controller_delegate_(ModelType::DEVICE_INFO) {
+    : fake_data_type_controller_delegate_(DataType::DEVICE_INFO) {
   if (skip_engine_connection) {
     fake_data_type_controller_delegate_
         .EnableSkipEngineConnectionForActivationResponse();

@@ -33,7 +33,7 @@ namespace syncer {
 
 class DeviceInfoPrefs;
 
-// Sync bridge implementation for DEVICE_INFO model type. Handles storage of
+// Sync bridge implementation for DEVICE_INFO data type. Handles storage of
 // device info and associated sync metadata, applying/merging foreign changes,
 // and allows public read access.
 class DeviceInfoSyncBridge : public DataTypeSyncBridge,
@@ -66,7 +66,7 @@ class DeviceInfoSyncBridge : public DataTypeSyncBridge,
   // for the data types which have been just enabled and subscribed for new
   // invalidations.
   void SetCommittedAdditionalInterestedDataTypesCallback(
-      base::RepeatingCallback<void(const ModelTypeSet&)> callback);
+      base::RepeatingCallback<void(const DataTypeSet&)> callback);
 
   // DataTypeSyncBridge implementation.
   void OnSyncStarting(const DataTypeActivationRequest& request) override;
@@ -208,7 +208,7 @@ class DeviceInfoSyncBridge : public DataTypeSyncBridge,
 
   // Called when a new interested data type list has been committed. Only newly
   // enabled data types will be passed. May be empty.
-  base::RepeatingCallback<void(const ModelTypeSet&)>
+  base::RepeatingCallback<void(const DataTypeSet&)>
       new_interested_data_types_callback_;
 
   const std::unique_ptr<DeviceInfoPrefs> device_info_prefs_;

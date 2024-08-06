@@ -552,8 +552,8 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
         entries_pending_decryption_.erase(update_entity->id_string());
         break;
       case DECRYPTION_PENDING: {
-        SyncRecordModelTypeUpdateDropReason(
-            UpdateDropReason::kDecryptionPending, type_);
+        SyncRecordDataTypeUpdateDropReason(UpdateDropReason::kDecryptionPending,
+                                           type_);
 
         const std::string& key_name = response_data.encryption_key_name;
         DCHECK(!key_name.empty());
@@ -570,7 +570,7 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
           DCHECK(!entries_pending_decryption_.contains(server_id) ||
                  GetEncryptionKeyName(entries_pending_decryption_[server_id]) !=
                      key_name);
-          SyncRecordModelTypeUpdateDropReason(
+          SyncRecordDataTypeUpdateDropReason(
               UpdateDropReason::kDecryptionPendingForTooLong, type_);
           break;
         }
@@ -585,8 +585,8 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
       }
       case FAILED_TO_DECRYPT:
         // Failed to decrypt the entity. Likely it is corrupt. Move on.
-        SyncRecordModelTypeUpdateDropReason(UpdateDropReason::kFailedToDecrypt,
-                                            type_);
+        SyncRecordDataTypeUpdateDropReason(UpdateDropReason::kFailedToDecrypt,
+                                           type_);
         break;
     }
   }

@@ -17,7 +17,7 @@
 #include "base/observer_list.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/value_map_pref_store.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service_observer.h"
 
 namespace syncer {
@@ -48,13 +48,13 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   DualLayerUserPrefStore(const DualLayerUserPrefStore&) = delete;
   DualLayerUserPrefStore& operator=(const DualLayerUserPrefStore&) = delete;
 
-  // Marks `model_type` as enabled for account storage. This should be called
+  // Marks `data_type` as enabled for account storage. This should be called
   // when a data type starts syncing.
-  void EnableType(syncer::ModelType model_type);
-  // Unmarks `model_type` as enabled for account storage and removes all
+  void EnableType(syncer::DataType data_type);
+  // Unmarks `data_type` as enabled for account storage and removes all
   // corresponding preference entries(belonging to this type) from account
   // storage. This should be called when a data type stops syncing.
-  void DisableTypeAndClearAccountStore(syncer::ModelType model_type);
+  void DisableTypeAndClearAccountStore(syncer::DataType data_type);
 
   // Sets value for preference `key` only in the account store. This is meant
   // for use by sync components (specifically PrefModelAssociator) to insert
@@ -112,7 +112,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
   // Return the set of active pref types.
-  base::flat_set<syncer::ModelType> GetActiveTypesForTest() const;
+  base::flat_set<syncer::DataType> GetActiveTypesForTest() const;
 
   bool IsHistorySyncEnabledForTest() const;
   void SetIsHistorySyncEnabledForTest(bool is_history_sync_enabled);
@@ -211,7 +211,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
       read_error_delegate_;
 
   // List of preference types currently syncing.
-  base::flat_set<syncer::ModelType> active_types_;
+  base::flat_set<syncer::DataType> active_types_;
 
   // Set to true while this store is setting prefs in the underlying stores.
   // Used to avoid self-notifications.

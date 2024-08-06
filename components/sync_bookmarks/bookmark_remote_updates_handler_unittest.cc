@@ -19,8 +19,8 @@
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/hash_util.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
@@ -200,9 +200,9 @@ syncer::UpdateResponseData CreateUpdateResponseData(
 
 syncer::UpdateResponseData CreateBookmarkRootUpdateData() {
   syncer::EntityData data;
-  data.id = syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS);
+  data.id = syncer::DataTypeToProtocolRootTag(syncer::BOOKMARKS);
   data.server_defined_unique_tag =
-      syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS);
+      syncer::DataTypeToProtocolRootTag(syncer::BOOKMARKS);
 
   data.specifics.mutable_bookmark();
 

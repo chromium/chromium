@@ -17,8 +17,8 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -118,7 +118,7 @@ size_t CountSyncableBookmarksFromModel(BookmarkModelView* model) {
   return count;
 }
 
-void RecordModelTypeNumUnsyncedEntitiesOnModelReadyForBookmarks(
+void RecordDataTypeNumUnsyncedEntitiesOnModelReadyForBookmarks(
     const SyncedBookmarkTracker& tracker) {
   size_t num_unsynced_entities = 0;
   for (const auto* entity : tracker.GetAllEntities()) {
@@ -126,7 +126,7 @@ void RecordModelTypeNumUnsyncedEntitiesOnModelReadyForBookmarks(
       num_unsynced_entities++;
     }
   }
-  syncer::SyncRecordModelTypeNumUnsyncedEntitiesOnModelReady(
+  syncer::SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(
       syncer::BOOKMARKS, num_unsynced_entities);
 }
 
@@ -371,7 +371,7 @@ void BookmarkDataTypeProcessor::ModelReadyToSync(
 
     if (bookmark_tracker_) {
       StartTrackingMetadata();
-      RecordModelTypeNumUnsyncedEntitiesOnModelReadyForBookmarks(
+      RecordDataTypeNumUnsyncedEntitiesOnModelReadyForBookmarks(
           *bookmark_tracker_);
     } else if (!metadata_str.empty()) {
       DLOG(WARNING)
@@ -510,7 +510,7 @@ void BookmarkDataTypeProcessor::ConnectIfReady() {
   } else {
     sync_pb::ModelTypeState model_type_state;
     model_type_state.mutable_progress_marker()->set_data_type_id(
-        GetSpecificsFieldNumberFromModelType(syncer::BOOKMARKS));
+        GetSpecificsFieldNumberFromDataType(syncer::BOOKMARKS));
     model_type_state.set_cache_guid(activation_request_.cache_guid);
     activation_context->model_type_state = model_type_state;
   }
@@ -652,9 +652,8 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
 
   bookmark_tracker_->CheckAllNodesTracked(bookmark_model_);
 
-  LogModelTypeConfigurationTime(syncer::BOOKMARKS,
-                                activation_request_.sync_mode,
-                                activation_request_.configuration_start_time);
+  LogDataTypeConfigurationTime(syncer::BOOKMARKS, activation_request_.sync_mode,
+                               activation_request_.configuration_start_time);
 
   schedule_save_closure_.Run();
   NudgeForCommitIfNeeded();
@@ -788,12 +787,12 @@ void BookmarkDataTypeProcessor::GetTypeEntitiesCountForDebugging(
 
 void BookmarkDataTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SyncRecordModelTypeMemoryHistogram(syncer::BOOKMARKS, EstimateMemoryUsage());
+  SyncRecordDataTypeMemoryHistogram(syncer::BOOKMARKS, EstimateMemoryUsage());
   if (bookmark_tracker_) {
-    SyncRecordModelTypeCountHistogram(
+    SyncRecordDataTypeCountHistogram(
         syncer::BOOKMARKS, bookmark_tracker_->TrackedBookmarksCount());
   } else {
-    SyncRecordModelTypeCountHistogram(syncer::BOOKMARKS, 0);
+    SyncRecordDataTypeCountHistogram(syncer::BOOKMARKS, 0);
   }
 }
 

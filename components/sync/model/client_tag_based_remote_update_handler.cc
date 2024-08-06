@@ -156,8 +156,8 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
   if (!data.is_deleted() && bridge_->SupportsGetClientTag() &&
       client_tag_hash !=
           ClientTagHash::FromUnhashed(type_, bridge_->GetClientTag(data))) {
-    SyncRecordModelTypeUpdateDropReason(
-        UpdateDropReason::kInconsistentClientTag, type_);
+    SyncRecordDataTypeUpdateDropReason(UpdateDropReason::kInconsistentClientTag,
+                                       type_);
     DLOG(WARNING) << "Received unexpected client tag hash: " << client_tag_hash
                   << " for " << ModelTypeToDebugString(type_);
     return nullptr;
@@ -169,7 +169,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
   // Handle corner cases first.
   if (entity == nullptr && data.is_deleted()) {
     // Local entity doesn't exist and update is tombstone.
-    SyncRecordModelTypeUpdateDropReason(
+    SyncRecordDataTypeUpdateDropReason(
         UpdateDropReason::kTombstoneForNonexistentInIncrementalUpdate, type_);
     DLOG(WARNING) << "Received remote delete for a non-existing item."
                   << " client_tag_hash: " << client_tag_hash << " for "

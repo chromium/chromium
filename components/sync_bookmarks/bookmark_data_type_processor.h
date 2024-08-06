@@ -81,7 +81,7 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
   std::string EncodeSyncMetadata() const;
 
   // It mainly decodes a BookmarkModelMetadata proto serialized in
-  // `metadata_str`, and uses it to fill in the tracker and the model type state
+  // `metadata_str`, and uses it to fill in the tracker and the data type state
   // objects. `model` must not be null and must outlive this object. It is used
   // to the retrieve the local node ids, and is stored in the processor to be
   // used for further model operations. `schedule_save_closure` is a repeating

@@ -129,7 +129,7 @@ void CommitContributionImpl::AddToCommitMessage(
           !sync_entity->specifics().password().has_unencrypted_metadata());
 
     // Record the size of the sync entity being committed.
-    syncer::SyncRecordModelTypeEntitySizeHistogram(
+    syncer::SyncRecordDataTypeEntitySizeHistogram(
         type_, commit_request->entity->is_deleted(),
         sync_entity->specifics().ByteSizeLong(), sync_entity->ByteSizeLong());
 

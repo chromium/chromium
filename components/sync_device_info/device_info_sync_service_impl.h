@@ -55,7 +55,7 @@ class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService,
   // InterestedDataTypesHandler implementation.
   void OnInterestedDataTypesChanged() override;
   void SetCommittedAdditionalInterestedDataTypesCallback(
-      base::RepeatingCallback<void(const ModelTypeSet&)> callback) override;
+      base::RepeatingCallback<void(const DataTypeSet&)> callback) override;
 
   // KeyedService overrides.
   void Shutdown() override;

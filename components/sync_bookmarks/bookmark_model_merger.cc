@@ -19,8 +19,8 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/hash_util.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -382,7 +382,7 @@ GroupedUpdates GroupValidUpdates(UpdateResponseDataList updates) {
     // Special-case the root folder to avoid recording
     // |RemoteBookmarkUpdateError::kUnsupportedPermanentFolder|.
     if (update_entity.server_defined_unique_tag ==
-        syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS)) {
+        syncer::DataTypeToProtocolRootTag(syncer::BOOKMARKS)) {
       ++num_valid_updates;
       continue;
     }

@@ -12,7 +12,7 @@
 #include "base/check.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace sync_preferences {
 
@@ -47,29 +47,29 @@ enum class MergeBehavior {
 class SyncablePrefMetadata {
  public:
   constexpr SyncablePrefMetadata(int syncable_pref_id,
-                                 syncer::ModelType model_type,
+                                 syncer::DataType data_type,
                                  PrefSensitivity pref_sensitivity,
                                  MergeBehavior merge_behavior)
       : syncable_pref_id_(syncable_pref_id),
-        model_type_(model_type),
+        data_type_(data_type),
         pref_sensitivity_(pref_sensitivity),
         merge_behaviour_(merge_behavior) {
-    CHECK(model_type_ == syncer::PREFERENCES ||
-          model_type_ == syncer::PRIORITY_PREFERENCES
+    CHECK(data_type_ == syncer::PREFERENCES ||
+          data_type_ == syncer::PRIORITY_PREFERENCES
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-          || model_type_ == syncer::OS_PREFERENCES ||
-          model_type_ == syncer::OS_PRIORITY_PREFERENCES
+          || data_type_ == syncer::OS_PREFERENCES ||
+          data_type_ == syncer::OS_PRIORITY_PREFERENCES
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
           )
-        << "Invalid type " << model_type_
+        << "Invalid type " << data_type_
         << " for syncable pref with id=" << syncable_pref_id_;
   }
 
   // Returns the unique ID corresponding to the syncable preference.
   int syncable_pref_id() const { return syncable_pref_id_; }
-  // Returns the model type of the pref, i.e. PREFERENCES, PRIORITY_PREFERENCES,
+  // Returns the data type of the pref, i.e. PREFERENCES, PRIORITY_PREFERENCES,
   // OS_PREFERENCES or OS_PRIORITY_PREFERENCES.
-  syncer::ModelType model_type() const { return model_type_; }
+  syncer::DataType data_type() const { return data_type_; }
 
   // Returns the sensitivity of the pref. It is used to determine whether the
   // pref requires history opt-in.
@@ -84,7 +84,7 @@ class SyncablePrefMetadata {
 
  private:
   int syncable_pref_id_;
-  syncer::ModelType model_type_;
+  syncer::DataType data_type_;
   PrefSensitivity pref_sensitivity_;
   MergeBehavior merge_behaviour_;
 };
