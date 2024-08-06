@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/ai/model_streaming_responder.h"
+#include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
@@ -257,7 +257,7 @@ class StreamingResponder final
 
 std::tuple<ScriptPromise<IDLString>,
            mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>>
-CreateModelStreamingStringResponder(
+CreateModelExecutionResponder(
     ScriptState* script_state,
     AbortSignal* signal,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -270,7 +270,7 @@ CreateModelStreamingStringResponder(
 
 std::tuple<ReadableStream*,
            mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>>
-CreateModelStreamingResponder(
+CreateModelExecutionStreamingResponder(
     ScriptState* script_state,
     AbortSignal* signal,
     scoped_refptr<base::SequencedTaskRunner> task_runner,

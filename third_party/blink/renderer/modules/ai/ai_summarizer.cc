@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
-#include "third_party/blink/renderer/modules/ai/model_streaming_responder.h"
+#include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace {
@@ -64,7 +64,7 @@ ScriptPromise<IDLString> AISummarizer::summarize(
     return ScriptPromise<IDLString>();
   }
 
-  auto [promise, pending_remote] = CreateModelStreamingStringResponder(
+  auto [promise, pending_remote] = CreateModelExecutionResponder(
       script_state, /*signal=*/nullptr, task_runner_,
       AIMetrics::AISessionType::kText);
   text_session_->GetRemoteTextSession()->Prompt(BuildPromptInput(input),
@@ -96,9 +96,10 @@ ReadableStream* AISummarizer::summarizeStreaming(
     return nullptr;
   }
 
-  auto [readable_stream, pending_remote] = CreateModelStreamingResponder(
-      script_state, /*signal=*/nullptr, task_runner_,
-      AIMetrics::AISessionType::kText);
+  auto [readable_stream, pending_remote] =
+      CreateModelExecutionStreamingResponder(script_state, /*signal=*/nullptr,
+                                             task_runner_,
+                                             AIMetrics::AISessionType::kText);
   text_session_->GetRemoteTextSession()->Prompt(BuildPromptInput(input),
                                                 std::move(pending_remote));
   return readable_stream;

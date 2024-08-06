@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/ai/model_streaming_responder.h"
+#include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 
 #include <optional>
 #include <tuple>
@@ -47,11 +47,11 @@ std::tuple<String, bool> ReadString(ReadableStreamDefaultReader* reader,
 
 }  // namespace
 
-TEST(CreateModelStreamingStringResponder, Simple) {
+TEST(CreateModelExecutionResponder, Simple) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
-  auto [promise, pending_remote] = CreateModelStreamingStringResponder(
+  auto [promise, pending_remote] = CreateModelExecutionResponder(
       script_state, /*signal=*/nullptr,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kText);
@@ -76,11 +76,11 @@ TEST(CreateModelStreamingStringResponder, Simple) {
   runloop.Run();
 }
 
-TEST(CreateModelStreamingStringResponder, ErrorPermissionDenied) {
+TEST(CreateModelExecutionResponder, ErrorPermissionDenied) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
-  auto [promise, pending_remote] = CreateModelStreamingStringResponder(
+  auto [promise, pending_remote] = CreateModelExecutionResponder(
       script_state, /*signal=*/nullptr,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kText);
@@ -107,12 +107,12 @@ TEST(CreateModelStreamingStringResponder, ErrorPermissionDenied) {
   runloop.Run();
 }
 
-TEST(CreateModelStreamingStringResponder, AbortWithoutResponse) {
+TEST(CreateModelExecutionResponder, AbortWithoutResponse) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   auto* controller = AbortController::Create(scope.GetScriptState());
-  auto [promise, pending_remote] = CreateModelStreamingStringResponder(
+  auto [promise, pending_remote] = CreateModelExecutionResponder(
       script_state, controller->signal(),
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kText);
@@ -138,12 +138,12 @@ TEST(CreateModelStreamingStringResponder, AbortWithoutResponse) {
   runloop.Run();
 }
 
-TEST(CreateModelStreamingStringResponder, AbortAfterResponse) {
+TEST(CreateModelExecutionResponder, AbortAfterResponse) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   auto* controller = AbortController::Create(scope.GetScriptState());
-  auto [promise, pending_remote] = CreateModelStreamingStringResponder(
+  auto [promise, pending_remote] = CreateModelExecutionResponder(
       script_state, controller->signal(),
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kText);
@@ -173,11 +173,11 @@ TEST(CreateModelStreamingStringResponder, AbortAfterResponse) {
   runloop.Run();
 }
 
-TEST(CreateModelStreamingResponder, Simple) {
+TEST(CreateModelExecutionStreamingResponder, Simple) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
-  auto [stream, pending_remote] = CreateModelStreamingResponder(
+  auto [stream, pending_remote] = CreateModelExecutionStreamingResponder(
       script_state, /*signal=*/nullptr,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kText);
@@ -207,11 +207,11 @@ TEST(CreateModelStreamingResponder, Simple) {
   runloop.Run();
 }
 
-TEST(CreateModelStreamingResponder, ErrorPermissionDenied) {
+TEST(CreateModelExecutionStreamingResponder, ErrorPermissionDenied) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
-  auto [stream, pending_remote] = CreateModelStreamingResponder(
+  auto [stream, pending_remote] = CreateModelExecutionStreamingResponder(
       script_state, /*signal=*/nullptr,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kText);
@@ -242,12 +242,12 @@ TEST(CreateModelStreamingResponder, ErrorPermissionDenied) {
   runloop.Run();
 }
 
-TEST(CreateModelStreamingResponder, AbortWithoutResponse) {
+TEST(CreateModelExecutionStreamingResponder, AbortWithoutResponse) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   auto* controller = AbortController::Create(scope.GetScriptState());
-  auto [stream, pending_remote] = CreateModelStreamingResponder(
+  auto [stream, pending_remote] = CreateModelExecutionStreamingResponder(
       script_state, controller->signal(),
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kText);
@@ -277,12 +277,12 @@ TEST(CreateModelStreamingResponder, AbortWithoutResponse) {
   runloop.Run();
 }
 
-TEST(CreateModelStreamingResponder, AbortAfterResponse) {
+TEST(CreateModelExecutionStreamingResponder, AbortAfterResponse) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   auto* controller = AbortController::Create(scope.GetScriptState());
-  auto [stream, pending_remote] = CreateModelStreamingResponder(
+  auto [stream, pending_remote] = CreateModelExecutionStreamingResponder(
       script_state, controller->signal(),
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kText);

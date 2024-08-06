@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_MODEL_STREAMING_RESPONDER_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_MODEL_STREAMING_RESPONDER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_MODEL_EXECUTION_RESPONDER_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_MODEL_EXECUTION_RESPONDER_H_
 
 #include <tuple>
 
@@ -31,7 +31,7 @@ class ScriptState;
 MODULES_EXPORT std::tuple<
     ReadableStream*,
     mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>>
-CreateModelStreamingResponder(
+CreateModelExecutionStreamingResponder(
     ScriptState* script_state,
     AbortSignal* signal,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -43,7 +43,7 @@ CreateModelStreamingResponder(
 MODULES_EXPORT std::tuple<
     ScriptPromise<IDLString>,
     mojo::PendingRemote<blink::mojom::blink::ModelStreamingResponder>>
-CreateModelStreamingStringResponder(
+CreateModelExecutionResponder(
     ScriptState* script_state,
     AbortSignal* signal,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -51,4 +51,4 @@ CreateModelStreamingStringResponder(
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_MODEL_STREAMING_RESPONDER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_MODEL_EXECUTION_RESPONDER_H_
