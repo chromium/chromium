@@ -8499,6 +8499,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"back-forward-transitions", flag_descriptions::kBackForwardTransitionsName,
      flag_descriptions::kBackForwardTransitionsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kBackForwardTransitions)},
+    {"mirror-back-forward-gestures-in-rtl",
+     flag_descriptions::kMirrorBackForwardGesturesInRTLName,
+     flag_descriptions::kMirrorBackForwardGesturesInRTLDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(ui::kMirrorBackForwardGesturesInRTL)},
 #endif
 
     {"windows-scrolling-personality",

@@ -934,7 +934,7 @@
   {
     "name": "back-forward-transitions",
     "owners": [ "liuwilliam@google.com", "chrome-seamless-core@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 133
   },
   {
     "name": "back-gesture-activity-tab-provider",
@@ -6042,6 +6042,11 @@
     "owners": ["jlebel@chromium.org", "chrome-signin-team@google.com"],
     // Used for automated testing of Gaia cookie restoration in iOS.
     "expiry_milestone": -1
+  },
+  {
+    "name": "mirror-back-forward-gestures-in-rtl",
+    "owners": ["bokan@chromium.org", "chrome-seamless-core@google.com"],
+    "expiry_milestone": 133
   },
   {
     "name": "mixed-content-autoupgrade-ios",
