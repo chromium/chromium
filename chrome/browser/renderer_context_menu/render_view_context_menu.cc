@@ -3673,7 +3673,8 @@ const policy::DlpRulesManager* RenderViewContextMenu::GetDlpRulesManager()
 }
 #endif
 
-bool RenderViewContextMenu::IsSaveAsItemAllowedByPolicy() const {
+bool RenderViewContextMenu::IsSaveAsItemAllowedByPolicy(
+    const GURL& item_url) const {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
   // Check if file-selection dialogs are forbidden by policy.
@@ -3689,7 +3690,7 @@ bool RenderViewContextMenu::IsSaveAsItemAllowedByPolicy() const {
 
   PolicyBlocklistService* service =
       PolicyBlocklistFactory::GetForBrowserContext(browser_context_);
-  if (service->GetURLBlocklistState(params_.link_url) ==
+  if (service->GetURLBlocklistState(item_url) ==
       policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
     return false;
   }
@@ -3773,7 +3774,7 @@ bool RenderViewContextMenu::IsTranslateEnabled() const {
 }
 
 bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
-  if (!IsSaveAsItemAllowedByPolicy()) {
+  if (!IsSaveAsItemAllowedByPolicy(params_.link_url)) {
     return false;
   }
 
@@ -3804,7 +3805,7 @@ bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
 }
 
 bool RenderViewContextMenu::IsSaveImageAsEnabled() const {
-  if (!IsSaveAsItemAllowedByPolicy()) {
+  if (!IsSaveAsItemAllowedByPolicy(params_.src_url)) {
     return false;
   }
 
@@ -3816,7 +3817,8 @@ bool RenderViewContextMenu::IsSaveImageAsEnabled() const {
 }
 
 bool RenderViewContextMenu::IsSaveAsEnabled() const {
-  if (!IsSaveAsItemAllowedByPolicy()) {
+  const GURL& url = params_.src_url;
+  if (!IsSaveAsItemAllowedByPolicy(url)) {
     return false;
   }
 
@@ -3824,7 +3826,6 @@ bool RenderViewContextMenu::IsSaveAsEnabled() const {
     return false;
   }
 
-  const GURL& url = params_.src_url;
   bool can_save = (params_.media_flags & ContextMenuData::kMediaCanSave) &&
                   url.is_valid() &&
                   ProfileIOData::IsHandledProtocol(url.scheme());
@@ -3849,15 +3850,20 @@ bool RenderViewContextMenu::IsSavePageEnabled() const {
     return false;
   }
 
-  if (!IsSaveAsItemAllowedByPolicy()) {
-    return false;
-  }
-
   // We save the last committed entry (which the user is looking at), as
   // opposed to any pending URL that hasn't committed yet.
   NavigationEntry* entry =
       embedder_web_contents_->GetController().GetLastCommittedEntry();
-  return content::IsSavableURL(entry ? entry->GetURL() : GURL());
+  if (!entry) {
+    return false;
+  }
+
+  GURL url = entry->GetURL();
+  if (!IsSaveAsItemAllowedByPolicy(url)) {
+    return false;
+  }
+
+  return content::IsSavableURL(url);
 }
 
 bool RenderViewContextMenu::IsPasteEnabled() const {
