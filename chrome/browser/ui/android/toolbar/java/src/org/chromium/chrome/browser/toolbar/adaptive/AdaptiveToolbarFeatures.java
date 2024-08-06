@@ -173,13 +173,13 @@ public class AdaptiveToolbarFeatures {
     }
 
     /**
+     * We guard contextual page actions behind a feature flag, since all segmentation platform
+     * powered functionalities require a feature flag.
+     *
      * @return Whether contextual page actions are enabled.
      */
     public static boolean isContextualPageActionsEnabled() {
-        // TODO(shaktisahu): These checks must match the ones when creating config. Maybe introduce
-        // a something common for android clients.
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS)
-                && isAnyContextualPageActionButtonEnabled();
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS);
     }
 
     public static boolean isAdaptiveToolbarTranslateEnabled() {
@@ -192,26 +192,12 @@ public class AdaptiveToolbarFeatures {
                 ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS);
     }
 
-    private static boolean isAnyContextualPageActionButtonEnabled() {
-        return isPriceTrackingPageActionEnabled()
-                || isReaderModePageActionEnabled()
-                || isPriceInsightsPageActionEnabled();
-    }
-
-    public static boolean isPriceTrackingPageActionEnabled() {
-        // Price tracking is now default enabled, only depending on the global CPA flag.
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS);
-    }
-
     public static boolean isPriceInsightsPageActionEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.PRICE_INSIGHTS);
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.PRICE_INSIGHTS);
     }
 
     public static boolean isReaderModePageActionEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE);
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE);
     }
 
     public static boolean isReaderModeRateLimited() {
@@ -223,15 +209,6 @@ public class AdaptiveToolbarFeatures {
 
     public static boolean isAdaptiveToolbarReadAloudEnabled(Profile profile) {
         return ReadAloudFeatures.isAllowed(profile);
-    }
-
-    /**
-     * @return Whether contextual page actions UI is enabled.
-     */
-    public static boolean isContextualPageActionUiEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS)
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "enable_ui", true);
     }
 
     /**

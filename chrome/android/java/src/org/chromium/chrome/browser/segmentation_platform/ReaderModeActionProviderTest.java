@@ -28,7 +28,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.dom_distiller.DistillerHeuristicsType;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
@@ -48,7 +47,6 @@ import java.util.concurrent.TimeoutException;
 /** Unit tests for {@link ReaderModeActionProvider} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS)
 public class ReaderModeActionProviderTest {
 
     @Mock private Tab mMockTab;

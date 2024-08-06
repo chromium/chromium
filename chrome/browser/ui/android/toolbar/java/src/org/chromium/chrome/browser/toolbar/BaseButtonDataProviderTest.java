@@ -97,7 +97,6 @@ public class BaseButtonDataProviderTest {
     @Test
     public void testButtonData_QuietVariation() {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, true);
         testValues.addFeatureFlagOverride(
                 ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, true);
         FeatureList.setTestValues(testValues);
@@ -122,7 +121,6 @@ public class BaseButtonDataProviderTest {
     @Test
     public void testButtonData_ActionChipVariation() {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, true);
         testValues.addFeatureFlagOverride(
                 ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, true);
         FeatureList.setTestValues(testValues);

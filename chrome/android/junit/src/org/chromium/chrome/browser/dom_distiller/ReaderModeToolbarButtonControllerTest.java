@@ -53,7 +53,6 @@ public class ReaderModeToolbarButtonControllerTest {
         mUserDataHost.setUserData(ReaderModeManager.USER_DATA_KEY, mMockReaderModeManager);
 
         mTestValues = new TestValues();
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, true);
         mTestValues.addFeatureFlagOverride(
                 ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE, true);
         mTestValues.addFeatureFlagOverride(

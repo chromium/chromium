@@ -55,10 +55,7 @@ import java.util.concurrent.TimeoutException;
 
 /** This class tests the behavior of the {@link ReaderModeManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-    ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE
-})
+@DisableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
 public class ReaderModeManagerTest {
     private static final GURL MOCK_DISTILLER_URL = new GURL("chrome-distiller://url");
     private static final GURL MOCK_URL = JUnitTestGURLs.GOOGLE_URL_CAT;
@@ -225,10 +222,7 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @EnableFeatures({
-        ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE
-    })
+    @EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
     public void testUI_notTriggered_contextualPageActionUiEnabled() {
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals(
@@ -245,10 +239,7 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @EnableFeatures({
-        ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE
-    })
+    @EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
     public void testUI_notTriggered_contextualPageActionUiEnabled_exceptOnCCT() {
         when(mTab.isCustomTab()).thenReturn(true);
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
@@ -263,10 +254,7 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @EnableFeatures({
-        ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE
-    })
+    @EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
     public void testUI_notTriggered_contextualPageActionUiEnabled_exceptOnIncognitoTabs() {
         when(mTab.isIncognito()).thenReturn(true);
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);

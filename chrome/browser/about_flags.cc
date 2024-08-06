@@ -714,13 +714,6 @@ const FeatureEntry::FeatureParam
         {"action_chip_with_different_color", "true"},
 };
 
-const FeatureEntry::FeatureParam kContextualPageActions_DisableUi[]{
-    {"disable_ui", "true"},
-};
-const FeatureEntry::FeatureVariation kContextualPageActionsVariations[] = {
-    {"Disable UI", kContextualPageActions_DisableUi},
-};
-
 const FeatureEntry::FeatureParam
     kContextualPageActionReaderMode_ActionChip_NotRateLimited[] = {
         {"action_chip", "true"},
@@ -5027,12 +5020,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kAdaptiveButtonInTopToolbarAddToBookmarks)},
-    {"contextual-page-actions", flag_descriptions::kContextualPageActionsName,
-     flag_descriptions::kContextualPageActionsDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         segmentation_platform::features::kContextualPageActions,
-         kContextualPageActionsVariations,
-         "ContextualPageActions")},
     {"contextual-page-actions-reader-mode",
      flag_descriptions::kContextualPageActionsReaderModeName,
      flag_descriptions::kContextualPageActionsReaderModeDescription, kOsAndroid,
