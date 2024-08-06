@@ -60,7 +60,7 @@ FailedCommitResponseData BuildFailedCommitResponseData(
 }  // namespace
 
 CommitContributionImpl::CommitContributionImpl(
-    ModelType type,
+    DataType type,
     const sync_pb::DataTypeContext& context,
     CommitRequestDataList commit_requests,
     base::OnceCallback<void(const CommitResponseDataList&,
@@ -229,7 +229,7 @@ size_t CommitContributionImpl::GetNumEntries() const {
 
 // static
 void CommitContributionImpl::PopulateCommitProto(
-    ModelType type,
+    DataType type,
     const CommitRequestData& commit_entity,
     sync_pb::SyncEntity* commit_proto) {
   const EntityData& entity_data = *commit_entity.entity;

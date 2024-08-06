@@ -14,15 +14,15 @@ const char kEntityChangeHistogramPrefix[] = "Sync.ModelTypeEntityChange3.";
 
 }  // namespace
 
-void RecordEntityChangeMetrics(ModelType type, ModelTypeEntityChange change) {
+void RecordEntityChangeMetrics(DataType type, ModelTypeEntityChange change) {
   std::string histogram_name = std::string(kEntityChangeHistogramPrefix) +
-                               ModelTypeToHistogramSuffix(type);
+                               DataTypeToHistogramSuffix(type);
   base::UmaHistogramEnumeration(histogram_name, change);
 }
 
-std::string GetEntityChangeHistogramNameForTest(ModelType type) {
+std::string GetEntityChangeHistogramNameForTest(DataType type) {
   return std::string(kEntityChangeHistogramPrefix) +
-         ModelTypeToHistogramSuffix(type);
+         DataTypeToHistogramSuffix(type);
 }
 
 }  // namespace syncer

@@ -66,31 +66,31 @@ ClientToServerMessage DefaultGetUpdatesRequest() {
 
 // Builds a ClientToServerResponse with some data type ids, including
 // invalid ones.  GetTypesToMigrate() should return only the valid
-// model types.
+// data types.
 TEST(SyncerProtoUtil, GetTypesToMigrate) {
   sync_pb::ClientToServerResponse response;
   response.add_migrated_data_type_id(
-      GetSpecificsFieldNumberFromModelType(BOOKMARKS));
+      GetSpecificsFieldNumberFromDataType(BOOKMARKS));
   response.add_migrated_data_type_id(
-      GetSpecificsFieldNumberFromModelType(HISTORY_DELETE_DIRECTIVES));
+      GetSpecificsFieldNumberFromDataType(HISTORY_DELETE_DIRECTIVES));
   response.add_migrated_data_type_id(-1);
-  EXPECT_EQ(ModelTypeSet({BOOKMARKS, HISTORY_DELETE_DIRECTIVES}),
+  EXPECT_EQ(DataTypeSet({BOOKMARKS, HISTORY_DELETE_DIRECTIVES}),
             GetTypesToMigrate(response));
 }
 
 // Builds a ClientToServerResponse_Error with some error data type
 // ids, including invalid ones.  ConvertErrorPBToSyncProtocolError() should
-// return a SyncProtocolError with only the valid model types.
+// return a SyncProtocolError with only the valid data types.
 TEST(SyncerProtoUtil, ConvertErrorPBToSyncProtocolError) {
   sync_pb::ClientToServerResponse_Error error_pb;
   error_pb.set_error_type(sync_pb::SyncEnums::THROTTLED);
   error_pb.add_error_data_type_ids(
-      GetSpecificsFieldNumberFromModelType(BOOKMARKS));
+      GetSpecificsFieldNumberFromDataType(BOOKMARKS));
   error_pb.add_error_data_type_ids(
-      GetSpecificsFieldNumberFromModelType(HISTORY_DELETE_DIRECTIVES));
+      GetSpecificsFieldNumberFromDataType(HISTORY_DELETE_DIRECTIVES));
   error_pb.add_error_data_type_ids(-1);
   SyncProtocolError error = ConvertErrorPBToSyncProtocolError(error_pb);
-  EXPECT_EQ(ModelTypeSet({BOOKMARKS, HISTORY_DELETE_DIRECTIVES}),
+  EXPECT_EQ(DataTypeSet({BOOKMARKS, HISTORY_DELETE_DIRECTIVES}),
             error.error_data_types);
 }
 
@@ -277,7 +277,7 @@ TEST_F(SyncerProtoUtilTest, ShouldHandleGetUpdatesRetryDelay) {
   SyncCycle cycle(&context, &mock_sync_scheduler);
 
   ClientToServerResponse response;
-  ModelTypeSet partial_failure_data_types;
+  DataTypeSet partial_failure_data_types;
   SyncerError error = SyncerProtoUtil::PostClientToServerMessage(
       DefaultGetUpdatesRequest(), &response, &cycle,
       &partial_failure_data_types);
@@ -308,7 +308,7 @@ TEST_F(SyncerProtoUtilTest, ShouldIgnoreGetUpdatesRetryDelay) {
   SyncCycle cycle(&context, &mock_sync_scheduler);
 
   ClientToServerResponse response;
-  ModelTypeSet partial_failure_data_types;
+  DataTypeSet partial_failure_data_types;
   SyncerError error = SyncerProtoUtil::PostClientToServerMessage(
       DefaultGetUpdatesRequest(), &response, &cycle,
       &partial_failure_data_types);

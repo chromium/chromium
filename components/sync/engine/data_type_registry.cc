@@ -35,7 +35,7 @@ DataTypeRegistry::~DataTypeRegistry() {
 }
 
 void DataTypeRegistry::ConnectDataType(
-    ModelType type,
+    DataType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {
   DCHECK(ProtocolTypes().Has(type));
   DCHECK(update_handler_map_.find(type) == update_handler_map_.end());
@@ -45,7 +45,7 @@ void DataTypeRegistry::ConnectDataType(
   DCHECK(activation_response->type_processor);
 
   DVLOG(1) << "Enabling an off-thread sync type: "
-           << ModelTypeToDebugString(type);
+           << DataTypeToDebugString(type);
 
   auto worker = std::make_unique<DataTypeWorker>(
       type, activation_response->model_type_state,
@@ -63,14 +63,14 @@ void DataTypeRegistry::ConnectDataType(
   worker_ptr->ConnectSync(std::move(activation_response->type_processor));
 }
 
-void DataTypeRegistry::DisconnectDataType(ModelType type) {
+void DataTypeRegistry::DisconnectDataType(DataType type) {
   if (update_handler_map_.count(type) == 0) {
     // Type not connected. Simply ignore.
     return;
   }
 
   DVLOG(1) << "Disabling an off-thread sync type: "
-           << ModelTypeToDebugString(type);
+           << DataTypeToDebugString(type);
 
   DCHECK(ProtocolTypes().Has(type));
   DCHECK(update_handler_map_.find(type) != update_handler_map_.end());
@@ -84,7 +84,7 @@ void DataTypeRegistry::DisconnectDataType(ModelType type) {
 
   auto iter = connected_data_type_workers_.begin();
   while (iter != connected_data_type_workers_.end()) {
-    if ((*iter)->GetModelType() == type) {
+    if ((*iter)->GetDataType() == type) {
       iter = connected_data_type_workers_.erase(iter);
     } else {
       ++iter;
@@ -92,17 +92,17 @@ void DataTypeRegistry::DisconnectDataType(ModelType type) {
   }
 }
 
-ModelTypeSet DataTypeRegistry::GetConnectedTypes() const {
-  ModelTypeSet types;
+DataTypeSet DataTypeRegistry::GetConnectedTypes() const {
+  DataTypeSet types;
   for (const std::unique_ptr<DataTypeWorker>& worker :
        connected_data_type_workers_) {
-    types.Put(worker->GetModelType());
+    types.Put(worker->GetDataType());
   }
   return types;
 }
 
-ModelTypeSet DataTypeRegistry::GetInitialSyncEndedTypes() const {
-  ModelTypeSet result;
+DataTypeSet DataTypeRegistry::GetInitialSyncEndedTypes() const {
+  DataTypeSet result;
   for (const auto& [type, update_handler] : update_handler_map_) {
     if (update_handler->IsInitialSyncEnded())
       result.Put(type);
@@ -110,12 +110,12 @@ ModelTypeSet DataTypeRegistry::GetInitialSyncEndedTypes() const {
   return result;
 }
 
-const UpdateHandler* DataTypeRegistry::GetUpdateHandler(ModelType type) const {
+const UpdateHandler* DataTypeRegistry::GetUpdateHandler(DataType type) const {
   auto it = update_handler_map_.find(type);
   return it == update_handler_map_.end() ? nullptr : it->second;
 }
 
-UpdateHandler* DataTypeRegistry::GetMutableUpdateHandler(ModelType type) {
+UpdateHandler* DataTypeRegistry::GetMutableUpdateHandler(DataType type) {
   auto it = update_handler_map_.find(type);
   return it == update_handler_map_.end() ? nullptr : it->second;
 }
@@ -132,19 +132,19 @@ KeystoreKeysHandler* DataTypeRegistry::keystore_keys_handler() {
   return sync_encryption_handler_->GetKeystoreKeysHandler();
 }
 
-ModelTypeSet DataTypeRegistry::GetTypesWithUnsyncedData() const {
-  ModelTypeSet types;
+DataTypeSet DataTypeRegistry::GetTypesWithUnsyncedData() const {
+  DataTypeSet types;
   for (const std::unique_ptr<DataTypeWorker>& worker :
        connected_data_type_workers_) {
     if (worker->HasLocalChanges()) {
-      types.Put(worker->GetModelType());
+      types.Put(worker->GetDataType());
     }
   }
   return types;
 }
 
 bool DataTypeRegistry::HasUnsyncedItems() const {
-  // For model type workers, we ask them individually.
+  // For data type workers, we ask them individually.
   for (const std::unique_ptr<DataTypeWorker>& worker :
        connected_data_type_workers_) {
     if (worker->HasLocalChanges()) {
@@ -174,13 +174,13 @@ void DataTypeRegistry::OnTrustedVaultKeyRequired() {}
 
 void DataTypeRegistry::OnTrustedVaultKeyAccepted() {}
 
-void DataTypeRegistry::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
-                                                bool encrypt_everything) {
+void DataTypeRegistry::OnEncryptedTypesChanged(DataTypeSet encrypted_types,
+                                               bool encrypt_everything) {
   // This does NOT support disabling encryption without reconnecting the
   // type, i.e. recreating its DataTypeWorker.
   for (const std::unique_ptr<DataTypeWorker>& worker :
        connected_data_type_workers_) {
-    if (encrypted_types.Has(worker->GetModelType())) {
+    if (encrypted_types.Has(worker->GetDataType())) {
       // No-op if the type was already encrypted.
       worker->EnableEncryption();
     }

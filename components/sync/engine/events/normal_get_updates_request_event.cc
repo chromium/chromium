@@ -24,9 +24,9 @@ NormalGetUpdatesRequestEvent::NormalGetUpdatesRequestEvent(
 
 NormalGetUpdatesRequestEvent::NormalGetUpdatesRequestEvent(
     base::Time timestamp,
-    ModelTypeSet nudged_types,
-    ModelTypeSet notified_types,
-    ModelTypeSet refresh_requested_types,
+    DataTypeSet nudged_types,
+    DataTypeSet notified_types,
+    DataTypeSet refresh_requested_types,
     bool is_retry,
     sync_pb::ClientToServerMessage request)
     : timestamp_(timestamp),
@@ -59,7 +59,7 @@ std::string NormalGetUpdatesRequestEvent::GetDetails() const {
     if (!details.empty())
       details.append("\n");
     details.append(base::StringPrintf(
-        "Nudged types: %s", ModelTypeSetToDebugString(nudged_types_).c_str()));
+        "Nudged types: %s", DataTypeSetToDebugString(nudged_types_).c_str()));
   }
 
   if (!notified_types_.empty()) {
@@ -67,7 +67,7 @@ std::string NormalGetUpdatesRequestEvent::GetDetails() const {
       details.append("\n");
     details.append(
         base::StringPrintf("Notified types: %s",
-                           ModelTypeSetToDebugString(notified_types_).c_str()));
+                           DataTypeSetToDebugString(notified_types_).c_str()));
   }
 
   if (!refresh_requested_types_.empty()) {
@@ -75,7 +75,7 @@ std::string NormalGetUpdatesRequestEvent::GetDetails() const {
       details.append("\n");
     details.append(base::StringPrintf(
         "Refresh requested types: %s",
-        ModelTypeSetToDebugString(refresh_requested_types_).c_str()));
+        DataTypeSetToDebugString(refresh_requested_types_).c_str()));
   }
 
   if (is_retry_) {

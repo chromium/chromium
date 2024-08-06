@@ -14,8 +14,8 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/engine/net/server_connection_manager.h"
@@ -205,9 +205,9 @@ void ProcessClientCommand(const sync_pb::ClientCommand& command,
   }
 
   if (command.custom_nudge_delays_size() > 0) {
-    std::map<ModelType, base::TimeDelta> delay_map;
+    std::map<DataType, base::TimeDelta> delay_map;
     for (int i = 0; i < command.custom_nudge_delays_size(); ++i) {
-      ModelType type = GetModelTypeFromSpecificsFieldNumber(
+      DataType type = GetDataTypeFromSpecificsFieldNumber(
           command.custom_nudge_delays(i).datatype_id());
       if (type != UNSPECIFIED) {
         delay_map[type] =
@@ -239,8 +239,8 @@ void ProcessClientCommand(const sync_pb::ClientCommand& command,
 
 }  // namespace
 
-ModelTypeSet GetTypesToMigrate(const ClientToServerResponse& response) {
-  return GetModelTypeSetFromSpecificsFieldNumberList(
+DataTypeSet GetTypesToMigrate(const ClientToServerResponse& response) {
+  return GetDataTypeSetFromSpecificsFieldNumberList(
       response.migrated_data_type_id());
 }
 
@@ -252,16 +252,16 @@ SyncProtocolError ConvertErrorPBToSyncProtocolError(
           // THROTTLED and PARTIAL_FAILURE are currently the only error codes
           // using `error_data_types`. In both cases, the types are throttled.
           .error_data_types = error.error_data_type_ids_size() > 0
-                                  ? GetModelTypeSetFromSpecificsFieldNumberList(
+                                  ? GetDataTypeSetFromSpecificsFieldNumberList(
                                         error.error_data_type_ids())
-                                  : ModelTypeSet()};
+                                  : DataTypeSet()};
 }
 
 // static
 SyncerError SyncerProtoUtil::HandleClientToServerMessageResponse(
     const sync_pb::ClientToServerResponse& response,
     SyncCycle* cycle,
-    ModelTypeSet* partial_failure_data_types) {
+    DataTypeSet* partial_failure_data_types) {
   LogClientToServerResponse(response);
 
   // Remember a bag of chips if it has been sent by the server.
@@ -417,7 +417,7 @@ bool SyncerProtoUtil::PostAndProcessHeaders(ServerConnectionManager* scm,
          msg.get_updates().from_progress_marker()) {
       UMA_HISTOGRAM_ENUMERATION(
           "Sync.PostedDataTypeGetUpdatesRequest",
-          ModelTypeHistogramValue(GetModelTypeFromSpecificsFieldNumber(
+          DataTypeHistogramValue(GetDataTypeFromSpecificsFieldNumber(
               progress_marker.data_type_id())));
     }
   }
@@ -486,7 +486,7 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
     const ClientToServerMessage& msg,
     ClientToServerResponse* response,
     SyncCycle* cycle,
-    ModelTypeSet* partial_failure_data_types) {
+    DataTypeSet* partial_failure_data_types) {
   DCHECK(response);
   DCHECK(msg.has_protocol_version());
   DCHECK(msg.has_store_birthday() || !IsBirthdayRequired(msg));
@@ -524,7 +524,7 @@ bool SyncerProtoUtil::ShouldMaintainPosition(
     const sync_pb::SyncEntity& sync_entity) {
   // Maintain positions for bookmarks that are not server-defined top-level
   // folders.
-  return GetModelTypeFromSpecifics(sync_entity.specifics()) == BOOKMARKS &&
+  return GetDataTypeFromSpecifics(sync_entity.specifics()) == BOOKMARKS &&
          !(sync_entity.folder() &&
            !sync_entity.server_defined_unique_tag().empty());
 }
@@ -533,7 +533,7 @@ bool SyncerProtoUtil::ShouldMaintainPosition(
 bool SyncerProtoUtil::ShouldMaintainHierarchy(
     const sync_pb::SyncEntity& sync_entity) {
   // Maintain hierarchy for bookmarks or top-level items.
-  return GetModelTypeFromSpecifics(sync_entity.specifics()) == BOOKMARKS ||
+  return GetDataTypeFromSpecifics(sync_entity.specifics()) == BOOKMARKS ||
          sync_entity.parent_id_string() == "0";
 }
 

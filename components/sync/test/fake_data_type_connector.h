@@ -18,9 +18,9 @@ class FakeDataTypeConnector : public DataTypeConnector {
   ~FakeDataTypeConnector() override;
 
   void ConnectDataType(
-      ModelType type,
+      DataType type,
       std::unique_ptr<DataTypeActivationResponse> activation_response) override;
-  void DisconnectDataType(ModelType type) override;
+  void DisconnectDataType(DataType type) override;
 };
 
 }  // namespace syncer

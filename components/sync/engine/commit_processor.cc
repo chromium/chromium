@@ -15,9 +15,9 @@
 
 namespace syncer {
 
-using TypeToIndexMap = std::map<ModelType, size_t>;
+using TypeToIndexMap = std::map<DataType, size_t>;
 
-CommitProcessor::CommitProcessor(ModelTypeSet commit_types,
+CommitProcessor::CommitProcessor(DataTypeSet commit_types,
                                  CommitContributorMap* commit_contributor_map)
     : commit_types_(commit_types),
       commit_contributor_map_(commit_contributor_map),
@@ -84,7 +84,7 @@ CommitProcessor::GatheringPhase CommitProcessor::IncrementGatheringPhase(
   }
 }
 
-ModelTypeSet CommitProcessor::GetUserTypesForCurrentCommitPhase() const {
+DataTypeSet CommitProcessor::GetUserTypesForCurrentCommitPhase() const {
   switch (phase_) {
     case GatheringPhase::kHighPriority:
       return Intersection(commit_types_, HighPriorityUserTypes());
@@ -96,12 +96,12 @@ ModelTypeSet CommitProcessor::GetUserTypesForCurrentCommitPhase() const {
       return Intersection(commit_types_, LowPriorityUserTypes());
     case GatheringPhase::kDone:
       NOTREACHED_IN_MIGRATION();
-      return ModelTypeSet();
+      return DataTypeSet();
   }
 }
 
 size_t CommitProcessor::GatherCommitContributionsForType(
-    ModelType type,
+    DataType type,
     size_t max_entries,
     Commit::ContributionMap* contributions) {
   if (max_entries == 0) {
@@ -110,7 +110,7 @@ size_t CommitProcessor::GatherCommitContributionsForType(
   auto cm_it = commit_contributor_map_->find(type);
   if (cm_it == commit_contributor_map_->end()) {
     DLOG(ERROR) << "Could not find requested type "
-                << ModelTypeToDebugString(type) << " in contributor map.";
+                << DataTypeToDebugString(type) << " in contributor map.";
     return 0;
   }
 
@@ -128,11 +128,11 @@ size_t CommitProcessor::GatherCommitContributionsForType(
 }
 
 size_t CommitProcessor::GatherCommitContributionsForTypes(
-    ModelTypeSet types,
+    DataTypeSet types,
     size_t max_entries,
     Commit::ContributionMap* contributions) {
   size_t num_entries = 0;
-  for (ModelType type : types) {
+  for (DataType type : types) {
     num_entries += GatherCommitContributionsForType(
         type, max_entries - num_entries, contributions);
     if (num_entries >= max_entries) {

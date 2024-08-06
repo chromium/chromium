@@ -17,7 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -71,7 +71,7 @@ class MockDataTypeWorker : public CommitQueue {
   void VerifyPendingCommits(
       const std::vector<std::vector<ClientTagHash>>& tag_hashes);
 
-  // Updates the model type state to be used in all future updates from server.
+  // Updates the data type state to be used in all future updates from server.
   void UpdateModelTypeState(const sync_pb::ModelTypeState& model_type_state);
 
   const sync_pb::ModelTypeState model_type_state() const {
@@ -125,7 +125,7 @@ class MockDataTypeWorker : public CommitQueue {
   // Returns an UpdateResponseData representing an update received from
   // the server for a type root node.
   syncer::UpdateResponseData GenerateTypeRootUpdateData(
-      const ModelType& model_type);
+      const DataType& data_type);
 
   // Returns an UpdateResponseData representing an update received from
   // the server for a deleted entity.

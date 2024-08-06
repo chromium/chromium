@@ -56,7 +56,7 @@ class SyncCycleContext {
 
   ServerConnectionManager* connection_manager() { return connection_manager_; }
 
-  ModelTypeSet GetConnectedTypes() const;
+  DataTypeSet GetConnectedTypes() const;
 
   ExtensionsActivity* extensions_activity() {
     return extensions_activity_.get();

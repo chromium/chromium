@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace syncer {
 
@@ -25,9 +25,9 @@ enum class ModelTypeEntityChange {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncEntityChange)
 
-void RecordEntityChangeMetrics(ModelType type, ModelTypeEntityChange change);
+void RecordEntityChangeMetrics(DataType type, ModelTypeEntityChange change);
 
-std::string GetEntityChangeHistogramNameForTest(ModelType type);
+std::string GetEntityChangeHistogramNameForTest(DataType type);
 
 }  // namespace syncer
 

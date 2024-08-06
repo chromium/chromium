@@ -10,16 +10,16 @@ MockNudgeHandler::MockNudgeHandler() = default;
 
 MockNudgeHandler::~MockNudgeHandler() = default;
 
-void MockNudgeHandler::NudgeForInitialDownload(ModelType type) {
+void MockNudgeHandler::NudgeForInitialDownload(DataType type) {
   num_initial_nudges_++;
 }
 
-void MockNudgeHandler::NudgeForCommit(ModelType type) {
+void MockNudgeHandler::NudgeForCommit(DataType type) {
   num_commit_nudges_++;
 }
 
 void MockNudgeHandler::SetHasPendingInvalidations(
-    ModelType type,
+    DataType type,
     bool has_pending_invalidations) {}
 
 int MockNudgeHandler::GetNumInitialDownloadNudges() const {

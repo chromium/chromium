@@ -17,7 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
@@ -89,7 +89,7 @@ enum class PendingInvalidationStatus {
 // This object also has a role to play in communications in the opposite
 // direction. Sometimes the sync sequence will receive changes from the sync
 // server and deliver them here. This object will post this information back to
-// the appropriate component on the model type's sequence.
+// the appropriate component on the data type's sequence.
 //
 // This object does more than just pass along messages. It understands the sync
 // protocol, and it can make decisions when it sees conflicting messages. For
@@ -122,13 +122,13 @@ class DataTypeWorker : public UpdateHandler,
   // |cryptographer|, |nudge_handler| and |cancelation_signal| must be non-null
   // and outlive the worker. Calling this will construct the object but not
   // more, ConnectSync() must be called immediately afterwards.
-  DataTypeWorker(ModelType type,
-                  const sync_pb::ModelTypeState& initial_state,
-                  Cryptographer* cryptographer,
-                  bool encryption_enabled,
-                  PassphraseType passphrase_type,
-                  NudgeHandler* nudge_handler,
-                  CancelationSignal* cancelation_signal);
+  DataTypeWorker(DataType type,
+                 const sync_pb::ModelTypeState& initial_state,
+                 Cryptographer* cryptographer,
+                 bool encryption_enabled,
+                 PassphraseType passphrase_type,
+                 NudgeHandler* nudge_handler,
+                 CancelationSignal* cancelation_signal);
 
   DataTypeWorker(const DataTypeWorker&) = delete;
   DataTypeWorker& operator=(const DataTypeWorker&) = delete;
@@ -139,7 +139,7 @@ class DataTypeWorker : public UpdateHandler,
   // |response_data| must be not null.
   static DecryptionStatus PopulateUpdateResponseData(
       const Cryptographer& cryptographer,
-      ModelType model_type,
+      DataType data_type,
       const sync_pb::SyncEntity& update_entity,
       UpdateResponseData* response_data);
 
@@ -152,9 +152,9 @@ class DataTypeWorker : public UpdateHandler,
   // still being built.
   // Must be called immediately after the constructor, prior to using other
   // methods.
-  void ConnectSync(std::unique_ptr<DataTypeProcessor> model_type_processor);
+  void ConnectSync(std::unique_ptr<DataTypeProcessor> data_type_processor);
 
-  ModelType GetModelType() const;
+  DataType GetDataType() const;
 
   // Makes this an encrypted type, which means:
   // a) Commits will be encrypted using the cryptographer passed on
@@ -298,7 +298,7 @@ class DataTypeWorker : public UpdateHandler,
   // the definition of an unknown key, and returns their info.
   std::vector<UnknownEncryptionKeyInfo> RemoveKeysNoLongerUnknown();
 
-  // Sends copy of |pending_invalidations_| vector to |model_type_processor_|
+  // Sends copy of |pending_invalidations_| vector to |data_type_processor_|
   // to store them in storage along |model_type_state_|.
   void SendPendingInvalidationsToProcessor();
 
@@ -332,7 +332,7 @@ class DataTypeWorker : public UpdateHandler,
   // of |model_type_state_|.
   void ExtractGcDirective();
 
-  const ModelType type_;
+  const DataType type_;
 
   const raw_ptr<Cryptographer> cryptographer_;
 
@@ -347,9 +347,9 @@ class DataTypeWorker : public UpdateHandler,
   // with ConnectSync().
   // Note that in practice, this is typically a proxy object to the actual
   // processor (which lives on the model sequence).
-  std::unique_ptr<DataTypeProcessor> model_type_processor_;
+  std::unique_ptr<DataTypeProcessor> data_type_processor_;
 
-  // State that applies to the entire model type.
+  // State that applies to the entire data type.
   sync_pb::ModelTypeState model_type_state_;
 
   bool encryption_enabled_;
@@ -401,7 +401,7 @@ class DataTypeWorker : public UpdateHandler,
 // It should be used in the following manner:
 // scoped_refptr<GetLocalChangesRequest> request =
 //     base::MakeRefCounted<GetLocalChangesRequest>(cancelation_signal_);
-// model_type_processor_->GetLocalChanges(
+// data_type_processor_->GetLocalChanges(
 //     max_entries,
 //     base::BindOnce(&GetLocalChangesRequest::SetResponse, request));
 // request->WaitForResponseOrCancelation();
@@ -425,7 +425,7 @@ class GetLocalChangesRequest
   void WaitForResponseOrCancelation(CancelationSignal* cancelation_signal);
 
   // SetResponse takes ownership of |local_changes| and unblocks
-  // WaitForResponseOrCancelation call. It is called by model type through
+  // WaitForResponseOrCancelation call. It is called by data type through
   // callback passed to GetLocalChanges.
   void SetResponse(CommitRequestDataList&& local_changes);
 

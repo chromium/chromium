@@ -81,19 +81,19 @@ void SyncStatusTracker::OnRetryTimeChanged(base::Time retry_time) {
   status_changed_callback_.Run(status_);
 }
 
-void SyncStatusTracker::OnThrottledTypesChanged(ModelTypeSet throttled_types) {
+void SyncStatusTracker::OnThrottledTypesChanged(DataTypeSet throttled_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.throttled_types = throttled_types;
   status_changed_callback_.Run(status_);
 }
 
-void SyncStatusTracker::OnBackedOffTypesChanged(ModelTypeSet backed_off_types) {
+void SyncStatusTracker::OnBackedOffTypesChanged(DataTypeSet backed_off_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.backed_off_types = backed_off_types;
   status_changed_callback_.Run(status_);
 }
 
-void SyncStatusTracker::OnMigrationRequested(ModelTypeSet) {
+void SyncStatusTracker::OnMigrationRequested(DataTypeSet) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -113,7 +113,7 @@ void SyncStatusTracker::IncrementNotificationsReceived() {
   status_changed_callback_.Run(status_);
 }
 
-void SyncStatusTracker::SetEncryptedTypes(ModelTypeSet types) {
+void SyncStatusTracker::SetEncryptedTypes(DataTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_.encrypted_types = types;
   status_changed_callback_.Run(status_);
@@ -165,7 +165,7 @@ void SyncStatusTracker::SetCacheGuid(const std::string& cache_guid) {
 }
 
 void SyncStatusTracker::SetHasPendingInvalidations(
-    ModelType type,
+    DataType type,
     bool has_pending_invalidations) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (has_pending_invalidations) {

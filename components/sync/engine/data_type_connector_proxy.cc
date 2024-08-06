@@ -21,7 +21,7 @@ DataTypeConnectorProxy::DataTypeConnectorProxy(
 DataTypeConnectorProxy::~DataTypeConnectorProxy() = default;
 
 void DataTypeConnectorProxy::ConnectDataType(
-    ModelType type,
+    DataType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {
   task_runner_->PostTask(
       FROM_HERE,
@@ -29,7 +29,7 @@ void DataTypeConnectorProxy::ConnectDataType(
                      type, std::move(activation_response)));
 }
 
-void DataTypeConnectorProxy::DisconnectDataType(ModelType type) {
+void DataTypeConnectorProxy::DisconnectDataType(DataType type) {
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(&DataTypeConnector::DisconnectDataType,
                                         data_type_connector_, type));

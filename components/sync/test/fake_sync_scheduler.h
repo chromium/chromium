@@ -22,16 +22,16 @@ class FakeSyncScheduler : public SyncScheduler {
 
   void Start(Mode mode, base::Time last_poll_time) override;
   void Stop() override;
-  void ScheduleLocalNudge(ModelType type) override;
-  void ScheduleLocalRefreshRequest(ModelTypeSet types) override;
-  void ScheduleInvalidationNudge(ModelType type) override;
-  void SetHasPendingInvalidations(ModelType type,
+  void ScheduleLocalNudge(DataType type) override;
+  void ScheduleLocalRefreshRequest(DataTypeSet types) override;
+  void ScheduleInvalidationNudge(DataType type) override;
+  void SetHasPendingInvalidations(DataType type,
                                   bool has_invalidation) override;
   void ScheduleConfiguration(sync_pb::SyncEnums::GetUpdatesOrigin origin,
-                             ModelTypeSet types_to_download,
+                             DataTypeSet types_to_download,
                              base::OnceClosure ready_task) override;
 
-  void ScheduleInitialSyncNudge(ModelType model_type) override;
+  void ScheduleInitialSyncNudge(DataType data_type) override;
   void SetNotificationsEnabled(bool notifications_enabled) override;
 
   void OnCredentialsUpdated() override;
@@ -39,17 +39,17 @@ class FakeSyncScheduler : public SyncScheduler {
 
   // SyncCycle::Delegate implementation.
   void OnThrottled(const base::TimeDelta& throttle_duration) override;
-  void OnTypesThrottled(ModelTypeSet types,
+  void OnTypesThrottled(DataTypeSet types,
                         const base::TimeDelta& throttle_duration) override;
-  void OnTypesBackedOff(ModelTypeSet types) override;
+  void OnTypesBackedOff(DataTypeSet types) override;
   bool IsAnyThrottleOrBackoff() override;
   void OnReceivedPollIntervalUpdate(
       const base::TimeDelta& new_interval) override;
   void OnReceivedCustomNudgeDelays(
-      const std::map<ModelType, base::TimeDelta>& nudge_delays) override;
+      const std::map<DataType, base::TimeDelta>& nudge_delays) override;
   void OnSyncProtocolError(const SyncProtocolError& error) override;
   void OnReceivedGuRetryDelay(const base::TimeDelta& delay) override;
-  void OnReceivedMigrationRequest(ModelTypeSet types) override;
+  void OnReceivedMigrationRequest(DataTypeSet types) override;
   void OnReceivedQuotaParamsForExtensionTypes(
       std::optional<int> max_tokens,
       std::optional<base::TimeDelta> refill_interval,

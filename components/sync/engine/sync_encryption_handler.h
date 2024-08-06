@@ -11,7 +11,7 @@
 
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
@@ -76,7 +76,7 @@ class SyncEncryptionHandler {
     // Until this function is called, observers can assume that the
     // set of encrypted types is AlwaysEncryptedUserTypes() and that the
     // encrypt everything flag is false.
-    virtual void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
+    virtual void OnEncryptedTypesChanged(DataTypeSet encrypted_types,
                                          bool encrypt_everything) = 0;
 
     // The cryptographer has been updated and/or the presence of pending keys
@@ -101,7 +101,7 @@ class SyncEncryptionHandler {
 
   virtual void NotifyInitialStateToObservers() = 0;
 
-  virtual ModelTypeSet GetEncryptedTypes() = 0;
+  virtual DataTypeSet GetEncryptedTypes() = 0;
 
   virtual Cryptographer* GetCryptographer() = 0;
 

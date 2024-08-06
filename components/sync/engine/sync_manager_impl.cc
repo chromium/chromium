@@ -17,7 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/configure_reason.h"
@@ -93,27 +93,26 @@ SyncManagerImpl::~SyncManagerImpl() {
   DCHECK(!initialized_);
 }
 
-ModelTypeSet SyncManagerImpl::InitialSyncEndedTypes() {
+DataTypeSet SyncManagerImpl::InitialSyncEndedTypes() {
   DCHECK(initialized_);
   return data_type_registry_->GetInitialSyncEndedTypes();
 }
 
-ModelTypeSet SyncManagerImpl::GetConnectedTypes() {
+DataTypeSet SyncManagerImpl::GetConnectedTypes() {
   DCHECK(initialized_);
   return data_type_registry_->GetConnectedTypes();
 }
 
 void SyncManagerImpl::ConfigureSyncer(ConfigureReason reason,
-                                      ModelTypeSet to_download,
+                                      DataTypeSet to_download,
                                       SyncFeatureState sync_feature_state,
                                       base::OnceClosure ready_task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!ready_task.is_null());
   DCHECK(initialized_);
 
-  DVLOG(1) << "Configuring -"
-           << "\n\t"
-           << "types to download: " << ModelTypeSetToDebugString(to_download);
+  DVLOG(1) << "Configuring -" << "\n\t"
+           << "types to download: " << DataTypeSetToDebugString(to_download);
 
   scheduler_->Start(SyncScheduler::CONFIGURATION_MODE, base::Time());
   scheduler_->ScheduleConfiguration(GetOriginFromReason(reason), to_download,
@@ -219,7 +218,7 @@ void SyncManagerImpl::OnTrustedVaultKeyAccepted() {
   // Does nothing.
 }
 
-void SyncManagerImpl::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
+void SyncManagerImpl::OnEncryptedTypesChanged(DataTypeSet encrypted_types,
                                               bool encrypt_everything) {
   sync_status_tracker_->SetEncryptedTypes(encrypted_types);
 }
@@ -351,19 +350,19 @@ void SyncManagerImpl::OnServerConnectionEvent(
   }
 }
 
-void SyncManagerImpl::NudgeForInitialDownload(ModelType type) {
+void SyncManagerImpl::NudgeForInitialDownload(DataType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   scheduler_->ScheduleInitialSyncNudge(type);
 }
 
-void SyncManagerImpl::NudgeForCommit(ModelType type) {
+void SyncManagerImpl::NudgeForCommit(DataType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   debug_info_event_listener_.OnNudgeFromDatatype(type);
   scheduler_->ScheduleLocalNudge(type);
 }
 
 void SyncManagerImpl::SetHasPendingInvalidations(
-    ModelType type,
+    DataType type,
     bool has_pending_invalidations) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   scheduler_->SetHasPendingInvalidations(type, has_pending_invalidations);
@@ -409,11 +408,11 @@ void SyncManagerImpl::OnActionableProtocolError(
 
 void SyncManagerImpl::OnRetryTimeChanged(base::Time) {}
 
-void SyncManagerImpl::OnThrottledTypesChanged(ModelTypeSet) {}
+void SyncManagerImpl::OnThrottledTypesChanged(DataTypeSet) {}
 
-void SyncManagerImpl::OnBackedOffTypesChanged(ModelTypeSet) {}
+void SyncManagerImpl::OnBackedOffTypesChanged(DataTypeSet) {}
 
-void SyncManagerImpl::OnMigrationRequested(ModelTypeSet types) {
+void SyncManagerImpl::OnMigrationRequested(DataTypeSet types) {
   for (SyncManager::Observer& observer : observers_) {
     observer.OnMigrationRequested(types);
   }
@@ -435,7 +434,7 @@ void SyncManagerImpl::SetInvalidatorEnabled(bool invalidator_enabled) {
 }
 
 void SyncManagerImpl::OnIncomingInvalidation(
-    ModelType type,
+    DataType type,
     std::unique_ptr<SyncInvalidation> invalidation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UpdateHandler* handler = data_type_registry_->GetMutableUpdateHandler(type);
@@ -449,10 +448,10 @@ void SyncManagerImpl::OnIncomingInvalidation(
   scheduler_->ScheduleInvalidationNudge(type);
 }
 
-void SyncManagerImpl::RefreshTypes(ModelTypeSet types) {
+void SyncManagerImpl::RefreshTypes(DataTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const ModelTypeSet types_to_refresh =
+  const DataTypeSet types_to_refresh =
       Intersection(types, data_type_registry_->GetConnectedTypes());
 
   if (!types_to_refresh.empty()) {
@@ -490,7 +489,7 @@ std::string SyncManagerImpl::bag_of_chips() {
   return cycle_context_->bag_of_chips();
 }
 
-ModelTypeSet SyncManagerImpl::GetTypesWithUnsyncedData() {
+DataTypeSet SyncManagerImpl::GetTypesWithUnsyncedData() {
   return data_type_registry_->GetTypesWithUnsyncedData();
 }
 

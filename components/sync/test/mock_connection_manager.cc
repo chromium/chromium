@@ -131,9 +131,9 @@ HttpResponse MockConnectionManager::PostBuffer(const std::string& buffer_in,
       sync_pb::ClientToServerResponse_Error* response_error =
           client_to_server_response.mutable_error();
       response_error->set_error_type(SyncEnums::THROTTLED);
-      for (ModelType type : partial_failure_type_) {
+      for (DataType type : partial_failure_type_) {
         response_error->add_error_data_type_ids(
-            GetSpecificsFieldNumberFromModelType(type));
+            GetSpecificsFieldNumberFromDataType(type));
       }
       throttling_ = false;
     }
@@ -142,9 +142,9 @@ HttpResponse MockConnectionManager::PostBuffer(const std::string& buffer_in,
       sync_pb::ClientToServerResponse_Error* response_error =
           client_to_server_response.mutable_error();
       response_error->set_error_type(SyncEnums::PARTIAL_FAILURE);
-      for (ModelType type : partial_failure_type_) {
+      for (DataType type : partial_failure_type_) {
         response_error->add_error_data_type_ids(
-            GetSpecificsFieldNumberFromModelType(type));
+            GetSpecificsFieldNumberFromDataType(type));
       }
       partial_failure_ = false;
     }
@@ -233,7 +233,7 @@ sync_pb::SyncEntity* MockConnectionManager::SetNigori(
   sync_pb::SyncEntity* ent = GetUpdateResponse()->add_entries();
   ent->set_id_string(id);
   ent->set_parent_id_string("0");
-  ent->set_server_defined_unique_tag(ModelTypeToProtocolRootTag(NIGORI));
+  ent->set_server_defined_unique_tag(DataTypeToProtocolRootTag(NIGORI));
   ent->set_name("Nigori");
   ent->set_non_unique_name("Nigori");
   ent->set_version(version);
@@ -342,8 +342,8 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateFromLastCommit() {
             last_commit_response().entryresponse(0).response_type());
 
   if (last_sent_commit().entries(0).deleted()) {
-    ModelType type =
-        GetModelTypeFromSpecifics(last_sent_commit().entries(0).specifics());
+    DataType type =
+        GetDataTypeFromSpecifics(last_sent_commit().entries(0).specifics());
     AddUpdateTombstone(last_sent_commit().entries(0).id_string(), type);
   } else {
     sync_pb::SyncEntity* ent = GetUpdateResponse()->add_entries();
@@ -370,7 +370,7 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateFromLastCommit() {
 }
 
 void MockConnectionManager::AddUpdateTombstone(const std::string& id,
-                                               ModelType type) {
+                                               DataType type) {
   // Tombstones have only the ID set and fake values for the required fields.
   sync_pb::SyncEntity* ent = GetUpdateResponse()->add_entries();
   ent->set_id_string(id);
@@ -378,15 +378,14 @@ void MockConnectionManager::AddUpdateTombstone(const std::string& id,
   ent->set_name("");
   ent->set_deleted(true);
 
-  // Make sure we can still extract the ModelType from this tombstone.
+  // Make sure we can still extract the DataType from this tombstone.
   AddDefaultFieldValue(type, ent->mutable_specifics());
 }
 
 void MockConnectionManager::SetLastUpdateDeleted() {
   // Tombstones have only the ID set.  Wipe anything else.
   string id_string = GetMutableLastUpdate()->id_string();
-  ModelType type =
-      GetModelTypeFromSpecifics(GetMutableLastUpdate()->specifics());
+  DataType type = GetDataTypeFromSpecifics(GetMutableLastUpdate()->specifics());
   GetUpdateResponse()->mutable_entries()->RemoveLast();
   AddUpdateTombstone(id_string, type);
 }
@@ -457,10 +456,10 @@ bool MockConnectionManager::ProcessGetUpdates(
   sync_pb::GetUpdatesResponse* updates = &update_queue_.front();
   for (int i = 0; i < updates->entries_size(); ++i) {
     if (!updates->entries(i).deleted()) {
-      ModelType entry_type =
-          GetModelTypeFromSpecifics(updates->entries(i).specifics());
+      DataType entry_type =
+          GetDataTypeFromSpecifics(updates->entries(i).specifics());
       EXPECT_TRUE(
-          IsModelTypePresentInSpecifics(gu.from_progress_marker(), entry_type))
+          IsDataTypePresentInSpecifics(gu.from_progress_marker(), entry_type))
           << "Syncer did not request updates being provided by the test.";
     }
   }
@@ -474,7 +473,7 @@ bool MockConnectionManager::ProcessGetUpdates(
   for (int i = 0; i < gu.from_progress_marker_size(); ++i) {
     int data_type_id = gu.from_progress_marker(i).data_type_id();
     EXPECT_TRUE(expected_filter_.Has(
-        GetModelTypeFromSpecificsFieldNumber(data_type_id)));
+        GetDataTypeFromSpecificsFieldNumber(data_type_id)));
     sync_pb::DataTypeProgressMarker* new_marker =
         response->mutable_get_updates()->add_new_progress_marker();
     new_marker->set_data_type_id(data_type_id);
@@ -534,14 +533,14 @@ bool MockConnectionManager::ProcessCommit(
     const sync_pb::SyncEntity& entry = commit_message.entries(i);
     string id_string = entry.id_string();
     if (!entry.has_id_string()) {
-      const ModelType model_type = GetModelTypeFromSpecifics(entry.specifics());
+      const DataType data_type = GetDataTypeFromSpecifics(entry.specifics());
       // For commit-only types, fake having received a random ID, simply to
       // reuse the validation logic later below.
-      if (CommitOnlyTypes().Has(model_type)) {
+      if (CommitOnlyTypes().Has(data_type)) {
         id_string = base::Uuid::GenerateRandomV4().AsLowercaseString();
       } else {
         ADD_FAILURE() << " for specifics type "
-                      << ModelTypeToDebugString(model_type);
+                      << DataTypeToDebugString(data_type);
         return false;
       }
     }
@@ -633,11 +632,11 @@ MockConnectionManager::requests() const {
   return requests_;
 }
 
-bool MockConnectionManager::IsModelTypePresentInSpecifics(
+bool MockConnectionManager::IsDataTypePresentInSpecifics(
     const google::protobuf::RepeatedPtrField<sync_pb::DataTypeProgressMarker>&
         filter,
-    ModelType value) {
-  int data_type_id = GetSpecificsFieldNumberFromModelType(value);
+    DataType value) {
+  int data_type_id = GetSpecificsFieldNumberFromDataType(value);
   for (int i = 0; i < filter.size(); ++i) {
     if (filter.Get(i).data_type_id() == data_type_id) {
       return true;
@@ -650,8 +649,8 @@ sync_pb::DataTypeProgressMarker const*
 MockConnectionManager::GetProgressMarkerForType(
     const google::protobuf::RepeatedPtrField<sync_pb::DataTypeProgressMarker>&
         filter,
-    ModelType value) {
-  int data_type_id = GetSpecificsFieldNumberFromModelType(value);
+    DataType value) {
+  int data_type_id = GetSpecificsFieldNumberFromDataType(value);
   for (int i = 0; i < filter.size(); ++i) {
     if (filter.Get(i).data_type_id() == data_type_id) {
       return &(filter.Get(i));

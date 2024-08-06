@@ -35,7 +35,7 @@ SyncCycleContext::SyncCycleContext(
 
 SyncCycleContext::~SyncCycleContext() = default;
 
-ModelTypeSet SyncCycleContext::GetConnectedTypes() const {
+DataTypeSet SyncCycleContext::GetConnectedTypes() const {
   return data_type_registry_->GetConnectedTypes();
 }
 

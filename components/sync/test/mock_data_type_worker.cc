@@ -15,7 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -267,13 +267,12 @@ syncer::UpdateResponseData MockDataTypeWorker::GenerateSharedUpdateData(
 }
 
 syncer::UpdateResponseData MockDataTypeWorker::GenerateTypeRootUpdateData(
-    const ModelType& model_type) {
+    const DataType& data_type) {
   syncer::EntityData data;
-  data.id = syncer::ModelTypeToProtocolRootTag(model_type);
+  data.id = syncer::DataTypeToProtocolRootTag(data_type);
   data.legacy_parent_id = "r";
-  data.server_defined_unique_tag =
-      syncer::ModelTypeToProtocolRootTag(model_type);
-  syncer::AddDefaultFieldValue(model_type, &data.specifics);
+  data.server_defined_unique_tag = syncer::DataTypeToProtocolRootTag(data_type);
+  syncer::AddDefaultFieldValue(data_type, &data.specifics);
   // These elements should have no effect on behavior, but we set them anyway
   // so we can test they are properly copied around the system if we want to.
   data.creation_time = base::Time::UnixEpoch();

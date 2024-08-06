@@ -12,7 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_connector.h"
@@ -28,8 +28,8 @@ class SyncEncryptionHandler;
 class DataTypeWorker;
 class UpdateHandler;
 
-using UpdateHandlerMap = std::map<ModelType, UpdateHandler*>;
-using CommitContributorMap = std::map<ModelType, CommitContributor*>;
+using UpdateHandlerMap = std::map<DataType, UpdateHandler*>;
+using CommitContributorMap = std::map<DataType, CommitContributor*>;
 
 // Keeps track of the sets of active update handlers and commit contributors.
 // Lives on the sync sequence.
@@ -49,9 +49,9 @@ class DataTypeRegistry : public DataTypeConnector,
 
   // Implementation of DataTypeConnector.
   void ConnectDataType(
-      ModelType type,
+      DataType type,
       std::unique_ptr<DataTypeActivationResponse> activation_response) override;
-  void DisconnectDataType(ModelType type) override;
+  void DisconnectDataType(DataType type) override;
 
   // Implementation of SyncEncryptionHandler::Observer.
   void OnPassphraseRequired(
@@ -60,7 +60,7 @@ class DataTypeRegistry : public DataTypeConnector,
   void OnPassphraseAccepted() override;
   void OnTrustedVaultKeyRequired() override;
   void OnTrustedVaultKeyAccepted() override;
-  void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
+  void OnEncryptedTypesChanged(DataTypeSet encrypted_types,
                                bool encrypt_everything) override;
   void OnCryptographerStateChanged(Cryptographer* cryptographer,
                                    bool has_pending_keys) override;
@@ -70,16 +70,16 @@ class DataTypeRegistry : public DataTypeConnector,
   // Gets the set of connected types, which is essentially the set of types that
   // the sync engine cares about. For each of these, a worker exists to
   // propagate changes between the server and the local model's processor.
-  ModelTypeSet GetConnectedTypes() const;
+  DataTypeSet GetConnectedTypes() const;
 
   // Returns set of types for which initial set of updates was downloaded and
   // applied.
-  ModelTypeSet GetInitialSyncEndedTypes() const;
+  DataTypeSet GetInitialSyncEndedTypes() const;
 
   // Returns the update handler for |type|. If UpdateHandler of |type| doesn't
   // exist, returns nullptr.
-  const UpdateHandler* GetUpdateHandler(ModelType type) const;
-  UpdateHandler* GetMutableUpdateHandler(ModelType type);
+  const UpdateHandler* GetUpdateHandler(DataType type) const;
+  UpdateHandler* GetMutableUpdateHandler(DataType type);
 
   // Simple getters.
   UpdateHandlerMap* update_handler_map();
@@ -87,7 +87,7 @@ class DataTypeRegistry : public DataTypeConnector,
   KeystoreKeysHandler* keystore_keys_handler();
 
   // Returns types that have local changes yet to be synced to the server.
-  ModelTypeSet GetTypesWithUnsyncedData() const;
+  DataTypeSet GetTypesWithUnsyncedData() const;
 
   bool HasUnsyncedItems() const;
 

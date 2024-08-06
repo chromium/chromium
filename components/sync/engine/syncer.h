@@ -9,7 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/syncer_error.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 
@@ -87,7 +87,7 @@ class Syncer {
   // out of sync and what must be done to bring it back into sync.
   // Returns: false if an error occurred and retries should backoff, true
   // otherwise.
-  virtual bool NormalSyncShare(ModelTypeSet request_types,
+  virtual bool NormalSyncShare(DataTypeSet request_types,
                                NudgeTracker* nudge_tracker,
                                SyncCycle* cycle);
 
@@ -98,7 +98,7 @@ class Syncer {
   // download.
   // Returns: false if an error occurred and retries should backoff, true
   // otherwise.
-  virtual bool ConfigureSyncShare(const ModelTypeSet& request_types,
+  virtual bool ConfigureSyncShare(const DataTypeSet& request_types,
                                   sync_pb::SyncEnums::GetUpdatesOrigin origin,
                                   SyncCycle* cycle);
 
@@ -108,10 +108,10 @@ class Syncer {
   // in sync despite bugs or transient failures.
   // Returns: false if an error occurred and retries should backoff, true
   // otherwise.
-  virtual bool PollSyncShare(ModelTypeSet request_types, SyncCycle* cycle);
+  virtual bool PollSyncShare(DataTypeSet request_types, SyncCycle* cycle);
 
  private:
-  bool DownloadAndApplyUpdates(ModelTypeSet* request_types,
+  bool DownloadAndApplyUpdates(DataTypeSet* request_types,
                                SyncCycle* cycle,
                                const GetUpdatesDelegate& delegate);
 
@@ -119,7 +119,7 @@ class Syncer {
   // number of unsynced and ready to commit items reaches zero or an error is
   // encountered.  A request to exit early will be treated as an error and will
   // abort any blocking operations.
-  SyncerError BuildAndPostCommits(const ModelTypeSet& request_types,
+  SyncerError BuildAndPostCommits(const DataTypeSet& request_types,
                                   NudgeTracker* nudge_tracker,
                                   SyncCycle* cycle);
 

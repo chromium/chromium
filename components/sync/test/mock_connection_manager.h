@@ -17,7 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/net/server_connection_manager.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
@@ -124,7 +124,7 @@ class MockConnectionManager : public ServerConnectionManager {
   // Add a deleted item.  Deletion records typically contain no
   // additional information beyond the deletion, and no specifics.
   // The server may send the originator fields.
-  void AddUpdateTombstone(const std::string& id, ModelType type);
+  void AddUpdateTombstone(const std::string& id, DataType type);
 
   void SetLastUpdateDeleted();
   void SetLastUpdateServerTag(const std::string& tag);
@@ -201,12 +201,12 @@ class MockConnectionManager : public ServerConnectionManager {
 
   // Expect that GetUpdates will request exactly the types indicated in
   // the bitset.
-  void ExpectGetUpdatesRequestTypes(ModelTypeSet expected_filter) {
+  void ExpectGetUpdatesRequestTypes(DataTypeSet expected_filter) {
     expected_filter_ = expected_filter;
   }
 
   // Set partial failure date types.
-  void SetPartialFailureTypes(ModelTypeSet types) {
+  void SetPartialFailureTypes(DataTypeSet types) {
     partial_failure_type_ = types;
   }
 
@@ -274,17 +274,17 @@ class MockConnectionManager : public ServerConnectionManager {
   void ApplyToken();
 
   // Determine whether an progress marker array (like that sent in
-  // GetUpdates.from_progress_marker) indicates that a particular ModelType
+  // GetUpdates.from_progress_marker) indicates that a particular DataType
   // should be included.
-  bool IsModelTypePresentInSpecifics(
+  bool IsDataTypePresentInSpecifics(
       const google::protobuf::RepeatedPtrField<sync_pb::DataTypeProgressMarker>&
           filter,
-      ModelType value);
+      DataType value);
 
   sync_pb::DataTypeProgressMarker const* GetProgressMarkerForType(
       const google::protobuf::RepeatedPtrField<sync_pb::DataTypeProgressMarker>&
           filter,
-      ModelType value);
+      DataType value);
 
   // When false, we pretend to have network connectivity issues.
   bool server_reachable_ = true;
@@ -340,9 +340,9 @@ class MockConnectionManager : public ServerConnectionManager {
   std::unique_ptr<sync_pb::ClientCommand> gu_client_command_;
   std::unique_ptr<sync_pb::ClientCommand> commit_client_command_;
 
-  ModelTypeSet expected_filter_;
+  DataTypeSet expected_filter_;
 
-  ModelTypeSet partial_failure_type_;
+  DataTypeSet partial_failure_type_;
 
   int num_get_updates_requests_ = 0;
 

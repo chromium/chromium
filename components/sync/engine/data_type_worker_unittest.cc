@@ -199,10 +199,10 @@ class DataTypeWorkerTest : public ::testing::Test {
   DataTypeWorkerTest()
       : DataTypeWorkerTest(PREFERENCES, /*is_encrypted_type=*/false) {}
 
-  DataTypeWorkerTest(ModelType model_type, bool is_encrypted_type)
-      : model_type_(model_type),
+  DataTypeWorkerTest(DataType data_type, bool is_encrypted_type)
+      : data_type_(data_type),
         is_encrypted_type_(is_encrypted_type),
-        mock_server_(std::make_unique<SingleTypeMockServer>(model_type)) {}
+        mock_server_(std::make_unique<SingleTypeMockServer>(data_type)) {}
 
   ~DataTypeWorkerTest() override = default;
 
@@ -215,9 +215,9 @@ class DataTypeWorkerTest : public ::testing::Test {
   void FirstInitialize() {
     ModelTypeState initial_state;
     initial_state.mutable_progress_marker()->set_data_type_id(
-        GetSpecificsFieldNumberFromModelType(model_type_));
+        GetSpecificsFieldNumberFromDataType(data_type_));
 
-    InitializeWithState(model_type_, initial_state);
+    InitializeWithState(data_type_, initial_state);
   }
 
   // Initializes with some existing data type state. Allows us to start
@@ -225,14 +225,14 @@ class DataTypeWorkerTest : public ::testing::Test {
   void NormalInitialize() {
     ModelTypeState initial_state;
     initial_state.mutable_progress_marker()->set_data_type_id(
-        GetSpecificsFieldNumberFromModelType(model_type_));
+        GetSpecificsFieldNumberFromDataType(data_type_));
     initial_state.mutable_progress_marker()->set_token(
         "some_saved_progress_token");
 
     initial_state.set_initial_sync_state(
         sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
-    InitializeWithState(model_type_, initial_state);
+    InitializeWithState(data_type_, initial_state);
 
     nudge_handler()->ClearCounters();
   }
@@ -240,7 +240,7 @@ class DataTypeWorkerTest : public ::testing::Test {
   void InitializeWithInvalidations() {
     ModelTypeState initial_state;
     initial_state.mutable_progress_marker()->set_data_type_id(
-        GetSpecificsFieldNumberFromModelType(model_type_));
+        GetSpecificsFieldNumberFromDataType(data_type_));
     initial_state.mutable_progress_marker()->set_token(
         "some_saved_progress_token");
 
@@ -253,24 +253,24 @@ class DataTypeWorkerTest : public ::testing::Test {
     initial_state.set_initial_sync_state(
         sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
-    InitializeWithState(model_type_, initial_state);
+    InitializeWithState(data_type_, initial_state);
 
     nudge_handler()->ClearCounters();
   }
 
-  void InitializeCommitOnly(ModelType model_type) {
-    mock_server_ = std::make_unique<SingleTypeMockServer>(model_type);
+  void InitializeCommitOnly(DataType data_type) {
+    mock_server_ = std::make_unique<SingleTypeMockServer>(data_type);
 
     // Don't set progress marker, commit only types don't use them.
     ModelTypeState initial_state;
     initial_state.set_initial_sync_state(
         sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
-    InitializeWithState(model_type, initial_state);
+    InitializeWithState(data_type, initial_state);
   }
 
   // Initialize with a custom initial ModelTypeState and pending updates.
-  void InitializeWithState(const ModelType type, const ModelTypeState& state) {
+  void InitializeWithState(const DataType type, const ModelTypeState& state) {
     DCHECK(!worker_);
     worker_ = std::make_unique<DataTypeWorker>(
         type, state, &cryptographer_, is_encrypted_type_,
@@ -334,7 +334,7 @@ class DataTypeWorkerTest : public ::testing::Test {
     original_specifics.SerializeToString(&plaintext);
 
     specifics->Clear();
-    AddDefaultFieldValue(model_type_, specifics);
+    AddDefaultFieldValue(data_type_, specifics);
     FakeCryptographer::FromSingleDefaultKey(GetNthKeyName(n))
         ->EncryptString(plaintext, specifics->mutable_encrypted());
   }
@@ -546,7 +546,7 @@ class DataTypeWorkerTest : public ::testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  const ModelType model_type_;
+  const DataType data_type_;
 
   FakeCryptographer cryptographer_;
 
@@ -603,10 +603,10 @@ TEST_F(DataTypeWorkerTest, SimpleCommit) {
   EXPECT_EQ(0U, server()->GetNumCommitMessages());
   EXPECT_EQ(0U, processor()->GetNumCommitResponses());
   histogram_tester.ExpectBucketCount(
-      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
       ModelTypeEntityChange::kLocalCreation, 0);
   histogram_tester.ExpectBucketCount(
-      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
       ModelTypeEntityChange::kLocalDeletion, 0);
 
   worker()->NudgeForCommit();
@@ -633,10 +633,10 @@ TEST_F(DataTypeWorkerTest, SimpleCommit) {
   EXPECT_EQ(kValue1, entity.specifics().preference().value());
 
   histogram_tester.ExpectBucketCount(
-      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
       ModelTypeEntityChange::kLocalCreation, 1);
   histogram_tester.ExpectBucketCount(
-      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
       ModelTypeEntityChange::kLocalDeletion, 0);
 
   // Exhaustively verify the commit response returned to the model thread.
@@ -664,19 +664,19 @@ TEST_F(DataTypeWorkerTest, SimpleDelete) {
   // We can't delete an entity that was never committed.
   // Step 1 is to create and commit a new entity.
   histogram_tester.ExpectBucketCount(
-      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
       ModelTypeEntityChange::kLocalCreation, 0);
   histogram_tester.ExpectBucketCount(
-      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
       ModelTypeEntityChange::kLocalDeletion, 0);
   processor()->SetCommitRequest(GenerateCommitRequest(kTag1, kValue1));
   DoSuccessfulCommit();
 
   histogram_tester.ExpectBucketCount(
-      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
       ModelTypeEntityChange::kLocalCreation, 1);
   histogram_tester.ExpectBucketCount(
-      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
       ModelTypeEntityChange::kLocalDeletion, 0);
 
   ASSERT_TRUE(processor()->HasCommitResponse(kHash1));
@@ -689,10 +689,10 @@ TEST_F(DataTypeWorkerTest, SimpleDelete) {
   DoSuccessfulCommit();
 
   histogram_tester.ExpectBucketCount(
-      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
       ModelTypeEntityChange::kLocalCreation, 1);
   histogram_tester.ExpectBucketCount(
-      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
       ModelTypeEntityChange::kLocalDeletion, 1);
 
   // Verify the SyncEntity sent in the commit message.
@@ -707,7 +707,7 @@ TEST_F(DataTypeWorkerTest, SimpleDelete) {
 
   // Deletions should contain enough specifics to identify the type.
   EXPECT_TRUE(entity.has_specifics());
-  EXPECT_EQ(PREFERENCES, GetModelTypeFromSpecifics(entity.specifics()));
+  EXPECT_EQ(PREFERENCES, GetDataTypeFromSpecifics(entity.specifics()));
 
   // Verify the commit response returned to the model thread.
   ASSERT_EQ(2U, processor()->GetNumCommitResponses());
@@ -786,14 +786,14 @@ TEST_F(DataTypeWorkerTest, ReceiveUpdates) {
   NormalInitialize();
 
   histogram_tester.ExpectBucketCount(
-      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
       ModelTypeEntityChange::kRemoteNonInitialUpdate, 0);
 
   const ClientTagHash tag_hash = GeneratePreferenceTagHash(kTag1);
 
   TriggerUpdateFromServer(10, kTag1, kValue1);
   EXPECT_EQ(status_controller()->get_updated_types(),
-            ModelTypeSet({worker()->GetModelType()}));
+            DataTypeSet({worker()->GetDataType()}));
 
   ASSERT_EQ(1U, processor()->GetNumUpdateResponses());
   std::vector<const UpdateResponseData*> updates_list =
@@ -815,7 +815,7 @@ TEST_F(DataTypeWorkerTest, ReceiveUpdates) {
   EXPECT_EQ(kValue1, entity.specifics.preference().value());
 
   histogram_tester.ExpectBucketCount(
-      GetEntityChangeHistogramNameForTest(worker()->GetModelType()),
+      GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
       ModelTypeEntityChange::kRemoteNonInitialUpdate, 1);
 }
 
@@ -823,7 +823,7 @@ TEST_F(DataTypeWorkerTest,
        ReceiveUpdates_ShouldNotPopulateUpdatedTypesOnTombstone) {
   NormalInitialize();
   TriggerTombstoneFromServer(10, kTag1);
-  EXPECT_EQ(status_controller()->get_updated_types(), ModelTypeSet());
+  EXPECT_EQ(status_controller()->get_updated_types(), DataTypeSet());
 }
 
 TEST_F(DataTypeWorkerTest, ReceiveUpdates_NoDuplicateHash) {
@@ -1508,7 +1508,7 @@ TEST_F(DataTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
   // The fact that the data type is now blocked should have been recorded.
   histogram_tester.ExpectUniqueSample(
       "Sync.ModelTypeBlockedDueToUndecryptableUpdate",
-      ModelTypeForHistograms::kPreferences, 1);
+      DataTypeForHistograms::kPreferences, 1);
 
   // Send empty GetUpdatesResponse. The counter shouldn't change.
   TriggerEmptyUpdateFromServer();
@@ -1590,7 +1590,7 @@ TEST_F(DataTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
   // Should have recorded that 1 incoming update was ignored.
   histogram_tester.ExpectUniqueSample(
       "Sync.ModelTypeUpdateDrop.DecryptionPendingForTooLong",
-      ModelTypeForHistograms::kPreferences, 1);
+      DataTypeForHistograms::kPreferences, 1);
 }
 
 // Test that processor has been disconnected from Sync when worker got
@@ -1632,8 +1632,8 @@ TEST_F(DataTypeWorkerTest, RecreateDeletedEntity) {
 
 TEST_F(DataTypeWorkerTest, CommitOnly) {
   base::HistogramTester histogram_tester;
-  ModelType model_type = USER_EVENTS;
-  InitializeCommitOnly(model_type);
+  DataType data_type = USER_EVENTS;
+  InitializeCommitOnly(data_type);
 
   int id = 123456789;
   EntitySpecifics specifics;
@@ -1657,10 +1657,10 @@ TEST_F(DataTypeWorkerTest, CommitOnly) {
   EXPECT_EQ(id, entity.specifics().user_event().event_time_usec());
 
   histogram_tester.ExpectBucketCount(
-      GetEntityChangeHistogramNameForTest(model_type),
+      GetEntityChangeHistogramNameForTest(data_type),
       ModelTypeEntityChange::kLocalCreation, 1);
   histogram_tester.ExpectBucketCount(
-      GetEntityChangeHistogramNameForTest(model_type),
+      GetEntityChangeHistogramNameForTest(data_type),
       ModelTypeEntityChange::kLocalDeletion, 0);
 
   ASSERT_EQ(1U, processor()->GetNumCommitResponses());

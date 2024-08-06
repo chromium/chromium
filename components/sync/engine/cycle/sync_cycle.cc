@@ -28,7 +28,7 @@ SyncCycleSnapshot SyncCycle::TakeSnapshot() const {
 SyncCycleSnapshot SyncCycle::TakeSnapshotWithOrigin(
     sync_pb::SyncEnums::GetUpdatesOrigin get_updates_origin) const {
   ProgressMarkerMap download_progress_markers;
-  for (ModelType type : ModelTypeSet::All()) {
+  for (DataType type : DataTypeSet::All()) {
     const UpdateHandler* update_handler =
         context_->data_type_registry()->GetUpdateHandler(type);
     if (update_handler == nullptr) {

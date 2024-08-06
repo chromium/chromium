@@ -50,15 +50,15 @@ class SyncSchedulerImpl : public SyncScheduler {
 
   void Start(Mode mode, base::Time last_poll_time) override;
   void ScheduleConfiguration(sync_pb::SyncEnums::GetUpdatesOrigin origin,
-                             ModelTypeSet types_to_download,
+                             DataTypeSet types_to_download,
                              base::OnceClosure ready_task) override;
   void Stop() override;
-  void ScheduleLocalNudge(ModelType type) override;
-  void ScheduleLocalRefreshRequest(ModelTypeSet types) override;
-  void ScheduleInvalidationNudge(ModelType type) override;
-  void ScheduleInitialSyncNudge(ModelType model_type) override;
+  void ScheduleLocalNudge(DataType type) override;
+  void ScheduleLocalRefreshRequest(DataTypeSet types) override;
+  void ScheduleInvalidationNudge(DataType type) override;
+  void ScheduleInitialSyncNudge(DataType data_type) override;
   void SetNotificationsEnabled(bool notifications_enabled) override;
-  void SetHasPendingInvalidations(ModelType type,
+  void SetHasPendingInvalidations(DataType type,
                                   bool has_invalidations) override;
 
   void OnCredentialsUpdated() override;
@@ -66,18 +66,18 @@ class SyncSchedulerImpl : public SyncScheduler {
 
   // SyncCycle::Delegate implementation.
   void OnThrottled(const base::TimeDelta& throttle_duration) override;
-  void OnTypesThrottled(ModelTypeSet types,
+  void OnTypesThrottled(DataTypeSet types,
                         const base::TimeDelta& throttle_duration) override;
-  void OnTypesBackedOff(ModelTypeSet types) override;
+  void OnTypesBackedOff(DataTypeSet types) override;
   bool IsAnyThrottleOrBackoff() override;
   void OnReceivedPollIntervalUpdate(
       const base::TimeDelta& new_interval) override;
   void OnReceivedCustomNudgeDelays(
-      const std::map<ModelType, base::TimeDelta>& nudge_delays) override;
+      const std::map<DataType, base::TimeDelta>& nudge_delays) override;
   void OnSyncProtocolError(
       const SyncProtocolError& sync_protocol_error) override;
   void OnReceivedGuRetryDelay(const base::TimeDelta& delay) override;
-  void OnReceivedMigrationRequest(ModelTypeSet types) override;
+  void OnReceivedMigrationRequest(DataTypeSet types) override;
   void OnReceivedQuotaParamsForExtensionTypes(
       std::optional<int> max_tokens,
       std::optional<base::TimeDelta> refill_interval,
@@ -94,7 +94,7 @@ class SyncSchedulerImpl : public SyncScheduler {
  private:
   struct ConfigurationParams {
     ConfigurationParams(sync_pb::SyncEnums::GetUpdatesOrigin origin,
-                        ModelTypeSet types_to_download,
+                        DataTypeSet types_to_download,
                         base::OnceClosure ready_task);
     ~ConfigurationParams();
 
@@ -102,7 +102,7 @@ class SyncSchedulerImpl : public SyncScheduler {
     ConfigurationParams& operator=(const ConfigurationParams&) = delete;
 
     const sync_pb::SyncEnums::GetUpdatesOrigin origin;
-    const ModelTypeSet types_to_download;
+    const DataTypeSet types_to_download;
     // Callback to invoke on configuration completion.
     base::OnceClosure ready_task;
   };
@@ -205,7 +205,7 @@ class SyncSchedulerImpl : public SyncScheduler {
 
   // Returns the set of types that are enabled and not currently throttled and
   // backed off.
-  ModelTypeSet GetEnabledAndUnblockedTypes();
+  DataTypeSet GetEnabledAndUnblockedTypes();
 
   // Called as we are started to broadcast an initial cycle snapshot
   // containing data like initial_sync_ended.  Important when the client starts

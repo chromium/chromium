@@ -23,8 +23,8 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/extensions_activity.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/cycle/sync_cycle.h"
 #include "components/sync/engine/events/protocol_event.h"
@@ -98,7 +98,7 @@ class SyncManagerObserverMock : public SyncManager::Observer {
               OnActionableProtocolError,
               (const SyncProtocolError&),
               (override));
-  MOCK_METHOD(void, OnMigrationRequested, (ModelTypeSet), (override));
+  MOCK_METHOD(void, OnMigrationRequested, (DataTypeSet), (override));
   MOCK_METHOD(void, OnProtocolEvent, (const ProtocolEvent&), (override));
   MOCK_METHOD(void, OnSyncStatusChanged, (const SyncStatus&), (override));
 };
@@ -113,7 +113,7 @@ class SyncEncryptionHandlerObserverMock
   MOCK_METHOD(void, OnPassphraseAccepted, (), (override));
   MOCK_METHOD(void, OnTrustedVaultKeyRequired, (), (override));
   MOCK_METHOD(void, OnTrustedVaultKeyAccepted, (), (override));
-  MOCK_METHOD(void, OnEncryptedTypesChanged, (ModelTypeSet, bool), (override));
+  MOCK_METHOD(void, OnEncryptedTypesChanged, (DataTypeSet, bool), (override));
   MOCK_METHOD(void,
               OnCryptographerStateChanged,
               (Cryptographer*, bool),
@@ -132,10 +132,10 @@ class MockSyncScheduler : public FakeSyncScheduler {
   MOCK_METHOD(void,
               ScheduleConfiguration,
               (sync_pb::SyncEnums::GetUpdatesOrigin origin,
-               ModelTypeSet types_to_download,
+               DataTypeSet types_to_download,
                base::OnceClosure ready_task),
               (override));
-  MOCK_METHOD(void, SetHasPendingInvalidations, (ModelType, bool), (override));
+  MOCK_METHOD(void, SetHasPendingInvalidations, (DataType, bool), (override));
 };
 
 class ComponentsFactory : public TestEngineComponentsFactory {
@@ -228,7 +228,7 @@ class SyncManagerImplTest : public testing::Test {
 // Test that the configuration params are properly created and sent to
 // ScheduleConfigure. No callback should be invoked.
 TEST_F(SyncManagerImplTest, BasicConfiguration) {
-  const ModelTypeSet types_to_download = {BOOKMARKS, PREFERENCES};
+  const DataTypeSet types_to_download = {BOOKMARKS, PREFERENCES};
   base::MockOnceClosure ready_task;
   EXPECT_CALL(*scheduler(), Start(SyncScheduler::CONFIGURATION_MODE, _));
   EXPECT_CALL(*scheduler(),

@@ -34,7 +34,7 @@ class FakeSyncEncryptionHandler : public KeystoreKeysHandler,
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   void NotifyInitialStateToObservers() override;
-  ModelTypeSet GetEncryptedTypes() override;
+  DataTypeSet GetEncryptedTypes() override;
   Cryptographer* GetCryptographer() override;
   PassphraseType GetPassphraseType() override;
   void SetEncryptionPassphrase(

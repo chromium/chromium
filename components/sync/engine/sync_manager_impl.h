@@ -55,19 +55,19 @@ class SyncManagerImpl
 
   // SyncManager implementation.
   void Init(InitArgs* args) override;
-  ModelTypeSet InitialSyncEndedTypes() override;
-  ModelTypeSet GetConnectedTypes() override;
+  DataTypeSet InitialSyncEndedTypes() override;
+  DataTypeSet GetConnectedTypes() override;
   void UpdateCredentials(const SyncCredentials& credentials) override;
   void InvalidateCredentials() override;
   void StartSyncingNormally(base::Time last_poll_time) override;
   void StartConfiguration() override;
   void ConfigureSyncer(ConfigureReason reason,
-                       ModelTypeSet to_download,
+                       DataTypeSet to_download,
                        SyncFeatureState sync_feature_state,
                        base::OnceClosure ready_task) override;
   void SetInvalidatorEnabled(bool invalidator_enabled) override;
   void OnIncomingInvalidation(
-      ModelType type,
+      DataType type,
       std::unique_ptr<SyncInvalidation> invalidation) override;
   void AddObserver(SyncManager::Observer* observer) override;
   void RemoveObserver(SyncManager::Observer* observer) override;
@@ -77,7 +77,7 @@ class SyncManagerImpl
   std::string cache_guid() override;
   std::string birthday() override;
   std::string bag_of_chips() override;
-  ModelTypeSet GetTypesWithUnsyncedData() override;
+  DataTypeSet GetTypesWithUnsyncedData() override;
   bool HasUnsyncedItemsForTest() override;
   SyncEncryptionHandler* GetEncryptionHandler() override;
   std::vector<std::unique_ptr<ProtocolEvent>> GetBufferedProtocolEvents()
@@ -93,7 +93,7 @@ class SyncManagerImpl
   void OnPassphraseAccepted() override;
   void OnTrustedVaultKeyRequired() override;
   void OnTrustedVaultKeyAccepted() override;
-  void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
+  void OnEncryptedTypesChanged(DataTypeSet encrypted_types,
                                bool encrypt_everything) override;
   void OnCryptographerStateChanged(Cryptographer* cryptographer,
                                    bool has_pending_keys) override;
@@ -104,24 +104,24 @@ class SyncManagerImpl
   void OnSyncCycleEvent(const SyncCycleEvent& event) override;
   void OnActionableProtocolError(const SyncProtocolError& error) override;
   void OnRetryTimeChanged(base::Time retry_time) override;
-  void OnThrottledTypesChanged(ModelTypeSet throttled_types) override;
-  void OnBackedOffTypesChanged(ModelTypeSet backed_off_types) override;
-  void OnMigrationRequested(ModelTypeSet types) override;
+  void OnThrottledTypesChanged(DataTypeSet throttled_types) override;
+  void OnBackedOffTypesChanged(DataTypeSet backed_off_types) override;
+  void OnMigrationRequested(DataTypeSet types) override;
   void OnProtocolEvent(const ProtocolEvent& event) override;
 
   // ServerConnectionEventListener implementation.
   void OnServerConnectionEvent(const ServerConnectionEvent& event) override;
 
   // Handle explicit requests to fetch updates for the given types.
-  void RefreshTypes(ModelTypeSet types) override;
+  void RefreshTypes(DataTypeSet types) override;
 
   // NetworkConnectionTracker::NetworkConnectionObserver implementation.
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
   // NudgeHandler implementation.
-  void NudgeForInitialDownload(ModelType type) override;
-  void NudgeForCommit(ModelType type) override;
-  void SetHasPendingInvalidations(ModelType type,
+  void NudgeForInitialDownload(DataType type) override;
+  void NudgeForCommit(DataType type) override;
+  void SetHasPendingInvalidations(DataType type,
                                   bool has_pending_invalidations) override;
 
  private:

@@ -27,10 +27,10 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/uuid.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/hash_util.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_invalidation_adapter.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/bookmark_update_preprocessing.h"
@@ -84,11 +84,11 @@ void LogPasswordNotesState(PasswordNotesStateForUMA state) {
   base::UmaHistogramEnumeration(kPasswordNotesStateHistogramName, state);
 }
 
-void LogEncryptionResult(ModelType type, bool success) {
+void LogEncryptionResult(DataType type, bool success) {
   base::UmaHistogramBoolean(kEntityEncryptionResultHistogramName, success);
   base::UmaHistogramBoolean(
       base::StrCat({kEntityEncryptionResultHistogramName, ".",
-                    ModelTypeToHistogramSuffix(type)}),
+                    DataTypeToHistogramSuffix(type)}),
       success);
 }
 
@@ -118,7 +118,7 @@ class CommitQueueProxy : public CommitQueue {
       base::SequencedTaskRunner::GetCurrentDefault();
 };
 
-void AdaptClientTagForFullUpdateData(ModelType model_type,
+void AdaptClientTagForFullUpdateData(DataType data_type,
                                      syncer::EntityData* data) {
   // Server does not send any client tags for wallet data entities or offer data
   // entities. This code manually asks the bridge to create the client tags for
@@ -130,12 +130,12 @@ void AdaptClientTagForFullUpdateData(ModelType model_type,
     return;
   }
   DCHECK(!data->specifics.has_encrypted());
-  if (model_type == AUTOFILL_WALLET_DATA) {
+  if (data_type == AUTOFILL_WALLET_DATA) {
     DCHECK(data->specifics.has_autofill_wallet());
     data->client_tag_hash = ClientTagHash::FromUnhashed(
         AUTOFILL_WALLET_DATA, GetUnhashedClientTagFromAutofillWalletSpecifics(
                                   data->specifics.autofill_wallet()));
-  } else if (model_type == AUTOFILL_WALLET_OFFER) {
+  } else if (data_type == AUTOFILL_WALLET_OFFER) {
     DCHECK(data->specifics.has_autofill_offer());
     data->client_tag_hash = ClientTagHash::FromUnhashed(
         AUTOFILL_WALLET_OFFER, GetUnhashedClientTagFromAutofillOfferSpecifics(
@@ -161,7 +161,7 @@ void AdaptWebAuthnClientTagHash(syncer::EntityData* data) {
        // sync_id.
        sync_id == data->specifics.webauthn_credential().sync_id())) {
     data->client_tag_hash =
-        ClientTagHash::FromUnhashed(ModelType::WEBAUTHN_CREDENTIAL, sync_id);
+        ClientTagHash::FromUnhashed(DataType::WEBAUTHN_CREDENTIAL, sync_id);
   }
 }
 
@@ -301,13 +301,13 @@ bool DecryptIncomingPasswordSharingInvitationSpecifics(
 
 }  // namespace
 
-DataTypeWorker::DataTypeWorker(ModelType type,
-                                 const sync_pb::ModelTypeState& initial_state,
-                                 Cryptographer* cryptographer,
-                                 bool encryption_enabled,
-                                 PassphraseType passphrase_type,
-                                 NudgeHandler* nudge_handler,
-                                 CancelationSignal* cancelation_signal)
+DataTypeWorker::DataTypeWorker(DataType type,
+                               const sync_pb::ModelTypeState& initial_state,
+                               Cryptographer* cryptographer,
+                               bool encryption_enabled,
+                               PassphraseType passphrase_type,
+                               NudgeHandler* nudge_handler,
+                               CancelationSignal* cancelation_signal)
     : type_(type),
       cryptographer_(cryptographer),
       nudge_handler_(nudge_handler),
@@ -359,8 +359,8 @@ DataTypeWorker::DataTypeWorker(ModelType type,
     }
   }
 
-  if (!CommitOnlyTypes().Has(GetModelType())) {
-    DCHECK_EQ(type, GetModelTypeFromSpecificsFieldNumber(
+  if (!CommitOnlyTypes().Has(GetDataType())) {
+    DCHECK_EQ(type, GetDataTypeFromSpecificsFieldNumber(
                         initial_state.progress_marker().data_type_id()));
   }
 }
@@ -379,9 +379,9 @@ DataTypeWorker::PendingInvalidation::PendingInvalidation(
 DataTypeWorker::PendingInvalidation::~PendingInvalidation() = default;
 
 DataTypeWorker::~DataTypeWorker() {
-  if (model_type_processor_) {
+  if (data_type_processor_) {
     // This will always be the case in production today.
-    model_type_processor_->DisconnectSync();
+    data_type_processor_->DisconnectSync();
   }
   for (size_t i = 0; i < pending_invalidations_.size(); ++i) {
     LogPendingInvalidationStatus(PendingInvalidationStatus::kLost);
@@ -394,16 +394,16 @@ void DataTypeWorker::LogPendingInvalidationStatus(
 }
 
 void DataTypeWorker::ConnectSync(
-    std::unique_ptr<DataTypeProcessor> model_type_processor) {
-  DCHECK(!model_type_processor_);
-  DCHECK(model_type_processor);
+    std::unique_ptr<DataTypeProcessor> data_type_processor) {
+  DCHECK(!data_type_processor_);
+  DCHECK(data_type_processor);
 
-  model_type_processor_ = std::move(model_type_processor);
+  data_type_processor_ = std::move(data_type_processor);
   // TODO(crbug.com/346777544): CommitQueueProxy is only needed by the
   // DataTypeProcessorProxy implementation, so it could possibly be moved
   // there % changing ConnectSync() to take a raw pointer. This then allows
   // removing base::test::SingleThreadTaskEnvironment from the unit test.
-  model_type_processor_->ConnectSync(
+  data_type_processor_->ConnectSync(
       std::make_unique<CommitQueueProxy>(weak_ptr_factory_.GetWeakPtr()));
 
   if (!IsInitialSyncDone(model_type_state_.initial_sync_state())) {
@@ -424,7 +424,7 @@ void DataTypeWorker::ConnectSync(
   }
 }
 
-ModelType DataTypeWorker::GetModelType() const {
+DataType DataTypeWorker::GetDataType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return type_;
 }
@@ -598,7 +598,7 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
   if (!entries_pending_decryption_.empty() &&
       (!encryption_enabled_ || cryptographer_->CanEncrypt())) {
     base::UmaHistogramEnumeration(kBlockedByUndecryptableUpdateHistogramName,
-                                  ModelTypeHistogramValue(type_));
+                                  DataTypeHistogramValue(type_));
   }
 
   // Usually, updates must only be applied at the end of a sync cycle, once all
@@ -616,7 +616,7 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
 // |response_data| must be not null.
 DataTypeWorker::DecryptionStatus DataTypeWorker::PopulateUpdateResponseData(
     const Cryptographer& cryptographer,
-    ModelType model_type,
+    DataType data_type,
     const sync_pb::SyncEntity& update_entity,
     UpdateResponseData* response_data) {
   syncer::EntityData data;
@@ -688,7 +688,7 @@ DataTypeWorker::DecryptionStatus DataTypeWorker::PopulateUpdateResponseData(
   data.server_defined_unique_tag = update_entity.server_defined_unique_tag();
 
   // Populate shared type fields.
-  if (SharedTypes().Has(model_type)) {
+  if (SharedTypes().Has(data_type)) {
     data.collaboration_id = update_entity.collaboration().collaboration_id();
   }
 
@@ -698,7 +698,7 @@ DataTypeWorker::DecryptionStatus DataTypeWorker::PopulateUpdateResponseData(
   data.originator_client_item_id = update_entity.originator_client_item_id();
 
   // Adapt the update for compatibility.
-  if (model_type == BOOKMARKS) {
+  if (data_type == BOOKMARKS) {
     data.is_bookmark_unique_position_in_specifics_preprocessed =
         AdaptUniquePositionForBookmark(update_entity, &data.specifics);
     AdaptTypeForBookmark(update_entity, &data.specifics);
@@ -709,10 +709,10 @@ DataTypeWorker::DecryptionStatus DataTypeWorker::PopulateUpdateResponseData(
     // because the logic requires access to tracked entities. Hence, it is
     // done by BookmarkDataTypeProcessor, with logic implemented in
     // components/sync_bookmarks/parent_guid_preprocessing.cc.
-  } else if (model_type == AUTOFILL_WALLET_DATA ||
-             model_type == AUTOFILL_WALLET_OFFER) {
-    AdaptClientTagForFullUpdateData(model_type, &data);
-  } else if (model_type == WEBAUTHN_CREDENTIAL) {
+  } else if (data_type == AUTOFILL_WALLET_DATA ||
+             data_type == AUTOFILL_WALLET_OFFER) {
+    AdaptClientTagForFullUpdateData(data_type, &data);
+  } else if (data_type == WEBAUTHN_CREDENTIAL) {
     AdaptWebAuthnClientTagHash(&data);
   }
 
@@ -785,7 +785,7 @@ void DataTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
 }
 
 void DataTypeWorker::SendPendingUpdatesToProcessorIfReady() {
-  DCHECK(model_type_processor_);
+  DCHECK(data_type_processor_);
 
   if (!IsInitialSyncAtLeastPartiallyDone(
           model_type_state_.initial_sync_state())) {
@@ -801,7 +801,7 @@ void DataTypeWorker::SendPendingUpdatesToProcessorIfReady() {
          !model_type_state_.encryption_key_name().empty());
   DCHECK(entries_pending_decryption_.empty());
 
-  DVLOG(1) << ModelTypeToDebugString(type_) << ": "
+  DVLOG(1) << DataTypeToDebugString(type_) << ": "
            << base::StringPrintf("Delivering %" PRIuS " applicable updates.",
                                  pending_updates_.size());
 
@@ -816,9 +816,9 @@ void DataTypeWorker::SendPendingUpdatesToProcessorIfReady() {
   DeduplicatePendingUpdatesBasedOnClientTagHash();
   DeduplicatePendingUpdatesBasedOnOriginatorClientItemId();
 
-  model_type_processor_->OnUpdateReceived(model_type_state_,
-                                          std::move(pending_updates_),
-                                          std::move(pending_gc_directive_));
+  data_type_processor_->OnUpdateReceived(model_type_state_,
+                                         std::move(pending_updates_),
+                                         std::move(pending_gc_directive_));
   pending_updates_.clear();
   pending_gc_directive_.reset();
 }
@@ -843,7 +843,7 @@ std::unique_ptr<CommitContribution> DataTypeWorker::GetContribution(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsInitialSyncAtLeastPartiallyDone(
       model_type_state_.initial_sync_state()));
-  DCHECK(model_type_processor_);
+  DCHECK(data_type_processor_);
 
   // Early return if type is not ready to commit (initial sync isn't done or
   // cryptographer has pending keys).
@@ -861,7 +861,7 @@ std::unique_ptr<CommitContribution> DataTypeWorker::GetContribution(
   // was not worth a nudge.
   scoped_refptr<GetLocalChangesRequest> request =
       base::MakeRefCounted<GetLocalChangesRequest>();
-  model_type_processor_->GetLocalChanges(
+  data_type_processor_->GetLocalChanges(
       max_entries,
       base::BindOnce(&GetLocalChangesRequest::SetResponse, request));
   request->WaitForResponseOrCancelation(cancelation_signal_);
@@ -922,7 +922,7 @@ void DataTypeWorker::OnCommitResponse(
   // Send the responses back to the model thread. It needs to know which
   // items have been successfully committed (it can save that information in
   // permanent storage) and which failed (it can e.g. notify the user).
-  model_type_processor_->OnCommitCompleted(
+  data_type_processor_->OnCommitCompleted(
       model_type_state_, committed_response_list, error_response_list);
 
   if (has_local_changes_state_ == kAllNudgedLocalChangesInFlight) {
@@ -934,7 +934,7 @@ void DataTypeWorker::OnCommitResponse(
 void DataTypeWorker::OnFullCommitFailure(SyncCommitError commit_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  model_type_processor_->OnCommitFailed(commit_error);
+  data_type_processor_->OnCommitFailed(commit_error);
 }
 
 size_t DataTypeWorker::EstimateMemoryUsage() const {
@@ -969,7 +969,7 @@ bool DataTypeWorker::UpdateTypeEncryptionKeyName() {
     if (model_type_state_.encryption_key_name().empty()) {
       return false;
     }
-    DLOG(WARNING) << ModelTypeToDebugString(type_)
+    DLOG(WARNING) << DataTypeToDebugString(type_)
                   << " : Had encryption disabled but non-empty encryption key "
                   << model_type_state_.encryption_key_name()
                   << ". Setting key to empty.";
@@ -985,7 +985,7 @@ bool DataTypeWorker::UpdateTypeEncryptionKeyName() {
 
   std::string default_key_name = cryptographer_->GetDefaultEncryptionKeyName();
   DCHECK(!default_key_name.empty());
-  DVLOG(1) << ModelTypeToDebugString(type_) << ": Updating encryption key "
+  DVLOG(1) << DataTypeToDebugString(type_) << ": Updating encryption key "
            << model_type_state_.encryption_key_name() << " -> "
            << default_key_name;
   model_type_state_.set_encryption_key_name(default_key_name);
@@ -1030,7 +1030,7 @@ void DataTypeWorker::DecryptStoredEntities() {
           newly_found_key.get_updates_while_should_have_been_known);
       base::UmaHistogramCounts1000(
           base::StrCat({kTimeUntilEncryptionKeyFoundHistogramName, ".",
-                        ModelTypeToHistogramSuffix(type_)}),
+                        DataTypeToHistogramSuffix(type_)}),
           newly_found_key.get_updates_while_should_have_been_known);
     }
   }
@@ -1166,7 +1166,7 @@ void DataTypeWorker::MaybeDropPendingUpdatesEncryptedWith(
         kUndecryptablePendingUpdatesDroppedHistogramName, dropped_updates);
     base::UmaHistogramCounts1000(
         base::StrCat({kUndecryptablePendingUpdatesDroppedHistogramName, ".",
-                      ModelTypeToHistogramSuffix(type_)}),
+                      DataTypeToHistogramSuffix(type_)}),
         dropped_updates);
   }
 }
@@ -1338,11 +1338,11 @@ bool DataTypeWorker::HasPendingInvalidations() const {
 }
 
 void DataTypeWorker::SendPendingInvalidationsToProcessor() {
-  CHECK(model_type_processor_);
+  CHECK(data_type_processor_);
   DVLOG(1) << "Storing pending invalidations for "
-           << ModelTypeToDebugString(type_);
+           << DataTypeToDebugString(type_);
   UpdateModelTypeStateInvalidations();
-  model_type_processor_->StorePendingInvalidations(
+  data_type_processor_->StorePendingInvalidations(
       std::vector<sync_pb::ModelTypeState::Invalidation>(
           model_type_state_.invalidations().begin(),
           model_type_state_.invalidations().end()));

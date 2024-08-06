@@ -61,9 +61,9 @@ using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::UnorderedElementsAre;
 
-sync_pb::EntitySpecifics MakeSpecifics(ModelType model_type) {
+sync_pb::EntitySpecifics MakeSpecifics(DataType data_type) {
   sync_pb::EntitySpecifics specifics;
-  AddDefaultFieldValue(model_type, &specifics);
+  AddDefaultFieldValue(data_type, &specifics);
   return specifics;
 }
 
@@ -95,12 +95,12 @@ class SyncerTest : public testing::Test,
     FAIL() << "Should not get silenced.";
   }
 
-  void OnTypesThrottled(ModelTypeSet types,
+  void OnTypesThrottled(DataTypeSet types,
                         const base::TimeDelta& throttle_duration) override {
     scheduler_->OnTypesThrottled(types, throttle_duration);
   }
 
-  void OnTypesBackedOff(ModelTypeSet types) override {
+  void OnTypesBackedOff(DataTypeSet types) override {
     scheduler_->OnTypesBackedOff(types);
   }
 
@@ -112,14 +112,14 @@ class SyncerTest : public testing::Test,
   }
 
   void OnReceivedCustomNudgeDelays(
-      const std::map<ModelType, base::TimeDelta>& delay_map) override {
+      const std::map<DataType, base::TimeDelta>& delay_map) override {
     auto iter = delay_map.find(BOOKMARKS);
     if (iter != delay_map.end() && iter->second.is_positive())
       last_bookmarks_commit_delay_ = iter->second;
   }
 
   void OnReceivedGuRetryDelay(const base::TimeDelta& delay) override {}
-  void OnReceivedMigrationRequest(ModelTypeSet types) override {}
+  void OnReceivedMigrationRequest(DataTypeSet types) override {}
   void OnReceivedQuotaParamsForExtensionTypes(
       std::optional<int> max_tokens,
       std::optional<base::TimeDelta> refill_interval,
@@ -133,9 +133,9 @@ class SyncerTest : public testing::Test,
 
   void OnActionableProtocolError(const SyncProtocolError& error) override {}
   void OnRetryTimeChanged(base::Time retry_time) override {}
-  void OnThrottledTypesChanged(ModelTypeSet throttled_types) override {}
-  void OnBackedOffTypesChanged(ModelTypeSet backed_off_types) override {}
-  void OnMigrationRequested(ModelTypeSet types) override {}
+  void OnThrottledTypesChanged(DataTypeSet throttled_types) override {}
+  void OnBackedOffTypesChanged(DataTypeSet backed_off_types) override {}
+  void OnMigrationRequested(DataTypeSet types) override {}
 
   void ResetCycle() {
     cycle_ = std::make_unique<SyncCycle>(context_.get(), this);
@@ -155,7 +155,7 @@ class SyncerTest : public testing::Test,
     return SyncShareConfigureTypes(context_->GetConnectedTypes());
   }
 
-  bool SyncShareConfigureTypes(ModelTypeSet types) {
+  bool SyncShareConfigureTypes(DataTypeSet types) {
     ResetCycle();
     return syncer_->ConfigureSyncShare(
         types, sync_pb::SyncEnums::RECONFIGURATION, cycle_.get());
@@ -199,32 +199,32 @@ class SyncerTest : public testing::Test,
 
   const std::string foreign_cache_guid() { return "kqyg7097kro6GSUod+GSg=="; }
 
-  MockDataTypeProcessor* GetProcessor(ModelType model_type) {
-    return &mock_model_type_processors_[model_type];
+  MockDataTypeProcessor* GetProcessor(DataType data_type) {
+    return &mock_data_type_processors_[data_type];
   }
 
   std::unique_ptr<DataTypeActivationResponse> MakeFakeActivationResponse(
-      ModelType model_type) {
+      DataType data_type) {
     auto response = std::make_unique<DataTypeActivationResponse>();
     response->model_type_state.set_initial_sync_state(
         sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     response->model_type_state.mutable_progress_marker()->set_data_type_id(
-        GetSpecificsFieldNumberFromModelType(model_type));
+        GetSpecificsFieldNumberFromDataType(data_type));
     response->type_processor =
-        std::make_unique<ForwardingDataTypeProcessor>(GetProcessor(model_type));
+        std::make_unique<ForwardingDataTypeProcessor>(GetProcessor(data_type));
     return response;
   }
 
-  void EnableDatatype(ModelType model_type) {
-    enabled_datatypes_.Put(model_type);
-    data_type_registry_->ConnectDataType(
-        model_type, MakeFakeActivationResponse(model_type));
+  void EnableDatatype(DataType data_type) {
+    enabled_datatypes_.Put(data_type);
+    data_type_registry_->ConnectDataType(data_type,
+                                         MakeFakeActivationResponse(data_type));
     mock_server_->ExpectGetUpdatesRequestTypes(enabled_datatypes_);
   }
 
-  void DisableDatatype(ModelType model_type) {
-    enabled_datatypes_.Remove(model_type);
-    data_type_registry_->DisconnectDataType(model_type);
+  void DisableDatatype(DataType data_type) {
+    enabled_datatypes_.Remove(data_type);
+    data_type_registry_->DisconnectDataType(data_type);
     mock_server_->ExpectGetUpdatesRequestTypes(enabled_datatypes_);
   }
 
@@ -233,9 +233,9 @@ class SyncerTest : public testing::Test,
   // not preceeded by GetUpdates.
   void ConfigureNoGetUpdatesRequired() {
     nudge_tracker_.OnInvalidationsEnabled();
-    nudge_tracker_.RecordSuccessfulSyncCycleIfNotBlocked(ModelTypeSet::All());
+    nudge_tracker_.RecordSuccessfulSyncCycleIfNotBlocked(DataTypeSet::All());
 
-    ASSERT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
+    ASSERT_FALSE(nudge_tracker_.IsGetUpdatesRequired(DataTypeSet::All()));
   }
 
  protected:
@@ -246,7 +246,7 @@ class SyncerTest : public testing::Test,
       new ExtensionsActivity;
   std::unique_ptr<MockConnectionManager> mock_server_;
   CancelationSignal cancelation_signal_;
-  std::map<ModelType, MockDataTypeProcessor> mock_model_type_processors_;
+  std::map<DataType, MockDataTypeProcessor> mock_data_type_processors_;
 
   raw_ptr<Syncer, DanglingUntriaged> syncer_ = nullptr;
 
@@ -259,13 +259,13 @@ class SyncerTest : public testing::Test,
   base::TimeDelta last_bookmarks_commit_delay_;
   int last_client_invalidation_hint_buffer_size_ = 10;
 
-  ModelTypeSet enabled_datatypes_;
+  DataTypeSet enabled_datatypes_;
   NudgeTracker nudge_tracker_;
   std::unique_ptr<MockDebugInfoGetter> debug_info_getter_;
 };
 
 TEST_F(SyncerTest, CommitFiltersThrottledEntries) {
-  const ModelTypeSet throttled_types = {BOOKMARKS};
+  const DataTypeSet throttled_types = {BOOKMARKS};
 
   GetProcessor(BOOKMARKS)->AppendCommitRequest(
       ClientTagHash::FromHashed("tag1"), MakeBookmarkSpecificsToCommit(),
@@ -310,7 +310,7 @@ TEST_F(SyncerTest, GetUpdatesPartialThrottled) {
 
   // Set BOOKMARKS throttled but PREFERENCES not,
   // then BOOKMARKS should not get synced but PREFERENCES should.
-  ModelTypeSet throttled_types = {BOOKMARKS};
+  DataTypeSet throttled_types = {BOOKMARKS};
   mock_server_->set_throttling(true);
   mock_server_->SetPartialFailureTypes(throttled_types);
 
@@ -365,7 +365,7 @@ TEST_F(SyncerTest, GetUpdatesPartialFailure) {
 
   // Set BOOKMARKS failure but PREFERENCES not,
   // then BOOKMARKS should not get synced but PREFERENCES should.
-  ModelTypeSet failed_types = {BOOKMARKS};
+  DataTypeSet failed_types = {BOOKMARKS};
   mock_server_->set_partial_failure(true);
   mock_server_->SetPartialFailureTypes(failed_types);
 
@@ -596,10 +596,10 @@ TEST_F(SyncerTest, CommitFailureWithConflict) {
       ->AppendCommitRequest(ClientTagHash::FromHashed("tag1"),
                             MakeSpecifics(PREFERENCES), "id1");
 
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(DataTypeSet::All()));
 
   EXPECT_TRUE(SyncShareNudge());
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(DataTypeSet::All()));
 
   GetProcessor(PREFERENCES)
       ->AppendCommitRequest(ClientTagHash::FromHashed("tag1"),
@@ -607,10 +607,10 @@ TEST_F(SyncerTest, CommitFailureWithConflict) {
 
   mock_server_->set_conflict_n_commits(1);
   EXPECT_FALSE(SyncShareNudge());
-  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
+  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(DataTypeSet::All()));
 
-  nudge_tracker_.RecordSuccessfulSyncCycleIfNotBlocked(ModelTypeSet::All());
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
+  nudge_tracker_.RecordSuccessfulSyncCycleIfNotBlocked(DataTypeSet::All());
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(DataTypeSet::All()));
 }
 
 // Tests that sending debug info events on Commit works.
@@ -699,7 +699,7 @@ TEST_F(SyncerTest, TestClientCommandDuringUpdate) {
   sync_pb::CustomNudgeDelay* bookmark_delay =
       command->add_custom_nudge_delays();
   bookmark_delay->set_datatype_id(
-      GetSpecificsFieldNumberFromModelType(BOOKMARKS));
+      GetSpecificsFieldNumberFromDataType(BOOKMARKS));
   bookmark_delay->set_delay_ms(950);
   mock_server_->AddUpdateDirectory("1", "0", "in_root", 1, 1,
                                    foreign_cache_guid(), "-1");
@@ -714,7 +714,7 @@ TEST_F(SyncerTest, TestClientCommandDuringUpdate) {
   command->set_set_sync_long_poll_interval(190);
   bookmark_delay = command->add_custom_nudge_delays();
   bookmark_delay->set_datatype_id(
-      GetSpecificsFieldNumberFromModelType(BOOKMARKS));
+      GetSpecificsFieldNumberFromDataType(BOOKMARKS));
   bookmark_delay->set_delay_ms(1050);
   mock_server_->AddUpdateDirectory("1", "0", "in_root", 1, 1,
                                    foreign_cache_guid(), "-1");
@@ -734,7 +734,7 @@ TEST_F(SyncerTest, TestClientCommandDuringCommit) {
   sync_pb::CustomNudgeDelay* bookmark_delay =
       command->add_custom_nudge_delays();
   bookmark_delay->set_datatype_id(
-      GetSpecificsFieldNumberFromModelType(BOOKMARKS));
+      GetSpecificsFieldNumberFromDataType(BOOKMARKS));
   bookmark_delay->set_delay_ms(950);
   GetProcessor(BOOKMARKS)->AppendCommitRequest(
       ClientTagHash::FromHashed("tag1"), MakeBookmarkSpecificsToCommit(),
@@ -750,7 +750,7 @@ TEST_F(SyncerTest, TestClientCommandDuringCommit) {
   command->set_set_sync_long_poll_interval(190);
   bookmark_delay = command->add_custom_nudge_delays();
   bookmark_delay->set_datatype_id(
-      GetSpecificsFieldNumberFromModelType(BOOKMARKS));
+      GetSpecificsFieldNumberFromDataType(BOOKMARKS));
   bookmark_delay->set_delay_ms(1050);
   GetProcessor(BOOKMARKS)->AppendCommitRequest(
       ClientTagHash::FromHashed("tag2"), MakeBookmarkSpecificsToCommit(),
@@ -897,7 +897,7 @@ TEST_F(SyncerTest, ShouldPopulateFcmRegistrationTokensForInterestedTypesOnly) {
 }
 
 TEST_F(SyncerTest, ShouldNotPopulateTooManyFcmRegistrationTokens) {
-  std::map<std::string, ModelTypeSet> fcm_token_and_interested_data_types;
+  std::map<std::string, DataTypeSet> fcm_token_and_interested_data_types;
   for (size_t i = 0; i < 7; ++i) {
     fcm_token_and_interested_data_types["token_" + base::NumberToString(i)] = {
         BOOKMARKS};

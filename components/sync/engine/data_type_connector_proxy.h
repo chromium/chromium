@@ -9,7 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_connector.h"
 
 namespace syncer {
@@ -26,9 +26,9 @@ class DataTypeConnectorProxy : public DataTypeConnector {
 
   // DataTypeConnector implementation
   void ConnectDataType(
-      ModelType type,
+      DataType type,
       std::unique_ptr<DataTypeActivationResponse> activation_response) override;
-  void DisconnectDataType(ModelType type) override;
+  void DisconnectDataType(DataType type) override;
 
  private:
   // A SequencedTaskRunner representing the thread where the DataTypeConnector

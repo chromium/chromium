@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/configure_reason.h"
 
 namespace syncer {
@@ -33,10 +33,10 @@ class DataTypeConfigurer {
     ~ConfigureParams();
 
     ConfigureReason reason = CONFIGURE_REASON_UNKNOWN;
-    ModelTypeSet to_download;
-    ModelTypeSet to_purge;
+    DataTypeSet to_download;
+    DataTypeSet to_purge;
 
-    base::OnceCallback<void(ModelTypeSet succeeded, ModelTypeSet failed)>
+    base::OnceCallback<void(DataTypeSet succeeded, DataTypeSet failed)>
         ready_task;
 
     // Whether full sync (or sync the feature) is enabled;
@@ -54,13 +54,13 @@ class DataTypeConfigurer {
   // |activation_response|. This must be called before requesting the initial
   // download of a datatype via ConfigureDataTypes().
   virtual void ConnectDataType(
-      ModelType type,
+      DataType type,
       std::unique_ptr<DataTypeActivationResponse> activation_response) = 0;
 
   // Opposite of the above: stops treating |type| as a datatype that is
   // propagating changes between the server and the processor. No-op if the
   // type is not connected.
-  virtual void DisconnectDataType(ModelType type) = 0;
+  virtual void DisconnectDataType(DataType type) = 0;
 };
 
 }  // namespace syncer

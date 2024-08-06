@@ -34,10 +34,10 @@ class DataTypeRegistryTest : public ::testing::Test {
 
   DataTypeRegistry* registry() { return registry_.get(); }
 
-  static sync_pb::ModelTypeState MakeInitialModelTypeState(ModelType type) {
+  static sync_pb::ModelTypeState MakeInitialModelTypeState(DataType type) {
     sync_pb::ModelTypeState state;
     state.mutable_progress_marker()->set_data_type_id(
-        GetSpecificsFieldNumberFromModelType(type));
+        GetSpecificsFieldNumberFromDataType(type));
     return state;
   }
 
@@ -64,18 +64,18 @@ TEST_F(DataTypeRegistryTest, ConnectDataTypes) {
 
   registry()->ConnectDataType(THEMES, MakeDataTypeActivationResponse(
                                           MakeInitialModelTypeState(THEMES)));
-  EXPECT_EQ(ModelTypeSet({THEMES}), registry()->GetConnectedTypes());
+  EXPECT_EQ(DataTypeSet({THEMES}), registry()->GetConnectedTypes());
 
   registry()->ConnectDataType(
       SESSIONS,
       MakeDataTypeActivationResponse(MakeInitialModelTypeState(SESSIONS)));
-  EXPECT_EQ(ModelTypeSet({THEMES, SESSIONS}), registry()->GetConnectedTypes());
+  EXPECT_EQ(DataTypeSet({THEMES, SESSIONS}), registry()->GetConnectedTypes());
 
   registry()->DisconnectDataType(THEMES);
-  EXPECT_EQ(ModelTypeSet({SESSIONS}), registry()->GetConnectedTypes());
+  EXPECT_EQ(DataTypeSet({SESSIONS}), registry()->GetConnectedTypes());
 
   // Allow DataTypeRegistry destruction to delete the
-  // Sessions' ModelTypeSyncWorker.
+  // Sessions' DataTypeSyncWorker.
 }
 
 // Tests correct result returned from GetInitialSyncEndedTypes.
@@ -92,7 +92,7 @@ TEST_F(DataTypeRegistryTest, GetInitialSyncEndedTypes) {
       SESSIONS,
       MakeDataTypeActivationResponse(MakeInitialModelTypeState(SESSIONS)));
 
-  EXPECT_EQ(ModelTypeSet({THEMES}), registry()->GetInitialSyncEndedTypes());
+  EXPECT_EQ(DataTypeSet({THEMES}), registry()->GetInitialSyncEndedTypes());
 }
 
 TEST_F(DataTypeRegistryTest, GetTypesWithUnsyncedData) {
@@ -108,12 +108,12 @@ TEST_F(DataTypeRegistryTest, GetTypesWithUnsyncedData) {
   // would call NudgeForCommit() on the worker.
   for (const std::unique_ptr<DataTypeWorker>& worker :
        registry()->GetConnectedDataTypeWorkersForTest()) {
-    if (worker->GetModelType() == BOOKMARKS) {
+    if (worker->GetDataType() == BOOKMARKS) {
       worker->NudgeForCommit();
     }
   }
 
-  EXPECT_EQ(ModelTypeSet({BOOKMARKS}), registry()->GetTypesWithUnsyncedData());
+  EXPECT_EQ(DataTypeSet({BOOKMARKS}), registry()->GetTypesWithUnsyncedData());
 }
 
 }  // namespace

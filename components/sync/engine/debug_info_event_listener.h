@@ -8,7 +8,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/cycle/debug_info_getter.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/sync_encryption_handler.h"
@@ -31,7 +31,7 @@ class DebugInfoEventListener : public SyncManager::Observer,
  public:
   // Keep a few more events than there are data types, to ensure that any
   // data-type-specific events during first sync or startup aren't dropped.
-  static constexpr const size_t kMaxEvents = GetNumModelTypes() + 10;
+  static constexpr const size_t kMaxEvents = GetNumDataTypes() + 10;
 
   DebugInfoEventListener();
 
@@ -46,7 +46,7 @@ class DebugInfoEventListener : public SyncManager::Observer,
   void OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) override;
   void OnConnectionStatusChange(ConnectionStatus connection_status) override;
   void OnActionableProtocolError(const SyncProtocolError& sync_error) override;
-  void OnMigrationRequested(ModelTypeSet types) override;
+  void OnMigrationRequested(DataTypeSet types) override;
   void OnProtocolEvent(const ProtocolEvent& event) override;
   void OnSyncStatusChanged(const SyncStatus& status) override;
 
@@ -57,7 +57,7 @@ class DebugInfoEventListener : public SyncManager::Observer,
   void OnPassphraseAccepted() override;
   void OnTrustedVaultKeyRequired() override;
   void OnTrustedVaultKeyAccepted() override;
-  void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
+  void OnEncryptedTypesChanged(DataTypeSet encrypted_types,
                                bool encrypt_everything) override;
   void OnCryptographerStateChanged(Cryptographer* cryptographer,
                                    bool has_pending_keys) override;
@@ -65,7 +65,7 @@ class DebugInfoEventListener : public SyncManager::Observer,
                                base::Time explicit_passphrase_time) override;
 
   // Sync manager events.
-  void OnNudgeFromDatatype(ModelType datatype);
+  void OnNudgeFromDatatype(DataType datatype);
 
   // DebugInfoGetter implementation.
   sync_pb::DebugInfo GetDebugInfo() const override;

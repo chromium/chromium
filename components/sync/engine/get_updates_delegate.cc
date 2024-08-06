@@ -37,8 +37,8 @@ void NormalGetUpdatesDelegate::HelpPopulateGuMessage(
   for (int i = 0; i < get_updates->from_progress_marker_size(); ++i) {
     sync_pb::DataTypeProgressMarker* progress_marker =
         get_updates->mutable_from_progress_marker(i);
-    ModelType type =
-        GetModelTypeFromSpecificsFieldNumber(progress_marker->data_type_id());
+    DataType type =
+        GetDataTypeFromSpecificsFieldNumber(progress_marker->data_type_id());
 
     DCHECK(!nudge_tracker_->IsTypeBlocked(type))
         << "Throttled types should have been removed from the request_types.";

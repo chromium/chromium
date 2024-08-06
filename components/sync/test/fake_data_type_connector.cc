@@ -13,9 +13,9 @@ FakeDataTypeConnector::FakeDataTypeConnector() = default;
 FakeDataTypeConnector::~FakeDataTypeConnector() = default;
 
 void FakeDataTypeConnector::ConnectDataType(
-    ModelType type,
+    DataType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {}
 
-void FakeDataTypeConnector::DisconnectDataType(ModelType type) {}
+void FakeDataTypeConnector::DisconnectDataType(DataType type) {}
 
 }  // namespace syncer

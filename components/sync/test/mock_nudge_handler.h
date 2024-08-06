@@ -6,7 +6,7 @@
 #define COMPONENTS_SYNC_TEST_MOCK_NUDGE_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/nudge_handler.h"
 
 namespace syncer {
@@ -20,9 +20,9 @@ class MockNudgeHandler : public NudgeHandler {
 
   ~MockNudgeHandler() override;
 
-  void NudgeForInitialDownload(ModelType type) override;
-  void NudgeForCommit(ModelType type) override;
-  void SetHasPendingInvalidations(ModelType type,
+  void NudgeForInitialDownload(DataType type) override;
+  void NudgeForCommit(DataType type) override;
+  void SetHasPendingInvalidations(DataType type,
                                   bool has_pending_invalidations) override;
 
   int GetNumInitialDownloadNudges() const;

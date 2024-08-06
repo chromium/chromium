@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/cycle/commit_quota.h"
 
@@ -45,7 +45,7 @@ struct WaitInterval {
 // A class to track the per-type scheduling data.
 class DataTypeTracker {
  public:
-  explicit DataTypeTracker(ModelType type);
+  explicit DataTypeTracker(DataType type);
 
   DataTypeTracker(const DataTypeTracker&) = delete;
   DataTypeTracker& operator=(const DataTypeTracker&) = delete;
@@ -170,7 +170,7 @@ class DataTypeTracker {
  private:
   friend class SyncSchedulerImplTest;
 
-  const ModelType type_;
+  const DataType type_;
 
   // Number of local change nudges received for this type since the last
   // successful sync cycle.

@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace syncer {
 
@@ -78,7 +78,7 @@ struct SyncProtocolError {
   SyncProtocolErrorType error_type = UNKNOWN_ERROR;
   std::string error_description;
   ClientAction action = UNKNOWN_ACTION;
-  ModelTypeSet error_data_types;
+  DataTypeSet error_data_types;
 };
 
 const char* GetSyncErrorTypeString(SyncProtocolErrorType type);
