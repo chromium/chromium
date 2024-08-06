@@ -428,6 +428,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
       const base::flat_map<CSSSampleId, WebDXFeature>>
       kMap({
           {CSSSampleId::kAccentColor, WebDXFeature::kAccentColor},
+          {CSSSampleId::kAnchorName, WebDXFeature::kAnchorPositioning},
           {CSSSampleId::kAnimationComposition,
            WebDXFeature::kAnimationComposition},
           {CSSSampleId::kAppearance, WebDXFeature::kAppearance},

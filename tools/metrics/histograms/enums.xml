@@ -34005,6 +34005,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="94" label="CanvasTextBaselines"/>
   <int value="95" label="ColorMix"/>
   <int value="96" label="AriaAttributeReflection"/>
+  <int value="97" label="AnchorPositioning"/>
 </enum>
 
 <enum name="WebFontCacheHit">
