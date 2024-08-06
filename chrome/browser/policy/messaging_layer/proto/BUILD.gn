@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -14,9 +15,42 @@ proto_library("crd_event_proto") {
 
 proto_library("log_upload_event_proto") {
   proto_in_dir = "//"
-
   sources = [ "synced/log_upload_event.proto" ]
-
   import_dirs = [ "//components/reporting/proto/synced" ]
   deps = [ "//components/reporting/proto:upload_tracker_proto" ]
+}
+
+if (is_chromeos_ash) {
+  proto_library("app_install_events_proto") {
+    proto_in_dir = "//"
+    sources = [ "synced/app_install_events.proto" ]
+  }
+
+  proto_library("add_remove_user_event_proto") {
+    proto_in_dir = "//"
+    sources = [ "synced/add_remove_user_event.proto" ]
+    import_dirs = [ "//components/reporting/proto/synced" ]
+    deps = [ "//components/reporting/proto:session_affiliated_user_proto" ]
+  }
+
+  proto_library("login_logout_event_proto") {
+    proto_in_dir = "//"
+    sources = [ "synced/login_logout_event.proto" ]
+    import_dirs = [ "//components/reporting/proto/synced" ]
+    deps = [ "//components/reporting/proto:session_affiliated_user_proto" ]
+  }
+
+  proto_library("lock_unlock_event_proto") {
+    proto_in_dir = "//"
+    sources = [ "synced/lock_unlock_event.proto" ]
+    import_dirs = [ "//components/reporting/proto/synced" ]
+    deps = [ "//components/reporting/proto:session_affiliated_user_proto" ]
+  }
+
+  proto_library("os_events_proto") {
+    proto_in_dir = "//"
+    sources = [ "synced/os_events.proto" ]
+    import_dirs = [ "//components/reporting/proto/synced" ]
+    deps = [ "//components/reporting/proto:session_affiliated_user_proto" ]
+  }
 }
