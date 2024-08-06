@@ -13878,6 +13878,47 @@
       {
         "args": [
           "--git-revision=${got_revision}",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.chrome_public_test_apk.filter",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "chrome_public_test_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "chrome_public_test_apk",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "AP2A.240705.004",
+            "device_os_type": "userdebug",
+            "device_type": "panther",
+            "os": "Android"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 19
+        },
+        "test": "chrome_public_test_apk",
+        "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
+      },
+      {
+        "args": [
+          "--git-revision=${got_revision}",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

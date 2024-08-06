@@ -1374,8 +1374,6 @@
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # Does not generate profraw data.
-      # TODO(crbug.com/352811552): Enable with "ci_only" once green
-      'android-14-arm64-rel',
     ],
     'modifications': {
       'android-11-x86-rel': {
@@ -1431,10 +1429,11 @@
           'shards': 40,
         },
       },
-      'android-14-arm64-fyi-rel': {
+      'android-14-arm64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.chrome_public_test_apk.filter',
         ],
+        'ci_only': True,
       },
       'android-14-x64-rel': {
         'args': [
@@ -1517,8 +1516,6 @@
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # Does not generate profraw data.
-      # TODO(crbug.com/352811552): Remove after test group is fully promoted.
-      'android-14-arm64-fyi-rel',
     ],
     'modifications': {
       'android-12-x64-rel': {

@@ -6635,7 +6635,6 @@
     },
 
     'android_14_device_fyi_gtests': {
-      'chrome_public_tests': {},
       'system_webview_shell_instrumentation_tests': {},
       'webview_trichrome_64_cts_tests_suite': {
         'variants': [
