@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
+#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_delegate.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/device_reauth/device_authenticator.h"
@@ -45,6 +46,7 @@ class TouchToFillControllerAutofillDelegate
       gfx::NativeWindow,
       Profile*,
       password_manager::metrics_util::PasswordMigrationWarningTriggers)>;
+  using ShowDataLossWarningCallback = base::RepeatingCallback<void(void)>;
 
   // The action a user took when interacting with the Touch To Fill sheet.
   //
@@ -89,7 +91,9 @@ class TouchToFillControllerAutofillDelegate
       const password_manager::PasswordForm* form_to_fill,
       autofill::FieldRendererId focused_field_renderer_id,
       ShowHybridOption should_show_hybrid_option,
-      ShowPasswordMigrationWarningCallback show_password_migration_warning);
+      ShowPasswordMigrationWarningCallback show_password_migration_warning,
+      std::unique_ptr<PasswordAccessLossWarningBridge>
+          data_loss_warning_bridge);
 
   TouchToFillControllerAutofillDelegate(
       ChromePasswordManagerClient* password_client,
@@ -170,12 +174,16 @@ class TouchToFillControllerAutofillDelegate
 
   autofill::FieldRendererId focused_field_renderer_id_;
 
-  // Shows the password migration warning (expected to be shown after filing
+  // Whether the controller should show an option for passkey hybrid sign-in.
+  ShowHybridOption should_show_hybrid_option_ = ShowHybridOption(false);
+
+  // Shows the password migration warning (expected to be shown after filling
   // user's credentials).
   ShowPasswordMigrationWarningCallback show_password_migration_warning_;
 
-  // Whether the controller should show an option for passkey hybrid sign-in.
-  ShowHybridOption should_show_hybrid_option_ = ShowHybridOption(false);
+  // Bridge used to show the data loss warning (expected to be shown after
+  // filling user's credentials).
+  std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge_;
 
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
 };
