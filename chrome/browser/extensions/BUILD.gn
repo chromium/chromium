@@ -413,8 +413,6 @@ source_set("extensions") {
     "api/web_view/chrome_web_view_internal_api.h",
     "api/webrtc_audio_private/webrtc_audio_private_api.cc",
     "api/webrtc_audio_private/webrtc_audio_private_api.h",
-    "api/webrtc_desktop_capture_private/webrtc_desktop_capture_private_api.cc",
-    "api/webrtc_desktop_capture_private/webrtc_desktop_capture_private_api.h",
     "api/webrtc_logging_private/webrtc_logging_private_api.cc",
     "api/webrtc_logging_private/webrtc_logging_private_api.h",
     "api/webstore_private/extension_install_status.cc",
