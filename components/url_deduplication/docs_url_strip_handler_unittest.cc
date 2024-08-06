@@ -30,4 +30,11 @@ TEST_F(DocsURLStripHandlerTest, StripURL) {
   ASSERT_EQ("https://drive.google.com/open?id=document1", stripped_url.spec());
 }
 
+TEST_F(DocsURLStripHandlerTest, StripURLNonDocsURL) {
+  GURL full_url = GURL(
+      "https://nondocsurl.com/document/d/document1#heading=h.xaresuk9ir9a");
+  GURL stripped_url = Handler()->StripExtraParams(full_url);
+  ASSERT_EQ("", stripped_url.spec());
+}
+
 }  // namespace url_deduplication

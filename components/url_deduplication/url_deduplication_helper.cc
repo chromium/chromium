@@ -29,9 +29,12 @@ URLDeduplicationHelper::~URLDeduplicationHelper() = default;
 std::string URLDeduplicationHelper::ComputeURLDeduplicationKey(GURL url) {
   GURL stripped_destination_url = url;
   for (auto& handler : strip_handlers_) {
-    stripped_destination_url = handler->StripExtraParams(url);
+    GURL temp_url = handler->StripExtraParams(url);
+    if (temp_url.is_valid() && !temp_url.is_empty()) {
+      stripped_destination_url = temp_url;
+    }
     if (stripped_destination_url != url) {
-      break;
+      return stripped_destination_url.spec();
     }
   }
 
@@ -67,6 +70,11 @@ std::string URLDeduplicationHelper::ComputeURLDeduplicationKey(GURL url) {
     needs_replacement = true;
   }
 
+  if (strategy_.clear_query) {
+    replacements.ClearQuery();
+    needs_replacement = true;
+  }
+
   if (strategy_.clear_username) {
     replacements.ClearUsername();
     needs_replacement = true;
@@ -74,11 +82,6 @@ std::string URLDeduplicationHelper::ComputeURLDeduplicationKey(GURL url) {
 
   if (strategy_.clear_password) {
     replacements.ClearPassword();
-    needs_replacement = true;
-  }
-
-  if (strategy_.clear_query) {
-    replacements.ClearQuery();
     needs_replacement = true;
   }
 
