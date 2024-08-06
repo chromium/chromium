@@ -5,6 +5,7 @@
 #ifndef MEDIA_BASE_AUDIO_SAMPLE_TYPES_H_
 #define MEDIA_BASE_AUDIO_SAMPLE_TYPES_H_
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <limits>
@@ -63,13 +64,11 @@ class FloatSampleTypeTraits {
   static constexpr SampleType From(FloatType source_value) {
     // Apply clipping (aka. clamping). These values are frequently sent to OS
     // level drivers that may not properly handle these values.
-    if (UNLIKELY(!(source_value >= kMinValue))) {
-      return kMinValue;
-    }
-    if (UNLIKELY(source_value >= kMaxValue)) {
-      return kMaxValue;
-    }
-    return static_cast<SampleType>(source_value);
+    // Note: Passing NaN to `std::clamp()` is UB.
+    return std::isnan(source_value)
+               ? kMinValue
+               : std::clamp(static_cast<SampleType>(source_value), kMinValue,
+                            kMaxValue);
   }
 
   template <typename FloatType>

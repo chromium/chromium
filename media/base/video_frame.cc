@@ -1485,7 +1485,7 @@ template <typename T>
 T VideoFrame::GetVisibleDataInternal(T data, size_t plane) const {
   DCHECK(IsValidPlane(format(), plane));
   DCHECK(IsMappable());
-  if (UNLIKELY(!data)) {
+  if (!data) [[unlikely]] {
     return nullptr;
   }
 

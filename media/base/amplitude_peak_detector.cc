@@ -43,7 +43,7 @@ void AmplitudePeakDetector::SetIsTracingEnabledForTests(
 void AmplitudePeakDetector::FindPeak(const void* data,
                                      int frames,
                                      int bytes_per_sample) {
-  if (LIKELY(!is_tracing_enabled_)) {
+  if (!is_tracing_enabled_) [[likely]] {
     return;
   }
 
@@ -51,7 +51,7 @@ void AmplitudePeakDetector::FindPeak(const void* data,
 }
 
 void AmplitudePeakDetector::FindPeak(const AudioBus* audio_bus) {
-  if (LIKELY(!is_tracing_enabled_)) {
+  if (!is_tracing_enabled_) [[likely]] {
     return;
   }
 
