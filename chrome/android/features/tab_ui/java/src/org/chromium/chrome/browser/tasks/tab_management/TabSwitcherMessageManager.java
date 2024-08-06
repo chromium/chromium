@@ -259,8 +259,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
      * coordinator.
      */
     public void registerMessages(@NonNull TabListCoordinator tabListCoordinator) {
-        if (tabListCoordinator.getTabListMode() != TabListCoordinator.TabListMode.GRID) return;
-
         tabListCoordinator.registerItemType(
                 TabProperties.UiType.MESSAGE,
                 new LayoutViewBuilder(R.layout.tab_grid_message_card_item),
@@ -281,7 +279,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     public void initWithNative(@NonNull Profile profile, @TabListMode int mode) {
         assert profile != null;
         mProfile = profile;
-        if (mode != TabListCoordinator.TabListMode.GRID) return;
 
         if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
             mArchivedTabsMessageService =
