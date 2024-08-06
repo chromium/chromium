@@ -429,6 +429,13 @@
     <div class="more-options">
       <!-- Menu and/or quick action(s). -->
       <div role="gridcell" id="action-icon-buttons">
+        <cr-icon-button id="copy-download-link" iron-icon="downloads:link"
+            hidden="[[!computeShowCopyDownloadLink_(data.url)]]"
+            title="$i18n{controlCopyDownloadLink}"
+            aria-label$="$i18n{controlCopyDownloadLink}"
+            on-click="onCopyDownloadLinkClick_"
+            focus-row-control focus-type="copyDownloadLink">
+        </cr-icon-button>
         <cr-icon-button id="more-actions" iron-icon="cr:more-vert"
             hidden="[[!computeShowActionMenu_(pauseOrResumeText_,
                 isDangerous_, isReviewable_, showDeepScan_, showCancel_,

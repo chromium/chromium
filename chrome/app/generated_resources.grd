@@ -2379,6 +2379,11 @@ are declared in tools/grit/grit_rule.gni.
         Deleted <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> from download history
       </message>
 
+      <message name="IDS_DOWNLOADS_TOAST_COPIED_DOWNLOAD_LINK"
+               desc="On the chrome://downloads page, the text for the toast shown when the user copies a download's url.">
+        <ph name="DOWNLOAD_URL">$1<ex>https://example.com</ex></ph> copied to clipboard
+      </message>
+
       <if expr="is_chromeos">
         <message name="IDS_PROMPT_BLOCKED_INSECURE_DOWNLOAD_TITLE"
                  desc="In the download notification, a title of the message shown on a download blocked for being insecure.">
@@ -2579,6 +2584,10 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_DELETE_FROM_HISTORY"
                desc="On the downloads page, the label for the button to remove a downloaded file from the history.">
         Delete from history
+      </message>
+      <message name="IDS_DOWNLOAD_COPY_DOWNLOAD_LINK"
+               desc="On the downloads page, the label for the button to copy a download's url to clipboard.">
+        Copy download link
       </message>
 
       <message name="IDS_DOWNLOAD_DANGEROUS_ICON_ACCESSIBLE_LABEL"
