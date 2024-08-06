@@ -103,11 +103,14 @@ export class PowerBookmarkRowElement extends CrLitElement {
     super.updated(changedProperties);
 
     if (changedProperties.has('listItemSize')) {
-      this.onListItemSizeChanged_();
+      this.handleListItemSizeChanged_();
+    }
+    if (changedProperties.has('toggleExpand')) {
+      this.handlePowerBookmarkToggle_();
     }
     if (changedProperties.has('renamingId') ||
         changedProperties.has('bookmark')) {
-      if(this.renamingId === this.bookmark?.id){
+      if (this.renamingId === this.bookmark?.id) {
         this.onInputDisplayChange_();
       }
     }
@@ -150,6 +153,21 @@ export class PowerBookmarkRowElement extends CrLitElement {
     }
   }
 
+  protected handlePowerBookmarkToggle_() {
+    this.dispatchEvent(new CustomEvent('power-bookmark-toggle', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  protected async handleListItemSizeChanged_() {
+    await this.$.crUrlListItem.updateComplete;
+    this.dispatchEvent(new CustomEvent('list-item-size-changed', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   protected renamingItem_(id: string) {
     return id === this.renamingId;
   }
@@ -158,20 +176,16 @@ export class PowerBookmarkRowElement extends CrLitElement {
     return !!this.bookmarksService?.bookmarkIsSelected(this.bookmark);
   }
 
-  private async onListItemSizeChanged_() {
-    await this.$.crUrlListItem.updateComplete;
-    if (this.parentNode &&
-        (this.parentNode as HTMLElement).tagName === 'IRON-LIST') {
-      this.parentNode.dispatchEvent(new CustomEvent('iron-resize'));
-    }
-  }
-
   protected isBookmarksBar_(): boolean {
     return this.bookmark?.id === loadTimeData.getString('bookmarksBarId');
   }
 
   protected showTrailingIcon_(): boolean {
     return !this.renamingItem_(this.bookmark?.id) && !this.hasCheckbox;
+  }
+
+  protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.toggleExpand = e.detail.value;
   }
 
   private onInputDisplayChange_() {
@@ -190,6 +204,11 @@ export class PowerBookmarkRowElement extends CrLitElement {
     // bookmark, or if the event is a right-click.
     if (this.renamingItem_(this.bookmark?.id) || !this.bookmark ||
         event.button === 2) {
+      return;
+    }
+    // In compact view, if the item is a folder, ignore row clicks to toggle
+    // the folder.
+    if (this.shouldExpand_() && !this.hasCheckbox) {
       return;
     }
     event.preventDefault();
@@ -345,6 +364,11 @@ export class PowerBookmarkRowElement extends CrLitElement {
   protected getBookmarkForceHover_(bookmark: chrome.bookmarks.BookmarkTreeNode):
       boolean {
     return bookmark === this.contextMenuBookmark;
+  }
+
+  protected shouldExpand_(): boolean|undefined {
+    return this.bookmark?.children && this.bookmark?.children.length > 0 &&
+        this.bookmarksTreeViewEnabled && this.compact;
   }
 
   protected canEdit_(bookmark: chrome.bookmarks.BookmarkTreeNode): boolean {

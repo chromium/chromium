@@ -695,4 +695,37 @@ suite('SidePanelPowerBookmarksListTest', () => {
     // Assert that the expand button is not present for single bookmarks
     assertFalse(!!expandButton);
   });
+
+  test('ExpandAndCollapseNestedBookmarks', async () => {
+    // Enabling the feature flag for expanding/collapsing nested bookmarks test.
+    loadTimeData.overrideValues({bookmarksTreeViewEnabled: true});
+    await initializeUI();
+
+    const folderElement = getPowerBookmarksRowElement('5');
+    assertTrue(!!folderElement);
+
+    const expandButton =
+        folderElement.shadowRoot!.querySelector<PowerBookmarkRowElement>('#expandButton');
+    assertTrue(!!expandButton);
+
+    expandButton.click();
+    await expandButton.updateComplete;
+    await folderElement.updateComplete;
+
+    // Verify nested bookmarks are now visible
+    const nestedBookmarkElement =
+        folderElement.shadowRoot!.querySelector<PowerBookmarkRowElement>(
+            '#bookmark-6');
+    assertTrue(!!nestedBookmarkElement);
+
+    expandButton.click();
+    await expandButton.updateComplete;
+    await folderElement.updateComplete;
+
+    // Verify nested bookmarks are no longer visible
+    const collapsedNestedBookmarkElement =
+        folderElement.shadowRoot!.querySelector<PowerBookmarkRowElement>(
+            '#bookmark-6');
+    assertFalse(!!collapsedNestedBookmarkElement);
+  });
 });
