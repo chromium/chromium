@@ -65,10 +65,14 @@ class AsyncDomStorageDatabase {
 
     DomStorageDatabase::Key prefix;
     bool clear_all_first;
+
     std::vector<DomStorageDatabase::KeyValuePair> entries_to_add;
     std::vector<DomStorageDatabase::Key> keys_to_delete;
     std::optional<DomStorageDatabase::Key> copy_to_prefix;
     std::vector<base::TimeTicks> timestamps;
+
+    // For metrics.
+    size_t data_size;
   };
 
   // An interface that represents a source of commits. Practically speaking,

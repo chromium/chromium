@@ -244,7 +244,21 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The total in-memory size of a single batched commit to a DOMStorage
-    database. Recorded when the batch is pushed to LevelDB.
+    database. Recorded when the batch is pushed to LevelDB. In this case, a
+    &quot;batched commit&quot; is all the recent writes to a single storage area
+    (i.e. a single site's DOM storage).
+  </summary>
+</histogram>
+
+<histogram name="DOMStorage.CommitSizeBytesAggregated" units="bytes"
+    expires_after="2024-11-28">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The total in-memory size of a LevelDB writebatch for the DOMStorage
+    database. Recorded when the batch is pushed to LevelDB. Unlike
+    CommitSizeBytes, this may contain data from multiple storage areas (sites)
+    if commit coalescing is enabled.
   </summary>
 </histogram>
 

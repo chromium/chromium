@@ -824,6 +824,7 @@ StorageAreaImpl::CollectCommit() {
                                  /*buckets=*/100);
 
   data_rate_limiter_.add_samples(data_size);
+  commit.data_size = data_size;
 
   ++commit_batches_in_flight_;
   commit_batch_.reset();
