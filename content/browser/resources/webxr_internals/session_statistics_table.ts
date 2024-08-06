@@ -8,9 +8,10 @@ import {getTemplate} from './session_statistics_table.html.js';
 import type {XrFrameStatistics} from './xr_session.mojom-webui.js';
 
 
-const COLUMN_NAMES = ['Total Duration', 'Frame Rate', 'Dropped Frames'];
+const COLUMN_NAMES = ['Total Duration (ms)', 'Frame Rate', 'Dropped Frames'];
 
 export class SessionStatisticsTable extends CustomElement {
+  textLines: string[];
   totalDuration: bigint;
   static override get template() {
     return getTemplate();
@@ -20,6 +21,7 @@ export class SessionStatisticsTable extends CustomElement {
     super();
 
     this.totalDuration = 0n;
+    this.textLines = [COLUMN_NAMES.join(', ')];
 
     const table =
         this.getRequiredElement<HTMLTableElement>('#session-statistics-table');
@@ -29,6 +31,13 @@ export class SessionStatisticsTable extends CustomElement {
       const headerCell = document.createElement('th');
       headerCell.textContent = columnName;
       headerRow.appendChild(headerCell);
+    });
+
+
+    // Add event listener to the button
+    const button = this.getRequiredElement<HTMLTableElement>('#copy-button');
+    button.addEventListener('click', () => {
+      this.copyToClipboard();
     });
   }
 
@@ -40,9 +49,9 @@ export class SessionStatisticsTable extends CustomElement {
 
     const fps = xrSessionStatistics.numFrames / durationInSeconds;
     const droppedFrames = xrSessionStatistics.droppedFrames / durationInSeconds;
-    const cellValues =
-        [`${this.totalDuration}ms`, `${fps}`, `${droppedFrames}`];
+    const cellValues = [`${this.totalDuration}`, `${fps}`, `${droppedFrames}`];
 
+    this.textLines.push(cellValues.join(', '));
     this.addRow(cellValues);
   }
 
@@ -55,6 +64,12 @@ export class SessionStatisticsTable extends CustomElement {
       const cell = newRow.insertCell();
       cell.textContent = value;
     });
+  }
+
+  // Method to copy textLines to clipboard
+  async copyToClipboard(): Promise<void> {
+    const textToCopy = this.textLines.join('\n');
+    await navigator.clipboard.writeText(textToCopy);
   }
 }
 
