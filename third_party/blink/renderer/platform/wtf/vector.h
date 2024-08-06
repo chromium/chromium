@@ -195,8 +195,9 @@ struct VectorTypeOperations {
                    T* const src_end,
                    T* const dst,
                    VectorOperationOrigin origin) {
-    if (!LIKELY(src && dst))
+    if (!src || !dst) [[unlikely]] {
       return;
+    }
     if constexpr (!VectorTraits<T>::kCanMoveWithMemcpy) {
       if (origin == VectorOperationOrigin::kConstruction) {
         for (T *s = src, *d = dst; s != src_end; ++s, ++d) {
@@ -231,8 +232,9 @@ struct VectorTypeOperations {
                               T* const src_end,
                               T* const dst,
                               VectorOperationOrigin origin) {
-    if (!LIKELY(src && dst))
+    if (!src || !dst) [[unlikely]] {
       return;
+    }
     if constexpr (!VectorTraits<T>::kCanMoveWithMemcpy) {
       if (dst < src) {
         Move(src, src_end, dst, origin);
@@ -337,7 +339,7 @@ struct VectorTypeOperations {
                                 T* dst,
                                 VectorOperationOrigin origin,
                                 Proj proj = {}) {
-    if (!LIKELY(dst && src)) {
+    if (!dst || !src) [[unlikely]] {
       return;
     }
     if constexpr (std::is_same_v<T, U> && std::is_same_v<Proj, std::identity> &&
@@ -363,8 +365,9 @@ struct VectorTypeOperations {
                                 T* dst_end,
                                 const T& val,
                                 VectorOperationOrigin origin) {
-    if (!LIKELY(dst))
+    if (!dst) [[unlikely]] {
       return;
+    }
     if constexpr (VectorTraits<T>::kCanFillWithMemset) {
       static_assert(sizeof(T) == sizeof(char), "size of type should be one");
       static_assert(!Allocator::kIsGarbageCollected,
@@ -671,8 +674,9 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
   }
 
   void DeallocateBuffer(T* buffer_to_deallocate) {
-    if (UNLIKELY(buffer_to_deallocate != InlineBuffer()))
+    if (buffer_to_deallocate != InlineBuffer()) [[unlikely]] {
       ReallyDeallocateBuffer(buffer_to_deallocate);
+    }
   }
 
   bool ExpandBuffer(wtf_size_t new_capacity) {
@@ -1533,14 +1537,17 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
     static_assert(!Allocator::kIsGarbageCollected || INLINE_CAPACITY,
                   "GarbageCollected collections without inline capacity cannot "
                   "be finalized.");
-    if (!INLINE_CAPACITY && LIKELY(!Base::Buffer())) {
-      return;
+    if (!INLINE_CAPACITY) {
+      if (!Base::Buffer()) [[likely]] {
+        return;
+      }
     }
     ANNOTATE_DELETE_BUFFER(begin(), capacity(), size_);
-    if (LIKELY(size_) &&
-        !(Allocator::kIsGarbageCollected && this->HasOutOfLineBuffer())) {
-      TypeOperations::Destruct(begin(), end());
-      size_ = 0;  // Partial protection against use-after-free.
+    if (size_) [[likely]] {
+      if (!Allocator::kIsGarbageCollected || !this->HasOutOfLineBuffer()) {
+        TypeOperations::Destruct(begin(), end());
+        size_ = 0;  // Partial protection against use-after-free.
+      }
     }
 
     // For garbage collected vector HeapAllocator::BackingFree() will bail out
@@ -1705,8 +1712,9 @@ template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 Vector<T, InlineCapacity, Allocator>&
 Vector<T, InlineCapacity, Allocator>::operator=(
     const Vector<T, InlineCapacity, Allocator>& other) {
-  if (UNLIKELY(&other == this))
+  if (&other == this) [[unlikely]] {
     return *this;
+  }
 
   if (size() > other.size()) {
     Shrink(other.size());
@@ -1992,8 +2000,9 @@ void Vector<T, InlineCapacity, Allocator>::Grow(wtf_size_t size) {
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 void Vector<T, InlineCapacity, Allocator>::reserve(wtf_size_t new_capacity) {
-  if (UNLIKELY(new_capacity <= capacity()))
+  if (new_capacity <= capacity()) [[unlikely]] {
     return;
+  }
   if (!data()) {
     Base::AllocateBuffer(new_capacity,
                          VectorOperationOrigin::kRegularModification);
@@ -2087,7 +2096,7 @@ template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
 ALWAYS_INLINE void Vector<T, InlineCapacity, Allocator>::push_back(U&& val) {
   DCHECK(Allocator::IsAllocationAllowed());
-  if (LIKELY(size() != capacity())) {
+  if (size() != capacity()) [[likely]] {
     MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, begin(), capacity(), size_,
                                        size_ + 1);
     ConstructTraits<T, VectorTraits<T>, Allocator>::ConstructAndNotifyElement(
@@ -2104,8 +2113,9 @@ template <typename... Args>
 ALWAYS_INLINE T& Vector<T, InlineCapacity, Allocator>::emplace_back(
     Args&&... args) {
   DCHECK(Allocator::IsAllocationAllowed());
-  if (UNLIKELY(size() == capacity()))
+  if (size() == capacity()) [[unlikely]] {
     ExpandCapacity(size() + 1);
+  }
 
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, begin(), capacity(), size_,
                                      size_ + 1);

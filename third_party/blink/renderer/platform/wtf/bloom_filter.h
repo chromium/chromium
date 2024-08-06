@@ -191,10 +191,12 @@ template <unsigned keyBits>
 inline void CountingBloomFilter<keyBits>::Add(unsigned hash) {
   uint8_t& first = FirstSlot(hash);
   uint8_t& second = SecondSlot(hash);
-  if (LIKELY(first < MaximumCount()))
+  if (first < MaximumCount()) [[likely]] {
     ++first;
-  if (LIKELY(second < MaximumCount()))
+  }
+  if (second < MaximumCount()) [[likely]] {
     ++second;
+  }
 }
 
 template <unsigned keyBits>
@@ -204,10 +206,12 @@ inline void CountingBloomFilter<keyBits>::Remove(unsigned hash) {
   DCHECK(first);
   DCHECK(second);
   // In case of an overflow, the slot sticks in the table until clear().
-  if (LIKELY(first < MaximumCount()))
+  if (first < MaximumCount()) [[likely]] {
     --first;
-  if (LIKELY(second < MaximumCount()))
+  }
+  if (second < MaximumCount()) [[likely]] {
     --second;
+  }
 }
 
 template <unsigned keyBits>

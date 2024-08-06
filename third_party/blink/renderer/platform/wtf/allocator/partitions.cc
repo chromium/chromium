@@ -377,7 +377,7 @@ size_t Partitions::BufferPotentialCapacity(size_t n) {
 // static
 void* Partitions::FastMalloc(size_t n, const char* type_name) {
   auto* fast_malloc_partition = FastMallocPartition();
-  if (UNLIKELY(fast_malloc_partition)) {
+  if (fast_malloc_partition) [[unlikely]] {
     return fast_malloc_partition->Alloc(n, type_name);
   } else {
     return malloc(n);
@@ -387,7 +387,7 @@ void* Partitions::FastMalloc(size_t n, const char* type_name) {
 // static
 void* Partitions::FastZeroedMalloc(size_t n, const char* type_name) {
   auto* fast_malloc_partition = FastMallocPartition();
-  if (UNLIKELY(fast_malloc_partition)) {
+  if (fast_malloc_partition) [[unlikely]] {
     return fast_malloc_partition
         ->AllocInline<partition_alloc::AllocFlags::kZeroFill>(n, type_name);
   } else {
@@ -398,7 +398,7 @@ void* Partitions::FastZeroedMalloc(size_t n, const char* type_name) {
 // static
 void Partitions::FastFree(void* p) {
   auto* fast_malloc_partition = FastMallocPartition();
-  if (UNLIKELY(fast_malloc_partition)) {
+  if (fast_malloc_partition) [[unlikely]] {
     fast_malloc_partition->Free(p);
   } else {
     free(p);

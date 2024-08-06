@@ -65,7 +65,7 @@ class WTF_EXPORT StringView {
     template <typename CharT>
     CharT* Realloc(int length) {
       size_t size = length * sizeof(CharT);
-      if (UNLIKELY(size > sizeof(stackbuf16_))) {
+      if (size > sizeof(stackbuf16_)) [[unlikely]] {
         heapbuf_.reset(reinterpret_cast<char*>(
             WTF::Partitions::BufferMalloc(size, "StackBackingStore")));
         return reinterpret_cast<CharT*>(heapbuf_.get());

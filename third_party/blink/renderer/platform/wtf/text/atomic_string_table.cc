@@ -97,8 +97,9 @@ struct UCharBufferTranslator {
 struct StringViewLookupTranslator {
   static unsigned GetHash(const StringView& buf) {
     StringImpl* shared_impl = buf.SharedImpl();
-    if (LIKELY(shared_impl))
+    if (shared_impl) [[likely]] {
       return shared_impl->GetHash();
+    }
 
     if (buf.Is8Bit()) {
       return StringHasher::ComputeHashAndMaskTop8Bits(
