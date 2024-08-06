@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
@@ -128,6 +129,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -901,7 +903,7 @@ public class TabListMediatorUnitTest {
                 .getValue()
                 .onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
 
-        verify(mTabModel).closeTab(eq(mTab2), eq(null), eq(false), eq(true));
+        verify(mTabModel).closeTabs(argThat(params -> params.tabs.get(0) == mTab2));
     }
 
     @Test
@@ -918,7 +920,7 @@ public class TabListMediatorUnitTest {
                 .getValue()
                 .onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
 
-        verify(mTabModel).closeTab(eq(mTab2), eq(null), eq(false), eq(false));
+        verify(mTabModel).closeTabs(argThat(params -> params.tabs.get(0) == mTab2));
     }
 
     @Test
@@ -935,7 +937,7 @@ public class TabListMediatorUnitTest {
                 .getValue()
                 .onResult(ConfirmationResult.CONFIRMATION_NEGATIVE);
 
-        verify(mTabModel, never()).closeTab(any(), any(), anyBoolean(), anyBoolean());
+        verify(mTabModel, never()).closeTabs(any());
     }
 
     @Test
@@ -947,7 +949,7 @@ public class TabListMediatorUnitTest {
                 .run(mItemView2, mModel.get(1).model.get(TabProperties.TAB_ID));
 
         verify(mActionConfirmationManager, never()).processCloseTabAttempt(any(), any());
-        verify(mTabModel).closeTab(eq(mTab2), eq(null), eq(false), eq(true));
+        verify(mTabModel).closeTabs(argThat(params -> params.tabs.get(0) == mTab2));
     }
 
     @Test
@@ -960,7 +962,7 @@ public class TabListMediatorUnitTest {
                 .run(mItemView2, mModel.get(1).model.get(TabProperties.TAB_ID));
 
         verify(mActionConfirmationManager, never()).processCloseTabAttempt(any(), any());
-        verify(mTabModel).closeTab(eq(mTab2), eq(null), eq(false), eq(true));
+        verify(mTabModel).closeTabs(argThat(params -> params.tabs.get(0) == mTab2));
     }
 
     @Test
@@ -4109,7 +4111,7 @@ public class TabListMediatorUnitTest {
         when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
         mMediator.onMenuItemClicked(R.id.close_tab, TAB1_ID);
         verify(mTabGroupModelFilter)
-                .closeMultipleTabs(tabs, /* canUndo= */ true, /* hideTabGroups= */ true);
+                .closeTabs(TabClosureParams.closeTabs(tabs).hideTabGroups(true).build());
     }
 
     @Test
@@ -4156,8 +4158,7 @@ public class TabListMediatorUnitTest {
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
         mMediator.onMenuItemClicked(R.id.delete_tab, TAB1_ID);
-        verify(mIncognitoTabGroupModelFilter)
-                .closeMultipleTabs(tabs, /* canUndo= */ true, /* hideTabGroups= */ false);
+        verify(mIncognitoTabGroupModelFilter).closeTabs(TabClosureParams.closeTabs(tabs).build());
     }
 
     @Test
@@ -4178,7 +4179,7 @@ public class TabListMediatorUnitTest {
         when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
         mMediator.onMenuItemClicked(R.id.close_tab, TAB1_ID);
         verify(mTabGroupModelFilter)
-                .closeMultipleTabs(tabs, /* canUndo= */ true, /* hideTabGroups= */ true);
+                .closeTabs(TabClosureParams.closeTabs(tabs).hideTabGroups(true).build());
     }
 
     @Test

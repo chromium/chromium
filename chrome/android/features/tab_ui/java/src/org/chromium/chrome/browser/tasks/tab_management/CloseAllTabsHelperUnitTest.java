@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -117,8 +117,8 @@ public class CloseAllTabsHelperUnitTest {
     public void testCloseAllTabsHidingTabGroups() {
         CloseAllTabsHelper.closeAllTabsHidingTabGroups(mTabModelSelector);
 
-        verify(mRegularTabGroupModelFilter).closeAllTabs(false, true);
-        verify(mIncognitoTabGroupModelFilter).closeAllTabs(false, true);
+        verify(mRegularTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
+        verify(mIncognitoTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
     }
 
     @Test
@@ -133,12 +133,11 @@ public class CloseAllTabsHelperUnitTest {
                         /* isIncognitoOnly= */ false);
         r.run();
 
-        verify(mRegularTabGroupModelFilter).closeAllTabs(false, true);
-        verify(mIncognitoTabGroupModelFilter).closeAllTabs(false, true);
+        verify(mRegularTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
+        verify(mIncognitoTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
 
         verifyNoInteractions(mRegularTabSwitcher);
         verifyNoInteractions(mIncognitoTabSwitcher);
-        verify(mIncognitoTabModel, never()).closeAllTabs();
     }
 
     @Test
@@ -153,12 +152,12 @@ public class CloseAllTabsHelperUnitTest {
                         /* isIncognitoOnly= */ true);
         r.run();
 
-        verify(mIncognitoTabModel).closeAllTabs(false);
+        verify(mIncognitoTabModel).closeTabs(argThat(params -> params.isAllTabs));
 
         verifyNoInteractions(mRegularTabSwitcher);
         verifyNoInteractions(mIncognitoTabSwitcher);
-        verify(mRegularTabGroupModelFilter, never()).closeAllTabs(anyBoolean(), anyBoolean());
-        verify(mIncognitoTabGroupModelFilter, never()).closeAllTabs(anyBoolean(), anyBoolean());
+        verify(mRegularTabGroupModelFilter, never()).closeTabs(any());
+        verify(mIncognitoTabGroupModelFilter, never()).closeTabs(any());
     }
 
     @Test
@@ -175,12 +174,12 @@ public class CloseAllTabsHelperUnitTest {
                         /* isIncognitoOnly= */ true);
         r.run();
 
-        verify(mIncognitoTabModel).closeAllTabs(false);
+        verify(mIncognitoTabModel).closeTabs(argThat(params -> params.isAllTabs));
 
         verifyNoInteractions(mRegularTabSwitcher);
         verifyNoInteractions(mIncognitoTabSwitcher);
-        verify(mRegularTabGroupModelFilter, never()).closeAllTabs(anyBoolean(), anyBoolean());
-        verify(mIncognitoTabGroupModelFilter, never()).closeAllTabs(anyBoolean(), anyBoolean());
+        verify(mRegularTabGroupModelFilter, never()).closeTabs(any());
+        verify(mIncognitoTabGroupModelFilter, never()).closeTabs(any());
     }
 
     @Test
@@ -196,12 +195,11 @@ public class CloseAllTabsHelperUnitTest {
                         /* isIncognitoOnly= */ false);
         r.run();
 
-        verify(mRegularTabGroupModelFilter).closeAllTabs(false, true);
-        verify(mIncognitoTabGroupModelFilter).closeAllTabs(false, true);
+        verify(mRegularTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
+        verify(mIncognitoTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
 
         verifyNoInteractions(mRegularTabSwitcher);
         verifyNoInteractions(mIncognitoTabSwitcher);
-        verify(mIncognitoTabModel, never()).closeAllTabs();
     }
 
     @Test
@@ -223,11 +221,11 @@ public class CloseAllTabsHelperUnitTest {
         r.run();
 
         verify(mIncognitoTabSwitcher).showQuickDeleteAnimation(any(), any());
-        verify(mIncognitoTabModel).closeAllTabs(false);
+        verify(mIncognitoTabModel).closeTabs(argThat(params -> params.isAllTabs));
 
         verifyNoInteractions(mRegularTabSwitcher);
-        verify(mRegularTabGroupModelFilter, never()).closeAllTabs(anyBoolean(), anyBoolean());
-        verify(mIncognitoTabGroupModelFilter, never()).closeAllTabs(anyBoolean(), anyBoolean());
+        verify(mRegularTabGroupModelFilter, never()).closeTabs(any());
+        verify(mIncognitoTabGroupModelFilter, never()).closeTabs(any());
     }
 
     @Test
@@ -249,11 +247,10 @@ public class CloseAllTabsHelperUnitTest {
         r.run();
 
         verify(mRegularTabSwitcher).showQuickDeleteAnimation(any(), any());
-        verify(mRegularTabGroupModelFilter).closeAllTabs(false, true);
-        verify(mIncognitoTabGroupModelFilter).closeAllTabs(false, true);
+        verify(mRegularTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
+        verify(mIncognitoTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
 
         verifyNoInteractions(mIncognitoTabSwitcher);
-        verify(mIncognitoTabModel, never()).closeAllTabs();
     }
 
     @Test
@@ -275,11 +272,10 @@ public class CloseAllTabsHelperUnitTest {
         r.run();
 
         verify(mIncognitoTabSwitcher).showQuickDeleteAnimation(any(), any());
-        verify(mRegularTabGroupModelFilter).closeAllTabs(false, true);
-        verify(mIncognitoTabGroupModelFilter).closeAllTabs(false, true);
+        verify(mRegularTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
+        verify(mIncognitoTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
 
         verifyNoInteractions(mRegularTabSwitcher);
-        verify(mIncognitoTabModel, never()).closeAllTabs();
     }
 
     @Test
@@ -301,11 +297,11 @@ public class CloseAllTabsHelperUnitTest {
         r.run();
 
         verify(mIncognitoTabSwitcher).showCloseAllTabsAnimation(any());
-        verify(mIncognitoTabModel).closeAllTabs(false);
+        verify(mIncognitoTabModel).closeTabs(argThat(params -> params.isAllTabs));
 
         verifyNoInteractions(mRegularTabSwitcher);
-        verify(mRegularTabGroupModelFilter, never()).closeAllTabs(anyBoolean(), anyBoolean());
-        verify(mIncognitoTabGroupModelFilter, never()).closeAllTabs(anyBoolean(), anyBoolean());
+        verify(mRegularTabGroupModelFilter, never()).closeTabs(any());
+        verify(mIncognitoTabGroupModelFilter, never()).closeTabs(any());
     }
 
     @Test
@@ -327,11 +323,10 @@ public class CloseAllTabsHelperUnitTest {
         r.run();
 
         verify(mRegularTabSwitcher).showCloseAllTabsAnimation(any());
-        verify(mRegularTabGroupModelFilter).closeAllTabs(false, true);
-        verify(mIncognitoTabGroupModelFilter).closeAllTabs(false, true);
+        verify(mRegularTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
+        verify(mIncognitoTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
 
         verifyNoInteractions(mIncognitoTabSwitcher);
-        verify(mIncognitoTabModel, never()).closeAllTabs();
     }
 
     @Test
@@ -353,10 +348,9 @@ public class CloseAllTabsHelperUnitTest {
         r.run();
 
         verify(mIncognitoTabSwitcher).showCloseAllTabsAnimation(any());
-        verify(mRegularTabGroupModelFilter).closeAllTabs(false, true);
-        verify(mIncognitoTabGroupModelFilter).closeAllTabs(false, true);
+        verify(mRegularTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
+        verify(mIncognitoTabGroupModelFilter).closeTabs(argThat(params -> params.isAllTabs));
 
         verifyNoInteractions(mRegularTabSwitcher);
-        verify(mIncognitoTabModel, never()).closeAllTabs();
     }
 }

@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -88,7 +89,10 @@ public class IncognitoProfileDestroyerIntegrationTest {
         assertIncognitoProfileStillAlive();
 
         // Close the incognito tab
-        ThreadUtils.runOnUiThreadBlocking(() -> mIncognitoTabModel.closeTab(onlyTab));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mIncognitoTabModel.closeTabs(
+                                TabClosureParams.closeTab(onlyTab).allowUndo(false).build()));
 
         // Verify the incognito Profile was destroyed.
         assertIncognitoProfileDestroyed();
@@ -107,7 +111,10 @@ public class IncognitoProfileDestroyerIntegrationTest {
         assertIncognitoProfileStillAlive();
 
         // Close one incognito tab
-        ThreadUtils.runOnUiThreadBlocking(() -> mIncognitoTabModel.closeTab(firstTab));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mIncognitoTabModel.closeTabs(
+                                TabClosureParams.closeTab(firstTab).allowUndo(false).build()));
 
         // Verify the incognito Profile was not destroyed
         assertIncognitoProfileStillAlive();
@@ -148,7 +155,10 @@ public class IncognitoProfileDestroyerIntegrationTest {
                 () -> mActivityTestRule.getActivity().getTabModelSelector().selectModel(false));
 
         // Close the incognito tab.
-        ThreadUtils.runOnUiThreadBlocking(() -> mIncognitoTabModel.closeTab(firstTab));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mIncognitoTabModel.closeTabs(
+                                TabClosureParams.closeTab(firstTab).allowUndo(false).build()));
 
         // Verify the incognito Profile was destroyed.
         assertIncognitoProfileDestroyed();

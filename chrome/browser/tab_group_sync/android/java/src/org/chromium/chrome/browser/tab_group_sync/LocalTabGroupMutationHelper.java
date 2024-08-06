@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_group_sync;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCreationDelegate;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -194,7 +195,8 @@ public class LocalTabGroupMutationHelper {
         }
 
         if (!tabsToClose.isEmpty()) {
-            getTabModel().closeMultipleTabs(tabsToClose, /* canUndo= */ false);
+            getTabModel()
+                    .closeTabs(TabClosureParams.closeTabs(tabsToClose).allowUndo(false).build());
         }
         updateTabGroupVisuals(tabGroup, rootId);
         // TODO(crbug.com/346406221): This currently causes the layout strip to flicker as events
@@ -232,7 +234,7 @@ public class LocalTabGroupMutationHelper {
 
         // Close the tabs.
         List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
-        getTabModel().closeMultipleTabs(tabs, /* canUndo= */ false);
+        getTabModel().closeTabs(TabClosureParams.closeTabs(tabs).allowUndo(false).build());
 
         // Remove mapping from service. Collect metrics before that.
         TabGroupSyncUtils.recordTabGroupOpenCloseMetrics(

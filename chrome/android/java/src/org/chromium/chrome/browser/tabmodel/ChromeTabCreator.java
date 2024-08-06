@@ -544,7 +544,7 @@ public class ChromeTabCreator extends TabCreator {
                                 i,
                                 intent);
                 TabAssociatedApp.from(newTab).setAppId(appId);
-                mTabModel.closeTab(tab, false, false);
+                mTabModel.closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
                 return newTab;
             }
         }

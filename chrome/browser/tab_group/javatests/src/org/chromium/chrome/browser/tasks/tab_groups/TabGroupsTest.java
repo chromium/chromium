@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -368,7 +369,7 @@ public class TabGroupsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabModel.setIndex(2, TabSelectionType.FROM_USER);
-                    mTabModel.closeAllTabs();
+                    mTabModel.closeTabs(TabClosureParams.closeAllTabs().build());
                 });
 
         List<Tab> noTabs = getCurrentTabs();

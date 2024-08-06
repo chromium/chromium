@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.TabArchiver.Clock;
 import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -130,7 +131,7 @@ public class TabArchiverTest {
         runOnUiThreadBlocking(
                 () -> {
                     // Clear out all archived tabs between tests.
-                    mArchivedTabModel.closeAllTabs();
+                    mArchivedTabModel.closeTabs(TabClosureParams.closeAllTabs().build());
                 });
     }
 

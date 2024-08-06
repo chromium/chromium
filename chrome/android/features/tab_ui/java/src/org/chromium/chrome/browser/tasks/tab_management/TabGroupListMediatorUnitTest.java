@@ -514,7 +514,7 @@ public class TabGroupListMediatorUnitTest {
         mConfirmationResultCallbackCaptor
                 .getValue()
                 .onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
-        verify(mTabGroupModelFilter).closeMultipleTabs(any(), eq(false), eq(false));
+        verify(mTabGroupModelFilter).closeTabs(any());
 
         reset(mActionConfirmationManager);
         PropertyModel model2 = mModelList.get(1).model;

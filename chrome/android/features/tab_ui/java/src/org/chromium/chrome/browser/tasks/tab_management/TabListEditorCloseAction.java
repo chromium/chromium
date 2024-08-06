@@ -12,6 +12,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
@@ -74,7 +75,7 @@ public class TabListEditorCloseAction extends TabListEditorAction {
         assert !tabs.isEmpty() : "Close action should not be enabled for no tabs.";
 
         if (getTabGroupModelFilter().isIncognito() || mActionConfirmationManager == null) {
-            doRemoveTabs(tabs, /* canUndo= */ true);
+            doRemoveTabs(tabs, /* allowUndo= */ true);
             return true;
         }
 
@@ -91,10 +92,13 @@ public class TabListEditorCloseAction extends TabListEditorAction {
         return true;
     }
 
-    private void doRemoveTabs(List<Tab> tabs, boolean canUndo) {
+    private void doRemoveTabs(List<Tab> tabs, boolean allowUndo) {
         getTabGroupModelFilter()
-                .closeMultipleTabs(
-                        tabs, canUndo, /* hideTabGroups= */ editorSupportsActionOnRelatedTabs());
+                .closeTabs(
+                        TabClosureParams.closeTabs(tabs)
+                                .allowUndo(allowUndo)
+                                .hideTabGroups(editorSupportsActionOnRelatedTabs())
+                                .build());
         TabUiMetricsHelper.recordSelectionEditorActionMetrics(
                 TabListEditorActionMetricGroups.CLOSE);
     }

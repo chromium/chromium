@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -571,7 +572,8 @@ public class TabsTest {
 
         Assert.assertEquals("Too many tabs at startup", 1, model.getCount());
 
-        ThreadUtils.runOnUiThreadBlocking((Runnable) () -> model.closeTab(tab, false, true));
+        ThreadUtils.runOnUiThreadBlocking(
+                (Runnable) () -> model.closeTabs(TabClosureParams.closeTab(tab).build()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -656,7 +658,7 @@ public class TabsTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    model.closeTab(newTab, false, true);
+                    model.closeTabs(TabClosureParams.closeTab(newTab).build());
                 });
 
         Assert.assertEquals("oldTab should have been focused.", 1, focusListener.getTimesFocused());
@@ -807,7 +809,8 @@ public class TabsTest {
 
         Assert.assertEquals("Too many tabs at startup", 1, model.getCount());
 
-        ThreadUtils.runOnUiThreadBlocking((Runnable) () -> model.closeTab(tab, false, true));
+        ThreadUtils.runOnUiThreadBlocking(
+                (Runnable) () -> model.closeTabs(TabClosureParams.closeTab(tab).build()));
 
         Assert.assertTrue("notifyChanged() was not called", mNotifyChangedCalled);
     }

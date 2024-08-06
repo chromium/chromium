@@ -210,7 +210,8 @@ public class TabModelSelectorTabObserverTest {
     }
 
     private static void closeTab(TabModel tabModel, Tab tab) {
-        ThreadUtils.runOnUiThreadBlocking(() -> tabModel.closeTab(tab));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> tabModel.closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build()));
     }
 
     private static void removeTab(TabModel tabModel, Tab tab) {

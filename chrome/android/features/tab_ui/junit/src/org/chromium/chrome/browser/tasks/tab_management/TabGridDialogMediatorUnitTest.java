@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -1427,7 +1428,7 @@ public class TabGridDialogMediatorUnitTest {
 
         mMediator.onToolbarMenuItemClick(R.id.close_tab, TAB1_ID);
         verify(mTabGroupModelFilter)
-                .closeMultipleTabs(tabGroup, /* canUndo= */ true, /* hideTabGroups= */ true);
+                .closeTabs(TabClosureParams.closeTabs(tabGroup).hideTabGroups(true).build());
 
         verifyNoInteractions(mActionConfirmationManager);
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.Close"));
@@ -1441,8 +1442,7 @@ public class TabGridDialogMediatorUnitTest {
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
 
         mMediator.onToolbarMenuItemClick(R.id.delete_tab, TAB1_ID);
-        verify(mTabGroupModelFilter)
-                .closeMultipleTabs(tabGroup, /* canUndo= */ true, /* hideTabGroups= */ false);
+        verify(mTabGroupModelFilter).closeTabs(TabClosureParams.closeTabs(tabGroup).build());
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.Delete"));
 
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(false);

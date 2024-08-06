@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.native_page.NativePageNavigationDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -59,7 +60,7 @@ public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateI
         if (index == TabModel.INVALID_TAB_INDEX) return false;
 
         tabModel.setIndex(index, TabSelectionType.FROM_USER);
-        tabModel.closeTab(mTab);
+        tabModel.closeTabs(TabClosureParams.closeTab(mTab).allowUndo(false).build());
         return true;
     }
 }

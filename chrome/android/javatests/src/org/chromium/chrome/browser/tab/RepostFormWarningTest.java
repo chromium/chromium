@@ -23,6 +23,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -147,7 +148,14 @@ public class RepostFormWarningTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 (Runnable)
-                        () -> sActivityTestRule.getActivity().getCurrentTabModel().closeTab(mTab));
+                        () ->
+                                sActivityTestRule
+                                        .getActivity()
+                                        .getCurrentTabModel()
+                                        .closeTabs(
+                                                TabClosureParams.closeTab(mTab)
+                                                        .allowUndo(false)
+                                                        .build()));
 
         waitForNoReportFormWarningDialog();
     }

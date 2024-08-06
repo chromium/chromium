@@ -14,8 +14,6 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
-import java.util.List;
-
 /**
  * TabModel organizes all the open tabs and allows you to create new ones. Regular and Incognito
  * tabs are kept in different TabModels.
@@ -29,46 +27,13 @@ public interface TabModel extends TabList {
     Tab getTabById(int tabId);
 
     /**
-     * Unregisters and destroys the specified tab, and then switches to the previous tab.
+     * Closes tabs based on the provided parameters. Refer to {@link TabClosureParams} for different
+     * ways to close tabs.
      *
-     * @param tab The non-null tab to close
-     * @return true if the tab was found
+     * @param tabClosureParams The parameters to follow when closing tabs.
+     * @return Whether the tab closure succeeded (only possibly false for single tab closure).
      */
-    boolean closeTab(Tab tab);
-
-    /**
-     * Unregisters and destroys the specified tab, and then switches to the previous tab.
-     *
-     * @param tab The non-null tab to close
-     * @param uponExit true iff the tab is being closed upon application exit (after user presses
-     *     the system back button)
-     * @param canUndo Whether or not this action can be undone. If this is {@code true} and {@link
-     *     #supportsPendingClosures()} is {@code true}, this {@link Tab} will not actually be closed
-     *     until {@link #commitTabClosure(int)} or {@link #commitAllTabClosures()} is called, but it
-     *     will be effectively removed from this list. To get a comprehensive list of all tabs,
-     *     including ones that have been partially closed, use the {@link TabList} from {@link
-     *     #getComprehensiveModel()}.
-     * @return true if the tab was found
-     */
-    boolean closeTab(Tab tab, boolean uponExit, boolean canUndo);
-
-    /**
-     * Unregisters and destroys the specified tab, and then switches to {@code recommendedNextTab}
-     * if it is not null, otherwise switches to the previous tab.
-     *
-     * @param tab The non-null tab to close.
-     * @param recommendedNextTab The tab to switch to if not null.
-     * @param uponExit true iff the tab is being closed upon application exit (after user presses
-     *     the system back button).
-     * @param canUndo Whether or not this action can be undone. If this is {@code true} and {@link
-     *     #supportsPendingClosures()} is {@code true}, this {@link Tab} will not actually be closed
-     *     until {@link #commitTabClosure(int)} or {@link #commitAllTabClosures()} is called, but it
-     *     will be effectively removed from this list. To get a comprehensive list of all tabs,
-     *     including ones that have been partially closed, use the {@link TabList} from {@link
-     *     #getComprehensiveModel()}.
-     * @return true if the tab was found.
-     */
-    boolean closeTab(Tab tab, @Nullable Tab recommendedNextTab, boolean uponExit, boolean canUndo);
+    boolean closeTabs(TabClosureParams tabClosureParams);
 
     /**
      * Returns which tab would be selected if the specified tab {@code id} were closed.
@@ -78,51 +43,6 @@ public interface TabModel extends TabList {
      * @return The id of the next tab that would be visible.
      */
     Tab getNextTabIfClosed(int id, boolean uponExit);
-
-    /**
-     * Close multiple tabs on this model.
-     *
-     * @param tabs The tabs to be closed.
-     * @param canUndo Whether or not this action can be undone. If this is {@code true} and {@link
-     *     #supportsPendingClosures()} is {@code true}, this {@link Tab} will not actually be closed
-     *     until {@link #commitTabClosure(int)} is called for every {@link Tab} in {@code tabs} or
-     *     {@link #commitAllTabClosures()} is called. However, it will be effectively removed from
-     *     this list. To get a comprehensive list of all tabs, including ones that have been
-     *     partially closed, use the {@link TabList} from {@link #getComprehensiveModel()}.
-     */
-    void closeMultipleTabs(List<Tab> tabs, boolean canUndo);
-
-    /**
-     * Close multiple tabs on this model.
-     *
-     * @param tabs The tabs to be closed.
-     * @param canUndo Whether or not this action can be undone. If this is {@code true} and {@link
-     *     #supportsPendingClosures()} is {@code true}, this {@link Tab} will not actually be closed
-     *     until {@link #commitTabClosure(int)} is called for every {@link Tab} in {@code tabs} or
-     *     {@link #commitAllTabClosures()} is called. However, it will be effectively removed from
-     *     this list. To get a comprehensive list of all tabs, including ones that have been
-     *     partially closed, use the {@link TabList} from {@link #getComprehensiveModel()}.
-     * @param canRestore Whether or not the tabs can be restored to the TabRestoreService after
-     *     closure. This is only respected if {@code canUndo} is false.
-     */
-    void closeMultipleTabs(List<Tab> tabs, boolean canUndo, boolean canRestore);
-
-    /**
-     * Close all the tabs on this model. Same as closeAllTabs(false).
-     *
-     * @deprecated in favor of the clearer {@link #closeAllTabs(boolean)}.
-     */
-    @Deprecated
-    void closeAllTabs();
-
-    /**
-     * Close all tabs on this model. Note this inherently supports the {@code canUndo} behavior of
-     * {@link #closeMultipleTabs(List<Tab>, boolean)}.
-     *
-     * @param uponExit true iff the tabs are being closed upon application exit (after user presses
-     *     the system back button).
-     */
-    void closeAllTabs(boolean uponExit);
 
     /**
      * @return Whether or not this model supports pending closures.

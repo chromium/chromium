@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.suggestions;
 
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -151,7 +152,7 @@ public class SuggestionsNavigationDelegateUnitTest {
                 mSuggestionsNavigationDelegate.maybeSelectTabWithUrl(
                         JUnitTestGURLs.URL_1.getSpec()));
         verify(tabModel).setIndex(eq(index), anyInt());
-        verify(tabModel).closeTab(eq(mTab));
+        verify(tabModel).closeTabs(argThat(params -> params.tabs.get(0) == mTab));
     }
 
     private TabModel prepareTabModelWithSingleTabAtIndex(GURL url, int index) {

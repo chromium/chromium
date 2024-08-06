@@ -22,6 +22,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -168,10 +169,10 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.closeMultipleTabs(
-                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
-                            /* canUndo= */ true,
-                            /* hideTabGroups= */ false);
+                    mTabGroupModelFilter.closeTabs(
+                            TabClosureParams.closeTabs(
+                                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)))
+                                    .build());
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
@@ -206,10 +207,10 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.closeMultipleTabs(
-                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
-                            /* canUndo= */ true,
-                            /* hideTabGroups= */ false);
+                    mTabGroupModelFilter.closeTabs(
+                            TabClosureParams.closeTabs(
+                                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)))
+                                    .build());
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
@@ -240,10 +241,8 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.closeMultipleTabs(
-                            List.of(mTabModel.getTabAt(0)),
-                            /* canUndo= */ true,
-                            /* hideTabGroups= */ false);
+                    mTabGroupModelFilter.closeTabs(
+                            TabClosureParams.closeTabs(List.of(mTabModel.getTabAt(0))).build());
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
@@ -280,13 +279,13 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.closeMultipleTabs(
-                            List.of(
-                                    mTabModel.getTabAt(0),
-                                    mTabModel.getTabAt(1),
-                                    mTabModel.getTabAt(2)),
-                            /* canUndo= */ true,
-                            /* hideTabGroups= */ false);
+                    mTabGroupModelFilter.closeTabs(
+                            TabClosureParams.closeTabs(
+                                            List.of(
+                                                    mTabModel.getTabAt(0),
+                                                    mTabModel.getTabAt(1),
+                                                    mTabModel.getTabAt(2)))
+                                    .build());
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
@@ -326,10 +325,10 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.closeMultipleTabs(
-                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
-                            /* canUndo= */ true,
-                            /* hideTabGroups= */ false);
+                    mTabGroupModelFilter.closeTabs(
+                            TabClosureParams.closeTabs(
+                                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)))
+                                    .build());
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();
@@ -364,10 +363,11 @@ public class UndoBarControllerTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.closeMultipleTabs(
-                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
-                            /* canUndo= */ true,
-                            /* hideTabGroups= */ true);
+                    mTabGroupModelFilter.closeTabs(
+                            TabClosureParams.closeTabs(
+                                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)))
+                                    .hideTabGroups(true)
+                                    .build());
                 });
 
         Snackbar currentSnackbar = getCurrentSnackbar();

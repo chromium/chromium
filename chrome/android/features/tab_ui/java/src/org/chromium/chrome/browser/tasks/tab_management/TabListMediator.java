@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -1140,7 +1141,7 @@ class TabListMediator {
                         if (closingTab == null) return;
 
                         if (mActionsOnAllRelatedTabs || filter.isIncognito()) {
-                            doCloseTab(tabId, closingTab, filter, /* canUndo= */ true);
+                            doCloseTab(tabId, closingTab, filter, /* allowUndo= */ true);
                             return;
                         }
 
@@ -1172,13 +1173,17 @@ class TabListMediator {
                             int tabId,
                             Tab closingTab,
                             TabGroupModelFilter filter,
-                            boolean canUndo) {
+                            boolean allowUndo) {
                         RecordUserAction.record("MobileTabClosed." + mComponentName);
 
                         if (mActionsOnAllRelatedTabs && filter.isTabInTabGroup(closingTab)) {
                             List<Tab> related = getRelatedTabsForId(tabId);
                             onGroupClosedFrom(tabId);
-                            filter.closeMultipleTabs(related, canUndo, /* hideTabGroups= */ true);
+                            filter.closeTabs(
+                                    TabClosureParams.closeTabs(related)
+                                            .allowUndo(allowUndo)
+                                            .hideTabGroups(true)
+                                            .build());
                         } else {
                             TabModel tabModel = filter.getTabModel();
                             onTabClosedFrom(tabId, mComponentName);
@@ -1186,7 +1191,11 @@ class TabListMediator {
                             Tab currentTab = TabModelUtils.getCurrentTab(tabModel);
                             Tab nextTab = currentTab == closingTab ? getNextTab(tabId) : null;
 
-                            tabModel.closeTab(closingTab, nextTab, /* uponExit= */ false, canUndo);
+                            tabModel.closeTabs(
+                                    TabClosureParams.closeTab(closingTab)
+                                            .recommendedNextTab(nextTab)
+                                            .allowUndo(allowUndo)
+                                            .build());
                         }
                     }
 

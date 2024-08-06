@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIphController;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -656,8 +657,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                             AdapterView<?> parent, View view, int position, long id) {
                         mTabMenu.dismiss();
                         if (position == ID_CLOSE_ALL_TABS) {
-                            mTabGroupModelFilter.closeAllTabs(
-                                    /* uponExit= */ false, /* hideTabGroups= */ true);
+                            mTabGroupModelFilter.closeTabs(
+                                    TabClosureParams.closeAllTabs().hideTabGroups(true).build());
                             RecordUserAction.record("MobileToolbarCloseAllTabs");
                         }
                     }

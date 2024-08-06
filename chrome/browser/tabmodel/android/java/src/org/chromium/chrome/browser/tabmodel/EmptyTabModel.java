@@ -16,8 +16,6 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
-import java.util.List;
-
 /** Singleton class intended to stub out Tab model before it has been created. */
 public class EmptyTabModel implements IncognitoTabModel {
     private boolean mIsIncognito;
@@ -69,7 +67,7 @@ public class EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
-    public boolean closeTab(Tab tab) {
+    public boolean closeTabs(TabClosureParams tabClosureParams) {
         return false;
     }
 
@@ -77,18 +75,6 @@ public class EmptyTabModel implements IncognitoTabModel {
     public Tab getNextTabIfClosed(int id, boolean uponExit) {
         return null;
     }
-
-    @Override
-    public void closeMultipleTabs(List<Tab> tabs, boolean canUndo) {}
-
-    @Override
-    public void closeMultipleTabs(List<Tab> tabs, boolean canUndo, boolean canRestore) {}
-
-    @Override
-    public void closeAllTabs() {}
-
-    @Override
-    public void closeAllTabs(boolean uponExit) {}
 
     @Override
     public int getCount() {
@@ -139,16 +125,6 @@ public class EmptyTabModel implements IncognitoTabModel {
     @Override
     public boolean isClosurePending(int tabId) {
         return false;
-    }
-
-    @Override
-    public boolean closeTab(Tab tab, boolean uponExit, boolean canUndo) {
-        return false;
-    }
-
-    @Override
-    public boolean closeTab(Tab tab, Tab recommendedNextTab, boolean uponExit, boolean canUndo) {
-        return closeTab(tab, uponExit, canUndo);
     }
 
     @Override

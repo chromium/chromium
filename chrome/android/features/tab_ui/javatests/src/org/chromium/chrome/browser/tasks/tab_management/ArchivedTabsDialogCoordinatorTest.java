@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -121,7 +122,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         mUserActionTester.tearDown();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mArchivedTabModel.closeAllTabs();
+                    mArchivedTabModel.closeTabs(TabClosureParams.closeAllTabs().build());
                     mTabArchiveSettings.resetSettingsForTesting();
                 });
     }

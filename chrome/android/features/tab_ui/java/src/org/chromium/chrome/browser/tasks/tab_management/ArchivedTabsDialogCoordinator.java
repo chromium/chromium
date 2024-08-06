@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -462,7 +463,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         if (tabCount == mArchivedTabModel.getTabCountSupplier().get()) {
             showCloseAllArchivedTabsConfirmation(tabCount, metricsRunnable);
         } else {
-            mArchivedTabModel.closeMultipleTabs(tabs, /* canUndo= */ true);
+            mArchivedTabModel.closeTabs(TabClosureParams.closeTabs(tabs).build());
             metricsRunnable.run();
         }
     }
@@ -493,9 +494,12 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 /* supportStopShowing= */ false,
                 (isPositive, stopShowing) -> {
                     if (isPositive) {
-                        mArchivedTabModel.closeMultipleTabs(
-                                TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel),
-                                /* canUndo= */ false);
+                        mArchivedTabModel.closeTabs(
+                                TabClosureParams.closeTabs(
+                                                TabModelUtils.convertTabListToListOfTabs(
+                                                        mArchivedTabModel))
+                                        .allowUndo(false)
+                                        .build());
                         onConfirmRunnable.run();
                     }
                 });

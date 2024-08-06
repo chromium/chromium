@@ -18,19 +18,15 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
-import java.util.List;
-
 /**
  * A TabModel implementation that handles off the record tabs.
  *
- * <p>
- * This is not thread safe and must only be operated on the UI thread.
+ * <p>This is not thread safe and must only be operated on the UI thread.
  *
- * <p>
- * The lifetime of this object is not tied to that of the native TabModel.  This ensures the
- * native TabModel is present when at least one incognito Tab has been created and added.  When
- * no Tabs remain, the native model will be destroyed and only rebuilt when a new incognito Tab
- * is created.
+ * <p>The lifetime of this object is not tied to that of the native TabModel. This ensures the
+ * native TabModel is present when at least one incognito Tab has been created and added. When no
+ * Tabs remain, the native model will be destroyed and only rebuilt when a new incognito Tab is
+ * created.
  */
 class IncognitoTabModelImpl implements IncognitoTabModel {
     /** Creates TabModels for use in IncognitoModel. */
@@ -140,27 +136,9 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     }
 
     @Override
-    public boolean closeTab(Tab tab) {
+    public boolean closeTabs(TabClosureParams tabClosureParams) {
         mCountOfAddingOrClosingTabs++;
-        boolean retVal = mDelegateModel.closeTab(tab);
-        mCountOfAddingOrClosingTabs--;
-        destroyIncognitoIfNecessary();
-        return retVal;
-    }
-
-    @Override
-    public boolean closeTab(Tab tab, boolean uponExit, boolean canUndo) {
-        mCountOfAddingOrClosingTabs++;
-        boolean retVal = mDelegateModel.closeTab(tab, uponExit, canUndo);
-        mCountOfAddingOrClosingTabs--;
-        destroyIncognitoIfNecessary();
-        return retVal;
-    }
-
-    @Override
-    public boolean closeTab(Tab tab, Tab recommendedNextTab, boolean uponExit, boolean canUndo) {
-        mCountOfAddingOrClosingTabs++;
-        boolean retVal = mDelegateModel.closeTab(tab, recommendedNextTab, uponExit, canUndo);
+        boolean retVal = mDelegateModel.closeTabs(tabClosureParams);
         mCountOfAddingOrClosingTabs--;
         destroyIncognitoIfNecessary();
         return retVal;
@@ -169,38 +147,6 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     @Override
     public Tab getNextTabIfClosed(int id, boolean uponExit) {
         return mDelegateModel.getNextTabIfClosed(id, uponExit);
-    }
-
-    @Override
-    public void closeMultipleTabs(List<Tab> tabs, boolean canUndo) {
-        mCountOfAddingOrClosingTabs++;
-        mDelegateModel.closeMultipleTabs(tabs, canUndo);
-        mCountOfAddingOrClosingTabs--;
-        destroyIncognitoIfNecessary();
-    }
-
-    @Override
-    public void closeMultipleTabs(List<Tab> tabs, boolean canUndo, boolean canRestore) {
-        mCountOfAddingOrClosingTabs++;
-        mDelegateModel.closeMultipleTabs(tabs, canUndo, canRestore);
-        mCountOfAddingOrClosingTabs--;
-        destroyIncognitoIfNecessary();
-    }
-
-    @Override
-    public void closeAllTabs() {
-        mCountOfAddingOrClosingTabs++;
-        mDelegateModel.closeAllTabs();
-        mCountOfAddingOrClosingTabs--;
-        destroyIncognitoIfNecessary();
-    }
-
-    @Override
-    public void closeAllTabs(boolean uponExit) {
-        mCountOfAddingOrClosingTabs++;
-        mDelegateModel.closeAllTabs(uponExit);
-        mCountOfAddingOrClosingTabs--;
-        destroyIncognitoIfNecessary();
     }
 
     @Override

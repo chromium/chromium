@@ -21,6 +21,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -128,7 +129,7 @@ public class RecentTabsTest {
                         new Callable<Boolean>() {
                             @Override
                             public Boolean call() {
-                                return tabModel.closeTab(tab, false, true);
+                                return tabModel.closeTabs(TabClosureParams.closeTab(tab).build());
                             }
                         });
         Assert.assertTrue(closeTabReturnValue);

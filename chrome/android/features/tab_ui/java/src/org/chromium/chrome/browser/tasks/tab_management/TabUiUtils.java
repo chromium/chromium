@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
@@ -53,7 +54,7 @@ public class TabUiUtils {
         boolean isIncognito = filter.isIncognitoBranded();
 
         if (hideTabGroups || isIncognito) {
-            filter.closeMultipleTabs(tabs, /* canUndo= */ true, hideTabGroups);
+            filter.closeTabs(TabClosureParams.closeTabs(tabs).hideTabGroups(hideTabGroups).build());
         } else {
             List<Integer> tabIds = tabs.stream().map(Tab::getId).collect(Collectors.toList());
 
@@ -61,14 +62,18 @@ public class TabUiUtils {
             Callback<Integer> onResult =
                     (@ConfirmationResult Integer result) -> {
                         if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
-                            boolean canUndo = result == ConfirmationResult.IMMEDIATE_CONTINUE;
+                            boolean allowUndo = result == ConfirmationResult.IMMEDIATE_CONTINUE;
                             List<Tab> tabsToClose =
                                     tabIds.stream()
                                             .map(filter.getTabModel()::getTabById)
                                             .filter(Objects::nonNull)
                                             .filter(tab -> !tab.isClosing())
                                             .collect(Collectors.toList());
-                            filter.closeMultipleTabs(tabsToClose, canUndo, hideTabGroups);
+                            filter.closeTabs(
+                                    TabClosureParams.closeTabs(tabsToClose)
+                                            .allowUndo(allowUndo)
+                                            .hideTabGroups(hideTabGroups)
+                                            .build());
                         }
                     };
             actionConfirmationManager.processDeleteGroupAttempt(onResult);

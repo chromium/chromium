@@ -271,7 +271,7 @@ public abstract class TabModelSelectorBase
         for (int i = 0; i < getModels().size(); i++) {
             TabModel model = mTabModels.get(i);
             if (model.indexOf(tab) >= 0) {
-                return model.closeTab(tab);
+                return model.closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
             }
         }
 
@@ -324,8 +324,9 @@ public abstract class TabModelSelectorBase
 
     @Override
     public void closeAllTabs(boolean uponExit) {
+        TabClosureParams params = TabClosureParams.closeAllTabs().uponExit(uponExit).build();
         for (int i = 0; i < getModels().size(); i++) {
-            mTabModels.get(i).closeAllTabs(uponExit);
+            mTabModels.get(i).closeTabs(params);
         }
     }
 

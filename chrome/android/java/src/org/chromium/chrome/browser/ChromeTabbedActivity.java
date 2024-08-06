@@ -195,6 +195,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
@@ -448,7 +449,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         return;
                     }
 
-                    getTabModelSelector().getModel(true).closeAllTabs();
+                    getTabModelSelector()
+                            .getModel(true)
+                            .closeTabs(TabClosureParams.closeAllTabs().build());
                 }
 
                 @Override
@@ -2605,7 +2608,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void terminateIncognitoSession() {
-        getTabModelSelector().getModel(true).closeAllTabs();
+        getTabModelSelector().getModel(true).closeTabs(TabClosureParams.closeAllTabs().build());
     }
 
     @Override
@@ -2683,7 +2686,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
             RecordUserAction.record("MobileMenuRecentTabs");
         } else if (id == R.id.close_tab) {
-            getCurrentTabModel().closeTab(currentTab, false, true);
+            getCurrentTabModel().closeTabs(TabClosureParams.closeTab(currentTab).build());
             RecordUserAction.record("MobileTabClosed");
         } else if (id == R.id.close_all_tabs_menu_id) {
             // Close both incognito and normal tabs.
@@ -2987,14 +2990,23 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             // This seems improbable; however, crbug/1463397 suggests otherwise. If
                             // this happens, remain on the current tab and close the tab in the
                             // other model.
-                            tabToCloseModel.closeTab(tabToClose, null, true, false);
+                            tabToCloseModel.closeTabs(
+                                    TabClosureParams.closeTab(tabToClose)
+                                            .uponExit(true)
+                                            .allowUndo(false)
+                                            .build());
                             return;
                         }
 
                         Tab nextTab =
                                 currentModel.getNextTabIfClosed(
                                         tabToClose.getId(), /* uponExit= */ true);
-                        currentModel.closeTab(tabToClose, nextTab, true, false);
+                        tabToCloseModel.closeTabs(
+                                TabClosureParams.closeTab(tabToClose)
+                                        .recommendedNextTab(nextTab)
+                                        .uponExit(true)
+                                        .allowUndo(false)
+                                        .build());
                     },
                     CLOSE_TAB_ON_MINIMIZE_DELAY_MS);
         }

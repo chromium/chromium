@@ -1567,7 +1567,7 @@ public class TabPersistentStoreTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     regularModel.addObserver(closeObserver);
-                    regularModel.closeAllTabs(false);
+                    regularModel.closeTabs(TabClosureParams.closeAllTabs().build());
                 });
         Assert.assertEquals(info.numRegularTabs, closedTabIds.size());
 

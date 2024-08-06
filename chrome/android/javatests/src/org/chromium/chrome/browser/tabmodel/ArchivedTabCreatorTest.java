@@ -95,7 +95,13 @@ public class ArchivedTabCreatorTest {
                 runOnUiThreadBlocking(
                         () -> {
                             TabState state = TabStateExtractor.from(tab);
-                            sActivityTestRule.getActivity().getCurrentTabModel().closeTab(tab);
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabModel()
+                                    .closeTabs(
+                                            TabClosureParams.closeTab(tab)
+                                                    .allowUndo(false)
+                                                    .build());
                             return mTabCreator.createFrozenTab(state, tab.getId(), /* index= */ 0);
                         });
         assertNotNull(frozenTab);

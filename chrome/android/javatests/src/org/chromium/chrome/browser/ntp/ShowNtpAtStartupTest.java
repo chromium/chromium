@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -192,7 +193,11 @@ public class ShowNtpAtStartupTest {
         Tab lastActiveTab = cta.getCurrentTabModel().getTabAt(0);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    cta.getCurrentTabModel().closeTab(lastActiveTab);
+                    cta.getCurrentTabModel()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(lastActiveTab)
+                                            .allowUndo(false)
+                                            .build());
                 });
         Assert.assertEquals(2, cta.getCurrentTabModel().getCount());
         Assert.assertFalse(ntp.isMagicStackVisibleForTesting());
@@ -207,7 +212,11 @@ public class ShowNtpAtStartupTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    cta.getCurrentTabModel().closeTab(newTrackingTab);
+                    cta.getCurrentTabModel()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(newTrackingTab)
+                                            .allowUndo(false)
+                                            .build());
                 });
         Assert.assertEquals(1, cta.getCurrentTabModel().getCount());
         Assert.assertFalse(ntp.isMagicStackVisibleForTesting());
@@ -399,7 +408,12 @@ public class ShowNtpAtStartupTest {
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    cta.getTabModelSelector().getModel(false).closeTab(lastActiveTab);
+                    cta.getTabModelSelector()
+                            .getModel(false)
+                            .closeTabs(
+                                    TabClosureParams.closeTab(lastActiveTab)
+                                            .allowUndo(false)
+                                            .build());
                 });
         assertTrue(
                 "The single tab card does not show that it is changed and needs a "

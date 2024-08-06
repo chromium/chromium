@@ -42,6 +42,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -82,7 +83,7 @@ public class FindTest {
                             .getActivity()
                             .getTabModelSelector()
                             .getModel(true)
-                            .closeAllTabs();
+                            .closeTabs(TabClosureParams.closeAllTabs().build());
                 });
     }
 

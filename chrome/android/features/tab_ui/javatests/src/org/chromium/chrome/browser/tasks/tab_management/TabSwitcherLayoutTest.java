@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
@@ -197,7 +198,9 @@ public class TabSwitcherLayoutTest {
         Tab tab = cta.getTabModelSelector().getCurrentTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    cta.getTabModelSelector().getCurrentModel().closeTab(tab, false, true);
+                    cta.getTabModelSelector()
+                            .getCurrentModel()
+                            .closeTabs(TabClosureParams.closeTab(tab).build());
                 });
         mActivityTestRule.loadUrlInTab(
                 mUrl, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, tab);
