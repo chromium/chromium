@@ -4426,6 +4426,7 @@ enum WebFeature {
   kSharedStorageWriteFromBidderReportWin = 5057,
   kSharedStorageWriteFromSellerScoreAd = 5058,
   kSharedStorageWriteFromSellerReportResult = 5059,
+  kCSSInsetAreaProperty = 5060,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

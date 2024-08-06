@@ -59,8 +59,10 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/zoom_adjusted_pixel_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -4722,10 +4724,21 @@ const CSSValue* PositionArea::ParseSingleValue(
 // TODO(crbug.com/352360007): this can be removed when inset-area is removed.
 const CSSValue* InsetArea::ParseSingleValue(
     CSSParserTokenStream& stream,
-    const CSSParserContext&,
+    const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   if (stream.Peek().Id() == CSSValueID::kNone) {
     return css_parsing_utils::ConsumeIdent(stream);
+  }
+  if (const auto* document = context.GetDocument()) {
+    document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kDeprecation,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        String(
+            "The 'inset-area' property has been deprecated, "
+            "and will be removed from this browser very soon. Please use the "
+            "'position-area' property instead.")));
+    Deprecation::CountDeprecation(document->GetExecutionContext(),
+                                  WebFeature::kCSSInsetAreaProperty);
   }
   return css_parsing_utils::ConsumePositionArea(stream);
 }
