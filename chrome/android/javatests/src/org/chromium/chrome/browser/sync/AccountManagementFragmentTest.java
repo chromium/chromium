@@ -84,7 +84,7 @@ import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 
 import java.util.Arrays;
@@ -299,7 +299,7 @@ public class AccountManagementFragmentTest {
     @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testSignOutUserWithoutShowingSignOutDialog() {
         FakeSyncServiceImpl fakeSyncService = overrideSyncService();
-        fakeSyncService.setTypesWithUnsyncedData(Set.of(ModelType.BOOKMARKS));
+        fakeSyncService.setTypesWithUnsyncedData(Set.of(DataType.BOOKMARKS));
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mSettingsActivityTestRule.startSettingsActivity();
@@ -320,7 +320,7 @@ public class AccountManagementFragmentTest {
     @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testSignOutShowsUnsavedDataDialog() {
         FakeSyncServiceImpl fakeSyncService = overrideSyncService();
-        fakeSyncService.setTypesWithUnsyncedData(Set.of(ModelType.BOOKMARKS));
+        fakeSyncService.setTypesWithUnsyncedData(Set.of(DataType.BOOKMARKS));
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mSettingsActivityTestRule.startSettingsActivity();

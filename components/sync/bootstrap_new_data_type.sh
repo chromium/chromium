@@ -9,7 +9,7 @@
 # it will generate a new branch with a single commit adding:
 #   - A new foo_bar_specifics.proto file with an empty FooBarSpecifics message,
 #     hooked to entity_specifics.proto.
-#   - A new ModelType::FOO_BAR.
+#   - A new DataType::FOO_BAR.
 #   - TODOs for next CLs, and the order in which they should be followed.
 # In case of failure the user should be left in the original branch.
 #
@@ -43,12 +43,12 @@ replace_string_in_file() {
 }
 
 if [[ "$#" -ne 2 ]]; then
-  echo "Usage: $0 <ModelType, e.g. FOO_BAR> <BugNumber, e.g. 123>"
+  echo "Usage: $0 <DataType, e.g. FOO_BAR> <BugNumber, e.g. 123>"
   exit 1
 fi
 
 if [[ ! "$1" =~ ^[A-Z]+(_[A-Z]+)*$ ]]; then
-  echo "Value for ModelType ($1) is not in upper snake case, e.g. FOO_BAR"
+  echo "Value for DataType ($1) is not in upper snake case, e.g. FOO_BAR"
   exit 1
 fi
 
@@ -93,7 +93,7 @@ camel_case="$(to_camel_case "$1")"
 title_case="$(to_title_case "$1")"
 bug_number="$2"
 git show HEAD --name-only --pretty='' | while read file; do
-  # FOO_BAR and 123456789 are the ModelType/BugNumber used by the template.
+  # FOO_BAR and 123456789 are the DataType/BugNumber used by the template.
   replace_string_in_file "$file" 'FOO_BAR' "$upper_snake_case"
   replace_string_in_file "$file" 'foo_bar' "$lower_snake_case"
   replace_string_in_file "$file" 'FooBar' "$camel_case"

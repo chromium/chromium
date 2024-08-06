@@ -11,7 +11,7 @@
 
 #include "base/containers/enum_set.h"
 #include "build/chromeos_buildflags.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace syncer {
 

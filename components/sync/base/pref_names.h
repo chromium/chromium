@@ -125,7 +125,7 @@ inline constexpr char kSyncPassphrasePromptMutedProductVersion[] =
 inline constexpr char kSyncFeatureStatusForSyncToSigninMigration[] =
     "sync.feature_status_for_sync_to_signin";
 // Prefix for boolean per-data-type statuses, to be suffixed with "." plus
-// GetModelTypeLowerCaseRootTag().
+// GetDataTypeLowerCaseRootTag().
 inline constexpr char kSyncDataTypeStatusForSyncToSigninMigrationPrefix[] =
     "sync.data_type_status_for_sync_to_signin";
 

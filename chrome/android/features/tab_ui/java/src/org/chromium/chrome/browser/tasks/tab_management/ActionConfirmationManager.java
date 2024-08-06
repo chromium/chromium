@@ -26,7 +26,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -227,7 +227,7 @@ public class ActionConfirmationManager {
 
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         boolean syncingTabGroups =
-                syncService.getActiveDataTypes().contains(ModelType.SAVED_TAB_GROUP);
+                syncService.getActiveDataTypes().contains(DataType.SAVED_TAB_GROUP);
         IdentityServicesProvider identityServicesProvider = IdentityServicesProvider.get();
         IdentityManager identityManager = identityServicesProvider.getIdentityManager(mProfile);
         @Nullable

@@ -33,7 +33,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 
 /** Tests for {@link PriceTrackingFeatures}. */
@@ -148,7 +148,7 @@ public class PriceTrackingFeaturesTest {
         when(mSyncServiceMock.getActiveDataTypes())
                 .thenReturn(
                         hasSessions
-                                ? CollectionUtil.newHashSet(ModelType.SESSIONS)
-                                : CollectionUtil.newHashSet(ModelType.AUTOFILL));
+                                ? CollectionUtil.newHashSet(DataType.SESSIONS)
+                                : CollectionUtil.newHashSet(DataType.AUTOFILL));
     }
 }

@@ -301,7 +301,7 @@ public final class SyncTestUtil {
      *
      * @param context the Context used to retreive the correct SyncService
      * @param typeString a String representing a specific datatype.
-     *     <p>TODO(pvalenzuela): Replace typeString with the native ModelType enum or something else
+     *     <p>TODO(pvalenzuela): Replace typeString with the native DataType enum or something else
      *     that will avoid callers needing to specify the native string version.
      * @return a List of Pair<String, JSONObject> representing the local Sync data
      */

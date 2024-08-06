@@ -25,8 +25,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
-import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -104,7 +104,7 @@ public class BatchUploadCardPreference extends Preference
 
     @Override
     public void onSaveInAccountDialogButtonClicked(Set<Integer> types, int itemsCount) {
-        if (!types.contains(ModelType.PASSWORDS)) {
+        if (!types.contains(DataType.PASSWORDS)) {
             uploadLocalDataAndShowSnackbar(types, itemsCount);
             return;
         }
@@ -142,8 +142,8 @@ public class BatchUploadCardPreference extends Preference
     private void update() {
         mSyncService.getLocalDataDescriptions(
                 mReauthenticatorBridge.canUseAuthenticationWithBiometricOrScreenLock()
-                        ? Set.of(ModelType.BOOKMARKS, ModelType.READING_LIST, ModelType.PASSWORDS)
-                        : Set.of(ModelType.BOOKMARKS, ModelType.READING_LIST),
+                        ? Set.of(DataType.BOOKMARKS, DataType.READING_LIST, DataType.PASSWORDS)
+                        : Set.of(DataType.BOOKMARKS, DataType.READING_LIST),
                 localDataDescriptionsMap -> {
                     mLocalDataDescriptionsMap = localDataDescriptionsMap;
                     int sum =
@@ -183,20 +183,20 @@ public class BatchUploadCardPreference extends Preference
 
         int localPasswordsCount = 0;
         LocalDataDescription passwordsLocalDataDescription =
-                mLocalDataDescriptionsMap.get(ModelType.PASSWORDS);
+                mLocalDataDescriptionsMap.get(DataType.PASSWORDS);
         if (passwordsLocalDataDescription != null) {
             localPasswordsCount = passwordsLocalDataDescription.itemCount();
         }
 
         int localItemsCountExcludingPasswords = 0;
         LocalDataDescription bookmarksLocalDataDescription =
-                mLocalDataDescriptionsMap.get(ModelType.BOOKMARKS);
+                mLocalDataDescriptionsMap.get(DataType.BOOKMARKS);
         if (bookmarksLocalDataDescription != null) {
             localItemsCountExcludingPasswords += bookmarksLocalDataDescription.itemCount();
         }
 
         LocalDataDescription readingListLocalDataDescription =
-                mLocalDataDescriptionsMap.get(ModelType.READING_LIST);
+                mLocalDataDescriptionsMap.get(DataType.READING_LIST);
         if (readingListLocalDataDescription != null) {
             localItemsCountExcludingPasswords += readingListLocalDataDescription.itemCount();
         }

@@ -428,7 +428,7 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
         return isEngineInitialized()
-                && getActiveDataTypes().contains(ModelType.HISTORY)
+                && getActiveDataTypes().contains(DataType.HISTORY)
                 && (getPassphraseType() == PassphraseType.KEYSTORE_PASSPHRASE
                         || getPassphraseType() == PassphraseType.TRUSTED_VAULT_PASSPHRASE);
     }

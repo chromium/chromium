@@ -60,7 +60,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 
@@ -146,7 +146,7 @@ public class QuickDeleteDialogDelegateTest {
                             .thenReturn(
                                     syncable
                                             ? CollectionUtil.newHashSet(
-                                                    ModelType.HISTORY_DELETE_DIRECTIVES)
+                                                    DataType.HISTORY_DELETE_DIRECTIVES)
                                             : new HashSet<>());
                 });
     }

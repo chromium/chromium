@@ -41,7 +41,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -94,7 +94,7 @@ public class ClearBrowsingDataFragmentBasicTest {
                             .thenReturn(
                                     syncable
                                             ? CollectionUtil.newHashSet(
-                                                    ModelType.HISTORY_DELETE_DIRECTIVES)
+                                                    DataType.HISTORY_DELETE_DIRECTIVES)
                                             : new HashSet<Integer>());
                 });
     }

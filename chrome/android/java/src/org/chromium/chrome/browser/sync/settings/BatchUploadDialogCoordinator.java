@@ -17,8 +17,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithTitleAndSummary;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
-import org.chromium.components.sync.ModelType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -102,43 +102,43 @@ final class BatchUploadDialogCoordinator {
         mDialogManager.showDialog(mModel, ModalDialogType.APP);
 
         mBookmarkSwitch =
-                updateModelTypeSwitchAndSeparator(
+                updateDataTypeSwitchAndSeparator(
                         context,
                         view,
-                        ModelType.BOOKMARKS,
+                        DataType.BOOKMARKS,
                         R.id.account_settings_bulk_upload_dialog_bookmarks,
                         R.id.account_settings_bulk_upload_dialog_bookmarks_separator,
                         R.plurals.account_settings_bulk_upload_dialog_bookmarks,
                         localDataDescriptionsMap);
         mPasswordsSwitch =
-                updateModelTypeSwitchAndSeparator(
+                updateDataTypeSwitchAndSeparator(
                         context,
                         view,
-                        ModelType.PASSWORDS,
+                        DataType.PASSWORDS,
                         R.id.account_settings_bulk_upload_dialog_passwords,
                         R.id.account_settings_bulk_upload_dialog_passwords_separator,
                         R.plurals.account_settings_bulk_upload_dialog_passwords,
                         localDataDescriptionsMap);
         mReadingListSwitch =
-                updateModelTypeSwitchAndSeparator(
+                updateDataTypeSwitchAndSeparator(
                         context,
                         view,
-                        ModelType.READING_LIST,
+                        DataType.READING_LIST,
                         R.id.account_settings_bulk_upload_dialog_reading_list,
                         R.id.account_settings_bulk_upload_dialog_reading_list_separator,
                         R.plurals.account_settings_bulk_upload_dialog_reading_list,
                         localDataDescriptionsMap);
     }
 
-    private MaterialSwitchWithTitleAndSummary updateModelTypeSwitchAndSeparator(
+    private MaterialSwitchWithTitleAndSummary updateDataTypeSwitchAndSeparator(
             Context context,
             View view,
-            int modelType,
+            int dataType,
             @IdRes int switchViewId,
             @IdRes int switchBottomSeparatorId,
             @PluralsRes int switchTextId,
             HashMap<Integer, LocalDataDescription> localDataDescriptionsMap) {
-        LocalDataDescription typeLocalDataDescription = localDataDescriptionsMap.get(modelType);
+        LocalDataDescription typeLocalDataDescription = localDataDescriptionsMap.get(dataType);
         boolean shouldShowSwitch =
                 typeLocalDataDescription != null && typeLocalDataDescription.itemCount() > 0;
         view.findViewById(switchBottomSeparatorId)
@@ -182,13 +182,13 @@ final class BatchUploadDialogCoordinator {
     private Set<Integer> getCheckedTypes() {
         Set<Integer> checkedTypes = new HashSet<>();
         if (mBookmarkSwitch != null && isTypeSwitchChecked(mBookmarkSwitch)) {
-            checkedTypes.add(ModelType.BOOKMARKS);
+            checkedTypes.add(DataType.BOOKMARKS);
         }
         if (mPasswordsSwitch != null && isTypeSwitchChecked(mPasswordsSwitch)) {
-            checkedTypes.add(ModelType.PASSWORDS);
+            checkedTypes.add(DataType.PASSWORDS);
         }
         if (mReadingListSwitch != null && isTypeSwitchChecked(mReadingListSwitch)) {
-            checkedTypes.add(ModelType.READING_LIST);
+            checkedTypes.add(DataType.READING_LIST);
         }
         return checkedTypes;
     }

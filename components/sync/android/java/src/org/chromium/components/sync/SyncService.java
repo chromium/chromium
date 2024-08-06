@@ -101,7 +101,7 @@ public interface SyncService {
      *
      * <p>This is affected by whether sync is on.
      *
-     * @return ModelType set of active data types.
+     * @return DataType set of active data types.
      */
     public Set<Integer> getActiveDataTypes();
 

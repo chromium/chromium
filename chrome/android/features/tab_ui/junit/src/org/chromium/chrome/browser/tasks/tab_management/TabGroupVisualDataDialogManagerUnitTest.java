@@ -43,7 +43,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -202,7 +202,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
                 .when(mTracker)
                 .shouldTriggerHelpUI(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
         when(mSyncService.getActiveDataTypes())
-                .thenReturn(Collections.singleton(ModelType.SAVED_TAB_GROUP));
+                .thenReturn(Collections.singleton(DataType.SAVED_TAB_GROUP));
 
         mTabGroupVisualDataDialogManager.showDialog(
                 TAB1_ID, mTabGroupModelFilter, mDialogController);

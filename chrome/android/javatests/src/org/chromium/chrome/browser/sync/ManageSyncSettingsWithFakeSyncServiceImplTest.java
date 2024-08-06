@@ -72,7 +72,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 
 import java.util.Set;
 
@@ -391,7 +391,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
     public void testSignOutUnsavedDataDialogShown() {
         final FakeSyncServiceImpl fakeSyncService =
                 (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
-        fakeSyncService.setTypesWithUnsyncedData(Set.of(ModelType.BOOKMARKS));
+        fakeSyncService.setTypesWithUnsyncedData(Set.of(DataType.BOOKMARKS));
         // Sign in and open settings.
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();

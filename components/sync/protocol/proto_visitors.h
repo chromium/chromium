@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SYNC_PROTOCOL_PROTO_VISITORS_H_
 #define COMPONENTS_SYNC_PROTOCOL_PROTO_VISITORS_H_
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "components/sync/protocol/app_setting_specifics.pb.h"
 #include "components/sync/protocol/app_specifics.pb.h"
@@ -678,7 +678,7 @@ VISIT_PROTO_FIELDS(
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
-  static_assert(53 == GetNumModelTypes(),
+  static_assert(53 == GetNumDataTypes(),
                 "When adding a new protocol type, you will likely need to add "
                 "it here as well.");
   VISIT(encrypted);

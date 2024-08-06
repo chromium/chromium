@@ -101,7 +101,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Arrays;
@@ -277,7 +277,7 @@ public class ClearBrowsingDataFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FakeSyncServiceImpl fakeSyncService = new FakeSyncServiceImpl();
-                    fakeSyncService.setTypesWithUnsyncedData(Set.of(ModelType.BOOKMARKS));
+                    fakeSyncService.setTypesWithUnsyncedData(Set.of(DataType.BOOKMARKS));
                     SyncServiceFactory.setInstanceForTesting(fakeSyncService);
                 });
         mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.TEST_ACCOUNT_1);

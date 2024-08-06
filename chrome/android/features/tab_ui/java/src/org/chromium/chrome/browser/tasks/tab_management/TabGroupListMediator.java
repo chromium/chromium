@@ -34,7 +34,7 @@ import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -139,7 +139,7 @@ public class TabGroupListMediator {
                 @Override
                 public void syncStateChanged() {
                     boolean enabled =
-                            mSyncService.getActiveDataTypes().contains(ModelType.SAVED_TAB_GROUP);
+                            mSyncService.getActiveDataTypes().contains(DataType.SAVED_TAB_GROUP);
                     mPropertyModel.set(TabGroupListProperties.SYNC_ENABLED, enabled);
                 }
             };

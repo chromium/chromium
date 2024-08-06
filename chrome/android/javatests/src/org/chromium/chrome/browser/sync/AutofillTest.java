@@ -25,7 +25,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.sync.protocol.AutofillProfileSpecifics;
 import org.chromium.components.sync.protocol.EntitySpecifics;
@@ -218,7 +218,7 @@ public class AutofillTest {
                 "Expected " + count + " server autofill profiles with name " + name + ".",
                 mSyncTestRule
                         .getFakeServerHelper()
-                        .verifyEntityCountByTypeAndName(count, ModelType.AUTOFILL_PROFILE, name));
+                        .verifyEntityCountByTypeAndName(count, DataType.AUTOFILL_PROFILE, name));
     }
 
     private void waitForClientAutofillProfileCount(int count) {

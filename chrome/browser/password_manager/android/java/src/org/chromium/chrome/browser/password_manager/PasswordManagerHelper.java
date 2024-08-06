@@ -46,7 +46,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -396,7 +396,7 @@ public class PasswordManagerHelper {
     public static boolean isSyncingPasswordsWithNoCustomPassphrase(SyncService syncService) {
         assert syncService.isEngineInitialized();
         if (syncService == null || !syncService.hasSyncConsent()) return false;
-        if (!syncService.getActiveDataTypes().contains(ModelType.PASSWORDS)) return false;
+        if (!syncService.getActiveDataTypes().contains(DataType.PASSWORDS)) return false;
         if (syncService.isUsingExplicitPassphrase()) return false;
         return true;
     }

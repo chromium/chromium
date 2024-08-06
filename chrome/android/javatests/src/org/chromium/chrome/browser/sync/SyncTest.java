@@ -27,8 +27,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
-import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.PassphraseType;
 import org.chromium.components.sync.UserSelectableType;
 
@@ -206,9 +206,9 @@ public class SyncTest {
                             .getSyncService()
                             .getLocalDataDescriptions(
                                     Set.of(
-                                            ModelType.BOOKMARKS,
-                                            ModelType.PASSWORDS,
-                                            ModelType.READING_LIST),
+                                            DataType.BOOKMARKS,
+                                            DataType.PASSWORDS,
+                                            DataType.READING_LIST),
                                     localDataDescriptionsMap -> {
                                         int sum =
                                                 localDataDescriptionsMap.values().stream()

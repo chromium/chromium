@@ -10,13 +10,13 @@
 #include <string>
 
 #include "base/values.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace syncer {
 
-// A container that maps ModelType to serialized
+// A container that maps DataType to serialized
 // DataTypeProgressMarkers.
-using ProgressMarkerMap = std::map<ModelType, std::string>;
+using ProgressMarkerMap = std::map<DataType, std::string>;
 
 base::Value::Dict ProgressMarkerMapToValueDict(
     const ProgressMarkerMap& marker_map);

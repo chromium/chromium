@@ -74,7 +74,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -192,7 +192,7 @@ public class PasswordManagerHelperTest {
     public void testActivelySyncingPasswordsWithNoCustomPassphrase() {
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
         when(mSyncServiceMock.getActiveDataTypes())
-                .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
+                .thenReturn(CollectionUtil.newHashSet(DataType.PASSWORDS));
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.isUsingExplicitPassphrase()).thenReturn(false);
         assertTrue(
@@ -203,7 +203,7 @@ public class PasswordManagerHelperTest {
     public void testActivelySyncingPasswordsWithCustomPassphrase() {
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
         when(mSyncServiceMock.getActiveDataTypes())
-                .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
+                .thenReturn(CollectionUtil.newHashSet(DataType.PASSWORDS));
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.isUsingExplicitPassphrase()).thenReturn(true);
         assertFalse(

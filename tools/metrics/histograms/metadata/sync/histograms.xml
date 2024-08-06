@@ -40,7 +40,7 @@ chromium-metrics-reviews@google.com.
       summary="UPM backend outdated error for passwords."/>
 </variants>
 
-<!-- LINT.IfChange(ModelTypeHistogramSuffix) -->
+<!-- LINT.IfChange(DataTypeHistogramSuffix) -->
 
 <variants name="SyncModelType">
   <variant name=".APP" summary="APP"/>
@@ -101,7 +101,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".WORKSPACE_DESK" summary="WORKSPACE_DESK"/>
 </variants>
 
-<!-- LINT.ThenChange(/components/sync/base/model_type.cc:ModelTypeHistogramSuffix) -->
+<!-- LINT.ThenChange(/components/sync/base/data_type.cc:DataTypeHistogramSuffix) -->
 
 <variants name="SyncModelTypeForSyncToSigninMigration">
   <variant name=".BOOKMARK" summary="BOOKMARK"/>
@@ -1001,7 +1001,7 @@ chromium-metrics-reviews@google.com.
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
-    Counts the number of entries for each model type. The count is based on
+    Counts the number of entries for each data type. The count is based on
     metadata entries for the type. Recorded after sync configuration. This
     metric is used for monitoring general health of sync client-side code.
   </summary>
@@ -1073,7 +1073,7 @@ chromium-metrics-reviews@google.com.
   <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
-    Counts the number of unsynced entities for each model type, including
+    Counts the number of unsynced entities for each data type, including
     tombstones. Recorded once model is ready to sync, i.e. typically soon after
     browser startup. Recorded only if initial sync is done.
   </summary>

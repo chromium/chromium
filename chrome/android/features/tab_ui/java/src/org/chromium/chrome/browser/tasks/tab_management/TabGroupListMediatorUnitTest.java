@@ -62,7 +62,7 @@ import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -620,7 +620,7 @@ public class TabGroupListMediatorUnitTest {
         assertFalse(mPropertyModel.get(TabGroupListProperties.SYNC_ENABLED));
 
         when(mSyncService.getActiveDataTypes())
-                .thenReturn(Collections.singleton(ModelType.SAVED_TAB_GROUP));
+                .thenReturn(Collections.singleton(DataType.SAVED_TAB_GROUP));
         verify(mSyncService).addSyncStateChangedListener(mSyncStateChangedListenerCaptor.capture());
         mSyncStateChangedListenerCaptor.getValue().syncStateChanged();
         assertTrue(mPropertyModel.get(TabGroupListProperties.SYNC_ENABLED));

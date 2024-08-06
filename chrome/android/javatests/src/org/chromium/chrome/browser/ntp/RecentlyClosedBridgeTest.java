@@ -43,7 +43,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
@@ -85,7 +85,7 @@ public class RecentlyClosedBridgeTest {
 
     @Before
     public void setUp() {
-        when(mSyncService.getActiveDataTypes()).thenReturn(Set.of(ModelType.SAVED_TAB_GROUP));
+        when(mSyncService.getActiveDataTypes()).thenReturn(Set.of(DataType.SAVED_TAB_GROUP));
         SyncServiceFactory.setInstanceForTesting(mSyncService);
 
         sActivityTestRule.waitForActivityNativeInitializationComplete();

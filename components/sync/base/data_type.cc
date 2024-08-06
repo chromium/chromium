@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 #include <ostream>
 
@@ -15,239 +15,239 @@ namespace syncer {
 
 namespace {
 
-struct ModelTypeInfo {
-  const ModelType model_type = UNSPECIFIED;
-  // Used to identify the model type in the SyncModelType histogram_suffix in
+struct DataTypeInfo {
+  const DataType data_type = UNSPECIFIED;
+  // Used to identify the data type in the SyncDataType histogram_suffix in
   // histograms.xml. Must always be kept in sync.
   const char* const histogram_suffix = nullptr;
   // Root tag for Model Type
-  // This should be the same as the model type but all lowercase.
+  // This should be the same as the data type but all lowercase.
   const char* const lowercase_root_tag = nullptr;
   // String value for Model Type
-  // This should be the same as the model type but space separated and the
+  // This should be the same as the data type but space separated and the
   // first letter of every word capitalized.
   const char* const data_type_debug_string = nullptr;
-  // Field number of the model type specifics in EntitySpecifics.
+  // Field number of the data type specifics in EntitySpecifics.
   const int specifics_field_number = -1;
-  // Model type value from SyncModelTypes enum in enums.xml. Must always be in
+  // Data type value from SyncDataTypes enum in enums.xml. Must always be in
   // sync with the enum.
-  const ModelTypeForHistograms model_type_histogram_val =
-      ModelTypeForHistograms::kUnspecified;
+  const DataTypeForHistograms data_type_histogram_val =
+      DataTypeForHistograms::kUnspecified;
 };
 
 // Below struct entries are in the same order as their definition in the
-// ModelType enum. When making changes to this list, don't forget to
-//  - update kSpecificsFieldNumberToModelTypeMap below,
-//  - update the ModelType enum,
-//  - update the SyncModelTypes enum in enums.xml, and
-//  - update the SyncModelType histogram suffix in histograms.xml.
+// DataType enum. When making changes to this list, don't forget to
+//  - update kSpecificsFieldNumberToDataTypeMap below,
+//  - update the DataType enum,
+//  - update the SyncDataTypes enum in enums.xml, and
+//  - update the SyncDataType histogram suffix in histograms.xml.
 // Struct field values should be unique across the entire map.
-// LINT.IfChange(ModelTypeHistogramSuffix)
-constexpr auto kModelTypeInfoMap = std::to_array<ModelTypeInfo>(
+// LINT.IfChange(DataTypeHistogramSuffix)
+constexpr auto kDataTypeInfoMap = std::to_array<DataTypeInfo>(
     {{UNSPECIFIED, "", "", "Unspecified", -1,
-      ModelTypeForHistograms::kUnspecified},
+      DataTypeForHistograms::kUnspecified},
      {BOOKMARKS, "BOOKMARK", "bookmarks", "Bookmarks",
       sync_pb::EntitySpecifics::kBookmarkFieldNumber,
-      ModelTypeForHistograms::kBookmarks},
+      DataTypeForHistograms::kBookmarks},
      {PREFERENCES, "PREFERENCE", "preferences", "Preferences",
       sync_pb::EntitySpecifics::kPreferenceFieldNumber,
-      ModelTypeForHistograms::kPreferences},
+      DataTypeForHistograms::kPreferences},
      {PASSWORDS, "PASSWORD", "passwords", "Passwords",
       sync_pb::EntitySpecifics::kPasswordFieldNumber,
-      ModelTypeForHistograms::kPasswords},
+      DataTypeForHistograms::kPasswords},
      {AUTOFILL_PROFILE, "AUTOFILL_PROFILE", "autofill_profiles",
       "Autofill Profiles",
       sync_pb::EntitySpecifics::kAutofillProfileFieldNumber,
-      ModelTypeForHistograms::kAutofillProfile},
+      DataTypeForHistograms::kAutofillProfile},
      {AUTOFILL, "AUTOFILL", "autofill", "Autofill",
       sync_pb::EntitySpecifics::kAutofillFieldNumber,
-      ModelTypeForHistograms::kAutofill},
+      DataTypeForHistograms::kAutofill},
      {AUTOFILL_WALLET_CREDENTIAL, "AUTOFILL_WALLET_CREDENTIAL",
       "autofill_wallet_credential", "Autofill Wallet Credential",
       sync_pb::EntitySpecifics::kAutofillWalletCredentialFieldNumber,
-      ModelTypeForHistograms::kAutofillWalletCredential},
+      DataTypeForHistograms::kAutofillWalletCredential},
      {AUTOFILL_WALLET_DATA, "AUTOFILL_WALLET", "autofill_wallet",
       "Autofill Wallet", sync_pb::EntitySpecifics::kAutofillWalletFieldNumber,
-      ModelTypeForHistograms::kAutofillWalletData},
+      DataTypeForHistograms::kAutofillWalletData},
      {AUTOFILL_WALLET_METADATA, "WALLET_METADATA", "autofill_wallet_metadata",
       "Autofill Wallet Metadata",
       sync_pb::EntitySpecifics::kWalletMetadataFieldNumber,
-      ModelTypeForHistograms::kAutofillWalletMetadata},
+      DataTypeForHistograms::kAutofillWalletMetadata},
      {AUTOFILL_WALLET_OFFER, "AUTOFILL_OFFER", "autofill_wallet_offer",
       "Autofill Wallet Offer",
       sync_pb::EntitySpecifics::kAutofillOfferFieldNumber,
-      ModelTypeForHistograms::kAutofillWalletOffer},
+      DataTypeForHistograms::kAutofillWalletOffer},
      {AUTOFILL_WALLET_USAGE, "AUTOFILL_WALLET_USAGE", "autofill_wallet_usage",
       "Autofill Wallet Usage",
       sync_pb::EntitySpecifics::kAutofillWalletUsageFieldNumber,
-      ModelTypeForHistograms::kAutofillWalletUsage},
+      DataTypeForHistograms::kAutofillWalletUsage},
      {THEMES, "THEME", "themes", "Themes",
       sync_pb::EntitySpecifics::kThemeFieldNumber,
-      ModelTypeForHistograms::kThemes},
+      DataTypeForHistograms::kThemes},
      {EXTENSIONS, "EXTENSION", "extensions", "Extensions",
       sync_pb::EntitySpecifics::kExtensionFieldNumber,
-      ModelTypeForHistograms::kExtensions},
+      DataTypeForHistograms::kExtensions},
      {SEARCH_ENGINES, "SEARCH_ENGINE", "search_engines", "Search Engines",
       sync_pb::EntitySpecifics::kSearchEngineFieldNumber,
-      ModelTypeForHistograms::kSearchEngines},
+      DataTypeForHistograms::kSearchEngines},
      {SESSIONS, "SESSION", "sessions", "Sessions",
       sync_pb::EntitySpecifics::kSessionFieldNumber,
-      ModelTypeForHistograms::kSessions},
+      DataTypeForHistograms::kSessions},
      {APPS, "APP", "apps", "Apps", sync_pb::EntitySpecifics::kAppFieldNumber,
-      ModelTypeForHistograms::kApps},
+      DataTypeForHistograms::kApps},
      {APP_SETTINGS, "APP_SETTING", "app_settings", "App settings",
       sync_pb::EntitySpecifics::kAppSettingFieldNumber,
-      ModelTypeForHistograms::kAppSettings},
+      DataTypeForHistograms::kAppSettings},
      {EXTENSION_SETTINGS, "EXTENSION_SETTING", "extension_settings",
       "Extension settings",
       sync_pb::EntitySpecifics::kExtensionSettingFieldNumber,
-      ModelTypeForHistograms::kExtensionSettings},
+      DataTypeForHistograms::kExtensionSettings},
      {HISTORY_DELETE_DIRECTIVES, "HISTORY_DELETE_DIRECTIVE",
       "history_delete_directives", "History Delete Directives",
       sync_pb::EntitySpecifics::kHistoryDeleteDirectiveFieldNumber,
-      ModelTypeForHistograms::kHistoryDeleteDirectices},
+      DataTypeForHistograms::kHistoryDeleteDirectices},
      {DICTIONARY, "DICTIONARY", "dictionary", "Dictionary",
       sync_pb::EntitySpecifics::kDictionaryFieldNumber,
-      ModelTypeForHistograms::kDictionary},
+      DataTypeForHistograms::kDictionary},
      {DEVICE_INFO, "DEVICE_INFO", "device_info", "Device Info",
       sync_pb::EntitySpecifics::kDeviceInfoFieldNumber,
-      ModelTypeForHistograms::kDeviceInfo},
+      DataTypeForHistograms::kDeviceInfo},
      {PRIORITY_PREFERENCES, "PRIORITY_PREFERENCE", "priority_preferences",
       "Priority Preferences",
       sync_pb::EntitySpecifics::kPriorityPreferenceFieldNumber,
-      ModelTypeForHistograms::kPriorityPreferences},
+      DataTypeForHistograms::kPriorityPreferences},
      {SUPERVISED_USER_SETTINGS, "MANAGED_USER_SETTING", "managed_user_settings",
       "Managed User Settings",
       sync_pb::EntitySpecifics::kManagedUserSettingFieldNumber,
-      ModelTypeForHistograms::kSupervisedUserSettings},
+      DataTypeForHistograms::kSupervisedUserSettings},
      {APP_LIST, "APP_LIST", "app_list", "App List",
       sync_pb::EntitySpecifics::kAppListFieldNumber,
-      ModelTypeForHistograms::kAppList},
+      DataTypeForHistograms::kAppList},
      {ARC_PACKAGE, "ARC_PACKAGE", "arc_package", "Arc Package",
       sync_pb::EntitySpecifics::kArcPackageFieldNumber,
-      ModelTypeForHistograms::kArcPackage},
+      DataTypeForHistograms::kArcPackage},
      {PRINTERS, "PRINTER", "printers", "Printers",
       sync_pb::EntitySpecifics::kPrinterFieldNumber,
-      ModelTypeForHistograms::kPrinters},
+      DataTypeForHistograms::kPrinters},
      {READING_LIST, "READING_LIST", "reading_list", "Reading List",
       sync_pb::EntitySpecifics::kReadingListFieldNumber,
-      ModelTypeForHistograms::kReadingList},
+      DataTypeForHistograms::kReadingList},
      {USER_EVENTS, "USER_EVENT", "user_events", "User Events",
       sync_pb::EntitySpecifics::kUserEventFieldNumber,
-      ModelTypeForHistograms::kUserEvents},
+      DataTypeForHistograms::kUserEvents},
      {USER_CONSENTS, "USER_CONSENT", "user_consent", "User Consents",
       sync_pb::EntitySpecifics::kUserConsentFieldNumber,
-      ModelTypeForHistograms::kUserConsents},
+      DataTypeForHistograms::kUserConsents},
      {SEND_TAB_TO_SELF, "SEND_TAB_TO_SELF", "send_tab_to_self",
       "Send Tab To Self", sync_pb::EntitySpecifics::kSendTabToSelfFieldNumber,
-      ModelTypeForHistograms::kSendTabToSelf},
+      DataTypeForHistograms::kSendTabToSelf},
      {SECURITY_EVENTS, "SECURITY_EVENT", "security_events", "Security Events",
       sync_pb::EntitySpecifics::kSecurityEventFieldNumber,
-      ModelTypeForHistograms::kSecurityEvents},
+      DataTypeForHistograms::kSecurityEvents},
      {WIFI_CONFIGURATIONS, "WIFI_CONFIGURATION", "wifi_configurations",
       "Wifi Configurations",
       sync_pb::EntitySpecifics::kWifiConfigurationFieldNumber,
-      ModelTypeForHistograms::kWifiConfigurations},
+      DataTypeForHistograms::kWifiConfigurations},
      {WEB_APPS, "WEB_APP", "web_apps", "Web Apps",
       sync_pb::EntitySpecifics::kWebAppFieldNumber,
-      ModelTypeForHistograms::kWebApps},
+      DataTypeForHistograms::kWebApps},
      {WEB_APKS, "WEB_APK", "web_apks", "Web Apks",
       sync_pb::EntitySpecifics::kWebApkFieldNumber,
-      ModelTypeForHistograms::kWebApks},
+      DataTypeForHistograms::kWebApks},
      {OS_PREFERENCES, "OS_PREFERENCE", "os_preferences", "OS Preferences",
       sync_pb::EntitySpecifics::kOsPreferenceFieldNumber,
-      ModelTypeForHistograms::kOsPreferences},
+      DataTypeForHistograms::kOsPreferences},
      {OS_PRIORITY_PREFERENCES, "OS_PRIORITY_PREFERENCE",
       "os_priority_preferences", "OS Priority Preferences",
       sync_pb::EntitySpecifics::kOsPriorityPreferenceFieldNumber,
-      ModelTypeForHistograms::kOsPriorityPreferences},
+      DataTypeForHistograms::kOsPriorityPreferences},
      {SHARING_MESSAGE, "SHARING_MESSAGE", "sharing_message", "Sharing Message",
       sync_pb::EntitySpecifics::kSharingMessageFieldNumber,
-      ModelTypeForHistograms::kSharingMessage},
+      DataTypeForHistograms::kSharingMessage},
      {WORKSPACE_DESK, "WORKSPACE_DESK", "workspace_desk", "Workspace Desk",
       sync_pb::EntitySpecifics::kWorkspaceDeskFieldNumber,
-      ModelTypeForHistograms::kWorkspaceDesk},
+      DataTypeForHistograms::kWorkspaceDesk},
      {HISTORY, "HISTORY", "history", "History",
       sync_pb::EntitySpecifics::kHistoryFieldNumber,
-      ModelTypeForHistograms::kHistory},
+      DataTypeForHistograms::kHistory},
      {PRINTERS_AUTHORIZATION_SERVERS, "PRINTERS_AUTHORIZATION_SERVER",
       "printers_authorization_servers", "Printers Authorization Servers",
       sync_pb::EntitySpecifics::kPrintersAuthorizationServerFieldNumber,
-      ModelTypeForHistograms::kPrintersAuthorizationServers},
+      DataTypeForHistograms::kPrintersAuthorizationServers},
      {CONTACT_INFO, "CONTACT_INFO", "contact_info", "Contact Info",
       sync_pb::EntitySpecifics::kContactInfoFieldNumber,
-      ModelTypeForHistograms::kContactInfo},
+      DataTypeForHistograms::kContactInfo},
      {SAVED_TAB_GROUP, "SAVED_TAB_GROUP", "saved_tab_group", "Saved Tab Group",
       sync_pb::EntitySpecifics::kSavedTabGroupFieldNumber,
-      ModelTypeForHistograms::kSavedTabGroups},
+      DataTypeForHistograms::kSavedTabGroups},
      {POWER_BOOKMARK, "POWER_BOOKMARK", "power_bookmark", "Power Bookmark",
       sync_pb::EntitySpecifics::kPowerBookmarkFieldNumber,
-      ModelTypeForHistograms::kPowerBookmark},
+      DataTypeForHistograms::kPowerBookmark},
      {WEBAUTHN_CREDENTIAL, "WEBAUTHN_CREDENTIAL", "webauthn_credential",
       "WebAuthn Credentials",
       sync_pb::EntitySpecifics::kWebauthnCredentialFieldNumber,
-      ModelTypeForHistograms::kWebAuthnCredentials},
+      DataTypeForHistograms::kWebAuthnCredentials},
      {INCOMING_PASSWORD_SHARING_INVITATION,
       "INCOMING_PASSWORD_SHARING_INVITATION",
       "incoming_password_sharing_invitation",
       "Incoming Password Sharing Invitations",
       sync_pb::EntitySpecifics::kIncomingPasswordSharingInvitationFieldNumber,
-      ModelTypeForHistograms::kIncomingPasswordSharingInvitations},
+      DataTypeForHistograms::kIncomingPasswordSharingInvitations},
      {OUTGOING_PASSWORD_SHARING_INVITATION,
       "OUTGOING_PASSWORD_SHARING_INVITATION",
       "outgoing_password_sharing_invitation",
       "Outgoing Password Sharing Invitations",
       sync_pb::EntitySpecifics::kOutgoingPasswordSharingInvitationFieldNumber,
-      ModelTypeForHistograms::kOutgoingPasswordSharingInvitations},
+      DataTypeForHistograms::kOutgoingPasswordSharingInvitations},
      {SHARED_TAB_GROUP_DATA, "SHARED_TAB_GROUP_DATA", "shared_tab_group_data",
       "Shared Tab Group Data",
       sync_pb::EntitySpecifics::kSharedTabGroupDataFieldNumber,
-      ModelTypeForHistograms::kSharedTabGroupData},
+      DataTypeForHistograms::kSharedTabGroupData},
      {COLLABORATION_GROUP, "COLLABORATION_GROUP", "collaboration_group",
       "Collaboration Group",
       sync_pb::EntitySpecifics::kCollaborationGroupFieldNumber,
-      ModelTypeForHistograms::kCollaborationGroup},
+      DataTypeForHistograms::kCollaborationGroup},
      {PLUS_ADDRESS, "PLUS_ADDRESS", "plus_address", "Plus Address",
       sync_pb::EntitySpecifics::kPlusAddressFieldNumber,
-      ModelTypeForHistograms::kPlusAddresses},
+      DataTypeForHistograms::kPlusAddresses},
      {PRODUCT_COMPARISON, "PRODUCT_COMPARISON", "product_comparison",
       "Product Comparison",
       sync_pb::EntitySpecifics::kProductComparisonFieldNumber,
-      ModelTypeForHistograms::kProductComparison},
+      DataTypeForHistograms::kProductComparison},
      {COOKIES, "COOKIE", "cookies", "Cookies",
       sync_pb::EntitySpecifics::kCookieFieldNumber,
-      ModelTypeForHistograms::kCookies},
+      DataTypeForHistograms::kCookies},
      {PLUS_ADDRESS_SETTING, "PLUS_ADDRESS_SETTING", "plus_address_setting",
       "Plus Address Setting",
       sync_pb::EntitySpecifics::kPlusAddressSettingFieldNumber,
-      ModelTypeForHistograms::kPlusAddressSettings},
+      DataTypeForHistograms::kPlusAddressSettings},
      // ---- Control Types ----
      {NIGORI, "NIGORI", "nigori", "Encryption Keys",
       sync_pb::EntitySpecifics::kNigoriFieldNumber,
-      ModelTypeForHistograms::kNigori}});
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:ModelTypeHistogramSuffix)
+      DataTypeForHistograms::kNigori}});
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:DataTypeHistogramSuffix)
 
-static_assert(kModelTypeInfoMap.size() == GetNumModelTypes(),
-              "kModelTypeInfoMap should have GetNumModelTypes() elements");
+static_assert(kDataTypeInfoMap.size() == GetNumDataTypes(),
+              "kDataTypeInfoMap should have GetNumDataTypes() elements");
 
-static_assert(53 == syncer::GetNumModelTypes(),
-              "When adding a new type, update enum SyncModelTypes in enums.xml "
-              "and suffix SyncModelType in histograms.xml.");
+static_assert(53 == syncer::GetNumDataTypes(),
+              "When adding a new type, update enum SyncDataTypes in enums.xml "
+              "and suffix SyncDataType in histograms.xml.");
 
-static_assert(53 == syncer::GetNumModelTypes(),
+static_assert(53 == syncer::GetNumDataTypes(),
               "When adding a new type, follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
               "integration-checklist/");
 
-// kSpecificsFieldNumberToModelTypeMap must exactly match the kModelTypeInfoMap,
-// so its size must be syncer::GetNumModelTypes().
+// kSpecificsFieldNumberToDataTypeMap must exactly match the kDataTypeInfoMap,
+// so its size must be syncer::GetNumDataTypes().
 //
 // NOTE: size here acts as a static assert on the constraint above.
-using kSpecificsFieldNumberToModelTypeMap =
-    base::fixed_flat_map<int, ModelType, syncer::GetNumModelTypes()>;
+using kSpecificsFieldNumberToDataTypeMap =
+    base::fixed_flat_map<int, DataType, syncer::GetNumDataTypes()>;
 
-constexpr kSpecificsFieldNumberToModelTypeMap
-    specifics_field_number2model_type = base::MakeFixedFlatMap<int, ModelType>({
+constexpr kSpecificsFieldNumberToDataTypeMap
+    specifics_field_number2data_type = base::MakeFixedFlatMap<int, DataType>({
         {-1, UNSPECIFIED},
         {sync_pb::EntitySpecifics::kBookmarkFieldNumber, BOOKMARKS},
         {sync_pb::EntitySpecifics::kPreferenceFieldNumber, PREFERENCES},
@@ -328,11 +328,11 @@ constexpr kSpecificsFieldNumberToModelTypeMap
 
 }  // namespace
 
-void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
+void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
   switch (type) {
     case UNSPECIFIED:
       NOTREACHED_IN_MIGRATION()
-          << "No default field value for " << ModelTypeToDebugString(type);
+          << "No default field value for " << DataTypeToDebugString(type);
       break;
     case BOOKMARKS:
       specifics->mutable_bookmark();
@@ -493,32 +493,32 @@ void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
   }
 }
 
-ModelType GetModelTypeFromSpecificsFieldNumber(int field_number) {
-  kSpecificsFieldNumberToModelTypeMap::const_iterator it =
-      specifics_field_number2model_type.find(field_number);
-  return (it == specifics_field_number2model_type.end() ? UNSPECIFIED
+DataType GetDataTypeFromSpecificsFieldNumber(int field_number) {
+  kSpecificsFieldNumberToDataTypeMap::const_iterator it =
+      specifics_field_number2data_type.find(field_number);
+  return (it == specifics_field_number2data_type.end() ? UNSPECIFIED
                                                         : it->second);
 }
 
-int GetSpecificsFieldNumberFromModelType(ModelType model_type) {
-  DCHECK(ProtocolTypes().Has(model_type))
+int GetSpecificsFieldNumberFromDataType(DataType data_type) {
+  DCHECK(ProtocolTypes().Has(data_type))
       << "Only protocol types have field values.";
-  return kModelTypeInfoMap[model_type].specifics_field_number;
+  return kDataTypeInfoMap[data_type].specifics_field_number;
 }
 
-void internal::GetModelTypeSetFromSpecificsFieldNumberListHelper(
-    ModelTypeSet& model_types,
+void internal::GetDataTypeSetFromSpecificsFieldNumberListHelper(
+    DataTypeSet& data_types,
     int field_number) {
-  ModelType model_type = GetModelTypeFromSpecificsFieldNumber(field_number);
-  if (IsRealDataType(model_type)) {
-    model_types.Put(model_type);
+  DataType data_type = GetDataTypeFromSpecificsFieldNumber(field_number);
+  if (IsRealDataType(data_type)) {
+    data_types.Put(data_type);
   } else {
     DLOG(WARNING) << "Unknown field number " << field_number;
   }
 }
 
-ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(53 == syncer::GetNumModelTypes(),
+DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
+  static_assert(53 == syncer::GetNumDataTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark())
@@ -642,11 +642,11 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   return UNSPECIFIED;
 }
 
-ModelTypeSet EncryptableUserTypes() {
-  static_assert(53 == syncer::GetNumModelTypes(),
+DataTypeSet EncryptableUserTypes() {
+  static_assert(53 == syncer::GetNumDataTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
-  ModelTypeSet encryptable_user_types = UserTypes();
+  DataTypeSet encryptable_user_types = UserTypes();
   // Wallet data is not encrypted since it actually originates on the server.
   encryptable_user_types.Remove(AUTOFILL_WALLET_DATA);
   encryptable_user_types.Remove(AUTOFILL_WALLET_OFFER);
@@ -680,59 +680,59 @@ ModelTypeSet EncryptableUserTypes() {
   return encryptable_user_types;
 }
 
-const char* ModelTypeToDebugString(ModelType model_type) {
+const char* DataTypeToDebugString(DataType data_type) {
   // This is used for displaying debug information.
-  return kModelTypeInfoMap[model_type].data_type_debug_string;
+  return kDataTypeInfoMap[data_type].data_type_debug_string;
 }
 
-const char* ModelTypeToHistogramSuffix(ModelType model_type) {
-  return kModelTypeInfoMap[model_type].histogram_suffix;
+const char* DataTypeToHistogramSuffix(DataType data_type) {
+  return kDataTypeInfoMap[data_type].histogram_suffix;
 }
 
-ModelTypeForHistograms ModelTypeHistogramValue(ModelType model_type) {
-  return kModelTypeInfoMap[model_type].model_type_histogram_val;
+DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
+  return kDataTypeInfoMap[data_type].data_type_histogram_val;
 }
 
-int ModelTypeToStableIdentifier(ModelType model_type) {
+int DataTypeToStableIdentifier(DataType data_type) {
   // Make sure the value is stable and positive.
-  return static_cast<int>(ModelTypeHistogramValue(model_type)) + 1;
+  return static_cast<int>(DataTypeHistogramValue(data_type)) + 1;
 }
 
-std::string ModelTypeSetToDebugString(ModelTypeSet model_types) {
+std::string DataTypeSetToDebugString(DataTypeSet data_types) {
   std::string result;
-  for (ModelType type : model_types) {
+  for (DataType type : data_types) {
     if (!result.empty()) {
       result += ", ";
     }
-    result += ModelTypeToDebugString(type);
+    result += DataTypeToDebugString(type);
   }
   return result;
 }
 
-std::ostream& operator<<(std::ostream& out, ModelTypeSet model_type_set) {
-  return out << ModelTypeSetToDebugString(model_type_set);
+std::ostream& operator<<(std::ostream& out, DataTypeSet data_type_set) {
+  return out << DataTypeSetToDebugString(data_type_set);
 }
 
-std::string ModelTypeToProtocolRootTag(ModelType model_type) {
-  DCHECK(ProtocolTypes().Has(model_type));
-  DCHECK(IsRealDataType(model_type));
+std::string DataTypeToProtocolRootTag(DataType data_type) {
+  DCHECK(ProtocolTypes().Has(data_type));
+  DCHECK(IsRealDataType(data_type));
   const std::string root_tag =
-      std::string(kModelTypeInfoMap[model_type].lowercase_root_tag);
+      std::string(kDataTypeInfoMap[data_type].lowercase_root_tag);
   DCHECK(!root_tag.empty());
   return "google_chrome_" + root_tag;
 }
 
-const char* GetModelTypeLowerCaseRootTag(ModelType model_type) {
-  return kModelTypeInfoMap[model_type].lowercase_root_tag;
+const char* GetDataTypeLowerCaseRootTag(DataType data_type) {
+  return kDataTypeInfoMap[data_type].lowercase_root_tag;
 }
 
-bool IsRealDataType(ModelType model_type) {
-  return model_type >= FIRST_REAL_MODEL_TYPE &&
-         model_type <= LAST_REAL_MODEL_TYPE;
+bool IsRealDataType(DataType data_type) {
+  return data_type >= FIRST_REAL_DATA_TYPE &&
+         data_type <= LAST_REAL_DATA_TYPE;
 }
 
-bool IsActOnceDataType(ModelType model_type) {
-  return model_type == HISTORY_DELETE_DIRECTIVES;
+bool IsActOnceDataType(DataType data_type) {
+  return data_type == HISTORY_DELETE_DIRECTIVES;
 }
 
 }  // namespace syncer

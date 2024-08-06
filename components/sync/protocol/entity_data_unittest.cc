@@ -4,7 +4,7 @@
 
 #include "components/sync/protocol/entity_data.h"
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/unique_position.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
