@@ -83,7 +83,7 @@ class DataSharingServiceAndroid::GroupDataObserverBridge
   void OnGroupRemoved(const GroupId& group_id) override;
 
  private:
-  ScopedJavaLocalRef<jobject> java_obj_;
+  ScopedJavaGlobalRef<jobject> java_obj_;
   base::ScopedObservation<DataSharingService, DataSharingService::Observer>
       scoped_obs_{this};
 };
@@ -91,7 +91,9 @@ class DataSharingServiceAndroid::GroupDataObserverBridge
 DataSharingServiceAndroid::GroupDataObserverBridge::GroupDataObserverBridge(
     DataSharingService* data_sharing_service,
     DataSharingServiceAndroid* data_sharing_service_android) {
-  java_obj_ = data_sharing_service_android->GetJavaObserverBridge();
+  java_obj_ = ScopedJavaGlobalRef<jobject>(
+      AttachCurrentThread(),
+      data_sharing_service_android->GetJavaObserverBridge());
   scoped_obs_.Observe(data_sharing_service);
 }
 
