@@ -1813,6 +1813,9 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_NOT_SUPPORTED_BUBBLE_BODY" desc="The body of the bubble when the active device doesn't support sidetone.">
         To avoid echo, you can listen to your mic only with wired headphone.
       </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_ANNOUNCEMENT" desc="Accessibility announcement that notifies whether sidetone is supported after user presses the toggle.">
+        <ph name="TITLE">$1<ex>Listen to your mic sound</ex></ph>. <ph name="DESCRIPTION">$2<ex>You can monitor your microphone sound from wired headphones. Close panel to stop.</ex></ph>
+      </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_DISMISS_BUTTON" desc="The dismiss button of the bubble when sidetone is enabled.">
         Dismiss
       </message>
