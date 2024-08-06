@@ -13122,11 +13122,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="User leaves the interstitial by closing the page"/>
 </enum>
 
-<enum name="InvalidOriginReason">
-  <int value="0" label="Opaque Origin"/>
-  <int value="1" label="Empty URL"/>
-</enum>
-
 <enum name="IOSContentSizeCategory">
   <int value="0" label="Unspecified"/>
   <int value="1" label="ExtraSmall"/>
