@@ -20,7 +20,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.MoreViewConditions.ViewHasChildrenCountCondition;
 import org.chromium.base.test.transit.ScrollableFacility;
-import org.chromium.base.test.transit.ViewElementInState;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -50,7 +50,7 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
         // tablets.
         Supplier<View> tilesViewSupplier =
                 elements.declareView(
-                        MOST_VISITED_TILES_LAYOUT, ViewElementInState.displayingAtLeastOption(1));
+                        MOST_VISITED_TILES_LAYOUT, ViewElement.displayingAtLeastOption(1));
         elements.declareEnterCondition(
                 new ViewHasChildrenCountCondition(tilesViewSupplier, mSiteSuggestions.size()));
         super.declareElements(elements);

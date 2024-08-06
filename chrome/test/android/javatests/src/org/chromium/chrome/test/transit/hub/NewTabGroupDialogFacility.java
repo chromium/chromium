@@ -26,7 +26,7 @@ import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.ViewElementInState;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.test.R;
@@ -80,27 +80,26 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
         String inputElementId = "Tab group title input showing " + mTitle;
         mTitleInputSpec = viewSpec(allOf(TITLE_INPUT_MATCHER, withText(mTitle)));
-        elements.declareView(mTitleInputSpec, ViewElementInState.elementIdOption(inputElementId));
+        elements.declareView(mTitleInputSpec, ViewElement.elementIdOption(inputElementId));
 
         // TODO(crbug.com/345489175): Partially cut off in android_30_google_apis_x86.textpb
-        elements.declareView(
-                COLOR_PICKER_CONTAINER, ViewElementInState.displayingAtLeastOption(50));
+        elements.declareView(COLOR_PICKER_CONTAINER, ViewElement.displayingAtLeastOption(50));
         @TabGroupColorId List<Integer> colors = ColorPickerUtils.getTabGroupColorIdList();
         for (@TabGroupColorId Integer color : colors) {
             if (mSelectedColor != null) {
                 elements.declareView(
                         colorPickerIconSpec(color, color.equals(mSelectedColor)),
-                        ViewElementInState.unscopedOption());
+                        ViewElement.unscopedOption());
             } else {
                 elements.declareView(
                         colorPickerIconSpec(color, /* selected= */ null),
-                        ViewElementInState.unscopedOption());
+                        ViewElement.unscopedOption());
             }
         }
 
         elements.declareView(DONE_BUTTON);
 
-        elements.declareElementInState(new SoftKeyboardElement(mHostStation.getActivitySupplier()));
+        elements.declareElement(new SoftKeyboardElement(mHostStation.getActivitySupplier()));
     }
 
     private ViewSpec colorPickerIconSpec(

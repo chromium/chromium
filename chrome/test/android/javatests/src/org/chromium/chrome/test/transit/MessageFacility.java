@@ -27,7 +27,7 @@ import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition.Trigger;
-import org.chromium.base.test.transit.ViewElementInState;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.page.PageStation;
@@ -60,8 +60,8 @@ public class MessageFacility<HostStationT extends PageStation> extends Facility<
     @Override
     public void declareElements(Elements.Builder elements) {
         // Unscoped because other messages can appear and fail the exit condition.
-        elements.declareView(MESSAGE_BANNER, ViewElementInState.unscopedOption());
-        elements.declareView(MESSAGE_ICON, ViewElementInState.unscopedOption());
+        elements.declareView(MESSAGE_BANNER, ViewElement.unscopedOption());
+        elements.declareView(MESSAGE_ICON, ViewElement.unscopedOption());
     }
 
     /** Dismiss the message banner. */

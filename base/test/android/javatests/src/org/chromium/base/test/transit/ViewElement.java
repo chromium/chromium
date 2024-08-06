@@ -16,13 +16,13 @@ import org.chromium.base.test.transit.ViewConditions.NotDisplayedAnymoreConditio
 /**
  * Represents a {@link ViewSpec} added to a {@link ConditionalState}.
  *
- * <p>{@link ViewSpec}s should be declared as constants, while {@link ViewElementInState}s are
+ * <p>{@link ViewSpec}s should be declared as constants, while {@link ViewElement}s are
  * created by calling {@link Elements.Builder#declareView(ViewSpec)}.
  *
  * <p>Generates ENTER and EXIT Conditions for the ConditionalState to ensure the ViewElement is in
  * the right state.
  */
-public class ViewElementInState extends ElementInState<View> {
+public class ViewElement extends Element<View> {
 
     /**
      * Minimum percentage of the View that needs to be displayed for a ViewElement's enter
@@ -35,7 +35,7 @@ public class ViewElementInState extends ElementInState<View> {
     private final ViewSpec mViewSpec;
     private final Options mOptions;
 
-    ViewElementInState(ViewSpec viewSpec, Options options) {
+    ViewElement(ViewSpec viewSpec, Options options) {
         super(
                 "VE/"
                         + (options.mElementId != null
@@ -48,7 +48,7 @@ public class ViewElementInState extends ElementInState<View> {
     /**
      * @return an Options builder to customize the ViewElement further.
      */
-    public static ViewElementInState.Options.Builder newOptions() {
+    public static ViewElement.Options.Builder newOptions() {
         return new Options().new Builder();
     }
 
@@ -78,7 +78,7 @@ public class ViewElementInState extends ElementInState<View> {
         protected boolean mScoped = true;
         protected boolean mExpectEnabled = true;
         protected String mElementId;
-        protected Integer mDisplayedPercentageRequired = ViewElementInState.MIN_DISPLAYED_PERCENT;
+        protected Integer mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
 
         protected Options() {}
 

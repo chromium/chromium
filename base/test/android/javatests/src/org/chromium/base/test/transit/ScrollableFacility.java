@@ -248,7 +248,7 @@ public abstract class ScrollableFacility<HostStationT extends Station>
         protected final @Nullable Matcher<?> mOffScreenDataMatcher;
         protected final @Presence int mPresence;
         protected final @Nullable ViewSpec mViewSpec;
-        protected final @Nullable ViewElementInState.Options mViewElementOptions;
+        protected final @Nullable ViewElement.Options mViewElementOptions;
         protected @Nullable Function<ItemOnScreenFacility<SelectReturnT>, SelectReturnT>
                 mSelectHandler;
 
@@ -286,11 +286,11 @@ public abstract class ScrollableFacility<HostStationT extends Station>
                 case Presence.PRESENT_AND_ENABLED:
                 case Presence.MAYBE_PRESENT:
                     mViewSpec = viewSpec(mOnScreenViewMatcher);
-                    mViewElementOptions = ViewElementInState.Options.DEFAULT;
+                    mViewElementOptions = ViewElement.Options.DEFAULT;
                     break;
                 case Presence.PRESENT_AND_DISABLED:
                     mViewSpec = viewSpec(mOnScreenViewMatcher);
-                    mViewElementOptions = ViewElementInState.expectDisabledOption();
+                    mViewElementOptions = ViewElement.expectDisabledOption();
                     break;
                 default:
                     mViewSpec = null;
@@ -347,7 +347,7 @@ public abstract class ScrollableFacility<HostStationT extends Station>
             return mViewSpec;
         }
 
-        public ViewElementInState.Options getViewElementOptions() {
+        public ViewElement.Options getViewElementOptions() {
             return mViewElementOptions;
         }
 

@@ -304,10 +304,10 @@ Example of a concrete `Station`:
 ```java
 /** The tab switcher screen, with the tab grid and the tab management toolbar. */
 public class TabSwitcherStation extends Station {
-    public static final ViewElement NEW_TAB_BUTTON =
-            scopedViewElement(withId(R.id.new_tab_button));
-    public static final ViewElement INCOGNITO_TOGGLE_TABS =
-            scopedViewElement(withId(R.id.incognito_toggle_tabs));
+    public static final ViewSpec NEW_TAB_BUTTON =
+            viewSpec(withId(R.id.new_tab_button));
+    public static final ViewSpec INCOGNITO_TOGGLE_TABS =
+            viewSpec(withId(R.id.incognito_toggle_tabs));
 
     protected ActivityElement<ChromeTabbedActivity> mActivityElement;
 

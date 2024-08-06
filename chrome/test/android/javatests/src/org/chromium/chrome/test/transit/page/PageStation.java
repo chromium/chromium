@@ -22,7 +22,7 @@ import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
-import org.chromium.base.test.transit.ViewElementInState;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -210,9 +210,9 @@ public class PageStation extends Station {
         // since they unintentionally still exist in the non-Hub tab switcher. They are mostly
         // occluded by the tab switcher toolbar, but at least the tab_switcher_button is still
         // visible.
-        elements.declareView(HOME_BUTTON, ViewElementInState.unscopedOption());
-        elements.declareView(TAB_SWITCHER_BUTTON, ViewElementInState.unscopedOption());
-        elements.declareView(MENU_BUTTON, ViewElementInState.unscopedOption());
+        elements.declareView(HOME_BUTTON, ViewElement.unscopedOption());
+        elements.declareView(TAB_SWITCHER_BUTTON, ViewElement.unscopedOption());
+        elements.declareView(MENU_BUTTON, ViewElement.unscopedOption());
 
         if (mNumTabsBeingOpened > 0) {
             elements.declareEnterCondition(

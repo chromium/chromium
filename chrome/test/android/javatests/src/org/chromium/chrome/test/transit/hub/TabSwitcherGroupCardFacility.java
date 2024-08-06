@@ -18,7 +18,7 @@ import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.ViewElementInState;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupExistsCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
@@ -58,7 +58,7 @@ public class TabSwitcherGroupCardFacility extends Facility<TabSwitcherStation> {
         String titleElementId = "Tab Group card title: " + mTitle;
         elements.declareView(
                 viewSpec(allOf(withText(mTitle), withId(R.id.tab_title), withParent(CARD))),
-                ViewElementInState.elementIdOption(titleElementId));
+                ViewElement.elementIdOption(titleElementId));
 
         elements.declareEnterCondition(
                 new TabGroupExistsCondition(

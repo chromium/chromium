@@ -663,8 +663,8 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/test/transit/ConditionWaiter.java",
       "android/javatests/src/org/chromium/base/test/transit/ConditionWithResult.java",
       "android/javatests/src/org/chromium/base/test/transit/ConditionalState.java",
+      "android/javatests/src/org/chromium/base/test/transit/Element.java",
       "android/javatests/src/org/chromium/base/test/transit/ElementFactory.java",
-      "android/javatests/src/org/chromium/base/test/transit/ElementInState.java",
       "android/javatests/src/org/chromium/base/test/transit/Elements.java",
       "android/javatests/src/org/chromium/base/test/transit/EntryPointSentinelStation.java",
       "android/javatests/src/org/chromium/base/test/transit/Facility.java",
@@ -685,7 +685,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/test/transit/Trip.java",
       "android/javatests/src/org/chromium/base/test/transit/UiThreadCondition.java",
       "android/javatests/src/org/chromium/base/test/transit/ViewConditions.java",
-      "android/javatests/src/org/chromium/base/test/transit/ViewElementInState.java",
+      "android/javatests/src/org/chromium/base/test/transit/ViewElement.java",
       "android/javatests/src/org/chromium/base/test/transit/ViewSpec.java",
     ]
   }

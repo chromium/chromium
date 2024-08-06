@@ -158,7 +158,7 @@ public class MyPTTest {
 ```
 
 We need the View instance to pass to `mRenderTestRule.render()`. The View can be
-retrieved from the ElementInState declared in `PageStation#declareElements()`:
+retrieved from the Element declared in `PageStation#declareElements()`:
 
 ```java
 public class PageStation extends Station {

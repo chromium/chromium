@@ -4,22 +4,50 @@
 
 package org.chromium.content_public.browser.test.transit;
 
-/** A Public Transit Element representing an HTML DOM element. */
-public class HtmlElement {
+import android.graphics.Rect;
 
-    private final String mHtmlId;
-    private final String mId;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.ConditionWithResult;
+import org.chromium.base.test.transit.Element;
+import org.chromium.base.test.transit.TravelException;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.transit.HtmlConditions.DisplayedCondition;
+import org.chromium.content_public.browser.test.transit.HtmlConditions.NotDisplayedCondition;
+import org.chromium.content_public.browser.test.util.DOMUtils;
 
-    public HtmlElement(String id) {
-        mHtmlId = id;
-        mId = "HTML/#" + id;
+import java.util.concurrent.TimeoutException;
+
+/**
+ * A Public Transit {@link Element} representing an HTML DOM element to be searched for in the given
+ * {@link WebContents}.
+ */
+public class HtmlElement extends Element<Rect> {
+    protected final HtmlElementSpec mHtmlElementSpec;
+    protected final Supplier<WebContents> mWebContentsSupplier;
+
+    public HtmlElement(HtmlElementSpec htmlElementSpec, Supplier<WebContents> webContentsSupplier) {
+        super(htmlElementSpec.getId());
+        mHtmlElementSpec = htmlElementSpec;
+        mWebContentsSupplier = webContentsSupplier;
     }
 
-    public String getHtmlId() {
-        return mHtmlId;
+    @Override
+    public ConditionWithResult<Rect> createEnterCondition() {
+        return new DisplayedCondition(mWebContentsSupplier, mHtmlElementSpec.getHtmlId());
     }
 
-    public String getId() {
-        return mId;
+    @Override
+    public Condition createExitCondition() {
+        return new NotDisplayedCondition(mWebContentsSupplier, mHtmlElementSpec.getHtmlId());
+    }
+
+    /** Click the HTML element to trigger a Transition. */
+    public void click() {
+        try {
+            DOMUtils.clickNode(mWebContentsSupplier.get(), mHtmlElementSpec.getHtmlId());
+        } catch (TimeoutException e) {
+            throw TravelException.newTravelException("Timed out trying to click DOM element", e);
+        }
     }
 }

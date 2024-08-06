@@ -15,7 +15,7 @@ import java.util.Set;
  *
  * @param <ProductT> the type of object supplied when this Element is present.
  */
-public abstract class ElementInState<ProductT> implements Supplier<ProductT> {
+public abstract class Element<ProductT> implements Supplier<ProductT> {
     private final String mId;
     private boolean mEnterConditionCreated;
     private boolean mExitConditionCreated;
@@ -26,7 +26,7 @@ public abstract class ElementInState<ProductT> implements Supplier<ProductT> {
      * @param id A String ID used to match elements in origin and destination states. This avoids
      *     waiting for an element to disappear if it is in the destination state.
      */
-    public ElementInState(String id) {
+    public Element(String id) {
         mId = id;
     }
 

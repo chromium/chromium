@@ -58,7 +58,7 @@ public class ViewSpec {
     /** Start an Espresso interaction with a displayed View that matches this ViewSpec's Matcher. */
     public ViewInteraction onView() {
         return Espresso.onView(
-                allOf(mViewMatcher, isDisplayingAtLeast(ViewElementInState.MIN_DISPLAYED_PERCENT)));
+                allOf(mViewMatcher, isDisplayingAtLeast(ViewElement.MIN_DISPLAYED_PERCENT)));
     }
 
     /** Perform an Espresso ViewAction on a displayed View that matches this ViewSpec's Matcher. */

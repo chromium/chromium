@@ -9,10 +9,10 @@ import android.app.Activity;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionWithResult;
-import org.chromium.base.test.transit.ElementInState;
+import org.chromium.base.test.transit.Element;
 
 /** Represents the soft keyboard shown, expecting it to hide after exiting the ConditionalState. */
-public class SoftKeyboardElement extends ElementInState<Void> {
+public class SoftKeyboardElement extends Element<Void> {
 
     private final Supplier<? extends Activity> mActivitySupplier;
 

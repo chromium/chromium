@@ -15,7 +15,7 @@ import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.UiThreadCondition;
-import org.chromium.base.test.transit.ViewElementInState;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
@@ -48,7 +48,7 @@ public class WebPageStation extends PageStation {
 
         // TODO(crbug.com/41497463): This should be shared, not unscoped, but the toolbar exists in
         // the tab switcher and it is not completely occluded.
-        elements.declareView(URL_BAR, ViewElementInState.unscopedOption());
+        elements.declareView(URL_BAR, ViewElement.unscopedOption());
     }
 
     /** Opens the web page app menu by pressing the toolbar "..." button */

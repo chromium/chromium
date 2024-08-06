@@ -30,7 +30,7 @@ import java.util.function.Function;
  *
  * @param <ParamT> type of parameter the |checkFunction| requires.
  */
-public class LogicalElement<ParamT> extends ElementInState<Void> {
+public class LogicalElement<ParamT> extends Element<Void> {
 
     private static final ConditionWithResult<Void> CONDITION_WITH_NULL_RESULT =
             new ConditionWithResult<>(/* isRunOnUiThread= */ false) {
