@@ -4,6 +4,8 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,6 +14,8 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_registry_observer.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -121,6 +125,26 @@ IN_PROC_BROWSER_TEST_P(CookiesApiTest, CookiesEventsSpanning) {
   // ignored and we won't be notified about a newly set cookie for which we want
   // to test whether the storeId is set correctly.
   OpenURLOffTheRecord(browser()->profile(), GURL("chrome://newtab/"));
+  ASSERT_TRUE(RunTest("cookies/events_spanning",
+                      /*allow_in_incognito=*/true))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(CookiesApiTest, CookiesEventsSpanningAsync) {
+  // This version of the test creates the OTR page *after* the JavaScript test
+  // code has registered the cookie listener. This tests the cookie API code
+  // that listens for the new profile creation.
+  //
+  // The test sends us message with the string "listening" once it's registered
+  // its listener. We force a reply to synchronize with the JS so the test
+  // always runs the same way.
+  ExtensionTestMessageListener listener("listening", ReplyBehavior::kWillReply);
+  listener.SetOnSatisfied(
+      base::BindLambdaForTesting([this, &listener](const std::string&) {
+        OpenURLOffTheRecord(browser()->profile(), GURL("chrome://newtab/"));
+        listener.Reply("ok");
+      }));
+
   ASSERT_TRUE(RunTest("cookies/events_spanning",
                       /*allow_in_incognito=*/true))
       << message_;

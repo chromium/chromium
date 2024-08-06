@@ -23,7 +23,6 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/extensions/api/cookies.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -105,14 +104,13 @@ void CookiesEventRouter::CookieChangeListener::OnCookieChange(
 }
 
 CookiesEventRouter::CookiesEventRouter(content::BrowserContext* context)
-    : profile_(Profile::FromBrowserContext(context)) {
+    : profile_(Profile::FromBrowserContext(context)),
+      profile_observation_(this) {
   MaybeStartListening();
-  BrowserList::AddObserver(this);
+  profile_observation_.Observe(profile_);
 }
 
-CookiesEventRouter::~CookiesEventRouter() {
-  BrowserList::RemoveObserver(this);
-}
+CookiesEventRouter::~CookiesEventRouter() = default;
 
 void CookiesEventRouter::OnCookieChange(bool otr,
                                         const net::CookieChangeInfo& change) {
@@ -173,12 +171,17 @@ void CookiesEventRouter::OnCookieChange(bool otr,
                 cookies_helpers::GetURLFromCanonicalCookie(change.cookie));
 }
 
-void CookiesEventRouter::OnBrowserAdded(Browser* browser) {
-  // The new browser may be associated with a profile that is the OTR spinoff
-  // of |profile_|, in which case we need to start listening to cookie changes
-  // there. If this is any other kind of new browser, MaybeStartListening() will
-  // be a no op.
-  MaybeStartListening();
+void CookiesEventRouter::OnOffTheRecordProfileCreated(Profile* off_the_record) {
+  // When an off-the-record spinoff of |profile_| is created, start listening
+  // for cookie changes there. The OTR receiver should never be bound, since
+  // there wasn't previously an OTR profile.
+
+  // Note: this assumes OnOffTheRecordProfileCreated() would only be called for
+  // _primary_ OTR profiles (on platforms we care about). If that's not the
+  // case, we would change this to fail gracefully and check the presence of a
+  // primary OTR profile.
+  CHECK(!otr_receiver_.is_bound());
+  BindToCookieManager(&otr_receiver_, off_the_record);
 }
 
 void CookiesEventRouter::MaybeStartListening() {
