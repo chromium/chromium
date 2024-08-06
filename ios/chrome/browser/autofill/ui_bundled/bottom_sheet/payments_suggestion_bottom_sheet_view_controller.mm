@@ -371,6 +371,7 @@ CGFloat const kTitleLogoHeight = 32;
             tintColor:nil
       backgroundColor:cell.backgroundColor
          cornerRadius:kCreditCardIconCornerRadius];
+  [cell updateIconBackgroundWidthToFitContent:YES];
   [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
 
   cell.textLabel.text = [self suggestionAtRow:indexPath.row];

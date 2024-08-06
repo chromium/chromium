@@ -143,6 +143,8 @@ NewFeatureBadgeView* NewIPHBadgeView() {
   NSLayoutConstraint* _iconVisibleConstraint;
   NSLayoutConstraint* _iconCenterAlignment;
   NSLayoutConstraint* _iconTopAlignment;
+  NSLayoutConstraint* _iconBackgroundDefaultWidthConstraint;
+  NSLayoutConstraint* _iconBackgroundCustomWidthConstraint;
 
   // View representing the current badge view.
   UIView* _badgeView;
@@ -216,13 +218,23 @@ NewFeatureBadgeView* NewIPHBadgeView() {
                        constant:kIconTopAlignmentVerticalSpacing];
     [self updateIconAlignment];
 
+    _iconBackgroundDefaultWidthConstraint = [_iconBackground.widthAnchor
+        constraintEqualToConstant:kTableViewIconImageSize];
+    _iconBackgroundDefaultWidthConstraint.active = YES;
+
+    [_iconImageView
+        setContentCompressionResistancePriority:UILayoutPriorityRequired - 1
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
+    _iconBackgroundCustomWidthConstraint = [_iconBackground.widthAnchor
+        constraintEqualToAnchor:_iconImageView.widthAnchor];
+    _iconBackgroundCustomWidthConstraint.active = NO;
+
     [NSLayoutConstraint activateConstraints:@[
       // Icon.
       [_iconBackground.leadingAnchor
           constraintEqualToAnchor:contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
-      [_iconBackground.widthAnchor
-          constraintEqualToConstant:kTableViewIconImageSize],
       [_iconBackground.heightAnchor
           constraintEqualToAnchor:_iconBackground.widthAnchor],
 
@@ -344,6 +356,16 @@ NewFeatureBadgeView* NewIPHBadgeView() {
   _badgeType = badgeType;
 }
 
+- (void)updateIconBackgroundWidthToFitContent:(BOOL)useCustomWidth {
+  if (useCustomWidth) {
+    _iconBackgroundDefaultWidthConstraint.active = NO;
+    _iconBackgroundCustomWidthConstraint.active = YES;
+    return;
+  }
+  _iconBackgroundCustomWidthConstraint.active = NO;
+  _iconBackgroundDefaultWidthConstraint.active = YES;
+}
+
 #pragma mark - UIView
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -368,6 +390,7 @@ NewFeatureBadgeView* NewIPHBadgeView() {
   [self setIconImage:nil tintColor:nil backgroundColor:nil cornerRadius:0];
   [self setDetailText:nil];
   [self setBadgeType:BadgeType::kNone];
+  [self updateIconBackgroundWidthToFitContent:NO];
 }
 
 #pragma mark - Private

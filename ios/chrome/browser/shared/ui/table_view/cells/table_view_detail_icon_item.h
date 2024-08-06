@@ -107,6 +107,10 @@ enum class BadgeType {
 // CHECK. Remove the badge by setting the type to BadgeType::kNone.
 - (void)setBadgeType:(BadgeType)badgeType;
 
+// Updates the width of the icon background to match the width of the image it
+// contains.
+- (void)updateIconBackgroundWidthToFitContent:(BOOL)useCustomWidth;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_TABLE_VIEW_DETAIL_ICON_ITEM_H_
