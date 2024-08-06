@@ -141,3 +141,16 @@ TEST_F(ManagePasswordsViewTest,
 
   EXPECT_FALSE(PasswordDetailsHasBackButton());
 }
+
+TEST_F(ManagePasswordsViewTest, DetailsBubbleTitleDependsOnFormDisplayName) {
+  password_manager::PasswordForm form;
+  form.signon_realm = "android://hash@com.netflix.mediaclient/";
+  form.app_display_name = "Netflix";
+  std::optional details_bubble_credentail(form);
+  ON_CALL(*model_delegate_mock(),
+          GetManagePasswordsSingleCredentialDetailsModeCredential)
+      .WillByDefault(ReturnRef(details_bubble_credentail));
+  CreateViewAndShow();
+
+  EXPECT_EQ(view()->GetWindowTitle(), u"Netflix");
+}

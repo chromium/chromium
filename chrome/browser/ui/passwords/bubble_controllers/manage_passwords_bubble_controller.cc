@@ -95,10 +95,21 @@ std::u16string ManagePasswordsBubbleController::GetTitle() const {
       return GetConfirmationManagePasswordsDialogTitleText(/*is_update=*/false);
     case password_manager::ui::UPDATE_CONFIRMATION_STATE:
       return GetConfirmationManagePasswordsDialogTitleText(/*is_update=*/true);
-    case password_manager::ui::MANAGE_STATE:
-      return GetManagePasswordsDialogTitleText(
-          GetWebContents()->GetVisibleURL(), delegate_->GetOrigin(),
-          !delegate_->GetCurrentForms().empty());
+    case password_manager::ui::MANAGE_STATE: {
+      switch (bubble_mode_) {
+        case BubbleMode::kCredentialList:
+          return GetManagePasswordsDialogTitleText(
+              GetWebContents()->GetVisibleURL(), delegate_->GetOrigin(),
+              !delegate_->GetCurrentForms().empty());
+        case BubbleMode::kSingleCredentialDetails:
+          const std::vector<password_manager::CredentialUIEntry::DomainInfo>&
+              affiliated_domains = password_manager::CredentialUIEntry(
+                                       *details_bubble_credential_)
+                                       .GetAffiliatedDomains();
+          CHECK(!affiliated_domains.empty());
+          return base::UTF8ToUTF16(affiliated_domains[0].name);
+      }
+    }
     default:
       NOTREACHED_NORETURN();
   }

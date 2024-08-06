@@ -323,6 +323,7 @@ void ManagePasswordsView::RecreateLayout() {
         gfx::Insets().set_bottom(ChromeLayoutProvider::Get()->GetDistanceMetric(
             DISTANCE_CONTENT_LIST_VERTICAL_SINGLE)));
   }
+  SetTitle(controller_.GetTitle());
   PreferredSizeChanged();
 }
 
