@@ -178,7 +178,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
-#include "components/subresource_filter/core/browser/subresource_filter_constants.h"
+#include "components/subresource_filter/core/common/constants.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"

@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter_test_utils.h"
+#include "components/subresource_filter/core/common/constants.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
@@ -46,8 +47,8 @@ class AsyncDocumentSubresourceFilterTest : public ::testing::Test {
     ASSERT_NO_FATAL_FAILURE(test_ruleset_creator_.CreateRulesetWithRules(
         rules, &test_ruleset_pair_));
 
-    dealer_handle_ =
-        std::make_unique<VerifiedRulesetDealer::Handle>(blocking_task_runner_);
+    dealer_handle_ = std::make_unique<VerifiedRulesetDealer::Handle>(
+        blocking_task_runner_, kSafeBrowsingRulesetConfig);
   }
 
   void TearDown() override {

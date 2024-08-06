@@ -31,6 +31,7 @@
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/common_features.h"
+#include "components/subresource_filter/core/common/constants.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -319,7 +320,7 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
     statistics_.reset();
     if (filter) {
       statistics_ = std::make_unique<PageLoadStatistics>(
-          filter->activation_state(), kUmaFilterTag);
+          filter->activation_state(), kSafeBrowsingRulesetConfig.uma_tag);
       if (filter->activation_state().enable_logging) {
         CHECK(filter->activation_state().activation_level !=
                   mojom::ActivationLevel::kDisabled,

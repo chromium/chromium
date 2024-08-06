@@ -102,7 +102,9 @@ class IndexedRulesetMatcher {
  public:
   // Returns whether the |buffer| of the given |size| contains a valid
   // flat::IndexedRuleset FlatBuffer.
-  static bool Verify(base::span<const uint8_t> buffer, int expected_checksum);
+  static bool Verify(base::span<const uint8_t> buffer,
+                     int expected_checksum,
+                     std::string_view uma_tag);
 
   // Creates an instance that matches URLs against the flat::IndexedRuleset
   // provided as the root object of serialized data in the |buffer|.

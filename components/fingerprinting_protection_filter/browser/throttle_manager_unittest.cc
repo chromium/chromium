@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/fingerprinting_protection_filter/browser/test_support.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/subresource_filter/content/shared/browser/child_frame_navigation_test_utils.h"
@@ -166,7 +167,8 @@ class ThrottleManagerTest
     // tests, to ensure that the NavigationSimulator properly runs all necessary
     // tasks while waiting for throttle checks to finish.
     dealer_handle_ = std::make_unique<VerifiedRulesetDealer::Handle>(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        kFingerprintingProtectionRulesetConfig);
     dealer_handle_->TryOpenAndSetRulesetFile(test_ruleset_pair_.indexed.path,
                                              /*expected_checksum=*/0,
                                              base::DoNothing());

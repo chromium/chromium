@@ -7,7 +7,7 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
-#include "components/subresource_filter/core/browser/ruleset_config.h"
+#include "components/subresource_filter/core/common/ruleset_config.h"
 
 namespace fingerprinting_protection_filter {
 

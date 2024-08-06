@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/subresource_filter/core/common/ruleset_config.h"
 #include "components/subresource_filter/core/common/ruleset_dealer.h"
 
 namespace base {
@@ -53,7 +54,7 @@ class VerifiedRulesetDealer : public RulesetDealer {
  public:
   class Handle;
 
-  VerifiedRulesetDealer();
+  explicit VerifiedRulesetDealer(const RulesetConfig& config);
 
   VerifiedRulesetDealer(const VerifiedRulesetDealer&) = delete;
   VerifiedRulesetDealer& operator=(const VerifiedRulesetDealer&) = delete;
@@ -79,6 +80,7 @@ class VerifiedRulesetDealer : public RulesetDealer {
   RulesetVerificationStatus status_ = RulesetVerificationStatus::kNotVerified;
   // Associated with the current |ruleset_file_|;
   int expected_checksum_ = 0;
+  RulesetConfig config_;
 };
 
 // The UI-thread handle that owns a VerifiedRulesetDealer living on a dedicated
@@ -88,7 +90,8 @@ class VerifiedRulesetDealer::Handle {
  public:
   // Creates a VerifiedRulesetDealer that is owned by this handle, accessed
   // through this handle, but lives on |task_runner|.
-  explicit Handle(scoped_refptr<base::SequencedTaskRunner> task_runner);
+  explicit Handle(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                  const RulesetConfig& config);
 
   Handle(const Handle&) = delete;
   Handle& operator=(const Handle&) = delete;

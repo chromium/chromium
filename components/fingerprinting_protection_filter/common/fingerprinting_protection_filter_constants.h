@@ -6,7 +6,7 @@
 #define COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_COMMON_FINGERPRINTING_PROTECTION_FILTER_CONSTANTS_H_
 
 #include "base/files/file_path.h"
-#include "components/subresource_filter/core/browser/ruleset_config.h"
+#include "components/subresource_filter/core/common/ruleset_config.h"
 
 namespace fingerprinting_protection_filter {
 
