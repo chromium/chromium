@@ -7471,7 +7471,8 @@ New install
       <message name="IDS_PICKER_HTML_CONTENT" translateable="false" desc="Display text for the clipboard html item.">
         Html content
       </message>
-      <message name="IDS_PICKER_SEE_MORE_BUTTON_TEXT" translateable="false" desc="Button text shown in a section when there are more results.">
+      <message name="IDS_PICKER_SEE_MORE_BUTTON_TEXT"
+        desc="This string appears as the label text of a button. The button is part of a truncated list of search results. Clicking the button will show all the search results.">
         Show all
       </message>
       <message name="IDS_PICKER_SEE_MORE_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible text for a button that shows all results for a section.">
@@ -7483,10 +7484,12 @@ New install
       <message name="IDS_PICKER_MORE_EMOJIS_AND_GIFS_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible text for a button which opens a panel with more emojis, symbols and emoticons.">
         Show more emojis and GIFs
       </message>
-      <message name="IDS_PICKER_GIFS_BUTTON_LABEL" translateable="false" desc="The label of a button that opens a panel of GIFs.">
+      <message name="IDS_PICKER_GIFS_BUTTON_LABEL"
+        desc="This string appears as the label text of a button. The button is part of a row of emojis. Clicking the button opens a window where users can select an animated GIF.">
         GIFs
       </message>
-      <message name="IDS_PICKER_NO_RESULTS_TEXT" translateable="false" desc="Label of the view showing that there are no search results.">
+      <message name="IDS_PICKER_NO_RESULTS_TEXT"
+        desc="This string appears a label inside a list of search results. It indicates that there are no search results found for the given query.">
         No results found.
       </message>
       <message name="IDS_PICKER_RESULT_BADGE_LABEL_INSERT" translateable="false" desc="Label of the badge in a result that can be inserted.">
