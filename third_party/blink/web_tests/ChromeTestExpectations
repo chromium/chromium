@@ -88,6 +88,7 @@ crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/bidi/network/provide_
 crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/classic/perform_actions/key_events.py [ Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/webdriver/tests/bidi/browsing_context/navigate/navigate.py [ Timeout ]
 crbug.com/356498699 external/wpt/webdriver/tests/bidi/browsing_context/navigation_failed/navigation_failed.py [ Failure Timeout ]
 crbug.com/626703 [ Release ] external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_closed/user_prompt_closed.py [ Failure ]  # Flaky output
 crbug.com/626703 external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_closed/beforeunload.py [ Failure ]  # Flaky output
