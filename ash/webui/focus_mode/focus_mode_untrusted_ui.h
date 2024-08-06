@@ -5,8 +5,6 @@
 #ifndef ASH_WEBUI_FOCUS_MODE_FOCUS_MODE_UNTRUSTED_UI_H_
 #define ASH_WEBUI_FOCUS_MODE_FOCUS_MODE_UNTRUSTED_UI_H_
 
-#include <memory>
-
 #include "content/public/browser/webui_config.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
@@ -23,14 +21,12 @@ class FocusModeUntrustedUI : public ui::UntrustedWebUIController {
 };
 
 // The WebUIConfig for chrome-untrusted://focus-mode-player.
-class FocusModeUntrustedUIConfig : public content::WebUIConfig {
+class FocusModeUntrustedUIConfig
+    : public content::DefaultWebUIConfig<FocusModeUntrustedUI> {
  public:
   FocusModeUntrustedUIConfig();
 
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
-
+  // content::DefaultWebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 

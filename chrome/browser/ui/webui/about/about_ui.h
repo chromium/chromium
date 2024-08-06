@@ -24,14 +24,9 @@ class WebUI;
 
 // AboutUI is used by multiple chrome:// pages.
 
-class AboutUIConfigBase : public content::WebUIConfig {
+class AboutUIConfigBase : public content::DefaultWebUIConfig<AboutUI> {
  public:
   explicit AboutUIConfigBase(std::string_view host);
-
-  // content::WebUIConfig:
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
 };
 
 // chrome://chrome-urls. Note that HandleChromeAboutAndChromeSyncRewrite()

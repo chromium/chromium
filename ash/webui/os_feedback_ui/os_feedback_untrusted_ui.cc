@@ -53,16 +53,10 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
 }  // namespace
 
 OsFeedbackUntrustedUIConfig::OsFeedbackUntrustedUIConfig()
-    : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  kChromeUIOSFeedbackUntrustedHost) {}
+    : DefaultWebUIConfig(content::kChromeUIUntrustedScheme,
+                         kChromeUIOSFeedbackUntrustedHost) {}
 
 OsFeedbackUntrustedUIConfig::~OsFeedbackUntrustedUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-OsFeedbackUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                                   const GURL& url) {
-  return std::make_unique<OsFeedbackUntrustedUI>(web_ui);
-}
 
 OsFeedbackUntrustedUI::OsFeedbackUntrustedUI(content::WebUI* web_ui)
     : ui::UntrustedWebUIController(web_ui) {

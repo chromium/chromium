@@ -20,16 +20,10 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 DataSharingInternalsUIConfig::DataSharingInternalsUIConfig()
-    : WebUIConfig(content::kChromeUIScheme,
-                  chrome::kChromeUIDataSharingInternalsHost) {}
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIDataSharingInternalsHost) {}
 
 DataSharingInternalsUIConfig::~DataSharingInternalsUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-DataSharingInternalsUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                                    const GURL& url) {
-  return std::make_unique<DataSharingInternalsUI>(web_ui);
-}
 
 DataSharingInternalsUI::DataSharingInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {

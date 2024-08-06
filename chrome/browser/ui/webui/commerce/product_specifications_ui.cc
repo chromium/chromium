@@ -160,14 +160,8 @@ ProductSpecificationsUI::~ProductSpecificationsUI() = default;
 WEB_UI_CONTROLLER_TYPE_IMPL(ProductSpecificationsUI)
 
 ProductSpecificationsUIConfig::ProductSpecificationsUIConfig()
-    : WebUIConfig(content::kChromeUIScheme, kChromeUICompareHost) {}
+    : DefaultWebUIConfig(content::kChromeUIScheme, kChromeUICompareHost) {}
 
 ProductSpecificationsUIConfig::~ProductSpecificationsUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-ProductSpecificationsUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                                     const GURL& url) {
-  return std::make_unique<ProductSpecificationsUI>(web_ui);
-}
 
 }  // namespace commerce

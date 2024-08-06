@@ -19,15 +19,13 @@ class WebUI;
 
 namespace printing {
 
-class PrintPreviewUIUntrustedConfig : public content::WebUIConfig {
+class PrintPreviewUIUntrusted;
+
+class PrintPreviewUIUntrustedConfig
+    : public content::DefaultWebUIConfig<PrintPreviewUIUntrusted> {
  public:
   PrintPreviewUIUntrustedConfig();
   ~PrintPreviewUIUntrustedConfig() override;
-
-  // content::WebUIConfig:
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
 };
 
 class PrintPreviewUIUntrusted : public ui::UntrustedWebUIController {

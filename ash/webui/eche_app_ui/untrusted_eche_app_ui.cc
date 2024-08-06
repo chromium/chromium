@@ -24,16 +24,10 @@ namespace ash {
 namespace eche_app {
 
 UntrustedEcheAppUIConfig::UntrustedEcheAppUIConfig()
-    : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  kChromeUIEcheAppGuestHost) {}
+    : DefaultWebUIConfig(content::kChromeUIUntrustedScheme,
+                         kChromeUIEcheAppGuestHost) {}
 
 UntrustedEcheAppUIConfig::~UntrustedEcheAppUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-UntrustedEcheAppUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                                const GURL& url) {
-  return std::make_unique<UntrustedEcheAppUI>(web_ui);
-}
 
 UntrustedEcheAppUI::UntrustedEcheAppUI(content::WebUI* web_ui)
     : ui::UntrustedWebUIController(web_ui) {

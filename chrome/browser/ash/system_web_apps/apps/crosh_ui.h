@@ -12,16 +12,16 @@ namespace content {
 class WebUI;
 }  // namespace content
 
+class CroshUI;
+
 // Loads DataSource at startup for Crosh (the Chromium OS shell).
-class CroshUIConfig : public content::WebUIConfig {
+class CroshUIConfig : public content::DefaultWebUIConfig<CroshUI> {
  public:
   CroshUIConfig();
   ~CroshUIConfig() override;
-  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
+  // content::DefaultWebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 class CroshUI : public ui::UntrustedWebUIController {

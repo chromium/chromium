@@ -33,16 +33,10 @@ bool ShouldHandleRequestCallback(const std::string& path) {
 }  // namespace
 
 PrintPreviewUIUntrustedConfig::PrintPreviewUIUntrustedConfig()
-    : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  chrome::kChromeUIPrintHost) {}
+    : DefaultWebUIConfig(content::kChromeUIUntrustedScheme,
+                         chrome::kChromeUIPrintHost) {}
 
 PrintPreviewUIUntrustedConfig::~PrintPreviewUIUntrustedConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-PrintPreviewUIUntrustedConfig::CreateWebUIController(content::WebUI* web_ui,
-                                                     const GURL& url) {
-  return std::make_unique<PrintPreviewUIUntrusted>(web_ui);
-}
 
 PrintPreviewUIUntrusted::PrintPreviewUIUntrusted(content::WebUI* web_ui)
     : UntrustedWebUIController(web_ui) {

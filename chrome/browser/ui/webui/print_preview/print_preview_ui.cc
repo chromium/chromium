@@ -393,7 +393,8 @@ PrintPreviewHandler* CreatePrintPreviewHandlers(content::WebUI* web_ui) {
 }  // namespace
 
 PrintPreviewUIConfig::PrintPreviewUIConfig()
-    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIPrintHost) {}
+    : DefaultWebUIConfig(content::kChromeUIScheme, chrome::kChromeUIPrintHost) {
+}
 
 bool PrintPreviewUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
@@ -407,12 +408,6 @@ bool PrintPreviewUIConfig::ShouldHandleURL(const GURL& url) {
 }
 
 PrintPreviewUIConfig::~PrintPreviewUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-PrintPreviewUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                            const GURL& url) {
-  return std::make_unique<PrintPreviewUI>(web_ui);
-}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PrintPreviewUI)
 

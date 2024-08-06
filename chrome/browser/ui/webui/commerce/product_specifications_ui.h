@@ -55,15 +55,11 @@ class ProductSpecificationsUI
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-class ProductSpecificationsUIConfig : public content::WebUIConfig {
+class ProductSpecificationsUIConfig
+    : public content::DefaultWebUIConfig<ProductSpecificationsUI> {
  public:
   ProductSpecificationsUIConfig();
   ~ProductSpecificationsUIConfig() override;
-
-  // content::WebUIConfig:
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
 };
 
 }  // namespace commerce

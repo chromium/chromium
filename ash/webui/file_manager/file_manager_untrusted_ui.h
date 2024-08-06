@@ -15,15 +15,14 @@ class WebUI;
 namespace ash {
 namespace file_manager {
 
+class FileManagerUntrustedUI;
+
 // Class that stores properties for the chrome-untrusted://file-manager WebUI.
-class FileManagerUntrustedUIConfig : public content::WebUIConfig {
+class FileManagerUntrustedUIConfig
+    : public content::DefaultWebUIConfig<FileManagerUntrustedUI> {
  public:
   FileManagerUntrustedUIConfig();
   ~FileManagerUntrustedUIConfig() override;
-
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
 };
 
 // WebUI for chrome-untrusted://file-manager, intended to be used by the file

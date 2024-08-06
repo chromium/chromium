@@ -13,17 +13,16 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
+class HatsUI;
+
 // The configuration for the chrome-untrusted://hats page.
-class HatsUIConfig : public content::WebUIConfig {
+class HatsUIConfig : public content::DefaultWebUIConfig<HatsUI> {
  public:
   HatsUIConfig();
   ~HatsUIConfig() override = default;
 
+  // content::DefaultWebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
-
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
 };
 
 class HatsPageHandler;

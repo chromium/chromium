@@ -12,16 +12,13 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class BluetoothInternalsHandler;
+class BluetoothInternalsUI;
 
-class BluetoothInternalsUIConfig : public content::WebUIConfig {
+class BluetoothInternalsUIConfig
+    : public content::DefaultWebUIConfig<BluetoothInternalsUI> {
  public:
   BluetoothInternalsUIConfig();
   ~BluetoothInternalsUIConfig() override;
-
-  // content::WebUIConfig:
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
 };
 
 // The WebUI for chrome://bluetooth-internals

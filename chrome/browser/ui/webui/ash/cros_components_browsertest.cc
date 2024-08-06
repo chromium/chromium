@@ -53,15 +53,10 @@ class CrosComponentsUI : public content::WebUIController {
   ~CrosComponentsUI() override = default;
 };
 
-class CrosComponentsUIConfig : public content::WebUIConfig {
+class CrosComponentsUIConfig
+    : public content::DefaultWebUIConfig<CrosComponentsUI> {
  public:
-  CrosComponentsUIConfig() : WebUIConfig("chrome", kTestHost) {}
-
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override {
-    return std::make_unique<CrosComponentsUI>(web_ui);
-  }
+  CrosComponentsUIConfig() : DefaultWebUIConfig("chrome", kTestHost) {}
 };
 
 struct ComponentTestData {

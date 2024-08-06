@@ -34,15 +34,13 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-class AccessibilityUIConfig : public content::WebUIConfig {
+class AccessibilityUI;
+
+class AccessibilityUIConfig
+    : public content::DefaultWebUIConfig<AccessibilityUI> {
  public:
   AccessibilityUIConfig();
   ~AccessibilityUIConfig() override;
-
-  // content::WebUIConfig:
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
 };
 
 // Controls the accessibility web UI page.

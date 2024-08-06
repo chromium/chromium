@@ -12,16 +12,13 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class DataSharingInternalsPageHandlerImpl;
+class DataSharingInternalsUI;
 
-class DataSharingInternalsUIConfig : public content::WebUIConfig {
+class DataSharingInternalsUIConfig
+    : public content::DefaultWebUIConfig<DataSharingInternalsUI> {
  public:
   DataSharingInternalsUIConfig();
   ~DataSharingInternalsUIConfig() override;
-
-  // content::WebUIConfig:
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
 };
 
 // The WebUI controller for chrome://data-sharing-internals.

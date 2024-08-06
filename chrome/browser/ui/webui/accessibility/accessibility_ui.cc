@@ -387,16 +387,10 @@ const std::string& CheckJSValue(const std::string* str) {
 }  // namespace
 
 AccessibilityUIConfig::AccessibilityUIConfig()
-    : WebUIConfig(content::kChromeUIScheme,
-                  chrome::kChromeUIAccessibilityHost) {}
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIAccessibilityHost) {}
 
 AccessibilityUIConfig::~AccessibilityUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-AccessibilityUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                             const GURL& url) {
-  return std::make_unique<AccessibilityUI>(web_ui);
-}
 
 AccessibilityUI::AccessibilityUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {

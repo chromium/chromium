@@ -616,13 +616,7 @@ std::string AboutLinuxProxyConfig() {
 }  // namespace
 
 AboutUIConfigBase::AboutUIConfigBase(std::string_view host)
-    : WebUIConfig(content::kChromeUIScheme, host) {}
-
-std::unique_ptr<content::WebUIController>
-AboutUIConfigBase::CreateWebUIController(content::WebUI* web_ui,
-                                         const GURL& url) {
-  return std::make_unique<AboutUI>(web_ui, url);
-}
+    : DefaultWebUIConfig(content::kChromeUIScheme, host) {}
 
 ChromeURLsUIConfig::ChromeURLsUIConfig()
     : AboutUIConfigBase(chrome::kChromeUIChromeURLsHost) {}

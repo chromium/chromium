@@ -251,14 +251,8 @@ void FocusModeUI::BindInterface(
 WEB_UI_CONTROLLER_TYPE_IMPL(FocusModeUI)
 
 FocusModeUIConfig::FocusModeUIConfig()
-    : WebUIConfig(content::kChromeUIScheme,
-                  chrome::kChromeUIFocusModeMediaHost) {}
-
-std::unique_ptr<content::WebUIController>
-FocusModeUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                         const GURL& url) {
-  return std::make_unique<FocusModeUI>(web_ui);
-}
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIFocusModeMediaHost) {}
 
 bool FocusModeUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {

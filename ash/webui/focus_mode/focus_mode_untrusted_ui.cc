@@ -54,14 +54,8 @@ FocusModeUntrustedUI::~FocusModeUntrustedUI() = default;
 WEB_UI_CONTROLLER_TYPE_IMPL(FocusModeUntrustedUI)
 
 FocusModeUntrustedUIConfig::FocusModeUntrustedUIConfig()
-    : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  chrome::kChromeUIFocusModePlayerHost) {}
-
-std::unique_ptr<content::WebUIController>
-FocusModeUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                                  const GURL& url) {
-  return std::make_unique<FocusModeUntrustedUI>(web_ui);
-}
+    : DefaultWebUIConfig(content::kChromeUIUntrustedScheme,
+                         chrome::kChromeUIFocusModePlayerHost) {}
 
 bool FocusModeUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
