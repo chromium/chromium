@@ -9653,7 +9653,7 @@ features through Chrome Labs. -->
 
 <histogram name="UpdateClient.BackgroundDownloaderMac.StartDownloadOutcome"
     enum="UpdateClientBackgroundDownloaderMacStartDownloadOutcome"
-    expires_after="2024-09-01">
+    expires_after="2025-01-05">
   <owner>noahrose@google.com</owner>
   <owner>sorin@chromium.org</owner>
   <owner>waffles@chromium.org</owner>
@@ -9675,7 +9675,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="UpdateClient.BackgroundDownloaderWin.StaleDownloadAge"
-    units="hours" expires_after="2024-11-03">
+    units="hours" expires_after="2025-01-05">
   <owner>noahrose@google.com</owner>
   <owner>sorin@chromium.org</owner>
   <owner>waffles@chromium.org</owner>
@@ -9685,7 +9685,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="UpdateClient.BackgroundDownloaderWin.StaleJobsCleaned"
-    units="count" expires_after="2024-11-03">
+    units="count" expires_after="2025-01-05">
   <owner>noahrose@google.com</owner>
   <owner>sorin@chromium.org</owner>
   <owner>waffles@chromium.org</owner>
