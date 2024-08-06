@@ -6,13 +6,20 @@
 #define CHROME_BROWSER_UI_TABS_PUBLIC_TAB_FEATURES_H_
 
 #include <memory>
+#include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 
 class DipsNavigationFlowDetectorWrapper;
 class FedCmAccountSelectionViewController;
 class LensOverlayController;
 class Profile;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace customize_chrome {
 class SidePanelController;
@@ -91,6 +98,13 @@ class TabFeatures {
  private:
   bool initialized_ = false;
 
+  // TODO(https://crbug.com/347770670): Delete this code when tab-discarding no
+  // longer swizzles WebContents.
+  // Called when the tab's WebContents is discarded.
+  void WillDiscardContents(tabs::TabInterface* tab,
+                           content::WebContents* old_contents,
+                           content::WebContents* new_contents);
+
   std::unique_ptr<
       enterprise_data_protection::DataProtectionNavigationController>
       data_protection_controller_;
@@ -110,6 +124,12 @@ class TabFeatures {
 
   std::unique_ptr<user_annotations::UserAnnotationsWebContentsObserver>
       user_annotations_web_contents_observer_;
+
+  // Holds subscriptions for TabInterface callbacks.
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
+
+  // Must be the last member.
+  base::WeakPtrFactory<TabFeatures> weak_factory_{this};
 };
 
 }  // namespace tabs

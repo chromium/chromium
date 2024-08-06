@@ -56,6 +56,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   CHECK(!initialized_);
   initialized_ = true;
 
+  tab_subscriptions_.push_back(
+      tab.RegisterWillDiscardContents(base::BindRepeating(
+          &TabFeatures::WillDiscardContents, weak_factory_.GetWeakPtr())));
+
   // Features that are only enabled for normal browser windows. By default most
   // features should be instantiated in this block.
   if (tab.IsInNormalWindow()) {
@@ -100,6 +104,13 @@ std::unique_ptr<LensOverlayController> TabFeatures::CreateLensController(
       IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
       SyncServiceFactory::GetForProfile(profile),
       ThemeServiceFactory::GetForProfile(profile));
+}
+
+void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
+                                      content::WebContents* old_contents,
+                                      content::WebContents* new_contents) {
+  // This method is transiently used to reset features that do not handle tab
+  // discarding themselves.
 }
 
 }  // namespace tabs
