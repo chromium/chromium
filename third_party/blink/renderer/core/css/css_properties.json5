@@ -2966,6 +2966,7 @@
       style_builder_custom_functions: ["initial", "inherit", "value"],
       typedom_types: ["Keyword"],
       valid_for_highlight_legacy: true,
+      valid_for_marker: true,
       valid_for_permission_element: true,
     },
     {
