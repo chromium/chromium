@@ -429,7 +429,7 @@ void ShowWebAppDetailedInstallDialog(
                 std::make_unique<views::BubbleDialogModelHost::CustomView>(
                     std::make_unique<ImageCarouselView>(screenshots),
                     views::BubbleDialogModelHost::FieldType::kControl))
-            .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE)
+            .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
             .Build();
   } else {
     // TODO(crbug.com/341254289): Completely remove after Universal Install has

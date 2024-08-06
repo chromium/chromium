@@ -126,7 +126,7 @@ void ShowSimpleInstallDialogForWebApps(
                 &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
             .SetDialogDestroyingCallback(base::BindOnce(
                 &WebAppInstallDialogDelegate::OnDestroyed, delegate_weak_ptr))
-            .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE)
+            .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
             .AddCustomField(
                 std::make_unique<views::BubbleDialogModelHost::CustomView>(
                     WebAppIconNameAndOriginView::Create(icon_image, app_name,
