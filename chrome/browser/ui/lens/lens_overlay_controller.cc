@@ -466,7 +466,7 @@ void LensOverlayController::BindOverlay(
 
   // Show the preselection overlay now that the overlay is initialized and ready
   // to be shown.
-  if (!pending_region_) {
+  if (!pending_region_ && !lens::features::IsLensOverlaySearchBubbleEnabled()) {
     ShowPreselectionBubble();
   }
 
@@ -1226,6 +1226,7 @@ void LensOverlayController::ShowOverlay() {
 void LensOverlayController::BackgroundUI() {
   overlay_view_->SetVisible(false);
   HidePreselectionBubble();
+  CloseSearchBubble();
   tab_contents_observer_.reset();
   // Re-enable mouse and keyboard events to the tab contents web view.
   auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
@@ -1444,7 +1445,8 @@ void LensOverlayController::OnWidgetDestroying(views::Widget* widget) {
 void LensOverlayController::OnOmniboxFocusChanged(
     OmniboxFocusState state,
     OmniboxFocusChangeReason reason) {
-  if (state_ == LensOverlayController::State::kOverlay) {
+  if (state_ == LensOverlayController::State::kOverlay &&
+      !lens::features::IsLensOverlaySearchBubbleEnabled()) {
     if (state == OMNIBOX_FOCUS_NONE) {
       ShowPreselectionBubble();
     } else {
@@ -1595,7 +1597,11 @@ void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
                  ? State::kOverlayAndResults
                  : State::kOverlay;
     if (state_ != State::kOverlayAndResults) {
-      ShowPreselectionBubble();
+      if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
+        search_bubble_controller_->Show();
+      } else {
+        ShowPreselectionBubble();
+      }
     }
   }
 }
