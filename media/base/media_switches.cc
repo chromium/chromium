@@ -115,12 +115,12 @@ const char kAudioCapturerWithEchoCancellation[] =
     "audio-capturer-with-echo-cancellation";
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
-#if defined(USE_CRAS)
+#if BUILDFLAG(USE_CRAS)
 // Use CRAS, the ChromeOS audio server.
 const char kUseCras[] = "use-cras";
 // Enforce system audio echo cancellation.
 const char kSystemAecEnabled[] = "system-aec-enabled";
-#endif  // defined(USE_CRAS)
+#endif  // BUILDFLAG(USE_CRAS)
 
 // For automated testing of protected content, this switch allows specific
 // domains (e.g. example.com) to always allow the permission to share the

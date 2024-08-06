@@ -68,6 +68,7 @@
 #include "gpu/config/gpu_switches.h"
 #include "media/base/media_switches.h"
 #include "media/capture/capture_switches.h"
+#include "media/media_buildflags.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "ui/base/resource/temporary_shared_resource_path_chromeos.h"
@@ -359,7 +360,7 @@ base::CommandLine CreateCommandLine(const base::FilePath& chrome_path) {
   command_line.AppendSwitchASCII(switches::kLang,
                                  g_browser_process->GetApplicationLocale());
 
-#if defined(USE_CRAS)
+#if BUILDFLAG(USE_CRAS)
   // CrAS is the default audio server in Chrome OS.
   if (base::SysInfo::IsRunningOnChromeOS()) {
     command_line.AppendSwitch(switches::kUseCras);

@@ -87,12 +87,12 @@ void LaunchAudioServiceInProcess(
   if (!BrowserMainLoop::GetInstance())
     return;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_CRAS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CRAS)
   if (GetContentClient()->browser()->EnforceSystemAudioEchoCancellation()) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kSystemAecEnabled);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_CRAS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CRAS)
 
   // TODO(crbug.com/40580951): Remove
   // BrowserMainLoop::GetAudioManager().
@@ -127,11 +127,11 @@ void LaunchAudioServiceOutOfProcess(
   switches.push_back(base::StrCat({switches::kAudioCodecsFromEDID, "=",
                                    base::NumberToString(codec_bitmask)}));
 #endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_CRAS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CRAS)
   if (GetContentClient()->browser()->EnforceSystemAudioEchoCancellation()) {
     switches.push_back(switches::kSystemAecEnabled);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS) && defined(USE_CRAS)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CRAS)
   ServiceProcessHost::Launch(
       std::move(receiver),
       ServiceProcessHost::Options()

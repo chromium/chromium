@@ -36,11 +36,6 @@ static_library("browser_util") {
 }
 
 static_library("crosapi") {
-  defines = []
-  if (use_cras) {
-    defines += [ "USE_CRAS" ]
-  }
-
   sources = [
     "arc_ash.cc",
     "arc_ash.h",

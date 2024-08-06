@@ -6900,10 +6900,6 @@ static_library("browser") {
     ]
   }
 
-  if (use_cras) {
-    defines += [ "USE_CRAS" ]
-  }
-
   if (enable_downgrade_processing) {
     sources += [
       "downgrade/downgrade_manager.cc",

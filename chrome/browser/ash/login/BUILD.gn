@@ -8,11 +8,6 @@ import("//media/media_options.gni")
 assert(is_chromeos_ash)
 
 static_library("login") {
-  defines = []
-  if (use_cras) {
-    defines += [ "USE_CRAS" ]
-  }
-
   sources = [
     "challenge_response_auth_keys_loader.cc",
     "challenge_response_auth_keys_loader.h",

@@ -10,12 +10,13 @@
 #include "build/chromeos_buildflags.h"
 #include "media/audio/fake_audio_manager.h"
 #include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
 
 #if defined(USE_ALSA)
 #include "media/audio/alsa/audio_manager_alsa.h"
 #endif
 
-#if defined(USE_CRAS)
+#if BUILDFLAG(USE_CRAS)
 #include "media/audio/cras/audio_manager_cras.h"
 #endif
 
@@ -36,12 +37,12 @@ std::unique_ptr<media::AudioManager> CreateAudioManager(
                                               audio_log_factory);
   }
 
-#if defined(USE_CRAS)
+#if BUILDFLAG(USE_CRAS)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUseCras)) {
     return std::make_unique<AudioManagerCras>(std::move(audio_thread),
                                               audio_log_factory);
   }
-#endif // defined(USE_CRAS)
+#endif  // BUILDFLAG(USE_CRAS)
 
 #if defined(USE_PULSEAUDIO)
   pa_threaded_mainloop* pa_mainloop = nullptr;

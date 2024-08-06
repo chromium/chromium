@@ -40,6 +40,7 @@
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
 #include "media/webrtc/webrtc_features.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
@@ -308,72 +309,72 @@ bool UtilityProcessHost::StartProcess() {
 
     // Browser command-line switches to propagate to the utility process.
     static const char* const kSwitchNames[] = {
-      network::switches::kAdditionalTrustTokenKeyCommitments,
-      network::switches::kForceEffectiveConnectionType,
-      network::switches::kHostResolverRules,
-      network::switches::kIgnoreCertificateErrorsSPKIList,
-      network::switches::kTestThirdPartyCookiePhaseout,
-      sandbox::policy::switches::kNoSandbox,
+        network::switches::kAdditionalTrustTokenKeyCommitments,
+        network::switches::kForceEffectiveConnectionType,
+        network::switches::kHostResolverRules,
+        network::switches::kIgnoreCertificateErrorsSPKIList,
+        network::switches::kTestThirdPartyCookiePhaseout,
+        sandbox::policy::switches::kNoSandbox,
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
-      switches::kDisableDevShmUsage,
+        switches::kDisableDevShmUsage,
 #endif
 #if BUILDFLAG(IS_MAC)
-      sandbox::policy::switches::kDisableMetalShaderCache,
-      sandbox::policy::switches::kEnableSandboxLogging,
-      os_crypt::switches::kUseMockKeychain,
+        sandbox::policy::switches::kDisableMetalShaderCache,
+        sandbox::policy::switches::kEnableSandboxLogging,
+        os_crypt::switches::kUseMockKeychain,
 #endif
-      switches::kEnableBackgroundThreadPool,
-      switches::kEnableExperimentalCookieFeatures,
-      switches::kForceTextDirection,
-      switches::kForceUIDirection,
-      switches::kIgnoreCertificateErrors,
-      switches::kOverrideUseSoftwareGLForTests,
-      switches::kOverrideEnabledCdmInterfaceVersion,
-      switches::kProxyServer,
-      switches::kDisableAcceleratedMjpegDecode,
-      switches::kUseFakeDeviceForMediaStream,
-      switches::kUseFakeMjpegDecodeAccelerator,
-      switches::kUseFileForFakeVideoCapture,
-      switches::kUseMockCertVerifierForTesting,
-      switches::kMockCertVerifierDefaultResultForTesting,
-      switches::kUtilityStartupDialog,
-      switches::kUseANGLE,
-      switches::kUseGL,
-      switches::kEnableExperimentalWebPlatformFeatures,
-      // These flags are used by the audio service:
-      switches::kAudioBufferSize,
-      switches::kDisableAudioInput,
-      switches::kDisableAudioOutput,
-      switches::kFailAudioStreamCreation,
-      switches::kMuteAudio,
-      switches::kUseFileForFakeAudioCapture,
+        switches::kEnableBackgroundThreadPool,
+        switches::kEnableExperimentalCookieFeatures,
+        switches::kForceTextDirection,
+        switches::kForceUIDirection,
+        switches::kIgnoreCertificateErrors,
+        switches::kOverrideUseSoftwareGLForTests,
+        switches::kOverrideEnabledCdmInterfaceVersion,
+        switches::kProxyServer,
+        switches::kDisableAcceleratedMjpegDecode,
+        switches::kUseFakeDeviceForMediaStream,
+        switches::kUseFakeMjpegDecodeAccelerator,
+        switches::kUseFileForFakeVideoCapture,
+        switches::kUseMockCertVerifierForTesting,
+        switches::kMockCertVerifierDefaultResultForTesting,
+        switches::kUtilityStartupDialog,
+        switches::kUseANGLE,
+        switches::kUseGL,
+        switches::kEnableExperimentalWebPlatformFeatures,
+        // These flags are used by the audio service:
+        switches::kAudioBufferSize,
+        switches::kDisableAudioInput,
+        switches::kDisableAudioOutput,
+        switches::kFailAudioStreamCreation,
+        switches::kMuteAudio,
+        switches::kUseFileForFakeAudioCapture,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FREEBSD) || \
     BUILDFLAG(IS_SOLARIS)
-      switches::kAlsaInputDevice,
-      switches::kAlsaOutputDevice,
+        switches::kAlsaInputDevice,
+        switches::kAlsaOutputDevice,
 #endif
-#if defined(USE_CRAS)
-      switches::kUseCras,
+#if BUILDFLAG(USE_CRAS)
+        switches::kUseCras,
 #endif
 #if BUILDFLAG(IS_WIN)
-      switches::kDisableHighResTimer,
-      switches::kEnableExclusiveAudio,
-      switches::kForceWaveAudio,
-      switches::kRaiseTimerFrequency,
-      switches::kTrySupportedChannelLayouts,
-      switches::kWaveOutBuffers,
-      switches::kWebXrForceRuntime,
-      sandbox::policy::switches::kAddXrAppContainerCaps,
+        switches::kDisableHighResTimer,
+        switches::kEnableExclusiveAudio,
+        switches::kForceWaveAudio,
+        switches::kRaiseTimerFrequency,
+        switches::kTrySupportedChannelLayouts,
+        switches::kWaveOutBuffers,
+        switches::kWebXrForceRuntime,
+        sandbox::policy::switches::kAddXrAppContainerCaps,
 #endif
-      network::switches::kIpAddressSpaceOverrides,
+        network::switches::kIpAddressSpaceOverrides,
 #if BUILDFLAG(IS_CHROMEOS)
-      switches::kSchedulerBoostUrgent,
+        switches::kSchedulerBoostUrgent,
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      switches::kEnableResourcesFileSharing,
+        switches::kEnableResourcesFileSharing,
 #endif
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-      switches::kHardwareVideoDecodeFrameRate,
+        switches::kHardwareVideoDecodeFrameRate,
 #endif
     };
     cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames);

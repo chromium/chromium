@@ -63,7 +63,7 @@ MEDIA_EXPORT extern const char kMinVideoDecoderOutputBufferSize[];
 MEDIA_EXPORT extern const char kAudioCapturerWithEchoCancellation[];
 #endif
 
-#if defined(USE_CRAS)
+#if BUILDFLAG(USE_CRAS)
 MEDIA_EXPORT extern const char kUseCras[];
 MEDIA_EXPORT extern const char kSystemAecEnabled[];
 #endif

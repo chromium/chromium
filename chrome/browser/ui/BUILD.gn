@@ -3087,10 +3087,6 @@ static_library("ui") {
     }
   }
 
-  if (use_cras) {
-    defines += [ "USE_CRAS" ]
-  }
-
   if (is_chromeos) {
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
