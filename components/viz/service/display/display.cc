@@ -528,7 +528,8 @@ void Display::InitializeRenderer() {
 #if BUILDFLAG(IS_WIN)
   const bool prevent_merging_surfaces_to_root_pass =
       features::IsDelegatedCompositingEnabled() &&
-      base::FeatureList::IsEnabled(features::kDelegatedCompositingLimitToUi);
+      features::kDelegatedCompositingModeParam.Get() ==
+          features::DelegatedCompositingMode::kLimitToUi;
 #else
   const bool prevent_merging_surfaces_to_root_pass = false;
 #endif

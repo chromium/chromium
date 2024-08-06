@@ -213,7 +213,8 @@ DelegationStatus OverlayProcessorWin::ProcessOverlaysForDelegation(
   }
 
   const bool is_full_delegated_compositing =
-      !base::FeatureList::IsEnabled(features::kDelegatedCompositingLimitToUi);
+      features::kDelegatedCompositingModeParam.Get() ==
+      features::DelegatedCompositingMode::kFull;
 
   OverlayCandidateFactory factory(
       render_passes->back().get(), resource_provider,

@@ -24,10 +24,20 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidBrowserControlsInViz);
 #endif  // BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackdropFilterMirrorEdgeMode);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelegatedCompositing);
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDCompSurfacesForDelegatedInk);
+enum class DelegatedCompositingMode {
+  // Enable delegated compositing.
+  kFull,
 #if BUILDFLAG(IS_WIN)
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelegatedCompositingLimitToUi);
+  // Enable partially delegated compositing. In this mode, the web contents will
+  // be forced into its own render pass instead of merging into the root pass.
+  // This effectively makes it so only the browser UI quads get delegated
+  // compositing.
+  kLimitToUi,
 #endif
+};
+extern const VIZ_COMMON_EXPORT base::FeatureParam<DelegatedCompositingMode>
+    kDelegatedCompositingModeParam;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDCompSurfacesForDelegatedInk);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderPassDrawnRect);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRecordSkPicture);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDrmBlackFullscreenOptimization);

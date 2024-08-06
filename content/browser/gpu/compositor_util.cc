@@ -483,8 +483,8 @@ bool IsGpuMemoryBufferCompositorResourcesEnabled() {
   return features::IsDelegatedCompositingEnabled();
 #elif BUILDFLAG(IS_WIN)
   return features::IsDelegatedCompositingEnabled() &&
-         !base::FeatureList::IsEnabled(
-             features::kDelegatedCompositingLimitToUi);
+         features::kDelegatedCompositingModeParam.Get() ==
+             features::DelegatedCompositingMode::kFull;
 #else
   return false;
 #endif

@@ -2346,17 +2346,13 @@ class OverlayProcessorWinSurfacePlaneTest
 
  protected:
   OverlayProcessorWinSurfacePlaneTest() {
-    const std::vector<base::test::FeatureRef> partially_delegated_compositing =
-        {
-            features::kDelegatedCompositing,
-            features::kDelegatedCompositingLimitToUi,
-        };
     switch (GetParam()) {
       case SurfaceTestMode::RootSurface:
-        feature_list_.InitWithFeatures({}, partially_delegated_compositing);
+        feature_list_.InitAndDisableFeature(features::kDelegatedCompositing);
         break;
       case SurfaceTestMode::SimulatePartiallyDelegated:
-        feature_list_.InitWithFeatures(partially_delegated_compositing, {});
+        feature_list_.InitAndEnableFeatureWithParameters(
+            features::kDelegatedCompositing, {{"mode", "limit_to_ui"}});
         break;
     }
   }
@@ -2754,8 +2750,8 @@ class OverlayProcessorWinDelegatedCompositingTest
     : public OverlayProcessorWinTest {
  protected:
   OverlayProcessorWinDelegatedCompositingTest() {
-    feature_list_.InitWithFeatures({features::kDelegatedCompositing},
-                                   {features::kDelegatedCompositingLimitToUi});
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDelegatedCompositing, {{"mode", "full"}});
   }
 
   class DelegationResult {
@@ -3080,8 +3076,8 @@ class OverlayProcessorWinPartiallyDelegatedCompositingTest
     : public OverlayProcessorWinDelegatedCompositingTest {
  protected:
   OverlayProcessorWinPartiallyDelegatedCompositingTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kDelegatedCompositingLimitToUi);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDelegatedCompositing, {{"mode", "limit_to_ui"}});
   }
 
   TextureDrawQuad* CreateOverlayQuadWithSurfaceDamageAt(

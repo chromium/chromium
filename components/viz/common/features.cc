@@ -70,16 +70,26 @@ BASE_FEATURE(kDelegatedCompositing,
 #endif
 );
 
+constexpr base::FeatureParam<DelegatedCompositingMode>::Option
+    kDelegatedCompositingModeOption[] = {
+        {DelegatedCompositingMode::kFull, "full"},
 #if BUILDFLAG(IS_WIN)
-// Enable partially delegated compositing. In this mode, the web contents will
-// be forced into its own render pass instead of merging into the root pass.
-// This effectively makes it so only the browser UI quads get delegated
-// compositing.
-// TODO(crbug.com/324460866): Consider removing partially delegated compositing.
-BASE_FEATURE(kDelegatedCompositingLimitToUi,
-             "DelegatedCompositingLimitToUi",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+        {DelegatedCompositingMode::kLimitToUi, "limit_to_ui"},
 #endif
+};
+const base::FeatureParam<DelegatedCompositingMode>
+    kDelegatedCompositingModeParam = {
+        &kDelegatedCompositing,
+        "mode",
+#if BUILDFLAG(IS_WIN)
+        // TODO(crbug.com/324460866): Windows does not fully support full
+        // delegated compositing.
+        DelegatedCompositingMode::kLimitToUi,
+#else
+        DelegatedCompositingMode::kFull,
+#endif
+        &kDelegatedCompositingModeOption,
+};
 
 // If enabled, the overlay processor will force the use of dcomp surfaces as the
 // render pass backing while delegated ink is being employed. This will avoid

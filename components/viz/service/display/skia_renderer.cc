@@ -1073,8 +1073,9 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
   // behavior is not required for full delegation since |OverlayProcessorWin|
   // does not modify non-root render pass damage in that case.
   use_render_pass_drawn_rect_ |=
-      base::FeatureList::IsEnabled(features::kDelegatedCompositing) &&
-      base::FeatureList::IsEnabled(features::kDelegatedCompositingLimitToUi);
+      features::IsDelegatedCompositingEnabled() &&
+      features::kDelegatedCompositingModeParam.Get() ==
+          features::DelegatedCompositingMode::kLimitToUi;
 #endif
   DCHECK(skia_output_surface_);
 
