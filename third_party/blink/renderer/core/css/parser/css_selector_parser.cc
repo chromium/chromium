@@ -2116,7 +2116,7 @@ bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenStream& stream,
   result.second = ClampTo<int>(b.NumericValue());
   if (sign == kMinusSign) {
     // Negating minimum integer returns itself, instead return max integer.
-    if (UNLIKELY(result.second == std::numeric_limits<int>::min())) {
+    if (result.second == std::numeric_limits<int>::min()) [[unlikely]] {
       result.second = std::numeric_limits<int>::max();
     } else {
       result.second = -result.second;

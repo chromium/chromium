@@ -236,7 +236,7 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
   if (value->IsNumber()) {
     double double_value = NativeValueTraits<IDLUnrestrictedDouble>::NativeValue(
         script_state->GetIsolate(), value, exception_state);
-    if (UNLIKELY(exception_state.HadException())) {
+    if (exception_state.HadException()) [[unlikely]] {
       return NamedPropertySetterResult::kIntercepted;
     }
     if (FastPathSetProperty(unresolved_property, double_value)) {
@@ -274,7 +274,7 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
   auto&& string_value =
       NativeValueTraits<IDLStringLegacyNullToEmptyString>::NativeValue(
           script_state->GetIsolate(), value, exception_state);
-  if (UNLIKELY(exception_state.HadException())) {
+  if (exception_state.HadException()) [[unlikely]] {
     return NamedPropertySetterResult::kIntercepted;
   }
   SetPropertyInternal(unresolved_property, String(), string_value, false,

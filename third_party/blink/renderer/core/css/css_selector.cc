@@ -1648,9 +1648,9 @@ bool CSSSelector::RareData::MatchNth(unsigned unsigned_count) {
   // give up immediately if we see them.
   int max_value = std::numeric_limits<int>::max() / 2;
   int min_value = std::numeric_limits<int>::min() / 2;
-  if (UNLIKELY(unsigned_count > static_cast<unsigned>(max_value) ||
-               NthAValue() > max_value || NthAValue() < min_value ||
-               NthBValue() > max_value || NthBValue() < min_value)) {
+  if (unsigned_count > static_cast<unsigned>(max_value) ||
+      NthAValue() > max_value || NthAValue() < min_value ||
+      NthBValue() > max_value || NthBValue() < min_value) [[unlikely]] {
     return false;
   }
 

@@ -266,7 +266,7 @@ bool SelectorChecker::Match(const SelectorCheckingContext& context,
   base::AutoReset<bool> reset_inside_match(&inside_match_, true);
 #endif  // DCHECK_IS_ON()
 
-  if (UNLIKELY(context.vtt_originating_element)) {
+  if (context.vtt_originating_element) [[unlikely]] {
     // A kUAShadow combinator is required for VTT matching.
     if (context.selector->IsLastInComplexSelector()) {
       return false;
@@ -1635,7 +1635,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return element.IsDragged();
     case CSSSelector::kPseudoFocus:
       if (mode_ == kResolvingStyle) {
-        if (UNLIKELY(context.is_inside_has_pseudo_class)) {
+        if (context.is_inside_has_pseudo_class) [[unlikely]] {
           element.SetAncestorsOrSiblingsAffectedByFocusInHas();
         } else {
           if (ImpactsNonSubject(context)) {
@@ -1646,7 +1646,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return MatchesFocusPseudoClass(element, context.has_scroll_marker_pseudo);
     case CSSSelector::kPseudoFocusVisible:
       if (mode_ == kResolvingStyle) {
-        if (UNLIKELY(context.is_inside_has_pseudo_class)) {
+        if (context.is_inside_has_pseudo_class) [[unlikely]] {
           element.SetAncestorsOrSiblingsAffectedByFocusVisibleInHas();
         } else {
           if (ImpactsNonSubject(context)) {
@@ -1657,7 +1657,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return MatchesFocusVisiblePseudoClass(element);
     case CSSSelector::kPseudoFocusWithin:
       if (mode_ == kResolvingStyle) {
-        if (UNLIKELY(context.is_inside_has_pseudo_class)) {
+        if (context.is_inside_has_pseudo_class) [[unlikely]] {
           element.SetAncestorsOrSiblingsAffectedByFocusInHas();
         } else if (ImpactsNonSubject(context)) {
           element.SetChildrenOrSiblingsAffectedByFocusWithin();
@@ -1674,7 +1674,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return element.HasFocusWithin();
     case CSSSelector::kPseudoHover:
       if (mode_ == kResolvingStyle) {
-        if (UNLIKELY(context.is_inside_has_pseudo_class)) {
+        if (context.is_inside_has_pseudo_class) [[unlikely]] {
           element.SetAncestorsOrSiblingsAffectedByHoverInHas();
         } else if (ImpactsNonSubject(context)) {
           element.SetChildrenOrSiblingsAffectedByHover();
@@ -1694,7 +1694,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return element.IsHovered();
     case CSSSelector::kPseudoActive:
       if (mode_ == kResolvingStyle) {
-        if (UNLIKELY(context.is_inside_has_pseudo_class)) {
+        if (context.is_inside_has_pseudo_class) [[unlikely]] {
           element.SetAncestorsOrSiblingsAffectedByActiveInHas();
         } else if (ImpactsNonSubject(context)) {
           element.SetChildrenOrSiblingsAffectedByActive();

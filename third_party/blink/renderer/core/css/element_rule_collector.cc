@@ -517,7 +517,7 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
     }
 
     const auto& selector = rule_data.Selector();
-    if (UNLIKELY(part_request && part_request->for_shadow_pseudo)) {
+    if (part_request && part_request->for_shadow_pseudo) [[unlikely]] {
       if (!selector.IsAllowedAfterPart()) {
         DCHECK_EQ(selector.GetPseudoType(), CSSSelector::kPseudoPart);
         continue;

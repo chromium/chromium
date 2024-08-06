@@ -73,7 +73,7 @@ const unsigned char* GetCachedTracingFlags() {
 
 #define TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART_IF_ENABLED( \
     element, reason, invalidationSet, singleSelectorPart)             \
-  if (UNLIKELY(*GetCachedTracingFlags()))                             \
+  if (*GetCachedTracingFlags()) [[unlikely]]                          \
     TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART(                \
         element, reason, invalidationSet, singleSelectorPart);
 

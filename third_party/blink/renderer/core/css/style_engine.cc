@@ -134,7 +134,7 @@ namespace {
 
 CSSFontSelector* CreateCSSFontSelectorFor(Document& document) {
   DCHECK(document.GetFrame());
-  if (UNLIKELY(document.GetFrame()->PagePopupOwner())) {
+  if (document.GetFrame()->PagePopupOwner()) [[unlikely]] {
     return PagePopupController::CreateCSSFontSelector(document);
   }
   return MakeGarbageCollected<CSSFontSelector>(document);
@@ -1635,11 +1635,11 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
     }
     // Class was added.
     if (!found) {
-      if (LIKELY(needs_schedule_invalidation)) {
+      if (needs_schedule_invalidation) [[likely]] {
         features.CollectInvalidationSetsForClass(invalidation_lists, element,
                                                  new_class);
       }
-      if (UNLIKELY(possibly_affecting_has_state)) {
+      if (possibly_affecting_has_state) [[unlikely]] {
         if (features.NeedsHasInvalidationForClass(new_class)) {
           affecting_has_state = true;
           possibly_affecting_has_state = false;  // Clear to skip check
@@ -1653,11 +1653,11 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
       continue;
     }
     // Class was removed.
-    if (LIKELY(needs_schedule_invalidation)) {
+    if (needs_schedule_invalidation) [[likely]] {
       features.CollectInvalidationSetsForClass(invalidation_lists, element,
                                                old_classes[i]);
     }
-    if (UNLIKELY(possibly_affecting_has_state)) {
+    if (possibly_affecting_has_state) [[unlikely]] {
       if (features.NeedsHasInvalidationForClass(old_classes[i])) {
         affecting_has_state = true;
         possibly_affecting_has_state = false;  // Clear to skip check

@@ -884,7 +884,7 @@ void StyleResolver::ForEachUARulesForElement(const Element& element,
   CSSDefaultStyleSheets& default_style_sheets =
       CSSDefaultStyleSheets::Instance();
   if (!print_media_type_) {
-    if (LIKELY(element.IsHTMLElement() || element.IsVTTElement())) {
+    if (element.IsHTMLElement() || element.IsVTTElement()) [[likely]] {
       func(default_style_sheets.DefaultHtmlStyle());
     } else if (element.IsSVGElement()) {
       func(default_style_sheets.DefaultSVGStyle());
