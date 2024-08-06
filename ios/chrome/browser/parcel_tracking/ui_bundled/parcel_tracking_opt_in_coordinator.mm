@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_coordinator.h"
+#import "ios/chrome/browser/parcel_tracking/ui_bundled/parcel_tracking_opt_in_coordinator.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -14,8 +14,8 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_mediator.h"
-#import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_view_controller.h"
+#import "ios/chrome/browser/parcel_tracking/ui_bundled/parcel_tracking_opt_in_mediator.h"
+#import "ios/chrome/browser/parcel_tracking/ui_bundled/parcel_tracking_opt_in_view_controller.h"
 
 @interface ParcelTrackingOptInCoordinator () <
     UIAdaptivePresentationControllerDelegate>

@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("parcel_tracking") {
+source_set("coordinator") {
   sources = [
     "parcel_tracking_opt_in_coordinator.h",
     "parcel_tracking_opt_in_coordinator.mm",
@@ -10,7 +10,7 @@ source_set("parcel_tracking") {
     "parcel_tracking_opt_in_mediator.mm",
   ]
   deps = [
-    ":parcel_tracking_ui",
+    ":ui",
     "//base",
     "//components/commerce/core:shopping_service",
     "//components/prefs",
@@ -31,7 +31,7 @@ source_set("parcel_tracking") {
   ]
 }
 
-source_set("parcel_tracking_ui") {
+source_set("ui") {
   sources = [
     "parcel_tracking_opt_in_view_controller.h",
     "parcel_tracking_opt_in_view_controller.mm",
@@ -43,7 +43,7 @@ source_set("parcel_tracking_ui") {
     "//ios/chrome/browser/parcel_tracking:opt_in_status",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//ios/chrome/browser/ui/parcel_tracking/resources",
+    "//ios/chrome/browser/parcel_tracking/ui_bundled/resources",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
@@ -58,7 +58,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "parcel_tracking_opt_in_coordinator_unittest.mm" ]
   deps = [
-    ":parcel_tracking",
+    ":coordinator",
     "//base/test:test_support",
     "//components/prefs",
     "//ios/chrome/browser/parcel_tracking:metrics",

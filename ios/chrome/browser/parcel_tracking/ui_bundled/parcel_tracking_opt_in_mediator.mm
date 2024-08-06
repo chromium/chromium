@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_mediator.h"
+#import "ios/chrome/browser/parcel_tracking/ui_bundled/parcel_tracking_opt_in_mediator.h"
 
 #import "base/memory/raw_ptr.h"
 #import "components/commerce/core/shopping_service.h"
