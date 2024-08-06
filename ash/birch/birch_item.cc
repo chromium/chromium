@@ -914,14 +914,12 @@ std::u16string BirchSelfShareItem::GetSubtitle(
 BirchLostMediaItem::BirchLostMediaItem(
     const GURL& source_url,
     const std::u16string& media_title,
-    bool is_video_conference_tab,
     const ui::ImageModel& backup_icon,
     const SecondaryIconType& secondary_icon_type,
     base::RepeatingClosure activation_callback)
-    : BirchItem(media_title, GetSubtitle(is_video_conference_tab)),
+    : BirchItem(media_title, GetSubtitle(secondary_icon_type)),
       source_url_(source_url),
       media_title_(media_title),
-      is_video_conference_tab_(is_video_conference_tab),
       backup_icon_(backup_icon),
       secondary_icon_type_(secondary_icon_type),
       activation_callback_(std::move(activation_callback)) {}
@@ -946,7 +944,6 @@ std::string BirchLostMediaItem::ToString() const {
   std::stringstream ss;
   ss << "Lost Media item: {ranking: " << ranking()
      << ", Source Url: " << source_url_ << ", Media Title: " << media_title_
-     << ", Is Video Conference Tab: " << is_video_conference_tab_
      << ", Secondary Icon Type: "
      << SecondaryIconTypeToString(secondary_icon_type_) << "}";
   return ss.str();
@@ -971,9 +968,9 @@ void BirchLostMediaItem::LoadIcon(LoadIconCallback callback) const {
 }
 
 // static
-std::u16string BirchLostMediaItem::GetSubtitle(bool is_video_conference_tab) {
+std::u16string BirchLostMediaItem::GetSubtitle(SecondaryIconType type) {
   return l10n_util::GetStringUTF16(
-      is_video_conference_tab
+      type == SecondaryIconType::kLostMediaVideoConference
           ? IDS_ASH_BIRCH_LOST_MEDIA_VIDEO_CONFERENCE_TAB_SUBTITLE
           : IDS_ASH_BIRCH_LOST_MEDIA_MEDIA_TAB_SUBTITLE);
 }

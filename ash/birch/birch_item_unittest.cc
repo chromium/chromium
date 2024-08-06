@@ -750,16 +750,14 @@ TEST_F(BirchItemIconTest, SelfShare_LoadIcon) {
 }
 
 TEST_F(BirchItemTest, LostMedia_VideoConference_Subtitle) {
-  BirchLostMediaItem item(GURL(), u"test_title",
-                          /*is_video_conference_tab=*/true, ui::ImageModel(),
+  BirchLostMediaItem item(GURL(), u"test_title", ui::ImageModel(),
                           SecondaryIconType::kLostMediaVideoConference,
                           base::DoNothing());
   EXPECT_EQ(item.subtitle(), u"Ongoing · Switch to tab");
 }
 
 TEST_F(BirchItemTest, LostMedia_MediaTab_Subtitle) {
-  BirchLostMediaItem item(GURL(), u"test_title",
-                          /*is_video_conference_tab=*/false, ui::ImageModel(),
+  BirchLostMediaItem item(GURL(), u"test_title", ui::ImageModel(),
                           SecondaryIconType::kLostMediaVideo,
                           base::DoNothing());
   EXPECT_EQ(item.subtitle(), u"Playing · Switch to tab");
@@ -767,8 +765,7 @@ TEST_F(BirchItemTest, LostMedia_MediaTab_Subtitle) {
 
 TEST_F(BirchItemIconTest, LostMedia_LoadIcon) {
   const GURL page_url = GURL("https://www.example.com/");
-  BirchLostMediaItem item(page_url, u"test_title",
-                          /*is_video_conference_tab=*/true, ui::ImageModel(),
+  BirchLostMediaItem item(page_url, u"test_title", ui::ImageModel(),
                           SecondaryIconType::kLostMediaVideoConference,
                           base::DoNothing());
   base::test::TestFuture<const ui::ImageModel&, SecondaryIconType> future;

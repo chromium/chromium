@@ -145,7 +145,6 @@ void BirchLostMediaProvider::OnVideoConferencingDataAvailable(
     items.emplace_back(
         /*source_url=*/apps[0]->url.value_or(GURL()),
         /*media_title=*/apps[0]->title,
-        /*is_video_conference_tab=*/true,
         /*backup_icon=*/backup_icon,
         /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideoConference,
         /*activation_callback=*/
@@ -193,7 +192,6 @@ void BirchLostMediaProvider::SetMediaAppsFromMediaController() {
   items.emplace_back(
       /*source_url=*/GURL(u"https://www." + source_url_),
       /*media_title=*/media_title_,
-      /*is_video_conference_tab=*/false,
       /*backup_icon=*/backup_icon,
       /*secondary_icon_type=*/secondary_icon_type_,
       /*activation_callback=*/

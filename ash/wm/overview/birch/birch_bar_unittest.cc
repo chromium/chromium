@@ -452,7 +452,6 @@ class BirchBarTest : public AshTestBase {
       item_list.emplace_back(
           /*source_url=*/GURL("https://www.source.com/"),
           /*media_title=*/u"media title",
-          /*is_video_conference_tab=*/false,
           /*backup_icon=*/ui::ImageModel(),
           /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideo,
           /*activation_callback=*/base::DoNothing());

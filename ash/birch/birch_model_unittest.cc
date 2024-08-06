@@ -513,7 +513,7 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   model->SetReleaseNotesItems(release_notes_item_list);
   std::vector<BirchLostMediaItem> lost_media_item_list;
   lost_media_item_list.emplace_back(
-      GURL("https://www.source.com/"), u"media title", false, ui::ImageModel(),
+      GURL("https://www.source.com/"), u"media title", ui::ImageModel(),
       SecondaryIconType::kLostMediaVideo, base::DoNothing());
   model->SetLostMediaItems(lost_media_item_list);
 
@@ -571,7 +571,7 @@ TEST_F(BirchModelTest, GetAllItemsDoesNotReturnItemsWithDisabledPrefs) {
   model->SetReleaseNotesItems(release_notes_item_list);
   std::vector<BirchLostMediaItem> lost_media_item_list;
   lost_media_item_list.emplace_back(
-      GURL("https://www.source.com/"), u"media title", false, ui::ImageModel(),
+      GURL("https://www.source.com/"), u"media title", ui::ImageModel(),
       SecondaryIconType::kLostMediaVideo, base::DoNothing());
   model->SetLostMediaItems(lost_media_item_list);
 
@@ -1061,7 +1061,7 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   model->SetReleaseNotesItems(release_notes_item_list);
   std::vector<BirchLostMediaItem> lost_media_item_list;
   lost_media_item_list.emplace_back(
-      GURL("https://www.source.com/"), u"media title", false, ui::ImageModel(),
+      GURL("https://www.source.com/"), u"media title", ui::ImageModel(),
       SecondaryIconType::kLostMediaVideo, base::DoNothing());
   model->SetLostMediaItems(lost_media_item_list);
 

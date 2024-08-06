@@ -1011,7 +1011,6 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider_AudioItem) {
   EXPECT_EQ(lost_media_items[0].source_url(),
             GURL(kSessionMetadataSourceTitleFull));
   EXPECT_EQ(lost_media_items[0].title(), kSessionMetadataTitle);
-  EXPECT_EQ(lost_media_items[0].is_video_conference_tab(), false);
   EXPECT_EQ(lost_media_items[0].secondary_icon_type(),
             SecondaryIconType::kLostMediaAudio);
 
@@ -1023,7 +1022,6 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider_AudioItem) {
   EXPECT_EQ(lost_media_items[0].source_url(),
             GURL(kSessionMetadataSourceTitleFull));
   EXPECT_EQ(lost_media_items[0].title(), kSessionMetadataTitle);
-  EXPECT_EQ(lost_media_items[0].is_video_conference_tab(), false);
   EXPECT_EQ(lost_media_items[0].secondary_icon_type(),
             SecondaryIconType::kLostMediaAudio);
 
@@ -1113,7 +1111,6 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider_VideoItem) {
   EXPECT_EQ(lost_media_items[0].source_url(),
             GURL(kSessionMetadataSourceTitleFull));
   EXPECT_EQ(lost_media_items[0].title(), kSessionMetadataTitle);
-  EXPECT_EQ(lost_media_items[0].is_video_conference_tab(), false);
   EXPECT_EQ(lost_media_items[0].secondary_icon_type(),
             SecondaryIconType::kLostMediaVideo);
 
@@ -1125,7 +1122,6 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider_VideoItem) {
   EXPECT_EQ(lost_media_items[0].source_url(),
             GURL(kSessionMetadataSourceTitleFull));
   EXPECT_EQ(lost_media_items[0].title(), kSessionMetadataTitle);
-  EXPECT_EQ(lost_media_items[0].is_video_conference_tab(), false);
   EXPECT_EQ(lost_media_items[0].secondary_icon_type(),
             SecondaryIconType::kLostMediaVideo);
 
@@ -1160,7 +1156,6 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider_VideoConferenceItem) {
   ASSERT_EQ(lost_media_items.size(), 1u);
   EXPECT_EQ(lost_media_items[0].source_url(), GURL(kMediaAppUrl));
   EXPECT_EQ(lost_media_items[0].title(), kMediaAppTitle);
-  EXPECT_EQ(lost_media_items[0].is_video_conference_tab(), true);
   EXPECT_EQ(lost_media_items[0].secondary_icon_type(),
             SecondaryIconType::kLostMediaVideoConference);
 
@@ -1176,7 +1171,6 @@ TEST_F(BirchKeyedServiceTest, LostMediaProvider_VideoConferenceItem) {
   ASSERT_EQ(lost_media_items.size(), 1u);
   EXPECT_EQ(lost_media_items[0].source_url(), GURL(kMediaAppUrl));
   EXPECT_EQ(lost_media_items[0].title(), kMediaAppTitle);
-  EXPECT_EQ(lost_media_items[0].is_video_conference_tab(), true);
   EXPECT_EQ(lost_media_items[0].secondary_icon_type(),
             SecondaryIconType::kLostMediaVideoConference);
 }

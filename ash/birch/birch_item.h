@@ -426,7 +426,6 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
  public:
   BirchLostMediaItem(const GURL& source_url,
                      const std::u16string& media_title,
-                     bool is_video_conference_tab,
                      const ui::ImageModel& backup_icon,
                      const SecondaryIconType& secondary_icon_type,
                      base::RepeatingClosure activation_callback);
@@ -445,17 +444,15 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
 
   const GURL& source_url() const { return source_url_; }
   const std::u16string& media_title() const { return media_title_; }
-  bool is_video_conference_tab() const { return is_video_conference_tab_; }
   const SecondaryIconType& secondary_icon_type() const {
     return secondary_icon_type_;
   }
 
  private:
-  static std::u16string GetSubtitle(bool is_video_conference_tab);
+  static std::u16string GetSubtitle(SecondaryIconType type);
 
   GURL source_url_;
   std::u16string media_title_;
-  bool is_video_conference_tab_;
   ui::ImageModel backup_icon_;
   SecondaryIconType secondary_icon_type_;
   base::RepeatingClosure activation_callback_;
