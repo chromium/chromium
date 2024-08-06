@@ -7439,24 +7439,24 @@ New install
         desc="This string appears as a selectable menu item in a menu, when the user has highlighted some text. When the user hovers over this item, it opens a submenu with various options to change the capitalization of the text. For example, one of the submenu options might convert the text into uppercase.">
         Change capitalization
       </message>
-      <message name="IDS_PICKER_NEW_MENU_LABEL" translateable="false"
+      <message name="IDS_PICKER_NEW_MENU_LABEL"
         desc="This string appears as a selectable menu item in a menu. When the user hovers over this item, it opens a submenu with various options to create new documents or Chrome tabs. The submenu options are: 'Google Doc', 'Google Sheet', 'Google Slide', and 'Chrome window'.">
         New
       </message>
-      <message name="IDS_PICKER_NEW_GOOGLE_DOC_MENU_LABEL" translateable="false"
+      <message name="IDS_PICKER_NEW_GOOGLE_DOC_MENU_LABEL"
         desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'New'. When selected, this item opens a new window with a blank Google Doc.">
         Google Doc
       </message>
-      <message name="IDS_PICKER_NEW_GOOGLE_SHEET_MENU_LABEL" translateable="false"
+      <message name="IDS_PICKER_NEW_GOOGLE_SHEET_MENU_LABEL"
         desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'New'. When selected, this item opens a new window with a blank Google Sheet.">
         Google Sheet
       </message>
-      <message name="IDS_PICKER_NEW_GOOGLE_SLIDE_MENU_LABEL" translateable="false"
+      <message name="IDS_PICKER_NEW_GOOGLE_SLIDE_MENU_LABEL"
         desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'New'. When selected, this item opens a new window with a blank Google Slide.">
         Google Slide
       </message>
-      <message name="IDS_PICKER_NEW_GOOGLE_CHROME_MENU_LABEL" translateable="false"
-        desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'New'. When selected, this item opens a new window with a new Chrome tab.">
+      <message name="IDS_PICKER_NEW_GOOGLE_CHROME_MENU_LABEL"
+        desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'New'. When selected, this item opens a new Chrome window.">
         Chrome window
       </message>
       <message name="IDS_PICKER_MORE_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains miscellaneous categories, e.g. Dates and Maths.">
