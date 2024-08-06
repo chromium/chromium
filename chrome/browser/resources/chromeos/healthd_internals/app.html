@@ -1,11 +1,18 @@
 <style include="cr-nav-menu-item-style healthd-internals-shared">
-  :host {
+  #appContainer {
     display: flex;
-    height: 100%;
+    height: 100vh;
+    width: 100vw;
   }
 
-  #selector {
-    padding-inline-end: 8px;
+  #main {
+    height: 100%;
+    flex: 1
+  }
+
+  #sidebarContainer {
+    display: flex;
+    height: 100%;
   }
 
   #sidebar {
@@ -17,9 +24,8 @@
     width: 220px;
   }
 
-  #main {
-    flex: 1;
-    padding: 8px;
+  #selector {
+    padding-inline-end: 8px;
   }
 
   #settingsButtonContainer {
@@ -27,9 +33,6 @@
     justify-content: center;
   }
 
-  #sidebarContainer {
-    display: flex;
-  }
 
   #sidebarToggleButton {
     display: flex;
@@ -37,12 +40,15 @@
     justify-content: center;
     height: 100%;
     font-size: 16px;
-    padding: 5px;
+    width: 20px;
+    cursor: pointer;
   }
 </style>
 
 <healthd-internals-settings-dialog id="settingsDialog">
 </healthd-internals-settings-dialog>
+
+<div id="appContainer">
 
 <div id="sidebarContainer">
   <div id="sidebar">
@@ -68,29 +74,19 @@
 
 <div id="main">
   <iron-pages class="full-page" selected="[[selectedIndex]]">
-    <div>
-      <healthd-internals-telemetry id="telemetryPage">
-      </healthd-internals-telemetry>
-    </div>
-    <div class="full-page">
-      <healthd-internals-generic-chart id="batteryChart">
-      </healthd-internals-generic-chart>
-    </div>
-    <div class="full-page">
-      <healthd-internals-generic-chart id="cpuFrequencyChart">
-      </healthd-internals-generic-chart>
-    </div>
-    <div class="full-page">
-      <healthd-internals-generic-chart id="cpuUsageChart">
-      </healthd-internals-generic-chart>
-    </div>
-    <div class="full-page">
-      <healthd-internals-generic-chart id="memoryChart">
-      </healthd-internals-generic-chart>
-    </div>
-    <div class="full-page">
-      <healthd-internals-generic-chart id="thermalChart">
-      </healthd-internals-generic-chart>
-    </div>
+    <healthd-internals-telemetry id="telemetryPage">
+    </healthd-internals-telemetry>
+    <healthd-internals-generic-chart id="batteryChart">
+    </healthd-internals-generic-chart>
+    <healthd-internals-generic-chart id="cpuFrequencyChart">
+    </healthd-internals-generic-chart>
+    <healthd-internals-generic-chart id="cpuUsageChart">
+    </healthd-internals-generic-chart>
+    <healthd-internals-generic-chart id="memoryChart">
+    </healthd-internals-generic-chart>
+    <healthd-internals-generic-chart id="thermalChart">
+    </healthd-internals-generic-chart>
   </iron-pages>
+</div>
+
 </div>
