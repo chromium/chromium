@@ -4525,6 +4525,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.ProfileImport.StorageNewAddressIsSavedTo"
+    enum="AutofillProfileSource" expires_after="2025-02-04">
+  <owner>amelies@google.com</owner>
+  <owner>src/components/autofill/OWNERS</owner>
+  <summary>
+    Logs in which storage type the new address profile will be stored when the
+    user accepted the save prompt that was shown to them after a form
+    submission. This metric is emitted at the end of an import process once the
+    user-provided import decision is final.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ProfileImport.UpdateProfileAffectedType.{Decision}"
     enum="AutofillSettingsVisibleTypes" expires_after="2024-12-12">
   <owner>koerber@google.com</owner>
