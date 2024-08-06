@@ -96,16 +96,15 @@ void RecordCommandResultMetric(apps::AppInstallSurface surface,
 
 namespace apps {
 
-WebAppInstaller::WebAppInstaller(Profile* profile)
-    : profile_(profile) {
+WebAppInstaller::WebAppInstaller(Profile* profile) : profile_(profile) {
   // Check CrosapiManager::IsInitialized as it is not initialized in some unit
   // tests. This should never fail in production code.
   if (web_app::IsWebAppsCrosapiEnabled() &&
       crosapi::CrosapiManager::IsInitialized()) {
-      // Add an observer to observe when the lacros bridge connects.
-      crosapi::WebAppServiceAsh* web_app_service_ash =
-          crosapi::CrosapiManager::Get()->crosapi_ash()->web_app_service_ash();
-      web_app_service_observer_.Observe(web_app_service_ash);
+    // Add an observer to observe when the lacros bridge connects.
+    crosapi::WebAppServiceAsh* web_app_service_ash =
+        crosapi::CrosapiManager::Get()->crosapi_ash()->web_app_service_ash();
+    web_app_service_observer_.Observe(web_app_service_ash);
   }
 }
 

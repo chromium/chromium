@@ -32,9 +32,8 @@ class WebAppInstallerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    https_server_.RegisterRequestHandler(
-        base::BindRepeating(&WebAppInstallerBrowserTest::HandleRequest,
-                            base::Unretained(this)));
+    https_server_.RegisterRequestHandler(base::BindRepeating(
+        &WebAppInstallerBrowserTest::HandleRequest, base::Unretained(this)));
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
 
     ASSERT_TRUE(https_server_.Start());
@@ -163,8 +162,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallOneOemApp) {
       webapps::InstallResultCode::kSuccessNewInstall, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
-                       InstallOneDefaultApp) {
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallOneDefaultApp) {
   WebAppInstaller installer(profile());
 
   constexpr char kManifestTemplate[] = R"({
@@ -205,8 +203,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
       webapps::InstallResultCode::kSuccessNewInstall, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
-                       InstallMultipleOemApps) {
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallMultipleOemApps) {
   WebAppInstaller installer(profile());
 
   constexpr char kManifestTemplate[] = R"({
@@ -266,8 +263,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
       webapps::InstallResultCode::kSuccessNewInstall, 2);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
-                       InstallWithManifestId) {
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallWithManifestId) {
   WebAppInstaller installer(profile());
 
   SetManifestResponse(AddIconToManifest(R"({
@@ -368,8 +364,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
       webapps::InstallResultCode::kExpectedAppIdCheckFailed, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
-                       ManifestFileIsNotJSON) {
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, ManifestFileIsNotJSON) {
   WebAppInstaller installer(profile());
 
   SetManifestResponse("INVALID");
@@ -423,8 +418,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
       webapps::InstallResultCode::kNotValidManifestForWebApp, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
-                       ManifestWithFailingIcons) {
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, ManifestWithFailingIcons) {
   WebAppInstaller installer(profile());
 
   constexpr char kManifestTemplate[] = R"({

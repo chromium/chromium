@@ -128,9 +128,9 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoSuccessfulResponse) {
       response.SerializeAsString());
 
   ResponseFuture response_future;
-  app_install_almanac_endpoint::GetAppInstallInfo(kTestPackageId, DeviceInfo(),
-                               test_url_loader_factory_,
-                               response_future.GetCallback());
+  app_install_almanac_endpoint::GetAppInstallInfo(
+      kTestPackageId, DeviceInfo(), test_url_loader_factory_,
+      response_future.GetCallback());
   EXPECT_TRUE(response_future.Get().has_value());
 
   AppInstallData expected_data(
@@ -178,9 +178,9 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoIncompleteResponse) {
       response.SerializeAsString());
 
   ResponseFuture response_future;
-  app_install_almanac_endpoint::GetAppInstallInfo(kTestPackageId, DeviceInfo(),
-                               test_url_loader_factory_,
-                               response_future.GetCallback());
+  app_install_almanac_endpoint::GetAppInstallInfo(
+      kTestPackageId, DeviceInfo(), test_url_loader_factory_,
+      response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kBadResponse);
 }
 
@@ -190,9 +190,9 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoMalformedResponse) {
       "Not a valid proto");
 
   ResponseFuture response_future;
-  app_install_almanac_endpoint::GetAppInstallInfo(kTestPackageId, DeviceInfo(),
-                               test_url_loader_factory_,
-                               response_future.GetCallback());
+  app_install_almanac_endpoint::GetAppInstallInfo(
+      kTestPackageId, DeviceInfo(), test_url_loader_factory_,
+      response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kBadResponse);
 }
 
@@ -222,9 +222,9 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoServerError) {
       /*content=*/"", net::HTTP_INTERNAL_SERVER_ERROR);
 
   ResponseFuture response_future;
-  app_install_almanac_endpoint::GetAppInstallInfo(kTestPackageId, DeviceInfo(),
-                               test_url_loader_factory_,
-                               response_future.GetCallback());
+  app_install_almanac_endpoint::GetAppInstallInfo(
+      kTestPackageId, DeviceInfo(), test_url_loader_factory_,
+      response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kConnectionError);
 }
 
@@ -235,9 +235,9 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoNetworkError) {
       network::URLLoaderCompletionStatus(net::ERR_TIMED_OUT));
 
   ResponseFuture response_future;
-  app_install_almanac_endpoint::GetAppInstallInfo(kTestPackageId, DeviceInfo(),
-                               test_url_loader_factory_,
-                               response_future.GetCallback());
+  app_install_almanac_endpoint::GetAppInstallInfo(
+      kTestPackageId, DeviceInfo(), test_url_loader_factory_,
+      response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kConnectionError);
 }
 
@@ -249,9 +249,9 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoNotFound) {
       net::HTTP_NOT_FOUND);
 
   ResponseFuture response_future;
-  app_install_almanac_endpoint::GetAppInstallInfo(kTestPackageId, DeviceInfo(),
-                               test_url_loader_factory_,
-                               response_future.GetCallback());
+  app_install_almanac_endpoint::GetAppInstallInfo(
+      kTestPackageId, DeviceInfo(), test_url_loader_factory_,
+      response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kBadRequest);
 }
 
