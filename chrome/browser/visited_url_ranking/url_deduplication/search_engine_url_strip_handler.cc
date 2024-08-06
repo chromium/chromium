@@ -9,6 +9,8 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 
+namespace url_deduplication {
+
 SearchEngineURLStripHandler::SearchEngineURLStripHandler(
     TemplateURLService* template_url_service,
     bool keep_search_intent_params,
@@ -18,8 +20,6 @@ SearchEngineURLStripHandler::SearchEngineURLStripHandler(
       keep_search_intent_params_(keep_search_intent_params),
       normalize_search_terms_(normalize_search_terms),
       keyword_(keyword) {}
-
-SearchEngineURLStripHandler::~SearchEngineURLStripHandler() = default;
 
 GURL SearchEngineURLStripHandler::StripExtraParams(GURL url) {
   if (!url.is_valid()) {
@@ -34,27 +34,18 @@ GURL SearchEngineURLStripHandler::StripExtraParams(GURL url) {
     // search intent params. This allows eliminating cases like past search URLs
     // from history that differ only by some obscure query param from each other
     // or from the search/keyword provider matches.
-    if (SupportsReplacement(keyword_, stripped_destination_url.host(),
-                            search_terms_data())) {
-      KeepSearchTermsInURL(keyword_, stripped_destination_url.host(), url,
-                           search_terms_data(), keep_search_intent_params_,
-                           normalize_search_terms_, &stripped_destination_url);
+    const TemplateURL* template_url = GetConstTemplateURLWithKeyword(
+        keyword_, stripped_destination_url.host());
+    if (template_url->SupportsReplacement(
+            template_url_service_->search_terms_data())) {
+      template_url->KeepSearchTermsInURL(
+          url, template_url_service_->search_terms_data(),
+          keep_search_intent_params_, normalize_search_terms_,
+          &stripped_destination_url);
     }
   }
 
   return stripped_destination_url;
-}
-
-// Returns a SearchTermsData which can be used to call TemplateURL methods.
-const SearchTermsData& SearchEngineURLStripHandler::search_terms_data() const {
-  return template_url_service_->search_terms_data();
-}
-
-TemplateURL* SearchEngineURLStripHandler::GetTemplateURLWithKeyword(
-    const std::u16string& keyword,
-    const std::string& host) {
-  return const_cast<TemplateURL*>(
-      GetConstTemplateURLWithKeyword(keyword, host));
 }
 
 const TemplateURL* SearchEngineURLStripHandler::GetConstTemplateURLWithKeyword(
@@ -69,27 +60,4 @@ const TemplateURL* SearchEngineURLStripHandler::GetConstTemplateURLWithKeyword(
              : template_url_service_->GetTemplateURLForHost(host);
 }
 
-bool SearchEngineURLStripHandler::SupportsReplacement(
-    const std::u16string& keyword,
-    const std::string& host,
-    const SearchTermsData& search_terms_data) const {
-  const TemplateURL* template_url =
-      GetConstTemplateURLWithKeyword(keyword, host);
-  return template_url->SupportsReplacement(search_terms_data);
-}
-
-bool SearchEngineURLStripHandler::KeepSearchTermsInURL(
-    const std::u16string& keyword,
-    const std::string& host,
-    const GURL& url,
-    const SearchTermsData& search_terms_data,
-    const bool keep_search_intent_params,
-    const bool normalize_search_terms,
-    GURL* out_url,
-    std::u16string* out_search_terms) const {
-  const TemplateURL* template_url =
-      GetConstTemplateURLWithKeyword(keyword, host);
-  return template_url->KeepSearchTermsInURL(url, search_terms_data,
-                                            keep_search_intent_params,
-                                            normalize_search_terms, out_url);
-}
+}  // namespace url_deduplication

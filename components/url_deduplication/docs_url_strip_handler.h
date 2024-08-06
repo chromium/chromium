@@ -8,16 +8,20 @@
 #include "components/url_deduplication/url_strip_handler.h"
 #include "url/gurl.h"
 
+namespace url_deduplication {
+
 class DocsURLStripHandler : public URLStripHandler {
  public:
-  DocsURLStripHandler();
+  DocsURLStripHandler() = default;
 
   DocsURLStripHandler(const DocsURLStripHandler&) = delete;
   DocsURLStripHandler& operator=(const DocsURLStripHandler&) = delete;
 
-  ~DocsURLStripHandler();
+  ~DocsURLStripHandler() override = default;
   // URLStripHandler:
-  GURL StripExtraParams(GURL);
+  GURL StripExtraParams(GURL) override;
 };
+
+}  // namespace url_deduplication
 
 #endif  // COMPONENTS_URL_DEDUPLICATION_DOCS_URL_STRIP_HANDLER_H_
