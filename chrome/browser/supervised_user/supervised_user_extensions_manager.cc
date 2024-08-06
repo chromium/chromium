@@ -237,7 +237,7 @@ void SupervisedUserExtensionsManager::OnExtensionInstalled(
     // client and for extensions received through sync).
     const Profile* profile = Profile::FromBrowserContext(browser_context);
     if (!supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
-            *profile->GetPrefs())) {
+            profile)) {
       return;
     }
     CHECK(extension);
@@ -376,6 +376,7 @@ void SupervisedUserExtensionsManager::UpdateApprovedExtension(
                               prefs::kSupervisedUserApprovedExtensions);
   base::Value::Dict& approved_extensions = update.Get();
   bool success = false;
+  const Profile* profile = Profile::FromBrowserContext(context_);
   switch (type) {
     case ApprovedExtensionChange::kAdd:
       CHECK(!approved_extensions.FindString(extension_id));
@@ -383,7 +384,7 @@ void SupervisedUserExtensionsManager::UpdateApprovedExtension(
 
       SupervisedUserExtensionsMetricsRecorder::RecordExtensionsUmaMetrics(
           supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
-              *user_prefs_.get())
+              profile)
               ? SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
                     kApprovalGrantedByDefault
               : SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
@@ -563,9 +564,10 @@ void SupervisedUserExtensionsManager::RemoveLocalParentalApproval(
 
 void SupervisedUserExtensionsManager::
     OnSkipParentApprovalToInstallExtensionsChanged() {
+  const Profile* profile = Profile::FromBrowserContext(context_);
   if (!is_active_policy_for_supervised_users_ ||
       !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
-          *user_prefs_.get())) {
+          profile)) {
     return;
   }
 

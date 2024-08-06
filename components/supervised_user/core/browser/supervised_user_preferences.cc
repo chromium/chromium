@@ -178,14 +178,4 @@ bool IsSubjectToParentalControls(const PrefService& pref_service) {
   return pref_service.GetString(prefs::kSupervisedUserId) == kChildAccountSUID;
 }
 
-bool SupervisedUserCanSkipExtensionParentApprovals(
-    const PrefService& pref_service) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  return IsSubjectToParentalControls(pref_service) &&
-         IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() &&
-         pref_service.GetBoolean(prefs::kSkipParentApprovalToInstallExtensions);
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-}
 }  // namespace supervised_user

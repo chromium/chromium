@@ -115,6 +115,14 @@ std::optional<ToggleState> GetPermissionsToggleState(
 #endif  // BUILDFLAG(IS_IOS)
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+bool SupervisedUserCanSkipExtensionParentApprovals(
+    const PrefService& pref_service) {
+  return IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() &&
+         pref_service.GetBoolean(prefs::kSkipParentApprovalToInstallExtensions);
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 std::optional<ToggleState> GetExtensionToggleState(
     std::optional<FamilyLinkUserLogRecord::Segment> supervision_status,
     const PrefService& pref_service) {

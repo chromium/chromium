@@ -734,7 +734,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnInstallPromptDone(
           && g_browser_process->profile_manager()->IsValidProfile(profile_) &&
           supervised_user::AreExtensionsPermissionsEnabled(profile_) &&
           !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
-              *profile_->GetPrefs())) {
+              profile_)) {
         if (PromptForParentApproval()) {
           // If we are showing parent permission dialog, return instead of
           // break, so that we don't release the ref below.
@@ -895,7 +895,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
     const bool requires_parent_permission =
         supervised_user::AreExtensionsPermissionsEnabled(profile_) &&
         !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
-            *profile_->GetPrefs());
+            profile_);
 
     // We don't prompt for parent permission for themes, so no need
     // to configure the install prompt to indicate that this is a child

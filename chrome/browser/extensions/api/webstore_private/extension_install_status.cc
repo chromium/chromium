@@ -114,7 +114,7 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
       !registry->GetInstalledExtension(extension_id) &&
       supervised_user::AreExtensionsPermissionsEnabled(profile) &&
       !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
-          *profile->GetPrefs()) &&
+          profile) &&
       !base::Contains(profile->GetPrefs()->GetDict(
                           prefs::kSupervisedUserApprovedExtensions),
                       extension_id)) {
