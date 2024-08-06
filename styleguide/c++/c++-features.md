@@ -966,6 +966,25 @@ implementation of a particular language feature.
 None
 ***
 
+### [[likely]], [[unlikely]] <sup>[allowed]</sup>
+
+```c++
+if (n > 0) [[likely]] {
+  return 1;
+}
+```
+
+**Description:** Tells the optimizer that a particular codepath is more or less
+likely than an alternative.
+
+**Documentation:**
+[C++ attribute: `likely`, `unlikely`](https://en.cppreference.com/w/cpp/language/attributes/likely)
+
+**Notes:**
+*** promo
+- [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/bk9YC5qSDF8)
+***
+
 ### Range-for statements with initializer <sup>[allowed]</sup>
 
 ```c++
@@ -1612,25 +1631,6 @@ callbacks.
 Requires significant support code and planning around API and migration.
 
 [Prototyping bug](https://crbug.com/1403840)
-***
-
-### [[likely]], [[unlikely]] <sup>[tbd]</sup>
-
-```c++
-if (n > 0) [[likely]] {
-  return 1;
-}
-```
-
-**Description:** Tells the optimizer that a particular codepath is more or less
-likely than an alternative.
-
-**Documentation:**
-[C++ attribute: `likely`, `unlikely`](https://en.cppreference.com/w/cpp/language/attributes/likely)
-
-**Notes:**
-*** promo
-[Will be allowed soon](https://crbug.com/1414620); for now, use `[UN]LIKELY`.
 ***
 
 ## C++20 TBD Library Features {#library-review-20}
