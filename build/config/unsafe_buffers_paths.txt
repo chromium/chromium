@@ -51,7 +51,8 @@
 # See `docs/unsafe_buffers.md`.
 
 -android_webview/
--ash/
+# Check chromeos-libfuzzer-asan-rel bots when removing this.
+-ash/quick_pair/fast_pair_handshake/
 -base/allocator
 -base/third_party
 -build/
