@@ -7354,26 +7354,27 @@ New install
 
       <!-- Picker -->
       <!-- TODO: b/309706053 - Finalize these strings and then mark them as these as translateable -->
-      <message name="IDS_PICKER_EXPRESSIONS_CATEGORY_LABEL" translateable="false"
+      <message name="IDS_PICKER_EXPRESSIONS_CATEGORY_LABEL"
         desc="This string appears in a selectable menu item in a menu. When selected, it opens the ChromeOS emoji picker. The term 'more' indicates that it has more than just emojis and GIFs, including symbols and emoticons.">
         Emojis, GIFs, and more
       </message>
-      <message name="IDS_PICKER_LINKS_CATEGORY_LABEL" translateable="false"
+      <message name="IDS_PICKER_LINKS_CATEGORY_LABEL"
         desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page showing the user's recent browsing history. Browsing history refers to recent websites that the user has visited.">
         Browsing history
       </message>
-      <message name="IDS_PICKER_DRIVE_FILES_CATEGORY_LABEL" translateable="false"
+      <message name="IDS_PICKER_DRIVE_FILES_CATEGORY_LABEL"
         desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page showing the user's recently viewed Google Drive files.">
         Google Drive
       </message>
-      <message name="IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show local file results.">
+      <message name="IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL"
+        desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page showing the user's recently modified files.">
         Files
       </message>
-      <message name="IDS_PICKER_DATES_TIMES_CATEGORY_LABEL" translateable="false"
+      <message name="IDS_PICKER_DATES_TIMES_CATEGORY_LABEL"
         desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page where users can enter date-related phrases (e.g. 'two weeks from now') and it converts the phrase into a specific date (e.g. 'Feb 05'). The translation should only mean 'date' and not 'time', since this does not support time-related phrases.">
         Date
       </message>
-      <message name="IDS_PICKER_UNITS_MATHS_CATEGORY_LABEL" translateable="false"
+      <message name="IDS_PICKER_UNITS_MATHS_CATEGORY_LABEL"
         desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page where users can enter mathematical calculations or unit conversions (e.g. '1 + 1' or '1 meter to feet').">
         Calculations
       </message>
