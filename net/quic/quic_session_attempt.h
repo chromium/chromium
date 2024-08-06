@@ -53,6 +53,10 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
   };
 
   // Create a SessionAttempt for a direct connection.
+  // The `crypto_client_config_handle` is retained to keep the corresponding
+  // CryptoClientConfig alive until `this` completes. Call sites can pass
+  // nullptr to `crypto_client_config_handle` if the corresponding
+  // CryptoClientConfig is guaranteed to be alive.
   QuicSessionAttempt(Delegate* delegate,
                      IPEndPoint ip_endpoint,
                      ConnectionEndpointMetadata metadata,
@@ -62,7 +66,9 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
                      base::TimeTicks dns_resolution_end_time,
                      bool retry_on_alternate_network_before_handshake,
                      bool use_dns_aliases,
-                     std::set<std::string> dns_aliases);
+                     std::set<std::string> dns_aliases,
+                     std::unique_ptr<QuicCryptoClientConfigHandle>
+                         crypto_client_config_handle);
   // Create a SessionAttempt for a connection proxied over the given stream.
   QuicSessionAttempt(
       Delegate* delegate,
@@ -119,6 +125,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
   const bool retry_on_alternate_network_before_handshake_;
   const bool use_dns_aliases_;
   std::set<std::string> dns_aliases_;
+  std::unique_ptr<QuicCryptoClientConfigHandle> crypto_client_config_handle_;
 
   // Fields only used for session attempts to a proxy.
   std::unique_ptr<QuicChromiumClientStream::Handle> proxy_stream_;

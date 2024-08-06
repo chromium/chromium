@@ -49,6 +49,7 @@
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_proxy_datagram_client_socket.h"
 #include "net/quic/quic_session_alias_key.h"
+#include "net/quic/quic_session_attempt.h"
 #include "net/quic/quic_session_key.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/ssl/ssl_config_service.h"
@@ -275,6 +276,19 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
   CompletionOnceCallback create_session_callback_;
 };
 
+// Represents a single QUIC endpoint and the information necessary to attempt
+// a QUIC session.
+struct NET_EXPORT_PRIVATE QuicEndpoint {
+  QuicEndpoint(quic::ParsedQuicVersion quic_version,
+               IPEndPoint ip_endpoint,
+               ConnectionEndpointMetadata metadata);
+  ~QuicEndpoint();
+
+  quic::ParsedQuicVersion quic_version = quic::ParsedQuicVersion::Unsupported();
+  IPEndPoint ip_endpoint;
+  ConnectionEndpointMetadata metadata;
+};
+
 // Manages a pool of QuicChromiumClientSessions.
 class NET_EXPORT_PRIVATE QuicSessionPool
     : public NetworkChangeNotifier::IPAddressObserver,
@@ -330,6 +344,21 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       const GURL& url,
       const NetLogWithSource& net_log,
       QuicSessionRequest* request);
+
+  // Creates a session attempt for `session_key` with `quic_endpoint`. There
+  // should be no matching session for `session_key`. This doesn't support
+  // proxies.
+  // *NOTE*: This method must not be used simultaneously with
+  //         QuicSessionRequest for the same `session_key`.
+  std::unique_ptr<QuicSessionAttempt> CreateSessionAttempt(
+      QuicSessionAttempt::Delegate* delegate,
+      const QuicSessionKey& session_key,
+      QuicEndpoint quic_endpoint,
+      int cert_verify_flags,
+      base::TimeTicks dns_resolution_start_time,
+      base::TimeTicks dns_resolution_end_time,
+      bool use_dns_aliases,
+      std::set<std::string> dns_aliases);
 
   // Called by a session when it is going away and no more streams should be
   // created on it.

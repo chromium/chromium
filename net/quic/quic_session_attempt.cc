@@ -56,7 +56,8 @@ QuicSessionAttempt::QuicSessionAttempt(
     base::TimeTicks dns_resolution_end_time,
     bool retry_on_alternate_network_before_handshake,
     bool use_dns_aliases,
-    std::set<std::string> dns_aliases)
+    std::set<std::string> dns_aliases,
+    std::unique_ptr<QuicCryptoClientConfigHandle> crypto_client_config_handle)
     : delegate_(delegate),
       ip_endpoint_(std::move(ip_endpoint)),
       metadata_(std::move(metadata)),
@@ -69,7 +70,8 @@ QuicSessionAttempt::QuicSessionAttempt(
       retry_on_alternate_network_before_handshake_(
           retry_on_alternate_network_before_handshake),
       use_dns_aliases_(use_dns_aliases),
-      dns_aliases_(std::move(dns_aliases)) {
+      dns_aliases_(std::move(dns_aliases)),
+      crypto_client_config_handle_(std::move(crypto_client_config_handle)) {
   CHECK(delegate_);
   DCHECK_NE(quic_version_, quic::ParsedQuicVersion::Unsupported());
 }

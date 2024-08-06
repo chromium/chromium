@@ -69,6 +69,7 @@
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_server_info.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
 #include "net/quic/quic_session_pool_peer.h"
 #include "net/quic/quic_session_pool_test_base.h"
@@ -150,6 +151,64 @@ std::vector<TestParams> GetTestParams() {
   }
   return params;
 }
+
+class SessionAttemptHelper : public QuicSessionAttempt::Delegate {
+ public:
+  SessionAttemptHelper(QuicSessionPool* pool,
+                       quic::ParsedQuicVersion quic_version)
+      : pool_(pool),
+        quic_endpoint(quic_version,
+                      IPEndPoint(IPAddress::IPv4Localhost(),
+                                 QuicSessionPoolTestBase::kDefaultServerPort),
+                      ConnectionEndpointMetadata()) {
+    const url::SchemeHostPort destination(
+        url::kHttpsScheme, QuicSessionPoolTestBase::kDefaultServerHostName,
+        QuicSessionPoolTestBase::kDefaultServerPort);
+    QuicSessionKey session_key(
+        destination.host(), destination.port(),
+        PrivacyMode::PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+        SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
+        SecureDnsPolicy::kAllow, /*require_dns_https_alpn=*/false);
+    quic_session_alias_key_ = QuicSessionAliasKey(destination, session_key);
+  }
+
+  SessionAttemptHelper(const SessionAttemptHelper&) = delete;
+  SessionAttemptHelper& operator=(const SessionAttemptHelper&) = delete;
+
+  ~SessionAttemptHelper() override = default;
+
+  // QuicSessionAttempt::Delegate implementation.
+  QuicSessionPool* GetQuicSessionPool() override { return pool_; }
+  const QuicSessionAliasKey& GetKey() override {
+    return quic_session_alias_key_;
+  }
+  const NetLogWithSource& GetNetLog() override { return net_log_; }
+
+  int Start() {
+    attempt_ = pool_->CreateSessionAttempt(
+        this, quic_session_alias_key_.session_key(), quic_endpoint,
+        /*cert_verify_flags=*/0,
+        /*dns_resolution_start_time=*/base::TimeTicks(),
+        /*dns_resolution_end_time=*/base::TimeTicks(), /*use_dns_aliases=*/true,
+        /*dns_aliases=*/{});
+    return attempt_->Start(base::BindOnce(&SessionAttemptHelper::OnComplete,
+                                          base::Unretained(this)));
+  }
+
+  std::optional<int> result() const { return result_; }
+
+ private:
+  void OnComplete(int rv) { result_ = rv; }
+
+  raw_ptr<QuicSessionPool> pool_;
+  QuicSessionAliasKey quic_session_alias_key_;
+  NetLogWithSource net_log_;
+
+  QuicEndpoint quic_endpoint;
+
+  std::unique_ptr<QuicSessionAttempt> attempt_;
+  std::optional<int> result_;
+};
 
 }  // namespace
 
@@ -14749,6 +14808,28 @@ TEST_P(QuicSessionPoolTest, EchDisabledSvcbOptional) {
   RequestBuilder builder(this);
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
+}
+
+TEST_P(QuicSessionPoolTest, CreateSessionAttempt) {
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  SessionAttemptHelper session_attempt(factory_.get(), version_);
+
+  int rv = session_attempt.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  RunUntilIdle();
+  EXPECT_THAT(session_attempt.result(), testing::Optional(OK));
+  ASSERT_TRUE(GetActiveSession(kDefaultDestination));
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 }  // namespace net::test

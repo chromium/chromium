@@ -361,6 +361,15 @@ void QuicSessionRequest::SetSession(
   session_ = std::move(session);
 }
 
+QuicEndpoint::QuicEndpoint(quic::ParsedQuicVersion quic_version,
+                           IPEndPoint ip_endpoint,
+                           ConnectionEndpointMetadata metadata)
+    : quic_version(quic_version),
+      ip_endpoint(ip_endpoint),
+      metadata(metadata) {}
+
+QuicEndpoint::~QuicEndpoint() = default;
+
 QuicSessionPool::QuicCryptoClientConfigOwner::QuicCryptoClientConfigOwner(
     std::unique_ptr<quic::ProofVerifier> proof_verifier,
     std::unique_ptr<quic::QuicClientSessionCache> session_cache,
@@ -598,6 +607,27 @@ int QuicSessionPool::RequestSession(
     request->SetSession(session->CreateHandle(std::move(destination)));
   }
   return rv;
+}
+
+std::unique_ptr<QuicSessionAttempt> QuicSessionPool::CreateSessionAttempt(
+    QuicSessionAttempt::Delegate* delegate,
+    const QuicSessionKey& session_key,
+    QuicEndpoint quic_endpoint,
+    int cert_verify_flags,
+    base::TimeTicks dns_resolution_start_time,
+    base::TimeTicks dns_resolution_end_time,
+    bool use_dns_aliases,
+    std::set<std::string> dns_aliases) {
+  CHECK(!HasActiveSession(session_key));
+  CHECK(!HasActiveJob(session_key));
+
+  return std::make_unique<QuicSessionAttempt>(
+      delegate, quic_endpoint.ip_endpoint, std::move(quic_endpoint.metadata),
+      quic_endpoint.quic_version, cert_verify_flags, dns_resolution_start_time,
+      dns_resolution_end_time,
+      params_.retry_on_alternate_network_before_handshake, use_dns_aliases,
+      std::move(dns_aliases),
+      CreateCryptoConfigHandle(session_key.network_anonymization_key()));
 }
 
 void QuicSessionPool::OnSessionGoingAway(QuicChromiumClientSession* session) {
