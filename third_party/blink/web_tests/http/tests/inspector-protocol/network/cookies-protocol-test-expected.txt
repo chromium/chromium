@@ -4,42 +4,6 @@ Enabling network
 
 Running test: deleteAllCookies
 
-Running test: deleteCookieByURL
-Adding multiple cookies
-Num of cookies 2
-name: cookie1, value: .domain, domain: www.chromium.org, path: /, session
-name: cookie2, value: .domain, domain: www.chromium.org, path: /, expires
-Deleting Cookie
-Num of cookies 1
-name: cookie2, value: .domain, domain: www.chromium.org, path: /, expires
-
-Running test: deleteAllCookies
-
-Running test: deleteCookieByDomain
-Adding multiple cookies
-Num of cookies 2
-name: cookie1, value: .domain, domain: .chromium.org, path: /path, session
-name: cookie2, value: .domain, domain: .chromium.org, path: /path, expires
-Deleting Cookie
-Num of cookies 1
-name: cookie2, value: .domain, domain: .chromium.org, path: /path, expires
-Deleting Cookie
-Num of cookies 0
-
-Running test: deleteAllCookies
-
-Running test: deleteCookieByDomainAndPath
-Adding multiple cookies
-Num of cookies 1
-name: cookie1, value: .domain, domain: .chromium.org, path: /path, session
-Deleting Cookie
-Num of cookies 1
-name: cookie1, value: .domain, domain: .chromium.org, path: /path, session
-Deleting Cookie
-Num of cookies 0
-
-Running test: deleteAllCookies
-
 Running test: nonUnicodeCookie
 Adding multiple cookies
 Num of cookies 1

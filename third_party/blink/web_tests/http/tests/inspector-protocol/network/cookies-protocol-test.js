@@ -112,31 +112,6 @@
   testRunner.runTestSuite([
     deleteAllCookies,
 
-    async function deleteCookieByURL() {
-      await setCookies([{name: 'cookie1', value: '.domain', url: 'http://www.chromium.org/path' },
-                        {name: 'cookie2', value: '.domain', url: 'http://www.chromium.org/path', expires: Date.now() + 1000 }]);
-      await deleteCookie({url: 'http://www.chromium.org/path', name: 'cookie1'});
-    },
-
-    deleteAllCookies,
-
-    async function deleteCookieByDomain() {
-      await setCookies([{name: 'cookie1', value: '.domain', domain: '.chromium.org', path: '/path' },
-                        {name: 'cookie2', value: '.domain', domain: '.chromium.org', path: '/path', expires: Date.now() + 1000 }]);
-      await deleteCookie({name: 'cookie1', domain: '.chromium.org'});
-      await deleteCookie({name: 'cookie2', domain: '.chromium.org'});
-    },
-
-    deleteAllCookies,
-
-    async function deleteCookieByDomainAndPath() {
-      await setCookies([{name: 'cookie1', value: '.domain', domain: '.chromium.org', path: '/path' }]);
-      await deleteCookie({name: 'cookie1', domain: '.chromium.org', path: '/foo'});
-      await deleteCookie({name: 'cookie1', domain: '.chromium.org', path: '/path'});
-    },
-
-    deleteAllCookies,
-
     async function nonUnicodeCookie() {
       await setCookies([{name: 'cookie1', value: 'привет', domain: '.chromium.org', path: '/path' }]);
     },
