@@ -761,7 +761,6 @@ ci.builder(
             "remoteexec",
             "asan",
             "xctest",
-            "lld",
         ],
     ),
     cores = None,

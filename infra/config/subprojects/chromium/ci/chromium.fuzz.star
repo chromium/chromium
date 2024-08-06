@@ -1056,7 +1056,6 @@ ci.builder(
             "libfuzzer",
             "no_dsyms",
             "no_remoting",
-            "lld",
         ],
     ),
     builderless = True,

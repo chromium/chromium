@@ -27,7 +27,6 @@ if (is_apple) {
 
 if (is_ios) {
   import("//build/config/ios/config.gni")
-  import("//build/config/ios/ios_sdk.gni")
 }
 
 declare_args() {
@@ -35,10 +34,7 @@ declare_args() {
   # In late bring-up on macOS (see docs/mac_lld.md).
   # Tentatively used on iOS.
   # The default linker everywhere else.
-  # TODO(crbug.com/346575276): Re-enable on iOS after next clang roll to fix
-  # an issue when building with Xcode 16.
-  use_lld =
-      is_clang && current_os != "zos" && (!is_ios || xcode_version_int < 1600)
+  use_lld = is_clang && current_os != "zos"
 
   # If true, optimize for size.
   # Default to favoring speed over size for platforms not listed below.
