@@ -49,8 +49,10 @@ static_library("guest_os") {
     "guest_os_stability_monitor.h",
     "guest_os_terminal.cc",
     "guest_os_terminal.h",
+    "vm_shutdown_observer.h",
     "vm_sk_forwarding_native_message_host.cc",
     "vm_sk_forwarding_native_message_host.h",
+    "vm_starting_observer.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -82,6 +84,7 @@ static_library("guest_os") {
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/smb_client",
     "//chrome/browser/ash/system_web_apps/apps",
@@ -129,6 +132,7 @@ static_library("guest_os") {
     "//chrome/browser/ash/exo",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/system_web_apps/apps",
   ]

@@ -84,8 +84,6 @@ static_library("ash") {
     "u2f_notification.h",
     "url_handler.cc",
     "url_handler.h",
-    "vm_shutdown_observer.h",
-    "vm_starting_observer.h",
     "window_throttle_observer_base.cc",
     "window_throttle_observer_base.h",
   ]
