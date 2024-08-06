@@ -847,6 +847,11 @@ void ViewAccessibility::RemoveDefaultActionVerb() {
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb);
 }
 
+void ViewAccessibility::SetAutoComplete(const std::string autocomplete) {
+  data_.AddStringAttribute(ax::mojom::StringAttribute::kAutoComplete,
+                           autocomplete);
+}
+
 void ViewAccessibility::UpdateFocusableState() {
   bool is_focusable = view_->GetFocusBehavior() != View::FocusBehavior::NEVER &&
                       GetIsEnabled() && view_->IsDrawn() &&
