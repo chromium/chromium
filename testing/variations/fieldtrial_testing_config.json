@@ -18544,6 +18544,26 @@
             ]
         }
     ],
+    "PsDualWritePrefsToNoticeStorage": [
+        {
+            "platforms": [
+                "linux",
+                "windows",
+                "android",
+                "mac",
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PsDualWritePrefsToNoticeStorage"
+                    ]
+                }
+            ]
+        }
+    ],
     "PsRedesign": [
         {
             "platforms": [

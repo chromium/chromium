@@ -17,6 +17,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/canonical_topic.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
@@ -347,6 +348,7 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   raw_ptr<PrefService> pref_service_;
   raw_ptr<content::InterestGroupManager> interest_group_manager_;
   profile_metrics::BrowserProfileType profile_type_;
+  std::unique_ptr<privacy_sandbox::PrivacySandboxNoticeStorage> notice_storage_;
   raw_ptr<content::BrowsingDataRemover> browsing_data_remover_;
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 #if !BUILDFLAG(IS_ANDROID)

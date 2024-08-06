@@ -42,6 +42,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
@@ -315,7 +316,10 @@ class PrivacySandboxServiceTest : public testing::Test {
       : browser_task_environment_(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         scoped_attestations_(
-            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {}
+            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {
+    notice_storage_ =
+        std::make_unique<privacy_sandbox::PrivacySandboxNoticeStorage>();
+  }
 
   void SetUp() override {
     InitializeFeaturesBeforeStart();
@@ -438,6 +442,9 @@ class PrivacySandboxServiceTest : public testing::Test {
     return mock_sentiment_service_.get();
   }
 #endif
+
+ protected:
+  std::unique_ptr<privacy_sandbox::PrivacySandboxNoticeStorage> notice_storage_;
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
@@ -584,6 +591,89 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeBlockedEtldPlusOne) {
   ASSERT_EQ(2u, returned_sites.size());
   EXPECT_EQ(returned_sites[0], sites[1]);
   EXPECT_EQ(returned_sites[1], sites[2]);
+}
+
+TEST_F(PrivacySandboxServiceTest, DidPromptActionUpdateNoticeStorage_OptIn) {
+  std::string_view topics_notice_name;
+  // TODO(crbug.com/352577199): Remove dependency on build flag when we
+  // introduce SurfaceType.
+#if BUILDFLAG(IS_ANDROID)
+  topics_notice_name = privacy_sandbox::kTopicsConsentModalClankBrApp;
+#else
+  topics_notice_name = privacy_sandbox::kTopicsConsentModal;
+#endif
+
+  feature_list()->Reset();
+  feature_list()->InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{privacy_sandbox::kPrivacySandboxSettings4,
+                             {{privacy_sandbox::
+                                   kPrivacySandboxSettings4ConsentRequiredName,
+                               "true"}}},
+                            {privacy_sandbox::kPsDualWritePrefsToNoticeStorage,
+                             {}}},
+      /*disabled_features=*/{});
+
+  // Show the notice so action can be taken
+  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kConsentShown);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kConsentAccepted);
+  auto actual = notice_storage_->ReadNoticeData(prefs(), topics_notice_name);
+  EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kOptIn,
+            actual->notice_action_taken);
+}
+
+TEST_F(PrivacySandboxServiceTest, DidPromptActionUpdateNoticeStorage_OptOut) {
+  std::string_view topics_notice_name;
+  // TODO(crbug.com/352577199): Remove dependency on build flag when we
+  // introduce SurfaceType.
+#if BUILDFLAG(IS_ANDROID)
+  topics_notice_name = privacy_sandbox::kTopicsConsentModalClankBrApp;
+#else
+  topics_notice_name = privacy_sandbox::kTopicsConsentModal;
+#endif
+
+  feature_list()->Reset();
+  feature_list()->InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{privacy_sandbox::kPrivacySandboxSettings4,
+                             {{privacy_sandbox::
+                                   kPrivacySandboxSettings4ConsentRequiredName,
+                               "true"}}},
+                            {privacy_sandbox::kPsDualWritePrefsToNoticeStorage,
+                             {}}},
+      /*disabled_features=*/{});
+
+  // Show the notice so action can be taken
+  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kConsentShown);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kConsentDeclined);
+  auto actual = notice_storage_->ReadNoticeData(prefs(), topics_notice_name);
+  EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kOptOut,
+            actual->notice_action_taken);
+}
+
+TEST_F(PrivacySandboxServiceTest, DidPromptActionUpdateNoticeStorage_Shown) {
+  std::string_view topics_notice_name;
+  // TODO(crbug.com/352577199): Remove dependency on build flag when we
+  // introduce SurfaceType.
+#if BUILDFLAG(IS_ANDROID)
+  topics_notice_name = privacy_sandbox::kTopicsConsentModalClankBrApp;
+#else
+  topics_notice_name = privacy_sandbox::kTopicsConsentModal;
+#endif
+
+  feature_list()->Reset();
+  feature_list()->InitAndEnableFeature(
+      privacy_sandbox::kPsDualWritePrefsToNoticeStorage);
+
+  auto actual_not_added =
+      notice_storage_->ReadNoticeData(prefs(), topics_notice_name);
+  ASSERT_TRUE(!actual_not_added.has_value());
+  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kConsentShown);
+  auto actual_added =
+      notice_storage_->ReadNoticeData(prefs(), topics_notice_name);
+  EXPECT_TRUE(actual_added.has_value());
 }
 
 TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {

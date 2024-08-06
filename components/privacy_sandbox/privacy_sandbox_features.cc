@@ -203,6 +203,10 @@ BASE_FEATURE(kPsRedesignAdPrivacyPage,
 const base::FeatureParam<bool> kPsRedesignAdPrivacyPageEnableToggles{
     &kPsRedesignAdPrivacyPage, "enable-toggles", false};
 
+BASE_FEATURE(kPsDualWritePrefsToNoticeStorage,
+             "PsDualWritePrefsToNoticeStorage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTrackingProtectionReminder,
              "TrackingProtectionReminder",
              base::FEATURE_DISABLED_BY_DEFAULT);

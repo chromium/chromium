@@ -234,6 +234,10 @@ BASE_DECLARE_FEATURE(kTrackingProtectionUserBypassPwaTrigger);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPsRedesignAdPrivacyPage);
 
+// Enables the notice storage for pref storage.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPsDualWritePrefsToNoticeStorage);
+
 // Enables setting the toggles on the top-level Ad Privacy page.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<bool> kPsRedesignAdPrivacyPageEnableToggles;
