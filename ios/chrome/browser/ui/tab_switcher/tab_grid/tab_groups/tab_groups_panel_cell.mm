@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_cell.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_favicon_grid.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -26,6 +29,8 @@ const CGFloat kHighlightBackgroundColorAlpha = 0.3;
   if (self) {
     self.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
     self.layer.cornerRadius = kCornerRadius;
+    self.isAccessibilityElement = YES;
+    self.accessibilityTraits |= UIAccessibilityTraitButton;
 
     _faviconsGrid = [[TabGroupsPanelFaviconGrid alloc] init];
     _faviconsGrid.translatesAutoresizingMaskIntoConstraints = NO;
@@ -111,6 +116,13 @@ const CGFloat kHighlightBackgroundColorAlpha = 0.3;
   _faviconsGrid.favicon3 = nil;
   _faviconsGrid.favicon4 = nil;
   self.item = nil;
+}
+
+- (NSString*)accessibilityLabel {
+  return l10n_util::GetNSStringF(
+      IDS_IOS_TAB_GROUPS_PANEL_CELL_ACCESSIBILITY_LABEL_FORMAT,
+      base::SysNSStringToUTF16(_titleLabel.text),
+      base::SysNSStringToUTF16(_subtitleLabel.text));
 }
 
 @end

@@ -5357,6 +5357,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         =1 {1 Tab}
         other {{count} Tabs}}
       </message>
+      <message name="IDS_IOS_TAB_GROUPS_PANEL_CELL_ACCESSIBILITY_LABEL_FORMAT" desc="Format for the accessibility label of a cell in the Tab Groups panel in Tab Grid. [iOS only]">
+        Open <ph name="GROUP_TITLE">$1<ex>Travel</ex></ph>, <ph name="CREATION_TEXT">$2<ex>Created 3 days ago</ex></ph>
+      </message>
       <message name="IDS_IOS_TAB_RESUMPTION_CONTEXT_MENU_DESCRIPTION" desc="Description for the long-press context menu of the module that presents the last opened tab, on the new tab page.">
         Hide "Continue with This Tab"
       </message>
