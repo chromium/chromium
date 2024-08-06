@@ -302,6 +302,7 @@
 <translation id="2529021024822217800">සියල්ල විවෘත කරන්න</translation>
 <translation id="2536991091671391962">ඔබට ඕනෑම උපාංගයක සුරැකි මුරපද භාවිත කළ හැක. ඒවා <ph name="EMAIL" /> සඳහා Google මුරපද කළමනාකරු වෙත සුරැකේ.</translation>
 <translation id="2542268842667970959">"ආරක්ෂිත පරීක්ෂාව" සඟවන්න</translation>
+<translation id="2545094307889012168">කාච උඩැතිරිය</translation>
 <translation id="2547458583188611426">සමමුහුර්ත කිරීම ක්‍රියා නොකරයි. සමමුහුර්ත කිරීම ආරම්භ කිරීමට, ඔබේ මුර-වැකිකඩ ඇතුළු කරන්න.</translation>
 <translation id="2551153019974022505">ගිණුම් දෝෂය</translation>
 <translation id="2556092377360758201">ආරක්‍ෂාවක් නැත (නිර්දේශ නොකෙරේ)</translation>
@@ -848,6 +849,7 @@
 <translation id="5197255632782567636">අන්තර්ජාලය</translation>
 <translation id="5205197603258285592">රූපය සුරකින්න...</translation>
 <translation id="5211488077761630279">ඔබේ <ph name="PERMISSION" /> භාවිතා කිරීමට "<ph name="SITE_NAME" />" හට ඉඩ දෙන්න ද?</translation>
+<translation id="5215046161188172474">සම්පූර්ණ URL බෙදා ගන්න</translation>
 <translation id="5219295696240154694">සියලු දෙනා සඳහා වෙබයේ ආරක්ෂාව වැඩි දියුණු කිරීමට උදවු කරන්න</translation>
 <translation id="5220945116117011963">දින වෙතින් දිනදර්ශන සිදුවීම් සාදන්න</translation>
 <translation id="5221339005270097309">මුරපද පරීක්ෂා කරමින්…</translation>
@@ -1125,6 +1127,7 @@
 විවිධ වෙබ් අඩවි හරහා ඔබේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම් බැලීමට, උදාහරණයක් වශයෙන්, වෙළඳ දැන්වීම් පෞද්ගලීකරණය කිරීමට වෙබ් අඩවිවලට කුකි භාවිත කළ නොහැකිය.</translation>
 <translation id="6476253015009698798">මෙම පිටුව සඳහා මිල හඹා යෑමක් නොමැත.</translation>
 <translation id="6476800141292307438">පිටුව <ph name="LANGUAGE" />ට පරිවර්තන කෙරේ. තිරයේ පහළ කොටස ළඟ විකල්ප ලැබේ.</translation>
+<translation id="6477585407014744043">සමූහය නම් කරන්න</translation>
 <translation id="648164694371393720">සත්‍යාපන දෝෂයකි</translation>
 <translation id="6494931198667773526">නිමා වන්නේ</translation>
 <translation id="6500795388871406244">යෝජිත මුරපදය භාවිත කරන්න:</translation>

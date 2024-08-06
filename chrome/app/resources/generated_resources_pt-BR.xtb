@@ -185,7 +185,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1124772482545689468">Usuário</translation>
 <translation id="1125550662859510761">Resolução: <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1125921926864945797">Plano de fundo e estilo</translation>
-<translation id="1126809382673880764">Não protege você contra sites, downloads e extensões perigosos. Você ainda terá a proteção do "Navegação segura", sempre que possível, em outros Serviços do Google, como o Gmail e a Pesquisa.</translation>
 <translation id="1128090040635299943">O Linux está sendo configurado no momento. A configuração vai levar alguns minutos.</translation>
 <translation id="1128591060186966949">Editar mecanismo de pesquisa</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -631,7 +630,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1461041542809785877">Desempenho</translation>
 <translation id="1461177659295855031">Mover para a pasta da barra de favoritos</translation>
 <translation id="1461288887896722288">Você acabou de fazer login em uma conta gerenciada. A criação de um perfil gerenciado vai permitir que você acesse alguns recursos vinculados a ela.</translation>
-<translation id="1461868306585780092">Avisar antes de usar conexões não seguras</translation>
 <translation id="146219525117638703">Estado ONC</translation>
 <translation id="146220085323579959">Desconectado da Internet. Verifique sua conexão com a Internet e tente novamente.</translation>
 <translation id="1462480037563370607">Adicionar sites manualmente</translation>
@@ -4182,7 +4180,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3959747296451923142">Confirmar remoção de assinatura</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Mais ações para o <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962119236270174787">Proteção padrão contra sites, extensões e downloads perigosos.</translation>
 <translation id="3963753386716096475">Usar um smartphone, tablet ou chave de segurança diferente</translation>
 <translation id="3964480518399667971">Desativar a rede celular</translation>
 <translation id="3965965397408324205">Sair de <ph name="PROFILE_NAME" /></translation>
@@ -5433,6 +5430,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4893336867552636863">Isso excluirá permanentemente os dados de navegação deste dispositivo.</translation>
 <translation id="4893454800196085005">Boa (DVD)</translation>
 <translation id="4893522937062257019">Na tela de bloqueio</translation>
+<translation id="4894055916816649664">Por apenas 10 minutos</translation>
 <translation id="4895799941222633551">Criar atalho…</translation>
 <translation id="4898011734382862273">O certificado "<ph name="CERTIFICATE_NAME" />" representa uma Autoridade de certificação</translation>
 <translation id="4898913189644355814">O site pode salvar o idioma de sua preferência ou os itens que você quer comprar. Essas informações estão disponíveis para o site e os subdomínios dele.</translation>
@@ -5523,7 +5521,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4967571733817147990">Personalizar botões do mouse</translation>
 <translation id="4967852842111017386">Nome do dispositivo do <ph name="FEATURE_NAME" /></translation>
 <translation id="4971412780836297815">Abrir quando estiver concluído</translation>
-<translation id="4971735654804503942">Proteção mais rápida e proativa contra sites, downloads e extensões perigosos. Envia um alerta de violação de senha. Requer que dados de navegação sejam enviados ao Google.</translation>
 <translation id="4972129977812092092">Editar impressora</translation>
 <translation id="4972164225939028131">Senha incorreta</translation>
 <translation id="4972737347717125191">Os sites podem pedir para usar dispositivos e dados de realidade virtual</translation>
@@ -6070,6 +6067,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5380526436444479273">Aguarde alguns minutos e tente de novo</translation>
 <translation id="5382591305415226340">Gerenciar links compatíveis</translation>
 <translation id="5383740867328871413">Grupo sem nome: <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5384401776498845256">Quem pode compartilhar com você</translation>
 <translation id="5385628342687007304">A senha é salva apenas neste dispositivo. Para usar em outros dispositivos, salve-a na sua Conta do Google.</translation>
 <translation id="5387116558048951800">Editar <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="5387496897058645038">Especificações do produto</translation>
@@ -6937,6 +6935,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6015776718598175635">Estrelas</translation>
 <translation id="6015796118275082299">Ano</translation>
 <translation id="6016178549409952427">Navegar para o conteúdo extra <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="6016462059150340136">Qualquer pessoa por perto</translation>
 <translation id="6016551720757758985">Confirmar powerwash com retorno à versão anterior</translation>
 <translation id="6016972670657536680">Botão Selecionar idioma e teclado. O idioma selecionado no momento é o <ph name="LANGUAGE" />.</translation>
 <translation id="6017514345406065928">Verde</translation>
@@ -7014,6 +7013,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6075075631258766703">Verificar o smartphone</translation>
 <translation id="6075731018162044558">Ops! O sistema encontrou uma falha ao conseguir um token de acesso de longo prazo à API para este dispositivo.</translation>
 <translation id="6075907793831890935">Trocar dados com o dispositivo chamado <ph name="HOSTNAME" /></translation>
+<translation id="6076092653254552547">Configurações do sistema</translation>
 <translation id="6076491747490570887">Cinza frio</translation>
 <translation id="6076576896267434196">A extensão "<ph name="EXTENSION_NAME" />" quer acessar sua conta</translation>
 <translation id="6077131872140550515">Remover das redes preferidas</translation>
@@ -7385,6 +7385,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6345878117466430440">Marcar como lida</translation>
 <translation id="6346952829206698721">Colar da área de transferência</translation>
 <translation id="6347010704471250799">Mostrar notificação</translation>
+<translation id="634792071306410644">Ninguém pode compartilhar itens até que você fique visível</translation>
 <translation id="6348252528297699679">É possível desativar a localização em "Configurações &gt; Privacidade e segurança &gt; Controles de privacidade &gt; Acesso ao local". <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6348805481186204412">Armazenamento off-line</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
@@ -7836,6 +7837,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6691936601825168937">&amp;Avançar</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 página}one{{COUNT} página}other{{COUNT} páginas}}</translation>
 <translation id="6693820805264897502">substituir senhas existentes</translation>
+<translation id="6694634756612002311">Gerenciar compartilhamento</translation>
 <translation id="6697172646384837537">Selecione o local de importação das senhas</translation>
 <translation id="6697492270171225480">Mostrar sugestões de páginas semelhantes quando uma página não for encontrada</translation>
 <translation id="6697690052557311665">Para compartilhar, clique com o botão direito do mouse no app Arquivos e selecione "Compartilhar com o Linux".</translation>
@@ -7989,6 +7991,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="680572642341004180">Ativar rastreamento RLZ no <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6806089545527108739">Não permitir, mas perguntar mais tarde</translation>
 <translation id="680644983456221885">Proteção proativa em tempo real contra sites, extensões e downloads perigosos baseados nos dados de navegação enviados ao Google</translation>
+<translation id="6806781719264274042">Apenas seus contatos com uma Conta do Google. <ph name="LINK_BEGIN" />Ver contatos<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">Para continuar, insira sua chave de segurança e toque nela</translation>
 <translation id="6808166974213191158">Gravador da imagem do sistema ChromeOS Flex</translation>
 <translation id="6808193438228982088">Raposa</translation>
@@ -8055,6 +8058,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6840214587087739194">Endereço excluído</translation>
 <translation id="6841143363521180029">Criptografado</translation>
 <translation id="6841186874966388268">Erros</translation>
+<translation id="6842135459748401207">Apenas dispositivos onde a conta <ph name="USER_EMAIL" /> está conectada</translation>
 <translation id="6842136130964845393">Para garantir o acesso às suas senhas salvas, confirme sua identidade</translation>
 <translation id="6842749380892715807">O download mais recente das listas de sites XML foi feito em <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">Geralmente, os sites detectam quando você está usando o dispositivo ativamente para definir sua disponibilidade nos apps de chat</translation>
@@ -8252,7 +8256,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6992554835374084304">Ativar a verificação ortográfica aprimorada</translation>
 <translation id="6993000214273684335">Guia removida do grupo sem nome: <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Atualizando o navegador Chrome</translation>
-<translation id="6995899638241819463">Avisar se suas senhas forem expostas em uma violação de dados</translation>
 <translation id="6995984090981858039">Ler dados e informações do dispositivo ChromeOS</translation>
 <translation id="6996245928508281884">Ative o Bluetooth e o Wi-Fi do smartphone</translation>
 <translation id="6996438701394974959">Aumentar o tamanho de visualização da tela e do texto</translation>
@@ -9390,6 +9393,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7826254698725248775">Conflito no identificador de dispositivo.</translation>
 <translation id="7828642077514646543">Erro: não foi possível decodificar o certificado</translation>
 <translation id="7829877209233347340">Peça a familiar responsável para se conectar e permitir a adição de uma conta escolar</translation>
+<translation id="7830276128493844263">A localização está desativada nas configurações do sistema</translation>
 <translation id="7830833461614351956">Copiar <ph name="NUM_OF_FILES" /> arquivos para abrir no <ph name="CLOUD_PROVIDER" />?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">As palavras personalizadas salvas serão exibidas aqui</translation>
@@ -10709,6 +10713,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Mostrar todas as pesquisas por "<ph name="QUERY_CLUSTER_NAME" />"</translation>
 <translation id="8767621466733104912">Atualizar automaticamente o Chrome para todos os usuários</translation>
+<translation id="8768049274922835860">Todos</translation>
 <translation id="876956356450740926">Execute ferramentas para desenvolvedores, ambientes de desenvolvimento integrado e editores. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Diretório raiz da extensão</translation>
 <translation id="8771300903067484968">O plano de fundo da página inicial foi redefinido para o plano de fundo padrão.</translation>
@@ -11009,6 +11014,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8984694057134206124">Você ficará visível para todos por <ph name="MINUTES" /> minutos. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Conheça o Steam para Chromebook</translation>
 <translation id="8985264973231822211">Ativado há <ph name="DEVICE_LAST_ACTIVATED_TIME" /> dia</translation>
+<translation id="8985561265504464578">Limite de detecção</translation>
 <translation id="8985661493893822002">Conecte-se à Internet para fazer login no seu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8985661571449404298">O download do arquivo não seguro foi concluído</translation>
 <translation id="8986362086234534611">Esquecer</translation>
@@ -11035,6 +11041,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8999560016882908256">Erro de sintaxe na seção: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Movimento reduzido na tela</translation>
 <translation id="9000185763019430629">Toque no sensor de impressão digital no lado direito do <ph name="DEVICE_TYPE" />. Seus dados de impressão digital são armazenados de forma segura e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
+<translation id="9003031149571024583">Informe o dígito <ph name="NUM_DIGIT" /> de 6 do PIN. Use a tecla Backspace ou Delete para remover o último dígito.</translation>
 <translation id="9003185744423389627">A conexão com o Servidor de gerenciamento de dispositivos falhou, apresentando o status "<ph name="STATUS_TEXT" />" (<ph name="FAILURE_TIME" />)</translation>
 <translation id="90033698482696970">Procurar automaticamente perfis de eSIM disponíveis?</translation>
 <translation id="9003647077635673607">Permitir em todos os websites</translation>

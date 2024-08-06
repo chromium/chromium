@@ -405,6 +405,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> പ്രിവ്യൂ. സജീവ ഡെസ്‌ക്.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" എന്നത് <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) റെസല്യൂഷൻ എന്നാക്കി മാറ്റി. സ്ഥിരീകരിച്ചില്ലെങ്കിൽ, മുമ്പത്തെ ക്രമീകരണം <ph name="TIMEOUT_SECONDS" />-നുള്ളിൽ പുനഃസ്ഥാപിക്കും.</translation>
 <translation id="2487915095798731898">ചേരുക</translation>
+<translation id="2496180316473517155">ബ്രൗസിംഗ് ചരിത്രം</translation>
 <translation id="2499445554382787206">ഡെസ്‌ക് പ്രൊഫൈൽ മെനു. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">സ്‌റ്റിക്കി കീകൾ</translation>
 <translation id="2504454902900101003">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും കാണുന്നത് സജ്ജീകരിക്കുന്നത് ഡിസ്‌മിസ് ചെയ്യുക</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">ഓൺലൈനായി സൈൻ ഇൻ ചെയ്യേണ്ടതുണ്ട്</translation>
 <translation id="2612072250312279703">ആക്‌റ്റിവിറ്റി മോണിറ്റർ</translation>
 <translation id="2612614436418177118">ആപ്പ് ഗ്രിഡിനുള്ളിൽ ഒരു ആപ്പ് ഐക്കൺ നീക്കുക</translation>
+<translation id="2619052155095999743">ചേർക്കുക</translation>
 <translation id="2619326010008283367"><ph name="TOTAL_STEPS" /> ഘട്ടങ്ങളുള്ള ടൂറിന്റെ <ph name="STEP" />-ാമത്തെ ഘട്ടം. ലോഞ്ചറിൽ നിങ്ങളുടെ ഉപകരണ ക്രമീകരണം കണ്ടെത്താം. നിങ്ങളുടെ വാൾപേപ്പർ മാറ്റുകയോ സ്ക്രീൻ സേവർ സജ്ജീകരിക്കുകയോ ചെയ്യുന്നത് പോലുള്ള കാര്യങ്ങൾ ചെയ്ത് ക്രമീകരണത്തിൽ <ph name="PRODUCT_NAME" /> ഇഷ്ടാനുസൃതമാക്കാൻ ശ്രമിക്കുക.</translation>
 <translation id="2620016719323068571">നിങ്ങളുടെ <ph name="CATEGORY" />, ഫയലുകൾ, ആപ്പുകൾ എന്നിവയും മറ്റും തിരയൂ...</translation>
 <translation id="2620436844016719705">സിസ്റ്റം</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">മറ്റ് വൈഫൈ നെറ്റ്‍വർക്കുകളിൽ ചേരുക</translation>
 <translation id="2705001408393684014">മൈക്ക് മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">മുകളിലേക്കുള്ള കീ</translation>
+<translation id="271033894570825754">പുതിയത്</translation>
 <translation id="2710984741481549981">വിൻഡോകൾ ലോക്ക് ചെയ്യുക</translation>
 <translation id="2718395828230677721">നൈറ്റ് ലൈറ്റ്</translation>
 <translation id="2726420622004325180">ഹോട്ട്‌സ്പോട്ട് നൽകാൻ നിങ്ങളുടെ ഫോണിൽ മൊബൈൽ ഡാറ്റ ഉണ്ടായിരിക്കണം</translation>
@@ -1086,6 +1089,7 @@
 <translation id="4890408602550914571">നിങ്ങളുടെ ഫോൺ സമീപത്തുണ്ടെന്നും Bluetooth ഓണാക്കിയിട്ടുണ്ടെന്നും ഉറപ്പാക്കുക.</translation>
 <translation id="4892981359753171125">ഫെയ്സ് കൺട്രോൾ</translation>
 <translation id="4895488851634969361">ബാറ്ററി ചാർജുചെയ്യൽ പൂർണ്ണമായി.</translation>
+<translation id="4902797682482387055">ഫോക്കസ് ചെയ്യാൻ നിർദ്ദേശിക്കുന്ന ടാസ്‌ക്</translation>
 <translation id="490375751687810070">ലംബം</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി</translation>
 <translation id="491504982845934899">ഉപകരണം സജ്ജീകരിച്ച് <ph name="NETWORK_NAME" /> സജീവമാക്കൂ</translation>
@@ -1096,6 +1100,7 @@
 <translation id="492453977506755176">ക്യാപ്‌ചർ മോഡ് കീ</translation>
 <translation id="4925542575807923399">ഈ അക്കൗണ്ട് ഒന്നിലധികം സൈൻ ഇൻ സെഷനിൽ സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്ന ആദ്യ അക്കൗണ്ട് ആയിരിക്കാൻ ഈ അക്കൗണ്ടിനായുള്ള അഡ്‌മിനിസ്‌ട്രേറ്റർ ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="493076006037866439">സ്ക്രീൻ സൂം ഔട്ട് ചെയ്യുക</translation>
+<translation id="4932733599132424254">തീയതി</translation>
 <translation id="4936329710968938986">എല്ലാവരും, ഓഫാണ്</translation>
 <translation id="4937170330762390348">കേട്ടെഴുത്ത് ഉപയോഗിച്ച്, നിങ്ങളുടെ ശബ്‌ദം കേട്ട് ടൈപ്പ് ചെയ്യാം. ടെക്‌സ്റ്റ് ഫീൽഡിൽ ആയിരിക്കുമ്പോൾ കേട്ടെഴുത്ത് കീ അമർത്തുകയോ സ്ക്രീനിന്റെ താഴെയുള്ള മൈക്രോഫോൺ ഐക്കൺ തിരഞ്ഞെടുക്കുകയോ ചെയ്യുക. നിങ്ങളുടെ കേട്ടെഴുത്ത് ഭാഷ <ph name="LANGUAGE" /> ആയി സജ്ജീകരിച്ചു. ഓഫ്‌ലൈനായി കേട്ടെഴുത്ത് ഉപയോഗിക്കാനാകുന്നതിന് സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യും. ക്രമീകരണം &gt; ഉപയോഗസഹായി എന്നതിൽ നിങ്ങൾക്ക് ഏതുസമയത്തും കേട്ടെഴുത്ത് ഭാഷ മാറ്റാം.</translation>
 <translation id="4938176435186993759">എല്ലാ നിർദ്ദേശങ്ങളും മറയ്ക്കുക</translation>
@@ -1104,6 +1109,7 @@
 <translation id="495046168593986294">മുകളിലേക്ക് സ്ക്രോള്‍ ചെയ്യുക</translation>
 <translation id="4950800194215951939">നിങ്ങളുടെ ഗെയിമിംഗ് അനുഭവം ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="4952936045814352993">അലാറം ശബ്‌ദങ്ങൾ പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നതിനാൽ 'ഫോൺ കണ്ടെത്തൽ' ലഭ്യമല്ല</translation>
+<translation id="4953585991029886728">ടെക്സ്റ്റ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="4960324571663582548">മുമ്പത്തെ പതിപ്പിലേക്ക് <ph name="DEVICE_TYPE" /> പുനഃസ്ഥാപിക്കാൻ <ph name="MANAGER" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു. നിങ്ങളുടെ ഉപകരണം റീസെറ്റ് ചെയ്യുകയും എല്ലാ ഡാറ്റയും ഇല്ലാതാകുകയും ചെയ്യും.</translation>
 <translation id="4961318399572185831">സ്‌ക്രീൻ കാസ്റ്റ് ചെയ്യുക</translation>
 <translation id="4964188651935955085">നിങ്ങൾ Bluetooth ഓഫാക്കിയാൽ, ഈ ബാഹ്യ ഉപകരണം നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ നിന്ന് വിച്ഛേദിക്കും:</translation>
@@ -1363,6 +1369,7 @@
 <translation id="5819918159912280082">നിങ്ങളുടെ Chromebook അപ്രതീക്ഷിതമായി റീസ്റ്റാർട്ട് ചെയ്തു. നിങ്ങളുടെ മുമ്പത്തെ വിൻഡോകളും ആപ്പുകളും തുറക്കുക.</translation>
 <translation id="5823239091726045201">വെബിലെ Google ടാസ്ക്കുകൾ</translation>
 <translation id="5825969630400862129">കണക്റ്റ് ചെയ്തിരിക്കുന്ന ഉപകരണങ്ങൾക്കുള്ള ക്രമീകരണം</translation>
+<translation id="5830180081891717894"><ph name="WINDOWS" /> എണ്ണം കൂടി</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-ൽ <ph name="ROUTE_TITLE" /> നിർത്തുക</translation>
 <translation id="5841296711770970362">അടുത്ത ട്രാക്കിലേക്ക് പോകുക</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> ഹോട്ട്‌സ്‌പോട്ട് ഓണാണ്, ഉപകരണങ്ങളൊന്നും കണക്‌റ്റ് ചെയ്‌തിട്ടില്ല</translation>
@@ -1424,6 +1431,7 @@
 <translation id="6032620807120418574">പൂർണ്ണ സ്ക്രീൻ റെക്കോർഡ് ചെയ്യാൻ എവിടെയെങ്കിലും ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="6040071906258664830">മൈക്രോഫോൺ റെക്കോർഡ് ചെയ്യുക <ph name="STATE" /></translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
+<translation id="6042308850641462728">കൂടുതൽ</translation>
 <translation id="6043212731627905357">ഈ മോണിറ്റർ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ പ്രവർത്തിക്കുന്നില്ല (മോണിറ്റർ ഇതിൽ പ്രവർത്തിക്കില്ല).</translation>
 <translation id="6043994281159824495">ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> ആപ്പുകൾ ഉപയോഗിച്ചു</translation>
@@ -1438,6 +1446,7 @@
 <translation id="6068258534237496331">വീഡിയോ കോൾ നിയന്ത്രണങ്ങൾ</translation>
 <translation id="6073451960410192870">റെക്കോർഡിംഗ് നിർത്തുക</translation>
 <translation id="6074087755403037157">ബീറ്റ ചാനൽ</translation>
+<translation id="6091929401758362855">പ്ലേലിസ്റ്റ്: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">അഡ്‌മിൻ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="6095008505822982596">വായനയുടെ വേഗത</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> ഉപയോഗിച്ച് കണക്ഷൻ ചേർക്കുക</translation>
@@ -1891,6 +1900,7 @@
 <translation id="7748275671948949022">ഷെൽഫിലെ ലോഞ്ചർ ബട്ടൺ ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="7749443890790263709">ഡെസ്‌ക്കുകളുടെ പരമാവധി എണ്ണത്തിൽ എത്തിയിരിക്കുന്നു.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">എല്ലാം കാണിക്കുക</translation>
 <translation id="7759183637555564029">എന്നെ എഴുതാൻ സഹായിക്കൂ, എന്നെ വായിക്കാൻ സഹായിക്കൂ എന്നിവ നിങ്ങൾക്ക് ഏതുസമയത്തും ക്രമീകരണത്തിൽ ഓഫാക്കാം. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7769299611924763557">നിങ്ങളുടെ GIF ഉടൻ തയ്യാറാകും</translation>
@@ -2024,6 +2034,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ഈ ക്രമീകരണം മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനാണ്.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> എന്നതിനുള്ള വിവരങ്ങളുടെ ഡയലോഗ് തുറക്കുക</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ഉപയോഗിക്കുന്നു</translation>
+<translation id="8168435359814927499">ഉള്ളടക്കം</translation>
 <translation id="8185090165691050712">ലോക്ക് മോഡിന്റെ വലുപ്പം മാറ്റാൻ മെനു ഓണാക്കുകയോ ഓഫാക്കുകയോ ചെയ്യുക</translation>
 <translation id="8192727139462702395">നിങ്ങൾ Bluetooth ഓഫാക്കിയാൽ, ഈ ബാഹ്യ ഉപകരണങ്ങൾ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ നിന്ന് വിച്ഛേദിക്കും:</translation>
 <translation id="8198456017687137612">ടാബ് കാസ്‌റ്റ് ചെയ്യുന്നു</translation>
@@ -2071,6 +2082,7 @@
 <translation id="8375916635258623388">ഈ <ph name="DEVICE_NAME" /> ഉം നിങ്ങളുടെ ഫോണും സ്വയമേവ കണക്റ്റ് ചെയ്യും</translation>
 <translation id="8380784334203145311">ഗുഡ് നെെറ്റ്,</translation>
 <translation id="8382715499079447151">കാണുന്നതിൽ നിന്നുള്ള പരിരക്ഷ</translation>
+<translation id="8383614331548401927">സ്വാഗത റീക്യാപ്പ്</translation>
 <translation id="8388750414311082622">അവസാന ഡെസ്‌ക്കിനെ നീക്കം ചെയ്യാനാവില്ല.</translation>
 <translation id="8394567579869570560">നിങ്ങളുടെ രക്ഷിതാവ് ഈ ഉപകരണം ലോക്ക് ചെയ്‌തു</translation>
 <translation id="8401850874595457088">ഭാഷാ മെനുവിൽ പ്രവേശിക്കുക</translation>

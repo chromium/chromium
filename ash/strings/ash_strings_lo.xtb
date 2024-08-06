@@ -405,6 +405,7 @@
 <translation id="2486214324139475545">ຕົວຢ່າງ <ph name="DESK_NAME" />. ໂຕະທີ່ໃຊ້ຢູ່.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" ໄດ້ປ່ຽນຄວາມລະອຽດເປັນ <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ແລ້ວ. ຫາກບໍ່ມີການຢືນຢັນ, ການຕັ້ງຄ່າກ່ອນໜ້າຈະຖືກກູ້ຄືນໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">ເຂົ້າຮ່ວມ</translation>
+<translation id="2496180316473517155">ປະຫວັດການທ່ອງເວັບ</translation>
 <translation id="2499445554382787206">ເມນູໂປຣໄຟລ໌ໂຕະ. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ປຸ່ມສະຕິກກີ້</translation>
 <translation id="2504454902900101003">ປິດການຕັ້ງຄ່າການເບິ່ງຮູບພາບຫຼ້າສຸດ, ມີເດຍ ແລະ ການແຈ້ງເຕືອນຢູ່ໂທລະສັບຂອງທ່ານໄວ້</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">ຕ້ອງເຂົ້າສູ່ລະບົບອອນລາຍ</translation>
 <translation id="2612072250312279703">ເຄື່ອງມືກວດສອບກິດຈະກຳ</translation>
 <translation id="2612614436418177118">ຍ້າຍໄອຄອນແອັບພາຍໃນຕາຕະລາງແອັບ</translation>
+<translation id="2619052155095999743">ສອດໃສ່</translation>
 <translation id="2619326010008283367">ເບິ່ງຂັ້ນຕອນທີ <ph name="STEP" /> ຈາກທັງໝົດ <ph name="TOTAL_STEPS" /> ຂັ້ນຕອນ. ທ່ານສາມາດຊອກຫາການຕັ້ງຄ່າອຸປະກອນຂອງທ່ານໄດ້ໃນຕົວເປີດໃຊ້. ລອງປັບແຕ່ງ <ph name="PRODUCT_NAME" /> ຂອງທ່ານໃນການຕັ້ງຄ່າ ເຊັ່ນ: ການປ່ຽນຮູບພື້ນຫຼັງຂອງທ່ານ ຫຼື ຕັ້ງຄ່າພາບພັກໜ້າຈໍ.</translation>
 <translation id="2620016719323068571">ຊອກຫາ <ph name="CATEGORY" />, ໄຟລ໌, ແອັບ ແລະ ອື່ນໆຂອງທ່ານ...</translation>
 <translation id="2620436844016719705">ລະ​ບົບ</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">ເຂົ້າຮ່ວມເຄືອຂ່າຍ Wi-Fi ອື່ນ</translation>
 <translation id="2705001408393684014">ເປີດໄມ. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ຂຶ້ນ</translation>
+<translation id="271033894570825754">ໃຫມ່</translation>
 <translation id="2710984741481549981">ລັອກໜ້າຈໍ</translation>
 <translation id="2718395828230677721">ແສງກາງຄືນ</translation>
 <translation id="2726420622004325180">ໂທລະສັບຂອງທ່ານຕ້ອງມີອິນເຕີເນັດມືຖືເພື່ອໃຫ້ຮັອດສະປອດ</translation>
@@ -558,6 +561,7 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">ຂະຫຍາຍເມນູ</translation>
 <translation id="3087734570205094154">ດ້ານລຸ່ມ</translation>
+<translation id="3090214513075567547">ເປີດເມນູບໍລິບົດ</translation>
 <translation id="3090989381251959936">ສະຫຼັບ <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">ບໍ່ມີ</translation>
 <translation id="3095995014811312755">ລຸ້ນ</translation>
@@ -1086,6 +1090,7 @@
 <translation id="4890408602550914571">ກວດໃຫ້ແນ່ໃຈວ່າໂທລະສັບຂອງທ່ານຢູ່ໃກ້ ແລະ ເປີດ Bluetooth ແລ້ວ.</translation>
 <translation id="4892981359753171125">ການຄວບຄຸມໃບໜ້າ</translation>
 <translation id="4895488851634969361">ແບັດເຕີຣີເຕັມ.</translation>
+<translation id="4902797682482387055">ໜ້າວຽກທີ່ແນະນຳໃຫ້ສຸມໃສ່</translation>
 <translation id="490375751687810070">ລວງຕັ້ງ</translation>
 <translation id="490788395437447240">ລະດັບແບັດເຕີຣີ <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="491504982845934899">ເປີດໃຊ້ຫຼັງຈາກຕິດຕັ້ງອຸປະກອນ <ph name="NETWORK_NAME" /></translation>
@@ -1096,6 +1101,7 @@
 <translation id="492453977506755176">ປຸ່ມສຳລັບໂໝດຖ່າຍຮູບ</translation>
 <translation id="4925542575807923399">ຜູ້ຄຸ້ມຄອງບັນຊີນີ້ຕ້ອງການບັນຊີນີ້ໃຫ້ເປັນບັນຊີລົງຊື່ເຂົ້າ​ໃຊ້ທໍາອິດຢູ່ໃນຊ່ວງ​ເວລາ​ເຂົ້າລະບົບຫຼາຍອັນ.</translation>
 <translation id="493076006037866439">ຊູມອອກຈາກໜ້າຈໍ</translation>
+<translation id="4932733599132424254">ວັນ​ທີ</translation>
 <translation id="4936329710968938986">ທຸກຄົນ, ປິດ</translation>
 <translation id="4937170330762390348">ດ້ວຍການປ້ອນຂໍ້ມູນດ້ວຍສຽງ, ທ່ານຈະສາມາດພິມໂດຍໃຊ້ສຽງຂອງທ່ານໄດ້. ກົດປຸ່ມການປ້ອນຂໍ້ມູນດ້ວຍສຽງ ຫຼື ເລືອກໄອຄອນໄມໂຄຣໂຟນຢູ່ລຸ່ມສຸດຂອງໜ້າຈໍຕອນທີ່ທ່ານຢູ່ຊ່ອງຂໍ້ມູນຂໍ້ຄວາມ. ຕັ້ງພາສາການປ້ອນຂໍ້ມູນດ້ວຍສຽງຂອງທ່ານເປັນ <ph name="LANGUAGE" /> ແລ້ວ. ໄຟລ໌ການເວົ້າຂອງທ່ານຈະຖືກດາວໂຫຼດເພື່ອໃຫ້ທ່ານສາມາດໃຊ້ການປ້ອນຂໍ້ມູນດ້ວຍສຽງແບບອອບລາຍໄດ້ ທ່ານສາມາດປ່ຽນພາສາການປ້ອນຂໍ້ມູນດ້ວຍສຽງຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າ &gt; ການຊ່ວຍເຂົ້າເຖິງ.</translation>
 <translation id="4938176435186993759">ເຊື່ອງການແນະນຳທັງໝົດ</translation>
@@ -1104,6 +1110,7 @@
 <translation id="495046168593986294">ເລື່ອນຂຶ້ນ</translation>
 <translation id="4950800194215951939">ປັບແຕ່ງປະສົບການການຫຼິ້ນເກມຂອງທ່ານ</translation>
 <translation id="4952936045814352993">ຊອກຫາຕຳແໜ່ງໂທລະສັບບໍ່ສາມາດໃຊ້ໄດ້ເມື່ອປິດສຽງໂມງປຸກ</translation>
+<translation id="4953585991029886728">​ແກ້ໄຂຂໍ້​ຄວາມ​</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> ຕ້ອງການໃຫ້ທ່ານປ່ຽນເວີຊັນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານກັບໄປເປັນເວີຊັນເກົ່າ. ອຸປະກອນຂອງທ່ານຈະຣີເຊັດ ແລະ ຂໍ້ມູນທັງໝົດຈະຖືກລຶບອອກ.</translation>
 <translation id="4961318399572185831">ຄາສທ໌ໜ້າຈໍ</translation>
 <translation id="4964188651935955085">ເມື່ອທ່ານປິດ Bluetooth, ອຸປະກອນພາຍນອກນີ້ຈະຍົກເລີກການເຊື່ອມຕໍ່ກັບ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ:</translation>
@@ -1425,6 +1432,7 @@
 <translation id="6032620807120418574">ຄລິກບ່ອນໃດກໍໄດ້ເພື່ອບັນທຶກພາບແບບເຕັມຈໍ</translation>
 <translation id="6040071906258664830">ບັນທຶກສຽງຈາກໄມໂຄຣໂຟນ <ph name="STATE" /></translation>
 <translation id="6040143037577758943">ປິດ</translation>
+<translation id="6042308850641462728">ເພີ່ມເຕີມ</translation>
 <translation id="6043212731627905357">ຈໍພາບນີ້ບໍ່ຖືກກັນກັບ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ (ບໍ່ຮອງຮັບຈໍພາບ).</translation>
 <translation id="6043994281159824495">ອອກຈາກ​ລະບົບ ດຽວນີ້</translation>
 <translation id="6045629311476491587">ໃຊ້ໂດຍ <ph name="APP_COUNT" /> ແອັບ</translation>
@@ -1439,6 +1447,7 @@
 <translation id="6068258534237496331">ການຄວບຄຸມການໂທວິດີໂອ</translation>
 <translation id="6073451960410192870">ຢຸດການບັນທຶກ</translation>
 <translation id="6074087755403037157">ຊ່ອງເບຕ້າ</translation>
+<translation id="6091929401758362855">ລາຍການຫຼິ້ນ: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">ປິດການນຳໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="6095008505822982596">ອັດຕາການເວົ້າ</translation>
 <translation id="6095425951508823973">ເພີ່ມການເຊື່ອມຕໍ່ກັບ <ph name="PROVIDER" /></translation>
@@ -1891,6 +1900,7 @@
 <translation id="7748275671948949022">ໄຮໄລ້ປຸ່ມຕົວເປີດໃຊ້ຢູ່ຖ້ານ</translation>
 <translation id="7749443890790263709">ຮອດຈຳນວນສູງສຸດຂອງພື້ນທີ່ເຮັດວຽກແລ້ວ</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">ສະ​ແດງ​ທັງ​ຫມົດ</translation>
 <translation id="7759183637555564029">ທ່ານສາມາດປິດຄຸນສົມບັດຊ່ວຍຂ້ອຍຂຽນ ແລະ ຊ່ວຍຂ້ອຍອ່ານໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">ເລືອກເພື່ອເວົ້າ</translation>
 <translation id="7769299611924763557">GIF ຂອງທ່ານຈະພ້ອມໃນໄວໆນີ້</translation>
@@ -2024,6 +2034,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ການຕັ້ງຄ່ານີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="8155628902202578800">ເປີດກ່ອງໂຕ້ຕອງຂໍ້ມູນສຳລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">ກຳລັງໃຊ້ <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">ເນື້ອ​ໃນ</translation>
 <translation id="8185090165691050712">ເປີດ/ປິດເມນູເພື່ອປັບຂະໜາດໂໝດລັອກ</translation>
 <translation id="8192727139462702395">ເມື່ອທ່ານປິດ Bluetooth, ອຸປະກອນພາຍນອກເຫຼົ່ານີ້ຈະຍົກເລີກການເຊື່ອມຕໍ່ກັບ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ:</translation>
 <translation id="8198456017687137612">ແຖບການສົ່ງສັນຍານ</translation>

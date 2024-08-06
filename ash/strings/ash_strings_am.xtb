@@ -405,6 +405,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> ቅድመ ዕይታ። ገቢር ዴስክ።</translation>
 <translation id="2486405091093637109">«<ph name="DISPLAY_NAME" />» ወደ የ<ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ጥራት ተቀይሯል። ሳይረጋገጥ ቀዳሚዎቹ ቅንብሮች በ<ph name="TIMEOUT_SECONDS" /> ውስጥ ወደነበሩበት ይመለሳሉ</translation>
 <translation id="2487915095798731898">ተቀላቀል</translation>
+<translation id="2496180316473517155">ታሪክ አሰሳ</translation>
 <translation id="2499445554382787206">የዴስክ መገለጫ ምናሌ። <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ተጣባቂ ቁልፎች</translation>
 <translation id="2504454902900101003">የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ እና ማሳወቂያዎች ዕይታ ማዋቀርን ያሰናብቱ</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">በመስመር ላይ መግባት ያስፈልጋል</translation>
 <translation id="2612072250312279703">የእንቅስቃሴ መከታተያ</translation>
 <translation id="2612614436418177118">የመተግበሪያ አዶን የመተግበሪያ ፍርግርግ ውስጥ ያንቀሳቅሳል</translation>
+<translation id="2619052155095999743">አስገባ</translation>
 <translation id="2619326010008283367">የጉብኝት እርምጃ <ph name="STEP" /> ከ<ph name="TOTAL_STEPS" />። የእርስዎን የመሣሪያ ቅንብሮች በማስጀመሪያ ውስጥ ማግኘት ይችላሉ። እንደ ልጣፍዎን መቀየር ወይም ማያ ገጽ ቆጣቢን ማቀናበር ባሉ ቅንብሮች ውስጥ የእርስዎን <ph name="PRODUCT_NAME" /> ለማበጀት ይሞክሩ።</translation>
 <translation id="2620016719323068571">የእርስዎን <ph name="CATEGORY" />፣ ፋይሎች፣ መተግበሪያዎች እና ሌሎችን ይፈልጉ...</translation>
 <translation id="2620436844016719705">ስርዓት</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">ሌላ Wi-Fi አውታረ መረቦችን ይቀላቀሉ</translation>
 <translation id="2705001408393684014">ማይክሮፎንን ቀያይር። <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ላይ</translation>
+<translation id="271033894570825754">አዲስ</translation>
 <translation id="2710984741481549981">መስኮቶቹን ይቆልፉ</translation>
 <translation id="2718395828230677721">የምሽት ብርሃን</translation>
 <translation id="2726420622004325180">የእርስዎ ስልክ ሆትስፖት ማቅረብ እንዲችል ሞባይል ውሂብ ሊኖረው ይገባል</translation>
@@ -1086,6 +1089,7 @@
 <translation id="4890408602550914571">ስልክዎ በአቅራቢያ እንዳለ፣ እና ብሉቱዝ እንደበራ ያረጋግጡ።</translation>
 <translation id="4892981359753171125">የፊት መቆጣጠሪያ</translation>
 <translation id="4895488851634969361">ባትሪው ሙሉ ነው።</translation>
+<translation id="4902797682482387055">ለማተኮር የተጠቆመ ተግባር</translation>
 <translation id="490375751687810070">አቀባዊ</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% ባትሪ</translation>
 <translation id="491504982845934899">ከመሣሪያ ውቅረት <ph name="NETWORK_NAME" /> በኋላ ያግብሩ</translation>
@@ -1096,6 +1100,7 @@
 <translation id="492453977506755176">የማንሳት ሁነታ ቁልፍ</translation>
 <translation id="4925542575807923399">የዚህ መለያ አስተዳዳሪ በአንድ ባለብዙ መለያ መግቢያ ክፍለ-ጊዜ ላይ ይህ መለያ መጀምሪያ እንዲገባ ይፈልጋል።</translation>
 <translation id="493076006037866439">ከማያ ገፅ ላይ አሳንስ</translation>
+<translation id="4932733599132424254">ቀን</translation>
 <translation id="4936329710968938986">ሁሉም ሰው፣ ጠፍቷል</translation>
 <translation id="4937170330762390348">በቃል ማስጻፊያ ድምፅዎን በመጠቀም መተየብ ይችላሉ። በቃል ማስጻፍ ቁልፉን ይጫኑ ወይም በጽሁፍ መስክ ላይ ሳይሆኑ ከማያ ገፁ ታች የማይክሮፎን አዶን ይምረጡ። የእርስዎ በቃል ማስጻፍ ቋንቋ ወደ <ph name="LANGUAGE" /> ተቀናብሯል። በቃል ማስጻፍን ከመስመር ውጭ መጠቀም እንዲችሉ የንግግር ፋይሎች ይወርዳሉ። በቃል ማስጻፍ ቋንቋን በማንኛውም ጊዜ ቅንብሮች &gt; ተደራሽነት ውስጥ መለወጥ ይችላሉ።</translation>
 <translation id="4938176435186993759">ሁሉንም የአስተያየት ጥቆማዎች ደብቅ</translation>
@@ -1104,6 +1109,7 @@
 <translation id="495046168593986294">ወደ ላይ ይሸብልሉ</translation>
 <translation id="4950800194215951939">የጨዋታ ተሞክሮዎን ያብጁ</translation>
 <translation id="4952936045814352993">የማንቂያ ድምጾች ሲሰናከሉ ስልክን ማስቀመጥ አይገኝም</translation>
+<translation id="4953585991029886728">ጽሁፍ ያርትዑ</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> የእርስዎን <ph name="DEVICE_TYPE" /> እንዲመልሱ ይፈልግብዎታል። መሣሪያዎ ዳግም ይጀመራል እና ሁሉም ውሂብ ይሰረዛል።</translation>
 <translation id="4961318399572185831">የCast ማያ ገፅ</translation>
 <translation id="4964188651935955085">ብሉቱዝን ሲያጠፉ ይህ ውጫዊ መሣሪያ ከእርስዎ <ph name="DEVICE_TYPE" /> ጋር ያለውን ግንኙነት ያቋርጣል፦</translation>
@@ -1425,6 +1431,7 @@
 <translation id="6032620807120418574">ሙሉ ማያ ገጽን ለመቅዳት በማንኛውም ቦታ ላይ ጠቅ ያድርጉ</translation>
 <translation id="6040071906258664830">ማይክሮፎን ይቅዱ <ph name="STATE" /></translation>
 <translation id="6040143037577758943">ዝጋ</translation>
+<translation id="6042308850641462728">ተጨማሪ</translation>
 <translation id="6043212731627905357">ይህ ማሳያ ከእርስዎ <ph name="DEVICE_TYPE" /> ጋር መስማማት አልቻለም (ማሳያው የሚደገፍ አይደለም)።</translation>
 <translation id="6043994281159824495">አሁን ዘግተህ ውጣ</translation>
 <translation id="6045629311476491587">በ<ph name="APP_COUNT" /> መተግበሪያዎች ሥራ ላይ ውሏል</translation>
@@ -1892,6 +1899,7 @@
 <translation id="7748275671948949022">የማስጀመሪያ አዝራርን በመደርደሪያ ላይ አድምቅ</translation>
 <translation id="7749443890790263709">የተደረሰባቸው የዴስኮች ከፍተኛ ብዛት።</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">ሁሉንም አሳይ</translation>
 <translation id="7759183637555564029">በማንኛውም ጊዜ በቅንብሮች ውስጥ እንድጽፍ እርዳኝ እና እንዳነብ እርዳኝን ማጥፋት ይችላሉ። <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">ለመናገር-ይምረጡ</translation>
 <translation id="7769299611924763557">የእርስዎ GIF በቅርቡ ዝግጁ ይሆናል</translation>
@@ -2025,6 +2033,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው።</translation>
 <translation id="8155628902202578800">የ<ph name="USER_EMAIL_ADDRESS" /> የመረጃ መገናኛን ክፈት</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />ን በመጠቀም ላይ</translation>
+<translation id="8168435359814927499">ይዘት</translation>
 <translation id="8185090165691050712">መጠን ለማሳነስ የመቆለፊያ ሁኔታን አብራ/አጥፋ</translation>
 <translation id="8192727139462702395">ብሉቱዝን ሲያጠፉ እነዚህ ውጫዊ መሣሪያዎች ከእርስዎ <ph name="DEVICE_TYPE" /> ጋር ያላቸውን ግንኙነት ያቋርጣሉ፦</translation>
 <translation id="8198456017687137612">የCast ማድረጊያ ትር</translation>

@@ -406,6 +406,7 @@
 <translation id="2486214324139475545">معاينة "<ph name="DESK_NAME" />": جهاز سطح المكتب نشِط.</translation>
 <translation id="2486405091093637109">‏تم تغيير درجة دقة "<ph name="DISPLAY_NAME" />" إلى ‎<ph name="RESOLUTION" /> (بمعدّل التحديث <ph name="REFRESH_RATE" /> هرتز). في حال عدم التأكيد، ستتم استعادة الإعدادات السابقة خلال <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">انضمام</translation>
+<translation id="2496180316473517155">سجلّ التصفّح</translation>
 <translation id="2499445554382787206">قائمة الملف الشخصي على جهاز سطح المكتب "<ph name="DESK_NAME" />"</translation>
 <translation id="2501920221385095727">تثبيت المفاتيح</translation>
 <translation id="2504454902900101003">عدم إعداد ميزة عرض الصور والوسائط والإشعارات الحديثة في هاتفك</translation>
@@ -437,6 +438,7 @@
 <translation id="2607678425161541573">يجب تسجيل الدخول على الإنترنت</translation>
 <translation id="2612072250312279703">أداة رصد النشاط</translation>
 <translation id="2612614436418177118">نقل رمز تطبيق داخل شبكة التطبيقات</translation>
+<translation id="2619052155095999743">إدخال</translation>
 <translation id="2619326010008283367">الخطوة <ph name="STEP" /> من إجمالي <ph name="TOTAL_STEPS" />: يمكنك العثور على إعدادات جهازك من خلال "مشغِّل التطبيقات". جرِّب تخصيص <ph name="PRODUCT_NAME" /> من خلال "الإعدادات"، مثل تغيير الخلفية أو ضبط شاشة استراحة.</translation>
 <translation id="2620016719323068571">البحث في <ph name="CATEGORY" /> والملفات والتطبيقات وغير ذلك...</translation>
 <translation id="2620436844016719705">النظام</translation>
@@ -463,6 +465,7 @@
 <translation id="2704781753052663061">‏الانضمام إلى شبكات Wi-Fi أخرى</translation>
 <translation id="2705001408393684014">تبديل الميكروفون: <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">أعلى</translation>
+<translation id="271033894570825754">جديد</translation>
 <translation id="2710984741481549981">قفل النوافذ</translation>
 <translation id="2718395828230677721">الإضاءة الليلية</translation>
 <translation id="2726420622004325180">يجب أن يتوفّر في هاتفك اتصال بيانات الجوّال لتتمكّن من تفعيل ميزة "نقطة الاتصال".</translation>
@@ -1099,6 +1102,7 @@
 <translation id="492453977506755176">مفتاح وضع تصوير الشاشة</translation>
 <translation id="4925542575807923399">يحتاج مشرف هذا الحساب أن يكون هذا الحساب الأول في تسجيل الدخول إلى جلسة دخول متعدد.</translation>
 <translation id="493076006037866439">تصغير الشاشة</translation>
+<translation id="4932733599132424254">التاريخ</translation>
 <translation id="4936329710968938986">الجميع: غير مفعّل</translation>
 <translation id="4937170330762390348">من خلال ميزة "إملاء"، يمكنك الكتابة باستخدام صوتك. اضغط على مفتاح ميزة "إملاء" أو اختَر رمز الميكروفون في أسفل الشاشة عندما تكون في حقل نصي. تم ضبط لغة ميزة "إملاء" على <ph name="LANGUAGE" />. سيتم تنزيل ملفات التعرّف على الكلام كي تتمكّن من استخدام ميزة "إملاء" بلا اتصال بالإنترنت. يمكنك في أي وقت تغيير لغة ميزة "إملاء" من خلال الإعدادات &gt; تسهيل الاستخدام.</translation>
 <translation id="4938176435186993759">إخفاء جميع الاقتراحات</translation>
@@ -1107,6 +1111,7 @@
 <translation id="495046168593986294">التمرير لأعلى</translation>
 <translation id="4950800194215951939">تخصيص تجربة اللعب</translation>
 <translation id="4952936045814352993">ميزة "تحديد الموقع الجغرافي للهاتف" غير متاحة لأنّك أوقفت أصوات التنبيهات.</translation>
+<translation id="4953585991029886728">تعديل النص</translation>
 <translation id="4960324571663582548">يتطلّب <ph name="MANAGER" /> منك العودة إلى استخدام جهاز <ph name="DEVICE_TYPE" />. ستتم إعادة ضبط جهازك ويتم حذف كل البيانات المتوفّرة عليه.</translation>
 <translation id="4961318399572185831">إرسال الشاشة</translation>
 <translation id="4964188651935955085">بعد إيقاف البلوتوث، سيتم إلغاء ربط هذا الجهاز الخارجي بجهاز <ph name="DEVICE_TYPE" />:</translation>
@@ -1428,6 +1433,7 @@
 <translation id="6032620807120418574">انقر على أي مكان لالتقاط صورة في وضع ملء الشاشة.</translation>
 <translation id="6040071906258664830">التسجيل من الميكروفون <ph name="STATE" /></translation>
 <translation id="6040143037577758943">إغلاق</translation>
+<translation id="6042308850641462728">عرض المزيد</translation>
 <translation id="6043212731627905357">لا تتوافق هذه الشاشة مع <ph name="DEVICE_TYPE" /> (هذه الشاشة غير مدعومة).</translation>
 <translation id="6043994281159824495">الخروج الآن</translation>
 <translation id="6045629311476491587">عدد التطبيقات التي تستخدم عناصر التحكم هذه: <ph name="APP_COUNT" /></translation>
@@ -1442,6 +1448,7 @@
 <translation id="6068258534237496331">عناصر التحكّم في مكالمات الفيديو</translation>
 <translation id="6073451960410192870">إيقاف التسجيل</translation>
 <translation id="6074087755403037157">قناة تجريبية</translation>
+<translation id="6091929401758362855">قائمة التشغيل: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">أوقف المشرف هذه الإعدادات</translation>
 <translation id="6095008505822982596">معدّل سرعة الكلام</translation>
 <translation id="6095425951508823973">إضافة اتصال باستخدام "<ph name="PROVIDER" />"</translation>
@@ -1895,6 +1902,7 @@
 <translation id="7748275671948949022">تمييز زر مشغّل التطبيقات على الرف</translation>
 <translation id="7749443890790263709">تم تجاوز أقصى عدد مسموح به من محطات الإرساء.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">عرض الكل</translation>
 <translation id="7759183637555564029">يمكنك متى شئت إيقاف ميزتَي "ساعدني في الكتابة" و"ساعدني في القراءة" من خلال الإعدادات. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">الاختيار والاستماع</translation>
 <translation id="7769299611924763557">‏سيصبح ملف GIF جاهزًا بعد قليل.</translation>
@@ -2028,6 +2036,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> يتولى مشرفك إدارة هذا الإعداد.</translation>
 <translation id="8155628902202578800">فتح مربع حوار المعلومات للبريد الإلكتروني <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">استخدام <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">المحتوى</translation>
 <translation id="8185090165691050712">قائمة تفعيل/إيقاف وضع القفل لميزة تغيير الحجم</translation>
 <translation id="8192727139462702395">بعد إيقاف البلوتوث، سيتم إلغاء ربط هذه الأجهزة الخارجية بجهاز <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">جارٍ إرسال محتوى علامة التبويب</translation>
@@ -2313,7 +2322,7 @@
 <translation id="974545358917229949">عرض <ph name="RESULT_COUNT" /> نتيجة عن <ph name="QUERY" /></translation>
 <translation id="981011780479609956">بلا تاريخ تسليم</translation>
 <translation id="98120814841227350">الانتقال إلى نهاية المستند</translation>
-<translation id="98515147261107953">أفقي</translation>
+<translation id="98515147261107953">منظر طبيعي</translation>
 <translation id="987589956647469042">بيانات الجوّال مفعَّلة.</translation>
 <translation id="989374776391122812">عناصر التحكّم في الكاميرا والصوت</translation>
 <translation id="990277280839877440">تم إغلاق النافذة <ph name="WINDOW_TITILE" />.</translation>

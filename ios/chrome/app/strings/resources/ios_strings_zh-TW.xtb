@@ -302,6 +302,7 @@
 <translation id="2529021024822217800">全部開啟</translation>
 <translation id="2536991091671391962">你可以在任何裝置上使用儲存的密碼，系統會將密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理工具。</translation>
 <translation id="2542268842667970959">隱藏「安全檢查」</translation>
+<translation id="2545094307889012168">智慧鏡頭重疊</translation>
 <translation id="2547458583188611426">目前未同步資料。如要開始同步，請輸入通關密語。</translation>
 <translation id="2551153019974022505">帳戶錯誤</translation>
 <translation id="2556092377360758201">無保護功能 (不建議)</translation>
@@ -848,6 +849,7 @@
 <translation id="5197255632782567636">網際網路</translation>
 <translation id="5205197603258285592">將圖片儲存到...</translation>
 <translation id="5211488077761630279">要允許「<ph name="SITE_NAME" />」使用<ph name="PERMISSION" />嗎？</translation>
+<translation id="5215046161188172474">分享完整網址</translation>
 <translation id="5219295696240154694">協助我們為所有人改善網路安全性</translation>
 <translation id="5220945116117011963">根據日期建立日曆活動</translation>
 <translation id="5221339005270097309">正在檢查密碼…</translation>
@@ -1125,6 +1127,7 @@
 網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。</translation>
 <translation id="6476253015009698798">價格追蹤功能不支援這個網頁。</translation>
 <translation id="6476800141292307438">將網頁翻譯成<ph name="LANGUAGE" />。翻譯選項位於靠近畫面底部的位置。</translation>
+<translation id="6477585407014744043">為群組命名</translation>
 <translation id="648164694371393720">驗證錯誤</translation>
 <translation id="6494931198667773526">結束時間</translation>
 <translation id="6500795388871406244">使用建議的密碼：</translation>
@@ -1294,6 +1297,7 @@
 <translation id="734758817008927353">卡片儲存選項</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
 <translation id="7353432112255316844">驗證身分</translation>
+<translation id="736564850024123010">切換網址列的位置，享受量身打造的使用體驗。</translation>
 <translation id="7367530036083223701">使用「密碼管理工具」在主畫面提供的小工具，就能安全存取密碼。</translation>
 <translation id="7380220816562673297">目前只能與家庭成員分享密碼。你可以<ph name="BEGIN_LINK" />建立家庭群組<ph name="END_LINK" /> (最多 6 位成員)，讓 Google 的產品和訂閱服務發揮更多價值。</translation>
 <translation id="739101637685146669">要將哪個網址加入書籤？</translation>

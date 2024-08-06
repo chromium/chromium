@@ -144,6 +144,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="5131565040785979529">Tổ chức <ph name="DOMAIN" /> của bạn sẽ quản lý tài khoản bạn đăng nhập và cách sử dụng Chromium.</translation>
 <translation id="5146749061471423558">Thêm dấu trang vào Chromium</translation>
 <translation id="5171868502429358653">Đăng nhập vào Chromium</translation>
+<translation id="5203483872492817335">Truy cập Chromium nhanh hơn từ thanh dock trên màn hình chính của iPad.</translation>
 <translation id="5213683223491576284">Mở trình quản lý mật khẩu trong Chromium.</translation>
 <translation id="5224391634244552924">Bạn chưa lưu mật khẩu nào. Chromium có thể kiểm tra các mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
 <translation id="5242782538551259282">Một số dữ liệu Chromium của bạn chưa được lưu vào Tài khoản Google.
@@ -225,6 +226,7 @@ Những yếu tố cần xem xét:
 Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chromium khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Thông báo của Chromium hiện đang tắt trong phần cài đặt của thiết bị.</translation>
 <translation id="7222001353246886083">Tìm kiếm ${searchCluster} trong Chromium</translation>
+<translation id="7228180817326917122">Mẹo khi dùng Chromium: Chọn vị trí thanh địa chỉ</translation>
 <translation id="725427773388857052">Chromium có thể bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web không an toàn và những vấn đề khác.</translation>
 <translation id="7269362888766543920">Một số tiện ích bổ sung khiến Chromium trục trặc. Hãy thử gỡ cài đặt chúng.</translation>
 <translation id="7285031092584344905">Truy cập mật khẩu và nhiều dữ liệu khác mà bạn lưu trên Chromium trong các ứng dụng khác.</translation>
@@ -247,6 +249,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="7928628054454574139">Mở Chromium bất cứ khi nào bạn nhấn vào đường liên kết trong các ứng dụng khác</translation>
 <translation id="7931842119211730154">Khóa các thẻ Ẩn danh khi bạn đóng Chromium</translation>
 <translation id="7934404985878918282">Xem Danh sách đọc trên Chromium</translation>
+<translation id="7947765692209663835">Truy cập Chromium nhanh hơn từ thanh dock trên màn hình chính của iPhone.</translation>
 <translation id="7971753607796745700">Thêm mục trong danh sách đọc vào Chromium</translation>
 <translation id="7980860476903281594">Chromium chia sẻ thông tin vị trí của bạn với những trang web mà bạn cho phép.</translation>
 <translation id="7994322153108931467">Để biết các mẹo hữu ích khi dùng Chromium, hãy bật thông báo trong phần cài đặt của iOS.</translation>
@@ -265,6 +268,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="8386869251364507178">Thao tác trên Chromium</translation>
 <translation id="8409374867500149834">Chromium sở hữu khả năng bảo mật mạnh nhất để bảo vệ bạn trước các trang web có hại</translation>
 <translation id="8458950033462118672">Bạn có thể đặt Chromium làm Ứng dụng trình duyệt mặc định để các đường liên kết tự động mở trong Chromium.</translation>
+<translation id="8473874987831035139">Mẹo khi dùng Chromium: Di chuyển Chromium vào thanh dock</translation>
 <translation id="8502918057530111907">Dùng Chromium theo mặc định để dễ dàng xem thông tin chi tiết về giá</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Việc này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chromium. Những dữ liệu chỉ được lưu vào thiết bị này khi bạn đăng nhập sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký và mật khẩu.}other{Việc này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chromium. Những dữ liệu chỉ được lưu vào thiết bị này khi bạn đăng nhập sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký và mật khẩu.}}</translation>
 <translation id="858114650497379505">Bạn có thể sử dụng mật khẩu đã lưu vào Trình quản lý mật khẩu trong ứng dụng khác trên iPhone.</translation>

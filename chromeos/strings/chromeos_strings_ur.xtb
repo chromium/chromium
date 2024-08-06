@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">کمزور سگنل</translation>
 <translation id="1300115153046603471">‏APN کی قسم ڈیفالٹ اور <ph name="ATTACH" /> ہے۔</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">تاریخ تخلیق</translation>
 <translation id="1308754910631152188">اپ ڈیٹ ہو رہا ہے (<ph name="PERCENTAGE_VALUE" />% مکمل)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> منٹ</translation>
 <translation id="1310380015393971138">کوئی <ph name="NETWORK_NAME" /> نیٹ ورک دستیاب نہیں</translation>
@@ -339,7 +340,6 @@
 <translation id="2645380101799517405">کنٹرولز</translation>
 <translation id="2652403576514495859">ڈکٹیشن کو فعال یا ٹوگل کریں</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
-<translation id="2653807227758181366">اس وال پیپر کی وضاحت کریں جسے آپ بنانا چاہتے ہیں یا نمونہ پرامپٹ استعمال کریں</translation>
 <translation id="2654647726140493436">اپ ڈیٹ ہونے کے عمل کے پیشرفت میں رہنے کے دوران اپنے <ph name="DEVICE_TYPE" /> کو آف نہ کریں یا <ph name="DEVICE_TYPE" /> کے پاور کیبل کو ان پلگ نہ کریں</translation>
 <translation id="2656001153562991489">‏Chromebook Plus کے لیے مخصوص</translation>
 <translation id="2665671725390405060">تلفظ سنیں</translation>
@@ -506,6 +506,7 @@
 <translation id="3708186454126126312">پہلے سے منسلک کردہ</translation>
 <translation id="3715651196924935218">فلوٹ سے باہر نکلیں</translation>
 <translation id="3716250181321371108">کنٹرول تخلیق کریں</translation>
+<translation id="3716830479327464973">آپ کے اس کی اجازت دینے پر، ریکارڈر آپ کی آڈیو ریکارڈنگ کا تجزیہ کرے گا:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> جائزے)</translation>
 <translation id="3748026146096797577">منسلک نہیں ہے</translation>
 <translation id="3749289110408117711">فائل کا نام</translation>
@@ -532,6 +533,7 @@
 <translation id="3869314628814282185">ریشمی جالدار</translation>
 <translation id="387301095347517405">آپ کی بیٹری کے مکمل طور پر چارج ہونے کی تعداد</translation>
 <translation id="3877066159641251281">ترجمہ سنیں</translation>
+<translation id="3880601782712134623">مختلف آوازوں کا خودکار طور پتہ لگائیں اور ہر اسپیکر کو ایک عام لیبل دیں جیسے کہ اسپیکر 1 اور اسپیکر 2</translation>
 <translation id="3885327323343477505">اسکرین سیور تبدیل کریں</translation>
 <translation id="3889914174935857450">تاریخ کو ری سیٹ کریں</translation>
 <translation id="3897092660631435901">مینیو</translation>
@@ -757,6 +759,7 @@
 <translation id="5049856988445523908">‏SIM مقفل ہو گیا (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">گروپ کا نام</translation>
 <translation id="5051044138948155788">یہ واحد صفحہ ہے۔ یہ آپ کو سکیننگ اسٹارٹ سکرین پر لے جائے گا۔</translation>
+<translation id="5078711626843651677">صوتی ماڈلز تب تک عارضی طور پر آلہ پر اسٹور کیے جاتے ہیں جب تک کہ اسپیکر کی لیبلنگ مکمل نہ ہو جائے۔ آپ اسے کسی بھی وقت ترتیبات میں آف کر سکتے ہیں۔</translation>
 <translation id="5078983345702708852">اختراعی</translation>
 <translation id="5087864757604726239">پیچھے</translation>
 <translation id="5088172560898466307">سرور کا میزبان نام</translation>
@@ -1107,6 +1110,7 @@
 <translation id="6905163627763043954">اسے آزمائیں</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> پر واپس جائیں</translation>
 <translation id="6910312834584889076">اسکینر کا سرورق کھلا ہوا ہے۔ سرورق کو بند کریں اور دوبارہ کوشش کریں۔</translation>
+<translation id="6910845598686542904">ریکارڈنگ میں شناخت کردہ آوازوں کے ماڈلز کا حساب لگائیں</translation>
 <translation id="6911383237894364323">میڈیا سرورز سے منسلک ہونے سے قاصر</translation>
 <translation id="6930242544192836755">دورانیہ</translation>
 <translation id="6930597342185648547">پس منظر کے بارے میں</translation>
@@ -1366,6 +1370,7 @@
 <translation id="8208861521865154048">فوائد</translation>
 <translation id="8226628635270268143">اپنی پسندیدہ تصاویر اور البمز منتخب کریں</translation>
 <translation id="8227119283605456246">فائل منسلک کریں</translation>
+<translation id="8227488649450500937">ان پرامپٹس میں سے ایک آزمائیں یا <ph name="BEGIN_LINK_PROMPTING_GUIDE" />پرامپٹنگ گائیڈ<ph name="END_LINK_PROMPTING_GUIDE" /> دیکھیں</translation>
 <translation id="8230672074305416752">ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
 <translation id="8238771987802558562">‏ایک APN منتخب کریں</translation>
 <translation id="8246209727385807362">نامعلوم کیریئر</translation>
@@ -1571,6 +1576,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> کے لیے کلید موجود نہیں ہے۔ <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">پوری ریکارڈنگ کے دوران آوازوں کا موازنہ کریں تاکہ ٹرانسکرپٹ میں اس بات کی عکاسی کی جا سکے کہ ہر اسپیکر نے کیا اور کب کہا</translation>
 <translation id="952992212772159698">فعال نہیں ہے</translation>
 <translation id="95718197892796296">چکنی مٹی</translation>
 <translation id="960719561871045870">آپریٹر کوڈ</translation>

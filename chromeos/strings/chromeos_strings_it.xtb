@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">Segnale debole</translation>
 <translation id="1300115153046603471">APN è di tipo predefinito e <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">Data creazione</translation>
 <translation id="1308754910631152188">Aggiornamento in corso (percentuale di completamento: <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minuti</translation>
 <translation id="1310380015393971138">Nessuna rete <ph name="NETWORK_NAME" /> disponibile</translation>
@@ -339,7 +340,6 @@
 <translation id="2645380101799517405">Controlli</translation>
 <translation id="2652403576514495859">attivare o attivare la dettatura</translation>
 <translation id="2653659639078652383">Invia</translation>
-<translation id="2653807227758181366">Descrivi lo sfondo che vuoi creare o utilizza un prompt di esempio</translation>
 <translation id="2654647726140493436">Non spegnere <ph name="DEVICE_TYPE" /> o scollegare il cavo di alimentazione di <ph name="DEVICE_TYPE" /> durante l'aggiornamento</translation>
 <translation id="2656001153562991489">Solo per Chromebook Plus</translation>
 <translation id="2665671725390405060">Ascolta la pronuncia</translation>
@@ -358,6 +358,7 @@
 <translation id="2780756493585863768">Sfondi recenti con Google AI integrata</translation>
 <translation id="2783010256799387990">SUPERATO</translation>
 <translation id="2786429550992142861">lino</translation>
+<translation id="2787237339470862294">Al momento questa lingua non è supportata</translation>
 <translation id="2787435249130282949">Tastiera più luminosa</translation>
 <translation id="2805756323405976993">App</translation>
 <translation id="28232023175184696">Impossibile connettersi a Internet. Fai clic per riprovare.</translation>
@@ -505,6 +506,7 @@
 <translation id="3708186454126126312">Connessi in precedenza</translation>
 <translation id="3715651196924935218">Esci da stato mobile</translation>
 <translation id="3716250181321371108">Crea controllo</translation>
+<translation id="3716830479327464973">Se consenti questa opzione, Registratore analizzerà le tue registrazioni audio per:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioni)</translation>
 <translation id="3748026146096797577">Non connesso</translation>
 <translation id="3749289110408117711">Nome file</translation>
@@ -531,6 +533,7 @@
 <translation id="3869314628814282185">tulle</translation>
 <translation id="387301095347517405">Il numero di cicli di ricarica completi della batteria</translation>
 <translation id="3877066159641251281">Ascolta la traduzione</translation>
+<translation id="3880601782712134623">Rileva automaticamente le voci distinte e assegna a un'etichetta generica ogni persona che parla, come Persona 1 e Persona 2</translation>
 <translation id="3885327323343477505">Cambia salvaschermo</translation>
 <translation id="3889914174935857450">Reimposta data</translation>
 <translation id="3897092660631435901">Menu</translation>
@@ -669,6 +672,7 @@
 <translation id="458794348635939462">impossibile risolvere tutti gli host</translation>
 <translation id="4593212453765072419">Autenticazione proxy richiesta</translation>
 <translation id="4594021849294327751">Crea trascrizione</translation>
+<translation id="4607282946861182308">Impossibile creare immagini di quanto richiesto. Prova un altro comando.</translation>
 <translation id="4609350030397390689">Riduci la luminosità della tastiera</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> di <ph name="TOTAL_PAGE_NUMBER" />. Premi Invio per annullare il processo di stampa.</translation>
 <translation id="463791356324567266">Annullamento scansione in corso…</translation>
@@ -755,6 +759,7 @@
 <translation id="5049856988445523908">SIM bloccata (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nome del gruppo</translation>
 <translation id="5051044138948155788">Questa è l'unica pagina. Si aprirà la schermata iniziale della scansione.</translation>
+<translation id="5078711626843651677">I modelli vocali vengono memorizzati temporaneamente sul dispositivo fino al completamento dell'assegnazione delle etichette di chi parla. Puoi disattivare questa funzionalità in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="5078983345702708852">futuristico</translation>
 <translation id="5087864757604726239">indietro</translation>
 <translation id="5088172560898466307">Nome host del server</translation>
@@ -1105,6 +1110,7 @@
 <translation id="6905163627763043954">Prova</translation>
 <translation id="6905724422583748843">Torna a <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Il coperchio dello scanner è aperto. Chiudilo e riprova.</translation>
+<translation id="6910845598686542904">Calcola i modelli delle voci rilevate nella registrazione</translation>
 <translation id="6911383237894364323">Impossibile connettersi ai server multimediali</translation>
 <translation id="6930242544192836755">Durata</translation>
 <translation id="6930597342185648547">Informazioni sullo sfondo</translation>
@@ -1364,6 +1370,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8208861521865154048">Vantaggi</translation>
 <translation id="8226628635270268143">Scegli le tue foto e i tuoi album preferiti</translation>
 <translation id="8227119283605456246">Allega file</translation>
+<translation id="8227488649450500937">Prova uno di questi prompt o consulta la <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guida ai prompt<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">impossibile eseguire il ping del gateway di rete predefinito</translation>
 <translation id="8238771987802558562">Scegli un APN</translation>
 <translation id="8246209727385807362">Operatore sconosciuto</translation>
@@ -1569,6 +1576,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="950520315903467048">Tasto mancante per <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">Confronta le voci dell'intera registrazione in modo che la trascrizione riporti correttamente ciò che ha detto ogni persona e quando</translation>
 <translation id="952992212772159698">Non attivo</translation>
 <translation id="95718197892796296">argilla</translation>
 <translation id="960719561871045870">Codice operatore</translation>

@@ -185,7 +185,6 @@
 <translation id="1124772482545689468">사용자</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" />x<ph name="HEIGHT" />(기본)처럼 보입니다.</translation>
 <translation id="1125921926864945797">배경화면 및 스타일</translation>
-<translation id="1126809382673880764">위험한 웹사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호하지 않습니다. Gmail, Google 검색과 같은 다른 Google 서비스에서는 가능한 경우 세이프 브라우징 보호가 계속 제공됩니다.</translation>
 <translation id="1128090040635299943">현재 Linux를 설정하는 중입니다. 설정에는 몇 분 정도 걸릴 수 있습니다.</translation>
 <translation id="1128591060186966949">검색엔진 수정</translation>
 <translation id="1129348283834595293">사이버펑크</translation>
@@ -630,7 +629,6 @@
 <translation id="1461041542809785877">성능</translation>
 <translation id="1461177659295855031">북마크바 폴더로 이동</translation>
 <translation id="1461288887896722288">관리 계정에 방금 로그인했습니다. 새 관리 프로필을 만들면 계정에 연결된 일부 리소스에 액세스할 수 있습니다.</translation>
-<translation id="1461868306585780092">안전하지 않은 연결을 사용하기 전에 경고 표시</translation>
 <translation id="146219525117638703">ONC 상태</translation>
 <translation id="146220085323579959">인터넷 연결이 끊겼습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.</translation>
 <translation id="1462480037563370607">수동으로 사이트 추가</translation>
@@ -4183,7 +4181,6 @@
 <translation id="3959747296451923142">구독 삭제 확인</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" />의 작업 더보기</translation>
-<translation id="3962119236270174787">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 대응하는 표준 보호 기능입니다.</translation>
 <translation id="3963753386716096475">다른 휴대전화, 태블릿 또는 보안 키 사용</translation>
 <translation id="3964480518399667971">셀룰러 네트워크 끄기</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> 나가기</translation>
@@ -5524,7 +5521,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4967571733817147990">마우스 버튼 맞춤설정</translation>
 <translation id="4967852842111017386"><ph name="FEATURE_NAME" /> 기기 이름</translation>
 <translation id="4971412780836297815">완료되면 열기</translation>
-<translation id="4971735654804503942">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 더 빠르게 대응하여 선제적 보호 조치를 취합니다. 비밀번호 유출에 관해 알립니다. Google에 인터넷 사용 기록을 전송해야 합니다.</translation>
 <translation id="4972129977812092092">프린터 수정</translation>
 <translation id="4972164225939028131">잘못된 비밀번호</translation>
 <translation id="4972737347717125191">사이트에서 가상 현실 기기 및 데이터의 사용을 요청할 수 있음</translation>
@@ -7016,6 +7012,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6075075631258766703">전화번호 확인</translation>
 <translation id="6075731018162044558">시스템이 이 기기에 대한 장기 API 액세스 토큰을 획득하지 못했습니다.</translation>
 <translation id="6075907793831890935">이름이 <ph name="HOSTNAME" />인 기기와 데이터 교환</translation>
+<translation id="6076092653254552547">시스템 설정</translation>
 <translation id="6076491747490570887">시원한 회색</translation>
 <translation id="6076576896267434196">'<ph name="EXTENSION_NAME" />' 확장 프로그램에서 계정에 액세스하려고 합니다</translation>
 <translation id="6077131872140550515">기본 네트워크에서 삭제</translation>
@@ -8256,7 +8253,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6992554835374084304">향상된 맞춤법 검사 기능 사용 설정</translation>
 <translation id="6993000214273684335">이름이 지정되지 않은 그룹에서 탭이 제거됨 - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Chrome 브라우저 업데이트 중</translation>
-<translation id="6995899638241819463">정보 유출로 인해 비밀번호가 노출된 경우 알림</translation>
 <translation id="6995984090981858039">ChromeOS 기기 정보와 데이터를 읽습니다.</translation>
 <translation id="6996245928508281884">휴대전화의 블루투스 및 Wi-Fi를 사용 설정하세요.</translation>
 <translation id="6996438701394974959">디스플레이 및 텍스트 크기 확대</translation>
@@ -9393,6 +9389,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7826254698725248775">기기 식별자가 충돌합니다.</translation>
 <translation id="7828642077514646543">오류: 인증서를 디코딩할 수 없습니다</translation>
 <translation id="7829877209233347340">부모님에게 로그인하여 학교 계정을 추가할 권한을 부여해 달라고 요청하세요.</translation>
+<translation id="7830276128493844263">시스템 설정에서 위치가 사용 중지됨</translation>
 <translation id="7830833461614351956">파일 <ph name="NUM_OF_FILES" />개를 <ph name="CLOUD_PROVIDER" />에 복사하여 여시겠습니까?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">저장한 맞춤 단어가 여기에 표시됩니다.</translation>

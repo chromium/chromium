@@ -1940,6 +1940,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4652440160515225514">Kuruluşunuz, bir politikayı ihlal ettiği için bu siteyi engelledi.</translation>
 <translation id="4658638640878098064">Sol üstte tel zımba</translation>
 <translation id="4661556981531699496">Evcil ve Yabani Hayvanlar</translation>
+<translation id="4661868874067696603">Daha fazla satın alma seçeneği arayın</translation>
 <translation id="4663373278480897665">Kameraya izin veriliyor</translation>
 <translation id="466561305373967878">Masa Oyunları</translation>
 <translation id="4668929960204016307">,</translation>
@@ -2421,7 +2422,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="555037537507405574">gelişmiş yazıcı özellikleri</translation>
 <translation id="555128936272638662">Mobil ve Kablosuz Cihaz Aksesuarları</translation>
 <translation id="5551890439174915351">100 x 200 mm</translation>
-<translation id="5552137475244467770">Chrome, internette yayınlanan listelerle karşılaştırarak şifrelerinizi belirli aralıklarla kontrol eder. Bu işlem sırasında şifreleriniz ve kullanıcı adlarınız şifrelendiğinden, Google dahil olmak üzere hiç kimse tarafından okunamaz.</translation>
 <translation id="5554520618550346933">Kullandığınız bir şifre internette yayınlanmışsa Chrome sizi uyarır. Bu işlem sırasında şifreleriniz ve kullanıcı adlarınız şifrelendiğinden, Google dahil olmak üzere hiç kimse tarafından okunamaz.</translation>
 <translation id="5556459405103347317">Yeniden Yükle</translation>
 <translation id="5558083606899411167">Klimalar</translation>
@@ -2429,6 +2429,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5559311991468302423">Adresi sil</translation>
 <translation id="5560088892362098740">Son Kullanma Tarihi</translation>
 <translation id="55635442646131152">Dokümanın ana hatları</translation>
+<translation id="5563589142503817291">Konumunuzu kullanması için Chrome'a <ph name="LINK" /> üzerinden erişim izni verin.</translation>
 <translation id="5565613213060953222">Gizli sekme aç</translation>
 <translation id="5565735124758917034">Etkin</translation>
 <translation id="5569030697349375295">Muhasebe ve Finans Yazılımları</translation>
@@ -2910,6 +2911,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6458606150257356946">Yine de yapıştır</translation>
 <translation id="6464094930452079790">resimler</translation>
 <translation id="6465306955648956876">Şifreleri yönet...</translation>
+<translation id="646789491285795429">Bu ürünü zaten takip ediyorsunuz</translation>
 <translation id="6468485451923838994">Yazı tipleri</translation>
 <translation id="647261751007945333">Cihaz politikaları</translation>
 <translation id="6472874020827012601">Kumaş (Mat)</translation>

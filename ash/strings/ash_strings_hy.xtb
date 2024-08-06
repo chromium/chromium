@@ -405,6 +405,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" />-ի նախադիտում։ Աշխատասեղանն ակտիվ է։</translation>
 <translation id="2486405091093637109">«<ph name="DISPLAY_NAME" />» էկրանի լուծաչափը դարձել է <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Հց)։ Նախորդ կարգավորումներն առանց հաստատվելու <ph name="TIMEOUT_SECONDS" /> անց կվերականգնվեն։</translation>
 <translation id="2487915095798731898">Միանալ</translation>
+<translation id="2496180316473517155">Դիտարկումների պատմություն</translation>
 <translation id="2499445554382787206">Աշխատասեղանի պրոֆիլի ընտրացանկ։ <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Կպչուն ստեղներ</translation>
 <translation id="2504454902900101003">Բաց թողնել հեռախոսի վերջին լուսանկարների մեդիաֆայլերի և ծանուցումների դիտման կարգավորումը</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">Անհրաժեշտ է առցանց մուտք գործել</translation>
 <translation id="2612072250312279703">գործողությունների մոնիտոր</translation>
 <translation id="2612614436418177118">Տեղաշարժել հավելվածի պատկերակը հավելվածների ցանցում</translation>
+<translation id="2619052155095999743">Զետեղել</translation>
 <translation id="2619326010008283367">Ուղեցույցի քայլ <ph name="STEP" />՝ <ph name="TOTAL_STEPS" />-ից։ Ձեր սարքի կարգավորումները կարող եք գտնել Գործարկիչում։ Կարգավորումներում փորձեք հարմարեցնել <ph name="PRODUCT_NAME" />-ը, օրինակ՝ փոխել պաստառը կամ կարգավորել էկրանապահը։</translation>
 <translation id="2620016719323068571">Որոնեք ձեր <ph name="CATEGORY" />ում, ֆայլերում, հավելվածներում և այլն…</translation>
 <translation id="2620436844016719705">Համակարգ</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">Միացեք այլ Wi-Fi ցանցերի</translation>
 <translation id="2705001408393684014">Միացնել/անջատել խոսափողը։ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
+<translation id="271033894570825754">New</translation>
 <translation id="2710984741481549981">Կողպել պատուհանները</translation>
 <translation id="2718395828230677721">Գիշերային ռեժիմ</translation>
 <translation id="2726420622004325180">Թեժ կետն ակտիվացնելու համար հեռախոսում պետք է միացված լինի բջջային ինտերնետը</translation>
@@ -1096,6 +1099,7 @@
 <translation id="492453977506755176">Տեսագրման ռեժիմի ստեղն</translation>
 <translation id="4925542575807923399">Այս հաշվի ադմինիստրատորը պահանջում է, որ այս հաշիվը լինի առաջին մուտքգործած հաշիվը բազմակի մուտքի աշխատաշրջանում:</translation>
 <translation id="493076006037866439">Փոքրացնել էկրանի մասշտաբը</translation>
+<translation id="4932733599132424254">Ամսաթիվ</translation>
 <translation id="4936329710968938986">Բոլորը, անջատված է</translation>
 <translation id="4937170330762390348">Թելադրման օգնությամբ դուք կարող եք տեքստ մուտքագրել ձեր ձայնի միջոցով։ Սեղմեք թելադրման ստեղնը կամ ընտրեք խոսափողի պատկերակը էկրանի ներքևում, երբ տեքստի մուտքագրման դաշտում լինեք։ Թելադրման համար սահմանված է <ph name="LANGUAGE" /> լեզուն։ Խոսքի ֆայլերը կներբեռնվեն, որպեսզի կարողանաք օգտագործել թելադրումն անցանց ռեժիմում։ Ցանկացած ժամանակ կարող եք փոխել թելադրման լեզուն՝ անցնելով Կարգավորումներ &gt; Հատուկ գործառույթներ։</translation>
 <translation id="4938176435186993759">Թաքցնել բոլոր առաջարկները</translation>
@@ -1104,6 +1108,7 @@
 <translation id="495046168593986294">Ոլորել վեր</translation>
 <translation id="4950800194215951939">Հարմարեցրեք խաղային ընթացքը</translation>
 <translation id="4952936045814352993">«Հեռախոսի տեղորոշում» գործառույթն անհասանելի է, երբ ծանուցումների ազդանշաններն անջատված են</translation>
+<translation id="4953585991029886728">Տեքստի խմբագրում</translation>
 <translation id="4960324571663582548">Կառավարիչը (<ph name="MANAGER" />) պահանջում է, որ վերադառնաք <ph name="DEVICE_TYPE" /> սարքի օպերացիոն համակարգի նախորդ տարբերակին։ Սարքը կվերակայվի, և բոլոր տվյալները կջնջվեն։</translation>
 <translation id="4961318399572185831">Էկրանի հեռարձակում</translation>
 <translation id="4964188651935955085">Եթե անջատեք Bluetooth-ը, այս արտաքին սարքը կանջատվի ձեր <ph name="DEVICE_TYPE" />-ից՝</translation>
@@ -1363,6 +1368,7 @@
 <translation id="5819918159912280082">Ձեր Chromebook-ը անսպասելիորեն վերագործարկվեց։ Բացեք նախորդ պատուհանները և հավելվածները։</translation>
 <translation id="5823239091726045201">Google Tasks-ի առաջադրանքները դիտարկիչում</translation>
 <translation id="5825969630400862129">Կապված սարքերի կարգավորումներ</translation>
+<translation id="5830180081891717894">ևս <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Դադարեցնել <ph name="ROUTE_TITLE" /> ներդիրի հեռարձակումը «<ph name="RECEIVER_NAME" />» սարքին</translation>
 <translation id="5841296711770970362">Անցնել հաջորդ կատարմանը</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" />-ի թեժ կետը միացված է, որևէ սարք դրան չի միացել</translation>
@@ -1424,6 +1430,7 @@
 <translation id="6032620807120418574">Լիաէկրան ռեժիմում տեսագրելու համար սեղմեք էկրանի որևէ կետ</translation>
 <translation id="6040071906258664830">Ձայնագրումը <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Փակել</translation>
+<translation id="6042308850641462728">Ավելին</translation>
 <translation id="6043212731627905357">Այս մոնիտորը համատեղելի չէ ձեր <ph name="DEVICE_TYPE" /> սարքի հետ (մոնիտորը չի աջակցվում):</translation>
 <translation id="6043994281159824495">Դուրս գրվել</translation>
 <translation id="6045629311476491587">Օգտագործվում է <ph name="APP_COUNT" /> հավելվածի կողմից</translation>
@@ -1890,6 +1897,7 @@
 <translation id="7748275671948949022">Առանձնացնել գործարկիչի կոճակը դարակում</translation>
 <translation id="7749443890790263709">Աշխատասեղանների առավելագույն թույլատրելի քանակը լրացել է:</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Ցույց տալ բոլորը</translation>
 <translation id="7759183637555564029">Տեքստագրիչ և «Օգնիր ինձ կարդալ» գործառույթները ցանկացած պահի կարող եք Կարգավորումներում անջատել։ <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Ընտրեք և լսեք</translation>
 <translation id="7769299611924763557">GIF ֆայլը շուտով պատրաստ կլինի</translation>
@@ -2023,6 +2031,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից։</translation>
 <translation id="8155628902202578800">Բացել <ph name="USER_EMAIL_ADDRESS" /> հաշվի տեղեկությունների երկխոսության պատուհանը</translation>
 <translation id="8167567890448493835">Օգտագործվում է՝ <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Բովանդակություն</translation>
 <translation id="8185090165691050712">Միացնել/անջատել ընտրացանկը՝ կողպման ռեժիմի չափը փոխելու համար</translation>
 <translation id="8192727139462702395">Եթե անջատեք Bluetooth-ը, այս արտաքին սարքերը կանջատվեն ձեր <ph name="DEVICE_TYPE" />-ից՝</translation>
 <translation id="8198456017687137612">Ներդիրի հեռարձակում</translation>
@@ -2070,6 +2079,7 @@
 <translation id="8375916635258623388">Այս <ph name="DEVICE_NAME" /> սարքը և ձեր հեռախոսը ավտոմատ կկապվեն</translation>
 <translation id="8380784334203145311">Բարի գիշեր,</translation>
 <translation id="8382715499079447151">Ապահով դիտում</translation>
+<translation id="8383614331548401927">Բարի վերադարձ</translation>
 <translation id="8388750414311082622">Վերջին աշխատասեղանը չի կարող հեռացվել:</translation>
 <translation id="8394567579869570560">Ձեր ծնողը կողպել է սարքը</translation>
 <translation id="8401850874595457088">Բացել լեզվի ընտրացանկը</translation>

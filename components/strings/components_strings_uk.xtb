@@ -1742,6 +1742,7 @@
 <translation id="4235360514405112390">Дійсний</translation>
 <translation id="4239799716689808527">Етикетки</translation>
 <translation id="4242380780309416996">Конверт (щільний)</translation>
+<translation id="4242981939686657948">Щоб спробувати розширений пошук в історії вебперегляду, увімкніть налаштування</translation>
 <translation id="4244926541863471678">Плівка</translation>
 <translation id="4246517972543675653">Навчання за кордоном</translation>
 <translation id="4250431568374086873">Ваше з’єднання з цим сайтом не повністю захищене</translation>
@@ -2420,7 +2421,6 @@
 <translation id="555037537507405574">розширені функції принтера</translation>
 <translation id="555128936272638662">Аксесуари для мобільних телефонів і бездротових пристроїв</translation>
 <translation id="5551890439174915351">100 x 200 мм</translation>
-<translation id="5552137475244467770">Chrome періодично зіставляє ваші паролі зі списками, які були опубліковані онлайн. Під час цього ваші паролі й імена користувачів шифруються, тож їх ніхто не може прочитати, навіть Google.</translation>
 <translation id="5554520618550346933">Коли ви використовуєте пароль, Chrome попереджає вас, якщо його опубліковано в Інтернеті. Під час цього ваші паролі й імена користувачів шифруються, тож їх ніхто не може прочитати, навіть Google.</translation>
 <translation id="5556459405103347317">Перезавантажити</translation>
 <translation id="5558083606899411167">Кондиціонери</translation>
@@ -4080,7 +4080,7 @@
 <translation id="8671519637524426245">Значення <ph name="SECURE_DNS_SALT" /> не відповідає вимогам щодо розміру.</translation>
 <translation id="867224526087042813">Підпис</translation>
 <translation id="8672535691554698269">Комп’ютерні мережі</translation>
-<translation id="8675446170353411473">У сервіс <ph name="CLOUD_PROVIDER" /> завантажуються файли</translation>
+<translation id="8675446170353411473">Ваші файли завантажуються в сервіс <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Без затримки</translation>
 <translation id="8680536109547170164">"<ph name="QUERY" />", відповідь: "<ph name="ANSWER" />"</translation>
 <translation id="8681531050781943054">Не вдалося завантажити веб-сторінку <ph name="PAGE" />.</translation>

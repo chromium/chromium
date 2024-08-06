@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Säätimet</translation>
 <translation id="2652403576514495859">ota sanelu käyttöön tai poista se käytöstä</translation>
 <translation id="2653659639078652383">Lähetä</translation>
-<translation id="2653807227758181366">Kuvaile taustakuvaa, jonka haluat luoda, tai käytä esimerkkikehotetta</translation>
 <translation id="2654647726140493436">Älä sammuta laitetta (<ph name="DEVICE_TYPE" />) tai irrota virtajohtoa (<ph name="DEVICE_TYPE" />) päivityksen aikana</translation>
 <translation id="2656001153562991489">Vain Chromebook Plus</translation>
 <translation id="2665671725390405060">Kuuntele ääntäminen</translation>
@@ -1366,6 +1365,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8208861521865154048">Edut</translation>
 <translation id="8226628635270268143">Valitse suosikkikuvat ja ‑albumit</translation>
 <translation id="8227119283605456246">Liitä tiedosto</translation>
+<translation id="8227488649450500937">Kokeile jotakin näistä kehotteista tai tutustu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />kehoteoppaaseen<ph name="END_LINK_PROMPTING_GUIDE" />.</translation>
 <translation id="8230672074305416752">Oletusarvoisen verkkoyhdyskäytävän ping epäonnistui</translation>
 <translation id="8238771987802558562">Valitse APN</translation>
 <translation id="8246209727385807362">Tuntematon operaattori</translation>

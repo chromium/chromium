@@ -35,6 +35,7 @@
 <translation id="1554731936187952550">‏האבטחה החזקה ביותר של Chrome מגינה עליך מפני אתרים מזיקים</translation>
 <translation id="1615715390546812898">‏חיפוש קולי ב-Chrome.</translation>
 <translation id="1657395063736185342">‏חיפוש רכיבים חזותיים ב-Chrome</translation>
+<translation id="1670609221633730681">‏טיפ ל-Chrome: אפשר לבחור את המיקום של סרגל הכתובות</translation>
 <translation id="1675955119303651351">‏חלק מהנתונים ב-Chrome עדיין לא נשמרו בחשבון Google.
         כדאי לחכות כמה דקות לפני היציאה מהחשבון. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו.</translation>
 <translation id="1682483655351012182">‏סנכרון נתוני Chrome שלך</translation>
@@ -113,12 +114,14 @@
 <translation id="3984746313391923992">‏לפי דרישת הארגון שלך, אין אפשרות להתחבר לחשבון ב-Chrome.</translation>
 <translation id="3988789688219830639">‏ל-Google Chrome אין גישה לתמונות או לסרטונים שלך. אפשר גישה ב'הגדרות iOS' &gt; 'פרטיות' &gt; 'תמונות'.</translation>
 <translation id="4064699917955374540">‏כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך לאמת את הזהות שלך.</translation>
+<translation id="4066411101507716142">‏אפשר לגשת מהר יותר ל-Chrome דרך ה-Dock במסך הבית של האייפד.</translation>
 <translation id="4067858366537947361">‏פתיחה של כרטיסייה פרטית ב-Chrome</translation>
 <translation id="4093042601582616698">‏להגדיר את Chrome כדפדפן ברירת המחדל?</translation>
 <translation id="417201473131094001">‏אין תמיכה ב-Chrome Canary</translation>
 <translation id="424864128008805179">‏האם לצאת מ-Chrome?</translation>
 <translation id="4251174643044751591">‏פתיחת דף ההגדרות של אמצעי תשלום ב-Chrome.</translation>
 <translation id="4286914711740227883">‏מחיקה של נתוני הגלישה ב-Chrome</translation>
+<translation id="430839890088895017">‏טיפ ל-Chrome: כדאי להעביר את Chrome ל-Dock</translation>
 <translation id="4453284704333523777">‏ניהול של הגדרות Chrome</translation>
 <translation id="4523886039239821078">‏תוספים מסוימים גורמים ל-Chrome לקרוס. יש להסיר את ההתקנה שלהם:</translation>
 <translation id="4633328489441962921">‏Chrome לא יכול לחפש עדכונים</translation>
@@ -236,6 +239,7 @@
 <translation id="7581063337314642333">‏ביקור בתצוגת הכרטיסיות ב-Chrome</translation>
 <translation id="7662994914830945754">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chrome יש להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="7669869107155339016">‏עוברים להגדרות Chrome.</translation>
+<translation id="7683540977001394271">‏אפשר לגשת מהר יותר ל-Chrome דרך ה-Dock במסך הבית של האייפון.</translation>
 <translation id="769104993356536261">‏שימוש בפעולות ב-Chrome ב-iOS</translation>
 <translation id="7693590760643069321">‏עכשיו משתמשים ב-Chrome בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="7698568245838009292">‏ל-Chrome דרושה גישה למצלמה</translation>

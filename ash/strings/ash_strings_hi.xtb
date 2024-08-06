@@ -405,6 +405,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> की झलक. इस डेस्क का इस्तेमाल किया जा रहा है.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" को <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> हर्ट्ज़) रिज़ॉल्यूशन में सेट कर दिया गया है. अगर इसकी पुष्टि नहीं की जाती है, तो सेटिंग <ph name="TIMEOUT_SECONDS" /> में पहले जैसी कर दी जाएंगी.</translation>
 <translation id="2487915095798731898">जुड़ें</translation>
+<translation id="2496180316473517155">ब्राउज़िंग इतिहास</translation>
 <translation id="2499445554382787206">डेस्क प्रोफ़ाइल मेन्यू. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">स्टिकी बटन</translation>
 <translation id="2504454902900101003">अपने फ़ोन में मौजूद हाल ही की फ़ोटो, कॉन्टेंट, और सूचनाओं को देखने की सुविधा सेट अप करने की प्रक्रिया रद्द करें</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">ऑनलाइन साइन इन करना ज़रूरी है</translation>
 <translation id="2612072250312279703">एक्टिविटी मॉनिटर</translation>
 <translation id="2612614436418177118">किसी ऐप्लिकेशन आइकॉन को ऐप्लिकेशन ग्रिड में ले जाने के लिए</translation>
+<translation id="2619052155095999743">सम्मिलित करें</translation>
 <translation id="2619326010008283367"><ph name="TOTAL_STEPS" /> में से <ph name="STEP" /> चरण. लॉन्चर में अपने डिवाइस की सेटिंग देखी जा सकती हैं. सेटिंग में जाकर, <ph name="PRODUCT_NAME" /> को पसंद के मुताबिक बनाएं. जैसे, वॉलपेपर बदलना या स्क्रीन सेवर सेट करना.</translation>
 <translation id="2620016719323068571"><ph name="CATEGORY" />, फ़ाइलें, ऐप्लिकेशन, और दूसरी चीज़ें खोजें...</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">अन्य वाई-फ़ाई नेटवर्क से कनेक्ट करें</translation>
 <translation id="2705001408393684014">माइक टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ऊपर</translation>
+<translation id="271033894570825754">नया</translation>
 <translation id="2710984741481549981">विंडो लॉक करें</translation>
 <translation id="2718395828230677721">नाइट लाइट</translation>
 <translation id="2726420622004325180">आपके फ़ोन में मोबाइल डेटा होना ज़रूरी है, ताकि हॉटस्पॉट की सुविधा दी जा सके</translation>
@@ -1098,6 +1101,7 @@
 <translation id="492453977506755176">कैप्चर मोड वाला बटन</translation>
 <translation id="4925542575807923399">इस खाते के एडमिन के लिए यह ज़रूरी है कि किसी एक से ज़्यादा साइन-इन वाले सत्र में यह खाता पहला साइन इन खाता हो.</translation>
 <translation id="493076006037866439">स्क्रीन पर ज़ूम आउट करें</translation>
+<translation id="4932733599132424254">तारीख</translation>
 <translation id="4936329710968938986">सभी के लिए, बंद है</translation>
 <translation id="4937170330762390348">लिखवाने की सुविधा की मदद से, बोलकर टाइप किया जा सकता है. जब आप टेक्स्ट फ़ील्ड में हों, तो लिखवाने वाला बटन दबाएं या स्क्रीन पर सबसे नीचे मौजूद माइक्रोफ़ोन आइकॉन को चुनें. लिखवाने की आपकी भाषा <ph name="LANGUAGE" /> पर सेट है. बोली पहचानने वाली फ़ाइलें डाउनलोड की जाएंगी, ताकि आप लिखवाने की सुविधा का ऑफ़लाइन इस्तेमाल कर सकें. आपके पास सेटिंग &gt; सुलभता में जाकर, कभी भी लिखवाने की भाषा बदलने का विकल्प मौजूद है.</translation>
 <translation id="4938176435186993759">सभी सुझाव छिपाएं</translation>
@@ -1106,6 +1110,7 @@
 <translation id="495046168593986294">ऊपर स्क्रोल करें</translation>
 <translation id="4950800194215951939">गेम खेलने के अनुभव को अपनी पसंद के मुताबिक बनाएं</translation>
 <translation id="4952936045814352993">अलार्म की आवाज़ें बंद करने पर, फ़ोन का पता लगाने की सुविधा उपलब्ध नहीं होती</translation>
+<translation id="4953585991029886728">लेख में बदलाव करें</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> के लिए ज़रूरी है कि आप अपने <ph name="DEVICE_TYPE" /> को पिछले वर्शन पर रोल बैक करें. आपका डिवाइस रीसेट हो जाएगा. साथ ही, आपका सारा डेटा मिट जाएगा.</translation>
 <translation id="4961318399572185831">स्‍क्रीन कास्‍ट करें</translation>
 <translation id="4964188651935955085">ब्लूटूथ बंद करने पर, यह बाहरी डिवाइस आपके <ph name="DEVICE_TYPE" /> से डिसकनेक्ट हो जाएगा:</translation>
@@ -1427,6 +1432,7 @@
 <translation id="6032620807120418574">फ़ुल स्क्रीन को रिकॉर्ड करने के लिए कहीं पर भी क्लिक करें</translation>
 <translation id="6040071906258664830">माइक्रोफ़ोन से ऑडियो रिकॉर्ड <ph name="STATE" /></translation>
 <translation id="6040143037577758943">बंद करें</translation>
+<translation id="6042308850641462728">और ज़्यादा</translation>
 <translation id="6043212731627905357">यह मॉनीटर आपके <ph name="DEVICE_TYPE" /> के साथ काम नहीं कर रहा है (मॉनीटर समर्थित नहीं है).</translation>
 <translation id="6043994281159824495">अब प्रस्थान करें</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> ऐप्लिकेशन ने इस्तेमाल किया</translation>
@@ -1893,6 +1899,7 @@
 <translation id="7748275671948949022">शेल्फ़ पर लॉन्चर बटन हाइलाइट करें</translation>
 <translation id="7749443890790263709">ज़्यादा से ज़्यादा इतने ही डेस्क जोड़े जा सकते हैं.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">सभी दिखाएं</translation>
 <translation id="7759183637555564029">सेटिंग में जाकर, 'लिखने में मेरी मदद करो' और 'पढ़ने में मेरी मदद करो' सुविधा को किसी भी समय बंद किया जा सकता है. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">चुनें और सुनें</translation>
 <translation id="7769299611924763557">आपका GIF जल्द ही तैयार हो जाएगा</translation>
@@ -2026,6 +2033,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> इस सेटिंग को आपका एडमिन मैनेज करता है.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> के लिए, जानकारी वाला डायलॉग खोलें.</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> का इस्तेमाल किया जा रहा है</translation>
+<translation id="8168435359814927499">कॉन्टेंट</translation>
 <translation id="8185090165691050712">मेन्यू को चालू या बंद करने के लिए, ताकि लॉक मोड का साइज़ बदला जा सके</translation>
 <translation id="8192727139462702395">ब्लूटूथ बंद करने पर, ये बाहरी डिवाइस आपके <ph name="DEVICE_TYPE" /> से डिसकनेक्ट हो जाएंगे:</translation>
 <translation id="8198456017687137612">कास्टिंग टैब</translation>

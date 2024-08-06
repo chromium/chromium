@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Comenzi</translation>
 <translation id="2652403576514495859">activează sau comută dictarea</translation>
 <translation id="2653659639078652383">Trimite</translation>
-<translation id="2653807227758181366">Descrie imaginea de fundal pe care dorești să o creezi sau folosește un exemplu de solicitare</translation>
 <translation id="2654647726140493436">Nu opri dispozitivul <ph name="DEVICE_TYPE" /> și nu deconecta cablul de alimentare pentru <ph name="DEVICE_TYPE" /> în timpul actualizării</translation>
 <translation id="2656001153562991489">Exclusiv pentru Chromebook Plus</translation>
 <translation id="2665671725390405060">Ascultă pronunția</translation>
@@ -1366,6 +1365,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8208861521865154048">Avantaje</translation>
 <translation id="8226628635270268143">Alege fotografiile și albumele preferate</translation>
 <translation id="8227119283605456246">Atașează un fișier</translation>
+<translation id="8227488649450500937">Încearcă una dintre aceste solicitări sau consultă <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ghidul pentru solicitări<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Nu s-a putut da ping către gateway-ul de rețea prestabilit</translation>
 <translation id="8238771987802558562">Alege un APN</translation>
 <translation id="8246209727385807362">Operator necunoscut</translation>

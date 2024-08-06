@@ -405,6 +405,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> 미리보기입니다. 활성 데스크입니다.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" 디스플레이가 <ph name="RESOLUTION" />(<ph name="REFRESH_RATE" />Hz) 해상도로 변경되었습니다. 확인하지 않으면 <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
 <translation id="2487915095798731898">가입</translation>
+<translation id="2496180316473517155">인터넷 사용 기록</translation>
 <translation id="2499445554382787206">데스크 프로필 메뉴. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">고정키</translation>
 <translation id="2504454902900101003">휴대전화의 최근 사진, 미디어, 알림 보기 설정 닫기</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">온라인 로그인 필요</translation>
 <translation id="2612072250312279703">활동 모니터링</translation>
 <translation id="2612614436418177118">앱 그리드 내에서 앱 아이콘 이동</translation>
+<translation id="2619052155095999743">삽입</translation>
 <translation id="2619326010008283367">둘러보기 <ph name="TOTAL_STEPS" />단계 중 <ph name="STEP" />단계입니다. 런처에서 기기 설정을 찾을 수 있습니다. 배경화면을 변경하거나 화면 보호기를 설정하는 등 설정에서 <ph name="PRODUCT_NAME" />을 맞춤설정해 보세요.</translation>
 <translation id="2620016719323068571"><ph name="CATEGORY" />, 파일, 앱 등 검색</translation>
 <translation id="2620436844016719705">시스템</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">다른 Wi-Fi 네트워크에 연결</translation>
 <translation id="2705001408393684014">마이크를 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">위</translation>
+<translation id="271033894570825754">New</translation>
 <translation id="2710984741481549981">창 잠금</translation>
 <translation id="2718395828230677721">야간 조명</translation>
 <translation id="2726420622004325180">핫스팟을 제공하려면 휴대전화에서 모바일 데이터를 이용할 수 있어야 합니다.</translation>
@@ -1086,6 +1089,7 @@
 <translation id="4890408602550914571">휴대전화가 근처에 있고 블루투스가 켜져 있는지 확인하세요.</translation>
 <translation id="4892981359753171125">얼굴 제어</translation>
 <translation id="4895488851634969361">배터리 충전이 완료되었습니다.</translation>
+<translation id="4902797682482387055">집중할 작업 추천</translation>
 <translation id="490375751687810070">세로</translation>
 <translation id="490788395437447240">배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="491504982845934899">기기 설정 후 <ph name="NETWORK_NAME" /> 활성화</translation>
@@ -1096,6 +1100,7 @@
 <translation id="492453977506755176">캡처 모드 키</translation>
 <translation id="4925542575807923399">이 계정이 멀티 로그인 세션에서 처음으로 로그인하는 계정이 되도록 계정 관리자가 요청합니다.</translation>
 <translation id="493076006037866439">화면 축소</translation>
+<translation id="4932733599132424254">날짜</translation>
 <translation id="4936329710968938986">모든 사용자, 사용 안 함</translation>
 <translation id="4937170330762390348">음성기록을 사용하면 음성으로 입력할 수 있습니다. 텍스트 입력란에서 음성기록 키를 누르거나 화면 하단의 마이크 아이콘을 선택합니다. 음성기록 언어가 <ph name="LANGUAGE" />로 설정되어 있습니다. 음성 파일은 오프라인으로 음성기록을 사용할 수 있도록 다운로드됩니다. 언제든지 설정 &gt; 접근성에서 음성기록 언어를 변경할 수 있습니다.</translation>
 <translation id="4938176435186993759">모든 추천 숨기기</translation>
@@ -1104,6 +1109,7 @@
 <translation id="495046168593986294">위로 스크롤</translation>
 <translation id="4950800194215951939">게임 환경 맞춤설정</translation>
 <translation id="4952936045814352993">알람 소리가 사용 중지되어 있는 상태에서는 휴대전화 찾기를 사용할 수 없습니다.</translation>
+<translation id="4953585991029886728">텍스트 수정</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" />에서 <ph name="DEVICE_TYPE" /> 기기를 롤백할 것을 요구합니다. 기기가 재설정되고 모든 데이터가 삭제됩니다.</translation>
 <translation id="4961318399572185831">화면 전송</translation>
 <translation id="4964188651935955085">블루투스를 사용 중지하면 다음의 외부 기기와 <ph name="DEVICE_TYPE" />의 연결이 해제됩니다.</translation>
@@ -1425,6 +1431,7 @@
 <translation id="6032620807120418574">전체 화면을 녹화하려면 아무 곳이나 클릭하세요.</translation>
 <translation id="6040071906258664830">마이크 녹음 <ph name="STATE" /></translation>
 <translation id="6040143037577758943">닫기</translation>
+<translation id="6042308850641462728">자세히</translation>
 <translation id="6043212731627905357"><ph name="DEVICE_TYPE" />과(와) 호환되지 않는 모니터입니다(지원되지 않는 모니터임).</translation>
 <translation id="6043994281159824495">지금 로그아웃</translation>
 <translation id="6045629311476491587">앱 <ph name="APP_COUNT" />개에서 사용 중</translation>
@@ -1891,6 +1898,7 @@
 <translation id="7748275671948949022">앱 표시줄의 런처 버튼 강조 표시</translation>
 <translation id="7749443890790263709">최대 데스크 개수에 도달했습니다.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">모두 표시</translation>
 <translation id="7759183637555564029">언제든지 설정에서 글쓰기 도우미 기능 및 읽기 도우미 기능을 사용 중지할 수 있습니다. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">텍스트 읽어주기</translation>
 <translation id="7769299611924763557">곧 GIF가 준비됩니다</translation>
@@ -2024,6 +2032,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> 관리자가 관리하는 설정입니다.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> 정보 대화상자 열기</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> 사용 중</translation>
+<translation id="8168435359814927499">콘텐츠</translation>
 <translation id="8185090165691050712">잠금 모드의 크기를 조절할 수 있는 메뉴 사용 설정/사용 중지</translation>
 <translation id="8192727139462702395">블루투스를 사용 중지하면 다음의 외부 기기와 <ph name="DEVICE_TYPE" />의 연결이 해제됩니다.</translation>
 <translation id="8198456017687137612">탭 전송 중</translation>

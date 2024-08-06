@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Narancssárga</translation>
 <translation id="125153950246128346">Koppintson másik lap megtekintéséhez</translation>
 <translation id="1273910660700874265">A következő lapcsoport beállításai: <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1340839264183302272">Kilépés a csoportból</translation>
 <translation id="1419023007528516122">Ezzel véglegesen törli a csoportot az eszközről.</translation>
 <translation id="1486715732399361704">Itt találja az összes lapcsoportot</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> perce létrehozva}other{<ph name="NUM_MINS_MANY" /> perce létrehozva}}</translation>
@@ -41,6 +42,7 @@
 <translation id="2801787514987684416">Megtekinti az üzlet adatait?</translation>
 <translation id="2928243913527329289">Google | Az üzletről</translation>
 <translation id="2977480621796371840">Eltávolítás a csoportból</translation>
+<translation id="29919168204617356">Az inaktív lapok automatikusan bezáródnak. Az Előzményekben bármikor megtalálhatja őket.</translation>
 <translation id="3008554597174452548">Termék nyomon követésének leállítása</translation>
 <translation id="3026391124054406831">Csoportokat hozhat létre a lapok rendszerezéséhez.</translation>
 <translation id="3051031624272448591">Az előzmények között bármikor újra megnyithatja őket.</translation>
@@ -51,6 +53,7 @@
 <translation id="3322827343001922122">A(z) <ph name="TITLE_OF_GROUP" /> lapcsoport műveleti menüjének megnyitása</translation>
 <translation id="3328308545011660196">Javaslat: Úgy tűnik, <ph name="NUMBER_OF_TABS" /> lap kapcsolódik egymáshoz. Csoportosítja őket?</translation>
 <translation id="3547352561153509682">Ezzel törli a csoportot minden olyan eszközről, amelyen be van jelentkezve a(z) <ph name="USER_EMAIL" /> fiókba.</translation>
+<translation id="3613492231657284463">Inaktív lapok elrejtése párbeszédpanel</translation>
 <translation id="3652027618765638838"><ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
 <translation id="374923079891132274">Megosztási lap előnézeti indexképe.</translation>
 <translation id="381219490185664296">Megszünteti a lapcsoport csoportosítását?</translation>
@@ -120,6 +123,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Lap mozgatása balra</translation>
 <translation id="6615455863669487791">Megjelenítés</translation>
+<translation id="6694634756612002311">Megosztás kezelése</translation>
 <translation id="6744956528665271406">Csoport színének szerkesztése</translation>
 <translation id="6856809498882026482">Több lapot kiválasztó mód elrejtése</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Lap megosztása}other{Lapok megosztása}}</translation>
@@ -137,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> vélemény a Google-on}other{<ph name="REVIEWS_COUNT_MANY" /> vélemény a Google-on}}</translation>
 <translation id="7559245342362162951">A csoportban lévő lapok teljes képernyős rácsszerkezetben való megjelenítése</translation>
 <translation id="7658239707568436148">Mégse</translation>
+<translation id="7688386659311034820">Inaktív lapok párbeszédpanel</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kiválasztott lap megosztása}other{<ph name="TABS_COUNT_MANY" /> kiválasztott lap megosztása}}</translation>
 <translation id="7773714564112603605">Lap eltávolítása és csoport törlése</translation>
 <translation id="7792771145871471484">Javaslatok áttekintése.</translation>
@@ -171,6 +176,7 @@
 <translation id="8926389886865778422">Többször ne figyelmeztessen</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> lapot tartalmazó lapcsoport kibontása.}other{<ph name="TABS_COUNT_MANY" /> lapot tartalmazó lapcsoport kibontása.}}</translation>
 <translation id="9090098097337832354">Az üzlettel kapcsolatos információs panel be van zárva</translation>
+<translation id="9111228330448174435">Párbeszédpanel megjelenítése új lapcsoport létrehozásakor</translation>
 <translation id="9150694013019234766">Válthat a képernyő aljánál lévő lapcsoport lapjai között</translation>
 <translation id="9169594135889675189">Új lap hozzáadása a csoporthoz</translation>
 <translation id="9216898458513705996">A lapok nyitva maradnak ezen az eszközön, de a csoport törlődni fog minden olyan eszközről, amelyen be van jelentkezve a(z) <ph name="USER_EMAIL" /> fiókba.</translation>

@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">సిగ్నల్ బలహీనంగా ఉంది</translation>
 <translation id="1300115153046603471">APN అనేది ఆటోమేటిక్ సెట్టింగ్ రకం, <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">క్రియేట్ చేసిన తేదీ</translation>
 <translation id="1308754910631152188">అప్‌డేట్ అవుతోంది (<ph name="PERCENTAGE_VALUE" />% పూర్తయింది)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> నిమిషాలు</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> నెట్‌వర్క్ ఏదీ అందుబాటులో లేదు</translation>
@@ -339,7 +340,6 @@
 <translation id="2645380101799517405">కంట్రోల్స్</translation>
 <translation id="2652403576514495859">డిక్టేషన్‌‌ను ఎనేబుల్ చేయండి లేదా టోగుల్ చేయండి</translation>
 <translation id="2653659639078652383">సమర్పించు</translation>
-<translation id="2653807227758181366">మీరు శాంపిల్ ప్రాంప్ట్‌ను క్రియేట్ చేయాలనుకుంటున్న లేదా ఉపయోగించాలనుకుంటున్న వాల్‌పేపర్‌ను వివరించండి</translation>
 <translation id="2654647726140493436">అప్‌డేట్ ప్రోగ్రెస్‌లో ఉన్నప్పుడు, మీ <ph name="DEVICE_TYPE" />‌ను ఆఫ్ చేయడం కానీ, లేదా <ph name="DEVICE_TYPE" /> పవర్ కేబుల్‌ను అన్‌ప్లగ్ చేయడం కానీ చేయవద్దు</translation>
 <translation id="2656001153562991489">ప్రత్యేకించి Chromebook Plusకు మాత్రమే</translation>
 <translation id="2665671725390405060">ఉచ్చారణను వినండి</translation>
@@ -506,6 +506,7 @@
 <translation id="3708186454126126312">ఇంతకు మునుపు కనెక్ట్ చేయబడినవి</translation>
 <translation id="3715651196924935218">ఫ్లోట్ మోడ్ నుండి నిష్క్రమించండి</translation>
 <translation id="3716250181321371108">కంట్రోల్‌ను క్రియేట్ చేయండి</translation>
+<translation id="3716830479327464973">మీరు దీన్ని అనుమతించినప్పుడు, Recorder మీ ఆడియో రికార్డింగ్‌లను వీటి కోసం విశ్లేషిస్తుంది:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> రివ్యూలు)</translation>
 <translation id="3748026146096797577">కనెక్ట్ కాలేదు</translation>
 <translation id="3749289110408117711">ఫైల్ పేరు</translation>
@@ -532,6 +533,7 @@
 <translation id="3869314628814282185">టల్లే</translation>
 <translation id="387301095347517405">మీ బ్యాటరీ పూర్తిగా ఛార్జ్ అయిన పర్యాయాల సంఖ్య</translation>
 <translation id="3877066159641251281">అనువాదాన్ని వినండి</translation>
+<translation id="3880601782712134623">ఆటోమేటిక్‌గా విభిన్న వాయిస్‌లను గుర్తించి, ప్రతి ఒక్క స్పీకర్‌కు స్పీకర్ 1, స్పీకర్ 2 వంటి సాధారణ లేబుల్‌ను ఇస్తుంది</translation>
 <translation id="3885327323343477505">స్క్రీన్ సేవర్‌ను మార్చండి</translation>
 <translation id="3889914174935857450">తేదీని రీసెట్ చేయండి</translation>
 <translation id="3897092660631435901">మెనూ</translation>
@@ -635,6 +637,7 @@
 <translation id="4422041425070339732">కింది వైపు బాణం</translation>
 <translation id="4425149324548788773">నా డ్రైవ్‌</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ఆఫ్‌లో ఉంది</translation>
+<translation id="4428840632568803690">స్పీకర్ <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos టికెట్ గడువు త్వరలో ముగుస్తుంది</translation>
 <translation id="4431821876790500265">రిపోర్ట్‌ను చూడండి</translation>
 <translation id="4443192710976771874">ఎరుపు రంగు</translation>
@@ -757,6 +760,7 @@
 <translation id="5049856988445523908">SIM లాక్ చేయబడింది (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">గ్రూప్‌ పేరు</translation>
 <translation id="5051044138948155788">ఈ పేజీ మాత్రమే ఉంది. ఇది మిమ్మల్ని స్కానింగ్ ప్రారంభ స్క్రీన్‌కు తీసుకువెళ్తుంది.</translation>
+<translation id="5078711626843651677">స్పీకర్ లేబులింగ్ పూర్తయ్యే వరకు వాయిస్ మోడల్స్ పరికరంలో తాత్కాలికంగా స్టోర్ చేయబడతాయి. మీరు దీనిని సెట్టింగ్‌లలో ఎప్పుడైనా ఆఫ్ చేయవచ్చు.</translation>
 <translation id="5078983345702708852">ఆధునికంగా ఉంది</translation>
 <translation id="5087864757604726239">వెనుకకు</translation>
 <translation id="5088172560898466307">సర్వర్ హోస్ట్ పేరు</translation>
@@ -1107,6 +1111,7 @@
 <translation id="6905163627763043954">దీన్ని ప్రయత్నించు</translation>
 <translation id="6905724422583748843">తిరిగి <ph name="PAGE_NAME" />‌కు</translation>
 <translation id="6910312834584889076">స్కానర్ కవర్ తెరిచి ఉంది. కవర్‌ను మూసివేసి, మళ్లీ ట్రై చేయండి.</translation>
+<translation id="6910845598686542904">రికార్డింగ్‌లో కనుగొనబడిన వాయిస్‌ల మోడల్స్‌ను గణిస్తుంది</translation>
 <translation id="6911383237894364323">మీడియా సర్వర్‌లకు కనెక్ట్ చేయడం సాధ్యం కాలేదు</translation>
 <translation id="6930242544192836755">వ్యవధి</translation>
 <translation id="6930597342185648547">బ్యాక్‌గ్రౌండ్ గురించి వివరాలు</translation>
@@ -1291,6 +1296,7 @@
 <translation id="7802764839223122985">కీ ఏదీ నొక్కబడలేదు. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">వద్దు</translation>
 <translation id="7805768142964895445">స్థితి</translation>
+<translation id="7811024689617730980">1 నుండి 31 వరకు ఆటోమేటిక్ రీసెట్ కోసం ఒక రోజును ఎంచుకోండి</translation>
 <translation id="7813073042185856802">పర్వతం</translation>
 <translation id="7819857487979277519">PSK (WPA లేదా RSN)</translation>
 <translation id="7824219488248240180">పోస్ట్-ఇంప్రెషనిస్ట్</translation>
@@ -1366,6 +1372,7 @@
 <translation id="8208861521865154048">పెర్క్‌లు</translation>
 <translation id="8226628635270268143">మీకు ఇష్టమైన ఫోటోలు, ఆల్బమ్‌లను ఎంచుకోండి</translation>
 <translation id="8227119283605456246">ఫైల్‌ను జోడించండి</translation>
+<translation id="8227488649450500937">ఈ ప్రాంప్ట్‌లలో ఒక దాన్ని ట్రై చేయండి లేదా <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ప్రాంప్టింగ్ గైడ్‌<ph name="END_LINK_PROMPTING_GUIDE" />ను చూడండి</translation>
 <translation id="8230672074305416752">డిఫాల్ట్ నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
 <translation id="8238771987802558562">APNను ఎంచుకోండి</translation>
 <translation id="8246209727385807362">తెలియని క్యారియర్</translation>
@@ -1571,6 +1578,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> కోసం కీ ఏదీ నొక్కబడలేదు. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">రికార్డింగ్ అంతటా వాయిస్‌లను సరిపోల్చండి, తద్వారా టైప్ చేసిన మాటల ఫైల్ ప్రతి వాయిస్ ఏమి చెప్పింది, ఎప్పుడు చెప్పింది అనే విషయాన్ని ప్రతిబింబిస్తుంది</translation>
 <translation id="952992212772159698">సక్రియం చేయబడలేదు</translation>
 <translation id="95718197892796296">బంక మట్టి</translation>
 <translation id="960719561871045870">ఆపరేటర్ కోడ్</translation>

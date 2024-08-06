@@ -185,7 +185,6 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1124772482545689468">Defnyddiwr</translation>
 <translation id="1125550662859510761">Yn edrych fel <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Brodorol)</translation>
 <translation id="1125921926864945797">Papur wal ac arddull</translation>
-<translation id="1126809382673880764">Nid yw'n eich amddiffyn rhag gwefannau peryglus, lawrlwythiadau nac estyniadau. Byddwch yn dal i gael amddiffyniad Pori'n Ddiogel, lle mae ar gael, mewn gwasanaethau Google eraill, megis Gmail a Search.</translation>
 <translation id="1128090040635299943">Mae Linux wrthi'n cael ei ffurfweddu ar hyn o bryd. Bydd y ffurfweddiad yn cymryd ychydig funudau.</translation>
 <translation id="1128591060186966949">Golygu peiriant chwilio</translation>
 <translation id="1129348283834595293">Seiberpync</translation>
@@ -634,7 +633,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1461041542809785877">Perfformiad</translation>
 <translation id="1461177659295855031">Symud i'r ffolder Bar Nodau Tudalen</translation>
 <translation id="1461288887896722288">Rydych chi newydd fewngofnodi i gyfrif a reolir, a bydd creu proffil newydd a reolir yn eich galluogi i gael mynediad at rai adnoddau sy'n gysylltiedig â'r cyfrif hwnnw.</translation>
-<translation id="1461868306585780092">Rhybuddiwch cyn defnyddio cysylltiadau anniogel</translation>
 <translation id="146219525117638703">Cyflwr ONC</translation>
 <translation id="146220085323579959">Mae'r rhyngrwyd wedi'i ddatgysylltu. Gwiriwch eich cysylltiad â'r rhyngrwyd a rhowch gynnig arall arni.</translation>
 <translation id="1462480037563370607">Ychwanegu gwefannau yn bwrpasol</translation>
@@ -4184,7 +4182,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="3959747296451923142">Cadarnhau tynnu'r tanysgrifiad</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Rhagor o gamau gweithredu ar gyfer <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962119236270174787">Amddiffyniad safonol yn erbyn gwefannau, lawrlwythiadau, ac estyniadau y gwyddys eu bod yn beryglus</translation>
 <translation id="3963753386716096475">Defnyddio ffôn, llechen neu allwedd ddiogelwch wahanol</translation>
 <translation id="3964480518399667971">Diffodd rhwydwaith symudol</translation>
 <translation id="3965965397408324205">Gadael <ph name="PROFILE_NAME" /></translation>
@@ -5526,7 +5523,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4967571733817147990">Addasu botymau'r llygoden</translation>
 <translation id="4967852842111017386">Enw dyfais <ph name="FEATURE_NAME" /></translation>
 <translation id="4971412780836297815">Ar agor pan fydd wedi'i gwblhau</translation>
-<translation id="4971735654804503942">Amddiffyniad cynt a rhagweithiol yn erbyn gwefannau, lawrlwythiadau ac estyniadau peryglus. Mae'n eich rhybuddio am achosion o dor diogelwch mewn perthynas â chyfrineiriau. Mae angen anfon data pori at Google.</translation>
 <translation id="4972129977812092092">Golygu argraffydd</translation>
 <translation id="4972164225939028131">Cyfrinair anghywir</translation>
 <translation id="4972737347717125191">Gall gwefannau ofyn am gael defnyddio dyfeisiau rhithwirionedd a'u data</translation>
@@ -7018,6 +7014,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6075075631258766703">Dilysu ffôn</translation>
 <translation id="6075731018162044558">Wps!  Gwnaeth y system fethu â chael y tocyn mynediad API hirdymor ar gyfer y ddyfais hon.</translation>
 <translation id="6075907793831890935">Cyfnewid data gyda'r ddyfais o'r enw <ph name="HOSTNAME" /></translation>
+<translation id="6076092653254552547">Gosodiadau system</translation>
 <translation id="6076491747490570887">Llwyd golau</translation>
 <translation id="6076576896267434196">Mae'r estyniad "<ph name="EXTENSION_NAME" />" eisiau mynediad at eich cyfrif</translation>
 <translation id="6077131872140550515">Tynnu o'r ffefrynnau</translation>
@@ -8266,7 +8263,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6992554835374084304">Troi gwell gwirio sillafu ymlaen</translation>
 <translation id="6993000214273684335">Mae tab wedi'i dynnu o'r grŵp dienw - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Wrthi'n diweddaru porwr Chrome</translation>
-<translation id="6995899638241819463">Yn eich rhybuddio os yw cyfrineiriau'n cael eu datgelu mewn tor data</translation>
 <translation id="6995984090981858039">Darllen gwybodaeth a data dyfais ChromeOS</translation>
 <translation id="6996245928508281884">Trowch Bluetooth a Wi-Fi eich ffôn ymlaen</translation>
 <translation id="6996438701394974959">Cynyddu yr arddangosiad a maint y testun</translation>
@@ -9403,6 +9399,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7826254698725248775">Dynodwr dyfeisiau croes.</translation>
 <translation id="7828642077514646543">Gwall: Methu â dadgodio’r dystysgrif</translation>
 <translation id="7829877209233347340">Gofynna i riant fewngofnodi i roi caniatâd i ychwanegu cyfrif ysgol</translation>
+<translation id="7830276128493844263">Mae Lleoliad wedi'i ddiffodd yng ngosodiadau'r system</translation>
 <translation id="7830833461614351956">Copïo <ph name="NUM_OF_FILES" /> ffeil i <ph name="CLOUD_PROVIDER" /> i'w hagor?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Bydd geiriau personol sydd wedi'u cadw yn ymddangos yma</translation>

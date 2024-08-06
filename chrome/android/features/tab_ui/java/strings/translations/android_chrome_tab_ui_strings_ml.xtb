@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">ഓറഞ്ച്</translation>
 <translation id="125153950246128346">മറ്റൊരു ടാബ് കാണാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ടാബ് ഗ്രൂപ്പ് ഓപ്ഷനുകൾ</translation>
+<translation id="1340839264183302272">ഗ്രൂപ്പ് വിടുക</translation>
 <translation id="1419023007528516122">ഇത് നിങ്ങളുടെ ഉപകരണത്തിൽ നിന്ന് ഗ്രൂപ്പ് ശാശ്വതമായി ഇല്ലാതാക്കും</translation>
 <translation id="1486715732399361704">നിങ്ങളുടെ എല്ലാ ടാബ് ഗ്രൂപ്പുകളും ഇവിടെ കണ്ടെത്താം</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> മിനിറ്റ് മുമ്പ് സൃഷ്‌ടിച്ചത്}other{<ph name="NUM_MINS_MANY" /> മിനിറ്റ് മുമ്പ് സൃഷ്‌ടിച്ചത്}}</translation>
@@ -122,6 +123,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ടാബ് ഇടത്തേക്ക് നീക്കുക</translation>
 <translation id="6615455863669487791">എന്നെ കാണിക്കുക</translation>
+<translation id="6694634756612002311">പങ്കിടൽ മാനേജ് ചെയ്യുക</translation>
 <translation id="6744956528665271406">ഗ്രൂപ്പിന്റെ നിറം എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6856809498882026482">ഒന്നിലധികം തിരഞ്ഞെടുക്കൽ മോഡ് മറയ്ക്കുക</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ടാബ് പങ്കിടുക}other{ടാബുകൾ പങ്കിടുക}}</translation>
@@ -174,6 +176,7 @@
 <translation id="8926389886865778422">എന്നോട് വീണ്ടും ചോദിക്കരുത്</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബുള്ള ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.}other{<ph name="TABS_COUNT_MANY" /> ടാബുകളുള്ള ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.}}</translation>
 <translation id="9090098097337832354">ഈ സ്റ്റോറിനെ കുറിച്ചുള്ള വിവരങ്ങൾ അടച്ചു</translation>
+<translation id="9111228330448174435">പുതിയ ടാബ് ഗ്രൂപ്പ് സൃഷ്ടിയിൽ ഡയലോഗ് കാണിക്കുക</translation>
 <translation id="9150694013019234766">സ്ക്രീനിന്റെ ചുവടെയുള്ള നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പിലെ, ടാബുകൾക്കിടയിൽ മാറുക</translation>
 <translation id="9169594135889675189">ഗ്രൂപ്പിലേക്ക് പുതിയ ടാബ് ചേർക്കുക</translation>
 <translation id="9216898458513705996">ഈ ഉപകരണത്തിൽ ടാബുകൾ തുറന്നിരിക്കും, എന്നാൽ <ph name="USER_EMAIL" /> എന്നതിലേക്ക് സൈൻ ചെയ്‌തിരിക്കുന്ന എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഗ്രൂപ്പ് ഇല്ലാതാക്കും</translation>

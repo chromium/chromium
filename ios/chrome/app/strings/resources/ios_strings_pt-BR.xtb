@@ -302,6 +302,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2529021024822217800">Abrir todos</translation>
 <translation id="2536991091671391962">Você pode usar as senhas salvas em qualquer dispositivo. Elas são armazenadas no Gerenciador de senhas do Google da conta <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Ocultar a "Confirmação de segurança"</translation>
+<translation id="2545094307889012168">Sobreposição do Lens</translation>
 <translation id="2547458583188611426">A sincronização não está funcionando. Para iniciar a sincronização, digite a senha longa.</translation>
 <translation id="2551153019974022505">Erro na conta</translation>
 <translation id="2556092377360758201">Sem proteção (não recomendado)</translation>
@@ -848,6 +849,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5205197603258285592">Salvar imagem no app…</translation>
 <translation id="5211488077761630279">Permitir que o site <ph name="SITE_NAME" /> use <ph name="PERMISSION" />?</translation>
+<translation id="5215046161188172474">Compartilhar URL completo</translation>
 <translation id="5219295696240154694">Ajude a melhorar a segurança para todos na Web</translation>
 <translation id="5220945116117011963">Criar eventos da agenda usando datas</translation>
 <translation id="5221339005270097309">Verificando senhas…</translation>
@@ -885,6 +887,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5396950905475481456">Convidar membros da família</translation>
 <translation id="5407969256130905701">Descartar alterações</translation>
 <translation id="5414763847370083940">Você vai receber um alerta se houver uma redução no preço em algum site.</translation>
+<translation id="5415289094036440596">Chaves de acesso não podem ser compartilhadas</translation>
 <translation id="5416022985862681400">Últimos sete dias</translation>
 <translation id="5416455648658732408">Mover para grupo de guias</translation>
 <translation id="5423269318075950257">Monitorar preço</translation>
@@ -1124,6 +1127,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 No entanto, eles não podem usar cookies para ver sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="6476253015009698798">O monitoramento de preços não está disponível para esta página.</translation>
 <translation id="6476800141292307438">Tradução da página para <ph name="LANGUAGE" />. Opções disponíveis na parte inferior da tela.</translation>
+<translation id="6477585407014744043">Dê um nome ao grupo</translation>
 <translation id="648164694371393720">Erro de autenticação</translation>
 <translation id="6494931198667773526">Fim</translation>
 <translation id="6500795388871406244">Usar senha sugerida:</translation>
@@ -1293,6 +1297,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="734758817008927353">Opções para salvar card</translation>
 <translation id="7352651011704765696">Algo deu errado</translation>
 <translation id="7353432112255316844">Confirmar sua identidade</translation>
+<translation id="736564850024123010">Mude a posição da sua barra de endereço para ter uma experiência personalizada.</translation>
 <translation id="7367530036083223701">Acesse suas senhas com segurança na tela inicial com o widget do Gerenciador de senhas.</translation>
 <translation id="7380220816562673297">Por enquanto, só é possível compartilhar senhas com membros da família. <ph name="BEGIN_LINK" />Crie um grupo familiar<ph name="END_LINK" /> com até seis membros e aproveite ao máximo seus produtos e assinaturas do Google.</translation>
 <translation id="739101637685146669">Qual URL você quer adicionar aos favoritos?</translation>

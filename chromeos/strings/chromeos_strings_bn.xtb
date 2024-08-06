@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">কন্ট্রোল</translation>
 <translation id="2652403576514495859">ডিকটেশন চালু অথবা টগল করে</translation>
 <translation id="2653659639078652383">জমা দিন</translation>
-<translation id="2653807227758181366">আপনি যে ওয়ালপেপার তৈরি করতে বা আপনি যে প্রম্পট ব্যবহার করতে চান সেই সম্পর্কে বিবরণ দিন</translation>
 <translation id="2654647726140493436">আপডেট করা চলাকালীন আপনার <ph name="DEVICE_TYPE" /> বন্ধ বা <ph name="DEVICE_TYPE" /> আনপ্লাগ করবেন না</translation>
 <translation id="2656001153562991489">Chromebook Plus-এর জন্য এক্সক্লুসিভ</translation>
 <translation id="2665671725390405060">উচ্চারণ শুনুন</translation>
@@ -358,6 +357,7 @@
 <translation id="2780756493585863768">Google AI দ্বারা পরিচালিত সাম্প্রতিক সময়ের ব্যাকগ্রাউন্ড</translation>
 <translation id="2783010256799387990">পাস করেছে</translation>
 <translation id="2786429550992142861">লিনেন</translation>
+<translation id="2787237339470862294">এই মুহূর্তে এই ভাষাটি কাজ করবে না</translation>
 <translation id="2787435249130282949">কীবোর্ড আরও বেশি উজ্জ্বল</translation>
 <translation id="2805756323405976993">অ্যাপ্স</translation>
 <translation id="28232023175184696">ইন্টারনেটের সাথে কানেক্ট করা যাচ্ছে না। আবার চেষ্টা করতে ক্লিক করুন।</translation>
@@ -669,6 +669,7 @@
 <translation id="458794348635939462">সব হোস্ট নেম যাচাই করা ব্যর্থ হয়েছে</translation>
 <translation id="4593212453765072419">প্রক্সি প্রমাণীকরণের প্রয়োজন</translation>
 <translation id="4594021849294327751">ট্রানস্ক্রিপ্ট তৈরি করুন</translation>
+<translation id="4607282946861182308">এটির ছবি তৈরি করা যাচ্ছে না। অন্য প্রম্পট ব্যবহার করে দেখুন।</translation>
 <translation id="4609350030397390689">কীবোর্ড উজ্জ্বলতা কমান</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />টির মধ্যে <ph name="PRINTED_PAGE_NUMBER" /> নম্বর পৃষ্ঠা। প্রিন্ট করা বাতিল করতে এন্টার প্রেস করুন।</translation>
 <translation id="463791356324567266">স্ক্যানিং বাতিল করা হচ্ছে...</translation>

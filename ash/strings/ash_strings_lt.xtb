@@ -405,6 +405,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2486214324139475545">„<ph name="DESK_NAME" />“ peržiūra. Aktyvus darbalaukis.</translation>
 <translation id="2486405091093637109">„<ph name="DISPLAY_NAME" />“ skyra pakeista į <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Jei nepatvirtinsite, ankstesni nustatymai bus atkurti po <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Prisijungti</translation>
+<translation id="2496180316473517155">Naršymo istorija</translation>
 <translation id="2499445554382787206">Darbalaukio profilio meniu. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Fiksuotos pozicijos klavišai</translation>
 <translation id="2504454902900101003">Atsisakyti nustatyti naujausių telefono nuotraukų, medijos ir pranešimų peržiūrą</translation>
@@ -436,6 +437,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2607678425161541573">Reikia prisijungti internete</translation>
 <translation id="2612072250312279703">veiklos stebėjimo priemonė</translation>
 <translation id="2612614436418177118">Perkelti programos piktogramą į programų tinklelį</translation>
+<translation id="2619052155095999743">Įterpti</translation>
 <translation id="2619326010008283367"><ph name="STEP" /> apžvalgos veiksmas iš <ph name="TOTAL_STEPS" />. Įrenginio nustatymus rasite Paleidimo priemonėje. Pabandykite tinkinti „<ph name="PRODUCT_NAME" />“ nustatymuose, pvz., pakeisti ekrano foną arba nustatyti ekrano užsklandą.</translation>
 <translation id="2620016719323068571">Ieškoti <ph name="CATEGORY" />, failų, programų ir kt...</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -462,6 +464,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2704781753052663061">Prisijungti prie kitų „Wi-Fi“ tinklų</translation>
 <translation id="2705001408393684014">Perjungti mikrofoną. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Aukštyn</translation>
+<translation id="271033894570825754">Naujiena</translation>
 <translation id="2710984741481549981">Užrakinti langus</translation>
 <translation id="2718395828230677721">Nakties šviesa</translation>
 <translation id="2726420622004325180">Telefone turi būti naudojami mobiliojo ryšio duomenys, kad jame būtų galima įjungti viešosios interneto prieigos tašką</translation>
@@ -558,6 +561,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Išskleisti meniu</translation>
 <translation id="3087734570205094154">Apačia</translation>
+<translation id="3090214513075567547">Atidaryti kontekstinį meniu</translation>
 <translation id="3090989381251959936">Perjungti „<ph name="FEATURE_NAME" />“. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Terminas praleistas</translation>
 <translation id="3095995014811312755">versija</translation>
@@ -1097,6 +1101,7 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="492453977506755176">Užfiksavimo režimo klavišas</translation>
 <translation id="4925542575807923399">Šios paskyros administratorius reikalauja, kad kelių paskyrų sesijoje pirmiausia būtų prisijungta naudojant šią paskyrą.</translation>
 <translation id="493076006037866439">Tolinti ekrane</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4936329710968938986">Visi, išjungta</translation>
 <translation id="4937170330762390348">Naudodami diktavimo funkciją galite vesti tekstą balsu. Paspauskite diktavimo klavišą arba pasirinkite mikrofono piktogramą ekrano apačioje, kai esate teksto lauke. Jūsų diktavimo kalba nustatyta į <ph name="LANGUAGE" />. Kalbos failai bus atsisiųsti, kad galėtumėte naudoti diktavimo funkciją neprisijungę. Diktavimo kalbą galite bet kada pakeisti skiltyje „Nustatymai“ &gt; „Pritaikomumas“.</translation>
 <translation id="4938176435186993759">Slėpti visus pasiūlymus</translation>
@@ -1105,6 +1110,7 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="495046168593986294">Slinkti į viršų</translation>
 <translation id="4950800194215951939">Tinkinkite žaidimų funkcijas</translation>
 <translation id="4952936045814352993">Telefono vietos nustatymo funkcija nepasiekiama, kai įspėjimų garsai yra išjungti</translation>
+<translation id="4953585991029886728">Redaguoti tekstą</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> reikalauja grąžinti ankstesnę „<ph name="DEVICE_TYPE" />“ versiją. Jūsų įrenginys bus nustatytas iš naujo ir visi duomenys bus ištrinti.</translation>
 <translation id="4961318399572185831">Perduoti ekraną</translation>
 <translation id="4964188651935955085">Kai išjungsite „Bluetooth“, šis išorinis įrenginys bus atjungtas nuo „<ph name="DEVICE_TYPE" />“:</translation>
@@ -1426,6 +1432,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6032620807120418574">Spustelėkite bet kur, kad įrašytumėte visą ekraną</translation>
 <translation id="6040071906258664830">Įrašyti mikrofoną: <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Uždaryti</translation>
+<translation id="6042308850641462728">Daugiau</translation>
 <translation id="6043212731627905357">Šis monitorius nesuderinamas su jūsų „<ph name="DEVICE_TYPE" />“ (monitorius nepalaikomas).</translation>
 <translation id="6043994281159824495">Atsijungti dabar</translation>
 <translation id="6045629311476491587">Naudoja <ph name="APP_COUNT" /> progr.</translation>
@@ -1893,6 +1900,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7748275671948949022">Paryškinti Paleidimo priemonės mygtuką lentynoje</translation>
 <translation id="7749443890790263709">Pasiektas didžiausias pultų skaičius.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Rodyti visas</translation>
 <translation id="7759183637555564029">Funkcijas „Pagalba rašant“ ir „Pagalba skaitant“ galite bet kada išjungti skiltyje „Nustatymai“. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Teksto ištarimas</translation>
 <translation id="7769299611924763557">GIF elementas bus netrukus paruoštas</translation>
@@ -2026,6 +2034,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Šį nustatymą tvarko jūsų administratorius.</translation>
 <translation id="8155628902202578800">Atidaryti <ph name="USER_EMAIL_ADDRESS" /> informacijos dialogo langą</translation>
 <translation id="8167567890448493835">Naudojama: <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Turinys</translation>
 <translation id="8185090165691050712">Įjungti ir (arba) išjungti meniu norint pakeisti užrakinimo režimo dydį</translation>
 <translation id="8192727139462702395">Kai išjungsite „Bluetooth“, šie išoriniai įrenginiai bus atjungti nuo „<ph name="DEVICE_TYPE" />“:</translation>
 <translation id="8198456017687137612">Perduodamas skirtukas</translation>

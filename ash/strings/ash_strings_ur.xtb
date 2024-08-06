@@ -405,6 +405,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> کا پیش منظر۔ فعال ڈیسک۔</translation>
 <translation id="2486405091093637109">‏"<ph name="DISPLAY_NAME" />" کو <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ریزولوشن میں تبدیل کر دیا گیا۔ تصدیق کیے بغیر، گزشتہ ترتیبات کو <ph name="TIMEOUT_SECONDS" /> میں بحال کر دیا جائے گا۔</translation>
 <translation id="2487915095798731898">شامل ہوں</translation>
+<translation id="2496180316473517155">براؤزنگ سرگزشت</translation>
 <translation id="2499445554382787206">ڈیسک پروفائل کے لیے مینیو۔ <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">اسٹکی کلیدیں</translation>
 <translation id="2504454902900101003">اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">آن لائن سائن ان کی ضرورت ہے</translation>
 <translation id="2612072250312279703">سرگرمی کی نگرانی</translation>
 <translation id="2612614436418177118">ایپ گرڈ کے اندر ایپ آئیکن منتقل کریں</translation>
+<translation id="2619052155095999743">داخل کریں</translation>
 <translation id="2619326010008283367"><ph name="TOTAL_STEPS" /> میں سے <ph name="STEP" /> ٹؤر قدم۔ آپ لانچر میں اپنے آلے کی ترتیبات کو تلاش کر سکتے ہیں۔ ترتیبات میں جا کر اپنے <ph name="PRODUCT_NAME" /> کو حسب ضرورت بنانے کی کوشش کریں، جیسے اپنے وال پیپر کو تبدیل کرنا یا اسکرین سیور سیٹ کرنا۔</translation>
 <translation id="2620016719323068571">اپنی <ph name="CATEGORY" />، فائلز، ایپس اور بہت کچھ تلاش کریں...</translation>
 <translation id="2620436844016719705">سسٹم</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">‏Wi-Fi کے دیگر نیٹ ورکس میں شامل ہوں</translation>
 <translation id="2705001408393684014">مائیک ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">اوپر</translation>
+<translation id="271033894570825754">نیا</translation>
 <translation id="2710984741481549981">ونڈوز مقفل کریں</translation>
 <translation id="2718395828230677721">نائٹ لائٹ</translation>
 <translation id="2726420622004325180">ہاٹ سپاٹ فراہم کرنے کے لیے آپ کے فون میں موبائل ڈیٹا کا ہونا ضروری ہے</translation>
@@ -1086,6 +1089,7 @@
 <translation id="4890408602550914571">یقینی بنائیں کہ آپ کا فون قریب میں ہے اور اس میں بلوٹوتھ آن ہے۔</translation>
 <translation id="4892981359753171125">فیس کنٹرول</translation>
 <translation id="4895488851634969361">بیٹری بھری ہوئی ہے۔</translation>
+<translation id="4902797682482387055">فوکس کرنے کے لیے تجویز کردہ ٹاسک</translation>
 <translation id="490375751687810070">عمودی</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> فیصد بیٹری ہے</translation>
 <translation id="491504982845934899">آلہ سیٹ اپ کرنے کے بعد <ph name="NETWORK_NAME" /> کو فعال کریں</translation>
@@ -1096,6 +1100,7 @@
 <translation id="492453977506755176">وضع کی کلید کیپچر کریں</translation>
 <translation id="4925542575807923399">اس اکاؤنٹ کے منتظم کا تقاضہ ہے کہ یہ اکاؤنٹ متعدد سائن سیشن میں پہلا سائن ان کردہ اکاؤنٹ ہو۔</translation>
 <translation id="493076006037866439">اسکرین کو زوم آؤٹ کریں</translation>
+<translation id="4932733599132424254">تاریخ</translation>
 <translation id="4936329710968938986">ہر کوئی، آف</translation>
 <translation id="4937170330762390348">ڈکٹیشن کے ساتھ، آپ اپنی آواز کا استعمال کرتے ہوئے ٹائپ کر سکتے ہیں۔ جب آپ ٹیکسٹ فیلڈ پر ہوں تو ڈکٹیشن کلید دبائیں یا اسکرین کے نیچے مائیکروفون آئیکن کو منتخب کریں۔ آپ کی ڈکٹیشن زبان <ph name="LANGUAGE" /> پر سیٹ ہے۔ اسپیچ فائلز ڈاؤن لوڈ کی جائیں گی تاکہ آپ ڈکٹیشن آف لائن استعمال کر سکیں۔ آپ ترتیبات &gt; ایکسیسبیلٹی میں کسی بھی وقت ڈکٹیشن کی زبان تبدیل کر سکتے ہیں۔</translation>
 <translation id="4938176435186993759">سبھی تجاویز چھپائیں</translation>
@@ -1104,6 +1109,7 @@
 <translation id="495046168593986294">اوپر اسکرول کریں</translation>
 <translation id="4950800194215951939">اپنے گیمنگ تجربے کو حسب ضرورت بنائیں</translation>
 <translation id="4952936045814352993">الارم کی آوازیں غیر فعال ہونے پر فون کا پتہ لگانے والی خصوصیت دستیاب نہیں ہے</translation>
+<translation id="4953585991029886728">متن میں ترمیم کریں</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> کا تقاضہ ہے کہ آپ اپنے <ph name="DEVICE_TYPE" /> پر واپس جائیں۔ آپ کا آلہ ری سیٹ ہو جائے گا اور تمام ڈیٹا حذف ہو جائے گا۔</translation>
 <translation id="4961318399572185831">اسکرین کاسٹ کریں</translation>
 <translation id="4964188651935955085">جب آپ بلوٹوتھ آف کرتے ہیں، تو یہ بیرونی آلہ آپ کے <ph name="DEVICE_TYPE" /> سے غیر منسلک ہو جائے گا:</translation>
@@ -1363,6 +1369,7 @@
 <translation id="5819918159912280082">‏آپ کی Chromebook غیر متوقع طور پر ری اسٹارٹ ہو گئی۔ اپنی پچھلی ونڈوز اور ایپس کھولیں۔</translation>
 <translation id="5823239091726045201">‏ویب پر Google ٹاسکس</translation>
 <translation id="5825969630400862129">منسلک کردہ آلات کی ترتیبات</translation>
+<translation id="5830180081891717894"><ph name="WINDOWS" /> مزید</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> پر <ph name="ROUTE_TITLE" /> کو روکیں</translation>
 <translation id="5841296711770970362">اگلے ٹریک پر جائیں</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> کا ہاٹ اسپاٹ آن ہے، کوئی آلہ منسلک نہیں ہے</translation>
@@ -1424,6 +1431,7 @@
 <translation id="6032620807120418574">فُل اسکرین ریکارڈ کرنے کے لیے کہیں بھی کلک کریں</translation>
 <translation id="6040071906258664830">مائیکروفون کے ذریعے ریکارڈ کریں <ph name="STATE" /></translation>
 <translation id="6040143037577758943">بند کریں</translation>
+<translation id="6042308850641462728">مزید</translation>
 <translation id="6043212731627905357">یہ مانیٹر آپ کے <ph name="DEVICE_TYPE" /> کے ساتھ ٹھیک طرح سے کام نہیں کر رہا (مانیٹر تعاون یافتہ نہیں ہے)۔</translation>
 <translation id="6043994281159824495">ابھی سائن آؤٹ کریں</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> ایپس کے ذریعے استعمال کردہ</translation>
@@ -1438,6 +1446,7 @@
 <translation id="6068258534237496331">ویڈیو کال کنٹرولز</translation>
 <translation id="6073451960410192870">ریکارڈنگ روکیں</translation>
 <translation id="6074087755403037157">بی ٹا چینل</translation>
+<translation id="6091929401758362855">پلے لسٹ: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">منتظم کی طرف سے غیر فعال کردہ</translation>
 <translation id="6095008505822982596">اسپیچ کی شرح</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> کے ساتھ کنکشن شامل کریں</translation>
@@ -1889,6 +1898,7 @@
 <translation id="7748275671948949022">لانچر بٹن کو شیلف پر نمایاں کریں</translation>
 <translation id="7749443890790263709">ڈیسکس کی زیادہ سے زیادہ تعداد تک پہنچ گئی۔</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">سبھی دکھائیں</translation>
 <translation id="7759183637555564029">آپ ترتیبات میں کسی بھی وقت لکھنے میں میری مدد کریں اور پڑھنے میں میری مدد کریں کو بند کر سکتے ہیں۔ <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">سننے کیلئے منتخب کریں</translation>
 <translation id="7769299611924763557">‏آپ کا GIF جلد ہی تیار ہو جائے گا</translation>
@@ -2022,6 +2032,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> یہ ترتیب آپ کے منتظم کے زیر انتظام ہے۔</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> کے لئے معلومات کا ڈائلاگ کھولیں</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> استعمال کر کے</translation>
+<translation id="8168435359814927499">مواد</translation>
 <translation id="8185090165691050712">قفل موڈ کا سائز تبدیل کرنے کے لیے مینیو کو آن/آف کریں</translation>
 <translation id="8192727139462702395">جب آپ بلوٹوتھ کو آف کرتے ہیں، تو یہ بیرونی آلات آپ کے <ph name="DEVICE_TYPE" /> سے غیر منسلک ہو جائیں گے:</translation>
 <translation id="8198456017687137612">کاسٹنگ ٹیب</translation>
@@ -2069,6 +2080,7 @@
 <translation id="8375916635258623388">یہ <ph name="DEVICE_NAME" /> اور آپ کا فون خود کار طور پر منسلک ہو جائیں گے</translation>
 <translation id="8380784334203145311">شب بخیر،</translation>
 <translation id="8382715499079447151">دیکھنے کا تحفظ</translation>
+<translation id="8383614331548401927">استقبالی خلاصہ</translation>
 <translation id="8388750414311082622">آخری ڈیسک ہٹایا نہیں جا سکا۔</translation>
 <translation id="8394567579869570560">آپ کے والد/والدہ نے اس آلے کو مقفل کر دیا</translation>
 <translation id="8401850874595457088">زبان مینیو درج کریں</translation>

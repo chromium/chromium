@@ -185,7 +185,6 @@
 <translation id="1124772482545689468">使用者</translation>
 <translation id="1125550662859510761">解像度：<ph name="WIDTH" /> x <ph name="HEIGHT" /> (原廠設定)</translation>
 <translation id="1125921926864945797">桌布和樣式</translation>
-<translation id="1126809382673880764">無法防範危險網站、下載檔案和擴充程式。您仍可在其他 Google 服務 (例如 Gmail 和搜尋) 中使用「安全瀏覽」功能 (如有)。</translation>
 <translation id="1128090040635299943">正在設定 Linux，過程需時數分鐘。</translation>
 <translation id="1128591060186966949">編輯搜尋引擎</translation>
 <translation id="1129348283834595293">數碼龐克</translation>
@@ -630,7 +629,6 @@
 <translation id="1461041542809785877">效能</translation>
 <translation id="1461177659295855031">移至「書籤列」資料夾</translation>
 <translation id="1461288887896722288">您剛才已登入受管帳戶，建立新的受管個人檔案即可存取一些已連結至該帳戶的資源。</translation>
-<translation id="1461868306585780092">在使用不安全的連線前先顯示警告</translation>
 <translation id="146219525117638703">ONC 狀態</translation>
 <translation id="146220085323579959">互聯網已中斷連線。請檢查互聯網連線，然後再試一次。</translation>
 <translation id="1462480037563370607">手動新增網站</translation>
@@ -4176,7 +4174,6 @@
 <translation id="3959747296451923142">確認移除訂閱</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">可以對　<ph name="IBAN_DESCRIPTION" />　執行嘅其他操作</translation>
-<translation id="3962119236270174787">對已知的危險網站、下載檔案及擴充程式提供標準保護功能</translation>
 <translation id="3963753386716096475">使用其他手機、平板電腦或安全密鑰</translation>
 <translation id="3964480518399667971">關閉流動網絡</translation>
 <translation id="3965965397408324205">退出「<ph name="PROFILE_NAME" />」</translation>
@@ -5512,7 +5509,6 @@
 <translation id="4967571733817147990">自訂滑鼠按鈕</translation>
 <translation id="4967852842111017386">「<ph name="FEATURE_NAME" />」裝置名稱</translation>
 <translation id="4971412780836297815">完成後開啟</translation>
-<translation id="4971735654804503942">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能。密碼外洩時系統會發出警告。需要將瀏覽資料傳送給 Google。</translation>
 <translation id="4972129977812092092">編輯打印機</translation>
 <translation id="4972164225939028131">密碼錯誤</translation>
 <translation id="4972737347717125191">網站可要求使用虛擬實境﻿裝置和資料</translation>
@@ -7000,6 +6996,7 @@
 <translation id="6075075631258766703">驗證手機</translation>
 <translation id="6075731018162044558">糟糕！系統無法為這部裝置取得長期 API 存取憑證。</translation>
 <translation id="6075907793831890935">與名稱為「<ph name="HOSTNAME" />」的裝置交換數據</translation>
+<translation id="6076092653254552547">系統設定</translation>
 <translation id="6076491747490570887">冷灰色</translation>
 <translation id="6076576896267434196">「<ph name="EXTENSION_NAME" />」擴充程式想存取您的帳戶</translation>
 <translation id="6077131872140550515">從慣用網絡中移除</translation>
@@ -8240,7 +8237,6 @@
 <translation id="6992554835374084304">開啟進階拼字檢查功能</translation>
 <translation id="6993000214273684335">已經將分頁由包含「<ph name="GROUP_CONTENTS" />」嘅未命名群組度移除</translation>
 <translation id="6993050154661569036">正在更新 Chrome 瀏覽器</translation>
-<translation id="6995899638241819463">密碼因資料外洩而被洩露時接收警告</translation>
 <translation id="6995984090981858039">讀取 ChromeOS 裝置資訊和資料</translation>
 <translation id="6996245928508281884">請開啟手機的藍牙和 Wi-Fi</translation>
 <translation id="6996438701394974959">放大顯示同文字大小</translation>
@@ -9377,6 +9373,7 @@
 <translation id="7826254698725248775">裝置識別碼發生衝突。</translation>
 <translation id="7828642077514646543">錯誤：無法為憑證解碼</translation>
 <translation id="7829877209233347340">請要求家長登入，授予新增學校帳戶的權限</translation>
+<translation id="7830276128493844263">已在系統設定中關閉位置功能</translation>
 <translation id="7830833461614351956">要將 <ph name="NUM_OF_FILES" /> 個檔案複製到 <ph name="CLOUD_PROVIDER" /> 開啟嗎？</translation>
 <translation id="7831754656372780761">「<ph name="TAB_TITLE" />」<ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">已儲存的自訂字詞將會在這裡顯示</translation>

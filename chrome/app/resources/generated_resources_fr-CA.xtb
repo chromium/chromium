@@ -185,7 +185,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1124772482545689468">Utilisateur</translation>
 <translation id="1125550662859510761">Semblable à <ph name="WIDTH" /> x <ph name="HEIGHT" /> (résolution native)</translation>
 <translation id="1125921926864945797">Fond d'écran et style</translation>
-<translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions ni les sites Web dangereux. Vous profitez toujours de la protection de navigation sécurisée, lorsqu'elle est offerte, dans d'autres services Google, comme Gmail et la recherche.</translation>
 <translation id="1128090040635299943">Linux est en cours de configuration. Cette opération prendra quelques minutes.</translation>
 <translation id="1128591060186966949">Modifier le moteur de recherche</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -630,7 +629,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1461041542809785877">Performance</translation>
 <translation id="1461177659295855031">Déplacer vers le dossier de la barre de favoris</translation>
 <translation id="1461288887896722288">Vous venez de vous connecter à un compte géré. La création d'un nouveau profil géré vous permettra d'accéder à certaines ressources liées à ce compte.</translation>
-<translation id="1461868306585780092">Émettre un avertissement avant d'utiliser des connexions non sécurisées</translation>
 <translation id="146219525117638703">État ONC</translation>
 <translation id="146220085323579959">Aucune connexion à Internet. Veuillez vérifier votre connexion, puis réessayer.</translation>
 <translation id="1462480037563370607">Ajouter des sites manuellement</translation>
@@ -4171,7 +4169,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3959747296451923142">Confirmer la suppression de l'abonnement</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Autres actions pour <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962119236270174787">Protection standard contre les extensions, les sites Web, les téléchargements qui sont réputés être dangereux</translation>
 <translation id="3963753386716096475">Utiliser une tablette, une clé de sécurité ou un téléphone différent</translation>
 <translation id="3964480518399667971">Désactiver la connectivité cellulaire</translation>
 <translation id="3965965397408324205">Quitter <ph name="PROFILE_NAME" /></translation>
@@ -5512,7 +5509,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4967571733817147990">Personnaliser les boutons de la souris</translation>
 <translation id="4967852842111017386">Nom de l'appareil pour le <ph name="FEATURE_NAME" /></translation>
 <translation id="4971412780836297815">Ouvrir à la fin</translation>
-<translation id="4971735654804503942">Ce mode offre une protection proactive et plus rapide contre les téléchargements, les extensions et les sites Web dangereux. Il vous permet d'être averti en cas de piratage de mots de passe. Pour ce faire, les données de navigation doivent être envoyées à Google.</translation>
 <translation id="4972129977812092092">Modifier l'imprimante</translation>
 <translation id="4972164225939028131">Mot de passe incorrect</translation>
 <translation id="4972737347717125191">Les sites peuvent demander à utiliser des données et des appareils de réalité virtuelle</translation>
@@ -6139,6 +6135,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5435779377906857208">Toujours autoriser <ph name="HOST" /> à accéder à votre position</translation>
 <translation id="5436492226391861498">En attente du tunnel mandataire...</translation>
 <translation id="5436510242972373446">Recherche sur <ph name="SITE_NAME" /> :</translation>
+<translation id="5438014818441491616">La largeur de la fenêtre <ph name="WINDOW_SIDE" /> est désormais de <ph name="WINDOW_SIZE_PERCENT" />, et la largeur du volet <ph name="PANE_SIDE" /> est désormais de <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5440425659852470030">Fermer le panneau latéral</translation>
 <translation id="544083962418256601">Créer des raccourcis...</translation>
 <translation id="5441133529460183413">Application Web installée à partir du navigateur Chrome</translation>
@@ -7003,6 +7000,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6075075631258766703">Vérifier le numéro de téléphone</translation>
 <translation id="6075731018162044558">Oups! Le système n'a pas réussi à obtenir un jeton d'accès aux API à long terme pour cet appareil.</translation>
 <translation id="6075907793831890935">Échanger des données avec l'appareil <ph name="HOSTNAME" /></translation>
+<translation id="6076092653254552547">Paramètres système</translation>
 <translation id="6076491747490570887">Gris frais</translation>
 <translation id="6076576896267434196">L'extension « <ph name="EXTENSION_NAME" /> » souhaite accéder à votre compte</translation>
 <translation id="6077131872140550515">Supprimer des réseaux préférés</translation>
@@ -8245,7 +8243,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6992554835374084304">Activer le correcteur orthographique amélioré</translation>
 <translation id="6993000214273684335">Onglet retiré d'un groupe sans nom : <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Mise à jour du navigateur Chrome en cours…</translation>
-<translation id="6995899638241819463">Vous envoyer un avertissement si des mots de passe sont exposés dans une violation de données</translation>
 <translation id="6995984090981858039">Lire les renseignements et les données de l'appareil ChromeOS</translation>
 <translation id="6996245928508281884">Activez le Bluetooth et le Wi-Fi sur votre téléphone</translation>
 <translation id="6996438701394974959">Augmenter la taille de l'affichage et du texte</translation>
@@ -8543,6 +8540,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 site dans le groupe de <ph name="FPS_OWNER" />}one{{MEMBERS} site dans le groupe de <ph name="FPS_OWNER" />}other{{MEMBERS} sites dans le groupe de <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Utiliser Windows Hello lors du remplissage des mots de passe</translation>
 <translation id="7225179976675429563">Type de réseau manquant</translation>
+<translation id="7227235818314667565">Gérer le partage</translation>
 <translation id="7227458944009118910">Les applications énumérées ci-dessous peuvent également prendre en charge les liens des protocoles. Les autres applications demanderont l'autorisation pour le faire.</translation>
 <translation id="7228056665272655255">Pour configurer l'empreinte digitale, demandez à votre enfant de toucher le capteur d'empreintes digitales dans le coin supérieur droit du clavier. Les données liées à l'empreinte digitale de votre enfant sont stockées de façon sécurisée et ne quittent jamais ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Verrouillage de l'écran et connexion</translation>
@@ -8591,6 +8589,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7258192266780953209">Transformations</translation>
 <translation id="7258225044283673131">L'application ne répond pas. Sélectionnez « Forcer la fermeture » pour fermer l'application.</translation>
 <translation id="7260186537988033909">Inscription d'appareil Kiosk et d'affichage terminée</translation>
+<translation id="7261217796641151584">Partager le groupe</translation>
 <translation id="7261612856573623172">Paramètres vocaux de synthèse vocale du système</translation>
 <translation id="7262004276116528033">Le service de connexion est hébergé par <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Toujours utiliser l'application <ph name="APP" /> pour ouvrir les liens Web pris en charge?</translation>
@@ -9382,6 +9381,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7826254698725248775">Identifiant d'appareil en conflit.</translation>
 <translation id="7828642077514646543">Erreur : impossible de décoder le certificat</translation>
 <translation id="7829877209233347340">Demande à un parent de se connecter afin d'accorder l'autorisation d'ajouter un compte scolaire</translation>
+<translation id="7830276128493844263">La localisation est désactivée dans les paramètres système</translation>
 <translation id="7830833461614351956">Copier <ph name="NUM_OF_FILES" /> fichiers vers <ph name="CLOUD_PROVIDER" /> pour les ouvrir?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Les mots personnalisés enregistrés s'afficheront ici</translation>
@@ -10526,6 +10526,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8656888282555543604">Activer la journalisation en braille</translation>
 <translation id="8657393004602556571">Voulez-vous supprimer les commentaires?</translation>
 <translation id="8657542881463614516">Utiliser un geste de balayage pour passer d'une page à l'autre</translation>
+<translation id="865936634714975126">Ajoutez un paramètre de requête dans l'URL pour sélectionner les types lors du chargement de la page. Exemple : chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Contacts pour le <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Fenêtre déplacée vers le bas</translation>
 <translation id="8661290697478713397">Ouvrir le lien dans une fenêtre de navi&amp;gation privée</translation>

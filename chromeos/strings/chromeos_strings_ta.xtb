@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">கட்டுப்பாடுகள்</translation>
 <translation id="2652403576514495859">சொல்வதை எழுதும் வசதியை இயக்கும் அல்லது நிலைமாற்றும்</translation>
 <translation id="2653659639078652383">சமர்ப்பி</translation>
-<translation id="2653807227758181366">நீங்கள் உருவாக்க விரும்பும் வால்பேப்பரை விவரிக்கவும் அல்லது மாதிரி ப்ராம்ப்ட்டைப் பயன்படுத்தவும்</translation>
 <translation id="2654647726140493436">புதுப்பிக்கப்படும்போது <ph name="DEVICE_TYPE" /> ஐ ஆஃப் செய்யவோ <ph name="DEVICE_TYPE" /> இன் பவர் கேபிளை அகற்றவோ வேண்டாம்</translation>
 <translation id="2656001153562991489">Chromebook Plus பயனர்களுக்கான பிரத்தியேகப் பிரிவு</translation>
 <translation id="2665671725390405060">உச்சரிப்பை வாசித்துக் காட்டும்</translation>
@@ -358,6 +357,7 @@
 <translation id="2780756493585863768">சமீபத்தில் AI உருவாக்கிய பின்புலங்கள்</translation>
 <translation id="2783010256799387990">சரிபார்க்கப்பட்டது</translation>
 <translation id="2786429550992142861">லினென்</translation>
+<translation id="2787237339470862294">தற்போது இந்த மொழி ஆதரிக்கப்படவில்லை</translation>
 <translation id="2787435249130282949">கீபோர்டு ஒளிர்வை அதிகரித்தல்</translation>
 <translation id="2805756323405976993">ஆப்ஸ்</translation>
 <translation id="28232023175184696">இணையத்துடன் இணைக்க முடியவில்லை. மீண்டும் முயல கிளிக் செய்யுங்கள்.</translation>
@@ -669,6 +669,7 @@
 <translation id="458794348635939462">அனைத்து ஹோஸ்ட்களையும் சரிசெய்ய முடியவில்லை</translation>
 <translation id="4593212453765072419">பிராக்ஸி அங்கீகரிப்பு தேவை</translation>
 <translation id="4594021849294327751">டிரான்ஸ்கிரிப்ட்டை உருவாக்கு</translation>
+<translation id="4607282946861182308">இதன் படங்களை உருவாக்க முடியவில்லை. வேறொரு ப்ராம்ப்ட்டை வழங்கவும்.</translation>
 <translation id="4609350030397390689">கீபோர்டு ஒளிர்வைக் குறைக்கும்</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. அச்சுப் பணியை ரத்துசெய்ய என்ட்டர் விசையை அழுத்தவும்.</translation>
 <translation id="463791356324567266">ஸ்கேன் செய்வதை ரத்துசெய்கிறது...</translation>
@@ -1364,6 +1365,7 @@
 <translation id="8208861521865154048">சலுகைகள்</translation>
 <translation id="8226628635270268143">உங்களுக்குப் பிடித்த படங்களையும் ஆல்பங்களையும் தேர்வுசெய்க</translation>
 <translation id="8227119283605456246">ஃபைலை இணை</translation>
+<translation id="8227488649450500937">இவற்றில் ஒரு ப்ராம்ப்ட்டை முயலவும் அல்லது <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ப்ராம்ப்ட்டிங் வழிகாட்டலைப்<ph name="END_LINK_PROMPTING_GUIDE" /> பார்க்கவும்</translation>
 <translation id="8230672074305416752">இயல்புநிலை நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
 <translation id="8238771987802558562">APNனைத் தேர்வுசெய்தல்</translation>
 <translation id="8246209727385807362">அறியப்படாத தொலைத்தொடர்பு நிறுவனம்</translation>

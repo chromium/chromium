@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">Slab signal</translation>
 <translation id="1300115153046603471">APN je zadana vrsta i <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">Datum izrade</translation>
 <translation id="1308754910631152188">Ažuriranje (<ph name="PERCENTAGE_VALUE" />% je završeno)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> min</translation>
 <translation id="1310380015393971138">Nije dostupna nijedna <ph name="NETWORK_NAME" /> mreža</translation>
@@ -339,7 +340,6 @@
 <translation id="2645380101799517405">Kontrole</translation>
 <translation id="2652403576514495859">omogućavanje ili uključivanje/isključivanje diktiranja</translation>
 <translation id="2653659639078652383">Pošalji</translation>
-<translation id="2653807227758181366">Opišite pozadinsku sliku koju želite kreirati ili upotrijebite uzorak upita</translation>
 <translation id="2654647726140493436">Nemojte isključivati uređaj <ph name="DEVICE_TYPE" /> niti iskopčavati kabl za napajanje uređaja <ph name="DEVICE_TYPE" /> dok traje ažuriranje</translation>
 <translation id="2656001153562991489">Ekskluzivno za Chromebook Plus</translation>
 <translation id="2665671725390405060">Slušanje izgovora</translation>
@@ -506,6 +506,7 @@
 <translation id="3708186454126126312">Prethodno povezano</translation>
 <translation id="3715651196924935218">Izlaz iz plutajućeg prikaza</translation>
 <translation id="3716250181321371108">Kreirajte kontrolu</translation>
+<translation id="3716830479327464973">Kad to dopustite, Snimač će analizirati vaše audiosnimke kako bi:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (broj recenzija: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nije povezano</translation>
 <translation id="3749289110408117711">Naziv fajla</translation>
@@ -532,6 +533,7 @@
 <translation id="3869314628814282185">tila</translation>
 <translation id="387301095347517405">Broj koji označava koliko je puta baterija prošla kompletan ciklus punjenja</translation>
 <translation id="3877066159641251281">Slušanje prijevoda</translation>
+<translation id="3880601782712134623">automatski otkrio različite glasove i svakom govorniku dao generičku oznaku kao što su Govornik 1 i Govornik 2</translation>
 <translation id="3885327323343477505">Promjena čuvara ekrana</translation>
 <translation id="3889914174935857450">Datum poništavanja</translation>
 <translation id="3897092660631435901">Meni</translation>
@@ -757,6 +759,7 @@
 <translation id="5049856988445523908">SIM je zaključan (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Naziv grupe</translation>
 <translation id="5051044138948155788">Ovo je jedina stranica. Ovo će vas odvesti na početni ekran za skeniranje.</translation>
+<translation id="5078711626843651677">Glasovni modeli privremeno se pohranjuju na uređaju dok se ne dovrši označavanje govornika. Tu značajku uvijek možete isključiti u postavkama.</translation>
 <translation id="5078983345702708852">futurističko</translation>
 <translation id="5087864757604726239">nazad</translation>
 <translation id="5088172560898466307">Naziv host računara servera</translation>
@@ -1107,6 +1110,7 @@
 <translation id="6905163627763043954">Isprobaj</translation>
 <translation id="6905724422583748843">Nazad na stranicu <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Poklopac skenera je otvoren. Zatvorite poklopac i pokušajte ponovo.</translation>
+<translation id="6910845598686542904">izračunao modele glasova otkrivenih na snimci</translation>
 <translation id="6911383237894364323">Povezivanje s medijskim serverima nije uspjelo</translation>
 <translation id="6930242544192836755">Trajanje</translation>
 <translation id="6930597342185648547">O pozadini</translation>
@@ -1366,7 +1370,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="8208861521865154048">Privilegije</translation>
 <translation id="8226628635270268143">Odaberite omiljene fotografije i albume</translation>
 <translation id="8227119283605456246">Priloži fajl</translation>
-<translation id="8227488649450500937">Pokušajte s jednim od ovih promptova ili pogledajte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />vodič za promptove<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
+<translation id="8227488649450500937">Isprobajte jedan od ovih upita ili pogledajte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />vodič za kreiranje upita<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Provjera pingom zadanog mrežnog pristupnika nije uspjela</translation>
 <translation id="8238771987802558562">Odaberite APN</translation>
 <translation id="8246209727385807362">Nepoznat mobilni operater</translation>
@@ -1572,6 +1576,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="950520315903467048">Nedostaje tipka za <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">usporedio glasove na cijeloj snimci da bi se u prijepisu naznačilo što je svaki govornik izgovorio i kada.</translation>
 <translation id="952992212772159698">Nije aktivirano</translation>
 <translation id="95718197892796296">gline</translation>
 <translation id="960719561871045870">Kôd operatera</translation>

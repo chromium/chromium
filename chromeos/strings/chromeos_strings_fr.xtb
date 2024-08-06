@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Commandes</translation>
 <translation id="2652403576514495859">activer ou désactiver la dictée</translation>
 <translation id="2653659639078652383">Envoyer</translation>
-<translation id="2653807227758181366">Décrivez le fond d'écran que vous souhaitez créer ou utilisez un exemple de requête</translation>
 <translation id="2654647726140493436">N'éteignez pas votre <ph name="DEVICE_TYPE" /> et ne débranchez pas le câble d'alimentation du <ph name="DEVICE_TYPE" /> pendant la mise à jour</translation>
 <translation id="2656001153562991489">Exclusivité Chromebook Plus</translation>
 <translation id="2665671725390405060">Écouter la prononciation</translation>
@@ -358,6 +357,7 @@
 <translation id="2780756493585863768">Arrière-plans récents optimisés par l'IA de Google</translation>
 <translation id="2783010256799387990">RÉUSSI</translation>
 <translation id="2786429550992142861">lin</translation>
+<translation id="2787237339470862294">Cette langue n'est pas prise en charge pour le moment</translation>
 <translation id="2787435249130282949">clavier plus lumineux</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="28232023175184696">Impossible d'établir la connexion Internet. Cliquez ici pour réessayer.</translation>
@@ -669,6 +669,7 @@
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4593212453765072419">L'authentification du proxy est requise.</translation>
 <translation id="4594021849294327751">Créer une transcription</translation>
+<translation id="4607282946861182308">Impossible de créer des images de cette requête. Essayez-en une autre.</translation>
 <translation id="4609350030397390689">Baisser la luminosité du clavier</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
 <translation id="463791356324567266">Annulation de la numérisation…</translation>
@@ -1364,6 +1365,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8208861521865154048">Avantages</translation>
 <translation id="8226628635270268143">Choisir vos photos et vos albums préférés</translation>
 <translation id="8227119283605456246">Joindre un fichier</translation>
+<translation id="8227488649450500937">Essayez l'une de ces requêtes ou consultez le <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guide sur les requêtes<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Impossible de pinguer la passerelle du réseau par défaut</translation>
 <translation id="8238771987802558562">Sélectionner un APN</translation>
 <translation id="8246209727385807362">Opérateur inconnu</translation>

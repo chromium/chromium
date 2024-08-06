@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Màu cam</translation>
 <translation id="125153950246128346">Nhấn để xem một thẻ khác</translation>
 <translation id="1273910660700874265">Các lựa chọn về nhóm thẻ <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1340839264183302272">Rời khỏi nhóm</translation>
 <translation id="1419023007528516122">Thao tác này sẽ xoá vĩnh viễn nhóm khỏi thiết bị của bạn</translation>
 <translation id="1486715732399361704">Bạn có thể tìm thấy tất cả nhóm thẻ của mình tại đây</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Tạo <ph name="NUM_MINS_ONE" /> phút trước}other{Tạo <ph name="NUM_MINS_MANY" /> phút trước}}</translation>
@@ -122,6 +123,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Chuyển thẻ sang trái</translation>
 <translation id="6615455863669487791">Hiển thị cho tôi</translation>
+<translation id="6694634756612002311">Quản lý hoạt động chia sẻ</translation>
 <translation id="6744956528665271406">Chỉnh sửa màu cho nhóm</translation>
 <translation id="6856809498882026482">Ẩn chế độ chọn nhiều thẻ</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Chia sẻ thẻ}other{Chia sẻ các thẻ}}</translation>
@@ -174,6 +176,7 @@
 <translation id="8926389886865778422">Đừng hỏi lại</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Mở rộng nhóm thẻ có <ph name="TABS_COUNT_ONE" /> thẻ.}other{Mở rộng nhóm thẻ có <ph name="TABS_COUNT_MANY" /> thẻ.}}</translation>
 <translation id="9090098097337832354">Thông tin về cửa hàng này đã đóng</translation>
+<translation id="9111228330448174435">Hiện hộp thoại khi tạo nhóm thẻ mới</translation>
 <translation id="9150694013019234766">Chuyển đổi giữa các thẻ trong nhóm thẻ ở gần cuối màn hình</translation>
 <translation id="9169594135889675189">Thêm thẻ mới vào nhóm</translation>
 <translation id="9216898458513705996">Thẻ sẽ vẫn mở trên thiết bị này nhưng nhóm sẽ bị xoá khỏi mọi thiết bị đã đăng nhập vào <ph name="USER_EMAIL" /></translation>

@@ -144,7 +144,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromium
 <translation id="5131565040785979529">Vaša organizacija, <ph name="DOMAIN" />, upravlja računom na kojem ste prijavljeni i načinom na koji koristite Chromium.</translation>
 <translation id="5146749061471423558">Dodavanje oznaka u Chromium</translation>
 <translation id="5171868502429358653">Prijavite se u Chromium</translation>
-<translation id="5203483872492817335">Brže pristupite Chromiumu putem donje trake početnog zaslona na iPadu.</translation>
+<translation id="5203483872492817335">Brže pristupajte Chromiumu s donje trake na početnom ekranu iPada.</translation>
 <translation id="5213683223491576284">Otvara Upravitelj lozinki u Chromiumu.</translation>
 <translation id="5224391634244552924">Nema sačuvanih lozinki. Chromium može provjeravati vaše lozinke kada ih sačuvate.</translation>
 <translation id="5242782538551259282">Neki podaci Chromiuma još nisu sačuvani na vaš Google račun.
@@ -226,7 +226,7 @@ Stvari za razmatranje:
 Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz. Pristupni izraz se ne šalje Googleu niti ga on pohranjuje. Ako zaboravite pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromiuma na računu<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Obavještenja Chromiuma su trenutno isključena u postavkama uređaja.</translation>
 <translation id="7222001353246886083">Pretražite frazu ${searchPhrase} u Chromiumu</translation>
-<translation id="7228180817326917122">Savjet za Chromium: odaberite položaj adresne trake</translation>
+<translation id="7228180817326917122">Savjet za Chromium: odaberite položaj trake za adresu</translation>
 <translation id="725427773388857052">Chromium vam može pomoći da se zaštitite od narušavanja podataka, nesigurnih web lokacija i još mnogo toga.</translation>
 <translation id="7269362888766543920">Neki programski dodaci uzrokuju pad aplikacije Chromium. Pokušajte ih deinstalirati.</translation>
 <translation id="7285031092584344905">Pristupajte lozinkama u Chromiumu i ostalom u drugim aplikacijama.</translation>
@@ -249,7 +249,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="7928628054454574139">Otvorite Chromium kad god dodirnete linkove u drugim aplikacijama</translation>
 <translation id="7931842119211730154">Zaključaj anonimne kartice prilikom zatvaranja Chromiuma</translation>
 <translation id="7934404985878918282">Prikazivanje Liste za čitanje u Chromiumu</translation>
-<translation id="7947765692209663835">Brže pristupite Chromiumu putem donje trake početnog zaslona na iPhoneu.</translation>
+<translation id="7947765692209663835">Brže pristupajte Chromiumu s donje trake na početnom ekranu iPhonea.</translation>
 <translation id="7971753607796745700">Dodavanje stavke na listu za čitanje u Chromiumu</translation>
 <translation id="7980860476903281594">Chromium dijeli vašu lokaciju s web lokacijama koje vi odobrite.</translation>
 <translation id="7994322153108931467">Da dobijate korisne savjete za Chromium, uključite obavještenja u postavkama iOS-a.</translation>

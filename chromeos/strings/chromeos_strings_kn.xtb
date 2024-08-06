@@ -340,7 +340,6 @@
 <translation id="2645380101799517405">ಕಂಟ್ರೋಲ್‌ಗಳು</translation>
 <translation id="2652403576514495859">ಉಕ್ತಲೇಖನವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ ಅಥವಾ ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="2653659639078652383">ಸಲ್ಲಿಸಿ</translation>
-<translation id="2653807227758181366">ನೀವು ರಚಿಸಲು ಬಯಸುವ ವಾಲ್‌ಪೇಪರ್ ಕುರಿತು ವಿವರಿಸಿ ಅಥವಾ ಸ್ಯಾಂಪಲ್ ಪ್ರಾಂಪ್ಟ್ ಒಂದನ್ನು ಬಳಸಿ</translation>
 <translation id="2654647726140493436">ಅಪ್‌ಡೇಟ್ ಪ್ರಗತಿಯಲ್ಲಿರುವಾಗ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಆಫ್ ಮಾಡಬೇಡಿ ಅಥವಾ <ph name="DEVICE_TYPE" /> ಪವರ್ ಕೇಬಲ್ ಅನ್ನು ಅನ್‌ಪ್ಲಗ್ ಮಾಡಬೇಡಿ</translation>
 <translation id="2656001153562991489">ವಿಶೇಷವಾಗಿ Chromebook Plus ಗಾಗಿ</translation>
 <translation id="2665671725390405060">ಉಚ್ಛಾರಣೆಯನ್ನು ಆಲಿಸಿ</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Google AI ನಿಂದ ಚಾಲಿತವಾದ ಇತ್ತೀಚಿನ ಹಿನ್ನೆಲೆಗಳು</translation>
 <translation id="2783010256799387990">ಪರಿಶೀಲನೆ ಸಫಲವಾಗಿದೆ</translation>
 <translation id="2786429550992142861">ಲಿನೆನ್</translation>
+<translation id="2787237339470862294">ಈ ಸಮಯದಲ್ಲಿ ಈ ಭಾಷೆ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="2787435249130282949">ಕೀಬೋರ್ಡ್ ಬ್ರೈಟರ್</translation>
 <translation id="2805756323405976993">ಆಪ್ಸ್‌‌</translation>
 <translation id="28232023175184696">ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">ಕೆಳಗಿನ ಆ್ಯರೋ</translation>
 <translation id="4425149324548788773">ನನ್ನ ಡ್ರೈವ್</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ಆಫ್ ಆಗಿದೆ</translation>
+<translation id="4428840632568803690">ಸ್ಪೀಕರ್ <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos ಟಿಕೆಟ್ ಶೀಘ್ರದಲ್ಲೇ ಅವಧಿ ಮೀರಲಿದೆ</translation>
 <translation id="4431821876790500265">ವರದಿಯನ್ನು ನೋಡಿ</translation>
 <translation id="4443192710976771874">ಕೆಂಪು</translation>
@@ -672,6 +673,7 @@
 <translation id="458794348635939462">ಎಲ್ಲಾ ಹೋಸ್ಟ್‌ಗಳನ್ನು ಪರಿಹರಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="4593212453765072419">ಪ್ರಾಕ್ಸಿ ದೃಢೀಕರಣ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="4594021849294327751">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ಅನ್ನು ರಚಿಸಿ</translation>
+<translation id="4607282946861182308">ಇದರ ಚಿತ್ರಗಳನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಬೇರೆ ಪ್ರಾಂಪ್ಟ್ ಬಳಸಿ ನೋಡಿ.</translation>
 <translation id="4609350030397390689">ಕೀಬೋರ್ಡ್ ಹೊಳಪನ್ನು ಕಡಿಮೆ ಮಾಡಿ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ರಲ್ಲಿ <ph name="PRINTED_PAGE_NUMBER" /> ಮುದ್ರಣ ಕಾರ್ಯವನ್ನು ರದ್ದುಮಾಡಲು enter ಒತ್ತಿರಿ.</translation>
 <translation id="463791356324567266">ಸ್ಕ್ಯಾನಿಂಗ್ ಮಾಡುವಿಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -1294,6 +1296,7 @@
 <translation id="7802764839223122985">ಕೀ ಕಾಣಿಸುತ್ತಿಲ್ಲ. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">ಬೇಡ</translation>
 <translation id="7805768142964895445">ಸ್ಥಿತಿ</translation>
+<translation id="7811024689617730980">1 ರಿಂದ 31 ರವರೆಗಿನ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ರೀಸೆಟ್ ಮಾಡುವ ದಿನವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7813073042185856802">ಪರ್ವತ</translation>
 <translation id="7819857487979277519">PSK (WPA ಅಥವಾ RSN)</translation>
 <translation id="7824219488248240180">ಪೋಸ್ಟ್-ಇಂಪ್ರೆಷನಿಸ್ಟ್</translation>
@@ -1369,6 +1372,7 @@
 <translation id="8208861521865154048">ಪರ್ಕ್‌ಗಳು</translation>
 <translation id="8226628635270268143">ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಫೋಟೋಗಳು ಮತ್ತು ಆಲ್ಬಮ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8227119283605456246">ಫೈಲ್‌‎ ಲಗತ್ತಿಸಿ</translation>
+<translation id="8227488649450500937">ಈ ಪ್ರಾಂಪ್ಟ್‌ಗಳಲ್ಲಿ ಒಂದನ್ನು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ಪ್ರಾಂಪ್ಟಿಂಗ್ ಗೈಡ್<ph name="END_LINK_PROMPTING_GUIDE" /> ಅನ್ನು ನೋಡಿ</translation>
 <translation id="8230672074305416752">ಡೀಫಾಲ್ಟ್ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="8238771987802558562">APN ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8246209727385807362">ಅಪರಿಚಿತ ವಾಹಕ</translation>
@@ -1377,7 +1381,6 @@
 <translation id="8261506727792406068">ಅಳಿಸಿ</translation>
 <translation id="8262870577632766028">1 ಗಂಟೆ</translation>
 <translation id="827422111966801947">ಇಂಡಿಗೊ</translation>
-<translation id="8280224923876749648">ಸ್ಪೀಕರ್ <ph name="SPEAKER_ID" /></translation>
 <translation id="8281886186245836920">ಸ್ಕಿಪ್‌ ಮಾಡಿ</translation>
 <translation id="8286154143153872371">ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ ಹಾಗೂ ವಾಲ್‌ಪೇಪರ್ ವೀಕ್ಷಿಸಲು ಪುಟವನ್ನು ಮರುಲೋಡ್ ಮಾಡಿ.</translation>
 <translation id="8291967909914612644">Home ಪೂರೈಕೆದಾರರ ರಾಷ್ಟ್ರ</translation>

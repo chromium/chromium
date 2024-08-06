@@ -340,7 +340,6 @@
 <translation id="2645380101799517405">Контроле</translation>
 <translation id="2652403576514495859">омогућите или укључите/искључите диктирање</translation>
 <translation id="2653659639078652383">Пошаљи</translation>
-<translation id="2653807227758181366">Опишите позадину коју желите да направите или користите пример упита</translation>
 <translation id="2654647726140493436">Не искључујте уређај <ph name="DEVICE_TYPE" /> и не искључујте кабл за напајање који <ph name="DEVICE_TYPE" /> користи док је ажурирање у току</translation>
 <translation id="2656001153562991489">Ексклузивно за Chromebook Plus</translation>
 <translation id="2665671725390405060">Слушајте изговор</translation>
@@ -1380,7 +1379,6 @@
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8262870577632766028">1 сат</translation>
 <translation id="827422111966801947">Тамноплава</translation>
-<translation id="8280224923876749648">Говорник <ph name="SPEAKER_ID" /></translation>
 <translation id="8281886186245836920">Прескочи</translation>
 <translation id="8286154143153872371">Повежите се на мрежу и поново учитајте страницу да бисте видели позадину.</translation>
 <translation id="8291967909914612644">Земља добављача за Home</translation>

@@ -231,6 +231,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="139305205187523129">Nenhum dado foi enviado por <ph name="HOST_NAME" /></translation>
 <translation id="1405567553485452995">Verde-claro</translation>
 <translation id="1406812885827747674">Permitir desta vez</translation>
+<translation id="14070772729708640">Os arquivos foram enviados para <ph name="FOLDER_NAME" /> em <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1408787208417187241">Três grampos na parte superior</translation>
 <translation id="1410365862999780287">Como outros usuários deste dispositivo não terão acesso à sua atividade, você pode navegar com mais privacidade. Isso não vai mudar a forma como os dados são coletados pelos sites que você acessa e pelos serviços que eles usam, incluindo o Google. Os downloads, favoritos e itens da Lista de leitura ainda serão salvos.</translation>
@@ -266,6 +267,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Usar as fontes do seu computador para criar conteúdo de alta fidelidade</translation>
 <translation id="1463793142714244641">Propriedades de férias</translation>
+<translation id="1465457928007067810">IBAN salvo na sua Conta do Google</translation>
 <translation id="1467432559032391204">À esquerda</translation>
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> é o código de <ph name="EMBEDDED_ORIGIN" /> para continuar para <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Mostrar mais</translation>
@@ -1191,6 +1193,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3240791268468473923">A página de credenciais para pagamento seguro sem correspondência está aberta</translation>
 <translation id="324180406144491771">Os links de “<ph name="HOST_NAME" />” são bloqueados</translation>
 <translation id="3248329428895535435">Não mostrar neste site</translation>
+<translation id="3249102948665905108">O upload do arquivo para <ph name="CLOUD_PROVIDER" /> foi concluído com erros</translation>
 <translation id="3252772880526154546">Arquitetura</translation>
 <translation id="3254301855501243548">18 x 22 pol.</translation>
 <translation id="3255926992597692024">O Chromium está tentando modificar as configurações para preenchimento de formas de pagamento.</translation>
@@ -1360,6 +1363,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3552155506104542239">Aviso: esta política está em conflito com a <ph name="POLICY_NAME" /> e não afetará apps Android. Em outros apps a política vai funcionar conforme o esperado.</translation>
 <translation id="3552297013052089404">Fonte Sans-Serif</translation>
 <translation id="3558573058928565255">Dia</translation>
+<translation id="3559897352860026926">Peça ao administrador para conferir as configurações de <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="355995771319966853">Desfazer preenchimento automático</translation>
 <translation id="3560408312959371419">Opções para proteções de rastreamento e dados do site no dispositivo</translation>
 <translation id="3560824484345057728">Ver sites relacionados</translation>
@@ -1738,6 +1742,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4235360514405112390">Válido</translation>
 <translation id="4239799716689808527">Rótulos</translation>
 <translation id="4242380780309416996">Envelope (grosso)</translation>
+<translation id="4242981939686657948">Para pesquisar seu histórico de navegação com mais eficiência, ative o</translation>
 <translation id="4244926541863471678">Filme</translation>
 <translation id="4246517972543675653">Estudo no exterior</translation>
 <translation id="4250431568374086873">Sua conexão com esse site não é completamente segura</translation>
@@ -2025,6 +2030,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4816492930507672669">Ajustar à página</translation>
 <translation id="4819347708020428563">Editar anotações na visualização padrão?</translation>
 <translation id="4822493756793346865">Os preços normais são baseados em lojas na Web nos últimos 90 dias.</translation>
+<translation id="4822922322149719535">Revisar o registro de erros</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo do Planilhas Google</translation>
 <translation id="4826588772550366629">a câmera e o microfone</translation>
 <translation id="4827283332383516812">Excluir cartão</translation>
@@ -2415,7 +2421,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="555037537507405574">recursos avançados de impressora</translation>
 <translation id="555128936272638662">Acessórios sem fio e para dispositivos móveis</translation>
 <translation id="5551890439174915351">100 x 200 mm</translation>
-<translation id="5552137475244467770">O Chrome verifica periodicamente se suas senhas estão em listas que foram publicadas on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem o Google.</translation>
 <translation id="5554520618550346933">Quando você usa uma senha, o Chrome avisa se ela foi publicada on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem mesmo o Google.</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="5558083606899411167">Aparelhos de ar-condicionado</translation>
@@ -2683,6 +2688,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6061154937977953833">Luta livre</translation>
 <translation id="6062937464449575061">Não monitorar preço</translation>
 <translation id="6063415549109819824">Financiamento de imóveis residenciais</translation>
+<translation id="6070432475334343308">Um ou mais arquivos não foram enviados para <ph name="FOLDER_NAME" /> em <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="6080696365213338172">Você acessou conteúdo usando um certificado fornecido pelo administrador. Os dados fornecidos a <ph name="DOMAIN" /> podem ser interceptados por seu administrador.</translation>
 <translation id="6085149458302186532">Rótulos (coloridos)</translation>
 <translation id="6087312102907839798">Pesquisas relacionadas</translation>
@@ -2805,6 +2811,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6307968763353904914">O banco não oferece cartões virtuais para essa forma de pagamento, mas é possível usar o <ph name="CARD_LABEL" /> em pagamentos on-line.</translation>
 <translation id="6311410654831092784">Cartolina</translation>
 <translation id="6312113039770857350">Página da Web não disponível</translation>
+<translation id="6316110367871394043">O upload do arquivo para <ph name="CLOUD_PROVIDER" /> foi pausado</translation>
 <translation id="6316723751983724988">Novidade: as opções do Family Link para o Chrome se aplicam aqui</translation>
 <translation id="63172326633386613">Gerenciar configurações de acessibilidade</translation>
 <translation id="6321917430147971392">Verifique suas configurações do DNS</translation>
@@ -3003,6 +3010,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6687335167692595844">Tamanho da fonte solicitado</translation>
 <translation id="6688743156324860098">Atualizar…</translation>
 <translation id="6688775486821967877">O cartão virtual não está disponível no momento. Tente de novo mais tarde.</translation>
+<translation id="6688851075017682769">Testar endereço por país</translation>
 <translation id="6689249931105087298">Relativa com compressão de pontos pretos</translation>
 <translation id="6689271823431384964">A opção de salvar seus cartões na Conta do Google está disponível no Chrome porque você fez login. É possível alterar esse comportamento nas configurações. O nome do titular do cartão vem da sua conta.</translation>
 <translation id="6691397311652656001">Libere mais de <ph name="REQUIRED_FREE_DISK_SPACE" /> de espaço</translation>
@@ -3159,6 +3167,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6979440798594660689">Desativar som (padrão)</translation>
 <translation id="6984270784814146224">Imagem sem etiqueta. Extraindo texto com a tecnologia de IA do Google</translation>
 <translation id="6987806006823772670">Envelope (revestido)</translation>
+<translation id="6989256887001961296">Este conteúdo está bloqueado.</translation>
 <translation id="6989763994942163495">Mostrar configurações avançadas...</translation>
 <translation id="6996312675313362352">Sempre traduzir <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6997288673234694149">Equipamentos de beisebol e softbol</translation>
@@ -3189,6 +3198,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7050187094878475250">Você tentou acessar <ph name="DOMAIN" />, mas o servidor apresentou um certificado cujo período de validade é extremamente longo, o que não é confiável.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Não é possível salvar esse cartão no momento}one{Não é possível salvar esse cartão no momento}other{Não é possível salvar esses cartões no momento}}</translation>
 <translation id="7053983685419859001">Bloquear</translation>
+<translation id="7054717457611655239">De agora em diante, salve seus arquivos em <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="7058163556978339998">O <ph name="BROWSER" /> verificou que <ph name="ISSUER" /> emitiu o certificado deste site.</translation>
 <translation id="7058774143982824355">Serviço para análise de um arquivo de senhas CSV</translation>
 <translation id="7062635574500127092">Azul-petróleo</translation>
@@ -3919,6 +3929,7 @@ Mais detalhes:
 <translation id="8371841335382565017">Mostrar lista de dispositivos para transmissão</translation>
 <translation id="8371889962595521444">Personalizar certificados raiz</translation>
 <translation id="8374636051559112948">Varia</translation>
+<translation id="837840316697671463">Se você não encontrar um arquivo no seu dispositivo, procure em <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Gerenciado pela sua organização</translation>
 <translation id="8380941800586852976">Perigoso</translation>
 <translation id="8381674639488873545">Essas cobranças podem ser únicas ou recorrentes e talvez não sejam óbvias. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
@@ -3966,6 +3977,7 @@ Mais detalhes:
 <translation id="84561192812921051">O administrador pode fazer mudanças no seu perfil e no seu navegador remotamente, analisar informações sobre o navegador com relatórios e realizar outras tarefas necessárias. A atividade deste dispositivo também pode ser gerenciada fora do Chrome.  <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Indefinida</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8458605637341729751">Ao continuar, você concorda que a localização exata do dispositivo seja coletada e compartilhada com o proprietário da conta para prevenção de fraudes. Para desativar o Pix no Chrome, acesse as <ph name="BEGIN_LINK1" />configurações de pagamento<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Ativar</translation>
 <translation id="8461694314515752532">Criptografar dados sincronizados com sua própria senha longa de sincronização</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 cartão de crédito}one{# cartão de crédito}other{# cartões de crédito}}</translation>
@@ -4068,6 +4080,7 @@ Mais detalhes:
 <translation id="8671519637524426245">O valor <ph name="SECURE_DNS_SALT" /> não atende aos requisitos de tamanho.</translation>
 <translation id="867224526087042813">Assinatura</translation>
 <translation id="8672535691554698269">Redes de computadores</translation>
+<translation id="8675446170353411473">O upload dos seus arquivos está sendo feito para <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8676424191133491403">Sem atraso</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, resposta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Não foi possível carregar a página da Web no endereço <ph name="PAGE" /> porque:</translation>
@@ -4149,6 +4162,7 @@ Mais detalhes:
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="882338992931677877">Entrada manual</translation>
 <translation id="8830320733681313421">Cartão postal Hagaki</translation>
+<translation id="8830565333350631528">Ver arquivos em <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8833007469711500369">Lavadoras e secadoras</translation>
 <translation id="8834962751196791179">Este aviso está sendo mostrado porque o site não é compatível com HTTPS e você está no modo de navegação anônima. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais sobre este aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">Programas de TV de ficção científica e fantasia</translation>

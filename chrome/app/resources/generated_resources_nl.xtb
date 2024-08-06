@@ -185,7 +185,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1125550662859510761">Ziet eruit als <ph name="WIDTH" /> x <ph name="HEIGHT" /> (systeemeigen resolutie)</translation>
 <translation id="1125921926864945797">Achtergrond en stijl</translation>
-<translation id="1126809382673880764">Beschermt je niet tegen gevaarlijke websites, downloads en extensies. Je wordt voor andere services, zoals Gmail en Zoeken, nog steeds beschermd door Safe Browsing als dat beschikbaar is.</translation>
 <translation id="1128090040635299943">Linux wordt momenteel ingesteld. De configuratie neemt een paar minuten in beslag.</translation>
 <translation id="1128591060186966949">Zoekmachine bewerken</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -629,7 +628,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1461041542809785877">Prestaties</translation>
 <translation id="1461177659295855031">Verplaatsen naar map Bookmarkbalk</translation>
 <translation id="1461288887896722288">Je bent zojuist ingelogd op een beheerd account. Als je een nieuw beheerd profiel maakt, heb je toegang tot bepaalde bronnen die aan dat account zijn gekoppeld.</translation>
-<translation id="1461868306585780092">Waarschuwen voordat niet-beveiligde verbindingen worden gebruikt</translation>
 <translation id="146219525117638703">ONC-status</translation>
 <translation id="146220085323579959">Verbinding met internet verbroken. Controleer je internetverbinding en probeer het opnieuw.</translation>
 <translation id="1462480037563370607">Sites handmatig toevoegen</translation>
@@ -4166,7 +4164,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3959747296451923142">Verwijdering van abonnement bevestigen</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Meer acties voor <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962119236270174787">Standaardbeveiliging tegen websites, downloads en extensies die als gevaarlijk zijn bestempeld</translation>
 <translation id="3963753386716096475">Een andere telefoon, tablet of beveiligingssleutel gebruiken</translation>
 <translation id="3964480518399667971">Mobiel netwerk uitzetten</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> sluiten</translation>
@@ -5506,7 +5503,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4967571733817147990">Muisknoppen aanpassen</translation>
 <translation id="4967852842111017386">Apparaatnaam voor <ph name="FEATURE_NAME" /></translation>
 <translation id="4971412780836297815">Openen wanneer klaar</translation>
-<translation id="4971735654804503942">Snellere, proactieve beveiliging tegen gevaarlijke websites, downloads en extensies. Stuurt een waarschuwing over wachtwoordlekken. Vereist dat browsegegevens naar Google worden verstuurd.</translation>
 <translation id="4972129977812092092">Printer bewerken</translation>
 <translation id="4972164225939028131">Onjuist wachtwoord</translation>
 <translation id="4972737347717125191">Sites kunnen vragen of ze apparaten en gegevens voor virtual reality mogen gebruiken</translation>
@@ -8235,7 +8231,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6992554835374084304">Zet verbeterde spellingcontrole aan</translation>
 <translation id="6993000214273684335">Tabblad verwijderd uit naamloze groep - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Chrome-browser updaten</translation>
-<translation id="6995899638241819463">Waarschuwen als je wachtwoorden zijn gelekt bij een gegevenslek</translation>
 <translation id="6995984090981858039">ChromeOS-apparaatinformatie en -gegevens lezen</translation>
 <translation id="6996245928508281884">Zet bluetooth en wifi op je telefoon uit</translation>
 <translation id="6996438701394974959">Weergave- en tekstgrootte vergroten</translation>

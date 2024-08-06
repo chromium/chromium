@@ -302,6 +302,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2529021024822217800">Tout ouvrir</translation>
 <translation id="2536991091671391962">Vous pouvez utiliser les mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le Gestionnaire de mots de passe de Google pour <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Masquer "Contrôle de sécurité"</translation>
+<translation id="2545094307889012168">Lens Overlay</translation>
 <translation id="2547458583188611426">La synchronisation ne fonctionne pas. Pour la lancer, saisissez votre phrase secrète.</translation>
 <translation id="2551153019974022505">Erreur de compte</translation>
 <translation id="2556092377360758201">Aucune protection (non recommandé)</translation>
@@ -848,6 +849,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5205197603258285592">Enregistrer l'image dans...</translation>
 <translation id="5211488077761630279">Autoriser <ph name="SITE_NAME" /> à utiliser <ph name="PERMISSION" /> ?</translation>
+<translation id="5215046161188172474">Partager l'URL complète</translation>
 <translation id="5219295696240154694">Contribuer à améliorer la sécurité sur le Web pour tous</translation>
 <translation id="5220945116117011963">Créer des événements d'agenda à partir de dates</translation>
 <translation id="5221339005270097309">Vérif. des mots de passe…</translation>
@@ -885,6 +887,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5396950905475481456">Inviter des membres de la famille</translation>
 <translation id="5407969256130905701">Supprimer les modifications</translation>
 <translation id="5414763847370083940">Vous recevrez une alerte si le prix baisse sur un site.</translation>
+<translation id="5415289094036440596">Impossible de partager les clés d'accès</translation>
 <translation id="5416022985862681400">Sept derniers jours</translation>
 <translation id="5416455648658732408">Déplacer vers un groupe d'onglets</translation>
 <translation id="5423269318075950257">Suivre les prix</translation>
@@ -1124,6 +1127,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 En revanche, ils ne peuvent pas en utiliser pour voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces).</translation>
 <translation id="6476253015009698798">Le suivi des prix n'est pas disponible pour cette page.</translation>
 <translation id="6476800141292307438">Traduction de la page en <ph name="LANGUAGE" />. Options disponibles au bas de l'écran.</translation>
+<translation id="6477585407014744043">Nommez le groupe</translation>
 <translation id="648164694371393720">Erreur d'authentification</translation>
 <translation id="6494931198667773526">Fin</translation>
 <translation id="6500795388871406244">Utiliser le mot de passe suggéré :</translation>
@@ -1294,6 +1298,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="734758817008927353">Options d'enregistrement de la carte</translation>
 <translation id="7352651011704765696">Un problème est survenu</translation>
 <translation id="7353432112255316844">Confirmer votre identité</translation>
+<translation id="736564850024123010">Déplacez la barre d'adresse pour une expérience personnalisée.</translation>
 <translation id="7367530036083223701">Accédez à vos mots de passe de manière sécurisée depuis l'écran d'accueil avec le widget Gestionnaire de mots de passe.</translation>
 <translation id="7380220816562673297">Pour le moment, vous ne pouvez partager des mots de passe qu'avec des membres de votre famille. <ph name="BEGIN_LINK" />Créez un groupe familial<ph name="END_LINK" /> avec jusqu'à six membres, et profitez pleinement de vos produits et abonnements sur Google.</translation>
 <translation id="739101637685146669">Quelle URL souhaitez-vous ajouter à vos favoris ?</translation>

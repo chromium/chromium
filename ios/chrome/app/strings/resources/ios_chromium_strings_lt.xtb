@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">Jei norite išjungti užrakinimo režimą naršyklėje „Chromium“, išjunkite jį „iPhone“ įrenginyje.</translation>
 <translation id="159029779861043703">„Chromium“ apsaugo neskelbtinus duomenis, kai naudodamas „Face ID“.</translation>
 <translation id="1591119736686995611">Atidaromas „Chromium“ skirtukų tinklelis.</translation>
+<translation id="16001233025397167">Saugos patikra padeda apsisaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir kt. Gaukite įspėjimus apie bet kokias privatumo ar saugos problemas, kurias „Chromium“ aptinka.</translation>
 <translation id="1611584326765829247">Leiskite „Chromium“ padėti stebėti jūsų siuntinius</translation>
 <translation id="1617663976202781617">„Chromium“ sinchronizavimo duomenys</translation>
 <translation id="1647558790457890304">„Chromium“ nustatymai</translation>
@@ -56,6 +57,7 @@
 <translation id="2426113998523353159">Organizacija reikalauja prisijungti, kad galėtumėte naudoti „Chromium“.</translation>
 <translation id="2450140762465183767">Dabar galite naudoti „Chromium“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
 <translation id="2478931088402984578">Pasirinkite <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2497941343438581585">Pasinaudokite „Chromium“ apsipirkimo pranašumais</translation>
 <translation id="252374538254180121">Nustatyti „Chromium“ kaip numatytąją naršyklę</translation>
 <translation id="2574528844022712255">Žr. „Chromium“ žymes</translation>
 <translation id="2590893390871230428">Sinchronizuoti „Chromium“ duomenis</translation>
@@ -103,6 +105,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chromium“ f
 <translation id="3855938650519180865">„Chromium“ naujienos</translation>
 <translation id="3886689467633467988">Prisijunkite prie šios svetainės ir „Chromium“, kad gautumėte žymes ir kt. visuose savo įrenginiuose.</translation>
 <translation id="3904484643286601695">Pasirinkimus galite bet kada atnaujinti „Chromium“ nustatymuose.</translation>
+<translation id="3983291422281996849">Nustatykite „Chromium“ kaip numatytąją naršyklę, kad galėtumėte lengvai stebėti kainas ir gauti norimų įsigyti prekių kainų įžvalgų.</translation>
 <translation id="4005283307739974863">Atidaroma ir vykdoma saugos patikra naršyklėje „Chromium“.</translation>
 <translation id="4043291146360695975">Slaptažodžiai saugomi Slaptažodžių tvarkytuvėje tik šiame įrenginyje.</translation>
 <translation id="4099085513035183040">Nepalaikoma „Chromium“ beta versijoje</translation>
@@ -133,6 +136,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="4736424910885271643">Jūsų paskyrą tvarko <ph name="HOSTED_DOMAIN" />, todėl jūsų „Chromium“ duomenys bus išvalyti iš šio įrenginio</translation>
 <translation id="4790638144988730920">Toliau naudokite „Chromium“ duomenis „Google“ paskyroje.</translation>
 <translation id="4828317641996116749">„Chromium“ nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą vėliau.</translation>
+<translation id="4904452304169763785">Įspėjama apie bet kokias privatumo ar saugos problemas, kurias „Chromium“ aptinka.</translation>
 <translation id="4962295957157529683">Pabaikite tai, ką darėte, kitame atidarytame „Chromium“ lange.</translation>
 <translation id="4985291216379576555">Neprisijungta, todėl „Chromium“ nepavyko patikrinti, ar yra naujinių</translation>
 <translation id="4996471330284142407">Nuveikite daugiau naudodami paprastą, saugią ir spartesnę nei bet kada anksčiau „Chromium“.</translation>
@@ -176,6 +180,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
   • Jei „Chromium“ užstringa, į strigties ataskaitą gali būti įtraukta tam tikros asmens informacijos.
 
   • Jei sinchronizuosite istoriją „Google“ paskyroje, į metriką taip pat gali būti įtraukta informacijos apie URL, kuriais lankotės.<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">Gaukite įspėjimus apie bet kokias privatumo ar saugos problemas, kurias „Chromium“ automatiškai aptinka.</translation>
 <translation id="5945387852661427312">Prisijungiate naudodami <ph name="DOMAIN" /> valdomą paskyrą ir suteikiate jos administratoriui galimybę valdyti jūsų „Chromium“ duomenis. Duomenys bus visam laikui susieti su šia paskyra. Atsijungę nuo „Chromium“ ištrinsite duomenis iš šio įrenginio, bet jie ir toliau bus saugomi „Google“ paskyroje.</translation>
 <translation id="5951593919357934226">Išnaudokite visas „Chromium“ galimybes.</translation>
 <translation id="5983312940147103417">„Chromium“ tobulinimas</translation>

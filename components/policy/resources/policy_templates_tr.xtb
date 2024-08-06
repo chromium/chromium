@@ -434,6 +434,15 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa gi
       Politika, "Zorunlu" (2) değerine ayarlanırsa profil seçici kullanıcı tarafından engellenemez. Kullanılabilir tek bir profil olsa bile profil seçici gösterilir.</translation>
 <translation id="1339174690935954950">Kullanıcıların geri bildirim göndermelerini engelle</translation>
 <translation id="1340053691042184658">Tarayıcıya misafir girişlerini engelle</translation>
+<translation id="134154550994512097">Bu politika, kullanıcıların Yalnızca HTTPS Modu'nu (Her Zaman Güvenli Bağlantılar Kullan) Ayarlar'da etkinleştirip etkinleştiremeyeceğini kontrol eder. Yalnızca HTTPS Modu, tüm gezinmeleri HTTPS'ye yükseltir.
+      Bu ayar belirtilmezse veya izin verildi olarak seçilirse kullanıcılar Yalnızca HTTPS Modu'nu etkinleştirebilir.
+      Bu ayar izin verilmedi olarak seçilirse kullanıcılar Yalnızca HTTPS Modu'nu etkinleştiremez.
+      Bu ayar, force_enabled değerine ayarlanırsa "Yalnızca HTTPS Modu" Yüksek Düzey Modu'nda etkinleştirilir ve kullanıcılar tarafından devre dışı bırakılamaz.
+      Bu ayar, force_balanced_enabled değerine ayarlanırsa "Yalnızca HTTPS Modu" Dengeli Mod'da etkinleştirilir ve kullanıcılar tarafından dışı bırakılamaz.
+      force_enabled, M112 ve sonraki sürümlerde, force_balanced_enabled ise M129 ve sonraki sürümlerde desteklenir.
+      Bu politikayı, politikayı alan Chrome sürümünün desteklemediği bir değere ayarlarsanız Chrome, varsayılan olarak izin verilen ayara geçer.
+
+Belirli ana makine adlarının veya ana makine adı kalıplarının bu özellik tarafından HTTPS'ye yükseltilmesini engellemek için ayrı <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> politikası kullanılabilir.</translation>
 <translation id="1342918903685430097">Cihaz için izin verilen minimum <ph name="PRODUCT_OS_NAME" /> sürümünü yapılandır.</translation>
 <translation id="1343128241903870688">Cihazın uygulama bilgileri raporlamasını devre dışı bırak</translation>
 <translation id="1347198119056266798">Bu politika kullanımda kaldırılmıştır. Lütfen bunun yerine <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> ve <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> politikalarını kullanın. <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> veya (kullanımdan kaldırılan) <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> politikası ayarlanırsa bu politika yoksayılır.
@@ -2643,6 +2652,9 @@ Sağlanan filtrelerden biriyle eşleşen alan adları için ayarlanan çerezler,
 <translation id="2973972555495515337">Politika, Etkin değerine ayarlanırsa üçüncü taraf web uygulamalarının, <ph name="PRODUCT_OS_NAME" /> masalarını kaydetmek ve paylaşmak için <ph name="DESK_API_NAME" /> kullanmasına izin verilir. Politika, Devre Dışı değerine ayarlanırsa kullanıcı, masa verilerini <ph name="DESK_API_NAME" /> aracılığıyla kaydedip paylaşamaz. Politika ayarlanmadan bırakılırsa davranış, devre dışı değerine ayarlandığında geçerli olan davranışla aynı olur. Politika yalnızca kayıtlı cihazlarda geçerli olur.</translation>
 <translation id="2976033779241323433">Varsayılan buluşsal sistem yöntemlerine göre dokunmatik sanal klavyeyi etkinleştir</translation>
 <translation id="2976429807269247880">Eski <ph name="ATTRIBUTE_SAMESITE_NAME" /> çerez davranışı ayarları</translation>
+<translation id="2977576137210520963">Politikanın ayarlanması, kalıpları istek yapan URL'nin güvenlik kaynağıyla eşleşen URL listesini sizin belirttiğiniz anlamına gelir. Eşleşme olması halinde istemde bulunulmadan ses yakalama cihazlarına erişim izni verilir
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için lütfen https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakın. Ancak her URL'ye uyan "*" kalıbının bu politika tarafından desteklenmediğini unutmayın.</translation>
 <translation id="2979696534869541158">Eski uygulamayı zorunlu kıl</translation>
 <translation id="2985927503455169394">Asistan ilk katılım deneyiminin varsayılan modunu kullanma</translation>
 <translation id="2987155890997901449">ARC'yi etkinleştir</translation>
@@ -6733,6 +6745,7 @@ Politikayı <ph name="BR_UNDER_USER_CONTROL" /> değerine ayarlamak, kullanıcı
 
 Kullanıcılar, ilk kurulumdan sonra yedekleme ve geri yükleme özelliğini açabilir veya kapatabilir.</translation>
 <translation id="6169768162756928771">GAIA kullanıcı kimliği yönetimi ayarları</translation>
+<translation id="6170316094401732532">Kullanıcıların Yalnızca HTTPS Modu ayarını kısıtlama</translation>
 <translation id="6172110090237528457">Giriş ekranı için cihaz düzeyinde ekran koruyucuyu yapılandırır.
 
 Bu politika Doğru değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" /> cihazı giriş ekranında boşta kaldığında bir ekran koruyucu gösterir.
@@ -7448,6 +7461,9 @@ Not: Cihazı yeniden başlatmak ve oturumu kapatmak önbelleğin temizlenmesine 
 
           Etkinleştirilir, boş bırakılır veya ayarlanmazsa bu politikanın hiçbir etkisi olmaz.</translation>
 <translation id="6583249367505445969">Yer işareti çubuğunu devre dışı bırak</translation>
+<translation id="6583473893541367102">Politikanın ayarlanması, kalıpları istek yapan URL'nin güvenlik kaynağıyla eşleşen URL listesini sizin belirttiğiniz anlamına gelir. Eşleşme olması halinde istemde bulunulmadan video yakalama cihazlarına erişim izni verilir
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için lütfen https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakın. Ancak her URL'ye uyan "*" kalıbının bu politika tarafından desteklenmediğini unutmayın.</translation>
 <translation id="6584122839583172231">F12 ayarları, ctrl ve üst karakter değiştiricileri içeren kısayolu kullanır</translation>
 <translation id="6584541828182430328">Tam ekran uyarısının gösterilmesini devre dışı bırak</translation>
 <translation id="658537215958747575">Kaynakların Direct Sockets'ı kullanmasına izin ver</translation>
@@ -8939,6 +8955,7 @@ Bu politika ayarlanmadan bırakılırsa PDF oluşturucu tarayıcı tarafından s
       Not: Kullanabileceğiniz değişkenlerin listesine bakın (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="7719808201797990069">Sekme silmeyle ilgili URL kalıbı istisnaları</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" /> kullanıcı kimliği</translation>
+<translation id="7725010277314676939">Yüksek Düzey Modu'nda Yalnızca HTTPS Modu'nu zorla etkinleştir</translation>
 <translation id="7728486978686128364">DELETE/GET/HEAD/OPTIONS/POST/PUT haricindeki istek yöntemlerini büyük harfle yazma</translation>
 <translation id="7731026922044991970">Tüm sitelerde çerezler için eski <ph name="ATTRIBUTE_SAMESITE_NAME" /> davranışına geri dön</translation>
 <translation id="7732907212083471072">Kaldırılan politikalar</translation>
@@ -10851,6 +10868,7 @@ Bu politika yalnızca <ph name="FULL_RESTORE_ENABLED_NAME" /> politikası doğru
 
       Bu politika geçici bir çözüm olup gelecekteki <ph name="PRODUCT_NAME" /> sürümlerinden kaldırılacaktır. Politikanın kaldırılmasından sonra <ph name="PRODUCT_NAME" />, her zaman ilave DNS türlerini sorgulayabilecektir.</translation>
 <translation id="9167719789236691545"><ph name="PRODUCT_OS_NAME" />, Dosyalar uygulamasında Drive'ı devre dışı bırak</translation>
+<translation id="9172648973829444124">Dengeli Mod'da Yalnızca HTTPS Modu'nu zorla etkinleştir</translation>
 <translation id="9172911925443428317">App Store puan promosyonunun gösterilmesine izin verme</translation>
 <translation id="9173133289347070466"><ph name="PRODUCT_NAME" /> ürün içi anketleri, tarayıcı ile ilgili kullanıcı geri bildirimleri toplar. Anket yanıtları, kullanıcı hesaplarıyla ilişkilendirilmez.
 Bu politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılara ürün içi anketler gösterilebilir.
@@ -10862,6 +10880,7 @@ Bu politika, Devre Dışı değerine ayarlanırsa kullanıcılara ürün içi an
 <translation id="9180108183162961002">Tarayıcıya misafir girişlerine izin ver</translation>
 <translation id="9185963199234034321">Giriş ekranında yüksek kontrastı etkinleştir ve kullanıcının bunu geçici olarak devre dışı bırakmasına izin ver</translation>
 <translation id="9187743794267626640">Harici depolama birimi eklemeyi devre dışı bırak</translation>
+<translation id="9189737595688383533">Kullanıcıların Yalnızca HTTPS Modu'nu etkinleştirmesine izin verme</translation>
 <translation id="9190022798664427644">Mono sesi etkinleştir</translation>
 <translation id="9190456586252617675">Bu politika, Asistan ilk katılım deneyimi modunu kontrol eder.
 

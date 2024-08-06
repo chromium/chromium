@@ -302,6 +302,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2529021024822217800">Åbn alle</translation>
 <translation id="2536991091671391962">Du kan bruge gemte adgangskoder på alle enheder. De er gemt i Google Adgangs­kode­admin­istrator for <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Skjul "Sikkerhedstjek"</translation>
+<translation id="2545094307889012168">Linseoverlejring</translation>
 <translation id="2547458583188611426">Synkronisering fungerer ikke. Angiv din adgangssætning for at starte synkroniseringen.</translation>
 <translation id="2551153019974022505">Kontofejl</translation>
 <translation id="2556092377360758201">Ingen beskyttelse (anbefales ikke)</translation>
@@ -848,6 +849,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5205197603258285592">Gem billede i…</translation>
 <translation id="5211488077761630279">Vil du tillade, at "<ph name="SITE_NAME" />" bruger <ph name="PERMISSION" />?</translation>
+<translation id="5215046161188172474">Del fuld webadresse</translation>
 <translation id="5219295696240154694">Vær med til at forbedre sikkerheden for alle på nettet</translation>
 <translation id="5220945116117011963">Opret kalenderbegivenheder ud fra datoer</translation>
 <translation id="5221339005270097309">Tjekker adgangskoder…</translation>
@@ -1125,6 +1127,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige websites for f.eks. at personligt tilpasse annoncer.</translation>
 <translation id="6476253015009698798">Prisovervågning er ikke tilgængelig for denne side.</translation>
 <translation id="6476800141292307438">Siden oversættes til <ph name="LANGUAGE" />. Valgmulighederne findes nederst på skærmen.</translation>
+<translation id="6477585407014744043">Navnegruppe</translation>
 <translation id="648164694371393720">Godkendelsesfejl</translation>
 <translation id="6494931198667773526">Slutter</translation>
 <translation id="6500795388871406244">Brug foreslået adgangskode:</translation>

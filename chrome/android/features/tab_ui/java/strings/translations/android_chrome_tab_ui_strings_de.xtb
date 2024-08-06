@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Orange</translation>
 <translation id="125153950246128346">Tippen, um einen anderen Tab zu sehen</translation>
 <translation id="1273910660700874265">Optionen für Tapgruppe „<ph name="TITLE_OF_GROUP" />“</translation>
+<translation id="1340839264183302272">Gruppe verlassen</translation>
 <translation id="1419023007528516122">Dadurch wird die Gruppe endgültig von deinem Gerät gelöscht</translation>
 <translation id="1486715732399361704">Hier findest du alle deine Tabgruppen</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Vor <ph name="NUM_MINS_ONE" /> Minute erstellt}other{Vor <ph name="NUM_MINS_MANY" /> Minuten erstellt}}</translation>
@@ -41,6 +42,7 @@
 <translation id="2801787514987684416">Geschäftsinformationen anzeigen?</translation>
 <translation id="2928243913527329289">Google | Informationen zu diesem Händler</translation>
 <translation id="2977480621796371840">Aus Gruppe entfernen</translation>
+<translation id="29919168204617356">Inaktive Tabs werden automatisch geschlossen. Du kannst sie jederzeit im Verlauf finden.</translation>
 <translation id="3008554597174452548">Produkt nicht mehr beobachten</translation>
 <translation id="3026391124054406831">Erstelle Gruppen, um deine Tabs zu organisieren.</translation>
 <translation id="3051031624272448591">Du kannst sie jederzeit im Verlauf wiederherstellen</translation>
@@ -51,6 +53,7 @@
 <translation id="3322827343001922122">Aktionsmenü für die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ öffnen</translation>
 <translation id="3328308545011660196">Vorschlag: <ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
 <translation id="3547352561153509682">Dadurch wird die Gruppe von allen Geräten gelöscht, die mit <ph name="USER_EMAIL" /> angemeldet sind</translation>
+<translation id="3613492231657284463">Dialogfeld „Inaktive Tabs“ ausblenden</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Vorschau: geteilte Tabelle.</translation>
 <translation id="381219490185664296">Tabgruppe aufheben?</translation>
@@ -120,6 +123,7 @@
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Tab nach links bewegen</translation>
 <translation id="6615455863669487791">Zeigen</translation>
+<translation id="6694634756612002311">Freigaben verwalten</translation>
 <translation id="6744956528665271406">Gruppenfarbe bearbeiten</translation>
 <translation id="6856809498882026482">Modus für die Mehrfachauswahl ausblenden</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Tab teilen}other{Tabs teilen}}</translation>
@@ -137,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> Rezension von Google}other{<ph name="REVIEWS_COUNT_MANY" /> Rezensionen von Google}}</translation>
 <translation id="7559245342362162951">Tabs der Gruppe in Vollbildraster anzeigen</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
+<translation id="7688386659311034820">Dialogfeld „Inaktive Tabs“</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab teilen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs teilen}}</translation>
 <translation id="7773714564112603605">Tab entfernen und Gruppe löschen</translation>
 <translation id="7792771145871471484">Vorschläge ansehen.</translation>
@@ -171,6 +176,7 @@
 <translation id="8926389886865778422">Nicht mehr fragen</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab maximieren.}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren.}}</translation>
 <translation id="9090098097337832354">Informationen zu diesem Händler sind geschlossen</translation>
+<translation id="9111228330448174435">Beim Erstellen einer neuen Tabgruppe kleines Fenster anzeigen</translation>
 <translation id="9150694013019234766">Am unteren Bildschirmrand kannst du zwischen den Tabs in deiner Tabgruppe wechseln</translation>
 <translation id="9169594135889675189">Der Gruppe einen neuen Tab hinzufügen</translation>
 <translation id="9216898458513705996">Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird auf allen Geräten gelöscht, die mit <ph name="USER_EMAIL" /> angemeldet sind</translation>

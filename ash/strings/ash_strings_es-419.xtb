@@ -405,6 +405,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2486214324139475545">Vista previa de <ph name="DESK_NAME" />. Escritorio activo.</translation>
 <translation id="2486405091093637109">Se cambió "<ph name="DISPLAY_NAME" />" a una resolución de <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Si no confirmas el cambio, se restablecerá la configuración anterior en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Unirse</translation>
+<translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="2499445554382787206">Menú del perfil del escritorio. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Teclas especiales</translation>
 <translation id="2504454902900101003">Descartar la configuración de la visualización de las fotos, el contenido multimedia y las notificaciones recientes de tu teléfono</translation>
@@ -436,6 +437,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2607678425161541573">Se requiere acceso en línea</translation>
 <translation id="2612072250312279703">control de actividad</translation>
 <translation id="2612614436418177118">Mover el ícono de una app dentro de la cuadrícula de apps</translation>
+<translation id="2619052155095999743">Insertar</translation>
 <translation id="2619326010008283367">Paso <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> del recorrido. Puedes encontrar la Configuración de tu dispositivo en el Selector. Intenta personalizar tu <ph name="PRODUCT_NAME" /> en Configuración, por ejemplo, puedes cambiar el fondo de pantalla o establecer un protector de pantalla.</translation>
 <translation id="2620016719323068571">Busca <ph name="CATEGORY" />, archivos, apps y más...</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -462,6 +464,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2704781753052663061">Unirse a otras redes Wi-Fi</translation>
 <translation id="2705001408393684014">Activa o desactiva el micrófono. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Arriba</translation>
+<translation id="271033894570825754">Nuevo</translation>
 <translation id="2710984741481549981">Bloquear las ventanas</translation>
 <translation id="2718395828230677721">Luz nocturna</translation>
 <translation id="2726420622004325180">Tu teléfono debe tener los datos móviles activados para proporcionar un hotspot.</translation>
@@ -1087,6 +1090,7 @@ Se conectó un dispositivo.</translation>
 <translation id="4890408602550914571">Asegúrate de que el teléfono esté cerca y tenga la conexión Bluetooth activada.</translation>
 <translation id="4892981359753171125">Control facial</translation>
 <translation id="4895488851634969361">La batería está completa.</translation>
+<translation id="4902797682482387055">Tarea sugerida en la que concentrarse</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240">Batería: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="491504982845934899">Activar luego de configurar el dispositivo <ph name="NETWORK_NAME" /></translation>
@@ -1097,6 +1101,7 @@ Se conectó un dispositivo.</translation>
 <translation id="492453977506755176">Tecla del modo de captura</translation>
 <translation id="4925542575807923399">El administrador de esta cuenta requiere que sea la primera a la que se acceda al crear una sesión de acceso múltiple.</translation>
 <translation id="493076006037866439">Alejar la pantalla</translation>
+<translation id="4932733599132424254">Fecha</translation>
 <translation id="4936329710968938986">Todos, desactivado</translation>
 <translation id="4937170330762390348">Con el dictado, puedes escribir con tu voz. Presiona la tecla de dictado o selecciona el ícono de micrófono en la parte inferior de la pantalla cuando estés en un campo de texto. El idioma de dictado está configurado en <ph name="LANGUAGE" />. Se descargarán los archivos de voz para que puedas usar el dictado sin conexión. Puedes cambiar el idioma de dictado en cualquier momento en Configuración &gt; Accesibilidad.</translation>
 <translation id="4938176435186993759">Ocultar todas las sugerencias</translation>
@@ -1105,6 +1110,7 @@ Se conectó un dispositivo.</translation>
 <translation id="495046168593986294">Desplazar hacia arriba</translation>
 <translation id="4950800194215951939">Personaliza tu experiencia de videojuegos</translation>
 <translation id="4952936045814352993">La opción Ubicar teléfono no está disponible cuando se inhabilitan los sonidos de las alarmas</translation>
+<translation id="4953585991029886728">Editar texto</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> requiere que reviertas tu <ph name="DEVICE_TYPE" />. Se restablecerá tu dispositivo y se borrarán todos los datos.</translation>
 <translation id="4961318399572185831">Transmitir pantalla</translation>
 <translation id="4964188651935955085">Cuando desactives el Bluetooth, este dispositivo externo se desconectará de tu <ph name="DEVICE_TYPE" />:</translation>
@@ -1364,6 +1370,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5819918159912280082">Se reinició tu Chromebook de forma inesperada. Abre las ventanas y apps anteriores.</translation>
 <translation id="5823239091726045201">Google Tasks en la Web</translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
+<translation id="5830180081891717894"><ph name="WINDOWS" /> más</translation>
 <translation id="5837036133683224804">Detener <ph name="ROUTE_TITLE" /> en <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Ir a la pista siguiente</translation>
 <translation id="5842553299352339114">El hotspot de <ph name="DEVICE_NAME" /> está activado y no hay dispositivos conectados.</translation>
@@ -1425,6 +1432,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6032620807120418574">Haz clic en cualquier parte para grabar la pantalla completa</translation>
 <translation id="6040071906258664830">Grabar con el micrófono: <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Cerrar</translation>
+<translation id="6042308850641462728">Más</translation>
 <translation id="6043212731627905357">Este monitor no es compatible con tu dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6043994281159824495">Salir ahora</translation>
 <translation id="6045629311476491587">En uso por parte de <ph name="APP_COUNT" /> apps</translation>
@@ -1891,6 +1899,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7748275671948949022">Destacar el botón del Selector en la barra</translation>
 <translation id="7749443890790263709">Se alcanzó la cantidad máxima de escritorios.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Mostrar todo</translation>
 <translation id="7759183637555564029">Puedes desactivar Ayúdame a escribir y Help me read en cualquier momento en Configuración. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Seleccionar para pronunciar</translation>
 <translation id="7769299611924763557">Tu GIF estará listo en breve</translation>
@@ -2024,6 +2033,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" />: El administrador controla esta configuración.</translation>
 <translation id="8155628902202578800">Abrir el diálogo de información de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> en uso</translation>
+<translation id="8168435359814927499">Contenido</translation>
 <translation id="8185090165691050712">Activar o desactivar el menú para cambiar el tamaño del modo bloqueado</translation>
 <translation id="8192727139462702395">Cuando desactives el Bluetooth, estos dispositivos externos se desconectarán de tu <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Pestaña de transmisión</translation>
@@ -2071,6 +2081,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8375916635258623388">Este dispositivo <ph name="DEVICE_NAME" /> y el teléfono se conectarán automáticamente</translation>
 <translation id="8380784334203145311">Buenas noches:</translation>
 <translation id="8382715499079447151">Protección de visualización</translation>
+<translation id="8383614331548401927">Repaso de bienvenida</translation>
 <translation id="8388750414311082622">No se puede quitar el último escritorio.</translation>
 <translation id="8394567579869570560">Tus padres bloquearon este dispositivo</translation>
 <translation id="8401850874595457088">Ingresar al menú de idiomas</translation>

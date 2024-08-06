@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ</translation>
 <translation id="2652403576514495859">ଡିକ୍ଟେସନକୁ ସକ୍ଷମ କିମ୍ବା ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="2653659639078652383">ଉପସ୍ଥାପନ</translation>
-<translation id="2653807227758181366">ଆପଣ ତିଆରି କରିବାକୁ ଚାହୁଁଥିବା ୱାଲପେପରର ବର୍ଣ୍ଣନା କରନ୍ତୁ କିମ୍ବା ଏକ ନମୁନା ପ୍ରମ୍ପ୍ଟ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2654647726140493436">ଅପଡେଟ ଚାଲୁଥିବା ସମୟରେ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ବନ୍ଦ କରନ୍ତୁ ନାହିଁ କିମ୍ୱା <ph name="DEVICE_TYPE" /> ପାୱାର କେବୁଲକୁ ଅନପ୍ଲଗ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="2656001153562991489">Chromebook Plus ପାଇଁ ଏକ୍ସକ୍ଲୁସିଭ</translation>
 <translation id="2665671725390405060">ଉଚ୍ଚାରଣକୁ ଶୁଣନ୍ତୁ</translation>
@@ -358,6 +357,7 @@
 <translation id="2780756493585863768">Google AI ଦ୍ୱାରା ପରିଚାଳିତ ବର୍ତ୍ତମାନର ବେକଗ୍ରାଉଣ୍ଡ</translation>
 <translation id="2783010256799387990">ପାସ୍ ହୋଇଛି</translation>
 <translation id="2786429550992142861">ଲିନେନ</translation>
+<translation id="2787237339470862294">ବର୍ତ୍ତମାନ ଏହି ଭାଷାକୁ ସପୋର୍ଟ କରୁନାହିଁ</translation>
 <translation id="2787435249130282949">କୀବୋର୍ଡକୁ ଆହୁରି ଉଜ୍ଜ୍ୱଳ କରନ୍ତୁ</translation>
 <translation id="2805756323405976993">ଆପ୍ସ</translation>
 <translation id="28232023175184696">ଇଣ୍ଟରନେଟ୍ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
@@ -669,6 +669,7 @@
 <translation id="458794348635939462">ହୋଷ୍ଟ ସମ୍ବନ୍ଧିତ ସମସ୍ତ ସମସ୍ୟାର ସମାଧାନ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="4593212453765072419">ପ୍ରକ୍ସି ପ୍ରାମାଣିକତା ଆବଶ୍ୟକ</translation>
 <translation id="4594021849294327751">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="4607282946861182308">ଏହାର ଇମେଜ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ଅନ୍ୟ ଏକ ପ୍ରମ୍ପ୍ଟ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4609350030397390689">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />ଟି ମଧ୍ୟରୁ <ph name="PRINTED_PAGE_NUMBER" /> ନମ୍ବର ପୃଷ୍ଠା। ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ ବାତିଲ୍ କରିବାକୁ Enter ଦବାନ୍ତୁ।</translation>
 <translation id="463791356324567266">ସ୍କାନିଂ ବାତିଲ୍ କରାଯାଉଛି...</translation>
@@ -1364,6 +1365,7 @@
 <translation id="8208861521865154048">ପର୍କଗୁଡ଼ିକ</translation>
 <translation id="8226628635270268143">ଆପଣଙ୍କ ପସନ୍ଦର ଫଟୋ ଏବଂ ଆଲବମଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
 <translation id="8227119283605456246">ଫାଇଲ୍ ସଂଲଗ୍ନ କରନ୍ତୁ</translation>
+<translation id="8227488649450500937">ଏହି ପ୍ରମ୍ପ୍ଟଗୁଡ଼ିକ ମଧ୍ୟରୁ ଗୋଟିଏକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ କିମ୍ବା <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ପ୍ରମ୍ପ୍ଟିଂ ଗାଇଡ<ph name="END_LINK_PROMPTING_GUIDE" /> ଦେଖନ୍ତୁ</translation>
 <translation id="8230672074305416752">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8238771987802558562">ଏକ APN ବାଛନ୍ତୁ</translation>
 <translation id="8246209727385807362">ଅଜଣା ବାହକ</translation>

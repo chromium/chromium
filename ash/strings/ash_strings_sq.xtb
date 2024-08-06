@@ -405,6 +405,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2486214324139475545">Pamja paraprake e "<ph name="DESK_NAME" />". Tavolina e punës aktive.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" u kalua në rezolucionin <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Nëse nuk konfirmohet, cilësimet e mëparshme do të restaurohen pas <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Bashkohu</translation>
+<translation id="2496180316473517155">Historiku i shfletimit</translation>
 <translation id="2499445554382787206">Menyja e profilit të tavolinës së punës. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tastet e përhershme</translation>
 <translation id="2504454902900101003">Hiq konfigurimin e shikimit të njoftimeve, medias dhe fotografive më të fundit të telefonit tënd</translation>
@@ -436,6 +437,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2607678425161541573">Kërkohet identifikim online</translation>
 <translation id="2612072250312279703">monitori i aktivitetit</translation>
 <translation id="2612614436418177118">Zhvendos një ikonë aplikacioni në rrjetën e aplikacioneve</translation>
+<translation id="2619052155095999743">Insert</translation>
 <translation id="2619326010008283367">Hapi <ph name="STEP" /> nga <ph name="TOTAL_STEPS" /> i turneut. Mund t'i gjesh "Cilësimet" e pajisjes sate te "Nisësi". Provo ta personalizosh <ph name="PRODUCT_NAME" /> te "Cilësimet", si p.sh. duke ndryshuar imazhin e sfondit ose duke caktuar një mbrojtës ekrani.</translation>
 <translation id="2620016719323068571">Kërko te <ph name="CATEGORY" />, skedarët, aplikacionet dhe të tjera...</translation>
 <translation id="2620436844016719705">Sistemi</translation>
@@ -462,6 +464,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2704781753052663061">Bashkohu me rrjete të tjera Wi-Fi</translation>
 <translation id="2705001408393684014">Aktivizo/çaktivizo mikrofonin. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Lart</translation>
+<translation id="271033894570825754">E re</translation>
 <translation id="2710984741481549981">Kyç dritaret</translation>
 <translation id="2718395828230677721">Drita e natës</translation>
 <translation id="2726420622004325180">Telefoni yt duhet të përdorë të dhënat celulare për të ofruar një zonë qasjeje për internet</translation>
@@ -1096,6 +1099,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="492453977506755176">Çelësi i modalitetit të regjistrimit</translation>
 <translation id="4925542575807923399">Administratori për këtë llogari kërkon që ajo të jetë llogaria e parë e identifikimit në një sesion me identifikime të shumëfishta.</translation>
 <translation id="493076006037866439">Zvogëlo ekranin</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4936329710968938986">Të gjithë, veçoria joaktive</translation>
 <translation id="4937170330762390348">Me diktimin, mund të shkruash duke përdorur zërin tënd. Shtyp tastin e diktimit ose zgjidh ikonën e mikrofonit në fund të ekranit kur je në një fushë teksti. Gjuha e diktimit është caktuar në <ph name="LANGUAGE" />. Skedarët e ligjërimit do të shkarkohen që të mund ta përdorësh diktimin offline. Mund ta ndryshosh gjuhën e diktimit në çdo kohë te Cilësimet &gt; Qasshmëria.</translation>
 <translation id="4938176435186993759">Fshihi të gjitha sugjerimet</translation>
@@ -1104,6 +1108,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="495046168593986294">Lëviz lart</translation>
 <translation id="4950800194215951939">Personalizo përvojën me lojërat</translation>
 <translation id="4952936045814352993">"Gjej telefonin" nuk ofrohet kur tingujt e alarmeve janë çaktivizuar</translation>
+<translation id="4953585991029886728">Redakto tekstin</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> kërkon që ta kthesh pas pajisjen tënde <ph name="DEVICE_TYPE" />. Pajisja do të rivendoset dhe të gjitha të dhënat do të fshihen.</translation>
 <translation id="4961318399572185831">Ekrani i transmetimit</translation>
 <translation id="4964188651935955085">Kur të çaktivizosh Bluetooth-in, kjo pajisje e jashtme do të shkëputet nga <ph name="DEVICE_TYPE" />:</translation>
@@ -1363,6 +1368,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5819918159912280082">Pajisja jote Chromebook është rinisur papritur. Hap dritaret dhe aplikacionet e tua të mëparshme.</translation>
 <translation id="5823239091726045201">Google Tasks në ueb</translation>
 <translation id="5825969630400862129">Cilësimet e pajisjeve të lidhura</translation>
+<translation id="5830180081891717894"><ph name="WINDOWS" /> të tjera</translation>
 <translation id="5837036133683224804">Ndalo <ph name="ROUTE_TITLE" /> në <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Shko te pjesa tjetër muzikore</translation>
 <translation id="5842553299352339114">Zona e qasjes për internet e <ph name="DEVICE_NAME" /> është aktive, asnjë pajisje e lidhur</translation>
@@ -1424,6 +1430,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6032620807120418574">Kliko diku për të regjistruar ekranin e plotë</translation>
 <translation id="6040071906258664830">Regjistro me mikrofonin: <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Mbyll</translation>
+<translation id="6042308850641462728">Më shumë</translation>
 <translation id="6043212731627905357">Ky monitor nuk po përshtatet me pajisjen tënde <ph name="DEVICE_TYPE" /> (monitori nuk mbështetet).</translation>
 <translation id="6043994281159824495">Dil tani</translation>
 <translation id="6045629311476491587">Përdorur nga <ph name="APP_COUNT" /> aplikacione</translation>
@@ -1890,6 +1897,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7748275671948949022">Thekso butonin e "Nisësit" në raft</translation>
 <translation id="7749443890790263709">Është arritur numri maksimal i tavolinave të punës.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Shfaq të gjitha</translation>
 <translation id="7759183637555564029">Mund të çaktivizosh "Më ndihmo të shkruaj" dhe "Më ndihmo të lexoj" në çdo kohë te "Cilësimet". <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Zgjidh që të thuhet</translation>
 <translation id="7769299611924763557">Imazhi yt GIF do të jetë gati së shpejti</translation>
@@ -2023,6 +2031,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Ky cilësim menaxhohet nga administratori yt.</translation>
 <translation id="8155628902202578800">Hap dialogun e informacioneve për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Po përdor <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Përmbajtja</translation>
 <translation id="8185090165691050712">Aktivizo/çaktivizo menynë për të ndryshuar përmasat e modalitetit të kyçjes</translation>
 <translation id="8192727139462702395">Kur të çaktivizosh Bluetooth-in, këto pajisje të jashtme do të shkëputen nga <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Skeda e transmetimit</translation>
@@ -2070,6 +2079,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8375916635258623388">Kjo pajisje <ph name="DEVICE_NAME" /> dhe telefoni yt do të lidhen automatikisht</translation>
 <translation id="8380784334203145311">Natën e mirë,</translation>
 <translation id="8382715499079447151">Mbrojtja e shikimit</translation>
+<translation id="8383614331548401927">Përmbledhja e mirëseardhjes</translation>
 <translation id="8388750414311082622">Tavolina e fundit e punës nuk mund të hiqet.</translation>
 <translation id="8394567579869570560">Prindi yt e kyçi këtë pajisje</translation>
 <translation id="8401850874595457088">Hyr në menynë e gjuhës</translation>

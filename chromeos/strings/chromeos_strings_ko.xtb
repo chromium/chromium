@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">컨트롤</translation>
 <translation id="2652403576514495859">음성기록 사용 설정 또는 전환</translation>
 <translation id="2653659639078652383">제출</translation>
-<translation id="2653807227758181366">만들려는 배경화면을 설명하거나 샘플 프롬프트를 사용하세요.</translation>
 <translation id="2654647726140493436">업데이트가 진행되는 동안 <ph name="DEVICE_TYPE" />의 전원을 끄거나 <ph name="DEVICE_TYPE" />에서 전원 케이블을 분리하지 마세요.</translation>
 <translation id="2656001153562991489">Chromebook Plus 전용</translation>
 <translation id="2665671725390405060">발음 듣기</translation>
@@ -1366,6 +1365,7 @@
 <translation id="8208861521865154048">혜택</translation>
 <translation id="8226628635270268143">좋아하는 사진 및 앨범을 선택합니다.</translation>
 <translation id="8227119283605456246">파일 첨부</translation>
+<translation id="8227488649450500937">다음 프롬프트 중 하나를 사용해 보거나 <ph name="BEGIN_LINK_PROMPTING_GUIDE" />프롬프트 가이드<ph name="END_LINK_PROMPTING_GUIDE" />를 참고하세요.</translation>
 <translation id="8230672074305416752">기본 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
 <translation id="8238771987802558562">APN 선택</translation>
 <translation id="8246209727385807362">알 수 없는 이동통신사</translation>

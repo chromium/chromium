@@ -340,7 +340,6 @@
 <translation id="2645380101799517405">Valdikliai</translation>
 <translation id="2652403576514495859">įgalinti arba perjungti diktavimą</translation>
 <translation id="2653659639078652383">Pateikti</translation>
-<translation id="2653807227758181366">Aprašykite norimą sukurti ekrano foną arba naudokite pavyzdinę užklausą</translation>
 <translation id="2654647726140493436">Neišjunkite „<ph name="DEVICE_TYPE" />“ ar neatjunkite „<ph name="DEVICE_TYPE" />“ maitinimo laido, kol vykdomas atnaujinimas</translation>
 <translation id="2656001153562991489">Taikoma tik „Chromebook Plus“</translation>
 <translation id="2665671725390405060">Klausyti tarimo</translation>
@@ -638,6 +637,7 @@
 <translation id="4422041425070339732">rodyklė žemyn</translation>
 <translation id="4425149324548788773">Mano Diskas</translation>
 <translation id="4428374560396076622">„<ph name="NETWORK_NAME" />“ išjungta</translation>
+<translation id="4428840632568803690"><ph name="SPEAKER_LABEL" /> kalbantysis</translation>
 <translation id="4429881212383817840">„Kerberos“ bilietas netrukus baigs galioti</translation>
 <translation id="4431821876790500265">Žr. ataskaitą</translation>
 <translation id="4443192710976771874">raudonos spalvos</translation>
@@ -1296,6 +1296,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7802764839223122985">Trūksta klavišo. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Ačiū, ne</translation>
 <translation id="7805768142964895445">Būsena</translation>
+<translation id="7811024689617730980">Pasirinkite automatinio nustatymo iš naujo dieną nuo 1 iki 31 imtinai</translation>
 <translation id="7813073042185856802">kalnas</translation>
 <translation id="7819857487979277519">PSK (WPA ar RSN)</translation>
 <translation id="7824219488248240180">postimpresionizmas</translation>
@@ -1380,7 +1381,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8261506727792406068">Ištrinti</translation>
 <translation id="8262870577632766028">Viena valanda</translation>
 <translation id="827422111966801947">Indigo spalva</translation>
-<translation id="8280224923876749648"><ph name="SPEAKER_ID" /> kalbantysis</translation>
 <translation id="8281886186245836920">Praleisti</translation>
 <translation id="8286154143153872371">Jei norite peržiūrėti ekrano foną, prisijunkite prie tinklo ir iš naujo įkelkite puslapį.</translation>
 <translation id="8291967909914612644">Namų paslaugos teikėjo šalis</translation>

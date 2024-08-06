@@ -405,6 +405,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2486214324139475545">Förhandsgranskning av <ph name="DESK_NAME" />. Aktivt skrivbord.</translation>
 <translation id="2486405091093637109"><ph name="DISPLAY_NAME" /> har ändrats till upplösningen <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Om du inte bekräftar återställs de tidigare inställningarna om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Delta</translation>
+<translation id="2496180316473517155">Webbhistorik</translation>
 <translation id="2499445554382787206">Meny för skrivbordsprofilen. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Låstangentsläge</translation>
 <translation id="2504454902900101003">Ignorera att ställa in visning av de senaste bilderna, mediefilerna och aviseringarna på telefonen</translation>
@@ -436,6 +437,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2607678425161541573">Onlineinloggning krävs</translation>
 <translation id="2612072250312279703">aktivitetskontroll</translation>
 <translation id="2612614436418177118">Flytta en appikon i rutnätet för appar</translation>
+<translation id="2619052155095999743">Infoga</translation>
 <translation id="2619326010008283367">Rundtur, steg <ph name="STEP" /> av <ph name="TOTAL_STEPS" />. Du hittar enhetsinställningarna i Appstartaren. Testa att anpassa <ph name="PRODUCT_NAME" /> i inställningarna som att ändra bakgrund eller ställa in en skärmsläckare.</translation>
 <translation id="2620016719323068571">Sök efter <ph name="CATEGORY" />, filer, appar med mera …</translation>
 <translation id="2620436844016719705">System</translation>
@@ -462,6 +464,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2704781753052663061">Anslut till andra wifi-nätverk</translation>
 <translation id="2705001408393684014">Aktivera eller inaktivera mikrofonen. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Upp</translation>
+<translation id="271033894570825754">Ny</translation>
 <translation id="2710984741481549981">Lås fönstren</translation>
 <translation id="2718395828230677721">Nattljus</translation>
 <translation id="2726420622004325180">Telefonen måste ha mobildata för att användas som surfzon</translation>
@@ -1086,6 +1089,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4890408602550914571">Kontrollera att telefonen finns i närheten och att Bluetooth är aktiverat på den.</translation>
 <translation id="4892981359753171125">Ansiktsstyrning</translation>
 <translation id="4895488851634969361">Batteriet är fullt.</translation>
+<translation id="4902797682482387055">Föreslagen uppgift att fokusera på</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % batterinivå</translation>
 <translation id="491504982845934899">Aktivera <ph name="NETWORK_NAME" /> när du har konfigurerat enheten</translation>
@@ -1096,6 +1100,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="492453977506755176">Tangent för skärmbild/skärminspelning</translation>
 <translation id="4925542575807923399">Administratören för kontot kräver att kontot är det första i en session med multiinloggning.</translation>
 <translation id="493076006037866439">Zooma ut från skärmen</translation>
+<translation id="4932733599132424254">Datum</translation>
 <translation id="4936329710968938986">Alla, av</translation>
 <translation id="4937170330762390348">Med diktering kan du skriva med rösten. Tryck på dikteringstangenten eller välj mikrofonikonen längst ned på skärmen när du är i ett textfält. Dikteringsspråket är inställt på <ph name="LANGUAGE" />. Talfiler laddas ned så att du kan använda diktering offline. Du kan när som helst ändra dikteringsspråket i Inställningar &gt; Tillgänglighet.</translation>
 <translation id="4938176435186993759">Dölj alla förslag</translation>
@@ -1104,6 +1109,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="495046168593986294">Scrolla upp</translation>
 <translation id="4950800194215951939">Anpassa din spelupplevelse</translation>
 <translation id="4952936045814352993">Funktionen Hitta telefonen är inte tillgänglig när ljudet är avstängt för alarmet</translation>
+<translation id="4953585991029886728">Textinmatning</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> kräver att du byter till en tidigare version av <ph name="DEVICE_TYPE" />. Enheten återställs och all data raderas.</translation>
 <translation id="4961318399572185831">Casta skärmen</translation>
 <translation id="4964188651935955085">När du inaktiverar Bluetooth kopplas den här externa enheten från din <ph name="DEVICE_TYPE" />:</translation>
@@ -1363,6 +1369,7 @@ Inga enheter är anslutna.</translation>
 <translation id="5819918159912280082">Din Chromebook startades om oväntat. Öppna dina föregående fönster och appar.</translation>
 <translation id="5823239091726045201">Google Tasks på webben</translation>
 <translation id="5825969630400862129">Inställningar för anslutna enheter</translation>
+<translation id="5830180081891717894"><ph name="WINDOWS" /> till</translation>
 <translation id="5837036133683224804">Sluta casta <ph name="ROUTE_TITLE" /> till <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Öppna nästa spår</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" />-surfzonen är aktiverad men inga enheter är anslutna</translation>
@@ -1424,6 +1431,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6032620807120418574">Klicka var som helst för att spela in hela skärmen</translation>
 <translation id="6040071906258664830">Spela in via mikrofon <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Stäng</translation>
+<translation id="6042308850641462728">Mer</translation>
 <translation id="6043212731627905357">Skärmen kan inte användas med <ph name="DEVICE_TYPE" /> (det finns inte stöd för skärmen).</translation>
 <translation id="6043994281159824495">Logga ut nu</translation>
 <translation id="6045629311476491587">Används av <ph name="APP_COUNT" /> appar</translation>
@@ -1890,6 +1898,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7748275671948949022">Markera appstartarknappen på hyllan</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Visa alla</translation>
 <translation id="7759183637555564029">Du kan stänga av Hjälp mig skriva och Hjälp mig läsa när som helst i inställningarna. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Textuppläsning</translation>
 <translation id="7769299611924763557">Giffen är snart redo</translation>
@@ -2023,6 +2032,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Den här inställningen hanteras av administratören.</translation>
 <translation id="8155628902202578800">Öppna informationsdialogrutan för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Använder <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Innehåll</translation>
 <translation id="8185090165691050712">Aktivera/inaktivera menyn för att ändra storlek på låst läge</translation>
 <translation id="8192727139462702395">När du inaktiverar Bluetooth kopplas dessa externa enheter från din <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Castar flik</translation>
@@ -2070,6 +2080,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8375916635258623388">Denna <ph name="DEVICE_NAME" /> ansluts automatiskt till din mobil</translation>
 <translation id="8380784334203145311">Hej!</translation>
 <translation id="8382715499079447151">Skydd mot smygtittare</translation>
+<translation id="8383614331548401927">Välkommen tillbaka</translation>
 <translation id="8388750414311082622">Det sista skrivbordet går inte att ta bort.</translation>
 <translation id="8394567579869570560">Din förälder har låst enheten</translation>
 <translation id="8401850874595457088">Språkmeny</translation>

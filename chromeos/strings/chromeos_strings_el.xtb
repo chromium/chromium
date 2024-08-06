@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Στοιχεία ελέγχου</translation>
 <translation id="2652403576514495859">ενεργοποίηση ή εναλλαγή υπαγόρευσης</translation>
 <translation id="2653659639078652383">Υποβολή</translation>
-<translation id="2653807227758181366">Περιγράψτε την ταπετσαρία που θέλετε να δημιουργήσετε ή χρησιμοποιήστε ένα δείγμα οδηγίας</translation>
 <translation id="2654647726140493436">Μην απενεργοποιήσετε τη συσκευή <ph name="DEVICE_TYPE" /> και μην αποσυνδέσετε το καλώδιο τροφοδοσίας της συσκευής <ph name="DEVICE_TYPE" /> όσο η ενημέρωση βρίσκεται σε εξέλιξη</translation>
 <translation id="2656001153562991489">Αποκλειστικά για Chromebook Plus</translation>
 <translation id="2665671725390405060">Ακούστε την προφορά</translation>
@@ -1366,6 +1365,7 @@
 <translation id="8208861521865154048">Προνόμια</translation>
 <translation id="8226628635270268143">Επιλέξτε τις αγαπημένες σας φωτογραφίες και λευκώματα.</translation>
 <translation id="8227119283605456246">Επισύναψη αρχείου</translation>
+<translation id="8227488649450500937">Δοκιμάστε μία από αυτές τις οδηγίες ή ανατρέξτε στον <ph name="BEGIN_LINK_PROMPTING_GUIDE" />οδηγό οδηγιών<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Αποτυχία ping της προεπιλεγμένης πύλης δικτύου.</translation>
 <translation id="8238771987802558562">Επιλέξτε APN</translation>
 <translation id="8246209727385807362">Άγνωστη εταιρεία κινητής τηλεφωνίας</translation>

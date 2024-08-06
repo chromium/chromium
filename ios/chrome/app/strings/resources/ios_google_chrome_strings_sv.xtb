@@ -35,6 +35,7 @@ Tänk på detta:
 <translation id="1554731936187952550">Du har den starkaste säkerheten i Chrome mot skadliga webbplatser</translation>
 <translation id="1615715390546812898">Sök med rösten i Chrome</translation>
 <translation id="1657395063736185342">Sök efter bilder i Chrome</translation>
+<translation id="1670609221633730681">Tips för Chrome: Välj adressfältets position</translation>
 <translation id="1675955119303651351">Viss Chrome-data har inte sparats i ditt Google-konto ännu.
         Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
 <translation id="1682483655351012182">Synkronisera data i Chrome</translation>
@@ -113,12 +114,14 @@ Tänk på detta:
 <translation id="3984746313391923992">Organisationen kräver att du inte loggar in i Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome har inte åtkomst till dina foton eller videor. Aktivera åtkomst i iOS-inställningar &gt; Integritet &gt; Foton.</translation>
 <translation id="4064699917955374540">Verifiera din identitet om du vill använda och spara Chrome-data i ditt Google-konto.</translation>
+<translation id="4066411101507716142">Kom åt Chrome snabbare från startskärmsdockan på iPad.</translation>
 <translation id="4067858366537947361">Öppna en inkognitoflik i Chrome</translation>
 <translation id="4093042601582616698">Vill du använda Chrome som standardwebbläsare?</translation>
 <translation id="417201473131094001">Stöds inte på Chrome Canary</translation>
 <translation id="424864128008805179">Vill du logga ut från Chrome?</translation>
 <translation id="4251174643044751591">Öppnar inställningssidan för betalningsmetoder i Chrome.</translation>
 <translation id="4286914711740227883">Radera webbinformation i Chrome</translation>
+<translation id="430839890088895017">Tips för Chrome: Flytta Chrome till dockan</translation>
 <translation id="4453284704333523777">Hantera inställningar för Chrome</translation>
 <translation id="4523886039239821078">Några tillägg har fått Chrome att krascha. Avinstallera följande:</translation>
 <translation id="4633328489441962921">Chrome kan inte söka efter uppdateringar</translation>
@@ -236,6 +239,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="7581063337314642333">Öppna rutnätet med flikar i Chrome</translation>
 <translation id="7662994914830945754">Logga in och aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>
 <translation id="7669869107155339016">Öppna inställningarna för Chrome.</translation>
+<translation id="7683540977001394271">Kom åt Chrome snabbare från startskärmsdockan på iPhone.</translation>
 <translation id="769104993356536261">Använda Chrome-åtgärder på iOS</translation>
 <translation id="7693590760643069321">Nu kan du använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="7698568245838009292">Chrome vill ha tillgång till kameran</translation>

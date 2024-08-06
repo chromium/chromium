@@ -185,7 +185,6 @@
 <translation id="1124772482545689468">Користувач</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" />x<ph name="HEIGHT" /> (оригінальна)</translation>
 <translation id="1125921926864945797">Оформлення й стиль</translation>
-<translation id="1126809382673880764">Не захищає від небезпечних веб-сайтів, завантажень і розширень. Безпечний перегляд усе ще працюватиме в інших сервісах Google (у яких він доступний), як-от Gmail і Пошук.</translation>
 <translation id="1128090040635299943">Виконується налаштування Linux. Зачекайте кілька хвилин.</translation>
 <translation id="1128591060186966949">Змінити пошукову систему</translation>
 <translation id="1129348283834595293">Кіберпанк</translation>
@@ -633,7 +632,6 @@
 <translation id="1461041542809785877">Ефективність</translation>
 <translation id="1461177659295855031">Перемістити в папку "Панель закладок"</translation>
 <translation id="1461288887896722288">Ви щойно ввійшли в керований обліковий запис. Щоб отримати доступ до деяких ресурсів, зв’язаних із цим обліковим записом, створіть новий керований профіль.</translation>
-<translation id="1461868306585780092">Показувати попередження, перш ніж почати використовувати незахищені з’єднання</translation>
 <translation id="146219525117638703">Стан ONC</translation>
 <translation id="146220085323579959">З’єднання з Інтернетом розірвано. Перевірте з’єднання з Інтернетом і повторіть спробу.</translation>
 <translation id="1462480037563370607">Додати сайти вручну</translation>
@@ -4184,7 +4182,6 @@
 <translation id="3959747296451923142">Підтвердити вилучення підписки</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Інші дії для номера "<ph name="IBAN_DESCRIPTION" />"</translation>
-<translation id="3962119236270174787">Стандартний захист від відомих небезпечних веб-сайтів, завантажень і розширень</translation>
 <translation id="3963753386716096475">Вибрати інший телефон, планшет або ключ безпеки</translation>
 <translation id="3964480518399667971">Вимкнути мобільну мережу</translation>
 <translation id="3965965397408324205">Вийти з профілю <ph name="PROFILE_NAME" /></translation>
@@ -4843,7 +4840,7 @@
 <translation id="4459169140545916303">У мережі <ph name="DEVICE_LAST_ACTIVATED_TIME" /> дн. тому</translation>
 <translation id="4460014764210899310">Розгрупувати</translation>
 <translation id="4461483878391246134">Додати мови, з яких ніколи не потрібно пропонувати переклад</translation>
-<translation id="4462159676511157176">Імена серверів – персоналізовано</translation>
+<translation id="4462159676511157176">Сторонні сервери імен</translation>
 <translation id="4465236939126352372">Для додатка <ph name="APP_NAME" /> налаштовано ліміт часу (<ph name="TIME" />)</translation>
 <translation id="4467561276409486506">&amp;Увімкнути або вимкнути компактний режим</translation>
 <translation id="4469324811108161144">Нотатки можуть містити щонайбільше стільки символів: <ph name="CHARACTER_LIMIT" />.</translation>
@@ -5525,7 +5522,6 @@
 <translation id="4967571733817147990">Налаштувати кнопки миші</translation>
 <translation id="4967852842111017386">Назва пристрою з функцією <ph name="FEATURE_NAME" /></translation>
 <translation id="4971412780836297815">Відкрити після завантаження</translation>
-<translation id="4971735654804503942">Швидший активний захист від небезпечних веб-сайтів, завантажень і розширень. Попереджає про розкриття паролів через порушення безпеки даних.  Дані веб-перегляду потрібно надсилати в Google.</translation>
 <translation id="4972129977812092092">Змінити принтер</translation>
 <translation id="4972164225939028131">Неправильний пароль</translation>
 <translation id="4972737347717125191">Сайти можуть запитувати дозвіл на використання пристроїв і даних віртуальної реальності</translation>
@@ -7013,6 +7009,7 @@
 <translation id="6075075631258766703">Перевірити телефон</translation>
 <translation id="6075731018162044558">Помилка. Системі не вдалося отримати маркер довгострокового доступу API для цього пристрою.</translation>
 <translation id="6075907793831890935">Обмінюватися даними з пристроєм із назвою <ph name="HOSTNAME" /></translation>
+<translation id="6076092653254552547">Налаштування системи</translation>
 <translation id="6076491747490570887">Холодний сірий</translation>
 <translation id="6076576896267434196">Розширення <ph name="EXTENSION_NAME" /> запитує доступ до вашого облікового запису</translation>
 <translation id="6077131872140550515">Вилучити з рекомендованих</translation>
@@ -8259,7 +8256,6 @@
 <translation id="6992554835374084304">Увімкнути покращену перевірку орфографії</translation>
 <translation id="6993000214273684335">Вкладку вилучено з групи без назви — <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Триває оновлення веб-переглядача Chrome</translation>
-<translation id="6995899638241819463">Попереджати, якщо паролі розкрито через порушення безпеки даних</translation>
 <translation id="6995984090981858039">Переглядати інформацію про пристрій із ChromeOS і дані на ньому</translation>
 <translation id="6996245928508281884">Увімкніть на телефоні Bluetooth і Wi-Fi</translation>
 <translation id="6996438701394974959">Збільшити розмір елементів і тексту на екрані</translation>
@@ -9396,6 +9392,7 @@
 <translation id="7826254698725248775">Конфліктний ідентифікатор пристрою.</translation>
 <translation id="7828642077514646543">Помилка: не вдалося розкодувати сертифікат</translation>
 <translation id="7829877209233347340">Щоб додати обліковий запис закладу освіти, попросіть когось із батьків увійти в їхній обліковий запис</translation>
+<translation id="7830276128493844263">Доступ до геоданих вимкнено в налаштуваннях системи</translation>
 <translation id="7830833461614351956">Скопіювати файли (<ph name="NUM_OF_FILES" />) у сервіс <ph name="CLOUD_PROVIDER" />, щоб відкрити їх?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Тут відображатимуться збережені спеціальні слова</translation>
@@ -11045,6 +11042,7 @@
 <translation id="8999560016882908256">Синтаксична помилка в розділі: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Обмеження руху на екрані</translation>
 <translation id="9000185763019430629">Торкніться сканера відбитків пальців на правому боці пристрою <ph name="DEVICE_TYPE" />. <ph name="DEVICE_TYPE" /> надійно зберігає дані про відбиток і нікуди не надсилає їх.</translation>
+<translation id="9003031149571024583">Введення PIN-коду (цифра <ph name="NUM_DIGIT" /> із 6). Щоб вилучити останню цифру, натисніть клавішу Backspace або Delete.</translation>
 <translation id="9003185744423389627">Не вдалося підключитися до сервера керування пристроями. Статус станом на <ph name="FAILURE_TIME" />: "<ph name="STATUS_TEXT" />".</translation>
 <translation id="90033698482696970">Автоматично сканувати доступні профілі eSIM?</translation>
 <translation id="9003647077635673607">Дозволити на всіх веб-сайтах</translation>

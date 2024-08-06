@@ -185,7 +185,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1124772482545689468">Utilizator</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Nativ)</translation>
 <translation id="1125921926864945797">Stil și imagine de fundal</translation>
-<translation id="1126809382673880764">Nu te protejează împotriva site-urilor, descărcărilor și extensiilor periculoase. Te vei bucura în continuare de protecția oferită de Navigarea sigură, dacă este disponibilă, în alte servicii Google, cum ar fi Gmail și Căutarea.</translation>
 <translation id="1128090040635299943">Se configurează Linux. Configurarea va dura câteva minute.</translation>
 <translation id="1128591060186966949">Editează motorul de căutare</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -630,7 +629,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1461041542809785877">Performanță</translation>
 <translation id="1461177659295855031">Mută în dosarul Bară de marcaje</translation>
 <translation id="1461288887896722288">Tocmai te-ai conectat la un cont gestionat. Crearea unui nou profil gestionat îți va permite să accesezi câteva resurse conectate la contul respectiv.</translation>
-<translation id="1461868306585780092">Avertizează înainte de a folosi conexiuni nesigure</translation>
 <translation id="146219525117638703">Stare ONC</translation>
 <translation id="146220085323579959">Internet deconectat. Verificați conexiunea la internet și încercați din nou.</translation>
 <translation id="1462480037563370607">Adaugă site-uri manual</translation>
@@ -4168,7 +4166,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="3959747296451923142">Confirmă eliminarea abonamentului</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Mai multe acțiuni pentru <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962119236270174787">Protecție standard împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase</translation>
 <translation id="3963753386716096475">Folosește alt telefon, altă tabletă sau altă cheie de securitate</translation>
 <translation id="3964480518399667971">Dezactivează rețeaua mobilă</translation>
 <translation id="3965965397408324205">Ieși din <ph name="PROFILE_NAME" /></translation>
@@ -5509,7 +5506,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4967571733817147990">Personalizează butoanele mouse-ului</translation>
 <translation id="4967852842111017386">Numele dispozitivului pentru <ph name="FEATURE_NAME" /></translation>
 <translation id="4971412780836297815">Deschide când s-a finalizat</translation>
-<translation id="4971735654804503942">Protecție proactivă mai rapidă împotriva site-urilor, descărcărilor și extensiilor periculoase. Te avertizează cu privire la compromiterea parolelor. Necesită trimiterea datelor de navigare la Google.</translation>
 <translation id="4972129977812092092">Editează imprimanta</translation>
 <translation id="4972164225939028131">Parolă greșită</translation>
 <translation id="4972737347717125191">Site-urile pot solicita permisiunea de a folosi dispozitive de realitate virtuală și date conexe</translation>
@@ -7000,6 +6996,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6075075631258766703">Confirmă numărul de telefon</translation>
 <translation id="6075731018162044558">Hopa! Sistemul nu a putut obține un indicativ de acces pe termen lung la API pentru acest dispozitiv.</translation>
 <translation id="6075907793831890935">Fă schimb de date cu dispozitivul numit <ph name="HOSTNAME" /></translation>
+<translation id="6076092653254552547">Setări de sistem</translation>
 <translation id="6076491747490570887">Gri rece</translation>
 <translation id="6076576896267434196">Extensia <ph name="EXTENSION_NAME" /> dorește să-ți acceseze contul</translation>
 <translation id="6077131872140550515">Elimină din preferate</translation>
@@ -8242,7 +8239,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6992554835374084304">Activează verificarea îmbunătățită a ortografiei</translation>
 <translation id="6993000214273684335">Fila a fost eliminată din grupul nedenumit – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Se actualizează browserul Chrome</translation>
-<translation id="6995899638241819463">Avertizează-mă dacă parolele au fost expuse în urma încălcării securității datelor</translation>
 <translation id="6995984090981858039">Citește informațiile de pe dispozitivul ChromeOS și datele dispozitivului</translation>
 <translation id="6996245928508281884">Activează funcția Bluetooth și Wi-Fi a telefonului</translation>
 <translation id="6996438701394974959">Mărește dimensiunea afișării și a textului</translation>
@@ -9380,6 +9376,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7826254698725248775">Identificator de dispozitiv în conflict.</translation>
 <translation id="7828642077514646543">Eroare: nu se poate decoda certificatul</translation>
 <translation id="7829877209233347340">Roagă-ți părintele să se conecteze pentru a-ți acorda permisiunea să adaugi un cont de la școală</translation>
+<translation id="7830276128493844263">Locația este dezactivată din setările de sistem</translation>
 <translation id="7830833461614351956">Copiezi <ph name="NUM_OF_FILES" /> fișiere în <ph name="CLOUD_PROVIDER" /> pentru a le deschide?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Cuvintele personalizate salvate vor fi afișate aici</translation>

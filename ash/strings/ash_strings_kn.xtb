@@ -405,6 +405,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> ಪೂರ್ವವೀಕ್ಷಣೆ. ಸಕ್ರಿಯ ಡೆಸ್ಕ್.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" ಅನ್ನು <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ರೆಸಲ್ಯೂಷನ್‌ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ. ಖಚಿತಪಡಿಸದೆಯೇ, ಈ ಹಿಂದಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು <ph name="TIMEOUT_SECONDS" /> ನಲ್ಲಿ ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="2487915095798731898">ಸೇರ್ಪಡೆಗೊಳ್ಳು</translation>
+<translation id="2496180316473517155">ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ</translation>
 <translation id="2499445554382787206">ಡೆಸ್ಕ್ ಪ್ರೊಫೈಲ್ ಮೆನು. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ಸ್ಟಿಕಿ ಕೀಗಳು</translation>
 <translation id="2504454902900101003">ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು, ಮಾಧ್ಯಮ ಮತ್ತು ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸುವುದಕ್ಕಾಗಿ ಸೆಟಪ್ ಮಾಡುವುದನ್ನು ವಜಾಗೊಳಿಸಿ</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">ಆನ್‌ಲೈನ್ ಸೈನ್ ಇನ್‌ನ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="2612072250312279703">ಚಟುವಟಿಕೆ ಮಾನಿಟರ್</translation>
 <translation id="2612614436418177118">ಆ್ಯಪ್ ಗ್ರಿಡ್‌ನಲ್ಲಿ ಆ್ಯಪ್ ಐಕಾನ್ ಅನ್ನು ಸರಿಸಿ</translation>
+<translation id="2619052155095999743">Insert</translation>
 <translation id="2619326010008283367">ಟೂರ್ ಹಂತ <ph name="TOTAL_STEPS" /> ರಲ್ಲಿ <ph name="STEP" />ನೇ ಹಂತ. ನಿಮ್ಮ ಸಾಧನದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಲಾಂಚರ್‌ನಲ್ಲಿ ಹುಡುಕಬಹುದು. ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ <ph name="PRODUCT_NAME" /> ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ, ಉದಾ. ನಿಮ್ಮ ವಾಲ್‌ಪೇಪರ್ ಅನ್ನು ಬದಲಾಯಿಸುವುದು ಅಥವಾ ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಅನ್ನು ಸೆಟ್ ಮಾಡುವುದು.</translation>
 <translation id="2620016719323068571">ನಿಮ್ಮ <ph name="CATEGORY" />, ಫೈಲ್‌ಗಳು, ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಹುಡುಕಿ...</translation>
 <translation id="2620436844016719705">ಸಿಸ್ಟಂ</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">ಇತರ ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗೆ ಸೇರಿ</translation>
 <translation id="2705001408393684014">ಮೈಕ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ಮೇಲಕ್ಕೆ</translation>
+<translation id="271033894570825754">ಹೊಸತು</translation>
 <translation id="2710984741481549981">Windows ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="2718395828230677721">ನೈಟ್ ಲೈಟ್</translation>
 <translation id="2726420622004325180">ಹಾಟ್‌ಸ್ಪಾಟ್ ಒದಗಿಸಲು ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಮೊಬೈಲ್ ಡೇಟಾ ಇರಬೇಕು.</translation>
@@ -558,6 +561,7 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">ಮೆನುವನ್ನು ವಿಸ್ತರಿಸಿ</translation>
 <translation id="3087734570205094154">ಕೆಳಗೆ</translation>
+<translation id="3090214513075567547">ಸಂದರ್ಭದ ಮೆನು ತೆರೆಯಿರಿ</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">ಕಾಣೆಯಾಗಿದೆ</translation>
 <translation id="3095995014811312755">ಆವೃತ್ತಿ</translation>
@@ -1086,6 +1090,7 @@
 <translation id="4890408602550914571">ನಿಮ್ಮ ಫೋನ್ ಸಮೀಪದಲ್ಲಿದೆ ಮತ್ತು ಅದರಲ್ಲಿ ಬ್ಲೂಟೂತ್ ಆನ್ ಆಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="4892981359753171125">ಫೇಸ್ ಕಂಟ್ರೋಲ್‌</translation>
 <translation id="4895488851634969361">ಬ್ಯಾಟರಿ ತುಂಬಿದೆ.</translation>
+<translation id="4902797682482387055">ಗಮನಹರಿಸಲು ಸೂಚಿಸಲಾದ ಕಾರ್ಯ</translation>
 <translation id="490375751687810070">ಲಂಬ</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% ರಷ್ಟು ಬ್ಯಾಟರಿ</translation>
 <translation id="491504982845934899">ಸಾಧನದ ಸೆಟಪ್ ನಂತರ <ph name="NETWORK_NAME" /> ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -1096,6 +1101,7 @@
 <translation id="492453977506755176">ಕ್ಯಾಪ್ಚರ್ ಮೋಡ್ ಕೀ</translation>
 <translation id="4925542575807923399">ಬಹು ಸೈನ್ ಇನ್ ಸೆಷನ್‌ನಲ್ಲಿ ಈ ಖಾತೆಯನ್ನು ಮೊದಲಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲಾದ ಖಾತೆಯು ಅಗತ್ಯವಿರುತ್ತದೆ ಎಂದು ಈ ಖಾತೆಯ ನಿರ್ವಾಹಕರಿಗೆ ಅಗತ್ಯವಿರುತ್ತದೆ.</translation>
 <translation id="493076006037866439">ಸ್ಕ್ರೀನ್‌ನಿಂದ ಜೂಮ್ ಔಟ್ ಮಾಡಿ</translation>
+<translation id="4932733599132424254">ದಿನಾಂಕ</translation>
 <translation id="4936329710968938986">ಪ್ರತಿಯೊಬ್ಬರು, ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="4937170330762390348">ಡಿಕ್ಟೇಶನ್ ನೀಡುವ ಮೂಲಕ, ನಿಮ್ಮ ಧ್ವನಿಯನ್ನು ಬಳಸಿಕೊಂಡು ನೀವು ಟೈಪ್ ಮಾಡಬಹುದು. ನೀವು ಪಠ್ಯ ಫೀಲ್ಡ್‌ನಲ್ಲಿರುವಾಗ ಡಿಕ್ಟೇಶನ್ ಕೀಯನ್ನು ಒತ್ತಿರಿ ಅಥವಾ ಪರದೆಯ ಕೆಳಭಾಗದಲ್ಲಿರುವ ಮೈಕ್ರೊಫೋನ್ ಐಕಾನ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿ. ನಿಮ್ಮ ಡಿಕ್ಟೇಶನ್ ಭಾಷೆಯನ್ನು <ph name="LANGUAGE" /> ಭಾಷೆಗೆ ಸೆಟ್ ಮಾಡಲಾಗಿದೆ. ಸ್ಪೀಚ್ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತದೆ, ಆಗ ನೀವು ಡಿಕ್ಟೇಶನ್ ಅನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಬಳಸಬಹುದು. ನೀವು ಡಿಕ್ಟೇಶನ್ ಭಾಷೆಯನ್ನು ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಆ್ಯಕ್ಸೆಸ್ಸಿಬಿಲಿಟಿಯಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="4938176435186993759">ಎಲ್ಲಾ ಸಲಹೆಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
@@ -1104,6 +1110,7 @@
 <translation id="495046168593986294">ಮೇಲಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="4950800194215951939">ನಿಮ್ಮ ಗೇಮಿಂಗ್ ಅನುಭವವನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="4952936045814352993">ಅಲಾರಾಂ ಧ್ವನಿಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿರುವಾಗ "ಫೋನ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಿ" ಲಭ್ಯವಿರುವುದಿಲ್ಲ</translation>
+<translation id="4953585991029886728">ಪಠ್ಯ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="4960324571663582548">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಹಿಂತಿರುಗಿಸಬೇಕಾದ ಅಗತ್ಯ <ph name="MANAGER" /> ಗೆ ಇದೆ. ನಿಮ್ಮ ಸಾಧನವನ್ನು ರೀಸೆಟ್ ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="4961318399572185831">ಪರದೆಯನ್ನು ಬಿತ್ತರಿಸಿ</translation>
 <translation id="4964188651935955085">ನೀವು ಬ್ಲೂಟೂತ್ ಅನ್ನು ಆಫ್ ಮಾಡಿದಾಗ, ಈ ಬಾಹ್ಯ ಸಾಧನವು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಿಂದ ಡಿಸ್‌ಕನೆಕ್ಟ್ ಆಗುತ್ತದೆ:</translation>
@@ -1425,6 +1432,7 @@
 <translation id="6032620807120418574">ಪೂರ್ಣ ಪರದೆಯನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಎಲ್ಲಿಯಾದರೂ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="6040071906258664830">ಮೈಕ್ರೋಫೋನ್ ಮೂಲಕ ರೆಕಾರ್ಡ್ ಮಾಡಿ ಆಯ್ಕೆಯು <ph name="STATE" /> ಆಗಿದೆ</translation>
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
+<translation id="6042308850641462728">ಇನ್ನಷ್ಟು</translation>
 <translation id="6043212731627905357">ಈ ಮಾನಿಟರ್ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಜೊತೆ ಸಿಗುತ್ತಿಲ್ಲ (ಮಾನಿಟರ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ).</translation>
 <translation id="6043994281159824495">ಈಗ ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> ಆ್ಯಪ್‌ಗಳು ಬಳಸಿವೆ</translation>
@@ -1892,6 +1900,7 @@
 <translation id="7748275671948949022">ಶೆಲ್ಫ್‌ನಲ್ಲಿ ಲಾಂಚರ್ ಬಟನ್ ಅನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="7749443890790263709">ಗರಿಷ್ಠ ಸಂಖ್ಯೆಯ ಡೆಸ್ಕ್‌ಗಳನ್ನು ತಲುಪಲಾಗಿದೆ.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">ಎಲ್ಲ ತೋರಿಸು</translation>
 <translation id="7759183637555564029">ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಬರೆಯಲು ಸಹಾಯ ಪಡೆಯಿರಿ ಮತ್ತುಓದಲು ನನಗೆ ಸಹಾಯ ಮಾಡಿಯನ್ನು ಆಫ್ ಮಾಡಬಹುದು. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ</translation>
 <translation id="7769299611924763557">ನಿಮ್ಮ GIF ಶೀಘ್ರದಲ್ಲೇ ಸಿದ್ಧವಾಗಲಿದೆ</translation>
@@ -2025,6 +2034,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಡೈಲಾಗ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ಬಳಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="8168435359814927499">ಕಂಟೆಂಟ್‍</translation>
 <translation id="8185090165691050712">ಲಾಕ್ ಮೋಡ್ ಅನ್ನು ಮರುಗಾತ್ರಗೊಳಿಸಲು ಮೆನುವನ್ನು ಆನ್/ಆಫ್ ಮಾಡಿ</translation>
 <translation id="8192727139462702395">ನೀವು ಬ್ಲೂಟೂತ್ ಅನ್ನು ಆಫ್ ಮಾಡಿದಾಗ, ಈ ಬಾಹ್ಯ ಸಾಧನಗಳು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಿಂದ ಡಿಸ್‌ಕನೆಕ್ಟ್ ಆಗುತ್ತವೆ:</translation>
 <translation id="8198456017687137612">ಬಿತ್ತರಿಸುವ ಟ್ಯಾಬ್‌</translation>

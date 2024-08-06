@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Қызғылт сары</translation>
 <translation id="125153950246128346">Басқа қойынды көру үшін түртіңіз.</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> қойындылар тобының опциялары</translation>
+<translation id="1340839264183302272">Топтан шығу</translation>
 <translation id="1419023007528516122">Бұл жағдайда топ құрылғыңыздан біржола жойылады.</translation>
 <translation id="1486715732399361704">Барлық қойындылар топтары осы жерде болады.</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> минут бұрын жасалды.}other{<ph name="NUM_MINS_MANY" /> минут бұрын жасалды.}}</translation>
@@ -122,6 +123,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Қойындыны солға жылжыту</translation>
 <translation id="6615455863669487791">Маған көрсету</translation>
+<translation id="6694634756612002311">Бөлісу әрекетін басқару</translation>
 <translation id="6744956528665271406">Топ түсін өзгерту</translation>
 <translation id="6856809498882026482">Бірнеше нұсқа таңдау режимін жасыру</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Қойындыны бөлісу}other{Қойындыларды бөлісу}}</translation>
@@ -174,6 +176,7 @@
 <translation id="8926389886865778422">Енді сұралмасын</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысы бар қойындылар тобын жаю.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар қойындылар тобын жаю.}}</translation>
 <translation id="9090098097337832354">Бұл дүкеннің жабық екендігі туралы ақпарат</translation>
+<translation id="9111228330448174435">Жаңа қойындылар тобын жасаған кезде диалогтік терезені көрсету</translation>
 <translation id="9150694013019234766">Экранның төменгі жағындағы қойындылар тобында қойындылар арасында ауысуға болады.</translation>
 <translation id="9169594135889675189">Топқа жаңа қойынды енгізу</translation>
 <translation id="9216898458513705996">Қойындылар осы құрылғыда ашық қалады, бірақ топ <ph name="USER_EMAIL" /> аккаунтына кірген барлық құрылғыдан жойылады.</translation>

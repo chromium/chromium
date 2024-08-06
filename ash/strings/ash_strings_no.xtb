@@ -405,6 +405,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2486214324139475545">Forhåndsvisning av <ph name="DESK_NAME" />. Aktivt skrivebord.</translation>
 <translation id="2486405091093637109">Oppløsningen for «<ph name="DISPLAY_NAME" />» ble endret til <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). De gamle innstillingene gjenopprettes om <ph name="TIMEOUT_SECONDS" /> hvis du ikke bekrefter dette.</translation>
 <translation id="2487915095798731898">Bli med</translation>
+<translation id="2496180316473517155">Nettleserlogg</translation>
 <translation id="2499445554382787206">Meny for skrivebordsprofil. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Trege taster</translation>
 <translation id="2504454902900101003">Lukk konfigurering av visning av nylige bilder, medier og varsler fra telefonen din</translation>
@@ -436,6 +437,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2607678425161541573">Nettbasert pålogging kreves</translation>
 <translation id="2612072250312279703">aktivitetsmåler</translation>
 <translation id="2612614436418177118">Flytt et appikon i apprutenettet</translation>
+<translation id="2619052155095999743">Sett inn</translation>
 <translation id="2619326010008283367">Innføringstrinn <ph name="STEP" /> av <ph name="TOTAL_STEPS" />. Du finner enhetsinnstillingene i appoversikten. Prøv å tilpasse <ph name="PRODUCT_NAME" /> i innstillingene, for eksempel ved å endre bakgrunnen eller angi en skjermsparer.</translation>
 <translation id="2620016719323068571">Søk i <ph name="CATEGORY" />, filer, apper med mer …</translation>
 <translation id="2620436844016719705">System</translation>
@@ -462,6 +464,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2704781753052663061">Koble til andre Wifi-nettverk</translation>
 <translation id="2705001408393684014">Slå av/på mikrofonen. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Opp</translation>
+<translation id="271033894570825754">Ny</translation>
 <translation id="2710984741481549981">Lås vinduene</translation>
 <translation id="2718395828230677721">Nattlys</translation>
 <translation id="2726420622004325180">Telefonen må ha mobildata for å kunne tilby en wifi-sone</translation>
@@ -1086,6 +1089,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4890408602550914571">Sørg for at telefonen er i nærheten, og at Bluetooth er slått på.</translation>
 <translation id="4892981359753171125">Ansiktskontroll</translation>
 <translation id="4895488851634969361">Batteriet er fullt.</translation>
+<translation id="4902797682482387055">Forslag til gjøremål du kan fokusere på</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
 <translation id="491504982845934899">Aktiver etter enhetsoppsett <ph name="NETWORK_NAME" /></translation>
@@ -1096,6 +1100,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="492453977506755176">Opptaksmodus-tasten</translation>
 <translation id="4925542575807923399">Administratoren for denne kontoen krever at denne kontoen er den første påloggingskontoen i en multipåloggingsøkt.</translation>
 <translation id="493076006037866439">Zoom ut på skjermen</translation>
+<translation id="4932733599132424254">Dato</translation>
 <translation id="4936329710968938986">Alle, av</translation>
 <translation id="4937170330762390348">Med diktering kan du skrive med stemmen. Trykk på dikteringstasten, eller velg mikrofonikonet nederst på skjermen når du er i et tekstfelt. Dikteringsspråket er satt til <ph name="LANGUAGE" />. Talefiler lastes ned, slik at du kan bruke diktering uten nett. Du kan bytte dikteringsspråk når som helst i Innstillinger &gt; Tilgjengelighet.</translation>
 <translation id="4938176435186993759">Skjul alle forslag</translation>
@@ -1104,6 +1109,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="495046168593986294">Rull opp</translation>
 <translation id="4950800194215951939">Tilpass spillopplevelsen din</translation>
 <translation id="4952936045814352993">Finn telefonen er ikke tilgjengelig når alarmlyder er slått av</translation>
+<translation id="4953585991029886728">Rediger teksten</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> krever rollback av <ph name="DEVICE_TYPE" />. Enheten blir tilbakestilt, og alle data blir slettet.</translation>
 <translation id="4961318399572185831">Cast skjermen</translation>
 <translation id="4964188651935955085">Når du slår av Bluetooth, blir denne eksterne enheten koblet fra <ph name="DEVICE_TYPE" />:</translation>
@@ -1425,6 +1431,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6032620807120418574">Klikk hvor som helst for å ta opp i fullskjerm</translation>
 <translation id="6040071906258664830">Mikrofonopptak er <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Lukk</translation>
+<translation id="6042308850641462728">Mer</translation>
 <translation id="6043212731627905357">Denne skjermen liker ikke <ph name="DEVICE_TYPE" /> (skjermen støttes ikke).</translation>
 <translation id="6043994281159824495">Logg av nå</translation>
 <translation id="6045629311476491587">Brukt av <ph name="APP_COUNT" /> apper</translation>
@@ -1891,6 +1898,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7748275671948949022">Fremhev Appoversikt-knappen på hyllen</translation>
 <translation id="7749443890790263709">Maksimalt antall skrivebord er nådd.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Vis alle</translation>
 <translation id="7759183637555564029">Du kan når som helst slå av Hjelp meg å skrive og Hjelp meg å lese i innstillingene. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Tekstopplesing</translation>
 <translation id="7769299611924763557">GIF-en din er snart klar</translation>
@@ -2024,6 +2032,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Denne innstillingen administreres av administratoren.</translation>
 <translation id="8155628902202578800">Åpne dialogboksen for informasjon om <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Bruker <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Innhold</translation>
 <translation id="8185090165691050712">Slå menyen på/av for å endre størrelsen på låsemodusen</translation>
 <translation id="8192727139462702395">Når du slår av Bluetooth, blir disse eksterne enhetene koblet fra <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Casting-fanen</translation>

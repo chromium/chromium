@@ -405,6 +405,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> алғы көрінісі. Жұмыс үстелі белсенді.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц) ажыратымдылығына өзгертілді. Растамасаңыз, алдыңғы параметрлер <ph name="TIMEOUT_SECONDS" /> ішінде қалпына келтіріледі.</translation>
 <translation id="2487915095798731898">Қосылу</translation>
+<translation id="2496180316473517155">Шолу журналы</translation>
 <translation id="2499445554382787206">Жұмыс үстелі профилінің мәзірі. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Жабысқақ пернелер</translation>
 <translation id="2504454902900101003">Телефондағы соңғы фотосуреттерді, медиафайлдарды және хабарландыруларды көру мүмкіндігін реттеуден бас тарту</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">Онлайн кіру қажет</translation>
 <translation id="2612072250312279703">әрекет мониторы</translation>
 <translation id="2612614436418177118">Қолданба белгішесін қолданбалар торында жылжыту</translation>
+<translation id="2619052155095999743">Енгізу</translation>
 <translation id="2619326010008283367">Шолудың <ph name="STEP" />/<ph name="TOTAL_STEPS" />-қадамы. Құрылғы параметрлерін іске қосу тақтасынан табуға болады. Параметрлерде <ph name="PRODUCT_NAME" /> құрылғысын бейімдеп көріңіз. Мысалы, тұсқағазды ауыстырыңыз немесе скринсейвер орнатыңыз.</translation>
 <translation id="2620016719323068571"><ph name="CATEGORY" />, файлдар, қолданбалар және т. б. іздеу…</translation>
 <translation id="2620436844016719705">Жүйе</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">Басқа Wi-Fi желілеріне қосылу</translation>
 <translation id="2705001408393684014">Микрофонды қосу/өшіру түймесі. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Жоғары</translation>
+<translation id="271033894570825754">Жаңа</translation>
 <translation id="2710984741481549981">Терезелерді құлыптау</translation>
 <translation id="2718395828230677721">Түнгі жарық</translation>
 <translation id="2726420622004325180">Хотспотты ұсыну үшін телефоныңызда мобильдік интернет болуы керек.</translation>
@@ -1086,6 +1089,7 @@
 <translation id="4890408602550914571">Телефоныңыз жаныңызда болуы және Bluetooth қосылып тұруы керек.</translation>
 <translation id="4892981359753171125">Бет-әлпетімен басқару</translation>
 <translation id="4895488851634969361">Батарея толы.</translation>
+<translation id="4902797682482387055">Зейін қою ұсынылатын тапсырма</translation>
 <translation id="490375751687810070">Тік</translation>
 <translation id="490788395437447240">Батарея заряды: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="491504982845934899">Құрылғыны орнатудан кейін <ph name="NETWORK_NAME" /> желісін белсендіру</translation>
@@ -1096,6 +1100,7 @@
 <translation id="492453977506755176">Түсіру режимінің пернесі</translation>
 <translation id="4925542575807923399">Бұл аккаунтның әкімшісі аккаунтның көп кіру сеансында алғашқы жүйеге кірген аккаунт болуын талап етеді.</translation>
 <translation id="493076006037866439">Экранды кішірейту</translation>
+<translation id="4932733599132424254">Күні</translation>
 <translation id="4936329710968938986">Барлығына, өшірулі</translation>
 <translation id="4937170330762390348">Мәтінді дауыспен енгізу арқылы дауысыңызбен тере аласыз. Мәтін өрісінде болған кезде мәтінді дауыспен енгізу пернесін басыңыз немесе экранның төменгі жағындағы микрофон белгішесін таңдаңыз. Мәтінді дауыспен енгізу тілі <ph name="LANGUAGE" /> тіліне орнатылған. Мәтінді дауыспен енгізуді офлайн режимде пайдалану үшін сөз файлдары жүктеп алынады. Мәтінді дауыспен енгізу тілін кез келген уақытта "Параметрлер &gt; Арнайы мүмкіндіктер" тармағында өзгертуге болады.</translation>
 <translation id="4938176435186993759">Барлық үсынысты жасыру</translation>
@@ -1104,6 +1109,7 @@
 <translation id="495046168593986294">Жоғарыға айналдыру</translation>
 <translation id="4950800194215951939">Ойын тәжірибесін бейімдеу</translation>
 <translation id="4952936045814352993">Дабыл сигналы өшірілсе, телефонды табу функциясы қолжетімді болмайды.</translation>
+<translation id="4953585991029886728">Мәтінді өзгерту</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> сізден <ph name="DEVICE_TYPE" /> құрылғысын алдыңғы нұсқаға қайтаруды талап етеді. Құрылғы бастапқы күйге қайтарылады және барлық дерек жойылады.</translation>
 <translation id="4961318399572185831">Экран трансляциясы</translation>
 <translation id="4964188651935955085">Bluetooth өшірілгенде, бұл сыртқы құрылғы <ph name="DEVICE_TYPE" /> құрылғыңыздан ажыратылады:</translation>
@@ -1363,6 +1369,7 @@
 <translation id="5819918159912280082">Chromebook күтпеген жерден өшіп қосылды. Алдыңғы терезелер мен қолданбаларды ашыңыз.</translation>
 <translation id="5823239091726045201">Ғаламтордағы Google Tasks</translation>
 <translation id="5825969630400862129">Байланысқан құрылғылар параметрлері</translation>
+<translation id="5830180081891717894">Тағы <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> қабылдағышында <ph name="ROUTE_TITLE" /> трансляциясын тоқтату</translation>
 <translation id="5841296711770970362">Келесі саундтрекке өту</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> хотспоты қосулы, ешбір құрылғы қосылмаған</translation>
@@ -1424,6 +1431,7 @@
 <translation id="6032620807120418574">Толық экранды жазу үшін кез келген жерді басыңыз.</translation>
 <translation id="6040071906258664830">Микрофон арқылы жазу <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Жабу</translation>
+<translation id="6042308850641462728">Жаю</translation>
 <translation id="6043212731627905357">Бұл монитор <ph name="DEVICE_TYPE" /> құрылғысымен үйлеспейді (мониторға қолдау көрсетілмейді).</translation>
 <translation id="6043994281159824495">Қазір шығу</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> қолданба пайдаланды</translation>
@@ -1890,6 +1898,7 @@
 <translation id="7748275671948949022">Сөредегі іске қосу тақтасының түймесін ерекшелеу</translation>
 <translation id="7749443890790263709">Жұмыс үстелдерінің максималды санына жетті.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Барлығын көрсету</translation>
 <translation id="7759183637555564029">"Жазуға көмек керек" және "Оқуға көмек керек" функцияларын параметрлер бөлімінде кез келген уақытта өшіруге болады. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7769299611924763557">GIF файлыңыз жақын арада дайын болады.</translation>
@@ -2023,6 +2032,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Бұл параметрді әкімшіңіз басқарады.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> аккаунты туралы ақпарат диалогтік терезесін ашу</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> тілін пайдалану</translation>
+<translation id="8168435359814927499">Контент</translation>
 <translation id="8185090165691050712">Өлшем өзгертуді құлыптау режимі мәзірін қосу/өшіру</translation>
 <translation id="8192727139462702395">Bluetooth өшірілгенде, мынадай сыртқы құрылғылар <ph name="DEVICE_TYPE" /> құрылғыңыздан ажыратылады:</translation>
 <translation id="8198456017687137612">Қойынды трансляциялануда</translation>
@@ -2070,6 +2080,7 @@
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> және телефоныңыз автоматты түрде жалғанады</translation>
 <translation id="8380784334203145311">Қайырлы түн!</translation>
 <translation id="8382715499079447151">Көруден қорғау режимі</translation>
+<translation id="8383614331548401927">Welcome Recap</translation>
 <translation id="8388750414311082622">Соңғы жұмыс үстелін өшіру мүмкін емес.</translation>
 <translation id="8394567579869570560">Ата-анаңыз бұл құрылғыны құлыптады</translation>
 <translation id="8401850874595457088">Тіл мәзіріне кіру</translation>

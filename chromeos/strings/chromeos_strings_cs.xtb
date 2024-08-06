@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">Slabý signál</translation>
 <translation id="1300115153046603471">APN je typu výchozí a <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">Datum vytvoření</translation>
 <translation id="1308754910631152188">Aktualizace (dokončeno <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> min</translation>
 <translation id="1310380015393971138">Není dostupná žádná síť <ph name="NETWORK_NAME" /></translation>
@@ -339,7 +340,6 @@
 <translation id="2645380101799517405">Ovládání</translation>
 <translation id="2652403576514495859">zapnout nebo přepnout diktování</translation>
 <translation id="2653659639078652383">Odeslat</translation>
-<translation id="2653807227758181366">Popište tapetu, kterou chcete vytvořit, nebo použijte ukázkový pokyn</translation>
 <translation id="2654647726140493436">Během aktualizace zařízení <ph name="DEVICE_TYPE" /> nevypínejte ani od zařízení <ph name="DEVICE_TYPE" /> neodpojujte napájecí kabel</translation>
 <translation id="2656001153562991489">Exkluzivní pro Chromebook Plus</translation>
 <translation id="2665671725390405060">Přehrát výslovnost</translation>
@@ -358,6 +358,7 @@
 <translation id="2780756493585863768">Nejnovější pozadí využívající Google AI</translation>
 <translation id="2783010256799387990">V POŘÁDKU</translation>
 <translation id="2786429550992142861">plátno</translation>
+<translation id="2787237339470862294">Tenhle jazyk teď není podporován</translation>
 <translation id="2787435249130282949">jasnější klávesnice</translation>
 <translation id="2805756323405976993">Aplikace</translation>
 <translation id="28232023175184696">Nelze se připojit k internetu. Kliknutím to zkuste znovu.</translation>
@@ -505,6 +506,7 @@
 <translation id="3708186454126126312">Dříve připojeno</translation>
 <translation id="3715651196924935218">Zrušit plovoucí</translation>
 <translation id="3716250181321371108">Vytvořit ovládací prvek</translation>
+<translation id="3716830479327464973">Když to povolíte, Diktafon bude analyzovat zvukové nahrávky:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (recenze: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nepřipojeno</translation>
 <translation id="3749289110408117711">Název souboru</translation>
@@ -531,6 +533,7 @@
 <translation id="3869314628814282185">tyl</translation>
 <translation id="387301095347517405">Údaj, kolikrát baterie prošla celým cyklem nabíjení</translation>
 <translation id="3877066159641251281">Poslechnout si překlad</translation>
+<translation id="3880601782712134623">Automaticky rozpozná jednotlivé hlasy a každému přidělí obecný štítek, například Mluvčí 1 a Mluvčí 2</translation>
 <translation id="3885327323343477505">Změnit spořič obrazovky</translation>
 <translation id="3889914174935857450">Resetovat datum</translation>
 <translation id="3897092660631435901">Nabídka</translation>
@@ -669,6 +672,7 @@
 <translation id="458794348635939462">Všechny hostitele se nepodařilo vyřešit</translation>
 <translation id="4593212453765072419">Vyžadováno ověření proxy serveru</translation>
 <translation id="4594021849294327751">Vytvořit přepis</translation>
+<translation id="4607282946861182308">Pro tenhle pokyn obrázky vytvořit nelze. Zkuste jiný.</translation>
 <translation id="4609350030397390689">Snížit jas</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tiskovou úlohu zrušíte stisknutím klávesy Enter.</translation>
 <translation id="463791356324567266">Rušení skenování…</translation>
@@ -755,6 +759,7 @@
 <translation id="5049856988445523908">Zamknutá SIM karta (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Název skupiny</translation>
 <translation id="5051044138948155788">Toto je jediná stránka. Touto akcí přejdete na obrazovku zahájení skenování.</translation>
+<translation id="5078711626843651677">Hlasové modely se dočasně ukládají do zařízení, dokud není označování mluvících osob dokončeno. Tuto funkci můžete v Nastavení kdykoli vypnout.</translation>
 <translation id="5078983345702708852">futuristické</translation>
 <translation id="5087864757604726239">zpět</translation>
 <translation id="5088172560898466307">Název hostitele serveru</translation>
@@ -1105,6 +1110,7 @@
 <translation id="6905163627763043954">Vyzkoušet</translation>
 <translation id="6905724422583748843">Zpět na stránku <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Kryt skeneru je otevřený. Zavřete kryt a zkuste to znovu.</translation>
+<translation id="6910845598686542904">Vypočítá modely hlasů zjištěných v nahrávce</translation>
 <translation id="6911383237894364323">Nelze se připojit k mediálním serverům</translation>
 <translation id="6930242544192836755">Délka</translation>
 <translation id="6930597342185648547">O pozadí</translation>
@@ -1569,6 +1575,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="939519157834106403">Identifikátor SSID</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 <translation id="950520315903467048">Chybí klávesa pro <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">Porovnejte hlasy v nahrávce, aby přepis uváděl, co řekl kdo a kdy</translation>
 <translation id="952992212772159698">Není aktivováno</translation>
 <translation id="95718197892796296">jíl</translation>
 <translation id="960719561871045870">Kód operátora</translation>

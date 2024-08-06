@@ -1509,6 +1509,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ນິ້ວ)</translation>
 <translation id="3792826587784915501">ໜັງແນວລັດທິ ແລະ ອິນດີ້</translation>
 <translation id="3793574014653384240">ຈຳນວນ ແລະ ສາເຫດຂອງການຂັດຂ້ອງທີ່ເກີດຂຶ້ນເມື່ອບໍ່ດົນມານີ້</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> ກຳລັງປ້ອງກັນບໍ່ໃຫ້ Chrome ສ້າງການເຊື່ອມຕໍ່ທີ່ປອດໄພ</translation>
 <translation id="3799805948399000906">ຂໍຟອນແລ້ວ</translation>
 <translation id="3801265110651850478">ສົ່ງຄໍາຮ້ອງຂໍ “ຢ່າຕິດຕາມ” ໄປກັບທຣາບຟິກການທ່ອງເວັບຂອງທ່ານ</translation>
 <translation id="380329542618494757">ຊື່</translation>
@@ -1940,6 +1941,7 @@
 <translation id="4652440160515225514">ອົງກອນຂອງທ່ານໄດ້ບລັອກເວັບໄຊນີ້ເນື່ອງຈາກມັນລະເມີດນະໂຍບາຍ.</translation>
 <translation id="4658638640878098064">ໜີບກະຫຼັບເຟີຢູ່ເທິງສຸດເບື້ອງຊ້າຍ</translation>
 <translation id="4661556981531699496">ສັດລ້ຽງ ແລະ ສັດ</translation>
+<translation id="4661868874067696603">ຊອກຫາຕົວເລືອກການຊື້ເພີ່ມເຕີມ</translation>
 <translation id="4663373278480897665">ອະນຸຍາດກ້ອງຖ່າຍຮູບແລ້ວ</translation>
 <translation id="466561305373967878">ເກມກະດານ</translation>
 <translation id="4668929960204016307">,</translation>
@@ -2421,7 +2423,6 @@
 <translation id="555037537507405574">ຄຸນສົມບັດເຄື່ອງພິມຂັ້ນສູງ</translation>
 <translation id="555128936272638662">ໂທລະສັບມືຖື ແລະ ອຸປະກອນໄຮ້ສາຍ</translation>
 <translation id="5551890439174915351">100 x 200 ມມ</translation>
-<translation id="5552137475244467770">Chrome ກວດລະຫັດຜ່ານຂອງທ່ານເປັນໄລຍະໂດຍທຽບກັບລາຍການທີ່ມີການເຜີຍແຜ່ທາງອອນລາຍ. ໃນເວລາເຮັດສິ່ງນີ້, ພວກເຮົາເຂົ້າລະຫັດຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານຂອງທ່ານໄວ້ ເພື່ອບໍ່ໃຫ້ຜູ້ໃດ ຮວມທັງ Google ສາມາດອ່ານພວກມັນໄດ້.</translation>
 <translation id="5554520618550346933">ເມື່ອທ່ານໃຊ້ລະຫັດຜ່ານ, Chrome ຈະເຕືອນທ່ານຫາກມີການເຜີຍແຜ່ລະຫັດຜ່ານທາງອອນລາຍ. ໃນເວລາກວດສອບ, ລະຫັດຜ່ານ ແລະ ຊື່ຜູ້ໃຊ້ຂອງທ່ານຈະຖືກເຂົ້າລະຫັດໄວ້, ເພື່ອບໍ່ໃຫ້ໃຜກໍຕາມສາມາດອ່ານຂໍ້ມູນດັ່ງກ່າວໄດ້, ຮວມທັງ Google ນຳ.</translation>
 <translation id="5556459405103347317">ໂຫຼດຄືນໃໝ່</translation>
 <translation id="5558083606899411167">ເຄື່ອງປັບອາກາດ</translation>
@@ -2429,6 +2430,7 @@
 <translation id="5559311991468302423">ລຶບທີ່ຢູ່</translation>
 <translation id="5560088892362098740">ວັນທີໝົດອາຍຸ</translation>
 <translation id="55635442646131152">ໂຄງຮ່າງເອກະສານ</translation>
+<translation id="5563589142503817291">ເພື່ອໃຊ້ສະຖານທີ່ຂອງທ່ານ, ກະລຸນາມອບສິດເຂົ້າເຖິງໃຫ້ Chrome ໃນ <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">ເປີດແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="5565735124758917034">ເປີດຢູ່</translation>
 <translation id="5569030697349375295">ຊອບແວບັນຊີ ແລະ ການເງິນ</translation>
@@ -2702,6 +2704,7 @@
 <translation id="6106989379647458772">ໜ້າ​ເວັບ​ຢູ່​ທີ່ <ph name="PAGE" /> ອາດ​ຈະ​ໃຊ້​ງານ​ບໍ່​ໄດ້​ຊົ່ວ​ຄາວ ຫຼື ມັນ​ອາດ​ຈະ​ຍ້າຍ​ໄປ​ຫາ​ທີ່​ຢູ່​ເວັບ​ໃໝ່​ຖາ​ວອນ​ແລ້ວ.</translation>
 <translation id="6107012941649240045">ອອກໃຫ້ກັບ</translation>
 <translation id="6107924765192360631">ພຽງເລີ່ມຕົ້ນດ້ວຍສອງສາມຄຳ ຫຼື ສະບັບຮ່າງທຳອິດເພື່ອຮັບການແນະນຳໃນການຂຽນ.</translation>
+<translation id="6108580855199168381">ລາຍລະອຽດໃບຮັບຮອງ</translation>
 <translation id="6108702513636120202">ໂປຣແກຣມຊອກຫາຂອງທ່ານໃນ Chromium</translation>
 <translation id="6108849843016142864">ສັດເລືອຄານ ແລະ ສັດເຄິ່ງບົກເຄິ່ງນໍ້າ</translation>
 <translation id="610911394827799129">ບັນຊີ Google ຂອງທ່ານອາດຈະມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນຢູ່ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -2910,6 +2913,7 @@
 <translation id="6458606150257356946">ແນວໃດກໍວາງໃສ່</translation>
 <translation id="6464094930452079790">ຮູບ</translation>
 <translation id="6465306955648956876">ຈັດການລະຫັດຜ່ານ...</translation>
+<translation id="646789491285795429">ທ່ານກຳລັງຕິດຕາມຜະລິດຕະພັນນີ້ຢູ່ແລ້ວ</translation>
 <translation id="6468485451923838994">ຟອນ</translation>
 <translation id="647261751007945333">ນະ​ໂຍ​ບາຍ​ຂອງອຸ​ປະ​ກອນ</translation>
 <translation id="6472874020827012601">ຜ້າ (ດ້ານ)</translation>
@@ -3471,6 +3475,12 @@
 <translation id="7535087603100972091">ຄ່າ</translation>
 <translation id="753556296624075801">ຂັບເຄື່ອນໂດຍ Google</translation>
 <translation id="7537536606612762813">ບັງ​ຄັບ</translation>
+<translation id="7541586907443866208">ຜູ້ໂຈມຕີຈະສາມາດເບິ່ງ ແລະ ປ່ຽນແປງຂໍ້ມູນໃດກໍຕາມທີ່ສົ່ງລະຫວ່າງທ່ານ ແລະ ເວັບໄຊນີ້ໄດ້.
+    &lt;ul&gt;
+    &lt;li&gt;ຫາກທ່ານກຳລັງໃຊ້ເຄືອຂ່າຍສາທາລະນະ ເຊັ່ນ: Wi-Fi ຂອງສະໜາມບິນ ຫຼື ໂຮງແຮມ, ກະລຸນາລອງໃໝ່ເມື່ອທ່ານເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍທີ່ເຊື່ອຖືໄດ້ (ເຊັ່ນ: ຢູ່ເຮືອນ ຫຼື ຢູ່ບ່ອນເຮັດວຽກ).&lt;/li&gt;
+    &lt;li&gt;ຫາກທ່ານຮູ້ຈັກເຈົ້າຂອງເວັບໄຊ, ກະລຸນາຂໍໃຫ້ເຂົາເຈົ້າແກ້ໄຂບັນຫານີ້.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຳເຕືອນນີ້<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">ການຕື່ມໃສ່ບັດເຄຣດິດອັດຕະໂນມັດປິດໃຊ້ງານ ເພາະວ່າແບບຟອມນີ້ບໍ່ໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພ.</translation>
 <translation id="7543525346216957623">ຖາມພໍ່ແມ່ຂອງທ່ານ</translation>
 <translation id="7546409722674205727">ເລີ່ມຕົ້ນການນຳໃຊ້ <ph name="APP_NAME" /></translation>

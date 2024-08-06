@@ -1943,6 +1943,7 @@
 <translation id="4652440160515225514">حظرت مؤسستك هذا الموقع الإلكتروني لأنه ينتهك إحدى السياسات.</translation>
 <translation id="4658638640878098064">وضع دبوس أعلى اليسار</translation>
 <translation id="4661556981531699496">حيوانات أليفة وحيوانات برية</translation>
+<translation id="4661868874067696603">البحث عن المزيد من خيارات الشراء</translation>
 <translation id="4663373278480897665">تم السماح باستخدام الكاميرا</translation>
 <translation id="466561305373967878">ألعاب لوحية</translation>
 <translation id="4668929960204016307">،</translation>
@@ -2424,7 +2425,6 @@
 <translation id="555037537507405574">الميزات المتقدمة للطابعة</translation>
 <translation id="555128936272638662">ملحقات أجهزة جوّالة ولاسلكية</translation>
 <translation id="5551890439174915351">100 × 200 ملم</translation>
-<translation id="5552137475244467770">‏يتحقَّق Chrome من كلمات مرورك بشكلٍ دوري في البيانات التي تم نشرها على الإنترنت. وأثناء هذه العملية، تكون كلمات المرور وأسماء المستخدمين مشفّرة، ولا يمكن لأي مستخدم آخر الاطِّلاع على هذه البيانات بما في ذلك Google.</translation>
 <translation id="5554520618550346933">‏عندما تستخدم كلمة مرور، يحذّرك Chrome مما إذا كان قد تم نشرها على الإنترنت. وأثناء هذه العملية، يتم تشفير كلمات المرور وأسماء المستخدمين حتى لا يتمكّن أي طرف آخر من الاطّلاع عليها، بما في ذلك Google.</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
 <translation id="5558083606899411167">مكيّفات هواء</translation>
@@ -2432,6 +2432,7 @@
 <translation id="5559311991468302423">حذف العنوان</translation>
 <translation id="5560088892362098740">تاريخ انتهاء الصلاحية</translation>
 <translation id="55635442646131152">مخطط المستند</translation>
+<translation id="5563589142503817291">‏لاستخدام موقعك الجغرافي، يجب منح Chrome إذن الوصول في <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">فتح علامة تبويب في وضع التصفّح المتخفي</translation>
 <translation id="5565735124758917034">نشط</translation>
 <translation id="5569030697349375295">برامج محاسبية ومالية</translation>
@@ -2913,6 +2914,7 @@
 <translation id="6458606150257356946">اللصق على أي حال</translation>
 <translation id="6464094930452079790">الصور</translation>
 <translation id="6465306955648956876">إدارة كلمات المرور...</translation>
+<translation id="646789491285795429">يتم حاليًا تتبُّع سعر هذا المنتج</translation>
 <translation id="6468485451923838994">الخطوط</translation>
 <translation id="647261751007945333">سياسات الأجهزة</translation>
 <translation id="6472874020827012601">نسيج (غير لامع)</translation>

@@ -340,7 +340,6 @@
 <translation id="2645380101799517405">သတ်မှတ်ချက်များ</translation>
 <translation id="2652403576514495859">နှုတ်တိုက်ချပေးခြင်း ဖွင့်ရန် (သို့) ပြောင်းရန်</translation>
 <translation id="2653659639078652383">ပေးပို့ရန်</translation>
-<translation id="2653807227758181366">ပြုလုပ်လိုသော နောက်ခံကို ဖော်ပြပါ (သို့) နမူနာညွှန်ကြားချက်ကို သုံးပါ</translation>
 <translation id="2654647726140493436">အပ်ဒိတ်လုပ်နေစဉ် သင့် <ph name="DEVICE_TYPE" /> ကို မပိတ်ပါနှင့် (သို့) <ph name="DEVICE_TYPE" /> ပါဝါကြိုးကို ပလတ်မဖြုတ်ပါနှင့်</translation>
 <translation id="2656001153562991489">Chromebook Plus အတွက်အထူးသီးသန့်</translation>
 <translation id="2665671725390405060">အသံထွက်ကို နားထောင်ရန်</translation>
@@ -1371,6 +1370,7 @@
 <translation id="8208861521865154048">ခံစားခွင့်များ</translation>
 <translation id="8226628635270268143">သင့်အကြိုက်ဆုံး ဓာတ်ပုံနှင့် အယ်လ်ဘမ်များ ရွေးချယ်ရန်</translation>
 <translation id="8227119283605456246">ပူးတွဲဖိုင်</translation>
+<translation id="8227488649450500937">ဤညွှန်ကြားချက်များထဲမှ တစ်ခုကို စမ်းကြည့်ပါ (သို့) <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ညွှန်ကြားချက် လမ်းညွှန်<ph name="END_LINK_PROMPTING_GUIDE" /> ကိုကြည့်ပါ</translation>
 <translation id="8230672074305416752">မူလကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
 <translation id="8238771987802558562">APN ရွေးခြင်း</translation>
 <translation id="8246209727385807362">အမျိုးအမည်မသိရသော ဝန်ဆောင်မှုပေးသူ</translation>
@@ -1379,7 +1379,6 @@
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="8262870577632766028">၁ နာရီ</translation>
 <translation id="827422111966801947">မဲနယ်</translation>
-<translation id="8280224923876749648">ပြောသူ <ph name="SPEAKER_ID" /></translation>
 <translation id="8281886186245836920">ကျော်ရန်</translation>
 <translation id="8286154143153872371">နောက်ခံကိုကြည့်ရန် ကွန်ရက်ချိတ်ဆက်၍ စာမျက်နှာကို ပြန်လည် စတင်ပါ။</translation>
 <translation id="8291967909914612644">ပင်မထောက်ပံ့သူ နိုင်ငံ</translation>

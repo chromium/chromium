@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Элементы управления</translation>
 <translation id="2652403576514495859">включить или отключить голосовой ввод</translation>
 <translation id="2653659639078652383">Отправить</translation>
-<translation id="2653807227758181366">Опишите желаемые обои или выберите готовый запрос.</translation>
 <translation id="2654647726140493436">Во время обновления не выключайте <ph name="DEVICE_TYPE" /> и не отсоединяйте кабель питания устройства (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="2656001153562991489">Только для Chromebook Plus</translation>
 <translation id="2665671725390405060">Озвучить произношение</translation>
@@ -1366,6 +1365,7 @@
 <translation id="8208861521865154048">Преимущества</translation>
 <translation id="8226628635270268143">Выберите любимые фото и альбомы</translation>
 <translation id="8227119283605456246">Прикрепить файл</translation>
+<translation id="8227488649450500937">Попробуйте один из этих запросов или посмотрите <ph name="BEGIN_LINK_PROMPTING_GUIDE" />руководство<ph name="END_LINK_PROMPTING_GUIDE" />.</translation>
 <translation id="8230672074305416752">Не удалось выполнить проверку ping сетевого шлюза, заданного по умолчанию.</translation>
 <translation id="8238771987802558562">Выбор точки доступа</translation>
 <translation id="8246209727385807362">Неизвестный оператор</translation>

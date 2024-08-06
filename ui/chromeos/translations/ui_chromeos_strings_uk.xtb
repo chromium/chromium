@@ -18,7 +18,7 @@
 <translation id="1150565364351027703">Сонцезахисні окуляри</translation>
 <translation id="115443833402798225">Клавіатура хангул (анмате)</translation>
 <translation id="1155759005174418845">Каталанська</translation>
-<translation id="1168100932582989117">Імена серверів – Google</translation>
+<translation id="1168100932582989117">Сервери імен Google</translation>
 <translation id="1172970565351728681">Залишилося приблизно <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Перейменувати</translation>
 <translation id="1173916544412572294">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" />%. Докладніше</translation>
@@ -431,7 +431,7 @@
 <translation id="4439427728133035643">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Підключитися</translation>
 <translation id="4442424173763614572">Помилка пошуку DNS</translation>
 <translation id="4445896958353114391">Синхронізація файлів</translation>
-<translation id="4462159676511157176">Імена серверів – персоналізовано</translation>
+<translation id="4462159676511157176">Сторонні сервери імен</translation>
 <translation id="4465725236958772856">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />. Мережею керує адміністратор. Підключитися</translation>
 <translation id="4470564870223067757">Клавіатура хангул із 2 наборами клавіш</translation>
 <translation id="4472575034687746823">Початок роботи</translation>

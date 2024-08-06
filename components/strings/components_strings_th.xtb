@@ -1939,6 +1939,7 @@
 <translation id="4652440160515225514">องค์กรของคุณบล็อกเว็บไซต์นี้เนื่องจากละเมิดนโยบาย</translation>
 <translation id="4658638640878098064">เย็บด้วยลวดเย็บกระดาษด้านซ้ายบน</translation>
 <translation id="4661556981531699496">สัตว์เลี้ยงและสัตว์อื่นๆ</translation>
+<translation id="4661868874067696603">ค้นหาตัวเลือกการซื้อเพิ่มเติม</translation>
 <translation id="4663373278480897665">อนุญาตให้ใช้กล้องถ่ายรูป</translation>
 <translation id="466561305373967878">เกมกระดาน</translation>
 <translation id="4668929960204016307">,</translation>
@@ -2420,7 +2421,6 @@
 <translation id="555037537507405574">ฟีเจอร์เครื่องพิมพ์ขั้นสูง</translation>
 <translation id="555128936272638662">โทรศัพท์มือถือและอุปกรณ์ไร้สาย</translation>
 <translation id="5551890439174915351">100 x 200 มม.</translation>
-<translation id="5552137475244467770">Chrome ตรวจสอบรหัสผ่านของคุณเป็นระยะโดยเทียบกับรายการที่มีการเผยแพร่ออนไลน์ เราเข้ารหัสชื่อผู้ใช้และรหัสผ่านเมื่อทำการตรวจสอบเพื่อไม่ให้ผู้ใดอ่านข้อมูลดังกล่าวได้ รวมถึง Google</translation>
 <translation id="5554520618550346933">เมื่อใช้รหัสผ่าน Chrome จะเตือนคุณหากมีการเผยแพร่รหัสผ่านออนไลน์ เราเข้ารหัสชื่อผู้ใช้และรหัสผ่านเมื่อทำการตรวจสอบเพื่อไม่ให้ผู้ใดอ่านข้อมูลดังกล่าวได้ รวมถึง Google</translation>
 <translation id="5556459405103347317">โหลดใหม่</translation>
 <translation id="5558083606899411167">เครื่องปรับอากาศ</translation>
@@ -2428,6 +2428,7 @@
 <translation id="5559311991468302423">ลบที่อยู่</translation>
 <translation id="5560088892362098740">วันที่หมดอายุ</translation>
 <translation id="55635442646131152">โครงร่างเอกสาร</translation>
+<translation id="5563589142503817291">หากต้องการใช้ตำแหน่ง โปรดให้สิทธิ์เข้าถึงแก่ Chrome ใน<ph name="LINK" /></translation>
 <translation id="5565613213060953222">เปิดแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="5565735124758917034">ใช้งานอยู่</translation>
 <translation id="5569030697349375295">ซอฟต์แวร์การเงินและการบัญชี</translation>
@@ -2909,6 +2910,7 @@
 <translation id="6458606150257356946">วางเลย</translation>
 <translation id="6464094930452079790">รูปภาพ</translation>
 <translation id="6465306955648956876">จัดการรหัสผ่าน...</translation>
+<translation id="646789491285795429">คุณติดตามผลิตภัณฑ์นี้อยู่แล้ว</translation>
 <translation id="6468485451923838994">แบบอักษร</translation>
 <translation id="647261751007945333">นโยบายอุปกรณ์</translation>
 <translation id="6472874020827012601">ผ้า (ด้าน)</translation>

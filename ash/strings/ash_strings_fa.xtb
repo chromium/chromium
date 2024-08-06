@@ -405,6 +405,7 @@
 <translation id="2486214324139475545">پیش‌نمایش <ph name="DESK_NAME" />. میزکار فعال.</translation>
 <translation id="2486405091093637109">‫«<ph name="DISPLAY_NAME" />» به وضوح <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> هرتز) تغییر کرد. بدون تأیید کردن، تنظیمات قبلی <ph name="TIMEOUT_SECONDS" /> دیگر بازیابی خواهد شد.</translation>
 <translation id="2487915095798731898">پیوستن</translation>
+<translation id="2496180316473517155">سابقه مرور</translation>
 <translation id="2499445554382787206">منو نمایه میزکار. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">کلیدهای چسبان</translation>
 <translation id="2504454902900101003">بستن راه‌اندازی مشاهده عکس‌ها، رسانه‌ها، و اعلان‌های جدید تلفن</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">ورود به سیستم آنلاین لازم است</translation>
 <translation id="2612072250312279703">پایشگر فعالیت</translation>
 <translation id="2612614436418177118">جابه‌جایی نماد برنامه در جدول برنامه</translation>
+<translation id="2619052155095999743">درج</translation>
 <translation id="2619326010008283367">مرحله <ph name="STEP" /> از <ph name="TOTAL_STEPS" /> در مراحل گشت. می‌توانید «تنظیمات» دستگاهتان را در «راه‌انداز» پیدا کنید. می‌توانید <ph name="PRODUCT_NAME" /> را در «تنظیمات» سفارشی‌سازی کنید و کارهایی مثل تغییر کاغذدیواری و تنظیم محافظ صفحه را انجام دهید.</translation>
 <translation id="2620016719323068571">جستجوی <ph name="CATEGORY" />، فایل‌ها، برنامه‌ها، و موارد بیشتر…</translation>
 <translation id="2620436844016719705">سیستم</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">‏افزودن دیگر شبکه‌های Wi-Fi</translation>
 <translation id="2705001408393684014">روشن/خاموش کردن میکروفون. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">پیکان بالا</translation>
+<translation id="271033894570825754">جدید</translation>
 <translation id="2710984741481549981">قفل کردن پنجره‌ها</translation>
 <translation id="2718395828230677721">نور شب</translation>
 <translation id="2726420622004325180">تلفنتان برای ارائه نقطه اتصال باید به داده تلفن همراه دسترسی داشته باشد</translation>
@@ -1097,6 +1100,7 @@
 <translation id="492453977506755176">کلید حالت ضبط</translation>
 <translation id="4925542575807923399">سرپرست این حساب لازم می‌داند که این حساب اولین حسابی باشد که در جلسه چندگانه ورود به سیستم وارد سیستم شده باشد.</translation>
 <translation id="493076006037866439">زوم‌پس کردن صفحه‌نمایش</translation>
+<translation id="4932733599132424254">تاریخ</translation>
 <translation id="4936329710968938986">همه، خاموش</translation>
 <translation id="4937170330762390348">با ویژگی دیکته می‌توانید با صدایتان تایپ کنید. وقتی در فیلد نوشتاری هستید، کلید دیکته را فشار دهید یا نماد میکروفون را در پایین صفحه انتخاب کنید. زبان دیکته روی <ph name="LANGUAGE" /> تنظیم شده است. فایل‌های گفتاری بارگیری خواهند شد تا بتوانید به‌صورت آفلاین از دیکته استفاده کنید. هرزمان بخواهید می‌توانید زبان دیکته را در «تنظیمات &gt; دسترس‌پذیری» تغییر دهید.</translation>
 <translation id="4938176435186993759">پنهان کردن همه پیشنهادها</translation>
@@ -1105,6 +1109,7 @@
 <translation id="495046168593986294">پیمایش به بالا</translation>
 <translation id="4950800194215951939">تجربه بازی کردن خود را سفارشی کنید</translation>
 <translation id="4952936045814352993">وقتی صداهای هشدار غیرفعال هستند، «پیدا کردن تلفن» دردسترس نیست</translation>
+<translation id="4953585991029886728">ویرایش نوشتار</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> از شما می‌خواهد <ph name="DEVICE_TYPE" /> را تنزل دهید. دستگاهتان بازنشانی و همه داده‌ها حذف خواهد شد.</translation>
 <translation id="4961318399572185831">فرستادن محتوای صفحه</translation>
 <translation id="4964188651935955085">هرگاه بلوتوث را خاموش کنید، اتصال این دستگاه خارجی به <ph name="DEVICE_TYPE" /> قطع خواهد شد:</translation>
@@ -1426,6 +1431,7 @@
 <translation id="6032620807120418574">برای ضبط تمام‌صفحه، روی هرجایی از صفحه کلیک کنید</translation>
 <translation id="6040071906258664830">ضبط میکروفون <ph name="STATE" /></translation>
 <translation id="6040143037577758943">بستن</translation>
+<translation id="6042308850641462728">بیشتر</translation>
 <translation id="6043212731627905357">این نمایشگر با <ph name="DEVICE_TYPE" /> سازگار نیست (نمایشگر پشتیبانی نمی‌شود).</translation>
 <translation id="6043994281159824495">خروج از سیستم هم‌اکنون</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> برنامه از آن استفاده کرده‌اند</translation>
@@ -1440,6 +1446,7 @@
 <translation id="6068258534237496331">کنترل‌های تماس تصویری</translation>
 <translation id="6073451960410192870">توقف ضبط</translation>
 <translation id="6074087755403037157">کانال بتا</translation>
+<translation id="6091929401758362855">فهرست پخش: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">توسط سرپرست غیرفعال شده است</translation>
 <translation id="6095008505822982596">سرعت گفتار</translation>
 <translation id="6095425951508823973">افزودن اتصال با <ph name="PROVIDER" /></translation>
@@ -1892,6 +1899,7 @@
 <translation id="7748275671948949022">برجسته کردن دکمه «راه‌انداز» در قفسه</translation>
 <translation id="7749443890790263709">به حداکثر تعداد میز رسیده‌اید.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">نمایش همه</translation>
 <translation id="7759183637555564029">هرزمان بخواهید می‌توانید «کمک گرفتن در نوشتن» و «کمک گرفتن در خواندن» را در «تنظیمات» خاموش کنید. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">انتخاب برای شنیدن</translation>
 <translation id="7769299611924763557">‏فایل GIF شما به‌زودی آماده خواهد شد</translation>
@@ -2025,6 +2033,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> این تنظیم را سرپرست شما مدیریت می‌کند.</translation>
 <translation id="8155628902202578800">باز کردن کادر گفتگوی اطلاعات برای <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">درحال استفاده از <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">محتوا</translation>
 <translation id="8185090165691050712">روشن/ خاموش کردن منو برای تغییر اندازه ‏حالت قفل</translation>
 <translation id="8192727139462702395">هرگاه بلوتوث را خاموش کنید، اتصال این دستگاه‌های خارجی از <ph name="DEVICE_TYPE" /> قطع خواهد شد:</translation>
 <translation id="8198456017687137612">فرستادن برگه</translation>

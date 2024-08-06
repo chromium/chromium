@@ -405,6 +405,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> preview. Active desk.</translation>
 <translation id="2486405091093637109">'<ph name="DISPLAY_NAME" />' was changed to <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) resolution. Without confirming, the previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Join</translation>
+<translation id="2496180316473517155">Browsing history</translation>
 <translation id="2499445554382787206">Desk profile menu. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Sticky keys</translation>
 <translation id="2504454902900101003">Dismiss setting up viewing your phone's recent photos, media and notifications</translation>
@@ -436,6 +437,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2607678425161541573">Online sign-in required</translation>
 <translation id="2612072250312279703">activity monitor</translation>
 <translation id="2612614436418177118">Move an app icon within app grid</translation>
+<translation id="2619052155095999743">Insert</translation>
 <translation id="2619326010008283367">Tour step <ph name="STEP" /> of <ph name="TOTAL_STEPS" />. You can find your device settings in Launcher. Try customising your <ph name="PRODUCT_NAME" /> in Settings, like changing your wallpaper or setting a screen saver.</translation>
 <translation id="2620016719323068571">Search your <ph name="CATEGORY" />, files, apps and more…</translation>
 <translation id="2620436844016719705">System</translation>
@@ -462,6 +464,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2704781753052663061">Join other Wi-Fi networks</translation>
 <translation id="2705001408393684014">Toggle mic. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
+<translation id="271033894570825754">New</translation>
 <translation id="2710984741481549981">Lock the windows</translation>
 <translation id="2718395828230677721">Night Light</translation>
 <translation id="2726420622004325180">Your phone must have mobile data to provide a hotspot</translation>
@@ -1086,6 +1089,7 @@ One device connected.</translation>
 <translation id="4890408602550914571">Make sure that your phone is nearby and has Bluetooth turned on.</translation>
 <translation id="4892981359753171125">Face control</translation>
 <translation id="4895488851634969361">Battery is full.</translation>
+<translation id="4902797682482387055">Suggested task to focus on</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% battery</translation>
 <translation id="491504982845934899">Activate after device setup <ph name="NETWORK_NAME" /></translation>
@@ -1096,6 +1100,7 @@ One device connected.</translation>
 <translation id="492453977506755176">Capture mode key</translation>
 <translation id="4925542575807923399">The administrator for this account requires this account to be the first signed-in account in a multiple sign-in session.</translation>
 <translation id="493076006037866439">Zoom out of screen</translation>
+<translation id="4932733599132424254">Date</translation>
 <translation id="4936329710968938986">Everyone, off</translation>
 <translation id="4937170330762390348">With dictation, you can type using your voice. Press the dictation key or select the microphone icon at the bottom of the screen when you’re on a text field. Your dictation language is set to <ph name="LANGUAGE" />. Speech files will be downloaded so you can use dictation offline. You can change the dictation language at any time in Settings &gt; Accessibility.</translation>
 <translation id="4938176435186993759">Hide all suggestions</translation>
@@ -1104,6 +1109,7 @@ One device connected.</translation>
 <translation id="495046168593986294">Scroll up</translation>
 <translation id="4950800194215951939">Customise your gaming experience</translation>
 <translation id="4952936045814352993">Locate phone is not available when alarm sounds are disabled</translation>
+<translation id="4953585991029886728">Edit text</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> requires you to roll back your <ph name="DEVICE_TYPE" />. Your device will reset and all data will be deleted.</translation>
 <translation id="4961318399572185831">Cast screen</translation>
 <translation id="4964188651935955085">When you turn off Bluetooth, this external device will disconnect from your <ph name="DEVICE_TYPE" />:</translation>
@@ -1425,6 +1431,7 @@ No devices connected.</translation>
 <translation id="6032620807120418574">Click anywhere to record full screen</translation>
 <translation id="6040071906258664830">Record microphone <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Close</translation>
+<translation id="6042308850641462728">More</translation>
 <translation id="6043212731627905357">This monitor isn't getting along with your <ph name="DEVICE_TYPE" /> (the monitor is not supported).</translation>
 <translation id="6043994281159824495">Sign out now</translation>
 <translation id="6045629311476491587">Used by <ph name="APP_COUNT" /> apps</translation>
@@ -1891,6 +1898,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7748275671948949022">Highlight Launcher button on shelf</translation>
 <translation id="7749443890790263709">Maximum number of desks reached.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Show all</translation>
 <translation id="7759183637555564029">You can turn off Help me write and Help me read at any time in Settings. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7769299611924763557">Your GIF will be ready shortly</translation>
@@ -2024,6 +2032,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> This setting is managed by your administrator.</translation>
 <translation id="8155628902202578800">Open info dialogue for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Using <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Content</translation>
 <translation id="8185090165691050712">Turn on/off menu to resize lock mode</translation>
 <translation id="8192727139462702395">When you turn off Bluetooth, these external devices will disconnect from your <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Casting tab</translation>

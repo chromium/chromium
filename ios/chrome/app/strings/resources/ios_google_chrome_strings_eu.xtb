@@ -35,6 +35,7 @@ Kontuan hartu beharrekoak:
 <translation id="1554731936187952550">Chrome-ren segurtasun-aukerarik sendoena darabilzu webgune kaltegarrien aurka</translation>
 <translation id="1615715390546812898">Bilatu Voice-rekin Chrome-n.</translation>
 <translation id="1657395063736185342">Bilatu irudi bidez Chrome-n</translation>
+<translation id="1670609221633730681">Chrome-rako aholkua: aukeratu helbide-barraren posizioa</translation>
 <translation id="1675955119303651351">Chrome-ko datu batzuk ez dira gorde Google-ko kontuan oraindik.
         Saioa amaitu aurretik, itxaron minutu batzuk. Orain amaitzen baduzu saioa, ezabatu egingo dira datuak.</translation>
 <translation id="1682483655351012182">Sinkronizatu Chrome-ko datuak</translation>
@@ -113,12 +114,14 @@ Kontuan hartu beharrekoak:
 <translation id="3984746313391923992">Chrome-n saioa amaituta edukitzea eskatzen dizu zure erakundeak.</translation>
 <translation id="3988789688219830639">Google Chrome-k ez du argazki eta bideoetarako sarbiderik. Gaitu ezazu iOS sistemako Settings &gt; Privacy &gt; Photos atalean.</translation>
 <translation id="4064699917955374540">Chrome-ko datuak Google-ko kontuan gordetzeko eta erabiltzeko, egiaztatu zeu zarela.</translation>
+<translation id="4066411101507716142">Sartu Chrome-n bizkorrago iPad-eko orri nagusiko zintaren bidez.</translation>
 <translation id="4067858366537947361">Ireki Chrome-ko ezkutuko moduko fitxa bat</translation>
 <translation id="4093042601582616698">Chrome arakatzaile lehenetsi bihurtu nahi duzu?</translation>
 <translation id="417201473131094001">Ez da bateragarria Chrome Canary-rekin</translation>
 <translation id="424864128008805179">Chrome-ko saioa amaitu nahi duzu?</translation>
 <translation id="4251174643044751591">Chrome-ko ordainketa-metodoen ezarpenen orria irekitzen du.</translation>
 <translation id="4286914711740227883">Ezabatu Chrome-ko arakatze-datuak</translation>
+<translation id="430839890088895017">Chrome-rako aholkua: eraman Chrome zintara</translation>
 <translation id="4453284704333523777">Kudeatu Chrome-ren ezarpenak</translation>
 <translation id="4523886039239821078">Gehigarri batzuek Chrome huts egitea eragiten dute. Desinstala itzazu.</translation>
 <translation id="4633328489441962921">Chrome-k ezin ditu bilatu eguneratzeak</translation>
@@ -236,6 +239,7 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="7581063337314642333">Bisitatu fitxen sareta Chrome-n</translation>
 <translation id="7662994914830945754">Chrome erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa eta aktibatu sinkronizazioa</translation>
 <translation id="7669869107155339016">Joan Chrome-ren ezarpenetara.</translation>
+<translation id="7683540977001394271">Sartu Chrome-n bizkorrago iPhone-ko orri nagusiko zintaren bidez.</translation>
 <translation id="769104993356536261">Erabili Chrome-ren Ekintzak iOS-en</translation>
 <translation id="7693590760643069321">Orain, Chrome erabili ahalko duzu mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean.</translation>
 <translation id="7698568245838009292">Chrome-k kamera atzitu nahi du</translation>

@@ -405,6 +405,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2486214324139475545">Pratinjau <ph name="DESK_NAME" />. Desktop virtual aktif.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" diubah ke resolusi <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Tanpa mengonfirmasi, setelan sebelumnya akan dipulihkan dalam <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Gabung</translation>
+<translation id="2496180316473517155">Histori penjelajahan</translation>
 <translation id="2499445554382787206">Menu profil desktop virtual. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tombol lekat</translation>
 <translation id="2504454902900101003">Tutup penyiapan untuk melihat foto, media, dan notifikasi terbaru ponsel Anda</translation>
@@ -436,6 +437,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2607678425161541573">Perlu login online</translation>
 <translation id="2612072250312279703">pemantauan aktivitas</translation>
 <translation id="2612614436418177118">Pindahkan ikon aplikasi dalam petak aplikasi</translation>
+<translation id="2619052155095999743">Insert</translation>
 <translation id="2619326010008283367">Langkah tur <ph name="STEP" /> dari <ph name="TOTAL_STEPS" />. Anda dapat menemukan Setelan perangkat di Peluncur. Coba sesuaikan <ph name="PRODUCT_NAME" /> Anda di Setelan seperti mengubah wallpaper atau menyetel screensaver.</translation>
 <translation id="2620016719323068571">Telusuri <ph name="CATEGORY" />, file, aplikasi, dan lainnya ...</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -462,6 +464,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2704781753052663061">Bergabung dengan jaringan Wi-Fi lain</translation>
 <translation id="2705001408393684014">Alihkan Status Mikrofon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Atas</translation>
+<translation id="271033894570825754">Baru</translation>
 <translation id="2710984741481549981">Kunci jendela</translation>
 <translation id="2718395828230677721">Cahaya Malam</translation>
 <translation id="2726420622004325180">Ponsel harus memiliki data seluler agar dapat mengaktifkan hotspot</translation>
@@ -1086,6 +1089,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4890408602550914571">Pastikan ponsel berada di dekat Anda dan Bluetooth aktif.</translation>
 <translation id="4892981359753171125">Kontrol wajah</translation>
 <translation id="4895488851634969361">Baterai penuh.</translation>
+<translation id="4902797682482387055">Tugas yang disarankan untuk difokuskan</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="490788395437447240">Baterai <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="491504982845934899">Aktifkan setelah penyiapan perangkat <ph name="NETWORK_NAME" /></translation>
@@ -1096,6 +1100,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="492453977506755176">Tombol mode tangkapan layar</translation>
 <translation id="4925542575807923399">Administrator akun ini mewajibkan akun ini untuk menjadi akun masuk pertama dalam sesi fitur masuk banyak akun.</translation>
 <translation id="493076006037866439">Perkecil layar</translation>
+<translation id="4932733599132424254">Tanggal</translation>
 <translation id="4936329710968938986">Siapa saja, nonaktif</translation>
 <translation id="4937170330762390348">Dengan dikte, Anda dapat mengetik menggunakan suara. Tekan tombol dikte atau pilih ikon mikrofon di bagian bawah layar saat Anda berada di kolom teks. Bahasa dikte Anda disetel ke <ph name="LANGUAGE" />. File ucapan akan didownload sehingga Anda dapat menggunakan dikte secara offline. Anda dapat mengubah bahasa dikte kapan saja di Setelan &gt; Aksesibilitas.</translation>
 <translation id="4938176435186993759">Sembunyikan semua saran</translation>
@@ -1104,6 +1109,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="495046168593986294">Scroll ke atas</translation>
 <translation id="4950800194215951939">Sesuaikan pengalaman bermain game Anda</translation>
 <translation id="4952936045814352993">Fitur temukan ponsel tidak tersedia saat suara alarm dinonaktifkan</translation>
+<translation id="4953585991029886728">Edit teks</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> mengharuskan Anda me-roll back <ph name="DEVICE_TYPE" />. Perangkat Anda akan direset dan semua data akan dihapus.</translation>
 <translation id="4961318399572185831">Transmisikan layar</translation>
 <translation id="4964188651935955085">Jika Anda menonaktifkan Bluetooth, koneksi perangkat eksternal ini akan diputuskan dari <ph name="DEVICE_TYPE" /> Anda:</translation>
@@ -1425,6 +1431,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6032620807120418574">Klik di mana saja untuk merekam dalam layar penuh</translation>
 <translation id="6040071906258664830">Rekam mikrofon <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Tutup</translation>
+<translation id="6042308850641462728">Lainnya</translation>
 <translation id="6043212731627905357">Monitor ini tidak dapat berfungsi dengan <ph name="DEVICE_TYPE" /> Anda (monitor tidak didukung).</translation>
 <translation id="6043994281159824495">Keluar sekarang</translation>
 <translation id="6045629311476491587">Digunakan oleh <ph name="APP_COUNT" /> aplikasi</translation>
@@ -1891,6 +1898,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7748275671948949022">Tandai tombol Peluncur di rak</translation>
 <translation id="7749443890790263709">Jumlah halaman kerja maksimum tercapai.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Tampilkan semua</translation>
 <translation id="7759183637555564029">Anda dapat menonaktifkan fitur Bantu tulis dan Bantu baca kapan saja di Setelan. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Klik untuk diucapkan</translation>
 <translation id="7769299611924763557">GIF Anda akan segera siap</translation>
@@ -2024,6 +2032,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Setelan ini dikelola oleh administrator Anda.</translation>
 <translation id="8155628902202578800">Buka dialog info untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Menggunakan <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Konten</translation>
 <translation id="8185090165691050712">Aktifkan/nonaktifkan menu untuk mengubah ukuran mode kunci</translation>
 <translation id="8192727139462702395">Jika Anda menonaktifkan Bluetooth, koneksi perangkat eksternal ini akan diputuskan dari <ph name="DEVICE_TYPE" /> Anda:</translation>
 <translation id="8198456017687137612">Mentransmisikan tab</translation>

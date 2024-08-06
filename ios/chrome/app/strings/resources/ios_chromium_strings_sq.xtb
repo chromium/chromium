@@ -144,6 +144,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="5131565040785979529">Organizata jote, <ph name="DOMAIN" />, menaxhon llogarinë ku je identifikuar dhe se si përdoret Chromium.</translation>
 <translation id="5146749061471423558">Shto faqeshënuesit te Chromium</translation>
 <translation id="5171868502429358653">Identifikohu në Chromium</translation>
+<translation id="5203483872492817335">Qasu më shpejt në Chromium nga stacioni i ekranit bazë të pajisjes sate iPad.</translation>
 <translation id="5213683223491576284">Hap "Menaxherin e fjalëkalimeve" në Chromium.</translation>
 <translation id="5224391634244552924">Nuk ka asnjë fjalëkalim të ruajtur. Chromium mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
 <translation id="5242782538551259282">Disa nga të dhënat e tua të Chromium nuk janë ruajtur ende në "Llogarinë tënde të Google".
@@ -224,6 +225,7 @@ Gjëra për të pasur parasysh:
 Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Njoftimet e Chromium janë çaktivizuar aktualisht te cilësimet e pajisjes sate.</translation>
 <translation id="7222001353246886083">Kërko për "${searchPhrase}" në Chromium</translation>
+<translation id="7228180817326917122">Këshillë për Chromium: Zgjidh pozicionin e shiritit të adresave</translation>
 <translation id="725427773388857052">Chromium mund të të ndihmojë të qëndrosh i sigurt nga nxjerrjet e paautorizuara të të dhënave, faqet e pasigurta të internetit etj.</translation>
 <translation id="7269362888766543920">Disa përbërës shtesë shkaktojnë ndërprerje aksidentale të Chromium. Provo t'i çinstalosh ata.</translation>
 <translation id="7285031092584344905">Qasu te fjalëkalimet e tua të Chromium etj. nëpër aplikacione të tjera.</translation>
@@ -246,6 +248,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="7928628054454574139">Hap gjithmonë Chromium kur troket te lidhjet në aplikacionet e tjera</translation>
 <translation id="7931842119211730154">Kyçi skedat "e fshehta" kur të mbyllësh Chromium</translation>
 <translation id="7934404985878918282">Shiko "Listën e leximit" të Chromium</translation>
+<translation id="7947765692209663835">Qasu më shpejt në Chromium nga stacioni i ekranit bazë të telefonit tënd iPhone.</translation>
 <translation id="7971753607796745700">Shto artikullin e listës së leximit në Chromium</translation>
 <translation id="7980860476903281594">Chromium e ndan vendndodhjen tënde me sajtet që lejon ti.</translation>
 <translation id="7994322153108931467">Për të marrë këshilla të dobishme për Chromium, aktivizo njoftimet te cilësimet e iOS.</translation>
@@ -264,6 +267,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="8386869251364507178">Veprimet e Chromium</translation>
 <translation id="8409374867500149834">Ti ke sigurinë më të fortë të Chromium kundër sajteve të dëmshme të uebit</translation>
 <translation id="8458950033462118672">Mund t'i hapësh automatikisht lidhjet në Chromium duke e bërë atë aplikacionin e parazgjedhur të shfletuesit.</translation>
+<translation id="8473874987831035139">Këshillë për Chromium: Zhvendose Chromium te stacioni</translation>
 <translation id="8502918057530111907">Përdor Chromium si parazgjedhje për të marrë me lehtësi statistika për çmimet</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Kjo ndodh kur Chromium nuk përdoret për {THRESHOLD} minutë. Të dhënat e ruajtura vetëm në këtë pajisje ndërkohë që ishte identifikuar do të fshihen. Kjo mund të përfshijë historikun dhe fjalëkalimet.}other{Kjo ndodh kur Chromium nuk përdoret për {THRESHOLD} minuta. Të dhënat e ruajtura vetëm në këtë pajisje ndërkohë që ishte identifikuar do të fshihen. Kjo mund të përfshijë historikun dhe fjalëkalimet.}}</translation>
 <translation id="858114650497379505">Fjalëkalimet që ke ruajtur në "Menaxherin e fjalëkalimeve" mund t'i përdorësh në aplikacione të tjera në iPhone.</translation>

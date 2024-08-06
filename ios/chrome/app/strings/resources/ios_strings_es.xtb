@@ -302,6 +302,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2529021024822217800">Abrir todos</translation>
 <translation id="2536991091671391962">Puedes usar las contraseñas guardadas en cualquier dispositivo. Se guardan en el Gestor de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Ocultar comprobación de seguridad</translation>
+<translation id="2545094307889012168">Lens Overlay</translation>
 <translation id="2547458583188611426">La sincronización no funciona. Para iniciar la sincronización, introduce tu frase de contraseña.</translation>
 <translation id="2551153019974022505">Error de cuenta</translation>
 <translation id="2556092377360758201">Sin protección (no recomendado)</translation>
@@ -848,6 +849,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5205197603258285592">Guardar imagen en...</translation>
 <translation id="5211488077761630279">¿Permitir que <ph name="SITE_NAME" /> use tu <ph name="PERMISSION" />?</translation>
+<translation id="5215046161188172474">Compartir URL completa</translation>
 <translation id="5219295696240154694">Ayudar a mejorar la seguridad de todos los usuarios en la Web</translation>
 <translation id="5220945116117011963">Crea eventos del calendario a partir de fechas</translation>
 <translation id="5221339005270097309">Comprobando contraseñas…</translation>
@@ -1125,6 +1127,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 Los sitios no pueden usar cookies para ver tu actividad de navegación en otros sitios con el objetivo de, por ejemplo, personalizar anuncios.</translation>
 <translation id="6476253015009698798">El seguimiento de precios no está disponible para esta página.</translation>
 <translation id="6476800141292307438">La página se está traduciendo al <ph name="LANGUAGE" />. Encontrarás opciones disponibles cerca de la parte inferior de la pantalla.</translation>
+<translation id="6477585407014744043">Nombre del grupo</translation>
 <translation id="648164694371393720">Error de autenticación</translation>
 <translation id="6494931198667773526">A</translation>
 <translation id="6500795388871406244">Usar contraseña sugerida:</translation>
@@ -1294,6 +1297,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="734758817008927353">Opciones para guardar una tarjeta</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
 <translation id="7353432112255316844">Verifica que eres tú</translation>
+<translation id="736564850024123010">Cambia la posición de la barra de direcciones para personalizar tu experiencia.</translation>
 <translation id="7367530036083223701">Accede de forma segura a tus contraseñas desde la pantalla de inicio con el widget del Gestor de contraseñas.</translation>
 <translation id="7380220816562673297">Por ahora, solo puedes compartir contraseñas con miembros de la familia. <ph name="BEGIN_LINK" />Crea un grupo familiar<ph name="END_LINK" /> de hasta 6 miembros y sácales más partido a tus productos y suscripciones de Google.</translation>
 <translation id="739101637685146669">¿Qué URL quieres añadir a Marcadores?</translation>

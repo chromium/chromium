@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Steuerelemente</translation>
 <translation id="2652403576514495859">Spracheingabe aktivieren oder deaktivieren</translation>
 <translation id="2653659639078652383">Senden</translation>
-<translation id="2653807227758181366">Beschreibe das Hintergrundbild, das du erstellen möchtest, oder verwende einen unserer Beispielprompts</translation>
 <translation id="2654647726140493436">Schalte das Gerät „<ph name="DEVICE_TYPE" />“ nicht aus und ziehe das <ph name="DEVICE_TYPE" />-Stromkabel während des Updates nicht ab</translation>
 <translation id="2656001153562991489">Exklusiv bei Chromebook Plus</translation>
 <translation id="2665671725390405060">Aussprache anhören</translation>
@@ -358,6 +357,7 @@
 <translation id="2780756493585863768">Zuletzt verwendete Hintergründe powered by Google AI</translation>
 <translation id="2783010256799387990">BESTANDEN</translation>
 <translation id="2786429550992142861">Leinen</translation>
+<translation id="2787237339470862294">Diese Sprache wird derzeit nicht unterstützt</translation>
 <translation id="2787435249130282949">Tastatur heller</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Keine Verbindung zum Internet. Zum Wiederholen klicken.</translation>
@@ -669,6 +669,7 @@
 <translation id="458794348635939462">Es konnten nicht alle Hosts aufgelöst werden</translation>
 <translation id="4593212453765072419">Proxy-Authentifizierung erforderlich</translation>
 <translation id="4594021849294327751">Transkript erstellen</translation>
+<translation id="4607282946861182308">Dafür können keine Bilder erstellt werden. Versuche es mit einem anderen Prompt.</translation>
 <translation id="4609350030397390689">Tastaturhelligkeit verringern</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> von <ph name="TOTAL_PAGE_NUMBER" />. Wenn du den Druckauftrag abbrechen möchtest, drücke die Eingabetaste.</translation>
 <translation id="463791356324567266">Scannen wird abgebrochen…</translation>
@@ -1364,6 +1365,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8208861521865154048">Vorteile</translation>
 <translation id="8226628635270268143">Hier kannst du deine bevorzugten Fotos und Alben auswählen</translation>
 <translation id="8227119283605456246">Datei anhängen</translation>
+<translation id="8227488649450500937">Probiere einen dieser Prompts aus oder sieh dir die <ph name="BEGIN_LINK_PROMPTING_GUIDE" />Anleitung zu Prompts<ph name="END_LINK_PROMPTING_GUIDE" /> an</translation>
 <translation id="8230672074305416752">Das standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
 <translation id="8238771987802558562">APN festlegen</translation>
 <translation id="8246209727385807362">Unbekannter Mobilfunkanbieter</translation>

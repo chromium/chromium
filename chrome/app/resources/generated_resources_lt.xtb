@@ -185,7 +185,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1124772482545689468">Naudotojas</translation>
 <translation id="1125550662859510761">Atrodo kaip <ph name="WIDTH" /> × <ph name="HEIGHT" /> (savasis)</translation>
 <translation id="1125921926864945797">Ekrano fonas ir stilius</translation>
-<translation id="1126809382673880764">Neapsaugo jūsų nuo pavojingų svetainių, atsisiuntimų ir plėtinių. Kai yra galimybė, vis tiek gausite saugaus naršymo pranešimus kitose „Google“ paslaugose, pvz., „Gmail“ ir paieškoje.</translation>
 <translation id="1128090040635299943">„Linux“ šiuo metu konfigūruojama. Konfigūravimas užtruks kelias minutes</translation>
 <translation id="1128591060186966949">Paieškos variklio redagavimas</translation>
 <translation id="1129348283834595293">Kiberpankas</translation>
@@ -633,7 +632,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1461041542809785877">Našumas</translation>
 <translation id="1461177659295855031">Perkelti į žymių juostos aplanką</translation>
 <translation id="1461288887896722288">Ką tik prisijungėte prie valdomos paskyros – sukūrę naują tvarkomą profilį galėsite pasiekti tam tikrus su šia paskyra susietus šaltinius.</translation>
-<translation id="1461868306585780092">Perspėjimas prieš naudojant nesaugius ryšius</translation>
 <translation id="146219525117638703">ONC būsena</translation>
 <translation id="146220085323579959">Internetas atjungtas. Patikrinkite interneto ryšį ir bandykite dar kartą.</translation>
 <translation id="1462480037563370607">Pridėkite svetaines neautomatiškai</translation>
@@ -2662,6 +2660,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2853121255651601031">Slaptažodis išsaugotas</translation>
 <translation id="2855243985454069333">Ištrinama istorija visuose sinchronizuojamuose įrenginiuose</translation>
 <translation id="2855812646048059450">Prisijunkite naudodami <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Griežtasis režimas</translation>
 <translation id="2856776373509145513">Naujo sudėtinio failo kūrimas</translation>
 <translation id="2856907950922663165">Išjungti URL šifruotę?</translation>
 <translation id="2859741939921354763">Slaptažodžių importavimas į „<ph name="BRAND" />“</translation>
@@ -4184,7 +4183,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="3959747296451923142">Patvirtinti prenumeratos pašalinimą</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Daugiau veiksmų (<ph name="IBAN_DESCRIPTION" />)</translation>
-<translation id="3962119236270174787">Įprasta apsauga nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi</translation>
 <translation id="3963753386716096475">Naudoti kitą telefoną, planšetinį kompiuterį arba saugos raktą</translation>
 <translation id="3964480518399667971">Išjungti mobiliojo ryšio tinklą</translation>
 <translation id="3965965397408324205">Išeiti iš „<ph name="PROFILE_NAME" />“</translation>
@@ -5526,7 +5524,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4967571733817147990">Pelės mygtukų tinkinimas</translation>
 <translation id="4967852842111017386">„<ph name="FEATURE_NAME" />“ įrenginio pavadinimas</translation>
 <translation id="4971412780836297815">Baigus atidaryti</translation>
-<translation id="4971735654804503942">Spartesnė, veiksni apsauga nuo pavojingų svetainių, atsisiuntimų ir plėtinių. Įspėjama apie slaptažodžių pažeidimus. Naršymo duomenys turi būti siunčiami į sistemą „Google“.</translation>
 <translation id="4972129977812092092">Spausdintuvo informacijos redagavimas</translation>
 <translation id="4972164225939028131">Netinkamas slaptažodis</translation>
 <translation id="4972737347717125191">Svetainėse gali būti prašoma naudoti virtualiosios realybės įrenginius ir duomenis</translation>
@@ -6423,6 +6420,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5623282979409330487">Svetainė pasiekia judesio jutiklius.</translation>
 <translation id="5623842676595125836">Žurnalas</translation>
 <translation id="5624120631404540903">Tvarkyti slaptažodžius</translation>
+<translation id="5624959475330585145">Klausti prieš naudojant nesaugius ryšius</translation>
 <translation id="5625225435499354052">Redaguoti sistemoje „Google Pay“</translation>
 <translation id="5626134646977739690">Pavadinimas:</translation>
 <translation id="5627832140542566187">Ekrano orientacija</translation>
@@ -8267,7 +8265,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6992554835374084304">Patobulinto rašybos tikrinimo įjungimas</translation>
 <translation id="6993000214273684335">Skirtukas pašalintas iš grupės be pavadinimo – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">„Chrome“ naršyklė atnaujinama</translation>
-<translation id="6995899638241819463">Įspėti, jei slaptažodžiai buvo atskleisti įvykus duomenų saugos pažeidimui</translation>
 <translation id="6995984090981858039">Skaityti „ChromeOS“ įrenginio informaciją ir duomenis</translation>
 <translation id="6996245928508281884">Įjunkite telefono „Bluetooth“ ir „Wi-Fi“</translation>
 <translation id="6996438701394974959">Padidinti pateikties ir teksto dydį</translation>
@@ -9664,6 +9661,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8008356846765065031">Internetas atjungtas. Patikrinkite interneto ryšį.</translation>
 <translation id="8008704580256716350">Užblokuotas įtartinas failas</translation>
 <translation id="8009225694047762179">Tvarkyti slaptažodžius</translation>
+<translation id="8010081455002666927">Automatinis aptikimas</translation>
 <translation id="8011372169388649948">Žymė „<ph name="BOOKMARK_TITLE" />“ perkelta.</translation>
 <translation id="8012188750847319132">didžiųjų raidžių klavišas</translation>
 <translation id="8012463809859447963">Išsami sparčiojo viešosios interneto prieigos taško informacija</translation>
@@ -11070,6 +11068,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="9009707268312089299">Importuota iš „Windows“</translation>
 <translation id="9009708085379296446">Ar norėjote pakeisti šį puslapį?</translation>
 <translation id="9010845741772269259">Pridėti mokėjimo metodus</translation>
+<translation id="901087299639956505">Subalansuotas režimas</translation>
 <translation id="9011163749350026987">Visada rodyti piktogramą</translation>
 <translation id="9011262023858991985">Šis skirtukas perduodamas</translation>
 <translation id="9011393886518328654">Laidos informacija</translation>

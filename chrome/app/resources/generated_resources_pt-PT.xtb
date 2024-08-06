@@ -185,7 +185,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1124772482545689468">Utilizador</translation>
 <translation id="1125550662859510761">Parece ter <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativo)</translation>
 <translation id="1125921926864945797">Imagem de fundo e estilo</translation>
-<translation id="1126809382673880764">Não protege contra transferências, extensões ou Websites perigosos. Continuará a obter a proteção da Navegação segura, quando disponível, noutros Serviços Google, como o Gmail e a Pesquisa.</translation>
 <translation id="1128090040635299943">O Linux está atualmente a ser configurado. A configuração vai demorar alguns minutos.</translation>
 <translation id="1128591060186966949">Editar motor de pesquisa</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -629,7 +628,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1461041542809785877">Desempenho</translation>
 <translation id="1461177659295855031">Mover para a pasta Barra de marcadores</translation>
 <translation id="1461288887896722288">Acabou de iniciar sessão numa conta gerida. A criação de um novo perfil gerido permite-lhe aceder a alguns recursos associados a essa conta.</translation>
-<translation id="1461868306585780092">Receba avisos antes de usar ligações inseguras</translation>
 <translation id="146219525117638703">Estado ONC</translation>
 <translation id="146220085323579959">Internet desligada. Verifique a ligação à internet e tente novamente.</translation>
 <translation id="1462480037563370607">Adicionar sites manualmente</translation>
@@ -2646,6 +2644,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2853121255651601031">Palavra-passe guardada</translation>
 <translation id="2855243985454069333">Elimina o histórico de todos os dispositivos sincronizados</translation>
 <translation id="2855812646048059450">Iniciar sessão com <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Modo rigoroso</translation>
 <translation id="2856776373509145513">Crie um novo contentor</translation>
 <translation id="2856907950922663165">Desativar a encriptação de URLs?</translation>
 <translation id="2859741939921354763">Importe palavras-passe para o <ph name="BRAND" /></translation>
@@ -4169,7 +4168,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3959747296451923142">Confirmar remoção da subscrição</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Mais ações para <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962119236270174787">Proteção padrão contra Websites, transferências e extensões identificados como perigosos</translation>
 <translation id="3963753386716096475">Usar um telemóvel, um tablet ou uma chave de segurança diferente</translation>
 <translation id="3964480518399667971">Desativar rede móvel</translation>
 <translation id="3965965397408324205">Sair de <ph name="PROFILE_NAME" /></translation>
@@ -5511,7 +5509,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4967571733817147990">Personalize os botões do rato</translation>
 <translation id="4967852842111017386">Nome do dispositivo da funcionalidade <ph name="FEATURE_NAME" /></translation>
 <translation id="4971412780836297815">Abrir quando estiver concluído</translation>
-<translation id="4971735654804503942">Proteção proativa mais rápida contra transferências, extensões e Webistes perigosos. Envia-lhe avisos sobre violações de palavras-passe. Requer o envio de dados de navegação para a Google.</translation>
 <translation id="4972129977812092092">Editar impressora</translation>
 <translation id="4972164225939028131">Palavra-passe incorreta.</translation>
 <translation id="4972737347717125191">Os sites podem solicitar a utilização de dados e dispositivos de realidade virtual</translation>
@@ -6139,6 +6136,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5435779377906857208">Permitir sempre que <ph name="HOST" /> aceda à sua localização</translation>
 <translation id="5436492226391861498">A aguardar pelo túnel do proxy...</translation>
 <translation id="5436510242972373446">Pesquisar <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616">Janela <ph name="WINDOW_SIDE" /> agora com <ph name="WINDOW_SIZE_PERCENT" /> de largura e painel <ph name="PANE_SIDE" /> agora com <ph name="PANE_SIZE_PERCENT" /> de largura.</translation>
 <translation id="5440425659852470030">Feche o painel lateral</translation>
 <translation id="544083962418256601">Criar atalhos...</translation>
 <translation id="5441133529460183413">App Web instalada a partir do navegador Chrome</translation>
@@ -6407,6 +6405,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5623282979409330487">Este site está a aceder aos sensores de movimentos.</translation>
 <translation id="5623842676595125836">Registo</translation>
 <translation id="5624120631404540903">Gerir palavras-passe</translation>
+<translation id="5624959475330585145">Perguntar antes de usar ligações inseguras</translation>
 <translation id="5625225435499354052">Editar no Google Pay</translation>
 <translation id="5626134646977739690">Nome:</translation>
 <translation id="5627832140542566187">Orientação do ecrã</translation>
@@ -8245,7 +8244,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6992554835374084304">Ative a verificação ortográfica avançada</translation>
 <translation id="6993000214273684335">Separador removido de grupo sem nome – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">A atualizar o navegador Chrome</translation>
-<translation id="6995899638241819463">Enviar-lhe um aviso se as palavras-passe forem expostas numa violação de dados</translation>
 <translation id="6995984090981858039">Ler dados e informações de dispositivos com ChromeOS</translation>
 <translation id="6996245928508281884">Ative o Bluetooth e o Wi-Fi do telemóvel</translation>
 <translation id="6996438701394974959">Aumentar o tamanho da visualização e do texto</translation>
@@ -8544,6 +8542,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 site no grupo de <ph name="FPS_OWNER" />}other{{MEMBERS} sites no grupo de <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Usar o Windows Hello ao preencher palavras-passe</translation>
 <translation id="7225179976675429563">Tipo de rede em falta</translation>
+<translation id="7227235818314667565">Gerir partilha</translation>
 <translation id="7227458944009118910">As apps listadas abaixo também podem processar links de protocolo. Outras apps pedirão autorização.</translation>
 <translation id="7228056665272655255">Para configurar a impressão digital, peça à criança para tocar no sensor de impressões digitais no canto superior direito do teclado. Os dados de impressões digitais da criança são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Bloqueio de ecrã e início de sessão</translation>
@@ -8592,6 +8591,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7258192266780953209">Transformações</translation>
 <translation id="7258225044283673131">A aplicação não está a responder. Selecione "Forçar fecho" para fechar a aplicação.</translation>
 <translation id="7260186537988033909">A inscrição de dispositivo no modo quiosque e sinalização está concluída</translation>
+<translation id="7261217796641151584">Partilhar grupo</translation>
 <translation id="7261612856573623172">Voz da conversão de texto em voz do sistema</translation>
 <translation id="7262004276116528033">Este serviço de início de sessão é alojado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Usar sempre a app <ph name="APP" /> para abrir links da Web suportados?</translation>
@@ -9640,6 +9640,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8008356846765065031">A Internet está desligada. Verifique a ligação à Internet.</translation>
 <translation id="8008704580256716350">Ficheiro suspeito bloqueado</translation>
 <translation id="8009225694047762179">Gerir palavras-passe</translation>
+<translation id="8010081455002666927">Detetar automaticamente</translation>
 <translation id="8011372169388649948">"<ph name="BOOKMARK_TITLE" />" movido.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Detalhes da zona Wi-Fi instantânea</translation>
@@ -10529,6 +10530,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8656888282555543604">Ativar o registo de braille</translation>
 <translation id="8657393004602556571">Quer rejeitar o feedback?</translation>
 <translation id="8657542881463614516">Use um gesto de deslizar rapidamente para navegar entre páginas</translation>
+<translation id="865936634714975126">Adicione um parâmetro de consulta ao URL para selecionar tipos no carregamento de página. Exemplo: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Contactos da funcionalidade <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Janela movida para baixo</translation>
 <translation id="8661290697478713397">Abrir Link numa Janela de Nave&amp;gação Anónima</translation>
@@ -11042,6 +11044,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9009707268312089299">Importados do Windows</translation>
 <translation id="9009708085379296446">Pretendia alterar esta página?</translation>
 <translation id="9010845741772269259">Adicionar métodos de pagamento</translation>
+<translation id="901087299639956505">Modo equilibrado</translation>
 <translation id="9011163749350026987">Mostrar o ícone sempre</translation>
 <translation id="9011262023858991985">A transmitir este separador</translation>
 <translation id="9011393886518328654">Notas de lançamento</translation>
@@ -11303,7 +11306,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9187967020623675250">As teclas não correspondem. Prima qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="9191638749941292185">Envia legendas para a Google para as traduzir automaticamente</translation>
 <translation id="9192019773545828776">Obtenha feedback de voz para poder usar o dispositivo sem olhar para o ecrã. O feedback em braille está disponível com um dispositivo ligado. Use Ctrl + Alt + Z para ativar e desativar o ChromeVox. Use Pesquisa + seta para a esquerda ou seta para a direita para navegar. Use Pesquisa + barra de espaço para selecionar (ativar).</translation>
-<translation id="919686179725692564">Saiba mais acerca de como fazer uma cópia de segurança das suas apps</translation>
+<translation id="919686179725692564">Saiba como fazer uma cópia de segurança das suas apps</translation>
 <translation id="9199503643457729322">Clique para sair do Guia de privacidade.</translation>
 <translation id="9199695835892108985">Repor todas as autorizações das portas de série?</translation>
 <translation id="9199853905755292769">Envie dados de utilização e diagnósticos. Agora, este dispositivo está a enviar automaticamente dados de diagnósticos, de utilização de apps e do dispositivo para a Google. Estes dados não vão ser usados para identificar a criança e vão ajudar a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudam as apps e os parceiros Google, como os programadores Android. Se a definição Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google. <ph name="BEGIN_LINK2" />Saiba mais sobre as métricas<ph name="BEGIN_LINK2_END" />Saiba mais<ph name="END_LINK2" /></translation>

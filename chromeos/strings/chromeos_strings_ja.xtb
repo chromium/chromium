@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">コントロール</translation>
 <translation id="2652403576514495859">音声入力の有効化または切り替え</translation>
 <translation id="2653659639078652383">送信</translation>
-<translation id="2653807227758181366">作成したい壁紙の説明を入力するか、サンプル プロンプトを使用してください</translation>
 <translation id="2654647726140493436">更新中は、<ph name="DEVICE_TYPE" /> をオフにしたり、<ph name="DEVICE_TYPE" /> の電源ケーブルを取り外したりしないでください</translation>
 <translation id="2656001153562991489">Chromebook Plus 限定</translation>
 <translation id="2665671725390405060">発音を聴く</translation>
@@ -1366,6 +1365,7 @@
 <translation id="8208861521865154048">特典</translation>
 <translation id="8226628635270268143">お気に入りの写真やアルバムを選択してください</translation>
 <translation id="8227119283605456246">添付ファイル</translation>
+<translation id="8227488649450500937">次のプロンプトを試すか、<ph name="BEGIN_LINK_PROMPTING_GUIDE" />プロンプト ガイド<ph name="END_LINK_PROMPTING_GUIDE" />をご覧ください</translation>
 <translation id="8230672074305416752">デフォルトのネットワーク ゲートウェイに向けた ping が失敗しました</translation>
 <translation id="8238771987802558562">APN を選択</translation>
 <translation id="8246209727385807362">不明な携帯通信会社</translation>

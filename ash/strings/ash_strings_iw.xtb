@@ -405,6 +405,7 @@
 <translation id="2486214324139475545">תצוגה מקדימה של <ph name="DESK_NAME" />. שולחן העבודה הווירטואלי פעיל.</translation>
 <translation id="2486405091093637109">‏‫<ph name="DISPLAY_NAME" /> השתנה לרזולוציה של <ph name="RESOLUTION" /> (‎<ph name="REFRESH_RATE" /> Hz). בלי אישור, ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">הצטרפות</translation>
+<translation id="2496180316473517155">היסטוריית גלישה</translation>
 <translation id="2499445554382787206">תפריט הפרופיל של שולחן העבודה הווירטואלי. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">מקשים דביקים</translation>
 <translation id="2504454902900101003">ביטול ההגדרה של הצגת התמונות, המדיה וההתראות שבטלפון מהזמן האחרון</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">נדרשת כניסה אונליין</translation>
 <translation id="2612072250312279703">מעקב אחר הפעילות</translation>
 <translation id="2612614436418177118">העברה של סמל אפליקציה בתצוגת האפליקציות</translation>
+<translation id="2619052155095999743">הוסף</translation>
 <translation id="2619326010008283367">שלב <ph name="STEP" /> מתוך <ph name="TOTAL_STEPS" /> בסיור. אפשר למצוא את הגדרות המכשיר במרכז האפליקציות. כדאי לנסות להתאים אישית את <ph name="PRODUCT_NAME" /> בהגדרות, למשל להחליף את הטפט או להגדיר שומר מסך.</translation>
 <translation id="2620016719323068571">חיפוש ב<ph name="CATEGORY" />, בקבצים, באפליקציות ועוד…</translation>
 <translation id="2620436844016719705">מערכת</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">‏הצטרפות לרשתות Wi-Fi אחרות</translation>
 <translation id="2705001408393684014">החלפת מצב המיקרופון. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">למעלה</translation>
+<translation id="271033894570825754">חדש</translation>
 <translation id="2710984741481549981">נעילת החלונות</translation>
 <translation id="2718395828230677721">תאורת לילה</translation>
 <translation id="2726420622004325180">כדי לספק נקודה לשיתוף אינטרנט, נדרשת חבילת גלישה בטלפון</translation>
@@ -1086,6 +1089,7 @@
 <translation id="4890408602550914571">‏יש לוודא שהטלפון נמצא בקרבת מקום ושה-Bluetooth מופעל.</translation>
 <translation id="4892981359753171125">שליטה באמצעות תנועות הפנים</translation>
 <translation id="4895488851634969361">הסוללה טעונה במלואה.</translation>
+<translation id="4902797682482387055">הצעה למשימה שכדאי להתמקד בה</translation>
 <translation id="490375751687810070">אנכי</translation>
 <translation id="490788395437447240">%<ph name="BATTERY_PERCENTAGE" /> סוללה</translation>
 <translation id="491504982845934899">הפעלת <ph name="NETWORK_NAME" /> לאחר הגדרת המכשיר</translation>
@@ -1096,6 +1100,7 @@
 <translation id="492453977506755176">מקש של מצב צילום</translation>
 <translation id="4925542575807923399">מנהל המערכת עבור החשבון הזה דורש שהחשבון הזה יהיה הראשון שיבצעו עבורו כניסה בעת כניסה עם מספר חשבונות</translation>
 <translation id="493076006037866439">הקטנת התצוגה במסך</translation>
+<translation id="4932733599132424254">תאריך</translation>
 <translation id="4936329710968938986">כולם, במצב כבוי</translation>
 <translation id="4937170330762390348">עם הכתבה, אפשר להקליד באמצעות הקול. מקישים על מקש ההכתבה או בוחרים בסמל המיקרופון שבתחתית המסך כשנמצאים בשדה טקסט. שפת ההכתבה שהוגדרה היא <ph name="LANGUAGE" />. תתבצע הורדה של קובצי דיבור כדי להשתמש בהכתבה במצב אופליין. אפשר לשנות את שפת ההכתבה בכל שלב בהגדרות &gt; נגישות.</translation>
 <translation id="4938176435186993759">הסתרה של כל ההצעות</translation>
@@ -1104,6 +1109,7 @@
 <translation id="495046168593986294">גלילה למעלה</translation>
 <translation id="4950800194215951939">התאמה אישית של חוויית הגיימינג</translation>
 <translation id="4952936045814352993">איתור הטלפון לא זמין כשצלילי ההתראות מושבתים</translation>
+<translation id="4953585991029886728">עריכת הטקסט</translation>
 <translation id="4960324571663582548">בהתאם לבקשה של <ph name="MANAGER" />, עליך להחזיר את ה-<ph name="DEVICE_TYPE" /> לגרסה קודמת. המכשיר יעבור איפוס וכל הנתונים שבו יימחקו.</translation>
 <translation id="4961318399572185831">‏הפעלת Cast של התוכן שמוצג במסך</translation>
 <translation id="4964188651935955085">‏אם משביתים את Bluetooth, המכשיר החיצוני הבא יתנתק מ-<ph name="DEVICE_TYPE" />:</translation>
@@ -1363,6 +1369,7 @@
 <translation id="5819918159912280082">‏ה-Chromebook הופעל מחדש באופן בלתי צפוי. רוצה לפתוח את האפליקציות והחלונות הקודמים?</translation>
 <translation id="5823239091726045201">‏Google Tasks באינטרנט</translation>
 <translation id="5825969630400862129">הגדרות של מכשירים מחוברים</translation>
+<translation id="5830180081891717894">עוד <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">הפסקת <ph name="ROUTE_TITLE" /> במכשיר <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">מעבר לטראק הבא</translation>
 <translation id="5842553299352339114">‏הנקודה לשיתוף אינטרנט (Hotspot) של <ph name="DEVICE_NAME" /> פועלת, אין מכשירים מחוברים</translation>
@@ -1424,6 +1431,7 @@
 <translation id="6032620807120418574">יש ללחוץ על מקום כלשהו במסך כדי להקליט את המסך המלא.</translation>
 <translation id="6040071906258664830">הקלטת המיקרופון <ph name="STATE" /></translation>
 <translation id="6040143037577758943">סגירה</translation>
+<translation id="6042308850641462728">עוד</translation>
 <translation id="6043212731627905357">אין כימיה בין הצג הזה למכשיר ה-<ph name="DEVICE_TYPE" /> שלך (המכשיר לא תומך בצג).</translation>
 <translation id="6043994281159824495">יציאה עכשיו</translation>
 <translation id="6045629311476491587">בשימוש על ידי <ph name="APP_COUNT" /> אפליקציות</translation>
@@ -1892,6 +1900,7 @@
 <translation id="7748275671948949022">הדגשת הלחצן של מרכז האפליקציות במדף</translation>
 <translation id="7749443890790263709">הגעת למספר המקסימלי של שולחנות עבודה.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">הצגת הכול</translation>
 <translation id="7759183637555564029">אפשר להשבית את התכונות 'עזרה בכתיבה' ו'עזרה בקריאה' בכל שלב בהגדרות. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">הקראה</translation>
 <translation id="7769299611924763557">‏קובץ ה-GIF יהיה מוכן בקרוב</translation>
@@ -2025,6 +2034,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ההגדרה הזו מנוהלת על-ידי מנהל המערכת שלך.</translation>
 <translation id="8155628902202578800">פתיחת תיבת דו-שיח עם מידע על <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">המיקום הנוכחי הוא<ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">תוכן</translation>
 <translation id="8185090165691050712">הפעלה/השבתה של התפריט לשינוי הגודל במצב הנעילה</translation>
 <translation id="8192727139462702395">‏אם משביתים את Bluetooth, המכשירים החיצוניים הבאים יתנתקו מ-<ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">העברת הכרטיסייה</translation>
@@ -2072,6 +2082,7 @@
 <translation id="8375916635258623388">מכשיר <ph name="DEVICE_NAME" /> זה והטלפון יחוברו באופן אוטומטי</translation>
 <translation id="8380784334203145311">לילה טוב,</translation>
 <translation id="8382715499079447151">הגנה על תצוגה</translation>
+<translation id="8383614331548401927">איפה היינו?</translation>
 <translation id="8388750414311082622">לא ניתן להסיר את שולחן העבודה האחרון.</translation>
 <translation id="8394567579869570560">הורה נעל את המכשיר הזה</translation>
 <translation id="8401850874595457088">התפריט להזנת שפה</translation>

@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">橘色</translation>
 <translation id="125153950246128346">輕觸即可查看另一個分頁</translation>
 <translation id="1273910660700874265">「<ph name="TITLE_OF_GROUP" />」分頁群組選項</translation>
+<translation id="1340839264183302272">退出群組</translation>
 <translation id="1419023007528516122">這麼做會將群組從裝置中永久刪除</translation>
 <translation id="1486715732399361704">你可以在這裡找到所有分頁群組</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分鐘前建立}other{<ph name="NUM_MINS_MANY" /> 分鐘前建立}}</translation>
@@ -122,6 +123,7 @@
 <translation id="6557858706263317126">還有 <ph name="HIDDEN_TABS_COUNT" /> 個</translation>
 <translation id="6562820390860419811">將分頁向左移</translation>
 <translation id="6615455863669487791">顯示</translation>
+<translation id="6694634756612002311">管理共用設定</translation>
 <translation id="6744956528665271406">編輯群組顏色</translation>
 <translation id="6856809498882026482">隱藏多選模式</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{分享分頁}other{分享分頁}}</translation>
@@ -174,6 +176,7 @@
 <translation id="8926389886865778422">不再詢問這個問題</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁的分頁群組。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組。}}</translation>
 <translation id="9090098097337832354">這間店的資訊已關閉</translation>
+<translation id="9111228330448174435">建立新分頁群組時顯示對話方塊</translation>
 <translation id="9150694013019234766">在靠近畫面底部的分頁群組中切換分頁</translation>
 <translation id="9169594135889675189">在群組中新增分頁</translation>
 <translation id="9216898458513705996">這些分頁會在這部裝置上保持開啟，但該群組會從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除</translation>

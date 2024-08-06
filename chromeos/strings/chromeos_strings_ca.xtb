@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Controls</translation>
 <translation id="2652403576514495859">activa o commuta el dictat</translation>
 <translation id="2653659639078652383">Envia</translation>
-<translation id="2653807227758181366">Descriu el fons de pantalla que vols crear o utilitza una indicació de mostra</translation>
 <translation id="2654647726140493436">No apaguis el <ph name="DEVICE_TYPE" /> ni desconnectis el cable d'alimentació del <ph name="DEVICE_TYPE" /> mentre l'actualització està en curs</translation>
 <translation id="2656001153562991489">Exclusiu per a Chromebook Plus</translation>
 <translation id="2665671725390405060">Escolta la pronunciació</translation>
@@ -1366,6 +1365,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8208861521865154048">Avantatges</translation>
 <translation id="8226628635270268143">Tria les teves fotos i els teus àlbums preferits</translation>
 <translation id="8227119283605456246">Adjunta un fitxer</translation>
+<translation id="8227488649450500937">Prova una d'aquestes indicacions o consulta la <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guia d'indicacions<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">No s'ha pogut fer ping a la passarel·la de xarxa predeterminada</translation>
 <translation id="8238771987802558562">Tria un APN</translation>
 <translation id="8246209727385807362">Operador de telefonia mòbil desconegut</translation>

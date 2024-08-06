@@ -340,7 +340,6 @@
 <translation id="2645380101799517405">Kontrole</translation>
 <translation id="2652403576514495859">omogućite ili uključite/isključite diktiranje</translation>
 <translation id="2653659639078652383">Pošalji</translation>
-<translation id="2653807227758181366">Opišite pozadinu koju želite da napravite ili koristite primer upita</translation>
 <translation id="2654647726140493436">Ne isključujte uređaj <ph name="DEVICE_TYPE" /> i ne isključujte kabl za napajanje koji <ph name="DEVICE_TYPE" /> koristi dok je ažuriranje u toku</translation>
 <translation id="2656001153562991489">Ekskluzivno za Chromebook Plus</translation>
 <translation id="2665671725390405060">Slušajte izgovor</translation>
@@ -1380,7 +1379,6 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8262870577632766028">1 sat</translation>
 <translation id="827422111966801947">Tamnoplava</translation>
-<translation id="8280224923876749648">Govornik <ph name="SPEAKER_ID" /></translation>
 <translation id="8281886186245836920">Preskoči</translation>
 <translation id="8286154143153872371">Povežite se na mrežu i ponovo učitajte stranicu da biste videli pozadinu.</translation>
 <translation id="8291967909914612644">Zemlja dobavljača za Home</translation>

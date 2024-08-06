@@ -185,7 +185,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1125550662859510761">A resolución parece de <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1125921926864945797">Fondo de pantalla e estilo</translation>
-<translation id="1126809382673880764">Non te protexe contra sitios web, descargas e extensións perigosos. Continuarás dispoñendo da protección da función Navegación segura, sempre que estea dispoñible, noutros servizos de Google (como Gmail e a Busca).</translation>
 <translation id="1128090040635299943">Estase configurando Linux. Este proceso tardará uns minutos.</translation>
 <translation id="1128591060186966949">Editar motor de busca</translation>
 <translation id="1129348283834595293">Ciberpunk</translation>
@@ -629,7 +628,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1461041542809785877">Rendemento</translation>
 <translation id="1461177659295855031">Mover ao cartafol da barra de marcadores</translation>
 <translation id="1461288887896722288">Acabas de iniciar sesión nunha conta xestionada. Se creas un perfil xestionado, poderás acceder a algúns recursos vinculados a ela.</translation>
-<translation id="1461868306585780092">Mostrar unha advertencia antes de usar conexións pouco seguras</translation>
 <translation id="146219525117638703">Estado de ONC</translation>
 <translation id="146220085323579959">Desconectouse Internet. Comproba a túa conexión a Internet e téntao de novo.</translation>
 <translation id="1462480037563370607">Engadir sitios manualmente</translation>
@@ -4170,7 +4168,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3959747296451923142">Confirmar a eliminación da subscrición</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Máis accións para <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962119236270174787">Protección estándar contra os sitios web, as descargas e as extensións que se consideren perigosos</translation>
 <translation id="3963753386716096475">Usar outro teléfono, tableta ou chave de seguranza</translation>
 <translation id="3964480518399667971">Desactivar rede móbil</translation>
 <translation id="3965965397408324205">Saír de <ph name="PROFILE_NAME" /></translation>
@@ -5512,7 +5509,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4967571733817147990">Personalizar os botóns do rato</translation>
 <translation id="4967852842111017386">Nome do dispositivo de <ph name="FEATURE_NAME" /></translation>
 <translation id="4971412780836297815">Abrir ao finalizar a descarga</translation>
-<translation id="4971735654804503942">Unha protección máis rápida e proactiva contra sitios web, descargas e extensións perigosos. Móstrache unha advertencia en caso de violacións da seguranza do contrasinal. Para utilizar este modo débenselle enviar a Google os datos de navegación.</translation>
 <translation id="4972129977812092092">Editar impresora</translation>
 <translation id="4972164225939028131">O contrasinal é incorrecto</translation>
 <translation id="4972737347717125191">Os sitios poden pedirche permiso para usar datos e dispositivos de realidade virtual</translation>
@@ -7001,6 +6997,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6075075631258766703">Verificar teléfono</translation>
 <translation id="6075731018162044558">O sistema non puido lograr un token de acceso á API de longo prazo para este dispositivo.</translation>
 <translation id="6075907793831890935">Intercambiar datos co dispositivo denominado <ph name="HOSTNAME" /></translation>
+<translation id="6076092653254552547">Configuración do sistema</translation>
 <translation id="6076491747490570887">Gris frío</translation>
 <translation id="6076576896267434196">A extensión <ph name="EXTENSION_NAME" /> quere acceder á túa conta</translation>
 <translation id="6077131872140550515">Quitar das redes preferidas</translation>
@@ -8241,7 +8238,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6992554835374084304">Activar corrector ortográfico mellorado</translation>
 <translation id="6993000214273684335">A pestana quitouse do grupo sen nome (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="6993050154661569036">Actualizando navegador Chrome</translation>
-<translation id="6995899638241819463">Avisarte se os teus contrasinais están en risco debido a unha violación da seguranza dos datos</translation>
 <translation id="6995984090981858039">Ler datos e información dos dispositivos con ChromeOS</translation>
 <translation id="6996245928508281884">Activa o Bluetooth e a wifi do teu teléfono</translation>
 <translation id="6996438701394974959">Aumentar o tamaño do texto e da pantalla</translation>
@@ -9378,6 +9374,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7826254698725248775">Identificador de dispositivos en conflito.</translation>
 <translation id="7828642077514646543">Produciuse un erro: non se puido descodificar o certificado</translation>
 <translation id="7829877209233347340">Pídelle a teu pai ou a túa nai que inicie sesión e che dea permiso para engadir unha conta de centro educativo</translation>
+<translation id="7830276128493844263">A localización está desactivada na configuración do sistema</translation>
 <translation id="7830833461614351956">Queres copiar <ph name="NUM_OF_FILES" /> ficheiros en <ph name="CLOUD_PROVIDER" /> para abrilos?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">As palabras personalizadas gardadas aparecerán aquí</translation>

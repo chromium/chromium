@@ -185,7 +185,6 @@
 <translation id="1124772482545689468">用户</translation>
 <translation id="1125550662859510761">有效分辨率：<ph name="WIDTH" /> x <ph name="HEIGHT" />（原生）</translation>
 <translation id="1125921926864945797">壁纸和风格</translation>
-<translation id="1126809382673880764">不会保护您免受危险网站、下载内容和扩展程序的侵害。在 Gmail 和 Google 搜索等其他 Google 服务中，若安全浏览保护可用，您仍将获得该保护。</translation>
 <translation id="1128090040635299943">目前正在配置 Linux。整个配置流程将需要几分钟的时间。</translation>
 <translation id="1128591060186966949">修改搜索引擎</translation>
 <translation id="1129348283834595293">赛博朋克</translation>
@@ -627,7 +626,6 @@
 <translation id="1461041542809785877">性能</translation>
 <translation id="1461177659295855031">移至“书签栏”文件夹</translation>
 <translation id="1461288887896722288">您刚刚登录了一个受管理的账号，不过您可通过创建一份新的受管理个人资料来访问与该账号关联的部分资源。</translation>
-<translation id="1461868306585780092">在使用不安全的连接前发出警告</translation>
 <translation id="146219525117638703">ONC 状态</translation>
 <translation id="146220085323579959">互联网连接已断开。请检查您的互联网连接并重试。</translation>
 <translation id="1462480037563370607">手动添加网站</translation>
@@ -4157,7 +4155,6 @@
 <translation id="3959747296451923142">确认移除订阅</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">可对“<ph name="IBAN_DESCRIPTION" />”执行的更多操作</translation>
-<translation id="3962119236270174787">针对已知危险网站、下载内容和扩展程序提供标准保护</translation>
 <translation id="3963753386716096475">换个手机、平板电脑或安全密钥</translation>
 <translation id="3964480518399667971">关闭移动网络</translation>
 <translation id="3965965397408324205">退出<ph name="PROFILE_NAME" /></translation>
@@ -5498,7 +5495,6 @@
 <translation id="4967571733817147990">自定义鼠标按键</translation>
 <translation id="4967852842111017386">“<ph name="FEATURE_NAME" />”功能的设备名称</translation>
 <translation id="4971412780836297815">完成后打开</translation>
-<translation id="4971735654804503942">为您提供更快速主动的保护措施，免受危险网站、下载内容或扩展程序的威胁。系统会在密码遭泄露时向您发出警告。您需要向 Google 发送浏览数据。</translation>
 <translation id="4972129977812092092">修改打印机</translation>
 <translation id="4972164225939028131">密码错误</translation>
 <translation id="4972737347717125191">网站可以请求使用虚拟现实设备和数据</translation>
@@ -6125,6 +6121,7 @@
 <translation id="5435779377906857208">始终允许 <ph name="HOST" /> 使用您的位置信息</translation>
 <translation id="5436492226391861498">正在等待代理隧道的响应...</translation>
 <translation id="5436510242972373446">用 <ph name="SITE_NAME" /> 搜索：</translation>
+<translation id="5438014818441491616">现在，<ph name="WINDOW_SIDE" />窗口占 <ph name="WINDOW_SIZE_PERCENT" /> 宽度，<ph name="PANE_SIDE" />窗格占 <ph name="PANE_SIZE_PERCENT" /> 宽度。</translation>
 <translation id="5440425659852470030">关闭侧边栏</translation>
 <translation id="544083962418256601">创建快捷方式...</translation>
 <translation id="5441133529460183413">从 Chrome 浏览器安装的 Web 应用</translation>
@@ -8227,7 +8224,6 @@
 <translation id="6992554835374084304">开启增强的“拼写检查”功能</translation>
 <translation id="6993000214273684335">此标签页已从未命名的组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">正在更新 Chrome 浏览器</translation>
-<translation id="6995899638241819463">若密码遭遇了数据泄露，发出警告</translation>
 <translation id="6995984090981858039">读取 ChromeOS 设备的相关信息和数据</translation>
 <translation id="6996245928508281884">开启您手机的蓝牙和 WLAN</translation>
 <translation id="6996438701394974959">放大显示大小和文字大小</translation>
@@ -8526,6 +8522,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" /> 的群组中有 1 个网站}other{<ph name="FPS_OWNER" /> 的群组中有 {MEMBERS} 个网站}}</translation>
 <translation id="7225082563376899794">填充密码时使用 Windows Hello</translation>
 <translation id="7225179976675429563">缺少网络类型</translation>
+<translation id="7227235818314667565">管理分享设置</translation>
 <translation id="7227458944009118910">下列应用也能处理协议链接。其他应用会请求授权。</translation>
 <translation id="7228056665272655255">若要设置指纹，请让您的孩子轻触键盘右上角的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="7228523857728654909">屏幕锁定和登录</translation>
@@ -8574,6 +8571,7 @@
 <translation id="7258192266780953209">转换</translation>
 <translation id="7258225044283673131">此应用无响应。请选择“强制关闭”以关闭此应用。</translation>
 <translation id="7260186537988033909">自助服务终端和数字标牌设备注册已完成</translation>
+<translation id="7261217796641151584">分享分组</translation>
 <translation id="7261612856573623172">系统默认文字转语音声音</translation>
 <translation id="7262004276116528033">此登录服务由 <ph name="SAML_DOMAIN" /> 托管</translation>
 <translation id="7264695323040866038">始终使用<ph name="APP" />应用打开受支持的网站链接？</translation>
@@ -10511,6 +10509,7 @@
 <translation id="8656888282555543604">启用盲文记录功能</translation>
 <translation id="8657393004602556571">您想舍弃反馈吗？</translation>
 <translation id="8657542881463614516">使用滑动手势浏览各个页面</translation>
+<translation id="865936634714975126">在网址中添加查询参数，以便选择网页加载类型。示例：chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">“<ph name="FEATURE_NAME" />”功能联系人</translation>
 <translation id="8659609431223166673">窗口已向下移动</translation>
 <translation id="8661290697478713397">在隐身窗口中打开链接(&amp;G)</translation>
@@ -11012,6 +11011,7 @@
 <translation id="8999560016882908256">区段语法错误：<ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">减少界面中的动画效果</translation>
 <translation id="9000185763019430629">轻触 <ph name="DEVICE_TYPE" /> 右侧的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
+<translation id="9003031149571024583">请输入 PIN 码的第 <ph name="NUM_DIGIT" /> 位，共 6 位。可以使用退格键或 Delete 键移除最后一个数字。</translation>
 <translation id="9003185744423389627">未能成功连接到设备管理服务器，状态为“<ph name="STATUS_TEXT" />”，失败时间为 <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">自动扫描查找可用的 eSIM 卡配置文件？</translation>
 <translation id="9003647077635673607">允许在所有网站上运行脚本</translation>

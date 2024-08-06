@@ -405,6 +405,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> алдын ала көрүү. Жигердүү иш такта.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Герц) дааналыгына өзгөрдү. Ырасталбаса, мурунку параметрлер <ph name="TIMEOUT_SECONDS" /> кийин калыбына келтирилет.</translation>
 <translation id="2487915095798731898">Кошулуу</translation>
+<translation id="2496180316473517155">Серептөө таржымалы</translation>
 <translation id="2499445554382787206">Иш тактанын профиль менюсу. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Жабышчаак баскычтар функциясы</translation>
 <translation id="2504454902900101003">Телефонуңуздагы соңку сүрөттөрдү, медиа файлдарды жана билдирмелерди көрүү параметрин жабуу</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">Онлайн аккаунтка кирүү талап кылынат</translation>
 <translation id="2612072250312279703">аракеттерге көз салуу</translation>
 <translation id="2612614436418177118">Колдонмонун сүрөтчөсүн колдонмонун торчосунда жылдыруу</translation>
+<translation id="2619052155095999743">Кыстаруу</translation>
 <translation id="2619326010008283367"><ph name="TOTAL_STEPS" /> кадамдын ичинен <ph name="STEP" />-кадам. Түзмөгүңүздүн параметрлерин Жүргүзгүчтөн таба аласыз. Параметрлерден тушкагазыңызды өзгөртүү же көшөгөнү тууралоо сыяктуу аракеттерди аткарып, <ph name="PRODUCT_NAME" /> түзмөгүңүздү ыңгайлаштырыңыз.</translation>
 <translation id="2620016719323068571">Төмөнкү категорияларда издөө: <ph name="CATEGORY" />, файлдар, колдонмолор жана башкалар...</translation>
 <translation id="2620436844016719705">Система</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">Башка Wi-Fi тармактарына кошулуу</translation>
 <translation id="2705001408393684014">Микрофонду өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Өйдө</translation>
+<translation id="271033894570825754">Жаңы</translation>
 <translation id="2710984741481549981">Терезелерди кулпулоо</translation>
 <translation id="2718395828230677721">Түнкү режим</translation>
 <translation id="2726420622004325180">Байланыш түйүнү катары колдонуу үчүн телефонуңузда мобилдик Интернет болушу керек.</translation>
@@ -1086,6 +1089,7 @@
 <translation id="4890408602550914571">Телефонуңуз жакын жерде турганын жана анда Bluetooth күйгүзүлгөнүн текшериңиз.</translation>
 <translation id="4892981359753171125">Жүз көзөмөлдөөсү</translation>
 <translation id="4895488851634969361">Батарея толду.</translation>
+<translation id="4902797682482387055">Ынтаа коюу үчүн сунушталган тапшырма</translation>
 <translation id="490375751687810070">Тигинен</translation>
 <translation id="490788395437447240">Батарея <ph name="BATTERY_PERCENTAGE" />% кубатталган</translation>
 <translation id="491504982845934899">Түзмөк тууралангандан кийин <ph name="NETWORK_NAME" /> иштетилсин</translation>
@@ -1096,6 +1100,7 @@
 <translation id="492453977506755176">Сүрөткө тартып алуу режиминин баскычы</translation>
 <translation id="4925542575807923399">Бул аккаунтунун администратору анын бир нече профиль сеансындагы аккаунтка биринчи кирген каттоо эсеби болушун талап кылат.</translation>
 <translation id="493076006037866439">Экранды алыстатуу</translation>
+<translation id="4932733599132424254">Күнү</translation>
 <translation id="4936329710968938986">Баары, өчүк</translation>
 <translation id="4937170330762390348">Текстти айтып тере аласыз. Текст жазылуучу жерге өтүп, текстти айтып терүү баскычын же экрандын ылдый жагындагы микрофон сүрөтчөсүн басыңыз. Текстти айтып терүү тили: <ph name="LANGUAGE" />. Офлайн режиминде айтып терүү үчүн кеп файлдары жүктөлүп алынат. Текстти айтып терүү тилин Параметрлер &gt; Атайын мүмкүнчүлүктөр бөлүмүнөн каалаган убакта өзгөртө аласыз.</translation>
 <translation id="4938176435186993759">Бардык сунуштарды жашыруу</translation>
@@ -1104,6 +1109,7 @@
 <translation id="495046168593986294">Өйдө сыдыруу</translation>
 <translation id="4950800194215951939">Оюн тажрыйбаңызды ыңгайлаштырыңыз</translation>
 <translation id="4952936045814352993">Эскертүүлөрдүн үнү басылганда телефондун жайгашкан жерин аныктоо мүмкүн эмес</translation>
+<translation id="4953585991029886728">Текстти түзөтүү</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> түзмөгүңүздү мурунку версияга кайтарууну талап кылууда. Түзмөгүңүз баштапкы абалга келтирилип, бардык дайын-даректер өчүрүлөт.</translation>
 <translation id="4961318399572185831">Экранды тышкы экранга чыгаруу</translation>
 <translation id="4964188651935955085">Bluetooth'ду өчүрсөңүз, бул тышкы түзмөк <ph name="DEVICE_TYPE" /> ажыратылат:</translation>
@@ -1363,6 +1369,7 @@
 <translation id="5819918159912280082">Chromebook түзмөгүңүзү күтүлбөгөн жерден өчүрүлүп күйгүзүлдү. Мурунку терезелериңизди жана колдонмолоруңузду ачыңыз.</translation>
 <translation id="5823239091726045201">Интернетте Google Tasks</translation>
 <translation id="5825969630400862129">Туташтырылган түзмөктөрдүн параметрлери</translation>
+<translation id="5830180081891717894">Дагы <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> бөлмөсүндөгү <ph name="ROUTE_TITLE" /> токтотулсун</translation>
 <translation id="5841296711770970362">Кийинки композицияга өтүү</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> байланыш түйүнү күйүк, бир да түзмөк туташкан жок</translation>
@@ -1424,6 +1431,7 @@
 <translation id="6032620807120418574">Толук экранды жаздыруу үчүн каалаган жерин басыңыз</translation>
 <translation id="6040071906258664830">Аудиону жаздыруу <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Жабуу</translation>
+<translation id="6042308850641462728">Дагы</translation>
 <translation id="6043212731627905357">Бул монитор <ph name="DEVICE_TYPE" /> түзмөгүңүз менен иштебей жатат (монитор колдоого алынбайт).</translation>
 <translation id="6043994281159824495">Азыр чыгуу</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> колдонмо пайдаланды</translation>
@@ -1890,6 +1898,7 @@
 <translation id="7748275671948949022">Текчедеги Жүргүзгүч баскычын бөлүп көрсөтүү</translation>
 <translation id="7749443890790263709">Иш такталардын саны эң жогорку чегине жетти.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Баарын көрсөтүү</translation>
 <translation id="7759183637555564029">Текст жазгыч жана Окуганга жардам бер функцияларын Параметрлерден каалаган убакта өчүрө аласыз. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Басып туруп угуу</translation>
 <translation id="7769299611924763557">GIF файлыңыз бир аздан кийин даяр болот</translation>
@@ -2023,6 +2032,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Бул параметрди администраторуңуз башкарат.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> үчүн маалымат диалогун ачуу</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> колдонулууда</translation>
+<translation id="8168435359814927499">Мазмун</translation>
 <translation id="8185090165691050712">Кулпулоо режиминин өлчөмүн өзгөртүү үчүн менюну өчүрүү/күйгүзүү</translation>
 <translation id="8192727139462702395">Bluetooth'ду өчүрсөңүз, бул тышкы түзмөктөр <ph name="DEVICE_TYPE" /> ажыратылат:</translation>
 <translation id="8198456017687137612">Өтмөктү тышкы экранга чыгаруу</translation>
@@ -2070,6 +2080,7 @@
 <translation id="8375916635258623388">Бул <ph name="DEVICE_NAME" /> түзмөгү телефонуңузга автоматтык түрдө туташат</translation>
 <translation id="8380784334203145311">Түнүңүз бейпил болсун,</translation>
 <translation id="8382715499079447151">Көрүүдөн коргоо</translation>
+<translation id="8383614331548401927">Уланталыбы?</translation>
 <translation id="8388750414311082622">Акыркы иш тактаны өчүрүүгө болбойт.</translation>
 <translation id="8394567579869570560">Ата-энеңиз бул түзмөктү кулпулап койду</translation>
 <translation id="8401850874595457088">Тил менюсун киргизиңиз</translation>

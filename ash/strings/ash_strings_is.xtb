@@ -405,6 +405,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2486214324139475545">Forskoðun <ph name="DESK_NAME" />. Virkt skrifborð.</translation>
 <translation id="2486405091093637109">„<ph name="DISPLAY_NAME" />“ var breytt í <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) upplausn. Án staðfestingar verða fyrri stillingar endurheimtar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Tengjast</translation>
+<translation id="2496180316473517155">Vafraferill</translation>
 <translation id="2499445554382787206">Valmynd skrifborðsprófíls. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Festilyklar</translation>
 <translation id="2504454902900101003">Hafna að setja upp skoðun nýlegra mynda, efnis og tilkynninga í símanum</translation>
@@ -436,6 +437,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2607678425161541573">Innskráningar á netinu er krafist</translation>
 <translation id="2612072250312279703">virknieftirlit</translation>
 <translation id="2612614436418177118">Færa forritatákn innan forritatöflu</translation>
+<translation id="2619052155095999743">Setja inn</translation>
 <translation id="2619326010008283367">Skref <ph name="STEP" /> af <ph name="TOTAL_STEPS" /> í kynningu. Þú finnur stillingar tækisins í ræsiforritinu. Prófaðu að sérsníða <ph name="PRODUCT_NAME" />-tækið þitt í stillingunum, t.d. að skipta um veggfóður eða stilla skjávara.</translation>
 <translation id="2620016719323068571">Leitaðu að <ph name="CATEGORY" />, skrám, forritum og fleira...</translation>
 <translation id="2620436844016719705">Kerfi</translation>
@@ -462,6 +464,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2704781753052663061">Tengjast við önnur Wi-Fi net</translation>
 <translation id="2705001408393684014">Kveikja/slökkva á hljóðnema. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Upp</translation>
+<translation id="271033894570825754">Nýtt</translation>
 <translation id="2710984741481549981">Læsa gluggum</translation>
 <translation id="2718395828230677721">Næturljós</translation>
 <translation id="2726420622004325180">Síminn verður að vera með farsímagögn til að útvega heitan reit</translation>
@@ -1086,6 +1089,7 @@ Eitt tæki er tengt.</translation>
 <translation id="4890408602550914571">Gakktu úr skugga um að síminn þinn sé nálægt og kveikt sé á Bluetooth.</translation>
 <translation id="4892981359753171125">Andlitsstýring</translation>
 <translation id="4895488851634969361">Rafhlaðan er fullhlaðin.</translation>
+<translation id="4902797682482387055">Tillaga að verkefni til að einbeita sér að</translation>
 <translation id="490375751687810070">Lóðrétt</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% rafhlaða</translation>
 <translation id="491504982845934899">Virkja eftir uppsetningu tækis: <ph name="NETWORK_NAME" /></translation>
@@ -1096,6 +1100,7 @@ Eitt tæki er tengt.</translation>
 <translation id="492453977506755176">myndatökulykill</translation>
 <translation id="4925542575807923399">Stjórnandi þessa reiknings krefst þess að reikningurinn sé fyrsti innskráði reikningurinn í lotu fyrir margar innskráningar.</translation>
 <translation id="493076006037866439">Minnka aðdrátt á skjá</translation>
+<translation id="4932733599132424254">Dagsetning</translation>
 <translation id="4936329710968938986">Öll, slökkt</translation>
 <translation id="4937170330762390348">Með raddinnslætti geturðu slegið inn texta með röddinni. Ýttu á raddinnsláttartakkann eða veldu hljóðnematáknið neðst á skjánum þegar þú ert í textareit. Raddinnsláttartungumálið þitt er stillt á: <ph name="LANGUAGE" />. Raddskrár verða sóttar svo þú getir notað raddinnslátt án nettengingar. Þú getur breytt tungumáli raddinnsláttar hvenær sem er í „Stillingar &gt; Aðgengi“.</translation>
 <translation id="4938176435186993759">Fela allar tillögur</translation>
@@ -1104,6 +1109,7 @@ Eitt tæki er tengt.</translation>
 <translation id="495046168593986294">Fletta upp</translation>
 <translation id="4950800194215951939">Sérsníddu leikjaupplifun þína</translation>
 <translation id="4952936045814352993">„Staðsetja síma“ er ekki í boði þegar slökkt er á vekjarahljóðum</translation>
+<translation id="4953585991029886728">Textareitur</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> krefst þess að þú niðurfærir útgáfu <ph name="DEVICE_TYPE" />. Tækið verður endurstillt og öllum gögnum verður eytt.</translation>
 <translation id="4961318399572185831">Senda út skjá</translation>
 <translation id="4964188651935955085">Þegar þú slekkur á Bluetooth aftengist þetta ytra tæki frá <ph name="DEVICE_TYPE" />:</translation>
@@ -1363,6 +1369,7 @@ Engin tæki eru tengd.</translation>
 <translation id="5819918159912280082">Chromebook-tölvan þín endurræsti sig óvænt. Opnaðu glugga og forrit sem voru opin.</translation>
 <translation id="5823239091726045201">Google-verkefni á vefnum</translation>
 <translation id="5825969630400862129">Stillingar tengdra tækja</translation>
+<translation id="5830180081891717894"><ph name="WINDOWS" /> í viðbót</translation>
 <translation id="5837036133683224804">Stöðva <ph name="ROUTE_TITLE" /> í <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Fara í næsta lag</translation>
 <translation id="5842553299352339114">Kveikt er á heitum reit í <ph name="DEVICE_NAME" />, engin tæki tengd</translation>
@@ -1424,6 +1431,7 @@ Engin tæki eru tengd.</translation>
 <translation id="6032620807120418574">Smelltu hvar sem er til að taka upp á öllum skjánum</translation>
 <translation id="6040071906258664830">Upptaka hljóðnema <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Loka</translation>
+<translation id="6042308850641462728">Meira</translation>
 <translation id="6043212731627905357">Þessum skjá lyndir ekki vel við <ph name="DEVICE_TYPE" /> (skjárinn er ekki studdur).</translation>
 <translation id="6043994281159824495">Skrá út núna</translation>
 <translation id="6045629311476491587">Notað af <ph name="APP_COUNT" /> forritum</translation>
@@ -1890,6 +1898,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7748275671948949022">Auðkenna ræsihnapp á hillu</translation>
 <translation id="7749443890790263709">Hámarksfjölda skjáborða náð.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Sýna allt</translation>
 <translation id="7759183637555564029">Þú getur slökkt á „Hjálpaðu mér að skrifa“ og „Hjálpaðu mér að lesa“ hvenær sem er í stillingunum. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Textaupplestur</translation>
 <translation id="7769299611924763557">GIF verður tilbúið innan skamms</translation>
@@ -2023,6 +2032,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Kerfisstjóri stjórnar þessari stillingu.</translation>
 <translation id="8155628902202578800">Opna upplýsingaglugga fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Notar <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Efni</translation>
 <translation id="8185090165691050712">Kveikja/slökkva á valmynd til að breyta stærð læsingarstillingar</translation>
 <translation id="8192727139462702395">Þegar þú slekkur á Bluetooth aftengjast þessi ytri tæki frá <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Útsendingarflipi</translation>
@@ -2070,6 +2080,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8375916635258623388">Þetta <ph name="DEVICE_NAME" /> og síminn þinn tengjast sjálfkrafa</translation>
 <translation id="8380784334203145311">Gott kvöld,</translation>
 <translation id="8382715499079447151">Gægjuvörn</translation>
+<translation id="8383614331548401927">Velkomin(n) aftur</translation>
 <translation id="8388750414311082622">Ekki er hægt að fjarlægja fyrra skjáborð.</translation>
 <translation id="8394567579869570560">Foreldri þitt læsti þessu tæki</translation>
 <translation id="8401850874595457088">Opna tungumálavalmynd</translation>

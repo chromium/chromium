@@ -35,6 +35,7 @@
 <translation id="1554731936187952550">Chrome 提供了最強大的安全防護機制，可避免你誤入有害網站</translation>
 <translation id="1615715390546812898">在 Chrome 中使用語音搜尋。</translation>
 <translation id="1657395063736185342">在 Chrome 中搜尋影像內容</translation>
+<translation id="1670609221633730681">Chrome 提示：選擇網址列位置</translation>
 <translation id="1675955119303651351">部分 Chrome 資料尚未儲存至你的 Google 帳戶。
         請稍待幾分鐘後再嘗試登出。如果現在登出，系統將刪除這類資料。</translation>
 <translation id="1682483655351012182">同步處理你的 Chrome 資料</translation>
@@ -113,12 +114,14 @@
 <translation id="3984746313391923992">貴機構要求你在 Chrome 保持登出狀態。</translation>
 <translation id="3988789688219830639">Google Chrome 無法存取您的相片或影片，請前往「iOS 設定」中的 [隱私權] &gt; [相片] 啟用存取權。</translation>
 <translation id="4064699917955374540">如要將 Chrome 的資料儲存到 Google 帳戶及使用這類資料，請驗證身分。</translation>
+<translation id="4066411101507716142">從 iPad 主畫面 Dock 更快存取 Chrome。</translation>
 <translation id="4067858366537947361">開啟 Chrome 無痕分頁</translation>
 <translation id="4093042601582616698">要將 Chrome 設為預設瀏覽器嗎？</translation>
 <translation id="417201473131094001">Chrome Canary 不支援這項功能</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4251174643044751591">使用 Chrome 開啟「付款方式設定」頁面。</translation>
 <translation id="4286914711740227883">刪除 Chrome 中的瀏覽資料</translation>
+<translation id="430839890088895017">Chrome 提示：將 Chrome 移至 Dock</translation>
 <translation id="4453284704333523777">管理 Chrome 設定</translation>
 <translation id="4523886039239821078">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式：</translation>
 <translation id="4633328489441962921">Chrome 無法檢查更新</translation>
@@ -236,6 +239,7 @@
 <translation id="7581063337314642333">開啟 Chrome 的分頁方格</translation>
 <translation id="7662994914830945754">登入帳戶並開啟同步功能後，不論從何處使用 Chrome 都能查看你的分頁</translation>
 <translation id="7669869107155339016">前往 Chrome 設定。</translation>
+<translation id="7683540977001394271">從 iPhone 主畫面 Dock 更快存取 Chrome。</translation>
 <translation id="769104993356536261">在 iOS 上使用 Chrome 快捷操作</translation>
 <translation id="7693590760643069321">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chrome 開啟。</translation>
 <translation id="7698568245838009292">Chrome 要求存取你的相機</translation>

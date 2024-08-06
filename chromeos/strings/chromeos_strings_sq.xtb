@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Kontrollet</translation>
 <translation id="2652403576514495859">aktivizo ose çaktivizo diktimin</translation>
 <translation id="2653659639078652383">Dërgoje</translation>
-<translation id="2653807227758181366">Përshkruaj imazhin e sfondit që dëshiron të krijosh ose përdor një shembull kërkese</translation>
 <translation id="2654647726140493436">Mos e fik pajisjen "<ph name="DEVICE_TYPE" />" dhe mos e hiq nga priza pajisjen "<ph name="DEVICE_TYPE" />" ndërkohë që përditësimi është në vazhdim</translation>
 <translation id="2656001153562991489">Ekskluzive për Chromebook Plus</translation>
 <translation id="2665671725390405060">Dëgjo shqiptimin</translation>
@@ -358,6 +357,7 @@
 <translation id="2780756493585863768">Sfonde të fundit të mundësuara nga IA-ja e Google</translation>
 <translation id="2783010256799387990">KALOI</translation>
 <translation id="2786429550992142861">lino</translation>
+<translation id="2787237339470862294">Kjo gjuhë nuk mbështetet në këtë moment</translation>
 <translation id="2787435249130282949">tastiera më e ndritshme</translation>
 <translation id="2805756323405976993">Aplikacionet</translation>
 <translation id="28232023175184696">S'mund të lidhet me internetin. Kliko për të provuar përsëri.</translation>
@@ -669,6 +669,7 @@
 <translation id="458794348635939462">Zgjidhja e të gjithë pritësve dështoi</translation>
 <translation id="4593212453765072419">Kërkohet vërtetimi i serverit përfaqësues</translation>
 <translation id="4594021849294327751">Krijo transkriptin</translation>
+<translation id="4607282946861182308">Nuk mund të krijohen imazhe të kësaj. Provo një kërkesë tjetër.</translation>
 <translation id="4609350030397390689">Ulja e ndriçimit të tastierës</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> nga <ph name="TOTAL_PAGE_NUMBER" />. Shtyp Enter për të anuluar printimin.</translation>
 <translation id="463791356324567266">Skanimi po anulohet...</translation>

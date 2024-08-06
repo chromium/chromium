@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">نارنجی</translation>
 <translation id="125153950246128346">دوسرا ٹیب دیکھنے کیلئے تھپتھپائیں</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ٹیب گروپ کے اختیارات</translation>
+<translation id="1340839264183302272">گروپ چھوڑیں</translation>
 <translation id="1419023007528516122">یہ آپ کے آلے سے گروپ کو مستقل طور پر حذف کر دے گا</translation>
 <translation id="1486715732399361704">آپ اپنے تمام ٹیب گروپس کو یہاں تلاش کر سکتے ہیں</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> منٹ پہلے تخلیق کیا گیا}other{<ph name="NUM_MINS_MANY" /> منٹ پہلے تخلیق کیا گیا}}</translation>
@@ -122,6 +123,7 @@
 <translation id="6557858706263317126"><ph name="HIDDEN_TABS_COUNT" />+</translation>
 <translation id="6562820390860419811">ٹیب کو بائیں منتقل کریں</translation>
 <translation id="6615455863669487791">مجھے دکھائیں</translation>
+<translation id="6694634756612002311">اشتراک کا نظم کریں</translation>
 <translation id="6744956528665271406">گروپ کے رنگ میں ترمیم کریں</translation>
 <translation id="6856809498882026482">متعدد انتخاب کی وضع کو چھپائیں</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ٹیب کا اشتراک کریں}other{ٹیبز کا اشتراک کریں}}</translation>
@@ -174,6 +176,7 @@
 <translation id="8926389886865778422">دوبارہ سوال نہ کریں</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{ٹیب گروپ کو <ph name="TABS_COUNT_ONE" /> ٹیب کے ساتھ پھیلائیں۔}other{ٹیب گروپ کو <ph name="TABS_COUNT_MANY" /> ٹیبز کے ساتھ پھیلائیں۔}}</translation>
 <translation id="9090098097337832354">اس اسٹور سے متعلق معلومات بند ہے</translation>
+<translation id="9111228330448174435">نئے ٹیب گروپ کی تخلیق پر ڈائیلاگ دکھائیں</translation>
 <translation id="9150694013019234766">اسکرین کے نچلے حصے کے قریب ٹیبز کے اپنے گروپ میں ٹیبز کے درمیان سوئچ کریں</translation>
 <translation id="9169594135889675189">گروپ میں نیا ٹیب شامل کریں</translation>
 <translation id="9216898458513705996">اس آلے پر ٹیبز کھلے رہیں گے لیکن گروپ کو ان تمام آلات سے حذف کر دیا جائے گا جو <ph name="USER_EMAIL" /> میں سائن ان ہیں</translation>

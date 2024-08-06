@@ -405,6 +405,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2486214324139475545">Vorschau für <ph name="DESK_NAME" />. Aktiver Desktop.</translation>
 <translation id="2486405091093637109">Die Auflösung von „<ph name="DISPLAY_NAME" />“ wurde in <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) geändert. Wenn du nicht bestätigst, werden in <ph name="TIMEOUT_SECONDS" /> die vorherigen Einstellungen wiederhergestellt.</translation>
 <translation id="2487915095798731898">Teilnehmen</translation>
+<translation id="2496180316473517155">Browserverlauf</translation>
 <translation id="2499445554382787206">Menü „Desktop-Profil“. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Sticky Keys</translation>
 <translation id="2504454902900101003">Anzeige der letzten Fotos, Medien und Benachrichtigungen auf deinem Smartphone nicht einrichten</translation>
@@ -436,6 +437,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2607678425161541573">Online-Anmeldung erforderlich</translation>
 <translation id="2612072250312279703">Aktivitätsmonitor</translation>
 <translation id="2612614436418177118">App-Symbol im App-Raster verschieben</translation>
+<translation id="2619052155095999743">Einfügen</translation>
 <translation id="2619326010008283367">Einführung: Schritt <ph name="STEP" /> von <ph name="TOTAL_STEPS" />. Du findest deine Geräteeinstellungen im Launcher. In den Einstellungen kannst du dein <ph name="PRODUCT_NAME" /> anpassen, z. B. den Hintergrund ändern oder einen Bildschirmschoner festlegen.</translation>
 <translation id="2620016719323068571">In deinen <ph name="CATEGORY" />, Dateien, Apps und mehr suchen…</translation>
 <translation id="2620436844016719705">System</translation>
@@ -462,6 +464,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2704781753052663061">Mit anderen WLANs verbinden</translation>
 <translation id="2705001408393684014">Mikrofon ein-/ausschalten. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Aufwärts</translation>
+<translation id="271033894570825754">Neu</translation>
 <translation id="2710984741481549981">Fenster sperren</translation>
 <translation id="2718395828230677721">Nachtlicht</translation>
 <translation id="2726420622004325180">Damit dein Smartphone einen Hotspot nutzen kann, müssen mobile Daten aktiviert sein</translation>
@@ -1086,6 +1089,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4890408602550914571">Achte darauf, dass sich dein Smartphone in der Nähe befindet und Bluetooth aktiviert ist.</translation>
 <translation id="4892981359753171125">Steuerung mit dem Gesicht</translation>
 <translation id="4895488851634969361">Akku ist vollständig geladen.</translation>
+<translation id="4902797682482387055">Vorschlag für eine Aufgabe, auf die du dich konzentrieren kannst</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="490788395437447240">Akku: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="491504982845934899">„<ph name="NETWORK_NAME" />“ nach der Geräteeinrichtung aktivieren</translation>
@@ -1096,6 +1100,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="492453977506755176">Taste für den Aufnahmemodus</translation>
 <translation id="4925542575807923399">Der Administrator dieses Kontos hat festgelegt, dass dieses Konto in einer Sitzung mit Mehrfachanmeldung das erste angemeldete Konto sein muss.</translation>
 <translation id="493076006037866439">Auf dem Bildschirm herauszoomen</translation>
+<translation id="4932733599132424254">Datum</translation>
 <translation id="4936329710968938986">Alle, aus</translation>
 <translation id="4937170330762390348">Mit der Spracheingabe kannst du Text diktieren. Drücke die Spracheingabetaste oder wähle das Mikrofonsymbol unten auf dem Bildschirm aus, wenn du dich in einem Textfeld befindest. Deine Spracheingabesprache ist auf <ph name="LANGUAGE" /> festgelegt. Sprachdateien werden heruntergeladen, damit du die Spracheingabe offline verwenden kannst. Du kannst die Sprache der Spracheingabe jederzeit unter „Einstellungen“ &gt; „Bedienungshilfen“ ändern.</translation>
 <translation id="4938176435186993759">Alle Vorschläge ausblenden</translation>
@@ -1104,6 +1109,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="495046168593986294">Nach oben scrollen</translation>
 <translation id="4950800194215951939">Gaming personalisieren</translation>
 <translation id="4952936045814352993">„Smartphone suchen“ ist nicht verfügbar, wenn Wecktöne deaktiviert sind</translation>
+<translation id="4953585991029886728">Text bearbeiten</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> erfordert, dass ein Rollback für dein Gerät (<ph name="DEVICE_TYPE" />) durchgeführt wird. Das Gerät wird zurückgesetzt und alle Daten werden gelöscht.</translation>
 <translation id="4961318399572185831">Bildschirm streamen</translation>
 <translation id="4964188651935955085">Wenn du Bluetooth deaktivierst, wird die Verbindung dieses externen Geräts von deiner/m <ph name="DEVICE_TYPE" /> getrennt:</translation>
@@ -1363,6 +1369,7 @@ Keine Geräte verbunden.</translation>
 <translation id="5819918159912280082">Dein Chromebook wurde unerwartet neu gestartet. Du kannst deine vorherigen Fenster und Apps noch einmal öffnen lassen.</translation>
 <translation id="5823239091726045201">Google Tasks im Web</translation>
 <translation id="5825969630400862129">Einstellungen für verbundene Geräte</translation>
+<translation id="5830180081891717894"><ph name="WINDOWS" /> weitere(s)</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> auf <ph name="RECEIVER_NAME" /> beenden</translation>
 <translation id="5841296711770970362">Zum nächsten Titel wechseln</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" />-Hotspot ist aktiviert, keine Geräte verbunden</translation>
@@ -1424,6 +1431,7 @@ Keine Geräte verbunden.</translation>
 <translation id="6032620807120418574">Klicke auf eine beliebige Stelle, um den ganzen Bildschirm aufzunehmen</translation>
 <translation id="6040071906258664830">Ton über Mikrofon aufnehmen <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Schließen</translation>
+<translation id="6042308850641462728">Mehr</translation>
 <translation id="6043212731627905357">Dieser Monitor ist mit deinem <ph name="DEVICE_TYPE" /> nicht kompatibel (wird nicht unterstützt).</translation>
 <translation id="6043994281159824495">Jetzt abmelden</translation>
 <translation id="6045629311476491587">Von <ph name="APP_COUNT" /> Apps verwendet</translation>
@@ -1890,6 +1898,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7748275671948949022">Launcher-Schaltfläche in der Ablage hervorheben</translation>
 <translation id="7749443890790263709">Maximale Anzahl von Arbeitsbereichen erreicht.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Alle anzeigen</translation>
 <translation id="7759183637555564029">Du kannst „Formuliere für mich“ und „Leseübersicht“ jederzeit in den Einstellungen deaktivieren. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Vorlesen</translation>
 <translation id="7769299611924763557">Die GIF-Datei ist gleich bereit</translation>
@@ -2023,6 +2032,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> – Diese Einstellung wird von deinem Administrator verwaltet.</translation>
 <translation id="8155628902202578800">Infodialog für <ph name="USER_EMAIL_ADDRESS" /> öffnen</translation>
 <translation id="8167567890448493835">"<ph name="LOCALE_NAME" />" wird verwendet</translation>
+<translation id="8168435359814927499">Inhalte</translation>
 <translation id="8185090165691050712">Menü für die Größenänderungssperre öffnen/schließen</translation>
 <translation id="8192727139462702395">Wenn du Bluetooth deaktivierst, wird die Verbindung dieser externen Geräte mit deiner/m <ph name="DEVICE_TYPE" /> getrennt:</translation>
 <translation id="8198456017687137612">Tab wird gestreamt</translation>
@@ -2070,6 +2080,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> und dein Smartphone werden automatisch miteinander verbunden</translation>
 <translation id="8380784334203145311">Gute Nacht,</translation>
 <translation id="8382715499079447151">Spionageschutz</translation>
+<translation id="8383614331548401927">Willkommen zurück</translation>
 <translation id="8388750414311082622">Letzter Desktop kann nicht entfernt werden.</translation>
 <translation id="8394567579869570560">Deine Eltern haben dieses Gerät gesperrt</translation>
 <translation id="8401850874595457088">Sprachmenü öffnen</translation>

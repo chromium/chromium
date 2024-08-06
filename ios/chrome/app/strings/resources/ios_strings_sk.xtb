@@ -302,6 +302,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2529021024822217800">Otvoriť všetky</translation>
 <translation id="2536991091671391962">Uložené heslá môžete používať v ľubovoľnom zariadení. Sú uložené v Správcovi hesiel Google v účte <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Skryť položku Kontrola bezpečnosti</translation>
+<translation id="2545094307889012168">Prekrytie objektívu</translation>
 <translation id="2547458583188611426">Synchronizácia nefunguje. Ak ju chcete spustiť, zadajte prístupovú frázu</translation>
 <translation id="2551153019974022505">Chyba účtu</translation>
 <translation id="2556092377360758201">Bez ochrany (neodporúča sa)</translation>
@@ -848,6 +849,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5205197603258285592">Uložiť obrázok v aplikácii</translation>
 <translation id="5211488077761630279">Chcete povoliť webu <ph name="SITE_NAME" /> používať povolenie <ph name="PERMISSION" />?</translation>
+<translation id="5215046161188172474">Zdieľať celú webovú adresu</translation>
 <translation id="5219295696240154694">Pomôžte zlepšiť zabezpečenie na internete pre všetkých</translation>
 <translation id="5220945116117011963">Vytvorenie udalostí v kalendári z dátumov</translation>
 <translation id="5221339005270097309">Kontrolujú sa heslá…</translation>
@@ -1125,6 +1127,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám).</translation>
 <translation id="6476253015009698798">Sledovanie ceny nie je k dispozícii pre túto stránku.</translation>
 <translation id="6476800141292307438">Stránka sa prekladá do jazyka <ph name="LANGUAGE" />. Možnosti nájdete v dolnej časti obrazovky.</translation>
+<translation id="6477585407014744043">Pomenujte skupinu</translation>
 <translation id="648164694371393720">Chyba overenia</translation>
 <translation id="6494931198667773526">Končí sa</translation>
 <translation id="6500795388871406244">Použite navrhnuté heslo:</translation>

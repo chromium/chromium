@@ -185,7 +185,6 @@
 <translation id="1124772482545689468">පරිශීලක</translation>
 <translation id="1125550662859510761">පේන විදියට <ph name="WIDTH" /> x <ph name="HEIGHT" /> (ආවේණික)</translation>
 <translation id="1125921926864945797">වෝල්පේපරය සහ විලාසය</translation>
-<translation id="1126809382673880764">අනතුරුදායක වෙබ් අඩවිවලට, බාගැනීම්වලට, සහ දිගුවලට එරෙහිව ඔබව ආරක්‍ෂා නොකරයි. Gmail සහ සෙවීම වැනි අනෙකුත් Google සේවා තුළ ලද හැකි විට ඔබට ආරක්‍ෂිත බ්‍රවුස් කිරීමේ ආරක්‍ෂාව ලබා ගත හැක.</translation>
 <translation id="1128090040635299943">Linux දැනට වින්‍යාස කරමින් පවතී. වින්‍යාසකරණයට මිනිත්තු කිහිපයක් ගත වනු ඇත.</translation>
 <translation id="1128591060186966949">සෙවීම් යාන්ත්‍රණය සංස්කරණය කරන්න</translation>
 <translation id="1129348283834595293">සයිබර්පන්ක්</translation>
@@ -630,7 +629,6 @@
 <translation id="1461041542809785877">ක්‍රියාකාරීත්වය</translation>
 <translation id="1461177659295855031">පිටුසන තීරුව ෆෝල්ඩරය වෙත යන්න</translation>
 <translation id="1461288887896722288">ඔබ දැන් කළමනාකරණය කළ ගිණුමකට පුරනය වී ඇත, නව කළමනාකරණය කළ පැතිකඩක් තැනීමට ඔබට එම ගිණුමට සම්බන්ධ කර ඇති සමහර සම්පත් වෙත ප්‍රවේශ වීමට ඉඩ දෙයි.</translation>
-<translation id="1461868306585780092">අනාරක්ෂිත සම්බන්ධතා භාවිතා කිරීමට පෙර අනතුරු අඟවන්න</translation>
 <translation id="146219525117638703">ONC තත්ත්වය</translation>
 <translation id="146220085323579959">අන්තර්ජාලය විසන්ධි විය. කරුණාකර ඔබගේ අන්තර්ජාල සබැඳුම පරික්ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="1462480037563370607">අඩවි හස්තීයව එක් කරන්න</translation>
@@ -4169,7 +4167,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3959747296451923142">ග්‍රාහකත්වය ඉවත් කිරීම තහවුරු කරන්න</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> සඳහා තවත් ක්‍රියා</translation>
-<translation id="3962119236270174787">අනතුරුදායක බව දන්නා වෙබ් අඩවිවලට, බාගැනීම්වලට සහ දිගුවලට එරෙහි සම්මත ආරක්ෂාව</translation>
 <translation id="3963753386716096475">වෙනත් දුරකථනයක්, ටැබ්ලටයක් හෝ ආරක්ෂිත යතුරක් භාවිත කරන්න</translation>
 <translation id="3964480518399667971">සෙලියුලර් ජාලය අක්‍රිය කරන්න</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> වෙතින් පිට වන්න</translation>
@@ -5511,7 +5508,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4967571733817147990">මූසික බොත්තම් අභිරුචිකරණය කරන්න</translation>
 <translation id="4967852842111017386"><ph name="FEATURE_NAME" /> උපාංග නාමය</translation>
 <translation id="4971412780836297815">අවසන් විට විවෘත කරන්න</translation>
-<translation id="4971735654804503942">අනතුරුදායක වෙබ් අඩවිවලට, බාගැනීම්වලට, සහ දිගුවලට එරෙහි වඩා වේගවත්, පූර්වාරක්‍ෂාකාරී ආරක්‍ෂාව. මුරපද කඩ කිරීම් ගැන ඔබට අවවාද කරයි. බ්‍රවුස් කිරීමේ දත්ත Google වෙත යැවීම අවශ්‍ය කරයි.</translation>
 <translation id="4972129977812092092">මුද්‍රකය සංස්කරණය</translation>
 <translation id="4972164225939028131">වැරදි මුරපදයකි</translation>
 <translation id="4972737347717125191">අඩවි අතථ්‍ය යථාර්ථ උපාංග සහ දත්ත භාවිත කිරීමට ඉල්ලිය හැකිය</translation>
@@ -7003,6 +6999,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6075075631258766703">දුකරථනය සත්‍යාපනය කරන්න</translation>
 <translation id="6075731018162044558">අහෝ!  පද්ධතිය හට මෙම උපාංගය සඳහා දිගු-කාලීන API පිවිසුම් ටෝකනයක් යෙදිය නොහැකි විය.</translation>
 <translation id="6075907793831890935"><ph name="HOSTNAME" /> නමැති උපාංගය සමඟ දත්ත හුවමාරු කරගන්න</translation>
+<translation id="6076092653254552547">පද්ධති සැකසීම්</translation>
 <translation id="6076491747490570887">ශීත අළු</translation>
 <translation id="6076576896267434196">"<ph name="EXTENSION_NAME" />" දිගුවට ඔබේ ගිණුමට ප්‍රවේශ වීමට අවශ්‍යයි</translation>
 <translation id="6077131872140550515">වඩා කැමති ඒවායින් ඉවත් කරන්න</translation>
@@ -8243,7 +8240,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6992554835374084304">උසස් අක්‍ෂර පරීක්‍ෂාව සක්‍රීය කරන්න</translation>
 <translation id="6993000214273684335">නම් නොකළ සමූහයකින් ටැබය ඉවත් කරන ලදි - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Chrome බ්‍රව්සරය යාවත්කාලීන කරමින්</translation>
-<translation id="6995899638241819463">දත්ත කඩ කිරීමකින් මුරපද අනාවරණ කෙරෙන්නේ නම් ඔබට අවවාද කරයි</translation>
 <translation id="6995984090981858039">ChromeOS උපාංග තොරතුරු සහ දත්ත කියවන්න</translation>
 <translation id="6996245928508281884">ඔබේ දුරකථනයේ බ්ලූටූත් සහ Wi-Fi ක්‍රියාත්මක කරන්න</translation>
 <translation id="6996438701394974959">සංදර්ශකය සහ පෙළ තරම වැඩි කරන්න</translation>
@@ -9379,6 +9375,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7826254698725248775">උපාංග හැඳුනුම්කාරකය ගැටුම්කාරී වේ.</translation>
 <translation id="7828642077514646543">දෝෂය: සහතිකය විකේතනය කළ නොහැකිය</translation>
 <translation id="7829877209233347340">පාසල් ගිණුමක් එක් කිරීමට අවසර දීමට මාපියෙකුට පුරන්නට කියන්න</translation>
+<translation id="7830276128493844263">පද්ධති සැකසීම් තුළ ස්ථානය ක්‍රියාවිරහිත කර ඇත</translation>
 <translation id="7830833461614351956">විවෘත කිරීමට <ph name="CLOUD_PROVIDER" /> වෙත ගොනු <ph name="NUM_OF_FILES" /> පිටපත් කරන්න ද?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">සුරැකි අභිරුචි වචන මෙහි දිස් වනු ඇත</translation>

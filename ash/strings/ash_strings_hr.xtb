@@ -405,6 +405,7 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2486214324139475545">Pregled za <ph name="DESK_NAME" /> Aktivna radna površina.</translation>
 <translation id="2486405091093637109">Zaslon <ph name="DISPLAY_NAME" /> promijenjen je na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Bez potvrđivanja, prethodne postavke vratit će se za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Pridruži se</translation>
+<translation id="2496180316473517155">Povijest pregledavanja</translation>
 <translation id="2499445554382787206">Izbornik profila radne površine. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Ljepljive tipke</translation>
 <translation id="2504454902900101003">Odbacite postavljanje prikaza nedavnih fotografija, medijskih sadržaja i obavijesti telefona</translation>
@@ -436,6 +437,7 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2607678425161541573">Potrebna je online prijava</translation>
 <translation id="2612072250312279703">praćenje aktivnosti</translation>
 <translation id="2612614436418177118">Premještanje ikone aplikacije unutar rešetke aplikacije</translation>
+<translation id="2619052155095999743">Umetni</translation>
 <translation id="2619326010008283367">Korak obilaska <ph name="STEP" /> od <ph name="TOTAL_STEPS" />. Postavke uređaja možete pronaći u Pokretaču. Pokušajte prilagoditi uređaj <ph name="PRODUCT_NAME" /> u postavkama, primjerice promijeniti pozadinu ili postaviti čuvar zaslona.</translation>
 <translation id="2620016719323068571">Pretražujte svoje <ph name="CATEGORY" />, datoteke, aplikacije i ostalo...</translation>
 <translation id="2620436844016719705">Sustav</translation>
@@ -462,6 +464,7 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2704781753052663061">Pridružite se drugim Wi-Fi mrežama</translation>
 <translation id="2705001408393684014">Pomaknite klizač mikrofona udesno. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Gore</translation>
+<translation id="271033894570825754">Novo</translation>
 <translation id="2710984741481549981">Zaključajte prozore</translation>
 <translation id="2718395828230677721">Noćno svjetlo</translation>
 <translation id="2726420622004325180">Telefon mora imati mobilne podatke da bi osigurao žarišnu točku</translation>
@@ -1097,6 +1100,7 @@ Jedan uređaj je povezan.</translation>
 <translation id="492453977506755176">Tipka za način snimanja</translation>
 <translation id="4925542575807923399">Administrator ovog računa zahtijeva da u sesiji s višestrukom prijavom ovaj račun bude prvi prijavljen.</translation>
 <translation id="493076006037866439">Smanjivanje zaslona</translation>
+<translation id="4932733599132424254">Datum</translation>
 <translation id="4936329710968938986">Svi, isključeno</translation>
 <translation id="4937170330762390348">Diktiranje omogućuje pisanje glasom. Pritisnite tipku diktiranja ili odaberite ikonu mikrofona pri dnu zaslona dok ste u tekstnom polju. Jezik za diktiranje postavljen je na <ph name="LANGUAGE" />. Preuzet će se govorne datoteke kako biste mogli upotrebljavati diktiranje izvan mreže. Jezik diktiranja uvijek možete promijeniti u odjeljku Postavke &gt; Pristupačnost.</translation>
 <translation id="4938176435186993759">Sakrij sve prijedloge</translation>
@@ -1105,6 +1109,7 @@ Jedan uređaj je povezan.</translation>
 <translation id="495046168593986294">Pomakni prema gore</translation>
 <translation id="4950800194215951939">Prilagodite svoj doživljaj videoigara</translation>
 <translation id="4952936045814352993">Lociranje telefona nije moguće kad su onemogućeni zvukovi alarma</translation>
+<translation id="4953585991029886728">Uređivanje teksta</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> zahtijeva da vratite uređaj <ph name="DEVICE_TYPE" /> na prethodnu verziju. Uređaj će se vratiti na zadano i svi će se podaci izbrisati.</translation>
 <translation id="4961318399572185831">Emitiranje zaslona</translation>
 <translation id="4964188651935955085">Kada isključite Bluetooth, ovaj vanjski uređaj prekinut će vezu s vašim uređajem <ph name="DEVICE_TYPE" />:</translation>
@@ -1426,6 +1431,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6032620807120418574">Kliknite bilo gdje da biste snimili cijeli zaslon</translation>
 <translation id="6040071906258664830">Snimanje mikrofona <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Zatvori</translation>
+<translation id="6042308850641462728">Više</translation>
 <translation id="6043212731627905357">Ovaj se monitor ne podudara s vašim uređajem <ph name="DEVICE_TYPE" /> (monitor nije podržan).</translation>
 <translation id="6043994281159824495">Odjavi se odmah</translation>
 <translation id="6045629311476491587">Koristi: <ph name="APP_COUNT" /> aplikacija/aplikacije</translation>
@@ -1440,6 +1446,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6068258534237496331">Kontrole videopoziva</translation>
 <translation id="6073451960410192870">Zaustavi snimanje</translation>
 <translation id="6074087755403037157">Beta kanal</translation>
+<translation id="6091929401758362855">Playlista: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Onemogućio administrator</translation>
 <translation id="6095008505822982596">Brzina govora</translation>
 <translation id="6095425951508823973">Dodajte vezu s: <ph name="PROVIDER" /></translation>
@@ -1892,6 +1899,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7748275671948949022">Isticanje gumba pokretača na traci</translation>
 <translation id="7749443890790263709">Dosegnut je maksimalan broj radnih površina.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Prikaži sve</translation>
 <translation id="7759183637555564029">Pomoć pri pisanju i pomoć pri čitanju uvijek možete isključiti u postavkama. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Odabir za govor</translation>
 <translation id="7769299611924763557">GIF će uskoro biti spreman</translation>
@@ -2025,6 +2033,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Tom postavkom upravlja vaš administrator.</translation>
 <translation id="8155628902202578800">Otvorite dijalog za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Upotrebljava se <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Sadržaj</translation>
 <translation id="8185090165691050712">Uključivanje/isključivanje izbornika za promjenu veličine načina zaključavanja</translation>
 <translation id="8192727139462702395">Kada isključite Bluetooth, ovi vanjski uređaji prekinut će vezu s vašim uređajem <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Emitiranje kartice</translation>

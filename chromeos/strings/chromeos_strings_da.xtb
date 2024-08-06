@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Styring</translation>
 <translation id="2652403576514495859">aktivér eller deaktiver diktering</translation>
 <translation id="2653659639078652383">Send</translation>
-<translation id="2653807227758181366">Beskriv den baggrund, du vil oprette, eller brug en eksempelprompt</translation>
 <translation id="2654647726140493436">Sluk ikke din <ph name="DEVICE_TYPE" />, og tag ikke strømkablet ud af din <ph name="DEVICE_TYPE" />, mens opdateringen er i gang</translation>
 <translation id="2656001153562991489">Eksklusivt til Chromebook Plus</translation>
 <translation id="2665671725390405060">Hør udtale</translation>
@@ -1366,6 +1365,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8208861521865154048">Fordele</translation>
 <translation id="8226628635270268143">Vælg dine foretrukne billeder og album</translation>
 <translation id="8227119283605456246">Vedhæft fil</translation>
+<translation id="8227488649450500937">Prøv én af disse prompter, eller se <ph name="BEGIN_LINK_PROMPTING_GUIDE" />vejledningen i prompter<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Kunne ikke pinge standardnetværkets gateway</translation>
 <translation id="8238771987802558562">Vælg et APN</translation>
 <translation id="8246209727385807362">Ukendt mobilselskab</translation>

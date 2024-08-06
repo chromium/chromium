@@ -185,7 +185,6 @@
 <translation id="1124772482545689468">کاربر</translation>
 <translation id="1125550662859510761">‏‎<ph name="WIDTH" /> × <ph name="HEIGHT" />‎ به‌نظر می‌رسد (داخلی)</translation>
 <translation id="1125921926864945797">کاغذدیواری و سبک</translation>
-<translation id="1126809382673880764">‏دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک از شما محافظت نمی‌کند. درصورت موجود بودن، همچنان ویژگی حفاظتی «مرور ایمن» را در سرویس‌های دیگر Google مثل Gmail و «جستجو» دریافت می‌کنید.</translation>
 <translation id="1128090040635299943">‏اکنون Linux درحال پیکربندی است. پیکربندی چند دقیقه طول می‌کشد.</translation>
 <translation id="1128591060186966949">ویرایش موتور جستجو</translation>
 <translation id="1129348283834595293">سایبرپانک</translation>
@@ -631,7 +630,6 @@
 <translation id="1461041542809785877">کارآیی</translation>
 <translation id="1461177659295855031">رفتن به پوشه «نوار نشانک‌ها»</translation>
 <translation id="1461288887896722288">به‌تازگی به سیستم حساب مدیریت‌شده‌ای وارد شده‌اید که با ایجاد نمایه مدیریت‌شده جدید به شما امکان می‌دهد به برخی‌از منابع پیوندشده با آن حساب دسترسی داشته باشید.</translation>
-<translation id="1461868306585780092">دریافت هشدار قبل‌از استفاده از اتصال‌های ناامن</translation>
 <translation id="146219525117638703">‏وضعیت ONC</translation>
 <translation id="146220085323579959">اتصال اینترنت قطع شد. لطفاً اتصال اینترنت خود را بررسی کنید و دوباره سعی کنید.</translation>
 <translation id="1462480037563370607">افزودن سایت‌ها به‌صورت دستی</translation>
@@ -4178,7 +4176,6 @@
 <translation id="3959747296451923142">تأیید حذف اشتراک</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">کنش‌های بیشتر برای <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962119236270174787">محافظت استاندارد دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودنشان مشخص شده است</translation>
 <translation id="3963753386716096475">استفاده از تلفن، رایانه لوحی، یا کلید ایمنی دیگر</translation>
 <translation id="3964480518399667971">خاموش کردن شبکه تلفن همراه</translation>
 <translation id="3965965397408324205">خارج شدن از <ph name="PROFILE_NAME" /></translation>
@@ -5520,7 +5517,6 @@
 <translation id="4967571733817147990">سفارشی‌سازی دکمه‌های موشواره</translation>
 <translation id="4967852842111017386">نام دستگاه <ph name="FEATURE_NAME" /></translation>
 <translation id="4971412780836297815">بعد از اتمام باز شود</translation>
-<translation id="4971735654804503942">‏محافظت سریع‌تر و پیشگیرانه دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک. رخنه در گذرواژه را به شما هشدار می‌دهد. عملکرد این ویژگی متکی بر ارسال داده‌های مرور به Google‌ است.</translation>
 <translation id="4972129977812092092">ویرایش چاپگر</translation>
 <translation id="4972164225939028131">گذرواژه اشتباه است</translation>
 <translation id="4972737347717125191">سایت‌ها می‌توانند استفاده از داده‌ها و دستگاه‌های واقعیت مجازی را درخواست کنند</translation>
@@ -6148,6 +6144,7 @@
 <translation id="5435779377906857208">دسترسی <ph name="HOST" /> به مکان شما همیشه مجاز باشد</translation>
 <translation id="5436492226391861498">منتظر تونل پراکسی...</translation>
 <translation id="5436510242972373446">جستجوی <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616">عرض پنجره <ph name="WINDOW_SIDE" /> اکنون <ph name="WINDOW_SIZE_PERCENT" /> است، عرض قاب <ph name="PANE_SIDE" /> اکنون <ph name="PANE_SIZE_PERCENT" /> است.</translation>
 <translation id="5440425659852470030">بستن پانل کناری</translation>
 <translation id="544083962418256601">ایجاد میان‌برها...</translation>
 <translation id="5441133529460183413">‏«برنامه وب» از مرورگر Chrome نصب شد</translation>
@@ -8255,7 +8252,6 @@
 <translation id="6992554835374084304">روشن کردن غلط‌یاب املایی بهبودیافته</translation>
 <translation id="6993000214273684335">برگه از گروه بی‌نام برداشته شد - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">‏به‌روزرسانی مرورگر Chrome</translation>
-<translation id="6995899638241819463">اگر گذرواژه‌ها دراثر سرقت اطلاعات شبکه لورفته باشند، به شما اطلاع داده شود</translation>
 <translation id="6995984090981858039">‏خواندن داده‌ها و اطلاعات دستگاه ChromeOS</translation>
 <translation id="6996245928508281884">‏بلوتوث و Wi-Fi تلفنتان را روشن کنید</translation>
 <translation id="6996438701394974959">افزایش اندازه نمایش و نوشتار</translation>
@@ -8554,6 +8550,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{۱ سایت در گروه <ph name="FPS_OWNER" /> است}one{{MEMBERS} سایت در گروه <ph name="FPS_OWNER" /> است}other{{MEMBERS} سایت در گروه <ph name="FPS_OWNER" /> است}}</translation>
 <translation id="7225082563376899794">‏استفاده از Windows Hello هنگام وارد کردن گذرواژه‌ها</translation>
 <translation id="7225179976675429563">نوع شبکه موجود نیست</translation>
+<translation id="7227235818314667565">مدیریت هم‌رسانی</translation>
 <translation id="7227458944009118910">برنامه‌های فهرست‌شده در زیر نیز می‌توانند پیوندهای پروتکل را مدیریت کنند. برنامه‌های دیگر اجازه درخواست خواهند کرد.</translation>
 <translation id="7228056665272655255">برای تنظیم اثر انگشت، از فرزندتان بخواهید حسگر اثر انگشت را در بالا گوشه سمت راست صفحه‌کلید لمس کند. داده‌های اثر انگشت فرزندتان به‌صورت ایمن ذخیره می‌شود و هرگز از این <ph name="DEVICE_TYPE" /> خارج نمی‌شود.</translation>
 <translation id="7228523857728654909">قفل صفحه و ورود به سیستم</translation>
@@ -8602,6 +8599,7 @@
 <translation id="7258192266780953209">تبدیل‌ها</translation>
 <translation id="7258225044283673131">برنامه پاسخ نمی‌دهد. برای بستن برنامه، «بستن اجباری» را انتخاب کنید.</translation>
 <translation id="7260186537988033909">ثبت‌نام دستگاه کیوسک و تابلوی دیجیتال کامل شد</translation>
+<translation id="7261217796641151584">هم‌رسانی گروه</translation>
 <translation id="7261612856573623172">صدای سیستم نوشتار به گفتار</translation>
 <translation id="7262004276116528033">این خدمات ورود به سیستم توسط <ph name="SAML_DOMAIN" /> میزبانی شده است</translation>
 <translation id="7264695323040866038">همیشه برای باز کردن پیوندهای وب پشتیبانی‌شده از برنامه <ph name="APP" /> استفاده شود؟</translation>
@@ -10538,6 +10536,7 @@
 <translation id="8656888282555543604">فعال کردن گزارش‌گیری بریل</translation>
 <translation id="8657393004602556571">می‌خواهید از بازخورد صرف‌نظر کنید؟</translation>
 <translation id="8657542881463614516">استفاده از اشاره کشیدن برای پیمایش بین صفحه‌ها</translation>
+<translation id="865936634714975126">‏برای انتخاب انواع موردنظر هنگام بار شدن صفحه، پارامتر پُرسمان در نشانی وب اضافه کنید. مثال: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> مخاطب</translation>
 <translation id="8659609431223166673">پنجره به پایین منتقل شد</translation>
 <translation id="8661290697478713397">باز کردن پیوند در پنجره حالت &amp;ناشناس</translation>

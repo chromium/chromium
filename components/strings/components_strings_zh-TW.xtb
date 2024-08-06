@@ -231,6 +231,7 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 未傳送任何資料。</translation>
 <translation id="1405567553485452995">淺綠色</translation>
 <translation id="1406812885827747674">這次允許</translation>
+<translation id="14070772729708640">檔案已成功上傳至「<ph name="CLOUD_PROVIDER" />」中的「<ph name="FOLDER_NAME" />」</translation>
 <translation id="1407135791313364759">全部開啟</translation>
 <translation id="1408787208417187241">三釘 (頂端)</translation>
 <translation id="1410365862999780287">這部裝置的其他使用者不會看到你的活動，瀏覽活動記錄的隱私更有保障。無痕模式不會影響網站及其使用的服務 (包括 Google) 收集資料的方式，而且下載內容、新增的書籤及加入閱讀清單中的項目仍會保留在裝置上。</translation>
@@ -266,6 +267,7 @@
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">使用電腦上的字型，方便你建立高傳真內容</translation>
 <translation id="1463793142714244641">分時度假與度假房產</translation>
+<translation id="1465457928007067810">已將 IBAN 儲存至 Google 帳戶</translation>
 <translation id="1467432559032391204">向左</translation>
 <translation id="1468653229182955856">你的 <ph name="EMBEDDED_ORIGIN" /> 驗證碼是 <ph name="ONE_TIME_CODE" />，請輸入此驗證碼，以便繼續使用 <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">顯示更多</translation>
@@ -1189,6 +1191,7 @@
 <translation id="3240791268468473923">無相符安全付款憑證表已開啟</translation>
 <translation id="324180406144491771">「<ph name="HOST_NAME" />」連結已遭到封鎖</translation>
 <translation id="3248329428895535435">不要在這個網站顯示</translation>
+<translation id="3249102948665905108">已將檔案上傳至「<ph name="CLOUD_PROVIDER" />」，但有錯誤</translation>
 <translation id="3252772880526154546">建築</translation>
 <translation id="3254301855501243548">18 x 22 吋</translation>
 <translation id="3255926992597692024">Chromium 正嘗試修改填入付款方式的設定。</translation>
@@ -1358,6 +1361,7 @@
 <translation id="3552155506104542239">警告：這項政策與 <ph name="POLICY_NAME" /> 相衝突，對 Android 應用程式沒有任何作用。否則，這項政策會正常運作。</translation>
 <translation id="3552297013052089404">Sans Serif 字型</translation>
 <translation id="3558573058928565255">白天</translation>
+<translation id="3559897352860026926">請要求系統管理員確認「<ph name="CLOUD_PROVIDER" />」設定。</translation>
 <translation id="355995771319966853">復原自動填入</translation>
 <translation id="3560408312959371419">追蹤保護功能和裝置端網站資料的選項</translation>
 <translation id="3560824484345057728">查看相關網站</translation>
@@ -2024,6 +2028,7 @@
 <translation id="4816492930507672669">依頁面大小自動調整</translation>
 <translation id="4819347708020428563">要在預設檢視中編輯註解嗎？</translation>
 <translation id="4822493756793346865">一般價格的依據是過去 90 天各網路商店的資料。</translation>
+<translation id="4822922322149719535">查看錯誤記錄</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可快速建立新的 Google 試算表</translation>
 <translation id="4826588772550366629">攝影機和麥克風</translation>
 <translation id="4827283332383516812">刪除卡片</translation>
@@ -2414,7 +2419,6 @@
 <translation id="555037537507405574">進階印表機功能</translation>
 <translation id="555128936272638662">手機與無線配件</translation>
 <translation id="5551890439174915351">100 x 200 公釐</translation>
-<translation id="5552137475244467770">Chrome 會定期將你的密碼與網路上發布的清單進行比對。在比對過程中，你的密碼和使用者名稱會經過加密，任何人 (包括 Google) 都無法讀取。</translation>
 <translation id="5554520618550346933">如果你使用的密碼已公布在網路上，Chrome 就會發出警告。在比對過程中，系統會加密你的密碼和使用者名稱，因此任何人 (包括 Google) 都無法讀取。</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5558083606899411167">空調</translation>
@@ -2682,6 +2686,7 @@
 <translation id="6061154937977953833">摔角</translation>
 <translation id="6062937464449575061">取消追蹤價格</translation>
 <translation id="6063415549109819824">家庭金融</translation>
+<translation id="6070432475334343308">一或多個檔案未上傳至「<ph name="CLOUD_PROVIDER" />」中的「<ph name="FOLDER_NAME" />」</translation>
 <translation id="6080696365213338172">你使用了管理員提供的憑證存取內容，因此管理員可攔截你傳送至「<ph name="DOMAIN" />」的資料。</translation>
 <translation id="6085149458302186532">標籤 (彩色)</translation>
 <translation id="6087312102907839798">相關搜尋</translation>
@@ -2804,6 +2809,7 @@
 <translation id="6307968763353904914">你的銀行目前無法提供適用這個付款方式的虛擬卡片，不過你還是能使用 <ph name="CARD_LABEL" /> 線上付款。</translation>
 <translation id="6311410654831092784">卡片紙</translation>
 <translation id="6312113039770857350">網頁無法使用</translation>
+<translation id="6316110367871394043">已暫停上傳檔案至「<ph name="CLOUD_PROVIDER" />」</translation>
 <translation id="6316723751983724988">新功能：這裡套用了 Chrome 的 Family Link 選項</translation>
 <translation id="63172326633386613">管理無障礙設定</translation>
 <translation id="6321917430147971392">檢查 DNS 設定</translation>
@@ -3002,6 +3008,7 @@
 <translation id="6687335167692595844">要求的字型大小</translation>
 <translation id="6688743156324860098">更新…</translation>
 <translation id="6688775486821967877">目前無法使用虛擬卡片，請稍後再試</translation>
+<translation id="6688851075017682769">依國家/地區測試地址</translation>
 <translation id="6689249931105087298">與黑點壓縮相對</translation>
 <translation id="6689271823431384964">你已登入帳戶，因此 Chrome 詢問你是否要將卡片儲存至 Google 帳戶。你可以在設定中變更這項行為。持卡人姓名來自你的帳戶。</translation>
 <translation id="6691397311652656001">請釋出超過 <ph name="REQUIRED_FREE_DISK_SPACE" /> 的空間</translation>
@@ -3158,6 +3165,7 @@
 <translation id="6979440798594660689">靜音 (預設)</translation>
 <translation id="6984270784814146224">圖片沒有標籤。系統正在運用 Google AI 技術擷取文字</translation>
 <translation id="6987806006823772670">信封 (塗布紙)</translation>
+<translation id="6989256887001961296">這項內容遭到封鎖。</translation>
 <translation id="6989763994942163495">顯示進階設定...</translation>
 <translation id="6996312675313362352">一律翻譯<ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6997288673234694149">棒球與壘球裝備</translation>
@@ -3188,6 +3196,7 @@
 <translation id="7050187094878475250">您嘗試連線至 <ph name="DOMAIN" />，但伺服器提供的憑證有效期限太長，因此難以信任。</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{目前無法儲存這張卡片}other{目前無法儲存這些卡片}}</translation>
 <translation id="7053983685419859001">封鎖</translation>
+<translation id="7054717457611655239">從現在起，請將檔案儲存至「<ph name="CLOUD_PROVIDER" />」。</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> 已驗證這個網站的憑證是由「<ph name="ISSUER" />」所核發。</translation>
 <translation id="7058774143982824355">CSV 密碼剖析器服務</translation>
 <translation id="7062635574500127092">藍綠色</translation>
@@ -3918,6 +3927,7 @@
 <translation id="8371841335382565017">顯示投放裝置清單</translation>
 <translation id="8371889962595521444">自訂根憑證</translation>
 <translation id="8374636051559112948">不一</translation>
+<translation id="837840316697671463">如果在裝置上找不到檔案，請前往「<ph name="CLOUD_PROVIDER" />」搜尋。</translation>
 <translation id="8378714024927312812">由貴機構管理</translation>
 <translation id="8380941800586852976">不安全</translation>
 <translation id="8381674639488873545">這些費用可能是一次性或週期性的費用，而且可能難以察覺。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
@@ -4067,6 +4077,7 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> 值不符合大小規定。</translation>
 <translation id="867224526087042813">簽名</translation>
 <translation id="8672535691554698269">電腦網路</translation>
+<translation id="8675446170353411473">正在將檔案上傳到「<ph name="CLOUD_PROVIDER" />」</translation>
 <translation id="8676424191133491403">不延遲</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />，答案：<ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">無法載入位於 <ph name="PAGE" /> 的網頁，原因如下：</translation>
@@ -4148,6 +4159,7 @@
 <translation id="8820817407110198400">書籤</translation>
 <translation id="882338992931677877">手動插槽</translation>
 <translation id="8830320733681313421">Hagaki (明信片)</translation>
+<translation id="8830565333350631528">查看「<ph name="CLOUD_PROVIDER" />」中的檔案</translation>
 <translation id="8833007469711500369">洗衣機與烘衣機</translation>
 <translation id="8834962751196791179">這個網站不支援 HTTPS，而且你目前處於無痕模式，因此系統顯示這則警告訊息。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">科幻與奇幻電視節目</translation>

@@ -144,6 +144,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chromium-
 <translation id="5131565040785979529">Fyrirtækið þitt, <ph name="DOMAIN" />, stjórnar reikningnum sem þú ert innskráð(ur) á og hvernig Chromium er notað.</translation>
 <translation id="5146749061471423558">Bæta bókamerkjum við Chromium</translation>
 <translation id="5171868502429358653">Skráðu þig inn á Chromium</translation>
+<translation id="5203483872492817335">Opnaðu Chromium hraðar úr heimaskjásdokkunni í iPad.</translation>
 <translation id="5213683223491576284">Opnar aðgangsorðastjórnun í Chromium.</translation>
 <translation id="5224391634244552924">Engin vistuð aðgangsorð. Chromium getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
 <translation id="5242782538551259282">Einhver Chromium-gögn hafa ekki enn verið vistuð á Google-reikninginn þinn.
@@ -225,6 +226,7 @@ Hafðu í huga:
 Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er hvorki sent til né vistað hjá Google. Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chromium-gögnunum á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Slökkt er á Chromium-tilkynningum í stillingum tækisins.</translation>
 <translation id="7222001353246886083">Leita að ${searchPhrase} í Chromium</translation>
+<translation id="7228180817326917122">Chromium-ábending: Veldu staðsetningu veffangastikunnar</translation>
 <translation id="725427773388857052">Chromium getur veitt þér vernd gegn öryggisbrotum, hættulegum vefsvæðum og fleira.</translation>
 <translation id="7269362888766543920">Einhverjar viðbætur valda því að Chromium hrynur. Prófaðu að fjarlægja þær.</translation>
 <translation id="7285031092584344905">Nálgastu Chromium-aðgangsorðin þín og fleira í öðrum forritum.</translation>
@@ -247,6 +249,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="7928628054454574139">Opna Chromium hvenær sem þú ýtir á tengil í öðrum forritum</translation>
 <translation id="7931842119211730154">Læsa huliðsflipum um leið og þú lokar Chromium</translation>
 <translation id="7934404985878918282">Sjá leslista Chromium</translation>
+<translation id="7947765692209663835">Opnaðu Chromium hraðar úr heimaskjásdokkunni í iPhone.</translation>
 <translation id="7971753607796745700">Bæta leslistaatriði við Chromium</translation>
 <translation id="7980860476903281594">Chromium deilir staðsetningunni þinni með vefsvæðum sem þú veitir heimild.</translation>
 <translation id="7994322153108931467">Til að fá gagnleg ráð um Chromium skaltu kveikja á tilkynningum í iOS-stillingum.</translation>
@@ -265,6 +268,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="8386869251364507178">Chromium-aðgerðir</translation>
 <translation id="8409374867500149834">Þú ert með öflugustu öryggisráðstafanir Chromium gegn skaðlegum vefsvæðum</translation>
 <translation id="8458950033462118672">Þú getur opnað tengla sjálfkrafa í Chromium með því að stilla það sem sjálfgefið vafraforrit.</translation>
+<translation id="8473874987831035139">Chromium-ábending: Færðu Chromium í dokkuna</translation>
 <translation id="8502918057530111907">Notaðu Chromium sem sjálfgefinn vafra til að fá verðinnsýn í hvelli</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mínútu. Gögnum sem voru eingöngu vistuð í þessu tæki á meðan þú varst skráð(ur) inn verður eytt. Það gæti m.a. átt við um feril og aðgangsorð.}one{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mínútu. Gögnum sem voru eingöngu vistuð í þessu tæki á meðan þú varst skráð(ur) inn verður eytt. Það gæti m.a. átt við um feril og aðgangsorð.}other{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mínútur. Gögnum sem voru eingöngu vistuð í þessu tæki á meðan þú varst skráð(ur) inn verður eytt. Það gæti m.a. átt við um feril og aðgangsorð.}}</translation>
 <translation id="858114650497379505">Þú getur notað aðgangsorðin sem þú vistaðir í aðgangsorðastjórnun í öðrum forritum í iPhone.</translation>

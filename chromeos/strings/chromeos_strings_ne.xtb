@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">कमजोर सिग्नल</translation>
 <translation id="1300115153046603471">APN को प्रकार डिफल्ट र <ph name="ATTACH" /> सेट गरिएको छ।</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">बनाइएको मिति</translation>
 <translation id="1308754910631152188">अपडेट हुँदै छ (<ph name="PERCENTAGE_VALUE" />% पूरा भयो)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> मिनेट</translation>
 <translation id="1310380015393971138">कुनै पनि <ph name="NETWORK_NAME" /> नेटवर्क उपलब्ध छैन</translation>
@@ -339,7 +340,6 @@
 <translation id="2645380101799517405">कन्ट्रोलहरू</translation>
 <translation id="2652403576514495859">स्पिच-टु-टेक्स्ट अन वा अफ गर्नुहोस्</translation>
 <translation id="2653659639078652383">पेश गर्नुहोस्</translation>
-<translation id="2653807227758181366">आफूले बनाउन चाहेको वालपेपरका बारेमा वर्णन गर्नुहोस् वा कुनै नमुना प्रम्प्ट प्रयोग गर्नुहोस्</translation>
 <translation id="2654647726140493436">अपडेट गर्ने प्रक्रिया चलिरहेका बे‌ला <ph name="DEVICE_TYPE" /> अफ गर्ने वा <ph name="DEVICE_TYPE" /> को पावर केबल निकाल्ने काम नगर्नुहोला</translation>
 <translation id="2656001153562991489">Chromebook Plus मा मात्र उपलब्ध</translation>
 <translation id="2665671725390405060">उच्चारण सुन्नुहोस्</translation>
@@ -506,6 +506,7 @@
 <translation id="3708186454126126312">यसअघि कनेक्ट गरिएका डिभाइस</translation>
 <translation id="3715651196924935218">फ्लोट विन्डोबाट बाहिरिनुहोस्</translation>
 <translation id="3716250181321371108">कन्ट्रोल सेट गर्नुहोस्</translation>
+<translation id="3716830479327464973">तपाईंले यो अनुमति दिनुभयो भने रेकर्डरले निम्न कार्यहरू गर्न तपाईंका अडियो रेकर्डिङहरूको विश्लेषण गर्ने छ:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> वटा समीक्षा)</translation>
 <translation id="3748026146096797577">कनेक्ट गरिएको छैन</translation>
 <translation id="3749289110408117711">फाइल नाम</translation>
@@ -532,6 +533,7 @@
 <translation id="3869314628814282185">ट्युले</translation>
 <translation id="387301095347517405">तपाईंको डिभाइसको ब्याट्री पूर्ण रूपमा चार्ज गरिएको सङ्ख्या</translation>
 <translation id="3877066159641251281">अनुवादित टेक्स्ट सुन्नुहोस्</translation>
+<translation id="3880601782712134623">छुट्टा-छुट्टै आवाजहरू स्वतः पत्ता लगाउन र हरेक वक्ताका हकमा वक्ता १ र वक्ता २ जस्ता सामान्य लेबल हाल्न</translation>
 <translation id="3885327323343477505">स्क्रिन सेभर बदल्नुहोस्</translation>
 <translation id="3889914174935857450">मिति रिसेट गर्नुहोस्</translation>
 <translation id="3897092660631435901">मेनु</translation>
@@ -757,6 +759,7 @@
 <translation id="5049856988445523908">SIM लक गरिएको छ (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">समूहको नाम</translation>
 <translation id="5051044138948155788">यो एउटा मात्र पेज हो। यसले तपाईंलाई स्क्यान सुरु गर्ने स्क्रिनमा लैजाने छ।</translation>
+<translation id="5078711626843651677">वक्ताका लेबलहरू हाल्ने प्रक्रिया पूरा नभएसम्म आवाजका मोडेलहरू केही बेरका लागि तपाईंको डिभाइसमा भण्डारण गरिन्छन्। तपाईं जुनसुकै बेला सेटिङमा गई यसलाई अफ गर्न सक्नुहुन्छ।</translation>
 <translation id="5078983345702708852">नवीनतम शैली</translation>
 <translation id="5087864757604726239">पछाडि जानुहोस्</translation>
 <translation id="5088172560898466307">सर्भरको होस्टनाम</translation>
@@ -1107,6 +1110,7 @@
 <translation id="6905163627763043954">यसलाई चलाएर हेर्नुहोस्</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> मा फर्कनुहोस्</translation>
 <translation id="6910312834584889076">स्क्यानरको कभर खुला छ। कभर लगाउनुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="6910845598686542904">रेकर्डिङमा पहिचान गरिएका आवाजका मोडेलहरू बनाउन</translation>
 <translation id="6911383237894364323">मिडिया सर्भरहरूमा कनेक्ट गर्न सकिएन</translation>
 <translation id="6930242544192836755">अवधि</translation>
 <translation id="6930597342185648547">ब्याकग्राउन्डका बारेमा</translation>
@@ -1366,6 +1370,7 @@
 <translation id="8208861521865154048">लाभहरू</translation>
 <translation id="8226628635270268143">आफूलाई मन पर्ने फोटो र एल्बमहरू छनौट गर्नुहोस्</translation>
 <translation id="8227119283605456246">फाइल समावेश गर्नुहोस्</translation>
+<translation id="8227488649450500937">यीमध्ये कुनै प्रम्प्ट प्रयोग गर्नुहोस् वा <ph name="BEGIN_LINK_PROMPTING_GUIDE" />प्रम्प्ट लेख्ने तरिकाका बारेमा जानकारी दिने गाइड<ph name="END_LINK_PROMPTING_GUIDE" /> हेर्नुहोस्</translation>
 <translation id="8230672074305416752">डिफल्ट नेटवर्कको गेटवे पिङ गर्न सकिएन</translation>
 <translation id="8238771987802558562">कुनै APN छनौट गर्नुहोस्</translation>
 <translation id="8246209727385807362">अज्ञात सेवा प्रदायक</translation>
@@ -1571,6 +1576,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> को की थिचिएको छैन। <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">हरेक वक्ताले कति बेला के भनेका छन् भन्ने कुरा ट्रान्स्क्रिप्टमा उल्लेख गरियोस् भन्नाका लागि रेकर्डिङको पूरै अवधिमा सुनिएका आवाजहरूको तुलना गर्न</translation>
 <translation id="952992212772159698">सक्रिय छैन</translation>
 <translation id="95718197892796296">माटो</translation>
 <translation id="960719561871045870">अपरेटरको कोड</translation>

@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">පාලන</translation>
 <translation id="2652403576514495859">අනුලේඛනය සබල කරන්න හෝ ටොගල් කරන්න</translation>
 <translation id="2653659639078652383">ඉදිරිපත් කරන්න</translation>
-<translation id="2653807227758181366">ඔබට තැනීමට අවශ්‍ය වෝල්පේපරය විස්තර කරන්න හෝ නියැදි ප්‍රේරකයක් භාවිත කරන්න</translation>
 <translation id="2654647726140493436">යාවත්කාලීනය ප්‍රගතියේ පවතින විට ඔබේ <ph name="DEVICE_TYPE" /> අක්‍රිය කිරීම හෝ <ph name="DEVICE_TYPE" /> බල කේබලය පේනු නොගත කිරීම නොකරන්න</translation>
 <translation id="2656001153562991489">Chromebook Plus සඳහා සුවිශේෂී</translation>
 <translation id="2665671725390405060">උච්චාරණයට සවන් දෙන්න</translation>
@@ -1366,6 +1365,7 @@
 <translation id="8208861521865154048">අමතර වාසි</translation>
 <translation id="8226628635270268143">ඔබේ ප්‍රියතම ඡායාරූප සහ ඇල්බම තෝරන්න</translation>
 <translation id="8227119283605456246">ගොනුව අමුණන්න</translation>
+<translation id="8227488649450500937">මෙම ප්‍රේරක වලින් එකක් උත්සාහ කරන්න හෝ <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ප්‍රේරක මාර්ගෝපදේශය<ph name="END_LINK_PROMPTING_GUIDE" /> බලන්න</translation>
 <translation id="8230672074305416752">පෙරනිමි ජාල වාහල පින්ග් කිරීම අසාර්ථක විය</translation>
 <translation id="8238771987802558562">APN එකක් තෝරන්න</translation>
 <translation id="8246209727385807362">නොදන්නා වාහකයෙකි</translation>

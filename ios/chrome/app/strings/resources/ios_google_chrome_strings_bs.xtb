@@ -35,7 +35,7 @@ Stvari za razmatranje:
 <translation id="1554731936187952550">Imate najjaču zaštitu Chromea od štetnih web lokacija</translation>
 <translation id="1615715390546812898">Pretražujte glasovnim komandama u Chromeu.</translation>
 <translation id="1657395063736185342">Pretraživanje vizuelnih elemenata u Chromeu</translation>
-<translation id="1670609221633730681">Savjet za Chrome: odaberite položaj adresne trake</translation>
+<translation id="1670609221633730681">Savjet za Chrome: odaberite položaj trake za adresu</translation>
 <translation id="1675955119303651351">Neki podaci Chromea još nisu sačuvani na vaš Google račun.
         Pričekajte nekoliko minuta prije odjave. Ako se sada odjavite, ovi podaci će se izbrisati.</translation>
 <translation id="1682483655351012182">Sinhroniziraj Chrome podatke</translation>
@@ -114,7 +114,7 @@ Stvari za razmatranje:
 <translation id="3984746313391923992">Vaša organizacija zahtijeva da ostanete odjavljeni s Chromea.</translation>
 <translation id="3988789688219830639">Google Chrome nema pristup vašim fotografijama ili videozapisima. Omogućite pristup u meniju iOS postavke &gt; Privatnost &gt; Fotografije.</translation>
 <translation id="4064699917955374540">Da koristite i sačuvate podatke Chromea na Google računu, potvrdite identitet.</translation>
-<translation id="4066411101507716142">Brže pristupite Chromeu putem donje trake početnog zaslona na iPadu.</translation>
+<translation id="4066411101507716142">Brže pristupajte Chromeu s donje trake na početnom ekranu iPada.</translation>
 <translation id="4067858366537947361">Otvorite anonimnu karticu u Chromeu</translation>
 <translation id="4093042601582616698">Postaviti Chrome kao zadani preglednik?</translation>
 <translation id="417201473131094001">Nije podržano na Chrome Canaryju</translation>
@@ -239,7 +239,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idit
 <translation id="7581063337314642333">Otvorite mrežu kartica u Chromeu</translation>
 <translation id="7662994914830945754">Da vidite svoje kartice s bilo kojeg uređaja na kojem koristite Chrome, prijavite se i uključite sinhronizaciju</translation>
 <translation id="7669869107155339016">Idite u Postavke Chromea.</translation>
-<translation id="7683540977001394271">Brže pristupite Chromeu putem donje trake početnog zaslona na iPhoneu.</translation>
+<translation id="7683540977001394271">Brže pristupajte Chromeu s donje trake na početnom ekranu iPhonea.</translation>
 <translation id="769104993356536261">Koristite Radnje u Chromeu na iOS-u</translation>
 <translation id="7693590760643069321">Sada možete koristiti Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="7698568245838009292">Chrome želi pristup kameri</translation>

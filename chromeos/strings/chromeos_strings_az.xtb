@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Nizamlayıcılar</translation>
 <translation id="2652403576514495859">diktəni aktivləşdirin və ya keçirin</translation>
 <translation id="2653659639078652383">Təqdim edin</translation>
-<translation id="2653807227758181366">Yaratmaq istədiyiniz divar kağızını təsvir edin və ya nümunə ipucudan istifadə edin</translation>
 <translation id="2654647726140493436">Güncəllənmə davam edərkən <ph name="DEVICE_TYPE" /> cihazını söndürməyin, <ph name="DEVICE_TYPE" /> enerji kabelini ayırmayın</translation>
 <translation id="2656001153562991489">Yalnız Chromebook Plus-da</translation>
 <translation id="2665671725390405060">Tələffüzü dinləyin</translation>
@@ -1366,6 +1365,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8208861521865154048">İmtiyazlar</translation>
 <translation id="8226628635270268143">Sevimli fotolarınızı və albomlarınızı seçin</translation>
 <translation id="8227119283605456246">Fayl qoşun</translation>
+<translation id="8227488649450500937">Bu ipuculardan birini yoxlayın, yaxud <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ipucu təlimatına<ph name="END_LINK_PROMPTING_GUIDE" /> nəzər salın</translation>
 <translation id="8230672074305416752">Defolt şəbəkə girişini yoxlamaq alınmadı</translation>
 <translation id="8238771987802558562">APN seçin</translation>
 <translation id="8246209727385807362">Naməlum operator</translation>

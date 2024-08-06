@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">નબળું સિગ્નલ</translation>
 <translation id="1300115153046603471">APNનો પ્રકાર ડિફૉલ્ટ અને <ph name="ATTACH" /> છે.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">બનાવ્યાની તારીખ</translation>
 <translation id="1308754910631152188">અપડેટ કરી રહ્યાં છીએ (<ph name="PERCENTAGE_VALUE" />% પૂર્ણ)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> મિનિટ</translation>
 <translation id="1310380015393971138">કોઈ <ph name="NETWORK_NAME" /> નેટવર્ક ઉપલબ્ધ નથી</translation>
@@ -339,7 +340,6 @@
 <translation id="2645380101799517405">નિયંત્રણો</translation>
 <translation id="2652403576514495859">ડિક્ટેશનની સુવિધા ચાલુ અથવા ટૉગલ કરો</translation>
 <translation id="2653659639078652383">સબમિટ કરો</translation>
-<translation id="2653807227758181366">તમે બનાવવા માગતા હો તે વૉલપેપરનું વર્ણન કરો અથવા નમૂનાના કોઈ પ્રૉમ્પ્ટનો ઉપયોગ કરો</translation>
 <translation id="2654647726140493436">અપડેટની પ્રક્રિયા ચાલુ હોય ત્યારે તમારા <ph name="DEVICE_TYPE" />ને બંધ ન કરો અથવા <ph name="DEVICE_TYPE" />નો પાવર કેબલ અનપ્લગ ન કરો</translation>
 <translation id="2656001153562991489">Chromebook Plus માટે વિશેષ</translation>
 <translation id="2665671725390405060">ઉચ્ચાર સાંભળો</translation>
@@ -506,6 +506,7 @@
 <translation id="3708186454126126312">પહેલાં કનેક્ટ કરેલા</translation>
 <translation id="3715651196924935218">ફ્લોટિંગ વિન્ડોમાંથી બહાર નીકળો</translation>
 <translation id="3716250181321371108">નિયંત્રણ બનાવો</translation>
+<translation id="3716830479327464973">જ્યારે તમે આને મંજૂરી આપો, ત્યારે નીચે જણાવેલી બાબતો માટે રેકોર્ડર તમારા ઑડિયો રેકોર્ડિંગનું વિશ્લેષણ કરશે:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> રિવ્યૂ)</translation>
 <translation id="3748026146096797577">કનેક્ટેડ નથી</translation>
 <translation id="3749289110408117711">ફાઇલનું નામ</translation>
@@ -532,6 +533,7 @@
 <translation id="3869314628814282185">ટયૂલ</translation>
 <translation id="387301095347517405">તમારી બૅટરી પૂર્ણ ચાર્જિંગ સાયકલમાંથી પસાર થયાની સંખ્યા</translation>
 <translation id="3877066159641251281">અનુવાદ સાંભળો</translation>
+<translation id="3880601782712134623">અલગ-અલગ વૉઇસની ઑટોમૅટિક રીતે ભાળ મેળવે છે અને દરેક સ્પીકરને કોઈ સામાન્ય લેબલ આપે છે, જેમ કે સ્પીકર 1 અને સ્પીકર 2</translation>
 <translation id="3885327323343477505">સ્ક્રીન સેવર બદલો</translation>
 <translation id="3889914174935857450">ડેટા રિસેટ કરો</translation>
 <translation id="3897092660631435901">મેનૂ</translation>
@@ -757,6 +759,7 @@
 <translation id="5049856988445523908">સિમ કાર્ડ લૉક છે (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">જૂથનું નામ</translation>
 <translation id="5051044138948155788">આ એકમાત્ર પેજ છે. આ તમને સ્કૅન શરૂ કરતી સ્ક્રીન પર લઈ જશે.</translation>
+<translation id="5078711626843651677">જ્યાં સુધી સ્પીકરને લેબલ આપવાની પ્રક્રિયા પૂર્ણ ન થાય, ત્યાં સુધી વૉઇસ મૉડલને હંગામી રીતે ડિવાઇસ પર સ્ટોર કરવામાં આવે છે. તમે કોઈપણ સમયે સેટિંગમાં જઈને આને બંધ કરી શકો છો.</translation>
 <translation id="5078983345702708852">ફ્યૂચુરિસ્ટિક</translation>
 <translation id="5087864757604726239">પાછા ફરો</translation>
 <translation id="5088172560898466307">સર્વર હોસ્ટનું નામ</translation>
@@ -1107,6 +1110,7 @@
 <translation id="6905163627763043954">અજમાવી જુઓ</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> પર પાછા જાઓ</translation>
 <translation id="6910312834584889076">સ્કૅનરનું કવર ખુલ્લું છે. કવર બંધ કરો અને ફરી પ્રયાસ કરો.</translation>
+<translation id="6910845598686542904">રેકોર્ડિંગમાં ભાળ મળેલા વૉઇસના મૉડલની ગણતરી કરે છે</translation>
 <translation id="6911383237894364323">મીડિયા સર્વર સાથે કનેક્ટ કરી શકાયું નથી</translation>
 <translation id="6930242544192836755">અવધિ</translation>
 <translation id="6930597342185648547">બૅકગ્રાઉન્ડ વિશે</translation>
@@ -1572,6 +1576,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> માટે કી ખૂટે છે. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">સમગ્ર રેકોર્ડિંગ દરમિયાન વૉઇસની તુલના કરે છે, જેથી ટ્રાન્સક્રિપ્ટ દર્શાવી શકે કે દરેક સ્પીકર દ્વારા શું કહેવામાં આવ્યું અને ક્યારે કહેવામાં આવ્યું</translation>
 <translation id="952992212772159698">સક્રિય કરેલું નથી</translation>
 <translation id="95718197892796296">માટી</translation>
 <translation id="960719561871045870">ઑપરેટર કોડ</translation>

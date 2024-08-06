@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">אמצעי בקרה</translation>
 <translation id="2652403576514495859">הפעלה או החלפת המצב של ההכתבה</translation>
 <translation id="2653659639078652383">שליחה</translation>
-<translation id="2653807227758181366">מתארים את הטפט שרוצים ליצור או משתמשים בהנחיה לדוגמה</translation>
 <translation id="2654647726140493436">אין לכבות את <ph name="DEVICE_TYPE" /> או לנתק את כבל החשמל של <ph name="DEVICE_TYPE" /> בזמן שהעדכון מתבצע</translation>
 <translation id="2656001153562991489">‏בלעדי ב-Chromebook Plus</translation>
 <translation id="2665671725390405060">האזנה להגייה</translation>
@@ -1366,6 +1365,7 @@
 <translation id="8208861521865154048">הטבות</translation>
 <translation id="8226628635270268143">בחירת התמונות והאלבומים האהובים עליך</translation>
 <translation id="8227119283605456246">צירוף קובץ</translation>
+<translation id="8227488649450500937">אפשר לנסות אחת מההנחיות האלה או לעיין <ph name="BEGIN_LINK_PROMPTING_GUIDE" />במדריך ליצירת הנחיות<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">לא ניתן היה לבצע פינג לשער הרשת המוגדרת כברירת מחדל</translation>
 <translation id="8238771987802558562">‏בחירת APN</translation>
 <translation id="8246209727385807362">ספק לא ידוע</translation>

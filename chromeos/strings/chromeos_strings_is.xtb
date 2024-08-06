@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Stýringar</translation>
 <translation id="2652403576514495859">kveikja eða slökkva á raddinnslætti</translation>
 <translation id="2653659639078652383">Senda</translation>
-<translation id="2653807227758181366">Lýstu veggfóðrinu sem þú vilt búa til eða notaðu dæmi um skipun</translation>
 <translation id="2654647726140493436">Ekki slökkva á <ph name="DEVICE_TYPE" /> eða taka rafmagnssnúru <ph name="DEVICE_TYPE" /> úr sambandi á meðan uppfærslan er í gangi</translation>
 <translation id="2656001153562991489">Aðeins fyrir Chromebook Plus</translation>
 <translation id="2665671725390405060">Hlusta á framburð</translation>
@@ -358,6 +357,7 @@
 <translation id="2780756493585863768">Nýlegir bakgrunnar sem eru knúnir af gervigreind Google</translation>
 <translation id="2783010256799387990">STÓÐST</translation>
 <translation id="2786429550992142861">líni</translation>
+<translation id="2787237339470862294">Þetta tungumál er ekki stutt eins og er</translation>
 <translation id="2787435249130282949">ljósara lyklaborð</translation>
 <translation id="2805756323405976993">Forrit</translation>
 <translation id="28232023175184696">Ekki er hægt að tengjast netinu. Smelltu til að reyna aftur.</translation>
@@ -669,6 +669,7 @@
 <translation id="458794348635939462">Ekki tókst að leysa úr öllum hýslum</translation>
 <translation id="4593212453765072419">Auðkenningar staðgengilsþjóns krafist</translation>
 <translation id="4594021849294327751">Búa til textauppskrift</translation>
+<translation id="4607282946861182308">Ekki er hægt að búa til myndir af þessu. Prófaðu aðra skipun.</translation>
 <translation id="4609350030397390689">Draga úr birtustigi lyklaborðs</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> af <ph name="TOTAL_PAGE_NUMBER" />. Ýttu á færslulykilinn til að hætta við prentverkið.</translation>
 <translation id="463791356324567266">Hættir við að skanna...</translation>
@@ -1364,6 +1365,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8208861521865154048">Fríðindi</translation>
 <translation id="8226628635270268143">Veldu uppáhaldsmyndir og -möppur</translation>
 <translation id="8227119283605456246">Hengja skrá við</translation>
+<translation id="8227488649450500937">Prófaðu eina af þessum skipunum eða skoðaðu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />leiðbeiningar um skipanir<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Ping-prófun sjálfvalinnar netkerfisgáttar mistókst</translation>
 <translation id="8238771987802558562">Veldu aðgangsstað</translation>
 <translation id="8246209727385807362">Óþekkt símafyrirtæki</translation>

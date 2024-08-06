@@ -302,6 +302,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2529021024822217800">Buka Semua</translation>
 <translation id="2536991091671391962">Anda dapat menggunakan sandi tersimpan di semua perangkat. Sandi disimpan ke Pengelola Sandi Google untuk <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Sembunyikan "Pemeriksaan Keamanan"</translation>
+<translation id="2545094307889012168">Overlay Lens</translation>
 <translation id="2547458583188611426">Sinkronisasi tidak berfungsi. Untuk memulai sinkronisasi, masukkan frasa sandi.</translation>
 <translation id="2551153019974022505">Error akun</translation>
 <translation id="2556092377360758201">Tidak Ada Perlindungan (tidak direkomendasikan)</translation>
@@ -848,6 +849,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5205197603258285592">Simpan Gambar di...</translation>
 <translation id="5211488077761630279">Izinkan "<ph name="SITE_NAME" />" menggunakan <ph name="PERMISSION" />?</translation>
+<translation id="5215046161188172474">Bagikan URL Lengkap</translation>
 <translation id="5219295696240154694">Bantu Tingkatkan Keamanan di Web untuk Semuanya</translation>
 <translation id="5220945116117011963">Buat acara kalender melalui tanggal</translation>
 <translation id="5221339005270097309">Memeriksa Sandi…</translation>
@@ -1125,6 +1127,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berbagai situs, misalnya untuk mempersonalisasi iklan.</translation>
 <translation id="6476253015009698798">Pemantauan harga tidak tersedia untuk halaman ini.</translation>
 <translation id="6476800141292307438">Menerjemahkan halaman ke dalam bahasa <ph name="LANGUAGE" />. Opsi tersedia di dekat bagian bawah layar.</translation>
+<translation id="6477585407014744043">Beri Nama Grup</translation>
 <translation id="648164694371393720">Error saat Autentikasi</translation>
 <translation id="6494931198667773526">Berakhir</translation>
 <translation id="6500795388871406244">Gunakan Sandi yang Disarankan:</translation>

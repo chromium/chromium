@@ -433,6 +433,17 @@ Se il criterio viene disattivato o se non viene configurato, gli elementi da avv
       Se è selezionata l'opzione "Forzato" (2), il selettore profilo non può essere eliminato dall'utente. Il selettore profilo sarà mostrato anche se c'è un solo profilo disponibile.</translation>
 <translation id="1339174690935954950">Impedisci agli utenti di inviare feedback</translation>
 <translation id="1340053691042184658">Impedisci gli accessi come ospite al browser</translation>
+<translation id="134154550994512097">Questo criterio consente di stabilire se gli utenti possono attivare o meno la modalità solo HTTPS (Utilizza sempre connessioni sicure) nelle Impostazioni. La Modalità solo HTTPS esegue l'upgrade di tutte le navigazioni alle estensioni HTTPS.
+      Se questa impostazione non viene configurata o se viene impostata su allowed, gli utenti potranno attivare la Modalità solo HTTPS.
+      Se viene impostata su disallowed, gli utenti non potranno attivare la Modalità solo HTTPS.
+      Se viene impostata su force_enabled, la Modalità solo HTTPS verrà attivata con restrizioni e gli utenti non potranno disattivarla.
+      Se viene impostata su force_balanced_enabled, la Modalità solo HTTPS verrà attivata in Modalità bilanciata e gli utenti non potranno disattivarla.
+      Il valore force_enabled è supportato a partire dalla versione M112, mentre force_balanced_enabled è supportato a partire dalla versione M129.
+      Se imposti questo criterio su un valore non supportato dalla versione di Chrome che lo riceve, Chrome utilizzerà l'impostazione consentita per impostazione predefinita.
+
+Il criterio <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separato
+può essere utilizzato per escludere determinati nomi host o pattern dei nomi host
+dall'upgrade ad HTTPS da parte di questa funzionalità.</translation>
 <translation id="1342918903685430097">Configura la versione minima di <ph name="PRODUCT_OS_NAME" /> consentita per il dispositivo.</translation>
 <translation id="1343128241903870688">Disattiva i report sulle informazioni relative alle app del dispositivo</translation>
 <translation id="1347198119056266798">Questo criterio è deprecato, al suo posto usa <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> e <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Questo criterio viene ignorato se è impostato il criterio <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> o <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (deprecato).
@@ -2648,6 +2659,9 @@ Il criterio <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> h
 <translation id="2973972555495515337">Se il criterio viene impostato su Attivato, le applicazioni web di terze parti possono usare <ph name="DESK_API_NAME" /> per salvare e condividere <ph name="PRODUCT_OS_NAME" /> scrivanie. Se il criterio viene impostato su Disattivato, l'utente non potrà salvare e condividere i dati delle scrivanie tramite l'<ph name="DESK_API_NAME" />. Se il criterio non viene configurato, viene applicato lo stesso comportamento del criterio disattivato. Il criterio verrà applicato soltanto sui dispositivi registrati.</translation>
 <translation id="2976033779241323433">Attiva la tastiera virtuale touch in base all'euristica di sistema predefinita</translation>
 <translation id="2976429807269247880">Impostazioni del comportamento per i cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedenti</translation>
+<translation id="2977576137210520963">Se il criterio viene configurato, verrà specificato l'elenco di URL i cui pattern vengono confrontati con l'origine di sicurezza dell'URL richiedente. Una corrispondenza assicura l'accesso ai dispositivi di acquisizione audio senza richieste
+
+      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Tieni presente, tuttavia, che il pattern "*", che corrisponde a qualsiasi URL, non è supportato da questo criterio.</translation>
 <translation id="2979696534869541158">Forza implementazione precedente</translation>
 <translation id="2985927503455169394">Usa la modalità predefinita dell'esperienza di onboarding dell'assistente</translation>
 <translation id="2987155890997901449">Attiva ARC</translation>
@@ -6708,6 +6722,7 @@ Se il criterio è impostato su <ph name="BR_UNDER_USER_CONTROL" />, agli utenti 
 
 Dopo la configurazione iniziale, gli utenti possono attivare o disattivare il backup e ripristino.</translation>
 <translation id="6169768162756928771">Impostazioni di gestione dell'identità degli utenti GAIA</translation>
+<translation id="6170316094401732532">Non limitare l'impostazione Modalità solo HTTPS degli utenti</translation>
 <translation id="6172110090237528457">Consente di configurare il salvaschermo a livello di dispositivo per la schermata di accesso.
 
 Se questo criterio viene impostato su true, quando il dispositivo <ph name="PRODUCT_OS_NAME" /> sarà inattivo verrà mostrato un salvaschermo nella schermata di accesso.
@@ -7431,6 +7446,9 @@ Nota: se il dispositivo viene riavviato o se l'utente esce, la cache viene svuot
 
           Questo criterio non ha effetto se viene attivato, lasciato vuoto o se non viene configurato.</translation>
 <translation id="6583249367505445969">Disattiva barra dei Preferiti</translation>
+<translation id="6583473893541367102">Se il criterio viene configurato, verrà specificato l'elenco di URL i cui pattern vengono confrontati con l'origine di sicurezza dell'URL richiedente. Una corrispondenza assicura l'accesso ai dispositivi per l'acquisizione video senza richieste
+
+      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Tieni presente, tuttavia, che il pattern "*", che corrisponde a qualsiasi URL, non è supportato da questo criterio.</translation>
 <translation id="6584122839583172231">Le impostazioni di F12 usano la scorciatoia che contiene i tasti di modifica Ctrl e Maiusc</translation>
 <translation id="6584541828182430328">Disattiva avviso schermo intero</translation>
 <translation id="658537215958747575">Consenti a origini idonee di utilizzare Direct Sockets</translation>
@@ -8909,6 +8927,7 @@ Se questo criterio non viene impostato, il renderer del PDF viene scelto dal bro
       Nota. Vedi l'elenco di variabili che puoi utilizzare: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
 <translation id="7719808201797990069">Eccezioni di pattern URL per ignorare le schede</translation>
 <translation id="7721944091689270995">ID utente <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="7725010277314676939">Forza l'attivazione della Modalità solo HTTPS con restrizioni</translation>
 <translation id="7728486978686128364">Non utilizzare i metodi di richiesta in maiuscolo, tranne per DELETE/GET/HEAD/OPTIONS/POST/PUT</translation>
 <translation id="7731026922044991970">Ripristina il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per i cookie su tutti i siti</translation>
 <translation id="7732907212083471072">Criteri rimossi</translation>
@@ -10782,6 +10801,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 
       Questo criterio è una misura temporanea e verrà rimosso nelle future versioni di <ph name="PRODUCT_NAME" />. Dopo la rimozione del criterio, <ph name="PRODUCT_NAME" /> potrà sempre eseguire query su tipi DNS aggiuntivi.</translation>
 <translation id="9167719789236691545">Disattiva Drive nell'app File di <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="9172648973829444124">Forza l'attivazione della Modalità solo HTTPS in Modalità bilanciata</translation>
 <translation id="9172911925443428317">Non consentire la visualizzazione della promozione di valutazione dell'App Store</translation>
 <translation id="9173133289347070466">Sondaggi di <ph name="PRODUCT_NAME" /> all'interno del prodotto raccolgono il feedback degli utenti per il browser. Le risposte al sondaggio non sono associate agli account utente.
 Se questo criterio viene attivato o se non viene configurato, i sondaggi all'interno del prodotto potrebbero essere mostrati agli utenti.
@@ -10793,6 +10813,7 @@ Questo criterio non ha effetto se il criterio <ph name="METRICS_REPORTING_ENABLE
 <translation id="9180108183162961002">Consenti gli accessi come ospite al browser</translation>
 <translation id="9185963199234034321">Attiva l'alto contrasto nella schermata di accesso e consenti all'utente di disattivarlo temporaneamente</translation>
 <translation id="9187743794267626640">Disabilita il montaggio di una memoria esterna</translation>
+<translation id="9189737595688383533">Non consentire agli utenti di attivare la Modalità solo HTTPS</translation>
 <translation id="9190022798664427644">Attiva l'audio in formato mono</translation>
 <translation id="9190456586252617675">Questo criterio consente di stabilire la modalità dell'esperienza di onboarding dell'assistente.
 

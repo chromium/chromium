@@ -405,6 +405,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> ప్రివ్యూ. యాక్టివ్ డెస్క్.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) రిజల్యూషన్‌కు మార్చబడింది. నిర్ధారించకుండా, మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />‌లో రీస్టోర్ చేయబడతాయి.</translation>
 <translation id="2487915095798731898">చేర్చు</translation>
+<translation id="2496180316473517155">బ్రౌజింగ్ హిస్టరీ</translation>
 <translation id="2499445554382787206">డెస్క్ ప్రొఫైల్ మెనూ. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">స్టిక్కీ కీలు</translation>
 <translation id="2504454902900101003">మీ ఫోన్‌లోని తాజా ఫోటోలను, మీడియాను, నోటిఫికేషన్‌లను చూసే సదుపాయాన్ని సెటప్ చేయడాన్ని విస్మరించండి</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">ఆన్‌లైన్ సైన్ ఇన్ అవసరం</translation>
 <translation id="2612072250312279703">యాక్టివిటీ మానిటర్</translation>
 <translation id="2612614436418177118">యాప్ గ్రిడ్ లోపల యాప్ చిహ్నాన్ని తరలించండి</translation>
+<translation id="2619052155095999743">చొప్పించండి</translation>
 <translation id="2619326010008283367"><ph name="TOTAL_STEPS" /> దశలలో <ph name="STEP" />వ దానిని చూడండి. మీరు లాంచర్‌లో మీ పరికర సెట్టింగ్‌లను కనుగొనవచ్చు. మీ వాల్‌పేపర్‌ను మార్చడం లేదా స్క్రీన్ సేవర్‌ను సెట్ చేయడం వంటి సెట్టింగ్‌లలో మీ <ph name="PRODUCT_NAME" />ను అనుకూలంగా మార్చడానికి ట్రై చేయండి.</translation>
 <translation id="2620016719323068571">మీ <ph name="CATEGORY" />, ఫైల్స్, యాప్‌లు, మరిన్నింటి కోసం సెర్చ్ చేయండి...</translation>
 <translation id="2620436844016719705">సిస్టమ్</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">ఇతర Wi-Fi నెట్‌వర్క్‌లలో చేరండి</translation>
 <translation id="2705001408393684014">మైక్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
+<translation id="271033894570825754">కొత్తది</translation>
 <translation id="2710984741481549981">విండోలను లాక్ చేయండి</translation>
 <translation id="2718395828230677721">రాత్రి కాంతి</translation>
 <translation id="2726420622004325180">హాట్‌స్పాట్‌ను అందించడానికి మీ ఫోన్ తప్పనిసరిగా మొబైల్ డేటాను కలిగి ఉండాలి</translation>
@@ -558,6 +561,7 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">మెనూని విస్తరించు</translation>
 <translation id="3087734570205094154">దిగువ</translation>
+<translation id="3090214513075567547">సంబంధిత మెనూను తెరవండి</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" />ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">మిస్ అయ్యింది</translation>
 <translation id="3095995014811312755">వెర్షన్‌</translation>
@@ -1087,6 +1091,7 @@
 <translation id="4890408602550914571">మీ ఫోన్ సమీపంలోనే ఉండి, అలాగే బ్లూటూత్ ఆన్ చేయబడి ఉందని నిర్ధారించుకోండి.</translation>
 <translation id="4892981359753171125">ఫేస్ కంట్రోల్</translation>
 <translation id="4895488851634969361">బ్యాటరీ నిండింది.</translation>
+<translation id="4902797682482387055">ఫోకస్ చేయమని సూచించిన టాస్క్</translation>
 <translation id="490375751687810070">నిలువుగా ఉంది</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% బ్యాటరీ</translation>
 <translation id="491504982845934899">పరికరాన్ని సెటప్ చేసిన తర్వాత <ph name="NETWORK_NAME" />ను యాక్టివేట్ చేయండి</translation>
@@ -1097,6 +1102,7 @@
 <translation id="492453977506755176">క్యాప్చర్ మోడ్ కీ</translation>
 <translation id="4925542575807923399">బహుళ సైన్-ఇన్ సెషన్‌లో ఈ ఖాతా మొదటిగా సైన్-ఇన్ చేసిన ఖాతాగా ఉండటం ఈ ఖాతా నిర్వాహకులకు అవసరం.</translation>
 <translation id="493076006037866439">స్క్రీన్ నుండి జూమ్ - అవుట్ చేయండి</translation>
+<translation id="4932733599132424254">తేదీ</translation>
 <translation id="4936329710968938986">అందరూ, ఆఫ్‌లో ఉంది</translation>
 <translation id="4937170330762390348">డిక్టేషన్ సహాయంతో, మీ వాయిస్‌ను ఉపయోగించి మీరు టైప్ చేయవచ్చు. మీరు టెక్స్ట్ ఫీల్డ్‌లో ఉన్నప్పుడు, డిక్టేషన్ కీని నొక్కండి, లేదా స్క్రీన్ దిగువున ఉండే మైక్రోఫోన్ చిహ్నాన్ని ఎంచుకోండి. మీ డిక్టేషన్ భాష <ph name="LANGUAGE" />‌కు సెట్ చేయబడింది. స్పీచ్ ఫైల్స్ డౌన్‌లోడ్ అవుతాయి, తద్వారా డిక్టేషన్‌ను మీరు ఆఫ్‌లైన్‌లో కూడా ఉపయోగించగలరు. 'సెట్టింగ్‌లు &gt; యాక్సెసిబిలిటీ'లో ఏ సమయంలోనైనా డిక్టేషన్ భాషను మీరు మార్చుకోవచ్చు.</translation>
 <translation id="4938176435186993759">అన్ని సూచనలను దాచండి</translation>
@@ -1105,6 +1111,7 @@
 <translation id="495046168593986294">పైకి స్క్రోల్ చేయి</translation>
 <translation id="4950800194215951939">మీ గేమింగ్ ఎక్స్‌పీరియన్స్‌ను అనుకూలంగా మార్చండి</translation>
 <translation id="4952936045814352993">అలారం శబ్దాలు డిజేబుల్ చేయబడినప్పుడు 'ఫోన్‌ను గుర్తించు' ఫీచర్ అందుబాటులో ఉండదు</translation>
+<translation id="4953585991029886728">వచనాన్ని ఎడిట్ చేయండి</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" />, మీ <ph name="DEVICE_TYPE" /> వెర్షన్‌ను దాని మునపటి వెర్షన్‌కు మార్చాలనుకుంటోంది. మీ పరికరం రీసెట్ చేయబడుతుంది, ఇంకా మొత్తం డేటా తొలగించబడుతుంది.</translation>
 <translation id="4961318399572185831">స్క్రీన్ ప్రసారం చేయండి</translation>
 <translation id="4964188651935955085">మీరు బ్లూటూత్‌ను ఆఫ్ చేసినప్పుడు, ఈ వెలుపలి పరికరం మీ <ph name="DEVICE_TYPE" /> నుండి డిస్‌కనెక్ట్ చేయబడుతుంది:</translation>
@@ -1426,6 +1433,7 @@
 <translation id="6032620807120418574">ఫుల్ స్క్రీన్‌ను రికార్డ్ చేయడానికి ఎక్కడైనా క్లిక్ చేయండి</translation>
 <translation id="6040071906258664830">మైక్రోఫోన్‌తో రికార్డ్ చేయడం <ph name="STATE" />లో ఉంది</translation>
 <translation id="6040143037577758943">మూసివేయండి</translation>
+<translation id="6042308850641462728">మరింత చూపించు</translation>
 <translation id="6043212731627905357">మీ <ph name="DEVICE_TYPE" />తో ఈ మానిటర్ పని చేయడం లేదు (మానిటర్‌కు మద్దతు లేదు).</translation>
 <translation id="6043994281159824495">ఇప్పుడే సైన్ అవుట్ చేయి</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> యాప్‌ల ద్వారా ఉపయోగించబడింది</translation>
@@ -1440,6 +1448,7 @@
 <translation id="6068258534237496331">వీడియో కాల్ కంట్రోల్స్</translation>
 <translation id="6073451960410192870">రికార్డ్ చేయడం ఆపివేయి</translation>
 <translation id="6074087755403037157">బీటా ఛానెల్</translation>
+<translation id="6091929401758362855">ప్లేలిస్ట్: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">అడ్మిన్ డిజేబుల్ చేశారు</translation>
 <translation id="6095008505822982596">స్పీచ్ రేట్</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" />‌తో కనెక్షన్‌ను జోడించండి</translation>
@@ -1892,6 +1901,7 @@
 <translation id="7748275671948949022">షెల్ఫ్‌లో లాంచర్ బటన్‌ను హైలైట్ చేయండి</translation>
 <translation id="7749443890790263709">గరిష్ట డెస్క్‌ల సంఖ్యను చేరుకుంది.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">అన్నీ చూపించు</translation>
 <translation id="7759183637555564029">"రాయడంలో సహాయం పొందండి", "చదవడంలో సహాయం పొందండి" ఫీచర్‌ను సెట్టింగ్‌లలో మీరు ఎప్పుడైనా ఆఫ్ చేయవచ్చు. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">వినడానికి ఎంచుకోండి</translation>
 <translation id="7769299611924763557">మీ GIF త్వరలో సిద్ధంగా ఉంటుంది</translation>
@@ -2025,6 +2035,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ఈ సెట్టింగ్ మీ నిర్వాహకుడి ద్వారా నిర్వహించబడుతుంది.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> కోసం సమాచార డైలాగ్‌ను తెరువు</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />ని ఉపయోగిస్తోంది</translation>
+<translation id="8168435359814927499">కంటెంట్</translation>
 <translation id="8185090165691050712">మెనూను ఆన్/ఆఫ్ చేసి, లాక్ మోడ్ సైజ్ మార్చండి</translation>
 <translation id="8192727139462702395">మీరు బ్లూటూత్‌ను ఆఫ్ చేసినప్పుడు, ఈ వెలుపలి పరికరాలు మీ <ph name="DEVICE_TYPE" /> నుండి డిస్‌కనెక్ట్ చేయబడతాయి:</translation>
 <translation id="8198456017687137612">ప్రసారం చేసే ట్యాబ్</translation>

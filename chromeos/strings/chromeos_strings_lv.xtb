@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Vadīklas</translation>
 <translation id="2652403576514495859">iespējot vai pārslēgt diktēšanu</translation>
 <translation id="2653659639078652383">Iesniegt</translation>
-<translation id="2653807227758181366">Aprakstiet fona tapeti, ko vēlaties izveidot, vai izmantojiet uzvednes paraugu.</translation>
 <translation id="2654647726140493436">Neizslēdziet ierīci (<ph name="DEVICE_TYPE" />) un neatvienojiet ierīces (<ph name="DEVICE_TYPE" />) barošanas vadu, kamēr notiek atjaunināšana.</translation>
 <translation id="2656001153562991489">Tikai Chromebook Plus datoriem</translation>
 <translation id="2665671725390405060">Klausīties izrunu</translation>
@@ -358,6 +357,7 @@
 <translation id="2780756493585863768">Jaunākie foni, ko nodrošina Google MI</translation>
 <translation id="2783010256799387990">NOKĀRTOTS</translation>
 <translation id="2786429550992142861">linaudums</translation>
+<translation id="2787237339470862294">Šī valoda pašlaik netiek atbalstīta.</translation>
 <translation id="2787435249130282949">gaišāka tastatūra</translation>
 <translation id="2805756323405976993">Lietotnes</translation>
 <translation id="28232023175184696">Nevar izveidot savienojumu ar internetu. Noklikšķiniet, lai mēģinātu vēlreiz.</translation>
@@ -669,6 +669,7 @@
 <translation id="458794348635939462">Neizdevās atrisināt visu saimniekdatoru nosaukumus</translation>
 <translation id="4593212453765072419">Nepieciešama starpniekservera autentifikācija</translation>
 <translation id="4594021849294327751">Izveidot transkripciju</translation>
+<translation id="4607282946861182308">Nevar izveidot šādus attēlus. Izmēģiniet citu uzvedni.</translation>
 <translation id="4609350030397390689">Samazināt tastatūras spilgtumu</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />: <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> no <ph name="TOTAL_PAGE_NUMBER" /> lapas(-ām). Lai atceltu drukas uzdevumu, nospiediet taustiņu Enter.</translation>
 <translation id="463791356324567266">Notiek skenēšanas atcelšana…</translation>
@@ -1360,6 +1361,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8208861521865154048">Priekšrocības</translation>
 <translation id="8226628635270268143">Izvēlieties savus iecienītākos fotoattēlus un albumus.</translation>
 <translation id="8227119283605456246">Pievienot failu</translation>
+<translation id="8227488649450500937">Izmēģiniet kādu no šīm uzvednēm vai skatiet <ph name="BEGIN_LINK_PROMPTING_GUIDE" />uzvedņu rakstīšanas ceļvedi<ph name="END_LINK_PROMPTING_GUIDE" />.</translation>
 <translation id="8230672074305416752">Neizdevās ehotestēt noklusējuma tīkla vārteju</translation>
 <translation id="8238771987802558562">Izvēlieties APN</translation>
 <translation id="8246209727385807362">Nezināms operators</translation>

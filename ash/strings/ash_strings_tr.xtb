@@ -405,6 +405,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> önizlemesi. Etkin masa.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" çözünürlüğü <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) olarak değiştirildi. Onaylamazsanız önceki ayarlar <ph name="TIMEOUT_SECONDS" /> içinde geri yüklenecek.</translation>
 <translation id="2487915095798731898">Katıl</translation>
+<translation id="2496180316473517155">Tarama geçmişi</translation>
 <translation id="2499445554382787206">Masa profili menüsü. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Yapışkan tuşlar</translation>
 <translation id="2504454902900101003">Telefonunuzdaki son fotoğrafları, medya içeriklerini ve bildirimleri görme seçeneğini ayarlamayı kapatın</translation>
@@ -436,6 +437,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2607678425161541573">Online oturum açma gerekli</translation>
 <translation id="2612072250312279703">etkinlik izleme</translation>
 <translation id="2612614436418177118">Uygulama simgesini uygulama tablosu içinde taşıyın</translation>
+<translation id="2619052155095999743">Ekle</translation>
 <translation id="2619326010008283367">Tur adımı <ph name="STEP" />/<ph name="TOTAL_STEPS" />. Cihazınızın ayarlarını Başlatıcı'da bulabilirsiniz. Ayarlar'dan <ph name="PRODUCT_NAME" /> cihazınızı özelleştirmeyi deneyin. Örneğin duvar kağıdınızı değiştirebilir veya ekran koruyucu ayarlayabilirsiniz.</translation>
 <translation id="2620016719323068571"><ph name="CATEGORY" />, dosyalar, uygulamalar genelinde ve daha fazla yerde arama yapın...</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -462,6 +464,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2704781753052663061">Başka kablosuz ağlara katıl</translation>
 <translation id="2705001408393684014">Mikrofonu aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Yukarı</translation>
+<translation id="271033894570825754">Yeni</translation>
 <translation id="2710984741481549981">Pencereleri kilitleyin</translation>
 <translation id="2718395828230677721">Gece Işığı</translation>
 <translation id="2726420622004325180">Hotspot sunabilmesi için telefonunuzun mobil verisi olmalıdır</translation>
@@ -1086,6 +1089,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4890408602550914571">Telefonunuzun yakında olduğundan ve Bluetooth'un açık olduğundan emin olun.</translation>
 <translation id="4892981359753171125">Yüz kontrolü</translation>
 <translation id="4895488851634969361">Pil dolu.</translation>
+<translation id="4902797682482387055">Odaklanmanız için önerilen görev</translation>
 <translation id="490375751687810070">Dikey</translation>
 <translation id="490788395437447240">%<ph name="BATTERY_PERCENTAGE" /> pil</translation>
 <translation id="491504982845934899"><ph name="NETWORK_NAME" /> ağını, cihaz kurulumundan sonra etkinleştirin</translation>
@@ -1096,6 +1100,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="492453977506755176">Ekran görüntüsü alma modu tuşu</translation>
 <translation id="4925542575807923399">Bu hesabın yöneticisi hesabın bir çoklu oturumda ilk oturum açan hesap olmasını gerektiriyor.</translation>
 <translation id="493076006037866439">Ekranı uzaklaştırın</translation>
+<translation id="4932733599132424254">Tarih</translation>
 <translation id="4936329710968938986">Herkes, kapalı</translation>
 <translation id="4937170330762390348">Dikte özelliğinde sesinizi kullanarak yazabilirsiniz. Metin alanındayken dikte tuşuna basın veya ekranın alt kısmındaki mikrofon simgesini seçin. Dikte diliniz <ph name="LANGUAGE" /> olarak ayarlandı. Dikteyi çevrimdışı olarak kullanabilmeniz için konuşma dosyaları indirilecek. Dikte dilini dilediğiniz zaman Ayarlar &gt; Erişilebilirlik bölümünden değiştirebilirsiniz.</translation>
 <translation id="4938176435186993759">Tüm önerileri gizle</translation>
@@ -1104,6 +1109,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="495046168593986294">Yukarı kaydır</translation>
 <translation id="4950800194215951939">Oyun deneyiminizi özelleştirin</translation>
 <translation id="4952936045814352993">Alarm sesleri devre dışıyken telefonu bulma özelliği kullanılamaz</translation>
+<translation id="4953585991029886728">Metni düzenle</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" />, <ph name="DEVICE_TYPE" /> cihazınızı geri çekmenizi zorunlu tutuyor. Cihazınız sıfırlanacak ve tüm veriler silinecek.</translation>
 <translation id="4961318399572185831">Ekranı yayınla</translation>
 <translation id="4964188651935955085">Bluetooth'u kapattığınızda aşağıdaki harici cihazın, <ph name="DEVICE_TYPE" /> cihazınızla bağlantısı kesilir:</translation>
@@ -1425,6 +1431,7 @@ Bağlı cihaz yok.</translation>
 <translation id="6032620807120418574">Tam ekran kaydetmek için herhangi bir yeri tıklayın</translation>
 <translation id="6040071906258664830">Mikrofon kaydı <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Kapat</translation>
+<translation id="6042308850641462728">Daha fazla</translation>
 <translation id="6043212731627905357">Bu monitör <ph name="DEVICE_TYPE" /> cihazınızla uyuşmuyor (monitör desteklenmiyor).</translation>
 <translation id="6043994281159824495">Şimdi çıkış yap</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> uygulama tarafından kullanıldı</translation>
@@ -1439,6 +1446,7 @@ Bağlı cihaz yok.</translation>
 <translation id="6068258534237496331">Görüntülü Görüşme Denetimleri</translation>
 <translation id="6073451960410192870">Kaydı durdur</translation>
 <translation id="6074087755403037157">Beta Kanalı</translation>
+<translation id="6091929401758362855">Oynatma listesi: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Yönetici devre dışı bıraktı</translation>
 <translation id="6095008505822982596">Konuşma hızı</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> ile bağlantı ekleyin</translation>
@@ -1891,6 +1899,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7748275671948949022">Raftaki başlatıcı düğmesini vurgular</translation>
 <translation id="7749443890790263709">Maksimum masa sayısına ulaşıldı.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Tümünü göster</translation>
 <translation id="7759183637555564029">"Yazmama yardım et" ve "Okumama yardım et" özelliklerini dilediğiniz zaman Ayarlar'dan devre dışı bırakabilirsiniz. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Seç ve Dinle</translation>
 <translation id="7769299611924763557">GIF'iniz kısa süre içinde hazır olacak</translation>
@@ -2024,6 +2033,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Bu ayar, yöneticiniz tarafından yönetilir.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> için bilgi iletişim kutusunu aç</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> kullanılıyor</translation>
+<translation id="8168435359814927499">İçerik</translation>
 <translation id="8185090165691050712">Kilit modunu yeniden boyutlandırmak için menüyü açın/kapatın</translation>
 <translation id="8192727139462702395">Bluetooth'u kapattığınızda aşağıdaki harici cihazların, <ph name="DEVICE_TYPE" /> cihazınızla bağlantısı kesilir:</translation>
 <translation id="8198456017687137612">Sekme yayınlanıyor</translation>

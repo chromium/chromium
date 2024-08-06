@@ -405,6 +405,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2486214324139475545">Previzualizare pentru <ph name="DESK_NAME" />. Desktop activ.</translation>
 <translation id="2486405091093637109">Rezoluția pentru <ph name="DISPLAY_NAME" /> a fost modificată la <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Dacă nu confirmi, vor fi restabilite setările anterioare în <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Urmează</translation>
+<translation id="2496180316473517155">Istoricul de navigare</translation>
 <translation id="2499445554382787206">Meniul profilului de desktop: <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Taste adezive</translation>
 <translation id="2504454902900101003">Renunță la configurarea afișării fotografiilor, a elementelor media și a notificărilor recente ale telefonului</translation>
@@ -436,6 +437,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2607678425161541573">Este necesară conectarea online</translation>
 <translation id="2612072250312279703">instrument de monitorizare a activităților</translation>
 <translation id="2612614436418177118">Mută o pictogramă de aplicație în grila de aplicații</translation>
+<translation id="2619052155095999743">Introduceți</translation>
 <translation id="2619326010008283367">Pasul <ph name="STEP" /> din <ph name="TOTAL_STEPS" /> al turului. Setările dispozitivului se găsesc în Lansator. Încearcă să personalizezi dispozitivul <ph name="PRODUCT_NAME" /> în Setări, de exemplu, să schimbi imaginea de fundal sau să setezi un screensaver.</translation>
 <translation id="2620016719323068571">Caută în <ph name="CATEGORY" />, fișiere, aplicații și altele…</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -462,6 +464,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2704781753052663061">Alătură-te altor rețele Wi-Fi</translation>
 <translation id="2705001408393684014">Comută microfonul. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">În sus</translation>
+<translation id="271033894570825754">Nou</translation>
 <translation id="2710984741481549981">Blochează ferestrele</translation>
 <translation id="2718395828230677721">Lum. de noapte</translation>
 <translation id="2726420622004325180">Telefonul trebuie să aibă date mobile pentru a crea un hotspot</translation>
@@ -1086,6 +1089,7 @@ Un dispozitiv conectat.</translation>
 <translation id="4890408602550914571">Asigură-te că telefonul este în apropiere, cu funcția Bluetooth activată.</translation>
 <translation id="4892981359753171125">Control cu mișcări ale feței</translation>
 <translation id="4895488851634969361">Bateria este încărcată complet.</translation>
+<translation id="4902797682482387055">Activitate sugerată asupra căreia să te concentrezi</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240">Nivelul bateriei: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="491504982845934899">Activează după configurarea dispozitivului <ph name="NETWORK_NAME" /></translation>
@@ -1096,6 +1100,7 @@ Un dispozitiv conectat.</translation>
 <translation id="492453977506755176">Tasta modului de capturare</translation>
 <translation id="4925542575807923399">Administratorul acestui cont solicită ca acest cont să fie primul conectat într-o sesiune de conectare multiplă.</translation>
 <translation id="493076006037866439">Micșorează ecranul</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4936329710968938986">Toți, dezactivat</translation>
 <translation id="4937170330762390348">Cu ajutorul dictării, poți să introduci text cu vocea. Apasă tasta de dictare sau selectează pictograma microfon din partea de jos a ecranului atunci când ești într-un câmp de text. Limba de dictare este setată la <ph name="LANGUAGE" />. Fișierele de redare în scris a vorbirii se vor descărca, astfel încât să poți folosi dictarea offline. Poți schimba limba de dictare oricând în Setări &gt; Accesibilitate.</translation>
 <translation id="4938176435186993759">Ascunde toate sugestiile</translation>
@@ -1104,6 +1109,7 @@ Un dispozitiv conectat.</translation>
 <translation id="495046168593986294">Derulează în sus</translation>
 <translation id="4950800194215951939">Personalizează-ți experiența de joc</translation>
 <translation id="4952936045814352993">Funcția de găsire a telefonului nu este disponibilă atunci când sunetul alarmei este dezactivat</translation>
+<translation id="4953585991029886728">Câmp text de editare</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> solicită să revii la starea anterioară a dispozitivului <ph name="DEVICE_TYPE" />. Dispozitivul va fi resetat și toate datele vor fi șterse.</translation>
 <translation id="4961318399572185831">Proiectează ecranul</translation>
 <translation id="4964188651935955085">Când dezactivezi Bluetooth, acest dispozitiv extern se va deconecta de la <ph name="DEVICE_TYPE" />:</translation>
@@ -1425,6 +1431,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6032620807120418574">Dă clic oriunde pentru a înregistra ecranul complet</translation>
 <translation id="6040071906258664830">Înregistrare audio <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Închide</translation>
+<translation id="6042308850641462728">Mai multe</translation>
 <translation id="6043212731627905357">Monitorul nu funcționează cu <ph name="DEVICE_TYPE" /> (monitorul nu este compatibil).</translation>
 <translation id="6043994281159824495">Deconectați-vă acum</translation>
 <translation id="6045629311476491587">Folosite de <ph name="APP_COUNT" /> aplicații</translation>
@@ -1891,6 +1898,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7748275671948949022">Evidențiază butonul Lansator de pe raft</translation>
 <translation id="7749443890790263709">S-a atins numărul maxim de desktopuri.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Afișați-le pe toate</translation>
 <translation id="7759183637555564029">Poți dezactiva oricând funcția Ajută-mă să scriu și Ajută-mă să citesc din Setări. <ph name="LINK_TO_LEARN_MORE" />,</translation>
 <translation id="7768784765476638775">Selectează și ascultă</translation>
 <translation id="7769299611924763557">GIF-ul va fi gata în curând</translation>
@@ -2024,6 +2032,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Această setare este gestionată de administrator.</translation>
 <translation id="8155628902202578800">Deschide fereastra de dialog cu informații pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Se folosește <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Conținut</translation>
 <translation id="8185090165691050712">Activează / dezactivează meniul pentru a redimensiona modul de blocare</translation>
 <translation id="8192727139462702395">Când dezactivezi Bluetooth, următoarele dispozitive externe se vor deconecta de la <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Se proiectează fila</translation>

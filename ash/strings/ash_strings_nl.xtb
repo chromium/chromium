@@ -405,6 +405,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2486214324139475545">Voorbeeld van <ph name="DESK_NAME" />. Actief bureau.</translation>
 <translation id="2486405091093637109"><ph name="DISPLAY_NAME" /> is gewijzigd in een resolutie van <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Zonder bevestiging worden de vorige instellingen hersteld over <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Deelnemen</translation>
+<translation id="2496180316473517155">Browsegeschiedenis</translation>
 <translation id="2499445554382787206">Menu voor bureauprofiel. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Plaktoetsen</translation>
 <translation id="2504454902900101003">Instellen van de weergave van recente foto's, media en meldingen van je telefoon sluiten</translation>
@@ -436,6 +437,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2607678425161541573">Online inloggen vereist</translation>
 <translation id="2612072250312279703">activiteitsmonitor</translation>
 <translation id="2612614436418177118">Een app-icoon verplaatsen binnen het app-raster</translation>
+<translation id="2619052155095999743">Invoegen</translation>
 <translation id="2619326010008283367">Rondleiding stap <ph name="STEP" /> van <ph name="TOTAL_STEPS" />. Je vindt je apparaatinstellingen in de Launcher. Pas de instellingen van je <ph name="PRODUCT_NAME" /> aan. Je kunt bijvoorbeeld je achtergrond wijzigen of een screensaver instellen.</translation>
 <translation id="2620016719323068571">Doorzoek onder andere je <ph name="CATEGORY" />, bestanden en apps…</translation>
 <translation id="2620436844016719705">Systeem</translation>
@@ -462,6 +464,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2704781753052663061">Verbinden met andere wifi-netwerken</translation>
 <translation id="2705001408393684014">Microfoon aan/uit. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Omhoog</translation>
+<translation id="271033894570825754">Nieuw</translation>
 <translation id="2710984741481549981">De vensters vergrendelen</translation>
 <translation id="2718395828230677721">Nachtlicht</translation>
 <translation id="2726420622004325180">Je telefoon moet mobiele data hebben om als hotspot te werken</translation>
@@ -1097,6 +1100,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="492453977506755176">Toets voor opnamemodus</translation>
 <translation id="4925542575807923399">De beheerder van dit account vereist dat dit account het eerste ingelogde account is in een sessie met toegang tot meerdere accounts.</translation>
 <translation id="493076006037866439">Uitzoomen op scherm</translation>
+<translation id="4932733599132424254">Datum</translation>
 <translation id="4936329710968938986">Iedereen, uit</translation>
 <translation id="4937170330762390348">Met dicteren kun je typen met je stem. Druk op de dicteertoets of selecteer het microfoontje onderaan het scherm in een tekstveld. Je dicteertaal is ingesteld op <ph name="LANGUAGE" />. Spraakbestanden worden gedownload zodat je dicteren offline kunt gebruiken. Je kunt de dicteertaal op elk moment wijzigen via Instellingen &gt; Toegankelijkheid.</translation>
 <translation id="4938176435186993759">Alle suggesties verbergen</translation>
@@ -1105,6 +1109,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="495046168593986294">Omhoog scrollen</translation>
 <translation id="4950800194215951939">Je gamebeleving aanpassen</translation>
 <translation id="4952936045814352993">Telefoon vinden is niet beschikbaar als alarmgeluiden uitstaan</translation>
+<translation id="4953585991029886728">Tekst bewerken</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> vereist dat je je <ph name="DEVICE_TYPE" /> terugzet naar een oudere versie. Je apparaat wordt gereset en alle gegevens worden verwijderd.</translation>
 <translation id="4961318399572185831">Scherm casten</translation>
 <translation id="4964188651935955085">Als je bluetooth uitzet, wordt de verbinding van dit externe apparaat met je <ph name="DEVICE_TYPE" /> verbroken:</translation>
@@ -1426,6 +1431,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6032620807120418574">Klik ergens om het volledige scherm op te nemen</translation>
 <translation id="6040071906258664830">Microfoon opnemen <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Sluiten</translation>
+<translation id="6042308850641462728">Meer</translation>
 <translation id="6043212731627905357">Dit beeldscherm werkt niet met je <ph name="DEVICE_TYPE" /> (het beeldscherm wordt niet ondersteund).</translation>
 <translation id="6043994281159824495">Nu uitloggen</translation>
 <translation id="6045629311476491587">Gebruikt door <ph name="APP_COUNT" /> apps</translation>
@@ -1892,6 +1898,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7748275671948949022">Launcher-knop op de plank markeren</translation>
 <translation id="7749443890790263709">Maximum aantal bureaus bereikt.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Alles bekijken</translation>
 <translation id="7759183637555564029">Je kunt Help me met schrijven en Help me met lezen op elk moment uitzetten via Instellingen. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Selecteer om voor te lezen</translation>
 <translation id="7769299611924763557">Je gif is bijna klaar</translation>
@@ -2025,6 +2032,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Deze instelling wordt beheerd door je beheerder.</translation>
 <translation id="8155628902202578800">Dialoogvenster met informatie openen voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> in gebruik</translation>
+<translation id="8168435359814927499">Content</translation>
 <translation id="8185090165691050712">Menu aan-/uitzetten om het formaat van de vergrendelde modus aan te passen</translation>
 <translation id="8192727139462702395">Als je bluetooth uitzet, wordt de verbinding van deze externe apparaten met je <ph name="DEVICE_TYPE" /> verbroken:</translation>
 <translation id="8198456017687137612">Tabblad wordt gecast</translation>

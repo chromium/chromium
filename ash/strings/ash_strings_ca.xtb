@@ -405,6 +405,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2486214324139475545">Previsualització de <ph name="DESK_NAME" />. Escriptori actiu.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" ha canviat a una resolució de <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Si no ho confirmes, la configuració anterior es restaurarà d'aquí a <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Vull entrar-hi</translation>
+<translation id="2496180316473517155">Historial de navegació</translation>
 <translation id="2499445554382787206">Menú del perfil de l'escriptori. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tecles permanents</translation>
 <translation id="2504454902900101003">Ignora la configuració de visualització de les notificacions, dels fitxers multimèdia i de les fotos recents del telèfon</translation>
@@ -436,6 +437,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2607678425161541573">Cal iniciar la sessió en línia</translation>
 <translation id="2612072250312279703">monitor d'activitat</translation>
 <translation id="2612614436418177118">Mou la icona d'una aplicació a la quadrícula d'aplicacions</translation>
+<translation id="2619052155095999743">Insereix</translation>
 <translation id="2619326010008283367">Pas <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> de la visita. Trobaràs la configuració del dispositiu al menú d'aplicacions. Prova de personalitzar el teu <ph name="PRODUCT_NAME" /> a Configuració, per exemple, canvia el fons de pantalla o estableix un estalvi de pantalla.</translation>
 <translation id="2620016719323068571">Cerca <ph name="CATEGORY" />, fitxers, aplicacions i més...</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -462,6 +464,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2704781753052663061">Uneix-te a altres xarxes Wi-Fi</translation>
 <translation id="2705001408393684014">Commuta el micròfon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Amunt</translation>
+<translation id="271033894570825754">Nou</translation>
 <translation id="2710984741481549981">Bloqueja les finestres</translation>
 <translation id="2718395828230677721">Llum nocturna</translation>
 <translation id="2726420622004325180">El telèfon ha de tenir dades mòbils per proporcionar un punt d'accés</translation>
@@ -1086,6 +1089,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4890408602550914571">Comprova que el telèfon sigui a prop teu i que tingui el Bluetooth activat.</translation>
 <translation id="4892981359753171125">Control facial</translation>
 <translation id="4895488851634969361">La bateria està carregada.</translation>
+<translation id="4902797682482387055">Tasca suggerida en què concentrar-te</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="491504982845934899">Activa <ph name="NETWORK_NAME" /> després de configurar el dispositiu</translation>
@@ -1096,6 +1100,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="492453977506755176">Tecla del mode de captura</translation>
 <translation id="4925542575807923399">L'administrador d'aquest compte requereix que sigui el primer compte que iniciï la sessió en una sessió amb inici de sessió múltiple.</translation>
 <translation id="493076006037866439">Redueix la pantalla</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4936329710968938986">Tothom, desactivat</translation>
 <translation id="4937170330762390348">Amb la funció de dictat, pots escriure utilitzant la veu. Prem la tecla de dictat o selecciona la icona de micròfon que hi ha a la part inferior de la pantalla quan siguis en un camp de text. L'idioma del dictat s'ha configurat en <ph name="LANGUAGE" />. Els fitxers de parla es baixaran perquè puguis utilitzar l'opció de dictat sense connexió. Pots canviar l'idioma del dictat en qualsevol moment a Configuració &gt; Accessibilitat.</translation>
 <translation id="4938176435186993759">Amaga tots els suggeriments</translation>
@@ -1104,6 +1109,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="495046168593986294">Desplaça't cap amunt</translation>
 <translation id="4950800194215951939">Personalitza la teva experiència de joc</translation>
 <translation id="4952936045814352993">La funció Localitza el telèfon no està disponible quan els sons d'alarma estan desactivats</translation>
+<translation id="4953585991029886728">Edita el text</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> requereix que el dispositiu <ph name="DEVICE_TYPE" /> torni a una versió anterior. El dispositiu es restablirà i totes les dades se suprimiran.</translation>
 <translation id="4961318399572185831">Emet la pantalla</translation>
 <translation id="4964188651935955085">Quan desactivis el Bluetooth, aquest dispositiu extern es desconnectarà del teu dispositiu <ph name="DEVICE_TYPE" />:</translation>
@@ -1425,6 +1431,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6032620807120418574">Fes clic en qualsevol lloc per gravar la pantalla completa</translation>
 <translation id="6040071906258664830">Grava el micròfon <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Tanca</translation>
+<translation id="6042308850641462728">Més</translation>
 <translation id="6043212731627905357">Aquest monitor i el teu <ph name="DEVICE_TYPE" /> no s'entenen (el monitor no és compatible).</translation>
 <translation id="6043994281159824495">Tanca la sessió ara</translation>
 <translation id="6045629311476491587">Utilitzats per <ph name="APP_COUNT" /> aplicacions</translation>
@@ -1891,6 +1898,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7748275671948949022">Marca el botó del menú d'aplicacions al prestatge</translation>
 <translation id="7749443890790263709">S'ha assolit el nombre màxim d'escriptoris.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Mostra-ho tot</translation>
 <translation id="7759183637555564029">Pots desactivar Ajuda'm a escriure i Ajuda'm a llegir en qualsevol moment a Configuració. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Escolta la selecció</translation>
 <translation id="7769299611924763557">El teu GIF estarà a punt aviat</translation>
@@ -2024,6 +2032,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" />. El teu administrador gestiona aquesta opció de configuració.</translation>
 <translation id="8155628902202578800">Obre el quadre de diàleg d'informació per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">S'està utilitzant <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Contingut</translation>
 <translation id="8185090165691050712">Activa/Desactiva el menú per canviar la mida del mode de bloqueig</translation>
 <translation id="8192727139462702395">Quan desactivis el Bluetooth, aquests dispositius externs es desconnectaran del teu dispositiu <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">S'està emetent la pestanya</translation>

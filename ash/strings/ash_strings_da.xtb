@@ -405,6 +405,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2486214324139475545">Forhåndsvisning af <ph name="DESK_NAME" />. Aktivt skrivebord.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" blev ændret til opløsningen <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Hvis du ikke bekræfter, gendannes de tidligere indstillinger om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Deltag</translation>
+<translation id="2496180316473517155">Browserhistorik</translation>
 <translation id="2499445554382787206">Menu for skrivebordsprofil. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Træge taster</translation>
 <translation id="2504454902900101003">Afvis konfiguration af visning af din telefons seneste billeder, medier og notifikationer</translation>
@@ -436,6 +437,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2607678425161541573">Onlinelogin er påkrævet</translation>
 <translation id="2612072250312279703">aktivitetsovervågning</translation>
 <translation id="2612614436418177118">Flyt et appikon inden for appgitteret</translation>
+<translation id="2619052155095999743">Indsæt</translation>
 <translation id="2619326010008283367">Se trin <ph name="STEP" /> af <ph name="TOTAL_STEPS" />. Du kan se dine enhedsindstillinger på applisten. Prøv at tilpasse din <ph name="PRODUCT_NAME" /> under Indstillinger. Du kan f.eks. ændre din baggrund eller vælge en pauseskærm.</translation>
 <translation id="2620016719323068571">Søg i dine <ph name="CATEGORY" />, filer, apps og meget mere...</translation>
 <translation id="2620436844016719705">System</translation>
@@ -462,6 +464,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2704781753052663061">Opret forbindelse til andre Wi-Fi-netværk</translation>
 <translation id="2705001408393684014">Slå mikrofon til/fra. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Op</translation>
+<translation id="271033894570825754">Nyt</translation>
 <translation id="2710984741481549981">Lås vinduerne</translation>
 <translation id="2718395828230677721">Nattelys</translation>
 <translation id="2726420622004325180">Din telefon skal have mobildata for at fungere som hotspot</translation>
@@ -1086,6 +1089,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4890408602550914571">Sørg for, at din telefon er i nærheden, og at Bluetooth er aktiveret.</translation>
 <translation id="4892981359753171125">Ansigtsstyring</translation>
 <translation id="4895488851634969361">Batteriet er helt opladet.</translation>
+<translation id="4902797682482387055">Foreslået opgave, der skal fokuseres på</translation>
 <translation id="490375751687810070">Lodret</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
 <translation id="491504982845934899">Aktivér <ph name="NETWORK_NAME" /> efter konfiguration af enheden</translation>
@@ -1096,6 +1100,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="492453977506755176">Tast til optagelsestilstand</translation>
 <translation id="4925542575807923399">Kontoadministratoren kræver, at denne konto er den første konto, der logges ind på, i en session med samlet login fra flere konti.</translation>
 <translation id="493076006037866439">Zoom ud på skærmen</translation>
+<translation id="4932733599132424254">Dato</translation>
 <translation id="4936329710968938986">Alle, deaktiveret</translation>
 <translation id="4937170330762390348">Du kan skrive med din stemme ved hjælp af diktering. Tryk på dikteringstasten, eller vælg mikrofonikonet nederst på skærmen, når du er i et tekstfelt. Dit dikteringssprog er indstillet til <ph name="LANGUAGE" />. Talefilerne downloades, så du kan bruge diktering offline. Du kan til enhver tid ændre dikteringssproget i Indstillinger &gt; Hjælpefunktioner.</translation>
 <translation id="4938176435186993759">Skjul alle forslag</translation>
@@ -1104,6 +1109,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="495046168593986294">Rul op</translation>
 <translation id="4950800194215951939">Tilpas din spiloplevelse</translation>
 <translation id="4952936045814352993">Funktionen "Find telefon" er ikke tilgængelig, når alarmlyde er deaktiveret</translation>
+<translation id="4953585991029886728">Rediger tekst</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> kræver, at du skifter tilbage til en tidligere version af din <ph name="DEVICE_TYPE" />. Din enhed nulstilles, og alle data slettes.</translation>
 <translation id="4961318399572185831">Cast skærm</translation>
 <translation id="4964188651935955085">Når du deaktiverer Bluetooth, afbryder denne eksterne enhed forbindelsen til din <ph name="DEVICE_TYPE" />:</translation>
@@ -1425,6 +1431,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="6032620807120418574">Klik et vilkårligt sted for at optage hele skærmen</translation>
 <translation id="6040071906258664830">Optag mikrofon er slået <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Luk</translation>
+<translation id="6042308850641462728">Mere</translation>
 <translation id="6043212731627905357">Denne skærm fungerer ikke sammen med <ph name="DEVICE_TYPE" /> (skærmen understøttes ikke).</translation>
 <translation id="6043994281159824495">Log ud nu</translation>
 <translation id="6045629311476491587">Anvendes af <ph name="APP_COUNT" /> apps</translation>
@@ -1891,6 +1898,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7748275671948949022">Fremhæv knappen til applisten på hylden</translation>
 <translation id="7749443890790263709">Det maksimale antal skriveborde er nået.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Vis alle</translation>
 <translation id="7759183637555564029">Du kan til enhver tid deaktivere Hjælp mig med at skrive og Hjælp mig med at læse under Indstillinger. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Tekstoplæsning</translation>
 <translation id="7769299611924763557">Din gif er klar om et øjeblik</translation>
@@ -2024,6 +2032,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Denne indstilling administreres af din administrator.</translation>
 <translation id="8155628902202578800">Åbn dialogboks med oplysninger om <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Bruger <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Indhold</translation>
 <translation id="8185090165691050712">Aktivér/deaktiver menuen til justering af størrelse i låst tilstand</translation>
 <translation id="8192727139462702395">Når du deaktiverer Bluetooth, afbryder disse eksterne enheder forbindelsen til din <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Caster fane</translation>

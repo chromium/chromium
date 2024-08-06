@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Controis</translation>
 <translation id="2652403576514495859">activar ou desactivar o ditado</translation>
 <translation id="2653659639078652383">Enviar</translation>
-<translation id="2653807227758181366">Describe o fondo de pantalla que queres crear ou usa un exemplo de solicitude</translation>
 <translation id="2654647726140493436">Non apagues o dispositivo (<ph name="DEVICE_TYPE" />) nin desconectes o cable de alimentación do dispositivo (<ph name="DEVICE_TYPE" />) mentres a actualización estea en curso</translation>
 <translation id="2656001153562991489">Exclusivo de Chromebook Plus</translation>
 <translation id="2665671725390405060">Escoitar a pronuncia</translation>
@@ -1366,6 +1365,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8208861521865154048">Vantaxes</translation>
 <translation id="8226628635270268143">Escolle as fotos e os álbums que máis che gustan</translation>
 <translation id="8227119283605456246">Anexar ficheiro</translation>
+<translation id="8227488649450500937">Proba con algunha destas ideas ou consulta a <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guía para a creación de solicitudes<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Produciuse un erro ao facer ping na pasarela de rede predeterminada</translation>
 <translation id="8238771987802558562">Escoller un APN</translation>
 <translation id="8246209727385807362">Operador descoñecido</translation>

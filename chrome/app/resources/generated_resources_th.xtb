@@ -185,7 +185,6 @@
 <translation id="1124772482545689468">ผู้ใช้</translation>
 <translation id="1125550662859510761">ดูเหมือน <ph name="WIDTH" /> x <ph name="HEIGHT" /> (ค่าดั้งเดิม)</translation>
 <translation id="1125921926864945797">วอลเปเปอร์และสไตล์</translation>
-<translation id="1126809382673880764">ไม่ปกป้องคุณจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย คุณจะยังคงได้รับการปกป้องจาก Google Safe Browsing ในบริการอื่นๆ ของ Google ที่มีฟีเจอร์นี้ เช่น Gmail และ Search</translation>
 <translation id="1128090040635299943">กำลังกำหนดค่า Linux อยู่ ซึ่งจะใช้เวลาสักครู่</translation>
 <translation id="1128591060186966949">แก้ไขเครื่องมือค้นหา</translation>
 <translation id="1129348283834595293">ไซเบอร์พังก์</translation>
@@ -629,7 +628,6 @@
 <translation id="1461041542809785877">ประสิทธิภาพ</translation>
 <translation id="1461177659295855031">ย้ายไปยังโฟลเดอร์แถบบุ๊กมาร์ก</translation>
 <translation id="1461288887896722288">คุณเพิ่งลงชื่อเข้าใช้บัญชีที่จัดการ การสร้างโปรไฟล์ที่มีการจัดการใหม่จะทําให้คุณเข้าถึงทรัพยากรบางอย่างที่เชื่อมโยงกับบัญชีนั้นได้</translation>
-<translation id="1461868306585780092">แจ้งเตือนก่อนใช้การเชื่อมต่อที่ไม่ปลอดภัย</translation>
 <translation id="146219525117638703">ONC State</translation>
 <translation id="146220085323579959">อินเทอร์เน็ตถูกตัดการเชื่อมต่อ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและลองอีกครั้ง</translation>
 <translation id="1462480037563370607">เพิ่มเว็บไซต์ด้วยตนเอง</translation>
@@ -4166,7 +4164,6 @@
 <translation id="3959747296451923142">ยืนยันการนําการสมัครใช้บริการออก</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">การดำเนินการเพิ่มเติมสำหรับ <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962119236270174787">การปกป้องแบบมาตรฐานจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่ทราบแล้วว่าเป็นอันตราย</translation>
 <translation id="3963753386716096475">ใช้โทรศัพท์ แท็บเล็ต หรือคีย์ความปลอดภัยอื่น</translation>
 <translation id="3964480518399667971">ปิดเครือข่ายมือถือ</translation>
 <translation id="3965965397408324205">ออกจาก <ph name="PROFILE_NAME" /></translation>
@@ -5507,7 +5504,6 @@
 <translation id="4967571733817147990">ปรับแต่งปุ่มเมาส์</translation>
 <translation id="4967852842111017386">ชื่ออุปกรณ์<ph name="FEATURE_NAME" /></translation>
 <translation id="4971412780836297815">เปิดเมื่อเสร็จสิ้น</translation>
-<translation id="4971735654804503942">การปกป้องเชิงรุกอย่างรวดเร็วขึ้นจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย เตือนคุณเรื่องการละเมิดรหัสผ่าน ต้องส่งข้อมูลการท่องเว็บให้ Google</translation>
 <translation id="4972129977812092092">แก้ไขเครื่องพิมพ์</translation>
 <translation id="4972164225939028131">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="4972737347717125191">เว็บไซต์ขอใช้อุปกรณ์และข้อมูล Virtual Reality ได้</translation>
@@ -6134,6 +6130,7 @@
 <translation id="5435779377906857208">อนุญาตให้ <ph name="HOST" /> เข้าถึงตำแหน่งของคุณเสมอ</translation>
 <translation id="5436492226391861498">กำลังรอช่องทางการเชื่อมต่อพร็อกซี...</translation>
 <translation id="5436510242972373446">ค้นหา <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616">ตอนนี้หน้าต่าง<ph name="WINDOW_SIDE" />กว้าง <ph name="WINDOW_SIZE_PERCENT" /> และแผง<ph name="PANE_SIDE" />กว้าง <ph name="PANE_SIZE_PERCENT" /></translation>
 <translation id="5440425659852470030">ปิดแผงด้านข้าง</translation>
 <translation id="544083962418256601">สร้างทางลัด...</translation>
 <translation id="5441133529460183413">ติดตั้งเว็บแอปจากเบราว์เซอร์ Chrome แล้ว</translation>
@@ -8236,7 +8233,6 @@
 <translation id="6992554835374084304">เปิดฟีเจอร์ตรวจตัวสะกดที่ได้รับการปรับปรุง</translation>
 <translation id="6993000214273684335">แท็บถูกนำออกจากกลุ่มที่ไม่มีชื่อ - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">กำลังอัปเดตเบราว์เซอร์ Chrome</translation>
-<translation id="6995899638241819463">เตือนคุณในกรณีที่รหัสผ่านรั่วไหลจากการละเมิดข้อมูล</translation>
 <translation id="6995984090981858039">อ่านข้อมูลอุปกรณ์ ChromeOS และข้อมูล</translation>
 <translation id="6996245928508281884">เปิดบลูทูธและ Wi-Fi ของโทรศัพท์</translation>
 <translation id="6996438701394974959">เพิ่มขนาดการแสดงผลและข้อความ</translation>
@@ -8535,6 +8531,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 เว็บไซต์ในกลุ่มของ <ph name="FPS_OWNER" />}other{{MEMBERS} เว็บไซต์ในกลุ่มของ <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">ใช้ Windows Hello เมื่อป้อนรหัสผ่าน</translation>
 <translation id="7225179976675429563">ไม่มีประเภทเครือข่าย</translation>
+<translation id="7227235818314667565">จัดการการแชร์</translation>
 <translation id="7227458944009118910">แอปที่ระบุไว้ด้านล่างจัดการลิงก์โปรโตคอลได้เช่นกัน ส่วนแอปอื่นๆ อาจจะขอสิทธิ์</translation>
 <translation id="7228056665272655255">หากต้องการตั้งค่าลายนิ้วมือ ให้บุตรหลานแตะเซ็นเซอร์ลายนิ้วมือที่มุมขวาบนของแป้นพิมพ์ ข้อมูลลายนิ้วมือของบุตรหลานจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> เครื่องนี้เสมอ</translation>
 <translation id="7228523857728654909">ล็อกหน้าจอและการลงชื่อเข้าใช้</translation>
@@ -8583,6 +8580,7 @@
 <translation id="7258192266780953209">Transformations</translation>
 <translation id="7258225044283673131">แอปพลิเคชันไม่ตอบสนอง เลือก "บังคับปิด" เพื่อปิดแอป</translation>
 <translation id="7260186537988033909">ลงทะเบียนอุปกรณ์คีออสก์และป้ายเสร็จสมบูรณ์</translation>
+<translation id="7261217796641151584">แชร์กลุ่ม</translation>
 <translation id="7261612856573623172">เสียงการอ่านออกเสียงข้อความของระบบ</translation>
 <translation id="7262004276116528033">บริการลงชื่อเข้าใช้นี้โฮสต์โดย <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">ใช้แอป <ph name="APP" /> เพื่อเปิดลิงก์เว็บที่รองรับทุกครั้งไหม</translation>
@@ -10519,6 +10517,7 @@
 <translation id="8656888282555543604">เปิดใช้การบันทึกอักษรเบรลล์</translation>
 <translation id="8657393004602556571">ต้องการทิ้งความคิดเห็นใช่ไหม</translation>
 <translation id="8657542881463614516">ใช้ท่าทางสัมผัสการปัดเพื่อไปยังหน้าต่างๆ</translation>
+<translation id="865936634714975126">เพิ่มพารามิเตอร์การค้นหาใน URL เพื่อเลือกประเภทเมื่อโหลดหน้าเว็บ ตัวอย่างเช่น chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">รายชื่อติดต่อของ<ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">หน้าต่างเลื่อนลง</translation>
 <translation id="8661290697478713397">เปิดลิงก์ในหน้าต่าง&amp;ที่ไม่ระบุตัวตน</translation>

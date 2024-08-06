@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Ovládanie</translation>
 <translation id="2652403576514495859">zapnúť alebo prepnúť diktovanie</translation>
 <translation id="2653659639078652383">Odoslať</translation>
-<translation id="2653807227758181366">Opíšte tapetu, ktorú chcete vytvoriť, alebo použite vzorový pokyn</translation>
 <translation id="2654647726140493436">Počas aktualizácie nevypínajte zariadenie <ph name="DEVICE_TYPE" /> ani neodpájajte napájací kábel zariadenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="2656001153562991489">Exkluzívne pre Chromebook Plus</translation>
 <translation id="2665671725390405060">Vypočuť výslovnosť</translation>
@@ -1366,6 +1365,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8208861521865154048">Výhody</translation>
 <translation id="8226628635270268143">Vyberte svoje obľúbené fotky a albumy</translation>
 <translation id="8227119283605456246">Pripojiť súbor</translation>
+<translation id="8227488649450500937">Vyskúšajte jeden z týchto pokynov alebo si pozrite <ph name="BEGIN_LINK_PROMPTING_GUIDE" />sprievodcu pokynmi<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Predvolenú bránu siete sa nepodarilo otestovať</translation>
 <translation id="8238771987802558562">Výber názvu prístupového bodu (APN)</translation>
 <translation id="8246209727385807362">Neznámy operátor</translation>
@@ -1578,7 +1578,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="966787709310836684">ponuka</translation>
 <translation id="979450713603643090">Svetloružová</translation>
 <translation id="982713511914535780">Spustiť test vybíjania</translation>
-<translation id="98515147261107953">Na šírku</translation>
+<translation id="98515147261107953">Krajina</translation>
 <translation id="987264212798334818">Všeobecné</translation>
 <translation id="995062385528875723">Nemôžete používať písmená s diakritikou, inú abecedu než latinku ani symboly</translation>
 </translationbundle>

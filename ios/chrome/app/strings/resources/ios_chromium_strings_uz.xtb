@@ -143,6 +143,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chromium m
 <translation id="5131565040785979529">Siz kirgan hisob va Chromium profilingiz qanday ishlatilishi tashkilotingiz (<ph name="DOMAIN" />) boshqaruvida.</translation>
 <translation id="5146749061471423558">Chromiumga bukmarklar kiritish</translation>
 <translation id="5171868502429358653">Chromium hisobiga kirish</translation>
+<translation id="5203483872492817335">Chromiumni iPad bosh ekraniga mahkamlab, tezroq oching.</translation>
 <translation id="5213683223491576284">Chromiumda parollar menejerini ochadi.</translation>
 <translation id="5224391634244552924">Hech qanday parol saqlanmagan. Chromium faqat saqlangan parollaringizni tekshira oladi.</translation>
 <translation id="5242782538551259282">Ayrim Chromium maʼlumotlari Google hisobingizga hali saqlanmagan.
@@ -224,6 +225,7 @@ Bularni hisobga olish kerak:
 Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chromium maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromium bildirishnomalari ayni vaqtda qurilma sozlamalarida yoniq emas</translation>
 <translation id="7222001353246886083">Chromiumda qidirish: ${searchPhrase}</translation>
+<translation id="7228180817326917122">Chromium maslahati: Manzillar qatori joylashuvini tanlang</translation>
 <translation id="725427773388857052">Chromium maʼlumotlaringizni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalaydi.</translation>
 <translation id="7269362888766543920">Ba’zi kengaytmalar Chromium brauzerini ishdan chiqaradi. Ularni o‘chirib tashlang.</translation>
 <translation id="7285031092584344905">Boshqa ilovalarda Chromium brauzeridagi parollaringiz va boshqalarni oching.</translation>
@@ -246,6 +248,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="7928628054454574139">Chromiumni istalgan vaqt boshqa ilovalardagi havolalarni bosib ochish</translation>
 <translation id="7931842119211730154">Chromium yopilganda, Inkognito varaqlar qulflansin</translation>
 <translation id="7934404985878918282">Chromium saqlangan sahifalarini koʻrish</translation>
+<translation id="7947765692209663835">Chromiumni iPhone bosh ekraniga mahkamlab, tezroq oching.</translation>
 <translation id="7971753607796745700">Saqlangan sahifalar bandini Chromiumga qoʻshish</translation>
 <translation id="7980860476903281594">Chromium joylashuvingiz axborotini siz ruxsat bergan saytlarga ulashadi.</translation>
 <translation id="7994322153108931467">Chromium haqida tavsiyalar olish uchun iOS sozlamalari orqali bildirishnomalarni yoqing.</translation>
@@ -264,6 +267,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="8386869251364507178">Chromium amallari</translation>
 <translation id="8409374867500149834">Sizdagi Chromium zararli saytlarga qarshi eng kuchli himoya tizimiga ega</translation>
 <translation id="8458950033462118672">Saytlar Chromium brauzerida avtomatik ochilishi uchun uni birlamchi brauzer etib tayinlash kifoya.</translation>
+<translation id="8473874987831035139">Chromium maslahati: Chromiumni ekranga mahkamlang</translation>
 <translation id="8502918057530111907">Narxlarni tez bilish uchun Chromiumni birlamchi brauzer etib tayinlang</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromium {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Hisobga kirilganda faqat shu qurilmada saqlangan maʼlumotlar oʻchirib tashlanadi. Bunga tarix va parollar kirishi mumkin.}other{Chromium {THRESHOLD} daqiqa ishlatilmasa, mazkur amal bajariladi. Hisobga kirilganda faqat shu qurilmada saqlangan maʼlumotlar oʻchirib tashlanadi. Bunga tarix va parollar kirishi mumkin.}}</translation>
 <translation id="858114650497379505">Parollar menejeriga saqlangan parollarni iPhonedagi boshqa ilovalarda ishlatish mumkin.</translation>

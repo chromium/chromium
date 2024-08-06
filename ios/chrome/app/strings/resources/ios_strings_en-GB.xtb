@@ -302,6 +302,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2529021024822217800">Open All</translation>
 <translation id="2536991091671391962">You can use saved passwords on any device. They're saved to Google Password Manager for <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Hide 'Safety Check'</translation>
+<translation id="2545094307889012168">Lens overlay</translation>
 <translation id="2547458583188611426">Sync is not working. To start sync, enter your passphrase.</translation>
 <translation id="2551153019974022505">Account error</translation>
 <translation id="2556092377360758201">No protection (not recommended)</translation>
@@ -848,6 +849,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5205197603258285592">Save image in…</translation>
 <translation id="5211488077761630279">Allow ‘<ph name="SITE_NAME" />’ to use your <ph name="PERMISSION" />?</translation>
+<translation id="5215046161188172474">Share full URL</translation>
 <translation id="5219295696240154694">Help improve security on the web for everyone</translation>
 <translation id="5220945116117011963">Create calendar events from dates</translation>
 <translation id="5221339005270097309">Checking passwords…</translation>
@@ -1125,6 +1127,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 Sites can't use cookies to see your browsing activity across different sites, for example, to personalise ads.</translation>
 <translation id="6476253015009698798">Price tracking isn't available for this page.</translation>
 <translation id="6476800141292307438">Translating the page to <ph name="LANGUAGE" />. Options available near bottom of the screen.</translation>
+<translation id="6477585407014744043">Name group</translation>
 <translation id="648164694371393720">Authentication error</translation>
 <translation id="6494931198667773526">Ends</translation>
 <translation id="6500795388871406244">Use suggested password:</translation>

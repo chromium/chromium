@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Улбар шар</translation>
 <translation id="125153950246128346">Өөр табыг харахын тулд товшино уу</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" />-н табын бүлгийн сонголт</translation>
+<translation id="1340839264183302272">Бүлгээс гарах</translation>
 <translation id="1419023007528516122">Энэ нь бүлгийг таны төхөөрөмжөөс бүрмөсөн устгана</translation>
 <translation id="1486715732399361704">Та бүх табын бүлгээ эндээс олох боломжтой</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> минутын өмнө үүсгэсэн}other{<ph name="NUM_MINS_MANY" /> минутын өмнө үүсгэсэн}}</translation>
@@ -41,6 +42,7 @@
 <translation id="2801787514987684416">Дэлгүүрийн мэдээллийг үзэх үү?</translation>
 <translation id="2928243913527329289">Google | Энэ дэлгүүрийн тухай</translation>
 <translation id="2977480621796371840">Бүлгээс хасах</translation>
+<translation id="29919168204617356">Идэвхгүй табуудыг автоматаар хаана. Та хүссэн үедээ тухайн табуудыг Түүхээс олох боломжтой.</translation>
 <translation id="3008554597174452548">Бүтээгдэхүүн хянахаа зогсоох</translation>
 <translation id="3026391124054406831">Табуудаа цэгцлэхийн тулд бүлэг үүсгэнэ үү.</translation>
 <translation id="3051031624272448591">Та тэдгээрийг түүхээс хүссэн үедээ буцааж авах боломжтой</translation>
@@ -51,6 +53,7 @@
 <translation id="3322827343001922122">Табын бүлгийн үйлдлийн цэсийг <ph name="TITLE_OF_GROUP" /> табын бүлэгт зориулж нээнэ үү</translation>
 <translation id="3328308545011660196">Зөвлөмж: <ph name="NUMBER_OF_TABS" /> таб холбоотой бололтой. Эдгээрийг бүлэглэх үү?</translation>
 <translation id="3547352561153509682">Энэ нь бүлгийг <ph name="USER_EMAIL" />-д нэвтэрсэн бүх төхөөрөмжөөс устгана</translation>
+<translation id="3613492231657284463">Идэвхгүй табуудыг нуух харилцах цонх</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Хуваалцах хүснэгтийн урьдчилсан үзэлтийн өнгөц зураг.</translation>
 <translation id="381219490185664296">Табын бүлгийг салгах уу?</translation>
@@ -120,6 +123,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Табыг зүүн тийш зөөх</translation>
 <translation id="6615455863669487791">Надад үзүүлнэ үү</translation>
+<translation id="6694634756612002311">Хуваалцахыг удирдах</translation>
 <translation id="6744956528665271406">Бүлгийн өнгийг засах</translation>
 <translation id="6856809498882026482">Олон сонголттой горимыг нуух</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Табыг хуваалцах}other{Табуудыг хуваалцах}}</translation>
@@ -137,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google-н <ph name="REVIEWS_COUNT_ONE" /> шүүмж}other{Google-н <ph name="REVIEWS_COUNT_MANY" /> шүүмж}}</translation>
 <translation id="7559245342362162951">Бүлгийн табуудыг бүтэн дэлгэцийн торонд харуулах</translation>
 <translation id="7658239707568436148">Болих</translation>
+<translation id="7688386659311034820">Идэвхгүй табуудын харилцах цонх</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг хуваалцах}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг хуваалцах}}</translation>
 <translation id="7773714564112603605">Табыг хасаж, бүлгийг устгах</translation>
 <translation id="7792771145871471484">Зөвлөмжийг шалгах.</translation>
@@ -171,6 +176,7 @@
 <translation id="8926389886865778422">Дахиж бүү асуу</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб бүхий табын бүлгийг дэлгэх.}other{<ph name="TABS_COUNT_MANY" /> таб бүхий табын бүлгийг дэлгэх.}}</translation>
 <translation id="9090098097337832354">Энэ дэлгүүрийн талаарх мэдээллийг хаасан</translation>
+<translation id="9111228330448174435">Шинэ табын бүлэг үүсгэх талаарх харилцах цонхыг харуулах</translation>
 <translation id="9150694013019234766">Дэлгэцийн доод хэсгийн ойролцоо байгаа табын бүлгээсээ таб хооронд сэлгэнэ үү</translation>
 <translation id="9169594135889675189">Бүлэгт шинэ таб нэмэх</translation>
 <translation id="9216898458513705996">Таб энэ төхөөрөмж дээр нээлттэй үлдэх хэдий ч бүлгийг <ph name="USER_EMAIL" />-д нэвтэрсэн бүх төхөөрөмжөөс устгана</translation>

@@ -302,6 +302,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2529021024822217800">Öppna alla</translation>
 <translation id="2536991091671391962">Du kan använda sparade lösenord på vilken enhet som helst. De sparas i Google Lösenordshantering för <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Dölj Säkerhetskontroll</translation>
+<translation id="2545094307889012168">Lens-överlagring</translation>
 <translation id="2547458583188611426">Synkroniseringen fungerar inte. Ange din lösenfras för att starta synkroniseringen.</translation>
 <translation id="2551153019974022505">Kontofel</translation>
 <translation id="2556092377360758201">Inget skydd (rekommenderas inte)</translation>
@@ -848,6 +849,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5205197603258285592">Spara bild i …</translation>
 <translation id="5211488077761630279">Vill du tillåta att <ph name="SITE_NAME" /> använder din <ph name="PERMISSION" />?</translation>
+<translation id="5215046161188172474">Dela fullständig webbadress</translation>
 <translation id="5219295696240154694">Hjälp till att förbättra säkerheten på webben för alla</translation>
 <translation id="5220945116117011963">Skapa kalenderhändelser från datum</translation>
 <translation id="5221339005270097309">Kontrollerar lösenord …</translation>
@@ -885,6 +887,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5396950905475481456">Bjud in familjemedlemmar</translation>
 <translation id="5407969256130905701">Ignorera ändringar</translation>
 <translation id="5414763847370083940">Du får en avisering om priset sänks på en webbplats.</translation>
+<translation id="5415289094036440596">Det går inte att dela nycklar</translation>
 <translation id="5416022985862681400">Senaste 7 dagarna</translation>
 <translation id="5416455648658732408">Flytta till flikgrupp</translation>
 <translation id="5423269318075950257">Bevaka pris</translation>
@@ -1124,6 +1127,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av cookies och till exempel anpassa annonser.</translation>
 <translation id="6476253015009698798">Prisbevakning är inte tillgänglig för den här sidan.</translation>
 <translation id="6476800141292307438">Översätter sidan till <ph name="LANGUAGE" />. Alternativ finns längst ned på skärmen.</translation>
+<translation id="6477585407014744043">Namngrupp</translation>
 <translation id="648164694371393720">Autentiseringsfel</translation>
 <translation id="6494931198667773526">Slutar</translation>
 <translation id="6500795388871406244">Använd det föreslagna lösenordet:</translation>
@@ -1293,6 +1297,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="734758817008927353">Alternativ för att spara kort</translation>
 <translation id="7352651011704765696">Något gick fel</translation>
 <translation id="7353432112255316844">Verifiera din identitet</translation>
+<translation id="736564850024123010">Anpassa upplevelsen genom att ändra adressfältets position.</translation>
 <translation id="7367530036083223701">Få säker åtkomst till dina lösenord från startskärmen med widgeten för Lösenordshantering.</translation>
 <translation id="7380220816562673297">För närvarande kan du bara dela lösenord med familjemedlemmar. <ph name="BEGIN_LINK" />Skapa en familjegrupp<ph name="END_LINK" /> med upp till sex medlemmar och få ut mer av dina produkter och prenumerationer från Google.</translation>
 <translation id="739101637685146669">Vilken webbadress vill du lägga till i dina bokmärken?</translation>

@@ -144,6 +144,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="5131565040785979529">Din organisation, <ph name="DOMAIN" />, hanterar kontot du är inloggad på och hur Chromium används.</translation>
 <translation id="5146749061471423558">Lägg till bokmärken i Chromium</translation>
 <translation id="5171868502429358653">Logga in i Chromium</translation>
+<translation id="5203483872492817335">Kom åt Chromium snabbare från startskärmsdockan på iPad.</translation>
 <translation id="5213683223491576284">Öppnar Lösenordshantering i Chromium.</translation>
 <translation id="5224391634244552924">Inga sparade lösenord. Chromium kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="5242782538551259282">Viss Chromium-data har inte sparats i ditt Google-konto ännu.
@@ -225,6 +226,7 @@ Tänk på detta:
 Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du kontots Chromium-data<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromium-aviseringar är i nuläget inaktiverade i enhetsinställningarna.</translation>
 <translation id="7222001353246886083">Sök efter ${searchphrase} i Chromium</translation>
+<translation id="7228180817326917122">Tips för Chromium: Välj adressfältets position</translation>
 <translation id="725427773388857052">Chromium kan skydda dig från dataintrång, osäkra webbplatser med mera.</translation>
 <translation id="7269362888766543920">Några tillägg har fått Chromium att krascha. Testa att avinstallera dem.</translation>
 <translation id="7285031092584344905">Få tillgång till dina lösenord i Chromium och mer i andra appar.</translation>
@@ -247,6 +249,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="7928628054454574139">Öppna Chromium varje gång du trycker på länkar i andra appar</translation>
 <translation id="7931842119211730154">Lås inkognitoflikar när du stänger Chromium</translation>
 <translation id="7934404985878918282">Se läslistan i Chromium</translation>
+<translation id="7947765692209663835">Kom åt Chromium snabbare från startskärmsdockan på iPhone.</translation>
 <translation id="7971753607796745700">Lägg till ett objekt från läslistan i Chromium</translation>
 <translation id="7980860476903281594">Chromium delar din plats med webbplatser du tillåter.</translation>
 <translation id="7994322153108931467">Om du vill få användbara tips om Chromium kan du aktivera aviseringar i iOS-inställningarna.</translation>
@@ -265,6 +268,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="8386869251364507178">Chromium-åtgärder</translation>
 <translation id="8409374867500149834">Du har den starkaste säkerheten i Chromium mot skadliga webbplatser</translation>
 <translation id="8458950033462118672">Du kan öppna länkar i Chromium automatiskt genom att ställa in den som standardwebbläsare.</translation>
+<translation id="8473874987831035139">Tips för Chromium: Flytta Chromium till dockan</translation>
 <translation id="8502918057530111907">Använd Chromium som standard för att enkelt få prisinformation</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Detta händer när Chromium inte har använts på {THRESHOLD} minut. Data som endast har sparats på den här enheten medan du var inloggad kommer att raderas. Detta kan inkludera historik och lösenord.}other{Detta händer när Chromium inte har använts på {THRESHOLD} minuter. Data som endast har sparats på den här enheten medan du var inloggad kommer att raderas. Detta kan inkludera historik och lösenord.}}</translation>
 <translation id="858114650497379505">Du kan använda lösenorden som sparats med Lösenordshantering i andra iPhone-appar.</translation>

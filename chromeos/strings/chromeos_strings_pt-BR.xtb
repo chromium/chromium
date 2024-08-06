@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Controles</translation>
 <translation id="2652403576514495859">ativar ou alternar o Ditado</translation>
 <translation id="2653659639078652383">Enviar</translation>
-<translation id="2653807227758181366">Descreva o plano de fundo que você quer criar ou use um exemplo de comando</translation>
 <translation id="2654647726140493436">Não desligue o <ph name="DEVICE_TYPE" /> nem desconecte o cabo de alimentação do <ph name="DEVICE_TYPE" /> enquanto a atualização estiver em andamento</translation>
 <translation id="2656001153562991489">Exclusivo para Chromebook Plus</translation>
 <translation id="2665671725390405060">Ouvir a pronúncia</translation>
@@ -358,6 +357,7 @@
 <translation id="2780756493585863768">Planos de fundo recentes gerados com IA do Google</translation>
 <translation id="2783010256799387990">APROVADO</translation>
 <translation id="2786429550992142861">linho</translation>
+<translation id="2787237339470862294">Esse idioma não está disponível no momento</translation>
 <translation id="2787435249130282949">teclado mais claro</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Não é possível se conectar à Internet. Clique para tentar novamente.</translation>
@@ -669,6 +669,7 @@
 <translation id="458794348635939462">Falha na resolução de todos os hosts</translation>
 <translation id="4593212453765072419">Autenticação de proxy necessária</translation>
 <translation id="4594021849294327751">Criar transcrição</translation>
+<translation id="4607282946861182308">Não é possível criar imagens desse comando. Tente outro comando.</translation>
 <translation id="4609350030397390689">Diminuir o brilho do teclado</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Pressione "Enter" para cancelar o trabalho de impressão.</translation>
 <translation id="463791356324567266">Cancelando a digitalização…</translation>
@@ -1364,6 +1365,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8208861521865154048">Benefícios</translation>
 <translation id="8226628635270268143">Escolher seus álbuns e fotos favoritos</translation>
 <translation id="8227119283605456246">Anexar arquivo</translation>
+<translation id="8227488649450500937">Tente usar um desses comandos ou consulte o <ph name="BEGIN_LINK_PROMPTING_GUIDE" />Guia para a criação de comandos<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Falha no ping do gateway de rede padrão</translation>
 <translation id="8238771987802558562">Escolher um APN</translation>
 <translation id="8246209727385807362">Operadora desconhecida</translation>

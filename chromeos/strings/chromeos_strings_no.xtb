@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Kontroller</translation>
 <translation id="2652403576514495859">slå diktering av eller på</translation>
 <translation id="2653659639078652383">Send inn</translation>
-<translation id="2653807227758181366">Beskriv bakgrunnen du vil opprette, eller bruk en eksempelforespørsel</translation>
 <translation id="2654647726140493436">Ikke slå av <ph name="DEVICE_TYPE" /> eller koble fra strømkabelen for <ph name="DEVICE_TYPE" /> mens oppdateringen pågår</translation>
 <translation id="2656001153562991489">Kun på Chromebook Plus</translation>
 <translation id="2665671725390405060">Hør uttalen</translation>
@@ -1366,6 +1365,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8208861521865154048">Fordeler</translation>
 <translation id="8226628635270268143">Velg favorittbildene og -albumene dine</translation>
 <translation id="8227119283605456246">Legg ved fil</translation>
+<translation id="8227488649450500937">Prøv en av disse forespørslene, eller se <ph name="BEGIN_LINK_PROMPTING_GUIDE" />veiledningen for forespørsler<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Kunne ikke pinge gatewayen for standardnettverket</translation>
 <translation id="8238771987802558562">Velg et APN</translation>
 <translation id="8246209727385807362">Ukjent operatør</translation>

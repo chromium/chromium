@@ -405,6 +405,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> – podgląd. Biurko aktywne.</translation>
 <translation id="2486405091093637109">Rozdzielczość wyświetlacza „<ph name="DISPLAY_NAME" />” została zmieniona na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Jeśli tego nie potwierdzisz, za <ph name="TIMEOUT_SECONDS" /> zostaną przywrócone poprzednie ustawienia.</translation>
 <translation id="2487915095798731898">Dołącz</translation>
+<translation id="2496180316473517155">Historia przeglądania</translation>
 <translation id="2499445554382787206">Menu profilu biurka. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Klawisze trwałe</translation>
 <translation id="2504454902900101003">Zamknij konfigurację wyświetlania najnowszych zdjęć, plików multimedialnych i powiadomień z telefonu</translation>
@@ -436,6 +437,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2607678425161541573">Wymagane jest zalogowanie w trybie online</translation>
 <translation id="2612072250312279703">monitor aktywności</translation>
 <translation id="2612614436418177118">Przenieś ikonę aplikacji w siatce aplikacji</translation>
+<translation id="2619052155095999743">Wstaw</translation>
 <translation id="2619326010008283367">Prezentacja – krok <ph name="STEP" /> z <ph name="TOTAL_STEPS" />. Ustawienia urządzenia znajdziesz w Menu z aplikacjami. W Ustawieniach możesz dostosować urządzenie <ph name="PRODUCT_NAME" />. Spróbuj np. zmienić tapetę lub ustawić wygaszacz ekranu.</translation>
 <translation id="2620016719323068571">Szukaj elementów takich jak np. <ph name="CATEGORY" />, pliki lub aplikacje…</translation>
 <translation id="2620436844016719705">System</translation>
@@ -462,6 +464,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2704781753052663061">Połącz z innymi sieciami Wi-Fi</translation>
 <translation id="2705001408393684014">Przełącz stan mikrofonu. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">W górę</translation>
+<translation id="271033894570825754">Nowy</translation>
 <translation id="2710984741481549981">Zablokuj okna</translation>
 <translation id="2718395828230677721">Podśw. nocne</translation>
 <translation id="2726420622004325180">Aby telefon mógł działać jako punkt dostępu, musi korzystać z mobilnej transmisji danych</translation>
@@ -1097,6 +1100,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="492453977506755176">Klawisz trybu przechwytywania</translation>
 <translation id="4925542575807923399">Administrator tego konta wymaga, by w sesji wielokrotnego logowania logować się na nie jako pierwsze.</translation>
 <translation id="493076006037866439">Pomniejsz na ekranie</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4936329710968938986">Wszystkim, wyłączono</translation>
 <translation id="4937170330762390348">Dzięki dyktowaniu możesz pisać głosowo. Naciśnij klawisz dyktowania lub wybierz ikonę mikrofonu u dołu ekranu, jeśli jesteś w polu tekstowym. Twój język dyktowania to <ph name="LANGUAGE" />. Pliki rozpoznawania mowy zostaną pobrane, aby można było używać dyktowania offline. W każdej chwili możesz zmienić język dyktowania. W tym celu wybierz Ustawienia &gt; Ułatwienia dostępu.</translation>
 <translation id="4938176435186993759">Ukryj wszystkie sugestie</translation>
@@ -1105,6 +1109,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="495046168593986294">Przewiń w górę</translation>
 <translation id="4950800194215951939">Spersonalizuj sposób grania</translation>
 <translation id="4952936045814352993">Funkcja Znajdź telefon jest niedostępna, kiedy dźwięki alarmu są wyłączone</translation>
+<translation id="4953585991029886728">Edytowanie tekstu</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> wymaga przywrócenia wcześniejszej wersji systemu operacyjnego na urządzeniu <ph name="DEVICE_TYPE" />. Urządzenie zostanie zresetowane, a wszystkie dane – usunięte.</translation>
 <translation id="4961318399572185831">Przesyłanie ekranu</translation>
 <translation id="4964188651935955085">Gdy wyłączysz Bluetooth, to urządzenie zewnętrzne rozłączy się z urządzeniem <ph name="DEVICE_TYPE" />:</translation>
@@ -1426,6 +1431,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6032620807120418574">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
 <translation id="6040071906258664830">Nagrywanie z mikrofonu <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Zamknij</translation>
+<translation id="6042308850641462728">Więcej</translation>
 <translation id="6043212731627905357">Ten monitor nie działa z Twoim urządzeniem <ph name="DEVICE_TYPE" /> (nie jest obsługiwany).</translation>
 <translation id="6043994281159824495">Wyloguj się teraz</translation>
 <translation id="6045629311476491587">Używane przez <ph name="APP_COUNT" /> aplikację</translation>
@@ -1892,6 +1898,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7748275671948949022">Podświetl przycisk Menu z aplikacjami na półce</translation>
 <translation id="7749443890790263709">Osiągnięto maksymalną liczbę biurek.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Pokaż wszystko</translation>
 <translation id="7759183637555564029">Funkcje Pomóż mi w pisaniu i Pomóż mi w czytaniu możesz w każdej chwili wyłączyć w Ustawieniach. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Przeczytaj na głos</translation>
 <translation id="7769299611924763557">Twój GIF będzie wkrótce gotowy</translation>
@@ -2025,6 +2032,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> – tym ustawieniem zarządza Twój administrator.</translation>
 <translation id="8155628902202578800">Otwórz okno informacyjne dla konta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">W użyciu jest: <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Treść</translation>
 <translation id="8185090165691050712">Włącz/wyłącz menu, aby zmienić rozmiar trybu blokady</translation>
 <translation id="8192727139462702395">Gdy wyłączysz Bluetooth, te urządzenia zewnętrzne rozłączą się z urządzeniem <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Przesyłam kartę</translation>

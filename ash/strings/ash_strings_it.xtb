@@ -405,6 +405,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2486214324139475545">Anteprima di <ph name="DESK_NAME" />. Scrivania attiva.</translation>
 <translation id="2486405091093637109">La risoluzione "<ph name="DISPLAY_NAME" />" è stata modificata in <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Se non confermi, le impostazioni precedenti verranno ripristinate in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Partecipa</translation>
+<translation id="2496180316473517155">Cronologia di navigazione</translation>
 <translation id="2499445554382787206">Menu profilo scrivania. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tasti permanenti</translation>
 <translation id="2504454902900101003">Chiudi la configurazione della visualizzazione di notifiche, contenuti multimediali e foto recenti dello smartphone</translation>
@@ -436,6 +437,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2607678425161541573">Accesso online richiesto</translation>
 <translation id="2612072250312279703">monitoraggio dell'attività</translation>
 <translation id="2612614436418177118">Sposta l'icona di un'app all'interno della griglia delle app</translation>
+<translation id="2619052155095999743">Inserisci</translation>
 <translation id="2619326010008283367">Passaggio <ph name="STEP" /> di <ph name="TOTAL_STEPS" /> del tour. Puoi trovare le impostazioni del tuo dispositivo in Avvio app. Prova a personalizzare il tuo <ph name="PRODUCT_NAME" /> nelle Impostazioni, ad esempio cambiando lo sfondo o impostando un salvaschermo.</translation>
 <translation id="2620016719323068571">Cerca <ph name="CATEGORY" />, file, app e altro ancora…</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -462,6 +464,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2704781753052663061">Visualizza altre reti Wi-Fi</translation>
 <translation id="2705001408393684014">Attiva/disattiva il microfono. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Su</translation>
+<translation id="271033894570825754">Nuovo</translation>
 <translation id="2710984741481549981">Blocca le finestre</translation>
 <translation id="2718395828230677721">Luce notturna</translation>
 <translation id="2726420622004325180">Il telefono deve avere i dati mobili per poter fornire un hotspot</translation>
@@ -1083,6 +1086,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4890408602550914571">Assicurati che il tuo telefono sia nelle vicinanze e che il Bluetooth sia attivo.</translation>
 <translation id="4892981359753171125">Controllo del volto</translation>
 <translation id="4895488851634969361">La batteria è carica.</translation>
+<translation id="4902797682482387055">Attività suggerita su cui concentrarti</translation>
 <translation id="490375751687810070">Verticale</translation>
 <translation id="490788395437447240">Livello batteria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="491504982845934899">Attiva <ph name="NETWORK_NAME" /> dopo la configurazione del dispositivo</translation>
@@ -1093,6 +1097,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="492453977506755176">Tasto modalità di acquisizione</translation>
 <translation id="4925542575807923399">L'amministratore di questo account richiede che questo account sia il primo account registrato in una sessione con accesso simultaneo.</translation>
 <translation id="493076006037866439">Diminuisci lo zoom dello schermo</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4936329710968938986">Per tutti, off</translation>
 <translation id="4937170330762390348">Con la dettatura, puoi digitare usando la voce. Premi il tasto per la dettatura o seleziona l'icona a forma di microfono nella parte inferiore dello schermo quando è attivo un campo di testo. La lingua di dettatura è impostata su: <ph name="LANGUAGE" />. I file di contenuti vocali verranno scaricati per consentirti di utilizzare la dettatura offline. Puoi cambiare la lingua di dettatura in qualsiasi momento in Impostazioni &gt; Accessibilità.</translation>
 <translation id="4938176435186993759">Nascondi tutti i suggerimenti</translation>
@@ -1101,6 +1106,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="495046168593986294">Scorri verso l'alto</translation>
 <translation id="4950800194215951939">Personalizza la tua esperienza di gioco</translation>
 <translation id="4952936045814352993">Localizza telefono non è disponibile quando i suoni di avviso sono disattivati</translation>
+<translation id="4953585991029886728">Modifica testo</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> richiede il rollback di <ph name="DEVICE_TYPE" />. Il dispositivo verrà reimpostato e tutti i dati verranno eliminati.</translation>
 <translation id="4961318399572185831">Trasmetti schermo</translation>
 <translation id="4964188651935955085">Se disattivi il Bluetooth, questo dispositivo esterno verrà scollegato da <ph name="DEVICE_TYPE" />:</translation>
@@ -1422,6 +1428,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6032620807120418574">Fai clic su un punto qualsiasi per registrare l'intera schermata</translation>
 <translation id="6040071906258664830">Registrazione con microfono <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Chiudi</translation>
+<translation id="6042308850641462728">Altro</translation>
 <translation id="6043212731627905357">Questo monitor non è compatibile con il tuo dispositivo <ph name="DEVICE_TYPE" /> (il monitor non è supportato).</translation>
 <translation id="6043994281159824495">Esci ora</translation>
 <translation id="6045629311476491587">Usati da <ph name="APP_COUNT" /> app</translation>
@@ -1436,6 +1443,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6068258534237496331">Controlli per le videochiamate</translation>
 <translation id="6073451960410192870">Interrompi registrazione</translation>
 <translation id="6074087755403037157">Canale beta</translation>
+<translation id="6091929401758362855">Playlist: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Opzione disattivata dall'amministratore</translation>
 <translation id="6095008505822982596">Velocità voce</translation>
 <translation id="6095425951508823973">Aggiungi una connessione con <ph name="PROVIDER" /></translation>
@@ -1888,6 +1896,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7748275671948949022">Evidenzia il pulsante Avvio app nella barra delle app</translation>
 <translation id="7749443890790263709">Numero massimo di scrivanie raggiunto.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Mostra tutto</translation>
 <translation id="7759183637555564029">Puoi disattivare le funzionalità Aiutami a scrivere e Aiutami a leggere in qualsiasi momento in Impostazioni. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Seleziona per ascoltare</translation>
 <translation id="7769299611924763557">La tua GIF sarà pronta a breve</translation>
@@ -2021,6 +2030,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Questa impostazione è gestita dall'amministratore.</translation>
 <translation id="8155628902202578800">Apri la finestra di dialogo delle informazioni per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">In uso: <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Contenuti</translation>
 <translation id="8185090165691050712">Attiva/disattiva il menu per la modalità di blocco del ridimensionamento</translation>
 <translation id="8192727139462702395">Se disattivi il Bluetooth, questi dispositivi esterni verranno scollegati da <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Trasmissione della scheda in corso…</translation>

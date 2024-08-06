@@ -42,6 +42,7 @@
 <translation id="1177863135347784049">מותאם אישית</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1183189057400844278">‏כדי שתמיד תהיה לך אפשרות להשתמש בסיסמאות בחשבון Google שלך, עליך לאמת את הזהות שלך</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{לאתר אחד אין הרשאה לשליחת התראות}one{ל-# אתרים אין הרשאה לשליחת התראות}two{ל-# אתרים אין הרשאה לשליחת התראות}other{ל-# אתרים אין הרשאה לשליחת התראות}}</translation>
 <translation id="1187810343066461819">ניתן למחוק גם את הסימניות, ההיסטוריה ונתונים נוספים ברכב הזה</translation>
 <translation id="1193729455103054076">רוצה להשתמש בסיסמה החזקה?</translation>
 <translation id="1197267115302279827">העברת סימניות</translation>
@@ -306,6 +307,7 @@
 <translation id="2497852260688568942">מנהל המערכת שלך השבית את הסנכרון</translation>
 <translation id="250020030759455918">‏ב-Chrome יוצגו סטטוס הכניסה שלך ל-<ph name="SITE_NAME" />, נתוני הגלישה ונתוני האתר</translation>
 <translation id="2510106555128151389">מתבצעת התקנה של <ph name="WEBAPK_NAME" />...</translation>
+<translation id="2512234228327349533">חיפוש אפשרויות קנייה</translation>
 <translation id="2513403576141822879">‏אפשר למצוא הגדרות נוספות בנושא פרטיות, אבטחה ואיסוף נתונים בדף <ph name="BEGIN_LINK" />סנכרון ושירותי Google<ph name="END_LINK" /></translation>
 <translation id="2515921719039583189">‏למחוק את הנתונים מ-Chrome מהמכשיר הזה?</translation>
 <translation id="2517113738956581680">גיליון בגודל מלא</translation>
@@ -1268,6 +1270,7 @@
 <translation id="6964300328304469089">החשבון הנוכחי: <ph name="NAME" />, <ph name="EMAIL" />. עליך לבחור חשבון.</translation>
 <translation id="696447261358045621">לצאת מהמצב האנונימי?</translation>
 <translation id="6965382102122355670">אישור</translation>
+<translation id="6966660124354134532">צריך להקיש כדי לעקוב אחרי מוצר או לבטל את המעקב אחריו.</translation>
 <translation id="6971862865055170158">לא לאשר</translation>
 <translation id="6978717888677691380">אתרים שחסמת</translation>
 <translation id="6979737339423435258">משחר ההיסטוריה</translation>
@@ -1296,6 +1299,7 @@
 <translation id="7105047059074518658">כדי שיהיה קל יותר לגלוש במכשירים שונים, עליך להיכנס לחשבון</translation>
 <translation id="7106762743910369165">הדפדפן מנוהל על ידי הארגון שלך</translation>
 <translation id="7111394291981742152">‏ב-Chrome יש לך יותר שליטה במודעות שמוצגות לך, וחלות הגבלות על המידע עליך שהאתרים יכולים לקבל בהצגת מודעות בהתאמה אישית.</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{נבדקו הרשאות של אתר אחד}one{נבדקו ההרשאות של # אתרים}two{נבדקו ההרשאות של # אתרים}other{נבדקו ההרשאות של # אתרים}}</translation>
 <translation id="7138678301420049075">אחר</translation>
 <translation id="7140829094791862589">מיון לפי סדר ידני</translation>
 <translation id="7146622961999026732">נראה שהאתרים והאפליקציות האלה חשובים לך:</translation>
@@ -1665,6 +1669,7 @@
 <translation id="8773160212632396039">עיבוד הבקשה מתבצע</translation>
 <translation id="8788265440806329501">היסטוריית הניווט סגורה</translation>
 <translation id="8788968922598763114">פתיחה מחדש של הכרטיסייה האחרונה שנסגרה</translation>
+<translation id="8790193082819560975">צריך להקיש כדי לחפש אפשרויות קנייה של המוצר בכרטיסייה חדשה.</translation>
 <translation id="879027982257117598">לדוגמה, אם ביקרת באתר למכירת נעלי ריצה למרחקים ארוכים, האתר עשוי להעריך שריצות מרתון מעניינות אותך. לאחר מכן, יכול להיות שבביקור באתר שונה תוצג מודעה לנעלי ריצה לפי הצעה מהאתר הראשון.</translation>
 <translation id="8798449543960971550">נקראו</translation>
 <translation id="8803526663383843427">במצב מופעל</translation>

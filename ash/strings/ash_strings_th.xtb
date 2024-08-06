@@ -405,6 +405,7 @@
 <translation id="2486214324139475545">ตัวอย่าง <ph name="DESK_NAME" /> เดสก์ที่ใช้งานอยู่</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" เปลี่ยนเป็นความละเอียด <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) หากไม่ยืนยัน ระบบจะคืนค่าการตั้งค่าก่อนหน้านี้ใน <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="2487915095798731898">เข้าร่วม</translation>
+<translation id="2496180316473517155">ประวัติการท่องเว็บ</translation>
 <translation id="2499445554382787206">เมนูโปรไฟล์เดสก์ <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">คีย์ติดหนึบ</translation>
 <translation id="2504454902900101003">ปิดการตั้งค่าการดูรูปภาพ สื่อ และการแจ้งเตือนล่าสุดของโทรศัพท์</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">ต้องลงชื่อเข้าใช้ออนไลน์</translation>
 <translation id="2612072250312279703">เครื่องมือตรวจสอบกิจกรรม</translation>
 <translation id="2612614436418177118">ย้ายไอคอนแอปภายในตารางกริดสำหรับแอป</translation>
+<translation id="2619052155095999743">แทรก</translation>
 <translation id="2619326010008283367">ดูการแนะนำขั้นตอนที่ <ph name="STEP" /> จาก <ph name="TOTAL_STEPS" /> คุณดูการตั้งค่าอุปกรณ์ได้ใน Launcher ลองปรับแต่ง <ph name="PRODUCT_NAME" /> ในการตั้งค่า เช่น เปลี่ยนวอลเปเปอร์หรือตั้งค่าภาพพักหน้าจอ</translation>
 <translation id="2620016719323068571">ค้นหา<ph name="CATEGORY" /> ไฟล์ แอป และอื่นๆ...</translation>
 <translation id="2620436844016719705">ระบบ</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">เข้าร่วมเครือข่าย Wi-Fi อื่น</translation>
 <translation id="2705001408393684014">เปิด/ปิดไมค์ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ขึ้น</translation>
+<translation id="271033894570825754">ใหม่</translation>
 <translation id="2710984741481549981">ล็อกหน้าต่าง</translation>
 <translation id="2718395828230677721">แสงตอนกลางคืน</translation>
 <translation id="2726420622004325180">โทรศัพท์ต้องมืออินเทอร์เน็ตมือถือเพื่อการใช้งานเป็นฮอตสปอต</translation>
@@ -1092,6 +1095,7 @@
 <translation id="492453977506755176">แป้นสำหรับโหมดจับภาพ</translation>
 <translation id="4925542575807923399">ผู้ดูแลระบบต้องทำให้บัญชีนี้เป็นบัญชีที่ลงชื่อเข้าใช้เป็นบัญชีแรก ในเซสชันการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
 <translation id="493076006037866439">ซูมออกนอกหน้าจอ</translation>
+<translation id="4932733599132424254">วันที่</translation>
 <translation id="4936329710968938986">ทุกคน ปิดอยู่</translation>
 <translation id="4937170330762390348">ฟีเจอร์การพิมพ์ตามคำบอกช่วยให้คุณพิมพ์ด้วยเสียงได้ กดแป้นให้พิมพ์ตามคำบอกหรือเลือกไอคอนไมโครโฟนที่ด้านล่างของหน้าจอเมื่อคุณอยู่ในช่องข้อความ ภาษาสำหรับการพิมพ์ตามคำบอกตั้งค่าเป็น<ph name="LANGUAGE" /> จะมีการดาวน์โหลดไฟล์คำพูดเพื่อให้คุณใช้การพิมพ์ตามคำบอกแบบออฟไลน์ได้ คุณเปลี่ยนภาษาสำหรับการพิมพ์ตามคำบอกได้ทุกเมื่อในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
 <translation id="4938176435186993759">ซ่อนคำแนะนำทั้งหมด</translation>
@@ -1100,6 +1104,7 @@
 <translation id="495046168593986294">เลื่อนขึ้น</translation>
 <translation id="4950800194215951939">ปรับแต่งประสบการณ์การเล่นเกม</translation>
 <translation id="4952936045814352993">ระบุตำแหน่งของโทรศัพท์ไม่ได้เมื่อปิดเสียงการปลุกไว้</translation>
+<translation id="4953585991029886728">แก้ไขข้อความ</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> กำหนดให้คุณต้องย้อนกลับเวอร์ชันของ <ph name="DEVICE_TYPE" /> อุปกรณ์จะรีเซ็ตและระบบจะลบข้อมูลทั้งหมด</translation>
 <translation id="4961318399572185831">แคสต์หน้าจอ</translation>
 <translation id="4964188651935955085">เมื่อปิดบลูทูธ อุปกรณ์ภายนอกนี้จะยกเลิกการเชื่อมต่อกับ <ph name="DEVICE_TYPE" /> ของคุณ</translation>
@@ -1421,6 +1426,7 @@
 <translation id="6032620807120418574">คลิกที่ใดก็ได้เพื่อบันทึกแบบเต็มหน้าจอ</translation>
 <translation id="6040071906258664830">การบันทึกเสียงจากไมโครโฟน<ph name="STATE" /></translation>
 <translation id="6040143037577758943">ปิด</translation>
+<translation id="6042308850641462728">แสดงเพิ่ม</translation>
 <translation id="6043212731627905357">จอภาพนี้ใช้งานไม่ได้กับ <ph name="DEVICE_TYPE" /> ของคุณ (ไม่รองรับจอภาพนี้)</translation>
 <translation id="6043994281159824495">ออกจากระบบเลย</translation>
 <translation id="6045629311476491587">ใช้โดยแอป <ph name="APP_COUNT" /> แอป</translation>
@@ -1435,6 +1441,7 @@
 <translation id="6068258534237496331">การควบคุมวิดีโอคอล</translation>
 <translation id="6073451960410192870">หยุดบันทึก</translation>
 <translation id="6074087755403037157">เวอร์ชันเบต้า</translation>
+<translation id="6091929401758362855">เพลย์ลิสต์: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">ปิดใช้โดยผู้ดูแลระบบ</translation>
 <translation id="6095008505822982596">ความเร็วในการพูด</translation>
 <translation id="6095425951508823973">เพิ่มการเชื่อมต่อกับ <ph name="PROVIDER" /></translation>
@@ -1887,6 +1894,7 @@
 <translation id="7748275671948949022">ไฮไลต์ปุ่ม Launcher บนแถบ</translation>
 <translation id="7749443890790263709">มีพื้นที่ทำงานครบตามจำนวนสูงสุดแล้ว</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">แสดงทั้งหมด</translation>
 <translation id="7759183637555564029">คุณปิดฟีเจอร์ช่วยฉันเขียนและช่วยฉันอ่านได้ทุกเมื่อในการตั้งค่า <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">เลือกเพื่อให้อ่าน</translation>
 <translation id="7769299611924763557">GIF จะพร้อมใช้งานในไม่ช้า</translation>
@@ -2020,6 +2028,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> การตั้งค่านี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="8155628902202578800">เปิดกล่องโต้ตอบข้อมูลของ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">กำลังใช้<ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">เนื้อหา</translation>
 <translation id="8185090165691050712">เปิด/ปิดเมนูเพื่อปรับขนาดโหมดล็อก</translation>
 <translation id="8192727139462702395">เมื่อปิดบลูทูธ อุปกรณ์ภายนอกเหล่านี้จะยกเลิกการเชื่อมต่อกับ <ph name="DEVICE_TYPE" /> ของคุณ</translation>
 <translation id="8198456017687137612">กำลังแคสต์แท็บ</translation>

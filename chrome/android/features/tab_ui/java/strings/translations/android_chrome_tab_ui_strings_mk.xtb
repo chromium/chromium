@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Портокалова</translation>
 <translation id="125153950246128346">Допрете за да видите друга картичка</translation>
 <translation id="1273910660700874265">Опции за групата картички <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1340839264183302272">Напуштете ја групата</translation>
 <translation id="1419023007528516122">Ова трајно ќе ја избрише групата од вашиот уред</translation>
 <translation id="1486715732399361704">Сите ваши групи картички може да ги најдете овде</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Создадено пред <ph name="NUM_MINS_ONE" /> минута}one{Создадено пред <ph name="NUM_MINS_MANY" /> минута}other{Создадено пред <ph name="NUM_MINS_MANY" /> минути}}</translation>
@@ -41,6 +42,7 @@
 <translation id="2801787514987684416">Да се прикажат информации за продавницата?</translation>
 <translation id="2928243913527329289">Google | За продавницава</translation>
 <translation id="2977480621796371840">Отстрани од групата</translation>
+<translation id="29919168204617356">Неактивните картички ќе се затвораат автоматски. Секогаш може да ги најдете во „Историја“.</translation>
 <translation id="3008554597174452548">Запри со следење на производот</translation>
 <translation id="3026391124054406831">Создајте групи за да ги организирате вашите картички.</translation>
 <translation id="3051031624272448591">Секогаш може да ги вратите во историјата</translation>
@@ -51,6 +53,7 @@
 <translation id="3322827343001922122">Отворете го менито со дејства на група картички за групата картички <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Предлог: <ph name="NUMBER_OF_TABS" /> картички изгледаат поврзани. Да се групираат?</translation>
 <translation id="3547352561153509682">Ова ќе ја избрише групата од сите уреди најавени на <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">Скриј го дијалогот со неактивни картички</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Сликичка за преглед на лист за споделување</translation>
 <translation id="381219490185664296">Да се одгрупира група картички?</translation>
@@ -120,6 +123,7 @@
 <translation id="6557858706263317126">уште <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Премести ја картичката налево</translation>
 <translation id="6615455863669487791">Покажи ми</translation>
+<translation id="6694634756612002311">Управувајте со споделувањето</translation>
 <translation id="6744956528665271406">Изменете ја бојата на групата</translation>
 <translation id="6856809498882026482">Скриј го режимот на повеќекратен избор</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Сподели ја картичката}one{Сподели ги картичките}other{Сподели ги картичките}}</translation>
@@ -137,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> рецензија од Google}one{<ph name="REVIEWS_COUNT_MANY" /> рецензија од Google}other{<ph name="REVIEWS_COUNT_MANY" /> рецензии од Google}}</translation>
 <translation id="7559245342362162951">Прикажи ги картичките од групата во табела на цел екран</translation>
 <translation id="7658239707568436148">Откажи</translation>
+<translation id="7688386659311034820">Дијалог со неактивни картички</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Споделете <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Споделете <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Споделете <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
 <translation id="7773714564112603605">Отстранете ја картичката и избришете ја групата</translation>
 <translation id="7792771145871471484">Прегледајте ги предлозите.</translation>
@@ -171,6 +176,7 @@
 <translation id="8926389886865778422">Не прашувај повторно</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Прошири ја групата картички со <ph name="TABS_COUNT_ONE" /> картичка.}one{Прошири ја групата картички со <ph name="TABS_COUNT_MANY" /> картичка.}other{Прошири ја групата картички со <ph name="TABS_COUNT_MANY" /> картички.}}</translation>
 <translation id="9090098097337832354">Информациите за продавницава се затворени</translation>
+<translation id="9111228330448174435">Прикажувај дијалог при создавање нова група картички</translation>
 <translation id="9150694013019234766">Префрлајте се од една на друга картичка во групата со картички најдолу на екранот</translation>
 <translation id="9169594135889675189">Додај нова картичка во групата</translation>
 <translation id="9216898458513705996">Картичките ќе останат отворени на овој уред, но групата ќе се избрише од сите уреди најавени на <ph name="USER_EMAIL" /></translation>

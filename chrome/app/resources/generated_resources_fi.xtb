@@ -185,7 +185,6 @@
 <translation id="1124772482545689468">Käyttäjä</translation>
 <translation id="1125550662859510761">Näyttää olevan <ph name="WIDTH" /> x <ph name="HEIGHT" /> (natiivi)</translation>
 <translation id="1125921926864945797">Taustakuva ja tyyli</translation>
-<translation id="1126809382673880764">Ei suojaa sinua vaarallisilta sivustoilta, latauksilta ja laajennuksilta. Voit silti käyttää Selaussuojaa muissa Googlen palveluissa, joissa se on saatavilla, kuten Gmailissa ja Haussa.</translation>
 <translation id="1128090040635299943">Linuxia määritetään. Määritys kestää muutaman minuutin.</translation>
 <translation id="1128591060186966949">Muokkaa hakukonetta</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -630,7 +629,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1461041542809785877">Suorituskyky</translation>
 <translation id="1461177659295855031">Siirrä Kirjanmerkkipalkki-kansioon</translation>
 <translation id="1461288887896722288">Kirjauduit juuri hallinnoidulle tilille. Uuden tilin luominen antaa sinulle pääsyn joihinkin tilille linkitettyihin materiaaleihin.</translation>
-<translation id="1461868306585780092">Varoita ennen suojaamattomien yhteyksien käyttöä</translation>
 <translation id="146219525117638703">ONC-tila</translation>
 <translation id="146220085323579959">Internetyhteys katkaistu. Tarkista internetyhteytesi ja yritä uudelleen.</translation>
 <translation id="1462480037563370607">Lisää sivustoja manuaalisesti</translation>
@@ -4177,7 +4175,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="3959747296451923142">Vahvista tilauksen poisto</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" />: lisää toimintoja</translation>
-<translation id="3962119236270174787">Perustason suojaus vaaralliseksi tiedettyjä sivustoja, latauksia ja laajennuksia vastaan</translation>
 <translation id="3963753386716096475">Käytä toista puhelinta, tablettia tai suojausavainta</translation>
 <translation id="3964480518399667971">Laita mobiiliverkko pois päältä</translation>
 <translation id="3965965397408324205">Sulje <ph name="PROFILE_NAME" /></translation>
@@ -5519,7 +5516,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4967571733817147990">Muokkaa hiiren painikkeita</translation>
 <translation id="4967852842111017386"><ph name="FEATURE_NAME" /> / laitteen nimi</translation>
 <translation id="4971412780836297815">Avaa kun valmis</translation>
-<translation id="4971735654804503942">Nopeampi, proaktiivinen suojaus vaarallisia sivustoja, latauksia ja laajennuksia vastaan. Varoittaa sinua salasanarikkomuksista. Edellyttää selaustietojen lähettämistä Googlelle.</translation>
 <translation id="4972129977812092092">Muokkaa tulostinta</translation>
 <translation id="4972164225939028131">Väärä salasana</translation>
 <translation id="4972737347717125191">Sivustot saavat pyytää virtuaalitodellisuuslaitteiden ja ‑datan käyttölupaa</translation>
@@ -7011,6 +7007,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6075075631258766703">Todenna puhelin</translation>
 <translation id="6075731018162044558">Hups! Järjestelmä ei voinut hankkia laitteelle pitkäaikaista API-käyttötunnusta.</translation>
 <translation id="6075907793831890935">Vaihtaa tietoja isäntää <ph name="HOSTNAME" /> käyttävän laitteen kanssa.</translation>
+<translation id="6076092653254552547">Järjestelmäasetukset</translation>
 <translation id="6076491747490570887">Kylmänharmaa</translation>
 <translation id="6076576896267434196">Laajennus (<ph name="EXTENSION_NAME" />) haluaa pääsyn tilillesi</translation>
 <translation id="6077131872140550515">Poista ensisijaisista</translation>
@@ -8251,7 +8248,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6992554835374084304">Ota käyttöön parannettu oikeinkirjoituksen tarkistus</translation>
 <translation id="6993000214273684335">Välilehti poistettu nimettömästä ryhmästä – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Chrome-selainta päivitetään</translation>
-<translation id="6995899638241819463">Varoita, jos salasanoja vaarantuu tietosuojaloukkauksessa</translation>
 <translation id="6995984090981858039">Lukea ChromeOS-laitteen tietoja ja dataa.</translation>
 <translation id="6996245928508281884">Laita puhelimen Bluetooth ja Wi-Fi päälle</translation>
 <translation id="6996438701394974959">Suurenna näytön ja tekstin kokoa</translation>
@@ -9388,6 +9384,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7826254698725248775">Ristiriitainen laitteen tunnus</translation>
 <translation id="7828642077514646543">Virhe: Varmenteen purku epäonnistui</translation>
 <translation id="7829877209233347340">Pyydä vanhempaa kirjautumaan, jotta hän voi antaa luvan koulutilin lisäämiseen</translation>
+<translation id="7830276128493844263">Sijainti on laitettu pois päältä järjestelmäasetuksista</translation>
 <translation id="7830833461614351956">Kopioidaanko <ph name="NUM_OF_FILES" /> tiedostoa tänne: <ph name="CLOUD_PROVIDER" />?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Tässä näytetään tallennetut muokatut sanat.</translation>

@@ -405,6 +405,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2486214324139475545">Darbvietas <ph name="DESK_NAME" /> priekšskatījums. Aktīva darbvieta.</translation>
 <translation id="2486405091093637109">Displeja “<ph name="DISPLAY_NAME" />” izšķirtspēja tika mainīta uz <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Ja neapstiprināsiet, iestatījumi tiks atjaunoti pēc šāda laika: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Pievienoties</translation>
+<translation id="2496180316473517155">Pārlūkošanas vēsture</translation>
 <translation id="2499445554382787206">Darbvietas profila izvēlne. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Taustiņu ķēde</translation>
 <translation id="2504454902900101003">Nerādīt iespēju iestatīt tālruņa jaunāko fotoattēlu, multivides satura un paziņojumu skatīšanu</translation>
@@ -436,6 +437,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2607678425161541573">Nepieciešama pierakstīšanās tiešsaistē</translation>
 <translation id="2612072250312279703">darbību uzraugs</translation>
 <translation id="2612614436418177118">Lietotņu režģī pārvietot lietotnes ikonu</translation>
+<translation id="2619052155095999743">Ievietot</translation>
 <translation id="2619326010008283367">Ceļveža <ph name="STEP" />. darbība no <ph name="TOTAL_STEPS" />. Ierīces iestatījumi ir pieejami palaidējā. Mēģiniet iestatījumos pielāgot ierīci (<ph name="PRODUCT_NAME" />), piemēram, mainiet fona tapeti vai iestatiet ekrānsaudzētāju.</translation>
 <translation id="2620016719323068571">Meklējiet <ph name="CATEGORY" />, failus, lietotnes un citu saturu…</translation>
 <translation id="2620436844016719705">Sistēma</translation>
@@ -462,6 +464,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2704781753052663061">Pievienoties citiem Wi-Fi tīkliem</translation>
 <translation id="2705001408393684014">Pārslēgt mikrofonu. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Augšup</translation>
+<translation id="271033894570825754">Jauns</translation>
 <translation id="2710984741481549981">Bloķēt logus</translation>
 <translation id="2718395828230677721">Nakts režīms</translation>
 <translation id="2726420622004325180">Jūsu tālrunī ir jābūt aktivizētiem mobilajiem datiem, lai iespējotu tīklāju.</translation>
@@ -1086,6 +1089,7 @@ Pievienota viena ierīce.</translation>
 <translation id="4890408602550914571">Tālrunim ir jāatrodas tuvumā, un tajā ir jābūt ieslēgtam Bluetooth savienojumam.</translation>
 <translation id="4892981359753171125">Sejas vadība</translation>
 <translation id="4895488851634969361">Akumulators ir pilnībā uzlādēts.</translation>
+<translation id="4902797682482387055">Ieteiktais uzdevums, kam pievērst uzmanību</translation>
 <translation id="490375751687810070">Vertikāli</translation>
 <translation id="490788395437447240">Akumulators: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="491504982845934899">Aktivizēt <ph name="NETWORK_NAME" /> pēc ierīces iestatīšanas</translation>
@@ -1096,6 +1100,7 @@ Pievienota viena ierīce.</translation>
 <translation id="492453977506755176">Uzņemšanas režīma taustiņš</translation>
 <translation id="4925542575807923399">Šī konta administrators ir noteicis, ka vairākkārtējas pierakstīšanās sesijā šis ir pirmais konts, kurā jāpierakstās.</translation>
 <translation id="493076006037866439">Tālināt ekrāna saturu</translation>
+<translation id="4932733599132424254">Datums</translation>
 <translation id="4936329710968938986">Visiem, izslēgta</translation>
 <translation id="4937170330762390348">Izmantojot diktēšanas funkciju, rakstīšanai varat lietot balsi. Kad ir atlasīts teksta lauks, nospiediet diktēšanas taustiņu vai atlasiet mikrofona ikonu ekrāna apakšdaļā. Iestatītā diktēšanas valoda: <ph name="LANGUAGE" />. Runas faili tiks lejupielādēti, lai diktēšanu varētu izmantot bezsaistē. Jebkurā laikā varat mainīt diktēšanas valodu sadaļā Iestatījumi &gt; Pieejamība.</translation>
 <translation id="4938176435186993759">Paslēpt visus ieteikumus</translation>
@@ -1104,6 +1109,7 @@ Pievienota viena ierīce.</translation>
 <translation id="495046168593986294">Ritināt uz augšu</translation>
 <translation id="4950800194215951939">Pielāgojiet spēļu iespējas.</translation>
 <translation id="4952936045814352993">Funkcija “Atrast tālruni” nav pieejama, ja brīdinājumu skaņas ir atspējotas</translation>
+<translation id="4953585991029886728">Rediģējams teksts</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> pieprasa ierīcē <ph name="DEVICE_TYPE" /> atjaunot iepriekšējo versiju. Ierīce tiks atiestatīta, un visi dati tiks izdzēsti.</translation>
 <translation id="4961318399572185831">Ekrāna apraide</translation>
 <translation id="4964188651935955085">Izslēdzot Bluetooth, no jūsu ierīces (<ph name="DEVICE_TYPE" />) tiks atvienota šāda ārējā ierīce:</translation>
@@ -1363,6 +1369,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5819918159912280082">Jūsu Chromebook dators tika negaidīti restartēts. Atveriet iepriekšējos logus un lietotnes.</translation>
 <translation id="5823239091726045201">Google uzdevumi tīmeklī</translation>
 <translation id="5825969630400862129">Saistīto ierīču iestatījumi</translation>
+<translation id="5830180081891717894">Vēl <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Pārtraukt “<ph name="ROUTE_TITLE" />” apraidi ierīcē “<ph name="RECEIVER_NAME" />”</translation>
 <translation id="5841296711770970362">Pāriet uz nākamo ierakstu</translation>
 <translation id="5842553299352339114">Šīs ierīces (<ph name="DEVICE_NAME" />) tīklājs ir ieslēgts, un nav pievienota neviena ierīce.</translation>
@@ -1424,6 +1431,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6032620807120418574">Noklikšķiniet jebkurā vietā, lai ierakstītu visu ekrānu</translation>
 <translation id="6040071906258664830">Ierakstīt mikrofona skaņu <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Aizvērt</translation>
+<translation id="6042308850641462728">Vairāk</translation>
 <translation id="6043212731627905357">Šis monitors nav saderīgs ar jūsu ierīci <ph name="DEVICE_TYPE" /> (monitors netiek atbalstīts).</translation>
 <translation id="6043994281159824495">Izrakstīties tagad</translation>
 <translation id="6045629311476491587">Izmanto <ph name="APP_COUNT" /> lietotnes</translation>
@@ -1890,6 +1898,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7748275671948949022">Plauktā izcelt palaidēja pogu</translation>
 <translation id="7749443890790263709">Sasniegts maksimālais darbvietu skaits.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Rādīt visu</translation>
 <translation id="7759183637555564029">Iestatījumos varat jebkurā laikā izslēgt funkcijas “Palīdziet man uzrakstīt” un “Palīdziet man izlasīt”. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Atlasīt, lai izrunātu</translation>
 <translation id="7769299611924763557">Jūsu GIF attēls drīz būs gatavs</translation>
@@ -2023,6 +2032,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Šo iestatījumu pārvalda jūsu administrators.</translation>
 <translation id="8155628902202578800">Atvērt lietotāja <ph name="USER_EMAIL_ADDRESS" /> informācijas dialoglodziņu</translation>
 <translation id="8167567890448493835">Izmantotā valoda: <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Saturs</translation>
 <translation id="8185090165691050712">Ieslēgt/izslēgt bloķēšanas režīma lieluma maiņas izvēlni</translation>
 <translation id="8192727139462702395">Izslēdzot Bluetooth, no jūsu ierīces (<ph name="DEVICE_TYPE" />) tiks atvienotas šādas ārējās ierīces:</translation>
 <translation id="8198456017687137612">Apraides cilne</translation>
@@ -2070,6 +2080,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8375916635258623388">Tiks automātiski izveidots šīs ierīces <ph name="DEVICE_NAME" /> un jūsu tālruņa savienojums</translation>
 <translation id="8380784334203145311">Arlabunakti!</translation>
 <translation id="8382715499079447151">Skatīšanas aizsardzība</translation>
+<translation id="8383614331548401927">Kopsavilkums sākumam</translation>
 <translation id="8388750414311082622">Pēdējo darbvietu nevar noņemt.</translation>
 <translation id="8394567579869570560">Jūsu vecāki bloķēja šo ierīci</translation>
 <translation id="8401850874595457088">Atvērt valodu izvēlni</translation>

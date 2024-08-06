@@ -302,6 +302,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2529021024822217800">Tout ouvrir</translation>
 <translation id="2536991091671391962">Vous pouvez utiliser des mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le gestionnaire de mots de passe Google du compte <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Masquer la « Vérification de sécurité »</translation>
+<translation id="2545094307889012168">Superposition de la Lentille</translation>
 <translation id="2547458583188611426">La synchronisation ne fonctionne pas. Pour lancer la synchronisation, entrez votre phrase de passe.</translation>
 <translation id="2551153019974022505">Erreur relative au compte</translation>
 <translation id="2556092377360758201">Aucune protection (non recommandé)</translation>
@@ -848,6 +849,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5205197603258285592">Enregistrer l'image dans…</translation>
 <translation id="5211488077761630279">Autoriser « <ph name="SITE_NAME" /> » à utiliser votre <ph name="PERMISSION" />?</translation>
+<translation id="5215046161188172474">Partager l'URL complète</translation>
 <translation id="5219295696240154694">Contribuer à l'amélioration de la sécurité sur le Web pour tous</translation>
 <translation id="5220945116117011963">Créer des événements d'agenda à partir de dates</translation>
 <translation id="5221339005270097309">Vérif. mots de passe…</translation>
@@ -1125,6 +1127,7 @@ La fonction de transfert doit également être activée dans la section Généra
 Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces).</translation>
 <translation id="6476253015009698798">Le suivi des prix n'est pas offert sur cette page.</translation>
 <translation id="6476800141292307438">Traduction de la page en <ph name="LANGUAGE" /> en cours… Les options sont affichées dans le bas de l'écran.</translation>
+<translation id="6477585407014744043">Nom du groupe</translation>
 <translation id="648164694371393720">Erreur d'authentification</translation>
 <translation id="6494931198667773526">Fin</translation>
 <translation id="6500795388871406244">Utilisez le mot de passe suggéré :</translation>

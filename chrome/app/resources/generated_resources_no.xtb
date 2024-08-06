@@ -185,7 +185,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1124772482545689468">Bruker</translation>
 <translation id="1125550662859510761">Ser ut som <ph name="WIDTH" /> x <ph name="HEIGHT" /> (innebygd)</translation>
 <translation id="1125921926864945797">Bakgrunn og stil</translation>
-<translation id="1126809382673880764">Beskytter deg ikke mot farlige nettsteder, nedlastinger eller utvidelser. Du får fremdeles beskyttelse fra Safe Browsing der dette er tilgjengelig, på andre Google-tjenester, som Gmail og Søk.</translation>
 <translation id="1128090040635299943">Linux holder på å bli konfigurert. Det kommer til å ta noen minutter.</translation>
 <translation id="1128591060186966949">Endre i søkemotoren</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -630,7 +629,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1461041542809785877">Ytelse</translation>
 <translation id="1461177659295855031">Flytt til bokmerkeradmappen</translation>
 <translation id="1461288887896722288">Du har nettopp logget på en administrert konto. Hvis du oppretter en ny administrert profil, får du tilgang til noen ressurser som er tilknyttet den kontoen.</translation>
-<translation id="1461868306585780092">Bli advart før bruk av usikre tilkoblinger</translation>
 <translation id="146219525117638703">ONC-status</translation>
 <translation id="146220085323579959">Internett er ikke tilkoblet. Sjekk Internett-tilkoblingen og prøv på nytt.</translation>
 <translation id="1462480037563370607">Legg til nettsteder manuelt</translation>
@@ -4173,7 +4171,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="3959747296451923142">Bekreft fjerning av abonnementet</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Flere handlinger for <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962119236270174787">Standardbeskyttelse mot nettsteder, nedlastinger og utvidelser som anses som farlige</translation>
 <translation id="3963753386716096475">Bruk en annen telefon, et annet nettbrett eller en annen sikkerhetsnøkkel</translation>
 <translation id="3964480518399667971">Slå av mobildata</translation>
 <translation id="3965965397408324205">Gå ut av <ph name="PROFILE_NAME" /></translation>
@@ -5514,7 +5511,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4967571733817147990">Tilpass museknapper</translation>
 <translation id="4967852842111017386">Enhetsnavn for <ph name="FEATURE_NAME" /></translation>
 <translation id="4971412780836297815">Åpne når ferdig</translation>
-<translation id="4971735654804503942">Raskere, proaktiv beskyttelse mot farlige nettsteder, nedlastinger og utvidelser. Advarer deg om passordbrudd. Krever at nettlesingsdata sendes til Google.</translation>
 <translation id="4972129977812092092">Endre skriveren</translation>
 <translation id="4972164225939028131">Feil passord</translation>
 <translation id="4972737347717125191">Nettsteder kan be om å få bruke virtuell virkelighet-enheter og -data</translation>
@@ -7004,6 +7000,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6075075631258766703">Bekreft telefonen</translation>
 <translation id="6075731018162044558">Beklager. Systemet kunne ikke hente noe langvarig API-tilgangstoken for denne enheten.</translation>
 <translation id="6075907793831890935">utveksle data med enheten <ph name="HOSTNAME" />.</translation>
+<translation id="6076092653254552547">Systeminnstillinger</translation>
 <translation id="6076491747490570887">Kjølig grå</translation>
 <translation id="6076576896267434196">«<ph name="EXTENSION_NAME" />»-utvidelsen ønsker tilgang til kontoen din</translation>
 <translation id="6077131872140550515">Fjern som foretrukket nettverk</translation>
@@ -8244,7 +8241,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6992554835374084304">Slå på forbedret stavekontroll</translation>
 <translation id="6993000214273684335">Fanen er fjernet fra en gruppe uten navn – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Oppdaterer Chrome-nettleseren</translation>
-<translation id="6995899638241819463">Få en advarsel hvis passord blir avdekket i databrudd</translation>
 <translation id="6995984090981858039">lese ChromeOS-enhetsinformasjon og -data</translation>
 <translation id="6996245928508281884">Slå på Bluetooth og wifi på telefonen</translation>
 <translation id="6996438701394974959">Øk visnings- og tekststørrelsen</translation>
@@ -9382,6 +9378,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7826254698725248775">Motstridende enhetsidentifikator.</translation>
 <translation id="7828642077514646543">Feil: Kan ikke dekode sertifikatet</translation>
 <translation id="7829877209233347340">Be en forelder om å logge på for å gi tillatelse til å legge til en skolekonto</translation>
+<translation id="7830276128493844263">Posisjon er slått av i systeminnstillingene</translation>
 <translation id="7830833461614351956">Vil du kopiere <ph name="NUM_OF_FILES" /> filer til <ph name="CLOUD_PROVIDER" /> for å åpne dem?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Lagrede egendefinerte ord vises her</translation>

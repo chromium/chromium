@@ -302,6 +302,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2529021024822217800">Åpne alle</translation>
 <translation id="2536991091671391962">Du kan bruke lagrede passord på alle enheter. De lagres i Google Passordlagring for <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Skjul «Sikkerhetssjekk»</translation>
+<translation id="2545094307889012168">Lens-overlegg</translation>
 <translation id="2547458583188611426">Synkronisering fungerer ikke. For å starte synkroniseringen, skriv inn passordfrasen din.</translation>
 <translation id="2551153019974022505">Kontofeil</translation>
 <translation id="2556092377360758201">Ingen beskyttelse (anbefales ikke)</translation>
@@ -848,6 +849,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5197255632782567636">Internett</translation>
 <translation id="5205197603258285592">Lagre bildet i …</translation>
 <translation id="5211488077761630279">Vil du tillate at «<ph name="SITE_NAME" />» bruker <ph name="PERMISSION" />?</translation>
+<translation id="5215046161188172474">Del hele nettadressen</translation>
 <translation id="5219295696240154694">Bidra til å gjøre nettet sikrere for alle</translation>
 <translation id="5220945116117011963">Opprett kalenderaktiviteter fra datoer</translation>
 <translation id="5221339005270097309">Sjekker passord …</translation>
@@ -1125,6 +1127,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser.</translation>
 <translation id="6476253015009698798">Prissporing er ikke tilgjengelig for denne siden.</translation>
 <translation id="6476800141292307438">Oversetter siden til <ph name="LANGUAGE" />. Du finner alternativer på nedre del av skjermen.</translation>
+<translation id="6477585407014744043">Gi gruppen et navn</translation>
 <translation id="648164694371393720">Autentiseringsfeil</translation>
 <translation id="6494931198667773526">Slutter</translation>
 <translation id="6500795388871406244">Bruk foreslått passord:</translation>

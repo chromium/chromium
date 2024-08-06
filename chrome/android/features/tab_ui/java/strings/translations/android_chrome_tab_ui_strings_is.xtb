@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Appelsínugulur</translation>
 <translation id="125153950246128346">Ýttu til að sjá annan flipa</translation>
 <translation id="1273910660700874265">Valkostir fyrir flipahópinn „<ph name="TITLE_OF_GROUP" />“</translation>
+<translation id="1340839264183302272">Yfirgefa hóp</translation>
 <translation id="1419023007528516122">Þetta mun eyða hópnum úr tækinu þínu varanlega</translation>
 <translation id="1486715732399361704">Hér finnurðu alla flipahópana þína</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Búinn til fyrir <ph name="NUM_MINS_ONE" /> mínútu}one{Búinn til fyrir <ph name="NUM_MINS_MANY" /> mínútu}other{Búinn til fyrir <ph name="NUM_MINS_MANY" /> mínútum}}</translation>
@@ -41,6 +42,7 @@
 <translation id="2801787514987684416">Skoða upplýsingar verslunar?</translation>
 <translation id="2928243913527329289">Google | Um þessa verslun</translation>
 <translation id="2977480621796371840">Fjarlægja úr hópi</translation>
+<translation id="29919168204617356">Óvirkum flipum verður lokað sjálfkrafa. Þú getur alltaf fundið þá í „Ferli“.</translation>
 <translation id="3008554597174452548">Hætta að fylgjast með vöru</translation>
 <translation id="3026391124054406831">Búðu til hópa til að flokka flipana þína.</translation>
 <translation id="3051031624272448591">Þú getur alltaf nálgast þá aftur í ferlinum</translation>
@@ -51,6 +53,7 @@
 <translation id="3322827343001922122">Opnaðu aðgerðavalmynd flipahóps fyrir <ph name="TITLE_OF_GROUP" />-flipahóp</translation>
 <translation id="3328308545011660196">Tillaga: <ph name="NUMBER_OF_TABS" /> flipar virðast vera tengdir. Viltu setja þá í hóp?</translation>
 <translation id="3547352561153509682">Þetta mun eyða hópnum úr öllum tækjum sem eru skráð inn á <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">Fela glugga með óvirkum flipum</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Smámynd til að deila forskoðun blaðs</translation>
 <translation id="381219490185664296">Fjarlægja flipa úr hóp?</translation>
@@ -120,6 +123,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Færa flipa til vinstri</translation>
 <translation id="6615455863669487791">Sýndu mér</translation>
+<translation id="6694634756612002311">Stjórna deilingu</translation>
 <translation id="6744956528665271406">Breyta lit hóps</translation>
 <translation id="6856809498882026482">Fela stillingu til að velja marga</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Deila flipa}one{Deila flipum}other{Deila flipum}}</translation>
@@ -137,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> umsögn frá Google}one{<ph name="REVIEWS_COUNT_MANY" /> umsögn frá Google}other{<ph name="REVIEWS_COUNT_MANY" /> umsagnir frá Google}}</translation>
 <translation id="7559245342362162951">Sýna flipa hóps á öllum skjánum</translation>
 <translation id="7658239707568436148">Hætta við</translation>
+<translation id="7688386659311034820">Gluggi með óvirkum flipum</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Deila <ph name="TABS_COUNT_ONE" /> völdum flipa}one{Deila <ph name="TABS_COUNT_MANY" /> völdum flipa}other{Deila <ph name="TABS_COUNT_MANY" /> völdum flipum}}</translation>
 <translation id="7773714564112603605">Fjarlægja flipa og eyða hóp</translation>
 <translation id="7792771145871471484">Skoða tillögurnar.</translation>
@@ -171,6 +176,7 @@
 <translation id="8926389886865778422">Ekki spyrja aftur</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Stækka flipahóp með <ph name="TABS_COUNT_ONE" /> flipa.}one{Stækka flipahóp með <ph name="TABS_COUNT_MANY" /> flipa.}other{Stækka flipahóp með <ph name="TABS_COUNT_MANY" /> flipum.}}</translation>
 <translation id="9090098097337832354">Upplýsingum um þessa verslun lokað</translation>
+<translation id="9111228330448174435">Sýna glugga um að búa til nýjan flipahóp</translation>
 <translation id="9150694013019234766">Flettu á milli flipa í flipahópnum neðarlega á skjánum</translation>
 <translation id="9169594135889675189">Bæta nýjum flipa við hóp</translation>
 <translation id="9216898458513705996">Fliparnir verða opnir í þessu tæki en hópnum verður eytt úr öllum tækjum sem eru skráð inn á <ph name="USER_EMAIL" /></translation>

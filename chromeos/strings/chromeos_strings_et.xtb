@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Nupud</translation>
 <translation id="2652403576514495859">dikteerimise lubamine või sisse-/väljalülitamine</translation>
 <translation id="2653659639078652383">Esita</translation>
-<translation id="2653807227758181366">Kirjeldage taustapilti, mille soovite luua, või kasutage näidispäringut</translation>
 <translation id="2654647726140493436">Ärge lülitage seadet <ph name="DEVICE_TYPE" /> värskendamise ajal välja ega eemaldage seadme <ph name="DEVICE_TYPE" /> toitekaablit</translation>
 <translation id="2656001153562991489">Ainult Chromebook Plusis</translation>
 <translation id="2665671725390405060">Kuula hääldust</translation>
@@ -1366,6 +1365,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8208861521865154048">Hüved</translation>
 <translation id="8226628635270268143">Valige oma lemmikfotod ja -albumid</translation>
 <translation id="8227119283605456246">Manusta fail</translation>
+<translation id="8227488649450500937">Proovige mõnda nendest päringutest või vaadake <ph name="BEGIN_LINK_PROMPTING_GUIDE" />päringujuhendit<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Vaikevõrgulüüsi pingimine ebaõnnestus</translation>
 <translation id="8238771987802558562">Valige APN</translation>
 <translation id="8246209727385807362">Tundmatu operaator</translation>

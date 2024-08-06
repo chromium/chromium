@@ -269,7 +269,7 @@
 <translation id="2359043044084662842">Перакласці</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2360196772093551345">Запытаць мабільную версію сайта</translation>
-<translation id="2361721159900796207">Аб'ект будзе схаваны</translation>
+<translation id="2361721159900796207">Аб’ект будзе схаваны</translation>
 <translation id="2362083820973145409">Вы ўвайшлі як <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Кнопка адкрывае налады.</translation>
 <translation id="236977714248711277">Сайты не могуць выкарыстоўваць файлы cookie для паляпшэння сваёй функцыянальнасці: напрыклад, для захавання інфармацыі пра тое, што вы ўвайшлі ва ўліковы запіс, або каб запамінаць тавары ў кошыку.
 
@@ -302,6 +302,7 @@
 <translation id="2529021024822217800">Адкрыць усе</translation>
 <translation id="2536991091671391962">Вы можаце выкарыстоўваць захаваныя паролі на любой прыладзе. Яны захоўваюцца ў Менеджары пароляў Google для ўліковага запісу <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Схаваць картку "Праверка бяспекі"</translation>
+<translation id="2545094307889012168">Накладка Аб’ектыва</translation>
 <translation id="2547458583188611426">Сінхранізацыя не працуе. Каб запусціць сінхранізацыю, увядзіце фразу-пароль.</translation>
 <translation id="2551153019974022505">Памылка ва ўліковым запісе</translation>
 <translation id="2556092377360758201">Без абароны (не рэкамендуецца)</translation>
@@ -516,7 +517,7 @@
 <translation id="3551320343578183772">Закрыць укладку</translation>
 <translation id="3565930036634619844">Укладка. <ph name="TAB_INDEX" /> з <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Двойчы націсніце, каб праглядзець іншыя паролі.</translation>
-<translation id="3575234738189584619">Пошук з дапамогай Аб'ектыва</translation>
+<translation id="3575234738189584619">Пошук з дапамогай Аб’ектыва</translation>
 <translation id="3575426792457739946">Гэты спіс змяшчае ўсе загружаныя профілі.</translation>
 <translation id="3581564640715911333">Прапаноўваць перакладаць старонкі на іншых мовах</translation>
 <translation id="3585696901179982416">{count,plural, =1{Адрас на пазіцыі {position} з {count}}one{Адрас на пазіцыі {position} з {count}}few{Адрас на пазіцыі {position} з {count}}many{Адрас на пазіцыі {position} з {count}}other{Адрас на пазіцыі {position} з {count}}}</translation>
@@ -765,7 +766,7 @@
 <translation id="4818522717893377262">Дадаць мову...</translation>
 <translation id="481968316161811770">Файлы cookie, даныя сайта</translation>
 <translation id="4821595350501541683">Укладкі былі закрыты, а даныя пра работу ў браўзеры – выдалены</translation>
-<translation id="4824480232751123840">Аб'ём</translation>
+<translation id="4824480232751123840">Аб’ём</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} і яшчэ 1}one{{domain} і яшчэ {count}}few{{domain} і яшчэ {count}}many{{domain} і яшчэ {count}}other{{domain} і яшчэ {count}}}</translation>
 <translation id="4826218269716039351">Староннія файлы cookie блакіруюцца</translation>
 <translation id="4826588772550366629">камеру і мікрафон</translation>
@@ -848,6 +849,7 @@
 <translation id="5197255632782567636">Інтэрнэт</translation>
 <translation id="5205197603258285592">Захаваць выяву ў...</translation>
 <translation id="5211488077761630279">Дазволіць сайту <ph name="SITE_NAME" /> выкарыстоўваць <ph name="PERMISSION" />?</translation>
+<translation id="5215046161188172474">Абагуліць поўны URL-адрас</translation>
 <translation id="5219295696240154694">Дапамажыце павысіць бяспеку ў інтэрнэце для кожнага</translation>
 <translation id="5220945116117011963">Стварэнне падзей у календары на падставе дат</translation>
 <translation id="5221339005270097309">Ідзе праверка пароляў…</translation>
@@ -924,7 +926,7 @@
 <translation id="5559567453458728487">Пераўтвараць адзінкі вымярэння, знойдзеныя ў інтэрнэце</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5572648434713976849">Вы будзеце атрымліваць лепшыя прапановы ў адрасным радку</translation>
-<translation id="5572684875078967866">Аб'ём даных</translation>
+<translation id="5572684875078967866">Аб’ём даных</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Адсочваць гэту пасылку}one{Адсочваць усе пасылкі}few{Адсочваць усе пасылкі}many{Адсочваць усе пасылкі}other{Адсочваць усе пасылкі}}</translation>
 <translation id="5597915316964418992">Адкрыйце сетку ўкладак</translation>
 <translation id="560322036295180549">Ваша арганізацыя выключыла гэты параметр</translation>
@@ -975,7 +977,7 @@
 <translation id="5817176759448082654">Праверка пароляў</translation>
 <translation id="5819208479324046259">Браўзерам кіруе <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="5827650163984030263">Схаваць пункт "Менеджар пароляў"</translation>
-<translation id="5834415013958049700">Пошук скапіраванага відарыса праз Аб'ектыў</translation>
+<translation id="5834415013958049700">Пошук скапіраванага відарыса праз Аб’ектыў</translation>
 <translation id="5844284118433003733">Даныя будуць звязаны з Уліковым запісам Google, у які вы ўвайшлі. Гэта дазволіць абараніць вас у сэрвісах Google (напрыклад, узмацніць абарону ў Gmail пасля парушэння бяспекі).</translation>
 <translation id="5846482154967366008">Пошукавая сістэма</translation>
 <translation id="5850913622988109693">Варыянты адсочвання пасылак</translation>
@@ -1078,7 +1080,7 @@
 <translation id="6331180460633101391">Ужытых раней пароляў: <ph name="COUNT" /></translation>
 <translation id="6337234675334993532">Шыфраванне</translation>
 <translation id="633809752005859102">Нешта пайшло зусім не так. Мы будзем разбірацца з гэтым.</translation>
-<translation id="6339793034470834130">Каб выкарыстоўваць Web Inspector, падключыцеся да Safari на вашым камп'ютары з дапамогай кабелю і адкрыйце свой iPhone з меню Develop. Вы можаце знайсці меню Develop у Пашыраных наладах Safari на вашым камп'ютары.</translation>
+<translation id="6339793034470834130">Каб выкарыстоўваць Web Inspector, падключыцеся да Safari на вашым камп’ютары з дапамогай кабелю і адкрыйце свой iPhone з меню Develop. Вы можаце знайсці меню Develop у Пашыраных наладах Safari на вашым камп’ютары.</translation>
 <translation id="6340285871011301182">Частковы пераклад недаступны.</translation>
 <translation id="6340526405444716530">Персаналізацыя</translation>
 <translation id="6342069812937806050">Толькі што</translation>
@@ -1087,7 +1089,7 @@
 <translation id="6347953390226388422">{count,plural, =1{Гэты адрас будзе выдалены з вашага Уліковага запісу Google (<ph name="USER_EMAIL" />) і з дадзенай прылады.}one{Гэтыя адрасы будуць выдалены з вашага Уліковага запісу Google (<ph name="USER_EMAIL" />) і з дадзенай прылады.}few{Гэтыя адрасы будуць выдалены з вашага Уліковага запісу Google (<ph name="USER_EMAIL" />) і з дадзенай прылады.}many{Гэтыя адрасы будуць выдалены з вашага Уліковага запісу Google (<ph name="USER_EMAIL" />) і з дадзенай прылады.}other{Гэтыя адрасы будуць выдалены з вашага Уліковага запісу Google (<ph name="USER_EMAIL" />) і з дадзенай прылады.}}</translation>
 <translation id="634878792104344809">Сінхранізацыя пароляў, гісторыі і іншых даных на ўсіх вашых прыладах</translation>
 <translation id="6351658970066645919">Выдаліць даныя пра работу ў браўзеры</translation>
-<translation id="63519665078626091">Каб выкарыстоўваць Web Inspector, падключыцеся да Safari на вашым камп'ютары з дапамогай кабелю і адкрыйце свой iPad з меню Develop. Вы можаце знайсці меню Develop у Пашыраных наладах Safari на вашым камп'ютары.</translation>
+<translation id="63519665078626091">Каб выкарыстоўваць Web Inspector, падключыцеся да Safari на вашым камп’ютары з дапамогай кабелю і адкрыйце свой iPad з меню Develop. Вы можаце знайсці меню Develop у Пашыраных наладах Safari на вашым камп’ютары.</translation>
 <translation id="6355820205320395730">Ненадзейныя паролі лёгка падабраць. Выкарыстоўвайце толькі надзейныя паролі. <ph name="BEGIN_LINK" />Праглядзець іншыя парады па бяспецы<ph name="END_LINK" /></translation>
 <translation id="6361681885917591592">Гатова</translation>
 <translation id="6361848730467328243">Падпісацца на <ph name="DOMAIN_NAME" /></translation>
@@ -1125,6 +1127,7 @@
 Сайты не могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на розных сайтах, напрыклад, каб персаналізаваць рэкламу.</translation>
 <translation id="6476253015009698798">Адсочванне цэн на гэтай старонцы недаступнае.</translation>
 <translation id="6476800141292307438">Старонка перакладаецца на мову "<ph name="LANGUAGE" />". Параметры знаходзяцца ў ніжняй частцы экрана.</translation>
+<translation id="6477585407014744043">Назва групы</translation>
 <translation id="648164694371393720">Памылка аўтэнтыфікацыі</translation>
 <translation id="6494931198667773526">Заканчэнне</translation>
 <translation id="6500795388871406244">Выкарыстайце прапанаваны пароль:</translation>
@@ -1230,7 +1233,7 @@
 <translation id="6952332546582084833">Ваш любімы браўзер цяпер даступны для iOS</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6973630695168034713">Папкі</translation>
-<translation id="69739764870135975">Калі Google з'яўляецца вашай стандартнай пошукавай сістэмай, вам будуць паказвацца больш адпаведныя кантэксту прапановы</translation>
+<translation id="69739764870135975">Калі Google з’яўляецца вашай стандартнай пошукавай сістэмай, вам будуць паказвацца больш адпаведныя кантэксту прапановы</translation>
 <translation id="6979158407327259162">Google Дыск</translation>
 <translation id="6983306615164277634">Каб змяніць палажэнне адраснага радка, націсніце яго і ўтрымлівайце.</translation>
 <translation id="6986937292199604715">Уключыць</translation>
@@ -1380,7 +1383,7 @@
 <translation id="7744192722284567281">Раскрыты пры ўцечцы даных</translation>
 <translation id="7744394900930577716">Паролі ў іншых праграмах</translation>
 <translation id="7749790401023484470">Вы не выбралі тэкст</translation>
-<translation id="7752405526771734448">Візуальны пошук з дапамогай Аб'ектыва</translation>
+<translation id="7752405526771734448">Візуальны пошук з дапамогай Аб’ектыва</translation>
 <translation id="7756478488453921771">Меню → Налады → Спосабы аплаты</translation>
 <translation id="775755486779745798">Аўтаматычна запоўніць месяц заканчэння тэрміну дзеяння <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">Блакіроўка ўкладак інкогніта</translation>

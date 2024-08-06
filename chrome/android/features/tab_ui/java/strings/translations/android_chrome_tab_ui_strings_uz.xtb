@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Apelsinrang</translation>
 <translation id="125153950246128346">Boshqa varaqni ochish uchun bosing</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> varaqlar guruhi sozlamalari</translation>
+<translation id="1340839264183302272">Guruhni tark etish</translation>
 <translation id="1419023007528516122">Bunda guruh qurilmadan butunlay oʻchirib tashlanadi.</translation>
 <translation id="1486715732399361704">Barcha varaqlar guruhi shu yerda chiqadi</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> daqiqa oldin yaratilgan}other{<ph name="NUM_MINS_MANY" /> daqiqa oldin yaratilgan}}</translation>
@@ -41,6 +42,7 @@
 <translation id="2801787514987684416">Doʻkon axboroti ochilsinmi?</translation>
 <translation id="2928243913527329289">Google | Bu doʻkon haqida</translation>
 <translation id="2977480621796371840">Guruhdan chiqarish</translation>
+<translation id="29919168204617356">Nofaol varaqlar avtomatik yopiladi. Istalgan vaqt ularni Tarixdan topishingiz mumkin.</translation>
 <translation id="3008554597174452548">Mahsulot kuzatuvini toʻxtatish</translation>
 <translation id="3026391124054406831">Varaqlarni tartiblash uchun guruhlar yaratish.</translation>
 <translation id="3051031624272448591">Ularni istalgan vaqt tarix sahifasidan olish mumkin</translation>
@@ -51,6 +53,7 @@
 <translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> varaqlar guruhi uchun amallar menyusini ochish</translation>
 <translation id="3328308545011660196">Taklif: <ph name="NUMBER_OF_TABS" /> ta varaq aloqador. Ular guruhlansinmi?</translation>
 <translation id="3547352561153509682">Bunda guruh <ph name="USER_EMAIL" /> hisobidan kirilgan barcha qurilmalarda oʻchiriladi</translation>
+<translation id="3613492231657284463">Nofaol varaqlar oynasini berkitish</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Ulashiladigan varaq eskizi</translation>
 <translation id="381219490185664296">Varaqlar guruhi bekor qilinsinmi?</translation>
@@ -120,6 +123,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Varaqni chapga siljitish</translation>
 <translation id="6615455863669487791">Ko‘rsatish</translation>
+<translation id="6694634756612002311">Ulashuvni boshqarish</translation>
 <translation id="6744956528665271406">Guruh rangini tahrirlash</translation>
 <translation id="6856809498882026482">Bir nechta variant tanlanadigan rejimni yopish</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Varaqni ulashish}other{Varaqlarni ulashish}}</translation>
@@ -137,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> ta sharh Googledan}other{<ph name="REVIEWS_COUNT_MANY" /> ta sharh Googledan}}</translation>
 <translation id="7559245342362162951">Guruh varaqlarini butun ekranga jadval shaklida chiqarish</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
+<translation id="7688386659311034820">Nofaol varaqlar oynasi</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaqni ulashish}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaqni ulashish}}</translation>
 <translation id="7773714564112603605">Varaqni olib tashlash va guruhni oʻchirish</translation>
 <translation id="7792771145871471484">Batafsil.</translation>
@@ -171,6 +176,7 @@
 <translation id="8926389886865778422">Qayta so‘ralmasin</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqli guruhni yoyish.}other{<ph name="TABS_COUNT_MANY" /> ta varaqli guruhni yoyish.}}</translation>
 <translation id="9090098097337832354">Bu doʻkon haqidagi axborot yopildi</translation>
+<translation id="9111228330448174435">Yangi varaqlar guruhini yaratishda bildirgi chiqarish</translation>
 <translation id="9150694013019234766">Ekranning quyi qismidagi varaqlar guruhidagi varaqlarni almashtirish</translation>
 <translation id="9169594135889675189">Guruhga yangi varaq kiritish</translation>
 <translation id="9216898458513705996">Varaqlar bu qurilmada ochiq qoladi, ammo guruh <ph name="USER_EMAIL" /> hisobidan kirilgan barcha qurilmalardan oʻchirib tashlanadi</translation>

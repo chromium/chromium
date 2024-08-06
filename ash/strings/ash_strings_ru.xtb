@@ -405,6 +405,7 @@
 <translation id="2486214324139475545">Предпросмотр активного рабочего стола "<ph name="DESK_NAME" />".</translation>
 <translation id="2486405091093637109">Вы изменили разрешение экрана "<ph name="DISPLAY_NAME" />" на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Если вы не подтвердите изменение, будут восстановлены предыдущие настройки. Оставшееся время: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Присоединиться</translation>
+<translation id="2496180316473517155">История браузера</translation>
 <translation id="2499445554382787206">Меню профиля рабочего стола. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Залипание клавиш</translation>
 <translation id="2504454902900101003">Не настраивать просмотр недавних фотографий, медиафайлов и уведомлений с телефона</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">Войдите в аккаунт в режиме онлайн</translation>
 <translation id="2612072250312279703">мониторинг системы</translation>
 <translation id="2612614436418177118">Переместить значок приложения в сетке</translation>
+<translation id="2619052155095999743">Вставить</translation>
 <translation id="2619326010008283367">Шаг <ph name="STEP" /> из <ph name="TOTAL_STEPS" />. Вы можете персонализировать <ph name="PRODUCT_NAME" />, например изменить обои или установить заставку. Для этого откройте настройки на панели запуска.</translation>
 <translation id="2620016719323068571">Ищите <ph name="CATEGORY" />, файлы, приложения и не только…</translation>
 <translation id="2620436844016719705">Система</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">Подключиться к другим сетям Wi-Fi</translation>
 <translation id="2705001408393684014">Кнопка включения и отключения микрофона. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Вверх</translation>
+<translation id="271033894570825754">Новое</translation>
 <translation id="2710984741481549981">Закрепить окна</translation>
 <translation id="2718395828230677721">Ночной свет</translation>
 <translation id="2726420622004325180">Чтобы включить точку доступа на телефоне, требуется подключение к мобильному Интернету</translation>
@@ -1086,6 +1089,7 @@
 <translation id="4890408602550914571">Убедитесь, что телефон находится рядом и на нем включена передача данных по Bluetooth.</translation>
 <translation id="4892981359753171125">Отслеживание лица</translation>
 <translation id="4895488851634969361">Батарея полностью заряжена.</translation>
+<translation id="4902797682482387055">Рекомендуемая задача</translation>
 <translation id="490375751687810070">Вертикально</translation>
 <translation id="490788395437447240">Батарея заряжена на <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="491504982845934899">Чтобы активировать сеть <ph name="NETWORK_NAME" />, сначала настройте устройство</translation>
@@ -1096,6 +1100,7 @@
 <translation id="492453977506755176">Клавиша режима съемки</translation>
 <translation id="4925542575807923399">Чтобы начать сеанс множественного входа, необходимо в первую очередь выполнить вход в этот аккаунт</translation>
 <translation id="493076006037866439">Уменьшить масштаб</translation>
+<translation id="4932733599132424254">Дата</translation>
 <translation id="4936329710968938986">Доступно всем: отключено</translation>
 <translation id="4937170330762390348">Чтобы продиктовать текст, выберите текстовое поле и нажмите кнопку голосового ввода или значок микрофона в нижней части экрана. Язык голосового ввода: <ph name="LANGUAGE" />. Чтобы эта функция работала в офлайн-режиме, на устройство будут скачаны файлы для распознавания речи. Изменить язык голосового ввода можно в любой момент в меню "Настройки &gt; Специальные возможности".</translation>
 <translation id="4938176435186993759">Скрыть все подсказки</translation>
@@ -1104,6 +1109,7 @@
 <translation id="495046168593986294">Прокрутить вверх</translation>
 <translation id="4950800194215951939">Настройте игровой процесс.</translation>
 <translation id="4952936045814352993">Функция "Найти телефон" недоступна, так как отключены сигналы оповещений</translation>
+<translation id="4953585991029886728">Изменение текста</translation>
 <translation id="4960324571663582548">Согласно требованиям <ph name="MANAGER" /> вам нужно выполнить откат на устройстве <ph name="DEVICE_TYPE" />. Настройки устройства будут сброшены, а все данные – удалены.</translation>
 <translation id="4961318399572185831">Трансляция экрана</translation>
 <translation id="4964188651935955085">После этого от вашего устройства (<ph name="DEVICE_TYPE" />) будет отключено следующее внешнее устройство:</translation>
@@ -1425,6 +1431,7 @@
 <translation id="6032620807120418574">Нажмите в любом месте, чтобы включить запись видео со всего экрана.</translation>
 <translation id="6040071906258664830">Запись микрофона <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Закрыть</translation>
+<translation id="6042308850641462728">Ещё</translation>
 <translation id="6043212731627905357">Монитор не совместим с устройством <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6043994281159824495">Выйти</translation>
 <translation id="6045629311476491587">Используется в нескольких приложениях (<ph name="APP_COUNT" />)</translation>
@@ -1891,6 +1898,7 @@
 <translation id="7748275671948949022">Выделить кнопку запуска на панели запуска</translation>
 <translation id="7749443890790263709">Достигнуто максимально допустимое количество рабочих столов.</translation>
 <translation id="7749958366403230681">Клавиша ExpressKey 4</translation>
+<translation id="7751260505918304024">Показать все</translation>
 <translation id="7759183637555564029">Отключить генератор текстов и функцию Help me read можно в любое время в настройках. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Озвучивание при нажатии</translation>
 <translation id="7769299611924763557">Файл GIF скоро будет готов</translation>
@@ -2024,6 +2032,7 @@
 <translation id="8155007568264258537">Функцией "<ph name="FEATURE_NAME" />" управляет администратор.</translation>
 <translation id="8155628902202578800">Открыть диалоговое окно с информацией об аккаунте <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Используемый язык: <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Контент</translation>
 <translation id="8185090165691050712">Показать или скрыть меню для режима блокировки изменения размеров</translation>
 <translation id="8192727139462702395">После этого от вашего устройства (<ph name="DEVICE_TYPE" />) будут отключены следующие внешние устройства:</translation>
 <translation id="8198456017687137612">Трансляция вкладки</translation>

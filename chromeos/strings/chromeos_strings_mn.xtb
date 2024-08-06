@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Тохиргоо</translation>
 <translation id="2652403576514495859">дуу хоолойгоор бичихийг идэвхжүүлэх эсвэл асаах/унтраах</translation>
 <translation id="2653659639078652383">Илгээх</translation>
-<translation id="2653807227758181366">Үүсгэхийг хүссэн дэлгэцийн зургаа тайлбарлах эсвэл жишээ зааврыг ашиглана уу</translation>
 <translation id="2654647726140493436">Шинэчилж байх үед өөрийн <ph name="DEVICE_TYPE" />-г унтрааж эсвэл <ph name="DEVICE_TYPE" />-н цахилгааны утсыг салгаж болохгүй</translation>
 <translation id="2656001153562991489">Chromebook Plus-т тусгайлан зориулсан</translation>
 <translation id="2665671725390405060">Дуудлага сонсох</translation>
@@ -358,6 +357,7 @@
 <translation id="2780756493585863768">Google AI-аар дэмжигдсэн саяхны дэвсгэр</translation>
 <translation id="2783010256799387990">ДАВСАН</translation>
 <translation id="2786429550992142861">зотон даавуу</translation>
+<translation id="2787237339470862294">Энэ хэлийг одоогоор дэмждэггүй</translation>
 <translation id="2787435249130282949">гарыг илүү гэрэлтүүлэх</translation>
 <translation id="2805756323405976993">Програм</translation>
 <translation id="28232023175184696">Интернэтэд холбогдох боломжгүй байна. Дахин оролдохын тулд товшино уу.</translation>
@@ -669,6 +669,7 @@
 <translation id="458794348635939462">Бүх хостыг шийдвэрлэж чадсангүй</translation>
 <translation id="4593212453765072419">Проксиг баталгаажуулах шаардлагатай</translation>
 <translation id="4594021849294327751">Сийрүүлэг үүсгэх</translation>
+<translation id="4607282946861182308">Үүний зургийг үүсгэх боломжгүй. Өөр заавар оролдож үзнэ үү.</translation>
 <translation id="4609350030397390689">Гарны гэрэлтүүлгийг багасгах</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />-с <ph name="PRINTED_PAGE_NUMBER" />. Хэвлэх ажлыг цуцлахын тулд enter дээр дарна уу.</translation>
 <translation id="463791356324567266">Скан хийхийг цуцалж байна...</translation>
@@ -1364,6 +1365,7 @@
 <translation id="8208861521865154048">Нэмэлтүүд</translation>
 <translation id="8226628635270268143">Дуртай зураг, цомгуудаа сонгоно уу</translation>
 <translation id="8227119283605456246">Файл хавсаргах</translation>
+<translation id="8227488649450500937">Эдгээр зааврын аль нэгийг туршиж үзэх эсвэл <ph name="BEGIN_LINK_PROMPTING_GUIDE" />заавар бичих хөтчийг<ph name="END_LINK_PROMPTING_GUIDE" /> харна уу</translation>
 <translation id="8230672074305416752">Сүлжээний өгөгдмөл гэйтвэйд пин илгээж чадсангүй</translation>
 <translation id="8238771987802558562">APN-г сонгох</translation>
 <translation id="8246209727385807362">Тодорхойгүй оператор компани</translation>

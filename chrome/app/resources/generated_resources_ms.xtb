@@ -185,7 +185,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1125550662859510761">Kelihatan seperti <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Asal)</translation>
 <translation id="1125921926864945797">Hiasan latar dan gaya</translation>
-<translation id="1126809382673880764">Tidak melindungi anda daripada laman web, muat turun dan sambungan yang berbahaya. Anda akan mendapat perlindungan Penyemakan Imbas Selamat, jika tersedia, dalam perkhidmatan Google yang lain, seperti Gmail dan Carian.</translation>
 <translation id="1128090040635299943">Linux sedang dikonfigurasikan. Konfigurasi memerlukan masa beberapa minit.</translation>
 <translation id="1128591060186966949">Edit enjin carian</translation>
 <translation id="1129348283834595293">Siberpunk</translation>
@@ -630,7 +629,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1461041542809785877">Prestasi</translation>
 <translation id="1461177659295855031">Alihkan ke folder Bar Penanda Halaman</translation>
 <translation id="1461288887896722288">Anda baru sahaja log masuk ke akaun terurus, tindakan membuat profil terurus baharu akan membenarkan anda untuk mengakses beberapa sumber yang dipautkan kepada akaun tersebut.</translation>
-<translation id="1461868306585780092">Amaran sebelum menggunakan sambungan yang tidak selamat</translation>
 <translation id="146219525117638703">Keadaan ONC</translation>
 <translation id="146220085323579959">Internet terputus. Sila periksa sambungan internet anda dan cuba lagi.</translation>
 <translation id="1462480037563370607">Tambahkan laman secara manual</translation>
@@ -4181,7 +4179,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="3959747296451923142">Sahkan pengalihan keluar langganan</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Lagi tindakan untuk <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962119236270174787">Perlindungan standard daripada laman web, muat turun dan sambungan yang diketahui berbahaya</translation>
 <translation id="3963753386716096475">Gunakan telefon, tablet atau kunci keselamatan lain</translation>
 <translation id="3964480518399667971">Matikan Rangkaian selular</translation>
 <translation id="3965965397408324205">Keluar daripada <ph name="PROFILE_NAME" /></translation>
@@ -5523,7 +5520,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4967571733817147990">Sesuaikan butang tetikus</translation>
 <translation id="4967852842111017386">Nama peranti <ph name="FEATURE_NAME" /></translation>
 <translation id="4971412780836297815">Buka apabila selesai</translation>
-<translation id="4971735654804503942">Perlindungan proaktif yang lebih pantas terhadap laman web, muat turun dan sambungan yang berbahaya. Memberi anda amaran tentang pelanggaran kata laluan. Menghendaki data semakan imbas dihantar kepada Google.</translation>
 <translation id="4972129977812092092">Edit pencetak</translation>
 <translation id="4972164225939028131">Kata laluan salah</translation>
 <translation id="4972737347717125191">Tapak boleh meminta untuk menggunakan peranti dan data realiti maya</translation>
@@ -8257,7 +8253,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6992554835374084304">Hidupkan semak ejaan yang dipertingkatkan</translation>
 <translation id="6993000214273684335">Tab dialih keluar daripada kumpulan tidak bernama - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Mengemas kini penyemak imbas Chrome</translation>
-<translation id="6995899638241819463">Beri amaran kepada anda jika kata laluan terdedah dalam pelanggaran data</translation>
 <translation id="6995984090981858039">Baca maklumat dan data peranti ChromeOS</translation>
 <translation id="6996245928508281884">Hidupkan Bluetooth dan Wi-Fi telefon anda</translation>
 <translation id="6996438701394974959">Tingkatkan saiz paparan dan teks</translation>

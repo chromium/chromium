@@ -1738,6 +1738,7 @@
 <translation id="4235360514405112390">有效</translation>
 <translation id="4239799716689808527">标签</translation>
 <translation id="4242380780309416996">信封（重磅纸）</translation>
+<translation id="4242981939686657948">如需更强大的浏览记录搜索方式，请开启</translation>
 <translation id="4244926541863471678">膜</translation>
 <translation id="4246517972543675653">出国留学</translation>
 <translation id="4250431568374086873">您与此网站之间建立的连接并非完全安全</translation>
@@ -1935,6 +1936,7 @@
 <translation id="4652440160515225514">贵组织已屏蔽此网站，因为它违反了相关政策。</translation>
 <translation id="4658638640878098064">钉装（左上角）</translation>
 <translation id="4661556981531699496">宠物与动物</translation>
+<translation id="4661868874067696603">搜索更多购买选项</translation>
 <translation id="4663373278480897665">已允许使用摄像头</translation>
 <translation id="466561305373967878">棋盘游戏</translation>
 <translation id="4668929960204016307">、</translation>
@@ -2416,7 +2418,6 @@
 <translation id="555037537507405574">高级打印机功能</translation>
 <translation id="555128936272638662">手机和无线设备配件</translation>
 <translation id="5551890439174915351">100 x 200 毫米</translation>
-<translation id="5552137475244467770">Chrome 会定期检查您的密码是否已被列在网上发布的外泄密码列表内。当 Chrome 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
 <translation id="5554520618550346933">当您使用某个密码时，如果发现它已被在线发布，Chrome 会向您发出警告。当 Chrome 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5558083606899411167">空调</translation>
@@ -2424,6 +2425,7 @@
 <translation id="5559311991468302423">删除此地址</translation>
 <translation id="5560088892362098740">到期日期</translation>
 <translation id="55635442646131152">文档大纲</translation>
+<translation id="5563589142503817291">如需使用位置信息，请在<ph name="LINK" />中授予 Chrome 访问权限。</translation>
 <translation id="5565613213060953222">打开无痕式标签页</translation>
 <translation id="5565735124758917034">主动</translation>
 <translation id="5569030697349375295">会计和财务软件</translation>
@@ -2904,6 +2906,7 @@
 <translation id="6458606150257356946">仍然粘贴</translation>
 <translation id="6464094930452079790">图片</translation>
 <translation id="6465306955648956876">管理密码…</translation>
+<translation id="646789491285795429">您已在跟踪此商品</translation>
 <translation id="6468485451923838994">字体</translation>
 <translation id="647261751007945333">设备政策</translation>
 <translation id="6472874020827012601">织物（哑光）</translation>

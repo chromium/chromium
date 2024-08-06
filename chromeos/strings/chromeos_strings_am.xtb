@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">መቆጣጠሪያዎች</translation>
 <translation id="2652403576514495859">በቃል ማስጻፍን ያንቁ ወይም ይቀያይሩ</translation>
 <translation id="2653659639078652383">አስገባ</translation>
-<translation id="2653807227758181366">ለመፍጠር ወይም ለናሙና ጥያቄ መጠቀም የሚፈልጉትን ልጣፍ ይግለጹ።</translation>
 <translation id="2654647726140493436">ዝማኔው በሂደት ላይ ሳለ የእርስዎን <ph name="DEVICE_TYPE" /> አያጥፉት ወይም የ<ph name="DEVICE_TYPE" /> የኤሌክትሪክ ኃይል ገመዱን አይንቀሉት</translation>
 <translation id="2656001153562991489">ለChromebook Plus ለሚመለከተው የተወሰነ</translation>
 <translation id="2665671725390405060">የአነጋገር ስርዓትን ያዳምጡ</translation>
@@ -1366,6 +1365,7 @@
 <translation id="8208861521865154048">ጥቅማጥቅሞች</translation>
 <translation id="8226628635270268143">የእርስዎን ተወዳጅ ፎቶዎች እና አልበሞች ይምረጡ</translation>
 <translation id="8227119283605456246">ፋይል አያይዝ</translation>
+<translation id="8227488649450500937">ከእነዚህ ጥያቄዎች አንዱን ይሞክሩ ወይም <ph name="BEGIN_LINK_PROMPTING_GUIDE" />የሚጠይቅ መመሪያ<ph name="END_LINK_PROMPTING_GUIDE" /> ይመልከቱ</translation>
 <translation id="8230672074305416752">ነባሪ የሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
 <translation id="8238771987802558562">ኤፒኤን ይምረጡ</translation>
 <translation id="8246209727385807362">የማይታወቅ አገልግሎት አቅራቢ</translation>

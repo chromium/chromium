@@ -302,6 +302,7 @@
 <translation id="2529021024822217800">सर्व उघडा</translation>
 <translation id="2536991091671391962">तुम्ही सेव्ह केलेले पासवर्ड कोणत्याही डिव्हाइसवर वापरू शकता. ते <ph name="EMAIL" /> साठी Google Password Manager यामध्ये सेव्ह केले जातात.</translation>
 <translation id="2542268842667970959">"सुरक्षितता तपासणी" हे लपवा</translation>
+<translation id="2545094307889012168">लेन्स ओव्हरले</translation>
 <translation id="2547458583188611426">सिंक काम करत नाही. सिंक सुरू करण्यासाठी तुमचा पासफ्रेझ एंटर करा.</translation>
 <translation id="2551153019974022505">खात्यासंबंधी एरर</translation>
 <translation id="2556092377360758201">संरक्षण नाही (शिफारस केली जात नाही)</translation>
@@ -848,6 +849,7 @@
 <translation id="5197255632782567636">इंटरनेट</translation>
 <translation id="5205197603258285592">यामध्ये इमेज सेव्ह करा...</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />" ला तुमच्या <ph name="PERMISSION" /> वापरण्याची अनुमती द्यायची आहे का?</translation>
+<translation id="5215046161188172474">संपूर्ण URL शेअर करा</translation>
 <translation id="5219295696240154694">प्रत्येकासाठी वेब वरील सुरक्षेमध्ये सुधारणा करण्याकरिता मदत करा</translation>
 <translation id="5220945116117011963">तारखांमधून कॅलेंडर इव्हेंट तयार करा</translation>
 <translation id="5221339005270097309">पासवर्ड तपासत आहे…</translation>
@@ -885,6 +887,7 @@
 <translation id="5396950905475481456">कुटुंब सदस्यांना आमंत्रित करा</translation>
 <translation id="5407969256130905701">बदल काढून टाका</translation>
 <translation id="5414763847370083940">कोणत्याही साइटवर किंमत कमी झाल्यास तुम्हाला सूचना मिळेल.</translation>
+<translation id="5415289094036440596">पासकी शेअर केल्या जाऊ शकत नाहीत</translation>
 <translation id="5416022985862681400">मागील सात दिवस</translation>
 <translation id="5416455648658732408">टॅब गट यामध्ये हलवा</translation>
 <translation id="5423269318075950257">किमतीचा माग ठेवा</translation>
@@ -1125,6 +1128,7 @@
 वेगवेगळ्या साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट कुकी वापरू शकत नाहीत, उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्यासाठी.</translation>
 <translation id="6476253015009698798">या पेजसाठी किमतीचा माग ठेवणे उपलब्ध नाही.</translation>
 <translation id="6476800141292307438">पेजचे <ph name="LANGUAGE" /> मध्ये भाषांतर करत आहे. पर्याय स्क्रीनच्या खाली उपलब्ध आहेत.</translation>
+<translation id="6477585407014744043">गटाला नाव द्या</translation>
 <translation id="648164694371393720">ऑथेंटिकेशन एरर</translation>
 <translation id="6494931198667773526">संपेल</translation>
 <translation id="6500795388871406244">सुचवलेला पासवर्ड वापरा:</translation>
@@ -1294,6 +1298,7 @@
 <translation id="734758817008927353">कार्ड सेव्ह करण्यासाठी पर्याय</translation>
 <translation id="7352651011704765696">काहीतरी चूक झाली</translation>
 <translation id="7353432112255316844">हे तुम्हीच असल्याची पडताळणी करा</translation>
+<translation id="736564850024123010">कस्टमाइझ केलेल्या अनुभवासाठी तुमच्या अ‍ॅड्रेस बारचे स्थान स्विच करा.</translation>
 <translation id="7367530036083223701">Password Manager विजेट वापरून होम स्क्रीनवरून तुमचे पासवर्ड सुरक्षितपणे ॲक्सेस करा.</translation>
 <translation id="7380220816562673297">सध्या, तुम्ही फक्त कुटुंब सदस्यांसह पासवर्ड शेअर करू शकता. कमाल ६ सदस्यांसोबत <ph name="BEGIN_LINK" />कुटुंब गट तयार करणे<ph name="END_LINK" /> हे करा आणि संपूर्ण Google वर तुमच्या उत्पादनांचा व सदस्यत्वांचा पुरेपूर वापर करा.</translation>
 <translation id="739101637685146669">तुम्हाला कोणती URL बुकमार्क करायची आहे?</translation>

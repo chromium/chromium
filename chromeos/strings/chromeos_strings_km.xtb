@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">សេវាខ្សោយ</translation>
 <translation id="1300115153046603471">APN គឺជា​ប្រភេទ​លំនាំដើម និង <ph name="ATTACH" />។</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">កាលបរិច្ឆេទ​បង្កើត</translation>
 <translation id="1308754910631152188">កំពុងដំឡើងកំណែ (បានបញ្ចប់ <ph name="PERCENTAGE_VALUE" />% ហើយ)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> នាទី</translation>
 <translation id="1310380015393971138">មិនមានបណ្ដាញ <ph name="NETWORK_NAME" /> ដែលអាចប្រើបានទេ</translation>
@@ -339,7 +340,6 @@
 <translation id="2645380101799517405">ការបញ្ជា</translation>
 <translation id="2652403576514495859">បើក ឬបិទការសរសេរ​តាមអាន</translation>
 <translation id="2653659639078652383">ដាក់ស្នើ</translation>
-<translation id="2653807227758181366">ពណ៌នា​អំពី​ផ្ទាំង​រូបភាព​ដែលអ្នក​ចង់បង្កើត ឬប្រើ​សារតម្រុយ​គំរូ</translation>
 <translation id="2654647726140493436">កុំបិទ <ph name="DEVICE_TYPE" /> ឬដកខ្សែ​ភ្លើង <ph name="DEVICE_TYPE" /> របស់អ្នក ខណៈពេលដែលការដំឡើងកំណែកំពុងដំណើរការ</translation>
 <translation id="2656001153562991489">ផ្ដាច់មុខសម្រាប់ Chromebook Plus</translation>
 <translation id="2665671725390405060">ស្តាប់ការបញ្ចេញសំឡេង</translation>
@@ -506,6 +506,7 @@
 <translation id="3708186454126126312">បាន​ភ្ជាប់​ពីមុន​</translation>
 <translation id="3715651196924935218">ចេញពី​ស្ថានភាពអណ្ដែត</translation>
 <translation id="3716250181321371108">បង្កើត​ការបញ្ជា</translation>
+<translation id="3716830479327464973">នៅពេល​អ្នកអនុញ្ញាត​ការធ្វើបែបនេះ កម្មវិធី​ថតសំឡេង​នឹងវិភាគ​សំឡេងថត​របស់អ្នក​ដើម្បី៖</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (ការវាយតម្លៃចំនួន <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">មិនបានភ្ជាប់ទេ</translation>
 <translation id="3749289110408117711">ឈ្មោះឯកសារ</translation>
@@ -532,6 +533,7 @@
 <translation id="3869314628814282185">ទូល</translation>
 <translation id="387301095347517405">ចំនួនដង​ដែលថ្មរបស់អ្នក​បានសាកពេញ</translation>
 <translation id="3877066159641251281">ស្ដាប់​ការបកប្រែ</translation>
+<translation id="3880601782712134623">ចាប់ដឹង​សំឡេង​ខុសៗគ្នា​ដោយស្វ័យប្រវត្តិ និង​ដាក់ស្លាក​ទូទៅ​សម្គាល់​អ្នកនិយាយ​ម្នាក់ៗ ដូចជា​អ្នកនិយាយទី 1 និង​អ្នកនិយាយទី 2 ជាដើម</translation>
 <translation id="3885327323343477505">ប្ដូរធាតុរក្សាអេក្រង់</translation>
 <translation id="3889914174935857450">កាលបរិច្ឆេទកំណត់ឡើងវិញ</translation>
 <translation id="3897092660631435901">ម៉ឺនុយ</translation>
@@ -635,6 +637,7 @@
 <translation id="4422041425070339732">ព្រួញ​ចុះក្រោម</translation>
 <translation id="4425149324548788773">ដ្រាយរបស់ខ្ញុំ</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> បានបិទ</translation>
+<translation id="4428840632568803690">អ្នកនិយាយ​ទី <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">សំបុត្រ Kerberos ជិតផុត​កំណត់ហើយ</translation>
 <translation id="4431821876790500265">មើល​របាយការណ៍</translation>
 <translation id="4443192710976771874">ក្រហម</translation>
@@ -757,6 +760,7 @@
 <translation id="5049856988445523908">បានចាក់​សោស៊ីម (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ឈ្មោះ​ក្រុម</translation>
 <translation id="5051044138948155788">នេះគឺជា​ទំព័រតែមួយគត់។ ការធ្វើបែបនេះ​នឹងនាំអ្នកទៅ​អេក្រង់ចាប់ផ្ដើមស្កេន។</translation>
+<translation id="5078711626843651677">គំរូ​សំឡេង​ត្រូវបាន​រក្សាទុក​ជាបណ្ដោះអាសន្ន​នៅលើ​ឧបករណ៍ រហូត​ទាល់តែ​បញ្ចប់​ការដាក់ស្លាក​សម្គាល់​អ្នកនិយាយ។ អ្នកអាចបិទ​លក្ខណៈនេះ​នៅពេល​ណាក៏បាន​នៅក្នុង "ការកំណត់"។</translation>
 <translation id="5078983345702708852">បែបអនាគត</translation>
 <translation id="5087864757604726239">ថយក្រោយ</translation>
 <translation id="5088172560898466307">ឈ្មោះម៉ាស៊ីនមេ</translation>
@@ -1107,6 +1111,7 @@
 <translation id="6905163627763043954">សាកល្បងវា</translation>
 <translation id="6905724422583748843">ត្រឡប់​ទៅ <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">គម្រប​របស់ម៉ាស៊ីនស្កេន​គឺបើក។ សូមបិទ​គម្របនោះ រួចព្យាយាម​ម្ដងទៀត។</translation>
+<translation id="6910845598686542904">គណនា​គំរូ​សំឡេង​ដែលចាប់ដឹង​នៅក្នុង​សំឡេងថត</translation>
 <translation id="6911383237894364323">មិនអាចភ្ជាប់​ម៉ាស៊ីនមេ​មេឌៀបានទេ</translation>
 <translation id="6930242544192836755">ថេរវេលា</translation>
 <translation id="6930597342185648547">អំពី​ផ្ទៃខាងក្រោយ</translation>
@@ -1291,6 +1296,7 @@
 <translation id="7802764839223122985">បាត់​គ្រាប់ចុច។ <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">ទេ អរគុណ</translation>
 <translation id="7805768142964895445">ស្ថានភាព</translation>
+<translation id="7811024689617730980">ជ្រើសរើស​ថ្ងៃ​សម្រាប់កំណត់​ឡើងវិញ​ដោយស្វ័យប្រវត្តិ ចាប់ពី 1 ដល់ 31 ដោយរាប់បញ្ចូល 1 និង 31</translation>
 <translation id="7813073042185856802">ភ្នំ</translation>
 <translation id="7819857487979277519">PSK (WPA ឬ RSN)</translation>
 <translation id="7824219488248240180">សិល្បករក្រោយសម័យសិល្បៈចំណាប់អារម្មណ៍</translation>
@@ -1572,6 +1578,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">ផ្ញើមតិ</translation>
 <translation id="950520315903467048">បាត់​គ្រាប់ចុចសម្រាប់<ph name="DIRECTION" />។ <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">ប្រៀបធៀប​សំឡេង​ក្នុង​សំឡេងថតទាំងមូល ដើម្បីឱ្យ​ប្រតិចារឹក​បង្ហាញ​ខ្លឹមសារ និងពេលវេលាដែល​អ្នកនិយាយ​ម្នាក់ៗបាន​និយាយ</translation>
 <translation id="952992212772159698">មិនត្រូវបានធ្វើសកម្មភាពទេ</translation>
 <translation id="95718197892796296">ដីឥដ្ឋ</translation>
 <translation id="960719561871045870">លេខកូដប្រតិបត្តិករ</translation>

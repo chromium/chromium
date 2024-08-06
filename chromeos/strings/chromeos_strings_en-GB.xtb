@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Controls</translation>
 <translation id="2652403576514495859">enable or toggle dictation</translation>
 <translation id="2653659639078652383">Submit</translation>
-<translation id="2653807227758181366">Describe the wallpaper that you want to create or use a sample prompt</translation>
 <translation id="2654647726140493436">Do not turn off your <ph name="DEVICE_TYPE" /> or unplug the <ph name="DEVICE_TYPE" /> power cable while the update is in progress</translation>
 <translation id="2656001153562991489">Exclusive for Chromebook Plus</translation>
 <translation id="2665671725390405060">Listen to pronunciation</translation>
@@ -1366,6 +1365,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8208861521865154048">Perks</translation>
 <translation id="8226628635270268143">Choose your favourite photos and albums</translation>
 <translation id="8227119283605456246">Attach file</translation>
+<translation id="8227488649450500937">Try one of these prompts or see the <ph name="BEGIN_LINK_PROMPTING_GUIDE" />prompting guide<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Failed to ping the default network gateway</translation>
 <translation id="8238771987802558562">Choose an APN</translation>
 <translation id="8246209727385807362">Unknown operator</translation>

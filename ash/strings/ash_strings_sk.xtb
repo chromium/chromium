@@ -405,6 +405,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2486214324139475545">Ukážka plochy <ph name="DESK_NAME" />. Plocha je aktívna.</translation>
 <translation id="2486405091093637109">Rozlíšenie obrazovky <ph name="DISPLAY_NAME" /> bolo zmenené na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Ak to nepotvrdíte, predchádzajúce nastavenia budú obnovené o <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Pripojiť sa</translation>
+<translation id="2496180316473517155">História prehliadania</translation>
 <translation id="2499445554382787206">Ponuka profilu plochy. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Funkcia sticky keys</translation>
 <translation id="2504454902900101003">Zrušiť nastavovanie zobrazovania nedávnych fotiek, médií a upozornení z telefónu</translation>
@@ -436,6 +437,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2607678425161541573">Vyžaduje sa prihlásenie online</translation>
 <translation id="2612072250312279703">monitor aktivity</translation>
 <translation id="2612614436418177118">Presunutie ikony aplikácie v mriežke aplikácií</translation>
+<translation id="2619052155095999743">Vložiť</translation>
 <translation id="2619326010008283367"><ph name="STEP" />. krok prehliadky z <ph name="TOTAL_STEPS" />. Nastavenia zariadenia nájdete v Spúšťači. Skúste si prispôsobiť <ph name="PRODUCT_NAME" /> v Nastaveniach, napríklad zmenou tapety alebo nastavením šetriča obrazovky.</translation>
 <translation id="2620016719323068571">Hľadajte <ph name="CATEGORY" />, súbory, aplikácie a ďalší obsah…</translation>
 <translation id="2620436844016719705">Systém</translation>
@@ -462,6 +464,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2704781753052663061">Pripojiť sa k iným sieťam Wi-Fi</translation>
 <translation id="2705001408393684014">Prepnúť mikrofón. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Hore</translation>
+<translation id="271033894570825754">Nové</translation>
 <translation id="2710984741481549981">Uzamknúť okná</translation>
 <translation id="2718395828230677721">Nočný režim</translation>
 <translation id="2726420622004325180">Ak chcete aktivovať hotspot, musíte v telefóne používať mobilné dáta</translation>
@@ -1086,6 +1089,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="4890408602550914571">Telefón so zapnutým rozhraním Bluetooth majte nablízku.</translation>
 <translation id="4892981359753171125">Ovládanie tvárou</translation>
 <translation id="4895488851634969361">Batéria je úplne nabitá.</translation>
+<translation id="4902797682482387055">Navrhovaná úloha, na ktorú sa treba zamerať</translation>
 <translation id="490375751687810070">Na výšku</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % batérie</translation>
 <translation id="491504982845934899">Aktivovať <ph name="NETWORK_NAME" /> po nastavení zariadenia</translation>
@@ -1096,6 +1100,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="492453977506755176">Kláves režimu snímania</translation>
 <translation id="4925542575807923399">Správca tohto účtu vyžaduje, aby sa tento účet v relácii viacnásobného prihlásenia prihlásil ako prvý.</translation>
 <translation id="493076006037866439">Oddialenie obrazovky</translation>
+<translation id="4932733599132424254">Dátum</translation>
 <translation id="4936329710968938986">Všetci, vypnuté</translation>
 <translation id="4937170330762390348">Diktovanie vám umožňuje písať hlasom. Keď prejdete na textové pole, stlačte kláves diktovania alebo vyberte ikonu mikrofónu v dolnej časti obrazovky. Máte nastavené diktovanie v jazyku <ph name="LANGUAGE" />. Súbory reči budú stiahnuté, aby ste diktovanie mohli používať offline. Jazyk diktovania môžete kedykoľvek zmeniť v sekcii Nastavenia &gt; Dostupnosť.</translation>
 <translation id="4938176435186993759">Skryť všetky návrhy</translation>
@@ -1104,6 +1109,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="495046168593986294">Posunúť nahor</translation>
 <translation id="4950800194215951939">Prispôsobte si herné prostredie</translation>
 <translation id="4952936045814352993">Keď sú zvuky budíka vypnuté, lokalizácia telefónu nie je k dispozícii</translation>
+<translation id="4953585991029886728">Upraviť text</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> vyžaduje, aby ste obnovili predchádzajúcu verziu v zariadení <ph name="DEVICE_TYPE" />. Zariadenie bude resetované a všetky údaje odstránené.</translation>
 <translation id="4961318399572185831">Prenášanie obrazovky</translation>
 <translation id="4964188651935955085">Keď vypnete Bluetooth, od zariadenia <ph name="DEVICE_TYPE" /> sa odpojí toto externé zariadenie:</translation>
@@ -1425,6 +1431,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6032620807120418574">Kliknutím na ľubovoľné miesto nahráte celú obrazovku</translation>
 <translation id="6040071906258664830">Nahrávať zvuk z mikrofónu <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Zavrieť</translation>
+<translation id="6042308850641462728">Viac</translation>
 <translation id="6043212731627905357">Tento monitor nie je kompatibilný s vaším zariadením <ph name="DEVICE_TYPE" /> (monitor nie je podporovaný).</translation>
 <translation id="6043994281159824495">Odhlásiť sa</translation>
 <translation id="6045629311476491587">Používané <ph name="APP_COUNT" /> aplikáciami</translation>
@@ -1891,6 +1898,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7748275671948949022">Zvýraznenie tlačidla Spúšťača na poličke</translation>
 <translation id="7749443890790263709">Dosiahli ste maximálny počet pracovných prostredí.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Zobraziť všetky</translation>
 <translation id="7759183637555564029">Asistenta pri písaní a asistenta pri čítaní môžete kedykoľvek vypnúť v Nastaveniach. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Vyslovenie položky po vybratí</translation>
 <translation id="7769299611924763557">Váš gif bude čoskoro pripravený</translation>
@@ -2024,6 +2032,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Toto nastavenie ovláda váš správca.</translation>
 <translation id="8155628902202578800">Otvoriť dialógové okno informácií o používateľovi <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Práve sa používa <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Obsah</translation>
 <translation id="8185090165691050712">Zapnutie alebo vypnutie ponuky umožňujúcej zmenu veľkosti zamknutého režimu</translation>
 <translation id="8192727139462702395">Keď vypnete Bluetooth, od zariadenia <ph name="DEVICE_TYPE" /> sa odpoja tieto externé zariadenia:</translation>
 <translation id="8198456017687137612">Karta prenosu</translation>
@@ -2308,7 +2317,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="974545358917229949">Zobrazujú sa výsledky (<ph name="RESULT_COUNT" />) pre <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Bez termínu dokončenia</translation>
 <translation id="98120814841227350">Prechod na koniec dokumentu</translation>
-<translation id="98515147261107953">Na šírku</translation>
+<translation id="98515147261107953">Krajina</translation>
 <translation id="987589956647469042">Mobilné dáta sú zapnuté</translation>
 <translation id="989374776391122812">Ovládanie kamery a zvuku</translation>
 <translation id="990277280839877440">Okno <ph name="WINDOW_TITILE" /> bolo zatvorené.</translation>

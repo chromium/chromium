@@ -185,7 +185,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1124772482545689468">Korisnik</translation>
 <translation id="1125550662859510761">Izgleda da je u pitanju <ph name="WIDTH" />×<ph name="HEIGHT" /> (osnovno)</translation>
 <translation id="1125921926864945797">Pozadina i stil</translation>
-<translation id="1126809382673880764">Ne štiti vas od opasnih veb-sajtova, preuzimanja i dodataka. U drugim Google uslugama, kao što su Gmail i Pretraga, i dalje ćete imati zaštitu pomoću Bezbednog pregledanja kada je dostupna.</translation>
 <translation id="1128090040635299943">Linux se trenutno konfiguriše. Konfigurisanje će potrajati par minuta.</translation>
 <translation id="1128591060186966949">Izmena pretraživača</translation>
 <translation id="1129348283834595293">Sajberpank</translation>
@@ -631,7 +630,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1461041542809785877">Učinak</translation>
 <translation id="1461177659295855031">Premesti u folder trake sa obeleživačima</translation>
 <translation id="1461288887896722288">Upravo ste se prijavili na nalog kojim se upravlja, a kada napravite novi profil kojim se upravlja moći ćete da pristupate nekim resursima povezanim sa tim nalogom.</translation>
-<translation id="1461868306585780092">Upozori pre korišćenja nebezbednih veza</translation>
 <translation id="146219525117638703">ONC stanje</translation>
 <translation id="146220085323579959">Veza sa internetom je prekinuta. Proverite internet vezu i pokušajte ponovo.</translation>
 <translation id="1462480037563370607">Ručno dodajte sajtove</translation>
@@ -4166,7 +4164,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="3959747296451923142">Potvrdite uklanjanje pretplate</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Još radnji za <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962119236270174787">Standardna zaštita od veb-sajtova, preuzimanja i dodataka za koje se zna da su štetni</translation>
 <translation id="3963753386716096475">Koristite drugi telefon, tablet ili bezbednosni ključ</translation>
 <translation id="3964480518399667971">Isključi mobilnu mrežu</translation>
 <translation id="3965965397408324205">Zatvori <ph name="PROFILE_NAME" /></translation>
@@ -5508,7 +5505,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4967571733817147990">Prilagodite dugmad miša</translation>
 <translation id="4967852842111017386">Naziv uređaja za <ph name="FEATURE_NAME" /></translation>
 <translation id="4971412780836297815">Otvori kada bude dovršeno</translation>
-<translation id="4971735654804503942">Brža proaktivna zaštita od opasnih veb-sajtova, preuzimanja i dodataka. Upozorava vas o otkrivanju lozinki. Zahteva slanje podataka pregledanja Google-u.</translation>
 <translation id="4972129977812092092">Izmenite štampač</translation>
 <translation id="4972164225939028131">Pogrešna lozinka</translation>
 <translation id="4972737347717125191">Sajtovi mogu da traže da koriste uređaje i podatke virtuelne realnosti</translation>
@@ -8245,7 +8241,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6992554835374084304">Uključite poboljšanu proveru pravopisa</translation>
 <translation id="6993000214273684335">Kartica je uklonjena iz neimenovane grupe – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Pregledač Chrome se ažurira</translation>
-<translation id="6995899638241819463">Upozori me ako su lozinke otkrivene pri upadu u podatke</translation>
 <translation id="6995984090981858039">Čitanje informacija o ChromeOS uređaju i podataka sa uređaja</translation>
 <translation id="6996245928508281884">Uključite Bluetooth i WiFi na telefonu</translation>
 <translation id="6996438701394974959">Povećajte veličinu prikaza i teksta</translation>

@@ -405,6 +405,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> のプレビュー。使用中のデスクです。</translation>
 <translation id="2486405091093637109">「<ph name="DISPLAY_NAME" />」の解像度を <ph name="RESOLUTION" />（<ph name="REFRESH_RATE" /> Hz）に変更しました。確定しない場合、<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
 <translation id="2487915095798731898">参加</translation>
+<translation id="2496180316473517155">閲覧履歴</translation>
 <translation id="2499445554382787206">デスクのプロファイル メニュー: <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">固定キー</translation>
 <translation id="2504454902900101003">スマートフォンの最近の写真、メディア、通知の表示の設定を行わない</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">オンライン ログインが必要です</translation>
 <translation id="2612072250312279703">アクティビティ モニター</translation>
 <translation id="2612614436418177118">アプリグリッド内でアプリアイコンを移動します</translation>
+<translation id="2619052155095999743">挿入</translation>
 <translation id="2619326010008283367">ステップ <ph name="STEP" />/<ph name="TOTAL_STEPS" />。ランチャーにはデバイスの [設定] が表示されます。壁紙を変更したりスクリーン セーバーを設定したりと、[設定] で <ph name="PRODUCT_NAME" /> をカスタマイズしてみてください。</translation>
 <translation id="2620016719323068571"><ph name="CATEGORY" />、ファイル、アプリなどを検索...</translation>
 <translation id="2620436844016719705">システム</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">他の Wi-Fi ネットワークに接続</translation>
 <translation id="2705001408393684014">マイクを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">上矢印キー</translation>
+<translation id="271033894570825754">New</translation>
 <translation id="2710984741481549981">ウィンドウを固定</translation>
 <translation id="2718395828230677721">夜間モード</translation>
 <translation id="2726420622004325180">ホットスポットを提供するにはスマートフォンにモバイルデータが必要です</translation>
@@ -1086,6 +1089,7 @@
 <translation id="4890408602550914571">スマートフォンが近くにあり、Bluetooth がオンになっていることを確認してください。</translation>
 <translation id="4892981359753171125">顔コントロール</translation>
 <translation id="4895488851634969361">バッテリー残量: 満。</translation>
+<translation id="4902797682482387055">集中するタスクの候補</translation>
 <translation id="490375751687810070">縦</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% のバッテリー残量</translation>
 <translation id="491504982845934899">デバイスのセットアップ後に <ph name="NETWORK_NAME" /> を有効にします</translation>
@@ -1096,6 +1100,7 @@
 <translation id="492453977506755176">キャプチャ モード キー</translation>
 <translation id="4925542575807923399">このアカウントの管理者が、マルチ ログイン セッションにおいて最初にこのアカウントにログインすることを要件としています。</translation>
 <translation id="493076006037866439">画面を縮小する</translation>
+<translation id="4932733599132424254">日付</translation>
 <translation id="4936329710968938986">全ユーザー対象（オフ）</translation>
 <translation id="4937170330762390348">音声入力では、声を使って入力できます。テキスト欄にカーソルを置いて、音声入力キーを押すか、画面下部のマイクアイコンを選択します。音声入力の言語は<ph name="LANGUAGE" />に設定されています。音声ファイルがダウンロードされ、オフラインで音声入力を使用できます。音声入力の言語は [設定] &gt; [ユーザー補助] でいつでも変更できます。</translation>
 <translation id="4938176435186993759">すべての候補を非表示</translation>
@@ -1104,6 +1109,7 @@
 <translation id="495046168593986294">上にスクロール</translation>
 <translation id="4950800194215951939">ゲーム環境をカスタマイズ</translation>
 <translation id="4952936045814352993">アラーム音が無効になっている場合、スマートフォンを探す機能は使用できません</translation>
+<translation id="4953585991029886728">テキスト編集</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> が <ph name="DEVICE_TYPE" /> をロールバックするよう求めています。デバイスはリセットされ、データはすべて削除されます。</translation>
 <translation id="4961318399572185831">画面をキャスト</translation>
 <translation id="4964188651935955085">Bluetooth をオフにすると、次の外部デバイスが <ph name="DEVICE_TYPE" /> と接続解除されます。</translation>
@@ -1425,6 +1431,7 @@
 <translation id="6032620807120418574">全画面を録画するには任意の場所をクリックしてください</translation>
 <translation id="6040071906258664830">マイク録音は <ph name="STATE" /> です</translation>
 <translation id="6040143037577758943">閉じる</translation>
+<translation id="6042308850641462728">もっと見る</translation>
 <translation id="6043212731627905357">このモニターは <ph name="DEVICE_TYPE" /> では使用できません（サポートされていません）。</translation>
 <translation id="6043994281159824495">ログアウト</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> 件のアプリで使用</translation>
@@ -1892,6 +1899,7 @@
 <translation id="7748275671948949022">シェルフのランチャー ボタンをハイライト表示する</translation>
 <translation id="7749443890790263709">デスクの数が上限に達しました。</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">すべて表示</translation>
 <translation id="7759183637555564029">文書作成サポートと読み取りサポートは [設定] でいつでもオフにできます。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">選択して読み上げ</translation>
 <translation id="7769299611924763557">GIF の作成はまもなく完了します</translation>
@@ -2025,6 +2033,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> この設定は管理者によって管理されています。</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> の情報ダイアログを開きます</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> を使用しています</translation>
+<translation id="8168435359814927499">コンテンツ</translation>
 <translation id="8185090165691050712">ロックモードのサイズ変更メニューのオンとオフを切り替えます</translation>
 <translation id="8192727139462702395">Bluetooth をオフにすると、次の外部デバイスが <ph name="DEVICE_TYPE" /> と接続解除されます。</translation>
 <translation id="8198456017687137612">タブをキャスト中</translation>

@@ -144,6 +144,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chromium-eko dat
 <translation id="5131565040785979529"><ph name="DOMAIN" /> erakundeak kudeatzen du saioa hasteko erabili duzun kontua eta Chromium erabiltzeko modua.</translation>
 <translation id="5146749061471423558">Gehitu laster-markak Chromium-en</translation>
 <translation id="5171868502429358653">Hasi saioa Chromium-en</translation>
+<translation id="5203483872492817335">Sartu Chromium-en bizkorrago iPad-eko orri nagusiko zintaren bidez.</translation>
 <translation id="5213683223491576284">Chromium-en Pasahitz-kudeatzailea irekitzen du.</translation>
 <translation id="5224391634244552924">Ez dago pasahitzik gordeta. Gordeta dituzun pasahitzak egiaztatu egin ditzake Chromium-ek.</translation>
 <translation id="5242782538551259282">Chromium-eko datu batzuk ez dira gorde Google-ko kontuan oraindik.
@@ -225,6 +226,7 @@ Kontuan hartu beharrekoak:
 Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Google-k ez du jasoko pasaesaldia, ezta gordeko ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />ezabatu kontuko Chromium-eko datuak<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromium-en jakinarazpenak desaktibatuta daude une honetan gailuaren ezarpenetan.</translation>
 <translation id="7222001353246886083">Bilatu ${searchPhrase} Chromium-en</translation>
+<translation id="7228180817326917122">Chromium-erako aholkua: aukeratu helbide-barraren posizioa</translation>
 <translation id="725427773388857052">Datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurrean babes zaitzake Chromium-ek.</translation>
 <translation id="7269362888766543920">Gehigarri batzuek huts eginarazten diote Chromium-i. Desinstala itzazu.</translation>
 <translation id="7285031092584344905">Erabili Chromium-eko pasahitzak eta gainerako informazioa beste aplikazioetan.</translation>
@@ -247,6 +249,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="7928628054454574139">Ireki Chromium beste aplikazioetako estekak sakatzen dituzunean</translation>
 <translation id="7931842119211730154">Blokeatu ezkutuko moduko fitxak Chromium ixten duzunean</translation>
 <translation id="7934404985878918282">Ikusi Chromium-en Irakurketa-zerrenda</translation>
+<translation id="7947765692209663835">Sartu Chromium-en bizkorrago iPhone-ko orri nagusiko zintaren bidez.</translation>
 <translation id="7971753607796745700">Gehitu irakurketa-zerrendako elementu bat Chromium-en</translation>
 <translation id="7980860476903281594">Onartzen dituzun webguneekin partekatuko du kokapena Chromium-ek.</translation>
 <translation id="7994322153108931467">Chromium-i buruzko aholku lagungarriak jasotzeko, aktibatu jakinarazpenak iOS-en ezarpenetan.</translation>
@@ -265,6 +268,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="8386869251364507178">Chromium-en ekintzak</translation>
 <translation id="8409374867500149834">Chromium-en segurtasun-aukerarik sendoena darabilzu webgune kaltegarrien aurka</translation>
 <translation id="8458950033462118672">Ezarri Chromium arakatzaile lehenetsi gisa eta ireki estekak bertan automatikoki.</translation>
+<translation id="8473874987831035139">Chromium-erako aholkua: eraman Chromium zintara</translation>
 <translation id="8502918057530111907">Erabili Chromium modu lehenetsian prezioen informazio xehatua erraz jasotzeko</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Saio hasita daukazula gailu honetan bakarrik gorde diren datuak ezabatu egingo dira. Baliteke pasahitzak eta arakatze-historia ezabatzea, besteak beste.}other{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Saio hasita daukazula gailu honetan bakarrik gorde diren datuak ezabatu egingo dira. Baliteke pasahitzak eta arakatze-historia ezabatzea, besteak beste.}}</translation>
 <translation id="858114650497379505">iPhone-ko beste aplikazio batzuk erabiltzen ari zinela Pasahitz-kudeatzailea zerbitzuan gorde zenituen pasahitzak erabil ditzakezu.</translation>

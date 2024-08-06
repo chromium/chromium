@@ -185,7 +185,6 @@
 <translation id="1124772482545689468">ব্যবহারকারী</translation>
 <translation id="1125550662859510761">মনে হচ্ছে <ph name="WIDTH" /> x <ph name="HEIGHT" /> (স্থানীয়)</translation>
 <translation id="1125921926864945797">ওয়ালপেপার ও স্টাইল</translation>
-<translation id="1126809382673880764">এই মোডে আপনার ডিভাইসের ক্ষতি করতে পারে এমন ওয়েবসাইট, ডাউনলোড অথবা এক্সটেনশন থেকে কোনও সুরক্ষা পাওয়া সম্ভব হয় না। তবে Gmail এবং Search-এর মতো অন্যান্য Google পরিষেবায়, যেখানে উপলভ্য সেখানে আপনি এখনও 'Safe Browsing'-এর সুরক্ষা পাবেন।</translation>
 <translation id="1128090040635299943">Linux বর্তমানে কনফিগার করা হচ্ছে। কনফিগার করতে কয়েক মিনিট সময় লাগবে।</translation>
 <translation id="1128591060186966949">সার্চ ইঞ্জিন সম্পাদনা করুন</translation>
 <translation id="1129348283834595293">সাইবারপাঙ্ক</translation>
@@ -631,7 +630,6 @@
 <translation id="1461041542809785877">কর্ম সম্পাদন</translation>
 <translation id="1461177659295855031">বুকমার্ক বার ফোল্ডারে যান</translation>
 <translation id="1461288887896722288">আপনি এইমাত্র ম্যানেজ করা অ্যাকাউন্টে সাইন-ইন করেছেন, ম্যানেজ করা নতুন প্রোফাইল তৈরি করার মাধ্যমে সেই অ্যাকাউন্টের সাথে লিঙ্ক করা কিছু রিসোর্স অ্যাক্সেস করবেন।</translation>
-<translation id="1461868306585780092">অসুরক্ষিত কানেকশন ব্যবহার করার আগে সতর্কতা পান</translation>
 <translation id="146219525117638703">ONC অবস্থা</translation>
 <translation id="146220085323579959">ইন্টারনেট সংযোগ বিচ্ছিন্ন হয়েছে৷ অনুগ্রহ করে আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন এবং আবার চেষ্টা করুন৷</translation>
 <translation id="1462480037563370607">ম্যানুয়ালি সাইট যোগ করুন</translation>
@@ -4181,7 +4179,6 @@
 <translation id="3959747296451923142">সাবস্ক্রিপশন সরানো কনফার্ম করুন</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" />-এর জন্য আরও অ্যাকশন</translation>
-<translation id="3962119236270174787">ঝুঁকিপূর্ণ হিসেবে চিহ্নিত ওয়েবসাইট, ডাউনলোড এবং এক্সটেনশনের জন্য স্ট্যান্ডার্ড নিরাপত্তা</translation>
 <translation id="3963753386716096475">আলাদা ফোন, ট্যাবলেট বা নিরাপত্তা কী ব্যবহার করুন</translation>
 <translation id="3964480518399667971">মোবাইল নেটওয়ার্ক বন্ধ করুন</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> ছেড়ে যান</translation>
@@ -5433,6 +5430,7 @@
 <translation id="4893336867552636863">এটি স্থায়ীভাবে এই ডিভাইস থেকে আপনার ব্রাউজিং ডেটা মুছে ফেলবে।</translation>
 <translation id="4893454800196085005">ভাল - ডিভিডি</translation>
 <translation id="4893522937062257019">লক স্ক্রিনে</translation>
+<translation id="4894055916816649664">শুধু ১০ মিনিটের জন্য</translation>
 <translation id="4895799941222633551">&amp;শর্টকাট তৈরি করুন...</translation>
 <translation id="4898011734382862273">"<ph name="CERTIFICATE_NAME" />" সার্টিফিকেটটি একটি শংসাকরণ কর্তৃপক্ষের প্রতিনিধিত্ব করে</translation>
 <translation id="4898913189644355814">কোনও সাইট আপনার পছন্দের ভাষা বা আপনি যে আইটেম কিনতে চান তা সেভ করতে পারে। এই তথ্য সাইট ও তার সাবডোমেনে উপলভ্য আছে।</translation>
@@ -5523,7 +5521,6 @@
 <translation id="4967571733817147990">মাউসের বোতাম কাস্টমাইজ করুন</translation>
 <translation id="4967852842111017386"><ph name="FEATURE_NAME" /> ডিভাইসের নাম</translation>
 <translation id="4971412780836297815">সম্পন্ন হলে খুলুন</translation>
-<translation id="4971735654804503942">ঝুঁকিপূর্ণ ওয়েবসাইট, ডাউনলোড এবং এক্সটেনশনের জন্য আরও দ্রুত, সক্রিয় সুরক্ষা ব্যবস্থা। পাসওয়ার্ড সুরক্ষিত নেই সেই সম্পর্কে আপনাকে জানায়। Google-কে পাঠানোর জন্য ব্রাউজ করা ডেটা প্রয়োজন।</translation>
 <translation id="4972129977812092092">প্রিন্টার এডিট করুন</translation>
 <translation id="4972164225939028131">ভুল পাসওয়ার্ড</translation>
 <translation id="4972737347717125191">ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করতে, সাইট অনুমতি চাইতে পারে</translation>
@@ -6070,6 +6067,7 @@
 <translation id="5380526436444479273">কয়েক মিনিট অপেক্ষা করে আবার চেষ্টা করুন</translation>
 <translation id="5382591305415226340">সমর্থিত লিঙ্কগুলি পরিচালনা করুন</translation>
 <translation id="5383740867328871413">নামহীন গ্রুপ - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5384401776498845256">কারা কারা আপনার সাথে শেয়ার করতে পারবেন</translation>
 <translation id="5385628342687007304">এই পাসওয়ার্ড শুধুমাত্র এই ডিভাইসে সেভ করা আছে। অন্য ডিভাইসে এটি ব্যবহার করার জন্য, আপনার Google অ্যাকাউন্টে তা সেভ করুন।</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" /> এডিট করুন</translation>
 <translation id="5387496897058645038">প্রোডাক্টের স্পেসিফিকেশন</translation>
@@ -6937,6 +6935,7 @@
 <translation id="6015776718598175635">স্টার</translation>
 <translation id="6015796118275082299">বছর</translation>
 <translation id="6016178549409952427">অতিরিক্ত কন্টেন্ট থাকা মোট <ph name="TOTAL_ELEMENTS" />টি এলিমেন্টের মধ্যে <ph name="CURRENT_ELEMENT" /> নম্বর এলিমেন্টে যান</translation>
+<translation id="6016462059150340136">আশেপাশে থাকা যেকেউ</translation>
 <translation id="6016551720757758985">পূর্ববর্তী সংস্করণে ফিরে যাওয়া সহ পাওয়ারওয়াশ নিশ্চিত করুন</translation>
 <translation id="6016972670657536680">ভাষা এবং কীবোর্ড বোতাম বেছে নিন। বর্তমানে নির্বাচিত ভাষা হলো <ph name="LANGUAGE" />।</translation>
 <translation id="6017514345406065928">সবুজ</translation>
@@ -7386,6 +7385,7 @@
 <translation id="6345878117466430440">'পড়া হয়েছে' হিসেবে চিহ্নিত করুন</translation>
 <translation id="6346952829206698721">ক্লিপবোর্ড থেকে পেস্ট করুন</translation>
 <translation id="6347010704471250799">বিজ্ঞপ্তি দেখুন</translation>
+<translation id="634792071306410644">আপনি ডিভাইস দৃশ্যমান না করা পর্যন্ত কেউ আপনার সাথে শেয়ার করতে পারবেন না</translation>
 <translation id="6348252528297699679">আপনি 'সেটিংস &gt; গোপনীয়তা ও সুরক্ষা &gt; গোপনীয়তা নিয়ন্ত্রণ &gt; লোকেশন অ্যাক্সেস' বিকল্পে গিয়ে লোকেশন বন্ধ করে দিতে পারবেন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="6348805481186204412">অফলাইন স্টোরেজ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ইনস্টল করুন</translation>
@@ -7837,6 +7837,7 @@
 <translation id="6691936601825168937">&amp;ফরওয়ার্ড</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{১টি পৃষ্ঠা}one{{COUNT}টি পৃষ্ঠা}other{{COUNT}টি পৃষ্ঠা}}</translation>
 <translation id="6693820805264897502">বর্তমানে থাকা পাসওয়ার্ড পরিবর্তন</translation>
+<translation id="6694634756612002311">শেয়ার করা ম্যানেজ করুন</translation>
 <translation id="6697172646384837537">পাসওয়ার্ড কোথায় ইমপোর্ট করতে হবে তা বেছে নিন</translation>
 <translation id="6697492270171225480">কোনও একটি পৃষ্ঠা খুঁজে পাওয়া না গেলে একইরকম আরও পৃষ্ঠার সাজেশন দেখুন</translation>
 <translation id="6697690052557311665">শেয়ার করতে, "ফাইল" অ্যাপের একটি ফোল্ডারের উপর মাউসের কার্সার নিয়ে গিয়ে ডান দিকের বোতামে ক্লিক করুন এবং "Linux-এর সাথে শেয়ার করুন" বেছে নিন।</translation>
@@ -7990,6 +7991,7 @@
 <translation id="680572642341004180"><ph name="SHORT_PRODUCT_OS_NAME" /> এ RLZ নজর রাখা সক্ষম করুন৷</translation>
 <translation id="6806089545527108739">অনুমতি দেবেন না কিন্তু পরে জিজ্ঞাসা করুন</translation>
 <translation id="680644983456221885">Google-কে পাঠানো আপনার ব্রাউজ করা ডেটার উপর ভিত্তি করে বিপজ্জনক সাইট, ডাউনলোড এবং এক্সটেনশন থেকে রিয়েল-টাইমে সুরক্ষা পাওয়া যায়</translation>
+<translation id="6806781719264274042">শুধুমাত্র আপনার যেসব পরিচিতির Google অ্যাকাউন্ট রয়েছে। <ph name="LINK_BEGIN" />পরিচিতি দেখুন<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">চালিয়ে যেতে, নিরাপত্তা কী ইনসার্ট করে সেটিকে টাচ করুন</translation>
 <translation id="6808166974213191158">ChromeOS Flex সিস্টেম ছবি রাইটার</translation>
 <translation id="6808193438228982088">শিয়াল</translation>
@@ -8056,6 +8058,7 @@
 <translation id="6840214587087739194">ঠিকানা মোছা হয়েছে</translation>
 <translation id="6841143363521180029">এনক্রিপটেড</translation>
 <translation id="6841186874966388268">ত্রুটিগুলি</translation>
+<translation id="6842135459748401207">শুধুমাত্র <ph name="USER_EMAIL" /> আইডি দিয়ে যেসব ডিভাইসে সাইন-ইন করা হয়েছে</translation>
 <translation id="6842136130964845393">আপনার সেভ করা পাসওয়ার্ড সবসময় যাতে অ্যাক্সেস করতে পারেন তা নিশ্চিত করতে, নিজের পরিচয় যাচাই করুন</translation>
 <translation id="6842749380892715807">XML সাইটলিস্ট <ph name="LAST_DATE_DOWNLOAD" />-এ শেষবার ডাউনলোড করা হয়েছে।</translation>
 <translation id="6842868554183332230">চ্যাট অ্যাপে আপনার উপলভ্যতা সেট করতে, আপনি কখন সক্রিয়ভাবে ডিভাইস ব্যবহার করছেন তা সাইট শনাক্ত করে</translation>
@@ -8253,7 +8256,6 @@
 <translation id="6992554835374084304">উন্নত বানান পরীক্ষা চালু করুন</translation>
 <translation id="6993000214273684335">নামবিহীন গ্রুপ থেকে ট্যাব সরানো হয়েছে - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Chrome ব্রাউজার আপডেট করা হচ্ছে</translation>
-<translation id="6995899638241819463">আপনার পাসওয়ার্ড কোনও ডেটা নিরাপত্তা লঙ্ঘনের কারণে সর্বজনীনভাবে প্রকাশ হলে তা আপনাকে জানানো হবে</translation>
 <translation id="6995984090981858039">ChromeOS ডিভাইসের তথ্য এবং ডেটা অ্যাক্সেস করতে পারবে</translation>
 <translation id="6996245928508281884">আপনার ফোনের ব্লুটুথ ও ওয়াই-ফাই চালু করুন</translation>
 <translation id="6996438701394974959">ডিসপ্লে ও টেক্সটের সাইজ বাড়ান</translation>
@@ -10710,6 +10712,7 @@
 <translation id="8766796754185931010">কোটোয়েরি</translation>
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" />-এর সবকটি সার্চ ফলাফল দেখান</translation>
 <translation id="8767621466733104912">সকল ব্যবহারকারীর জন্য স্বয়ংক্রিয়ভাবে Chrome আপডেট করুন</translation>
+<translation id="8768049274922835860">প্রত্যেকে</translation>
 <translation id="876956356450740926">ডেভেলপার টুল, আইডিই (IDE) ও এডিটর রান করান। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">এক্সটেনশান রুট ডিরেক্টরি</translation>
 <translation id="8771300903067484968">স্টার্ট পেজের ব্যাকগ্রাউন্ড ডিফল্ট ব্যাকগ্রাউন্ডে রিসেট করা হয়েছে।</translation>
@@ -11010,6 +11013,7 @@
 <translation id="8984694057134206124">আপনাকে <ph name="MINUTES" /> মিনিটের জন্য সবাই দেখতে পাবে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Chromebook-এর Steam-এ স্বাগত</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> দিন আগে ব্যবহার করা হয়েছে</translation>
+<translation id="8985561265504464578">শনাক্ত করার জন্য থ্রেশহোল্ড</translation>
 <translation id="8985661493893822002">আপনার <ph name="DEVICE_TYPE" />-এ সাইন-ইন করার জন্য ইন্টারনেটে কানেক্ট করুন।</translation>
 <translation id="8985661571449404298">অসুরক্ষিত ফাইল ডাউনলোড করা হয়েছে</translation>
 <translation id="8986362086234534611">ভুলে যান</translation>
@@ -11036,6 +11040,7 @@
 <translation id="8999560016882908256">বিভাগের সিন্ট্যাক্সে সমস্যা হয়েছে: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">স্ক্রিনে কম অ্যানিমেশন দেখানোর সেটিংস</translation>
 <translation id="9000185763019430629">আপনার <ph name="DEVICE_TYPE" />-এর ডানদিকে থাকা ফিঙ্গারপ্রিন্ট সেন্সর টাচ করুন। আপনার ফিঙ্গারপ্রিন্ট ডেটা সুরক্ষিতভাবে স্টোর করে রাখা হয় এবং তা <ph name="DEVICE_TYPE" /> থেকে কখনও শেয়ার করা হয় না।</translation>
+<translation id="9003031149571024583">৬ সংখ্যার পিনের <ph name="NUM_DIGIT" /> নম্বর সংখ্যাটি লিখুন। শেষ সংখ্যাটি সরাতে Backspace অথবা Delete 'কী' ব্যবহার করুন।</translation>
 <translation id="9003185744423389627"><ph name="FAILURE_TIME" />-এ '<ph name="STATUS_TEXT" />' স্ট্যাটাস সহ 'ডিভাইস ম্যানেজার' সার্ভারে কানেক্ট করা যায়নি</translation>
 <translation id="90033698482696970">উপলভ্য থাকা ই-সিম প্রোফাইলের জন্য অটোমেটিক স্ক্যান করবেন?</translation>
 <translation id="9003647077635673607">সমস্ত ওয়েবসাইটে অনুমতি দিন</translation>

@@ -1937,6 +1937,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4652440160515225514">La tua organizzazione ha bloccato questo sito perché viola un criterio.</translation>
 <translation id="4658638640878098064">Pinzatura in alto a sinistra</translation>
 <translation id="4661556981531699496">Animali e animali domestici</translation>
+<translation id="4661868874067696603">Cerca altre opzioni di acquisto</translation>
 <translation id="4663373278480897665">Videocamera consentita</translation>
 <translation id="466561305373967878">Giochi da tavolo</translation>
 <translation id="4668929960204016307">,</translation>
@@ -2418,7 +2419,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="555037537507405574">funzionalità avanzate della stampante</translation>
 <translation id="555128936272638662">Accessori per dispositivi mobili e wireless</translation>
 <translation id="5551890439174915351">100 x 200 mm</translation>
-<translation id="5552137475244467770">Chrome confronta periodicamente le tue password con gli elenchi pubblicati online. Durante questa operazione, le tue password e i tuoi nomi utente vengono criptati, quindi non possono essere letti da nessuno, Google compresa.</translation>
 <translation id="5554520618550346933">Quando utilizzi una password, Chrome ti avvisa se è stata pubblicata online. Durante questa operazione, le tue password e i tuoi nomi utente vengono criptati, quindi non possono essere letti da nessuno, Google compresa.</translation>
 <translation id="5556459405103347317">Ricarica</translation>
 <translation id="5558083606899411167">Condizionatori d'aria</translation>
@@ -2426,6 +2426,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5559311991468302423">Elimina indirizzo</translation>
 <translation id="5560088892362098740">Data di scadenza</translation>
 <translation id="55635442646131152">Struttura documento</translation>
+<translation id="5563589142503817291">Per usare la posizione, concedi l'accesso a Chrome in <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Apri scheda di navigazione in incognito</translation>
 <translation id="5565735124758917034">Attivo</translation>
 <translation id="5569030697349375295">Software per contabilità e controllo finanziario</translation>
@@ -2906,6 +2907,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6458606150257356946">Incolla comunque</translation>
 <translation id="6464094930452079790">immagini</translation>
 <translation id="6465306955648956876">Gestisci password…</translation>
+<translation id="646789491285795429">Stai già monitorando questo prodotto</translation>
 <translation id="6468485451923838994">Caratteri</translation>
 <translation id="647261751007945333">Criteri dispositivo</translation>
 <translation id="6472874020827012601">Tessuto (opaco)</translation>
@@ -3974,6 +3976,7 @@ Ulteriori dettagli:
 <translation id="84561192812921051">L'amministratore può apportare modifiche al profilo e al browser da remoto, analizzare le informazioni sul browser tramite i report ed eseguire altre attività necessarie. L'attività svolta su questo dispositivo potrebbe essere gestita anche al di fuori di Chrome.  <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Indeterminato</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
+<translation id="8458605637341729751">Se continui, accetti che la posizione esatta del tuo dispositivo venga raccolta e condivisa con il titolare dell'account per finalità antifrode. Per disattivare Pix in Chrome, vai alle <ph name="BEGIN_LINK1" />impostazioni di pagamento<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Attiva</translation>
 <translation id="8461694314515752532">Cripta i dati sincronizzati con la tua passphrase di sincronizzazione</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 carta di credito}other{# carte di credito}}</translation>

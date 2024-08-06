@@ -144,6 +144,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chromium 
 <translation id="5131565040785979529">Tu organización, <ph name="DOMAIN" />, gestiona la cuenta en la que has iniciado sesión y el modo en que se usa Chromium.</translation>
 <translation id="5146749061471423558">Añadir marcadores a Chromium</translation>
 <translation id="5171868502429358653">Inicia sesión en Chromium</translation>
+<translation id="5203483872492817335">Accede más rápido a Chromium desde el Dock de la pantalla de inicio de tu iPad.</translation>
 <translation id="5213683223491576284">Abre el Gestor de contraseñas en Chromium.</translation>
 <translation id="5224391634244552924">No hay ninguna contraseña guardada. Chromium puede comprobar tus contraseñas si las guardas.</translation>
 <translation id="5242782538551259282">Algunos de tus datos de Chromium aún no se han guardado en tu cuenta de Google.
@@ -225,6 +226,7 @@ Notas importantes:
 Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. La frase de contraseña no se enviará a Google, que tampoco la almacenará. Si olvidas tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Las notificaciones de Chromium están desactivadas actualmente en los ajustes del dispositivo.</translation>
 <translation id="7222001353246886083">Buscar ${searchFrase} en Chromium</translation>
+<translation id="7228180817326917122">Consejo de Chromium: elige la posición de la barra de direcciones</translation>
 <translation id="725427773388857052">Chromium puede ayudarte a protegerte frente a quiebras de seguridad de datos, sitios web no seguros y mucho más.</translation>
 <translation id="7269362888766543920">Algunos complementos hacen que Chromium falle. Prueba a desinstalarlos.</translation>
 <translation id="7285031092584344905">Accede a tus contraseñas de Chromium y más en otras aplicaciones.</translation>
@@ -247,6 +249,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="7928628054454574139">Abre Chromium siempre que toques enlaces en otras aplicaciones</translation>
 <translation id="7931842119211730154">Bloquear pestañas de Incógnito al cerrar Chromium</translation>
 <translation id="7934404985878918282">Ver lista de lectura de Chromium</translation>
+<translation id="7947765692209663835">Accede más rápido a Chromium desde el Dock de la pantalla de inicio de tu iPhone.</translation>
 <translation id="7971753607796745700">Añadir elemento de lista de lectura a Chromium</translation>
 <translation id="7980860476903281594">Chromium compartirá tu ubicación con los sitios que permitas.</translation>
 <translation id="7994322153108931467">Para recibir consejos útiles sobre Chromium, activa las notificaciones en los ajustes de iOS.</translation>
@@ -265,6 +268,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="8386869251364507178">Acciones de Chromium</translation>
 <translation id="8409374867500149834">Tienes la seguridad más potente de Chromium frente a sitios web dañinos</translation>
 <translation id="8458950033462118672">Puedes abrir enlaces en Chromium automáticamente estableciendo que sea tu aplicación de navegador predeterminada.</translation>
+<translation id="8473874987831035139">Consejo de Chromium: Mueve Chromium al Dock</translation>
 <translation id="8502918057530111907">Usa Chromium de forma predeterminada para obtener estadísticas sobre precios fácilmente</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Ocurre cuando Chromium lleva {THRESHOLD} minuto sin usarse. Se eliminarán los datos guardados solo en este dispositivo mientras tenías la sesión iniciada. Esto podría incluir el historial y las contraseñas.}other{Ocurre cuando Chromium lleva {THRESHOLD} minutos sin usarse. Se eliminarán los datos guardados solo en este dispositivo mientras tenías la sesión iniciada. Esto podría incluir el historial y las contraseñas.}}</translation>
 <translation id="858114650497379505">Puedes usar las contraseñas que has guardado en el gestor de contraseñas en otras aplicaciones de tu iPhone.</translation>

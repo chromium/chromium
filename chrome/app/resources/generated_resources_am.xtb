@@ -185,7 +185,6 @@
 <translation id="1124772482545689468">ተጠቃሚ</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ይመስላል (ቤተኛ)</translation>
 <translation id="1125921926864945797">ልጣፍ እና ቅጥ</translation>
-<translation id="1126809382673880764">እርስዎን አደገኛ ከሆኑ የድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች አይጠብቀዎትም። አሁንም የሚገኝ በሆነበት ጊዜ እንደ Gmail እና ፍለጋ ባሉ ሌሎች የGoogle አገልግሎቶች ላይ የጥንቃቄ አሰሳ ጥበቃን ያገኛሉ።</translation>
 <translation id="1128090040635299943">Linux በአሁኑ ጊዜ እየተዋቀረ ነው። ማዋቀር ጥቂት ደቂቃዎችን ይወስዳል።</translation>
 <translation id="1128591060186966949">የፍለጋ ፕሮግራምን ያርትዑ</translation>
 <translation id="1129348283834595293">ሳይበርፓንክ</translation>
@@ -630,7 +629,6 @@
 <translation id="1461041542809785877">አፈጻጸም</translation>
 <translation id="1461177659295855031">ወደ የዕልባቶች አሞሌ አቃፊ ውሰድ</translation>
 <translation id="1461288887896722288">አሁን ወደ የሚተዳደር መለያ ገብተዋል፣ አዲስ የሚተዳደር መገለጫ መፍጠር ከዚያ መለያ ጋር የተገናኙ አንዳንድ ግብዓቶችን እንዲደርሱ ያስችልዎታል።</translation>
-<translation id="1461868306585780092">አስተማማኝ ያልሆኑ ግንኙነቶችን ከመጠቀም በፊት አስጠንቅቅ</translation>
 <translation id="146219525117638703">ONC ሁኔታ</translation>
 <translation id="146220085323579959">የበይነመረብ ግንኙነት ተቋርጧል። እባክዎ የበይነመረብዎ ግንኙነት ይፈትሹና እንደገና ይሞክሩ።</translation>
 <translation id="1462480037563370607">ጣቢያዎችን በእጅ ያክሉ</translation>
@@ -4176,7 +4174,6 @@
 <translation id="3959747296451923142">የደንበኝነት ምዝገባ ማስወገድን አረጋግጥ</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">ለ<ph name="IBAN_DESCRIPTION" /> ተጨማሪ እርምጃዎች</translation>
-<translation id="3962119236270174787">አደገኛ መሆናቸው ከታወቁ የድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች መደበኛ ጥበቃ</translation>
 <translation id="3963753386716096475">የተለየ ስልክ፣ ጡባዊ ወይም የደህንነት ቁልፍ ይጠቀሙ</translation>
 <translation id="3964480518399667971">ተንቀሳቃሽ አውታረ መረብን አጥፋ</translation>
 <translation id="3965965397408324205">ከ<ph name="PROFILE_NAME" /> ውጣ</translation>
@@ -5516,7 +5513,6 @@
 <translation id="4967571733817147990">የእርስዎን አዝራሮች ያብጁ</translation>
 <translation id="4967852842111017386">የ<ph name="FEATURE_NAME" /> የመሣሪያ ስም</translation>
 <translation id="4971412780836297815">ሲጠናቀቅ ክፈት</translation>
-<translation id="4971735654804503942">ይበልጥ ፈጣን፣ ከአደገኛ ድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች አስቀድሞ የሚደረግ ጥበቃ። ስለይለፍ ቃል ጥሰቶች ያስጠነቅቅዎታል። ወደ Google የአሰሳ ውሂብን መላክ ያስፈልጋል።</translation>
 <translation id="4972129977812092092">ማተሚያን ያርትዑ</translation>
 <translation id="4972164225939028131">የተሳሳተ የይለፍ ቃል</translation>
 <translation id="4972737347717125191">ጣቢያዎች ምናባዊ የእውነታ መሣሪያዎችን እና ውሂብን ለመጠቀም መጠየቅ ይችላሉ</translation>
@@ -7008,6 +7004,7 @@
 <translation id="6075075631258766703">ስልክን አረጋግጥ</translation>
 <translation id="6075731018162044558">ውይ!  ስርዓቱ የዚህ መሣሪያ የረጅም ጊዜ ኤ ፒ አይ መዳረሻ ማስመሰያ ማግኘት አልቻለም።</translation>
 <translation id="6075907793831890935"><ph name="HOSTNAME" /> ከሚባል መሣሪያ ጋር ውሂብ ተለዋወጥ</translation>
+<translation id="6076092653254552547">የሥርዓት ቅንብሮች</translation>
 <translation id="6076491747490570887">ቀዝቀዝ ያለ ግራጫ</translation>
 <translation id="6076576896267434196">የ«<ph name="EXTENSION_NAME" />» ቅጥያ ወደ መለያዎ ለመድረስ ይፈልጋል</translation>
 <translation id="6077131872140550515">ከሚመረጡ አስወግድ</translation>
@@ -8250,7 +8247,6 @@
 <translation id="6992554835374084304">የበለጸገ የፊደል አራሚን ያብሩ</translation>
 <translation id="6993000214273684335">ትር ካልተሰየመ ቡድን ተወግዷል - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">የChrome አሳሽን በማዘመን ላይ</translation>
-<translation id="6995899638241819463">የይለፍ ቃላት በውሂብ ደንብ ጥሰት ተጋላጭ ከሆነ ያስጠንቅቅዎት</translation>
 <translation id="6995984090981858039">የChromeOS የመሣሪያ መረጃ እና ውሂብን ያንብቡ</translation>
 <translation id="6996245928508281884">የስልክዎን ብሉቱዝ እና Wi-Fi ይክፈቱ</translation>
 <translation id="6996438701394974959">ማሳያ እና የጽሑፍ መጠን ይጨምራል</translation>
@@ -9388,6 +9384,7 @@
 <translation id="7826254698725248775">የሚጋጭ የመሣሪያ ለዪ።</translation>
 <translation id="7828642077514646543">ስህተት፦ የዕውቅና ማረጋገጫን መፍታት አልተቻለም</translation>
 <translation id="7829877209233347340">አንድ ወላጅ የትምህርት ቤት መለያ ለማከል ፈቃድ እንዲሰጡ ይጠይቋቸው</translation>
+<translation id="7830276128493844263">በሥርዓት ቅንብሮች ውስጥ አካባቢ ጠፍቷል</translation>
 <translation id="7830833461614351956">ለመክፈት <ph name="NUM_OF_FILES" /> ፋይሎች <ph name="CLOUD_PROVIDER" /> ይቀዱ?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">የተቀመጡ ብጁ ቃላት እዚህ ይታያሉ</translation>

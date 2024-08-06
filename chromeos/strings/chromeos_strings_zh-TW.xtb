@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">控制項</translation>
 <translation id="2652403576514495859">啟用/切換語音輸入功能</translation>
 <translation id="2653659639078652383">提交</translation>
-<translation id="2653807227758181366">描述要建立的桌布或使用範例提示</translation>
 <translation id="2654647726140493436">更新期間請勿關閉 <ph name="DEVICE_TYPE" /> 或拔除 <ph name="DEVICE_TYPE" /> 電源線</translation>
 <translation id="2656001153562991489">Chromebook Plus 專用</translation>
 <translation id="2665671725390405060">聆聽發音</translation>
@@ -1366,6 +1365,7 @@
 <translation id="8208861521865154048">獎勵</translation>
 <translation id="8226628635270268143">選擇你最喜愛的相片和相簿</translation>
 <translation id="8227119283605456246">附加檔案</translation>
+<translation id="8227488649450500937">試試以下任一提示或參閱<ph name="BEGIN_LINK_PROMPTING_GUIDE" />提示指南<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">無法連線偵測預設的網路閘道</translation>
 <translation id="8238771987802558562">選擇 APN</translation>
 <translation id="8246209727385807362">不明電信業者</translation>

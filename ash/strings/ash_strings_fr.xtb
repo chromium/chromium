@@ -405,6 +405,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2486214324139475545">Aperçu du <ph name="DESK_NAME" />. Bureau actif.</translation>
 <translation id="2486405091093637109">La résolution de <ph name="DISPLAY_NAME" /> a été passée en <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Si vous ne confirmez pas, les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Rejoindre</translation>
+<translation id="2496180316473517155">Historique de navigation</translation>
 <translation id="2499445554382787206">Menu du profil du bureau. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Touches rémanentes</translation>
 <translation id="2504454902900101003">Ignorer la configuration concernant l'affichage des photos, notifications et contenus multimédias récents de votre téléphone</translation>
@@ -436,6 +437,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2607678425161541573">Connexion en ligne requise</translation>
 <translation id="2612072250312279703">moniteur d'activité</translation>
 <translation id="2612614436418177118">Déplacer une icône d'application dans la grille d'applications</translation>
+<translation id="2619052155095999743">Insérer</translation>
 <translation id="2619326010008283367">Étape <ph name="STEP" /> sur <ph name="TOTAL_STEPS" /> de la visite. Vous trouverez les paramètres de votre appareil dans le Lanceur d'applications. Personnalisez votre <ph name="PRODUCT_NAME" /> dans les paramètres. Modifiez par exemple votre fond d'écran ou configurez un économiseur d'écran.</translation>
 <translation id="2620016719323068571">Rechercher dans vos <ph name="CATEGORY" />, fichiers, applis, etc.…</translation>
 <translation id="2620436844016719705">Système</translation>
@@ -462,6 +464,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2704781753052663061">Rejoindre d'autres réseaux Wi-Fi</translation>
 <translation id="2705001408393684014"><ph name="STATE_TEXT" /> Déplacez le curseur vers la droite pour activer le son.</translation>
 <translation id="2706462751667573066">Haut</translation>
+<translation id="271033894570825754">Nouveau</translation>
 <translation id="2710984741481549981">Verrouiller les fenêtres</translation>
 <translation id="2718395828230677721">Éclairage nocturne</translation>
 <translation id="2726420622004325180">Les données mobiles doivent être activées sur votre téléphone pour qu'il puisse fournir un point d'accès</translation>
@@ -1086,6 +1089,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4890408602550914571">Vérifiez que votre téléphone est à proximité et que le Bluetooth est activé.</translation>
 <translation id="4892981359753171125">Contrôle du visage</translation>
 <translation id="4895488851634969361">La batterie est pleine.</translation>
+<translation id="4902797682482387055">Tâche suggérée sur laquelle se concentrer</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240">Niveau de la batterie : <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="491504982845934899">Activer <ph name="NETWORK_NAME" /> après la configuration de l'appareil</translation>
@@ -1096,6 +1100,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="492453977506755176">Touche du mode de capture</translation>
 <translation id="4925542575807923399">L'administrateur de ce compte a configuré ce dernier de sorte qu'il soit le premier compte à être connecté lors de sessions de connexion multicompte.</translation>
 <translation id="493076006037866439">Faire un zoom arrière sur l'écran</translation>
+<translation id="4932733599132424254">Date</translation>
 <translation id="4936329710968938986">Tout le monde, désactivé</translation>
 <translation id="4937170330762390348">Avec la dictée, vous pouvez saisir du texte par commande vocale. Lorsque vous êtes dans un champ de texte, appuyez sur la touche de dictée ou sélectionnez l'icône représentant un micro située au bas de l'écran. Votre langue de dictée est définie sur <ph name="LANGUAGE" />. Les fichiers vocaux seront téléchargés afin que vous puissiez utiliser la dictée hors connexion. Vous pouvez changer la langue de dictée à tout moment dans Paramètres &gt; Accessibilité.</translation>
 <translation id="4938176435186993759">Masquer toutes les suggestions</translation>
@@ -1104,6 +1109,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
 <translation id="4950800194215951939">Personnalisez votre expérience de jeu</translation>
 <translation id="4952936045814352993">Impossible de localiser le téléphone lorsque les sons de l'alarme sont désactivés</translation>
+<translation id="4953585991029886728">Modifier le texte</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> exige un rollback de votre <ph name="DEVICE_TYPE" />. Cela entraînera la réinitialisation de votre appareil et la suppression de toutes vos données.</translation>
 <translation id="4961318399572185831">Caster l'écran</translation>
 <translation id="4964188651935955085">L'appareil externe suivant sera alors déconnecté de votre <ph name="DEVICE_TYPE" /> :</translation>
@@ -1363,6 +1369,7 @@ Aucun appareil connecté.</translation>
 <translation id="5819918159912280082">Votre Chromebook a redémarré de façon inattendue. Ouvrez vos fenêtres et applis précédentes.</translation>
 <translation id="5823239091726045201">Google Tasks sur le Web</translation>
 <translation id="5825969630400862129">Paramètres des appareils connectés</translation>
+<translation id="5830180081891717894"><ph name="WINDOWS" /> autre(s)</translation>
 <translation id="5837036133683224804">Arrêter <ph name="ROUTE_TITLE" /> vers <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Passer au titre suivant</translation>
 <translation id="5842553299352339114">Le point d'accès <ph name="DEVICE_NAME" /> est activé, aucun appareil connecté</translation>
@@ -1424,6 +1431,7 @@ Aucun appareil connecté.</translation>
 <translation id="6032620807120418574">Cliquez n'importe où pour capturer tout l'écran</translation>
 <translation id="6040071906258664830">Enregistrement via le micro <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Fermer</translation>
+<translation id="6042308850641462728">Plus</translation>
 <translation id="6043212731627905357">Ce moniteur ne fonctionne pas avec votre <ph name="DEVICE_TYPE" /> (il n'est pas compatible).</translation>
 <translation id="6043994281159824495">Se déconnecter maintenant</translation>
 <translation id="6045629311476491587">Utilisés par <ph name="APP_COUNT" /> applis</translation>
@@ -1891,6 +1899,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7748275671948949022">Mettre en surbrillance le bouton du lanceur d'applications sur l'étagère</translation>
 <translation id="7749443890790263709">Vous avez atteint le nombre maximal de bureaux.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Tout afficher</translation>
 <translation id="7759183637555564029">Vous pouvez désactiver M'aider à écrire et M'aider à lire à tout moment dans les paramètres. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Sélectionner pour écouter</translation>
 <translation id="7769299611924763557">Votre GIF sera bientôt prêt</translation>
@@ -2024,6 +2033,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Ce paramètre est géré par votre administrateur.</translation>
 <translation id="8155628902202578800">Ouvrir la boîte de dialogue d'informations pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> en cours d'utilisation</translation>
+<translation id="8168435359814927499">Contenu</translation>
 <translation id="8185090165691050712">Activer/Désactiver le menu pour redimensionner le mode verrouillé</translation>
 <translation id="8192727139462702395">Les appareils externes suivants seront alors déconnectés de votre <ph name="DEVICE_TYPE" /> :</translation>
 <translation id="8198456017687137612">Diffusion de l'onglet</translation>
@@ -2071,6 +2081,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8375916635258623388">L'appareil <ph name="DEVICE_NAME" /> et votre téléphone seront associés automatiquement</translation>
 <translation id="8380784334203145311">Bonsoir,</translation>
 <translation id="8382715499079447151">Protection anti-regard</translation>
+<translation id="8383614331548401927">Récap de bienvenue</translation>
 <translation id="8388750414311082622">Impossible de supprimer le dernier bureau.</translation>
 <translation id="8394567579869570560">Ton parent a verrouillé cet appareil</translation>
 <translation id="8401850874595457088">Ouvrir le menu des langues</translation>

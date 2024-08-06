@@ -185,7 +185,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1124772482545689468">Użytkownik</translation>
 <translation id="1125550662859510761">Wygląda na <ph name="WIDTH" /> × <ph name="HEIGHT" /> (natywna)</translation>
 <translation id="1125921926864945797">Tapeta i styl</translation>
-<translation id="1126809382673880764">Nie chroni przed niebezpiecznymi stronami, pobieranymi plikami ani rozszerzeniami. Funkcja Bezpieczne przeglądanie nadal będzie chronić Cię w innych usługach Google, w których jest dostępna (takich jak Gmail i wyszukiwarka).</translation>
 <translation id="1128090040635299943">Trwa konfiguracja Linuksa. Zajmie to kilka minut.</translation>
 <translation id="1128591060186966949">Edytuj wyszukiwarkę</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -631,7 +630,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1461041542809785877">Wydajność</translation>
 <translation id="1461177659295855031">Przenieś do folderu Pasek zakładek</translation>
 <translation id="1461288887896722288">Właśnie zalogowałeś(-aś) się na konto zarządzane. Utworzenie nowego profilu zarządzanego umożliwi Ci dostęp do niektórych zasobów powiązanych z tym kontem.</translation>
-<translation id="1461868306585780092">Ostrzegaj przed użyciem niezabezpieczonych połączeń</translation>
 <translation id="146219525117638703">Stan konfiguracji ONC</translation>
 <translation id="146220085323579959">Internet odłączony. Sprawdź połączenie i spróbuj ponownie.</translation>
 <translation id="1462480037563370607">Dodaj witryny ręcznie</translation>
@@ -4148,7 +4146,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="3959747296451923142">Potwierdź usunięcie subskrypcji</translation>
 <translation id="3960566196862329469">Konfiguracja ONC</translation>
 <translation id="3961005895395968120">Więcej działań dotyczących: <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962119236270174787">Standardowa ochrona przed stronami, pobieranymi plikami i rozszerzeniami, które są uznawane za niebezpieczne</translation>
 <translation id="3963753386716096475">Użyj innego telefonu, tabletu lub klucza bezpieczeństwa</translation>
 <translation id="3964480518399667971">Wyłącz sieć komórkową</translation>
 <translation id="3965965397408324205">Zamknij: <ph name="PROFILE_NAME" /></translation>
@@ -5489,7 +5486,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4967571733817147990">Dostosowywanie przycisków myszy</translation>
 <translation id="4967852842111017386"><ph name="FEATURE_NAME" /> – nazwa urządzenia</translation>
 <translation id="4971412780836297815">Otwórz po zakończeniu</translation>
-<translation id="4971735654804503942">Szybsza proaktywna ochrona przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami. Będziesz otrzymywać ostrzeżenia o kradzieżach haseł. Wymaga wysyłania danych przeglądania do Google.</translation>
 <translation id="4972129977812092092">Edytuj drukarkę</translation>
 <translation id="4972164225939028131">Nieprawidłowe hasło</translation>
 <translation id="4972737347717125191">Strony mogą prosić o zgodę na używanie urządzeń i danych rzeczywistości wirtualnej</translation>
@@ -8223,7 +8219,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6992554835374084304">Włączanie ulepszonego sprawdzania pisowni</translation>
 <translation id="6993000214273684335">Karta została usunięta z nienazwanej grupy – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Aktualizuję przeglądarkę Chrome</translation>
-<translation id="6995899638241819463">Ostrzegaj, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł</translation>
 <translation id="6995984090981858039">Odczytywanie informacji i danych z urządzenia z ChromeOS</translation>
 <translation id="6996245928508281884">Włącz Bluetooth i Wi-Fi na telefonie</translation>
 <translation id="6996438701394974959">Zwiększ rozmiar wyświetlanego obrazu i tekstu</translation>

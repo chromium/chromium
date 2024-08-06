@@ -405,6 +405,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> चे पूर्वावलोकन करा. अ‍ॅक्टिव्ह डेस्क.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" हे <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) रेझोल्यूशनवर वर बदलले गेले आहे. कन्फर्म केल्याशिवाय, मागील सेटिंग्ज <ph name="TIMEOUT_SECONDS" /> मध्ये रिस्टोअर केली जातील.</translation>
 <translation id="2487915095798731898">सामील व्हा</translation>
+<translation id="2496180316473517155">ब्राउझिंग इतिहास</translation>
 <translation id="2499445554382787206">डेस्‍क प्रोफाइल मेनू. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">स्टिकी की</translation>
 <translation id="2504454902900101003">तुमच्या फोनमधील अलीकडील फोटो, मीडिया आणि सूचना पाहण्याचे सेट करणे डिसमिस करा</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">ऑनलाइन साइन इन करणे आवश्यक आहे</translation>
 <translation id="2612072250312279703">अ‍ॅक्टिव्हिटी मॉनिटर</translation>
 <translation id="2612614436418177118">अ‍ॅप आयकन हा अ‍ॅप ग्रिडमध्ये हलवा</translation>
+<translation id="2619052155095999743">समाविष्ट करा</translation>
 <translation id="2619326010008283367">टूरच्या <ph name="TOTAL_STEPS" /> पायऱ्यांपैकी <ph name="STEP" />. लाँचर मध्ये तुम्ही तुमची डिव्हाइस सेटिंग्ज पाहू शकता. तुमचा वॉलपेपर बदलणे किंवा स्क्रीन सेव्हर सेट करणे यासारख्या गोष्टींसाठी सेटिंग्ज मध्ये तुमचे <ph name="PRODUCT_NAME" /> कस्टमाइझ करून पहा.</translation>
 <translation id="2620016719323068571">तुमचे <ph name="CATEGORY" />, फाइल, अ‍ॅप्स आणि आणखी बरेच काही शोधा...</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">इतर वाय-फाय नेटवर्कमध्ये सामील व्हा</translation>
 <translation id="2705001408393684014">माइक टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
+<translation id="271033894570825754">नवीन</translation>
 <translation id="2710984741481549981">विंडो लॉक करा</translation>
 <translation id="2718395828230677721">रात्री प्रकाश</translation>
 <translation id="2726420622004325180">हॉटस्पॉट पुरवण्यासाठी तुमच्या फोनमध्ये मोबाइल डेटा असणे आवश्यक आहे</translation>
@@ -1086,6 +1089,7 @@
 <translation id="4890408602550914571">तुमचा फोन जवळपास असल्याची आणि ब्लूटूथ सुरू असल्याची खात्री करा.</translation>
 <translation id="4892981359753171125">फेस विषयी नियंत्रण</translation>
 <translation id="4895488851634969361">बॅटरी भरली आहे.</translation>
+<translation id="4902797682482387055">फोकस करण्यासाठी सुचवलेली टास्क</translation>
 <translation id="490375751687810070">उभा</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% बॅटरी</translation>
 <translation id="491504982845934899"><ph name="NETWORK_NAME" /> डिव्हाइस सेटअपनंतर ॲक्टिव्हेट करा</translation>
@@ -1096,6 +1100,7 @@
 <translation id="492453977506755176">कॅप्चर मोड की</translation>
 <translation id="4925542575807923399">या खात्याच्या ॲडमिनिस्ट्रेटरला हे खाते एका एकाहून अधिक साइन इन सेशनमधील प्रथम साइन इन केलेले खाते असणे आवश्यक आहे.</translation>
 <translation id="493076006037866439">स्क्रीनवर झूम आउट करा</translation>
+<translation id="4932733599132424254">तारीख</translation>
 <translation id="4936329710968938986">प्रत्येकजण, बंद आहे</translation>
 <translation id="4937170330762390348">डिक्टेशनसह तुम्ही तुमचा आवाज वापरून टाइप करू शकता. तुम्ही मजकूर फील्डवर असताना डिक्टेशन की प्रेस करा किंवा स्क्रीनच्या तळाशी असलेला मायक्रोफोन आयकन निवडा. तुमची डिक्टेशन भाषा <ph name="LANGUAGE" /> वर सेट केली आहे. स्पीच फाइल डाउनलोड केल्या जातील, जेणेकरून तुम्ही डिक्टेशन ऑफलाइन वापरू शकाल. तुम्ही सेटिंग्ज &gt; अ‍ॅक्सेसिबिलिटी मध्ये डिक्टेशन भाषा कधीही बदलू शकता.</translation>
 <translation id="4938176435186993759">सर्व सूचना लपवा</translation>
@@ -1104,6 +1109,7 @@
 <translation id="495046168593986294">वर स्क्रोल करा</translation>
 <translation id="4950800194215951939">तुमचा गेमिंगचा अनुभव कस्टमाइझ करा</translation>
 <translation id="4952936045814352993">अलार्मचे आवाज बंद केले असताना फोन शोधा उपलब्ध नाही</translation>
+<translation id="4953585991029886728">मजकूर संपादित करा</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> नुसार तुम्ही तुमचे <ph name="DEVICE_TYPE" /> हे मागील आवृत्तीवर स्विच करणे आवश्यक आहे. तुमचे डिव्हाइस रीसेट केले जाईल आणि सर्व डेटा हटवला जाईल.</translation>
 <translation id="4961318399572185831">स्क्रीन कास्ट करा</translation>
 <translation id="4964188651935955085">तुम्ही ब्लूटूथ बंद कराल, तेव्हा हे बाह्य डिव्हाइस तुमच्या <ph name="DEVICE_TYPE" /> वरून डिस्कनेक्ट होईल:</translation>
@@ -1363,6 +1369,7 @@
 <translation id="5819918159912280082">तुमचे Chromebook अनपेक्षितपणे रीस्टार्ट झाले आहे. तुमच्या मागील विंडो आणि अ‍ॅप्स उघडा.</translation>
 <translation id="5823239091726045201">वेबवर Google कार्ये</translation>
 <translation id="5825969630400862129">कनेक्‍ट केलेली डिव्हाइस सेटिंग्ज</translation>
+<translation id="5830180081891717894">आणखी <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> वर <ph name="ROUTE_TITLE" /> थांबवा</translation>
 <translation id="5841296711770970362">पुढील ट्रॅकवर जा</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> चा हॉटस्पॉट सुरू आहे, कोणतीही डिव्हाइस कनेक्ट केलेली नाहीत</translation>
@@ -1424,6 +1431,7 @@
 <translation id="6032620807120418574">फुल स्क्रीन रेकॉर्ड करण्यासाठी कुठेही क्लिक करा</translation>
 <translation id="6040071906258664830">मायक्रोफोनद्वारे रेकॉर्ड करा <ph name="STATE" /></translation>
 <translation id="6040143037577758943">बंद करा</translation>
+<translation id="6042308850641462728">अधिक</translation>
 <translation id="6043212731627905357">हा मॉनिटर तुमच्या <ph name="DEVICE_TYPE" /> सह व्यवस्थित काम करत नाही (मॉनिटरला सपोर्ट नाही).</translation>
 <translation id="6043994281159824495">आता साइन आउट करा</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> अ‍ॅपने वापरले</translation>
@@ -1438,6 +1446,7 @@
 <translation id="6068258534237496331">व्हिडिओ कॉल नियंत्रणे</translation>
 <translation id="6073451960410192870">रेकॉर्डिंग थांबवा</translation>
 <translation id="6074087755403037157">बीटा चॅनल</translation>
+<translation id="6091929401758362855">प्लेलिस्ट: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">ॲडमिनने बंद केलेले</translation>
 <translation id="6095008505822982596">स्पीच रेट</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> द्वारे कनेक्शन जोडा</translation>
@@ -1890,6 +1899,7 @@
 <translation id="7748275671948949022">शेल्फवरील लाँचर बटण हायलाइट करा</translation>
 <translation id="7749443890790263709">डेस्कची कमाल मर्यादा गाठली आहे.</translation>
 <translation id="7749958366403230681">ExpressKey ४</translation>
+<translation id="7751260505918304024">सर्व दर्शवा</translation>
 <translation id="7759183637555564029">लिहिण्यात मला मदत करा आणि वाचायला मला मदत करा हे तुम्ही सेटिंग्ज मध्ये कधीही बंद करू शकता. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">बोलण्यासाठी निवडा</translation>
 <translation id="7769299611924763557">तुमची GIF लवकरच तयार होईल</translation>
@@ -2023,6 +2033,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> हे सेटिंग तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केले जाते.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> साठी माहिती डायलॉग उघडा</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> वापरत आहे</translation>
+<translation id="8168435359814927499">आशय</translation>
 <translation id="8185090165691050712">लॉक मोडचा आकार बदलण्यासाठी मेनू सुरू/बंद करा</translation>
 <translation id="8192727139462702395">तुम्ही ब्लूटूथ बंद कराल, तेव्हा ही बाह्य डिव्हाइस तुमच्या <ph name="DEVICE_TYPE" /> वरून डिस्कनेक्ट होतील:</translation>
 <translation id="8198456017687137612">टॅब कास्‍ट करत आहे</translation>
@@ -2070,6 +2081,7 @@
 <translation id="8375916635258623388">हे <ph name="DEVICE_NAME" />आणि तुमचा फोन आपोआप कनेक्ट होतील</translation>
 <translation id="8380784334203145311">शुभ रात्री,</translation>
 <translation id="8382715499079447151">पाहण्यासंबंधित संरक्षण</translation>
+<translation id="8383614331548401927">स्वागत Recap</translation>
 <translation id="8388750414311082622">शेवटचा डेस्क काढून टाकू शकत नाही.</translation>
 <translation id="8394567579869570560">तुमच्या पालकाने हे डिव्हाइस लॉक केले</translation>
 <translation id="8401850874595457088">भाषा एंटर करण्याचा मेनू</translation>

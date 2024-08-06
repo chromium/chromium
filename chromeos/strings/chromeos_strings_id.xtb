@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Kontrol</translation>
 <translation id="2652403576514495859">aktifkan atau alihkan dikte</translation>
 <translation id="2653659639078652383">Kirim</translation>
-<translation id="2653807227758181366">Deskripsikan wallpaper yang ingin Anda buat atau gunakan contoh perintah</translation>
 <translation id="2654647726140493436">Jangan mematikan <ph name="DEVICE_TYPE" /> atau mencabut kabel daya <ph name="DEVICE_TYPE" /> saat update sedang berlangsung</translation>
 <translation id="2656001153562991489">Eksklusif untuk Chromebook Plus</translation>
 <translation id="2665671725390405060">Dengarkan pengucapan</translation>
@@ -1366,6 +1365,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8208861521865154048">Keuntungan</translation>
 <translation id="8226628635270268143">Pilih foto dan album favorit</translation>
 <translation id="8227119283605456246">Lampirkan file</translation>
+<translation id="8227488649450500937">Coba salah satu perintah ini atau lihat <ph name="BEGIN_LINK_PROMPTING_GUIDE" />panduan menulis perintah<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Gagal melakukan ping ke gateway jaringan default</translation>
 <translation id="8238771987802558562">Pilih APN</translation>
 <translation id="8246209727385807362">Operator tidak diketahui</translation>

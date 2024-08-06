@@ -405,6 +405,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> pratonton. Meja aktif.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" diubah kepada peleraian <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Tetapan terdahulu akan dipulihkan dalam masa <ph name="TIMEOUT_SECONDS" /> tanpa pengesahan.</translation>
 <translation id="2487915095798731898">Sertai</translation>
+<translation id="2496180316473517155">Sejarah penyemakan imbas</translation>
 <translation id="2499445554382787206">Menu profil meja. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Kekunci lekit</translation>
 <translation id="2504454902900101003">Menolak penyediaan pemaparan foto, media dan pemberitahuan terbaharu telefon anda</translation>
@@ -436,6 +437,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2607678425161541573">Log masuk dalam talian diperlukan</translation>
 <translation id="2612072250312279703">pemantau aktiviti</translation>
 <translation id="2612614436418177118">Alihkan apl ikon dalam grid apl</translation>
+<translation id="2619052155095999743">Masukkan</translation>
 <translation id="2619326010008283367">Langkah jelajah <ph name="STEP" /> daripada <ph name="TOTAL_STEPS" />. Anda boleh menemukan Tetapan peranti anda dalam Pelancar. Cuba sesuaikan <ph name="PRODUCT_NAME" /> anda dalam Tetapan seperti mengubah hiasan latar anda atau menetapkan penyelamat skrin.</translation>
 <translation id="2620016719323068571">Cari <ph name="CATEGORY" />, fail, apl anda dan pelbagai lagi...</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -462,6 +464,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2704781753052663061">Sertai rangkaian Wi-Fi yang lain</translation>
 <translation id="2705001408393684014">Togol Mikrofon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Atas</translation>
+<translation id="271033894570825754">Baharu</translation>
 <translation id="2710984741481549981">Kunci tetingkap</translation>
 <translation id="2718395828230677721">Cahaya Malam</translation>
 <translation id="2726420622004325180">Telefon anda mestilah mempunyai data mudah alih untuk menyediakan tempat liputan</translation>
@@ -1097,6 +1100,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="492453977506755176">Kekunci mod tangkap</translation>
 <translation id="4925542575807923399">Pentadbir akaun ini memerlukan akaun ini menjadi akaun dilog masuk yang pertama dalam sesi berbilang log masuk.</translation>
 <translation id="493076006037866439">Zum keluar daripada skrin</translation>
+<translation id="4932733599132424254">Tarikh</translation>
 <translation id="4936329710968938986">Semua orang, dimatikan</translation>
 <translation id="4937170330762390348">Dengan pengimlakan, anda boleh menaip menggunakan suara anda. Tekan kunci pengimlakan atau pilih ikon mikrofon pada bahagian bawah skrin apabila anda berada pada medan teks. Bahasa pengimlakan anda ditetapkan kepada <ph name="LANGUAGE" />. Fail ucapan akan dimuat turun supaya anda boleh menggunakan pengimlakan luar talian. Anda boleh menukar bahasa pengimlakan pada bila-bila masa dalam Tetapan &gt; Kebolehaksesan.</translation>
 <translation id="4938176435186993759">Sembunyikan semua cadangan</translation>
@@ -1105,6 +1109,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="495046168593986294">Tatal ke atas</translation>
 <translation id="4950800194215951939">Sesuaikan pengalaman permainan anda</translation>
 <translation id="4952936045814352993">Kesan lokasi telefon tidak tersedia apabila bunyi penggera dilumpuhkan</translation>
+<translation id="4953585991029886728">Edit teks</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> menghendaki anda mengundurkan <ph name="DEVICE_TYPE" />. Peranti anda akan ditetapkan semula dan semua data akan dipadamkan.</translation>
 <translation id="4961318399572185831">Hantar skrin</translation>
 <translation id="4964188651935955085">Apabila anda mematikan Bluetooth, peranti luaran ini akan diputuskan sambungan daripada <ph name="DEVICE_TYPE" /> anda:</translation>
@@ -1426,6 +1431,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6032620807120418574">Klik mana-mana bahagian untuk merakam skrin penuh</translation>
 <translation id="6040071906258664830">Rakam mikrofon <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Tutup</translation>
+<translation id="6042308850641462728">Lagi</translation>
 <translation id="6043212731627905357">Monitor ini tidak serasi dengan <ph name="DEVICE_TYPE" /> anda (monitor tidak disokong).</translation>
 <translation id="6043994281159824495">Log keluar sekarang</translation>
 <translation id="6045629311476491587">Digunakan oleh <ph name="APP_COUNT" /> apl</translation>
@@ -1893,6 +1899,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7748275671948949022">Serlahkan butang Pelancar pada rak</translation>
 <translation id="7749443890790263709">Bilangan maksimum meja dicapai.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Paparkan semua</translation>
 <translation id="7759183637555564029">Anda boleh mematikan Bantu saya tulis dan Bantu saya baca pada bila-bila masa dalam Tetapan. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Pilih untuk bercakap</translation>
 <translation id="7769299611924763557">GIF anda akan tersedia tidak lama lagi</translation>
@@ -2026,6 +2033,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Tetapan ini diurus oleh pentadbir anda.</translation>
 <translation id="8155628902202578800">Buka dialog maklumat untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Menggunakan <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Kandungan</translation>
 <translation id="8185090165691050712">Hidupkan/Matikan menu untuk mengubah saiz mod kunci</translation>
 <translation id="8192727139462702395">Apabila anda mematikan Bluetooth, peranti luaran ini akan diputuskan sambungan daripada <ph name="DEVICE_TYPE" /> anda:</translation>
 <translation id="8198456017687137612">Menghantar tab</translation>

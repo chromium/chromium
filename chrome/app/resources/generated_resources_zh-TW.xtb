@@ -185,7 +185,6 @@
 <translation id="1124772482545689468">使用者</translation>
 <translation id="1125550662859510761">螢幕解析度：<ph name="WIDTH" /> x <ph name="HEIGHT" /> (原生)</translation>
 <translation id="1125921926864945797">桌布和樣式</translation>
-<translation id="1126809382673880764">無法封鎖不安全的網站、下載內容和擴充功能。在 Gmail 和 Google 搜尋等其他 Google 服務中，安全瀏覽功能的防護機制仍然會發揮作用 (在適用情況下)。</translation>
 <translation id="1128090040635299943">目前正在設定 Linux，需要幾分鐘才能完成作業。</translation>
 <translation id="1128591060186966949">編輯搜尋引擎</translation>
 <translation id="1129348283834595293">賽博龐克</translation>
@@ -629,7 +628,6 @@
 <translation id="1461041542809785877">效能</translation>
 <translation id="1461177659295855031">移至書籤列資料夾</translation>
 <translation id="1461288887896722288">你已登入受管理帳戶，建立新的受管理設定檔即可存取一些已連結到該帳戶的資源。</translation>
-<translation id="1461868306585780092">使用不安全的連線前發出警告</translation>
 <translation id="146219525117638703">ONC 狀態</translation>
 <translation id="146220085323579959">網際網路連線已中斷。請檢查你的網際網路連線，然後再試一次。</translation>
 <translation id="1462480037563370607">手動新增網站</translation>
@@ -4164,7 +4162,6 @@
 <translation id="3959747296451923142">確認移除訂閱</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">可對<ph name="IBAN_DESCRIPTION" /> 執行的其他動作</translation>
-<translation id="3962119236270174787">針對已知不安全的網站、下載內容和擴充功能提供標準防護機制</translation>
 <translation id="3963753386716096475">使用其他手機、平板電腦或安全金鑰</translation>
 <translation id="3964480518399667971">關閉行動數據網路</translation>
 <translation id="3965965397408324205">離開<ph name="PROFILE_NAME" /></translation>
@@ -5505,7 +5502,6 @@
 <translation id="4967571733817147990">自訂滑鼠按鈕</translation>
 <translation id="4967852842111017386"><ph name="FEATURE_NAME" />裝置名稱</translation>
 <translation id="4971412780836297815">完成後開啟</translation>
-<translation id="4971735654804503942">針對不安全的網站、下載內容和擴充功能提供更快速的主動式防護機制。系統會顯示密碼遭外洩的警告訊息。須將瀏覽資料傳送至 Google。</translation>
 <translation id="4972129977812092092">編輯印表機資訊</translation>
 <translation id="4972164225939028131">密碼錯誤</translation>
 <translation id="4972737347717125191">網站可以要求使用虛擬實境裝置和資料</translation>
@@ -6992,6 +6988,7 @@
 <translation id="6075075631258766703">驗證手機</translation>
 <translation id="6075731018162044558">糟糕！系統無法為這個裝置取得長期 API 存取符記。</translation>
 <translation id="6075907793831890935">與名稱為 <ph name="HOSTNAME" /> 的裝置交換資料</translation>
+<translation id="6076092653254552547">系統設定</translation>
 <translation id="6076491747490570887">冷灰色</translation>
 <translation id="6076576896267434196">「<ph name="EXTENSION_NAME" />」擴充功能想存取你的帳戶</translation>
 <translation id="6077131872140550515">從慣用網路移除</translation>
@@ -7813,6 +7810,7 @@
 <translation id="6691936601825168937">下一頁(&amp;F)</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 頁}other{{COUNT} 頁}}</translation>
 <translation id="6693820805264897502">更換現有密碼</translation>
+<translation id="6694634756612002311">管理共用設定</translation>
 <translation id="6697172646384837537">選取密碼匯入位置</translation>
 <translation id="6697492270171225480">找不到網頁時顯示類似的網頁建議</translation>
 <translation id="6697690052557311665">如要共用項目，請在「檔案」應用程式中的資料夾上按一下右鍵，然後選取 [與 Linux 共用]。</translation>
@@ -8231,7 +8229,6 @@
 <translation id="6992554835374084304">開啟進階拼字檢查功能</translation>
 <translation id="6993000214273684335">已將分頁從包含「<ph name="GROUP_CONTENTS" />」的未命名群組中移除</translation>
 <translation id="6993050154661569036">正在更新 Chrome 瀏覽器</translation>
-<translation id="6995899638241819463">當密碼因資料侵害事件遭到外洩時發出警告</translation>
 <translation id="6995984090981858039">讀取 ChromeOS 裝置資訊和資料</translation>
 <translation id="6996245928508281884">請開啟手機的藍牙和 Wi-Fi</translation>
 <translation id="6996438701394974959">放大顯示和文字大小</translation>
@@ -9369,6 +9366,7 @@
 <translation id="7826254698725248775">裝置 ID 發生衝突。</translation>
 <translation id="7828642077514646543">錯誤：無法將憑證解碼</translation>
 <translation id="7829877209233347340">請要求家長登入，授予新增學校帳戶的權限</translation>
+<translation id="7830276128493844263">系統設定中的位置存取權為關閉狀態</translation>
 <translation id="7830833461614351956">要將 <ph name="NUM_OF_FILES" /> 個檔案複製到「<ph name="CLOUD_PROVIDER" />」再開啟嗎？</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">你所儲存的自訂字詞會顯示在這裡</translation>
@@ -10988,6 +10986,7 @@
 <translation id="8984694057134206124">所有人都看得到你的裝置，這個狀態將持續 <ph name="MINUTES" /> 分鐘。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">歡迎在 Chromebook 上使用 Steam</translation>
 <translation id="8985264973231822211">上次使用時間：<ph name="DEVICE_LAST_ACTIVATED_TIME" /> 天前</translation>
+<translation id="8985561265504464578">偵測門檻</translation>
 <translation id="8985661493893822002">請連上網際網路以登入 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="8985661571449404298">下載的檔案不安全</translation>
 <translation id="8986362086234534611">清除</translation>

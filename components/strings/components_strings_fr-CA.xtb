@@ -1940,6 +1940,7 @@
 <translation id="4652440160515225514">Votre organisation a bloqué ce site, car il enfreint une politique.</translation>
 <translation id="4658638640878098064">Agrafe en haut à gauche</translation>
 <translation id="4661556981531699496">Faune et animaux de compagnie</translation>
+<translation id="4661868874067696603">Rechercher plus d'options d'achat</translation>
 <translation id="4663373278480897665">La caméra est autorisée</translation>
 <translation id="466561305373967878">Jeux de société</translation>
 <translation id="4668929960204016307">,</translation>
@@ -2421,7 +2422,6 @@
 <translation id="555037537507405574">fonctionnalités avancées de l'imprimante</translation>
 <translation id="555128936272638662">Accessoires pour appareils sans fil et mobiles</translation>
 <translation id="5551890439174915351">100 mm x 200 mm</translation>
-<translation id="5552137475244467770">Chrome vérifie régulièrement que vos mots de passe ne figurent pas dans les listes qui ont été publiées en ligne. Lors de cette opération, vos mots de passe et vos noms d'utilisateur sont chiffrés afin que personne ne puisse les consulter, y compris Google.</translation>
 <translation id="5554520618550346933">Lorsque vous utilisez un mot de passe, Chrome vous avertit s'il a été publié en ligne. Lors de cette opération, vos mots de passe et vos noms d'utilisateur sont chiffrés pour que personne ne puisse les consulter, y compris Google.</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="5558083606899411167">Climatiseurs</translation>
@@ -2429,6 +2429,7 @@
 <translation id="5559311991468302423">Supprimer l'adresse</translation>
 <translation id="5560088892362098740">Date d'expiration</translation>
 <translation id="55635442646131152">Plan du document</translation>
+<translation id="5563589142503817291">Pour utiliser votre position, accordez l'accès à Chrome dans <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Ouvrir l'onglet de navigation privée</translation>
 <translation id="5565735124758917034">Actif</translation>
 <translation id="5569030697349375295">Logiciels de comptabilité et de finances</translation>
@@ -2910,6 +2911,7 @@
 <translation id="6458606150257356946">Coller quand même</translation>
 <translation id="6464094930452079790">Images</translation>
 <translation id="6465306955648956876">Gérer les mots de passe...</translation>
+<translation id="646789491285795429">Vous suivez déjà ce produit</translation>
 <translation id="6468485451923838994">Polices</translation>
 <translation id="647261751007945333">Règles relatives aux appareils</translation>
 <translation id="6472874020827012601">Tissu (mat)</translation>

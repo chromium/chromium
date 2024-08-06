@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Rheolyddion</translation>
 <translation id="2652403576514495859">galluogi neu doglo arddweud</translation>
 <translation id="2653659639078652383">Danfon</translation>
-<translation id="2653807227758181366">Disgrifiwch y papur wal rydych chi am ei greu neu defnyddiwch neges annog sampl</translation>
 <translation id="2654647726140493436">Peidiwch â diffodd eich <ph name="DEVICE_TYPE" /> na dad-blygio'r cebl pŵer <ph name="DEVICE_TYPE" /> tra bod y diweddariad ar y gweill</translation>
 <translation id="2656001153562991489">Unigryw ar gyfer Chromebook Plus</translation>
 <translation id="2665671725390405060">Gwrando ar yr ynganiad</translation>
@@ -1366,6 +1365,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8208861521865154048">Manteision</translation>
 <translation id="8226628635270268143">Dewiswch eich hoff luniau ac albymau</translation>
 <translation id="8227119283605456246">Atodi ffeil</translation>
+<translation id="8227488649450500937">Rhowch gynnig ar un o'r anogwyr hyn neu gweler y <ph name="BEGIN_LINK_PROMPTING_GUIDE" />canllaw anogwyr<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Wedi methu â phingio porth y rhwydwaith diofyn</translation>
 <translation id="8238771987802558562">Dewis APN</translation>
 <translation id="8246209727385807362">Cludwr anhysbys</translation>

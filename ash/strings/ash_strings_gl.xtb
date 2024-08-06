@@ -405,6 +405,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="2486214324139475545">Vista previa de <ph name="DESK_NAME" />. Escritorio activo.</translation>
 <translation id="2486405091093637109">A resolución de <ph name="DISPLAY_NAME" /> pasou a ser <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Se non confirmas o cambio, a configuración anterior restaurarase dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Unirse</translation>
+<translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="2499445554382787206">Menú do perfil do escritorio. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Teclas presas</translation>
 <translation id="2504454902900101003">Pechar a configuración de visualización do contido multimedia, das notificacións, e das fotos recentes do teu teléfono</translation>
@@ -436,6 +437,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="2607678425161541573">É necesario iniciar sesión en liña</translation>
 <translation id="2612072250312279703">monitor de actividade</translation>
 <translation id="2612614436418177118">Move a icona dunha aplicación dentro da grade de aplicacións</translation>
+<translation id="2619052155095999743">Inserir</translation>
 <translation id="2619326010008283367">Paso <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> da visita. Podes atopar a configuración do dispositivo no menú de aplicacións. Proba a personalizar o <ph name="PRODUCT_NAME" /> en Configuración. Por exemplo, podes cambiar o fondo de pantalla ou escoller un novo protector de pantalla.</translation>
 <translation id="2620016719323068571">Busca <ph name="CATEGORY" />, ficheiros, aplicacións e moito máis…</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -462,6 +464,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="2704781753052663061">Unirse a outras redes wifi</translation>
 <translation id="2705001408393684014">Activar/desactivar micrófono. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Arriba</translation>
+<translation id="271033894570825754">Novo</translation>
 <translation id="2710984741481549981">Bloquear as ventás</translation>
 <translation id="2718395828230677721">Luz nocturna</translation>
 <translation id="2726420622004325180">O teu teléfono debe ter datos móbiles para ofrecer unha zona wifi</translation>
@@ -1087,6 +1090,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4890408602550914571">Asegúrate de ter o teléfono preto e co Bluetooth activado.</translation>
 <translation id="4892981359753171125">Control facial</translation>
 <translation id="4895488851634969361">A batería está completamente cargada.</translation>
+<translation id="4902797682482387055">Tarefa suxerida na que concentrarse</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
 <translation id="491504982845934899">Activar despois da configuración do dispositivo <ph name="NETWORK_NAME" /></translation>
@@ -1097,6 +1101,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="492453977506755176">Tecla do modo de captura</translation>
 <translation id="4925542575807923399">O administrador desta conta require que esta conta sexa a primeira na que se inicie sesión cando se cree unha sesión de inicio de sesión múltiple.</translation>
 <translation id="493076006037866439">Afastar a pantalla</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4936329710968938986">Todos (desactivado)</translation>
 <translation id="4937170330762390348">A función de ditado permíteche escribir usando a voz. Cando esteas nun campo de texto, preme a tecla de ditado ou selecciona a icona do micrófono que está na parte inferior da pantalla. O <ph name="LANGUAGE" /> é o idioma que tes definido para o ditado. Os ficheiros de voz descargaranse para que poidas usar a función de ditado sen conexión. Podes cambiar o idioma do ditado cando queiras en Configuración &gt; Accesibilidade.</translation>
 <translation id="4938176435186993759">Ocultar todas as suxestións</translation>
@@ -1105,6 +1110,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="495046168593986294">Desprazarse cara arriba</translation>
 <translation id="4950800194215951939">Personaliza a experiencia de xogo</translation>
 <translation id="4952936045814352993">A función Localizar teléfono non está dispoñible se están desactivados os sons das alarmas</translation>
+<translation id="4953585991029886728">Edita texto</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> require que cambies o teu dispositivo (<ph name="DEVICE_TYPE" />) a unha versión anterior. O dispositivo restablecerase e eliminaranse todos os datos.</translation>
 <translation id="4961318399572185831">Enviar pantalla</translation>
 <translation id="4964188651935955085">Se desactivas o Bluetooth, este aparello externo desconectarase do teu dispositivo (<ph name="DEVICE_TYPE" />):</translation>
@@ -1426,6 +1432,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6032620807120418574">Fai clic en calquera parte para realizar unha gravación da pantalla completa</translation>
 <translation id="6040071906258664830">Estado da gravación dos sons do micrófono: <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Pechar</translation>
+<translation id="6042308850641462728">Máis</translation>
 <translation id="6043212731627905357">Este monitor non funciona co dispositivo <ph name="DEVICE_TYPE" /> (o monitor non é compatible).</translation>
 <translation id="6043994281159824495">Pechar sesión agora</translation>
 <translation id="6045629311476491587">Permisos usados por <ph name="APP_COUNT" /> aplicacións</translation>
@@ -1892,6 +1899,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7748275671948949022">Destacar botón do menú de aplicacións no andel</translation>
 <translation id="7749443890790263709">Alcanzouse o número máximo de escritorios.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Mostrar todo</translation>
 <translation id="7759183637555564029">Podes desactivar Axúdame a escribir e Axúdame a ler cando queiras en Configuración. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Escoitar selección</translation>
 <translation id="7769299611924763557">O teu GIF estará listo decontado</translation>
@@ -2025,6 +2033,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> O teu administrador xestiona esta opción de configuración.</translation>
 <translation id="8155628902202578800">Abrir cadro de diálogo de información para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Usando: <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Contido</translation>
 <translation id="8185090165691050712">Activa ou desactiva o menú para cambiar o tamaño do modo de bloqueo</translation>
 <translation id="8192727139462702395">Se desactivas o Bluetooth, estes aparellos externos desconectaranse do teu dispositivo (<ph name="DEVICE_TYPE" />):</translation>
 <translation id="8198456017687137612">Recibindo emisión de pestana</translation>

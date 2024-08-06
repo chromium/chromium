@@ -1509,6 +1509,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> pol.)</translation>
 <translation id="3792826587784915501">Filmes de culto e indie</translation>
 <translation id="3793574014653384240">Números e causas das falhas de sistema que ocorreram recentemente.</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> está a impedir que o Chrome estabeleça uma ligação segura</translation>
 <translation id="3799805948399000906">Tipo de letra solicitado</translation>
 <translation id="3801265110651850478">Enviar um pedido "Não rastrear" com o seu tráfego de navegação</translation>
 <translation id="380329542618494757">Nome</translation>
@@ -1940,6 +1941,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4652440160515225514">A sua organização bloqueou este site porque viola uma política.</translation>
 <translation id="4658638640878098064">Agrafar parte superior esquerda</translation>
 <translation id="4661556981531699496">Animais de estimação e animais selvagens</translation>
+<translation id="4661868874067696603">Pesquise mais opções de compra</translation>
 <translation id="4663373278480897665">Câmara permitida</translation>
 <translation id="466561305373967878">Jogos de tabuleiro</translation>
 <translation id="4668929960204016307">,</translation>
@@ -2421,7 +2423,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="555037537507405574">funcionalidades avançadas da impressora</translation>
 <translation id="555128936272638662">Acessórios de dispositivos móveis e sem fios</translation>
 <translation id="5551890439174915351">100 x 200 mm</translation>
-<translation id="5552137475244467770">O Chrome verifica periodicamente se as suas palavras-passe fazem parte das listas publicadas online. Ao fazê-lo, as suas palavras-passe e nomes de utilizador estão encriptados, pelo que não podem ser lidos por ninguém, incluindo a Google.</translation>
 <translation id="5554520618550346933">Quando usa uma palavra-passe, o Chrome avisa se esta tiver sido publicada online. Ao fazê-lo, as suas palavras-passe e nomes de utilizador estão encriptados e, por isso, não podem ser lidos por ninguém, incluindo a Google.</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="5558083606899411167">Aparelhos de ar condicionado</translation>
@@ -2429,6 +2430,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5559311991468302423">Apagar morada</translation>
 <translation id="5560088892362098740">Data de validade</translation>
 <translation id="55635442646131152">Contorno do documento</translation>
+<translation id="5563589142503817291">Para usar a localização, dê acesso ao Chrome nas <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Abrir separador de navegação anónima</translation>
 <translation id="5565735124758917034">Ativo</translation>
 <translation id="5569030697349375295">Software de contabilidade e finanças</translation>
@@ -2702,6 +2704,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6106989379647458772">A página Web em <ph name="PAGE" /> pode estar temporariamente indisponível ou pode ter sido permanentemente movida para um novo endereço Web.</translation>
 <translation id="6107012941649240045">Emitido para</translation>
 <translation id="6107924765192360631">Basta começar com algumas palavras ou um primeiro rascunho para receber sugestões de escrita.</translation>
+<translation id="6108580855199168381">Detalhes do certificado</translation>
 <translation id="6108702513636120202">O seu motor de pesquisa no Chromium</translation>
 <translation id="6108849843016142864">Répteis e anfíbios</translation>
 <translation id="610911394827799129">A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -2910,6 +2913,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6458606150257356946">Colar mesmo assim</translation>
 <translation id="6464094930452079790">imagens</translation>
 <translation id="6465306955648956876">Gerir palavras-passe…</translation>
+<translation id="646789491285795429">Já está a acompanhar este produto</translation>
 <translation id="6468485451923838994">Tipos de letra</translation>
 <translation id="647261751007945333">Políticas do dispositivo</translation>
 <translation id="6472874020827012601">Tecido (mate)</translation>
@@ -3470,6 +3474,13 @@ Detalhes adicionais:
 <translation id="7535087603100972091">Valor</translation>
 <translation id="753556296624075801">Tecnologia da Google</translation>
 <translation id="7537536606612762813">Obrigatório</translation>
+<translation id="7541586907443866208">Os atacantes vão poder ver e alterar todos os dados enviados entre si e este site.
+    &lt;ul&gt;
+    &lt;li&gt;Se tiver estabelecido uma ligação a uma rede pública, como o Wi-Fi de um aeroporto ou um hotel, considere tentar novamente quando tiver estabelecido uma ligação a uma rede fidedigna (por exemplo, em casa ou no trabalho).&lt;/li&gt;
+    &lt;li&gt;Se conhecer o proprietário do site, peça-lhe para corrigir esta situação.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais acerca deste aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">O preenchimento automático de cartões de crédito está desativado, porque este formulário não utiliza uma ligação segura.</translation>
 <translation id="7543525346216957623">Pede aos teus pais</translation>
 <translation id="7546409722674205727">A iniciar a app <ph name="APP_NAME" /></translation>

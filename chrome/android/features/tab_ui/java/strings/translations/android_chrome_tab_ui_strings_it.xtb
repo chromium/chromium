@@ -42,6 +42,7 @@
 <translation id="2801787514987684416">Vuoi visualizzare le informazioni sul negozio?</translation>
 <translation id="2928243913527329289">Google | Informazioni su questo negozio</translation>
 <translation id="2977480621796371840">Rimuovi dal gruppo</translation>
+<translation id="29919168204617356">Le schede non attive verranno chiuse automaticamente. Puoi trovarle nella cronologia in qualsiasi momento.</translation>
 <translation id="3008554597174452548">Interrompi il monitoraggio del prodotto</translation>
 <translation id="3026391124054406831">Crea gruppi per organizzare le tue schede.</translation>
 <translation id="3051031624272448591">Puoi ripristinarle nella cronologia in qualsiasi momento</translation>
@@ -52,6 +53,7 @@
 <translation id="3322827343001922122">Apri il menu Azioni del gruppo di schede <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Suggerimento: <ph name="NUMBER_OF_TABS" /> schede sembrano correlate. Vuoi raggrupparle?</translation>
 <translation id="3547352561153509682">Il gruppo verrà eliminato da tutti i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">Nascondi finestra di dialogo schede non attive</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatura dell'anteprima del foglio di condivisione.</translation>
 <translation id="381219490185664296">Separare il gruppo di schede?</translation>
@@ -139,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> recensione da Google}other{<ph name="REVIEWS_COUNT_MANY" /> recensioni da Google}}</translation>
 <translation id="7559245342362162951">Mostra le schede del gruppo in una griglia a schermo intero</translation>
 <translation id="7658239707568436148">Annulla</translation>
+<translation id="7688386659311034820">Finestra di dialogo delle schede non attive</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Condividi <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Condividi <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="7773714564112603605">Rimuovi scheda ed elimina gruppo</translation>
 <translation id="7792771145871471484">Controlla i suggerimenti.</translation>

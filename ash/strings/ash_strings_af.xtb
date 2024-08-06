@@ -405,6 +405,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" />-voorskou. Aktiewe lessenaar.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" is verander na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) resolusie. Die vorige instellings sal oor <ph name="TIMEOUT_SECONDS" /> teruggestel word as jy nie bevestig nie.</translation>
 <translation id="2487915095798731898">Sluit aan</translation>
+<translation id="2496180316473517155">Blaaigeskiedenis</translation>
 <translation id="2499445554382787206">Lessenaarprofielkieslys. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Taaisleutels</translation>
 <translation id="2504454902900101003">Maak die opstelling toe vir die bekyk van jou foon se onlangse foto’s, media en kennisgewings</translation>
@@ -436,6 +437,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2607678425161541573">Aanlyn aanmelding word vereis</translation>
 <translation id="2612072250312279703">aktiwiteitmonitor</translation>
 <translation id="2612614436418177118">Skuif 'n appikoon binne approoster</translation>
+<translation id="2619052155095999743">Invoeg</translation>
 <translation id="2619326010008283367">Toerstap <ph name="STEP" /> van <ph name="TOTAL_STEPS" />. Jy kan jou toestelinstellings in Lanseerder vind. Probeer om jou <ph name="PRODUCT_NAME" /> in Instellings te pasmaak, soos om jou muurpapier te verander of ’n sluimerskerm te stel.</translation>
 <translation id="2620016719323068571">Deursoek jou <ph name="CATEGORY" />, lêers, programme en meer …</translation>
 <translation id="2620436844016719705">Stelsel</translation>
@@ -462,6 +464,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2704781753052663061">Sluit aan by ander Wi-Fi-netwerke</translation>
 <translation id="2705001408393684014">Wissel mikrofoon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Op</translation>
+<translation id="271033894570825754">Nuut</translation>
 <translation id="2710984741481549981">Sluit die vensters</translation>
 <translation id="2718395828230677721">Aandbeligting</translation>
 <translation id="2726420622004325180">Jou foon moet mobiele data hê om 'n warmkol te verskaf</translation>
@@ -1087,6 +1090,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4890408602550914571">Maak seker dat jou foon in die omtrek is en dat Bluetooth aangeskakel is.</translation>
 <translation id="4892981359753171125">Gesigbeheer</translation>
 <translation id="4895488851634969361">Battery is vol.</translation>
+<translation id="4902797682482387055">Voorgestelde taak om op te fokus</translation>
 <translation id="490375751687810070">Vertikaal</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% batterykrag</translation>
 <translation id="491504982845934899">Aktiveer ná toestelopstelling <ph name="NETWORK_NAME" /></translation>
@@ -1097,6 +1101,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="492453977506755176">Vasvangmodus-sleutel</translation>
 <translation id="4925542575807923399">Die administrateur vir hierdie rekening vereis dat hierdie rekening die eerste een moet wees waarby in 'n veelvuldige aanmeldsessie aangemeld word.</translation>
 <translation id="493076006037866439">Zoem uit op skerm</translation>
+<translation id="4932733599132424254">Datum</translation>
 <translation id="4936329710968938986">Almal, af</translation>
 <translation id="4937170330762390348">Met diktering kan jy jou stem gebruik om te tik. Druk die dikteersleutel of kies die mikrofoonikoon onderaan die skerm wanneer jy op ’n teksveld is. Jou dikteertaal is ingestel op <ph name="LANGUAGE" />. Spraaklêers sal afgelaai word sodat jy diktering vanlyn kan gebruik. Jy kan die dikteertaal enige tyd verander in Instellings &gt; Toeganklikheid.</translation>
 <translation id="4938176435186993759">Versteek alle voorstelle</translation>
@@ -1105,6 +1110,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="495046168593986294">Rollees op</translation>
 <translation id="4950800194215951939">Pasmaak jou speletjie-ervaring</translation>
 <translation id="4952936045814352993">Spoor foon op is nie beskikbaar wanneer wekkerklanke gedeaktiveer is nie</translation>
+<translation id="4953585991029886728">Wysig teks</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> vereis dat jy jou <ph name="DEVICE_TYPE" /> terugrol. Jou toestel sal teruggestel word en alle data sal uitgevee word.</translation>
 <translation id="4961318399572185831">Saai skerm uit</translation>
 <translation id="4964188651935955085">Wanneer jy Bluetooth afskakel, sal hierdie eksterne toestel van jou <ph name="DEVICE_TYPE" /> ontkoppel:</translation>
@@ -1364,6 +1370,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="5819918159912280082">Jou Chromebook het onverwags herbegin. Maak jou vorige vensters en apps oop.</translation>
 <translation id="5823239091726045201">Google-take op die web</translation>
 <translation id="5825969630400862129">Instellings vir gekoppelde toestelle</translation>
+<translation id="5830180081891717894">Nog <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> op <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Gaan na volgende snit</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" />-warmkol is aan; geen toestelle is gekoppel nie</translation>
@@ -1425,6 +1432,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="6032620807120418574">Klik enige plek om volskerm op te neem</translation>
 <translation id="6040071906258664830">Neem mikrofoon op <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Maak toe</translation>
+<translation id="6042308850641462728">Meer</translation>
 <translation id="6043212731627905357">Hierdie monitor werk nie saam met jou <ph name="DEVICE_TYPE" /> nie (die monitor is nie gesteun nie).</translation>
 <translation id="6043994281159824495">Meld nou af</translation>
 <translation id="6045629311476491587">Word deur <ph name="APP_COUNT" /> apps gebruik</translation>
@@ -1891,6 +1899,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7748275671948949022">Merk lanseerderknoppie op rak</translation>
 <translation id="7749443890790263709">Maksimum aantal lessenaars is bereik.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Wys alles</translation>
 <translation id="7759183637555564029">Jy kan enige tyd Help My Skryf en Help My Lees in Instellings afskakel. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Hardoplees</translation>
 <translation id="7769299611924763557">Jou GIF sal binnekort gereed wees</translation>
@@ -2024,6 +2033,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Jou administrateur bestuur hierdie instelling.</translation>
 <translation id="8155628902202578800">Maak inligtingdialoog oop vir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Gebruik tans <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Inhoud</translation>
 <translation id="8185090165691050712">Skakel kieslys aan/af om die grootte van die sluitmodus te verander</translation>
 <translation id="8192727139462702395">Wanneer jy Bluetooth afskakel, sal hierdie eksterne toestelle van jou <ph name="DEVICE_TYPE" /> ontkoppel:</translation>
 <translation id="8198456017687137612">Saai tans oortjie uit</translation>
@@ -2071,6 +2081,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8375916635258623388">Hierdie <ph name="DEVICE_NAME" /> en jou foon sal outomaties koppel</translation>
 <translation id="8380784334203145311">Goeienag</translation>
 <translation id="8382715499079447151">Kykbeskerming</translation>
+<translation id="8383614331548401927">Opsomming van verwelkoming</translation>
 <translation id="8388750414311082622">Jongste lessenaar kan nie verwyder word nie.</translation>
 <translation id="8394567579869570560">Jou ouer het hierdie toestel gesluit</translation>
 <translation id="8401850874595457088">Voer taalkieslys in</translation>

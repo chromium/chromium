@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Oranžna</translation>
 <translation id="125153950246128346">Dotaknite se, če želite prikazati drug zavihek</translation>
 <translation id="1273910660700874265">Možnosti skupine zavihkov <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1340839264183302272">Zapusti skupino</translation>
 <translation id="1419023007528516122">S tem boste skupino trajno izbrisali iz naprave</translation>
 <translation id="1486715732399361704">Vse skupine zavihkov so prikazane tukaj</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Ustvarjeno pred <ph name="NUM_MINS_ONE" /> minuto}one{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minuto}two{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minutama}few{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minutami}other{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minutami}}</translation>
@@ -122,6 +123,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Premakni zavihek v levo</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
+<translation id="6694634756612002311">Upravljaj deljenje</translation>
 <translation id="6744956528665271406">Uredi barvo skupine</translation>
 <translation id="6856809498882026482">Skrij način z več izbirami</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Deli zavihek}one{Deli zavihke}two{Deli zavihke}few{Deli zavihke}other{Deli zavihke}}</translation>
@@ -174,6 +176,7 @@
 <translation id="8926389886865778422">Ne sprašuj več</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Razširitev skupine zavihkov z <ph name="TABS_COUNT_ONE" /> zavihkom.}one{Razširitev skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkom.}two{Razširitev skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkoma.}few{Razširitev skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihki.}other{Razširitev skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihki.}}</translation>
 <translation id="9090098097337832354">Informacije o tej trgovini so zaprte.</translation>
+<translation id="9111228330448174435">Prikaz pogovornega okna pri ustvarjanju nove skupine zavihkov</translation>
 <translation id="9150694013019234766">Preklapljanje med zavihki v skupini zavihkov pri dnu zaslona</translation>
 <translation id="9169594135889675189">Skupini dodaj nov zavihek</translation>
 <translation id="9216898458513705996">Zavihki bodo ostali odprti v tej napravi, vendar bo skupina izbrisana iz vseh naprav, v katerih ste prijavljeni v račun <ph name="USER_EMAIL" /></translation>

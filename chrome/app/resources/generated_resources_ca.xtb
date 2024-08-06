@@ -185,7 +185,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1124772482545689468">Usuari</translation>
 <translation id="1125550662859510761">Resolució: <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1125921926864945797">Fons de pantalla i estil</translation>
-<translation id="1126809382673880764">No et protegeix contra baixades, extensions ni llocs web perillosos. Continuaràs obtenint protecció mitjançant Navegació segura, sempre que estigui disponible, en altres serveis de Google, com ara Gmail i la Cerca.</translation>
 <translation id="1128090040635299943">Linux s'està configurant en aquests moments. La configuració tardarà una estona.</translation>
 <translation id="1128591060186966949">Edita el motor de cerca</translation>
 <translation id="1129348283834595293">Ciberpunk</translation>
@@ -629,7 +628,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1461041542809785877">Rendiment</translation>
 <translation id="1461177659295855031">Mou a la carpeta Barra d'adreces d'interès</translation>
 <translation id="1461288887896722288">Acabes d'iniciar la sessió en un compte gestionat. Si crees un perfil gestionat nou podràs accedir a alguns recursos que hi estan enllaçats.</translation>
-<translation id="1461868306585780092">Avisa abans d'utilitzar connexions no segures</translation>
 <translation id="146219525117638703">Estat d'ONC</translation>
 <translation id="146220085323579959">S'ha desconnectat Internet. Comproveu la connexió a Internet i torneu-ho a provar.</translation>
 <translation id="1462480037563370607">Afegeix els llocs web manualment</translation>
@@ -4165,7 +4163,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="3959747296451923142">Confirma la supressió de la subscripció</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Més accions per a <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962119236270174787">Protecció estàndard contra llocs web, baixades i extensions que se sap que són perillosos</translation>
 <translation id="3963753386716096475">Utilitza un telèfon, una tauleta o una clau de seguretat diferents</translation>
 <translation id="3964480518399667971">Desactiva la xarxa mòbil</translation>
 <translation id="3965965397408324205">Surt del perfil <ph name="PROFILE_NAME" /></translation>
@@ -5506,7 +5503,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4967571733817147990">Personalitza els botons del ratolí</translation>
 <translation id="4967852842111017386">Nom del dispositiu de <ph name="FEATURE_NAME" /></translation>
 <translation id="4971412780836297815">Obre quan acabi</translation>
-<translation id="4971735654804503942">Protecció més ràpida i proactiva contra llocs web, baixades i extensions perillosos. T'avisa sobre violacions de les contrasenyes. Requereix que les dades de navegació s'enviïn a Google.</translation>
 <translation id="4972129977812092092">Edita la impressora</translation>
 <translation id="4972164225939028131">La contrasenya no és correcta</translation>
 <translation id="4972737347717125191">Els llocs web poden demanar permís per utilitzar dispositius i dades de realitat virtual</translation>
@@ -6996,6 +6992,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6075075631258766703">Verifica el telèfon</translation>
 <translation id="6075731018162044558">El sistema no ha pogut obtenir un testimoni d'accés a l'API de llarg termini per a aquest dispositiu.</translation>
 <translation id="6075907793831890935">Intercanviar dades amb el dispositiu <ph name="HOSTNAME" /></translation>
+<translation id="6076092653254552547">Configuració del sistema</translation>
 <translation id="6076491747490570887">Gris fred</translation>
 <translation id="6076576896267434196">L'extensió "<ph name="EXTENSION_NAME" />" vol accedir al compte</translation>
 <translation id="6077131872140550515">Suprimeix de les preferides</translation>
@@ -8236,7 +8233,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6992554835374084304">Activa el corrector ortogràfic millorat</translation>
 <translation id="6993000214273684335">La pestanya s'ha suprimit d'un grup sense nom: <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">S'està actualitzant el navegador Chrome</translation>
-<translation id="6995899638241819463">Rep un advertiment si les contrasenyes queden exposades en l'àmbit d'una violació de les dades</translation>
 <translation id="6995984090981858039">Llegir informació i dades de dispositius ChromeOS</translation>
 <translation id="6996245928508281884">Activa el Bluetooth i la Wi‐Fi del telèfon</translation>
 <translation id="6996438701394974959">Augmenta la mida de la pantalla i del text</translation>
@@ -9374,6 +9370,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7826254698725248775">L'identificador del dispositiu ja s'està utilitzant.</translation>
 <translation id="7828642077514646543">Error: no es pot descodificar el certificat</translation>
 <translation id="7829877209233347340">Demana als pares que iniciïn la sessió per atorgar-te permís per afegir un compte de centre educatiu.</translation>
+<translation id="7830276128493844263">La ubicació està desactivada a la configuració del sistema</translation>
 <translation id="7830833461614351956">Vols copiar <ph name="NUM_OF_FILES" /> fitxers a <ph name="CLOUD_PROVIDER" /> per obrir-los?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Les paraules personalitzades desades es mostraran aquí</translation>

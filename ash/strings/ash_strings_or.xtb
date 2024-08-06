@@ -405,6 +405,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> ପ୍ରିଭ୍ୟୁ। ସକ୍ରିୟ ଡେସ୍କ।</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />"କୁ <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ରିଜୋଲ୍ୟୁସନରେ ପରିବର୍ତ୍ତନ କରାଯାଇଛି। ସୁନିଶ୍ଚିତ ନକରି, ପୂର୍ବବର୍ତ୍ତୀ ସେଟିଂସକୁ <ph name="TIMEOUT_SECONDS" />ରେ ରିଷ୍ଟୋର କରାଯିବ।</translation>
 <translation id="2487915095798731898">ଯୋଗ ଦିଅନ୍ତୁ</translation>
+<translation id="2496180316473517155">ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି</translation>
 <translation id="2499445554382787206">ଡେସ୍କ ପ୍ରୋଫାଇଲ ମେନୁ। <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ଷ୍ଟିକି କୀ'ଗୁଡ଼ିକ</translation>
 <translation id="2504454902900101003">ଆପଣଙ୍କ ଫୋନରେ ଥିବା ବର୍ତ୍ତମାନର ଫଟୋ, ମିଡିଆ ଏବଂ ବିଜ୍ଞପ୍ତିକୁ ଭ୍ୟୁ କରିବାକୁ ସେଟ ଅପ କରିବା ଖାରଜ କରନ୍ତୁ</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">ଅନଲାଇନ୍ ସାଇନ୍ ଇନ୍ କରିବା ଆବଶ୍ୟକ</translation>
 <translation id="2612072250312279703">କାର୍ଯ୍ୟକଳାପ ମନିଟର</translation>
 <translation id="2612614436418177118">ଆପ ଗ୍ରିଡ ମଧ୍ୟରେ ଥିବା ଏକ ଆପ ଆଇକନକୁ ମୁଭ କରନ୍ତୁ</translation>
+<translation id="2619052155095999743">ଇନସାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2619326010008283367">ଟୁରର <ph name="TOTAL_STEPS" /> ଷ୍ଟେପରୁ <ph name="STEP" /> ନମ୍ବର ଷ୍ଟେପ। ଆପଣ ଲଞ୍ଚରରେ ଆପଣଙ୍କ ଡିଭାଇସର ସେଟିଂସକୁ ଖୋଜିପାରିବେ। ଆପଣଙ୍କ ୱାଲପେପରକୁ ପରିବର୍ତ୍ତନ କରିବା କିମ୍ବା ଏକ ସ୍କ୍ରିନ ସେଭର ସେଟ କରିବା ପରି ସେଟିଂସରେ ଆପଣଙ୍କ <ph name="PRODUCT_NAME" />କୁ କଷ୍ଟମାଇଜ କରିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2620016719323068571">ଆପଣଙ୍କ <ph name="CATEGORY" />, ଫାଇଲ, ଆପ୍ସ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ସନ୍ଧାନ କରନ୍ତୁ...</translation>
 <translation id="2620436844016719705">ସିଷ୍ଟମ୍‌</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">ଅନ୍ୟ ୱାଇ-ଫାଇ ନେଟ୍‍ୱାର୍କଗୁଡ଼ିକୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2705001408393684014">ମାଇକ୍ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ଅପ୍‍ କୀ</translation>
+<translation id="271033894570825754">ନୂଆ</translation>
 <translation id="2710984741481549981">ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ଲକ କରନ୍ତୁ</translation>
 <translation id="2718395828230677721">ରାତି ଆଲୋକ</translation>
 <translation id="2726420622004325180">ହଟସ୍ପଟ୍ ପ୍ରଦାନ କରିବାକୁ ଆପଣଙ୍କ ଫୋନରେ ନିଶ୍ଚିତ ରୂପେ ମୋବାଇଲ ଡାଟା ଥିବା ଆବଶ୍ୟକ</translation>
@@ -1086,6 +1089,7 @@
 <translation id="4890408602550914571">ଆପଣଙ୍କ ଫୋନ୍ ନିକଟରେ ଅଛି ଏବଂ ସେଥିରେ ବ୍ଲୁଟୁଥ୍ ଚାଲୁ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="4892981359753171125">ଫେସ କଣ୍ଟ୍ରୋଲ</translation>
 <translation id="4895488851634969361">ବ୍ୟାଟେରୀ ପୂର୍ଣ୍ଣ ଅଟେ।</translation>
+<translation id="4902797682482387055">ଫୋକସ କରିବାକୁ ଥିବା ପ୍ରସ୍ତାବିତ ଟାସ୍କ</translation>
 <translation id="490375751687810070">ଭୂଲମ୍ଵ</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ</translation>
 <translation id="491504982845934899">ଡିଭାଇସ ସେଟଅପ କରିବା ପରେ <ph name="NETWORK_NAME" /> ସକ୍ରିୟ କରନ୍ତୁ</translation>
@@ -1096,6 +1100,7 @@
 <translation id="492453977506755176">କ୍ୟାପଚର୍ ମୋଡ୍ କୀ</translation>
 <translation id="4925542575807923399">ଏହି ଆକାଉଣ୍ଟର ବ୍ୟବସ୍ଥାପକଙ୍କ ପାଇଁ, ଏକ ଏକାଧିକ ସାଇନ୍ ଇନ୍ ଅବଧି କାଳରେ ଏହି ଆକାଉଣ୍ଟଟିକୁ ସର୍ବପ୍ରଥମେ ସାଇନ୍ ଇନ୍ କରିଥିବା ଆକାଉଣ୍ଟ ଭାବରେ ରଖିବା ଆବଶ୍ୟକ ଅଟେ৷</translation>
 <translation id="493076006037866439">ସ୍କ୍ରିନରୁ ଜୁମ ଆଉଟ କରନ୍ତୁ</translation>
+<translation id="4932733599132424254">ତାରିଖ</translation>
 <translation id="4936329710968938986">ସମସ୍ତେ, ବନ୍ଦ ଅଛି</translation>
 <translation id="4937170330762390348">ଡିକ୍ଟେସନ ସାହାଯ୍ୟରେ ଆପଣ ଆପଣଙ୍କ ଭଏସ ବ୍ୟବହାର କରି ଟାଇପ କରିପାରିବେ। ଆପଣ ଟେକ୍ସଟ ଫିଲ୍ଡରେ ଥିବା ବେଳେ ଡିକ୍ଟେସନ କୀ ଦବାନ୍ତୁ କିମ୍ବା ସ୍କ୍ରିନର ତଳ ପାର୍ଶ୍ୱରେ ଥିବା ମାଇକ୍ରୋଫୋନ ଆଇକନକୁ ଚୟନ କରନ୍ତୁ। ଆପଣଙ୍କ ଡିକ୍ଟେସନର ଭାଷାକୁ <ph name="LANGUAGE" />ରେ ସେଟ କରାଯାଇଛି। ସ୍ପିଚ ଫାଇଲଗୁଡ଼ିକ ଡାଉନଲୋଡ କରାଯିବ ଯାହା ଫଳରେ ଆପଣ ଅଫଲାଇନରେ ଡିକ୍ଟେସନକୁ ବ୍ୟବହାର କରିପାରିବେ। ଆପଣ ସେଟିଂସ &gt; ଆକ୍ସେସିବିଲିଟୀରେ ଯେ କୌଣସି ସମୟରେ ଡିକ୍ଟେସନର ଭାଷାକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="4938176435186993759">ସମସ୍ତ ପରାମର୍ଶ ଲୁଚାନ୍ତୁ</translation>
@@ -1104,6 +1109,7 @@
 <translation id="495046168593986294">ଉପରକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="4950800194215951939">ଅପଣଙ୍କ ଗେମିଂ ଅନୁଭୂତିକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
 <translation id="4952936045814352993">ଆଲାରାମର ସାଉଣ୍ଡକୁ ଅକ୍ଷମ କରାଯାଇଥିବା ସମୟରେ ଲୋକେଟ୍ ଫୋନ୍ ଉପଲବ୍ଧ ହୁଏ ନାହିଁ</translation>
+<translation id="4953585991029886728">ଟେକ୍ସଟ୍ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> ପାଇଁ ଆପଣ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ପ୍ରତ୍ୟାହାର କରିବା ଆବଶ୍ୟକ। ଆପଣଙ୍କ ଡିଭାଇସ ରିସେଟ ହେବ ଏବଂ ସମସ୍ତ ଡାଟା ଡିଲିଟ ହୋଇଯିବ।</translation>
 <translation id="4961318399572185831">କାଷ୍ଟ ସ୍କ୍ରିନ୍‌</translation>
 <translation id="4964188651935955085">ଆପଣ ବ୍ଲୁଟୁଥ ବନ୍ଦ କଲେ, ଏହି ଏକ୍ସଟର୍ନଲ ଡିଭାଇସ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରୁ ଡିସକନେକ୍ଟ ହୋଇଯିବ:</translation>
@@ -1363,6 +1369,7 @@
 <translation id="5819918159912280082">ଆପଣଙ୍କ Chromebook ଅପ୍ରତ୍ୟାଶିତ ଭାବେ ରିଷ୍ଟାର୍ଟ ହୋଇଛି। ଆପଣଙ୍କ ପୂର୍ବବର୍ତ୍ତୀ ୱିଣ୍ଡୋ ଏବଂ ଆପ୍ସ ଖୋଲନ୍ତୁ।</translation>
 <translation id="5823239091726045201">ୱେବରେ Google Tasks</translation>
 <translation id="5825969630400862129">ସଂଯୁକ୍ତ ଥିବା ଡିଭାଇସଗୁଡ଼ିକର ସେଟିଂସ୍</translation>
+<translation id="5830180081891717894"><ph name="WINDOWS" /> ଅଧିକ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />ରେ <ph name="ROUTE_TITLE" /> ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5841296711770970362">ପରବର୍ତ୍ତୀ ଟ୍ରାକକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> ହଟସ୍ପଟ ଚାଲୁ ଅଛି, କୌଣସି ଡିଭାଇସ କନେକ୍ଟ କରାଯାଇନାହିଁ</translation>
@@ -1424,6 +1431,7 @@
 <translation id="6032620807120418574">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ରେକର୍ଡ କରିବାକୁ ସ୍କ୍ରିନର ଯେ କୌଣସି ସ୍ଥାନରେ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="6040071906258664830">ମାଇକ୍ରୋଫୋନରେ ରେକର୍ଡ କରନ୍ତୁ <ph name="STATE" /></translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
+<translation id="6042308850641462728">ଅଧିକ</translation>
 <translation id="6043212731627905357">ଏହି ମନିଟର୍‌ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ସହ କାର୍ଯ୍ୟ କରୁନାହିଁ (ମନିଟର୍‌ ସମର୍ଥିତ ନୁହେଁ)।</translation>
 <translation id="6043994281159824495">ବର୍ତ୍ତମାନ ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" />ଟି ଆପ ଦ୍ୱାରା ବ୍ୟବହାର କରାଯାଇଛି</translation>
@@ -1888,6 +1896,7 @@
 <translation id="7748275671948949022">ସେଲ୍ଫରେ ଲଞ୍ଚର ବଟନକୁ ହାଇଲାଇଟ କରନ୍ତୁ</translation>
 <translation id="7749443890790263709">ସର୍ବାଧିକ ସଂଖ୍ୟକ ଡେସ୍କରେ ପହଞ୍ଚିଯାଇଛି।</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">ସବୁ ଦେଖାନ୍ତୁ</translation>
 <translation id="7759183637555564029">ଆପଣ ଯେ କୌଣସି ସମୟରେ ସେଟିଂସରେ 'ମୋତେ ଲେଖିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ' ଏବଂ 'ମୋତେ ପଢ଼ିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ'କୁ ବନ୍ଦ କରିପାରିବେ। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">ସିଲେକ୍ଟ-ଟୁ-ସ୍ପିକ୍</translation>
 <translation id="7769299611924763557">ଆପଣଙ୍କ GIF ଖୁବ ଶୀଘ୍ର ପ୍ରସ୍ତୁତ ହୋଇଯିବ</translation>
@@ -2021,6 +2030,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ଏହି ସେଟିଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ।</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ ସୂଚନା ଡାଏଲଗ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />କୁ ବ୍ୟବହାର କରାଯାଉଛି</translation>
+<translation id="8168435359814927499">ବିଷୟବସ୍ତୁ</translation>
 <translation id="8185090165691050712">ଲକ ମୋଡକୁ ରିସାଇଜ କରିବା ପାଇଁ ମେନୁକୁ ଚାଲୁ/ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8192727139462702395">ଆପଣ ବ୍ଲୁଟୁଥ ବନ୍ଦ କଲେ, ଏହି ଏକ୍ସଟର୍ନଲ ଡିଭାଇସଗୁଡ଼ିକ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରୁ ଡିସକନେକ୍ଟ ହୋଇଯିବ:</translation>
 <translation id="8198456017687137612">କାଷ୍ଟିଂ ଟାବ୍</translation>
@@ -2068,6 +2078,7 @@
 <translation id="8375916635258623388">ଏହି <ph name="DEVICE_NAME" /> ଏବଂ ଆପଣଙ୍କର ଫୋନ୍‌ ସ୍ୱଚାଳିତ ଭାବେ ସଂଯୋଗ ହେବ</translation>
 <translation id="8380784334203145311">ଶୁଭ ରାତ୍ରି,</translation>
 <translation id="8382715499079447151">ଦେଖିବା ସମ୍ବନ୍ଧିତ ସୁରକ୍ଷା</translation>
+<translation id="8383614331548401927">Recapକୁ ସ୍ୱାଗତ</translation>
 <translation id="8388750414311082622">ଶେଷ ଡେସ୍କକୁ କଢ଼ା ଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="8394567579869570560">ଆପଣଙ୍କ ମାତା-ପିତା ଏହି ଡିଭାଇସ୍‌କୁ ଲକ୍‌ କରିଦେଇଛନ୍ତି</translation>
 <translation id="8401850874595457088">ଭାଷା ମେନୁରେ ଏଣ୍ଟର କରନ୍ତୁ</translation>

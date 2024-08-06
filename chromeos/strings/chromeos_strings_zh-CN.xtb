@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">信号较弱</translation>
 <translation id="1300115153046603471">APN 是默认<ph name="ATTACH" />类型。</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">创建日期</translation>
 <translation id="1308754910631152188">正在更新（已完成 <ph name="PERCENTAGE_VALUE" />%）</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> 分钟</translation>
 <translation id="1310380015393971138">无可用的“<ph name="NETWORK_NAME" />”网络</translation>
@@ -339,7 +340,6 @@
 <translation id="2645380101799517405">控件</translation>
 <translation id="2652403576514495859">启用或停用语音输入</translation>
 <translation id="2653659639078652383">提交</translation>
-<translation id="2653807227758181366">请描述您要创建的壁纸或使用示例提示</translation>
 <translation id="2654647726140493436">在更新期间，请勿关闭<ph name="DEVICE_TYPE" />或拔下<ph name="DEVICE_TYPE" />电源线</translation>
 <translation id="2656001153562991489">Chromebook Plus 专享</translation>
 <translation id="2665671725390405060">聆听发音</translation>
@@ -506,6 +506,7 @@
 <translation id="3708186454126126312">曾经连接过</translation>
 <translation id="3715651196924935218">退出悬浮模式</translation>
 <translation id="3716250181321371108">创建控件</translation>
+<translation id="3716830479327464973">如果您允许使用此功能，录音机会分析录音，以便：</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 条评价）</translation>
 <translation id="3748026146096797577">未建立连接</translation>
 <translation id="3749289110408117711">文件名</translation>
@@ -532,6 +533,7 @@
 <translation id="3869314628814282185">薄纱</translation>
 <translation id="387301095347517405">您的电池已经历的完整充电循环次数</translation>
 <translation id="3877066159641251281">聆听译文</translation>
+<translation id="3880601782712134623">自动检测不同的语音，并为每位讲者添加一个宽泛的标签，例如讲者 1、讲者 2</translation>
 <translation id="3885327323343477505">更换屏保</translation>
 <translation id="3889914174935857450">重置日期</translation>
 <translation id="3897092660631435901">菜单</translation>
@@ -757,6 +759,7 @@
 <translation id="5049856988445523908">SIM 卡已锁定 (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">群组名称</translation>
 <translation id="5051044138948155788">这是目前仅有的一个页面了。此操作会将您转到扫描开始屏幕。</translation>
+<translation id="5078711626843651677">语音模型会暂存在设备上，直到讲者标签添加完毕。您随时可在“设置”中关闭此功能。</translation>
 <translation id="5078983345702708852">未来主义</translation>
 <translation id="5087864757604726239">后退</translation>
 <translation id="5088172560898466307">服务器主机名</translation>
@@ -1107,6 +1110,7 @@
 <translation id="6905163627763043954">试用一下</translation>
 <translation id="6905724422583748843">返回“<ph name="PAGE_NAME" />”</translation>
 <translation id="6910312834584889076">扫描仪的盖子没合上。请合上盖子，然后重试。</translation>
+<translation id="6910845598686542904">根据在录音中检测到的语音计算模型</translation>
 <translation id="6911383237894364323">无法连接到媒体服务器</translation>
 <translation id="6930242544192836755">持续时间</translation>
 <translation id="6930597342185648547">关于背景</translation>
@@ -1572,6 +1576,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="950520315903467048">缺少表示<ph name="DIRECTION" />的按键。<ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">对整个录音中的各种语音进行比较，以便在转写内容中体现出每位讲者的说话内容和说话时间</translation>
 <translation id="952992212772159698">未激活</translation>
 <translation id="95718197892796296">黏土</translation>
 <translation id="960719561871045870">运营商代码</translation>

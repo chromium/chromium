@@ -405,6 +405,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> को प्रिभ्यू। सक्रिय डेस्क।</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" को रिजोल्युसन बदलेर <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) बनाइएको छ। पुष्टि गरिएन भने अबको <ph name="TIMEOUT_SECONDS" /> मा यसअघिका सेटिङ रिस्टोर गरिने छन्।</translation>
 <translation id="2487915095798731898">सामेल हुनुहोस्</translation>
+<translation id="2496180316473517155">ब्राउजिङ इतिहास</translation>
 <translation id="2499445554382787206">डेस्कको प्रोफाइल मेनु। <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">स्टिकी कुञ्जीहरू</translation>
 <translation id="2504454902900101003">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया तथा सूचनाहरू हेर्ने सुविधा सेटअप गर्ने प्रक्रिया खारेज गर्नुहोस्</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">अनलाइन मार्फत साइन इन गर्नु पर्ने हुन्छ</translation>
 <translation id="2612072250312279703">एक्टिभिटी मनिटर</translation>
 <translation id="2612614436418177118">एप ग्रिडभित्र कुनै एपको आइकन सार्नुहोस्</translation>
+<translation id="2619052155095999743">घुसाउनुहोस्</translation>
 <translation id="2619326010008283367"><ph name="TOTAL_STEPS" /> मध्ये <ph name="STEP" /> औँ चरण। तपाईं लन्चरमा गई आफ्नो डिभाइसका सेटिङ भेट्टाउन सक्नुहुन्छ। वालपेपर परिवर्तन गर्ने तरिका वा स्क्रिन सेभर सेटअप गर्ने तरिका जसरी नै सेटिङमा गई <ph name="PRODUCT_NAME" /> कस्टमाइज गरी हेर्नुहोस्।</translation>
 <translation id="2620016719323068571">आफ्ना <ph name="CATEGORY" />, फाइल, एप र अन्य कुराहरू खोज्नुहोस्...</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">अन्य Wi-Fi नेटवर्कहरूमा सामेल हुनुहोस्</translation>
 <translation id="2705001408393684014">माइक टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">माथि</translation>
+<translation id="271033894570825754">नयाँ</translation>
 <translation id="2710984741481549981">विन्डोहरू लक गर्नुहोस्</translation>
 <translation id="2718395828230677721">रात्रिकालीन प्रकाश</translation>
 <translation id="2726420622004325180">हटस्पट सुविधा अन गर्न तपाईंको फोनमा अनिवार्य रूपमा मोबाइल डेटा उपलब्ध हुनु पर्छ</translation>
@@ -1086,6 +1089,7 @@
 <translation id="4890408602550914571">तपाईंको फोन नजिकै छ त्यसको ब्लुटुथ अन छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="4892981359753171125">फेस कन्ट्रोल</translation>
 <translation id="4895488851634969361">ब्याटरी पूर्ण भयो।</translation>
+<translation id="4902797682482387055">फोकस गर्न सिफारिस गरिएको कार्य</translation>
 <translation id="490375751687810070">ठाडो</translation>
 <translation id="490788395437447240">ब्याट्री <ph name="BATTERY_PERCENTAGE" />% छ</translation>
 <translation id="491504982845934899">डिभाइस सेटअप गरेपछि <ph name="NETWORK_NAME" /> एक्टिभेट गर्नुहोस्</translation>
@@ -1096,6 +1100,7 @@
 <translation id="492453977506755176">क्याप्चर मोड की</translation>
 <translation id="4925542575807923399">यस खाताको प्रशासकलाई एक बहुविध साइन-इन सत्रमा प्रथम साइन-इन गरिएको खाता हुन यस खातालाई आवश्यक छ।</translation>
 <translation id="493076006037866439">स्क्रिनमा जुम आउट गर्नुहोस्</translation>
+<translation id="4932733599132424254">मिति</translation>
 <translation id="4936329710968938986">सबैका लागि, अफ छ</translation>
 <translation id="4937170330762390348">तपाईं "स्पिच-टु-टेक्स्ट" का सहायताले आफ्नो आवाज प्रयोग गरेर टाइप गर्न सक्नुहुन्छ। तपाईं टेक्स्ट फिल्डमा भएका बेला "स्पिच-टु-टेक्स्ट" की थिच्नुहोस् वा स्क्रिनको पुछारमा रहेको माइक्रोफोन जनाउने आइकन चयन गर्नुहोस्। तपाईंको "स्पिच-टु-टेक्स्ट" को भाषा सेट गरी <ph name="LANGUAGE" /> बनाइएको छ। तपाईं "स्पिच-टु-टेक्स्ट" अफलाइन प्रयोग गर्न सक्नुहोस् भन्नाका लागि भाषाका वाक् पहिचानसम्बन्धी फाइलहरू डाउनलोड गरिने छन्। तपाईं जुनसुकै बेला "सेटिङ &gt; एक्सेसिबिलिटी" मा गई "स्पिच-टु-टेक्स्ट" को भाषा परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="4938176435186993759">सबै सिफारिसहरू लुकाउनुहोस्</translation>
@@ -1104,6 +1109,7 @@
 <translation id="495046168593986294">माथि स्क्रोल गर्नुहोस्</translation>
 <translation id="4950800194215951939">गेम खेल्ने उत्कृष्ट सुविधा कस्टमाइज गर्नुहोस्</translation>
 <translation id="4952936045814352993">अलार्मका आवाजहरू अफ गरिएका बेला फोन रहेको स्थान पत्ता लगाउने सुविधा उपलब्ध हुँदैन</translation>
+<translation id="4953585991029886728">पाठ सम्पादन गर्नुहोस्</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> का अनुसार तपाईंले <ph name="DEVICE_TYPE" /> मा अघिल्लो संस्करण रिस्टोर गर्नु पर्ने हुन्छ। तपाईंको डिभाइस रिसेट हुने छ र डिभाइसमा भएका सबै डेटा मेटाइने छ।</translation>
 <translation id="4961318399572185831">स्क्रिन cast गर्नुहोस्</translation>
 <translation id="4964188651935955085">तपाईंले ब्लुटुथ अफ गर्नुभयो भने तपाईंको <ph name="DEVICE_TYPE" /> बाट यो बाह्य डिभाइस डिस्कनेक्ट हुने छ:</translation>
@@ -1425,6 +1431,7 @@
 <translation id="6032620807120418574">फुल स्क्रिनमा रेकर्ड गर्न कुनै पनि ठाउँमा क्लिक गर्नुहोस्</translation>
 <translation id="6040071906258664830">माइक्रोफोन प्रयोग गरी रेकर्ड गर्ने सुविधा <ph name="STATE" /> छ</translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
+<translation id="6042308850641462728">थप</translation>
 <translation id="6043212731627905357">तपाईंको मनिटरले <ph name="DEVICE_TYPE" /> सँग राम्ररी काम गरिरहेको छैन (यस मनिटरलाई समर्थन छैन)।</translation>
 <translation id="6043994281159824495">अहिले साइन आउट गर्नुहोस्</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> वटा एपले प्रयोग गरेका छन्</translation>
@@ -1439,6 +1446,7 @@
 <translation id="6068258534237496331">भिडियो कलसम्बन्धी सेटिङ</translation>
 <translation id="6073451960410192870">रेकर्ड गर्न छाड्नुहोस्</translation>
 <translation id="6074087755403037157">बिटा च्यानल</translation>
+<translation id="6091929401758362855">प्लेलिस्ट: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">एड्मिनले अफ गर्नुभएको छ</translation>
 <translation id="6095008505822982596">स्पिचको गति</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> को VPN कनेक्सन हाल्नुहोस्</translation>
@@ -1891,6 +1899,7 @@
 <translation id="7748275671948949022">सेल्फमा भएको लन्चर बटन हाइलाइट गर्नुहोस्</translation>
 <translation id="7749443890790263709">डेस्कको अधिकतम सङ्ख्या पुगेको छ।</translation>
 <translation id="7749958366403230681">ExpressKey ४</translation>
+<translation id="7751260505918304024">सबै देखाउनुहोस्</translation>
 <translation id="7759183637555564029">तपाईं जुनसुकै बेला सेटिङमा गई "मलाई लेख्न मद्दत गर्नुहोस्" र "मलाई पढ्न मद्दत गर्नुहोस्" अफ गर्न सक्नुहुन्छ। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">सेलेक्ट टु स्पिक</translation>
 <translation id="7769299611924763557">तपाईंको GIF चाँडै नै तयार हुने छ</translation>
@@ -2024,6 +2033,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> तपाईंका प्रशासक यो सेटिङ मिलाउनुहुन्छ।</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> को जानकारीको डायलग खोल्नुहोस्</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> प्रयोग गर्दै</translation>
+<translation id="8168435359814927499">सामग्री</translation>
 <translation id="8185090165691050712">लक मोडको आकार बदल्न मेनु टगल गरी अन/अफ गर्नुहोस्</translation>
 <translation id="8192727139462702395">तपाईंले ब्लुटुथ अफ गर्नुभयो भने तपाईंको <ph name="DEVICE_TYPE" /> बाट यी बाह्य डिभाइसहरू डिस्कनेक्ट हुने छन्:</translation>
 <translation id="8198456017687137612">ट्याब कास्ट गरिँदै छ</translation>

@@ -35,6 +35,7 @@
 <translation id="1554731936187952550">Танд аюултай вебсайтуудын эсрэг Chrome-н хамгийн хүчирхэг аюулгүй байдлын хамгаалалт бий</translation>
 <translation id="1615715390546812898">Chrome-д дуу хоолойгоор хайна уу.</translation>
 <translation id="1657395063736185342">Chrome-с визуалууд хайгаарай.</translation>
+<translation id="1670609221633730681">Chrome-н зөвлөгөө: Хаяг оруулах хэсгийн байрлалаа сонгоно уу</translation>
 <translation id="1675955119303651351">Таны Chrome-н зарим өгөгдлийг одоогоор Google Бүртгэлд тань хадгалаагүй.
         Гарахаасаа өмнө хэдэн минут хүлээж үзнэ үү. Хэрэв та одоо гарвал энэ өгөгдлийг устгана.</translation>
 <translation id="1682483655351012182">Chrome-н өгөгдлөө синк хийх</translation>
@@ -113,12 +114,14 @@
 <translation id="3984746313391923992">Танай байгууллага танаас Chrome-с гарсан хэвээр байхыг шаардаж байна.</translation>
 <translation id="3988789688219830639">Google Chrome-д таны зураг, видеонд нэвтрэх зөвшөөрөл байхгүй байна. Та iOS Тохиргоо &gt; Нууцлал &gt; Зураг хэсэгт хандалтыг идэвхжүүлээрэй.</translation>
 <translation id="4064699917955374540">Google Бүртгэлдээ Chrome-н өгөгдлийг ашиглах болон хадгалахын тулд өөрийгөө мөн болохыг баталгаажуулна уу.</translation>
+<translation id="4066411101507716142">Өөрийн iPad-н үндсэн нүүрний суурилуулагчаас Chrome-д илүү хурдан хандана уу.</translation>
 <translation id="4067858366537947361">Chrome-н нууцлалтай табыг нээх</translation>
 <translation id="4093042601582616698">Chrome-г өгөгдмөл хөтчөө болгох уу?</translation>
 <translation id="417201473131094001">Chrome Канар дээр дэмжихгүй</translation>
 <translation id="424864128008805179">Chrome-с гарах уу?</translation>
 <translation id="4251174643044751591">Chrome-д Төлбөрийн хэрэгслүүдийн тохиргооны хуудсыг нээнэ.</translation>
 <translation id="4286914711740227883">Chrome дээр интернэтээр үзсэн өгөгдлийг устгах</translation>
+<translation id="430839890088895017">Chrome-н зөвлөгөө: Chrome-г суурилуулагч руу зөөнө үү</translation>
 <translation id="4453284704333523777">Chrome-н тохиргоог удирдах</translation>
 <translation id="4523886039239821078">Зарим нэмэлт апп-ууд нь Chrome-ыг эвдрэхэд хүргэдэг. Тиймээс тэдгээрийг утсгана уу:</translation>
 <translation id="4633328489441962921">Chrome-н шинэчлэлтийг шалгах боломжгүй байна</translation>
@@ -236,6 +239,7 @@
 <translation id="7581063337314642333">Chrome-н табын хүснэгтэд зочлох</translation>
 <translation id="7662994914830945754">Та Chrome-г хаанаас ч ашигласан бай табуудаа харахын тулд нэвтрээд, синк хийхийг асаана уу</translation>
 <translation id="7669869107155339016">Chrome-н Тохиргоо руу очно уу.</translation>
+<translation id="7683540977001394271">Өөрийн iPhone-н үндсэн нүүрний суурилуулагчаас Chrome-д илүү хурдан хандана уу.</translation>
 <translation id="769104993356536261">iOS-т Chrome-н үйлдлүүдийг ашиглана уу</translation>
 <translation id="7693590760643069321">Та одоо Chrome-г хэзээд ч мессеж, документ болон бусад аппын холбоосыг товшин ашиглах боломжтой.</translation>
 <translation id="7698568245838009292">Chrome камерт хандах хүсэлтэй байна</translation>

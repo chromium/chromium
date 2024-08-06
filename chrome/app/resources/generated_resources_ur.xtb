@@ -185,7 +185,6 @@
 <translation id="1124772482545689468">صارف</translation>
 <translation id="1125550662859510761">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> جیسا نظر آتا ہے (اصل)</translation>
 <translation id="1125921926864945797">وال پیپر اور اسٹائل</translation>
-<translation id="1126809382673880764">‏خطرناک ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے آپ کی حفاظت نہیں کرتی ہے۔ آپ کو اب بھی Gmail اور تلاش جیسی Google کی دیگر سروسز میں جہاں بھی دستیاب ہوگا محفوظ براؤزنگ کا تحفظ ملے گا۔</translation>
 <translation id="1128090040635299943">‏Linux فی الحال کنفیگر کیا جا رہا ہے۔ کنفیگریشن میں کچھ منٹس لگیں گے۔</translation>
 <translation id="1128591060186966949">سرچ انجن میں ترمیم کریں</translation>
 <translation id="1129348283834595293">سائبر پنک</translation>
@@ -629,7 +628,6 @@
 <translation id="1461041542809785877">کارکردگی</translation>
 <translation id="1461177659295855031">بُک مارکس بار فولڈر میں منتقل کریں</translation>
 <translation id="1461288887896722288">آپ نے ابھی ابھی ایک نظم کردہ اکاؤنٹ میں سائن ان کیا ہے، ایک نئی نظم کردہ پروفائل بنانے سے آپ کو اس اکاؤنٹ سے لنک کردہ کچھ وسائل تک رسائی حاصل ہو جائے گی۔</translation>
-<translation id="1461868306585780092">غیر محفوظ کنکشن استعمال کرنے سے پہلے متنبہ کریں</translation>
 <translation id="146219525117638703">‏ONC حالت</translation>
 <translation id="146220085323579959">انٹرنیٹ منقطع ہو گیا۔ براہ کرم اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="1462480037563370607">سائٹس کو دستی طور پر شامل کریں</translation>
@@ -4168,7 +4166,6 @@
 <translation id="3959747296451923142">سبسکرپشن کو ہٹانے کی تصدیق کریں</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> کے لیے مزید کارروائیاں</translation>
-<translation id="3962119236270174787">خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے معیاری حفاظت</translation>
 <translation id="3963753386716096475">مختلف فون، ٹیبلیٹ یا سیکیورٹی کلید استعمال کریں</translation>
 <translation id="3964480518399667971">سیلولر نیٹ ورک کو آف کریں</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> سے باہر نکلیں</translation>
@@ -5509,7 +5506,6 @@
 <translation id="4967571733817147990">ماؤس کے بٹنز کو حسب ضرورت بنائیں</translation>
 <translation id="4967852842111017386"><ph name="FEATURE_NAME" /> کے آلے کا نام</translation>
 <translation id="4971412780836297815">مکمل ہو جانے پر کھولیں</translation>
-<translation id="4971735654804503942">‏ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے تیز، فعال حفاظت۔ پاس ورڈز کی خلاف ورزیوں کے بارے میں آپ کو متنبہ کرتا ہے۔ براؤزنگ ڈیٹا کو Google کے پاس بھیجے جانے کی ضرورت ہوتی ہے۔</translation>
 <translation id="4972129977812092092">پرنٹر میں ترمیم کریں</translation>
 <translation id="4972164225939028131">غلط پاس ورڈ</translation>
 <translation id="4972737347717125191">سائٹس ورچوئل رئیلٹی آلات اور ڈیٹا استعمال کرنے کے لیے پوچھ سکتی ہیں</translation>
@@ -6135,6 +6131,7 @@
 <translation id="5435779377906857208"><ph name="HOST" /> کو ہمیشہ اپنے مقام تک رسائی کی اجازت دیں</translation>
 <translation id="5436492226391861498">پراکسی ٹنل کا انتظار ہے…</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> کو تلاش کریں:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> ونڈو اب <ph name="WINDOW_SIZE_PERCENT" /> چوڑا ہے <ph name="PANE_SIDE" /> پین اب <ph name="PANE_SIZE_PERCENT" /> چوڑا ہے۔</translation>
 <translation id="5440425659852470030">سائیڈ پینل بند کریں</translation>
 <translation id="544083962418256601">شارٹ کٹس بنائیں…</translation>
 <translation id="5441133529460183413">‏Chrome براؤزر سے ویب ایپ انسٹال کی گئی</translation>
@@ -6999,6 +6996,7 @@
 <translation id="6075075631258766703">فون کی توثیق کریں</translation>
 <translation id="6075731018162044558">‏افوہ!  سسٹم اس آلہ کیلئے ایک طویل مدتی API رسائی کا ٹوکن حاصل کرنے میں ناکام ہوگیا۔</translation>
 <translation id="6075907793831890935"><ph name="HOSTNAME" /> نام کے آلے کے ساتھ ڈیٹا کا تبادلہ کریں</translation>
+<translation id="6076092653254552547">سسٹم کی ترتیبات</translation>
 <translation id="6076491747490570887">ٹھنڈا خاکستری</translation>
 <translation id="6076576896267434196">"<ph name="EXTENSION_NAME" />" ایکسٹینشن آپ کے اکاؤنٹ تک رسائی حاصل کرنا چاہتا ہے</translation>
 <translation id="6077131872140550515">ترجیحی سے ہٹائیں</translation>
@@ -7820,6 +7818,7 @@
 <translation id="6691936601825168937">&amp;فارورڈ کریں</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 صفحہ}other{{COUNT} صفحات}}</translation>
 <translation id="6693820805264897502">موجودہ پاس ورڈز کو تبدیل کریں</translation>
+<translation id="6694634756612002311">اشتراک کا نظم کریں</translation>
 <translation id="6697172646384837537">منتخب کریں کہ اپنے پاس ورڈ کہاں سے درآمد کرنا ہے</translation>
 <translation id="6697492270171225480">صفحہ نہ مل پانے کی صورت میں ملتے جلتے صفحات کے لیے تجاویز دکھائیں</translation>
 <translation id="6697690052557311665">‏اشتراک کرنے کیلئے، فائلز ایپ میں کسی فولڈر پر دایاں کلک کریں، پھر "Linux کے ساتھ اشتراک کریں" منتخب کریں۔</translation>
@@ -8238,7 +8237,6 @@
 <translation id="6992554835374084304">املا کی بہتر جانچ آن کریں</translation>
 <translation id="6993000214273684335">بغیر نام والے گروپ سے ٹیب ہٹا دیا گیا - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">‏Chrome براؤزر کو اپ ڈیٹ کیا جا رہا ہے</translation>
-<translation id="6995899638241819463">اگر پاس ورڈز ڈیٹا کی خلاف ورزی میں افشاء ہوتے ہیں تو وارننگ حاصل کریں</translation>
 <translation id="6995984090981858039">‏ChromeOS آلے کی معلومات اور ڈیٹا پڑھیں</translation>
 <translation id="6996245928508281884">‏اپنے فون کے بلوٹوتھ اور Wi-Fi کو آن کریں</translation>
 <translation id="6996438701394974959">ڈسپلے اور ٹیکسٹ کے سائز میں اضافہ کریں</translation>
@@ -8536,6 +8534,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" /> کے گروپ میں موجود 1 سائٹ}other{<ph name="FPS_OWNER" /> کے گروپ میں موجود {MEMBERS} سائٹس}}</translation>
 <translation id="7225082563376899794">‏پاس ورڈز بھرتے وقت Windows Hello کا استعمال کریں</translation>
 <translation id="7225179976675429563">نیٹ ورک کی قسم غائب ہے</translation>
+<translation id="7227235818314667565">اشتراک کا نظم کریں</translation>
 <translation id="7227458944009118910">ذیل میں درج ایپس پروٹوکول لنکس کو بھی ہینڈل کر سکتی ہیں۔ دیگر ایپس اجازت طلب کریں گی۔</translation>
 <translation id="7228056665272655255">فنگر پرنٹ سیٹ اپ کرنے کے لیے، اپنے بچے سے کی بورڈ کے اوپر دائیں کونے میں موجود فنگر پرنٹ سینسر کو ٹچ کرنے کو کہیں۔ آپ کے بچے کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی اس <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="7228523857728654909">اسکرین لاک اور سائن ان</translation>
@@ -8584,6 +8583,7 @@
 <translation id="7258192266780953209">تبدیلیاں</translation>
 <translation id="7258225044283673131">ایپلیکیشن جواب نہیں دے رہی ہے۔ ایپ بند کرنے کیلئے، "زبردستی بند کریں" منتخب کریں۔</translation>
 <translation id="7260186537988033909">کیوسک اور سائنیج آلہ کا اندراج مکمل ہو گیا</translation>
+<translation id="7261217796641151584">گروپ کا اشتراک کریں</translation>
 <translation id="7261612856573623172">ٹیکسٹ ٹو اسپیچ کی سسٹم کی آواز</translation>
 <translation id="7262004276116528033">اس سائن ان سروس کی میزبانی <ph name="SAML_DOMAIN" />  کرتا ہے</translation>
 <translation id="7264695323040866038">تعاون یافتہ ویب لنکس کھولنے کے لیے ہمیشہ <ph name="APP" /> استعمال کریں؟</translation>
@@ -9375,6 +9375,7 @@
 <translation id="7826254698725248775">متنازع آلہ شناخت کنندہ۔</translation>
 <translation id="7828642077514646543">خرابی: سرٹیفکیٹ کو ڈی کوڈ کرنے سے قاصر</translation>
 <translation id="7829877209233347340">والدین سے اسکول اکاؤنٹ شامل کرنے کی اجازت دینے کے ليے سائن ان کرنے کو کہیں</translation>
+<translation id="7830276128493844263">سسٹم کی ترتیبات میں مقام آف ہے</translation>
 <translation id="7830833461614351956">کھولنے کے لیے <ph name="NUM_OF_FILES" /> فائلز کو <ph name="CLOUD_PROVIDER" /> میں کاپی کریں؟</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">محفوظ کردہ حسب ضرورت الفاظ یہاں ظاہر ہوں گے</translation>
@@ -10519,6 +10520,7 @@
 <translation id="8656888282555543604">بریل لاگنگ کو فعال کریں</translation>
 <translation id="8657393004602556571">کیا آپ تاثرات کو مسترد کرنا چاہتے ہیں؟</translation>
 <translation id="8657542881463614516">صفحات کے درمیان نیویگیٹ کرنے کے لیے سوائپ کے اشارے کا استعمال کریں</translation>
+<translation id="865936634714975126">‏صفحہ کی لوڈنگ پر اقسام منتخب کرنے کے لیے URL میں استفسار پیرامیٹر شامل کریں۔ مثال: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> رابطے</translation>
 <translation id="8659609431223166673">ونڈو نیچے کی طرف چلی گئی</translation>
 <translation id="8661290697478713397">لنک پوشید&amp;گی ونڈو میں کھولیں</translation>
@@ -10993,6 +10995,7 @@
 <translation id="8984694057134206124">آپ ہر ایک کو <ph name="MINUTES" /> منٹ کیلئے مرئی ہوں گے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">‏Steam برائے Chromebook میں خوش آمدید</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> دن پہلے فعال کیا گیا</translation>
+<translation id="8985561265504464578">حد کا پتہ لگائیں</translation>
 <translation id="8985661493893822002">براہ کرم اپنے <ph name="DEVICE_TYPE" /> میں سائن ان کرنے کے لیے انٹرنیٹ سے منسلک ہوں۔</translation>
 <translation id="8985661571449404298">غیر محفوظ فائل ڈاؤن لوڈ ہو گئی</translation>
 <translation id="8986362086234534611">بھول جائیں</translation>
@@ -11019,6 +11022,7 @@
 <translation id="8999560016882908256">سیکشن کے سِنٹیکس کی خرابی: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">اسکرین پر کم کردہ انیمیشنز</translation>
 <translation id="9000185763019430629">اپنے <ph name="DEVICE_TYPE" /> کے دائیں ہاتھ کی طرف موجود فنگر پرنٹ سینسر کو ٹچ کریں۔ آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
+<translation id="9003031149571024583">‏6 ہندسوں میں سے <ph name="NUM_DIGIT" /> ہندسے والا PIN درج کریں۔ آخری ہندسہ ہٹانے کے لیے بیک اسپیس یا حذف کریں کا استعمال کریں۔</translation>
 <translation id="9003185744423389627">آلے کے مینیجمنٹ کے سرور سے کنکشن <ph name="FAILURE_TIME" /> پر '<ph name="STATUS_TEXT" />' اسٹیٹس کے ساتھ ناکام ہو گیا</translation>
 <translation id="90033698482696970">‏دستیاب eSIM پروفائلز کے لیے خودکار طور پر اسکین کریں؟</translation>
 <translation id="9003647077635673607">سبھی ویب سائٹس پر اجازت دیں</translation>

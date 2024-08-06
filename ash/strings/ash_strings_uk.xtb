@@ -405,6 +405,7 @@
 <translation id="2486214324139475545">Попередній огляд робочого столу "<ph name="DESK_NAME" />". Він активний.</translation>
 <translation id="2486405091093637109">Роздільну здатність дисплея "<ph name="DISPLAY_NAME" />" змінено на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Якщо не підтвердити цю зміну, попередні налаштування відновляться через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Приєднатися</translation>
+<translation id="2496180316473517155">Історія веб-перегляду</translation>
 <translation id="2499445554382787206">Меню профілю робочого столу (<ph name="DESK_NAME" />).</translation>
 <translation id="2501920221385095727">Залипання клавіш</translation>
 <translation id="2504454902900101003">Відхилити налаштування перегляду нещодавніх фотографій, медіафайлів і сповіщень на телефоні</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">Необхідно ввійти в режимі онлайн</translation>
 <translation id="2612072250312279703">відстеження дій</translation>
 <translation id="2612614436418177118">Перемістити значок додатка в сітці</translation>
+<translation id="2619052155095999743">Вставити</translation>
 <translation id="2619326010008283367">Огляд: крок <ph name="STEP" /> з <ph name="TOTAL_STEPS" />. Налаштування пристрою можна знайти на Панелі запуску. У цьому розділі ви можете персоналізувати <ph name="PRODUCT_NAME" />, наприклад змінити фоновий малюнок або встановити заставку.</translation>
 <translation id="2620016719323068571">Шукайте <ph name="CATEGORY" />, файли, додатки тощо…</translation>
 <translation id="2620436844016719705">Система</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">Підключитися до інших мереж Wi-Fi</translation>
 <translation id="2705001408393684014">Перемикач мікрофона. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Вгору</translation>
+<translation id="271033894570825754">Новий</translation>
 <translation id="2710984741481549981">Заблокувати вікна</translation>
 <translation id="2718395828230677721">Нічний екран</translation>
 <translation id="2726420622004325180">Щоб увімкнути функцію "Точка доступу", на телефоні має бути мобільний Інтернет</translation>
@@ -1086,6 +1089,7 @@
 <translation id="4890408602550914571">Переконайтеся, що ваш телефон поблизу, а Bluetooth увімкнено.</translation>
 <translation id="4892981359753171125">Визначення обличчя</translation>
 <translation id="4895488851634969361">Акумулятор заряджений.</translation>
+<translation id="4902797682482387055">Рекомендоване завдання для режиму зосередження</translation>
 <translation id="490375751687810070">Вертикально</translation>
 <translation id="490788395437447240">Заряд акумулятора – <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="491504982845934899">Щоб активувати мережу <ph name="NETWORK_NAME" />, потрібно налаштувати пристрій</translation>
@@ -1096,6 +1100,7 @@
 <translation id="492453977506755176">Клавіша режиму зйомки</translation>
 <translation id="4925542575807923399">Адміністратору облікового запису потрібно, щоб цей обліковий запис був першим обліковим записом, з якого здійснено вхід під час сеансу паралельного входу.</translation>
 <translation id="493076006037866439">Віддалити екран</translation>
+<translation id="4932733599132424254">Дата</translation>
 <translation id="4936329710968938986">Усі, вимкнено</translation>
 <translation id="4937170330762390348">За допомогою функції диктування ви можете вводити текст голосом. У текстовому полі натисніть клавішу диктування або значок мікрофона внизу екрана. Вибрано таку мову диктування: <ph name="LANGUAGE" />. Буде завантажено файли для розпізнавання мовлення, щоб ви могли користуватися функцією диктування без підключення до мережі. Ви можете будь-коли змінити мову диктування в меню "Налаштування &gt; Функції доступності".</translation>
 <translation id="4938176435186993759">Приховати всі пропозиції</translation>
@@ -1104,6 +1109,7 @@
 <translation id="495046168593986294">Прокрутити вгору</translation>
 <translation id="4950800194215951939">Налаштуйте ігровий процес</translation>
 <translation id="4952936045814352993">Функція "Пошук телефона" не доступна, оскільки ви вимкнули сигнали сповіщень</translation>
+<translation id="4953585991029886728">Редагування тексту</translation>
 <translation id="4960324571663582548">За вимогами <ph name="MANAGER" />, потрібно повернутися до попередньої версії на пристрої <ph name="DEVICE_TYPE" />. Налаштування пристрою буде скинуто, а дані – видалено.</translation>
 <translation id="4961318399572185831">Трансляція екрана</translation>
 <translation id="4964188651935955085">Якщо вимкнути Bluetooth, від <ph name="DEVICE_TYPE" /> від’єднається такий зовнішній пристрій:</translation>
@@ -1425,6 +1431,7 @@
 <translation id="6032620807120418574">Натисніть будь-де, щоб записати весь екран</translation>
 <translation id="6040071906258664830">Мікрофон для запису <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Закрити</translation>
+<translation id="6042308850641462728">Більше</translation>
 <translation id="6043212731627905357">Ваш пристрій <ph name="DEVICE_TYPE" /> не підтримує цей монітор.</translation>
 <translation id="6043994281159824495">Вийти зараз</translation>
 <translation id="6045629311476491587">Використано в стількох додатках: <ph name="APP_COUNT" /></translation>
@@ -1891,6 +1898,7 @@
 <translation id="7748275671948949022">Виділити кнопку запуску на панелі</translation>
 <translation id="7749443890790263709">Ви додали максимальну кількість робочих столів.</translation>
 <translation id="7749958366403230681">Клавіша ExpressKey 4</translation>
+<translation id="7751260505918304024">Показати все</translation>
 <translation id="7759183637555564029">Ви можете будь-коли вимкнути функції "Допомога з текстом" і "Допомога із читанням" у налаштуваннях. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Читання з екрана</translation>
 <translation id="7769299611924763557">Зображення GIF буде готове незабаром</translation>
@@ -2024,6 +2032,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Цим налаштуванням керує адміністратор.</translation>
 <translation id="8155628902202578800">Відкрити вікно з інформацією про обліковий запис <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Використовується: <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Вміст</translation>
 <translation id="8185090165691050712">Відкрити або закрити меню режиму, що блокує змінення розміру додатка</translation>
 <translation id="8192727139462702395">Якщо вимкнути Bluetooth, від <ph name="DEVICE_TYPE" /> від’єднаються такі зовнішні пристрої:</translation>
 <translation id="8198456017687137612">Трансляція вкладки</translation>
@@ -2071,7 +2080,7 @@
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> і ваш телефон під’єднуватимуться автоматично</translation>
 <translation id="8380784334203145311">Доброї ночі!</translation>
 <translation id="8382715499079447151">Безпечний перегляд</translation>
-<translation id="8383614331548401927">Короткий огляд</translation>
+<translation id="8383614331548401927">З поверненням</translation>
 <translation id="8388750414311082622">Останній робочий стіл не можна видалити.</translation>
 <translation id="8394567579869570560">Батьки заблокували цей пристрій</translation>
 <translation id="8401850874595457088">Меню вибору мови</translation>

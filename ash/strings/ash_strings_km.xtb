@@ -405,6 +405,7 @@
 <translation id="2486214324139475545">ការមើល <ph name="DESK_NAME" /> សាកល្បង។ តុ​សកម្ម។</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" ត្រូវបាន​ប្ដូរទៅ​កម្រិតគុណភាព <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz)។ ប្រសិនបើ​មិនបញ្ជាក់ទេ ការកំណត់​ពីមុននឹងត្រូវបានស្ដារ​ក្នុងរយៈពេល <ph name="TIMEOUT_SECONDS" />។</translation>
 <translation id="2487915095798731898">ចូលរួម</translation>
+<translation id="2496180316473517155">ប្រវត្តិរុករក</translation>
 <translation id="2499445554382787206">ម៉ឺនុយ​កម្រងព័ត៌មាន​តុ។ <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">គ្រាប់ចុចស្អិត</translation>
 <translation id="2504454902900101003">ច្រានចោល​ការរៀបចំ​ការមើល​រូបថត មេឌៀ និង​ការជូនដំណឹង​ថ្មីៗ​លើ​ទូរសព្ទ​របស់​អ្នក</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">តម្រូវឱ្យ​ចូលគណនី​លើអ៊ីនធឺណិត</translation>
 <translation id="2612072250312279703">កម្មវិធីតាមដានសកម្មភាព</translation>
 <translation id="2612614436418177118">ផ្លាស់ទី​រូបកម្មវិធី​នៅក្នុង​ក្រឡាកម្មវិធី</translation>
+<translation id="2619052155095999743">ដាក់ចូល</translation>
 <translation id="2619326010008283367">ការណែនាំនៅជំហានទី <ph name="STEP" /> នៃ <ph name="TOTAL_STEPS" />។ អ្នកអាចរកឃើញ "ការកំណត់" ឧបករណ៍របស់អ្នកក្នុងកម្មវិធី​ចាប់ផ្ដើម។ សាកល្បងប្ដូរ <ph name="PRODUCT_NAME" /> របស់អ្នក​តាមបំណងនៅក្នុង "ការកំណត់" ដូចជា​ប្ដូរផ្ទាំង​រូបភាព​របស់អ្នក ឬ​កំណត់ធាតុរក្សាអេក្រង់។</translation>
 <translation id="2620016719323068571">ស្វែងរក <ph name="CATEGORY" /> ឯកសារ កម្មវិធី និងអ្វីៗជាច្រើនទៀត...</translation>
 <translation id="2620436844016719705">ប្រព័ន្ធ</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">ភ្ជាប់​បណ្ដាញ Wi-Fi ផ្សេងទៀត</translation>
 <translation id="2705001408393684014">បិទ/បើកមីក្រូហ្វូន។ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
+<translation id="271033894570825754">ថ្មី</translation>
 <translation id="2710984741481549981">ចាក់សោ​វិនដូ</translation>
 <translation id="2718395828230677721">ពន្លឺពេលយប់</translation>
 <translation id="2726420622004325180">ទូរសព្ទ​របស់អ្នក​ត្រូវតែមាន​ទិន្នន័យទូរសព្ទចល័ត ដើម្បីផ្ដល់​ហតស្ប៉ត</translation>
@@ -558,6 +561,7 @@
 <translation id="3077734595579995578">SHIFT</translation>
 <translation id="3081696990447829002">ពង្រីក​ម៉ឺនុយ​</translation>
 <translation id="3087734570205094154">ខាងក្រោម</translation>
+<translation id="3090214513075567547">បើក​ម៉ឺនុយ​បរិបទ</translation>
 <translation id="3090989381251959936">បិទ/បើក <ph name="FEATURE_NAME" />។ <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">ជំពាក់</translation>
 <translation id="3095995014811312755">កំណែ</translation>
@@ -1097,6 +1101,7 @@
 <translation id="492453977506755176">គ្រាប់ចុចមុខងារថត</translation>
 <translation id="4925542575807923399">អ្នកគ្រប់គ្រងគណនីនេះតម្រូវឲ្យគណនីនេះជាគណនីចូលមុននៅក្នុងវេនចូលច្រើនគណនី។</translation>
 <translation id="493076006037866439">បង្រួម​អេក្រង់</translation>
+<translation id="4932733599132424254">កាលបរិច្ឆេទ</translation>
 <translation id="4936329710968938986">អ្នកគ្រប់គ្នា បិទ</translation>
 <translation id="4937170330762390348">តាមរយៈ​ការសរសេរ​តាមអាន អ្នកអាច​វាយបញ្ចូល​ដោយប្រើ​សំឡេង​របស់អ្នក។ ចុចគ្រាប់ចុច​សរសេរ​តាមអាន ឬ​ជ្រើសរើស​រូបមីក្រូហ្វូន​នៅផ្នែកខាងក្រោមនៃ​អេក្រង់ នៅពេល​ដែលអ្នក​ស្ថិតនៅ​កន្លែងបញ្ចូល​អក្សរ។ ភាសា​សរសេរ​តាមអាន​របស់អ្នក​ត្រូវបាន​កំណត់ទៅជា​ភាសា<ph name="LANGUAGE" />។ ឯកសារនៃ​ការនិយាយ​នឹងត្រូវបាន​ទាញយក ដូច្នេះ​អ្នកអាចប្រើ​ការសរសេរ​តាមអានបាន​ដោយគ្មានអ៊ីនធឺណិត។ អ្នកអាចប្ដូរ​ភាសា​សរសេរ​តាមអាន​នៅពេលណាក៏បាន​នៅក្នុង​ការកំណត់ &gt; ភាពងាយស្រួល។</translation>
 <translation id="4938176435186993759">លាក់ការ​ណែនាំទាំងអស់</translation>
@@ -1105,6 +1110,7 @@
 <translation id="495046168593986294">រំកិលឡើងលើ</translation>
 <translation id="4950800194215951939">ប្ដូរ​បទពិសោធ​លេងហ្គេម​របស់អ្នក​តាមបំណង</translation>
 <translation id="4952936045814352993">មុខងារ​កំណត់ទីតាំង​ទូរសព្ទ​មិនអាចប្រើបានទេ នៅពេលបិទ​សំឡេងម៉ោងរោទ៍</translation>
+<translation id="4953585991029886728">កែប្រែអត្ថបទ</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> តម្រូវឱ្យ​អ្នកបន្ទាបកំណែ <ph name="DEVICE_TYPE" /> របស់អ្នក។ ឧបករណ៍​របស់អ្នកនឹង​កំណត់​ឡើងវិញ ហើយទិន្នន័យ​ទាំងអស់​នឹងត្រូវបានលុប។</translation>
 <translation id="4961318399572185831">ខាសអេក្រង់</translation>
 <translation id="4964188651935955085">នៅពេលអ្នក​បិទប៊្លូធូស ឧបករណ៍​ខាងក្រៅនេះ​នឹងផ្ដាច់ពី <ph name="DEVICE_TYPE" /> របស់អ្នក៖</translation>
@@ -1426,6 +1432,7 @@
 <translation id="6032620807120418574">ចុចកន្លែង​ណាមួយ ដើម្បីថត​អេក្រង់ពេញ</translation>
 <translation id="6040071906258664830">ថតសំឡេង​ដោយ​ប្រើ​មីក្រូហ្វូន <ph name="STATE" /></translation>
 <translation id="6040143037577758943">បិទ</translation>
+<translation id="6042308850641462728">ច្រើនទៀត</translation>
 <translation id="6043212731627905357">ម៉ូនីទ័រ​នេះ​មិន​ត្រូវ​គ្នា​ជាមួយ​ <ph name="DEVICE_TYPE" /> របស់​អ្នក​ទេ​ (មិន​ស្គាល់​ម៉ូនីទ័រ)។</translation>
 <translation id="6043994281159824495">ចាកចេញឥឡូវនេះ</translation>
 <translation id="6045629311476491587">បាន​ប្រើដោយ​កម្មវិធី <ph name="APP_COUNT" /></translation>
@@ -1440,6 +1447,7 @@
 <translation id="6068258534237496331">ការគ្រប់គ្រង​ការហៅជាវីដេអូ</translation>
 <translation id="6073451960410192870">បញ្ឈប់ការថត</translation>
 <translation id="6074087755403037157">បណ្ដាញបេតា</translation>
+<translation id="6091929401758362855">កម្រង​សំឡេង៖ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">បានបិទដោយអ្នកគ្រប់គ្រង</translation>
 <translation id="6095008505822982596">ល្បឿននៃការនិយាយ</translation>
 <translation id="6095425951508823973">បញ្ចូលការតភ្ជាប់ជាមួយ <ph name="PROVIDER" /></translation>
@@ -1891,6 +1899,7 @@
 <translation id="7748275671948949022">រំលេច​ប៊ូតុង​កម្មវិធី​ចាប់ផ្ដើមនៅលើធ្នើរ</translation>
 <translation id="7749443890790263709">ចំនួនតុ​បាន​ឈានដល់កម្រិតអតិបរមាហើយ។</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">បង្ហាញទាំងអស់</translation>
 <translation id="7759183637555564029">អ្នក​អាចបិទ "ជួយខ្ញុំ​ក្នុងការ​សរសេរ" និង "ជួយខ្ញុំ​ក្នុងការ​អាន" នៅពេលណាក៏បាន​នៅក្នុង "ការកំណត់"។ <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">ជ្រើសរើសដើម្បីអាន</translation>
 <translation id="7769299611924763557">GIF របស់​អ្នកនឹង​រួចរាល់​ក្នុ​ងពេល​ឆាប់ៗ​នេះ</translation>
@@ -2024,6 +2033,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ការកំណត់​នេះត្រូវបានគ្រប់គ្រងដោយអ្នកគ្រប់គ្រងរបស់អ្នក។</translation>
 <translation id="8155628902202578800">បើក​ប្រអប់ព័ត៌មាន​សម្រាប់ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">កំពុង​ប្រើ <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">មាតិកា</translation>
 <translation id="8185090165691050712">បិទ/បើក​ម៉ឺនុយសម្រាប់ប្ដូរ​ទំហំ​មុខងារ​ចាក់សោ</translation>
 <translation id="8192727139462702395">នៅពេលអ្នក​បិទប៊្លូធូស ឧបករណ៍​ខាងក្រៅ​ទាំងនេះ​នឹងផ្ដាច់ពី <ph name="DEVICE_TYPE" /> របស់អ្នក៖</translation>
 <translation id="8198456017687137612">កំពុងបញ្ជូនផ្ទាំង</translation>

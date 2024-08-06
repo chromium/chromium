@@ -42,6 +42,7 @@
 <translation id="2801787514987684416">ಸ್ಟೋರ್ ಮಾಹಿತಿಯನ್ನು ನೋಡುವುದೇ?</translation>
 <translation id="2928243913527329289">Google | ಈ ಸ್ಟೋರ್ ಕುರಿತು</translation>
 <translation id="2977480621796371840">ಗುಂಪಿನಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
+<translation id="29919168204617356">ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಮುಚ್ಚಲಾಗುತ್ತದೆ. ನೀವು ಅವುಗಳನ್ನು ಯಾವಾಗಲೂ ಇತಿಹಾಸದಲ್ಲಿ ಕಾಣಬಹುದು.</translation>
 <translation id="3008554597174452548">ಉತ್ಪನ್ನವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="3026391124054406831">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ವ್ಯವಸ್ಥಿತಗೊಳಿಸಲು ಗುಂಪುಗಳನ್ನು ರಚಿಸಿ.</translation>
 <translation id="3051031624272448591">ನೀವು ಯಾವಾಗಲೂ ಅವುಗಳನ್ನು ಇತಿಹಾಸದಲ್ಲಿ ಮರಳಿ ಪಡೆಯಬಹುದು</translation>
@@ -52,6 +53,7 @@
 <translation id="3322827343001922122">ಟ್ಯಾಬ್ ಗುಂಪು <ph name="TITLE_OF_GROUP" /> ಗಾಗಿ ಟ್ಯಾಬ್ ಗುಂಪಿನ ಕ್ರಿಯೆಯ ಮೆನುವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="3328308545011660196">ಸಲಹೆ: <ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು ಸಂಬಂಧಿಸಿರುವ ಹಾಗೆ ಕಾಣುತ್ತಿದೆ. ಅವುಗಳನ್ನು ಗುಂಪು ಮಾಡಬೇಕೆ?</translation>
 <translation id="3547352561153509682">ಇದು <ph name="USER_EMAIL" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿರುವ ಎಲ್ಲಾ ಸಾಧನಗಳಿಂದ ಗುಂಪನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
+<translation id="3613492231657284463">ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳ ಡೈಲಾಗ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ಶೀಟ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುವ ಕುರಿತ ಪೂರ್ವವೀಕ್ಷಣೆಯ ಥಂಬ್‌ನೇಲ್.</translation>
 <translation id="381219490185664296">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ರದ್ದು ಮಾಡಬೇಕೆ?</translation>
@@ -139,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google ನಿಂದ <ph name="REVIEWS_COUNT_ONE" /> ವಿಮರ್ಶೆ}one{Google ನಿಂದ <ph name="REVIEWS_COUNT_MANY" /> ವಿಮರ್ಶೆಗಳು}other{Google ನಿಂದ <ph name="REVIEWS_COUNT_MANY" /> ವಿಮರ್ಶೆಗಳು}}</translation>
 <translation id="7559245342362162951">ಗುಂಪಿನ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪೂರ್ಣ ಸ್ಕ್ರೀನ್‌ ಗ್ರಿಡ್‌ನಲ್ಲಿ ತೋರಿಸಿ</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
+<translation id="7688386659311034820">ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳ ಡೈಲಾಗ್</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ}one{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ}other{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ}}</translation>
 <translation id="7773714564112603605">ಟ್ಯಾಬ್ ತೆಗೆದುಹಾಕಿ ಮತ್ತು ಗುಂಪನ್ನು ಅಳಿಸಿ</translation>
 <translation id="7792771145871471484">ಸಲಹೆಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>

@@ -185,7 +185,6 @@
 <translation id="1124772482545689468">المستخدم</translation>
 <translation id="1125550662859510761">‏تبدو كـ <ph name="WIDTH" /> x <ph name="HEIGHT" /> (أصلية)</translation>
 <translation id="1125921926864945797">الخلفية والتصميم</translation>
-<translation id="1126809382673880764">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. وستظل تستفيد من ميزة "التصفّح الآمن" عند توفّرها في خدمات Google الأخرى، مثل Gmail و"بحث Google".</translation>
 <translation id="1128090040635299943">‏يجري الآن إعداد نظام التشغيل Linux. ستستغرق عملية الإعداد بضع دقائق.</translation>
 <translation id="1128591060186966949">تعديل محرّك البحث</translation>
 <translation id="1129348283834595293">خيال علمي سيبراني</translation>
@@ -632,7 +631,6 @@
 <translation id="1461041542809785877">الأداء</translation>
 <translation id="1461177659295855031">النقل إلى مجلد "شريط الإشارات"</translation>
 <translation id="1461288887896722288">لقد سجّلت دخولك إلى حساب مُدار. في حال إنشاء ملف شخصي مُدار جديد، ستتمكَّن من الوصول إلى بعض الموارد المرتبطة بهذا الحساب.</translation>
-<translation id="1461868306585780092">عرض تحذير قبل استخدام الاتصالات غير الآمنة</translation>
 <translation id="146219525117638703">‏حالة ONC</translation>
 <translation id="146220085323579959">تم قطع الاتصال بالإنترنت. يُرجى التحقق من الاتصال بالإنترنت وإعادة المحاولة.</translation>
 <translation id="1462480037563370607">إضافة المواقع الإلكترونية يدويًا</translation>
@@ -4171,7 +4169,6 @@
 <translation id="3959747296451923142">تأكيد إزالة الاشتراك</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">مزيد من الإجراءات لـ "<ph name="IBAN_DESCRIPTION" />"</translation>
-<translation id="3962119236270174787">يوفّر لك هذا الخيار حماية عادية من الإضافات وعمليات التنزيل والمواقع الإلكترونية الضارة.</translation>
 <translation id="3963753386716096475">استخدام هواتف أو أجهزة لوحية أو مفاتيح أمان مختلفة</translation>
 <translation id="3964480518399667971">إيقاف شبكة الجوّال</translation>
 <translation id="3965965397408324205">الخروج من <ph name="PROFILE_NAME" /></translation>
@@ -5513,7 +5510,6 @@
 <translation id="4967571733817147990">تخصيص أزرار الماوس</translation>
 <translation id="4967852842111017386">اسم الجهاز الذي يستخدم ميزة "<ph name="FEATURE_NAME" />"</translation>
 <translation id="4971412780836297815">فتح عند اكتمال التنزيل</translation>
-<translation id="4971735654804503942">‏يوفّر حماية استباقية وسريعة من الإضافات وعمليات التنزيل والمواقع الإلكترونية الضارة، ويُحذّرك من عمليات اختراق كلمة المرور. يتطلّب إرسال بيانات التصفّح إلى Google.</translation>
 <translation id="4972129977812092092">تعديل الطابعة</translation>
 <translation id="4972164225939028131">كلمة مرور غير صحيحة</translation>
 <translation id="4972737347717125191">السماح للمواقع الإلكترونية بطلب استخدام أجهزة الواقع الافتراضي وبياناتها</translation>
@@ -6141,6 +6137,7 @@
 <translation id="5435779377906857208">السماح دائمًا للنطاق <ph name="HOST" /> بالوصول إلى موقعك الجغرافي</translation>
 <translation id="5436492226391861498">في انتظار قناة الخادم...</translation>
 <translation id="5436510242972373446">البحث في الموقع <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616">‏النافذة <ph name="WINDOW_SIDE" /> أصبحت الآن بعرض ‎<ph name="WINDOW_SIZE_PERCENT" /> من الشاشة، واللوحة <ph name="PANE_SIDE" /> أصبحت الآن بعرض ‎<ph name="PANE_SIZE_PERCENT" /> من الشاشة.</translation>
 <translation id="5440425659852470030">إغلاق اللوحة الجانبية</translation>
 <translation id="544083962418256601">إنشاء اختصارات...</translation>
 <translation id="5441133529460183413">‏تطبيقات الويب المثبَّتة من متصفّح Chrome</translation>
@@ -8254,7 +8251,6 @@
 <translation id="6992554835374084304">تفعيل التدقيق الإملائي المُحسَّن</translation>
 <translation id="6993000214273684335">تمت إزالة علامة التبويب من مجموعة لم تتم تسميتها وتحتوي على <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="6993050154661569036">‏جارٍ تحديث متصفّح Chrome</translation>
-<translation id="6995899638241819463">التحذير في حال الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
 <translation id="6995984090981858039">‏الاطّلاع على معلومات وبيانات جهاز ChromeOS</translation>
 <translation id="6996245928508281884">‏فعِّل البلوتوث وشبكة Wi-Fi على هاتفك.</translation>
 <translation id="6996438701394974959">زيادة حجم شاشة العرض والنص</translation>
@@ -8554,6 +8550,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{موقع إلكتروني واحد في مجموعة <ph name="FPS_OWNER" />}zero{{MEMBERS} موقع إلكتروني في مجموعة <ph name="FPS_OWNER" />}two{موقعان إلكترونيان ({MEMBERS}) في مجموعة <ph name="FPS_OWNER" />}few{{MEMBERS} مواقع إلكترونية في مجموعة <ph name="FPS_OWNER" />}many{{MEMBERS} موقعًا إلكترونيًا في مجموعة <ph name="FPS_OWNER" />}other{{MEMBERS} موقع إلكتروني في مجموعة <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">‏استخدام برنامج Windows Hello عند ملء كلمات المرور</translation>
 <translation id="7225179976675429563">نوع الشبكة مفقود</translation>
+<translation id="7227235818314667565">إدارة المشاركة</translation>
 <translation id="7227458944009118910">يمكن للتطبيقات المدرَجة أدناه التعامل مع روابط البروتوكولات أيضًا. وستطلب التطبيقات الأخرى الحصول على الإذن.</translation>
 <translation id="7228056665272655255">لضبط إعدادات بصمة الإصبع، اطلب من طفلك لمس أداة استشعار بصمة الإصبع في أعلى يمين لوحة المفاتيح. يتم تخزين بيانات بصمة إصبع طفلك بشكل آمن وتظلّ محفوظة على جهاز <ph name="DEVICE_TYPE" /> هذا فقط.</translation>
 <translation id="7228523857728654909">قفل الشاشة وتسجيل الدخول</translation>
@@ -8602,6 +8599,7 @@
 <translation id="7258192266780953209">تحويل حالات الأحرف</translation>
 <translation id="7258225044283673131">التطبيق لا يستجيب. اختَر "فرض الإغلاق" لإغلاق التطبيق.</translation>
 <translation id="7260186537988033909">اكتمل تسجيل الجهاز في وضع الكشك واللوحات الرقمية.</translation>
+<translation id="7261217796641151584">مشاركة المجموعة</translation>
 <translation id="7261612856573623172">اسم الصوت المستخدَم في ميزة "تحويل النص إلى كلام" في النظام</translation>
 <translation id="7262004276116528033">يستضيف <ph name="SAML_DOMAIN" /> خدمة تسجيل الدخول هذه.</translation>
 <translation id="7264695323040866038">هل تريد استخدام التطبيق <ph name="APP" /> دائمًا لفتح روابط الويب المتوافقة؟</translation>
@@ -10539,6 +10537,7 @@
 <translation id="8656888282555543604">تفعيل ميزة تسجيل لغة برايل</translation>
 <translation id="8657393004602556571">هل تريد تجاهل الملاحظات؟</translation>
 <translation id="8657542881463614516">استخدام إيماءة التمرير السريع للتنقّل بين الصفحات</translation>
+<translation id="865936634714975126">‏أضِف مَعلمة لطلب البحث في عنوان URL لاختيار الأنواع المطلوب عرضها عند تحميل الصفحة. مثال: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">جهات الاتصال التي تستخدم ميزة "<ph name="FEATURE_NAME" />"</translation>
 <translation id="8659609431223166673">تم نقل النافذة إلى الأسفل</translation>
 <translation id="8661290697478713397">ف&amp;تح رابط في نافذة التصفح المتخفي</translation>
@@ -11434,7 +11433,7 @@
 <translation id="983531994960412650">‫<ph name="WINDOW_TITLE" /> - يتم التسجيل من الكاميرا والميكروفون.</translation>
 <translation id="984275831282074731">طرق الدفع</translation>
 <translation id="984705303330760860">إضافة لغات إلى ميزة التدقيق الإملائي</translation>
-<translation id="98515147261107953">أفقي</translation>
+<translation id="98515147261107953">منظر طبيعي</translation>
 <translation id="987068745968718743">‏نظام Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">عام</translation>
 <translation id="987475089238841621">تُستخدَم حِزم اللغات مع ميزة "النسخ النصي التلقائي" ويتم تخزينها على جهازك.</translation>

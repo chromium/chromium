@@ -339,7 +339,6 @@
 <translation id="2645380101799517405">Басқару элементтері</translation>
 <translation id="2652403576514495859">мәтінді дауыспен енгізуді қосу немесе ауыстыру</translation>
 <translation id="2653659639078652383">Жіберу</translation>
-<translation id="2653807227758181366">Жасағыңыз келетін тұсқағазды сипаттаңыз немесе нұсқау үлгісін қолданыңыз.</translation>
 <translation id="2654647726140493436">Жаңартылып жатқан кезде, <ph name="DEVICE_TYPE" /> құрылғысын өшірмеңіз немесе <ph name="DEVICE_TYPE" /> қуат кабелін ажыратпаңыз.</translation>
 <translation id="2656001153562991489">Chromebook Plus-қа арналған</translation>
 <translation id="2665671725390405060">Айтылуын тыңдау</translation>
@@ -1366,6 +1365,7 @@
 <translation id="8208861521865154048">Бонустар</translation>
 <translation id="8226628635270268143">Өзіңізге ұнайтын фотосуреттер мен альбомдарды таңдау</translation>
 <translation id="8227119283605456246">Файл тіркеу</translation>
+<translation id="8227488649450500937">Осы нұсқаулардың бірін қолданып көріңіз немесе <ph name="BEGIN_LINK_PROMPTING_GUIDE" />нұсқау жазу нұсқаулығын<ph name="END_LINK_PROMPTING_GUIDE" /> қараңыз</translation>
 <translation id="8230672074305416752">Әдепкі желі шлюзінің байланысы тексерілмеді.</translation>
 <translation id="8238771987802558562">APN таңдау</translation>
 <translation id="8246209727385807362">Белгісіз оператор</translation>

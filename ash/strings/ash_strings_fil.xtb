@@ -405,6 +405,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2486214324139475545">Preview ng <ph name="DESK_NAME" />. Aktibong desk.</translation>
 <translation id="2486405091093637109">Pinalitan ang "<ph name="DISPLAY_NAME" />" at ginawang <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) na resolution. Kung hindi kukumpirmahin, mare-restore ang mga nakaraang setting sa loob ng <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Sumali</translation>
+<translation id="2496180316473517155">History ng Pag-browse</translation>
 <translation id="2499445554382787206">Menu ng profile sa desk. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Mga sticky key</translation>
 <translation id="2504454902900101003">I-dismiss ang pag-set up sa pagtingin sa mga kamakailang larawan, media, at notification ng iyong telepono</translation>
@@ -436,6 +437,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2607678425161541573">Kailangang mag-sign in online</translation>
 <translation id="2612072250312279703">activity monitor</translation>
 <translation id="2612614436418177118">Ilipat ang icon ng isang app sa grid ng app</translation>
+<translation id="2619052155095999743">Ipasok</translation>
 <translation id="2619326010008283367">Hakbang <ph name="STEP" /> sa <ph name="TOTAL_STEPS" /> ng tour. Makikita mo ang Mga Setting ng iyong device sa Launcher. Subukang i-customize ang iyong <ph name="PRODUCT_NAME" /> sa Mga Setting tulad ng pagpapalit ng wallpaper mo o pagtatakda ng screen saver.</translation>
 <translation id="2620016719323068571">Hanapin ang iyong mga <ph name="CATEGORY" />, file, app, at higit pa...</translation>
 <translation id="2620436844016719705">System</translation>
@@ -462,6 +464,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2704781753052663061">Sumali sa iba pang Wi-Fi network</translation>
 <translation id="2705001408393684014">I-toggle ang Mikropono. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
+<translation id="271033894570825754">Bago</translation>
 <translation id="2710984741481549981">I-lock ang mga window</translation>
 <translation id="2718395828230677721">Night Light</translation>
 <translation id="2726420622004325180">Dapat na mayroong mobile data ang iyong telepono para makapagbigay ito ng hotspot</translation>
@@ -1086,6 +1089,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4890408602550914571">Tiyaking nasa malapit ang iyong telepono at naka-on ang Bluetooth nito.</translation>
 <translation id="4892981359753171125">Kontrol gamit ang mukha</translation>
 <translation id="4895488851634969361">Puno na ang baterya.</translation>
+<translation id="4902797682482387055">Iminumungkahing gawain na pagtutuunan ng pansin</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% ang baterya</translation>
 <translation id="491504982845934899">I-activate ang <ph name="NETWORK_NAME" /> pagkatapos ng pag-set up ng device</translation>
@@ -1096,6 +1100,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="492453977506755176">Key para sa capture mode</translation>
 <translation id="4925542575807923399">Kinakailangan ng administrator sa account na ito na ang account na ito ang unang i-sign in na account sa isang session ng multiple na pag-sign in.</translation>
 <translation id="493076006037866439">Mag-zoom out sa screen</translation>
+<translation id="4932733599132424254">Petsa</translation>
 <translation id="4936329710968938986">Lahat, naka-off</translation>
 <translation id="4937170330762390348">Sa pamamagitan ng dictation, makakapag-type ka gamit ang iyong boses. Pindutin ang dictation key o piliin ang icon na mikropono sa ibaba ng screen kapag nasa isang field ng text ka. Nakatakda sa <ph name="LANGUAGE" /> ang wika ng dictation mo. Mada-download ang mga file ng speech para magamit mo offline ang dictation. Puwede mong palitan ang wika ng dictation anumang oras sa Mga Setting &gt; Accessibility.</translation>
 <translation id="4938176435186993759">I-hide ang lahat ng suhestyon</translation>
@@ -1104,6 +1109,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="495046168593986294">Mag-scroll pataas</translation>
 <translation id="4950800194215951939">I-customize ang iyong experience sa gaming</translation>
 <translation id="4952936045814352993">Hindi available ang paghanap sa telepono kapag naka-disable ang mga tunog ng alarm</translation>
+<translation id="4953585991029886728">I-edit ang text</translation>
 <translation id="4960324571663582548">Inaatasan ka ng <ph name="MANAGER" /> na i-roll back ang iyong <ph name="DEVICE_TYPE" />. Mare-reset ang iyong device at made-delete ang lahat ng data.</translation>
 <translation id="4961318399572185831">I-cast ang screen</translation>
 <translation id="4964188651935955085">Kapag in-off mo ang Bluetooth, madidiskonekta ang external na device na ito sa iyong <ph name="DEVICE_TYPE" />:</translation>
@@ -1425,6 +1431,7 @@ Walang nakakonektang device.</translation>
 <translation id="6032620807120418574">Mag-click kahit saan para i-record ang full screen</translation>
 <translation id="6040071906258664830">I-record ang mikropono <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Isara</translation>
+<translation id="6042308850641462728">Marami pang iba</translation>
 <translation id="6043212731627905357">Hindi gumagana ang monitor na ito sa iyong <ph name="DEVICE_TYPE" /> (hindi sinusuportahan ang monitor).</translation>
 <translation id="6043994281159824495">Mag-sign out ngayon</translation>
 <translation id="6045629311476491587">Ginagamit ng <ph name="APP_COUNT" /> (na) app</translation>
@@ -1890,6 +1897,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7748275671948949022">I-highlight ang button ng Launcher sa shelf</translation>
 <translation id="7749443890790263709">Naabot ang maximum na bilang ng desk.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Ipakita lahat</translation>
 <translation id="7759183637555564029">Puwede mong i-off ang Tulungan akong magsulat at Tulungan akong magbasa sa anumang oras sa Mga Setting. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7769299611924763557">Handa na ang iyong GIF sa ilang sandali</translation>
@@ -2023,6 +2031,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Pinapamahalaan ng iyong administrator ang setting na ito.</translation>
 <translation id="8155628902202578800">Buksan ang dialog ng impormasyon para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Gamit ang <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Content</translation>
 <translation id="8185090165691050712">I-on/i-off ang menu para sa resize lock mode</translation>
 <translation id="8192727139462702395">Kapag in-off mo ang Bluetooth, madidiskonekta ang mga external na device na ito sa iyong <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Ikina-cast ang tab</translation>

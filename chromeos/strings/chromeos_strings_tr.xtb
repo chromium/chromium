@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">Zayıf sinyal</translation>
 <translation id="1300115153046603471">APN, varsayılan ve <ph name="ATTACH" /> türünde.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">Oluşturulma tarihi</translation>
 <translation id="1308754910631152188">Güncelleniyor (%<ph name="PERCENTAGE_VALUE" /> tamamlandı)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> dakika</translation>
 <translation id="1310380015393971138">Kullanılabilir <ph name="NETWORK_NAME" /> ağı yok</translation>
@@ -339,7 +340,6 @@
 <translation id="2645380101799517405">Denetimler</translation>
 <translation id="2652403576514495859">dikteyi etkinleştirin veya devre dışı bırakın</translation>
 <translation id="2653659639078652383">Gönder</translation>
-<translation id="2653807227758181366">Oluşturmak istediğiniz duvar kağıdını açıklayın veya örnek istem kullanın</translation>
 <translation id="2654647726140493436">Güncelleme devam ederken <ph name="DEVICE_TYPE" /> cihazınızı kapatmayın veya <ph name="DEVICE_TYPE" /> güç kablosunu çıkarmayın</translation>
 <translation id="2656001153562991489">Chromebook Plus'a özel</translation>
 <translation id="2665671725390405060">Telaffuzunu dinleyin</translation>
@@ -506,6 +506,7 @@
 <translation id="3708186454126126312">Daha önce bağlanılmış cihazlar</translation>
 <translation id="3715651196924935218">Kayan moddan çık</translation>
 <translation id="3716250181321371108">Kontrol oluştur</translation>
+<translation id="3716830479327464973">Buna izin verdiğinizde Kaydedici, ses kayıtlarınızı analiz ederek şunları yapar:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> yorum)</translation>
 <translation id="3748026146096797577">Bağlı Değil</translation>
 <translation id="3749289110408117711">Dosya adı</translation>
@@ -532,6 +533,7 @@
 <translation id="3869314628814282185">tül</translation>
 <translation id="387301095347517405">Pilinizin tam şarj döngüsünden geçme sayısı</translation>
 <translation id="3877066159641251281">Çeviriyi dinle</translation>
+<translation id="3880601782712134623">Farklı sesleri otomatik olarak algılar ve her birine Konuşmacı 1 ya da Konuşmacı 2 gibi genel bir etiket atar.</translation>
 <translation id="3885327323343477505">Ekran koruyucuyu değiştir</translation>
 <translation id="3889914174935857450">Tarihi sıfırlayın</translation>
 <translation id="3897092660631435901">Menü</translation>
@@ -757,6 +759,7 @@
 <translation id="5049856988445523908">SIM Kilitlendi (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grup adı</translation>
 <translation id="5051044138948155788">Bundan başka sayfa yok. Bu işlem sizi tarama başlangıç ekranına götürür.</translation>
+<translation id="5078711626843651677">Ses modelleri, konuşmacı etiketleme işlemi tamamlanana kadar geçici olarak cihaz üzerinde saklanır. Bu özelliği dilediğiniz zaman Ayarlar'dan kapatabilirsiniz.</translation>
 <translation id="5078983345702708852">fütüristik</translation>
 <translation id="5087864757604726239">geri</translation>
 <translation id="5088172560898466307">Sunucu ana makinesinin adı</translation>
@@ -1107,6 +1110,7 @@
 <translation id="6905163627763043954">Dene</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> uygulamasına geri dön</translation>
 <translation id="6910312834584889076">Tarayıcının kapağı açık. Kapağı kapatıp tekrar deneyin.</translation>
+<translation id="6910845598686542904">Kayıtta algılanan seslerin modellerini hesaplama</translation>
 <translation id="6911383237894364323">Medya sunucularına bağlanılamadı</translation>
 <translation id="6930242544192836755">Süre</translation>
 <translation id="6930597342185648547">Arka plan hakkında</translation>
@@ -1366,6 +1370,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8208861521865154048">Avantajlar</translation>
 <translation id="8226628635270268143">En beğendiğiniz fotoğraf ve albümleri seçin</translation>
 <translation id="8227119283605456246">Dosya ekle</translation>
+<translation id="8227488649450500937">Bu istemlerden birini deneyin veya <ph name="BEGIN_LINK_PROMPTING_GUIDE" />istem kılavuzuna<ph name="END_LINK_PROMPTING_GUIDE" /> göz atın</translation>
 <translation id="8230672074305416752">Varsayılan ağ geçidi pinglenemedi</translation>
 <translation id="8238771987802558562">Bir APN seçin</translation>
 <translation id="8246209727385807362">Bilinmeyen operatör</translation>
@@ -1571,6 +1576,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> tuşu eksik. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">Kayıt boyunca sesleri karşılaştırarak her konuşmacının ne zaman ne söylediğinin transkriptte gösterilmesini sağlar.</translation>
 <translation id="952992212772159698">Etkin değil</translation>
 <translation id="95718197892796296">kil</translation>
 <translation id="960719561871045870">Operatör kodu</translation>

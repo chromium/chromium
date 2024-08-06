@@ -185,7 +185,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1125550662859510761">Terlihat seperti <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Native)</translation>
 <translation id="1125921926864945797">Wallpaper dan gaya</translation>
-<translation id="1126809382673880764">Tidak melindungi Anda terhadap situs, download, dan ekstensi berbahaya. Anda akan tetap mendapatkan perlindungan Safe Browsing, jika tersedia, di layanan Google lainnya, seperti Gmail dan Penelusuran.</translation>
 <translation id="1128090040635299943">Linux sedang dikonfigurasi. Konfigurasi memerlukan waktu beberapa menit.</translation>
 <translation id="1128591060186966949">Edit mesin telusur</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -630,7 +629,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1461041542809785877">Performa</translation>
 <translation id="1461177659295855031">Pindahkan ke folder Kolom Bookmark</translation>
 <translation id="1461288887896722288">Anda baru saja login ke akun terkelola. Membuat profil terkelola baru akan membuat Anda dapat mengakses beberapa resource yang ditautkan ke akun tersebut.</translation>
-<translation id="1461868306585780092">Berikan peringatan sebelum menggunakan koneksi yang tidak aman</translation>
 <translation id="146219525117638703">Status ONC</translation>
 <translation id="146220085323579959">Internet terputus. Periksa koneksi internet Anda dan coba lagi.</translation>
 <translation id="1462480037563370607">Tambahkan situs secara manual</translation>
@@ -4181,7 +4179,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="3959747296451923142">Konfirmasi penghapusan langganan</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Tindakan lainnya untuk <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3962119236270174787">Perlindungan standar terhadap situs, download, dan ekstensi yang bereputasi berbahaya</translation>
 <translation id="3963753386716096475">Gunakan ponsel, tablet, atau kunci keamanan lain</translation>
 <translation id="3964480518399667971">Matikan jaringan Seluler</translation>
 <translation id="3965965397408324205">Tutup <ph name="PROFILE_NAME" /></translation>
@@ -5523,7 +5520,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4967571733817147990">Sesuaikan tombol mouse</translation>
 <translation id="4967852842111017386">Nama perangkat <ph name="FEATURE_NAME" /></translation>
 <translation id="4971412780836297815">Buka setelah selesai</translation>
-<translation id="4971735654804503942">Perlindungan lebih cepat dan proaktif terhadap situs, download, dan ekstensi berbahaya. Memberi Anda peringatan terkait kebocoran sandi. Mengharuskan pengiriman data penjelajahan ke Google.</translation>
 <translation id="4972129977812092092">Edit printer</translation>
 <translation id="4972164225939028131">Sandi salah</translation>
 <translation id="4972737347717125191">Situs dapat meminta untuk menggunakan perangkat dan data virtual reality</translation>
@@ -7015,6 +7011,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6075075631258766703">Verifikasi ponsel</translation>
 <translation id="6075731018162044558">Ups!  Sistem gagal mencapai token akses API jangka panjang untuk perangkat ini.</translation>
 <translation id="6075907793831890935">Menukar data dengan perangkat yang bernama <ph name="HOSTNAME" /></translation>
+<translation id="6076092653254552547">Setelan sistem</translation>
 <translation id="6076491747490570887">Abu-abu sejuk</translation>
 <translation id="6076576896267434196">Ekstensi "<ph name="EXTENSION_NAME" />" ingin mengakses akun Anda</translation>
 <translation id="6077131872140550515">Hapus dari pilihan</translation>
@@ -8255,7 +8252,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6992554835374084304">Aktifkan fitur periksa ejaan lanjutan</translation>
 <translation id="6993000214273684335">Tab dihapus dari grup tanpa nama - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Mengupdate browser Chrome</translation>
-<translation id="6995899638241819463">Berikan peringatan jika sandi Anda terekspos saat terjadi pelanggaran data</translation>
 <translation id="6995984090981858039">Membaca data dan informasi perangkat ChromeOS</translation>
 <translation id="6996245928508281884">Aktifkan Bluetooth dan Wi-Fi ponsel</translation>
 <translation id="6996438701394974959">Perbesar ukuran layar dan teks</translation>
@@ -9392,6 +9388,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7826254698725248775">ID perangkat bertentangan.</translation>
 <translation id="7828642077514646543">Error: Tidak dapat mendekode sertifikat</translation>
 <translation id="7829877209233347340">Minta orang tua login dan memberikan izin untuk menambahkan akun sekolah</translation>
+<translation id="7830276128493844263">Lokasi dinonaktifkan di setelan sistem</translation>
 <translation id="7830833461614351956">Salin <ph name="NUM_OF_FILES" /> file ke <ph name="CLOUD_PROVIDER" /> untuk dibuka?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Kata khusus yang disimpan akan muncul di sini</translation>

@@ -405,6 +405,7 @@
 <translation id="2486214324139475545">「<ph name="DESK_NAME" />」預覽。使用中的桌面。</translation>
 <translation id="2486405091093637109">「<ph name="DISPLAY_NAME" />」的解析度已變更為 <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz)。如未在 <ph name="TIMEOUT_SECONDS" />內確認，系統將還原先前的設定。</translation>
 <translation id="2487915095798731898">加入</translation>
+<translation id="2496180316473517155">瀏覽記錄</translation>
 <translation id="2499445554382787206">桌面設定檔選單：<ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">相黏鍵</translation>
 <translation id="2504454902900101003">取消以下設定：查看手機上最近的相片、媒體和通知</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">需要線上登入</translation>
 <translation id="2612072250312279703">活動監測工具</translation>
 <translation id="2612614436418177118">在應用程式排列顯示畫面中移動應用程式圖示</translation>
+<translation id="2619052155095999743">Insert 鍵</translation>
 <translation id="2619326010008283367">導覽步驟 <ph name="STEP" />，共 <ph name="TOTAL_STEPS" /> 個步驟。你可以使用啟動器找出裝置的「設定」，然後在「設定」中試著自訂 <ph name="PRODUCT_NAME" />，例如變更桌布或設定螢幕保護程式。</translation>
 <translation id="2620016719323068571">搜尋<ph name="CATEGORY" />、檔案、應用程式和其他內容...</translation>
 <translation id="2620436844016719705">系統</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">加入其他 Wi-Fi 網路</translation>
 <translation id="2705001408393684014">切換麥克風。<ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">向上鍵</translation>
+<translation id="271033894570825754">全新</translation>
 <translation id="2710984741481549981">鎖定視窗</translation>
 <translation id="2718395828230677721">夜燈</translation>
 <translation id="2726420622004325180">你的手機必須有行動數據才能提供無線基地台</translation>
@@ -1083,6 +1086,7 @@
 <translation id="4890408602550914571">請確認你的手機在附近，且已開啟藍牙功能。</translation>
 <translation id="4892981359753171125">臉部控制</translation>
 <translation id="4895488851634969361">電池電量已滿。</translation>
+<translation id="4902797682482387055">建議專注處理的工作</translation>
 <translation id="490375751687810070">縱向</translation>
 <translation id="490788395437447240">電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="491504982845934899">在裝置完成「<ph name="NETWORK_NAME" />」設定後啟用</translation>
@@ -1093,6 +1097,7 @@
 <translation id="492453977506755176">擷取模式鍵</translation>
 <translation id="4925542575807923399">這個帳戶的管理員要求此帳戶必需是多重登入工作階段中第一個登入的帳戶。</translation>
 <translation id="493076006037866439">縮小畫面內容</translation>
+<translation id="4932733599132424254">日期</translation>
 <translation id="4936329710968938986">所有人，已關閉</translation>
 <translation id="4937170330762390348">語音輸入功能可讓你透過語音輸入文字。請在文字欄位中，按下語音輸入鍵或選取畫面底部的「麥克風」圖示。你的語音輸入語言目前設為<ph name="LANGUAGE" />。系統會下載語音檔案，方便你離線使用語音輸入功能。你隨時可以依序前往「設定」&gt;「無障礙設定」變更語音輸入語言。</translation>
 <translation id="4938176435186993759">隱藏所有建議</translation>
@@ -1101,6 +1106,7 @@
 <translation id="495046168593986294">向上捲動</translation>
 <translation id="4950800194215951939">自訂遊戲體驗</translation>
 <translation id="4952936045814352993">停用鬧鐘音效後無法使用尋找手機的功能</translation>
+<translation id="4953585991029886728">編輯文字</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> 要求你復原 <ph name="DEVICE_TYPE" />。你的裝置將會重設，且所有資料將遭到刪除。</translation>
 <translation id="4961318399572185831">投放螢幕</translation>
 <translation id="4964188651935955085">關閉藍牙後，以下外接裝置會與 <ph name="DEVICE_TYPE" /> 中斷連線：</translation>
@@ -1360,6 +1366,7 @@
 <translation id="5819918159912280082">Chromebook 意外重新啟動。開啟先前的視窗和應用程式。</translation>
 <translation id="5823239091726045201">Google Tasks 網頁版</translation>
 <translation id="5825969630400862129">設定已連結的裝置</translation>
+<translation id="5830180081891717894">還有 <ph name="WINDOWS" /> 個</translation>
 <translation id="5837036133683224804">停止透過<ph name="RECEIVER_NAME" />投放「<ph name="ROUTE_TITLE" />」</translation>
 <translation id="5841296711770970362">播放下一首曲目</translation>
 <translation id="5842553299352339114">「<ph name="DEVICE_NAME" />」無線基地台已啟用，目前沒有任何裝置連線</translation>
@@ -1421,6 +1428,7 @@
 <translation id="6032620807120418574">點擊任一處即可錄製全螢幕畫面</translation>
 <translation id="6040071906258664830">錄音麥克風已<ph name="STATE" /></translation>
 <translation id="6040143037577758943">關閉</translation>
+<translation id="6042308850641462728">更多</translation>
 <translation id="6043212731627905357">這個顯示器與你的 <ph name="DEVICE_TYPE" /> 不相容 (這是不支援的顯示器)。</translation>
 <translation id="6043994281159824495">立即登出</translation>
 <translation id="6045629311476491587">正由 <ph name="APP_COUNT" /> 個應用程式使用</translation>
@@ -1886,6 +1894,7 @@
 <translation id="7748275671948949022">醒目顯示檔案櫃中的啟動鍵</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">全部顯示</translation>
 <translation id="7759183637555564029">你隨時可以前往「設定」關閉「幫我寫」和「幫我讀」功能。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">隨選朗讀</translation>
 <translation id="7769299611924763557">GIF 很快就能使用</translation>
@@ -2019,6 +2028,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> 這項設定是由系統管理員管理。</translation>
 <translation id="8155628902202578800">開啟 <ph name="USER_EMAIL_ADDRESS" /> 的資訊對話方塊</translation>
 <translation id="8167567890448493835">使用<ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">內容</translation>
 <translation id="8185090165691050712">開啟/關閉選單即可調整鎖定模式的大小</translation>
 <translation id="8192727139462702395">關閉藍牙後，以下外接裝置會與 <ph name="DEVICE_TYPE" /> 中斷連線：</translation>
 <translation id="8198456017687137612">正在投放分頁</translation>
@@ -2066,6 +2076,7 @@
 <translation id="8375916635258623388">這部 <ph name="DEVICE_NAME" /> 會自動連結到你的手機</translation>
 <translation id="8380784334203145311">晚安，</translation>
 <translation id="8382715499079447151">檢視防護</translation>
+<translation id="8383614331548401927">歡迎回顧</translation>
 <translation id="8388750414311082622">無法移除最後一個桌面。</translation>
 <translation id="8394567579869570560">你的家長已鎖定這部裝置</translation>
 <translation id="8401850874595457088">輸入語言選單</translation>

@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Oranž</translation>
 <translation id="125153950246128346">Puudutage muu vahelehe vaatamiseks</translation>
 <translation id="1273910660700874265">Vahelehegrupi <ph name="TITLE_OF_GROUP" /> valikud</translation>
+<translation id="1340839264183302272">Lahku grupist</translation>
 <translation id="1419023007528516122">See kustutab grupi jäädavalt teie seadmest.</translation>
 <translation id="1486715732399361704">Siit leiate kõik oma vahelegrupid</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Loodud <ph name="NUM_MINS_ONE" /> minut tagasi}other{Loodud <ph name="NUM_MINS_MANY" /> minutit tagasi}}</translation>
@@ -122,6 +123,7 @@
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Teisalda vaheleht vasakule</translation>
 <translation id="6615455863669487791">Kuva mulle</translation>
+<translation id="6694634756612002311">Halda jagamist</translation>
 <translation id="6744956528665271406">Muuda grupi värvi</translation>
 <translation id="6856809498882026482">Peida mitmikvalimise režiim</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Jaga vahelehte}other{Jaga vahelehti}}</translation>
@@ -174,6 +176,7 @@
 <translation id="8926389886865778422">Ära enam küsi</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Laienda <ph name="TABS_COUNT_ONE" /> vahelehega vahelehegrupp.}other{Laienda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp.}}</translation>
 <translation id="9090098097337832354">Selle poe teave suleti</translation>
+<translation id="9111228330448174435">Kuva uue vahelehegrupi loomisel dialoog</translation>
 <translation id="9150694013019234766">Ekraanikuva allosas olevas vahelehtede grupis vahelehtede vahel vahetamine</translation>
 <translation id="9169594135889675189">Lisa gruppi uus vaheleht</translation>
 <translation id="9216898458513705996">Vahelehegrupid jäävad selles seadmes avatuks, aga grupp kustutatakse kõikidest teistest seadmetest, mis on kontoga <ph name="USER_EMAIL" /> sisse logitud</translation>

@@ -405,6 +405,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" />-н урьдчилан үзэлт. Идэвхтэй дэлгэц.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />"-г <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц) нягтралтай болгож өөрчилсөн. Баталгаажуулахгүйгээр өмнөх тохиргоог <ph name="TIMEOUT_SECONDS" />-н дараа сэргээнэ.</translation>
 <translation id="2487915095798731898">Нэгдэх</translation>
+<translation id="2496180316473517155">Хайлтын түүх</translation>
 <translation id="2499445554382787206">Дэлгэцийн профайлын цэс. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Холбогч түлхүүр</translation>
 <translation id="2504454902900101003">Утасныхаа саяхны зураг, медиа болон мэдэгдлүүдийг харахыг тохируулахыг үл хэрэгсэх</translation>
@@ -436,6 +437,7 @@
 <translation id="2607678425161541573">Онлайнаар нэвтрэх шаардлагатай</translation>
 <translation id="2612072250312279703">үйл ажиллагааны монитор</translation>
 <translation id="2612614436418177118">Аппын дүрс тэмдгийг аппын хүснэгт дотор зөөх</translation>
+<translation id="2619052155095999743">Оруулах</translation>
 <translation id="2619326010008283367">Аяллын <ph name="TOTAL_STEPS" />-н <ph name="STEP" />-р алхам. Та Эхлүүлэгчээс төхөөрөмжийнхөө тохиргоог олох боломжтой. Дэлгэцийн зургаа өөрчлөх эсвэл дэлгэц амраагч тохируулах зэргээр өөрийн <ph name="PRODUCT_NAME" />-г тохиргоонд өөрчилж үзнэ үү.</translation>
 <translation id="2620016719323068571"><ph name="CATEGORY" />, файлууд, аппууд болон бусад зүйлээ хайгаарай...</translation>
 <translation id="2620436844016719705">Систем</translation>
@@ -462,6 +464,7 @@
 <translation id="2704781753052663061">Бусад Wi-Fi сүлжээнд нэгдэх</translation>
 <translation id="2705001408393684014">Микрофоныг асаах/унтраах. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Дээш</translation>
+<translation id="271033894570825754">Шинэ</translation>
 <translation id="2710984741481549981">Цонхнуудыг түгжих</translation>
 <translation id="2718395828230677721">Шөнийн гэрэл</translation>
 <translation id="2726420622004325180">Таны утас сүлжээний цэг өгөхийн тулд мобайл дататай байх ёстой</translation>
@@ -1087,6 +1090,7 @@
 <translation id="4890408602550914571">Таны утас ойролцоо бөгөөд Bluetooth-г нь асаасан эсэхийг шалгана уу.</translation>
 <translation id="4892981359753171125">Царайн тохиргоо</translation>
 <translation id="4895488851634969361">Цэнэг дүүрсэн байна.</translation>
+<translation id="4902797682482387055">Төвлөрөхийг санал болгосон ажил</translation>
 <translation id="490375751687810070">Босоо</translation>
 <translation id="490788395437447240">Батарей <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="491504982845934899">Төхөөрөмжийг тохируулсны дараа <ph name="NETWORK_NAME" />-г идэвхжүүлэх</translation>
@@ -1097,6 +1101,7 @@
 <translation id="492453977506755176">Зураг авах горимын товч</translation>
 <translation id="4925542575807923399">Энэ хаягийг хариуцсан ажилтан нь олон хаягаар зэрэг нэвтрэх тохиолдолд зөвхөн энэ хаягаар түрүүлж нэвтэрсний дараагаар бусад хаягт нэвтрэх боломжтой байхаар тохируулсан байна.</translation>
 <translation id="493076006037866439">Дэлгэцийг жижгэрүүлэх</translation>
+<translation id="4932733599132424254">Огноо</translation>
 <translation id="4936329710968938986">Бүгд, унтраалттай</translation>
 <translation id="4937170330762390348">Дуу хоолойгоор бичихийн тусламжтай та дуу хоолойгоо ашиглан бичих боломжтой. Та текстийн талбарт байх үедээ дуу хоолойгоор бичих товчлуурыг дарах эсвэл дэлгэцийн доод талд байх микрофоны дүрс тэмдгийг сонгоно уу. Таны дуу хоолойгоор бичих хэлийг <ph name="LANGUAGE" /> болгож тохируулсан. Ярианы файлуудыг татах бөгөөд ингэснээр та дуу хоолойгоор бичихийг офлайн үед ашиглах боломжтой. Та дуу хоолойгоор бичих хэлийг хүссэн үедээ Тохиргоо &gt; Хандалт дотор өөрчлөх боломжтой.</translation>
 <translation id="4938176435186993759">Бүх зөвлөмжийг нуух</translation>
@@ -1105,6 +1110,7 @@
 <translation id="495046168593986294">Дээш гүйлгэх</translation>
 <translation id="4950800194215951939">Тоглоомын хэрэглээгээ өөрчилнө үү</translation>
 <translation id="4952936045814352993">Сэрүүлгийн дууг идэвхгүй болгосон үед утасны байршил олох боломжгүй</translation>
+<translation id="4953585991029886728">Текстийг засварлах</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> танаас <ph name="DEVICE_TYPE" />-г өмнөх хувилбар луу нь буцаахыг шаардаж байна. Таны төхөөрөмжийг шинэчилж, бүх өгөгдлийг устгана.</translation>
 <translation id="4961318399572185831">Дэлгэцийг каст хийх</translation>
 <translation id="4964188651935955085">Таныг Bluetooth-г унтраах үед энэ гадны төхөөрөмж таны <ph name="DEVICE_TYPE" />-с сална:</translation>
@@ -1364,6 +1370,7 @@
 <translation id="5819918159912280082">Таны Chromebook гэнэт дахин эхэлсэн. Өмнөх цонх болон аппуудаа нээнэ үү.</translation>
 <translation id="5823239091726045201">Веб дээрх Google tasks</translation>
 <translation id="5825969630400862129">Холбогдсон төхөөрөмжүүдийн тохиргоо</translation>
+<translation id="5830180081891717894">Бусад <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-г <ph name="ROUTE_TITLE" />-д дамжуулахаа зогсоох</translation>
 <translation id="5841296711770970362">Дараагийн дууны зам руу очих</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" />-н сүлжээний цэг асаалттай бөгөөд холбогдсон ямар ч төхөөрөмж байхгүй</translation>
@@ -1425,6 +1432,7 @@
 <translation id="6032620807120418574">Бүтэн дэлгэцийг бичихийн тулд дурын газар товшино уу</translation>
 <translation id="6040071906258664830">Микрофоныг бичих <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Хаах</translation>
+<translation id="6042308850641462728">Илүү их</translation>
 <translation id="6043212731627905357">Таны <ph name="DEVICE_TYPE" /> монитортой тохирохгүй байна (мониторыг дэмжээгүй).</translation>
 <translation id="6043994281159824495">Яг одоо гарах</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> апп ашигласан</translation>
@@ -1891,6 +1899,7 @@
 <translation id="7748275671948949022">Тавиур дээрх Эхлүүлэгчийн товчлуурыг тодруулах</translation>
 <translation id="7749443890790263709">Дэлгэцийн тоо хамгийн дээд хэмжээнд хүрлээ.</translation>
 <translation id="7749958366403230681">Шуурхай түлхүүр 4</translation>
+<translation id="7751260505918304024">Бүгдийг үзүүлэх</translation>
 <translation id="7759183637555564029">Та Надад бичихэд тусал болон Надад уншихад тусал онцлогийг Тохиргоонд хүссэн үедээ унтраах боломжтой. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Ярихаар-сонгох</translation>
 <translation id="7769299611924763557">Таны GIF удахгүй бэлэн болно</translation>
@@ -2024,6 +2033,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Энэ тохиргоог таны администратор удирддаг.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" />-н мэдээллийн харилцах цонхыг нээх</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />-г ашиглаж байна</translation>
+<translation id="8168435359814927499">Агуулга</translation>
 <translation id="8185090165691050712">Түгжсэн горимын хэмжээг өөрчлөх цэсийг асаах/унтраах</translation>
 <translation id="8192727139462702395">Таныг Bluetooth-г унтраах үед эдгээр гадны төхөөрөмж таны <ph name="DEVICE_TYPE" />-с сална:</translation>
 <translation id="8198456017687137612">Табыг дамжуулж байна</translation>
@@ -2071,6 +2081,7 @@
 <translation id="8375916635258623388">Энэ <ph name="DEVICE_NAME" /> болон таны утас автоматаар холбогдоно</translation>
 <translation id="8380784334203145311">Сайхан амраарай,</translation>
 <translation id="8382715499079447151">Үзэх хамгаалалт</translation>
+<translation id="8383614331548401927">Угтах тойм</translation>
 <translation id="8388750414311082622">Сүүлийн дэлгэцийг устгах боломжгүй байна.</translation>
 <translation id="8394567579869570560">Таны эцэг эх энэ төхөөрөмжийг түгжсэн</translation>
 <translation id="8401850874595457088">Хэлний цэсийг оруулна уу</translation>

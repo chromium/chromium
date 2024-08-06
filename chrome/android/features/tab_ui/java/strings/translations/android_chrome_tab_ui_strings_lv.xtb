@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Oranža</translation>
 <translation id="125153950246128346">Pieskarieties, lai skatītu citu cilni</translation>
 <translation id="1273910660700874265">Ciļņu grupas “<ph name="TITLE_OF_GROUP" />” iespējas</translation>
+<translation id="1340839264183302272">Pamest grupu</translation>
 <translation id="1419023007528516122">Tādējādi šī grupa tiks neatgriezeniski dzēsta no jūsu ierīces</translation>
 <translation id="1486715732399361704">Šeit varat skatīt visas savas ciļņu grupas.</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Izveidota pirms <ph name="NUM_MINS_ONE" /> minūtes}zero{Izveidota pirms <ph name="NUM_MINS_MANY" /> minūtēm}one{Izveidota pirms <ph name="NUM_MINS_MANY" /> minūtes}other{Izveidota pirms <ph name="NUM_MINS_MANY" /> minūtēm}}</translation>
@@ -41,6 +42,7 @@
 <translation id="2801787514987684416">Vai skatīt veikala informāciju?</translation>
 <translation id="2928243913527329289">Google | Par šo veikalu</translation>
 <translation id="2977480621796371840">Noņemt no grupas</translation>
+<translation id="29919168204617356">Neaktīvās cilnes tiks automātiski aizvērtas. Varat jebkurā laikā tās atrast vēsturē.</translation>
 <translation id="3008554597174452548">Vairs neizsekot produktam</translation>
 <translation id="3026391124054406831">Izveidojiet grupas, lai sakārtotu savas cilnes.</translation>
 <translation id="3051031624272448591">Jebkurā laikā vēstures sadaļā varat tās atjaunot.</translation>
@@ -51,6 +53,7 @@
 <translation id="3322827343001922122">Atvērt ciļņu grupas “<ph name="TITLE_OF_GROUP" />” darbību izvēlni</translation>
 <translation id="3328308545011660196">Ieteikums: šķiet, ka <ph name="NUMBER_OF_TABS" /> cilnes ir saistītas. Vai grupēt tās?</translation>
 <translation id="3547352561153509682">Tādējādi grupa tiks dzēsta no visām ierīcēm, kurās esat pierakstījies kontā <ph name="USER_EMAIL" />.</translation>
+<translation id="3613492231657284463">Paslēpt neaktīvo ciļņu dialoglodziņu</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Kopīgošanas sīktēls</translation>
 <translation id="381219490185664296">Vai atcelt grupēšanu ciļņu grupā?</translation>
@@ -120,6 +123,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Pārvietot cilni pa kreisi</translation>
 <translation id="6615455863669487791">Rādīt man</translation>
+<translation id="6694634756612002311">Pārvaldīt kopīgošanu</translation>
 <translation id="6744956528665271406">Rediģēt grupas krāsu</translation>
 <translation id="6856809498882026482">Paslēpt vairākatlases režīmu</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Kopīgot cilni}zero{Kopīgot cilnes}one{Kopīgot cilnes}other{Kopīgot cilnes}}</translation>
@@ -137,6 +141,7 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> atsauksme no Google tīkla}zero{<ph name="REVIEWS_COUNT_MANY" /> atsauksmju no Google tīkla}one{<ph name="REVIEWS_COUNT_MANY" /> atsauksme no Google tīkla}other{<ph name="REVIEWS_COUNT_MANY" /> atsauksmes no Google tīkla}}</translation>
 <translation id="7559245342362162951">Rādīt grupas cilnes pilnekrāna režģī</translation>
 <translation id="7658239707568436148">Atcelt</translation>
+<translation id="7688386659311034820">Neaktīvo ciļņu dialoglodziņš</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Kopīgot <ph name="TABS_COUNT_ONE" /> atlasīto cilni}zero{Kopīgot <ph name="TABS_COUNT_MANY" /> atlasītās cilnes}one{Kopīgot <ph name="TABS_COUNT_MANY" /> atlasīto cilni}other{Kopīgot <ph name="TABS_COUNT_MANY" /> atlasītās cilnes}}</translation>
 <translation id="7773714564112603605">Noņemt cilni un dzēst grupu</translation>
 <translation id="7792771145871471484">Pārskatīt ieteikumus.</translation>
@@ -171,6 +176,7 @@
 <translation id="8926389886865778422">Nejautāt atkārtoti</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_ONE" /> cilne.}zero{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Izvērst ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="9090098097337832354">Informācija par šo veikalu ir aizvērta</translation>
+<translation id="9111228330448174435">Rādīt dialoglodziņu jaunas ciļņu grupas izveidei</translation>
 <translation id="9150694013019234766">Pārslēdziet cilnes savā ciļņu grupā ekrāna apakšdaļā.</translation>
 <translation id="9169594135889675189">Pievienot grupai jaunu cilni</translation>
 <translation id="9216898458513705996">Cilnes paliks atvērtas šajā ierīcē, taču grupa tiks dzēsta no visām ierīcēm, kurās esat pierakstījies kontā <ph name="USER_EMAIL" />.</translation>

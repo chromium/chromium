@@ -405,6 +405,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2486214324139475545">Náhled plochy <ph name="DESK_NAME" />. Aktivní plocha.</translation>
 <translation id="2486405091093637109">Rozlišení „<ph name="DISPLAY_NAME" />“ bylo změněno na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Pokud nové rozlišení nepotvrdíte, za <ph name="TIMEOUT_SECONDS" /> se obnoví předchozí nastavení.</translation>
 <translation id="2487915095798731898">Připojit se</translation>
+<translation id="2496180316473517155">Historie procházení</translation>
 <translation id="2499445554382787206">Nabídka profilu plochy. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Jedním prstem</translation>
 <translation id="2504454902900101003">Zavřít nastavení zobrazování nedávných fotek, médií a oznámení z telefonu</translation>
@@ -436,6 +437,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2607678425161541573">Je vyžadováno online přihlášení</translation>
 <translation id="2612072250312279703">sledování aktivity</translation>
 <translation id="2612614436418177118">Přesunout ikonu aplikace v mřížce aplikace</translation>
+<translation id="2619052155095999743">Vložit</translation>
 <translation id="2619326010008283367">Krok <ph name="STEP" /> z <ph name="TOTAL_STEPS" /> v prohlídce. Ve Spouštěči najdete nastavení zařízení. Zkuste si zařízení <ph name="PRODUCT_NAME" /> v Nastavení přizpůsobit, například změnit tapetu nebo nastavit spořič obrazovky.</translation>
 <translation id="2620016719323068571">Prohledat soubory, aplikace a další obsah z kategorie <ph name="CATEGORY" />…</translation>
 <translation id="2620436844016719705">Systém</translation>
@@ -462,6 +464,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2704781753052663061">Připojit se k dalším sítím Wi-Fi</translation>
 <translation id="2705001408393684014">Přepnout mikrofon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Nahoru</translation>
+<translation id="271033894570825754">Nové</translation>
 <translation id="2710984741481549981">Zamknout okna</translation>
 <translation id="2718395828230677721">Noční režim</translation>
 <translation id="2726420622004325180">Aby telefon mohl sloužit jako hotspot, musí v něm být zapnutá mobilní data</translation>
@@ -1096,6 +1099,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="492453977506755176">Klávesa režimu nahrávání</translation>
 <translation id="4925542575807923399">Správce tohoto účtu vyžaduje, aby se tento účet v relaci multiprofilu přihlásil jako první.</translation>
 <translation id="493076006037866439">Oddálit obrazovku</translation>
+<translation id="4932733599132424254">Datum</translation>
 <translation id="4936329710968938986">Všichni, vypnuto</translation>
 <translation id="4937170330762390348">Pomocí diktování můžete psát hlasově. Když jste v textovém poli, stiskněte klávesu diktování nebo vyberte ikonu mikrofonu v dolní části obrazovky. Váš jazyk diktování je nastaven na <ph name="LANGUAGE" />. Soubory řeči se stáhnou, abyste mohli používat diktování offline. Jazyk diktování můžete kdykoli změnit v Nastavení &gt; Usnadnění.</translation>
 <translation id="4938176435186993759">Skrýt všechny návrhy</translation>
@@ -1104,6 +1108,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="495046168593986294">Posunout nahoru</translation>
 <translation id="4950800194215951939">Přizpůsobte si herní prostředí</translation>
 <translation id="4952936045814352993">Když jsou vypnuté zvuky budíků, funkce Najít telefon není k dispozici</translation>
+<translation id="4953585991029886728">Upravit text</translation>
 <translation id="4960324571663582548">Organizace <ph name="MANAGER" /> vyžaduje, abyste toto zařízení <ph name="DEVICE_TYPE" /> převedli na starší verzi. Zařízení se resetuje a všechna data se vymažou.</translation>
 <translation id="4961318399572185831">Odesílání obrazovky</translation>
 <translation id="4964188651935955085">Když vypnete Bluetooth, od zařízení <ph name="DEVICE_TYPE" /> se odpojí toto externí zařízení:</translation>
@@ -1363,6 +1368,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5819918159912280082">Chromebook se neočekávaně restartoval. Chcete otevřít předchozí okna a aplikace?</translation>
 <translation id="5823239091726045201">Úkoly Google na webu</translation>
 <translation id="5825969630400862129">Nastavení připojených zařízení</translation>
+<translation id="5830180081891717894">Další: <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Zastavit <ph name="ROUTE_TITLE" /> na přijímači <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Přejít na další skladbu</translation>
 <translation id="5842553299352339114">Hotspot zařízení <ph name="DEVICE_NAME" /> je zapnutý, nejsou připojena žádná zařízení</translation>
@@ -1424,6 +1430,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6032620807120418574">Kliknutím kamkoliv spustíte záznam celé obrazovky</translation>
 <translation id="6040071906258664830">Záznam mikrofonu <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Zavřít</translation>
+<translation id="6042308850641462728">Více</translation>
 <translation id="6043212731627905357">Tento monitor si se zařízením <ph name="DEVICE_TYPE" /> nerozumí (monitor není podporován).</translation>
 <translation id="6043994281159824495">Odhlásit se</translation>
 <translation id="6045629311476491587">Využíváno <ph name="APP_COUNT" /> aplikacemi</translation>
@@ -1438,6 +1445,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6068258534237496331">Ovládací prvky videohovorů</translation>
 <translation id="6073451960410192870">Zastavit nahrávání</translation>
 <translation id="6074087755403037157">Verze beta</translation>
+<translation id="6091929401758362855">Playlist: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Zakázáno administrátorem</translation>
 <translation id="6095008505822982596">Rychlost řeči</translation>
 <translation id="6095425951508823973">Přidat propojení s poskytovatelem <ph name="PROVIDER" /></translation>
@@ -1889,6 +1897,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7748275671948949022">Zvýraznit tlačítko Spouštěče na poličce</translation>
 <translation id="7749443890790263709">Byl dosažen maximální počet ploch.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Zobrazit vše</translation>
 <translation id="7759183637555564029">Funkce Pomoz mi psát a Pomoz mi číst můžete v Nastavení kdykoli vypnout. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Poslech vybraného textu</translation>
 <translation id="7769299611924763557">Váš GIF bude brzy připraven</translation>
@@ -2022,6 +2031,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Toto nastavení spravuje administrátor.</translation>
 <translation id="8155628902202578800">Otevřít dialogové okno s informacemi o účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Používá se <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Obsah</translation>
 <translation id="8185090165691050712">Zapnout/vypnout nabídku změny velikosti zamknutého režimu</translation>
 <translation id="8192727139462702395">Když vypnete Bluetooth, od zařízení <ph name="DEVICE_TYPE" /> se odpojí tato externí zařízení:</translation>
 <translation id="8198456017687137612">Odesílání karty</translation>
@@ -2069,6 +2079,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8375916635258623388">Toto zařízení <ph name="DEVICE_NAME" />a váš telefon se automaticky spojí</translation>
 <translation id="8380784334203145311">Dobrou noc,</translation>
 <translation id="8382715499079447151">Ochrana před špehováním</translation>
+<translation id="8383614331548401927">Shrnutí na přivítanou</translation>
 <translation id="8388750414311082622">Poslední plochu nelze odstranit.</translation>
 <translation id="8394567579869570560">Rodič toto zařízení uzamkl</translation>
 <translation id="8401850874595457088">Otevřít nabídku výběru jazyka</translation>

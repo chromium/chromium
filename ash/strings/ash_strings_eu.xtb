@@ -405,6 +405,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> lan-eremuaren aurrebista. Lan-eremu aktiboa.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" pantailari <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) bereizmena ezarri zaio. Berresten ez baduzu, <ph name="TIMEOUT_SECONDS" /> barru leheneratuko da aurreko ezarpena.</translation>
 <translation id="2487915095798731898">Sartu</translation>
+<translation id="2496180316473517155">Arakatze-historia</translation>
 <translation id="2499445554382787206">Lan-eremuaren profilaren menua. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tekla itsaskorrak</translation>
 <translation id="2504454902900101003">Baztertu telefonoko azkenaldiko argazkiak, multimedia-elementuak eta jakinarazpenak ikusteko aukera konfiguratzeko prozesua</translation>
@@ -436,6 +437,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2607678425161541573">Saioa hasi behar da sarean</translation>
 <translation id="2612072250312279703">jarduera-gainbegiralea</translation>
 <translation id="2612614436418177118">Mugitu aplikazio baten ikonoa aplikazioen saretaren barnean</translation>
+<translation id="2619052155095999743">Txertatu</translation>
 <translation id="2619326010008283367">Txangoko <ph name="TOTAL_STEPS" /> urratsetatik <ph name="STEP" />garrena. Exekutatzeko tresnan aurkituko dituzu gailuaren ezarpenak. Pertsonalizatu <ph name="PRODUCT_NAME" /> ezarpenetan; adibidez, aldatu horma-papera edo ezarri pantaila-babesle bat.</translation>
 <translation id="2620016719323068571">Bilatu <ph name="CATEGORY" />, fitxategiak, aplikazioak eta beste…</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -462,6 +464,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2704781753052663061">Konektatu beste wifi-sare batzuetara</translation>
 <translation id="2705001408393684014">Aktibatu/Desaktibatu mikrofonoa. <ph name="STATE_TEXT" />.</translation>
 <translation id="2706462751667573066">Gora</translation>
+<translation id="271033894570825754">Berria</translation>
 <translation id="2710984741481549981">Blokeatu leihoak</translation>
 <translation id="2718395828230677721">Gaueko argia</translation>
 <translation id="2726420622004325180">Telefonoak datu-konexioa erabili behar du wifi-gune bat sortzeko</translation>
@@ -1097,6 +1100,7 @@ Gailu bat dago konektatuta.</translation>
 <translation id="492453977506755176">Edukia kapturatzeko moduaren tekla</translation>
 <translation id="4925542575807923399">Saio bat baino gehiago hasteko eginbidea erabiltzeko, saioa hasten duen lehen kontua hau izatea eskatzen du kontu honen administratzaileak.</translation>
 <translation id="493076006037866439">Txikitu pantaila</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4936329710968938986">Denekin, desaktibatuta</translation>
 <translation id="4937170330762390348">Diktaketari esker, ahotsaren bidez idatz dezakezu. Testu-eremu batean zaudenean, sakatu diktatzeko tekla edo hautatu pantailaren behealdeko mikrofonoaren ikonoa. <ph name="LANGUAGE" /> daukazu ezarrita diktatzeko hizkuntza gisa. Hizketa-fitxategiak deskargatuko dira, diktaketa konexiorik gabe ere erabili ahal izateko. Diktatzeko hizkuntza aldatzeko, joan Ezarpenak &gt; Erabilerraztasuna atalera.</translation>
 <translation id="4938176435186993759">Ezkutatu iradokizun guztiak</translation>
@@ -1105,6 +1109,7 @@ Gailu bat dago konektatuta.</translation>
 <translation id="495046168593986294">Egin gora</translation>
 <translation id="4950800194215951939">Pertsonalizatu zure bideojokoen erabilera</translation>
 <translation id="4952936045814352993">Telefonoaren kokapena zehazteko aukera ez dago erabilgarri alarmen soinuak desgaituta daudenean</translation>
+<translation id="4953585991029886728">Editatu testua</translation>
 <translation id="4960324571663582548"><ph name="DEVICE_TYPE" /> gailuaren aurreko bertsiora itzultzea eskatu dizu <ph name="MANAGER" /> kudeatzaileak. Gailua berrezarri egingo da, eta datu guztiak ezabatuko dira.</translation>
 <translation id="4961318399572185831">Igorri pantaila</translation>
 <translation id="4964188651935955085">Bluetootha desaktibatzen duzunean, kanpoko gailu hau deskonektatuko da <ph name="DEVICE_TYPE" /> gailutik:</translation>
@@ -1364,6 +1369,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="5819918159912280082">Chromebook-a ustekabean berrabiarazi da. Ireki aurreko leihoak eta aplikazioak.</translation>
 <translation id="5823239091726045201">Sareko Google Zereginak</translation>
 <translation id="5825969630400862129">Konektatutako gailuen ezarpenak</translation>
+<translation id="5830180081891717894">beste <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Utzi <ph name="ROUTE_TITLE" /> (<ph name="RECEIVER_NAME" />) hargailura igortzeari</translation>
 <translation id="5841296711770970362">Joan hurrengo pistara</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> gailuaren wifi-gunea aktibatuta dago, eta ez dago gailurik konektatuta</translation>
@@ -1425,6 +1431,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="6032620807120418574">Egin klik edonon pantaila osoko moduan grabatzeko</translation>
 <translation id="6040071906258664830">Mikrofonoaren grabaketa <ph name="STATE" /> dago</translation>
 <translation id="6040143037577758943">Itxi</translation>
+<translation id="6042308850641462728">Gehiago</translation>
 <translation id="6043212731627905357">Monitore honek arazoak ditu <ph name="DEVICE_TYPE" /> gailuarekin (ez da bateragarria).</translation>
 <translation id="6043994281159824495">Amaitu saioa</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> aplikaziok erabili dituzte</translation>
@@ -1891,6 +1898,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7748275671948949022">Nabarmendu Exekutatzeko tresnaren botoia apalean</translation>
 <translation id="7749443890790263709">Gehieneko lan-eremuen kopurura iritsi zara.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Erakutsi guztiak</translation>
 <translation id="7759183637555564029">Idazteko laguntza eta Irakurtzeko laguntza desaktibatzeko, joan ezarpenetara. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Hautatu ozen irakurtzeko</translation>
 <translation id="7769299611924763557">GIFa laster egongo da prest</translation>
@@ -2024,6 +2032,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Administratzaileak kudeatzen du ezarpen hau.</translation>
 <translation id="8155628902202578800">Ireki <ph name="USER_EMAIL_ADDRESS" /> erabiltzailearen informazio-leihoa</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> erabiltzen</translation>
+<translation id="8168435359814927499">Edukia</translation>
 <translation id="8185090165691050712">Aktibatu/Desaktibatu tamaina aldatzeko aukera blokeatuta daukan moduaren menua</translation>
 <translation id="8192727139462702395">Bluetootha desaktibatzen duzunean, kanpoko gailu hauek deskonektatuko dira <ph name="DEVICE_TYPE" /> gailutik:</translation>
 <translation id="8198456017687137612">Edukia igortzen ari den fitxa</translation>
@@ -2071,6 +2080,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> hau eta telefonoa automatikoki konektatuko dira</translation>
 <translation id="8380784334203145311">Gabon:</translation>
 <translation id="8382715499079447151">Ikusteko babesa</translation>
+<translation id="8383614331548401927">Ongietorria egiteko laburpena</translation>
 <translation id="8388750414311082622">Ezin da kendu azken lan-eremua.</translation>
 <translation id="8394567579869570560">Guraso batek gailua blokeatu dizu</translation>
 <translation id="8401850874595457088">Sartu hizkuntzaren menuan</translation>

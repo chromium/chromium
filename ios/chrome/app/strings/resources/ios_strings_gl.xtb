@@ -302,6 +302,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2529021024822217800">Abrir todo</translation>
 <translation id="2536991091671391962">Podes usar os contrasinais gardados en calquera dispositivo. Estes gárdanse no xestor de contrasinais de Google asociado a <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Oculta Comprobación de seguranza</translation>
+<translation id="2545094307889012168">Superposición de Lens</translation>
 <translation id="2547458583188611426">A sincronización non funciona. Para comezar a sincronizar datos, escribe a túa frase de acceso.</translation>
 <translation id="2551153019974022505">Erro da conta</translation>
 <translation id="2556092377360758201">Sen protección (non recomendado)</translation>
@@ -848,6 +849,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5205197603258285592">Gardar imaxe en…</translation>
 <translation id="5211488077761630279">Queres permitir que "<ph name="SITE_NAME" />" utilice a túa <ph name="PERMISSION" />?</translation>
+<translation id="5215046161188172474">Compartir o URL completo</translation>
 <translation id="5219295696240154694">Axudar a mellorar a seguranza na Web para todos</translation>
 <translation id="5220945116117011963">Crea eventos do calendario a partir de datas</translation>
 <translation id="5221339005270097309">Comprobando contrasinais…</translation>
@@ -1125,6 +1127,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 Non poden utilizalas para ver a túa actividade de navegación en distintos sitios (por exemplo, co fin de personalizar anuncios).</translation>
 <translation id="6476253015009698798">O seguimento de prezos non está dispoñible para esta páxina.</translation>
 <translation id="6476800141292307438">Traducindo a páxina ao <ph name="LANGUAGE" />. Hai opcións dispoñibles na parte inferior da pantalla.</translation>
+<translation id="6477585407014744043">Ponlle un nome ao grupo</translation>
 <translation id="648164694371393720">Produciuse un erro de autenticación</translation>
 <translation id="6494931198667773526">Finaliza</translation>
 <translation id="6500795388871406244">Utiliza o contrasinal suxerido:</translation>

@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">Signal kuchsiz</translation>
 <translation id="1300115153046603471">APN turi: standart va <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">Yaratilgan sana</translation>
 <translation id="1308754910631152188">Yangilanmoqda (<ph name="PERCENTAGE_VALUE" />% yakunlandi)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> daqiqa</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> nomli tarmoq topilmadi</translation>
@@ -339,7 +340,6 @@
 <translation id="2645380101799517405">Boshqaruv</translation>
 <translation id="2652403576514495859">ovoz bilan yozishni yoqish yoki almashtirish</translation>
 <translation id="2653659639078652383">Yuborish</translation>
-<translation id="2653807227758181366">Yaratiladigan fon rasmini tasvirlang yoki namunaviy soʻrovdan foydalaning</translation>
 <translation id="2654647726140493436">Yangilash vaqtida <ph name="DEVICE_TYPE" /> oʻchirilmasligi va <ph name="DEVICE_TYPE" /> quvvat kabeli uzilmasligi zarur</translation>
 <translation id="2656001153562991489">Chromebook Plus uchun ekskluziv</translation>
 <translation id="2665671725390405060">Talaffuzini eshitish</translation>
@@ -358,6 +358,7 @@
 <translation id="2780756493585863768">Google AI yaratgan oxirgin fon rasmlari</translation>
 <translation id="2783010256799387990">TUGADI</translation>
 <translation id="2786429550992142861">zigʻir</translation>
+<translation id="2787237339470862294">Bu til hozirda dastaklanmaydi</translation>
 <translation id="2787435249130282949">yorqinroq klaviatura</translation>
 <translation id="2805756323405976993">Ilovalar</translation>
 <translation id="28232023175184696">Internetga ulana olmadi. Qayta urinish uchun bosing.</translation>
@@ -505,6 +506,7 @@
 <translation id="3708186454126126312">Avval ulangan qurilmalar</translation>
 <translation id="3715651196924935218">Suzuvchi rejimdan chiqish</translation>
 <translation id="3716250181321371108">Boshqaruv elementini yaratish</translation>
+<translation id="3716830479327464973">Ruxsat berilsa, Diktofon ovozli yozuvlarni buning uchun tahlil qiladi:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ta sharh)</translation>
 <translation id="3748026146096797577">Ulanilmagan</translation>
 <translation id="3749289110408117711">Fayl nomi</translation>
@@ -531,6 +533,7 @@
 <translation id="3869314628814282185">tul</translation>
 <translation id="387301095347517405">Batareya toʻliq quvvat olgan davrlar soni</translation>
 <translation id="3877066159641251281">Tarjimani tinglash</translation>
+<translation id="3880601782712134623">Ovozlarni avtomatik aniqlash va har bir maʼruzachiga tegishli umumiy nom berish, masalan, Gapiruvchi 1 va Gapiruvchi 2 kabi.</translation>
 <translation id="3885327323343477505">Ekran lavhasini oʻzgartirish</translation>
 <translation id="3889914174935857450">Sanani tiklash</translation>
 <translation id="3897092660631435901">Menyu</translation>
@@ -669,6 +672,7 @@
 <translation id="458794348635939462">Hech qaysi host aniqlanmadi</translation>
 <translation id="4593212453765072419">Proksi hisob tekshiruvini talab qiladi</translation>
 <translation id="4594021849294327751">Transkripsiya yaratish</translation>
+<translation id="4607282946861182308">Buning rasmlarini yaratish imkonsiz. Boshqa soʻrov yuboring.</translation>
 <translation id="4609350030397390689">Klaviatura yorqinligi pasaytirish</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Chop etilishini bekor qilish uchun Enter tugmasini bosing.</translation>
 <translation id="463791356324567266">Skanerlash bekor qilinmoqda...</translation>
@@ -755,6 +759,7 @@
 <translation id="5049856988445523908">Qulflangan SIM (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Guruh nomi</translation>
 <translation id="5051044138948155788">Faqat shu sahifa bor. Skanerlash boshlanadigan ekran ochiladi.</translation>
+<translation id="5078711626843651677">Ovozli modellari gapiruvchini belgilash tugaguniga qadar qurilmada vaqtincha saqlanadi. Buni istalgan vaqtda Sozlamalarda faolsizlantirish mumkin.</translation>
 <translation id="5078983345702708852">futuristik</translation>
 <translation id="5087864757604726239">ortga</translation>
 <translation id="5088172560898466307">Server hosti nomi</translation>
@@ -1105,6 +1110,7 @@
 <translation id="6905163627763043954">Sinab ko‘rish</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> sahifasiga qaytish</translation>
 <translation id="6910312834584889076">Skaner qopqogʻi yopilmagan. Qopqogʻini toping va qaytadan urining.</translation>
+<translation id="6910845598686542904">Yozuvda aniqlangan ovozlarning modellarini tahlil qilish</translation>
 <translation id="6911383237894364323">Media serverlarga ulana olmadi</translation>
 <translation id="6930242544192836755">Davomiyligi</translation>
 <translation id="6930597342185648547">Orqa fon haqida</translation>
@@ -1570,6 +1576,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="939519157834106403">Tarmoq nomi (SSID)</translation>
 <translation id="945522503751344254">Fikr-mulohaza</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> tugmasi topilmadi. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">Yozuv davomida ovozlarni solishtiring, shunda transkripsiya har bir maʼruzachi nima va qachon aytganini aks ettiradi</translation>
 <translation id="952992212772159698">Faollashtirilmagan</translation>
 <translation id="95718197892796296">loy</translation>
 <translation id="960719561871045870">Operator kodi</translation>

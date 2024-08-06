@@ -405,6 +405,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2486214324139475545">Predogled namizja »<ph name="DESK_NAME" />«. Aktivno namizje.</translation>
 <translation id="2486405091093637109">Ločljivost zaslona »<ph name="DISPLAY_NAME" />« je bila spremenjena na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Brez potrditve bodo prejšnje nastavitve obnovljene čez <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Pridruži se</translation>
+<translation id="2496180316473517155">Zgodovina brskanja</translation>
 <translation id="2499445554382787206">Meni profila namizja. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Zaklepanje tipk</translation>
 <translation id="2504454902900101003">Opustitev nastavitve nedavnih fotografij, predstavnosti in obvestil telefona</translation>
@@ -436,6 +437,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2607678425161541573">Obvezna je spletna prijava</translation>
 <translation id="2612072250312279703">nadzornik dejavnosti</translation>
 <translation id="2612614436418177118">Premikanje ikone aplikacije znotraj mreže aplikacij</translation>
+<translation id="2619052155095999743">Vstavi</translation>
 <translation id="2619326010008283367"><ph name="STEP" />. korak predstavitve od <ph name="TOTAL_STEPS" />. Nastavitve naprave so na voljo v zaganjalniku. Poskusite prilagoditi napravo <ph name="PRODUCT_NAME" /> v nastavitvah – denimo spremeniti zaslonsko ozadje ali nastaviti ohranjevalnik zaslona.</translation>
 <translation id="2620016719323068571">Iščite po <ph name="CATEGORY" />, datotekah, aplikacijah in drugem …</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -462,6 +464,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2704781753052663061">Pridružitev drugih omrežij Wi-Fi</translation>
 <translation id="2705001408393684014">Preklop mikrofona. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Gor</translation>
+<translation id="271033894570825754">Novo</translation>
 <translation id="2710984741481549981">Zaklepanje oken</translation>
 <translation id="2718395828230677721">Nočna svetloba</translation>
 <translation id="2726420622004325180">Če želite, da telefon da na voljo dostopno točko, mora imeti vklopljen prenos podatkov v mobilnem omrežju.</translation>
@@ -1097,6 +1100,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="492453977506755176">Tipka za način zajema</translation>
 <translation id="4925542575807923399">Skrbnik tega računa zahteva, da je ta račun v seji prijave z več računi prvi prijavljeni račun.</translation>
 <translation id="493076006037866439">Pomanjšava zaslona</translation>
+<translation id="4932733599132424254">Datum</translation>
 <translation id="4936329710968938986">Vsi, izklopljeno</translation>
 <translation id="4937170330762390348">Z narekom lahko vnašate z glasom. Ko ste v polju z besedilom, pritisnite tipko za narek ali izberite ikono mikrofona na dnu zaslona. Jezik nareka je nastavljen na jezik <ph name="LANGUAGE" />. Datoteke za govor bodo prenesene, tako da boste lahko uporabljali narek brez povezave. Jezik nareka lahko kadar koli spremenite v »Nastavitve &gt; Dostopnost«.</translation>
 <translation id="4938176435186993759">Skrij vse predloge</translation>
@@ -1105,6 +1109,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="495046168593986294">Pomik navzgor</translation>
 <translation id="4950800194215951939">Prilagodite igralno izkušnjo</translation>
 <translation id="4952936045814352993">Iskanje telefona ni na voljo, če so onemogočeni zvoki alarma.</translation>
+<translation id="4953585991029886728">Urejanje besedila</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> zahteva, da napravo <ph name="DEVICE_TYPE" /> povrnete na prejšnjo različico. Naprava se bo ponastavila in vaši podatki bodo izbrisani.</translation>
 <translation id="4961318399572185831">Predvajanje zaslona</translation>
 <translation id="4964188651935955085">Ko izklopite Bluetooth, bo povezava te zunanje naprave z napravo <ph name="DEVICE_TYPE" /> prekinjena:</translation>
@@ -1364,6 +1369,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="5819918159912280082">Chromebook se je nepričakovano znova zagnal. Odprite prejšnja okna in aplikacije.</translation>
 <translation id="5823239091726045201">Google Opravila v spletu</translation>
 <translation id="5825969630400862129">Nastavitve povezanih naprav</translation>
+<translation id="5830180081891717894">še <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Ustavi zavihek <ph name="ROUTE_TITLE" /> v sprejemniku <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Na naslednjo skladbo</translation>
 <translation id="5842553299352339114">Dostopna točka naprave <ph name="DEVICE_NAME" /> je vklopljena, ni povezanih naprav</translation>
@@ -1425,6 +1431,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6032620807120418574">Kliknite kjer koli za snemanje celotnega zaslona.</translation>
 <translation id="6040071906258664830">Snemanje mikrofona <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Zapri</translation>
+<translation id="6042308850641462728">Več</translation>
 <translation id="6043212731627905357">Ta monitor se ne ujema z napravo <ph name="DEVICE_TYPE" /> (monitor ni podprt).</translation>
 <translation id="6043994281159824495">Odjava</translation>
 <translation id="6045629311476491587">Uporablja toliko aplikacij: <ph name="APP_COUNT" /></translation>
@@ -1891,6 +1898,7 @@ Nova namestitev</translation>
 <translation id="7748275671948949022">Označevanje gumba za Zaganjalnik na polici</translation>
 <translation id="7749443890790263709">Doseženo je največje dovoljeno število namizij.</translation>
 <translation id="7749958366403230681">Hitra tipka 4</translation>
+<translation id="7751260505918304024">Prikaži vse</translation>
 <translation id="7759183637555564029">Funkciji Pomagaj mi pisati in Pomagaj mi brati lahko kadar koli izklopite v nastavitvah. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Izberite in poslušajte</translation>
 <translation id="7769299611924763557">GIF bo kmalu pripravljen</translation>
@@ -2024,6 +2032,7 @@ Nova namestitev</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> To nastavitev upravlja skrbnik.</translation>
 <translation id="8155628902202578800">Odpri pogovorno okno z informacijami o uporabniku <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Uporaba jezika <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Vsebina</translation>
 <translation id="8185090165691050712">Vklop/izklop menija za spreminjanje velikosti zaklenjenega načina</translation>
 <translation id="8192727139462702395">Ko izklopite Bluetooth, bo povezava teh zunanjih naprav z napravo <ph name="DEVICE_TYPE" /> prekinjena:</translation>
 <translation id="8198456017687137612">Predvajanje vsebine zavihka</translation>
@@ -2071,6 +2080,7 @@ Nova namestitev</translation>
 <translation id="8375916635258623388">Ta naprava <ph name="DEVICE_NAME" /> in telefon se bosta samodejno povezala</translation>
 <translation id="8380784334203145311">Lahko noč,</translation>
 <translation id="8382715499079447151">Zaščita pred ogledovanjem</translation>
+<translation id="8383614331548401927">Povzetek pozdrava</translation>
 <translation id="8388750414311082622">Zadnjega namizja ni mogoče odstraniti.</translation>
 <translation id="8394567579869570560">Tvoj starš je zaklenil to napravo</translation>
 <translation id="8401850874595457088">Odpiranje menija za jezik</translation>
