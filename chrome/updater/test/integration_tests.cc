@@ -69,6 +69,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "chrome/updater/test/integration_tests_mac.h"
 #include "chrome/updater/util/mac_util.h"
 #endif
 
@@ -1979,6 +1980,76 @@ TEST_F(IntegrationTest, SmokeTestPrepareToRunBundle) {
   ASSERT_TRUE(updater_path);
   ASSERT_NO_FATAL_FAILURE(ExpectPrepareToRunBundleSuccess(*updater_path));
 
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+// The CRURegistration library exists only on macOS. It runs ksadmin. It should
+// not find ksadmin before the updater is installed or after it is uninstalled,
+// but should find the scope-suitable ksadmin while the updater is installed.
+TEST_F(IntegrationTest, CRURegistrationFindKSAdmin) {
+  EXPECT_NO_FATAL_FAILURE(ExpectCRURegistrationCannotFindKSAdmin())
+      << "ksadmin found before first installation.";
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectCRURegistrationFindsKSAdmin(GetUpdaterScopeForTesting()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+  EXPECT_NO_FATAL_FAILURE(ExpectCRURegistrationCannotFindKSAdmin())
+      << "ksadmin found after uninstall.";
+}
+
+TEST_F(IntegrationTest, CRURegistrationCannotGetTagWithoutUpdater) {
+  base::ScopedTempFile xc_path;
+  ASSERT_TRUE(xc_path.Create());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectCRURegistrationCannotFetchTag(kApp1.appid, xc_path.path()));
+}
+
+TEST_F(IntegrationTest, CRURegistrationCannotGetTagWithoutApp) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  base::ScopedTempFile xc_path;
+  ASSERT_TRUE(xc_path.Create());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectCRURegistrationCannotFetchTag(kApp1.appid, xc_path.path()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, CRURegistrationFindsBlankTag) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  base::ScopedTempFile xc_path;
+  ASSERT_TRUE(xc_path.Create());
+  ASSERT_NO_FATAL_FAILURE(InstallApp(kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(SetExistenceCheckerPath(kApp1.appid, xc_path.path()));
+
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectCRURegistrationFetchesTag(kApp1.appid, xc_path.path(), ""));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, CRURegistrationFindsTag) {
+  ScopedServer test_server(test_commands_);
+  const std::string kAppId("test");
+  const base::Version v1("1");
+  base::ScopedTempFile xc_path;
+  ASSERT_TRUE(xc_path.Create());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
+      &test_server, kAppId, "", UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), v1));
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      kAppId, /*is_silent_install=*/true,
+      base::StrCat({"appguid=", kAppId, "&ap=tagvalue&usagestats=1"})));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(SetExistenceCheckerPath(kAppId, xc_path.path()));
+
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectCRURegistrationFetchesTag(kAppId, xc_path.path(), "tagvalue"));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
@@ -4389,6 +4460,28 @@ TEST_F(IntegrationTestKSAdminFourApps, XCPathMismatchUser) {
                             kRepeatAppUserTag);
   ExpectBothKSAdminFetchTag(false, kNonexistentAppID, no_app_xcfile_.path(), {},
                             {});
+}
+
+TEST_F(IntegrationTestKSAdminFourApps, CRURegistrationFetchTag) {
+  // Direct, unambiguous matches (or nothing matching).
+  ExpectCRURegistrationFetchesTag(kSystemAppID, system_app_xcfile_.path(),
+                                  kSystemAppTag);
+  ExpectCRURegistrationFetchesTag(kUserAppID, user_app_xcfile_.path(),
+                                  kUserAppTag);
+  ExpectCRURegistrationCannotFetchTag(kNonexistentAppID, no_app_xcfile_.path());
+
+  // Ambiguous app ID, direct XCFile path matches.
+  ExpectCRURegistrationFetchesTag(
+      kRepeatAppID, repeat_app_system_xcfile_.path(), kRepeatAppSystemTag);
+  ExpectCRURegistrationFetchesTag(kRepeatAppID, repeat_app_user_xcfile_.path(),
+                                  kRepeatAppUserTag);
+
+  // Non-matching XCFile path can still match user apps, but only user apps.
+  ExpectCRURegistrationFetchesTag(kUserAppID, no_app_xcfile_.path(),
+                                  kUserAppTag);
+  ExpectCRURegistrationFetchesTag(kRepeatAppID, no_app_xcfile_.path(),
+                                  kRepeatAppUserTag);
+  ExpectCRURegistrationCannotFetchTag(kSystemAppID, no_app_xcfile_.path());
 }
 
 #endif  // BUILDFLAG(IS_MAC) && !defined(ADDRESS_SANITIZER)

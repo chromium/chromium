@@ -7,15 +7,15 @@
 #import <Foundation/Foundation.h>
 #import <dispatch/dispatch.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/scoped_generic.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 #import "chrome/updater/mac/client_lib/CRURegistration-Private.h"
-#include "net/base/apple/url_conversions.h"
-#include "net/base/filename_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -48,8 +48,9 @@ constexpr char kEmitTextTestBinaryName[] = "emit_text";
 
 TEST(CRURegistrationTest, SmokeTest) {
   CRURegistration* registration = [[CRURegistration alloc]
-      initWithAppId:
-          @"org.chromium.ChromiumUpdater.CRURegistrationTest.SmokeTest"];
+             initWithAppId:
+                 @"org.chromium.ChromiumUpdater.CRURegistrationTest.SmokeTest"
+      existenceCheckerPath:@"IGNORED"];
   ASSERT_TRUE(registration);
 }
 
@@ -81,8 +82,7 @@ void GetEmitTextNSURL(NSURL** result) {
       test_data_path.AppendASCII(kEmitTextTestBinaryName);
   ASSERT_TRUE(base::PathExists(emit_text_path))
       << "cannot find: " << emit_text_path;
-  GURL emit_text_gurl = net::FilePathToFileURL(emit_text_path);
-  *result = net::NSURLWithGURL(emit_text_gurl);
+  *result = base::apple::FilePathToNSURL(emit_text_path);
   ASSERT_TRUE(*result);
 }
 
@@ -230,15 +230,35 @@ TEST_F(CRUAsyncTaskRunnerTest, NonzeroReturn) {
   EXPECT_EQ((NSInteger)34, got_error_.code);
 }
 
+TEST_F(CRUAsyncTaskRunnerTest, TaskFailureErrorWrapping) {
+  CRURegistration* registration = [[CRURegistration alloc]
+             initWithAppId:@"org.chromium.ChromiumUpdater.CRURegistrationTest."
+                           @"TaskFailureErrorWrapping"
+      existenceCheckerPath:@"IGNORED"];
+
+  ASSERT_TRUE(RunEmitText(@"error", -1, EmitTextOutputTarget::kBoth));
+  NSError* wrapped = [registration wrapError:got_error_
+                                  withStdout:got_stdout_
+                                   andStderr:got_stderr_];
+  EXPECT_NSEQ(CRURegistrationErrorDomain, wrapped.domain);
+  EXPECT_EQ(CRURegistrationErrorTaskFailed, wrapped.code);
+  EXPECT_NSEQ(@"", wrapped.userInfo[CRUStdoutKey]);
+  EXPECT_NSEQ(@"", wrapped.userInfo[CRUStderrKey]);
+  NSError* underlying = wrapped.userInfo[NSUnderlyingErrorKey];
+  ASSERT_TRUE([underlying isKindOfClass:[NSError class]]);
+  EXPECT_NSEQ(CRUReturnCodeErrorDomain, underlying.domain);
+}
+
 void TestWorkQueueImpl(int item_count) {
   dispatch_queue_t queue = dispatch_queue_create_with_target(
       "TestWorkQueueImpl", DISPATCH_QUEUE_SERIAL,
       dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0));
 
   CRURegistration* registration = [[CRURegistration alloc]
-      initWithAppId:
-          @"org.chromium.ChromiumUpdater.CRURegistrationTest.WorkQueueTest"
-        targetQueue:queue];
+             initWithAppId:@"org.chromium.ChromiumUpdater.CRURegistrationTest."
+                           @"WorkQueueTest"
+      existenceCheckerPath:@"IGNORED"
+               targetQueue:queue];
 
   NSURL* emit_text_nsurl = nil;
   ASSERT_NO_FATAL_FAILURE(GetEmitTextNSURL(&emit_text_nsurl));
@@ -304,6 +324,89 @@ TEST(CRURegistrationTest, WorkQueueOneItem) {
 
 TEST(CRURegistrationTest, WorkQueueThreeItems) {
   ASSERT_NO_FATAL_FAILURE(TestWorkQueueImpl(3));
+}
+
+TEST(CRURegistrationTest, WrapNoError) {
+  CRURegistration* registration = [[CRURegistration alloc]
+             initWithAppId:
+                 @"org.chromium.ChromiumUpdater.CRURegistrationTest.WrapError"
+      existenceCheckerPath:@"IGNORED"];
+
+  EXPECT_FALSE([registration wrapError:nil withStdout:nil andStderr:nil]);
+  EXPECT_FALSE([registration wrapError:nil
+                            withStdout:@"irrelevant"
+                             andStderr:@"irrelevant"]);
+  EXPECT_FALSE([registration wrapError:nil
+                            withStdout:nil
+                             andStderr:@"irrelevant"]);
+  EXPECT_FALSE([registration wrapError:nil
+                            withStdout:@"irrelevant"
+                             andStderr:@"nil"]);
+}
+
+// Verify that `wrapError:withStdout:andStderr:` correctly identifies an NSTask
+// error from attempting to run a nonexistent file as "helper not found".
+TEST(CRURegistrationTest, WrapMissingTaskTargetError) {
+  CRURegistration* registration = [[CRURegistration alloc]
+             initWithAppId:
+                 @"org.chromium.ChromiumUpdater.CRURegistrationTest.WrapError"
+      existenceCheckerPath:@"IGNORED"];
+
+  // Create an NSTask configured to execute a file that does not exist and
+  // capture the error that ensues from running it.
+  base::ScopedTempDir empty_dir;
+  ASSERT_TRUE(empty_dir.CreateUniqueTempDir());
+  NSURL* nonexistent_path = base::apple::FilePathToNSURL(
+      empty_dir.GetPath().AppendASCII("nonexistent"));
+  NSTask* will_fail = [[NSTask alloc] init];
+  will_fail.executableURL = nonexistent_path;
+  NSError* bad_task_error;
+  ASSERT_FALSE([will_fail launchAndReturnError:&bad_task_error]);
+  ASSERT_TRUE(bad_task_error);
+
+  NSError* wrapped_error = [registration wrapError:bad_task_error
+                                        withStdout:nil
+                                         andStderr:nil];
+  EXPECT_TRUE(wrapped_error);
+  EXPECT_NSEQ(wrapped_error.domain, CRURegistrationErrorDomain);
+  EXPECT_EQ(wrapped_error.code, CRURegistrationErrorHelperNotFound);
+}
+
+TEST(CRURegistrationTest, WrapErrorUnchanged) {
+  CRURegistration* registration = [[CRURegistration alloc]
+             initWithAppId:
+                 @"org.chromium.ChromiumUpdater.CRURegistrationTest.WrapError"
+      existenceCheckerPath:@"IGNORED"];
+
+  NSError* registration_error =
+      [NSError errorWithDomain:CRURegistrationErrorDomain
+                          code:CRURegistrationErrorTaskFailed
+                      userInfo:@{@"test-key" : @"test-value"}];
+  NSError* wrapped_reg_error = [registration wrapError:registration_error
+                                            withStdout:@"discarded"
+                                             andStderr:@"discarded"];
+  EXPECT_NSEQ(wrapped_reg_error.domain, CRURegistrationErrorDomain);
+  EXPECT_EQ(wrapped_reg_error.code, CRURegistrationErrorTaskFailed);
+  EXPECT_NSEQ(wrapped_reg_error.userInfo[@"test-key"], @"test-value");
+  EXPECT_FALSE(wrapped_reg_error.userInfo[CRUStdoutKey]);
+  EXPECT_FALSE(wrapped_reg_error.userInfo[CRUStderrKey]);
+  EXPECT_FALSE(wrapped_reg_error.userInfo[NSUnderlyingErrorKey]);
+
+  NSError* internal_error =
+      [NSError errorWithDomain:CRURegistrationInternalErrorDomain
+                          code:CRURegistrationInternalErrorUnrecognized
+                      userInfo:@{@"test-key" : @"test-value"}];
+  NSError* wrapped_internal_error = [registration wrapError:internal_error
+                                                 withStdout:@"discarded"
+                                                  andStderr:@"discarded"];
+  EXPECT_NSEQ(wrapped_internal_error.domain,
+              CRURegistrationInternalErrorDomain);
+  EXPECT_EQ(wrapped_internal_error.code,
+            CRURegistrationInternalErrorUnrecognized);
+  EXPECT_NSEQ(wrapped_internal_error.userInfo[@"test-key"], @"test-value");
+  EXPECT_FALSE(wrapped_internal_error.userInfo[CRUStdoutKey]);
+  EXPECT_FALSE(wrapped_internal_error.userInfo[CRUStderrKey]);
+  EXPECT_FALSE(wrapped_internal_error.userInfo[NSUnderlyingErrorKey]);
 }
 
 }  // namespace

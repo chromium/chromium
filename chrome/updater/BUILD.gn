@@ -956,6 +956,7 @@ if (is_win || is_mac || is_linux) {
         "mac/setup/wake_task_unittest.mm",
         "policy/mac/managed_preference_policy_manager_impl_unittest.mm",
         "policy/mac/managed_preference_policy_manager_unittest.cc",
+        "test/integration_tests_mac.h",
         "test/integration_tests_mac.mm",
         "util/util_mac_unittest.mm",
       ]
@@ -964,6 +965,7 @@ if (is_win || is_mac || is_linux) {
         ":ks_ticket",
         "//chrome/updater/mac:ksadmin_lib",
         "//chrome/updater/mac:privileged_helper_sources",
+        "//chrome/updater/mac/client_lib:public_sources",
         "//chrome/updater/mac/client_lib:test_sources",
         "//chrome/updater/net/mac/mojom",
         "//third_party/ocmock",

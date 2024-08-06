@@ -25,6 +25,26 @@ extern NSString* const CRURegistrationInternalErrorDomain;
  */
 extern NSString* const CRUErrnoKey;
 
+/**
+ * NSError userInfo dict key mapped to the string captured from the stderr
+ * output of a command-line tool invoked by CRURegistration. This error is
+ * usually intended to be human-readable, rather than machine-readable.
+ */
+extern NSString* const CRUStderrKey;
+
+/**
+ * NSError userInfo dict key mapped to the string captured from the stdout
+ * output of a command-line tool invoked by CRURegistration. May contain partial
+ * or incorrect output from the command that failed.
+ */
+extern NSString* const CRUStdoutKey;
+
+/**
+ * NSError userInfo dict key mapped to the return code of a failing task (as
+ * an NSNumber wrapping NSInteger).
+ */
+extern NSString* const CRUReturnCodeKey;
+
 typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
     /**
      * CRURegistration couldn't read a stream (stdout or stderr) when running
@@ -37,6 +57,14 @@ typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
      * CRURegistration couldn't find the updater or the updater installer.
      */
     CRURegistrationErrorHelperNotFound = 2,
+
+    /**
+     * The updater component invoked by CRURegistration returned an error. Its
+     * error message is available in the error's user data under CRUStderrKey.
+     * Any partial output, usable for debugging purposes, is available under
+     * CRUStdoutKey.
+     */
+    CRURegistrationErrorTaskFailed = 3,
 };
 
 /**
@@ -59,10 +87,14 @@ typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
  * typically should not be the main queue.
  *
  * @param appId The ID of the app this CRURegistration instance operates on.
+ * @param xcPath The absolute path of the application bundle for the instance
+ *     of the app this CRURegistration operates on, or another path the updater
+ *     registers to verify the existence of an app on disk.
  * @param targetQueue Dispatch queue for callbacks and internal operations.
  *     If this queue is blocked, CRURegistration will get stuck.
  */
 - (instancetype)initWithAppId:(NSString*)appId
+         existenceCheckerPath:(NSString*)xcPath
                   targetQueue:(dispatch_queue_t)targetQueue
     NS_DESIGNATED_INITIALIZER;
 
@@ -72,12 +104,17 @@ typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
  * queue for execution (with the specified quality of service).
  *
  * @param appId The ID of the app this CRURegistration instance operates on.
+ * @param xcPath The absolute path of the application bundle for the instance
+ *     of the app this CRURegistration operates on, or another path the updater
+ *     registers to verify the existence of an app on disk.
  * @param qos Identifier for the global concurrent queue to use for callbacks
  *     and internal operations. See Apple's documentation for
  *     `dispatch_get_global_queue` for more details:
  *     https://developer.apple.com/documentation/dispatch/1452927-dispatch_get_global_queue
  */
-- (instancetype)initWithAppId:(NSString*)appId qos:(dispatch_qos_class_t)qos;
+- (instancetype)initWithAppId:(NSString*)appId
+         existenceCheckerPath:(NSString*)xcPath
+                          qos:(dispatch_qos_class_t)qos;
 
 /**
  * Initializes a CRURegistration instance to manage Chromium Updater's
@@ -85,13 +122,33 @@ typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
  * global concurrent queue for execution.
  *
  * @param appId The ID of the app this CRURegistration instance operates on.
+ * @param xcPath The absolute path of the application bundle for the instance
+ *     of the app this CRURegistration operates on, or another path the updater
+ *     registers to verify the existence of an app on disk.
  */
-- (instancetype)initWithAppId:(NSString*)appId;
+- (instancetype)initWithAppId:(NSString*)appId
+         existenceCheckerPath:(NSString*)xcPath;
 
 /**
  * CRURegistration cannot be initialized without an app ID.
  */
 - (instancetype)init NS_UNAVAILABLE;
+
+/**
+ * Asynchronously retrieve the tag for the registered app.
+ *
+ * `reply` will be dispatched to the target queue when tag reading has completed
+ * or failed. If the tag can be read successfully, it will be passed as the
+ * NSString* argument of the reply block and the NSError* argument will be nil.
+ * If the tag cannot be read, the NSString* will be nil while the NSError*
+ * will contain a descriptive error.
+ *
+ * If the tag is empty, the NSString* argument will be the empty string (and
+ * there is no error). If no app with the provided ID is registered or the
+ * updater is not installed, an error occurs.
+ */
+- (void)fetchTagWithReply:(void (^)(NSString* _Nullable,
+                                    NSError* _Nullable))reply;
 
 @end
 

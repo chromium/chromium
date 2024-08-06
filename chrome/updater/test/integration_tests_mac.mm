@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/updater/test/integration_tests_mac.h"
+
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -34,6 +36,8 @@
 #include "chrome/updater/activity.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants_builder.h"
+#import "chrome/updater/mac/client_lib/CRURegistration-Private.h"
+#import "chrome/updater/mac/client_lib/CRURegistration.h"
 #include "chrome/updater/mac/privileged_helper/service.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
@@ -47,6 +51,7 @@
 #include "chrome/updater/util/util.h"
 #include "components/crx_file/crx_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
 
 namespace updater::test {
@@ -550,6 +555,111 @@ void ExpectKSAdminFetchTag(UpdaterScope scope,
   }
 
   ExpectKSAdminResult(scope, elevate, switches, std::move(want_tag), want_exit);
+}
+
+void ExpectCRURegistrationCannotFindKSAdmin() {
+  @autoreleasepool {
+    CRURegistration* registration = [[CRURegistration alloc]
+               initWithAppId:@"org.chromium.ChromiumUpdater.CannotFindKSAdmin"
+        existenceCheckerPath:@"IGNORED during this test"];
+    NSURL* got_ksadmin = [registration syncFindBestKSAdmin];
+    EXPECT_FALSE(got_ksadmin)
+        << "unexpectedly found ksadmin: "
+        << base::SysNSStringToUTF8(got_ksadmin.absoluteString);
+  }
+}
+
+void ExpectCRURegistrationFindsKSAdmin(UpdaterScope scope) {
+  @autoreleasepool {
+    CRURegistration* registration = [[CRURegistration alloc]
+               initWithAppId:@"org.chromium.ChromiumUpdater.FindsKSAdmin"
+        existenceCheckerPath:@"IGNORED during this test"];
+    NSURL* got_ksadmin = [registration syncFindBestKSAdmin];
+    EXPECT_TRUE(got_ksadmin);
+    EXPECT_TRUE([got_ksadmin isFileURL]);
+    base::FilePath got_ksadmin_path(base::apple::NSURLToFilePath(got_ksadmin));
+    EXPECT_FALSE(got_ksadmin_path.empty());
+    got_ksadmin_path = base::MakeAbsoluteFilePath(got_ksadmin_path);
+    EXPECT_FALSE(got_ksadmin_path.empty());
+
+    std::optional<base::FilePath> expected_ksadmin_path(GetKSAdminPath(scope));
+    ASSERT_TRUE(expected_ksadmin_path);
+    EXPECT_FALSE(expected_ksadmin_path->empty());
+
+    EXPECT_TRUE(base::FilePath::CompareEqualIgnoreCase(
+        expected_ksadmin_path->value(), got_ksadmin_path.value()))
+        << "unexpected ksadmin path.\n\twant: "
+        << expected_ksadmin_path->value()
+        << "\n\t got: " << got_ksadmin_path.value();
+  }
+}
+
+void ExpectCRURegistrationCannotFetchTag(const std::string& app_id,
+                                         const base::FilePath& xc_path) {
+  @autoreleasepool {
+    NSString* ns_xc_path = base::apple::FilePathToNSString(xc_path);
+    ASSERT_TRUE(ns_xc_path) << "test issue - xc_path was not valid";
+    CRURegistration* registration =
+        [[CRURegistration alloc] initWithAppId:base::SysUTF8ToNSString(app_id)
+                          existenceCheckerPath:ns_xc_path];
+
+    NSConditionLock* result_lock =
+        [[NSConditionLock alloc] initWithCondition:0];
+    __block NSString* got_tag = nil;
+    __block NSError* got_error = nil;
+
+    [registration fetchTagWithReply:^(NSString* tag, NSError* error) {
+      [result_lock lock];
+      got_tag = tag;
+      got_error = error;
+      [result_lock unlockWithCondition:1];
+    }];
+
+    ASSERT_TRUE([result_lock
+        lockWhenCondition:1
+               beforeDate:[NSDate dateWithTimeIntervalSinceNow:10.0]]);
+    absl::Cleanup result_unlocker = ^{
+      [result_lock unlock];
+    };
+
+    EXPECT_FALSE(got_tag) << base::SysNSStringToUTF8(got_tag);
+    ASSERT_TRUE(got_error);
+  }
+}
+
+void ExpectCRURegistrationFetchesTag(const std::string& app_id,
+                                     const base::FilePath& xc_path,
+                                     const std::string& want_tag) {
+  @autoreleasepool {
+    NSString* ns_xc_path = base::apple::FilePathToNSString(xc_path);
+    ASSERT_TRUE(ns_xc_path) << "test issue - xc_path was not valid";
+    CRURegistration* registration =
+        [[CRURegistration alloc] initWithAppId:base::SysUTF8ToNSString(app_id)
+                          existenceCheckerPath:ns_xc_path];
+
+    NSConditionLock* result_lock =
+        [[NSConditionLock alloc] initWithCondition:0];
+    __block NSString* got_tag = nil;
+    __block NSError* got_error = nil;
+
+    [registration fetchTagWithReply:^(NSString* tag, NSError* error) {
+      [result_lock lock];
+      got_tag = tag;
+      got_error = error;
+      [result_lock unlockWithCondition:1];
+    }];
+
+    ASSERT_TRUE([result_lock
+        lockWhenCondition:1
+               beforeDate:[NSDate dateWithTimeIntervalSinceNow:10.0]]);
+    absl::Cleanup result_unlocker = ^{
+      [result_lock unlock];
+    };
+
+    EXPECT_FALSE(got_error) << base::SysNSStringToUTF8([got_error description]);
+    ASSERT_TRUE(got_tag);
+    EXPECT_EQ(want_tag, base::SysNSStringToUTF8(got_tag));
+  }
 }
 
 }  // namespace updater::test
