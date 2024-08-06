@@ -1430,6 +1430,35 @@ reviewer.
 </histogram>
 
 <histogram
+    name="PrivacySandbox.PrivateAggregation.Host.NumContributionMergeKeysInPipe{ApiAndDelay}"
+    units="contributions if merged" expires_after="2025-06-21">
+  <owner>alexmt@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Records the number of contributions sent through a host's mojo pipe,
+    including contributions dropped due to the contribution limit. (To avoid
+    unbounded memory usage, we don't track more than 10k dropped contributions.)
+    Counts contributions as if they were merged, i.e. counts the number of merge
+    keys. Only records if the contribution merging feature is enabled. Recorded
+    for every PrivateAggregationHost mojo pipe {ApiAndDelay}.
+  </summary>
+  <token key="ApiAndDelay">
+    <variant name="" summary="regardless of the calling API"/>
+    <variant name=".ProtectedAudience"
+        summary="with Protected Audience specified as the API"/>
+    <variant name=".SharedStorage"
+        summary="with Shared Storage specified as the API"/>
+    <variant name=".SharedStorage.FullDelay"
+        summary="with Shared Storage specified as the API and with *no*
+                 timeout set (causing the report to be sent after a longer,
+                 randomized delay"/>
+    <variant name=".SharedStorage.ReducedDelay"
+        summary="with Shared Storage specified as the API and with a timeout
+                 set (causing the report to be sent after only a short delay)"/>
+  </token>
+</histogram>
+
+<histogram
     name="PrivacySandbox.PrivateAggregation.Host.PipeOpenDurationOnShutdown"
     units="ms" expires_after="2025-01-05">
   <owner>alexmt@chromium.org</owner>
@@ -1451,10 +1480,11 @@ reviewer.
     Records whether a PrivateAggregationHost mojo pipe successfully resulted in
     a report request being forwarded to the manager and, if not, the reason for
     failure or no report. Further, breaks out the case of too many
-    contributions, where the request is forwarded but is truncated. Note that,
-    even if successfully forwarded, the report may still be rejected by the
-    budgeter, manager or in the aggregation_service layer. Recorded for every
-    mojo pipe on disconnection.
+    contributions, where the request is forwarded but is truncated. (Note that a
+    report being dropped due to zero value does not count as truncation.) Note
+    that, even if successfully forwarded, the report may still be rejected by
+    the budgeter, manager or in the aggregation_service layer. Recorded for
+    every mojo pipe on disconnection.
   </summary>
 </histogram>
 
