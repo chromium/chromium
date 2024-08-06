@@ -357,32 +357,33 @@ private_aggregation_promise_test(async () => {
 }, 'run() that calls Private Aggregation with too big filtering ID for largest max bytes possible');
 
 private_aggregation_promise_test(async () => {
-  await addModuleOnce("resources/shared-storage-module.js");
+  await addModuleOnce('resources/shared-storage-module.js');
 
   const data = {
     enableDebugMode: true,
     contributions: [
-        {bucket: 1n, value: 2, filteringId: 1n},
-        {bucket: 1n, value: 2, filteringId: 2n}]
+      {bucket: 1n, value: 2, filteringId: 1n},
+      {bucket: 1n, value: 2, filteringId: 2n}
+    ]
   };
-  await sharedStorage.run("contribute-to-histogram", {data, keepAlive: true});
+  await sharedStorage.run('contribute-to-histogram', {data, keepAlive: true});
 
   const reports = await pollReports(
-      "/.well-known/private-aggregation/report-shared-storage")
+      '/.well-known/private-aggregation/report-shared-storage')
   assert_equals(reports.length, 1);
 
   const report = JSON.parse(reports[0]);
-  verifyReport(report, /*api=*/'shared-storage', /*is_debug_enabled=*/true,
-               /*debug_key=*/undefined,
-               /*expected_cleartext_payload=*/
-               MULTIPLE_CONTRIBUTIONS_DIFFERING_IN_FILTERING_ID_EXAMPLE_PAYLOAD);
+  verifyReport(
+      report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
+      /*debug_key=*/ undefined,
+      /*expected_cleartext_payload=*/
+      MULTIPLE_CONTRIBUTIONS_DIFFERING_IN_FILTERING_ID_EXAMPLE_PAYLOAD);
 
   const debug_reports = await pollReports(
-      "/.well-known/private-aggregation/debug/report-shared-storage")
+      '/.well-known/private-aggregation/debug/report-shared-storage')
   assert_equals(debug_reports.length, 1);
 
   verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
-
 }, 'run() that calls Private Aggregation with contributions that match buckets but not filtering IDs');
 
 </script>
