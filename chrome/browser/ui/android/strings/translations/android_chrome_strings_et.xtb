@@ -42,6 +42,7 @@
 <translation id="1177863135347784049">Kohandatud</translation>
 <translation id="1181037720776840403">Eemalda</translation>
 <translation id="1183189057400844278">Selleks, et saaksite oma Google'i kontol alati kasutada paroole, kinnitage oma isik</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{Märguanded pole 1 saidi puhul lubatud}other{Märguanded pole # saidi puhul lubatud}}</translation>
 <translation id="1187810343066461819">Kustuta sellest autost ka järjehoidjad, ajalugu ja muu</translation>
 <translation id="1193729455103054076">Kas kasutada tugevat parooli?</translation>
 <translation id="1197267115302279827">Teisalda järjehoidjad</translation>
@@ -1308,6 +1309,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7105047059074518658">Logige sisse, et mitmes seadmes sirvimine lihtsamaks muuta</translation>
 <translation id="7106762743910369165">Teie brauserit haldab teie organisatsioon</translation>
 <translation id="7111394291981742152">Chrome annab teile suurema kontrolli nähtavate reklaamide üle ja piirab teavet, mida saidid teile isikupärastatud reklaamide näitamisel saavad teie kohta õppida.</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{1 saidi load on üle vaadatud}other{# saidi load on üle vaadatud}}</translation>
 <translation id="7138678301420049075">Muu</translation>
 <translation id="7140829094791862589">Sortimisalus: käsitsi</translation>
 <translation id="7146622961999026732">Näib, et need saidid ja rakendused on teile olulised:</translation>

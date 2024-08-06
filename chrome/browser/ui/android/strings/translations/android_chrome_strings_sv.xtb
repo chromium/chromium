@@ -42,6 +42,7 @@
 <translation id="1177863135347784049">Anpassat</translation>
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="1183189057400844278">Verifiera din identitet för att se till att du alltid kan använda lösenorden i Google-kontot</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{Aviseringar tillåts inte för 1 webbplats}other{Aviseringar tillåts inte för # webbplatser}}</translation>
 <translation id="1187810343066461819">Radera även bokmärken, historik med mera från den här bilen</translation>
 <translation id="1193729455103054076">Vill du använda ett starkt lösenord?</translation>
 <translation id="1197267115302279827">Flytta bokmärken</translation>
@@ -1309,6 +1310,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7105047059074518658">Logga in och surfa enklare på olika enheter</translation>
 <translation id="7106762743910369165">Webbläsaren hanteras av din organisation</translation>
 <translation id="7111394291981742152">Chrome ger dig större kontroll över annonserna du ser och begränsar vilken information webbplatser kan få om dig när de visar anpassade annonser.</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{Behörigheter har granskats för 1 webbplats}other{Behörigheter har granskats för # webbplatser}}</translation>
 <translation id="7138678301420049075">Övrigt</translation>
 <translation id="7140829094791862589">Sortera manuellt</translation>
 <translation id="7146622961999026732">De här webbplatserna och apparna verkar vara viktiga för dig:</translation>

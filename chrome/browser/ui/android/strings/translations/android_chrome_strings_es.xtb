@@ -42,6 +42,7 @@
 <translation id="1177863135347784049">Personalizado</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1183189057400844278">Para asegurarte de que siempre puedas usar las contraseñas en tu cuenta de Google, verifica tu identidad</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{Notificaciones no permitidas en 1 sitio}other{Notificaciones no permitidas en # sitios}}</translation>
 <translation id="1187810343066461819">Eliminar también de este coche los marcadores, el historial y otros datos</translation>
 <translation id="1193729455103054076">¿Usar contraseña segura?</translation>
 <translation id="1197267115302279827">Mover marcadores</translation>
@@ -1308,6 +1309,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7105047059074518658">Inicia sesión para navegar más fácilmente en varios dispositivos</translation>
 <translation id="7106762743910369165">Tu organización es la encargada de gestionar tu navegador</translation>
 <translation id="7111394291981742152">Chrome te ofrece más control sobre los anuncios que ves y limita la información que los sitios pueden obtener sobre ti cuando te muestran anuncios personalizados</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{Permisos revisados de 1 sitio}other{Permisos revisados de # sitios}}</translation>
 <translation id="7138678301420049075">Otro</translation>
 <translation id="7140829094791862589">Ordenar manualmente</translation>
 <translation id="7146622961999026732">Parece que estos sitios y estas aplicaciones son importantes para ti:</translation>

@@ -42,6 +42,7 @@
 <translation id="1177863135347784049">Sérsniðið</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
 <translation id="1183189057400844278">Staðfestu að þetta sért þú til að ganga úr skugga um að geta alltaf notað aðgangsorðin á Google-reikningnum þínum</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{Tilkynningar eru ekki leyfðar fyrir eitt vefsvæði}one{Tilkynningar eru ekki leyfðar fyrir # vefsvæði}other{Tilkynningar eru ekki leyfðar fyrir # vefsvæði}}</translation>
 <translation id="1187810343066461819">Eyða líka bókamerkjum, ferli og fleira úr þessum bíl</translation>
 <translation id="1193729455103054076">Nota traust aðgangsorð?</translation>
 <translation id="1197267115302279827">Færa bókamerki</translation>
@@ -1308,6 +1309,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7105047059074518658">Skráðu þig inn svo að vafrinn virki betur í öllum tækjunum þínum</translation>
 <translation id="7106762743910369165">Vafranum er stjórnað af fyrirtækinu þínu</translation>
 <translation id="7111394291981742152">Chrome veitir þér betri stjórn á auglýsingunum sem þú sérð og takmarkar upplýsingar um þig sem vefsvæði safna þegar þau birta þér sérsniðnar auglýsingar.</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{Farið yfir heimildir fyrir eitt vefsvæði}one{Farið yfir heimildir fyrir # vefsvæði}other{Farið yfir heimildir fyrir # vefsvæði}}</translation>
 <translation id="7138678301420049075">Annað</translation>
 <translation id="7140829094791862589">Raða handvirkt</translation>
 <translation id="7146622961999026732">Þessi svæði og forrit virðast vera þér mikilvæg:</translation>

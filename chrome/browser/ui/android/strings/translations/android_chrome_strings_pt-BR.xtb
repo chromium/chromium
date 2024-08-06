@@ -42,6 +42,7 @@
 <translation id="1177863135347784049">Personalizado</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1183189057400844278">Confirme sua identidade para sempre poder usar as senhas na sua Conta do Google</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{As notificações de 1 site foram bloqueadas}one{As notificações de # site foram bloqueadas}other{As notificações de # sites foram bloqueadas}}</translation>
 <translation id="1187810343066461819">Excluir também favoritos, histórico e muito mais deste carro</translation>
 <translation id="1193729455103054076">Usar uma senha forte?</translation>
 <translation id="1197267115302279827">Mover favoritos</translation>
@@ -1309,6 +1310,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7105047059074518658">Faça login para facilitar a navegação em vários dispositivos</translation>
 <translation id="7106762743910369165">O navegador é gerenciado pela sua organização</translation>
 <translation id="7111394291981742152">O Chrome oferece mais controle sobre os anúncios mostrados e limita o que os sites podem saber sobre você quando mostram anúncios personalizados</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{Permissões revisadas para 1 site}one{Permissões revisadas para # site}other{Permissões revisadas para # sites}}</translation>
 <translation id="7138678301420049075">Outro</translation>
 <translation id="7140829094791862589">Classificar por ordem manual</translation>
 <translation id="7146622961999026732">Estes sites e apps parecem importantes para você:</translation>

@@ -42,6 +42,7 @@
 <translation id="1177863135347784049">Tùy chỉnh</translation>
 <translation id="1181037720776840403">Xóa</translation>
 <translation id="1183189057400844278">Xác minh danh tính của bạn để đảm bảo bạn luôn dùng được mật khẩu trong Tài khoản Google</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{Không cho phép 1 trang web gửi thông báo}other{Không cho phép # trang web gửi thông báo}}</translation>
 <translation id="1187810343066461819">Xoá cả dấu trang, nhật ký và các dữ liệu khác khỏi ô tô này</translation>
 <translation id="1193729455103054076">Dùng mật khẩu mạnh?</translation>
 <translation id="1197267115302279827">Di chuyển dấu trang</translation>
@@ -1308,6 +1309,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7105047059074518658">Đăng nhập để duyệt xem một cách dễ dàng hơn trên các thiết bị</translation>
 <translation id="7106762743910369165">Trình duyệt này do tổ chức của bạn quản lý</translation>
 <translation id="7111394291981742152">Chrome giúp bạn có nhiều quyền kiểm soát hơn đối với những quảng cáo mà bạn thấy và hạn chế những thông tin mà các trang web có thể tìm hiểu về bạn khi cho bạn xem quảng cáo được cá nhân hoá.</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{Đã xem xét các quyền của 1 trang web}other{Đã xem xét các quyền của # trang web}}</translation>
 <translation id="7138678301420049075">Khác</translation>
 <translation id="7140829094791862589">Tự sắp xếp thứ tự</translation>
 <translation id="7146622961999026732">Các trang web và ứng dụng này có vẻ quan trọng đối với bạn:</translation>

@@ -11254,7 +11254,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
       <ph name="LIST_ITEM" />Futtassa a Chrome kapcsolati diagnosztikát
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Kép a képben</translation>
-<translation id="9166253503936244008">Olvassa be ezt a QR-kódot azzal az eszközzel, ramely a(z) <ph name="APP_NAME" /> alkalmazáshoz használni kívánt azonosítókulccsal rendelkezik.</translation>
+<translation id="9166253503936244008">Olvassa be ezt a QR-kódot azzal az eszközzel, amely a(z) <ph name="APP_NAME" /> alkalmazáshoz használni kívánt azonosítókulccsal rendelkezik.</translation>
 <translation id="9167063903968449027">Olvasólista megjelenítése</translation>
 <translation id="9167450455589251456">A profil nem támogatott</translation>
 <translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> fiók</translation>

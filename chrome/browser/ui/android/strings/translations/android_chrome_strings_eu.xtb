@@ -42,6 +42,7 @@
 <translation id="1177863135347784049">Pertsonalizatua</translation>
 <translation id="1181037720776840403">Kendu</translation>
 <translation id="1183189057400844278">Google-ko kontuko pasahitzak beti erabili ahal izango dituzula ziurtatzeko, egiaztatu zeu zarela</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{Webgune batek ez du jakinarazpenak bidaltzeko baimenik}other{# webgunek ez dute jakinarazpenak bidaltzeko baimenik}}</translation>
 <translation id="1187810343066461819">Ezabatu laster-markak, historia eta beste datu batzuk ere autotik</translation>
 <translation id="1193729455103054076">Pasahitz konplexu bat erabili nahi duzu?</translation>
 <translation id="1197267115302279827">Mugitu laster-markak</translation>
@@ -1308,6 +1309,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7105047059074518658">Hasi saioa errazago arakatzeko gailu guztietan</translation>
 <translation id="7106762743910369165">Zure erakundeak kudeatzen du arakatzailea</translation>
 <translation id="7111394291981742152">Chrome-k ikusten dituzun iragarkien gaineko kontrol handiagoa ematen dizu, eta webguneek iragarki pertsonalizatuak erakusten dizkizutenean zuri buruz atzi dezaketen informazioa mugatzen du.</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{Webgune baten baimenak berrikusi dira}other{# webguneren baimenak berrikusi dira}}</translation>
 <translation id="7138678301420049075">Beste bat</translation>
 <translation id="7140829094791862589">Ordenatu eskuz</translation>
 <translation id="7146622961999026732">Webgune eta aplikazio hauek garrantzitsuak dira zuretzat:</translation>

@@ -42,6 +42,7 @@
 <translation id="1177863135347784049">Egyéni</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
 <translation id="1183189057400844278">Annak érdekében, hogy mindig használhassa a Google-fiókjában lévő jelszavakat, igazolja személyazonosságát</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{Az értesítések nem engedélyezettek 1 webhelyen}other{Az értesítések nem engedélyezettek # webhelyen}}</translation>
 <translation id="1187810343066461819">A könyvjelzők, előzmények és egyebek is törlődjenek erről az autóról</translation>
 <translation id="1193729455103054076">Erős jelszót kíván használni?</translation>
 <translation id="1197267115302279827">Könyvjelzők áthelyezése</translation>
@@ -1308,6 +1309,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7105047059074518658">Jelentkezzen be, hogy egyszerűbben böngészhessen eszközökön átnyúlóan</translation>
 <translation id="7106762743910369165">Böngészőjét a szervezete kezeli.</translation>
 <translation id="7111394291981742152">A Chrome nagyobb irányítást ad afelett, hogy milyen hirdetések jelenjenek meg Önnek, és korlátozza, hogy mely webhelyek tudhatnak meg Önről információkat, amikor személyre szabott hirdetéseket jelenítenek meg.</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{1 webhely engedélyei felülvizsgálva}other{# webhely engedélyei felülvizsgálva}}</translation>
 <translation id="7138678301420049075">Egyéb</translation>
 <translation id="7140829094791862589">Manuális rendezés</translation>
 <translation id="7146622961999026732">Úgy tűnik, ezek a webhelyek és alkalmazások fontosak Önnek:</translation>

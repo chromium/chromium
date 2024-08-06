@@ -42,6 +42,7 @@
 <translation id="1177863135347784049">Benutzerdefiniert</translation>
 <translation id="1181037720776840403">Entfernen</translation>
 <translation id="1183189057400844278">Bestätige deine Identität, damit du jederzeit die Passwörter in deinem Google-Konto verwenden kannst</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{Benachrichtigungen nicht zulässig für 1 Website}other{Benachrichtigungen nicht zulässig für # Websites}}</translation>
 <translation id="1187810343066461819">Auch Lesezeichen, Verlauf und mehr aus diesem Auto löschen</translation>
 <translation id="1193729455103054076">Starkes Passwort verwenden?</translation>
 <translation id="1197267115302279827">Lesezeichen verschieben</translation>
@@ -1308,6 +1309,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7105047059074518658">Anmelden, um Chrome noch einfacher auf mehreren Geräten zu nutzen</translation>
 <translation id="7106762743910369165">Dein Browser wird von deiner Organisation verwaltet</translation>
 <translation id="7111394291981742152">Mit Chrome hast du mehr Kontrolle darüber, welche Werbung du siehst – außerdem kannst du einschränken, was Websites über dich erfahren können, wenn sie dir personalisierte Werbung zeigen.</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{Berechtigungen für 1 Website überprüft}other{Berechtigungen für # Websites überprüft}}</translation>
 <translation id="7138678301420049075">Sonstiges</translation>
 <translation id="7140829094791862589">Manuelle Reihenfolge</translation>
 <translation id="7146622961999026732">Diese Websites und Apps scheinen dir wichtig zu sein:</translation>

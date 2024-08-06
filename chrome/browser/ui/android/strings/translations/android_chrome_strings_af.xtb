@@ -42,6 +42,7 @@
 <translation id="1177863135347784049">Gepasmaak</translation>
 <translation id="1181037720776840403">Verwyder</translation>
 <translation id="1183189057400844278">Verifieer dis jy om seker te maak dat jy altyd die wagwoorde in jou Google-rekening kan gebruik</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{Kennisgewings word vir 1 werf nie toegelaat nie}other{Kennisgewings word vir # werwe nie toegelaat nie}}</translation>
 <translation id="1187810343066461819">Vee ook boekmerke, geskiedenis en meer van hierdie motor uit</translation>
 <translation id="1193729455103054076">Gebruik sterk wagwoord?</translation>
 <translation id="1197267115302279827">Skuif boekmerke</translation>
@@ -1308,6 +1309,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7105047059074518658">Meld aan om makliker op alle toestelle te blaai</translation>
 <translation id="7106762743910369165">Jou organisasie bestuur jou blaaier</translation>
 <translation id="7111394291981742152">Chrome gee jou meer beheer oor die advertensies wat jy sien en beperk wat werwe oor jou kan uitvind wanneer hulle vir jou gepersonaliseerde advertensies wys.</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{Toestemmings is vir 1 werf gekontroleer}other{Toestemmings is vir # werwe gekontroleer}}</translation>
 <translation id="7138678301420049075">Ander</translation>
 <translation id="7140829094791862589">Sorteer orde handmatig</translation>
 <translation id="7146622961999026732">Dit lyk of hierdie werwe en apps vir jou belangrik is:</translation>

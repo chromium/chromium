@@ -42,6 +42,7 @@
 <translation id="1177863135347784049">Boshqa</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
 <translation id="1183189057400844278">Google hisobingizdagi parollardan istalgan vaqt foydalanish uchun shaxsingizni tasdiqlang</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{1 ta sayt uchun bildirishnomalarga ruxsat berilmagan}other{# ta sayt uchun bildirishnomalarga ruxsat berilmagan}}</translation>
 <translation id="1187810343066461819">Bukmarklar, tarix va boshqa maʼlumotlar ham avtomobildan oʻchirib tashlanadi</translation>
 <translation id="1193729455103054076">Kuchli parol ishlatilsinmi?</translation>
 <translation id="1197267115302279827">Xatcho‘plarni ko‘chirib o‘tkazish</translation>
@@ -1308,6 +1309,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7105047059074518658">Internetni turli qurilmalararo kezish uchun hisobga kiring</translation>
 <translation id="7106762743910369165">Brauzeringiz tashkilotingiz boshqaruvida</translation>
 <translation id="7111394291981742152">Chrome sizga koʻrsatiladigan reklamalar ustidan koʻproq nazorat beradi va saytlar sizga moslangan reklama chiqarganida siz haqingizda nimani bilishini cheklaydi.</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{1 ta sayt uchun ruxsatlar tekshirilgan}other{# ta sayt uchun ruxsatlar tekshirilgan}}</translation>
 <translation id="7138678301420049075">Boshqa</translation>
 <translation id="7140829094791862589">Qoʻlda saralash</translation>
 <translation id="7146622961999026732">Bu sayt va ilovalar siz uchun muhimga oʻxshaydi:</translation>

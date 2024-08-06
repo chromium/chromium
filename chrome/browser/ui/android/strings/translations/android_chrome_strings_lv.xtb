@@ -42,6 +42,7 @@
 <translation id="1177863135347784049">Pielāgota</translation>
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="1183189057400844278">Lai vienmēr varētu izmantot Google kontā saglabātās paroles, apstipriniet savu identitāti</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{Vienā vietnē nav atļauti paziņojumi.}zero{# vietnēs nav atļauti paziņojumi.}one{# vietnē nav atļauti paziņojumi.}other{# vietnēs nav atļauti paziņojumi.}}</translation>
 <translation id="1187810343066461819">Arī izdzēst grāmatzīmes, vēsturi un citu informāciju šajā automašīnas profilā</translation>
 <translation id="1193729455103054076">Vai izmantot drošu paroli?</translation>
 <translation id="1197267115302279827">Pārvietot grāmatzīmes</translation>
@@ -1308,6 +1309,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7105047059074518658">Pierakstieties, lai atvieglotu pārlūkošanu dažādās ierīcēs</translation>
 <translation id="7106762743910369165">Pārlūku pārvalda jūsu organizācija</translation>
 <translation id="7111394291981742152">Chrome nodrošina lielāku kontroli pār jums rādītajām reklāmām un ierobežo informāciju, ko vietnes var uzzināt par jums, kad tās rāda jums personalizētas reklāmas.</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{Vienai vietnei ir pārskatītas atļaujas.}zero{# vietnēm ir pārskatītas atļaujas.}one{# vietnei ir pārskatītas atļaujas.}other{# vietnēm ir pārskatītas atļaujas.}}</translation>
 <translation id="7138678301420049075">Cits</translation>
 <translation id="7140829094791862589">Kārtot manuāli</translation>
 <translation id="7146622961999026732">Šķiet, ka šīs vietnes un lietotnes jums ir svarīgas:</translation>

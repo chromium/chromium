@@ -42,6 +42,7 @@
 <translation id="1177863135347784049">Vlastní</translation>
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="1183189057400844278">Pokud chcete mít vždy možnost použít hesla ve svém účtu Google, ověřte svou totožnost</translation>
+<translation id="1183443789037147668">{NUM_SITES,plural, =1{1 web nemá povoleno zobrazovat oznámení}few{# weby nemají povoleno zobrazovat oznámení}many{# webu nemá povoleno zobrazovat oznámení}other{# webů nemá povoleno zobrazovat oznámení}}</translation>
 <translation id="1187810343066461819">Také z tohoto auta vymazat záložky, historii a další položky</translation>
 <translation id="1193729455103054076">Použít silné heslo?</translation>
 <translation id="1197267115302279827">Přesunutí záložek</translation>
@@ -1308,6 +1309,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7105047059074518658">Přihlaste se, abyste internet mohli snáze procházet na různých zařízeních</translation>
 <translation id="7106762743910369165">Váš prohlížeč je spravován vaší organizací</translation>
 <translation id="7111394291981742152">Chrome vám dává větší kontrolu nad reklamami, které se vám zobrazují, a omezuje, co se o vás weby mohou dozvědět, když vám zobrazují personalizované reklamy.</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{Byla zkontrolována oprávnění 1 webu}few{Byla zkontrolována oprávnění # webů}many{Byla zkontrolována oprávnění # webu}other{Byla zkontrolována oprávnění # webů}}</translation>
 <translation id="7138678301420049075">Ostatní</translation>
 <translation id="7140829094791862589">Seřadit ručně</translation>
 <translation id="7146622961999026732">Tyto weby a aplikace jsou pro vás zřejmě důležité:</translation>
