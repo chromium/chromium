@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/gfx/geometry/quad_f.h"
 
@@ -219,10 +220,7 @@ void Range::setStart(Node* ref_node,
 
   start_.Set(*ref_node, offset, child_node);
 
-  if (did_move_document ||
-      HasDifferentRootContainer(&start_.Container(), &end_.Container()) ||
-      compareBoundaryPoints(start_, end_, ASSERT_NO_EXCEPTION) > 0)
-    collapse(true);
+  CollapseIfNeeded(did_move_document, /*collapse_to_start=*/true);
 }
 
 void Range::setEnd(Node* ref_node,
@@ -248,10 +246,7 @@ void Range::setEnd(Node* ref_node,
 
   end_.Set(*ref_node, offset, child_node);
 
-  if (did_move_document ||
-      HasDifferentRootContainer(&start_.Container(), &end_.Container()) ||
-      compareBoundaryPoints(start_, end_, ASSERT_NO_EXCEPTION) > 0)
-    collapse(false);
+  CollapseIfNeeded(did_move_document, /*collapse_to_start=*/false);
 }
 
 void Range::setStart(const Position& start, ExceptionState& exception_state) {
@@ -268,10 +263,54 @@ void Range::setEnd(const Position& end, ExceptionState& exception_state) {
 
 void Range::collapse(bool to_start) {
   RangeUpdateScope scope(this);
-  if (to_start)
+  if (to_start) {
     end_ = start_;
-  else
+  } else {
     start_ = end_;
+  }
+  // If Range is collapsed, then the start and end endpoints are the same.
+  // It cannot be across a composed tree.
+  composed_range_ = nullptr;
+}
+
+void Range::CollapseIfNeeded(bool did_move_document, bool collapse_to_start) {
+  RangeBoundaryPoint original_start(start_);
+  RangeBoundaryPoint original_end(end_);
+
+  bool different_tree_scopes =
+      HasDifferentRootContainer(&start_.Container(), &end_.Container());
+  // If document moved, we are in different tree scopes, or start boundary point
+  // is after end boundary point, we should collapse the range.
+  if (did_move_document || different_tree_scopes ||
+      compareBoundaryPoints(start_, end_, ASSERT_NO_EXCEPTION) > 0) {
+    collapse(collapse_to_start);
+  } else {
+    // Else, if endpoints should stay as is, then we can return without checking
+    // the composed range.
+    composed_range_ = nullptr;
+    return;
+  }
+  // If endpoints are in different tree scopes, but in the same document, then
+  // we should compare boundary points across the flat tree to determine if
+  // composed range should be stored.
+  if (RuntimeEnabledFeatures::SelectionAcrossShadowDOMEnabled() &&
+      !did_move_document && different_tree_scopes) {
+    bool no_common_ancestor = false;
+    bool composed_start_before_or_equal_end =
+        ComparePositionsInFlatTree(
+            &original_start.Container(), original_start.Offset(),
+            &original_end.Container(), original_end.Offset(),
+            &no_common_ancestor) <= 0;
+    // If endpoints are not in the same flat tree, we do not store the composed
+    // range.
+    if (no_common_ancestor) {
+      return;
+    }
+    if (composed_start_before_or_equal_end) {
+      composed_range_ = MakeGarbageCollected<RangeBoundaryPoints>(
+          original_start, original_end);
+    }
+  }
 }
 
 bool Range::HasSameRoot(const Node& node) const {
@@ -337,10 +376,12 @@ int16_t Range::comparePoint(Node* ref_node,
     return 0;
 
   // compare to end, and point comes after
-  if (compareBoundaryPoints(ref_node, offset, &end_.Container(), end_.Offset(),
-                            exception_state) > 0 &&
-      !exception_state.HadException())
+  bool start_after_end =
+      compareBoundaryPoints(ref_node, offset, &end_.Container(), end_.Offset(),
+                            exception_state) > 0;
+  if (start_after_end && !exception_state.HadException()) {
     return 1;
+  }
 
   // point is in the middle of this range, or on the boundary points
   return 0;
@@ -408,7 +449,7 @@ int16_t Range::compareBoundaryPoints(Node* container_a,
   if (disconnected) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kWrongDocumentError,
-        "The two ranges are in separate documents.");
+        "The two ranges are in separate tree scopes.");
     return 0;
   }
   return result;
@@ -424,8 +465,9 @@ int16_t Range::compareBoundaryPoints(const RangeBoundaryPoint& boundary_a,
 
 bool Range::BoundaryPointsValid() const {
   DummyExceptionStateForTesting exception_state;
-  return compareBoundaryPoints(start_, end_, exception_state) <= 0 &&
-         !exception_state.HadException();
+  bool start_after_end =
+      compareBoundaryPoints(start_, end_, exception_state) > 0;
+  return !start_after_end && !exception_state.HadException();
 }
 
 void Range::deleteContents(ExceptionState& exception_state) {
@@ -1807,6 +1849,7 @@ void Range::Trace(Visitor* visitor) const {
   visitor->Trace(owner_document_);
   visitor->Trace(start_);
   visitor->Trace(end_);
+  visitor->Trace(composed_range_);
   ScriptWrappable::Trace(visitor);
 }
 

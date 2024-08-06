@@ -580,15 +580,15 @@ const StaticRangeVector DOMSelection::getComposedRanges(
   }
   // 2. Otherwise, let startNode be start node of the range associated with
   // this, and let startOffset be start offset of the range.
-  Node* startNode = range->startContainer();
-  unsigned startOffset = range->startOffset();
+  Node* startNode = range->composedStartContainer();
+  unsigned startOffset = range->composedStartOffset();
   // 3. Rescope startNode and startOffset with listed shadow roots.
   Rescope(startNode, startOffset, shadowRoots, /*isEnd=*/false);
 
   // 4. Let endNode be end node of the range associated with this, and let
   // endOffset be end offset of the range.
-  Node* endNode = range->endContainer();
-  unsigned endOffset = range->endOffset();
+  Node* endNode = range->composedEndContainer();
+  unsigned endOffset = range->composedEndOffset();
   // 5. Rescope endNode and endOffset with listed shadow roots.
   Rescope(endNode, endOffset, shadowRoots, /*isEnd=*/true);
 
@@ -610,11 +610,16 @@ void DOMSelection::Rescope(Node*& node,
   // 3. & 5. While node is a node, node's root is a shadow root, and
   // node's root is not a shadow-including inclusive ancestor of any of
   // shadowRoots, repeat these steps:
-  while (node && node->ContainingShadowRoot() &&
-         !shadowRoots.Contains(node->ContainingShadowRoot())) {
+  while (node) {
+    ShadowRoot* root = node->ContainingShadowRoot();
     Element* host = node->OwnerShadowHost();
-    if (!host) {
+    if (!root || !host) {
       return;
+    }
+    for (auto& shadowRoot : shadowRoots) {
+      if (root->IsShadowIncludingInclusiveAncestorOf(*shadowRoot)) {
+        return;
+      }
     }
     // 1. Set node to node's root's host's parent.
     node = host->parentNode();

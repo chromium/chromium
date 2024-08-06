@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] getComposedRanges a sequence with a static range pointing to the shadow host when there is a forward selection that crosses shadow boundaries and the shadow tree is not specified as an argument
-  assert_equals: expected 1 but got 2
-[FAIL] getComposedRanges a sequence with a static range that crosses shadow boundaries when there is a forward selection that crosses shadow boundaries and the shadow tree is specified as an argument
-  assert_equals: expected Text node "hello, world" but got Element node <div id="container">a<div id="host"></div>b</div>
-Harness: the test ran to completion.
-
