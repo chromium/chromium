@@ -30,6 +30,10 @@ class MockPlusAddressHttpClient : public PlusAddressHttpClient {
                const std::string&,
                PlusAddressRequestCallback));
   MOCK_METHOD(void,
+              PreallocatePlusAddresses,
+              (PreallocatePlusAddressesCallback),
+              (override));
+  MOCK_METHOD(void,
               GetAllPlusAddresses,
               (PlusAddressMapRequestCallback),
               (override));

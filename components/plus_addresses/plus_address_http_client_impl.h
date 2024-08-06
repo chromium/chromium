@@ -60,6 +60,8 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
   void ConfirmPlusAddress(const url::Origin& origin,
                           const std::string& plus_address,
                           PlusAddressRequestCallback on_completed) override;
+  void PreallocatePlusAddresses(
+      PreallocatePlusAddressesCallback callback) override;
   void GetAllPlusAddresses(PlusAddressMapRequestCallback on_completed) override;
   void Reset() override;
 

@@ -16,6 +16,8 @@
 #include "base/json/json_writer.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/types/expected.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_parsing_utils.h"
@@ -237,6 +239,17 @@ void PlusAddressHttpClientImpl::ConfirmPlusAddress(
                      base::Unretained(this), origin, plus_address,
                      WrapAsAutorunCallback(std::move(on_completed),
                                            base::unexpected(kSignoutError))));
+}
+
+void PlusAddressHttpClientImpl::PreallocatePlusAddresses(
+    PreallocatePlusAddressesCallback callback) {
+  // TODO: crbug.com/324559503 - implement.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          std::move(callback),
+          base::unexpected(PlusAddressRequestError(
+              PlusAddressRequestErrorType::kRequestNotSupportedError))));
 }
 
 void PlusAddressHttpClientImpl::GetAllPlusAddresses(

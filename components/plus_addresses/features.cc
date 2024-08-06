@@ -111,6 +111,19 @@ BASE_FEATURE(kPlusAddressOfferCreationOnSingleUsernameForms,
              "PlusAddressOfferCreationOnSingleUsernameForms",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, plus addresses are preallocated to avoid having to query the
+// server for every reserve call.
+BASE_FEATURE(kPlusAddressPreallocation,
+             "PlusAddressPreallocation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The minimum number of locally stored pre-allocated plus addresses. If the
+// number slips below this threshold, more are requested.
+extern const base::FeatureParam<int> kPlusAddressPreallocationMinimumSize(
+    &kPlusAddressPreallocation,
+    "minimum-size",
+    10);
+
 // When enabled, `GoogleGroupsManager::IsFeatureEnabledForProfile` is used to
 // check whether `kPlusAddressesEnabled` is enabled. Used as a killswitch.
 // TODO: crbug.com/348575889 - Clean up.
