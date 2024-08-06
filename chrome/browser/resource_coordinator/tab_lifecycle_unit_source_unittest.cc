@@ -311,7 +311,7 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
     content::WebContents* initial_web_contents =
         tab_strip_model_->GetWebContentsAt(0);
     content::WebContentsTester::For(initial_web_contents)
-        ->SetLastActiveTime(kDummyLastActiveTime);
+        ->SetLastActiveTimeTicks(kDummyLastActiveTime);
 
     // Advance time so tabs are urgent discardable.
     task_environment()->AdvanceClock(kBackgroundUrgentProtectionTime);
@@ -329,7 +329,7 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
                      ->GetController()
                      .GetPendingEntry());
     EXPECT_EQ(kDummyLastActiveTime,
-              tab_strip_model_->GetWebContentsAt(0)->GetLastActiveTime());
+              tab_strip_model_->GetWebContentsAt(0)->GetLastActiveTimeTicks());
 
     source_->SetFocusedTabStripModelForTesting(nullptr);
   }

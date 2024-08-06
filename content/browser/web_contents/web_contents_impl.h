@@ -457,7 +457,7 @@ class CONTENT_EXPORT WebContentsImpl
   bool IsBeingDestroyed() override;
   void NotifyNavigationStateChanged(InvalidateTypes changed_flags) override;
   void OnAudioStateChanged() override;
-  base::TimeTicks GetLastActiveTime() override;
+  base::TimeTicks GetLastActiveTimeTicks() override;
   void WasShown() override;
   void WasHidden() override;
   void WasOccluded() override;
@@ -1511,7 +1511,7 @@ class CONTENT_EXPORT WebContentsImpl
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest, FrameTreeShape);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest,
                            NonActivityCaptureDoesNotCountAsActivity);
-  FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest, GetLastActiveTime);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest, GetLastActiveTimeTicks);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest,
                            LoadResourceFromMemoryCacheWithBadSecurityInfo);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest,
@@ -1942,7 +1942,7 @@ class CONTENT_EXPORT WebContentsImpl
   // can be called with the current visibility to affect capturing
   // changes.
   // |is_activity| controls whether a change to |visible| affects
-  // the value returned by GetLastActiveTime().
+  // the value returned by GetLastActiveTimeTicks().
   void UpdateVisibilityAndNotifyPageAndView(Visibility new_visibility,
                                             bool is_activity = true);
 
@@ -2222,7 +2222,7 @@ class CONTENT_EXPORT WebContentsImpl
 
   // The time that this WebContents was last made active. The initial value is
   // the WebContents creation time.
-  base::TimeTicks last_active_time_;
+  base::TimeTicks last_active_time_ticks_;
 
   // The most recent time that this WebContents was interacted with. Currently,
   // this counts:

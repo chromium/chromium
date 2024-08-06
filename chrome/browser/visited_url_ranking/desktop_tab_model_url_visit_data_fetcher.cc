@@ -46,7 +46,7 @@ base::Time GetLastActiveTime(content::WebContents* web_contents) {
   // Use the TimeDelta common ground between the two units to make the
   // conversion.
   const base::TimeDelta delta_since_epoch =
-      web_contents->GetLastActiveTime() - base::TimeTicks::UnixEpoch();
+      web_contents->GetLastActiveTimeTicks() - base::TimeTicks::UnixEpoch();
   return base::Time::UnixEpoch() + delta_since_epoch;
 }
 

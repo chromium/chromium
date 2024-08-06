@@ -894,7 +894,7 @@ class SessionRestoreImpl : public BrowserListObserver {
                                  tab_groups::TabGroupId>* new_group_ids,
                   const int tab_index,
                   bool is_selected_tab,
-                  base::TimeTicks last_active_time,
+                  base::TimeTicks last_active_time_ticks,
                   bool& did_show_browser) {
     // It's possible (particularly for foreign sessions) to receive a tab
     // without valid navigations. In that case, just skip it.
@@ -932,7 +932,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     WebContents* web_contents = chrome::AddRestoredTab(
         browser, tab.navigations, tab_index, selected_index,
         tab.extension_app_id, new_group, is_selected_tab, tab.pinned,
-        last_active_time, session_storage_namespace.get(),
+        last_active_time_ticks, session_storage_namespace.get(),
         tab.user_agent_override, tab.extra_data,
         true /* from_session_restore */, is_active_browser);
     DCHECK(web_contents);

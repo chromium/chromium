@@ -109,7 +109,7 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
   page_node_ = PerformanceManagerImpl::CreatePageNode(
       web_contents->GetWeakPtr(), web_contents->GetBrowserContext()->UniqueId(),
       web_contents->GetVisibleURL(), initial_property_flags,
-      web_contents->GetLastActiveTime());
+      web_contents->GetLastActiveTimeTicks());
   content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
   DCHECK(main_rfh);
 

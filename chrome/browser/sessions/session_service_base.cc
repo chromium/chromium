@@ -532,7 +532,7 @@ void SessionServiceBase::BuildCommandsForTab(
 
   command_storage_manager()->AppendRebuildCommand(
       sessions::CreateLastActiveTimeCommand(session_id,
-                                            tab->GetLastActiveTime()));
+                                            tab->GetLastActiveTimeTicks()));
 
   // TODO(stahon@microsoft.com) This might be movable to SessionService
   // when Chrome OS uses AppSessionService for app restores.

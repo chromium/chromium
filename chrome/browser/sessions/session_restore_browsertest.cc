@@ -2405,8 +2405,8 @@ IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_PRE_CorrectLoadingOrder) {
     GURL expected_url = GURL(kUrls[activation_order[kExpectedNumTabs - i - 1]]);
     ASSERT_EQ(expected_url, web_contents[i]->GetLastCommittedURL());
     if (i > 0) {
-      ASSERT_GT(web_contents[i - 1]->GetLastActiveTime(),
-                web_contents[i]->GetLastActiveTime());
+      ASSERT_GT(web_contents[i - 1]->GetLastActiveTimeTicks(),
+                web_contents[i]->GetLastActiveTimeTicks());
     }
   }
 
@@ -2454,8 +2454,8 @@ IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_CorrectLoadingOrder) {
     GURL expected_url = GURL(kUrls[activation_order[kExpectedNumTabs - i]]);
     ASSERT_EQ(expected_url, web_contents[i]->GetLastCommittedURL());
     if (i > 0) {
-      ASSERT_GT(web_contents[i - 1]->GetLastActiveTime(),
-                web_contents[i]->GetLastActiveTime());
+      ASSERT_GT(web_contents[i - 1]->GetLastActiveTimeTicks(),
+                web_contents[i]->GetLastActiveTimeTicks());
     }
   }
 }

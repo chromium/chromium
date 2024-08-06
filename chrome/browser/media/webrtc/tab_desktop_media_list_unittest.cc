@@ -174,7 +174,7 @@ class TabDesktopMediaListTest : public testing::Test,
       return nullptr;
 
     WebContentsTester::For(contents.get())
-        ->SetLastActiveTime(base::TimeTicks::Now());
+        ->SetLastActiveTimeTicks(base::TimeTicks::Now());
 
     // Get or create a NavigationEntry and add a title and a favicon to it.
     content::NavigationEntry* entry =
@@ -415,13 +415,13 @@ TEST_P(TabDesktopMediaListTest, MoveTab) {
 
   WebContents* contents0 = tab_strip_model->GetWebContentsAt(0);
   ASSERT_TRUE(contents0);
-  base::TimeTicks t0 = contents0->GetLastActiveTime();
+  base::TimeTicks t0 = contents0->GetLastActiveTimeTicks();
   WebContents* contents1 = tab_strip_model->GetWebContentsAt(1);
   ASSERT_TRUE(contents1);
-  base::TimeTicks t1 = contents1->GetLastActiveTime();
+  base::TimeTicks t1 = contents1->GetLastActiveTimeTicks();
 
-  WebContentsTester::For(contents0)->SetLastActiveTime(t1);
-  WebContentsTester::For(contents1)->SetLastActiveTime(t0);
+  WebContentsTester::For(contents0)->SetLastActiveTimeTicks(t1);
+  WebContentsTester::For(contents1)->SetLastActiveTimeTicks(t0);
 
   EXPECT_CALL(observer_, OnSourceMoved(1, 0))
       .WillOnce(testing::DoAll(CheckListSize(list_.get(), kDefaultSourceCount),

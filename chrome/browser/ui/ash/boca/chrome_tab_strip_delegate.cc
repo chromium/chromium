@@ -48,7 +48,7 @@ std::vector<ash::TabInfo> ChromeTabStripDelegate::GetTabsListForWindow(
                       : tab_renderer_data.favicon;
 
     auto* web_contents = tab_strip_model->GetWebContentsAt(i);
-    tab.last_access_timetick = web_contents->GetLastActiveTime();
+    tab.last_access_timetick = web_contents->GetLastActiveTimeTicks();
 
     tabs.push_back(tab);
   }

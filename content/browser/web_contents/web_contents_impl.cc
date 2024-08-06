@@ -1191,7 +1191,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       notify_disconnection_(false),
       dialog_manager_(nullptr),
       is_showing_before_unload_dialog_(false),
-      last_active_time_(base::TimeTicks::Now()),
+      last_active_time_ticks_(base::TimeTicks::Now()),
       closed_by_user_gesture_(false),
       minimum_zoom_percent_(
           static_cast<int>(blink::kMinimumBrowserZoomFactor * 100)),
@@ -2744,8 +2744,8 @@ void WebContentsImpl::OnAudioStateChanged() {
                              is_currently_audible_);
 }
 
-base::TimeTicks WebContentsImpl::GetLastActiveTime() {
-  return last_active_time_;
+base::TimeTicks WebContentsImpl::GetLastActiveTimeTicks() {
+  return last_active_time_ticks_;
 }
 
 void WebContentsImpl::WasShown() {
@@ -3592,8 +3592,8 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
 
   enable_wake_locks_ = params.enable_wake_locks;
 
-  if (!params.last_active_time.is_null()) {
-    last_active_time_ = params.last_active_time;
+  if (!params.last_active_time_ticks.is_null()) {
+    last_active_time_ticks_ = params.last_active_time_ticks;
   }
 
   scoped_refptr<SiteInstanceImpl> site_instance =
@@ -4349,7 +4349,7 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
   // the CrossProcessFrameConnector.
   if (new_visibility == Visibility::VISIBLE) {
     if (is_activity) {
-      last_active_time_ = base::TimeTicks::Now();
+      last_active_time_ticks_ = base::TimeTicks::Now();
     }
     SetVisibilityAndNotifyObservers(new_visibility);
   }

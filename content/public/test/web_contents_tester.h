@@ -162,7 +162,8 @@ class WebContentsTester {
   virtual void ResetPauseSubresourceLoadingCalled() = 0;
 
   // Sets the last active time.
-  virtual void SetLastActiveTime(base::TimeTicks last_active_time) = 0;
+  virtual void SetLastActiveTimeTicks(
+      base::TimeTicks last_active_time_ticks) = 0;
 
   // Increments/decrements the number of frames with connected USB devices.
   virtual void TestIncrementUsbActiveFrameCount() = 0;

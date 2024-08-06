@@ -132,7 +132,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
 
   void ResetPauseSubresourceLoadingCalled() override;
 
-  void SetLastActiveTime(base::TimeTicks last_active_time) override;
+  void SetLastActiveTimeTicks(base::TimeTicks last_active_time_ticks) override;
 
   void TestIncrementUsbActiveFrameCount() override;
   void TestDecrementUsbActiveFrameCount() override;

@@ -856,7 +856,7 @@ bool RenderFrameDevToolsAgentHost::Close() {
 
 base::TimeTicks RenderFrameDevToolsAgentHost::GetLastActivityTime() {
   if (WebContents* contents = web_contents())
-    return contents->GetLastActiveTime();
+    return contents->GetLastActiveTimeTicks();
   return base::TimeTicks();
 }
 

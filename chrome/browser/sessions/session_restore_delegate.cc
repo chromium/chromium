@@ -80,7 +80,8 @@ bool SessionRestoreDelegate::RestoredTab::operator<(
   if (is_app_ != right.is_app_)
     return is_app_;
   // Finally, older tabs should be deferred first.
-  return contents_->GetLastActiveTime() > right.contents_->GetLastActiveTime();
+  return contents_->GetLastActiveTimeTicks() >
+         right.contents_->GetLastActiveTimeTicks();
 }
 
 // static

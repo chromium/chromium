@@ -925,7 +925,8 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
 
   tab_data->show_icon = tab_renderer_data.show_icon;
 
-  const base::TimeTicks last_active_time_ticks = contents->GetLastActiveTime();
+  const base::TimeTicks last_active_time_ticks =
+      contents->GetLastActiveTimeTicks();
   tab_data->last_active_time_ticks = last_active_time_ticks;
 
   // last_active_time_for_testing can affect pixel tests depending on when the

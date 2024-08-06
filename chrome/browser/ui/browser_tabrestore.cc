@@ -51,7 +51,7 @@ std::unique_ptr<WebContents> CreateRestoredTab(
     const std::vector<SerializedNavigationEntry>& navigations,
     int selected_navigation,
     const std::string& extension_app_id,
-    base::TimeTicks last_active_time,
+    base::TimeTicks last_active_time_ticks,
     content::SessionStorageNamespace* session_storage_namespace,
     const sessions::SerializedUserAgentOverride& user_agent_override,
     const std::map<std::string, std::string>& extra_data,
@@ -72,7 +72,7 @@ std::unique_ptr<WebContents> CreateRestoredTab(
   create_params.initially_hidden = initially_hidden;
   create_params.desired_renderer_state =
       WebContents::CreateParams::kNoRendererProcess;
-  create_params.last_active_time = last_active_time;
+  create_params.last_active_time_ticks = last_active_time_ticks;
   std::unique_ptr<WebContents> web_contents =
       WebContents::CreateWithSessionStorage(create_params,
                                             session_storage_namespace_map);

@@ -56,7 +56,7 @@ base::Time TabContentsSyncedTabDelegate::GetLastActiveTime() {
   // Use the TimeDelta common ground between the two units to make the
   // conversion.
   const base::TimeDelta delta_since_epoch =
-      web_contents_->GetLastActiveTime() - base::TimeTicks::UnixEpoch();
+      web_contents_->GetLastActiveTimeTicks() - base::TimeTicks::UnixEpoch();
   const base::Time converted_time = base::Time::UnixEpoch() + delta_since_epoch;
   if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
     if (cached_last_active_time_.has_value() &&

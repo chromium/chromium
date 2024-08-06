@@ -188,7 +188,7 @@ TabLifecycleUnitSource::TabLifecycleUnit::TabLifecycleUnit(
   if (GetVisibility() == content::Visibility::VISIBLE)
     last_focused_time_ = NowTicks();
   else
-    last_focused_time_ = web_contents->GetLastActiveTime();
+    last_focused_time_ = web_contents->GetLastActiveTimeTicks();
 }
 
 TabLifecycleUnitSource::TabLifecycleUnit::~TabLifecycleUnit() {
@@ -490,7 +490,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
       old_contents->GetVisibility() == content::Visibility::HIDDEN;
   create_params.desired_renderer_state =
       content::WebContents::CreateParams::kNoRendererProcess;
-  create_params.last_active_time = old_contents->GetLastActiveTime();
+  create_params.last_active_time_ticks = old_contents->GetLastActiveTimeTicks();
   std::unique_ptr<content::WebContents> null_contents =
       content::WebContents::Create(create_params);
   content::WebContents* raw_null_contents = null_contents.get();

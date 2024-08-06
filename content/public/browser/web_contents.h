@@ -259,10 +259,11 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
         network::mojom::WebSandboxFlags::kNone;
 
     // Value used to set the last time the WebContents was made active, this is
-    // the value that'll be returned by GetLastActiveTime(). If this is left
-    // default initialized then the value is not passed on to the WebContents
-    // and GetLastActiveTime() will return the WebContents' creation time.
-    base::TimeTicks last_active_time;
+    // the value that'll be returned by GetLastActiveTimeTicks(). If this is
+    // left default initialized then the value is not passed on to the
+    // WebContents and GetLastActiveTimeTicks() will return the WebContents'
+    // creation time.
+    base::TimeTicks last_active_time_ticks;
 
     // Code location responsible for creating the CreateParams.  This is used
     // mostly for debugging (e.g. to help attribute specific scenarios or
@@ -849,7 +850,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
 
   // Get/Set the last time that the WebContents was made active (either when it
   // was created or shown with WasShown()).
-  virtual base::TimeTicks GetLastActiveTime() = 0;
+  virtual base::TimeTicks GetLastActiveTimeTicks() = 0;
 
   // Invoked when the WebContents becomes shown/hidden. A hidden WebContents
   // isn't painted on the screen.

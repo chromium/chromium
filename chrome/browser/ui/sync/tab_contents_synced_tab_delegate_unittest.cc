@@ -126,7 +126,7 @@ TEST_F(TabContentsSyncedTabDelegateTest, CachedLastActiveTime) {
   base::TimeTicks original_time_ticks = base::TimeTicks::Now();
   base::Time original_time = ConvertLastActiveTime(original_time_ticks);
   content::WebContentsTester::For(web_contents.get())
-      ->SetLastActiveTime(original_time_ticks);
+      ->SetLastActiveTimeTicks(original_time_ticks);
 
   EXPECT_EQ(original_time, delegate.GetLastActiveTime());
 
@@ -134,7 +134,7 @@ TEST_F(TabContentsSyncedTabDelegateTest, CachedLastActiveTime) {
   base::TimeTicks before_threshold_ticks =
       original_time_ticks + threshold - base::Minutes(1);
   content::WebContentsTester::For(web_contents.get())
-      ->SetLastActiveTime(before_threshold_ticks);
+      ->SetLastActiveTimeTicks(before_threshold_ticks);
   EXPECT_EQ(original_time, delegate.GetLastActiveTime());
 
   // After the threshold has passed, the new value should be returned.
@@ -142,7 +142,7 @@ TEST_F(TabContentsSyncedTabDelegateTest, CachedLastActiveTime) {
       original_time_ticks + threshold + base::Minutes(1);
   base::Time after_threshold = ConvertLastActiveTime(after_threshold_ticks);
   content::WebContentsTester::For(web_contents.get())
-      ->SetLastActiveTime(after_threshold_ticks);
+      ->SetLastActiveTimeTicks(after_threshold_ticks);
   EXPECT_EQ(after_threshold, delegate.GetLastActiveTime());
 }
 
@@ -167,7 +167,7 @@ TEST_F(TabContentsSyncedTabDelegateTest, ResetCachedLastActiveTime) {
   base::TimeTicks original_time_ticks = base::TimeTicks::Now();
   base::Time original_time = ConvertLastActiveTime(original_time_ticks);
   content::WebContentsTester::For(web_contents.get())
-      ->SetLastActiveTime(original_time_ticks);
+      ->SetLastActiveTimeTicks(original_time_ticks);
 
   EXPECT_EQ(original_time, delegate.GetLastActiveTime());
 
@@ -178,7 +178,7 @@ TEST_F(TabContentsSyncedTabDelegateTest, ResetCachedLastActiveTime) {
       original_time_ticks + threshold - base::Minutes(1);
   base::Time before_threshold = ConvertLastActiveTime(before_threshold_ticks);
   content::WebContentsTester::For(web_contents.get())
-      ->SetLastActiveTime(before_threshold_ticks);
+      ->SetLastActiveTimeTicks(before_threshold_ticks);
   EXPECT_EQ(before_threshold, delegate.GetLastActiveTime());
 }
 

@@ -206,7 +206,7 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
                                            main_frame->GetRoutingID()));
 
     // Get tab's last active time stamp.
-    const base::TimeTicks t = contents->GetLastActiveTime();
+    const base::TimeTicks t = contents->GetLastActiveTimeTicks();
     tab_map.insert(
         std::make_pair(t, SourceDescription(media_id, contents->GetTitle())));
 
