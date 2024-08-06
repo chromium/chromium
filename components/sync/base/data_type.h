@@ -198,9 +198,9 @@ constexpr int GetNumDataTypes() {
 // them via DataTypeHistogramValue(data_type).
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. When you add a new entry or when you
-// deprecate an existing one, also update SyncModelTypes in enums.xml and
+// deprecate an existing one, also update SyncDataTypes in enums.xml and
 // SyncDataType suffix in histograms.xml.
-// LINT.IfChange(SyncModelTypes)
+// LINT.IfChange(SyncDataTypes)
 enum class DataTypeForHistograms {
   kUnspecified = 0,
   // kTopLevelFolder = 1,
@@ -273,7 +273,7 @@ enum class DataTypeForHistograms {
   kPlusAddressSettings = 68,
   kMaxValue = kPlusAddressSettings,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncModelTypes)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncDataTypes)
 
 // Used to mark the type of EntitySpecifics that has no actual data.
 void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics);
