@@ -266,6 +266,7 @@ ManifestDemuxer::SeekResponse HlsRenditionImpl::Seek(
   }
 
   decryptor_ = nullptr;
+  last_discontinuity_sequence_num_ = std::nullopt;
 
   if (IsLive()) {
     return ManifestDemuxer::SeekState::kNeedsData;
@@ -442,11 +443,19 @@ void HlsRenditionImpl::OnSegmentData(scoped_refptr<hls::MediaSegment> segment,
     }
   }
 
-  if (!engine_host_->AppendAndParseData(role_, base::TimeDelta(),
-                                        parse_end + base::Seconds(1),
+  if (last_discontinuity_sequence_num_.value_or(
+          segment->GetDiscontinuitySequenceNumber()) !=
+      segment->GetDiscontinuitySequenceNumber()) {
+    engine_host_->ResetParserState(role_, parse_end + base::Seconds(1),
+                                   &parse_offset_);
+  }
+
+  if (!engine_host_->AppendAndParseData(role_, parse_end + base::Seconds(1),
                                         &parse_offset_, stream_data)) {
     return engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
   }
+
+  last_discontinuity_sequence_num_ = segment->GetDiscontinuitySequenceNumber();
 
   // Wince we've successfully parsed our data, we can mark that an init segment
   // is not required due to seeking.

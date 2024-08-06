@@ -376,7 +376,6 @@ void ManifestDemuxer::EvictCodedFrames(std::string_view role,
 }
 
 bool ManifestDemuxer::AppendAndParseData(std::string_view role,
-                                         base::TimeDelta start,
                                          base::TimeDelta end,
                                          base::TimeDelta* offset,
                                          base::span<const uint8_t> data) {
@@ -385,8 +384,8 @@ bool ManifestDemuxer::AppendAndParseData(std::string_view role,
     return false;
   }
   while (true) {
-    switch (chunk_demuxer_->RunSegmentParserLoop(std::string(role), start, end,
-                                                 offset)) {
+    switch (chunk_demuxer_->RunSegmentParserLoop(
+        std::string(role), base::TimeDelta(), end, offset)) {
       case StreamParser::ParseStatus::kSuccess:
         return true;
       case StreamParser::ParseStatus::kSuccessHasMoreData:
@@ -395,6 +394,14 @@ bool ManifestDemuxer::AppendAndParseData(std::string_view role,
         return false;
     }
   }
+}
+
+void ManifestDemuxer::ResetParserState(std::string_view role,
+                                       base::TimeDelta end,
+                                       base::TimeDelta* offset) {
+  CHECK(chunk_demuxer_);
+  return chunk_demuxer_->ResetParserState(std::string(role), base::TimeDelta(),
+                                          end, offset);
 }
 
 void ManifestDemuxer::OnError(PipelineStatus error) {

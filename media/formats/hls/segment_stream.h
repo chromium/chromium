@@ -66,13 +66,32 @@ class MEDIA_EXPORT SegmentStream {
   void ResetExpectingFutureManifest(base::TimeDelta new_start_time);
 
  private:
+  class SegmentIndex {
+   public:
+    explicit SegmentIndex(const MediaSegment& segment);
+    SegmentIndex(types::DecimalInteger discontinuity,
+                 types::DecimalInteger media);
+
+    bool operator<(const SegmentIndex& other) const;
+    bool operator<=(const SegmentIndex& other) const;
+    bool operator==(const SegmentIndex& other) const;
+    bool operator>(const SegmentIndex& other) const;
+
+    SegmentIndex Next() const;
+
+    SegmentIndex MaxOf(const MediaSegment& other) const;
+
+    types::DecimalInteger media_sequence_;
+    types::DecimalInteger discontinuity_sequence_;
+  };
+
   const bool seekable_;
   base::TimeDelta next_segment_start_;
 
   base::queue<scoped_refptr<MediaSegment>> segments_;
   scoped_refptr<MediaPlaylist> active_playlist_;
 
-  types::DecimalInteger highest_sequence_number_ = 0lu;
+  SegmentIndex highest_segment_index_ = {0, 0};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
