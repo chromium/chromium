@@ -320,11 +320,6 @@ CORE_EXPORT LayoutUnit ComputeBlockSizeForFragment(
     LayoutUnit inline_size,
     LayoutUnit override_available_size = kIndefiniteSize);
 
-CORE_EXPORT LayoutUnit
-ComputeInlineSizeFromAspectRatio(const ConstraintSpace& space,
-                                 const BlockNode&,
-                                 const BoxStrut& border_padding);
-
 LayoutUnit ComputeInlineSizeForFragmentInternal(
     const ConstraintSpace& space,
     const BlockNode& node,

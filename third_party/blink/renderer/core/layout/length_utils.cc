@@ -404,75 +404,72 @@ MinMaxSizes ComputeMinAndMaxContentContributionForTest(
       .sizes;
 }
 
-LayoutUnit ComputeInlineSizeFromAspectRatio(const ConstraintSpace& space,
-                                            const BlockNode& node,
-                                            const BoxStrut& border_padding) {
-  const ComputedStyle& style = node.Style();
-  DCHECK(!style.AspectRatio().IsAuto());
-
-  // Even though an implicit stretch will resolve - we return an indefinite
-  // size, as we prefer the inline-axis size for this case.
-  if (style.LogicalHeight().IsAuto() &&
-      space.BlockAutoBehavior() != AutoSizeBehavior::kStretchExplicit) {
-    return kIndefiniteSize;
-  }
-
-  const auto block_size = ComputeBlockSizeForFragment(
-      space, node, border_padding, /* intrinsic_size */ kIndefiniteSize,
-      /* inline_size */ kIndefiniteSize);
-
-  if (block_size == kIndefiniteSize)
-    return kIndefiniteSize;
-
-  // Check if we can get an inline size using the aspect ratio.
-  return InlineSizeFromAspectRatio(border_padding, style.LogicalAspectRatio(),
-                                   style.BoxSizingForAspectRatio(), block_size);
-}
-
 LayoutUnit ComputeInlineSizeForFragmentInternal(
     const ConstraintSpace& space,
     const BlockNode& node,
     const BoxStrut& border_padding,
     MinMaxSizesFunctionRef min_max_sizes_func) {
   const auto& style = node.Style();
-
-  auto extent = kIndefiniteSize;
   const Length& logical_width = style.LogicalWidth();
-  bool apply_automatic_min_size = false;
 
-  // TODO(https://crbug.com/40339056): This still isn't right -- we need to do
-  // more math here for calc-size()!
-  if (!style.AspectRatio().IsAuto() &&
-      ((logical_width.HasAuto() &&
-        space.InlineAutoBehavior() != AutoSizeBehavior::kStretchExplicit) ||
-       logical_width.HasMinContent() || logical_width.HasMaxContent())) {
-    extent = ComputeInlineSizeFromAspectRatio(space, node, border_padding);
-
-    if (extent != kIndefiniteSize) {
-      // This means we successfully applied aspect-ratio and now need to check
-      // if we need to apply the implied minimum size:
-      // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
-      if (style.OverflowInlineDirection() == EOverflow::kVisible) {
-        apply_automatic_min_size = true;
-      }
+  const bool may_apply_aspect_ratio = ([&]() {
+    if (style.AspectRatio().IsAuto()) {
+      return false;
     }
-  }
 
-  if (extent == kIndefiniteSize) [[likely]] {
-    const Length& auto_length = ([&]() {
-      if (space.AvailableSize().inline_size == kIndefiniteSize) {
-        return Length::MinContent();
-      }
-      if (space.IsInlineAutoBehaviorStretch()) {
-        return Length::FillAvailable();
-      }
+    // Even though an implicit stretch will resolve - we prefer the inline-axis
+    // size for this case.
+    if (style.LogicalHeight().HasAuto() &&
+        space.BlockAutoBehavior() != AutoSizeBehavior::kStretchExplicit) {
+      return false;
+    }
+
+    // If we can resolve our block-size with no intrinsic-size we can use our
+    // aspect-ratio.
+    return ComputeBlockSizeForFragment(space, node, border_padding,
+                                       /* intrinsic_size */ kIndefiniteSize,
+                                       /* inline_size */ kIndefiniteSize) !=
+           kIndefiniteSize;
+  })();
+
+  const Length& auto_length = ([&]() {
+    if (space.AvailableSize().inline_size == kIndefiniteSize) {
+      return Length::MinContent();
+    }
+    if (space.InlineAutoBehavior() == AutoSizeBehavior::kStretchExplicit) {
+      return Length::FillAvailable();
+    }
+    if (may_apply_aspect_ratio) {
       return Length::FitContent();
-    })();
-    extent = ResolveMainInlineLength(space, style, border_padding,
-                                     min_max_sizes_func, logical_width,
-                                     &auto_length);
-  }
+    }
+    if (space.InlineAutoBehavior() == AutoSizeBehavior::kStretchImplicit) {
+      return Length::FillAvailable();
+    }
+    DCHECK_EQ(space.InlineAutoBehavior(), AutoSizeBehavior::kFitContent);
+    return Length::FitContent();
+  })();
 
+  // Check if we should apply the automatic minimum size.
+  // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
+  bool apply_automatic_min_size = ([&]() {
+    if (style.IsScrollContainer()) {
+      return false;
+    }
+    if (!may_apply_aspect_ratio) {
+      return false;
+    }
+    if (logical_width.HasContentOrIntrinsic()) {
+      return true;
+    }
+    if (logical_width.HasAuto() && auto_length.HasContentOrIntrinsic()) {
+      return true;
+    }
+    return false;
+  })();
+
+  const LayoutUnit extent =
+      ResolveMainInlineLength(space, style, border_padding, min_max_sizes_func,
+                              logical_width, &auto_length);
   const Length& min_length =
       apply_automatic_min_size && style.LogicalMinWidth().HasAuto()
           ? Length::MinIntrinsic()
@@ -507,8 +504,24 @@ LayoutUnit ComputeUsedInlineSizeForTableFragment(
     const MinMaxSizes& table_grid_min_max_sizes) {
   DCHECK(!space.IsFixedInlineSize());
 
-  auto MinMaxSizesFunc =
-      [&table_grid_min_max_sizes](SizeType type) -> MinMaxSizesResult {
+  auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
+    const auto& style = node.Style();
+    const bool has_aspect_ratio = !style.AspectRatio().IsAuto();
+
+    // Check if we have an aspect-ratio.
+    if (has_aspect_ratio && type == SizeType::kContent) {
+      const LayoutUnit block_size =
+          ComputeBlockSizeForFragment(space, node, border_padding,
+                                      /* intrinsic_size */ kIndefiniteSize,
+                                      /* inline_size */ kIndefiniteSize);
+      if (block_size != kIndefiniteSize) {
+        const LayoutUnit inline_size = InlineSizeFromAspectRatio(
+            border_padding, style.LogicalAspectRatio(),
+            style.BoxSizingForAspectRatio(), block_size);
+        return MinMaxSizesResult({inline_size, inline_size},
+                                 /* depends_on_block_constraints */ false);
+      }
+    }
     return MinMaxSizesResult(table_grid_min_max_sizes,
                              /* depends_on_block_constraints */ false);
   };
