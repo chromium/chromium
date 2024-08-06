@@ -787,7 +787,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.NavigationUnexpectedRegistration"
-    enum="ConversionNavigationUnexpectedRegistration" expires_after="M130">
+    enum="ConversionNavigationUnexpectedRegistration"
+    expires_after="2025-02-02">
   <owner>anthonygarant@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1319,7 +1320,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.VerboseDebugReport.HttpResponseOrNetErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-12-04">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-02-02">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

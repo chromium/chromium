@@ -410,7 +410,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.DlcManagerStatus.RetriedTimesOnSuccess.{DlcType}"
-    units="count" expires_after="2024-09-22">
+    units="count" expires_after="2025-02-02">
   <owner>hunghsienchen@google.com</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -922,7 +922,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.StreamClientTypeInput" enum="CrasClientType"
-    expires_after="2024-11-03">
+    expires_after="2025-02-02">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -932,7 +932,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.StreamClientTypeOutput" enum="CrasClientType"
-    expires_after="2024-11-03">
+    expires_after="2025-02-02">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>

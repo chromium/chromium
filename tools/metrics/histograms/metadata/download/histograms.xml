@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DangerousDownloadInterstitial.Action"
-    enum="DangerousDownloadInterstitialAction" expires_after="2024-12-01">
+    enum="DangerousDownloadInterstitialAction" expires_after="2025-02-02">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Download.DangerousDownloadInterstitial.InteractionTime.{InteractionType}"
-    units="ms" expires_after="2024-12-01">
+    units="ms" expires_after="2025-02-02">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -330,7 +330,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.DangerousDownloadInterstitial.SurveyResponse"
     enum="DangerousDownloadInterstitialSurveyOptions"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1231,7 +1231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.WebUi.DocumentLoadedInMainFrameTime" units="ms"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>awado@google.com</owner>
   <owner>jacastro@chromium.org</owner>
   <summary>
@@ -1242,7 +1242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.WebUi.LoadCompletedInMainFrame" units="ms"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>awado@google.com</owner>
   <owner>jacastro@chromium.org</owner>
   <summary>

@@ -490,7 +490,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.AmbientMode.AnimationSmoothness.PhotoTransition" units="%"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>wutao@chromium.org</owner>
   <owner>xiaohuic@chromium.org</owner>
   <summary>
@@ -1761,7 +1761,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Calendar.UserAction" enum="CalendarUserAction"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>jiamingc@google.com</owner>
   <owner>tbarzic@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
@@ -1772,7 +1772,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Calendar.UserActionToOpenCalendarWebUi"
-    enum="CalendarUserAction" expires_after="2024-12-01">
+    enum="CalendarUserAction" expires_after="2025-02-02">
   <owner>jiamingc@google.com</owner>
   <owner>tbarzic@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
@@ -7671,7 +7671,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SeaPen.MigrationStatus"
-    enum="SeaPenWallpaperManagerMigrationStatus" expires_after="2024-12-01">
+    enum="SeaPenWallpaperManagerMigrationStatus" expires_after="2025-02-02">
   <owner>cowmoo@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -8779,7 +8779,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.TabletMode.AnimationSmoothness.Enter" units="%"
-    expires_after="2024-12-04">
+    expires_after="2025-02-02">
   <owner>oshima@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>

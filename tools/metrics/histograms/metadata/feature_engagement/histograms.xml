@@ -730,7 +730,7 @@ In the future, Desktop IPH may be completely moved to the user_education folder.
 </histogram>
 
 <histogram name="UserEducation.MessageNotShown.{IPHFeature}"
-    enum="PromoFailure" expires_after="2024-12-01">
+    enum="PromoFailure" expires_after="2025-02-02">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
