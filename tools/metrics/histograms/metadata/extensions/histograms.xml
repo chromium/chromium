@@ -113,7 +113,7 @@ of interesting buckets, such as "internal + external".
 <!--
 This is emitted for two scenarios when a worker may be unregistered:
 
-  1. due to an extension update to potentially unregister the old worker or
+  1. due to an extension update to potentially unregistering the old worker or
 
   2. due to the extension being deactivated (due to disable, uninstall, or
   terminate)
@@ -4743,26 +4743,13 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
-    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_DeactivateExtension_NotCurrentActivation"
+    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus{UnregistrationType}2"
     enum="ServiceWorkerStatusCode" expires_after="2025-03-25">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
-    Emitted at the same time as
-    Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_DeactivateExtension,
-    however it is for when the worker is not the current activation. Not the
-    current activation means the worker was deactivated in the
-    ServiceWorkerTaskQueue when this metric is emitted.
-  </summary>
-</histogram>
-
-<histogram
-    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus{UnregistrationType}"
-    enum="ServiceWorkerStatusCode" expires_after="2025-03-25">
-  <owner>jlulejian@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The ServiceWorkerStatusCode when unregister a worker for an extension fails.
+    The ServiceWorkerStatusCode when unregistering a worker for an extension
+    fails.
 
     Emitted when Extensions.ServiceWorkerBackground.WorkerRegistrationState is
     false.
@@ -4780,6 +4767,9 @@ This is emitted for two scenarios when a worker may be unregistered:
     #2 can occur independently outside of an extension update.
 
     {UnregistrationType}
+
+    Note: This metric was incremented Aug, 2024 since it did not emit if the
+    extension was deactivated (which was always true).
   </summary>
   <token key="UnregistrationType" variants="UnregistrationType"/>
 </histogram>

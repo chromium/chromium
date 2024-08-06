@@ -1083,15 +1083,15 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRegistrationInstallMetricBrowserTest,
       "DeactivateExtension",
       /*true_count=*/1, /*false_count=*/0, histogram_tester);
   histogram_tester.ExpectTotalCount(
-      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus2",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "DeactivateExtension",
+      "DeactivateExtension2",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "AddExtension",
+      "AddExtension2",
       /*expected_count=*/0);
 
   // We didn't update the extension.
@@ -1148,15 +1148,15 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRegistrationRestartMetricBrowserTest,
       "DeactivateExtension",
       /*true_count=*/1, /*false_count=*/0, histogram_tester);
   histogram_tester.ExpectTotalCount(
-      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus2",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "DeactivateExtension",
+      "DeactivateExtension2",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "AddExtension",
+      "AddExtension2",
       /*expected_count=*/0);
   CheckBooleanHistogramCounts(
       "Extensions.ServiceWorkerBackground.WorkerRegistrationState",
@@ -1307,17 +1307,17 @@ IN_PROC_BROWSER_TEST_P(MV2BackgroundsToMV3WorkerRegistrationMetricBrowserTest,
       "AddExtension",
       /*true_count=*/0, /*false_count=*/1, histogram_tester);
   CheckStatusCodeHistogramCounts(
-      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus2",
       /*status=*/blink::ServiceWorkerStatusCode::kErrorNotFound, /*count=*/1,
       histogram_tester);
   CheckStatusCodeHistogramCounts(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "AddExtension",
+      "AddExtension2",
       /*status=*/blink::ServiceWorkerStatusCode::kErrorNotFound, /*count=*/1,
       histogram_tester);
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "DeactivateExtension",
+      "DeactivateExtension2",
       /*expected_count=*/0);
 
   // Then the new worker registration is registered.
@@ -1442,15 +1442,15 @@ IN_PROC_BROWSER_TEST_P(WorkerBackgroundToWorkerBackgroundRegistrationMetricTest,
       "AddExtension",
       /*true_count=*/1, /*false_count=*/0, histogram_tester);
   histogram_tester.ExpectTotalCount(
-      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus2",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "DeactivateExtension",
+      "DeactivateExtension2",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-      "AddExtension",
+      "AddExtension2",
       /*expected_count=*/0);
 
   CheckBooleanHistogramCounts(

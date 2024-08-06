@@ -551,11 +551,11 @@ void ExtensionRegistrar::NotifyServiceWorkerUnregistered(
     LOG(ERROR) << "Failed to unregister service worker for extension "
                << extension_id;
     base::UmaHistogramEnumeration(
-        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
+        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus2",
         status);
     base::UmaHistogramEnumeration(
         "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-        "AddExtension",
+        "AddExtension2",
         status);
   }
 }

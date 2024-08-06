@@ -724,6 +724,9 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
     const ExtensionId& extension_id,
     const base::UnguessableToken& activation_token,
     blink::ServiceWorkerStatusCode status) {
+  // When unregistering the worker we should've already deactivated the
+  // extension.
+  CHECK(!IsCurrentActivation(extension_id, activation_token));
   bool success = status == blink::ServiceWorkerStatusCode::kOk;
   base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState", success);
@@ -732,32 +735,25 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
       "DeactivateExtension",
       success);
 
-  if (g_test_observer) {
-    g_test_observer->WorkerUnregistered(extension_id);
-  }
-
-  // Extension run with |activation_token| was already deactivated.
-  if (!IsCurrentActivation(extension_id, activation_token)) {
-    if (!success) {
-      base::UmaHistogramEnumeration(
-          "Extensions.ServiceWorkerBackground."
-          "WorkerUnregistrationFailureStatus_"
-          "DeactivateExtension_NotCurrentActivation",
-          status);
-    }
-    return;
-  }
-
+  // TODO(crbug.com/346732739): Handle this better than just logging an error
+  // message.
   if (!success) {
-    // TODO(crbug.com/346732739): Handle this case.
-    LOG(ERROR) << "Failed to unregister service worker!";
+    // TODO(crbug.com/346732739): Uncomment this log message once `!success`
+    // doesn't include expected failure cases (e.g. unregistering before the
+    // initial registration completes).
+    // LOG(ERROR) << "Failed to unregistering service worker for extension id: "
+    //             << extension_id << " status was: " << (int)status;
     base::UmaHistogramEnumeration(
-        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
+        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus2",
         status);
     base::UmaHistogramEnumeration(
         "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-        "DeactivateExtension",
+        "DeactivateExtension2",
         status);
+  }
+
+  if (g_test_observer) {
+    g_test_observer->WorkerUnregistered(extension_id);
   }
 }
 
