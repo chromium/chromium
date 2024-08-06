@@ -4457,8 +4457,9 @@ void BrowserView::AddedToWidget() {
   // TODO(pbos): Investigate whether the side panels should be creatable when
   // the ToolbarView does not create a button for them. This specifically seems
   // to hit web apps. See https://crbug.com/1267781.
-  unified_side_panel_->AddObserver(
-      SidePanelUtil::GetSidePanelCoordinatorForBrowser((browser_.get())));
+  auto* side_panel_coordinator =
+      browser_->GetFeatures().side_panel_coordinator();
+  unified_side_panel_->AddObserver(side_panel_coordinator);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // TopControlsSlideController must be initialized here in AddedToWidget()

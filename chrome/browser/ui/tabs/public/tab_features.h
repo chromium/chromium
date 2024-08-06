@@ -17,6 +17,7 @@ class FedCmAccountSelectionViewController;
 class LensOverlayController;
 class Profile;
 class ReadAnythingSidePanelController;
+class SidePanelRegistry;
 
 namespace commerce {
 class CommerceUiTabHelper;
@@ -84,6 +85,12 @@ class TabFeatures {
     return customize_chrome_side_panel_controller_.get();
   }
 
+  // This side-panel registry is tab-scoped. It is different from the browser
+  // window scoped SidePanelRegistry.
+  SidePanelRegistry* side_panel_registry() {
+    return side_panel_registry_.get();
+  }
+
   DipsNavigationFlowDetectorWrapper* dips_navigation_flow_detector_wrapper() {
     return dips_navigation_flow_detector_wrapper_.get();
   }
@@ -130,6 +137,8 @@ class TabFeatures {
 
   std::unique_ptr<permissions::PermissionIndicatorsTabData>
       permission_indicators_tab_data_;
+
+  std::unique_ptr<SidePanelRegistry> side_panel_registry_;
 
   // Responsible for the customize chrome tab-scoped side panel.
   std::unique_ptr<customize_chrome::SidePanelController>

@@ -8,17 +8,12 @@
 #include "extensions/common/extension_id.h"
 
 class Browser;
-class Profile;
 
 namespace content {
 class WebContents;
 }  // namespace content
 
 namespace extensions::side_panel_util {
-
-// Implemented by extension_side_panel_utils.cc in views/.
-void CreateSidePanelManagerForWebContents(Profile* profile,
-                                          content::WebContents* web_contents);
 
 // Toggles the side panel for the given `extension_id` in `browser`, opening
 // the panel if it is closed and closing it if it is open.

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -23,12 +24,15 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
+#include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_controller.h"
 #include "chrome/browser/user_annotations/user_annotations_web_contents_observer.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/permissions/permission_indicators_tab_data.h"
+#include "extensions/common/extension_features.h"
+
 namespace tabs {
 
 namespace {
@@ -67,6 +71,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       tab.RegisterWillDiscardContents(base::BindRepeating(
           &TabFeatures::WillDiscardContents, weak_factory_.GetWeakPtr())));
 
+  // TODO(crbug.com/346148554): Do not create a SidePanelRegistry or
+  // dependencies for non-normal browsers.
+  side_panel_registry_ = std::make_unique<SidePanelRegistry>();
+
   // Features that are only enabled for normal browser windows. By default most
   // features should be instantiated in this block.
   if (tab.IsInNormalWindow()) {
@@ -101,12 +109,19 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   customize_chrome_side_panel_controller_ =
       std::make_unique<customize_chrome::SidePanelControllerViews>(tab);
 
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionSidePanelIntegration)) {
+    extensions::ExtensionSidePanelManager::CreateForTab(
+        profile, tab.GetContents(), side_panel_registry_.get());
+  }
+
   data_protection_controller_ = std::make_unique<
       enterprise_data_protection::DataProtectionNavigationController>(&tab);
 
   // TODO(https://crbug.com/355485153): Move this into the normal window block.
   read_anything_side_panel_controller_ =
-      std::make_unique<ReadAnythingSidePanelController>(tab.GetContents());
+      std::make_unique<ReadAnythingSidePanelController>(
+          tab.GetContents(), side_panel_registry_.get());
 }
 
 TabFeatures::TabFeatures() = default;
@@ -129,7 +144,8 @@ TabFeatures::CreateCommerceUiTabHelper(TabInterface* tab, Profile* profile) {
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
       BookmarkModelFactory::GetForBrowserContext(profile),
       ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())
-          ->GetImageFetcher(image_fetcher::ImageFetcherConfig::kNetworkOnly));
+          ->GetImageFetcher(image_fetcher::ImageFetcherConfig::kNetworkOnly),
+      side_panel_registry_.get());
 }
 
 void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
@@ -138,7 +154,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   // This method is transiently used to reset features that do not handle tab
   // discarding themselves.
   read_anything_side_panel_controller_ =
-      std::make_unique<ReadAnythingSidePanelController>(new_contents);
+      std::make_unique<ReadAnythingSidePanelController>(
+          new_contents, side_panel_registry_.get());
 
   if (commerce_ui_tab_helper_) {
     commerce_ui_tab_helper_ = CreateCommerceUiTabHelper(

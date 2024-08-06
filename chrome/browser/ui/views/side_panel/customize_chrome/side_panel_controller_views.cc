@@ -61,7 +61,7 @@ bool SidePanelControllerViews::IsCustomizeChromeEntryShowing() const {
 }
 
 bool SidePanelControllerViews::IsCustomizeChromeEntryAvailable() const {
-  auto* registry = SidePanelRegistry::Get(tab_->GetContents());
+  auto* registry = tab_->GetTabFeatures()->side_panel_registry();
   return registry ? (registry->GetEntryForKey(
                          SidePanelEntry::Key(kSidePanelEntryId)) != nullptr)
                   : false;
@@ -112,7 +112,7 @@ void SidePanelControllerViews::DidFinishNavigation(
 }
 
 void SidePanelControllerViews::CreateAndRegisterEntry() {
-  auto* registry = SidePanelRegistry::Get(tab_->GetContents());
+  auto* registry = tab_->GetTabFeatures()->side_panel_registry();
 
   if (!registry) {
     return;
@@ -133,7 +133,7 @@ void SidePanelControllerViews::CreateAndRegisterEntry() {
 }
 
 void SidePanelControllerViews::DeregisterEntry() {
-  auto* registry = SidePanelRegistry::Get(tab_->GetContents());
+  auto* registry = tab_->GetTabFeatures()->side_panel_registry();
 
   if (!registry) {
     return;

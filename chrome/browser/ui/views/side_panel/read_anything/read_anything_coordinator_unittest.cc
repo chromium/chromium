@@ -71,29 +71,29 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
     // Ensure a kReadAnything entry is added to the contextual registry for the
     // first tab.
     AddTabToBrowser(GURL("http://foo1.com"));
-    auto* tab_one_registry =
-        SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
+    auto* tab_one_registry = SidePanelRegistry::GetDeprecated(
+        browser_view()->GetActiveWebContents());
     contextual_registries_.push_back(tab_one_registry);
 
     // Ensure a kReadAnything entry is added to the contextual registry for the
     // second tab.
     AddTabToBrowser(GURL("http://foo2.com"));
-    auto* tab_two_registry =
-        SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
+    auto* tab_two_registry = SidePanelRegistry::GetDeprecated(
+        browser_view()->GetActiveWebContents());
     contextual_registries_.push_back(tab_two_registry);
 
     // Verify the first tab has one entry, kReadAnything.
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
-    SidePanelRegistry* contextual_registry =
-        SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
+    SidePanelRegistry* contextual_registry = SidePanelRegistry::GetDeprecated(
+        browser_view()->GetActiveWebContents());
     ASSERT_EQ(contextual_registry->entries().size(), 1u);
     EXPECT_EQ(contextual_registry->entries()[0]->key().id(),
               SidePanelEntry::Id::kReadAnything);
 
     // Verify the second tab has one entry, kReadAnything.
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
-    contextual_registry =
-        SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
+    contextual_registry = SidePanelRegistry::GetDeprecated(
+        browser_view()->GetActiveWebContents());
     ASSERT_EQ(contextual_registry->entries().size(), 1u);
     EXPECT_EQ(contextual_registry->entries()[0]->key().id(),
               SidePanelEntry::Id::kReadAnything);
@@ -135,8 +135,8 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
   void AddTabToBrowser(const GURL& tab_url) {
     AddTab(browser_view()->browser(), tab_url);
     // Remove the companion entry if it present.
-    auto* registry =
-        SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
+    auto* registry = SidePanelRegistry::GetDeprecated(
+        browser_view()->GetActiveWebContents());
     registry->Deregister(
         SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion));
   }

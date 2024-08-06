@@ -24,7 +24,8 @@ class MockCommerceUiTabHelper : public commerce::CommerceUiTabHelper {
   // TabFeatures.
   static void ReplaceFactory();
 
-  explicit MockCommerceUiTabHelper(content::WebContents* content);
+  MockCommerceUiTabHelper(content::WebContents* content,
+                          SidePanelRegistry* registry);
   ~MockCommerceUiTabHelper() override;
 
   const gfx::Image& GetValidProductImage();

@@ -102,7 +102,7 @@ content::WebContents* UnifiedSideSearchController::OpenURLFromTab(
 void UnifiedSideSearchController::SidePanelAvailabilityChanged(
     bool should_close) {
   if (should_close) {
-    auto* registry = SidePanelRegistry::Get(web_contents());
+    auto* registry = SidePanelRegistry::GetDeprecated(web_contents());
     if (registry && registry->GetEntryForKey(
                         SidePanelEntry::Key(SidePanelEntry::Id::kSideSearch))) {
       registry->Deregister(
@@ -271,7 +271,7 @@ void UnifiedSideSearchController::UpdateSidePanel() {
 }
 
 void UnifiedSideSearchController::UpdateSidePanelRegistry(bool is_available) {
-  auto* registry = SidePanelRegistry::Get(web_contents());
+  auto* registry = SidePanelRegistry::GetDeprecated(web_contents());
   if (!registry)
     return;
   auto* current_entry = registry->GetEntryForKey(

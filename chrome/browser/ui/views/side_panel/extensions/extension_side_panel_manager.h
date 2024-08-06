@@ -45,10 +45,14 @@ class ExtensionSidePanelManager : public SidePanelRegistryObserver,
       delete;
   ~ExtensionSidePanelManager() override;
 
-  static ExtensionSidePanelManager* GetOrCreateForBrowser(Browser* browser);
+  static void CreateForBrowser(Browser* browser,
+                               SidePanelRegistry* window_registry);
+  static ExtensionSidePanelManager* GetForBrowserForTesting(Browser* browser);
 
-  static ExtensionSidePanelManager* GetOrCreateForWebContents(
-      Profile* profile,
+  static void CreateForTab(Profile* profile,
+                           content::WebContents* web_contents,
+                           SidePanelRegistry* tab_registry);
+  static ExtensionSidePanelManager* GetForTabForTesting(
       content::WebContents* web_contents);
 
   ExtensionSidePanelCoordinator* GetExtensionCoordinatorForTesting(

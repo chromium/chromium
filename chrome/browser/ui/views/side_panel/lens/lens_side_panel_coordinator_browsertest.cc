@@ -342,7 +342,10 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
       GetSidePanelCoordinator()->GetCurrentSidePanelEntryForTesting();
   EXPECT_EQ(last_active_entry, nullptr);
   EXPECT_EQ(
-      SidePanelCoordinator::GetGlobalSidePanelRegistry(browser())
+      browser()
+          ->browser_window_features()
+          ->side_panel_coordinator()
+          ->GetWindowRegistry()
           ->GetEntryForKey(SidePanelEntry::Key(SidePanelEntry::Id::kLens)),
       nullptr);
   EXPECT_EQ(1, user_action_tester.GetActionCount(kCloseAction));

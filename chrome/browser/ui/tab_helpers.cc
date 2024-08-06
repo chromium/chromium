@@ -775,12 +775,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   extensions::TabHelper::CreateForWebContents(web_contents);
   extensions::NavigationExtensionEnabler::CreateForWebContents(web_contents);
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSidePanelIntegration)) {
-    extensions::side_panel_util::CreateSidePanelManagerForWebContents(
-        profile, web_contents);
-  }
-
   extensions::WebNavigationTabObserver::CreateForWebContents(web_contents);
   if (web_app::AreWebAppsEnabled(profile)) {
     web_app::WebAppTabHelper::CreateForWebContents(web_contents);

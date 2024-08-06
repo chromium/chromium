@@ -28,8 +28,9 @@ class ReadAnythingSidePanelControllerTest : public ChromeViewsTestBase {
 
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-    side_panel_controller_ =
-        std::make_unique<ReadAnythingSidePanelController>(web_contents());
+    side_panel_registry_ = std::make_unique<SidePanelRegistry>();
+    side_panel_controller_ = std::make_unique<ReadAnythingSidePanelController>(
+        web_contents(), side_panel_registry_.get());
   }
 
   void TearDown() override {
@@ -50,9 +51,9 @@ class ReadAnythingSidePanelControllerTest : public ChromeViewsTestBase {
  protected:
   std::unique_ptr<ReadAnythingSidePanelController> side_panel_controller_;
   MockReadAnythingSidePanelControllerObserver side_panel_controller_observer_;
-  raw_ptr<SidePanelRegistry> side_panel_registry_;
 
   content::WebContents* web_contents() { return web_contents_.get(); }
+  std::unique_ptr<SidePanelRegistry> side_panel_registry_;
 
  private:
   content::RenderViewHostTestEnabler rvh_enabler_;
@@ -64,8 +65,7 @@ TEST_F(ReadAnythingSidePanelControllerTest, RegisterReadAnythingEntry) {
   // When CreateAndRegisterEntry() is called, the current tab's side
   // panel registry should contain a kReadAnythingEntry.
   side_panel_controller_->CreateAndRegisterEntry();
-  auto* registry = SidePanelRegistry::Get(web_contents());
-  EXPECT_EQ(registry
+  EXPECT_EQ(side_panel_registry_
                 ->GetEntryForKey(
                     SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything))
                 ->key()
@@ -78,15 +78,14 @@ TEST_F(ReadAnythingSidePanelControllerTest, DeregisterReadAnythingEntry) {
   // in the registry.
   side_panel_controller_->CreateAndRegisterEntry();
 
-  auto* registry = SidePanelRegistry::Get(web_contents());
-  EXPECT_EQ(registry
+  EXPECT_EQ(side_panel_registry_
                 ->GetEntryForKey(
                     SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything))
                 ->key()
                 .id(),
             SidePanelEntry::Id::kReadAnything);
   side_panel_controller_->DeregisterEntry();
-  EXPECT_EQ(registry->GetEntryForKey(
+  EXPECT_EQ(side_panel_registry_->GetEntryForKey(
                 SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything)),
             nullptr);
 }
@@ -95,22 +94,21 @@ TEST_F(ReadAnythingSidePanelControllerTest, CreateAndRegisterMultipleTimes) {
   // When CreateAndRegisterEntry() is called multiple times, only
   // one entry should be added to the registry.
   side_panel_controller_->CreateAndRegisterEntry();
-  auto* registry = SidePanelRegistry::Get(web_contents());
-  EXPECT_EQ(registry
+  EXPECT_EQ(side_panel_registry_
                 ->GetEntryForKey(
                     SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything))
                 ->key()
                 .id(),
             SidePanelEntry::Id::kReadAnything);
   side_panel_controller_->CreateAndRegisterEntry();
-  EXPECT_EQ(registry
+  EXPECT_EQ(side_panel_registry_
                 ->GetEntryForKey(
                     SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything))
                 ->key()
                 .id(),
             SidePanelEntry::Id::kReadAnything);
   side_panel_controller_->DeregisterEntry();
-  EXPECT_EQ(registry->GetEntryForKey(
+  EXPECT_EQ(side_panel_registry_->GetEntryForKey(
                 SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything)),
             nullptr);
 }
@@ -131,8 +129,7 @@ TEST_F(ReadAnythingSidePanelControllerTest,
 TEST_F(ReadAnythingSidePanelControllerTest, OnEntryShown_ActivateObservers) {
   AddObserver(&side_panel_controller_observer_);
   side_panel_controller_->CreateAndRegisterEntry();
-  auto* registry = SidePanelRegistry::Get(web_contents());
-  SidePanelEntry* entry = registry->GetEntryForKey(
+  SidePanelEntry* entry = side_panel_registry_->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
 
   EXPECT_CALL(side_panel_controller_observer_, Activate(true)).Times(1);
@@ -142,8 +139,7 @@ TEST_F(ReadAnythingSidePanelControllerTest, OnEntryShown_ActivateObservers) {
 TEST_F(ReadAnythingSidePanelControllerTest, OnEntryHidden_ActivateObservers) {
   AddObserver(&side_panel_controller_observer_);
   side_panel_controller_->CreateAndRegisterEntry();
-  auto* registry = SidePanelRegistry::Get(web_contents());
-  SidePanelEntry* entry = registry->GetEntryForKey(
+  SidePanelEntry* entry = side_panel_registry_->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
 
   EXPECT_CALL(side_panel_controller_observer_, Activate(false)).Times(1);

@@ -10971,6 +10971,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/lens:interactive_ui_tests",
       "//chrome/browser/ui/omnibox",

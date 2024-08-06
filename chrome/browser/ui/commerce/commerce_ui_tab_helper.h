@@ -19,6 +19,7 @@
 #include "ui/gfx/image/image.h"
 
 class GURL;
+class SidePanelRegistry;
 class SidePanelUI;
 namespace bookmarks {
 class BookmarkModel;
@@ -49,7 +50,8 @@ class CommerceUiTabHelper : public content::WebContentsObserver {
   CommerceUiTabHelper(content::WebContents* contents,
                       ShoppingService* shopping_service,
                       bookmarks::BookmarkModel* model,
-                      image_fetcher::ImageFetcher* image_fetcher);
+                      image_fetcher::ImageFetcher* image_fetcher,
+                      SidePanelRegistry* side_panel_registry);
   ~CommerceUiTabHelper() override;
   CommerceUiTabHelper(const CommerceUiTabHelper& other) = delete;
   CommerceUiTabHelper& operator=(const CommerceUiTabHelper& other) =
@@ -207,6 +209,7 @@ class CommerceUiTabHelper : public content::WebContentsObserver {
   raw_ptr<ShoppingService, DanglingUntriaged> shopping_service_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<image_fetcher::ImageFetcher> image_fetcher_;
+  raw_ptr<SidePanelRegistry> side_panel_registry_;
 
   std::unique_ptr<PriceTrackingPageActionController> price_tracking_controller_;
   std::unique_ptr<ProductSpecificationsPageActionController>

@@ -22,7 +22,7 @@ void OpenExtensionSidePanel(Browser& browser, const ExtensionId& id) {
 
 content::WebContents* GetExtensionSidePanelWebContents(Browser& browser,
                                                        const ExtensionId& id) {
-  return ExtensionSidePanelManager::GetOrCreateForBrowser(&browser)
+  return ExtensionSidePanelManager::GetForBrowserForTesting(&browser)
       ->GetExtensionCoordinatorForTesting(id)
       ->GetHostWebContentsForTesting();
 }

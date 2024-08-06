@@ -8,6 +8,8 @@
 #include "base/observer_list.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 
+class SidePanelRegistry;
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -26,7 +28,8 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver {
     virtual void Activate(bool active) {}
     virtual void OnSidePanelControllerDestroyed() = 0;
   };
-  explicit ReadAnythingSidePanelController(content::WebContents* web_contents);
+  ReadAnythingSidePanelController(content::WebContents* web_contents,
+                                  SidePanelRegistry* side_panel_registry);
   ReadAnythingSidePanelController(const ReadAnythingSidePanelController&) =
       delete;
   ReadAnythingSidePanelController& operator=(
@@ -56,6 +59,7 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver {
   base::ObserverList<ReadAnythingSidePanelController::Observer> observers_;
 
   const raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<SidePanelRegistry> side_panel_registry_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SIDE_PANEL_CONTROLLER_H_

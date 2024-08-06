@@ -33,8 +33,9 @@ DECLARE_TEMPLATE_METADATA(SidePanelWebUIViewT_ReadAnythingUntrustedUI,
                           SidePanelWebUIViewT);
 
 ReadAnythingSidePanelController::ReadAnythingSidePanelController(
-    content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    content::WebContents* web_contents,
+    SidePanelRegistry* side_panel_registry)
+    : web_contents_(web_contents), side_panel_registry_(side_panel_registry) {}
 
 ReadAnythingSidePanelController::~ReadAnythingSidePanelController() {
   // Inform observers when |this| is destroyed so they can do their own cleanup.
@@ -44,9 +45,8 @@ ReadAnythingSidePanelController::~ReadAnythingSidePanelController() {
 }
 
 void ReadAnythingSidePanelController::CreateAndRegisterEntry() {
-  auto* registry = SidePanelRegistry::Get(web_contents_);
-  if (!registry || registry->GetEntryForKey(SidePanelEntry::Key(
-                       SidePanelEntry::Id::kReadAnything))) {
+  if (side_panel_registry_->GetEntryForKey(
+          SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything))) {
     return;
   }
 
@@ -55,20 +55,16 @@ void ReadAnythingSidePanelController::CreateAndRegisterEntry() {
       base::BindRepeating(&ReadAnythingSidePanelController::CreateContainerView,
                           base::Unretained(this)));
   side_panel_entry->AddObserver(this);
-  registry->Register(std::move(side_panel_entry));
+  side_panel_registry_->Register(std::move(side_panel_entry));
 }
 
 void ReadAnythingSidePanelController::DeregisterEntry() {
-  auto* registry = SidePanelRegistry::Get(web_contents_);
-  if (!registry) {
-    return;
-  }
-
-  if (auto* current_entry = registry->GetEntryForKey(
+  if (auto* current_entry = side_panel_registry_->GetEntryForKey(
           SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything))) {
     current_entry->RemoveObserver(this);
   }
-  registry->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
+  side_panel_registry_->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
 }
 
 void ReadAnythingSidePanelController::AddPageHandlerAsObserver(
