@@ -58,7 +58,7 @@ MockDataTypeWorker::CreateWorkerAndConnectSync(
 
 MockDataTypeWorker::MockDataTypeWorker(
     std::unique_ptr<DataTypeActivationResponse> context)
-    : model_type_state_(context->model_type_state),
+    : data_type_state_(context->data_type_state),
       processor_(std::move(context->type_processor)) {}
 
 MockDataTypeWorker::~MockDataTypeWorker() = default;
@@ -171,9 +171,9 @@ void MockDataTypeWorker::VerifyPendingCommits(
   }
 }
 
-void MockDataTypeWorker::UpdateModelTypeState(
-    const sync_pb::ModelTypeState& model_type_state) {
-  model_type_state_ = model_type_state;
+void MockDataTypeWorker::UpdateDataTypeState(
+    const sync_pb::DataTypeState& data_type_state) {
+  data_type_state_ = data_type_state;
 }
 
 void MockDataTypeWorker::UpdateFromServer() {
@@ -191,7 +191,7 @@ void MockDataTypeWorker::UpdateFromServer(
     const sync_pb::EntitySpecifics& specifics,
     int64_t version_offset) {
   UpdateFromServer(tag_hash, specifics, version_offset,
-                   model_type_state_.encryption_key_name());
+                   data_type_state_.encryption_key_name());
 }
 
 void MockDataTypeWorker::UpdateFromServer(
@@ -208,9 +208,9 @@ void MockDataTypeWorker::UpdateFromServer(
 void MockDataTypeWorker::UpdateFromServer(
     UpdateResponseDataList updates,
     std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
-  model_type_state_.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-  processor_->OnUpdateReceived(model_type_state_, std::move(updates),
+  data_type_state_.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  processor_->OnUpdateReceived(data_type_state_, std::move(updates),
                                gc_directive);
   // Processors often use a proxy object to communicate with the worker, so it
   // is necessary to process posted tasks.
@@ -253,7 +253,7 @@ syncer::UpdateResponseData MockDataTypeWorker::GenerateUpdateData(
     const ClientTagHash& tag_hash,
     const sync_pb::EntitySpecifics& specifics) {
   return GenerateUpdateData(tag_hash, specifics, 1,
-                            model_type_state_.encryption_key_name());
+                            data_type_state_.encryption_key_name());
 }
 
 syncer::UpdateResponseData MockDataTypeWorker::GenerateSharedUpdateData(
@@ -303,7 +303,7 @@ syncer::UpdateResponseData MockDataTypeWorker::GenerateTombstoneUpdateData(
   UpdateResponseData response_data;
   response_data.entity = std::move(data);
   response_data.response_version = version;
-  response_data.encryption_key_name = model_type_state_.encryption_key_name();
+  response_data.encryption_key_name = data_type_state_.encryption_key_name();
   return response_data;
 }
 
@@ -326,7 +326,7 @@ void MockDataTypeWorker::AckOnePendingCommit(int64_t version_offset) {
   }
   pending_commits_.pop_front();
   processor_->OnCommitCompleted(
-      model_type_state_, list,
+      data_type_state_, list,
       /*error_response_list=*/FailedCommitResponseDataList());
   // Processors often use a proxy object to communicate with the worker, so it
   // is necessary to process posted tasks.
@@ -342,7 +342,7 @@ void MockDataTypeWorker::FailOneCommit() {
   }
   pending_commits_.pop_front();
   processor_->OnCommitCompleted(
-      model_type_state_,
+      data_type_state_,
       /*committed_response_list=*/CommitResponseDataList(), list);
   // Processors often use a proxy object to communicate with the worker, so it
   // is necessary to process posted tasks.
@@ -408,7 +408,7 @@ void MockDataTypeWorker::UpdateWithEncryptionKey(const std::string& ekn) {
 void MockDataTypeWorker::UpdateWithEncryptionKey(
     const std::string& ekn,
     UpdateResponseDataList update) {
-  model_type_state_.set_encryption_key_name(ekn);
+  data_type_state_.set_encryption_key_name(ekn);
   UpdateFromServer(std::move(update));
 }
 

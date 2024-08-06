@@ -18,7 +18,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/protocol/model_type_state_helper.h"
+#include "components/sync/protocol/data_type_state_helper.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_encryption_handler.h"
 #include "components/sync/service/data_type_manager_observer.h"
@@ -332,7 +332,7 @@ void DataTypeManagerImpl::ConnectDataTypes() {
     }
 
     if (IsInitialSyncDone(
-            activation_response->model_type_state.initial_sync_state())) {
+            activation_response->data_type_state.initial_sync_state())) {
       downloaded_types_.Put(type);
     } else {
       downloaded_types_.Remove(type);

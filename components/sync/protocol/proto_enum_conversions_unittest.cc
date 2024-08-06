@@ -113,7 +113,7 @@ TEST(ProtoEnumConversionsTest, GetNoteTargetTypeString) {
 }
 
 TEST(ProtoEnumConversionsTest, GetInitialSyncStateString) {
-  TestEnumStringsNonEmpty(sync_pb::ModelTypeState::InitialSyncState);
+  TestEnumStringsNonEmpty(sync_pb::DataTypeState::InitialSyncState);
 }
 
 TEST(ProtoEnumConversionsTest, GetCategoryBenefitTypeString) {

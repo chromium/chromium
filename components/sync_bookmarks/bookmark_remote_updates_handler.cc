@@ -356,11 +356,11 @@ void BookmarkRemoteUpdatesHandler::Process(
 
     // If the received entity has out of date encryption, we schedule another
     // commit to fix it.
-    if (bookmark_tracker_->model_type_state().encryption_key_name() !=
+    if (bookmark_tracker_->data_type_state().encryption_key_name() !=
         update->encryption_key_name) {
       DVLOG(2) << "Bookmarks: Requesting re-encrypt commit "
                << update->encryption_key_name << " -> "
-               << bookmark_tracker_->model_type_state().encryption_key_name();
+               << bookmark_tracker_->data_type_state().encryption_key_name();
       bookmark_tracker_->IncrementSequenceNumber(tracked_entity);
     }
 

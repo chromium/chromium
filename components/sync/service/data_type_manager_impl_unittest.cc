@@ -1319,13 +1319,13 @@ TEST_F(DataTypeManagerImplTest, AllTypesReady) {
   InitDataTypeManager({PRIORITY_PREFERENCES, BOOKMARKS});
 
   // Mark both types as already downloaded.
-  sync_pb::ModelTypeState already_downloaded;
+  sync_pb::DataTypeState already_downloaded;
   already_downloaded.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   GetController(PRIORITY_PREFERENCES)
       ->model()
-      ->SetModelTypeStateForActivationResponse(already_downloaded);
-  GetController(BOOKMARKS)->model()->SetModelTypeStateForActivationResponse(
+      ->SetDataTypeStateForActivationResponse(already_downloaded);
+  GetController(BOOKMARKS)->model()->SetDataTypeStateForActivationResponse(
       already_downloaded);
 
   testing::InSequence seq;
@@ -1610,10 +1610,10 @@ TEST_F(DataTypeManagerImplTest, ProvideDebugInfo) {
   InitDataTypeManager({PREFERENCES, BOOKMARKS});
 
   // Mark BOOKMARKS as already downloaded.
-  sync_pb::ModelTypeState bookmarks_state;
+  sync_pb::DataTypeState bookmarks_state;
   bookmarks_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-  GetController(BOOKMARKS)->model()->SetModelTypeStateForActivationResponse(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  GetController(BOOKMARKS)->model()->SetDataTypeStateForActivationResponse(
       bookmarks_state);
 
   testing::InSequence seq;

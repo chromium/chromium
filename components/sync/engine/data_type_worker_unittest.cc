@@ -27,8 +27,8 @@
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/cycle/status_controller.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -45,8 +45,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
+using sync_pb::DataTypeState;
 using sync_pb::EntitySpecifics;
-using sync_pb::ModelTypeState;
 using sync_pb::SyncEntity;
 using testing::ElementsAre;
 using testing::IsNull;
@@ -213,7 +213,7 @@ class DataTypeWorkerTest : public ::testing::Test {
   // significant server action until we receive an update response that
   // contains the type root node for this type.
   void FirstInitialize() {
-    ModelTypeState initial_state;
+    DataTypeState initial_state;
     initial_state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromDataType(data_type_));
 
@@ -223,14 +223,14 @@ class DataTypeWorkerTest : public ::testing::Test {
   // Initializes with some existing data type state. Allows us to start
   // committing items right away.
   void NormalInitialize() {
-    ModelTypeState initial_state;
+    DataTypeState initial_state;
     initial_state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromDataType(data_type_));
     initial_state.mutable_progress_marker()->set_token(
         "some_saved_progress_token");
 
     initial_state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
     InitializeWithState(data_type_, initial_state);
 
@@ -238,20 +238,20 @@ class DataTypeWorkerTest : public ::testing::Test {
   }
 
   void InitializeWithInvalidations() {
-    ModelTypeState initial_state;
+    DataTypeState initial_state;
     initial_state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromDataType(data_type_));
     initial_state.mutable_progress_marker()->set_token(
         "some_saved_progress_token");
 
-    sync_pb::ModelTypeState_Invalidation* loaded_invalidation =
+    sync_pb::DataTypeState_Invalidation* loaded_invalidation =
         initial_state.add_invalidations();
 
     loaded_invalidation->set_hint("loaded_hint_1");
     loaded_invalidation->set_version(1);
 
     initial_state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
     InitializeWithState(data_type_, initial_state);
 
@@ -262,15 +262,15 @@ class DataTypeWorkerTest : public ::testing::Test {
     mock_server_ = std::make_unique<SingleTypeMockServer>(data_type);
 
     // Don't set progress marker, commit only types don't use them.
-    ModelTypeState initial_state;
+    DataTypeState initial_state;
     initial_state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
     InitializeWithState(data_type, initial_state);
   }
 
-  // Initialize with a custom initial ModelTypeState and pending updates.
-  void InitializeWithState(const DataType type, const ModelTypeState& state) {
+  // Initialize with a custom initial DataTypeState and pending updates.
+  void InitializeWithState(const DataType type, const DataTypeState& state) {
     DCHECK(!worker_);
     worker_ = std::make_unique<DataTypeWorker>(
         type, state, &cryptographer_, is_encrypted_type_,
@@ -739,10 +739,10 @@ TEST_F(DataTypeWorkerTest, SendInitialSyncDone) {
   // The update contains one entity for the root node.
   EXPECT_EQ(1U, processor()->GetNthUpdateResponse(0).size());
 
-  const ModelTypeState& state = processor()->GetNthUpdateState(0);
+  const DataTypeState& state = processor()->GetNthUpdateState(0);
   EXPECT_FALSE(state.progress_marker().token().empty());
   EXPECT_EQ(state.initial_sync_state(),
-            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+            sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   EXPECT_TRUE(worker()->IsInitialSyncEnded());
 }
 
@@ -2942,8 +2942,8 @@ TEST_F(DataTypeWorkerTest, HintCoalescing) {
   }
 }
 
-// Verifies the management of pending invalidations and ModelTypeState.
-TEST_F(DataTypeWorkerTest, ModelTypeStateAfterApplyUpdates) {
+// Verifies the management of pending invalidations and DataTypeState.
+TEST_F(DataTypeWorkerTest, DataTypeStateAfterApplyUpdates) {
   NormalInitialize();
 
   worker()->RecordRemoteInvalidation(BuildInvalidation(1, "bm_hint_1"));
@@ -2971,7 +2971,7 @@ TEST_F(DataTypeWorkerTest, ModelTypeStateAfterApplyUpdates) {
   // invalidations.
   worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
 
-  // Unprocessed invalidations after ApplyUpdates are in ModelTypeState.
+  // Unprocessed invalidations after ApplyUpdates are in DataTypeState.
   EXPECT_EQ(2, processor()->GetNthUpdateState(0).invalidations_size());
   EXPECT_EQ("unprocessed_hint_4",
             processor()->GetNthUpdateState(0).invalidations(0).hint());
@@ -3451,7 +3451,7 @@ TEST_F(DataTypeWorkerHistoryTest, AppliesPartialUpdateImmediately) {
   EXPECT_EQ(processor()->GetNthUpdateResponse(0).size(), 1u);
   EXPECT_EQ(
       processor()->GetNthUpdateState(0).initial_sync_state(),
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_PARTIALLY_DONE);
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_PARTIALLY_DONE);
   EXPECT_FALSE(worker()->IsInitialSyncEnded());
 
   // Now the GetUpdatesProcessor indicates that the cycle is done.
@@ -3462,7 +3462,7 @@ TEST_F(DataTypeWorkerHistoryTest, AppliesPartialUpdateImmediately) {
   ASSERT_EQ(processor()->GetNumUpdateResponses(), 2u);
   EXPECT_EQ(processor()->GetNthUpdateResponse(1).size(), 0u);
   EXPECT_EQ(processor()->GetNthUpdateState(1).initial_sync_state(),
-            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+            sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   EXPECT_TRUE(worker()->IsInitialSyncEnded());
 }
 
@@ -3487,7 +3487,7 @@ TEST_F(DataTypeWorkerHistoryTest, KeepsInitialSyncMarkedAsDone) {
   ASSERT_EQ(processor()->GetNumUpdateResponses(), 1u);
   ASSERT_EQ(
       processor()->GetNthUpdateState(0).initial_sync_state(),
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_PARTIALLY_DONE);
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_PARTIALLY_DONE);
   ASSERT_FALSE(worker()->IsInitialSyncEnded());
 
   // Now the GetUpdatesProcessor indicates that the cycle is done.
@@ -3496,7 +3496,7 @@ TEST_F(DataTypeWorkerHistoryTest, KeepsInitialSyncMarkedAsDone) {
   // Now initial sync is marked as fully done.
   ASSERT_EQ(processor()->GetNumUpdateResponses(), 2u);
   ASSERT_EQ(processor()->GetNthUpdateState(1).initial_sync_state(),
-            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+            sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   ASSERT_TRUE(worker()->IsInitialSyncEnded());
 
   // Another update comes in.
@@ -3511,7 +3511,7 @@ TEST_F(DataTypeWorkerHistoryTest, KeepsInitialSyncMarkedAsDone) {
   // initial sync should still be marked as fully done.
   ASSERT_EQ(processor()->GetNumUpdateResponses(), 3u);
   EXPECT_EQ(processor()->GetNthUpdateState(2).initial_sync_state(),
-            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+            sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   EXPECT_TRUE(worker()->IsInitialSyncEnded());
 
   // Again, the GetUpdatesProcessor indicates that the cycle is done.
@@ -3520,7 +3520,7 @@ TEST_F(DataTypeWorkerHistoryTest, KeepsInitialSyncMarkedAsDone) {
   // This should send another update to the processor, but not change anything.
   ASSERT_EQ(processor()->GetNumUpdateResponses(), 4u);
   EXPECT_EQ(processor()->GetNthUpdateState(3).initial_sync_state(),
-            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+            sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   EXPECT_TRUE(worker()->IsInitialSyncEnded());
 }
 

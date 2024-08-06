@@ -34,7 +34,7 @@ void ForwardingDataTypeProcessor::GetLocalChanges(
 }
 
 void ForwardingDataTypeProcessor::OnCommitCompleted(
-    const sync_pb::ModelTypeState& type_state,
+    const sync_pb::DataTypeState& type_state,
     const CommitResponseDataList& committed_response_list,
     const FailedCommitResponseDataList& error_response_list) {
   processor_->OnCommitCompleted(type_state, committed_response_list,
@@ -47,7 +47,7 @@ void ForwardingDataTypeProcessor::OnCommitFailed(
 }
 
 void ForwardingDataTypeProcessor::OnUpdateReceived(
-    const sync_pb::ModelTypeState& type_state,
+    const sync_pb::DataTypeState& type_state,
     UpdateResponseDataList updates,
     std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   processor_->OnUpdateReceived(type_state, std::move(updates),
@@ -55,7 +55,7 @@ void ForwardingDataTypeProcessor::OnUpdateReceived(
 }
 
 void ForwardingDataTypeProcessor::StorePendingInvalidations(
-    std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
+    std::vector<sync_pb::DataTypeState::Invalidation> invalidations_to_store) {
   processor_->StorePendingInvalidations(std::move(invalidations_to_store));
 }
 

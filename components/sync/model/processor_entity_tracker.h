@@ -15,7 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace sync_pb {
 class EntityMetadata;
@@ -31,9 +31,9 @@ class ProcessorEntityTracker {
  public:
   // Creates tracker and fills entities data from batch metadata map. This
   // constructor must be used only if initial_sync_done returns true in
-  // |model_type_state|.
+  // |data_type_state|.
   ProcessorEntityTracker(
-      const sync_pb::ModelTypeState& model_type_state,
+      const sync_pb::DataTypeState& data_type_state,
       std::map<std::string, std::unique_ptr<sync_pb::EntityMetadata>>
           metadata_map);
 
@@ -106,12 +106,12 @@ class ProcessorEntityTracker {
   // Returns true if there are any local entities to be committed.
   bool HasLocalChanges() const;
 
-  const sync_pb::ModelTypeState& model_type_state() const {
-    return model_type_state_;
+  const sync_pb::DataTypeState& data_type_state() const {
+    return data_type_state_;
   }
 
-  void set_model_type_state(const sync_pb::ModelTypeState& model_type_state) {
-    model_type_state_ = model_type_state;
+  void set_data_type_state(const sync_pb::DataTypeState& data_type_state) {
+    data_type_state_ = data_type_state;
   }
 
   // Returns number of entities, including tombstones.
@@ -141,7 +141,7 @@ class ProcessorEntityTracker {
   std::map<ClientTagHash, std::unique_ptr<ProcessorEntity>> entities_;
 
   // The model type metadata (progress marker, initial sync done, etc).
-  sync_pb::ModelTypeState model_type_state_;
+  sync_pb::DataTypeState data_type_state_;
 
   // The bridge wants to communicate entirely via storage keys that it is free
   // to define and can understand more easily. All of the sync machinery wants

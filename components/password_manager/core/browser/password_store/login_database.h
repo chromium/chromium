@@ -24,7 +24,7 @@
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/browser/password_store/statistics_table.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 
@@ -274,9 +274,9 @@ class LoginDatabase : public EncryptDecryptInterface {
         syncer::ModelType model_type,
         const std::string& storage_key);
 
-    // Reads the stored ModelTypeState for |model_type|. Returns nullptr in case
+    // Reads the stored DataTypeState for |model_type|. Returns nullptr in case
     // of failure. This is currently used only for passwords.
-    std::unique_ptr<sync_pb::ModelTypeState> GetModelTypeState(
+    std::unique_ptr<sync_pb::DataTypeState> GetDataTypeState(
         syncer::ModelType model_type);
 
     // PasswordStoreSync::MetadataStore implementation.
@@ -288,11 +288,11 @@ class LoginDatabase : public EncryptDecryptInterface {
                               const sync_pb::EntityMetadata& metadata) override;
     bool ClearEntityMetadata(syncer::ModelType model_type,
                              const std::string& storage_key) override;
-    bool UpdateModelTypeState(
+    bool UpdateDataTypeState(
         syncer::ModelType model_type,
-        const sync_pb::ModelTypeState& model_type_state) override;
+        const sync_pb::DataTypeState& data_type_state) override;
 
-    bool ClearModelTypeState(syncer::ModelType model_type) override;
+    bool ClearDataTypeState(syncer::ModelType model_type) override;
     void SetPasswordDeletionsHaveSyncedCallback(
         base::RepeatingCallback<void(bool)> callback) override;
     bool HasUnsyncedPasswordDeletions() override;

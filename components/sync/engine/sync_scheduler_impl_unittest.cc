@@ -179,7 +179,7 @@ std::unique_ptr<DataTypeActivationResponse> MakeFakeActivationResponse(
     DataType data_type) {
   auto response = std::make_unique<DataTypeActivationResponse>();
   response->type_processor = std::make_unique<FakeDataTypeProcessor>();
-  response->model_type_state.mutable_progress_marker()->set_data_type_id(
+  response->data_type_state.mutable_progress_marker()->set_data_type_id(
       GetSpecificsFieldNumberFromDataType(data_type));
   return response;
 }

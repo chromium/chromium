@@ -26,7 +26,7 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 using autofill::AutofillWebDataService;
 using autofill::CreditCard;
@@ -232,14 +232,14 @@ void GetServerCardsMetadataOnDBSequence(
       ->GetServerCardsMetadata(*cards_metadata);
 }
 
-void GetModelTypeStateOnDBSequence(syncer::DataType data_type,
-                                   AutofillWebDataService* wds,
-                                   sync_pb::ModelTypeState* model_type_state) {
+void GetDataTypeStateOnDBSequence(syncer::DataType data_type,
+                                  AutofillWebDataService* wds,
+                                  sync_pb::DataTypeState* data_type_state) {
   DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
   syncer::MetadataBatch metadata_batch;
   autofill::AutofillSyncMetadataTable::FromWebDatabase(wds->GetDatabase())
       ->GetAllSyncMetadata(data_type, &metadata_batch);
-  *model_type_state = metadata_batch.GetModelTypeState();
+  *data_type_state = metadata_batch.GetDataTypeState();
 }
 
 }  // namespace
@@ -326,14 +326,14 @@ std::vector<PaymentsMetadata> GetServerCardsMetadata(int profile) {
   return cards_metadata;
 }
 
-sync_pb::ModelTypeState GetWalletModelTypeState(syncer::DataType data_type,
-                                                int profile) {
+sync_pb::DataTypeState GetWalletDataTypeState(syncer::DataType data_type,
+                                              int profile) {
   DCHECK(data_type == syncer::AUTOFILL_WALLET_DATA ||
          data_type == syncer::AUTOFILL_WALLET_OFFER);
-  sync_pb::ModelTypeState result;
+  sync_pb::DataTypeState result;
   scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
   wds->GetDBTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&GetModelTypeStateOnDBSequence, data_type,
+      FROM_HERE, base::BindOnce(&GetDataTypeStateOnDBSequence, data_type,
                                 base::Unretained(wds.get()), &result));
   WaitForCurrentTasksToComplete(wds->GetDBTaskRunner());
   return result;

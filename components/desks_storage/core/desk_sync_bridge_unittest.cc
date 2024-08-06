@@ -38,8 +38,8 @@
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_data.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_matchers.h"
@@ -70,7 +70,7 @@ namespace {
 using ash::DeskTemplate;
 using ash::DeskTemplateSource;
 using ash::DeskTemplateType;
-using sync_pb::ModelTypeState;
+using sync_pb::DataTypeState;
 using sync_pb::WorkspaceDeskSpecifics;
 using syncer::DataTypeStore;
 using syncer::DataTypeStoreTestUtil;
@@ -548,8 +548,8 @@ WorkspaceDeskSpecifics CreateChromeAppTemplateExpectedValue(
   return expected_desk_specifics;
 }
 
-ModelTypeState StateWithEncryption(const std::string& encryption_key_name) {
-  ModelTypeState state;
+DataTypeState StateWithEncryption(const std::string& encryption_key_name) {
+  DataTypeState state;
   state.set_encryption_key_name(encryption_key_name);
   return state;
 }
@@ -621,13 +621,13 @@ class DeskSyncBridgeTest : public testing::Test {
 
   void WriteToStoreWithMetadata(
       const std::vector<WorkspaceDeskSpecifics>& specifics_list,
-      ModelTypeState state) {
+      DataTypeState state) {
     std::unique_ptr<DataTypeStore::WriteBatch> batch =
         store_->CreateWriteBatch();
     for (auto& specifics : specifics_list) {
       batch->WriteData(specifics.uuid(), specifics.SerializeAsString());
     }
-    batch->GetMetadataChangeList()->UpdateModelTypeState(state);
+    batch->GetMetadataChangeList()->UpdateDataTypeState(state);
     CommitToStoreAndWait(std::move(batch));
   }
 
@@ -1184,7 +1184,7 @@ TEST_F(DeskSyncBridgeTest, InitializationWithLocalDataAndMetadata) {
   const WorkspaceDeskSpecifics template1 = CreateWorkspaceDeskSpecifics(1);
   const WorkspaceDeskSpecifics template2 = CreateWorkspaceDeskSpecifics(2);
 
-  ModelTypeState state = StateWithEncryption("test_encryption_key");
+  DataTypeState state = StateWithEncryption("test_encryption_key");
   WriteToStoreWithMetadata({template1, template2}, state);
   EXPECT_CALL(*processor(), ModelReadyToSync(MetadataBatchContains(
                                 HasEncryptionKeyName("test_encryption_key"),
@@ -1214,7 +1214,7 @@ TEST_F(DeskSyncBridgeTest, GetAllEntriesIncludesPolicyEntries) {
   const WorkspaceDeskSpecifics template1 = CreateWorkspaceDeskSpecifics(1);
   const WorkspaceDeskSpecifics template2 = CreateWorkspaceDeskSpecifics(2);
 
-  ModelTypeState state = StateWithEncryption("test_encryption_key");
+  DataTypeState state = StateWithEncryption("test_encryption_key");
   WriteToStoreWithMetadata({template1, template2}, state);
   EXPECT_CALL(*processor(), ModelReadyToSync(MetadataBatchContains(
                                 HasEncryptionKeyName("test_encryption_key"),

@@ -28,7 +28,7 @@
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/update_handler.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace sync_pb {
 class SyncEntity;
@@ -123,7 +123,7 @@ class DataTypeWorker : public UpdateHandler,
   // and outlive the worker. Calling this will construct the object but not
   // more, ConnectSync() must be called immediately afterwards.
   DataTypeWorker(DataType type,
-                 const sync_pb::ModelTypeState& initial_state,
+                 const sync_pb::DataTypeState& initial_state,
                  Cryptographer* cryptographer,
                  bool encryption_enabled,
                  PassphraseType passphrase_type,
@@ -162,7 +162,7 @@ class DataTypeWorker : public UpdateHandler,
   // regardless of this method.
   // b) The worker can only commit or push updates once the cryptographer has
   // selected a default key to encrypt data (Cryptographer::CanEncrypt()). That
-  // used key will be listed in ModelTypeState.
+  // used key will be listed in DataTypeState.
   // This is a no-op if encryption was already enabled on construction or by
   // a previous call to this method.
   void EnableEncryption();
@@ -231,7 +231,7 @@ class DataTypeWorker : public UpdateHandler,
     bool is_processed = false;
   };
 
-  // Sends |pending_updates_| and |model_type_state_| to the processor if there
+  // Sends |pending_updates_| and |data_type_state_| to the processor if there
   // are no encryption pendencies and initial sync is done. This is called in
   // ApplyUpdates() during a GetUpdates cycle, but also if the processor must be
   // informed of a new encryption key, or the worker just managed to decrypt
@@ -246,10 +246,10 @@ class DataTypeWorker : public UpdateHandler,
   bool CanCommitItems() const;
 
   // If |encryption_enabled_| is false, sets the encryption key name in
-  // |model_type_state_| to the empty string. This should usually be a no-op.
+  // |data_type_state_| to the empty string. This should usually be a no-op.
   // If |encryption_enabled_| is true *and* the cryptographer has selected a
   // (non-empty) default key, sets the value to that default key.
-  // Returns whether the |model_type_state_| key name changed.
+  // Returns whether the |data_type_state_| key name changed.
   bool UpdateTypeEncryptionKeyName();
 
   // Iterates through all elements in |entries_pending_decryption_| and tries to
@@ -299,11 +299,11 @@ class DataTypeWorker : public UpdateHandler,
   std::vector<UnknownEncryptionKeyInfo> RemoveKeysNoLongerUnknown();
 
   // Sends copy of |pending_invalidations_| vector to |data_type_processor_|
-  // to store them in storage along |model_type_state_|.
+  // to store them in storage along |data_type_state_|.
   void SendPendingInvalidationsToProcessor();
 
-  // Copies |pending_invalidations_| vector to |model_type_state_|.
-  void UpdateModelTypeStateInvalidations();
+  // Copies |pending_invalidations_| vector to |data_type_state_|.
+  void UpdateDataTypeStateInvalidations();
 
   // Encrypts the specifics and hides the title if necessary.
   void EncryptPasswordSpecificsData(CommitRequestDataList* request_data_list);
@@ -329,7 +329,7 @@ class DataTypeWorker : public UpdateHandler,
   bool HasNonDeletionUpdates() const;
 
   // Extraxts GC directive from the progress marker to handle it independently
-  // of |model_type_state_|.
+  // of |data_type_state_|.
   void ExtractGcDirective();
 
   const DataType type_;
@@ -350,7 +350,7 @@ class DataTypeWorker : public UpdateHandler,
   std::unique_ptr<DataTypeProcessor> data_type_processor_;
 
   // State that applies to the entire data type.
-  sync_pb::ModelTypeState model_type_state_;
+  sync_pb::DataTypeState data_type_state_;
 
   bool encryption_enabled_;
 

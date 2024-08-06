@@ -49,8 +49,8 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -2087,11 +2087,11 @@ LoginDatabase::SyncMetadataStore::GetSyncEntityMetadataForStorageKey(
   return DecryptAndParseSyncEntityMetadata(s.ColumnString(0));
 }
 
-std::unique_ptr<sync_pb::ModelTypeState>
-LoginDatabase::SyncMetadataStore::GetModelTypeState(
+std::unique_ptr<sync_pb::DataTypeState>
+LoginDatabase::SyncMetadataStore::GetDataTypeState(
     syncer::ModelType model_type) {
   CHECK_EQ(model_type, syncer::PASSWORDS);
-  auto state = std::make_unique<sync_pb::ModelTypeState>();
+  auto state = std::make_unique<sync_pb::DataTypeState>();
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE,
       base::StringPrintf("SELECT model_metadata FROM %s WHERE id=1",
@@ -2123,13 +2123,13 @@ LoginDatabase::SyncMetadataStore::GetAllSyncMetadata(
     return nullptr;
   }
 
-  std::unique_ptr<sync_pb::ModelTypeState> model_type_state =
-      GetModelTypeState(model_type);
-  if (model_type_state == nullptr) {
+  std::unique_ptr<sync_pb::DataTypeState> data_type_state =
+      GetDataTypeState(model_type);
+  if (data_type_state == nullptr) {
     return nullptr;
   }
 
-  metadata_batch->SetModelTypeState(*model_type_state);
+  metadata_batch->SetDataTypeState(*data_type_state);
   return metadata_batch;
 }
 
@@ -2250,10 +2250,10 @@ bool LoginDatabase::SyncMetadataStore::ClearEntityMetadata(
   return result;
 }
 
-bool LoginDatabase::SyncMetadataStore::UpdateModelTypeState(
+bool LoginDatabase::SyncMetadataStore::UpdateDataTypeState(
     syncer::ModelType model_type,
-    const sync_pb::ModelTypeState& model_type_state) {
-  TRACE_EVENT0("passwords", "SyncMetadataStore::UpdateModelTypeState");
+    const sync_pb::DataTypeState& data_type_state) {
+  TRACE_EVENT0("passwords", "SyncMetadataStore::UpdateDataTypeState");
   CHECK_EQ(model_type, syncer::PASSWORDS);
 
   // Make sure only one row is left by storing it in the entry with id=1
@@ -2263,14 +2263,14 @@ bool LoginDatabase::SyncMetadataStore::UpdateModelTypeState(
       base::StringPrintf("INSERT OR REPLACE INTO %s (id, model_metadata) "
                          "VALUES(1, ?)",
                          kPasswordsSyncModelMetadataTableName)));
-  s.BindString(0, model_type_state.SerializeAsString());
+  s.BindString(0, data_type_state.SerializeAsString());
 
   return s.Run();
 }
 
-bool LoginDatabase::SyncMetadataStore::ClearModelTypeState(
+bool LoginDatabase::SyncMetadataStore::ClearDataTypeState(
     syncer::ModelType model_type) {
-  TRACE_EVENT0("passwords", "SyncMetadataStore::ClearModelTypeState");
+  TRACE_EVENT0("passwords", "SyncMetadataStore::ClearDataTypeState");
   CHECK_EQ(model_type, syncer::PASSWORDS);
 
   sql::Statement s(db_->GetCachedStatement(

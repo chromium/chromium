@@ -107,11 +107,11 @@ TEST_F(PlusAddressSettingSyncBridgeTest, ModelReadyToSync_InitialSync) {
 
 TEST_F(PlusAddressSettingSyncBridgeTest, ModelReadyToSync_ExistingMetadata) {
   // Simulate that some metadata is stored.
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState::INITIAL_SYNC_DONE);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState::INITIAL_SYNC_DONE);
   auto write_batch = store().CreateWriteBatch();
-  write_batch->GetMetadataChangeList()->UpdateModelTypeState(model_type_state);
+  write_batch->GetMetadataChangeList()->UpdateDataTypeState(data_type_state);
   base::test::TestFuture<const std::optional<syncer::ModelError>&> write_result;
   store().CommitWriteBatch(std::move(write_batch), write_result.GetCallback());
   ASSERT_FALSE(write_result.Get());

@@ -10,9 +10,9 @@
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/gaia_password_reuse.pb.h"
 #include "components/sync/protocol/get_updates_caller_info.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/note_entity.pb.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
@@ -205,7 +205,7 @@ const char* ProtoEnumToString(sync_pb::WorkspaceDeskSpecifics::DeskType type);
 const char* ProtoEnumToString(
     sync_pb::WorkspaceDeskSpecifics::TabGroupColor color);
 
-const char* ProtoEnumToString(sync_pb::ModelTypeState::InitialSyncState state);
+const char* ProtoEnumToString(sync_pb::DataTypeState::InitialSyncState state);
 
 const char* ProtoEnumToString(
     sync_pb::CookieSpecifics::CookieSameSite site_restrictions);

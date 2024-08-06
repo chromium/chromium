@@ -18,7 +18,7 @@
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_processor.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace syncer {
 
@@ -50,16 +50,16 @@ class MockDataTypeProcessor : public DataTypeProcessor {
   void GetLocalChanges(size_t max_entries,
                        GetLocalChangesCallback callback) override;
   void OnCommitCompleted(
-      const sync_pb::ModelTypeState& type_state,
+      const sync_pb::DataTypeState& type_state,
       const CommitResponseDataList& committed_response_list,
       const FailedCommitResponseDataList& error_response_list) override;
   void OnCommitFailed(SyncCommitError commit_error) override;
   void OnUpdateReceived(
-      const sync_pb::ModelTypeState& type_state,
+      const sync_pb::DataTypeState& type_state,
       UpdateResponseDataList response_list,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive) override;
   void StorePendingInvalidations(
-      std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
+      std::vector<sync_pb::DataTypeState::Invalidation> invalidations_to_store)
       override;
 
   // By default, this object behaves as if all messages are processed
@@ -98,7 +98,7 @@ class MockDataTypeProcessor : public DataTypeProcessor {
   // Does not includes responses that are in pending tasks.
   size_t GetNumUpdateResponses() const;
   std::vector<const UpdateResponseData*> GetNthUpdateResponse(size_t n) const;
-  sync_pb::ModelTypeState GetNthUpdateState(size_t n) const;
+  sync_pb::DataTypeState GetNthUpdateState(size_t n) const;
   sync_pb::GarbageCollectionDirective GetNthGcDirective(size_t n) const;
 
   // Getters to access the log of received commit responses.
@@ -106,7 +106,7 @@ class MockDataTypeProcessor : public DataTypeProcessor {
   // Does not includes responses that are in pending tasks.
   size_t GetNumCommitResponses() const;
   CommitResponseDataList GetNthCommitResponse(size_t n) const;
-  sync_pb::ModelTypeState GetNthCommitState(size_t n) const;
+  sync_pb::DataTypeState GetNthCommitState(size_t n) const;
 
   // Getters to access the lastest update response for a given tag_hash.
   bool HasUpdateResponse(const ClientTagHash& tag_hash) const;
@@ -138,7 +138,7 @@ class MockDataTypeProcessor : public DataTypeProcessor {
   //
   // Implemented as an Impl method so we can defer its execution in some cases.
   void OnCommitCompletedImpl(
-      const sync_pb::ModelTypeState& type_state,
+      const sync_pb::DataTypeState& type_state,
       const CommitResponseDataList& committed_response_list,
       const FailedCommitResponseDataList& error_response_list);
 
@@ -146,7 +146,7 @@ class MockDataTypeProcessor : public DataTypeProcessor {
   //
   // Implemented as an Impl method so we can defer its execution in some cases.
   void OnUpdateReceivedImpl(
-      const sync_pb::ModelTypeState& type_state,
+      const sync_pb::DataTypeState& type_state,
       UpdateResponseDataList response_list,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive);
 
@@ -171,9 +171,9 @@ class MockDataTypeProcessor : public DataTypeProcessor {
 
   // A log of messages received by this object.
   std::vector<CommitResponseDataList> received_commit_responses_;
-  std::vector<sync_pb::ModelTypeState> type_states_received_on_commit_;
+  std::vector<sync_pb::DataTypeState> type_states_received_on_commit_;
   std::vector<UpdateResponseDataList> received_update_responses_;
-  std::vector<sync_pb::ModelTypeState> type_states_received_on_update_;
+  std::vector<sync_pb::DataTypeState> type_states_received_on_update_;
   std::vector<sync_pb::GarbageCollectionDirective> received_gc_directives_;
   size_t commit_failures_count_ = 0;
 

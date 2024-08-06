@@ -322,9 +322,9 @@ TEST_F(SessionStoreTest, ShouldWriteAndRestoreMetadata) {
   metadata1.set_server_id(kServerId1);
   batch->GetMetadataChangeList()->UpdateMetadata(kStorageKey1, metadata1);
 
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_encryption_key_name(kEncryptionKeyName1);
-  batch->GetMetadataChangeList()->UpdateModelTypeState(model_type_state);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_encryption_key_name(kEncryptionKeyName1);
+  batch->GetMetadataChangeList()->UpdateDataTypeState(data_type_state);
 
   SessionStore::WriteBatch::Commit(std::move(batch));
 

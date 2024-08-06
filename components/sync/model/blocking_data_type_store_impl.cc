@@ -12,11 +12,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "components/sync/model/data_type_store_backend.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/data_type_store_backend.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "third_party/leveldatabase/src/include/leveldb/env.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
@@ -50,14 +50,14 @@ class LevelDbMetadataChangeList : public MetadataChangeList {
   }
 
   // MetadataChangeList implementation.
-  void UpdateModelTypeState(
-      const sync_pb::ModelTypeState& model_type_state) override {
+  void UpdateDataTypeState(
+      const sync_pb::DataTypeState& data_type_state) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     leveldb_write_batch_->Put(global_metadata_key_,
-                              model_type_state.SerializeAsString());
+                              data_type_state.SerializeAsString());
   }
 
-  void ClearModelTypeState() override {
+  void ClearDataTypeState() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     leveldb_write_batch_->Delete(global_metadata_key_);
   }
@@ -238,11 +238,11 @@ std::optional<ModelError> BlockingDataTypeStoreImpl::ReadAllMetadata(
     DCHECK_EQ(global_metadata_key_, missing_global_metadata_id[0]);
     DCHECK(global_metadata_records.empty());
   } else {
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     if (!state.ParseFromString(global_metadata_records[0].value)) {
       return ModelError(FROM_HERE, "Failed to deserialize model type state.");
     }
-    metadata_batch->SetModelTypeState(state);
+    metadata_batch->SetDataTypeState(state);
   }
 
   // Read individual metadata records.

@@ -48,7 +48,7 @@ void DataTypeRegistry::ConnectDataType(
            << DataTypeToDebugString(type);
 
   auto worker = std::make_unique<DataTypeWorker>(
-      type, activation_response->model_type_state,
+      type, activation_response->data_type_state,
       sync_encryption_handler_->GetCryptographer(),
       sync_encryption_handler_->GetEncryptedTypes().Has(type),
       sync_encryption_handler_->GetPassphraseType(), nudge_handler_,

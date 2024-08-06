@@ -33,16 +33,16 @@ class ForwardingDataTypeProcessor : public DataTypeProcessor {
   void GetLocalChanges(size_t max_entries,
                        GetLocalChangesCallback callback) override;
   void OnCommitCompleted(
-      const sync_pb::ModelTypeState& type_state,
+      const sync_pb::DataTypeState& type_state,
       const CommitResponseDataList& committed_response_list,
       const FailedCommitResponseDataList& error_response_list) override;
   void OnCommitFailed(SyncCommitError commit_error) override;
   void OnUpdateReceived(
-      const sync_pb::ModelTypeState& type_state,
+      const sync_pb::DataTypeState& type_state,
       UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive) override;
   void StorePendingInvalidations(
-      std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
+      std::vector<sync_pb::DataTypeState::Invalidation> invalidations_to_store)
       override;
 
  private:

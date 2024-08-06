@@ -22,7 +22,7 @@
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/data_type_processor.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace sync_pb {
 class GarbageCollectionDirective;
@@ -72,10 +72,10 @@ class MockDataTypeWorker : public CommitQueue {
       const std::vector<std::vector<ClientTagHash>>& tag_hashes);
 
   // Updates the data type state to be used in all future updates from server.
-  void UpdateModelTypeState(const sync_pb::ModelTypeState& model_type_state);
+  void UpdateDataTypeState(const sync_pb::DataTypeState& data_type_state);
 
-  const sync_pb::ModelTypeState model_type_state() const {
-    return model_type_state_;
+  const sync_pb::DataTypeState data_type_state() const {
+    return data_type_state_;
   }
 
   // Trigger an update from the server. See GenerateUpdateData for parameter
@@ -110,7 +110,7 @@ class MockDataTypeWorker : public CommitQueue {
       const std::string& ekn);
 
   // Mostly same as GenerateUpdateData above, but set 1 as |version_offset|, and
-  // use model_type_state_.encryption_key_name() as |ekn|.
+  // use data_type_state_.encryption_key_name() as |ekn|.
   syncer::UpdateResponseData GenerateUpdateData(
       const ClientTagHash& tag_hash,
       const sync_pb::EntitySpecifics& specifics);
@@ -179,7 +179,7 @@ class MockDataTypeWorker : public CommitQueue {
   int64_t GetServerVersion(const ClientTagHash& tag_hash);
   void SetServerVersion(const ClientTagHash& tag_hash, int64_t version);
 
-  sync_pb::ModelTypeState model_type_state_;
+  sync_pb::DataTypeState data_type_state_;
 
   // A pointer to the processor for this mock worker.
   const std::unique_ptr<DataTypeProcessor> processor_;

@@ -36,7 +36,7 @@
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
-#include "components/sync/protocol/model_type_state_helper.h"
+#include "components/sync/protocol/data_type_state_helper.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -369,8 +369,8 @@ void PasswordSyncBridge::Init(
       sync_metadata_read_error = SyncMetadataReadError::
           kNewlySupportedFieldDetectedInUnsupportedFieldsCache;
     } else if (syncer::IsInitialSyncDone(
-                   batch->GetModelTypeState().initial_sync_state()) &&
-               !batch->GetModelTypeState()
+                   batch->GetDataTypeState().initial_sync_state()) &&
+               !batch->GetDataTypeState()
                     .notes_enabled_before_initial_sync_for_passwords()) {
       // The browser has just been upgraded to a version that supports password
       // notes. Therefore, the metadata are cleared to enforce the initial sync
@@ -398,7 +398,7 @@ void PasswordSyncBridge::Init(
   if (wipe_model_upon_sync_disabled_behavior_ ==
           syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata &&
       (!batch || !syncer::IsInitialSyncDone(
-                     batch->GetModelTypeState().initial_sync_state()))) {
+                     batch->GetDataTypeState().initial_sync_state()))) {
     // Since the model isn't initially tracking metadata, move away from
     // kOnceIfTrackingMetadata so the behavior doesn't kick in, in case sync
     // is turned on later and back to off.

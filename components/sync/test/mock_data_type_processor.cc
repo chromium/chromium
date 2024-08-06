@@ -49,7 +49,7 @@ void MockDataTypeProcessor::GetLocalChanges(size_t max_entries,
 }
 
 void MockDataTypeProcessor::OnCommitCompleted(
-    const sync_pb::ModelTypeState& type_state,
+    const sync_pb::DataTypeState& type_state,
     const CommitResponseDataList& committed_response_list,
     const FailedCommitResponseDataList& error_response_list) {
   pending_tasks_.push_back(base::BindOnce(
@@ -64,7 +64,7 @@ void MockDataTypeProcessor::OnCommitFailed(SyncCommitError commit_error) {
 }
 
 void MockDataTypeProcessor::OnUpdateReceived(
-    const sync_pb::ModelTypeState& type_state,
+    const sync_pb::DataTypeState& type_state,
     UpdateResponseDataList response_list,
     std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   pending_tasks_.push_back(base::BindOnce(
@@ -178,7 +178,7 @@ MockDataTypeProcessor::GetNthUpdateResponse(size_t n) const {
   return nth_update_responses;
 }
 
-sync_pb::ModelTypeState MockDataTypeProcessor::GetNthUpdateState(
+sync_pb::DataTypeState MockDataTypeProcessor::GetNthUpdateState(
     size_t n) const {
   DCHECK_LT(n, GetNumUpdateResponses());
   return type_states_received_on_update_[n];
@@ -200,7 +200,7 @@ CommitResponseDataList MockDataTypeProcessor::GetNthCommitResponse(
   return received_commit_responses_[n];
 }
 
-sync_pb::ModelTypeState MockDataTypeProcessor::GetNthCommitState(
+sync_pb::DataTypeState MockDataTypeProcessor::GetNthCommitState(
     size_t n) const {
   DCHECK_LT(n, GetNumCommitResponses());
   return type_states_received_on_commit_[n];
@@ -268,7 +268,7 @@ int MockDataTypeProcessor::GetStoreInvalidationsCallCount() const {
 }
 
 void MockDataTypeProcessor::OnCommitCompletedImpl(
-    const sync_pb::ModelTypeState& type_state,
+    const sync_pb::DataTypeState& type_state,
     const CommitResponseDataList& committed_response_list,
     const FailedCommitResponseDataList& error_response_list) {
   received_commit_responses_.push_back(committed_response_list);
@@ -294,7 +294,7 @@ void MockDataTypeProcessor::OnCommitCompletedImpl(
 }
 
 void MockDataTypeProcessor::OnUpdateReceivedImpl(
-    const sync_pb::ModelTypeState& type_state,
+    const sync_pb::DataTypeState& type_state,
     UpdateResponseDataList response_list,
     std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   type_states_received_on_update_.push_back(type_state);
@@ -312,7 +312,7 @@ void MockDataTypeProcessor::OnUpdateReceivedImpl(
 }
 
 void MockDataTypeProcessor::StorePendingInvalidations(
-    std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
+    std::vector<sync_pb::DataTypeState::Invalidation> invalidations_to_store) {
   store_invalidations_call_count_++;
 }
 

@@ -7,8 +7,8 @@
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 
@@ -22,7 +22,9 @@ constexpr std::string_view kModelType = "model_type";
 constexpr std::string_view kStorageKey = "storage_key";
 constexpr std::string_view kValue = "value";
 
-constexpr std::string_view kAutofillModelTypeStateTable =
+// The table name uses the legacy name "model type state" as a historic artifact
+// to avoid a data migration.
+constexpr std::string_view kAutofillDataTypeStateTable =
     "autofill_model_type_state";
 // kModelType = "model_type"
 // kValue = "value"
@@ -64,7 +66,7 @@ WebDatabaseTable::TypeKey AutofillSyncMetadataTable::GetTypeKey() const {
 }
 
 bool AutofillSyncMetadataTable::CreateTablesIfNecessary() {
-  return InitAutofillSyncMetadataTable() && InitModelTypeStateTable();
+  return InitAutofillSyncMetadataTable() && InitDataTypeStateTable();
 }
 
 bool AutofillSyncMetadataTable::MigrateToVersion(
@@ -86,12 +88,12 @@ bool AutofillSyncMetadataTable::GetAllSyncMetadata(
     return false;
   }
 
-  sync_pb::ModelTypeState model_type_state;
-  if (!GetModelTypeState(model_type, &model_type_state)) {
+  sync_pb::DataTypeState data_type_state;
+  if (!GetDataTypeState(model_type, &data_type_state)) {
     return false;
   }
 
-  metadata_batch->SetModelTypeState(model_type_state);
+  metadata_batch->SetDataTypeState(data_type_state);
   return true;
 }
 
@@ -134,30 +136,30 @@ bool AutofillSyncMetadataTable::ClearEntityMetadata(
   return s.Run();
 }
 
-bool AutofillSyncMetadataTable::UpdateModelTypeState(
+bool AutofillSyncMetadataTable::UpdateDataTypeState(
     syncer::ModelType model_type,
-    const sync_pb::ModelTypeState& model_type_state) {
+    const sync_pb::DataTypeState& data_type_state) {
   DCHECK(SupportsMetadataForModelType(model_type))
       << "Model type " << model_type << " not supported for metadata";
 
   // Hardcode the id to force a collision, ensuring that there remains only a
   // single entry.
   sql::Statement s;
-  InsertBuilder(db_, s, kAutofillModelTypeStateTable, {kModelType, kValue},
+  InsertBuilder(db_, s, kAutofillDataTypeStateTable, {kModelType, kValue},
                 /*or_replace=*/true);
   s.BindInt(0, GetKeyValueForModelType(model_type));
-  s.BindString(1, model_type_state.SerializeAsString());
+  s.BindString(1, data_type_state.SerializeAsString());
 
   return s.Run();
 }
 
-bool AutofillSyncMetadataTable::ClearModelTypeState(
+bool AutofillSyncMetadataTable::ClearDataTypeState(
     syncer::ModelType model_type) {
   DCHECK(SupportsMetadataForModelType(model_type))
       << "Model type " << model_type << " not supported for metadata";
 
   sql::Statement s;
-  DeleteBuilder(db_, s, kAutofillModelTypeStateTable, "model_type=?");
+  DeleteBuilder(db_, s, kAutofillDataTypeStateTable, "model_type=?");
   s.BindInt(0, GetKeyValueForModelType(model_type));
 
   return s.Run();
@@ -195,14 +197,14 @@ bool AutofillSyncMetadataTable::GetAllSyncEntityMetadata(
   return true;
 }
 
-bool AutofillSyncMetadataTable::GetModelTypeState(
+bool AutofillSyncMetadataTable::GetDataTypeState(
     syncer::ModelType model_type,
-    sync_pb::ModelTypeState* state) {
+    sync_pb::DataTypeState* state) {
   DCHECK(SupportsMetadataForModelType(model_type))
       << "Model type " << model_type << " not supported for metadata";
 
   sql::Statement s;
-  SelectBuilder(db_, s, kAutofillModelTypeStateTable, {kValue},
+  SelectBuilder(db_, s, kAutofillDataTypeStateTable, {kValue},
                 "WHERE model_type=?");
   s.BindInt(0, GetKeyValueForModelType(model_type));
 
@@ -222,9 +224,9 @@ bool AutofillSyncMetadataTable::InitAutofillSyncMetadataTable() {
                                 {kModelType, kStorageKey});
 }
 
-bool AutofillSyncMetadataTable::InitModelTypeStateTable() {
+bool AutofillSyncMetadataTable::InitDataTypeStateTable() {
   return CreateTableIfNotExists(
-      db_, kAutofillModelTypeStateTable,
+      db_, kAutofillDataTypeStateTable,
       {{kModelType, "INTEGER NOT NULL PRIMARY KEY"}, {kValue, "BLOB"}});
 }
 

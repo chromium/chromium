@@ -14,7 +14,7 @@
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/nigori/nigori_local_change_processor.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace syncer {
 
@@ -38,15 +38,15 @@ class NigoriDataTypeProcessor : public DataTypeProcessor,
   void GetLocalChanges(size_t max_entries,
                        GetLocalChangesCallback callback) override;
   void OnCommitCompleted(
-      const sync_pb::ModelTypeState& type_state,
+      const sync_pb::DataTypeState& type_state,
       const CommitResponseDataList& committed_response_list,
       const FailedCommitResponseDataList& error_response_list) override;
   void OnUpdateReceived(
-      const sync_pb::ModelTypeState& type_state,
+      const sync_pb::DataTypeState& type_state,
       UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive) override;
   void StorePendingInvalidations(
-      std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
+      std::vector<sync_pb::DataTypeState::Invalidation> invalidations_to_store)
       override;
 
   // DataTypeControllerDelegate implementation.
@@ -73,7 +73,7 @@ class NigoriDataTypeProcessor : public DataTypeProcessor,
   bool IsTrackingMetadata() override;
 
   bool IsConnectedForTest() const;
-  const sync_pb::ModelTypeState& GetModelTypeStateForTest();
+  const sync_pb::DataTypeState& GetDataTypeStateForTest();
 
  private:
   // Returns true if the handshake with sync thread is complete.
@@ -95,7 +95,7 @@ class NigoriDataTypeProcessor : public DataTypeProcessor,
   raw_ptr<NigoriSyncBridge> bridge_ = nullptr;
 
   // The model type metadata (progress marker, initial sync done, etc).
-  sync_pb::ModelTypeState model_type_state_;
+  sync_pb::DataTypeState data_type_state_;
 
   // Whether the model has initialized its internal state for sync (and provided
   // metadata).

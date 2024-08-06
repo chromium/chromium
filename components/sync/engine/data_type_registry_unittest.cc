@@ -13,7 +13,7 @@
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/data_type_worker.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/test/fake_data_type_processor.h"
 #include "components/sync/test/fake_sync_encryption_handler.h"
 #include "components/sync/test/mock_nudge_handler.h"
@@ -34,8 +34,8 @@ class DataTypeRegistryTest : public ::testing::Test {
 
   DataTypeRegistry* registry() { return registry_.get(); }
 
-  static sync_pb::ModelTypeState MakeInitialModelTypeState(DataType type) {
-    sync_pb::ModelTypeState state;
+  static sync_pb::DataTypeState MakeInitialDataTypeState(DataType type) {
+    sync_pb::DataTypeState state;
     state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromDataType(type));
     return state;
@@ -43,9 +43,9 @@ class DataTypeRegistryTest : public ::testing::Test {
 
   static std::unique_ptr<DataTypeActivationResponse>
   MakeDataTypeActivationResponse(
-      const sync_pb::ModelTypeState& model_type_state) {
+      const sync_pb::DataTypeState& data_type_state) {
     auto context = std::make_unique<DataTypeActivationResponse>();
-    context->model_type_state = model_type_state;
+    context->data_type_state = data_type_state;
     context->type_processor = std::make_unique<FakeDataTypeProcessor>();
     return context;
   }
@@ -62,13 +62,13 @@ class DataTypeRegistryTest : public ::testing::Test {
 TEST_F(DataTypeRegistryTest, ConnectDataTypes) {
   EXPECT_TRUE(registry()->GetConnectedTypes().empty());
 
-  registry()->ConnectDataType(THEMES, MakeDataTypeActivationResponse(
-                                          MakeInitialModelTypeState(THEMES)));
+  registry()->ConnectDataType(
+      THEMES, MakeDataTypeActivationResponse(MakeInitialDataTypeState(THEMES)));
   EXPECT_EQ(DataTypeSet({THEMES}), registry()->GetConnectedTypes());
 
   registry()->ConnectDataType(
       SESSIONS,
-      MakeDataTypeActivationResponse(MakeInitialModelTypeState(SESSIONS)));
+      MakeDataTypeActivationResponse(MakeInitialDataTypeState(SESSIONS)));
   EXPECT_EQ(DataTypeSet({THEMES, SESSIONS}), registry()->GetConnectedTypes());
 
   registry()->DisconnectDataType(THEMES);
@@ -81,16 +81,16 @@ TEST_F(DataTypeRegistryTest, ConnectDataTypes) {
 // Tests correct result returned from GetInitialSyncEndedTypes.
 TEST_F(DataTypeRegistryTest, GetInitialSyncEndedTypes) {
   // Themes has finished initial sync.
-  sync_pb::ModelTypeState model_type_state = MakeInitialModelTypeState(THEMES);
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  sync_pb::DataTypeState data_type_state = MakeInitialDataTypeState(THEMES);
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   registry()->ConnectDataType(THEMES,
-                              MakeDataTypeActivationResponse(model_type_state));
+                              MakeDataTypeActivationResponse(data_type_state));
 
   // SESSIONS has NOT finished initial sync.
   registry()->ConnectDataType(
       SESSIONS,
-      MakeDataTypeActivationResponse(MakeInitialModelTypeState(SESSIONS)));
+      MakeDataTypeActivationResponse(MakeInitialDataTypeState(SESSIONS)));
 
   EXPECT_EQ(DataTypeSet({THEMES}), registry()->GetInitialSyncEndedTypes());
 }
@@ -99,10 +99,10 @@ TEST_F(DataTypeRegistryTest, GetTypesWithUnsyncedData) {
   // Create workers for PREFERENCES and BOOKMARKS.
   registry()->ConnectDataType(
       PREFERENCES,
-      MakeDataTypeActivationResponse(MakeInitialModelTypeState(PREFERENCES)));
+      MakeDataTypeActivationResponse(MakeInitialDataTypeState(PREFERENCES)));
   registry()->ConnectDataType(
       BOOKMARKS,
-      MakeDataTypeActivationResponse(MakeInitialModelTypeState(BOOKMARKS)));
+      MakeDataTypeActivationResponse(MakeInitialDataTypeState(BOOKMARKS)));
 
   // Simulate a local BOOKMARKS change. In production, the DataTypeProcessor
   // would call NudgeForCommit() on the worker.

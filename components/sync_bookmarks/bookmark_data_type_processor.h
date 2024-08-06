@@ -52,15 +52,15 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
   void GetLocalChanges(size_t max_entries,
                        GetLocalChangesCallback callback) override;
   void OnCommitCompleted(
-      const sync_pb::ModelTypeState& type_state,
+      const sync_pb::DataTypeState& type_state,
       const syncer::CommitResponseDataList& committed_response_list,
       const syncer::FailedCommitResponseDataList& error_response_list) override;
   void OnUpdateReceived(
-      const sync_pb::ModelTypeState& type_state,
+      const sync_pb::DataTypeState& type_state,
       syncer::UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive) override;
   void StorePendingInvalidations(
-      std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
+      std::vector<sync_pb::DataTypeState::Invalidation> invalidations_to_store)
       override;
 
   // DataTypeControllerDelegate implementation.
@@ -125,7 +125,7 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
 
   // Process specifically calls to OnUpdateReceived() that correspond to the
   // initial merge of bookmarks (e.g. was just enabled).
-  void OnInitialUpdateReceived(const sync_pb::ModelTypeState& type_state,
+  void OnInitialUpdateReceived(const sync_pb::DataTypeState& type_state,
                                syncer::UpdateResponseDataList updates);
 
   // Instantiates the required objects to track metadata and starts observing

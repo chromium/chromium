@@ -31,13 +31,13 @@ namespace autofill {
 //   value              The serialized EntityMetadata record.
 // -----------------------------------------------------------------------------
 // autofill_model_type_state
-//                      Contains sync ModelTypeStates for autofill model types.
+//                      Contains sync DataTypeStates for autofill model types.
 //
 //   model_type         An int value corresponding to syncer::ModelType enum.
 //                      Added in version 78. Previously, the table was used only
 //                      for one model type, there was an id column with value 1
 //                      for the single entry.
-//   value              The serialized ModelTypeState record.
+//   value              The serialized DataTypeState record.
 // -----------------------------------------------------------------------------
 class AutofillSyncMetadataTable : public WebDatabaseTable,
                                   public syncer::SyncMetadataStore {
@@ -76,10 +76,10 @@ class AutofillSyncMetadataTable : public WebDatabaseTable,
                             const sync_pb::EntityMetadata& metadata) override;
   bool ClearEntityMetadata(syncer::ModelType model_type,
                            const std::string& storage_key) override;
-  bool UpdateModelTypeState(
+  bool UpdateDataTypeState(
       syncer::ModelType model_type,
-      const sync_pb::ModelTypeState& model_type_state) override;
-  bool ClearModelTypeState(syncer::ModelType model_type) override;
+      const sync_pb::DataTypeState& data_type_state) override;
+  bool ClearDataTypeState(syncer::ModelType model_type) override;
 
  private:
   int GetKeyValueForModelType(syncer::ModelType model_type) const;
@@ -87,11 +87,11 @@ class AutofillSyncMetadataTable : public WebDatabaseTable,
   bool GetAllSyncEntityMetadata(syncer::ModelType model_type,
                                 syncer::MetadataBatch* metadata_batch);
 
-  bool GetModelTypeState(syncer::ModelType model_type,
-                         sync_pb::ModelTypeState* state);
+  bool GetDataTypeState(syncer::ModelType model_type,
+                        sync_pb::DataTypeState* state);
 
   bool InitAutofillSyncMetadataTable();
-  bool InitModelTypeStateTable();
+  bool InitDataTypeStateTable();
 };
 
 }  // namespace autofill

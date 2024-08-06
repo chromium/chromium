@@ -31,11 +31,11 @@ constexpr char kStorageKey1[] = "key1";
 constexpr char kStorageKey2[] = "key2";
 constexpr int64_t kServerVersion = 5;
 
-sync_pb::ModelTypeState GenerateModelTypeState() {
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-  return model_type_state;
+sync_pb::DataTypeState GenerateDataTypeState() {
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  return data_type_state;
 }
 
 std::unique_ptr<sync_pb::EntityMetadata> GenerateMetadata(
@@ -118,8 +118,7 @@ sync_pb::UniquePosition GenerateUniquePosition(const ClientTagHash& hash) {
 
 class ProcessorEntityTrackerTest : public ::testing::Test {
  public:
-  ProcessorEntityTrackerTest()
-      : entity_tracker_(GenerateModelTypeState(), {}) {}
+  ProcessorEntityTrackerTest() : entity_tracker_(GenerateDataTypeState(), {}) {}
   ~ProcessorEntityTrackerTest() override = default;
 
   const ClientTagHash kClientTagHash1 =
@@ -137,14 +136,14 @@ TEST_F(ProcessorEntityTrackerTest, ShouldLoadFromMetadata) {
                        GenerateMetadata(kStorageKey1, kClientTagHash1));
   metadata_map.emplace(
       kStorageKey2, GenerateTombstoneMetadata(kStorageKey2, kClientTagHash2));
-  ProcessorEntityTracker entity_tracker(GenerateModelTypeState(),
+  ProcessorEntityTracker entity_tracker(GenerateDataTypeState(),
                                         std::move(metadata_map));
 
   // Check some getters for the entity tracker.
   EXPECT_EQ(2u, entity_tracker.size());
   EXPECT_EQ(1u, entity_tracker.CountNonTombstoneEntries());
-  EXPECT_EQ(entity_tracker.model_type_state().initial_sync_state(),
-            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  EXPECT_EQ(entity_tracker.data_type_state().initial_sync_state(),
+            sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   EXPECT_TRUE(entity_tracker.AllStorageKeysPopulated());
   EXPECT_FALSE(entity_tracker.HasLocalChanges());

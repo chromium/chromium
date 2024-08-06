@@ -38,7 +38,6 @@ namespace {
 
 using base::ScopedTempDir;
 using sync_pb::AutofillWalletUsageSpecifics;
-using sync_pb::ModelTypeState;
 using syncer::EntityData;
 using syncer::MockDataTypeLocalChangeProcessor;
 using testing::NiceMock;

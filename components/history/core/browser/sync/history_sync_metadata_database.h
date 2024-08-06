@@ -46,11 +46,11 @@ class HistorySyncMetadataDatabase : public syncer::SyncMetadataStore {
   // before anything else.
   bool Init();
 
-  // Reads all stored metadata for History (both ModelTypeState and
+  // Reads all stored metadata for History (both DataTypeState and
   // EntityMetadata) and fills `metadata_batch` with it.
   bool GetAllSyncMetadata(syncer::MetadataBatch* metadata_batch);
 
-  // Deletes all EntityMetadata (but leaves the ModelTypeState alone).
+  // Deletes all EntityMetadata (but leaves the DataTypeState alone).
   bool ClearAllEntityMetadata();
 
   // syncer::SyncMetadataStore implementation.
@@ -59,10 +59,10 @@ class HistorySyncMetadataDatabase : public syncer::SyncMetadataStore {
                             const sync_pb::EntityMetadata& metadata) override;
   bool ClearEntityMetadata(syncer::ModelType model_type,
                            const std::string& storage_key) override;
-  bool UpdateModelTypeState(
+  bool UpdateDataTypeState(
       syncer::ModelType model_type,
-      const sync_pb::ModelTypeState& model_type_state) override;
-  bool ClearModelTypeState(syncer::ModelType model_type) override;
+      const sync_pb::DataTypeState& data_type_state) override;
+  bool ClearDataTypeState(syncer::ModelType model_type) override;
 
   // Conversion between timestamps and storage keys, exposed so that the bridge
   // (and tests) can access this.
@@ -78,8 +78,8 @@ class HistorySyncMetadataDatabase : public syncer::SyncMetadataStore {
   // with it.
   bool GetAllEntityMetadata(syncer::MetadataBatch* metadata_batch);
 
-  // Reads sync_pb::ModelTypeState for History and fills `state` with it.
-  bool GetModelTypeState(sync_pb::ModelTypeState* state);
+  // Reads sync_pb::DataTypeState for History and fills `state` with it.
+  bool GetDataTypeState(sync_pb::DataTypeState* state);
 
   const raw_ptr<sql::Database> db_;
   const raw_ptr<sql::MetaTable> meta_table_;

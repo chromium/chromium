@@ -24,8 +24,8 @@
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_prefs.h"
@@ -76,10 +76,10 @@ MATCHER_P(EntityDataHasSpecifics, session_specifics_matcher, "") {
                                                    result_listener);
 }
 
-sync_pb::ModelTypeState GetModelTypeStateWithInitialSyncDone() {
-  sync_pb::ModelTypeState state;
+sync_pb::DataTypeState GetDataTypeStateWithInitialSyncDone() {
+  sync_pb::DataTypeState state;
   state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   state.set_cache_guid(kLocalCacheGuid);
   state.set_authenticated_account_id(kAccountId);
   state.mutable_progress_marker()->set_data_type_id(
@@ -228,7 +228,7 @@ class SessionSyncBridgeTest : public ::testing::Test {
     real_processor_->ConnectSync(
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
 
-    sync_pb::ModelTypeState state = GetModelTypeStateWithInitialSyncDone();
+    sync_pb::DataTypeState state = GetDataTypeStateWithInitialSyncDone();
     syncer::UpdateResponseDataList initial_updates;
     for (const SessionSpecifics& specifics : remote_data) {
       initial_updates.push_back(SpecificsToUpdateResponse(specifics));
@@ -909,7 +909,7 @@ TEST_F(SessionSyncBridgeTest, ShouldRecycleTabNodeAfterCommitCompleted) {
   // Mimic a commit completing for the initial sync.
   ASSERT_TRUE(real_processor()->HasLocalChangesForTest());
   real_processor()->OnCommitCompleted(
-      GetModelTypeStateWithInitialSyncDone(),
+      GetDataTypeStateWithInitialSyncDone(),
       {CreateSuccessResponse(kLocalCacheGuid),
        CreateSuccessResponse(tab_client_tag1)},
       /*error_response_list=*/FailedCommitResponseDataList());
@@ -955,7 +955,7 @@ TEST_F(SessionSyncBridgeTest, ShouldRecycleTabNodeAfterCommitCompleted) {
   // which we do by navigating in one of the open tabs.
   EXPECT_CALL(mock_processor(), Delete(tab_storage_key2, _, _));
   real_processor()->OnCommitCompleted(
-      GetModelTypeStateWithInitialSyncDone(),
+      GetDataTypeStateWithInitialSyncDone(),
       {CreateSuccessResponse(tab_client_tag2)},
       /*error_response_list=*/FailedCommitResponseDataList());
   tab1->Navigate("http://foo3.com/");
@@ -1247,7 +1247,7 @@ TEST_F(SessionSyncBridgeTest, ShouldHandleRemoteDeletion) {
   // session.
   ASSERT_TRUE(real_processor()->HasLocalChangesForTest());
   real_processor()->OnCommitCompleted(
-      GetModelTypeStateWithInitialSyncDone(),
+      GetDataTypeStateWithInitialSyncDone(),
       {CreateSuccessResponse(kLocalCacheGuid)},
       /*error_response_list=*/FailedCommitResponseDataList());
   ASSERT_FALSE(real_processor()->HasLocalChangesForTest());
@@ -1277,7 +1277,7 @@ TEST_F(SessionSyncBridgeTest, ShouldHandleRemoteDeletion) {
   syncer::UpdateResponseDataList updates;
   updates.push_back(
       CreateTombstone(SessionStore::GetClientTag(foreign_header)));
-  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(),
+  real_processor()->OnUpdateReceived(GetDataTypeStateWithInitialSyncDone(),
                                      std::move(updates),
                                      /*gc_directive=*/std::nullopt);
 
@@ -1366,7 +1366,7 @@ TEST_F(SessionSyncBridgeTest, ShouldIgnoreRemoteDeletionOfLocalTab) {
   // Mimic receiving a commit ack for both the tab and the header entity,
   // because otherwise it will be treated as conflict, and then local wins.
   real_processor()->OnCommitCompleted(
-      GetModelTypeStateWithInitialSyncDone(),
+      GetDataTypeStateWithInitialSyncDone(),
       {CreateSuccessResponse(tab_client_tag1),
        CreateSuccessResponse(kLocalCacheGuid)},
       /*error_response_list=*/FailedCommitResponseDataList());
@@ -1378,7 +1378,7 @@ TEST_F(SessionSyncBridgeTest, ShouldIgnoreRemoteDeletionOfLocalTab) {
   syncer::UpdateResponseDataList updates;
   updates.push_back(CreateTombstone(kLocalCacheGuid));
   updates.push_back(CreateTombstone(tab_client_tag1));
-  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(),
+  real_processor()->OnUpdateReceived(GetDataTypeStateWithInitialSyncDone(),
                                      std::move(updates),
                                      /*gc_directive=*/std::nullopt);
 
@@ -1486,7 +1486,7 @@ TEST_F(SessionSyncBridgeTest, ShouldIgnoreRemoteDeletionOfLocalPlaceholderTab) {
   // Mimic receiving a commit ack for both the tab and the header entity,
   // because otherwise it will be treated as conflict, and then local wins.
   real_processor()->OnCommitCompleted(
-      GetModelTypeStateWithInitialSyncDone(),
+      GetDataTypeStateWithInitialSyncDone(),
       {CreateSuccessResponse(tab_client_tag1),
        CreateSuccessResponse(kLocalCacheGuid)},
       /*error_response_list=*/FailedCommitResponseDataList());
@@ -1513,7 +1513,7 @@ TEST_F(SessionSyncBridgeTest, ShouldIgnoreRemoteDeletionOfLocalPlaceholderTab) {
   syncer::UpdateResponseDataList updates;
   updates.push_back(CreateTombstone(kLocalCacheGuid));
   updates.push_back(CreateTombstone(tab_client_tag1));
-  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(),
+  real_processor()->OnUpdateReceived(GetDataTypeStateWithInitialSyncDone(),
                                      std::move(updates),
                                      /*gc_directive=*/std::nullopt);
 
@@ -1603,7 +1603,7 @@ TEST_F(SessionSyncBridgeTest, ShouldNotRestoreLocalSessionWithoutMetadata) {
   // Mimic receiving a commit ack for both the tabs and the header entity,
   // because otherwise it will be treated as conflict, and then local wins.
   real_processor()->OnCommitCompleted(
-      GetModelTypeStateWithInitialSyncDone(),
+      GetDataTypeStateWithInitialSyncDone(),
       {CreateSuccessResponse(tab_client_tag1),
        CreateSuccessResponse(tab_client_tag2),
        CreateSuccessResponse(kLocalCacheGuid)},
@@ -1618,7 +1618,7 @@ TEST_F(SessionSyncBridgeTest, ShouldNotRestoreLocalSessionWithoutMetadata) {
   updates.push_back(CreateTombstone(kLocalCacheGuid));
   updates.push_back(CreateTombstone(tab_client_tag1));
   updates.push_back(CreateTombstone(tab_client_tag2));
-  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(),
+  real_processor()->OnUpdateReceived(GetDataTypeStateWithInitialSyncDone(),
                                      std::move(updates),
                                      /*gc_directive=*/std::nullopt);
 
@@ -1773,7 +1773,7 @@ TEST_F(SessionSyncBridgeTest, ShouldNotBroadcastUpdatesIfEmpty) {
   EXPECT_CALL(mock_foreign_session_updated_cb(), Run()).Times(0);
 
   // Mimic receiving an empty list of remote updates.
-  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(), {},
+  real_processor()->OnUpdateReceived(GetDataTypeStateWithInitialSyncDone(), {},
                                      /*gc_directive=*/std::nullopt);
 }
 
@@ -1818,7 +1818,7 @@ TEST_F(SessionSyncBridgeTest, ShouldDoGarbageCollection) {
                                        _, _));
 
   EXPECT_CALL(mock_foreign_session_updated_cb(), Run()).Times(AtLeast(1));
-  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(),
+  real_processor()->OnUpdateReceived(GetDataTypeStateWithInitialSyncDone(),
                                      std::move(updates),
                                      /*gc_directive=*/std::nullopt);
 }

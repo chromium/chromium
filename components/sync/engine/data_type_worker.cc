@@ -40,8 +40,8 @@
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/data_type_processor.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/data_type_state_helper.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state_helper.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -302,7 +302,7 @@ bool DecryptIncomingPasswordSharingInvitationSpecifics(
 }  // namespace
 
 DataTypeWorker::DataTypeWorker(DataType type,
-                               const sync_pb::ModelTypeState& initial_state,
+                               const sync_pb::DataTypeState& initial_state,
                                Cryptographer* cryptographer,
                                bool encryption_enabled,
                                PassphraseType passphrase_type,
@@ -312,7 +312,7 @@ DataTypeWorker::DataTypeWorker(DataType type,
       cryptographer_(cryptographer),
       nudge_handler_(nudge_handler),
       cancelation_signal_(cancelation_signal),
-      model_type_state_(initial_state),
+      data_type_state_(initial_state),
       encryption_enabled_(encryption_enabled),
       passphrase_type_(passphrase_type) {
   DCHECK(cryptographer_);
@@ -321,26 +321,26 @@ DataTypeWorker::DataTypeWorker(DataType type,
   // GC directive is stored independently of progress marker and is used during
   // a sync cycle (i.e. in-memory only). Clear GC directive on load to clean up
   // previously persisted values.
-  model_type_state_.mutable_progress_marker()->clear_gc_directive();
+  data_type_state_.mutable_progress_marker()->clear_gc_directive();
 
-  if (!model_type_state_.invalidations().empty()) {
-    if (static_cast<size_t>(model_type_state_.invalidations_size()) >
+  if (!data_type_state_.invalidations().empty()) {
+    if (static_cast<size_t>(data_type_state_.invalidations_size()) >
         kMaxPendingInvalidations) {
-      DVLOG(1) << "Cleaning invalidations in |model_type_state_| due to "
+      DVLOG(1) << "Cleaning invalidations in |data_type_state_| due to "
                   "invalidations overflow.";
-      model_type_state_.clear_invalidations();
+      data_type_state_.clear_invalidations();
     }
     // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
     // DataTypeWorker::ctor(), but sync cycle is not scheduled. New sync
     // cycle has to be triggered right after we loaded persisted
     // invalidations.
-    for (int i = 0; i < model_type_state_.invalidations_size(); ++i) {
+    for (int i = 0; i < data_type_state_.invalidations_size(); ++i) {
       pending_invalidations_.emplace_back(
           std::make_unique<SyncInvalidationAdapter>(
-              model_type_state_.invalidations(i).hint(),
-              model_type_state_.invalidations(i).has_version()
+              data_type_state_.invalidations(i).hint(),
+              data_type_state_.invalidations(i).has_version()
                   ? std::optional<int64_t>(
-                        model_type_state_.invalidations(i).version())
+                        data_type_state_.invalidations(i).version())
                   : std::nullopt),
           false);
     }
@@ -352,10 +352,10 @@ DataTypeWorker::DataTypeWorker(DataType type,
           *pending_invalidations_[i].pending_invalidation));
     }
     if (!is_version_order_correct) {
-      DVLOG(1) << "Cleaning invalidations in |model_type_state| due to "
+      DVLOG(1) << "Cleaning invalidations in |data_type_state| due to "
                   "incorrect version order.";
       pending_invalidations_.clear();
-      model_type_state_.clear_invalidations();
+      data_type_state_.clear_invalidations();
     }
   }
 
@@ -406,11 +406,11 @@ void DataTypeWorker::ConnectSync(
   data_type_processor_->ConnectSync(
       std::make_unique<CommitQueueProxy>(weak_ptr_factory_.GetWeakPtr()));
 
-  if (!IsInitialSyncDone(model_type_state_.initial_sync_state())) {
+  if (!IsInitialSyncDone(data_type_state_.initial_sync_state())) {
     nudge_handler_->NudgeForInitialDownload(type_);
   }
 
-  // |model_type_state_| might have an outdated encryption key name, e.g.
+  // |data_type_state_| might have an outdated encryption key name, e.g.
   // because |cryptographer_| was updated before this worker was constructed.
   // OnCryptographerChange() might never be called, so update the key manually
   // here and push it to the processor. SendPendingUpdatesToProcessorIfReady()
@@ -468,18 +468,18 @@ void DataTypeWorker::UpdatePassphraseType(PassphraseType type) {
 
 bool DataTypeWorker::IsInitialSyncEnded() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return IsInitialSyncDone(model_type_state_.initial_sync_state());
+  return IsInitialSyncDone(data_type_state_.initial_sync_state());
 }
 
 const sync_pb::DataTypeProgressMarker& DataTypeWorker::GetDownloadProgress()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return model_type_state_.progress_marker();
+  return data_type_state_.progress_marker();
 }
 
 const sync_pb::DataTypeContext& DataTypeWorker::GetDataTypeContext() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return model_type_state_.type_context();
+  return data_type_state_.type_context();
 }
 
 void DataTypeWorker::ProcessGetUpdatesResponse(
@@ -490,10 +490,10 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const bool is_initial_sync =
-      !IsInitialSyncDone(model_type_state_.initial_sync_state());
+      !IsInitialSyncDone(data_type_state_.initial_sync_state());
 
   // TODO(rlarocque): Handle data type context conflicts.
-  *model_type_state_.mutable_type_context() = mutated_context;
+  *data_type_state_.mutable_type_context() = mutated_context;
 
   if (progress_marker.has_gc_directive()) {
     if (progress_marker.gc_directive().has_version_watermark()) {
@@ -526,7 +526,7 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
     }
   }
 
-  *model_type_state_.mutable_progress_marker() = progress_marker;
+  *data_type_state_.mutable_progress_marker() = progress_marker;
   ExtractGcDirective();
 
   for (const sync_pb::SyncEntity* update_entity : applicable_updates) {
@@ -729,14 +729,14 @@ void DataTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
   // Note that the initial sync technically isn't started/done yet but by the
   // time this value is persisted to disk on the model thread it will be.
   if (cycle_done) {
-    model_type_state_.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+    data_type_state_.set_initial_sync_state(
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   } else {
     DCHECK(ApplyUpdatesImmediatelyTypes().Has(type_));
-    if (model_type_state_.initial_sync_state() !=
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE) {
-      model_type_state_.set_initial_sync_state(
-          sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_PARTIALLY_DONE);
+    if (data_type_state_.initial_sync_state() !=
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE) {
+      data_type_state_.set_initial_sync_state(
+          sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_PARTIALLY_DONE);
     }
   }
 
@@ -768,7 +768,7 @@ void DataTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
         ++it;
       }
     }
-    UpdateModelTypeStateInvalidations();
+    UpdateDataTypeStateInvalidations();
 
     has_dropped_invalidation_ = false;
 
@@ -788,7 +788,7 @@ void DataTypeWorker::SendPendingUpdatesToProcessorIfReady() {
   DCHECK(data_type_processor_);
 
   if (!IsInitialSyncAtLeastPartiallyDone(
-          model_type_state_.initial_sync_state())) {
+          data_type_state_.initial_sync_state())) {
     return;
   }
 
@@ -798,7 +798,7 @@ void DataTypeWorker::SendPendingUpdatesToProcessorIfReady() {
 
   DCHECK(!AlwaysEncryptedUserTypes().Has(type_) || encryption_enabled_);
   DCHECK(!encryption_enabled_ ||
-         !model_type_state_.encryption_key_name().empty());
+         !data_type_state_.encryption_key_name().empty());
   DCHECK(entries_pending_decryption_.empty());
 
   DVLOG(1) << DataTypeToDebugString(type_) << ": "
@@ -816,7 +816,7 @@ void DataTypeWorker::SendPendingUpdatesToProcessorIfReady() {
   DeduplicatePendingUpdatesBasedOnClientTagHash();
   DeduplicatePendingUpdatesBasedOnOriginatorClientItemId();
 
-  data_type_processor_->OnUpdateReceived(model_type_state_,
+  data_type_processor_->OnUpdateReceived(data_type_state_,
                                          std::move(pending_updates_),
                                          std::move(pending_gc_directive_));
   pending_updates_.clear();
@@ -841,8 +841,8 @@ void DataTypeWorker::NudgeIfReadyToCommit() {
 std::unique_ptr<CommitContribution> DataTypeWorker::GetContribution(
     size_t max_entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(IsInitialSyncAtLeastPartiallyDone(
-      model_type_state_.initial_sync_state()));
+  DCHECK(
+      IsInitialSyncAtLeastPartiallyDone(data_type_state_.initial_sync_state()));
   DCHECK(data_type_processor_);
 
   // Early return if type is not ready to commit (initial sync isn't done or
@@ -898,11 +898,11 @@ std::unique_ptr<CommitContribution> DataTypeWorker::GetContribution(
 
   DCHECK(!AlwaysEncryptedUserTypes().Has(type_) || encryption_enabled_);
   DCHECK(!encryption_enabled_ ||
-         (model_type_state_.encryption_key_name() ==
+         (data_type_state_.encryption_key_name() ==
           cryptographer_->GetDefaultEncryptionKeyName()));
 
   return std::make_unique<CommitContributionImpl>(
-      type_, model_type_state_.type_context(), std::move(response),
+      type_, data_type_state_.type_context(), std::move(response),
       base::BindOnce(&DataTypeWorker::OnCommitResponse,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&DataTypeWorker::OnFullCommitFailure,
@@ -923,7 +923,7 @@ void DataTypeWorker::OnCommitResponse(
   // items have been successfully committed (it can save that information in
   // permanent storage) and which failed (it can e.g. notify the user).
   data_type_processor_->OnCommitCompleted(
-      model_type_state_, committed_response_list, error_response_list);
+      data_type_state_, committed_response_list, error_response_list);
 
   if (has_local_changes_state_ == kAllNudgedLocalChangesInFlight) {
     // There are no new nudged changes since last commit.
@@ -940,7 +940,7 @@ void DataTypeWorker::OnFullCommitFailure(SyncCommitError commit_error) {
 size_t DataTypeWorker::EstimateMemoryUsage() const {
   using base::trace_event::EstimateMemoryUsage;
   size_t memory_usage = 0;
-  memory_usage += EstimateMemoryUsage(model_type_state_);
+  memory_usage += EstimateMemoryUsage(data_type_state_);
   memory_usage += EstimateMemoryUsage(entries_pending_decryption_);
   memory_usage += EstimateMemoryUsage(pending_updates_);
   return memory_usage;
@@ -950,7 +950,7 @@ bool DataTypeWorker::CanCommitItems() const {
   // We can only commit if we've received the initial update response and aren't
   // blocked by missing encryption keys.
   return IsInitialSyncAtLeastPartiallyDone(
-             model_type_state_.initial_sync_state()) &&
+             data_type_state_.initial_sync_state()) &&
          !BlockForEncryption();
 }
 
@@ -966,14 +966,14 @@ bool DataTypeWorker::BlockForEncryption() const {
 bool DataTypeWorker::UpdateTypeEncryptionKeyName() {
   if (!encryption_enabled_) {
     // The type encryption key is expected to be empty.
-    if (model_type_state_.encryption_key_name().empty()) {
+    if (data_type_state_.encryption_key_name().empty()) {
       return false;
     }
     DLOG(WARNING) << DataTypeToDebugString(type_)
                   << " : Had encryption disabled but non-empty encryption key "
-                  << model_type_state_.encryption_key_name()
+                  << data_type_state_.encryption_key_name()
                   << ". Setting key to empty.";
-    model_type_state_.clear_encryption_key_name();
+    data_type_state_.clear_encryption_key_name();
     return true;
   }
 
@@ -986,9 +986,9 @@ bool DataTypeWorker::UpdateTypeEncryptionKeyName() {
   std::string default_key_name = cryptographer_->GetDefaultEncryptionKeyName();
   DCHECK(!default_key_name.empty());
   DVLOG(1) << DataTypeToDebugString(type_) << ": Updating encryption key "
-           << model_type_state_.encryption_key_name() << " -> "
+           << data_type_state_.encryption_key_name() << " -> "
            << default_key_name;
-  model_type_state_.set_encryption_key_name(default_key_name);
+  data_type_state_.set_encryption_key_name(default_key_name);
   return true;
 }
 
@@ -1203,7 +1203,7 @@ bool DataTypeWorker::HasNonDeletionUpdates() const {
 }
 
 void DataTypeWorker::ExtractGcDirective() {
-  DCHECK(model_type_state_.has_progress_marker());
+  DCHECK(data_type_state_.has_progress_marker());
   // This is a workaround for multiple GetUpdates during one sync cycle. The
   // server returns gc_directive only if there are updates for the data type.
   // For example, if there are many bookmarks to download and several Wallet
@@ -1227,15 +1227,15 @@ void DataTypeWorker::ExtractGcDirective() {
   // TODO(crbug.com/40860698): consider a better approach instead of this
   // workaround.
 
-  if (model_type_state_.progress_marker().has_gc_directive()) {
+  if (data_type_state_.progress_marker().has_gc_directive()) {
     // Keep a new GC directive if received.
     // TODO(b/325917757): cover the case when a collaboration was removed and
     // then added in the next GetUpdates request again. All the previous
     // entities should be removed from the tracker (it's expected that the
     // server returns all the entities anyway and some entities could be removed
     // in the meantime).
-    pending_gc_directive_ = model_type_state_.progress_marker().gc_directive();
-    model_type_state_.mutable_progress_marker()->clear_gc_directive();
+    pending_gc_directive_ = data_type_state_.progress_marker().gc_directive();
+    data_type_state_.mutable_progress_marker()->clear_gc_directive();
     return;
   }
 
@@ -1341,19 +1341,19 @@ void DataTypeWorker::SendPendingInvalidationsToProcessor() {
   CHECK(data_type_processor_);
   DVLOG(1) << "Storing pending invalidations for "
            << DataTypeToDebugString(type_);
-  UpdateModelTypeStateInvalidations();
+  UpdateDataTypeStateInvalidations();
   data_type_processor_->StorePendingInvalidations(
-      std::vector<sync_pb::ModelTypeState::Invalidation>(
-          model_type_state_.invalidations().begin(),
-          model_type_state_.invalidations().end()));
+      std::vector<sync_pb::DataTypeState::Invalidation>(
+          data_type_state_.invalidations().begin(),
+          data_type_state_.invalidations().end()));
 }
 
-void DataTypeWorker::UpdateModelTypeStateInvalidations() {
-  model_type_state_.clear_invalidations();
+void DataTypeWorker::UpdateDataTypeStateInvalidations() {
+  data_type_state_.clear_invalidations();
   for (const auto& inv : pending_invalidations_) {
     SyncInvalidation* invalidation = inv.pending_invalidation.get();
-    sync_pb::ModelTypeState_Invalidation* invalidation_to_store =
-        model_type_state_.add_invalidations();
+    sync_pb::DataTypeState_Invalidation* invalidation_to_store =
+        data_type_state_.add_invalidations();
     invalidation_to_store->set_hint(invalidation->GetPayload());
     if (!invalidation->IsUnknownVersion()) {
       invalidation_to_store->set_version(invalidation->GetVersion());

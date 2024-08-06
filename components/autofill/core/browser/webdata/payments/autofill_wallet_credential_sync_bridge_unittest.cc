@@ -36,7 +36,7 @@ namespace autofill {
 namespace {
 
 using sync_pb::AutofillWalletCredentialSpecifics;
-using sync_pb::ModelTypeState;
+using sync_pb::DataTypeState;
 using syncer::EntityData;
 using syncer::MockDataTypeLocalChangeProcessor;
 using testing::NiceMock;
@@ -121,9 +121,9 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
     real_processor_->ConnectSync(
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
     // Initialize the processor with the initial sync already done.
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     syncer::UpdateResponseDataList initial_updates;
     for (const AutofillWalletCredentialSpecifics& specifics : remote_data) {
       initial_updates.push_back(SpecificsToUpdateResponse(specifics));

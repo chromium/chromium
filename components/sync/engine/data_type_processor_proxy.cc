@@ -54,7 +54,7 @@ void DataTypeProcessorProxy::GetLocalChanges(
 }
 
 void DataTypeProcessorProxy::OnCommitCompleted(
-    const sync_pb::ModelTypeState& type_state,
+    const sync_pb::DataTypeState& type_state,
     const CommitResponseDataList& committed_response_list,
     const FailedCommitResponseDataList& error_response_list) {
   task_runner_->PostTask(
@@ -70,7 +70,7 @@ void DataTypeProcessorProxy::OnCommitFailed(SyncCommitError commit_error) {
 }
 
 void DataTypeProcessorProxy::OnUpdateReceived(
-    const sync_pb::ModelTypeState& type_state,
+    const sync_pb::DataTypeState& type_state,
     UpdateResponseDataList updates,
     std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   task_runner_->PostTask(
@@ -80,7 +80,7 @@ void DataTypeProcessorProxy::OnUpdateReceived(
 }
 
 void DataTypeProcessorProxy::StorePendingInvalidations(
-    std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
+    std::vector<sync_pb::DataTypeState::Invalidation> invalidations_to_store) {
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&DataTypeProcessor::StorePendingInvalidations,
                                 processor_, std::move(invalidations_to_store)));

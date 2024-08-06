@@ -18,7 +18,7 @@
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 
 namespace sync_pb {
-class ModelTypeState;
+class DataTypeState;
 }  // namespace sync_pb
 
 namespace syncer {
@@ -37,7 +37,7 @@ class ClientTagBasedRemoteUpdateHandler {
 
   // Processes incremental updates from the sync server.
   std::optional<ModelError> ProcessIncrementalUpdate(
-      const sync_pb::ModelTypeState& model_type_state,
+      const sync_pb::DataTypeState& data_type_state,
       UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive);
 

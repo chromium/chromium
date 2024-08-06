@@ -34,9 +34,9 @@
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/mock_commit_queue.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/webdata/common/web_database.h"
@@ -48,7 +48,7 @@ namespace {
 
 using base::ScopedTempDir;
 using sync_pb::AutofillOfferSpecifics;
-using sync_pb::ModelTypeState;
+using sync_pb::DataTypeState;
 using syncer::EntityData;
 using syncer::MockDataTypeLocalChangeProcessor;
 using testing::NiceMock;
@@ -152,17 +152,17 @@ class AutofillWalletOfferSyncBridgeTest : public testing::Test {
   }
 
   void ResetBridge(bool initial_sync_done) {
-    ModelTypeState model_type_state;
-    model_type_state.set_initial_sync_state(
+    DataTypeState data_type_state;
+    data_type_state.set_initial_sync_state(
         initial_sync_done
-            ? sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE
+            ? sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE
             : sync_pb::
-                  ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
-    model_type_state.mutable_progress_marker()->set_data_type_id(
+                  DataTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
+    data_type_state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromModelType(syncer::AUTOFILL_WALLET_OFFER));
-    model_type_state.set_cache_guid(kDefaultCacheGuid);
-    EXPECT_TRUE(sync_metadata_table_.UpdateModelTypeState(
-        syncer::AUTOFILL_WALLET_OFFER, model_type_state));
+    data_type_state.set_cache_guid(kDefaultCacheGuid);
+    EXPECT_TRUE(sync_metadata_table_.UpdateDataTypeState(
+        syncer::AUTOFILL_WALLET_OFFER, data_type_state));
     bridge_ = std::make_unique<AutofillWalletOfferSyncBridge>(
         mock_processor_.CreateForwardingProcessor(), &backend_);
   }
@@ -187,9 +187,9 @@ class AutofillWalletOfferSyncBridgeTest : public testing::Test {
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
 
     // Initialize the processor with the initial sync already done.
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
     sync_pb::GarbageCollectionDirective gc_directive;
     gc_directive.set_version_watermark(1);

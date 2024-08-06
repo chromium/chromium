@@ -14,9 +14,9 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+import "components/sync/protocol/data_type_state.proto";
 import "components/sync/protocol/encryption.proto";
 import "components/sync/protocol/entity_metadata.proto";
-import "components/sync/protocol/model_type_state.proto";
 import "components/sync/protocol/nigori_specifics.proto";
 
 message CrossUserSharingKeys {
@@ -121,7 +121,7 @@ message NigoriModel {
 // nigori_model.cryptographer_data.key_bag and nigori_model.keystore_keys).
 message NigoriLocalData {
   // Global metadata.
-  optional ModelTypeState model_type_state = 1;
+  optional DataTypeState data_type_state = 1;
 
   // Metadata for Nigori entity.
   optional EntityMetadata entity_metadata = 2;

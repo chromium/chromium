@@ -21,8 +21,8 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/processor_entity_tracker.h"
+#include "components/sync/protocol/data_type_state_helper.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state_helper.h"
 #include "components/sync/protocol/unique_position.pb.h"
 
 namespace syncer {
@@ -52,18 +52,18 @@ ClientTagBasedRemoteUpdateHandler::ClientTagBasedRemoteUpdateHandler(
 
 std::optional<ModelError>
 ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
-    const sync_pb::ModelTypeState& model_type_state,
+    const sync_pb::DataTypeState& data_type_state,
     UpdateResponseDataList updates,
     std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   std::unique_ptr<MetadataChangeList> metadata_changes =
       bridge_->CreateMetadataChangeList();
   EntityChangeList entity_changes;
 
-  metadata_changes->UpdateModelTypeState(model_type_state);
+  metadata_changes->UpdateDataTypeState(data_type_state);
   const bool got_new_encryption_requirements =
-      entity_tracker_->model_type_state().encryption_key_name() !=
-      model_type_state.encryption_key_name();
-  entity_tracker_->set_model_type_state(model_type_state);
+      entity_tracker_->data_type_state().encryption_key_name() !=
+      data_type_state.encryption_key_name();
+  entity_tracker_->set_data_type_state(data_type_state);
 
   // If new encryption requirements come from the server, the entities that are
   // in |updates| will be recorded here so they can be ignored during the
@@ -89,7 +89,7 @@ ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
     // Log update freshness metrics only if the initial sync is fully done (for
     // data types in ApplyUpdatesImmediatelyTypes(), it may only be
     // PARTIALLY_DONE here).
-    if (IsInitialSyncDone(model_type_state.initial_sync_state())) {
+    if (IsInitialSyncDone(data_type_state.initial_sync_state())) {
       LogNonReflectionUpdateFreshnessToUma(
           type_,
           /*remote_modification_time=*/
@@ -255,12 +255,12 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
   // commit to fix it. Tombstones aren't encrypted and hence shouldn't be
   // checked.
   if (!update_is_tombstone &&
-      entity_tracker_->model_type_state().encryption_key_name() !=
+      entity_tracker_->data_type_state().encryption_key_name() !=
           update_encryption_key_name) {
     DVLOG(2) << ModelTypeToDebugString(type_)
              << ": Requesting re-encrypt commit " << update_encryption_key_name
              << " -> "
-             << entity_tracker_->model_type_state().encryption_key_name();
+             << entity_tracker_->data_type_state().encryption_key_name();
 
     entity->IncrementSequenceNumber(base::Time::Now());
   }

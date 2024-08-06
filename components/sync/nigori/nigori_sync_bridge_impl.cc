@@ -267,8 +267,8 @@ bool IsValidEncryptedTypesTransition(bool old_encrypt_everything,
 }
 
 bool IsValidLocalData(const sync_pb::NigoriLocalData& local_data) {
-  if (local_data.model_type_state().initial_sync_state() !=
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE) {
+  if (local_data.data_type_state().initial_sync_state() !=
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE) {
     // |local_data| should not be stored before initial sync is done.
     return false;
   }
@@ -405,7 +405,7 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
 
   // Restore metadata.
   NigoriMetadataBatch metadata_batch;
-  metadata_batch.model_type_state = deserialized_data->model_type_state();
+  metadata_batch.data_type_state = deserialized_data->data_type_state();
   metadata_batch.entity_metadata = deserialized_data->entity_metadata();
   processor_->ModelReadyToSync(this, std::move(metadata_batch));
 
@@ -1069,7 +1069,7 @@ sync_pb::NigoriLocalData NigoriSyncBridgeImpl::SerializeAsNigoriLocalData()
 
   // Serialize the metadata.
   const NigoriMetadataBatch metadata_batch = processor_->GetMetadata();
-  *output.mutable_model_type_state() = metadata_batch.model_type_state;
+  *output.mutable_data_type_state() = metadata_batch.data_type_state;
   if (metadata_batch.entity_metadata) {
     *output.mutable_entity_metadata() = *metadata_batch.entity_metadata;
   }

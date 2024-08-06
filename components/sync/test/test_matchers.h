@@ -11,9 +11,9 @@
 #include <utility>
 
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/deletion_origin.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace syncer {
@@ -31,20 +31,20 @@ MATCHER(NoModelError, "") {
 // entity metadata nor global model state.
 MATCHER(IsEmptyMetadataBatch, "") {
   return arg != nullptr &&
-         sync_pb::ModelTypeState().SerializeAsString() ==
-             arg->GetModelTypeState().SerializeAsString() &&
+         sync_pb::DataTypeState().SerializeAsString() ==
+             arg->GetDataTypeState().SerializeAsString() &&
          arg->TakeAllMetadata().empty();
 }
 
 // Matcher for MetadataBatch: general purpose verification given two matchers,
-// of type Matcher<ModelTypeState> and Matcher<EntityMetadataMap> respectively.
+// of type Matcher<DataTypeState> and Matcher<EntityMetadataMap> respectively.
 MATCHER_P2(MetadataBatchContains, state, entities, "") {
   if (arg == nullptr) {
     *result_listener << "which is null";
     return false;
   }
-  if (!ExplainMatchResult(testing::Matcher<sync_pb::ModelTypeState>(state),
-                          arg->GetModelTypeState(), result_listener)) {
+  if (!ExplainMatchResult(testing::Matcher<sync_pb::DataTypeState>(state),
+                          arg->GetDataTypeState(), result_listener)) {
     return false;
   }
 
@@ -63,23 +63,22 @@ MATCHER_P2(MetadataBatchContains, state, entities, "") {
       copyable_metadata, result_listener);
 }
 
-// Matcher for sync_pb::ModelTypeState: verifies that field
+// Matcher for sync_pb::DataTypeState: verifies that field
 // |encryption_key_name| is equal to the provided string |expected_key_name|.
 MATCHER_P(HasEncryptionKeyName, expected_key_name, "") {
   return arg.encryption_key_name() == expected_key_name;
 }
 
-// Matcher for sync_pb::ModelTypeState: verifies that initial sync is done.
+// Matcher for sync_pb::DataTypeState: verifies that initial sync is done.
 MATCHER(HasInitialSyncDone, "") {
   return arg.initial_sync_state() ==
-         sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE;
+         sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE;
 }
 
-// Matcher for sync_pb::ModelTypeState: verifies that initial sync is not done.
+// Matcher for sync_pb::DataTypeState: verifies that initial sync is not done.
 MATCHER(HasNotInitialSyncDone, "") {
   return arg.initial_sync_state() ==
-         sync_pb::
-             ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED;
+         sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED;
 }
 
 MATCHER_P2(MatchesDeletionOrigin, expected_version, expected_location, "") {

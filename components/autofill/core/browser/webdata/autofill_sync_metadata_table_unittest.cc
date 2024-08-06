@@ -10,8 +10,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,8 +21,8 @@ namespace autofill {
 
 namespace {
 
+using sync_pb::DataTypeState;
 using sync_pb::EntityMetadata;
-using sync_pb::ModelTypeState;
 using syncer::EntityMetadataMap;
 using syncer::MetadataBatch;
 using testing::ElementsAre;
@@ -52,8 +52,8 @@ TEST_P(AutfillSyncMetadataTableTest, AutofillNoMetadata) {
   MetadataBatch metadata_batch;
   EXPECT_TRUE(table_->GetAllSyncMetadata(model_type, &metadata_batch));
   EXPECT_EQ(0u, metadata_batch.TakeAllMetadata().size());
-  EXPECT_EQ(ModelTypeState().SerializeAsString(),
-            metadata_batch.GetModelTypeState().SerializeAsString());
+  EXPECT_EQ(DataTypeState().SerializeAsString(),
+            metadata_batch.GetDataTypeState().SerializeAsString());
 }
 
 TEST_P(AutfillSyncMetadataTableTest, AutofillGetAllSyncMetadata) {
@@ -65,11 +65,11 @@ TEST_P(AutfillSyncMetadataTableTest, AutofillGetAllSyncMetadata) {
 
   EXPECT_TRUE(table_->UpdateEntityMetadata(model_type, storage_key, metadata));
 
-  ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
-  EXPECT_TRUE(table_->UpdateModelTypeState(model_type, model_type_state));
+  EXPECT_TRUE(table_->UpdateDataTypeState(model_type, data_type_state));
 
   metadata.set_sequence_number(2);
   EXPECT_TRUE(table_->UpdateEntityMetadata(model_type, storage_key2, metadata));
@@ -77,8 +77,8 @@ TEST_P(AutfillSyncMetadataTableTest, AutofillGetAllSyncMetadata) {
   MetadataBatch metadata_batch;
   EXPECT_TRUE(table_->GetAllSyncMetadata(model_type, &metadata_batch));
 
-  EXPECT_EQ(metadata_batch.GetModelTypeState().initial_sync_state(),
-            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  EXPECT_EQ(metadata_batch.GetDataTypeState().initial_sync_state(),
+            sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   EntityMetadataMap metadata_records = metadata_batch.TakeAllMetadata();
 
@@ -87,14 +87,14 @@ TEST_P(AutfillSyncMetadataTableTest, AutofillGetAllSyncMetadata) {
   EXPECT_EQ(metadata_records[storage_key2]->sequence_number(), 2);
 
   // Now check that a model type state update replaces the old value
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
-  EXPECT_TRUE(table_->UpdateModelTypeState(model_type, model_type_state));
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
+  EXPECT_TRUE(table_->UpdateDataTypeState(model_type, data_type_state));
 
   EXPECT_TRUE(table_->GetAllSyncMetadata(model_type, &metadata_batch));
   EXPECT_EQ(
-      metadata_batch.GetModelTypeState().initial_sync_state(),
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
+      metadata_batch.GetDataTypeState().initial_sync_state(),
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
 }
 
 TEST_P(AutfillSyncMetadataTableTest, AutofillWriteThenDeleteSyncMetadata) {
@@ -102,16 +102,16 @@ TEST_P(AutfillSyncMetadataTableTest, AutofillWriteThenDeleteSyncMetadata) {
   EntityMetadata metadata;
   MetadataBatch metadata_batch;
   std::string storage_key = "storage_key";
-  ModelTypeState model_type_state;
+  DataTypeState data_type_state;
 
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   metadata.set_client_tag_hash("client_hash");
 
   // Write the data into the store.
   EXPECT_TRUE(table_->UpdateEntityMetadata(model_type, storage_key, metadata));
-  EXPECT_TRUE(table_->UpdateModelTypeState(model_type, model_type_state));
+  EXPECT_TRUE(table_->UpdateDataTypeState(model_type, data_type_state));
   // Delete the data we just wrote.
   EXPECT_TRUE(table_->ClearEntityMetadata(model_type, storage_key));
   // It shouldn't be there any more.
@@ -121,10 +121,10 @@ TEST_P(AutfillSyncMetadataTableTest, AutofillWriteThenDeleteSyncMetadata) {
   EXPECT_EQ(metadata_records.size(), 0u);
 
   // Now delete the model type state.
-  EXPECT_TRUE(table_->ClearModelTypeState(model_type));
+  EXPECT_TRUE(table_->ClearDataTypeState(model_type));
   EXPECT_TRUE(table_->GetAllSyncMetadata(model_type, &metadata_batch));
-  EXPECT_EQ(ModelTypeState().SerializeAsString(),
-            metadata_batch.GetModelTypeState().SerializeAsString());
+  EXPECT_EQ(DataTypeState().SerializeAsString(),
+            metadata_batch.GetDataTypeState().SerializeAsString());
 }
 
 TEST_P(AutfillSyncMetadataTableTest, AutofillCorruptSyncMetadata) {
@@ -141,7 +141,7 @@ TEST_P(AutfillSyncMetadataTableTest, AutofillCorruptSyncMetadata) {
   EXPECT_FALSE(table_->GetAllSyncMetadata(model_type, &metadata_batch));
 }
 
-TEST_P(AutfillSyncMetadataTableTest, AutofillCorruptModelTypeState) {
+TEST_P(AutfillSyncMetadataTableTest, AutofillCorruptDataTypeState) {
   syncer::ModelType model_type = GetParam();
   MetadataBatch metadata_batch;
   sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(

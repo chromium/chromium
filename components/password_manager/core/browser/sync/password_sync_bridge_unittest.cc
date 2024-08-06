@@ -29,9 +29,9 @@
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_matchers.h"
@@ -338,10 +338,10 @@ class MockSyncMetadataStore : public PasswordStoreSync::MetadataStore {
               (syncer::ModelType, const std::string&),
               (override));
   MOCK_METHOD(bool,
-              UpdateModelTypeState,
-              (syncer::ModelType, const sync_pb::ModelTypeState&),
+              UpdateDataTypeState,
+              (syncer::ModelType, const sync_pb::DataTypeState&),
               (override));
-  MOCK_METHOD(bool, ClearModelTypeState, (syncer::ModelType), (override));
+  MOCK_METHOD(bool, ClearDataTypeState, (syncer::ModelType), (override));
   MOCK_METHOD(void,
               SetPasswordDeletionsHaveSyncedCallback,
               (base::RepeatingCallback<void(bool)>),
@@ -424,9 +424,9 @@ class PasswordSyncBridgeTest : public testing::Test {
         .WillByDefault(testing::Return(true));
     ON_CALL(mock_sync_metadata_store_sync_, ClearEntityMetadata)
         .WillByDefault(testing::Return(true));
-    ON_CALL(mock_sync_metadata_store_sync_, UpdateModelTypeState)
+    ON_CALL(mock_sync_metadata_store_sync_, UpdateDataTypeState)
         .WillByDefault(testing::Return(true));
-    ON_CALL(mock_sync_metadata_store_sync_, ClearModelTypeState)
+    ON_CALL(mock_sync_metadata_store_sync_, ClearDataTypeState)
         .WillByDefault(testing::Return(true));
 
     ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
@@ -1009,10 +1009,10 @@ TEST_F(PasswordSyncBridgeTest,
         // Create entity without the flag that the password have been
         // redownloaded for notes already.
         auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
-        sync_pb::ModelTypeState model_type_state;
-        model_type_state.set_initial_sync_state(
-            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-        metadata_batch->SetModelTypeState(model_type_state);
+        sync_pb::DataTypeState data_type_state;
+        data_type_state.set_initial_sync_state(
+            sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        metadata_batch->SetDataTypeState(data_type_state);
         return metadata_batch;
       });
 
@@ -1040,12 +1040,12 @@ TEST_F(
         // Create entity with the flag that the password have been redownloaded
         // for notes already.
         auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
-        sync_pb::ModelTypeState model_type_state;
-        model_type_state.set_initial_sync_state(
-            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-        model_type_state.set_notes_enabled_before_initial_sync_for_passwords(
+        sync_pb::DataTypeState data_type_state;
+        data_type_state.set_initial_sync_state(
+            sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        data_type_state.set_notes_enabled_before_initial_sync_for_passwords(
             true);
-        metadata_batch->SetModelTypeState(model_type_state);
+        metadata_batch->SetDataTypeState(data_type_state);
         return metadata_batch;
       });
 
@@ -1206,18 +1206,18 @@ TEST_F(PasswordSyncBridgeTest,
 // ShouldMergeSync() would return an error without crashing.
 TEST_F(
     PasswordSyncBridgeTest,
-    ShouldMergeSyncRemoteAndLocalPasswordsWithErrorWhenStoreUpdateModelTypeStateFails) {
-  // Simulate failure in UpdateModelTypeState();
-  ON_CALL(*mock_sync_metadata_store_sync(), UpdateModelTypeState)
+    ShouldMergeSyncRemoteAndLocalPasswordsWithErrorWhenStoreUpdateDataTypeStateFails) {
+  // Simulate failure in UpdateDataTypeState();
+  ON_CALL(*mock_sync_metadata_store_sync(), UpdateDataTypeState)
       .WillByDefault(testing::Return(false));
 
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
       bridge()->CreateMetadataChangeList();
-  metadata_changes->UpdateModelTypeState(model_type_state);
+  metadata_changes->UpdateDataTypeState(data_type_state);
 
   EXPECT_CALL(*mock_password_store_sync(), RollbackTransaction());
   std::optional<syncer::ModelError> error =
@@ -1270,13 +1270,13 @@ TEST_F(PasswordSyncBridgeTest,
        ShouldCallModelReadyUponConstructionWithMetadata) {
   ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
       .WillByDefault([&]() {
-        sync_pb::ModelTypeState model_type_state;
-        model_type_state.set_initial_sync_state(
-            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-        model_type_state.set_notes_enabled_before_initial_sync_for_passwords(
+        sync_pb::DataTypeState data_type_state;
+        data_type_state.set_initial_sync_state(
+            sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        data_type_state.set_notes_enabled_before_initial_sync_for_passwords(
             true);
         auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
-        metadata_batch->SetModelTypeState(model_type_state);
+        metadata_batch->SetDataTypeState(data_type_state);
         metadata_batch->AddMetadata(
             "storage_key", std::make_unique<sync_pb::EntityMetadata>());
         return metadata_batch;
@@ -2055,14 +2055,14 @@ TEST_F(PasswordSyncBridgeTest,
   ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
       .WillByDefault([&]() {
         auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
-        sync_pb::ModelTypeState model_type_state;
-        model_type_state.set_initial_sync_state(
-            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState data_type_state;
+        data_type_state.set_initial_sync_state(
+            sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
         // Have to set "notes enabled" to true, otherwise the bridge will clear
         // the metadata.
-        model_type_state.set_notes_enabled_before_initial_sync_for_passwords(
+        data_type_state.set_notes_enabled_before_initial_sync_for_passwords(
             true);
-        metadata_batch->SetModelTypeState(model_type_state);
+        metadata_batch->SetDataTypeState(data_type_state);
         metadata_batch->AddMetadata(
             kStorageKey, std::make_unique<sync_pb::EntityMetadata>());
         return metadata_batch;
@@ -2102,9 +2102,9 @@ TEST_F(PasswordSyncBridgeTest,
   ASSERT_EQ(
       mock_sync_metadata_store_sync()
           ->GetAllSyncMetadata(syncer::PASSWORDS)
-          ->GetModelTypeState()
+          ->GetDataTypeState()
           .initial_sync_state(),
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
 
   // Now create the bridge based on the above data+metadata, with wiping
   // behavior `kOnceIfTrackingMetadata`.

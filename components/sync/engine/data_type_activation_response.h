@@ -10,7 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_processor.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace syncer {
 
@@ -20,8 +20,8 @@ struct DataTypeActivationResponse {
   DataTypeActivationResponse();
   ~DataTypeActivationResponse();
 
-  // Initial ModelTypeState at the moment of activation.
-  sync_pb::ModelTypeState model_type_state;
+  // Initial DataTypeState at the moment of activation.
+  sync_pb::DataTypeState data_type_state;
 
   // The DataTypeProcessor for the worker. Note that this is owned because
   // it is generally a proxy object to the real processor.

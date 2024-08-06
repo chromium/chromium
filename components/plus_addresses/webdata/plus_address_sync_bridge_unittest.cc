@@ -21,8 +21,8 @@
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_data.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/plus_address_specifics.pb.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_matchers.h"
@@ -106,11 +106,11 @@ TEST_F(PlusAddressSyncBridgeTest, ModelReadyToSync_InitialSync) {
 
 TEST_F(PlusAddressSyncBridgeTest, ModelReadyToSync_ExistingMetadata) {
   // Simulate that some metadata is stored.
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState::INITIAL_SYNC_DONE);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState::INITIAL_SYNC_DONE);
   ASSERT_TRUE(
-      table().UpdateModelTypeState(syncer::PLUS_ADDRESS, model_type_state));
+      table().UpdateDataTypeState(syncer::PLUS_ADDRESS, data_type_state));
 
   // Expect that `ModelReadyToSync()` is called with the stored metadata when
   // the bridge is created.

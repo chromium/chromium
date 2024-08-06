@@ -16,7 +16,7 @@
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
 
 namespace sync_pb {
@@ -68,12 +68,12 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
     size_t data_change_count() const { return data_change_count_; }
     size_t metadata_change_count() const { return metadata_change_count_; }
 
-    const sync_pb::ModelTypeState& model_type_state() const {
-      return model_type_state_;
+    const sync_pb::DataTypeState& data_type_state() const {
+      return data_type_state_;
     }
 
-    void set_model_type_state(const sync_pb::ModelTypeState& model_type_state) {
-      model_type_state_ = model_type_state;
+    void set_data_type_state(const sync_pb::DataTypeState& data_type_state) {
+      data_type_state_ = data_type_state;
     }
 
     std::unique_ptr<MetadataBatch> CreateMetadataBatch() const;
@@ -84,7 +84,7 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
     size_t metadata_change_count_ = 0;
     std::map<std::string, std::unique_ptr<EntityData>> data_store_;
     std::map<std::string, sync_pb::EntityMetadata> metadata_store_;
-    sync_pb::ModelTypeState model_type_state_;
+    sync_pb::DataTypeState data_type_state_;
   };
 
   FakeDataTypeSyncBridge(

@@ -21,8 +21,8 @@
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
-#include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/protocol/model_type_state_helper.h"
+#include "components/sync/protocol/data_type_state.pb.h"
+#include "components/sync/protocol/data_type_state_helper.h"
 
 ReadingListSyncBridge::ReadingListSyncBridge(
     syncer::StorageType storage_type,
@@ -53,7 +53,7 @@ void ReadingListSyncBridge::ModelReadyToSync(
   if (wipe_model_upon_sync_disabled_behavior_ ==
           syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata &&
       !syncer::IsInitialSyncDone(
-          sync_metadata_batch->GetModelTypeState().initial_sync_state())) {
+          sync_metadata_batch->GetDataTypeState().initial_sync_state())) {
     // Since the model isn't initially tracking metadata, move away from
     // kOnceIfTrackingMetadata so the behavior doesn't kick in, in case sync is
     // turned on later and back to off.

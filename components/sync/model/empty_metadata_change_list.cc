@@ -9,10 +9,10 @@ namespace syncer {
 EmptyMetadataChangeList::EmptyMetadataChangeList() = default;
 EmptyMetadataChangeList::~EmptyMetadataChangeList() = default;
 
-void EmptyMetadataChangeList::UpdateModelTypeState(
-    const sync_pb::ModelTypeState& model_type_state) {}
+void EmptyMetadataChangeList::UpdateDataTypeState(
+    const sync_pb::DataTypeState& data_type_state) {}
 
-void EmptyMetadataChangeList::ClearModelTypeState() {}
+void EmptyMetadataChangeList::ClearDataTypeState() {}
 
 void EmptyMetadataChangeList::UpdateMetadata(
     const std::string& storage_key,

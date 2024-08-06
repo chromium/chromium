@@ -11,9 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/model/model_error.h"
 #include "components/sync/model/data_type_controller_delegate.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/model/model_error.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace syncer {
 
@@ -28,10 +28,10 @@ class FakeDataTypeControllerDelegate : public DataTypeControllerDelegate {
 
   ~FakeDataTypeControllerDelegate() override;
 
-  // Determines the ModelTypeState returned in Connect() as part of
+  // Determines the DataTypeState returned in Connect() as part of
   // DataTypeActivationResponse.
-  void SetModelTypeStateForActivationResponse(
-      const sync_pb::ModelTypeState& model_type_state);
+  void SetDataTypeStateForActivationResponse(
+      const sync_pb::DataTypeState& data_type_state);
 
   // Influences the bit |skip_engine_connection| returned in Connect() as part
   // of DataTypeActivationResponse.

@@ -8,20 +8,20 @@
 
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/model/processor_entity.h"
+#include "components/sync/protocol/data_type_state_helper.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state_helper.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 #include "components/sync/protocol/unique_position.pb.h"
 
 namespace syncer {
 
 ProcessorEntityTracker::ProcessorEntityTracker(
-    const sync_pb::ModelTypeState& model_type_state,
+    const sync_pb::DataTypeState& data_type_state,
     std::map<std::string, std::unique_ptr<sync_pb::EntityMetadata>>
         metadata_map)
-    : model_type_state_(model_type_state) {
+    : data_type_state_(data_type_state) {
   DCHECK(
-      IsInitialSyncAtLeastPartiallyDone(model_type_state.initial_sync_state()));
+      IsInitialSyncAtLeastPartiallyDone(data_type_state.initial_sync_state()));
   for (auto& [storage_key, metadata] : metadata_map) {
     std::unique_ptr<ProcessorEntity> entity =
         ProcessorEntity::CreateFromMetadata(storage_key, std::move(*metadata));
@@ -105,8 +105,8 @@ ProcessorEntity* ProcessorEntityTracker::AddRemote(
 
 void ProcessorEntityTracker::RemoveEntityForClientTagHash(
     const ClientTagHash& client_tag_hash) {
-  DCHECK(IsInitialSyncAtLeastPartiallyDone(
-      model_type_state_.initial_sync_state()));
+  DCHECK(
+      IsInitialSyncAtLeastPartiallyDone(data_type_state_.initial_sync_state()));
   DCHECK(!client_tag_hash.value().empty());
   const ProcessorEntity* entity = GetEntityForTagHash(client_tag_hash);
   if (entity == nullptr || entity->storage_key().empty()) {
@@ -120,8 +120,8 @@ void ProcessorEntityTracker::RemoveEntityForClientTagHash(
 
 void ProcessorEntityTracker::RemoveEntityForStorageKey(
     const std::string& storage_key) {
-  DCHECK(IsInitialSyncAtLeastPartiallyDone(
-      model_type_state_.initial_sync_state()));
+  DCHECK(
+      IsInitialSyncAtLeastPartiallyDone(data_type_state_.initial_sync_state()));
   // Look-up the client tag hash.
   auto iter = storage_key_to_tag_hash_.find(storage_key);
   if (iter == storage_key_to_tag_hash_.end()) {
@@ -136,8 +136,8 @@ void ProcessorEntityTracker::RemoveEntityForStorageKey(
 
 std::vector<std::string> ProcessorEntityTracker::RemoveInactiveCollaborations(
     const base::flat_set<std::string>& active_collaborations) {
-  CHECK(IsInitialSyncAtLeastPartiallyDone(
-      model_type_state_.initial_sync_state()));
+  CHECK(
+      IsInitialSyncAtLeastPartiallyDone(data_type_state_.initial_sync_state()));
   std::vector<std::string> removed_storage_keys;
   std::erase_if(entities_, [&removed_storage_keys,
                             &active_collaborations](const auto& item) {
@@ -172,7 +172,7 @@ void ProcessorEntityTracker::ClearStorageKey(const std::string& storage_key) {
 
 size_t ProcessorEntityTracker::EstimateMemoryUsage() const {
   size_t memory_usage = 0;
-  memory_usage += sync_pb::EstimateMemoryUsage(model_type_state_);
+  memory_usage += sync_pb::EstimateMemoryUsage(data_type_state_);
   memory_usage += base::trace_event::EstimateMemoryUsage(entities_);
   memory_usage +=
       base::trace_event::EstimateMemoryUsage(storage_key_to_tag_hash_);

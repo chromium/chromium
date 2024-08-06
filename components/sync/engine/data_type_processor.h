@@ -12,7 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace syncer {
 class CommitQueue;
@@ -47,7 +47,7 @@ class DataTypeProcessor {
   // Informs this object that some of its commit requests have been
   // serviced (successfully or not).
   virtual void OnCommitCompleted(
-      const sync_pb::ModelTypeState& type_state,
+      const sync_pb::DataTypeState& type_state,
       const CommitResponseDataList& committed_response_list,
       const FailedCommitResponseDataList& error_response_list) = 0;
 
@@ -57,14 +57,14 @@ class DataTypeProcessor {
 
   // Informs this object that there are some incoming updates it should handle.
   virtual void OnUpdateReceived(
-      const sync_pb::ModelTypeState& type_state,
+      const sync_pb::DataTypeState& type_state,
       UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive) = 0;
 
   // Informs this object that it should handle new invalidations to store,
   // replacing any previously-stored invalidations.
   virtual void StorePendingInvalidations(
-      std::vector<sync_pb::ModelTypeState::Invalidation>
+      std::vector<sync_pb::DataTypeState::Invalidation>
           invalidations_to_store) = 0;
 };
 

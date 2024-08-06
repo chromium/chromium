@@ -19,16 +19,16 @@
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using sync_pb::DataTypeState;
 using sync_pb::EntityMetadata;
 using sync_pb::EntitySpecifics;
-using sync_pb::ModelTypeState;
 
 namespace syncer {
 
@@ -42,13 +42,13 @@ class TestMetadataChangeList : public MetadataChangeList {
   ~TestMetadataChangeList() override = default;
 
   // MetadataChangeList implementation.
-  void UpdateModelTypeState(
-      const sync_pb::ModelTypeState& model_type_state) override {
-    db_->set_model_type_state(model_type_state);
+  void UpdateDataTypeState(
+      const sync_pb::DataTypeState& data_type_state) override {
+    db_->set_data_type_state(data_type_state);
   }
 
-  void ClearModelTypeState() override {
-    db_->set_model_type_state(ModelTypeState());
+  void ClearDataTypeState() override {
+    db_->set_data_type_state(DataTypeState());
   }
 
   void UpdateMetadata(const std::string& storage_key,
@@ -126,7 +126,7 @@ const sync_pb::EntityMetadata& FakeDataTypeSyncBridge::Store::GetMetadata(
 std::unique_ptr<MetadataBatch>
 FakeDataTypeSyncBridge::Store::CreateMetadataBatch() const {
   auto metadata_batch = std::make_unique<MetadataBatch>();
-  metadata_batch->SetModelTypeState(model_type_state_);
+  metadata_batch->SetDataTypeState(data_type_state_);
   for (const auto& [storage_key, metadata] : metadata_store_) {
     metadata_batch->AddMetadata(
         storage_key, std::make_unique<sync_pb::EntityMetadata>(metadata));
@@ -139,7 +139,7 @@ void FakeDataTypeSyncBridge::Store::Reset() {
   metadata_change_count_ = 0;
   data_store_.clear();
   metadata_store_.clear();
-  model_type_state_.Clear();
+  data_type_state_.Clear();
 }
 
 FakeDataTypeSyncBridge::FakeDataTypeSyncBridge(

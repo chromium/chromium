@@ -29,11 +29,11 @@
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
@@ -51,9 +51,9 @@
 namespace syncer {
 namespace {
 
+using sync_pb::DataTypeState;
 using sync_pb::DeviceInfoSpecifics;
 using sync_pb::EntitySpecifics;
-using sync_pb::ModelTypeState;
 using testing::_;
 using testing::AllOf;
 using testing::InvokeWithoutArgs;
@@ -327,10 +327,10 @@ DeviceInfoSpecifics CreateSpecifics(
   return specifics;
 }
 
-ModelTypeState StateWithEncryption(const std::string& encryption_key_name) {
-  ModelTypeState state;
+DataTypeState StateWithEncryption(const std::string& encryption_key_name) {
+  DataTypeState state;
   state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   state.set_cache_guid(CacheGuidForSuffix(kLocalSuffix));
   state.set_encryption_key_name(encryption_key_name);
   return state;
@@ -502,8 +502,8 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
         .WillByDefault([this](std::unique_ptr<MetadataBatch> batch) {
           ON_CALL(mock_processor_, IsTrackingMetadata())
               .WillByDefault(Return(
-                  batch->GetModelTypeState().initial_sync_state() ==
-                  sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE));
+                  batch->GetDataTypeState().initial_sync_state() ==
+                  sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE));
         });
   }
 
@@ -565,7 +565,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
     std::unique_ptr<MetadataChangeList> metadata_change_list =
         bridge()->CreateMetadataChangeList();
 
-    metadata_change_list->UpdateModelTypeState(StateWithEncryption(""));
+    metadata_change_list->UpdateDataTypeState(StateWithEncryption(""));
     ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(true));
     bridge()->MergeFullSyncData(std::move(metadata_change_list),
                                 EntityChangeList());
@@ -648,12 +648,12 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
 
   void WriteToStoreWithMetadata(
       const std::vector<DeviceInfoSpecifics>& specifics_list,
-      ModelTypeState state) {
+      DataTypeState state) {
     std::unique_ptr<WriteBatch> batch = store()->CreateWriteBatch();
     for (auto& specifics : specifics_list) {
       batch->WriteData(specifics.cache_guid(), specifics.SerializeAsString());
     }
-    batch->GetMetadataChangeList()->UpdateModelTypeState(state);
+    batch->GetMetadataChangeList()->UpdateDataTypeState(state);
     CommitToStoreAndWait(std::move(batch));
   }
 
@@ -781,7 +781,7 @@ TEST_F(DeviceInfoSyncBridgeTest, TestWithLocalMetadata) {
 
 TEST_F(DeviceInfoSyncBridgeTest, TestWithLocalDataAndMetadata) {
   const DeviceInfoSpecifics local_specifics = CreateLocalDeviceSpecifics();
-  ModelTypeState state = StateWithEncryption("ekn");
+  DataTypeState state = StateWithEncryption("ekn");
   WriteToStoreWithMetadata({local_specifics}, state);
 
   EXPECT_CALL(*processor(), ModelReadyToSync(MetadataBatchContains(
@@ -798,7 +798,7 @@ TEST_F(DeviceInfoSyncBridgeTest, TestWithLocalDataAndMetadata) {
 TEST_F(DeviceInfoSyncBridgeTest, TestWithMultipleLocalDataAndMetadata) {
   const DeviceInfoSpecifics local_specifics = CreateLocalDeviceSpecifics();
   const DeviceInfoSpecifics remote_specifics = CreateSpecifics(1);
-  ModelTypeState state = StateWithEncryption("ekn");
+  DataTypeState state = StateWithEncryption("ekn");
   WriteToStoreWithMetadata({local_specifics, remote_specifics}, state);
 
   EXPECT_CALL(*processor(), ModelReadyToSync(MetadataBatchContains(
@@ -902,10 +902,10 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyIncrementalSyncChangesStore) {
   ASSERT_EQ(1, change_count());
 
   const DeviceInfoSpecifics specifics = CreateSpecifics(1);
-  ModelTypeState state = StateWithEncryption("ekn");
+  DataTypeState state = StateWithEncryption("ekn");
   std::unique_ptr<MetadataChangeList> metadata_changes =
       bridge()->CreateMetadataChangeList();
-  metadata_changes->UpdateModelTypeState(state);
+  metadata_changes->UpdateDataTypeState(state);
 
   auto error = bridge()->ApplyIncrementalSyncChanges(
       std::move(metadata_changes), EntityAddList({specifics}));
@@ -1518,10 +1518,10 @@ TEST_F(DeviceInfoSyncBridgeTest,
   DeviceInfoSpecifics specifics = CreateLocalDeviceSpecifics();
   specifics.set_cache_guid(kInvalidCacheGuid);
 
-  ModelTypeState model_type_state = StateWithEncryption("ekn");
-  model_type_state.set_cache_guid(kInvalidCacheGuid);
+  DataTypeState data_type_state = StateWithEncryption("ekn");
+  data_type_state.set_cache_guid(kInvalidCacheGuid);
 
-  WriteToStoreWithMetadata({specifics}, model_type_state);
+  WriteToStoreWithMetadata({specifics}, data_type_state);
 
   InitializeBridge();
   ASSERT_FALSE(
@@ -1544,7 +1544,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
         std::unique_ptr<MetadataChangeList> change_list =
             bridge()->CreateMetadataChangeList();
         change_list->ClearMetadata(CacheGuidForSuffix(kLocalSuffix));
-        change_list->ClearModelTypeState();
+        change_list->ClearDataTypeState();
         bridge()->ApplyDisableSyncChanges(std::move(change_list));
 
         bridge()->OnSyncStarting(
@@ -1570,10 +1570,10 @@ TEST_F(DeviceInfoSyncBridgeTest,
   DeviceInfoSpecifics specifics = CreateLocalDeviceSpecifics();
   specifics.set_cache_guid(kInvalidCacheGuid);
 
-  ModelTypeState model_type_state = StateWithEncryption("ekn");
-  model_type_state.set_cache_guid(kInvalidCacheGuid);
+  DataTypeState data_type_state = StateWithEncryption("ekn");
+  data_type_state.set_cache_guid(kInvalidCacheGuid);
 
-  WriteToStoreWithMetadata({specifics}, model_type_state);
+  WriteToStoreWithMetadata({specifics}, data_type_state);
   InitializeBridge();
   ASSERT_FALSE(
       bridge()->IsRecentLocalCacheGuid(CacheGuidForSuffix(kLocalSuffix)));
@@ -1601,7 +1601,7 @@ TEST_F(DeviceInfoSyncBridgeTest,
   std::unique_ptr<MetadataChangeList> change_list =
       bridge()->CreateMetadataChangeList();
   change_list->ClearMetadata(CacheGuidForSuffix(kLocalSuffix));
-  change_list->ClearModelTypeState();
+  change_list->ClearDataTypeState();
   bridge()->ApplyDisableSyncChanges(std::move(change_list));
 
   bridge()->OnSyncStarting(TestDataTypeActivationRequest(SyncMode::kFull));
@@ -1615,8 +1615,8 @@ TEST_F(DeviceInfoSyncBridgeTest,
 
 TEST_F(DeviceInfoSyncBridgeTest, ShouldInvokeCallbackOnReadAllMetadata) {
   const DeviceInfoSpecifics specifics = CreateLocalDeviceSpecifics();
-  const ModelTypeState model_type_state = StateWithEncryption("ekn");
-  WriteToStoreWithMetadata({specifics}, model_type_state);
+  const DataTypeState data_type_state = StateWithEncryption("ekn");
+  WriteToStoreWithMetadata({specifics}, data_type_state);
 
   InitializeBridge();
   // Wait until the metadata is loaded.
@@ -1687,8 +1687,8 @@ TEST_F(DeviceInfoSyncBridgeTest,
 
 TEST_F(DeviceInfoSyncBridgeTest, ShouldForceLocalDeviceInfoUpload) {
   const DeviceInfoSpecifics specifics = CreateLocalDeviceSpecifics();
-  const ModelTypeState model_type_state = StateWithEncryption("ekn");
-  WriteToStoreWithMetadata({specifics}, model_type_state);
+  const DataTypeState data_type_state = StateWithEncryption("ekn");
+  WriteToStoreWithMetadata({specifics}, data_type_state);
 
   InitializeBridge();
 
@@ -1702,8 +1702,8 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldForceLocalDeviceInfoUpload) {
 
 TEST_F(DeviceInfoSyncBridgeTest, ShouldNotUploadRecentLocalDeviceUponStartup) {
   const DeviceInfoSpecifics specifics = CreateLocalDeviceSpecifics();
-  const ModelTypeState model_type_state = StateWithEncryption("ekn");
-  WriteToStoreWithMetadata({specifics}, model_type_state);
+  const DataTypeState data_type_state = StateWithEncryption("ekn");
+  WriteToStoreWithMetadata({specifics}, data_type_state);
 
   InitializeBridge();
 
@@ -1719,8 +1719,8 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldUploadOutdatedLocalDeviceInfo) {
   // initialization.
   const DeviceInfoSpecifics specifics =
       CreateLocalDeviceSpecifics(base::Time::Now() - base::Days(10));
-  const ModelTypeState model_type_state = StateWithEncryption("ekn");
-  WriteToStoreWithMetadata({specifics}, model_type_state);
+  const DataTypeState data_type_state = StateWithEncryption("ekn");
+  WriteToStoreWithMetadata({specifics}, data_type_state);
 
   InitializeBridge();
 

@@ -384,14 +384,14 @@ class HistorySyncBridgeTest : public testing::Test {
     // metadata.
     processor()->SetIsTrackingMetadata(true);
 
-    // Populate a MetadataChangeList with a ModelTypeState, and an
+    // Populate a MetadataChangeList with a DataTypeState, and an
     // EntityMetadata entry for each entity.
     std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
         bridge()->CreateMetadataChangeList();
-    sync_pb::ModelTypeState model_type_state;
-    model_type_state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-    metadata_changes->UpdateModelTypeState(model_type_state);
+    sync_pb::DataTypeState data_type_state;
+    data_type_state.set_initial_sync_state(
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+    metadata_changes->UpdateDataTypeState(data_type_state);
     for (const sync_pb::HistorySpecifics& specifics : specifics_vector) {
       syncer::EntityData data = SpecificsToEntityData(specifics);
       data.client_tag_hash = syncer::ClientTagHash::FromUnhashed(
@@ -459,7 +459,7 @@ class HistorySyncBridgeTest : public testing::Test {
     for (const auto& [storage_key, metadata] : all_metadata.GetAllMetadata()) {
       delete_all_metadata->ClearMetadata(storage_key);
     }
-    delete_all_metadata->ClearModelTypeState();
+    delete_all_metadata->ClearDataTypeState();
 
     bridge()->ApplyDisableSyncChanges(std::move(delete_all_metadata));
 
@@ -475,12 +475,12 @@ class HistorySyncBridgeTest : public testing::Test {
     return metadata_batch->TakeAllMetadata();
   }
 
-  sync_pb::ModelTypeState GetPersistedModelTypeState() {
+  sync_pb::DataTypeState GetPersistedDataTypeState() {
     auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
     if (!metadata_db_.GetAllSyncMetadata(metadata_batch.get())) {
       ADD_FAILURE() << "Failed to read metadata from DB";
     }
-    return metadata_batch->GetModelTypeState();
+    return metadata_batch->GetDataTypeState();
   }
 
  private:
@@ -638,16 +638,16 @@ TEST_F(HistorySyncBridgeTest, ClearsDataWhenSyncStopped) {
   ASSERT_EQ(backend()->GetURLs().size(), 2u);
   ASSERT_EQ(backend()->GetVisits().size(), 2u);
 
-  // Some Sync metadata should now exist (both a non-empty ModelTypeState, and
+  // Some Sync metadata should now exist (both a non-empty DataTypeState, and
   // an EntityMetadata record for the local visit).
-  ASSERT_NE(GetPersistedModelTypeState().ByteSizeLong(), 0u);
+  ASSERT_NE(GetPersistedDataTypeState().ByteSizeLong(), 0u);
   ASSERT_FALSE(GetPersistedEntityMetadata().empty());
 
   // Stop Sync.
   ApplyDisableSyncChanges();
 
   // Any Sync metadata should have been cleared.
-  EXPECT_EQ(GetPersistedModelTypeState().ByteSizeLong(), 0u);
+  EXPECT_EQ(GetPersistedDataTypeState().ByteSizeLong(), 0u);
   EXPECT_TRUE(GetPersistedEntityMetadata().empty());
 
   // The local visit should still exist in the DB, but since Sync was stopped

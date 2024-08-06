@@ -19,9 +19,9 @@
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/nigori/nigori_sync_bridge.h"
+#include "components/sync/protocol/data_type_state_helper.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state_helper.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 
@@ -99,13 +99,13 @@ void NigoriDataTypeProcessor::GetLocalChanges(
 }
 
 void NigoriDataTypeProcessor::OnCommitCompleted(
-    const sync_pb::ModelTypeState& type_state,
+    const sync_pb::DataTypeState& type_state,
     const CommitResponseDataList& committed_response_list,
     const FailedCommitResponseDataList& error_response_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(entity_);
 
-  model_type_state_ = type_state;
+  data_type_state_ = type_state;
   if (!committed_response_list.empty()) {
     entity_->ReceiveCommitResponse(committed_response_list[0],
                                    /*commit_only=*/false);
@@ -120,7 +120,7 @@ void NigoriDataTypeProcessor::OnCommitCompleted(
 }
 
 void NigoriDataTypeProcessor::OnUpdateReceived(
-    const sync_pb::ModelTypeState& type_state,
+    const sync_pb::DataTypeState& type_state,
     UpdateResponseDataList updates,
     std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -137,9 +137,9 @@ void NigoriDataTypeProcessor::OnUpdateReceived(
   std::optional<ModelError> error;
 
   const bool is_initial_sync =
-      !IsInitialSyncDone(model_type_state_.initial_sync_state());
+      !IsInitialSyncDone(data_type_state_.initial_sync_state());
 
-  model_type_state_ = type_state;
+  data_type_state_ = type_state;
 
   if (is_initial_sync) {
     DCHECK(!entity_);
@@ -200,16 +200,16 @@ void NigoriDataTypeProcessor::OnUpdateReceived(
 }
 
 void NigoriDataTypeProcessor::StorePendingInvalidations(
-    std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
+    std::vector<sync_pb::DataTypeState::Invalidation> invalidations_to_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (model_error_ || !bridge_) {
     return;
   }
-  model_type_state_.mutable_invalidations()->Assign(
+  data_type_state_.mutable_invalidations()->Assign(
       invalidations_to_store.begin(), invalidations_to_store.end());
   // ApplyIncrementalSyncChanges does actually query and persist the
-  // |model_type_state_|.
+  // |data_type_state_|.
   bridge_->ApplyIncrementalSyncChanges(/*data=*/std::nullopt);
 }
 
@@ -310,7 +310,7 @@ void NigoriDataTypeProcessor::GetTypeEntitiesCountForDebugging(
 void NigoriDataTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   size_t memory_usage = 0;
-  memory_usage += EstimateMemoryUsage(model_type_state_);
+  memory_usage += EstimateMemoryUsage(data_type_state_);
   memory_usage += entity_ ? entity_->EstimateMemoryUsage() : 0;
   SyncRecordDataTypeMemoryHistogram(ModelType::NIGORI, memory_usage);
   SyncRecordDataTypeCountHistogram(ModelType::NIGORI, entity_ ? 1 : 0);
@@ -331,10 +331,9 @@ void NigoriDataTypeProcessor::ModelReadyToSync(
     return;
   }
 
-  if (IsInitialSyncDone(
-          nigori_metadata.model_type_state.initial_sync_state()) &&
+  if (IsInitialSyncDone(nigori_metadata.data_type_state.initial_sync_state()) &&
       nigori_metadata.entity_metadata) {
-    model_type_state_ = std::move(nigori_metadata.model_type_state);
+    data_type_state_ = std::move(nigori_metadata.data_type_state);
     sync_pb::EntityMetadata metadata =
         std::move(*nigori_metadata.entity_metadata);
     metadata.set_client_tag_hash(kRawNigoriClientTagHash);
@@ -342,7 +341,7 @@ void NigoriDataTypeProcessor::ModelReadyToSync(
                                                   std::move(metadata));
   } else {
     // First time syncing or persisted data are corrupted; initialize metadata.
-    model_type_state_.mutable_progress_marker()->set_data_type_id(
+    data_type_state_.mutable_progress_marker()->set_data_type_id(
         sync_pb::EntitySpecifics::kNigoriFieldNumber);
   }
   ConnectIfReady();
@@ -357,7 +356,7 @@ void NigoriDataTypeProcessor::Put(std::unique_ptr<EntityData> entity_data) {
   DCHECK_EQ(NIGORI, GetModelTypeFromSpecifics(entity_data->specifics));
   DCHECK(entity_);
 
-  if (!IsInitialSyncDone(model_type_state_.initial_sync_state())) {
+  if (!IsInitialSyncDone(data_type_state_.initial_sync_state())) {
     // Ignore changes before the initial sync is done.
     return;
   }
@@ -387,7 +386,7 @@ NigoriMetadataBatch NigoriDataTypeProcessor::GetMetadata() {
   DCHECK(entity_);
 
   NigoriMetadataBatch nigori_metadata_batch;
-  nigori_metadata_batch.model_type_state = model_type_state_;
+  nigori_metadata_batch.data_type_state = data_type_state_;
   nigori_metadata_batch.entity_metadata = entity_->metadata();
 
   return nigori_metadata_batch;
@@ -424,13 +423,13 @@ bool NigoriDataTypeProcessor::IsConnectedForTest() const {
   return IsConnected();
 }
 
-const sync_pb::ModelTypeState&
-NigoriDataTypeProcessor::GetModelTypeStateForTest() {
-  return model_type_state_;
+const sync_pb::DataTypeState&
+NigoriDataTypeProcessor::GetDataTypeStateForTest() {
+  return data_type_state_;
 }
 
 bool NigoriDataTypeProcessor::IsTrackingMetadata() {
-  return IsInitialSyncDone(model_type_state_.initial_sync_state());
+  return IsInitialSyncDone(data_type_state_.initial_sync_state());
 }
 
 bool NigoriDataTypeProcessor::IsConnected() const {
@@ -451,19 +450,19 @@ void NigoriDataTypeProcessor::ConnectIfReady() {
     return;
   }
 
-  if (IsInitialSyncDone(model_type_state_.initial_sync_state()) &&
-      model_type_state_.cache_guid() != activation_request_.cache_guid) {
+  if (IsInitialSyncDone(data_type_state_.initial_sync_state()) &&
+      data_type_state_.cache_guid() != activation_request_.cache_guid) {
     ClearMetadataAndReset();
     DCHECK(model_ready_to_sync_);
   }
-  model_type_state_.set_cache_guid(activation_request_.cache_guid);
+  data_type_state_.set_cache_guid(activation_request_.cache_guid);
 
   // Cache GUID verification earlier above guarantees the user is the same.
-  model_type_state_.set_authenticated_account_id(
+  data_type_state_.set_authenticated_account_id(
       activation_request_.authenticated_account_id.ToString());
 
   auto activation_response = std::make_unique<DataTypeActivationResponse>();
-  activation_response->model_type_state = model_type_state_;
+  activation_response->data_type_state = data_type_state_;
   activation_response->type_processor =
       std::make_unique<ForwardingDataTypeProcessor>(this);
   std::move(start_callback_).Run(std::move(activation_response));
@@ -477,7 +476,7 @@ void NigoriDataTypeProcessor::NudgeForCommitIfNeeded() const {
   }
 
   // Don't send anything if the type is not ready to handle commits.
-  if (!IsInitialSyncDone(model_type_state_.initial_sync_state())) {
+  if (!IsInitialSyncDone(data_type_state_.initial_sync_state())) {
     return;
   }
 
@@ -492,8 +491,8 @@ void NigoriDataTypeProcessor::ClearMetadataAndReset() {
   // disabling sync.
   bridge_->ApplyDisableSyncChanges();
   entity_.reset();
-  model_type_state_ = sync_pb::ModelTypeState();
-  model_type_state_.mutable_progress_marker()->set_data_type_id(
+  data_type_state_ = sync_pb::DataTypeState();
+  data_type_state_.mutable_progress_marker()->set_data_type_id(
       sync_pb::EntitySpecifics::kNigoriFieldNumber);
 }
 

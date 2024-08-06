@@ -99,11 +99,11 @@ class ReadingListModelTest : public FakeReadingListModelStorage::Observer,
     base::WeakPtr<FakeReadingListModelStorage> storage = ResetStorage();
 
     auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     state.set_authenticated_account_id(kTestAccountId);
-    metadata_batch->SetModelTypeState(state);
+    metadata_batch->SetDataTypeState(state);
 
     return storage->TriggerLoadCompletion(std::move(initial_syncable_entries),
                                           std::move(metadata_batch));

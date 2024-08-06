@@ -22,16 +22,16 @@
 #include "components/sync/engine/data_type_processor.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_activation_request.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/data_type_local_change_processor.h"
-#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/processor_entity_tracker.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace sync_pb {
-class ModelTypeState;
+class DataTypeState;
 }
 
 namespace syncer {
@@ -115,16 +115,16 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   void GetLocalChanges(size_t max_entries,
                        GetLocalChangesCallback callback) override;
   void OnCommitCompleted(
-      const sync_pb::ModelTypeState& type_state,
+      const sync_pb::DataTypeState& type_state,
       const CommitResponseDataList& committed_response_list,
       const FailedCommitResponseDataList& error_response_list) override;
   void OnCommitFailed(SyncCommitError commit_error) override;
   void OnUpdateReceived(
-      const sync_pb::ModelTypeState& type_state,
+      const sync_pb::DataTypeState& type_state,
       UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive) override;
   void StorePendingInvalidations(
-      std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store)
+      std::vector<sync_pb::DataTypeState::Invalidation> invalidations_to_store)
       override;
 
   // DataTypeControllerDelegate implementation.
@@ -189,7 +189,7 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   // it should get further processed. If the update is incorrect, this function
   // also reports an error.
   bool ValidateUpdate(
-      const sync_pb::ModelTypeState& model_type_state,
+      const sync_pb::DataTypeState& data_type_state,
       const UpdateResponseDataList& updates,
       const std::optional<sync_pb::GarbageCollectionDirective>& gc_directive);
 
@@ -197,14 +197,14 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   // the data type does not support incremental updates, this will be called for
   // any server update.
   std::optional<ModelError> OnFullUpdateReceived(
-      const sync_pb::ModelTypeState& type_state,
+      const sync_pb::DataTypeState& type_state,
       UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive);
 
   // Handle any incremental updates received from the server after being
   // enabled.
   std::optional<ModelError> OnIncrementalUpdateReceived(
-      const sync_pb::ModelTypeState& type_state,
+      const sync_pb::DataTypeState& type_state,
       UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive);
 
@@ -249,12 +249,12 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   void MergeDataWithMetadataForDebugging(AllNodesCallback callback,
                                          std::unique_ptr<DataBatch> batch);
 
-  // Verifies that the persisted ModelTypeState (in `entity_tracker_`) is valid.
+  // Verifies that the persisted DataTypeState (in `entity_tracker_`) is valid.
   // May modify the state (incl. the persisted data) or even clear it entirely
   // if it is invalid.
   void ClearPersistedMetadataIfInconsistentWithActivationRequest();
 
-  // Verifies that the passed-in metadata (ModelTypeState plus entity metadata)
+  // Verifies that the passed-in metadata (DataTypeState plus entity metadata)
   // is valid, and clears it (incl. the persisted data) if not. Returns whether
   // the metadata was cleared.
   bool ClearPersistedMetadataIfInvalid(const MetadataBatch& metadata);

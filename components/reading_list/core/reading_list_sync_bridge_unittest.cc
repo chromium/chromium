@@ -145,15 +145,15 @@ class ReadingListSyncBridgeTest : public testing::Test {
 
     if (initial_sync_done) {
       // Mimic initial sync having been done earlier.
-      sync_pb::ModelTypeState model_type_state;
-      model_type_state.set_cache_guid(kCacheGuid);
-      model_type_state.set_initial_sync_state(
-          sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+      sync_pb::DataTypeState data_type_state;
+      data_type_state.set_cache_guid(kCacheGuid);
+      data_type_state.set_initial_sync_state(
+          sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
       std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
           underlying_in_memory_store_->CreateWriteBatch();
-      write_batch->GetMetadataChangeList()->UpdateModelTypeState(
-          model_type_state);
+      write_batch->GetMetadataChangeList()->UpdateDataTypeState(
+          data_type_state);
       underlying_in_memory_store_->CommitWriteBatch(std::move(write_batch),
                                                     base::DoNothing());
     }

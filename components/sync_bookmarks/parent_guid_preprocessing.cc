@@ -14,8 +14,8 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
 
@@ -227,7 +227,7 @@ void PopulateParentGuidInSpecifics(const SyncedBookmarkTracker* tracker,
   // No tracker provided, so use an empty tracker instead where all lookups will
   // fail.
   std::unique_ptr<SyncedBookmarkTracker> empty_tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
   PopulateParentGuidInSpecificsWithTracker(empty_tracker.get(), updates);
 }
 

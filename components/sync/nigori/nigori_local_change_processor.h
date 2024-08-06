@@ -11,8 +11,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/sync/model/model_error.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 
 namespace syncer {
 
@@ -30,7 +30,7 @@ struct NigoriMetadataBatch {
 
   ~NigoriMetadataBatch();
 
-  sync_pb::ModelTypeState model_type_state;
+  sync_pb::DataTypeState data_type_state;
   std::optional<sync_pb::EntityMetadata> entity_metadata;
 };
 

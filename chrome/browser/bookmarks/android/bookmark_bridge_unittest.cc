@@ -136,9 +136,9 @@ class BookmarkBridgeTest : public testing::Test {
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
 
     // After this update initial sync is for sure done.
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
     activation_response->type_processor->OnUpdateReceived(
         state, {}, /*gc_directive=*/std::nullopt);

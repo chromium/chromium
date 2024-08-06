@@ -18,9 +18,9 @@ FakeDataTypeControllerDelegate::FakeDataTypeControllerDelegate(ModelType type)
 
 FakeDataTypeControllerDelegate::~FakeDataTypeControllerDelegate() = default;
 
-void FakeDataTypeControllerDelegate::SetModelTypeStateForActivationResponse(
-    const sync_pb::ModelTypeState& model_type_state) {
-  activation_response_.model_type_state = model_type_state;
+void FakeDataTypeControllerDelegate::SetDataTypeStateForActivationResponse(
+    const sync_pb::DataTypeState& data_type_state) {
+  activation_response_.data_type_state = data_type_state;
 }
 
 void FakeDataTypeControllerDelegate::
@@ -116,7 +116,7 @@ FakeDataTypeControllerDelegate::GetWeakPtr() {
 std::unique_ptr<DataTypeActivationResponse>
 FakeDataTypeControllerDelegate::MakeActivationResponse() const {
   auto response = std::make_unique<DataTypeActivationResponse>();
-  response->model_type_state = activation_response_.model_type_state;
+  response->data_type_state = activation_response_.data_type_state;
   response->skip_engine_connection =
       activation_response_.skip_engine_connection;
   return response;

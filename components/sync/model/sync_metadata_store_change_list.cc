@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/location.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 
 namespace syncer {
 
@@ -24,24 +24,24 @@ SyncMetadataStoreChangeList::SyncMetadataStoreChangeList(
 
 SyncMetadataStoreChangeList::~SyncMetadataStoreChangeList() = default;
 
-void SyncMetadataStoreChangeList::UpdateModelTypeState(
-    const sync_pb::ModelTypeState& model_type_state) {
+void SyncMetadataStoreChangeList::UpdateDataTypeState(
+    const sync_pb::DataTypeState& data_type_state) {
   if (error_encountered_) {
     return;
   }
 
-  if (!store_->UpdateModelTypeState(type_, model_type_state)) {
-    SetError(ModelError(FROM_HERE, "Failed to update ModelTypeState."));
+  if (!store_->UpdateDataTypeState(type_, data_type_state)) {
+    SetError(ModelError(FROM_HERE, "Failed to update DataTypeState."));
   }
 }
 
-void SyncMetadataStoreChangeList::ClearModelTypeState() {
+void SyncMetadataStoreChangeList::ClearDataTypeState() {
   if (error_encountered_) {
     return;
   }
 
-  if (!store_->ClearModelTypeState(type_)) {
-    SetError(ModelError(FROM_HERE, "Failed to clear ModelTypeState."));
+  if (!store_->ClearDataTypeState(type_)) {
+    SetError(ModelError(FROM_HERE, "Failed to clear DataTypeState."));
   }
 }
 

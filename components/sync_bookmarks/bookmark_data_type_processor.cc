@@ -27,7 +27,7 @@
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
-#include "components/sync/protocol/model_type_state_helper.h"
+#include "components/sync/protocol/data_type_state_helper.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync_bookmarks/bookmark_local_changes_builder.h"
 #include "components/sync_bookmarks/bookmark_model_merger.h"
@@ -185,7 +185,7 @@ void BookmarkDataTypeProcessor::GetLocalChanges(
 }
 
 void BookmarkDataTypeProcessor::OnCommitCompleted(
-    const sync_pb::ModelTypeState& type_state,
+    const sync_pb::DataTypeState& type_state,
     const syncer::CommitResponseDataList& committed_response_list,
     const syncer::FailedCommitResponseDataList& error_response_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -205,18 +205,18 @@ void BookmarkDataTypeProcessor::OnCommitCompleted(
                                                 response.sequence_number);
   }
 
-  bookmark_tracker_->set_model_type_state(type_state);
+  bookmark_tracker_->set_data_type_state(type_state);
   schedule_save_closure_.Run();
 }
 
 void BookmarkDataTypeProcessor::OnUpdateReceived(
-    const sync_pb::ModelTypeState& model_type_state,
+    const sync_pb::DataTypeState& data_type_state,
     syncer::UpdateResponseDataList updates,
     std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!model_type_state.cache_guid().empty());
-  CHECK_EQ(model_type_state.cache_guid(), activation_request_.cache_guid);
-  DCHECK(syncer::IsInitialSyncDone(model_type_state.initial_sync_state()));
+  DCHECK(!data_type_state.cache_guid().empty());
+  CHECK_EQ(data_type_state.cache_guid(), activation_request_.cache_guid);
+  DCHECK(syncer::IsInitialSyncDone(data_type_state.initial_sync_state()));
   DCHECK(start_callback_.is_null());
   // Processor should never connect if
   // `last_initial_merge_remote_updates_exceeded_limit_` is set.
@@ -229,7 +229,7 @@ void BookmarkDataTypeProcessor::OnUpdateReceived(
   PopulateParentGuidInSpecifics(bookmark_tracker_.get(), &updates);
 
   if (!bookmark_tracker_) {
-    OnInitialUpdateReceived(model_type_state, std::move(updates));
+    OnInitialUpdateReceived(data_type_state, std::move(updates));
     return;
   }
 
@@ -241,9 +241,9 @@ void BookmarkDataTypeProcessor::OnUpdateReceived(
     BookmarkRemoteUpdatesHandler updates_handler(
         bookmark_model_, favicon_service_, bookmark_tracker_.get());
     const bool got_new_encryption_requirements =
-        bookmark_tracker_->model_type_state().encryption_key_name() !=
-        model_type_state.encryption_key_name();
-    bookmark_tracker_->set_model_type_state(model_type_state);
+        bookmark_tracker_->data_type_state().encryption_key_name() !=
+        data_type_state.encryption_key_name();
+    bookmark_tracker_->set_data_type_state(data_type_state);
     updates_handler.Process(updates, got_new_encryption_requirements);
   }
 
@@ -272,18 +272,17 @@ void BookmarkDataTypeProcessor::OnUpdateReceived(
 }
 
 void BookmarkDataTypeProcessor::StorePendingInvalidations(
-    std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
+    std::vector<sync_pb::DataTypeState::Invalidation> invalidations_to_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!bookmark_tracker_) {
     // It's possible to receive invalidations while bookmarks are not syncing,
     // e.g. if invalidation system is initialized earlier than bookmark model.
     return;
   }
-  sync_pb::ModelTypeState model_type_state =
-      bookmark_tracker_->model_type_state();
-  model_type_state.mutable_invalidations()->Assign(
+  sync_pb::DataTypeState data_type_state = bookmark_tracker_->data_type_state();
+  data_type_state.mutable_invalidations()->Assign(
       invalidations_to_store.begin(), invalidations_to_store.end());
-  bookmark_tracker_->set_model_type_state(model_type_state);
+  bookmark_tracker_->set_data_type_state(data_type_state);
   schedule_save_closure_.Run();
 }
 
@@ -348,7 +347,7 @@ void BookmarkDataTypeProcessor::ModelReadyToSync(
       LogClearMetadataWhileStoppedHistogram(syncer::BOOKMARKS,
                                             /*is_delayed_call=*/true);
       if (syncer::IsInitialSyncDone(
-              model_metadata.model_type_state().initial_sync_state())) {
+              model_metadata.data_type_state().initial_sync_state())) {
         // There used to be a tracker, which is dropped now due to
         // `pending_clear_metadata_`. This isn't very different to
         // ClearMetadataIfStopped(), in the sense that the need to wipe the
@@ -495,7 +494,7 @@ void BookmarkDataTypeProcessor::ConnectIfReady() {
 
   DCHECK(!activation_request_.cache_guid.empty());
 
-  if (bookmark_tracker_ && bookmark_tracker_->model_type_state().cache_guid() !=
+  if (bookmark_tracker_ && bookmark_tracker_->data_type_state().cache_guid() !=
                                activation_request_.cache_guid) {
     // In case of a cache uuid mismatch, treat it as a corrupted metadata and
     // start clean.
@@ -505,14 +504,13 @@ void BookmarkDataTypeProcessor::ConnectIfReady() {
   auto activation_context =
       std::make_unique<syncer::DataTypeActivationResponse>();
   if (bookmark_tracker_) {
-    activation_context->model_type_state =
-        bookmark_tracker_->model_type_state();
+    activation_context->data_type_state = bookmark_tracker_->data_type_state();
   } else {
-    sync_pb::ModelTypeState model_type_state;
-    model_type_state.mutable_progress_marker()->set_data_type_id(
+    sync_pb::DataTypeState data_type_state;
+    data_type_state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromDataType(syncer::BOOKMARKS));
-    model_type_state.set_cache_guid(activation_request_.cache_guid);
-    activation_context->model_type_state = model_type_state;
+    data_type_state.set_cache_guid(activation_request_.cache_guid);
+    activation_context->data_type_state = data_type_state;
   }
   activation_context->type_processor =
       std::make_unique<syncer::DataTypeProcessorProxy>(
@@ -598,7 +596,7 @@ void BookmarkDataTypeProcessor::OnBookmarkModelBeingDeleted() {
 }
 
 void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
-    const sync_pb::ModelTypeState& model_type_state,
+    const sync_pb::DataTypeState& data_type_state,
     syncer::UpdateResponseDataList updates) {
   DCHECK(!bookmark_tracker_);
   DCHECK(activation_request_.error_handler);
@@ -622,7 +620,7 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
     return;
   }
 
-  bookmark_tracker_ = SyncedBookmarkTracker::CreateEmpty(model_type_state);
+  bookmark_tracker_ = SyncedBookmarkTracker::CreateEmpty(data_type_state);
   StartTrackingMetadata();
 
   {

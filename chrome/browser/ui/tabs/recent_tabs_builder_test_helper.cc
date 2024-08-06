@@ -18,6 +18,7 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_processor.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -204,10 +205,10 @@ void RecentTabsBuilderTestHelper::ExportToSessionSync(
         BuildUpdateResponseData(header_specifics, GetSessionTimestamp(s)));
   }
 
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-  processor->OnUpdateReceived(model_type_state, std::move(updates),
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  processor->OnUpdateReceived(data_type_state, std::move(updates),
                               /*gc_directive=*/std::nullopt);
   // ClientTagBasedDataTypeProcessor uses DataTypeProcessorProxy during
   // activation, which involves task posting for receiving updates.

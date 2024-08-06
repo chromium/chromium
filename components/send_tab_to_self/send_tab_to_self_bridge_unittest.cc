@@ -20,8 +20,8 @@
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_data.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
@@ -95,9 +95,9 @@ std::unique_ptr<syncer::DeviceInfo> CreateDevice(
       /*floating_workspace_last_signin_timestamp=*/std::nullopt);
 }
 
-sync_pb::ModelTypeState StateWithEncryption(
+sync_pb::DataTypeState StateWithEncryption(
     const std::string& encryption_key_name) {
-  sync_pb::ModelTypeState state;
+  sync_pb::DataTypeState state;
   state.set_encryption_key_name(encryption_key_name);
   return state;
 }
@@ -287,10 +287,10 @@ TEST_F(SendTabToSelfBridgeTest, ApplyIncrementalSyncChangesAddTwoSpecifics) {
   const sync_pb::SendTabToSelfSpecifics specifics1 = CreateSpecifics(1);
   const sync_pb::SendTabToSelfSpecifics specifics2 = CreateSpecifics(2);
 
-  sync_pb::ModelTypeState state = StateWithEncryption("ekn");
+  sync_pb::DataTypeState state = StateWithEncryption("ekn");
   std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
       bridge()->CreateMetadataChangeList();
-  metadata_changes->UpdateModelTypeState(state);
+  metadata_changes->UpdateDataTypeState(state);
 
   EXPECT_CALL(*mock_observer(), EntriesAddedRemotely(SizeIs(2)));
 
@@ -400,10 +400,10 @@ TEST_F(SendTabToSelfBridgeTest, AddEntryAndRestartBridge) {
   InitializeBridge();
 
   const sync_pb::SendTabToSelfSpecifics specifics = CreateSpecifics(1);
-  sync_pb::ModelTypeState state = StateWithEncryption("ekn");
+  sync_pb::DataTypeState state = StateWithEncryption("ekn");
   std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
       bridge()->CreateMetadataChangeList();
-  metadata_changes->UpdateModelTypeState(state);
+  metadata_changes->UpdateDataTypeState(state);
 
   auto error = bridge()->ApplyIncrementalSyncChanges(
       std::move(metadata_changes), EntityAddList({specifics}));
@@ -543,10 +543,10 @@ TEST_F(SendTabToSelfBridgeTest, ExpireEntryDuringInit) {
   const sync_pb::SendTabToSelfSpecifics not_expired_specifics =
       CreateSpecifics(2, AdvanceAndGetTime());
 
-  sync_pb::ModelTypeState state = StateWithEncryption("ekn");
+  sync_pb::DataTypeState state = StateWithEncryption("ekn");
   std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
       bridge()->CreateMetadataChangeList();
-  metadata_changes->UpdateModelTypeState(state);
+  metadata_changes->UpdateDataTypeState(state);
 
   auto error = bridge()->ApplyIncrementalSyncChanges(
       std::move(metadata_changes),
@@ -571,10 +571,10 @@ TEST_F(SendTabToSelfBridgeTest, ExpireEntryDuringInit) {
 TEST_F(SendTabToSelfBridgeTest, AddExpiredEntry) {
   InitializeBridge();
 
-  sync_pb::ModelTypeState state = StateWithEncryption("ekn");
+  sync_pb::DataTypeState state = StateWithEncryption("ekn");
   std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
       bridge()->CreateMetadataChangeList();
-  metadata_changes->UpdateModelTypeState(state);
+  metadata_changes->UpdateDataTypeState(state);
 
   const sync_pb::SendTabToSelfSpecifics expired_specifics =
       CreateSpecifics(1, AdvanceAndGetTime());

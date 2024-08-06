@@ -13,7 +13,6 @@
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"

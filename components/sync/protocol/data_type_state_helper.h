@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_PROTOCOL_MODEL_TYPE_STATE_HELPER_H_
-#define COMPONENTS_SYNC_PROTOCOL_MODEL_TYPE_STATE_HELPER_H_
+#ifndef COMPONENTS_SYNC_PROTOCOL_DATA_TYPE_STATE_HELPER_H_
+#define COMPONENTS_SYNC_PROTOCOL_DATA_TYPE_STATE_HELPER_H_
 
+#include "components/sync/base/model_type.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 
 namespace syncer {
@@ -16,4 +17,4 @@ bool IsInitialSyncAtLeastPartiallyDone(
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_PROTOCOL_MODEL_TYPE_STATE_HELPER_H_
+#endif  // COMPONENTS_SYNC_PROTOCOL_DATA_TYPE_STATE_HELPER_H_

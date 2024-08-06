@@ -23,9 +23,9 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/processor_entity_tracker.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync/test/fake_data_type_sync_bridge.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
@@ -49,17 +49,17 @@ const char kKey2[] = "key2";
 const char kValue1[] = "value1";
 const char kValue2[] = "value2";
 
-sync_pb::ModelTypeState GenerateModelTypeState() {
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-  return model_type_state;
+sync_pb::DataTypeState GenerateDataTypeState() {
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  return data_type_state;
 }
 
 std::unique_ptr<DataTypeActivationResponse> GenerateDataTypeActivationResponse(
     DataTypeProcessor* processor) {
   auto response = std::make_unique<DataTypeActivationResponse>();
-  response->model_type_state = GenerateModelTypeState();
+  response->data_type_state = GenerateDataTypeState();
   response->type_processor =
       std::make_unique<ForwardingDataTypeProcessor>(processor);
   return response;
@@ -111,8 +111,7 @@ class ClientTagBasedRemoteUpdateHandlerTest : public ::testing::Test {
       : ClientTagBasedRemoteUpdateHandlerTest(PREFERENCES) {}
 
   explicit ClientTagBasedRemoteUpdateHandlerTest(ModelType type)
-      : processor_entity_tracker_(GenerateModelTypeState(),
-                                  EntityMetadataMap()),
+      : processor_entity_tracker_(GenerateDataTypeState(), EntityMetadataMap()),
         data_type_sync_bridge_(type,
                                change_processor_.CreateForwardingProcessor()),
         remote_update_handler_(type,
@@ -123,18 +122,18 @@ class ClientTagBasedRemoteUpdateHandlerTest : public ::testing::Test {
 
   ~ClientTagBasedRemoteUpdateHandlerTest() override = default;
 
-  void ProcessSingleUpdate(const sync_pb::ModelTypeState& model_type_state,
+  void ProcessSingleUpdate(const sync_pb::DataTypeState& data_type_state,
                            UpdateResponseData update,
                            std::optional<sync_pb::GarbageCollectionDirective>
                                gc_directive = std::nullopt) {
     UpdateResponseDataList updates;
     updates.push_back(std::move(update));
     remote_update_handler_.ProcessIncrementalUpdate(
-        model_type_state, std::move(updates), gc_directive);
+        data_type_state, std::move(updates), gc_directive);
   }
 
   void ProcessSingleUpdate(UpdateResponseData update) {
-    ProcessSingleUpdate(GenerateModelTypeState(), std::move(update));
+    ProcessSingleUpdate(GenerateDataTypeState(), std::move(update));
   }
 
   UpdateResponseData GeneratePrefUpdate(const std::string& key,
@@ -154,12 +153,12 @@ class ClientTagBasedRemoteUpdateHandlerTest : public ::testing::Test {
                                         const std::string& value,
                                         int64_t version_offset) {
     const ClientTagHash client_tag_hash = GetPrefHash(key);
-    const sync_pb::ModelTypeState model_type_state = GenerateModelTypeState();
+    const sync_pb::DataTypeState data_type_state = GenerateDataTypeState();
     const sync_pb::EntitySpecifics specifics =
         GeneratePrefSpecifics(key, value);
     return worker()->GenerateUpdateData(client_tag_hash, specifics,
                                         version_offset,
-                                        model_type_state.encryption_key_name());
+                                        data_type_state.encryption_key_name());
   }
 
   std::unique_ptr<EntityData> GeneratePrefEntityData(const std::string& key,
@@ -487,14 +486,14 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   const std::string kDifferentEncryptionKeyName = "DifferentEncryptionKey";
   const ClientTagHash kClientTagHash = GetPrefHash(kKey1);
 
-  sync_pb::ModelTypeState model_type_state = GenerateModelTypeState();
-  model_type_state.set_encryption_key_name(kTestEncryptionKeyName);
+  sync_pb::DataTypeState data_type_state = GenerateDataTypeState();
+  data_type_state.set_encryption_key_name(kTestEncryptionKeyName);
 
   ProcessSingleUpdate(GeneratePrefUpdate(kClientTagHash, kKey1, kValue1));
 
   // Generate a remote deletion with a different encryption key.
-  model_type_state.set_encryption_key_name(kDifferentEncryptionKeyName);
-  ProcessSingleUpdate(model_type_state,
+  data_type_state.set_encryption_key_name(kDifferentEncryptionKeyName);
+  ProcessSingleUpdate(data_type_state,
                       worker()->GenerateTombstoneUpdateData(kClientTagHash));
 
   EXPECT_EQ(0u, ProcessorEntityCount());
@@ -640,7 +639,7 @@ class ClientTagBasedRemoteUpdateHandlerForSharedTest
       gc_directive.mutable_collaboration_gc()->add_active_collaboration_ids(
           active_collaboration);
     }
-    ProcessSingleUpdate(GenerateModelTypeState(), std::move(update),
+    ProcessSingleUpdate(GenerateDataTypeState(), std::move(update),
                         std::move(gc_directive));
   }
 };

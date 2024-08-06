@@ -14,8 +14,8 @@
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -29,7 +29,9 @@ constexpr char kProfileId[] = "profile_id";
 constexpr char kFacet[] = "facet";
 constexpr char kPlusAddress[] = "plus_address";
 
-constexpr char kSyncModelTypeState[] = "plus_address_sync_model_type_state";
+// The table name uses the legacy name "model type state" as a historic artifact
+// to avoid a data migration.
+constexpr char kSyncDataTypeState[] = "plus_address_sync_model_type_state";
 constexpr char kModelType[] = "model_type";
 constexpr char kValue[] = "value";
 
@@ -56,22 +58,22 @@ std::optional<PlusProfile> PlusProfileFromStatement(sql::Statement& s) {
 // Populates the `metadata_batch`'s model type state with the state stored for
 // `model_type`, or the default, if no state is stored.
 // Returns false if the model type state is unparsable.
-bool GetModelTypeState(sql::Database& db,
-                       syncer::ModelType model_type,
-                       syncer::MetadataBatch& metadata_batch) {
-  sql::Statement model_state_query(db.GetUniqueStatement(
-      base::StringPrintf("SELECT %s FROM %s WHERE %s=?", kValue,
-                         kSyncModelTypeState, kModelType)));
-  model_state_query.BindInt(0, syncer::ModelTypeToStableIdentifier(model_type));
-  sync_pb::ModelTypeState model_type_state;
+bool GetDataTypeState(sql::Database& db,
+                      syncer::ModelType model_type,
+                      syncer::MetadataBatch& metadata_batch) {
+  sql::Statement data_type_state_query(db.GetUniqueStatement(base::StringPrintf(
+      "SELECT %s FROM %s WHERE %s=?", kValue, kSyncDataTypeState, kModelType)));
+  data_type_state_query.BindInt(
+      0, syncer::ModelTypeToStableIdentifier(model_type));
+  sync_pb::DataTypeState data_type_state;
   // When the user just started syncing `model_type`, no model type state is
   // persisted yet and `Step()` will fail. Don't treat this as an error, but
   // fallback to the default state instead.
-  if (model_state_query.Step() &&
-      !model_type_state.ParseFromString(model_state_query.ColumnString(0))) {
+  if (data_type_state_query.Step() &&
+      !data_type_state.ParseFromString(data_type_state_query.ColumnString(0))) {
     return false;
   }
-  metadata_batch.SetModelTypeState(model_type_state);
+  metadata_batch.SetDataTypeState(data_type_state);
   return true;
 }
 
@@ -117,7 +119,7 @@ WebDatabaseTable::TypeKey PlusAddressTable::GetTypeKey() const {
 }
 
 bool PlusAddressTable::CreateTablesIfNecessary() {
-  return CreatePlusAddressesTable() && CreateSyncModelTypeStateTable() &&
+  return CreatePlusAddressesTable() && CreateSyncDataTypeStateTable() &&
          CreateSyncEntityMetadataTable();
 }
 
@@ -210,22 +212,22 @@ bool PlusAddressTable::ClearEntityMetadata(syncer::ModelType model_type,
   return query.Run();
 }
 
-bool PlusAddressTable::UpdateModelTypeState(
+bool PlusAddressTable::UpdateDataTypeState(
     syncer::ModelType model_type,
-    const sync_pb::ModelTypeState& model_type_state) {
+    const sync_pb::DataTypeState& data_type_state) {
   CHECK_EQ(model_type, syncer::PLUS_ADDRESS);
   sql::Statement query(db_->GetUniqueStatement(
       base::StringPrintf("INSERT OR REPLACE INTO %s (%s, %s) VALUES (?, ?)",
-                         kSyncModelTypeState, kModelType, kValue)));
+                         kSyncDataTypeState, kModelType, kValue)));
   query.BindInt(0, syncer::ModelTypeToStableIdentifier(model_type));
-  query.BindBlob(1, model_type_state.SerializeAsString());
+  query.BindBlob(1, data_type_state.SerializeAsString());
   return query.Run();
 }
 
-bool PlusAddressTable::ClearModelTypeState(syncer::ModelType model_type) {
+bool PlusAddressTable::ClearDataTypeState(syncer::ModelType model_type) {
   CHECK_EQ(model_type, syncer::PLUS_ADDRESS);
   sql::Statement query(db_->GetUniqueStatement(base::StringPrintf(
-      "DELETE FROM %s WHERE %s=?", kSyncModelTypeState, kModelType)));
+      "DELETE FROM %s WHERE %s=?", kSyncDataTypeState, kModelType)));
   query.BindInt(0, syncer::ModelTypeToStableIdentifier(model_type));
   return query.Run();
 }
@@ -234,7 +236,7 @@ bool PlusAddressTable::GetAllSyncMetadata(
     syncer::ModelType model_type,
     syncer::MetadataBatch& metadata_batch) {
   CHECK_EQ(model_type, syncer::PLUS_ADDRESS);
-  return GetModelTypeState(*db_, model_type, metadata_batch) &&
+  return GetDataTypeState(*db_, model_type, metadata_batch) &&
          AddEntityMetadata(*db_, model_type, metadata_batch);
 }
 
@@ -246,11 +248,11 @@ bool PlusAddressTable::CreatePlusAddressesTable() {
                                          kPlusAddress));
 }
 
-bool PlusAddressTable::CreateSyncModelTypeStateTable() {
-  return db_->DoesTableExist(kSyncModelTypeState) ||
+bool PlusAddressTable::CreateSyncDataTypeStateTable() {
+  return db_->DoesTableExist(kSyncDataTypeState) ||
          db_->Execute(base::StringPrintf(
              "CREATE TABLE %s (%s INTEGER PRIMARY KEY, %s BLOB)",
-             kSyncModelTypeState, kModelType, kValue));
+             kSyncDataTypeState, kModelType, kValue));
 }
 
 bool PlusAddressTable::CreateSyncEntityMetadataTable() {
@@ -273,7 +275,7 @@ bool PlusAddressTable::MigrateToVersion127_SyncSupport() {
   // The migration logic drops the existing `kPlusAddressTable` and recreates it
   // with a new schema. No data needs to be migrated between the tables, since
   // the table was not used yet.
-  // Then, new `kSyncModelTypeState` and `kSyncEntityMetadata` tables are
+  // Then, new `kSyncDataTypeState` and `kSyncEntityMetadata` tables are
   // created.
   return transaction.Begin() &&
          db_->Execute(base::StrCat({"DROP TABLE ", kPlusAddressTable})) &&
@@ -283,7 +285,7 @@ bool PlusAddressTable::MigrateToVersion127_SyncSupport() {
                                          kPlusAddress)) &&
          db_->Execute(base::StringPrintf(
              "CREATE TABLE %s (%s INTEGER PRIMARY KEY, %s BLOB)",
-             kSyncModelTypeState, kModelType, kValue)) &&
+             kSyncDataTypeState, kModelType, kValue)) &&
          db_->Execute(base::StringPrintf(
              "CREATE TABLE %s (%s INTEGER, %s VARCHAR, %s BLOB, "
              "PRIMARY KEY (%s, %s))",

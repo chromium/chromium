@@ -29,7 +29,7 @@
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/test/mock_commit_queue.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/switches.h"
@@ -125,12 +125,12 @@ syncer::UpdateResponseData CreateUpdateResponseData(
                                   base::Uuid::GenerateRandomV4());
 }
 
-sync_pb::ModelTypeState CreateModelTypeState() {
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_cache_guid(kCacheGuid);
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-  return model_type_state;
+sync_pb::DataTypeState CreateDataTypeState() {
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_cache_guid(kCacheGuid);
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  return data_type_state;
 }
 
 // |node| must not be nullptr.
@@ -172,7 +172,7 @@ sync_pb::BookmarkMetadata CreateUnsyncedNodeMetadata(
 sync_pb::BookmarkModelMetadata CreateMetadataForPermanentNodes(
     const BookmarkModelView* bookmark_model) {
   sync_pb::BookmarkModelMetadata model_metadata;
-  *model_metadata.mutable_model_type_state() = CreateModelTypeState();
+  *model_metadata.mutable_data_type_state() = CreateDataTypeState();
 
   *model_metadata.add_bookmarks_metadata() =
       CreateNodeMetadata(bookmark_model->bookmark_bar_node(),
@@ -260,8 +260,8 @@ class BookmarkDataTypeProcessorTest : public testing::Test {
   void SimulateModelReadyToSyncWithInitialSyncDone() {
     sync_pb::BookmarkModelMetadata model_metadata =
         CreateMetadataForPermanentNodes(bookmark_model_.get());
-    DCHECK_EQ(model_metadata.model_type_state().initial_sync_state(),
-              sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+    DCHECK_EQ(model_metadata.data_type_state().initial_sync_state(),
+              sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
     // By default, set that bookmarks are reuploaded to avoid reupload logic.
     model_metadata.set_bookmarks_hierarchy_fields_reuploaded(true);
@@ -353,10 +353,10 @@ class BookmarkDataTypeProcessorTest : public testing::Test {
     return &error_handler_;
   }
 
-  sync_pb::ModelTypeState::Invalidation BuildInvalidation(
+  sync_pb::DataTypeState::Invalidation BuildInvalidation(
       int64_t version,
       const std::string& payload) {
-    sync_pb::ModelTypeState::Invalidation inv;
+    sync_pb::DataTypeState::Invalidation inv;
     inv.set_version(version);
     inv.set_hint(payload);
     return inv;
@@ -387,7 +387,7 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldDoInitialMergeWithZeroBookmarks) {
   ASSERT_FALSE(processor()->IsTrackingMetadata());
 
   base::HistogramTester histogram_tester;
-  processor()->OnUpdateReceived(CreateModelTypeState(), std::move(updates),
+  processor()->OnUpdateReceived(CreateDataTypeState(), std::move(updates),
                                 /*gc_directive=*/std::nullopt);
   EXPECT_TRUE(processor()->IsTrackingMetadata());
   EXPECT_THAT(bookmark_model()->bookmark_bar_node()->children(), IsEmpty());
@@ -416,7 +416,7 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldDoInitialMergeWithOneBookmark) {
   ASSERT_FALSE(processor()->IsTrackingMetadata());
 
   base::HistogramTester histogram_tester;
-  processor()->OnUpdateReceived(CreateModelTypeState(), std::move(updates),
+  processor()->OnUpdateReceived(CreateDataTypeState(), std::move(updates),
                                 /*gc_directive=*/std::nullopt);
   EXPECT_TRUE(processor()->IsTrackingMetadata());
   EXPECT_THAT(bookmark_model()->bookmark_bar_node()->children(), SizeIs(1));
@@ -453,7 +453,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   EXPECT_CALL(*error_handler(), Run);
 
   base::HistogramTester histogram_tester;
-  processor()->OnUpdateReceived(CreateModelTypeState(), std::move(updates),
+  processor()->OnUpdateReceived(CreateDataTypeState(), std::move(updates),
                                 /*gc_directive=*/std::nullopt);
 
   EXPECT_FALSE(processor()->IsTrackingMetadata());
@@ -495,7 +495,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   EXPECT_CALL(*error_handler(), Run);
 
   base::HistogramTester histogram_tester;
-  processor()->OnUpdateReceived(CreateModelTypeState(), std::move(updates),
+  processor()->OnUpdateReceived(CreateDataTypeState(), std::move(updates),
                                 /*gc_directive=*/std::nullopt);
 
   EXPECT_FALSE(processor()->IsTrackingMetadata());
@@ -534,7 +534,7 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldUpdateModelAfterRemoteCreation) {
   ASSERT_TRUE(bookmark_bar->children().empty());
 
   base::HistogramTester histogram_tester;
-  processor()->OnUpdateReceived(CreateModelTypeState(), std::move(updates),
+  processor()->OnUpdateReceived(CreateDataTypeState(), std::move(updates),
                                 /*gc_directive=*/std::nullopt);
 
   ASSERT_THAT(bookmark_bar->children().front().get(), NotNull());
@@ -576,7 +576,7 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldUpdateModelAfterRemoteUpdate) {
       kRandomPosition, /*response_version=*/1, bookmark_node->uuid()));
 
   base::HistogramTester histogram_tester;
-  processor()->OnUpdateReceived(CreateModelTypeState(), std::move(updates),
+  processor()->OnUpdateReceived(CreateDataTypeState(), std::move(updates),
                                 /*gc_directive=*/std::nullopt);
 
   // Check if the bookmark has been updated properly.
@@ -614,7 +614,7 @@ TEST_F(
   updates[0].response_version++;
 
   EXPECT_CALL(*schedule_save_closure(), Run());
-  processor()->OnUpdateReceived(CreateModelTypeState(), std::move(updates),
+  processor()->OnUpdateReceived(CreateDataTypeState(), std::move(updates),
                                 /*gc_directive=*/std::nullopt);
 }
 
@@ -700,8 +700,8 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldDecodeEmptyMetadata) {
 TEST_F(BookmarkDataTypeProcessorTest,
        ShouldIgnoreNonEmptyMetadataWhileSyncNotDone) {
   sync_pb::BookmarkModelMetadata model_metadata;
-  model_metadata.mutable_model_type_state()->set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
+  model_metadata.mutable_data_type_state()->set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
   // Add entries to the metadata.
   sync_pb::BookmarkMetadata* bookmark_metadata =
       model_metadata.add_bookmarks_metadata();
@@ -729,8 +729,8 @@ TEST_F(BookmarkDataTypeProcessorTest,
 TEST_F(BookmarkDataTypeProcessorTest,
        ShouldIgnoreMetadataNotMatchingTheModel) {
   sync_pb::BookmarkModelMetadata model_metadata;
-  model_metadata.mutable_model_type_state()->set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  model_metadata.mutable_data_type_state()->set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   // Add entries for only the bookmark bar. However, the TestBookmarkClient will
   // create all the 3 permanent nodes.
   *model_metadata.add_bookmarks_metadata() =
@@ -768,44 +768,44 @@ TEST_F(BookmarkDataTypeProcessorTest,
 // updated upon handling remote updates by assigning a new encryption
 // key name.
 TEST_F(BookmarkDataTypeProcessorTest,
-       ShouldUpdateModelTypeStateUponHandlingRemoteUpdates) {
+       ShouldUpdateDataTypeStateUponHandlingRemoteUpdates) {
   // Initialize the process to make sure the tracker has been created.
   SimulateModelReadyToSyncWithInitialSyncDone();
   SimulateOnSyncStarting();
   const SyncedBookmarkTracker* tracker = processor()->GetTrackerForTest();
   // The encryption key name should be empty.
-  ASSERT_TRUE(tracker->model_type_state().encryption_key_name().empty());
+  ASSERT_TRUE(tracker->data_type_state().encryption_key_name().empty());
 
   // Build a data type state with an encryption key name.
   const std::string kEncryptionKeyName = "new_encryption_key_name";
-  sync_pb::ModelTypeState model_type_state(CreateModelTypeState());
-  model_type_state.set_encryption_key_name(kEncryptionKeyName);
+  sync_pb::DataTypeState data_type_state(CreateDataTypeState());
+  data_type_state.set_encryption_key_name(kEncryptionKeyName);
 
   // Push empty updates list to the processor together with the updated model
   // type state.
   syncer::UpdateResponseDataList empty_updates_list;
-  processor()->OnUpdateReceived(model_type_state, std::move(empty_updates_list),
+  processor()->OnUpdateReceived(data_type_state, std::move(empty_updates_list),
                                 /*gc_directive=*/std::nullopt);
 
   // The data type state inside the tracker should have been updated, and
   // carries the new encryption key name.
-  EXPECT_THAT(tracker->model_type_state().encryption_key_name(),
+  EXPECT_THAT(tracker->data_type_state().encryption_key_name(),
               Eq(kEncryptionKeyName));
 }
 
 // Verifies that the data type state stored in the tracker gets
 // updated upon handling remote updates by replacing new pending invalidations.
 TEST_F(BookmarkDataTypeProcessorTest,
-       ShouldUpdateModelTypeStateUponHandlingInvalidations) {
+       ShouldUpdateDataTypeStateUponHandlingInvalidations) {
   // Initialize the process to make sure the tracker has been created.
   SimulateModelReadyToSyncWithInitialSyncDone();
   SimulateOnSyncStarting();
   const SyncedBookmarkTracker* tracker = processor()->GetTrackerForTest();
 
   // Build invalidations.
-  sync_pb::ModelTypeState::Invalidation inv_1 =
+  sync_pb::DataTypeState::Invalidation inv_1 =
       BuildInvalidation(1, "bm_hint_1");
-  sync_pb::ModelTypeState::Invalidation inv_2 =
+  sync_pb::DataTypeState::Invalidation inv_2 =
       BuildInvalidation(2, "bm_hint_2");
   EXPECT_CALL(*schedule_save_closure(), Run());
 
@@ -813,15 +813,15 @@ TEST_F(BookmarkDataTypeProcessorTest,
 
   // The data type state inside the tracker should have been updated, and
   // carries the new invalidations.
-  EXPECT_EQ(2, tracker->model_type_state().invalidations_size());
+  EXPECT_EQ(2, tracker->data_type_state().invalidations_size());
 
-  EXPECT_EQ(inv_1.hint(), tracker->model_type_state().invalidations(0).hint());
+  EXPECT_EQ(inv_1.hint(), tracker->data_type_state().invalidations(0).hint());
   EXPECT_EQ(inv_1.version(),
-            tracker->model_type_state().invalidations(0).version());
+            tracker->data_type_state().invalidations(0).version());
 
-  EXPECT_EQ(inv_2.hint(), tracker->model_type_state().invalidations(1).hint());
+  EXPECT_EQ(inv_2.hint(), tracker->data_type_state().invalidations(1).hint());
   EXPECT_EQ(inv_2.version(),
-            tracker->model_type_state().invalidations(1).version());
+            tracker->data_type_state().invalidations(1).version());
 }
 
 // This tests that when the encryption key changes, but the received entities
@@ -835,12 +835,12 @@ TEST_F(BookmarkDataTypeProcessorTest,
   SimulateConnectSync();
   const SyncedBookmarkTracker* tracker = processor()->GetTrackerForTest();
   // The encryption key name should be empty.
-  ASSERT_TRUE(tracker->model_type_state().encryption_key_name().empty());
+  ASSERT_TRUE(tracker->data_type_state().encryption_key_name().empty());
 
   // Build a data type state with an encryption key name.
   const std::string kEncryptionKeyName = "new_encryption_key_name";
-  sync_pb::ModelTypeState model_type_state(CreateModelTypeState());
-  model_type_state.set_encryption_key_name(kEncryptionKeyName);
+  sync_pb::DataTypeState data_type_state(CreateDataTypeState());
+  data_type_state.set_encryption_key_name(kEncryptionKeyName);
 
   // Push an update that is encrypted with the new encryption key.
   const std::string kNodeId = "node_id";
@@ -855,7 +855,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   EXPECT_CALL(*mock_commit_queue(), NudgeForCommit()).Times(0);
   syncer::UpdateResponseDataList updates;
   updates.push_back(std::move(response_data));
-  processor()->OnUpdateReceived(model_type_state, std::move(updates),
+  processor()->OnUpdateReceived(data_type_state, std::move(updates),
                                 /*gc_directive=*/std::nullopt);
 
   // The bookmarks shouldn't be marked for committing.
@@ -1049,7 +1049,7 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
 
   // Synchronize with the server and get any updates.
   EXPECT_CALL(*mock_commit_queue(), NudgeForCommit());
-  processor()->OnUpdateReceived(CreateModelTypeState(),
+  processor()->OnUpdateReceived(CreateDataTypeState(),
                                 syncer::UpdateResponseDataList(),
                                 /*gc_directive=*/std::nullopt);
 
@@ -1288,7 +1288,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   ASSERT_TRUE(processor()->IsConnectedForTest());
 
   ASSERT_FALSE(error_reported);
-  processor()->OnUpdateReceived(CreateModelTypeState(), std::move(updates),
+  processor()->OnUpdateReceived(CreateDataTypeState(), std::move(updates),
                                 /*gc_directive=*/std::nullopt);
   EXPECT_TRUE(error_reported);
   EXPECT_FALSE(processor()->IsConnectedForTest());
@@ -1336,7 +1336,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   ASSERT_TRUE(processor()->IsConnectedForTest());
 
   ASSERT_FALSE(error_reported);
-  processor()->OnUpdateReceived(CreateModelTypeState(), std::move(updates),
+  processor()->OnUpdateReceived(CreateDataTypeState(), std::move(updates),
                                 /*gc_directive=*/std::nullopt);
   EXPECT_TRUE(error_reported);
   EXPECT_FALSE(processor()->IsConnectedForTest());
@@ -1395,7 +1395,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   ASSERT_TRUE(processor()->IsConnectedForTest());
 
   ASSERT_FALSE(error_reported);
-  processor()->OnUpdateReceived(CreateModelTypeState(), std::move(updates),
+  processor()->OnUpdateReceived(CreateDataTypeState(), std::move(updates),
                                 /*gc_directive=*/std::nullopt);
   EXPECT_TRUE(error_reported);
   EXPECT_FALSE(processor()->IsConnectedForTest());
@@ -1441,7 +1441,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   ASSERT_FALSE(processor()->IsTrackingMetadata());
   ASSERT_TRUE(processor()->IsConnectedForTest());
 
-  processor()->OnUpdateReceived(CreateModelTypeState(), std::move(updates),
+  processor()->OnUpdateReceived(CreateDataTypeState(), std::move(updates),
                                 /*gc_directive=*/std::nullopt);
 
   ASSERT_FALSE(processor()->IsTrackingMetadata());
@@ -1499,7 +1499,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   ASSERT_FALSE(processor()->IsTrackingMetadata());
 
   ASSERT_FALSE(error_reported);
-  processor()->OnUpdateReceived(CreateModelTypeState(), std::move(updates),
+  processor()->OnUpdateReceived(CreateDataTypeState(), std::move(updates),
                                 /*gc_directive=*/std::nullopt);
   ASSERT_TRUE(error_reported);
   ASSERT_FALSE(processor()->IsTrackingMetadata());
@@ -1573,7 +1573,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   ASSERT_FALSE(processor()->IsTrackingMetadata());
 
   ASSERT_FALSE(error_reported);
-  processor()->OnUpdateReceived(CreateModelTypeState(), std::move(updates),
+  processor()->OnUpdateReceived(CreateDataTypeState(), std::move(updates),
                                 /*gc_directive=*/std::nullopt);
   ASSERT_TRUE(error_reported);
 
@@ -1739,7 +1739,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   // If the process is repeated, the result should be the same (bookmarks
   // deleted once again). This requires doing initial sync again.
   SimulateOnSyncStarting();
-  processor()->OnUpdateReceived(CreateModelTypeState(),
+  processor()->OnUpdateReceived(CreateDataTypeState(),
                                 CreateUpdateResponseDataListForPermanentNodes(),
                                 /*gc_directive=*/std::nullopt);
   bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
@@ -1837,7 +1837,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
   // shouldn't be cleared if sync was initially off (upon startup), then turned
   // on, then turned off again.
   SimulateOnSyncStarting();
-  processor()->OnUpdateReceived(CreateModelTypeState(),
+  processor()->OnUpdateReceived(CreateDataTypeState(),
                                 CreateUpdateResponseDataListForPermanentNodes(),
                                 /*gc_directive=*/std::nullopt);
   EXPECT_TRUE(processor()->IsTrackingMetadata());

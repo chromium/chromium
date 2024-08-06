@@ -1689,8 +1689,8 @@ TEST_F(LoginDatabaseSyncMetadataTest, NoMetadata) {
       db().password_sync_metadata_store().GetAllSyncMetadata(SyncModelType());
   ASSERT_THAT(metadata_batch, testing::NotNull());
   EXPECT_EQ(0u, metadata_batch->TakeAllMetadata().size());
-  EXPECT_EQ(sync_pb::ModelTypeState().SerializeAsString(),
-            metadata_batch->GetModelTypeState().SerializeAsString());
+  EXPECT_EQ(sync_pb::DataTypeState().SerializeAsString(),
+            metadata_batch->GetDataTypeState().SerializeAsString());
 }
 
 TEST_F(LoginDatabaseSyncMetadataTest, GetAllSyncMetadata) {
@@ -1705,12 +1705,12 @@ TEST_F(LoginDatabaseSyncMetadataTest, GetAllSyncMetadata) {
   EXPECT_TRUE(password_sync_metadata_store.UpdateEntityMetadata(
       SyncModelType(), kStorageKey1, metadata));
 
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
-  EXPECT_TRUE(password_sync_metadata_store.UpdateModelTypeState(
-      SyncModelType(), model_type_state));
+  EXPECT_TRUE(password_sync_metadata_store.UpdateDataTypeState(
+      SyncModelType(), data_type_state));
 
   metadata.set_sequence_number(2);
   EXPECT_TRUE(password_sync_metadata_store.UpdateEntityMetadata(
@@ -1720,8 +1720,8 @@ TEST_F(LoginDatabaseSyncMetadataTest, GetAllSyncMetadata) {
       password_sync_metadata_store.GetAllSyncMetadata(SyncModelType());
   ASSERT_THAT(metadata_batch, testing::NotNull());
 
-  EXPECT_EQ(metadata_batch->GetModelTypeState().initial_sync_state(),
-            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  EXPECT_EQ(metadata_batch->GetDataTypeState().initial_sync_state(),
+            sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   syncer::EntityMetadataMap metadata_records =
       metadata_batch->TakeAllMetadata();
@@ -1731,17 +1731,17 @@ TEST_F(LoginDatabaseSyncMetadataTest, GetAllSyncMetadata) {
   EXPECT_EQ(metadata_records[kStorageKey2]->sequence_number(), 2);
 
   // Now check that a model type state update replaces the old value
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
-  EXPECT_TRUE(password_sync_metadata_store.UpdateModelTypeState(
-      SyncModelType(), model_type_state));
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
+  EXPECT_TRUE(password_sync_metadata_store.UpdateDataTypeState(
+      SyncModelType(), data_type_state));
 
   metadata_batch =
       password_sync_metadata_store.GetAllSyncMetadata(SyncModelType());
   ASSERT_THAT(metadata_batch, testing::NotNull());
   EXPECT_EQ(
-      metadata_batch->GetModelTypeState().initial_sync_state(),
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
+      metadata_batch->GetDataTypeState().initial_sync_state(),
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
 }
 
 TEST_F(LoginDatabaseSyncMetadataTest, GetSyncEntityMetadataForStorageKey) {
@@ -1787,12 +1787,12 @@ TEST_F(LoginDatabaseSyncMetadataTest, DeleteAllSyncMetadata) {
   EXPECT_TRUE(password_sync_metadata_store.UpdateEntityMetadata(
       SyncModelType(), kStorageKey1, metadata));
 
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
-  EXPECT_TRUE(password_sync_metadata_store.UpdateModelTypeState(
-      SyncModelType(), model_type_state));
+  EXPECT_TRUE(password_sync_metadata_store.UpdateDataTypeState(
+      SyncModelType(), data_type_state));
 
   metadata.set_sequence_number(2);
   EXPECT_TRUE(password_sync_metadata_store.UpdateEntityMetadata(
@@ -1816,18 +1816,18 @@ TEST_F(LoginDatabaseSyncMetadataTest, WriteThenDeleteSyncMetadata) {
   PasswordStoreSync::MetadataStore& password_sync_metadata_store =
       db().password_sync_metadata_store();
   const std::string kStorageKey = "1";
-  sync_pb::ModelTypeState model_type_state;
+  sync_pb::DataTypeState data_type_state;
 
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   metadata.set_client_tag_hash("client_hash");
 
   // Write the data into the store.
   EXPECT_TRUE(password_sync_metadata_store.UpdateEntityMetadata(
       SyncModelType(), kStorageKey, metadata));
-  EXPECT_TRUE(password_sync_metadata_store.UpdateModelTypeState(
-      SyncModelType(), model_type_state));
+  EXPECT_TRUE(password_sync_metadata_store.UpdateDataTypeState(
+      SyncModelType(), data_type_state));
   // Delete the data we just wrote.
   EXPECT_TRUE(password_sync_metadata_store.ClearEntityMetadata(SyncModelType(),
                                                                kStorageKey));
@@ -1842,14 +1842,13 @@ TEST_F(LoginDatabaseSyncMetadataTest, WriteThenDeleteSyncMetadata) {
   EXPECT_EQ(metadata_records.size(), 0u);
 
   // Now delete the model type state.
-  EXPECT_TRUE(
-      password_sync_metadata_store.ClearModelTypeState(SyncModelType()));
+  EXPECT_TRUE(password_sync_metadata_store.ClearDataTypeState(SyncModelType()));
   metadata_batch =
       password_sync_metadata_store.GetAllSyncMetadata(SyncModelType());
   ASSERT_THAT(metadata_batch, testing::NotNull());
 
-  EXPECT_EQ(sync_pb::ModelTypeState().SerializeAsString(),
-            metadata_batch->GetModelTypeState().SerializeAsString());
+  EXPECT_EQ(sync_pb::DataTypeState().SerializeAsString(),
+            metadata_batch->GetDataTypeState().SerializeAsString());
 }
 
 TEST_F(LoginDatabaseSyncMetadataTest, HasUnsyncedPasswordDeletions) {

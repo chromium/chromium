@@ -32,8 +32,8 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/mock_commit_queue.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_matchers.h"
@@ -45,8 +45,8 @@ using base::ScopedTempDir;
 using base::Time;
 using base::UTF8ToUTF16;
 using sync_pb::AutofillSpecifics;
+using sync_pb::DataTypeState;
 using sync_pb::EntityMetadata;
-using sync_pb::ModelTypeState;
 using syncer::DataBatch;
 using syncer::DataTypeLocalChangeProcessor;
 using syncer::DataTypeSyncBridge;
@@ -191,9 +191,9 @@ class AutocompleteSyncBridgeTest : public testing::Test {
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
 
     // Initialize the processor with the initial sync already done.
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     syncer::UpdateResponseDataList initial_updates;
     for (const AutofillSpecifics& specifics : remote_data) {
       initial_updates.push_back(SpecificsToUpdateResponse(specifics));
@@ -677,11 +677,11 @@ TEST_F(AutocompleteSyncBridgeTest, LocalEntryExpired) {
 }
 
 TEST_F(AutocompleteSyncBridgeTest, LoadMetadataCalled) {
-  ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-  EXPECT_TRUE(sync_metadata_table()->UpdateModelTypeState(syncer::AUTOFILL,
-                                                          model_type_state));
+  DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  EXPECT_TRUE(sync_metadata_table()->UpdateDataTypeState(syncer::AUTOFILL,
+                                                         data_type_state));
   EXPECT_TRUE(sync_metadata_table()->UpdateEntityMetadata(
       syncer::AUTOFILL, "key", EntityMetadata()));
 

@@ -14,7 +14,6 @@
 #include "chromeos/ash/components/sync_wifi/synced_network_metrics_logger.h"
 #include "chromeos/ash/components/sync_wifi/synced_network_updater.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace ash::timer_factory {

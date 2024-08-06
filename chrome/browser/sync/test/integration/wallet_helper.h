@@ -29,9 +29,8 @@ struct ServerCvc;
 }  // namespace autofill
 
 namespace sync_pb {
+class DataTypeState;
 class SyncEntity;
-class DataType;
-class ModelTypeState;
 }  // namespace sync_pb
 
 namespace wallet_helper {
@@ -81,8 +80,8 @@ void UpdateServerCardMetadata(int profile,
 std::vector<autofill::PaymentsMetadata> GetServerCardsMetadata(int profile);
 
 // Function supports AUTOFILL_WALLET_DATA and AUTOFILL_WALLET_OFFER.
-sync_pb::ModelTypeState GetWalletModelTypeState(syncer::DataType type,
-                                                int profile);
+sync_pb::DataTypeState GetWalletDataTypeState(syncer::DataType type,
+                                              int profile);
 
 sync_pb::SyncEntity CreateDefaultSyncWalletCard();
 

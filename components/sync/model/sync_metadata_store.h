@@ -10,8 +10,8 @@
 #include "components/sync/base/model_type.h"
 
 namespace sync_pb {
+class DataTypeState;
 class EntityMetadata;
-class ModelTypeState;
 }  // namespace sync_pb
 
 namespace syncer {
@@ -45,15 +45,15 @@ class SyncMetadataStore {
   virtual bool ClearEntityMetadata(syncer::ModelType model_type,
                                    const std::string& storage_key) = 0;
 
-  // Updates the per-type ModelTypeState state for the |model_type|.
+  // Updates the per-type DataTypeState state for the |model_type|.
   // Returns true on success.
-  virtual bool UpdateModelTypeState(
+  virtual bool UpdateDataTypeState(
       syncer::ModelType model_type,
-      const sync_pb::ModelTypeState& model_type_state) = 0;
+      const sync_pb::DataTypeState& data_type_state) = 0;
 
-  // Clears the per-type ModelTypeState for |model_type|.
+  // Clears the per-type DataTypeState for |model_type|.
   // Returns true on success.
-  virtual bool ClearModelTypeState(syncer::ModelType model_type) = 0;
+  virtual bool ClearDataTypeState(syncer::ModelType model_type) = 0;
 };
 
 }  // namespace syncer

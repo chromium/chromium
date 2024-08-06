@@ -18,8 +18,8 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/model_error.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,8 +34,8 @@ using testing::Not;
 using testing::Pair;
 using testing::SizeIs;
 
-sync_pb::ModelTypeState CreateModelTypeState(const std::string& value) {
-  sync_pb::ModelTypeState state;
+sync_pb::DataTypeState CreateDataTypeState(const std::string& value) {
+  sync_pb::DataTypeState state;
   state.set_encryption_key_name(value);
   return state;
 }
@@ -110,11 +110,11 @@ void WriteMetadata(DataTypeStore* store,
   ASSERT_FALSE(error) << error->ToString();
 }
 
-void WriteModelTypeState(DataTypeStore* store,
-                         const sync_pb::ModelTypeState& state) {
+void WriteDataTypeState(DataTypeStore* store,
+                        const sync_pb::DataTypeState& state) {
   std::unique_ptr<DataTypeStore::WriteBatch> write_batch =
       store->CreateWriteBatch();
-  write_batch->GetMetadataChangeList()->UpdateModelTypeState(state);
+  write_batch->GetMetadataChangeList()->UpdateDataTypeState(state);
 
   std::optional<ModelError> error;
   store->CommitWriteBatch(std::move(write_batch),
@@ -139,10 +139,10 @@ void ReadStoreContents(DataTypeStore* store,
 
 void VerifyMetadata(
     const std::unique_ptr<MetadataBatch>& batch,
-    const sync_pb::ModelTypeState& state,
+    const sync_pb::DataTypeState& state,
     std::map<std::string, sync_pb::EntityMetadata> expected_metadata) {
   EXPECT_EQ(state.SerializeAsString(),
-            batch->GetModelTypeState().SerializeAsString());
+            batch->GetDataTypeState().SerializeAsString());
   EntityMetadataMap actual_metadata = batch->TakeAllMetadata();
   for (const auto& [storage_key, metadata] : expected_metadata) {
     auto it = actual_metadata.find(storage_key);
@@ -180,7 +180,7 @@ class DataTypeStoreImplTest : public testing::TestWithParam<StorageType> {
     WriteData(store(), "id1", "data1");
     WriteMetadata(store(), "id1", CreateEntityMetadata("metadata1"));
     WriteData(store(), "id2", "data2");
-    WriteModelTypeState(store(), CreateModelTypeState("type_state"));
+    WriteDataTypeState(store(), CreateDataTypeState("type_state"));
   }
 
  private:
@@ -199,7 +199,7 @@ TEST_P(DataTypeStoreImplTest, ReadEmptyStore) {
   std::unique_ptr<MetadataBatch> metadata_batch;
   ReadStoreContents(store(), &data_records, &metadata_batch);
   ASSERT_TRUE(data_records->empty());
-  VerifyMetadata(std::move(metadata_batch), sync_pb::ModelTypeState(),
+  VerifyMetadata(std::move(metadata_batch), sync_pb::DataTypeState(),
                  std::map<std::string, sync_pb::EntityMetadata>());
 }
 
@@ -213,7 +213,7 @@ TEST_P(DataTypeStoreImplTest, WriteThenRead) {
   ASSERT_THAT(*data_records,
               testing::UnorderedElementsAre(RecordMatches("id1", "data1"),
                                             RecordMatches("id2", "data2")));
-  VerifyMetadata(std::move(metadata_batch), CreateModelTypeState("type_state"),
+  VerifyMetadata(std::move(metadata_batch), CreateDataTypeState("type_state"),
                  {{"id1", CreateEntityMetadata("metadata1")}});
 }
 
@@ -285,16 +285,16 @@ TEST_P(DataTypeStoreImplTest, WriteThenDeleteAll) {
   }
 }
 
-// Test that if ModelTypeState is not set then ReadAllMetadata still succeeds
+// Test that if DataTypeState is not set then ReadAllMetadata still succeeds
 // and returns entry metadata records.
-TEST_P(DataTypeStoreImplTest, MissingModelTypeState) {
+TEST_P(DataTypeStoreImplTest, MissingDataTypeState) {
   WriteTestData();
 
   std::optional<ModelError> error;
 
   std::unique_ptr<DataTypeStore::WriteBatch> write_batch =
       store()->CreateWriteBatch();
-  write_batch->GetMetadataChangeList()->ClearModelTypeState();
+  write_batch->GetMetadataChangeList()->ClearDataTypeState();
   store()->CommitWriteBatch(std::move(write_batch),
                             base::BindOnce(&CaptureError, &error));
   base::RunLoop().RunUntilIdle();
@@ -305,7 +305,7 @@ TEST_P(DataTypeStoreImplTest, MissingModelTypeState) {
       base::BindOnce(&CaptureErrorAndMetadataBatch, &error, &metadata_batch));
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(error) << error->ToString();
-  VerifyMetadata(std::move(metadata_batch), sync_pb::ModelTypeState(),
+  VerifyMetadata(std::move(metadata_batch), sync_pb::DataTypeState(),
                  {{"id1", CreateEntityMetadata("metadata1")}});
 }
 
@@ -344,7 +344,7 @@ TEST_P(DataTypeStoreImplTest, ReadAllDataAndMetadata) {
   EXPECT_EQ(result.Get<0>(), std::nullopt);
   EXPECT_THAT(result.Get<1>(), testing::Pointee(testing::UnorderedElementsAre(
                                    RecordMatches("id", "data"))));
-  VerifyMetadata(result.Get<2>(), sync_pb::ModelTypeState(),
+  VerifyMetadata(result.Get<2>(), sync_pb::DataTypeState(),
                  {{"id", CreateEntityMetadata("metadata")}});
 }
 
@@ -360,16 +360,16 @@ TEST(DataTypeStoreImplWithTwoStoreTest, TwoStoresWithSharedBackend) {
 
   const sync_pb::EntityMetadata metadata1 = CreateEntityMetadata("metadata1");
   const sync_pb::EntityMetadata metadata2 = CreateEntityMetadata("metadata2");
-  const sync_pb::ModelTypeState state1 = CreateModelTypeState("state1");
-  const sync_pb::ModelTypeState state2 = CreateModelTypeState("state2");
+  const sync_pb::DataTypeState state1 = CreateDataTypeState("state1");
+  const sync_pb::DataTypeState state2 = CreateDataTypeState("state2");
 
   WriteData(store_1.get(), "key", "data1");
   WriteMetadata(store_1.get(), "key", metadata1);
-  WriteModelTypeState(store_1.get(), state1);
+  WriteDataTypeState(store_1.get(), state1);
 
   WriteData(store_2.get(), "key", "data2");
   WriteMetadata(store_2.get(), "key", metadata2);
-  WriteModelTypeState(store_2.get(), state2);
+  WriteDataTypeState(store_2.get(), state2);
 
   std::unique_ptr<DataTypeStore::RecordList> data_records;
   std::unique_ptr<MetadataBatch> metadata_batch;
@@ -444,16 +444,16 @@ TEST(DataTypeStoreImplWithTwoStoreTest,
 
   const sync_pb::EntityMetadata metadata1 = CreateEntityMetadata("metadata1");
   const sync_pb::EntityMetadata metadata2 = CreateEntityMetadata("metadata2");
-  const sync_pb::ModelTypeState state1 = CreateModelTypeState("state1");
-  const sync_pb::ModelTypeState state2 = CreateModelTypeState("state2");
+  const sync_pb::DataTypeState state1 = CreateDataTypeState("state1");
+  const sync_pb::DataTypeState state2 = CreateDataTypeState("state2");
 
   WriteData(store_1.get(), "key", "data1");
   WriteMetadata(store_1.get(), "key", metadata1);
-  WriteModelTypeState(store_1.get(), state1);
+  WriteDataTypeState(store_1.get(), state1);
 
   WriteData(store_2.get(), "key", "data2");
   WriteMetadata(store_2.get(), "key", metadata2);
-  WriteModelTypeState(store_2.get(), state2);
+  WriteDataTypeState(store_2.get(), state2);
 
   {
     std::unique_ptr<DataTypeStore::RecordList> data_records;
@@ -493,16 +493,16 @@ TEST(DataTypeStoreImplWithTwoStoreTest,
 
   const sync_pb::EntityMetadata metadata1 = CreateEntityMetadata("metadata1");
   const sync_pb::EntityMetadata metadata2 = CreateEntityMetadata("metadata2");
-  const sync_pb::ModelTypeState state1 = CreateModelTypeState("state1");
-  const sync_pb::ModelTypeState state2 = CreateModelTypeState("state2");
+  const sync_pb::DataTypeState state1 = CreateDataTypeState("state1");
+  const sync_pb::DataTypeState state2 = CreateDataTypeState("state2");
 
   WriteData(store_1.get(), "key", "data1");
   WriteMetadata(store_1.get(), "key", metadata1);
-  WriteModelTypeState(store_1.get(), state1);
+  WriteDataTypeState(store_1.get(), state1);
 
   WriteData(store_2.get(), "key", "data2");
   WriteMetadata(store_2.get(), "key", metadata2);
-  WriteModelTypeState(store_2.get(), state2);
+  WriteDataTypeState(store_2.get(), state2);
 
   {
     std::unique_ptr<DataTypeStore::RecordList> data_records;

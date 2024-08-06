@@ -38,7 +38,7 @@ namespace plus_addresses {
 // be added in the future. For this reason, tables are keyed by model type.
 // plus_address_sync_model_type_state
 //   model_type         int identifying the ModelType. Primary key.
-//   value              A serialized ModelTypeState record.
+//   value              A serialized DataTypeState record.
 //
 // plus_address_sync_entity_metadata
 //   model_type         int identifying the ModelType.
@@ -88,10 +88,10 @@ class PlusAddressTable : public WebDatabaseTable,
                             const sync_pb::EntityMetadata& metadata) override;
   bool ClearEntityMetadata(syncer::ModelType model_type,
                            const std::string& storage_key) override;
-  bool UpdateModelTypeState(
+  bool UpdateDataTypeState(
       syncer::ModelType model_type,
-      const sync_pb::ModelTypeState& model_type_state) override;
-  bool ClearModelTypeState(syncer::ModelType model_type) override;
+      const sync_pb::DataTypeState& data_type_state) override;
+  bool ClearDataTypeState(syncer::ModelType model_type) override;
 
   // Populates `metadata_batch` with all stored metadata for the `model_type`.
   // Returns true if all the reads succeeded.
@@ -104,7 +104,7 @@ class PlusAddressTable : public WebDatabaseTable,
   // Creates the table of the given name in the newest version of the schema,
   // unless it already exists. Returns true if the table exists now.
   bool CreatePlusAddressesTable();
-  bool CreateSyncModelTypeStateTable();
+  bool CreateSyncDataTypeStateTable();
   bool CreateSyncEntityMetadataTable();
 
   // Migration logic to a specific version. Returns true if the migration

@@ -35,9 +35,9 @@
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
+#include "components/sync/protocol/data_type_state.pb.h"
+#include "components/sync/protocol/data_type_state_helper.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/protocol/model_type_state_helper.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/sync_device_info/device_info_proto_enum_util.h"
@@ -786,18 +786,18 @@ void DeviceInfoSyncBridge::OnReadAllMetadata(
   // In the regular case for sync being disabled, wait for MergeFullSyncData()
   // before initializing the LocalDeviceInfoProvider.
   if (!syncer::IsInitialSyncDone(
-          metadata_batch->GetModelTypeState().initial_sync_state()) &&
+          metadata_batch->GetDataTypeState().initial_sync_state()) &&
       metadata_batch->GetAllMetadata().empty() && all_data_.empty()) {
     change_processor()->ModelReadyToSync(std::move(metadata_batch));
     return;
   }
 
   const std::string local_cache_guid_in_metadata =
-      metadata_batch->GetModelTypeState().cache_guid();
+      metadata_batch->GetDataTypeState().cache_guid();
 
   // Protect against corrupt local data.
   if (!syncer::IsInitialSyncDone(
-          metadata_batch->GetModelTypeState().initial_sync_state()) ||
+          metadata_batch->GetDataTypeState().initial_sync_state()) ||
       local_cache_guid_in_metadata.empty() ||
       all_data_.count(local_cache_guid_in_metadata) == 0) {
     // Data or metadata is off. Just throw everything away and start clean.
