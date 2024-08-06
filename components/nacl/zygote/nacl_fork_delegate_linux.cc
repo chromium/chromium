@@ -17,6 +17,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/cpu.h"
@@ -300,7 +301,7 @@ void NaClForkDelegate::Init(const int sandboxdesc,
   if (IGNORE_EINTR(close(fds[1])) != 0)
     LOG(ERROR) << "close(fds[1]) failed";
   if (status_ == kNaClHelperUnused) {
-    const ssize_t kExpectedLength = strlen(kNaClHelperStartupAck);
+    constexpr ssize_t kExpectedLength = sizeof(kNaClHelperStartupAck) - 1;
     char buf[kExpectedLength];
 
     // Wait for ack from nacl_helper, indicating it is ready to help
