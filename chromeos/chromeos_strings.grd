@@ -338,7 +338,6 @@
       </message>
 
       <!-- Editor Menu -->
-      <!-- TODO(b/286268215): Finalize these strings. -->
       <message name="IDS_EDITOR_MENU_PROMO_CARD_TITLE" desc="Title text in the dialog that is shown to introduce the Editor Menu feature.">
         Write faster and with more confidence
       </message>
@@ -374,6 +373,12 @@
       </message>
       <message name="IDS_EDITOR_MENU_EXPERIMENT_BADGE" desc="Label on the badge shown next to the Editor Menu title to indicate that it is an experimental feature.">
         Experiment
+      </message>
+      <message name="IDS_EDITOR_ANNOUNCEMENT_TEXT_FOR_FEEDBACK" desc="The announcement made when users submitted a feedback for a result received from Editor.">
+        Feedback submitted
+      </message>
+      <message name="IDS_EDITOR_ANNOUNCEMENT_TEXT_FOR_INSERTION" desc="The announcement made when users insert the text suggestion or replace the current selected text with the text suggestion from Editor.">
+        Replacing selected text with suggestion
       </message>
 
       <!-- Mahi -->

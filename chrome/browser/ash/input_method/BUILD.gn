@@ -434,6 +434,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "editor_system_actuator_browsertest.cc",
     "input_method_engine_browsertests.cc",
     "native_input_method_engine_with_ime_service_browsertest.cc",
     "native_input_method_engine_without_ime_service_browsertest.cc",
@@ -455,6 +456,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//build:branding_buildflags",
     "//chrome/browser",
+    "//chrome/browser/ash/accessibility:test_support",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/input_method:test_support",
     "//chrome/browser/ash/input_method/ui",
