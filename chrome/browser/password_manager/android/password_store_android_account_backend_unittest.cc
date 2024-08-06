@@ -170,13 +170,9 @@ class PasswordStoreAndroidAccountBackendTest : public testing::Test {
     prefs_.registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
     prefs_.registry()->RegisterIntegerPref(
-        prefs::kUnenrolledFromGoogleMobileServicesWithErrorListVersion, 0);
-    prefs_.registry()->RegisterIntegerPref(
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
     prefs_.registry()->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt,
                                           20.22);
-    prefs_.registry()->RegisterBooleanPref(prefs::kUserReceivedGMSCoreError,
-                                           false);
     prefs_.registry()->RegisterIntegerPref(
         prefs::kPasswordsUseUPMLocalAndSeparateStores,
         static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOff));

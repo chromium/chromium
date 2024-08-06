@@ -77,9 +77,6 @@ class PasswordStoreAndroidLocalBackendTest : public testing::Test {
   PasswordStoreAndroidLocalBackendTest() {
     prefs_.registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
-    prefs_.registry()->RegisterBooleanPref(prefs::kUserReceivedGMSCoreError,
-                                           false);
-
     ResetBackend();
   }
 

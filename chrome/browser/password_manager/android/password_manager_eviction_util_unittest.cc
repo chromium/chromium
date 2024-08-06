@@ -32,11 +32,6 @@ PasswordManagerEvictionUtilTest::PasswordManagerEvictionUtilTest() {
   test_pref_service_.registry()->RegisterBooleanPref(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
       false);
-  test_pref_service_.registry()->RegisterIntegerPref(
-      password_manager::prefs::kTimesReenrolledToGoogleMobileServices, 0);
-  test_pref_service_.registry()->RegisterIntegerPref(
-      password_manager::prefs::kTimesAttemptedToReenrollToGoogleMobileServices,
-      0);
 
   test_pref_service_.registry()->RegisterIntegerPref(
       password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,

@@ -1030,9 +1030,20 @@ inline constexpr char kStandaloneWindowMigrationNudgeShown[] =
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-// Deprecated 08/24.
+// All of these were deprecated 08/24.
 constexpr char kObsoleteUnenrolledFromGoogleMobileServicesAfterApiErrorCode[] =
     "unenrolled_from_google_mobile_services_after_api_error_code";
+constexpr char kObsoleteRequiresMigrationAfterSyncStatusChange[] =
+    "requires_migration_after_sync_status_change";
+constexpr char
+    kObsoleteUnenrolledFromGoogleMobileServicesWithErrorListVersion[] =
+        "unenrolled_from_google_mobile_services_with_error_list_version";
+constexpr char kObsoleteTimesReenrolledToGoogleMobileServices[] =
+    "times_reenrolled_to_google_mobile_services";
+constexpr char kObsoleteTimesAttemptedToReenrollToGoogleMobileServices[] =
+    "times_attempted_to_reenroll_to_google_mobile_services";
+constexpr char kObsoleteUserReceivedGMSCoreError[] =
+    "user_received_gmscore_error";
 #endif
 
 // Register local state used only for migration (clearing or moving to a new
@@ -1424,9 +1435,18 @@ void RegisterProfilePrefsForMigration(
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  // Deprecated 08/2024.
+  // All of these were deprecated 08/2024.
   registry->RegisterIntegerPref(
       kObsoleteUnenrolledFromGoogleMobileServicesAfterApiErrorCode, 0);
+  registry->RegisterBooleanPref(kObsoleteRequiresMigrationAfterSyncStatusChange,
+                                false);
+  registry->RegisterIntegerPref(
+      kObsoleteUnenrolledFromGoogleMobileServicesWithErrorListVersion, 0);
+  registry->RegisterIntegerPref(kObsoleteTimesReenrolledToGoogleMobileServices,
+                                0);
+  registry->RegisterIntegerPref(
+      kObsoleteTimesAttemptedToReenrollToGoogleMobileServices, 0);
+  registry->RegisterBooleanPref(kObsoleteUserReceivedGMSCoreError, false);
 #endif
 }
 
@@ -2720,9 +2740,16 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  // Added 08/2024.
+  // All of these were added 08/2024.
   profile_prefs->ClearPref(
       kObsoleteUnenrolledFromGoogleMobileServicesAfterApiErrorCode);
+  profile_prefs->ClearPref(kObsoleteRequiresMigrationAfterSyncStatusChange);
+  profile_prefs->ClearPref(
+      kObsoleteUnenrolledFromGoogleMobileServicesWithErrorListVersion);
+  profile_prefs->ClearPref(kObsoleteTimesReenrolledToGoogleMobileServices);
+  profile_prefs->ClearPref(
+      kObsoleteTimesAttemptedToReenrollToGoogleMobileServices);
+  profile_prefs->ClearPref(kObsoleteUserReceivedGMSCoreError);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

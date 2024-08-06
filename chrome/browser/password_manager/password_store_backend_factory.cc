@@ -100,14 +100,6 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
       "PasswordManager.PasswordStore.WasEnrolledInUPMWhenBackendWasCreated",
       !prefs->GetBoolean(password_manager::prefs::
                              kUnenrolledFromGoogleMobileServicesDueToErrors));
-  base::UmaHistogramCounts100(
-      "PasswordManager.PasswordStore.TimesReenrolledInUPM",
-      prefs->GetInteger(
-          password_manager::prefs::kTimesReenrolledToGoogleMobileServices));
-  base::UmaHistogramCounts100(
-      "PasswordManager.PasswordStore.TimesAttemptedToReenrollInUPM",
-      prefs->GetInteger(password_manager::prefs::
-                            kTimesAttemptedToReenrollToGoogleMobileServices));
   auto useSplitStores =
       static_cast<UseUpmLocalAndSeparateStoresState>(prefs->GetInteger(
           password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores));

@@ -101,10 +101,6 @@ std::string BackendOperationToString(
 void ResetUnenrollmentStatus(PrefService* prefs) {
   prefs->ClearPref(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
-  prefs->SetInteger(
-      prefs::kTimesReenrolledToGoogleMobileServices,
-      prefs->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices) + 1);
-  prefs->SetInteger(prefs::kTimesAttemptedToReenrollToGoogleMobileServices, 0);
 }
 
 bool IsPasswordSyncEnabled(PrefService* pref_service) {
@@ -670,9 +666,6 @@ void BuiltInBackendToAndroidBackendMigrator::MigrationFinished(
   }
 
   migration_in_progress_type_ = MigrationType::kNone;
-  // TODO: b/325423333 - reconsider always setting pref to false without
-  // checking `is_success`.
-  prefs_->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, false);
   TRACE_EVENT_NESTABLE_ASYNC_END0("passwords",
                                   "UnifiedPasswordManagerMigration", this);
 }

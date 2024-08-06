@@ -2694,33 +2694,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.PasswordStore.TimesAttemptedToReenrollInUPM"
-    units="Times" expires_after="2024-09-30">
-  <owner>kazinova@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Recorded on Android when the password store backend is created. This happens
-    on startup and once per profile, only for users in the UPM experiment. Users
-    can be unenrolled from UPM after encountering errors in communication with
-    the backend and reenrolled back if the backend communication is considered
-    reliable again. Records the number of times the user has attempted to
-    automatically reenroll in Google Mobile Services.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.PasswordStore.TimesReenrolledInUPM"
-    units="Times" expires_after="2025-01-05">
-  <owner>kazinova@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Recorded on Android when the password store backend is created. This happens
-    on startup and once per profile, only for users in the UPM experiment. Users
-    can be unenrolled from UPM after encountering errors in communication with
-    the backend and reenrolled back if the backend communication is considered
-    reliable again. Records the number of times the user was reenrolled.
-  </summary>
-</histogram>
-
 <histogram
     name="PasswordManager.PasswordStore.WasEnrolledInUPMWhenBackendWasCreated"
     enum="Boolean" expires_after="2025-01-05">

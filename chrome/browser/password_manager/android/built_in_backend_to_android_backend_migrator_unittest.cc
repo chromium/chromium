@@ -87,16 +87,10 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
                       current_migration_version);
     prefs_.registry()->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt,
                                           0.0);
-    prefs_.registry()->RegisterBooleanPref(
-        prefs::kRequiresMigrationAfterSyncStatusChange, false);
     prefs_.registry()->RegisterStringPref(
         ::prefs::kGoogleServicesLastSyncingUsername, "testaccount@gmail.com");
     prefs_.registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
-    prefs_.registry()->RegisterIntegerPref(
-        prefs::kTimesReenrolledToGoogleMobileServices, 0);
-    prefs_.registry()->RegisterIntegerPref(
-        prefs::kTimesAttemptedToReenrollToGoogleMobileServices, 0);
     prefs_.registry()->RegisterIntegerPref(
         prefs::kPasswordsUseUPMLocalAndSeparateStores,
         static_cast<int>(
@@ -490,7 +484,6 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   Init();
 
   // Simulate sync being recently disabled.
-  prefs()->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, true);
   InitSyncService(/*is_password_sync_enabled=*/false);
 
   PasswordForm form = CreateTestPasswordForm();
@@ -515,8 +508,6 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
-  EXPECT_FALSE(
-      prefs()->GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange));
 }
 
 // Tests that migration removes blocklisted entries with non-empty username or
@@ -596,10 +587,6 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 
   prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
                       true);
-  const int initial_num_reenrollments =
-      prefs()->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices);
-  prefs()->SetInteger(prefs::kTimesAttemptedToReenrollToGoogleMobileServices,
-                      10);
 
   PasswordForm form = CreateTestPasswordForm();
   android_backend().AddLoginAsync(form, base::DoNothing());
@@ -625,12 +612,6 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   // reenrolled into UPM.
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
-  EXPECT_EQ(prefs()->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices),
-            initial_num_reenrollments + 1);
-  EXPECT_EQ(prefs()->GetInteger(
-                prefs::kTimesAttemptedToReenrollToGoogleMobileServices),
-            0);
-
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
 }
@@ -1070,8 +1051,6 @@ struct MigrationParamForMetrics {
   bool migration_ran_before;
   // Whether password sync is enabled in settings.
   bool is_sync_enabled;
-  // Whether migration is required after a change in sync status.
-  bool migration_required_after_sync_state_change;
   // Whether migration should complete successfully or not.
   bool is_successful_migration;
   // Expected migration type for metrics recording.
@@ -1104,16 +1083,10 @@ class BuiltInBackendToAndroidBackendMigratorTestMetrics
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
     prefs()->registry()->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt,
                                             0.0);
-    prefs()->registry()->RegisterBooleanPref(
-        prefs::kRequiresMigrationAfterSyncStatusChange, false);
     prefs()->registry()->RegisterStringPref(
         ::prefs::kGoogleServicesLastSyncingUsername, "testaccount@gmail.com");
     prefs()->registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
-    prefs()->registry()->RegisterIntegerPref(
-        prefs::kTimesReenrolledToGoogleMobileServices, 0);
-    prefs()->registry()->RegisterIntegerPref(
-        prefs::kTimesAttemptedToReenrollToGoogleMobileServices, 0);
     prefs()->registry()->RegisterIntegerPref(
         prefs::kPasswordsUseUPMLocalAndSeparateStores,
         static_cast<int>(
@@ -1134,10 +1107,6 @@ class BuiltInBackendToAndroidBackendMigratorTestMetrics
                       GetParam().expected_migration_type() + ".Success";
 
     CreateMigrator(&built_in_backend_, &android_backend_, prefs());
-
-    if (GetParam().migration_required_after_sync_state_change) {
-      prefs()->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, true);
-    }
 
     if (GetParam().expected_migration_type() == "ReenrollmentAttempt") {
       prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
@@ -1197,56 +1166,48 @@ INSTANTIATE_TEST_SUITE_P(
         MigrationParamForMetrics{
             .migration_ran_before = false,
             .is_sync_enabled = true,
-            .migration_required_after_sync_state_change = false,
             .is_successful_migration = true,
             .migration_type = MigrationType::kInitialForSyncUsers},
         // Unsuccessful initial migration.
         MigrationParamForMetrics{
             .migration_ran_before = false,
             .is_sync_enabled = true,
-            .migration_required_after_sync_state_change = false,
             .is_successful_migration = false,
             .migration_type = MigrationType::kInitialForSyncUsers},
         // Successful non-syncable data migration to the android backend.
         MigrationParamForMetrics{
             .migration_ran_before = true,
             .is_sync_enabled = true,
-            .migration_required_after_sync_state_change = true,
             .is_successful_migration = true,
             .migration_type = MigrationType::kNonSyncableToAndroidBackend},
         // Unsuccessful non-syncable data migration to the android backend.
         MigrationParamForMetrics{
             .migration_ran_before = true,
             .is_sync_enabled = true,
-            .migration_required_after_sync_state_change = true,
             .is_successful_migration = false,
             .migration_type = MigrationType::kNonSyncableToAndroidBackend},
         // Successful non-syncable data migration to the built-in backend.
         MigrationParamForMetrics{
             .migration_ran_before = true,
             .is_sync_enabled = false,
-            .migration_required_after_sync_state_change = true,
             .is_successful_migration = true,
             .migration_type = MigrationType::kNonSyncableToBuiltInBackend},
         // Unsuccessful non-syncable data migration to the built-in backend.
         MigrationParamForMetrics{
             .migration_ran_before = true,
             .is_sync_enabled = false,
-            .migration_required_after_sync_state_change = true,
             .is_successful_migration = false,
             .migration_type = MigrationType::kNonSyncableToBuiltInBackend},
         // Successful reenrollment attempt.
         MigrationParamForMetrics{
             .migration_ran_before = true,
             .is_sync_enabled = true,
-            .migration_required_after_sync_state_change = false,
             .is_successful_migration = true,
             .migration_type = MigrationType::kReenrollmentAttempt},
         // Unsuccessful reenrollment attempt.
         MigrationParamForMetrics{
             .migration_ran_before = true,
             .is_sync_enabled = true,
-            .migration_required_after_sync_state_change = false,
             .is_successful_migration = false,
             .migration_type = MigrationType::kReenrollmentAttempt}));
 
@@ -1258,8 +1219,6 @@ class BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
     prefs()->registry()->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt,
                                             0.0);
-    prefs()->registry()->RegisterBooleanPref(
-        prefs::kRequiresMigrationAfterSyncStatusChange, false);
     prefs()->registry()->RegisterStringPref(
         ::prefs::kGoogleServicesLastSyncingUsername, "testaccount@gmail.com");
     prefs()->registry()->RegisterIntegerPref(

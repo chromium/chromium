@@ -169,10 +169,6 @@ void InternalsUIHandler::OnResetUpmEviction(const base::Value::List& args) {
   if (is_user_unenrolled) {
     prefs->ClearPref(password_manager::prefs::
                          kUnenrolledFromGoogleMobileServicesDueToErrors);
-    prefs->ClearPref(
-        password_manager::prefs::kTimesReenrolledToGoogleMobileServices);
-    prefs->ClearPref(password_manager::prefs::
-                         kTimesAttemptedToReenrollToGoogleMobileServices);
   } else {
     prefs->SetBoolean(
         password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,

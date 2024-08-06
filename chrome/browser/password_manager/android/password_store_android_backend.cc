@@ -821,8 +821,6 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   if (!reply.has_value()) {
     return;  // Task cleaned up after returning from background.
   }
-  // Set pref to track users who received GMSCore error.
-  prefs_->SetBoolean(prefs::kUserReceivedGMSCoreError, true);
 
   PasswordStoreOperation operation = reply->GetOperation();
 
