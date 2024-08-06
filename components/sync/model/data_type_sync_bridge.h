@@ -12,8 +12,13 @@
 
 #include "base/functional/callback.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
-#include "components/sync/model/entity_change.h"
 #include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/entity_change.h"
+#include "components/sync/protocol/unique_position.pb.h"
+
+namespace sync_pb {
+class EntitySpecifics;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -169,6 +174,22 @@ class DataTypeSyncBridge {
   // indicates that it requires the full data set to be sent to it through
   // MergeFullSyncData for any change to the data set.
   virtual bool SupportsIncrementalUpdates() const;
+
+  // By returning true in this function, the datatype indicates that it supports
+  // sync_pb.UniquePosition for ordering. The bridge should use helper methods
+  // from the change processor to generate such positions and implement
+  // GetUniquePosition() method so the processor would be able to extract the
+  // unique position from specifics. Dealing with unique positions is a rather
+  // advanced feature, by default the method returns false.
+  virtual bool SupportsUniquePositions() const;
+
+  // Extract unique position from specifics, called for non-deletions only.
+  // Unique position is supposed to be stored in specifics (and hence, generated
+  // before the Put() call) but locally it's stored in sync metadata by the
+  // processor. Returns the default proto if the entity does not have / require
+  // unique position.
+  virtual sync_pb::UniquePosition GetUniquePosition(
+      const sync_pb::EntitySpecifics& specifics) const;
 
   // Resolve a conflict between the client and server versions of data. They are
   // guaranteed not to match (both be deleted or have identical specifics). A

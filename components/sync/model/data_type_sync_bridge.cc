@@ -11,6 +11,8 @@
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
+#include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 
 namespace syncer {
 
@@ -36,6 +38,17 @@ bool DataTypeSyncBridge::SupportsGetStorageKey() const {
 
 bool DataTypeSyncBridge::SupportsIncrementalUpdates() const {
   return true;
+}
+
+bool DataTypeSyncBridge::SupportsUniquePositions() const {
+  return false;
+}
+
+sync_pb::UniquePosition DataTypeSyncBridge::GetUniquePosition(
+    const sync_pb::EntitySpecifics& specifics) const {
+  CHECK(SupportsUniquePositions());
+  NOTREACHED_NORETURN()
+      << "GetUniquePosition() must be implemented to support unique positions.";
 }
 
 ConflictResolution DataTypeSyncBridge::ResolveConflict(

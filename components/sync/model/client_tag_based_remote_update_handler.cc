@@ -4,6 +4,7 @@
 
 #include "components/sync/model/client_tag_based_remote_update_handler.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -13,15 +14,32 @@
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_processor_metrics.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/processor_entity_tracker.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state_helper.h"
+#include "components/sync/protocol/unique_position.pb.h"
 
 namespace syncer {
+
+namespace {
+
+std::optional<sync_pb::UniquePosition> ExtractUniquePositionIfSupported(
+    const UpdateResponseData& update,
+    const DataTypeSyncBridge& bridge) {
+  CHECK(!update.entity.is_deleted());
+  if (!bridge.SupportsUniquePositions()) {
+    return std::nullopt;
+  }
+  return bridge.GetUniquePosition(update.entity.specifics);
+}
+
+}  // namespace
 
 ClientTagBasedRemoteUpdateHandler::ClientTagBasedRemoteUpdateHandler(
     ModelType type,
@@ -213,19 +231,22 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     // Remote deletion. Note that the local data cannot be already deleted,
     // because it would have been treated as a conflict earlier above.
     DCHECK(!entity->metadata().is_deleted());
-    entity->RecordAcceptedRemoteUpdate(update, /*trimmed_specifics=*/{});
+    entity->RecordAcceptedRemoteUpdate(update, /*trimmed_specifics=*/{},
+                                       /*unique_position=*/std::nullopt);
     entity_changes->push_back(
         EntityChange::CreateDelete(entity->storage_key()));
   } else if (entity->MatchesData(data)) {
     // Remote update that is a no-op, metadata should still be updated.
     entity->RecordAcceptedRemoteUpdate(
         update,
-        bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(data.specifics));
+        bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(data.specifics),
+        ExtractUniquePositionIfSupported(update, *bridge_));
   } else {
     // Remote update.
     entity->RecordAcceptedRemoteUpdate(
         update,
-        bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(data.specifics));
+        bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(data.specifics),
+        ExtractUniquePositionIfSupported(update, *bridge_));
     entity_changes->push_back(EntityChange::CreateUpdate(
         entity->storage_key(), std::move(update.entity)));
   }
@@ -286,11 +307,16 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
       // to have a `password` field present.
       // TODO(crbug.com/40214653): Consider introducing a dedicated function for
       // recording exact matching updates.
-      entity->RecordForcedRemoteUpdate(
-          update, update.entity.is_deleted()
-                      ? sync_pb::EntitySpecifics()
-                      : bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(
-                            update.entity.specifics));
+      if (!update.entity.is_deleted()) {
+        entity->RecordForcedRemoteUpdate(
+            update,
+            bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(
+                update.entity.specifics),
+            ExtractUniquePositionIfSupported(update, *bridge_));
+      } else {
+        entity->RecordForcedRemoteUpdate(update, /*trimmed_specifics=*/{},
+                                         /*unique_position=*/std::nullopt);
+      }
       break;
     case ConflictResolution::kUseLocal:
     case ConflictResolution::kIgnoreRemoteEncryption:
@@ -305,13 +331,16 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
         DCHECK(!entity->metadata().is_deleted());
         // Squash the pending commit.
         entity->RecordForcedRemoteUpdate(update,
-                                         /*trimmed_specifics=*/{});
+                                         /*trimmed_specifics=*/{},
+                                         /*unique_position=*/std::nullopt);
         changes->push_back(EntityChange::CreateDelete(entity->storage_key()));
       } else if (!entity->metadata().is_deleted()) {
         // Squash the pending commit.
         entity->RecordForcedRemoteUpdate(
-            update, bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(
-                        update.entity.specifics));
+            update,
+            bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(
+                update.entity.specifics),
+            ExtractUniquePositionIfSupported(update, *bridge_));
         changes->push_back(EntityChange::CreateUpdate(
             entity->storage_key(), std::move(update.entity)));
       } else {
@@ -324,8 +353,10 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
         }
         // Squash the pending commit.
         entity->RecordForcedRemoteUpdate(
-            update, bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(
-                        update.entity.specifics));
+            update,
+            bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(
+                update.entity.specifics),
+            ExtractUniquePositionIfSupported(update, *bridge_));
         changes->push_back(EntityChange::CreateAdd(entity->storage_key(),
                                                    std::move(update.entity)));
       }
@@ -351,7 +382,8 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::CreateEntity(
   return entity_tracker_->AddRemote(
       storage_key, update,
       bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(
-          update.entity.specifics));
+          update.entity.specifics),
+      ExtractUniquePositionIfSupported(update, *bridge_));
 }
 
 }  // namespace syncer

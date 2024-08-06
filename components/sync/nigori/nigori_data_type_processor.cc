@@ -4,6 +4,7 @@
 
 #include "components/sync/nigori/nigori_data_type_processor.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/logging.h"
@@ -13,8 +14,8 @@
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/engine/forwarding_data_type_processor.h"
 #include "components/sync/engine/data_type_processor_metrics.h"
+#include "components/sync/engine/forwarding_data_type_processor.h"
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/nigori/nigori_sync_bridge.h"
@@ -149,7 +150,8 @@ void NigoriDataTypeProcessor::OnUpdateReceived(
       entity_ = ProcessorEntity::CreateNew(
           kNigoriStorageKey, ClientTagHash::FromHashed(kRawNigoriClientTagHash),
           updates[0].entity.id, updates[0].entity.creation_time);
-      entity_->RecordAcceptedRemoteUpdate(updates[0], /*trimmed_specifics=*/{});
+      entity_->RecordAcceptedRemoteUpdate(updates[0], /*trimmed_specifics=*/{},
+                                          /*unique_position=*/std::nullopt);
       error = bridge_->MergeFullSyncData(std::move(updates[0].entity));
     }
     if (error) {
@@ -177,10 +179,12 @@ void NigoriDataTypeProcessor::OnUpdateReceived(
   if (entity_->IsUnsynced()) {
     // Remote update always win in case of conflict, because bridge takes care
     // of reapplying pending local changes after processing the remote update.
-    entity_->RecordForcedRemoteUpdate(updates[0], /*trimmed_specifics=*/{});
+    entity_->RecordForcedRemoteUpdate(updates[0], /*trimmed_specifics=*/{},
+                                      /*unique_position=*/std::nullopt);
   } else if (!entity_->MatchesData(updates[0].entity)) {
     // Inform the bridge of the new or updated data.
-    entity_->RecordAcceptedRemoteUpdate(updates[0], /*trimmed_specifics=*/{});
+    entity_->RecordAcceptedRemoteUpdate(updates[0], /*trimmed_specifics=*/{},
+                                        /*unique_position=*/std::nullopt);
   }
   LogNonReflectionUpdateFreshnessToUma(NIGORI,
                                        updates[0].entity.modification_time);
@@ -363,7 +367,8 @@ void NigoriDataTypeProcessor::Put(std::unique_ptr<EntityData> entity_data) {
     return;
   }
 
-  entity_->RecordLocalUpdate(std::move(entity_data), /*trimmed_specifics=*/{});
+  entity_->RecordLocalUpdate(std::move(entity_data), /*trimmed_specifics=*/{},
+                             /*unique_position=*/std::nullopt);
   NudgeForCommitIfNeeded();
 }
 

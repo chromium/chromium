@@ -9,12 +9,14 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/time/time.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/unique_position.pb.h"
 
 namespace sync_pb {
 class EntitySpecifics;
@@ -83,16 +85,22 @@ class ProcessorEntity {
 
   // Records an update from the server assuming its data is the new data for
   // this entity.
-  void RecordAcceptedRemoteUpdate(const UpdateResponseData& response_data,
-                                  sync_pb::EntitySpecifics trimmed_specifics);
+  void RecordAcceptedRemoteUpdate(
+      const UpdateResponseData& response_data,
+      sync_pb::EntitySpecifics trimmed_specifics,
+      std::optional<sync_pb::UniquePosition> unique_position);
 
   // Squashes a pending commit with an update from the server.
-  void RecordForcedRemoteUpdate(const UpdateResponseData& response_data,
-                                sync_pb::EntitySpecifics trimmed_specifics);
+  void RecordForcedRemoteUpdate(
+      const UpdateResponseData& response_data,
+      sync_pb::EntitySpecifics trimmed_specifics,
+      std::optional<sync_pb::UniquePosition> unique_position);
 
   // Applies a local change to this item.
-  void RecordLocalUpdate(std::unique_ptr<EntityData> data,
-                         sync_pb::EntitySpecifics trimmed_specifics);
+  void RecordLocalUpdate(
+      std::unique_ptr<EntityData> data,
+      sync_pb::EntitySpecifics trimmed_specifics,
+      std::optional<sync_pb::UniquePosition> unique_position);
 
   // Applies a local deletion to this item. Returns true if entity was
   // previously committed to server and tombstone should be sent.

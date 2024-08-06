@@ -12,10 +12,12 @@
 #include <string>
 #include <unordered_set>
 
-#include "components/sync/model/model_error.h"
+#include "base/functional/callback_forward.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_sync_bridge.h"
+#include "components/sync/model/model_error.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/unique_position.pb.h"
 
 namespace sync_pb {
 class EntityMetadata;
@@ -31,6 +33,10 @@ struct EntityData;
 // purposes. It uses its own simple in-memory Store class.
 class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
  public:
+  using ExtractUniquePositionCallback =
+      base::RepeatingCallback<sync_pb::UniquePosition(
+          const sync_pb::EntitySpecifics& specifics)>;
+
   // Generate a client tag with the given key.
   static std::string ClientTagFromKey(const std::string& key);
 
@@ -114,6 +120,9 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
   std::string GetStorageKey(const EntityData& entity_data) override;
   bool SupportsGetClientTag() const override;
   bool SupportsGetStorageKey() const override;
+  bool SupportsUniquePositions() const override;
+  sync_pb::UniquePosition GetUniquePosition(
+      const sync_pb::EntitySpecifics& specifics) const override;
   ConflictResolution ResolveConflict(
       const std::string& storage_key,
       const EntityData& remote_data) const override;
@@ -162,6 +171,10 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
   // Sets the flag to mark entities with client tag hash `client_tag_hash` as
   // invalid when IsEntityDataValid() is called.
   void TreatRemoteUpdateAsInvalid(const ClientTagHash& client_tag_hash);
+
+  // Enables unique position support. The `callback` is used to extract unique
+  // position from specifics.
+  void EnableUniquePositionSupport(ExtractUniquePositionCallback callback);
 
   // Storage keys for the entities with deleted collaboration membership.
   const std::set<std::string>& deleted_collaboration_membership_storage_keys()
@@ -224,6 +237,8 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
   mutable size_t trimmed_specifics_change_count_ = 0;
 
   std::set<std::string> deleted_collaboration_membership_storage_keys_;
+
+  ExtractUniquePositionCallback extract_unique_positions_callback_;
 };
 
 }  // namespace syncer

@@ -17,15 +17,19 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_mode.h"
+#include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/data_type_activation_request.h"
+#include "components/sync/model/processor_entity.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -39,9 +43,12 @@ namespace syncer {
 
 namespace {
 
+using base::test::EqualsProto;
 using sync_pb::EntityMetadata;
 using sync_pb::EntitySpecifics;
 using sync_pb::ModelTypeState;
+using testing::Not;
+using testing::NotNull;
 
 const char kDefaultAuthenticatedAccountId[] = "DefaultAccountId";
 
@@ -69,6 +76,10 @@ ClientTagHash GetPrefHash(const std::string& key) {
   return GetHash(PREFERENCES, key);
 }
 
+ClientTagHash GetSharedTabHash(const std::string& key) {
+  return GetHash(SHARED_TAB_GROUP_DATA, key);
+}
+
 EntitySpecifics GeneratePrefSpecifics(const std::string& key,
                                       const std::string& value) {
   EntitySpecifics specifics;
@@ -82,6 +93,17 @@ EntitySpecifics GenerateUserEventSpecifics(int64_t event_time_usec,
   EntitySpecifics specifics;
   specifics.mutable_user_event()->set_event_time_usec(event_time_usec);
   specifics.mutable_user_event()->set_navigation_id(navigation_id);
+  return specifics;
+}
+
+EntitySpecifics GenerateSharedTabSpecifics(
+    std::string guid,
+    sync_pb::UniquePosition unique_position) {
+  EntitySpecifics specifics;
+  specifics.mutable_shared_tab_group_data()->set_guid(std::move(guid));
+  *specifics.mutable_shared_tab_group_data()
+       ->mutable_tab()
+       ->mutable_unique_position() = std::move(unique_position);
   return specifics;
 }
 
@@ -100,6 +122,14 @@ std::unique_ptr<EntityData> GeneratePrefEntityData(const std::string& key,
                                                    const std::string& value) {
   return GenerateEntityData(PREFERENCES, key,
                             GeneratePrefSpecifics(key, value));
+}
+
+std::unique_ptr<EntityData> GenerateSharedTabGroupEntityData(
+    const std::string& guid,
+    sync_pb::UniquePosition unique_position) {
+  return GenerateEntityData(
+      SHARED_TAB_GROUP_DATA, guid,
+      GenerateSharedTabSpecifics(guid, std::move(unique_position)));
 }
 
 EntitySpecifics WritePrefItem(FakeDataTypeSyncBridge* bridge,
@@ -134,6 +164,11 @@ void CaptureCommitRequest(CommitRequestDataList* dst,
 void CaptureTypeEntitiesCount(TypeEntitiesCount* dst,
                               const TypeEntitiesCount& count) {
   *dst = count;
+}
+
+sync_pb::UniquePosition ExtractUniquePositionFromSharedTab(
+    const sync_pb::EntitySpecifics& specifics) {
+  return specifics.shared_tab_group_data().tab().unique_position();
 }
 
 class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
@@ -3174,16 +3209,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
       "Sync.ClearMetadataWhileStopped.DelayedClear", 0);
 }
 
-TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldGenerateUniquePositions) {
-  InitializeToReadyState();
-
-  // TODO(crbug.com/351357559): verify the other methods once Put() supports
-  // unique positions.
-  sync_pb::UniquePosition only_element_position =
-      type_processor()->UniquePositionForInitialEntity(GetPrefHash(kKey1));
-  EXPECT_TRUE(UniquePosition::FromProto(only_element_position).IsValid());
-}
-
 class PasswordsClientTagBasedDataTypeProcessorTest
     : public ClientTagBasedDataTypeProcessorTest {
  protected:
@@ -3198,6 +3223,217 @@ TEST_F(PasswordsClientTagBasedDataTypeProcessorTest,
 
   EXPECT_TRUE(db()->model_type_state()
                   .notes_enabled_before_initial_sync_for_passwords());
+}
+
+// Test suite for testing the bridge with UniquePosition support.
+// SHARED_TAB_GROUP_DATA is used as an example data type with unique_position
+// in specifics.
+class ClientTagBasedDataTypeProcessorWithUniquePositionTest
+    : public ClientTagBasedDataTypeProcessorTest {
+ public:
+  void SetUp() override {
+    ClientTagBasedDataTypeProcessorTest::SetUp();
+    CHECK(bridge());
+
+    bridge()->EnableUniquePositionSupport(
+        base::BindRepeating(&ExtractUniquePositionFromSharedTab));
+  }
+
+  void WriteItemWithUniquePositionToBridge(
+      const std::string& guid,
+      sync_pb::UniquePosition unique_position) {
+    bridge()->WriteItem(guid, GenerateSharedTabGroupEntityData(
+                                  guid, std::move(unique_position)));
+  }
+
+ protected:
+  ModelType GetModelType() override { return SHARED_TAB_GROUP_DATA; }
+};
+
+TEST_F(ClientTagBasedDataTypeProcessorWithUniquePositionTest,
+       ShouldProcessUniquePositionForNewEntity) {
+  const std::string kGuid = "guid";
+  InitializeToReadyState();
+
+  sync_pb::UniquePosition unique_position =
+      UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
+  WriteItemWithUniquePositionToBridge(kGuid, unique_position);
+
+  const ProcessorEntity* entity = GetEntityForStorageKey(kGuid);
+  ASSERT_THAT(entity, NotNull());
+  EXPECT_THAT(db()->GetMetadata(kGuid).unique_position(),
+              EqualsProto(unique_position));
+  EXPECT_THAT(entity->metadata().unique_position(),
+              EqualsProto(unique_position));
+}
+
+TEST_F(ClientTagBasedDataTypeProcessorWithUniquePositionTest,
+       ShouldUpdateUniquePositionForExistingEntity) {
+  const std::string kGuid = "guid";
+  InitializeToReadyState();
+
+  WriteItemWithUniquePositionToBridge(
+      kGuid, UniquePosition::InitialPosition(UniquePosition::RandomSuffix())
+                 .ToProto());
+
+  const ProcessorEntity* entity = GetEntityForStorageKey(kGuid);
+  ASSERT_THAT(entity, NotNull());
+  ASSERT_TRUE(entity->metadata().has_unique_position());
+  ASSERT_TRUE(db()->GetMetadata(kGuid).has_unique_position());
+
+  // Update the entity with a new unique position.
+  sync_pb::UniquePosition new_unique_position =
+      UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
+  ASSERT_THAT(entity->metadata().unique_position(),
+              Not(EqualsProto(new_unique_position)));
+
+  WriteItemWithUniquePositionToBridge(kGuid, new_unique_position);
+
+  ASSERT_EQ(entity, GetEntityForStorageKey(kGuid));
+  EXPECT_THAT(db()->GetMetadata(kGuid).unique_position(),
+              EqualsProto(new_unique_position));
+  EXPECT_THAT(entity->metadata().unique_position(),
+              EqualsProto(new_unique_position));
+}
+
+TEST_F(ClientTagBasedDataTypeProcessorWithUniquePositionTest,
+       ShouldUpdateUniquePositionAfterDeletion) {
+  const std::string kGuid = "guid";
+  InitializeToReadyState();
+
+  WriteItemWithUniquePositionToBridge(
+      kGuid, UniquePosition::InitialPosition(UniquePosition::RandomSuffix())
+                 .ToProto());
+
+  const ProcessorEntity* entity = GetEntityForStorageKey(kGuid);
+  ASSERT_THAT(entity, NotNull());
+  ASSERT_TRUE(entity->metadata().has_unique_position());
+  ASSERT_TRUE(db()->GetMetadata(kGuid).has_unique_position());
+
+  // Delete the local entity keeping its local metadata, and update afterwards.
+  bridge()->DeleteItem(kGuid);
+  ASSERT_TRUE(db()->HasMetadata(kGuid));
+  ASSERT_FALSE(db()->HasData(kGuid));
+  ASSERT_FALSE(db()->GetMetadata(kGuid).has_unique_position());
+
+  // Restore the item and update its unique position.
+  sync_pb::UniquePosition new_unique_position =
+      UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
+  WriteItemWithUniquePositionToBridge(kGuid, new_unique_position);
+
+  ASSERT_EQ(entity, GetEntityForStorageKey(kGuid));
+  EXPECT_THAT(db()->GetMetadata(kGuid).unique_position(),
+              EqualsProto(new_unique_position));
+  EXPECT_THAT(entity->metadata().unique_position(),
+              EqualsProto(new_unique_position));
+}
+
+TEST_F(ClientTagBasedDataTypeProcessorWithUniquePositionTest,
+       ShouldStoreRemoteUniquePositionOnFullUpdate) {
+  const std::string kGuid = "guid";
+  ModelReadyToSync();
+  OnSyncStarting();
+  ASSERT_FALSE(type_processor()->IsTrackingMetadata());
+
+  sync_pb::UniquePosition unique_position =
+      UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
+  worker()->UpdateFromServer(
+      GetSharedTabHash(kGuid),
+      GenerateSharedTabSpecifics(kGuid, unique_position));
+  ASSERT_TRUE(type_processor()->IsTrackingMetadata());
+
+  const ProcessorEntity* entity = GetEntityForStorageKey(kGuid);
+  ASSERT_THAT(entity, NotNull());
+  EXPECT_THAT(db()->GetMetadata(kGuid).unique_position(),
+              EqualsProto(unique_position));
+  EXPECT_THAT(entity->metadata().unique_position(),
+              EqualsProto(unique_position));
+}
+
+TEST_F(ClientTagBasedDataTypeProcessorWithUniquePositionTest,
+       ShouldGenerateUniquePositionForInitialEntity) {
+  InitializeToReadyState();
+
+  sync_pb::UniquePosition initial_entity_position =
+      type_processor()->UniquePositionForInitialEntity(
+          GetSharedTabHash("guid"));
+  EXPECT_TRUE(UniquePosition::FromProto(initial_entity_position).IsValid());
+}
+
+TEST_F(ClientTagBasedDataTypeProcessorWithUniquePositionTest,
+       ShouldGenerateUniquePositionsBeforeAndAfter) {
+  const std::string kGuid = "guid";
+  InitializeToReadyState();
+
+  UniquePosition unique_position =
+      UniquePosition::InitialPosition(UniquePosition::RandomSuffix());
+  WriteItemWithUniquePositionToBridge(kGuid, unique_position.ToProto());
+  ASSERT_TRUE(GetEntityForStorageKey(kGuid)->metadata().has_unique_position());
+
+  sync_pb::UniquePosition position_after =
+      type_processor()->UniquePositionAfter(kGuid,
+                                            GetSharedTabHash("guid_after"));
+  sync_pb::UniquePosition position_before =
+      type_processor()->UniquePositionBefore(kGuid,
+                                             GetSharedTabHash("guid_before"));
+  ASSERT_TRUE(UniquePosition::FromProto(position_before).IsValid());
+  ASSERT_TRUE(UniquePosition::FromProto(position_after).IsValid());
+
+  EXPECT_TRUE(
+      unique_position.LessThan(UniquePosition::FromProto(position_after)));
+  EXPECT_TRUE(
+      UniquePosition::FromProto(position_before).LessThan(unique_position));
+  EXPECT_TRUE(UniquePosition::FromProto(position_before)
+                  .LessThan(UniquePosition::FromProto(position_after)));
+}
+
+TEST_F(ClientTagBasedDataTypeProcessorWithUniquePositionTest,
+       ShouldGenerateUniquePositionBetween) {
+  const std::string kGuidBefore = "guid_before";
+  const std::string kGuidAfter = "guid_after";
+  InitializeToReadyState();
+
+  UniquePosition unique_position_before = UniquePosition::FromProto(
+      type_processor()->UniquePositionForInitialEntity(
+          GetSharedTabHash(kGuidBefore)));
+  WriteItemWithUniquePositionToBridge(kGuidBefore,
+                                      unique_position_before.ToProto());
+
+  UniquePosition unique_position_after =
+      UniquePosition::FromProto(type_processor()->UniquePositionAfter(
+          kGuidBefore, GetSharedTabHash(kGuidAfter)));
+  WriteItemWithUniquePositionToBridge(kGuidAfter,
+                                      unique_position_after.ToProto());
+  ASSERT_TRUE(unique_position_before.LessThan(unique_position_after));
+  ASSERT_TRUE(
+      GetEntityForStorageKey(kGuidBefore)->metadata().has_unique_position());
+  ASSERT_TRUE(
+      GetEntityForStorageKey(kGuidAfter)->metadata().has_unique_position());
+
+  sync_pb::UniquePosition position_between =
+      type_processor()->UniquePositionBetween(kGuidBefore, kGuidAfter,
+                                              GetSharedTabHash("guid_between"));
+  ASSERT_TRUE(UniquePosition::FromProto(position_between).IsValid());
+
+  EXPECT_TRUE(unique_position_before.LessThan(
+      UniquePosition::FromProto(position_between)));
+  EXPECT_TRUE(UniquePosition::FromProto(position_between)
+                  .LessThan(unique_position_after));
+}
+
+TEST_F(ClientTagBasedDataTypeProcessorWithUniquePositionTest,
+       ShouldReturnUniquePosition) {
+  InitializeToReadyState();
+
+  sync_pb::UniquePosition unique_position =
+      UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
+  WriteItemWithUniquePositionToBridge("guid", unique_position);
+
+  EXPECT_THAT(
+      type_processor()->GetUniquePositionForStorageKey("does_not_exist"),
+      EqualsProto(sync_pb::UniquePosition()));
+  EXPECT_THAT(type_processor()->GetUniquePositionForStorageKey("guid"),
+              EqualsProto(unique_position));
 }
 
 }  // namespace syncer

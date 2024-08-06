@@ -18,6 +18,7 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
+#include "components/sync/protocol/unique_position.pb.h"
 #include "components/version_info/version_info.h"
 
 namespace syncer {
@@ -108,6 +109,8 @@ bool ProcessorEntity::MatchesData(const EntityData& data) const {
   if (data.is_deleted()) {
     return false;
   }
+  // Do not check for unique position changes explicitly because they are
+  // supposed to be in specifics.
   return MatchesSpecificsHash(data.specifics);
 }
 
@@ -169,7 +172,8 @@ void ProcessorEntity::RecordIgnoredRemoteUpdate(
 
 void ProcessorEntity::RecordAcceptedRemoteUpdate(
     const UpdateResponseData& update,
-    sync_pb::EntitySpecifics trimmed_specifics) {
+    sync_pb::EntitySpecifics trimmed_specifics,
+    std::optional<sync_pb::UniquePosition> unique_position) {
   DCHECK(!IsUnsynced());
   RecordIgnoredRemoteUpdate(update);
   metadata_.set_is_deleted(update.entity.is_deleted());
@@ -182,22 +186,30 @@ void ProcessorEntity::RecordAcceptedRemoteUpdate(
   UpdateSpecificsHash(update.entity.specifics);
   *metadata_.mutable_possibly_trimmed_base_specifics() =
       std::move(trimmed_specifics);
+  if (unique_position) {
+    *metadata_.mutable_unique_position() = std::move(unique_position.value());
+  } else {
+    metadata_.clear_unique_position();
+  }
 }
 
 void ProcessorEntity::RecordForcedRemoteUpdate(
     const UpdateResponseData& update,
-    sync_pb::EntitySpecifics trimmed_specifics) {
+    sync_pb::EntitySpecifics trimmed_specifics,
+    std::optional<sync_pb::UniquePosition> unique_position) {
   DCHECK(IsUnsynced());
   // There was a conflict and the server just won it. Explicitly ack all
   // pending commits so they are never enqueued again.
   metadata_.set_acked_sequence_number(metadata_.sequence_number());
   commit_data_.reset();
-  RecordAcceptedRemoteUpdate(update, std::move(trimmed_specifics));
+  RecordAcceptedRemoteUpdate(update, std::move(trimmed_specifics),
+                             std::move(unique_position));
 }
 
 void ProcessorEntity::RecordLocalUpdate(
     std::unique_ptr<EntityData> data,
-    sync_pb::EntitySpecifics trimmed_specifics) {
+    sync_pb::EntitySpecifics trimmed_specifics,
+    std::optional<sync_pb::UniquePosition> unique_position) {
   DCHECK(!metadata_.client_tag_hash().empty());
 
   // Update metadata fields from updated data.
@@ -220,6 +232,11 @@ void ProcessorEntity::RecordLocalUpdate(
   }
   metadata_.set_modification_time(TimeToProtoTime(modification_time));
   metadata_.set_is_deleted(false);
+  if (unique_position) {
+    *metadata_.mutable_unique_position() = std::move(unique_position.value());
+  } else {
+    metadata_.clear_unique_position();
+  }
 
   // SetCommitData will update data's fields from metadata.
   SetCommitData(std::move(data));
@@ -231,6 +248,7 @@ bool ProcessorEntity::RecordLocalDeletion(const DeletionOrigin& origin) {
   metadata_.set_is_deleted(true);
   metadata_.clear_specifics_hash();
   metadata_.clear_possibly_trimmed_base_specifics();
+  metadata_.clear_unique_position();
 
   if (origin.is_specified()) {
     *metadata_.mutable_deletion_origin() =

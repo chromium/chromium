@@ -6,10 +6,13 @@
 
 #include <utility>
 
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/hash_util.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/processor_entity.h"
+#include "components/sync/protocol/unique_position.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,6 +20,7 @@ namespace syncer {
 
 namespace {
 
+using base::test::EqualsProto;
 using testing::ElementsAre;
 using testing::IsNull;
 using testing::NotNull;
@@ -107,6 +111,11 @@ UpdateResponseData GenerateSharedTabGroupDataUpdate(
   return update;
 }
 
+sync_pb::UniquePosition GenerateUniquePosition(const ClientTagHash& hash) {
+  return UniquePosition::InitialPosition(GenerateUniquePositionSuffix(hash))
+      .ToProto();
+}
+
 class ProcessorEntityTrackerTest : public ::testing::Test {
  public:
   ProcessorEntityTrackerTest()
@@ -176,7 +185,8 @@ TEST_F(ProcessorEntityTrackerTest, ShouldAddNewLocalEntity) {
       GenerateEntityData(kStorageKey1, kClientTagHash1));
   EntityData* entity_data_ptr = entity_data.get();
   const ProcessorEntity* entity = entity_tracker_.AddUnsyncedLocal(
-      kStorageKey1, std::move(entity_data), /*trimmed_specifics=*/{});
+      kStorageKey1, std::move(entity_data), /*trimmed_specifics=*/{},
+      /*unique_position=*/std::nullopt);
   ASSERT_THAT(entity, NotNull());
 
   EXPECT_EQ(1u, entity_tracker_.size());
@@ -193,11 +203,28 @@ TEST_F(ProcessorEntityTrackerTest, ShouldAddNewLocalEntity) {
   EXPECT_TRUE(entity->HasCommitData());
 }
 
+TEST_F(ProcessorEntityTrackerTest, ShouldAddNewLocalEntityWithUniquePosition) {
+  const sync_pb::UniquePosition unique_position =
+      GenerateUniquePosition(kClientTagHash1);
+
+  std::unique_ptr<EntityData> entity_data = std::make_unique<EntityData>(
+      GenerateEntityData(kStorageKey1, kClientTagHash1));
+  const ProcessorEntity* entity = entity_tracker_.AddUnsyncedLocal(
+      kStorageKey1, std::move(entity_data), /*trimmed_specifics=*/{},
+      unique_position);
+
+  ASSERT_THAT(entity, NotNull());
+
+  EXPECT_THAT(entity->metadata().unique_position(),
+              EqualsProto(unique_position));
+}
+
 TEST_F(ProcessorEntityTrackerTest, ShouldAddNewRemoteEntity) {
   UpdateResponseData update =
       GenerateUpdate(kStorageKey1, kClientTagHash1, kServerVersion);
   const ProcessorEntity* entity =
-      entity_tracker_.AddRemote(kStorageKey1, update, /*trimmed_specifics=*/{});
+      entity_tracker_.AddRemote(kStorageKey1, update, /*trimmed_specifics=*/{},
+                                /*unique_position=*/std::nullopt);
   ASSERT_THAT(entity, NotNull());
 
   EXPECT_EQ(1u, entity_tracker_.size());
@@ -212,11 +239,26 @@ TEST_F(ProcessorEntityTrackerTest, ShouldAddNewRemoteEntity) {
   EXPECT_FALSE(entity->metadata().is_deleted());
 }
 
+TEST_F(ProcessorEntityTrackerTest, ShouldAddNewRemoteEntityWithUniquePosition) {
+  const sync_pb::UniquePosition unique_position =
+      GenerateUniquePosition(kClientTagHash1);
+
+  UpdateResponseData update =
+      GenerateUpdate(kStorageKey1, kClientTagHash1, kServerVersion);
+  const ProcessorEntity* entity = entity_tracker_.AddRemote(
+      kStorageKey1, update, /*trimmed_specifics=*/{}, unique_position);
+  ASSERT_THAT(entity, NotNull());
+
+  EXPECT_THAT(entity->metadata().unique_position(),
+              EqualsProto(unique_position));
+}
+
 TEST_F(ProcessorEntityTrackerTest, ShouldAddEntityWithoutStorageKey) {
   UpdateResponseData update =
       GenerateUpdate(kStorageKey1, kClientTagHash1, kServerVersion);
   const ProcessorEntity* entity = entity_tracker_.AddRemote(
-      kEmptyStorageKey, update, /*trimmed_specifics=*/{});
+      kEmptyStorageKey, update, /*trimmed_specifics=*/{},
+      /*unique_position=*/std::nullopt);
   ASSERT_THAT(entity, NotNull());
 
   // The entity should be available by the client tag hash only.
@@ -248,7 +290,7 @@ TEST_F(ProcessorEntityTrackerTest, ShouldClearStorageKeyForTombstone) {
   ProcessorEntity* entity = entity_tracker_.AddRemote(
       kStorageKey1,
       GenerateUpdate(kStorageKey1, kClientTagHash1, kServerVersion),
-      /*trimmed_specifics=*/{});
+      /*trimmed_specifics=*/{}, /*unique_position=*/std::nullopt);
   ASSERT_EQ(entity, entity_tracker_.GetEntityForStorageKey(kStorageKey1));
   ASSERT_EQ(kStorageKey1, entity->storage_key());
 
@@ -268,7 +310,7 @@ TEST_F(ProcessorEntityTrackerTest, ShouldOverrideTombstone) {
   ProcessorEntity* entity = entity_tracker_.AddRemote(
       kStorageKey1,
       GenerateUpdate(kStorageKey1, kClientTagHash1, kServerVersion),
-      /*trimmed_specifics=*/{});
+      /*trimmed_specifics=*/{}, /*unique_position=*/std::nullopt);
   ASSERT_THAT(entity, NotNull());
   ASSERT_EQ(entity, entity_tracker_.GetEntityForStorageKey(kStorageKey1));
   ASSERT_EQ(kStorageKey1, entity->storage_key());
@@ -291,7 +333,7 @@ TEST_F(ProcessorEntityTrackerTest, ShouldRemoveEntityForStorageKey) {
   const ProcessorEntity* entity = entity_tracker_.AddRemote(
       kStorageKey1,
       GenerateUpdate(kStorageKey1, kClientTagHash1, kServerVersion),
-      /*trimmed_specifics=*/{});
+      /*trimmed_specifics=*/{}, /*unique_position=*/std::nullopt);
   ASSERT_THAT(entity, NotNull());
   ASSERT_EQ(1u, entity_tracker_.size());
 
@@ -303,14 +345,14 @@ TEST_F(ProcessorEntityTrackerTest, ShouldRemoveEntityForClientTagHash) {
   const ProcessorEntity* entity = entity_tracker_.AddRemote(
       kStorageKey1,
       GenerateUpdate(kStorageKey1, kClientTagHash1, kServerVersion),
-      /*trimmed_specifics=*/{});
+      /*trimmed_specifics=*/{}, /*unique_position=*/std::nullopt);
   ASSERT_THAT(entity, NotNull());
   ASSERT_EQ(entity, entity_tracker_.GetEntityForTagHash(kClientTagHash1));
 
   const ProcessorEntity* entity_no_key = entity_tracker_.AddRemote(
       kEmptyStorageKey,
       GenerateUpdate(kStorageKey2, kClientTagHash2, kServerVersion),
-      /*trimmed_specifics=*/{});
+      /*trimmed_specifics=*/{}, /*unique_position=*/std::nullopt);
   ASSERT_THAT(entity_no_key, NotNull());
   ASSERT_EQ(entity_no_key,
             entity_tracker_.GetEntityForTagHash(kClientTagHash2));
@@ -332,7 +374,8 @@ TEST_F(ProcessorEntityTrackerTest, ShouldReturnLocalChanges) {
   std::unique_ptr<EntityData> entity_data = std::make_unique<EntityData>(
       GenerateEntityData(kStorageKey1, kClientTagHash1));
   ProcessorEntity* entity = entity_tracker_.AddUnsyncedLocal(
-      kStorageKey1, std::move(entity_data), /*trimmed_specifics=*/{});
+      kStorageKey1, std::move(entity_data), /*trimmed_specifics=*/{},
+      /*unique_position=*/std::nullopt);
   ASSERT_THAT(entity, NotNull());
   ASSERT_TRUE(entity->IsUnsynced());
   ASSERT_TRUE(entity->HasCommitData());
@@ -343,7 +386,8 @@ TEST_F(ProcessorEntityTrackerTest, ShouldReturnLocalChanges) {
   // Make some local changes.
   entity->RecordLocalUpdate(std::make_unique<EntityData>(GenerateEntityData(
                                 kStorageKey1, kClientTagHash1)),
-                            /*trimmed_specifics=*/{});
+                            /*trimmed_specifics=*/{},
+                            /*unique_position=*/std::nullopt);
   entity_tracker_.IncrementSequenceNumberForAllExcept({});
   EXPECT_TRUE(entity->IsUnsynced());
   EXPECT_TRUE(entity->HasCommitData());
@@ -360,7 +404,8 @@ TEST_F(ProcessorEntityTrackerTest, ShouldUpdateSpecificsCacheOnLocalCreation) {
   specifics_for_caching.mutable_preference()->set_value("value");
 
   ProcessorEntity* entity = entity_tracker_.AddUnsyncedLocal(
-      kStorageKey1, std::move(entity_data), specifics_for_caching);
+      kStorageKey1, std::move(entity_data), specifics_for_caching,
+      /*unique_position=*/std::nullopt);
 
   EXPECT_EQ(
       specifics_for_caching.SerializeAsString(),
@@ -375,7 +420,7 @@ TEST_F(ProcessorEntityTrackerTest, ShouldUpdateSpecificsCacheOnRemoteCreation) {
   ProcessorEntity* entity = entity_tracker_.AddRemote(
       kStorageKey1,
       GenerateUpdate(kStorageKey1, kClientTagHash1, kServerVersion),
-      specifics_for_caching);
+      specifics_for_caching, /*unique_position=*/std::nullopt);
 
   EXPECT_EQ(
       specifics_for_caching.SerializeAsString(),
@@ -387,12 +432,12 @@ TEST_F(ProcessorEntityTrackerTest, ShouldRemoveInactiveCollaborations) {
       kStorageKey1,
       GenerateSharedTabGroupDataUpdate(kStorageKey1, kClientTagHash1,
                                        "active_collaboration"),
-      /*trimmed_specifics=*/{});
+      /*trimmed_specifics=*/{}, /*unique_position=*/std::nullopt);
   entity_tracker_.AddRemote(
       kStorageKey2,
       GenerateSharedTabGroupDataUpdate(kStorageKey2, kClientTagHash2,
                                        "inactive_collaboration"),
-      /*trimmed_specifics=*/{});
+      /*trimmed_specifics=*/{}, /*unique_position=*/std::nullopt);
   ASSERT_EQ(entity_tracker_.size(), 2U);
 
   std::vector<std::string> removed_storage_keys =

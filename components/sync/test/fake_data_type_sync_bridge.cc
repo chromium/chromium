@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/deletion_origin.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -22,6 +23,7 @@
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/unique_position.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using sync_pb::EntityMetadata;
@@ -361,6 +363,15 @@ bool FakeDataTypeSyncBridge::SupportsGetStorageKey() const {
   return supports_get_storage_key_;
 }
 
+bool FakeDataTypeSyncBridge::SupportsUniquePositions() const {
+  return !extract_unique_positions_callback_.is_null();
+}
+
+sync_pb::UniquePosition FakeDataTypeSyncBridge::GetUniquePosition(
+    const sync_pb::EntitySpecifics& specifics) const {
+  return extract_unique_positions_callback_.Run(specifics);
+}
+
 ConflictResolution FakeDataTypeSyncBridge::ResolveConflict(
     const std::string& storage_key,
     const EntityData& remote_data) const {
@@ -439,6 +450,11 @@ void FakeDataTypeSyncBridge::AddPrefValueToIgnore(const std::string& value) {
 void FakeDataTypeSyncBridge::TreatRemoteUpdateAsInvalid(
     const ClientTagHash& client_tag_hash) {
   invalid_remote_updates_.insert(client_tag_hash);
+}
+
+void FakeDataTypeSyncBridge::EnableUniquePositionSupport(
+    ExtractUniquePositionCallback callback) {
+  extract_unique_positions_callback_ = std::move(callback);
 }
 
 }  // namespace syncer

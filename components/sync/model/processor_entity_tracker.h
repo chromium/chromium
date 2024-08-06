@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -53,15 +54,19 @@ class ProcessorEntityTracker {
   // Starts tracking new locally-created entity (must not be deleted outside
   // current object). The entity will be created unsynced with pending commit
   // data.
-  ProcessorEntity* AddUnsyncedLocal(const std::string& storage_key,
-                                    std::unique_ptr<EntityData> data,
-                                    sync_pb::EntitySpecifics trimmed_specifics);
+  ProcessorEntity* AddUnsyncedLocal(
+      const std::string& storage_key,
+      std::unique_ptr<EntityData> data,
+      sync_pb::EntitySpecifics trimmed_specifics,
+      std::optional<sync_pb::UniquePosition> unique_position);
 
   // Starts tracking new remotely-created entity (must not be deleted outside
   // current object).
-  ProcessorEntity* AddRemote(const std::string& storage_key,
-                             const UpdateResponseData& update_data,
-                             sync_pb::EntitySpecifics trimmed_specifics);
+  ProcessorEntity* AddRemote(
+      const std::string& storage_key,
+      const UpdateResponseData& update_data,
+      sync_pb::EntitySpecifics trimmed_specifics,
+      std::optional<sync_pb::UniquePosition> unique_position);
 
   // Removes item from |entities_| and |storage_key_to_tag_hash|. If entity does
   // not exist, does nothing.

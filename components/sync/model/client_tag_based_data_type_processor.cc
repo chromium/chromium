@@ -4,6 +4,7 @@
 
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -34,6 +35,7 @@
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/model_type_state_helper.h"
 #include "components/sync/protocol/proto_value_conversions.h"
@@ -84,9 +86,9 @@ bool ShouldReuseTrackedUniquePositionFor(const ProcessorEntity* target_entity,
   UniquePosition target_entity_position =
       UniquePosition::FromProto(target_entity->metadata().unique_position());
   if (!target_entity_position.IsValid()) {
-    // Do not CHECK if the unique position is valid, and generate a new position
-    // instead. This could be the case when some data type did not use unique
-    // positions before and hence they don't have it for already-existing
+    // Do not CHECK if the unique position is invalid, and generate a new
+    // position instead. This could be the case when some data type did not use
+    // unique positions before and hence they don't have it for already-existing
     // entities.
     return false;
   }
@@ -463,8 +465,6 @@ void ClientTagBasedDataTypeProcessor::Put(
   DUMP_WILL_BE_CHECK(!storage_key.empty());
   DUMP_WILL_BE_CHECK_EQ(type_, GetModelTypeFromSpecifics(data->specifics));
 
-  // TODO(crbug.com/351357559): support types with unique positions.
-
   if (!entity_tracker_) {
     // Ignore changes before the initial sync is done.
     return;
@@ -484,6 +484,12 @@ void ClientTagBasedDataTypeProcessor::Put(
   // imminent server-side state in most cases.
   sync_pb::EntitySpecifics trimmed_specifics =
       bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(data->specifics);
+
+  // Extract `unique_position` before the `data` is moved.
+  std::optional<sync_pb::UniquePosition> unique_position;
+  if (bridge_->SupportsUniquePositions()) {
+    unique_position = bridge_->GetUniquePosition(data->specifics);
+  }
 
   ProcessorEntity* entity =
       entity_tracker_->GetEntityForStorageKey(storage_key);
@@ -522,7 +528,8 @@ void ClientTagBasedDataTypeProcessor::Put(
       metadata_change_list->ClearMetadata(entity->storage_key());
       entity_tracker_->UpdateOrOverrideStorageKey(data->client_tag_hash,
                                                   storage_key);
-      entity->RecordLocalUpdate(std::move(data), std::move(trimmed_specifics));
+      entity->RecordLocalUpdate(std::move(data), std::move(trimmed_specifics),
+                                std::move(unique_position));
     } else {
       if (data->creation_time.is_null())
         data->creation_time = base::Time::Now();
@@ -530,13 +537,15 @@ void ClientTagBasedDataTypeProcessor::Put(
         data->modification_time = data->creation_time;
 
       entity = entity_tracker_->AddUnsyncedLocal(storage_key, std::move(data),
-                                                 std::move(trimmed_specifics));
+                                                 std::move(trimmed_specifics),
+                                                 std::move(unique_position));
     }
   } else if (entity->MatchesData(*data)) {
     // Ignore changes that don't actually change anything.
     return;
   } else {
-    entity->RecordLocalUpdate(std::move(data), std::move(trimmed_specifics));
+    entity->RecordLocalUpdate(std::move(data), std::move(trimmed_specifics),
+                              std::move(unique_position));
   }
 
   DUMP_WILL_BE_CHECK(entity->IsUnsynced());
@@ -1072,10 +1081,15 @@ ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
                   << " for " << ModelTypeToDebugString(type_);
     }
 #endif  // DCHECK_IS_ON()
+    std::optional<sync_pb::UniquePosition> unique_position;
+    if (bridge_->SupportsUniquePositions()) {
+      unique_position = bridge_->GetUniquePosition(update.entity.specifics);
+    }
     ProcessorEntity* entity = entity_tracker_->AddRemote(
         storage_key, update,
         bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(
-            update.entity.specifics));
+            update.entity.specifics),
+        std::move(unique_position));
     entity_data.push_back(
         EntityChange::CreateAdd(storage_key, std::move(update.entity)));
     if (!storage_key.empty())
@@ -1485,7 +1499,7 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionAfter(
   UniquePosition position_before = UniquePosition::FromProto(
       GetUniquePositionForStorageKey(storage_key_before));
   if (!position_before.IsValid()) {
-    DLOG(ERROR) << "Invalid unique position";
+    DVLOG(1) << "Invalid unique position";
     // TODO(crbug.com/351357559): add a metric or report a model error.
     // Do not CHECK because the metadata is loaded from the disk and might
     // contain corrupted data. Generate some consistent unique position on best
@@ -1515,7 +1529,7 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionBefore(
   UniquePosition position_after = UniquePosition::FromProto(
       GetUniquePositionForStorageKey(storage_key_after));
   if (!position_after.IsValid()) {
-    DLOG(ERROR) << "Invalid unique position";
+    DVLOG(1) << "Invalid unique position";
     // TODO(crbug.com/351357559): add a metric or report a model error.
     // Do not CHECK because the metadata is loaded from the disk and might
     // contain corrupted data. Generate some consistent unique position on best
@@ -1548,7 +1562,7 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionBetween(
   UniquePosition position_after = UniquePosition::FromProto(
       GetUniquePositionForStorageKey(storage_key_after));
   if (!position_after.IsValid() || !position_before.IsValid()) {
-    DLOG(ERROR) << "Invalid unique position";
+    DVLOG(1) << "Invalid unique position";
     // TODO(crbug.com/351357559): add a metric or report a model error.
     // Do not CHECK because the metadata is loaded from the disk and might
     // contain corrupted data. Generate some consistent unique position on best
@@ -1557,8 +1571,8 @@ sync_pb::UniquePosition ClientTagBasedDataTypeProcessor::UniquePositionBetween(
   }
 
   if (!position_before.LessThan(position_after)) {
-    DLOG(ERROR) << "Error while generating unique position between positions"
-                << " which are in an unxepected order";
+    DVLOG(1) << "Error while generating unique position between positions"
+             << " which are in an unxepected order";
     // TODO(crbug.com/351357559): add a metric or report a model error.
     // The order in sync metadata is incorrect due to inconsistency with the
     // model. This normally should not happen but generate some meaningful
@@ -1611,7 +1625,7 @@ ClientTagBasedDataTypeProcessor::GetUniquePositionForStorageKey(
   ProcessorEntity* entity =
       entity_tracker_->GetEntityForStorageKey(storage_key);
   if (!entity) {
-    DLOG(ERROR)
+    DVLOG(1)
         << "GetUniquePositionForStorageKey is called for non-existing entity";
     return sync_pb::UniquePosition();
   }

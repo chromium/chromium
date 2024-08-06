@@ -7,10 +7,16 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/hash_util.h"
+#include "components/sync/base/unique_position.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/forwarding_data_type_processor.h"
 #include "components/sync/model/conflict_resolution.h"
@@ -20,6 +26,7 @@
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync/test/fake_data_type_sync_bridge.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/mock_data_type_processor.h"
@@ -30,8 +37,12 @@ namespace syncer {
 
 namespace {
 
+using base::test::EqualsProto;
 using testing::ElementsAre;
 using testing::IsEmpty;
+using testing::IsNull;
+using testing::Not;
+using testing::NotNull;
 
 const char kKey1[] = "key1";
 const char kKey2[] = "key2";
@@ -77,6 +88,21 @@ sync_pb::EntitySpecifics GenerateSharedTabGroupSpecifics(
   sync_pb::EntitySpecifics specifics;
   specifics.mutable_shared_tab_group_data()->set_guid(guid);
   return specifics;
+}
+
+sync_pb::EntitySpecifics GenerateSharedTabGroupTabSpecifics(
+    const std::string& guid,
+    sync_pb::UniquePosition unique_position) {
+  sync_pb::EntitySpecifics specifics = GenerateSharedTabGroupSpecifics(guid);
+  *specifics.mutable_shared_tab_group_data()
+       ->mutable_tab()
+       ->mutable_unique_position() = std::move(unique_position);
+  return specifics;
+}
+
+sync_pb::UniquePosition ExtractUniquePositionFromSharedTab(
+    const sync_pb::EntitySpecifics& specifics) {
+  return specifics.shared_tab_group_data().tab().unique_position();
 }
 
 class ClientTagBasedRemoteUpdateHandlerTest : public ::testing::Test {
@@ -432,7 +458,8 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   // Update the local entity to not match the remote update.
   entity_tracker()->GetEntityForStorageKey(kKey1)->RecordLocalUpdate(
       GeneratePrefEntityData(kKey1, kValue2),
-      /*trimmed_specifics=*/sync_pb::EntitySpecifics());
+      /*trimmed_specifics=*/sync_pb::EntitySpecifics(),
+      /*unique_position=*/std::nullopt);
   ASSERT_TRUE(entity_tracker()->HasLocalChanges());
 
   // Remote update has the same specifics to represent re-encryption.
@@ -569,6 +596,12 @@ class ClientTagBasedRemoteUpdateHandlerForSharedTest
   ClientTagBasedRemoteUpdateHandlerForSharedTest()
       : ClientTagBasedRemoteUpdateHandlerTest(SHARED_TAB_GROUP_DATA) {}
 
+  void SetUp() override {
+    ClientTagBasedRemoteUpdateHandlerTest::SetUp();
+    bridge()->EnableUniquePositionSupport(
+        base::BindRepeating(&ExtractUniquePositionFromSharedTab));
+  }
+
   UpdateResponseData GenerateSharedTabGroupDataUpdate(
       const std::string& guid,
       const std::string& collaboration_id) {
@@ -583,6 +616,19 @@ class ClientTagBasedRemoteUpdateHandlerForSharedTest
       const std::string& collaboration_id) {
     return worker()->GenerateSharedUpdateData(
         client_tag_hash, GenerateSharedTabGroupSpecifics(guid),
+        collaboration_id);
+  }
+
+  UpdateResponseData GenerateSharedTabGroupTabUpdate(
+      const std::string& guid,
+      const std::string& collaboration_id) {
+    ClientTagHash client_tag_hash = GetSharedTabGroupDataHash(guid);
+    return worker()->GenerateSharedUpdateData(
+        client_tag_hash,
+        GenerateSharedTabGroupTabSpecifics(
+            guid, UniquePosition::InitialPosition(
+                      GenerateUniquePositionSuffix(client_tag_hash))
+                      .ToProto()),
         collaboration_id);
   }
 
@@ -660,6 +706,129 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
   EXPECT_EQ(2U, db()->metadata_change_count());
   EXPECT_THAT(bridge()->deleted_collaboration_membership_storage_keys(),
               IsEmpty());
+}
+
+TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
+       ShouldProcessUniquePositionForRemoteCreation) {
+  const std::string collaboration_id = "collaboration";
+  ASSERT_THAT(entity_tracker()->GetEntityForStorageKey("guid"), IsNull());
+
+  ProcessSharedSingleUpdate(
+      GenerateSharedTabGroupTabUpdate("guid", collaboration_id),
+      {collaboration_id});
+
+  const ProcessorEntity* entity =
+      entity_tracker()->GetEntityForStorageKey("guid");
+  ASSERT_THAT(entity, NotNull());
+  EXPECT_TRUE(entity->metadata().has_unique_position());
+}
+
+TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
+       ShouldProcessUniquePositionForRemoteUpdate) {
+  const std::string collaboration_id = "collaboration";
+  ProcessSharedSingleUpdate(
+      GenerateSharedTabGroupTabUpdate("guid", collaboration_id),
+      {collaboration_id});
+
+  const ProcessorEntity* entity =
+      entity_tracker()->GetEntityForStorageKey("guid");
+  ASSERT_THAT(entity, NotNull());
+  ASSERT_TRUE(entity->metadata().has_unique_position());
+
+  // Generate update with a new unique position.
+  UpdateResponseData update =
+      GenerateSharedTabGroupTabUpdate("guid", collaboration_id);
+  *update.entity.specifics.mutable_shared_tab_group_data()
+       ->mutable_tab()
+       ->mutable_unique_position() =
+      UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
+  ASSERT_THAT(
+      update.entity.specifics.shared_tab_group_data().tab().unique_position(),
+      Not(EqualsProto(entity->metadata().unique_position())));
+  sync_pb::EntitySpecifics specifics_copy = update.entity.specifics;
+  ProcessSharedSingleUpdate(std::move(update), {collaboration_id});
+  EXPECT_THAT(
+      entity->metadata().unique_position(),
+      EqualsProto(
+          specifics_copy.shared_tab_group_data().tab().unique_position()));
+
+  // Remote update matching data by re-using the same specifics.
+  update = GenerateSharedTabGroupTabUpdate("guid", collaboration_id);
+  update.entity.specifics = specifics_copy;
+  ProcessSharedSingleUpdate(std::move(update), {collaboration_id});
+  EXPECT_THAT(
+      entity->metadata().unique_position(),
+      EqualsProto(
+          specifics_copy.shared_tab_group_data().tab().unique_position()));
+}
+
+TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
+       ShouldPreferRemoteUniquePositionOverLocalDeletion) {
+  const std::string collaboration_id = "collaboration";
+  const std::string guid = "guid";
+
+  ProcessSharedSingleUpdate(
+      GenerateSharedTabGroupTabUpdate(guid, collaboration_id),
+      {collaboration_id});
+  ASSERT_EQ(1U, ProcessorEntityCount());
+  ASSERT_TRUE(db()->HasData(guid));
+  ASSERT_EQ(1U, db()->HasMetadata(guid));
+
+  // Mark local entity as deleted (tombstone).
+  db()->RemoveData(guid);
+  entity_tracker()->GetEntityForStorageKey(guid)->RecordLocalDeletion(
+      DeletionOrigin::Unspecified());
+  entity_tracker()->IncrementSequenceNumberForAllExcept({});
+  ASSERT_TRUE(entity_tracker()->HasLocalChanges());
+  const ProcessorEntity* entity =
+      entity_tracker()->GetEntityForStorageKey(guid);
+  ASSERT_THAT(entity, NotNull());
+  ASSERT_FALSE(entity->metadata().has_unique_position());
+
+  ProcessSharedSingleUpdate(
+      GenerateSharedTabGroupTabUpdate(guid, collaboration_id),
+      {collaboration_id});
+
+  ASSERT_EQ(entity, entity_tracker()->GetEntityForStorageKey(guid));
+  ASSERT_FALSE(entity->metadata().is_deleted());
+  EXPECT_TRUE(entity->metadata().has_unique_position());
+}
+
+TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
+       ShouldPreferRemoteUniquePositionOnConflict) {
+  const std::string collaboration_id = "collaboration";
+  const std::string guid = "guid";
+
+  ProcessSharedSingleUpdate(
+      GenerateSharedTabGroupTabUpdate(guid, collaboration_id),
+      {collaboration_id});
+
+  // Mark the local entity as updated for a conflict.
+  entity_tracker()->IncrementSequenceNumberForAllExcept({});
+  const ProcessorEntity* entity =
+      entity_tracker()->GetEntityForStorageKey(guid);
+  ASSERT_THAT(entity, NotNull());
+  ASSERT_TRUE(entity_tracker()->HasLocalChanges());
+  ASSERT_TRUE(entity->metadata().has_unique_position());
+
+  const sync_pb::UniquePosition original_unique_position =
+      entity->metadata().unique_position();
+
+  // Remote update with a new unique position.
+  UpdateResponseData update =
+      GenerateSharedTabGroupTabUpdate(guid, collaboration_id);
+  sync_pb::UniquePosition new_unique_position =
+      UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
+  *update.entity.specifics.mutable_shared_tab_group_data()
+       ->mutable_tab()
+       ->mutable_unique_position() = new_unique_position;
+  ASSERT_THAT(new_unique_position, Not(EqualsProto(original_unique_position)));
+  ProcessSharedSingleUpdate(std::move(update), {collaboration_id});
+
+  ASSERT_EQ(entity, entity_tracker()->GetEntityForStorageKey(guid));
+  EXPECT_TRUE(entity->metadata().has_unique_position());
+  EXPECT_THAT(entity->metadata().unique_position(),
+              EqualsProto(new_unique_position));
 }
 
 }  // namespace

@@ -11,6 +11,7 @@
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state_helper.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
+#include "components/sync/protocol/unique_position.pb.h"
 
 namespace syncer {
 
@@ -67,7 +68,8 @@ size_t ProcessorEntityTracker::CountNonTombstoneEntries() const {
 ProcessorEntity* ProcessorEntityTracker::AddUnsyncedLocal(
     const std::string& storage_key,
     std::unique_ptr<EntityData> data,
-    sync_pb::EntitySpecifics trimmed_specifics) {
+    sync_pb::EntitySpecifics trimmed_specifics,
+    std::optional<sync_pb::UniquePosition> unique_position) {
   DCHECK(data);
   DCHECK(!data->client_tag_hash.value().empty());
   DCHECK(!GetEntityForTagHash(data->client_tag_hash));
@@ -76,14 +78,16 @@ ProcessorEntity* ProcessorEntityTracker::AddUnsyncedLocal(
 
   ProcessorEntity* entity =
       AddInternal(storage_key, *data, kUncommittedVersion);
-  entity->RecordLocalUpdate(std::move(data), std::move(trimmed_specifics));
+  entity->RecordLocalUpdate(std::move(data), std::move(trimmed_specifics),
+                            std::move(unique_position));
   return entity;
 }
 
 ProcessorEntity* ProcessorEntityTracker::AddRemote(
     const std::string& storage_key,
     const UpdateResponseData& update_data,
-    sync_pb::EntitySpecifics trimmed_specifics) {
+    sync_pb::EntitySpecifics trimmed_specifics,
+    std::optional<sync_pb::UniquePosition> unique_position) {
   const EntityData& data = update_data.entity;
   DCHECK(!data.client_tag_hash.value().empty());
   DCHECK(!GetEntityForTagHash(data.client_tag_hash));
@@ -94,7 +98,8 @@ ProcessorEntity* ProcessorEntityTracker::AddRemote(
 
   ProcessorEntity* entity =
       AddInternal(storage_key, data, update_data.response_version);
-  entity->RecordAcceptedRemoteUpdate(update_data, std::move(trimmed_specifics));
+  entity->RecordAcceptedRemoteUpdate(update_data, std::move(trimmed_specifics),
+                                     std::move(unique_position));
   return entity;
 }
 
