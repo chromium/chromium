@@ -414,7 +414,8 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests that the batch upload dialog is shown and has the correct string for a
 // single local bookmark.
-- (void)testBatchUploadDialogTestIfSingleLocalBookmark {
+// TODO(crbug.com/357828862): Test disabled because flakey in M128.
+- (void)DISABLED_testBatchUploadDialogTestIfSingleLocalBookmark {
   // Add one local bookmark.
   [BookmarkEarlGrey addBookmarkWithTitle:@"example1"
                                      URL:@"https://www.example1.com"
@@ -475,7 +476,8 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests that the batch upload dialog is removed if local bookmarks are removed
 // behind the screen.
-- (void)testBatchUploadDialogRemovedIfLocalBookmarkIsRemoved {
+// TODO(crbug.com/357828862): Test disabled because flakey in M128.
+- (void)DISABLED_testBatchUploadDialogRemovedIfLocalBookmarkIsRemoved {
   // Add one local bookmark.
   [BookmarkEarlGrey addBookmarkWithTitle:@"example1"
                                      URL:@"https://www.example1.com"
