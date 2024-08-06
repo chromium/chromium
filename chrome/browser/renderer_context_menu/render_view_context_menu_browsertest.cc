@@ -3439,8 +3439,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), starting_tab_index);
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
-                       ImageSearchContextMenuOpensImageSearchForKeyboard) {
+// https://crbug.com/1444953
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#define MAYBE_ImageSearchContextMenuOpensImageSearchForKeyboard \
+  DISABLED_ImageSearchContextMenuOpensImageSearchForKeyboard
+#else
+#define MAYBE_ImageSearchContextMenuOpensImageSearchForKeyboard \
+  ImageSearchContextMenuOpensImageSearchForKeyboard
+#endif
+IN_PROC_BROWSER_TEST_F(
+    LensOverlayBrowserTest,
+    MAYBE_ImageSearchContextMenuOpensImageSearchForKeyboard) {
   bool run = false;
   int starting_tab_index = browser()->tab_strip_model()->active_index();
   // EF_NONE event_type will be treated as a keyboard press.
