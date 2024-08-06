@@ -182,7 +182,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/inspector-protocol/attribution-reporting"],
     "args": ["--enable-features=KeepAliveInBrowserMigration,AttributionReportingInBrowserMigration"],
-    "owners": ["anthonygarant@chromium.org"],
+    "owners": ["linnan@chromium.org"],
     "expires": "Jan 2, 2025"
   },
   {
@@ -2350,7 +2350,7 @@
     "exclusive_tests": "ALL",
     "args": ["--enable-features=CookieDeprecationFacilitatedTesting:label/label_test"],
     "expires": "Dec 30, 2024",
-    "owners": ["linnan@chromium.org", "anthonygarant@chromium.org"]
+    "owners": ["linnan@chromium.org", "johnidel@chromium.org"]
   },
   {
     "prefix": "ancestor-chain-bit-considered",

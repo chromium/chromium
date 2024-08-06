@@ -165,7 +165,7 @@ reviewer.
 
 <histogram name="Privacy.3PCD.SecCookieDeprecationHeaderStatus"
     enum="SecCookieDeprecationHeaderStatus" expires_after="2025-01-05">
-  <owner>anthonygarant@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
   <owner>src/chrome/browser/tpcd/OWNERS</owner>
   <summary>
     Recorded only for requests where a 3pcd facilitated testing is enabled (the
@@ -1180,8 +1180,7 @@ reviewer.
     name="PrivacySandbox.CookieDeprecationFacilitatedTesting.ReasonForComputedEligibilityForProfile"
     enum="CookieDeprecationFacilitatedTestingProfileEligibility"
     expires_after="2024-10-25">
-  <owner>anthonygarant@chromium.org</owner>
-  <owner>linan@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Records a profile computed eligibility to cookie deprecation facilitated
@@ -1204,8 +1203,7 @@ reviewer.
     name="PrivacySandbox.CookieDeprecationFacilitatedTesting.ReasonForEligibilityStoredInPrefs"
     enum="CookieDeprecationFacilitatedTestingProfileEligibility"
     expires_after="2024-12-24">
-  <owner>anthonygarant@chromium.org</owner>
-  <owner>linan@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Records the profile's computed eligibility which was used to set the
@@ -1320,7 +1318,6 @@ reviewer.
     name="PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus2"
     enum="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus2"
     expires_after="M130">
-  <owner>anthonygarant@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1363,8 +1360,8 @@ reviewer.
 <histogram
     name="PrivacySandbox.PrivateAggregation.BudgetStorage.BeginInitializationCount"
     units="units" expires_after="2025-06-30">
-  <owner>anthonygarant@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Count the number of times the budget storage begins initialization. This
     metric is intended to be used in conjunction with the
