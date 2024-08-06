@@ -2055,6 +2055,11 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
          'rather than implicit. See BrowserUserData header file for more '
          'details.', ),
         treat_as_error=False,
+        excluded_paths=(
+          # Exclude iOS as the iOS implementation of BrowserUserData is separate
+          # and still in use.
+          '^ios/',
+        ),
     ),
 )
 
