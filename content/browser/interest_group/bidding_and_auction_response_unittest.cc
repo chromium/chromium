@@ -29,6 +29,7 @@ const char kUntrustedURL[] = "http://untrusted.example.com/foo";
 const char kReportingURL[] = "https://reporting.example.com/report";
 const char kAggregationCoordinator[] = "https://coordinator.example.com";
 const char kAggregationCoordinator2[] = "https://coordinator2.example.com";
+const char kDebugReportingURL[] = "https://fdo.com/report";
 
 const base::flat_map<url::Origin, std::vector<std::string>> GroupNames() {
   return base::MakeFlatMap<url::Origin, std::vector<std::string>>(
@@ -130,6 +131,26 @@ base::Value::Dict CreateResponseDictWithPAggResponse(
                            .Set("igIndex", 1)
                            .Set("eventContributions",
                                 std::move(event_contributions))))));
+}
+
+base::Value::Dict CreateResponseDictWithDebugReports(
+    std::optional<bool> maybe_is_win_report,
+    std::optional<bool> maybe_component_win) {
+  base::Value::Dict report;
+  report.Set("url", kDebugReportingURL);
+  if (maybe_is_win_report.has_value()) {
+    report.Set("isWinReport", *maybe_is_win_report);
+  }
+  if (maybe_component_win.has_value()) {
+    report.Set("componentWin", *maybe_component_win);
+  }
+
+  return CreateValidResponseDict().Set(
+      "debugReports",
+      base::Value::List().Append(
+          base::Value::Dict()
+              .Set("adTechOrigin", kOwnerOrigin)
+              .Set("reports", base::Value::List().Append(std::move(report)))));
 }
 
 std::string ToString(
@@ -1198,6 +1219,156 @@ TEST_F(BiddingAndAuctionPAggResponseTest,
           result->server_filtered_pagg_requests_non_reserved[test_case.event],
           ElementsAreRequests(test_case.pagg_request));
     }
+  }
+}
+TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReports) {
+  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+  base::Value::List reports;
+  reports.Append(base::Value::Dict()
+                     .Set("isWinReport", true)
+                     .Set("componentWin", true)
+                     .Set("url", "https://component-win.win-debug-report.com"));
+  reports.Append(
+      base::Value::Dict()
+          .Set("isWinReport", false)
+          .Set("componentWin", true)
+          .Set("url", "https://component-win.loss-debug-report.com"));
+  reports.Append(base::Value::Dict().Set("url", kDebugReportingURL));
+
+  base::Value::Dict response = CreateValidResponseDict().Set(
+      "debugReports",
+      base::Value::List().Append(base::Value::Dict()
+                                     .Set("adTechOrigin", kOwnerOrigin)
+                                     .Set("reports", std::move(reports))));
+  std::optional<BiddingAndAuctionResponse> result =
+      BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
+                                          GroupNames(),
+                                          /*group_pagg_coordinators=*/{});
+  ASSERT_TRUE(result);
+  EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
+
+  EXPECT_EQ(2u, result->component_winner_debugging_only_reports.size());
+  EXPECT_THAT(result->component_winner_debugging_only_reports[std::make_pair(
+                  url::Origin::Create(GURL(kOwnerOrigin)), true)],
+              testing::UnorderedElementsAre(
+                  GURL("https://component-win.win-debug-report.com")));
+  EXPECT_THAT(result->component_winner_debugging_only_reports[std::make_pair(
+                  url::Origin::Create(GURL(kOwnerOrigin)), false)],
+              testing::UnorderedElementsAre(
+                  GURL("https://component-win.loss-debug-report.com")));
+
+  EXPECT_EQ(1u, result->server_filtered_debugging_only_reports.size());
+  EXPECT_THAT(
+      result->server_filtered_debugging_only_reports[url::Origin::Create(
+          GURL(kOwnerOrigin))],
+      testing::UnorderedElementsAre(kDebugReportingURL));
+}
+
+TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReportsIgnoreErrors) {
+  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+  static const base::Value kTestCases[] = {
+      {
+          base::Value(
+              CreateValidResponseDict().Set("debugReports", "not a list")),
+      },
+      {base::Value(CreateValidResponseDict().Set(
+          "debugReports", base::Value::List().Append("not a dict")))},
+      // Miss required ad tech origin.
+      {base::Value(CreateValidResponseDict().Set(
+          "debugReports",
+          base::Value::List().Append(base::Value::Dict().Set(
+              "reports", base::Value::List().Append(base::Value::Dict().Set(
+                             "url", "https://fdo.com"))))))},
+      // Http ad tech origin.
+      {base::Value(CreateValidResponseDict().Set(
+          "debugReports",
+          base::Value::List().Append(
+              base::Value::Dict()
+                  .Set("adTechOrigin", "http://adtech.com")
+                  .Set("reports",
+                       base::Value::List().Append(base::Value::Dict().Set(
+                           "url", "https://fdo.com"))))))},
+      // Http url.
+      {base::Value(CreateValidResponseDict().Set(
+          "debugReports",
+          base::Value::List().Append(
+              base::Value::Dict()
+                  .Set("adTechOrigin", "https://adtech.com")
+                  .Set("reports",
+                       base::Value::List().Append(base::Value::Dict().Set(
+                           "url", "http://fdo.com"))))))},
+      // Invalid url.
+      {base::Value(CreateValidResponseDict().Set(
+          "debugReports",
+          base::Value::List().Append(
+              base::Value::Dict()
+                  .Set("adTechOrigin", "https://adtech.com")
+                  .Set("reports",
+                       base::Value::List().Append(
+                           base::Value::Dict().Set("url", "not a url"))))))},
+  };
+  for (const auto& response : kTestCases) {
+    SCOPED_TRACE(response.DebugString());
+    std::optional<BiddingAndAuctionResponse> result =
+        BiddingAndAuctionResponse::TryParse(response.Clone(), GroupNames(),
+                                            /*group_pagg_coordinators=*/{});
+    ASSERT_TRUE(result);
+    EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
+
+    EXPECT_TRUE(result->component_winner_debugging_only_reports.empty());
+    EXPECT_TRUE(result->server_filtered_debugging_only_reports.empty());
+  }
+}
+
+TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReportsComponentWinner) {
+  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+  static const std::optional<bool> kTestCases[] = {
+      true,
+      false,
+      std::nullopt,
+  };
+  for (const auto& test_case : kTestCases) {
+    base::Value::Dict response = CreateResponseDictWithDebugReports(
+        test_case, /*maybe_component_win=*/true);
+    SCOPED_TRACE(response.DebugString());
+    std::optional<BiddingAndAuctionResponse> result =
+        BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
+                                            GroupNames(),
+                                            /*group_pagg_coordinators=*/{});
+    ASSERT_TRUE(result);
+    EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
+    EXPECT_EQ(1u, result->component_winner_debugging_only_reports.size());
+    bool is_win_report = test_case.has_value() && *test_case;
+    EXPECT_THAT(result->component_winner_debugging_only_reports[std::make_pair(
+                    url::Origin::Create(GURL(kOwnerOrigin)), is_win_report)],
+                testing::UnorderedElementsAre(kDebugReportingURL));
+    EXPECT_TRUE(result->server_filtered_debugging_only_reports.empty());
+  }
+}
+
+TEST(BiddingAndAuctionResponseTest, ForDebuggingOnlyReportsServerFiltered) {
+  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
+  static const std::optional<bool> kTestCases[] = {
+      true,
+      false,
+      std::nullopt,
+  };
+  for (const auto& test_case : kTestCases) {
+    base::Value::Dict response = CreateResponseDictWithDebugReports(
+        test_case, /*maybe_component_win=*/false);
+    SCOPED_TRACE(response.DebugString());
+    std::optional<BiddingAndAuctionResponse> result =
+        BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
+                                            GroupNames(),
+                                            /*group_pagg_coordinators=*/{});
+    ASSERT_TRUE(result);
+    EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
+    EXPECT_TRUE(result->component_winner_debugging_only_reports.empty());
+    EXPECT_EQ(1u, result->server_filtered_debugging_only_reports.size());
+    EXPECT_THAT(
+        result->server_filtered_debugging_only_reports[url::Origin::Create(
+            GURL(kOwnerOrigin))],
+        testing::UnorderedElementsAre(kDebugReportingURL));
   }
 }
 

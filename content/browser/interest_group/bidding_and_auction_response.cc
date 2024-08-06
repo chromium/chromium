@@ -239,6 +239,12 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
                            output);
     }
   }
+  base::Value::List* for_debugging_only_reports =
+      input_dict->FindList("debugReports");
+  if (for_debugging_only_reports) {
+    TryParseForDebuggingOnlyReports(*for_debugging_only_reports, output);
+  }
+
   output.result = AuctionResult::kSuccess;
   return std::move(output);
 }
@@ -327,8 +333,7 @@ void BiddingAndAuctionResponse::TryParsePAggIgContributions(
       TryParsePAggEventContributions(
           *event_contributions, reporting_origin,
           aggregation_coordinator_origin,
-          maybe_component_win.has_value() ? *maybe_component_win : false,
-          output);
+          maybe_component_win.has_value() && *maybe_component_win, output);
     }
   }
 }
@@ -443,6 +448,81 @@ void BiddingAndAuctionResponse::TryParsePAggContributions(
         output.server_filtered_pagg_requests_non_reserved[event_type_str]
             .emplace_back(std::move(request));
       }
+    }
+  }
+}
+
+// static
+void BiddingAndAuctionResponse::TryParseForDebuggingOnlyReports(
+    const base::Value::List& for_debugging_only_reports,
+    BiddingAndAuctionResponse& output) {
+  for (const auto& per_origin_debug_reports : for_debugging_only_reports) {
+    const base::Value::Dict* per_origin_debug_reports_dict =
+        per_origin_debug_reports.GetIfDict();
+    if (!per_origin_debug_reports_dict) {
+      continue;
+    }
+    const std::string* maybe_ad_tech_origin =
+        per_origin_debug_reports_dict->FindString("adTechOrigin");
+    if (!maybe_ad_tech_origin) {
+      continue;
+    }
+    url::Origin ad_tech_origin =
+        url::Origin::Create(GURL(*maybe_ad_tech_origin));
+    if (!network::IsOriginPotentiallyTrustworthy(ad_tech_origin)) {
+      continue;
+    }
+    const base::Value::List* reports =
+        per_origin_debug_reports_dict->FindList("reports");
+    if (reports) {
+      for (const auto& report : *reports) {
+        const base::Value::Dict* report_dict = report.GetIfDict();
+        if (!report_dict) {
+          continue;
+        }
+        TryParseSingleDebugReport(ad_tech_origin, *report_dict, output);
+      }
+    }
+  }
+}
+
+// static
+void BiddingAndAuctionResponse::TryParseSingleDebugReport(
+    const url::Origin& ad_tech_origin,
+    const base::Value::Dict& report_dict,
+    BiddingAndAuctionResponse& output) {
+  std::optional<bool> maybe_is_win_report = report_dict.FindBool("isWinReport");
+  bool is_win_report = maybe_is_win_report.has_value() && *maybe_is_win_report;
+  std::optional<bool> maybe_component_win =
+      report_dict.FindBool("componentWin");
+
+  const std::string* maybe_url_str = report_dict.FindString("url");
+  if (maybe_url_str) {
+    GURL reporting_url(*maybe_url_str);
+    if (!reporting_url.is_valid() ||
+        !network::IsUrlPotentiallyTrustworthy(reporting_url)) {
+      return;
+    }
+    if (!maybe_component_win.has_value() || !*maybe_component_win) {
+      output.server_filtered_debugging_only_reports[ad_tech_origin]
+          .emplace_back(reporting_url);
+    } else {
+      output
+          .component_winner_debugging_only_reports[std::make_pair(
+              ad_tech_origin, is_win_report)]
+          .emplace_back(reporting_url);
+    }
+  } else {
+    // "url" field is allowed to be not set in debugReports, for cases like
+    // forDebuggingOnly APIs were called but server side sampling filtered them
+    // out. There's still an entry for this in debugReports to tell Chrome to
+    // set cooldown for the ad tech origin.
+    // Insert an entry to corresponding maps for `ad_tech_origin`.
+    if (!maybe_component_win.has_value() || !*maybe_component_win) {
+      output.server_filtered_debugging_only_reports[ad_tech_origin];
+    } else {
+      output.component_winner_debugging_only_reports[std::make_pair(
+          ad_tech_origin, is_win_report)];
     }
   }
 }

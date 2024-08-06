@@ -75,6 +75,14 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
       const PrivateAggregationKey& agg_key,
       BiddingAndAuctionResponse& output);
 
+  static void TryParseForDebuggingOnlyReports(
+      const base::Value::List& for_debugging_only_reporting,
+      BiddingAndAuctionResponse& output);
+
+  static void TryParseSingleDebugReport(const url::Origin& ad_tech_origin,
+                                        const base::Value::Dict& report_dict,
+                                        BiddingAndAuctionResponse& output);
+
   struct CONTENT_EXPORT ReportingURLs {
     ReportingURLs();
     ~ReportingURLs();
@@ -128,6 +136,17 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
       server_filtered_pagg_requests_reserved;
   std::map<std::string, PrivateAggregationRequests>
       server_filtered_pagg_requests_non_reserved;
+
+  // forDebuggingOnly reports from component winning buyer/seller. These need to
+  // be further filtered based on the final auction result. Keyed by a pair of
+  // origin that the report came from and a bool of whether it's win or loss
+  // report.
+  std::map<std::pair<url::Origin, bool>, std::vector<GURL>>
+      component_winner_debugging_only_reports;
+
+  // forDebuggingOnly reports that have been filtered by the server.
+  std::map<url::Origin, std::vector<GURL>>
+      server_filtered_debugging_only_reports;
 };
 
 }  // namespace content
