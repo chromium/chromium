@@ -94,6 +94,20 @@ export class TabOrganizationResultsElement extends CrLitElement {
     this.$.scrollable.addEventListener('scroll', this.updateScroll_.bind(this));
   }
 
+  getTitle(): string {
+    if (this.missingActiveTab_()) {
+      return loadTimeData.getString('successMissingActiveTabTitle');
+    }
+    if (this.multiTabOrganization) {
+      if (this.hasMultipleOrganizations_()) {
+        return loadTimeData.getStringF(
+            'successTitleMulti', this.getOrganizations_().length);
+      }
+      return loadTimeData.getString('successTitleSingle');
+    }
+    return loadTimeData.getString('successTitle');
+  }
+
   focusInput() {
     const group = this.shadowRoot!.querySelector('tab-organization-group');
     if (!group) {
@@ -135,20 +149,6 @@ export class TabOrganizationResultsElement extends CrLitElement {
       return false;
     }
     return true;
-  }
-
-  protected getTitle_(): string {
-    if (this.missingActiveTab_()) {
-      return loadTimeData.getString('successMissingActiveTabTitle');
-    }
-    if (this.multiTabOrganization) {
-      if (this.hasMultipleOrganizations_()) {
-        return loadTimeData.getStringF(
-            'successTitleMulti', this.getOrganizations_().length);
-      }
-      return loadTimeData.getString('successTitleSingle');
-    }
-    return loadTimeData.getString('successTitle');
   }
 
   protected getOrganizations_(): TabOrganization[] {

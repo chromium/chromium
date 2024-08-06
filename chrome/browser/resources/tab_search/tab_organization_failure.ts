@@ -42,8 +42,8 @@ export class TabOrganizationFailureElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
-  protected getTitle_(): string {
-    switch (this.error) {
+  getTitle(error: TabOrganizationError): string {
+    switch (error) {
       case TabOrganizationError.kGrouping:
         return loadTimeData.getString('failureTitleGrouping');
       case TabOrganizationError.kGeneric:

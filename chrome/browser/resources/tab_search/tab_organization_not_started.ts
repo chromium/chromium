@@ -59,13 +59,13 @@ export class TabOrganizationNotStartedElement extends
     this.addWebUiListener('has-accoun-changed', this.setSignedIn_.bind(this));
   }
 
-  private setSignedIn_(signedIn: boolean) {
-    this.signedIn_ = signedIn;
-  }
-
-  protected getTitle_(): string {
+  getTitle(): string {
     return loadTimeData.getString(
         this.showFre ? 'notStartedTitleFRE' : 'notStartedTitle');
+  }
+
+  private setSignedIn_(signedIn: boolean) {
+    this.signedIn_ = signedIn;
   }
 
   protected getBody_(): string {
