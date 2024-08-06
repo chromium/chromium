@@ -15,6 +15,9 @@ static_library("babelorca") {
     "request_data_wrapper.h",
     "response_callback_wrapper.h",
     "response_callback_wrapper_impl.h",
+    "tachyon_authed_client.h",
+    "tachyon_authed_client_impl.cc",
+    "tachyon_authed_client_impl.h",
     "tachyon_client.h",
     "tachyon_client_impl.cc",
     "tachyon_client_impl.h",
@@ -59,6 +62,7 @@ source_set("unit_tests") {
   sources = [
     "oauth_token_fetcher_unittest.cc",
     "response_callback_wrapper_impl_unittest.cc",
+    "tachyon_authed_client_impl_unittest.cc",
     "tachyon_client_impl_unittest.cc",
     "token_manager_impl_unittest.cc",
   ]
@@ -73,6 +77,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//google_apis",
     "//net",
+    "//net/traffic_annotation:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",
