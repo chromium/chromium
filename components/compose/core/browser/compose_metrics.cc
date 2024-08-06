@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -195,6 +196,14 @@ void LogOpenComposeDialogResult(OpenComposeDialogResult result) {
 
 void LogStartSessionEntryPoint(ComposeEntryPoint entry_point) {
   base::UmaHistogramEnumeration(kComposeStartSessionEntryPoint, entry_point);
+
+  if (entry_point == ComposeEntryPoint::kProactiveNudge) {
+    base::RecordAction(
+        base::UserMetricsAction("Compose.StartedSession.ProactiveNudge"));
+  } else if (entry_point == ComposeEntryPoint::kContextMenu) {
+    base::RecordAction(
+        base::UserMetricsAction("Compose.StartedSession.ContextMenu"));
+  }
 }
 
 void LogResumeSessionEntryPoint(ComposeEntryPoint entry_point) {
