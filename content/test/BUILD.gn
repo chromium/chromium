@@ -2934,6 +2934,7 @@ test("content_unittests") {
     sources += [
       "../browser/compute_pressure/pressure_service_for_frame_unittest.cc",
       "../browser/compute_pressure/pressure_service_for_worker_unittest.cc",
+      "../browser/webid/digital_credentials/cross_device_request_dispatcher_unittest.cc",
     ]
   }
 
@@ -3371,6 +3372,8 @@ test("content_unittests") {
     ]
     deps += [
       "//components/speech:speech",
+      "//device/fido:cablev2_authenticator",
+      "//device/fido:cablev2_test_util",
       "//media/mojo/mojom:web_speech_recognition",
     ]
 

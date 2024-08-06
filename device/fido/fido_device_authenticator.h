@@ -126,6 +126,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   void Reset(ResetCallback callback) override;
   void Cancel() override;
   AuthenticatorType GetType() const override;
+  cablev2::FidoTunnelDevice* GetTunnelDevice() override;
   std::string GetId() const override;
   std::string GetDisplayName() const override;
   ProtocolVersion SupportedProtocol() const override;

@@ -185,6 +185,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
       cable_invalidated_pairing_callback_;
   std::optional<base::RepeatingCallback<void(cablev2::Event)>>
       cable_event_callback_;
+  bool cable_must_support_ctap_ = true;
 #if BUILDFLAG(IS_CHROMEOS)
   base::RepeatingCallback<std::string()> generate_request_id_callback_;
   bool require_legacy_cros_authenticator_ = false;

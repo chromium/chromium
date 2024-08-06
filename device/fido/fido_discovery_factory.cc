@@ -91,7 +91,7 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
               cable_data_.value_or(std::vector<CableDiscoveryData>()),
               std::move(cable_pairing_callback_),
               std::move(cable_invalidated_pairing_callback_),
-              std::move(cable_event_callback_)));
+              std::move(cable_event_callback_), cable_must_support_ctap_));
         }
 
         ret.emplace_back(std::move(v1_discovery));

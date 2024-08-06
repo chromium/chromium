@@ -84,8 +84,9 @@ enum class MessageType : uint8_t {
   kShutdown = 0,
   kCTAP = 1,
   kUpdate = 2,
+  kJSON = 3,
 
-  kMaxValue = 2,
+  kMaxValue = 3,
 };
 
 enum class Event {
@@ -97,6 +98,20 @@ enum class Event {
   kBLEAdvertReceived,
   // kReady means that the device is ready to receive a CTAP-level message.
   kReady,
+};
+
+// PayloadType enumerates the types of application-level payloads carried over a
+// hybrid connection.
+enum class PayloadType {
+  kCTAP,
+  kJSON,
+};
+
+// Feature enumerates the features that a hybrid device can support.
+enum class Feature {
+  kCTAP,
+  // Digital identity requests, e.g. mobile driver's licenses.
+  kDigitialIdentities,
 };
 
 }  // namespace cablev2

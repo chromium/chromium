@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/notreached.h"
+#include "device/fido/cable/fido_tunnel_device.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_constants.h"
 
@@ -188,6 +189,10 @@ void FidoAuthenticator::Reset(ResetCallback callback) {
 
 AuthenticatorType FidoAuthenticator::GetType() const {
   return AuthenticatorType::kOther;
+}
+
+cablev2::FidoTunnelDevice* FidoAuthenticator::GetTunnelDevice() {
+  return nullptr;
 }
 
 std::string FidoAuthenticator::GetDisplayName() const {

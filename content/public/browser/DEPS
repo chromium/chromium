@@ -42,6 +42,10 @@ specific_include_rules = {
     "+device/fido",
   ],
 
+  "digital_credentials_cross_device\.h": [
+    "+device/fido",
+  ],
+
   "desktop_capture\.h": [
     # desktop_capture.h creates a DesktopCaptureOptions to share between
     # content/browser and chrome/browser.

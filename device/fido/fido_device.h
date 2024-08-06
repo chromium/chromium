@@ -20,6 +20,10 @@
 
 namespace device {
 
+namespace cablev2 {
+class FidoTunnelDevice;
+}
+
 // Device abstraction for an individual CTAP1.0/CTAP2.0 device.
 //
 // Devices are instantiated with an unknown protocol version. Users should call
@@ -90,6 +94,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDevice {
   // same VID:PID. It defaults to returning the value of |GetId|.
   virtual std::string GetDisplayName() const;
   virtual FidoTransportProtocol DeviceTransport() const = 0;
+  virtual cablev2::FidoTunnelDevice* GetTunnelDevice();
 
   // NoSilentRequests returns true if this device does not support up=false
   // requests.

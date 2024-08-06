@@ -1,2 +1,5 @@
 pkotwicz@chromium.org
 file://content/browser/webid/OWNERS
+
+# For maintainence of interactions with //device/fido
+file://device/fido/OWNERS

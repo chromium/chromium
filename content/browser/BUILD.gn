@@ -3373,6 +3373,11 @@ source_set("browser") {
       "picture_in_picture/document_picture_in_picture_navigation_throttle.h",
       "picture_in_picture/document_picture_in_picture_window_controller_impl.cc",
       "picture_in_picture/document_picture_in_picture_window_controller_impl.h",
+
+      # Cross-device digital credentials flows are handled by Play Services on
+      # Android, not the browser.
+      "webid/digital_credentials/cross_device_request_dispatcher.cc",
+      "webid/digital_credentials/cross_device_request_dispatcher.h",
     ]
 
     if (!is_fuchsia) {
@@ -3385,6 +3390,7 @@ source_set("browser") {
     }
 
     deps += [
+      "//components/device_event_log",
       "//components/soda:constants",
       "//components/soda:soda",
       "//components/soda:utils",

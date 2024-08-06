@@ -9338,7 +9338,7 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
         /*contact_device_stream=*/nullptr,
         /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
         GetPairingCallback(), GetInvalidatedPairingCallback(),
-        GetEventCallback());
+        GetEventCallback(), /*must_support_ctap=*/true);
 
     ReplaceDiscoveryFactory(
         std::make_unique<DiscoveryFactory>(std::move(discovery)));
@@ -9380,7 +9380,7 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
         std::move(callback_and_event_stream.second),
         /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
         GetPairingCallback(), GetInvalidatedPairingCallback(),
-        GetEventCallback());
+        GetEventCallback(), /*must_support_ctap=*/true);
 
     maybe_contact_phones_callback_ = base::BindLambdaForTesting([&]() {
       callback_and_event_stream.first.Run(
@@ -9486,8 +9486,8 @@ TEST_F(AuthenticatorCableV2Test, QRBasedWithNoPairing) {
       qr_generator_key_, std::move(ble_advert_events_),
       /*contact_device_stream=*/nullptr,
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
-      GetPairingCallback(), GetInvalidatedPairingCallback(),
-      GetEventCallback());
+      GetPairingCallback(), GetInvalidatedPairingCallback(), GetEventCallback(),
+      /*must_support_ctap=*/true);
 
   ReplaceDiscoveryFactory(
       std::make_unique<DiscoveryFactory>(std::move(discovery)));
@@ -9516,8 +9516,8 @@ TEST_F(AuthenticatorCableV2Test, HandshakeError) {
       qr_generator_key_, std::move(ble_advert_events_),
       /*contact_device_stream=*/nullptr,
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
-      GetPairingCallback(), GetInvalidatedPairingCallback(),
-      GetEventCallback());
+      GetPairingCallback(), GetInvalidatedPairingCallback(), GetEventCallback(),
+      /*must_support_ctap=*/true);
 
   ReplaceDiscoveryFactory(
       std::make_unique<DiscoveryFactory>(std::move(discovery)));
@@ -9557,8 +9557,8 @@ TEST_F(AuthenticatorCableV2Test, NetworkServiceCrash) {
       qr_generator_key_, std::move(ble_advert_events_),
       /*contact_device_stream=*/nullptr,
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
-      GetPairingCallback(), GetInvalidatedPairingCallback(),
-      GetEventCallback());
+      GetPairingCallback(), GetInvalidatedPairingCallback(), GetEventCallback(),
+      /*must_support_ctap=*/true);
 
   ReplaceDiscoveryFactory(
       std::make_unique<DiscoveryFactory>(std::move(discovery)));
@@ -9635,8 +9635,8 @@ TEST_F(AuthenticatorCableV2Test, ContactIDDisabled) {
       qr_generator_key_, std::move(ble_advert_events_),
       std::move(callback_and_event_stream.second),
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
-      GetPairingCallback(), GetInvalidatedPairingCallback(),
-      GetEventCallback());
+      GetPairingCallback(), GetInvalidatedPairingCallback(), GetEventCallback(),
+      /*must_support_ctap=*/true);
 
   ReplaceDiscoveryFactory(
       std::make_unique<DiscoveryFactory>(std::move(discovery)));
@@ -9709,7 +9709,8 @@ TEST_F(AuthenticatorCableV2Test, ServerLink) {
       base::BindLambdaForTesting([&]() { return network_context_.get(); }),
       qr_generator_key_, std::move(ble_advert_events_),
       /*contact_device_stream=*/nullptr, extension_values, GetPairingCallback(),
-      GetInvalidatedPairingCallback(), GetEventCallback());
+      GetInvalidatedPairingCallback(), GetEventCallback(),
+      /*must_support_ctap=*/true);
 
   ReplaceDiscoveryFactory(
       std::make_unique<DiscoveryFactory>(std::move(discovery)));
@@ -9742,8 +9743,8 @@ TEST_F(AuthenticatorCableV2Test, LateLinking) {
       qr_generator_key_, std::move(ble_advert_events_),
       /*contact_device_stream=*/nullptr,
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
-      GetPairingCallback(), GetInvalidatedPairingCallback(),
-      GetEventCallback());
+      GetPairingCallback(), GetInvalidatedPairingCallback(), GetEventCallback(),
+      /*must_support_ctap=*/true);
 
   ReplaceDiscoveryFactory(
       std::make_unique<DiscoveryFactory>(std::move(discovery)));
@@ -9786,7 +9787,7 @@ class AuthenticatorCableV2AuthenticatorTest
         /*contact_device_stream=*/nullptr,
         /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
         GetPairingCallback(), GetInvalidatedPairingCallback(),
-        GetEventCallback());
+        GetEventCallback(), /*must_support_ctap=*/true);
 
     ReplaceDiscoveryFactory(
         std::make_unique<DiscoveryFactory>(std::move(discovery)));

@@ -58,7 +58,8 @@ Discovery::Discovery(
         pairing_callback,
     std::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
         invalidated_pairing_callback,
-    std::optional<base::RepeatingCallback<void(Event)>> event_callback)
+    std::optional<base::RepeatingCallback<void(Event)>> event_callback,
+    bool must_support_ctap)
     : FidoDeviceDiscovery(FidoTransportProtocol::kHybrid),
       request_type_(request_type),
       network_context_factory_(std::move(network_context_factory)),
@@ -68,7 +69,8 @@ Discovery::Discovery(
       contact_device_stream_(std::move(contact_device_stream)),
       pairing_callback_(std::move(pairing_callback)),
       invalidated_pairing_callback_(std::move(invalidated_pairing_callback)),
-      event_callback_(std::move(event_callback)) {
+      event_callback_(std::move(event_callback)),
+      must_support_ctap_(must_support_ctap) {
   static_assert(EXTENT(*qr_generator_key) == kQRSecretSize + kQRSeedSize, "");
   advert_stream_->Connect(
       base::BindRepeating(&Discovery::OnBLEAdvertSeen, base::Unretained(this)));
@@ -161,7 +163,8 @@ void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
       }
       AddDevice(std::make_unique<cablev2::FidoTunnelDevice>(
           network_context_factory_, pairing_callback_, event_callback_,
-          qr_keys_->qr_secret, qr_keys_->local_identity_seed, *plaintext));
+          qr_keys_->qr_secret, qr_keys_->local_identity_seed, *plaintext,
+          must_support_ctap_));
       return;
     }
   }
@@ -177,7 +180,8 @@ void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
       device_committed_ = true;
       AddDevice(std::make_unique<cablev2::FidoTunnelDevice>(
           network_context_factory_, base::DoNothing(), event_callback_,
-          extension.qr_secret, extension.local_identity_seed, *plaintext));
+          extension.qr_secret, extension.local_identity_seed, *plaintext,
+          must_support_ctap_));
       return;
     }
   }
