@@ -11,56 +11,21 @@
 #include "base/task/thread_pool.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/browser_metrics.h"
 #include "ui/display/screen.h"
 
 namespace content {
-
-namespace {
-// TODO(crbug.com/40256003): Consult with Clank team to see if we have
-// any metrics for this.
-#if BUILDFLAG(IS_ANDROID)
-constexpr static size_t kMaxNumThumbnails = 20U;
-#else
-constexpr static size_t kMaxNumThumbnails = 0U;
-#endif
-
-// TODO(crbug.com/40256003): Optimise the memory budget. This is fine for
-// MVP, but we need to consult the Clank team for a more propriate budget size.
-static size_t GetMemoryBudget() {
-  // Assume 4 bytes per pixel. This value estimates the max number of bytes of
-  // the physical screen's bitmap.
-  const static size_t kDisplaySizeInBytes = 4 * display::Screen::GetScreen()
-                                                    ->GetPrimaryDisplay()
-                                                    .GetSizeInPixel()
-                                                    .Area64();
-  size_t physical_memory_budget = 0U;
-#if BUILDFLAG(IS_ANDROID)
-  if (base::SysInfo::IsLowEndDevice()) {
-    // 64MB.
-    physical_memory_budget = 64 * 1024 * 1024;
-  } else {
-    // For 8GB of RAM, this is ~ 215MB.
-    physical_memory_budget = base::SysInfo::AmountOfPhysicalMemory() / 40;
-  }
-#endif
-  // We should at least be able to cache one thumbnail.
-  physical_memory_budget =
-      std::max(kDisplaySizeInBytes, physical_memory_budget);
-  return std::min(kDisplaySizeInBytes * kMaxNumThumbnails,
-                  physical_memory_budget);
-}
-}  // namespace
 
 NavigationEntryScreenshotManager::NavigationEntryScreenshotManager()
     :  // `NO_AUTO_EVICT` since we want to manually limit the global cache size
        // by the number of bytes of the thumbnails, rather than the number of
        // entries in the cache.
       managed_caches_(base::LRUCacheSet<int>::NO_AUTO_EVICT) {
-  CHECK(AreBackForwardTransitionsEnabled());
+  CHECK(NavigationTransitionConfig::AreBackForwardTransitionsEnabled());
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  max_cache_size_in_bytes_ = GetMemoryBudget();
+  max_cache_size_in_bytes_ =
+      NavigationTransitionConfig::ComputeCacheSizeInBytes();
   listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE,
       base::BindRepeating(&NavigationEntryScreenshotManager::OnMemoryPressure,

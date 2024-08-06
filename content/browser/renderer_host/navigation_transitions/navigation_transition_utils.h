@@ -18,7 +18,10 @@ namespace content {
 
 class NavigationRequest;
 
-struct NavigationTransitionUtils {
+class NavigationTransitionUtils {
+ public:
+  NavigationTransitionUtils() = delete;
+
   // See ScreenshotCallback in NavigationTransitionTestUtils.
   using ScreenshotCallback =
       base::RepeatingCallback<void(int nav_entry_index,

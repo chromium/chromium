@@ -12,6 +12,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -257,7 +258,7 @@ bool NavigationTransitionUtils::
     CaptureNavigationEntryScreenshotForCrossDocumentNavigations(
         NavigationRequest& navigation_request,
         bool did_receive_commit_ack) {
-  if (!AreBackForwardTransitionsEnabled()) {
+  if (!NavigationTransitionConfig::AreBackForwardTransitionsEnabled()) {
     return false;
   }
 
@@ -408,7 +409,7 @@ void NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
     NavigationRequest& navigation_request,
     const blink::SameDocNavigationScreenshotDestinationToken&
         destination_token) {
-  if (!AreBackForwardTransitionsEnabled()) {
+  if (!NavigationTransitionConfig::AreBackForwardTransitionsEnabled()) {
     // The source of this call is from the renderer. We can't always trust the
     // renderer thus fail safely.
     return;

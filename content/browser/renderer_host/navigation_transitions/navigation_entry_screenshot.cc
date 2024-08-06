@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/functional/callback.h"
@@ -59,7 +60,7 @@ NavigationEntryScreenshot::NavigationEntryScreenshot(
     bool supports_etc_non_power_of_two)
     : bitmap_(cc::UIResourceBitmap(bitmap)),
       navigation_entry_id_(navigation_entry_id) {
-  CHECK(AreBackForwardTransitionsEnabled());
+  CHECK(NavigationTransitionConfig::AreBackForwardTransitionsEnabled());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   StartCompression(bitmap, supports_etc_non_power_of_two);

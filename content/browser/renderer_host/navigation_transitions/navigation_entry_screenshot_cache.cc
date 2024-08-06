@@ -9,9 +9,9 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/common/content_features.h"
 
 namespace content {
 
@@ -37,12 +37,6 @@ std::unique_ptr<NavigationEntryScreenshot> RemoveScreenshotFromEntry(
 
 }  // namespace
 
-bool AreBackForwardTransitionsEnabled() {
-  // TODO(crbug.com/40256003): We might want to disable this feature on
-  // low-end devices.
-  return base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions);
-}
-
 // static
 void NavigationEntryScreenshotCache::SetCompressedCallbackForTesting(
     CompressedCallback callback) {
@@ -54,7 +48,7 @@ NavigationEntryScreenshotCache::NavigationEntryScreenshotCache(
     NavigationControllerImpl* nav_controller)
     : manager_(manager), nav_controller_(nav_controller) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CHECK(AreBackForwardTransitionsEnabled());
+  CHECK(NavigationTransitionConfig::AreBackForwardTransitionsEnabled());
 }
 
 NavigationEntryScreenshotCache::~NavigationEntryScreenshotCache() {

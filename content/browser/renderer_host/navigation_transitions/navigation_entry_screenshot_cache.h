@@ -18,8 +18,6 @@ class NavigationEntry;
 class NavigationEntryScreenshot;
 class NavigationEntryScreenshotManager;
 
-bool AreBackForwardTransitionsEnabled();
-
 // This interface limits the access of the `NavigationEntryScreenshotManager` to
 // the `NavigationEntryScreenshotCache`: we do not want the manager to
 // accidentally perform any "Set" or "Take" operations on the cache. This is
