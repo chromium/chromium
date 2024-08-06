@@ -120,9 +120,7 @@ public class ContextualPageActionController {
         mActionProviders.add(
                 new PriceTrackingActionProvider(
                         shoppingServiceSupplier, bookmarkModelSupplier, mProfileSupplier));
-        if (AdaptiveToolbarFeatures.isReaderModePageActionEnabled()) {
-            mActionProviders.add(new ReaderModeActionProvider());
-        }
+        mActionProviders.add(new ReaderModeActionProvider());
         if (AdaptiveToolbarFeatures.isPriceInsightsPageActionEnabled()) {
             mActionProviders.add(new PriceInsightsActionProvider(shoppingServiceSupplier));
         }

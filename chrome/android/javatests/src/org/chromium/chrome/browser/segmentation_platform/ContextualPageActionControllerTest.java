@@ -27,6 +27,7 @@ import org.chromium.ui.test.util.UiRestriction;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS})
 @Batch(Batch.PER_CLASS)
 public class ContextualPageActionControllerTest {
     private static final String CONTEXTUAL_PAGE_ACTION_DEFAULT_MODEL_HISTOGRAM =
@@ -50,10 +51,6 @@ public class ContextualPageActionControllerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE
-    })
     public void testContextualPageModelExecution() {
         LibraryLoader.getInstance().ensureInitialized();
 
@@ -71,10 +68,6 @@ public class ContextualPageActionControllerTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE) // Reader mode is only available on phones.
-    @EnableFeatures({
-        ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE
-    })
     public void testContextualPageModelExecution_OnReaderModePage() {
         LibraryLoader.getInstance().ensureInitialized();
         mActivityTestRule.startMainActivityFromLauncher();

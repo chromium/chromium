@@ -54,8 +54,6 @@ public class ReaderModeToolbarButtonControllerTest {
 
         mTestValues = new TestValues();
         mTestValues.addFeatureFlagOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE, true);
-        mTestValues.addFeatureFlagOverride(
                 ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, true);
 
         FeatureList.setTestValues(mTestValues);

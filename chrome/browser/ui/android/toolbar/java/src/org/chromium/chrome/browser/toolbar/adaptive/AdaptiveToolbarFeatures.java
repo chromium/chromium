@@ -79,19 +79,6 @@ public class AdaptiveToolbarFeatures {
         return false;
     }
 
-    private static String getFeatureNameForButtonVariant(
-            @AdaptiveToolbarButtonVariant int variant) {
-        switch (variant) {
-            case AdaptiveToolbarButtonVariant.READER_MODE:
-                return ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE;
-            case AdaptiveToolbarButtonVariant.TEST_BUTTON:
-                return CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME;
-            default:
-                throw new IllegalArgumentException(
-                        "Provided button variant not assigned to feature");
-        }
-    }
-
     /**
      * Returns whether the adaptive toolbar is enabled with segmentation and customization.
      *
@@ -102,7 +89,10 @@ public class AdaptiveToolbarFeatures {
     }
 
     /**
-     * @return Whether the contextual page actions should show the action chip version.
+     * @return Whether the contextual page action should show an action chip when appearing.
+     *     <li>If true, it will use the action chip animation using rate limiting from the
+     *         "IPH_ContextualPageActions_ActionChip" feature.
+     *     <li>If false, we'll show the button's IPH bubble specified on its ButtonData.
      */
     public static boolean shouldShowActionChip(@AdaptiveToolbarButtonVariant int buttonVariant) {
         if (!isDynamicAction(buttonVariant)) return false;
@@ -116,13 +106,12 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
             case AdaptiveToolbarButtonVariant.READER_MODE:
             case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
+            case AdaptiveToolbarButtonVariant.TEST_BUTTON:
                 return true;
             default:
-                break;
+                assert false : "Unknown button variant " + buttonVariant;
+                return false;
         }
-
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                getFeatureNameForButtonVariant(buttonVariant), "action_chip", false);
     }
 
     /**
@@ -134,17 +123,14 @@ public class AdaptiveToolbarFeatures {
         switch (buttonVariant) {
             case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
             case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
+            case AdaptiveToolbarButtonVariant.TEST_BUTTON:
                 return DEFAULT_PRICE_TRACKING_ACTION_CHIP_DELAY_MS;
             case AdaptiveToolbarButtonVariant.READER_MODE:
                 return DEFAULT_READER_MODE_ACTION_CHIP_DELAY_MS;
             default:
-                break;
+                assert false : "Unknown button variant " + buttonVariant;
+                return DEFAULT_CONTEXTUAL_PAGE_ACTION_CHIP_DELAY_MS;
         }
-
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                getFeatureNameForButtonVariant(buttonVariant),
-                "action_chip_time_ms",
-                DEFAULT_CONTEXTUAL_PAGE_ACTION_CHIP_DELAY_MS);
     }
 
     /**
@@ -163,13 +149,9 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
                 return false;
             default:
-                break;
+                assert false : "Unknown button variant " + buttonVariant;
+                return false;
         }
-
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                getFeatureNameForButtonVariant(buttonVariant),
-                "action_chip_with_different_color",
-                false);
     }
 
     /**
@@ -194,17 +176,6 @@ public class AdaptiveToolbarFeatures {
 
     public static boolean isPriceInsightsPageActionEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.PRICE_INSIGHTS);
-    }
-
-    public static boolean isReaderModePageActionEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE);
-    }
-
-    public static boolean isReaderModeRateLimited() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE,
-                "reader_mode_session_rate_limiting",
-                false);
     }
 
     public static boolean isAdaptiveToolbarReadAloudEnabled(Profile profile) {

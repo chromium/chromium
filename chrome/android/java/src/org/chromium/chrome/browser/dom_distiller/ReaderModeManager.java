@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -514,10 +513,8 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         if (mTab == null || mTab.getWebContents() == null) return;
 
         // This prompt should only be shown on incognito or custom tabs, in other cases we'll show a
-        // toolbar button instead.
-        if (AdaptiveToolbarFeatures.isReaderModePageActionEnabled()
-                && !mTab.isCustomTab()
-                && !mTab.isIncognito()) return;
+        // toolbar button (contextual page action) instead.
+        if (!mTab.isCustomTab() && !mTab.isIncognito()) return;
 
         // Test if the user is requesting the desktop site. Ignore this if distiller is set to
         // ALWAYS_TRUE.
@@ -777,15 +774,6 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                         ReaderModeManager.EXTRA_READER_MODE_PARENT,
                         Tab.INVALID_TAB_ID);
         return readerParentId != Tab.INVALID_TAB_ID;
-    }
-
-    /**
-     * Determine if a reader mode UI should be shown for the current tab and URL. Used when the
-     * contextual page action UI is enabled to replicate the rate limiting of the messages UI.
-     * @return True if the CPA UI should be suppressed.
-     */
-    public boolean isReaderModeUiRateLimited() {
-        return mMessageShown || sMutedSites.contains(urlToHash(mDistillerUrl));
     }
 
     /**
