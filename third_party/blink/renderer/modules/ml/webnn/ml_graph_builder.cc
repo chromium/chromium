@@ -207,10 +207,13 @@ base::expected<Conv2dAttributesType, String> ConvertToConv2dAttributesBase(
     const MLConv2dOptionsType* options) {
   Conv2dAttributesType attributes;
   CHECK(options);
+  const std::string label = options->label().Utf8();
   // If padding is not present, the values are assumed to be [0,0,0,0].
   auto padding = options->getPaddingOr({0, 0, 0, 0});
   if (padding.size() != 4) {
-    return base::unexpected("The length of padding should be 4.");
+    return base::unexpected(
+        String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
+        "The length of padding should be 4.");
   }
   // The order of padding array is [beginning_height, ending_height,
   // beginning_width, ending_width].
@@ -223,7 +226,9 @@ base::expected<Conv2dAttributesType, String> ConvertToConv2dAttributesBase(
   // If strides is not present, the values are assumed to be [1,1].
   auto strides = options->getStridesOr({1, 1});
   if (strides.size() != 2) {
-    return base::unexpected("The length of strides should be 2.");
+    return base::unexpected(
+        String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
+        "The length of strides should be 2.");
   }
   attributes.strides =
       webnn::Size2d<uint32_t>{.height = strides[0], .width = strides[1]};
@@ -231,7 +236,9 @@ base::expected<Conv2dAttributesType, String> ConvertToConv2dAttributesBase(
   // If dilations is not present, the values are assumed to be [1,1].
   auto dilations = options->getDilationsOr({1, 1});
   if (dilations.size() != 2) {
-    return base::unexpected("The length of dilations should be 2.");
+    return base::unexpected(
+        String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
+        +"The length of dilations should be 2.");
   }
   attributes.dilations =
       webnn::Size2d<uint32_t>{.height = dilations[0], .width = dilations[1]};
@@ -241,7 +248,7 @@ base::expected<Conv2dAttributesType, String> ConvertToConv2dAttributesBase(
   if (options->hasBias()) {
     attributes.bias_operand = options->bias()->Descriptor();
   }
-  attributes.label = options->label().Utf8();
+  attributes.label = label;
 
   return std::move(attributes);
 }
@@ -270,10 +277,13 @@ ConvertToConvTranspose2dAttributes(
     return base::unexpected(attributes.error());
   }
 
+  const std::string& label = attributes.value().label;
   // If output padding is not present, the values are assumed to be [0,0].
   const auto output_padding = options->getOutputPaddingOr({0, 0});
   if (output_padding.size() != 2) {
-    return base::unexpected("The length of output padding should be 2.");
+    return base::unexpected(
+        String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
+        "The length of output padding should be 2.");
   }
   attributes.value().output_padding = webnn::Size2d<uint32_t>{
       .height = output_padding[0], .width = output_padding[1]};
@@ -281,7 +291,9 @@ ConvertToConvTranspose2dAttributes(
   if (options->hasOutputSizes()) {
     auto output_sizes = options->getOutputSizesOr({});
     if (output_sizes.size() != 2) {
-      return base::unexpected("The length of output sizes should be 2.");
+      return base::unexpected(
+          String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
+          "The length of output sizes should be 2.");
     }
     attributes.value().output_sizes = webnn::Size2d<uint32_t>{
         .height = output_sizes[0], .width = output_sizes[1]};
@@ -297,11 +309,13 @@ ConvertToConvTranspose2dAttributes(
 base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
     const blink::MLPool2dOptions* options) {
   CHECK(options);
+  const std::string label = options->label().Utf8();
   webnn::Pool2dAttributes attributes;
   if (options->hasWindowDimensions()) {
     auto& window_dimensions = options->windowDimensions();
     if (window_dimensions.size() != 2) {
-      return base::unexpected("The length of window dimensions should be 2.");
+      return base::unexpected(webnn::GetErrorLabelPrefix(label) +
+                              "The length of window dimensions should be 2.");
     }
     attributes.window_dimensions = webnn::Size2d<uint32_t>{
         .height = window_dimensions[0], .width = window_dimensions[1]};
@@ -310,7 +324,8 @@ base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
   // If padding is not present, the values are assumed to be [0,0,0,0].
   auto padding = options->getPaddingOr({0, 0, 0, 0});
   if (padding.size() != 4) {
-    return base::unexpected("The length of padding should be 4.");
+    return base::unexpected(webnn::GetErrorLabelPrefix(label) +
+                            "The length of padding should be 4.");
   }
   attributes.padding = webnn::Padding2d{
       .beginning =
@@ -321,7 +336,8 @@ base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
   // If strides is not present, the values are assumed to be [1,1].
   auto strides = options->getStridesOr({1, 1});
   if (strides.size() != 2) {
-    return base::unexpected("The length of strides should be 2.");
+    return base::unexpected(webnn::GetErrorLabelPrefix(label) +
+                            "The length of strides should be 2.");
   }
   attributes.strides =
       webnn::Size2d<uint32_t>{.height = strides[0], .width = strides[1]};
@@ -329,7 +345,8 @@ base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
   // If dilations is not present, the values are assumed to be [1,1].
   auto dilations = options->getDilationsOr({1, 1});
   if (dilations.size() != 2) {
-    return base::unexpected("The length of dilations should be 2.");
+    return base::unexpected(webnn::GetErrorLabelPrefix(label) +
+                            "The length of dilations should be 2.");
   }
   attributes.dilations =
       webnn::Size2d<uint32_t>{.height = dilations[0], .width = dilations[1]};
@@ -342,12 +359,13 @@ base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
     // type is provided but ignored.
     auto& output_size = options->outputSizes();
     if (output_size.size() != 2) {
-      return base::unexpected("The length of output sizes should be 2.");
+      return base::unexpected(webnn::GetErrorLabelPrefix(label) +
+                              "The length of output sizes should be 2.");
     }
     attributes.output_sizes = webnn::Size2d<uint32_t>{.height = output_size[0],
                                                       .width = output_size[1]};
   }
-  attributes.label = options->label().Utf8();
+  attributes.label = label;
   return attributes;
 }
 

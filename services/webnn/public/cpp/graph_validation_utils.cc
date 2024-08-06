@@ -64,7 +64,7 @@ base::expected<double, std::string> CalculateConv2dOutputSize(
           stride +
       1;
 
-  if (checked_output_size.ValueOrDie() < 0) {
+  if (checked_output_size.ValueOrDie() <= 0) {
     return base::unexpected(ErrorWithLabel(
         label, "The input size is too small to fill the window."));
   }
