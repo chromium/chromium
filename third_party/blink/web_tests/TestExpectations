@@ -2586,7 +2586,7 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac11-arm64 ] external/wpt/css/css-properties-values-api/at-property.html [ Failure Timeout ]
+crbug.com/357751736 [ Mac11-arm64 ] external/wpt/css/css-properties-values-api/at-property.html [ Failure Timeout ]
 crbug.com/356913465 external/wpt/css/css-backgrounds/background-gradient-interpolation-003.html [ Failure ]
 crbug.com/356913465 [ Mac14 ] virtual/threaded/external/wpt/css/css-backgrounds/background-gradient-interpolation-003.html [ Failure ]
 crbug.com/356913465 [ Mac14-arm64 ] virtual/threaded/external/wpt/css/css-backgrounds/background-gradient-interpolation-003.html [ Failure ]
