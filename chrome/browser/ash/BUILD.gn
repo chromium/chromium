@@ -13,6 +13,7 @@ import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(enable_extensions, "Ash Chrome has to be built with extensions")
 assert(is_chromeos_ash)
@@ -287,6 +288,9 @@ static_library("ash") {
   ]
 
   public_deps = [
+    ":lock_unlock_event_proto",
+    ":login_logout_event_proto",
+    ":os_events_proto",
     ":primitives",
     "//ash",
     "//ash/app_list",
@@ -393,10 +397,7 @@ static_library("ash") {
     "//chrome/browser/extensions:cws_item_service_proto",
     "//chrome/browser/image_decoder",
     "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
-    "//chrome/browser/policy/messaging_layer/proto:lock_unlock_event_proto",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
-    "//chrome/browser/policy/messaging_layer/proto:login_logout_event_proto",
-    "//chrome/browser/policy/messaging_layer/proto:os_events_proto",
     "//chrome/browser/policy/messaging_layer/storage_selector",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/support_tool:support_tool_proto",
@@ -711,6 +712,8 @@ static_library("ash") {
   ]
 
   deps = [
+    ":add_remove_user_event_proto",
+    ":app_install_events_proto",
     ":device_policy_remover_generated",
     "//apps",
     "//ash/components/arc:arc_features",
@@ -991,8 +994,6 @@ static_library("ash") {
     "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/pdf:pdf_service",
     "//chrome/browser/policy:onc",
-    "//chrome/browser/policy/messaging_layer/proto:add_remove_user_event_proto",
-    "//chrome/browser/policy/messaging_layer/proto:app_install_events_proto",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/resources/ash/settings:resources",
     "//chrome/browser/resources/chromeos:app_icon_resources",
@@ -1606,7 +1607,10 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":add_remove_user_event_proto",
+    ":app_install_events_proto",
     ":ash",
+    ":lock_unlock_event_proto",
     ":test_support",
     "//ash",
     "//ash:test_support",
@@ -1773,10 +1777,7 @@ source_set("unit_tests") {
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/policy:onc",
     "//chrome/browser/policy:test_support",
-    "//chrome/browser/policy/messaging_layer/proto:add_remove_user_event_proto",
-    "//chrome/browser/policy/messaging_layer/proto:app_install_events_proto",
     "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
-    "//chrome/browser/policy/messaging_layer/proto:lock_unlock_event_proto",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/screen_ai:screen_ai_install_state",
     "//chrome/browser/screen_ai/public:optical_character_recognizer",
@@ -2561,6 +2562,42 @@ if (is_chromeos_device) {
       "//chrome/browser/ash/printing/print_management:interactive_ui_tests",
     ]
   }
+}
+
+proto_library("app_install_events_proto") {
+  proto_in_dir = "//"
+  sources =
+      [ "../policy/messaging_layer/proto/synced/app_install_events.proto" ]
+}
+
+proto_library("add_remove_user_event_proto") {
+  proto_in_dir = "//"
+  sources =
+      [ "../policy/messaging_layer/proto/synced/add_remove_user_event.proto" ]
+  import_dirs = [ "//components/reporting/proto/synced" ]
+  deps = [ "//components/reporting/proto:session_affiliated_user_proto" ]
+}
+
+proto_library("login_logout_event_proto") {
+  proto_in_dir = "//"
+  sources =
+      [ "../policy/messaging_layer/proto/synced/login_logout_event.proto" ]
+  import_dirs = [ "//components/reporting/proto/synced" ]
+  deps = [ "//components/reporting/proto:session_affiliated_user_proto" ]
+}
+
+proto_library("lock_unlock_event_proto") {
+  proto_in_dir = "//"
+  sources = [ "../policy/messaging_layer/proto/synced/lock_unlock_event.proto" ]
+  import_dirs = [ "//components/reporting/proto/synced" ]
+  deps = [ "//components/reporting/proto:session_affiliated_user_proto" ]
+}
+
+proto_library("os_events_proto") {
+  proto_in_dir = "//"
+  sources = [ "../policy/messaging_layer/proto/synced/os_events.proto" ]
+  import_dirs = [ "//components/reporting/proto/synced" ]
+  deps = [ "//components/reporting/proto:session_affiliated_user_proto" ]
 }
 
 device_policy_remover_path = "$target_gen_dir/device_policy_remover.cc"
