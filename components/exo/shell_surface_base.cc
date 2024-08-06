@@ -1549,13 +1549,21 @@ gfx::Size ShellSurfaceBase::CalculatePreferredSize(
 }
 
 gfx::Size ShellSurfaceBase::GetMinimumSize() const {
-  return minimum_size_.IsEmpty() ? gfx::Size(1, 1) : minimum_size_;
+  return requested_minimum_size_.IsEmpty() ? gfx::Size(1, 1)
+                                           : requested_minimum_size_;
 }
 
 gfx::Size ShellSurfaceBase::GetMaximumSize() const {
   // On ChromeOS, non empty maximum size will make the window
   // non maximizable.
-  return maximum_size_;
+  gfx::Size maximum_size = requested_maximum_size_;
+  // Make sure that the max size is already equal to or greater than the min
+  // size if set.
+  if (!requested_minimum_size_.IsEmpty() &&
+      !requested_maximum_size_.IsEmpty()) {
+    maximum_size.SetToMax(requested_minimum_size_);
+  }
+  return maximum_size;
 }
 
 void ShellSurfaceBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -2313,8 +2321,9 @@ bool ShellSurfaceBase::CalculateCanResize() const {
 }
 
 void ShellSurfaceBase::CommitWidget() {
-  bool size_constraint_changed = minimum_size_ != pending_minimum_size_ ||
-                                 maximum_size_ != pending_maximum_size_;
+  bool size_constraint_changed =
+      requested_minimum_size_ != pending_minimum_size_ ||
+      requested_maximum_size_ != pending_maximum_size_;
   set_bounds_is_dirty(
       bounds_is_dirty() || origin_ != pending_geometry_.origin() ||
       geometry_ != pending_geometry_ || display_id_ != pending_display_id_ ||
@@ -2325,9 +2334,9 @@ void ShellSurfaceBase::CommitWidget() {
   display_id_ = pending_display_id_;
   shape_dp_ = pending_shape_dp_;
 
-  // Apply new minimum/maximium size.
-  minimum_size_ = pending_minimum_size_;
-  maximum_size_ = pending_maximum_size_;
+  // Apply new minimum/maximum size.
+  requested_minimum_size_ = pending_minimum_size_;
+  requested_maximum_size_ = pending_maximum_size_;
   UpdateResizability();
 
   if (!widget_)

@@ -1749,6 +1749,35 @@ TEST_F(ShellSurfaceTest, SetMaximumSize) {
   }
 }
 
+TEST_F(ShellSurfaceTest, MinimumSizeAlwaysEqualOrSmallerThanMaximumSize) {
+  constexpr gfx::Size kBufferSize(256, 256);
+  auto shell_surface =
+      test::ShellSurfaceBuilder(kBufferSize).BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
+
+  constexpr gfx::Size kMinSize = {300, 300};
+  constexpr gfx::Size kMaxSize = {100, 100};
+  ConfigureData config_data;
+  shell_surface->set_configure_callback(
+      base::BindRepeating(&Configure, base::Unretained(&config_data)));
+
+  shell_surface->SetMinimumSize(kMinSize);
+  shell_surface->SetMaximumSize(kMaxSize);
+  surface->Commit();
+
+  // The maximum size smaller than the minimum size is ignored and the minimum
+  // size is returned by GetMaximumSize() instead.
+  EXPECT_EQ(kMinSize, shell_surface->GetMaximumSize());
+  EXPECT_EQ(kMinSize, shell_surface->GetMinimumSize());
+
+  // Reset minimum size
+  shell_surface->SetMinimumSize(gfx::Size(0, 0));
+  surface->Commit();
+  // Previously ignored maximum size is restored automatically because it's
+  // stored in |pending_maximum_size_|.
+  EXPECT_EQ(kMaxSize, shell_surface->GetMaximumSize());
+}
+
 void PreClose(int* pre_close_count, int* close_count) {
   EXPECT_EQ(*pre_close_count, *close_count);
   (*pre_close_count)++;
