@@ -7,6 +7,8 @@
 #include "ash/bubble/bubble_event_filter.h"
 #include "ash/picker/views/picker_style.h"
 #include "ash/picker/views/picker_view.h"
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "ui/display/screen.h"
@@ -46,6 +48,8 @@ views::Widget::InitParams CreateInitParams(
   views::Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_BUBBLE);
+  params.parent = Shell::GetContainer(Shell::GetRootWindowForNewWindows(),
+                                      kShellWindowId_FloatContainer);
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
