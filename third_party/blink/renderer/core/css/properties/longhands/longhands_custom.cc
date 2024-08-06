@@ -1821,13 +1821,13 @@ const CSSValue* Clear::CSSValueFromComputedStyleInternal(
 
 namespace {
 
-CSSValue* ConsumeClipComponent(CSSParserTokenRange& range,
+CSSValue* ConsumeClipComponent(CSSParserTokenStream& stream,
                                const CSSParserContext& context) {
-  if (range.Peek().Id() == CSSValueID::kAuto) {
-    return css_parsing_utils::ConsumeIdent(range);
+  if (stream.Peek().Id() == CSSValueID::kAuto) {
+    return css_parsing_utils::ConsumeIdent(stream);
   }
   return css_parsing_utils::ConsumeLength(
-      range, context, CSSPrimitiveValue::ValueRange::kAll,
+      stream, context, CSSPrimitiveValue::ValueRange::kAll,
       css_parsing_utils::UnitlessQuirk::kAllow);
 }
 
@@ -1844,31 +1844,32 @@ const CSSValue* Clip::ParseSingleValue(CSSParserTokenStream& stream,
     return nullptr;
   }
 
-  CSSParserSavePoint savepoint(stream);
-  CSSParserTokenRange args = css_parsing_utils::ConsumeFunction(stream);
+  CSSParserTokenStream::RestoringBlockGuard guard(stream);
+  stream.ConsumeWhitespace();
   // rect(t, r, b, l) || rect(t r b l)
-  CSSValue* top = ConsumeClipComponent(args, context);
+  CSSValue* top = ConsumeClipComponent(stream, context);
   if (!top) {
     return nullptr;
   }
-  bool needs_comma = css_parsing_utils::ConsumeCommaIncludingWhitespace(args);
-  CSSValue* right = ConsumeClipComponent(args, context);
+  bool needs_comma = css_parsing_utils::ConsumeCommaIncludingWhitespace(stream);
+  CSSValue* right = ConsumeClipComponent(stream, context);
   if (!right || (needs_comma &&
-                 !css_parsing_utils::ConsumeCommaIncludingWhitespace(args))) {
+                 !css_parsing_utils::ConsumeCommaIncludingWhitespace(stream))) {
     return nullptr;
   }
-  CSSValue* bottom = ConsumeClipComponent(args, context);
-  if (!bottom || (needs_comma &&
-                  !css_parsing_utils::ConsumeCommaIncludingWhitespace(args))) {
+  CSSValue* bottom = ConsumeClipComponent(stream, context);
+  if (!bottom ||
+      (needs_comma &&
+       !css_parsing_utils::ConsumeCommaIncludingWhitespace(stream))) {
     return nullptr;
   }
-  CSSValue* left = ConsumeClipComponent(args, context);
-  if (!left || !args.AtEnd()) {
-    // NOTE: This AtEnd() is fine, because we test args, not stream.
-    // But we need the savepoint to rewind in that case.
+  CSSValue* left = ConsumeClipComponent(stream, context);
+  if (!left || !stream.AtEnd()) {
+    // NOTE: This AtEnd() is fine, because we test within the
+    // RestoringBlockGuard. But we need the stream to rewind in that case.
     return nullptr;
   }
-  savepoint.Release();
+  guard.Release();
   return MakeGarbageCollected<CSSQuadValue>(top, right, bottom, left,
                                             CSSQuadValue::kSerializeAsRect);
 }
@@ -2528,21 +2529,27 @@ const CSSValue* ContainerType::CSSValueFromComputedStyleInternal(
 
 namespace {
 
-CSSValue* ConsumeAttr(CSSParserTokenRange args,
+CSSValue* ConsumeAttr(CSSParserTokenStream& stream,
                       const CSSParserContext& context) {
   DCHECK(!RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled());
-  if (args.Peek().GetType() != kIdentToken) {
-    return nullptr;
+
+  AtomicString attr_name;
+  {
+    CSSParserTokenStream::BlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+    if (stream.Peek().GetType() != kIdentToken) {
+      return nullptr;
+    }
+
+    attr_name = stream.ConsumeIncludingWhitespace().Value().ToAtomicString();
+    if (!stream.AtEnd()) {
+      // NOTE: This AtEnd() is fine, because we are inside a function block
+      // (i.e., inside a BlockGuard).
+      return nullptr;
+    }
   }
 
-  AtomicString attr_name =
-      args.ConsumeIncludingWhitespace().Value().ToAtomicString();
-  if (!args.AtEnd()) {
-    // NOTE: This AtEnd() is fine, because we don't take in the entire
-    // stream here, just the contents of a function.
-    return nullptr;
-  }
-
+  stream.ConsumeWhitespace();
   if (context.IsHTMLDocument()) {
     attr_name = attr_name.LowerASCII();
   }
@@ -2553,48 +2560,58 @@ CSSValue* ConsumeAttr(CSSParserTokenRange args,
   return attr_value;
 }
 
-CSSValue* ConsumeCounterContent(CSSParserTokenRange args,
+CSSValue* ConsumeCounterContent(CSSParserTokenStream& stream,
                                 const CSSParserContext& context,
                                 bool counters) {
-  CSSCustomIdentValue* identifier =
-      css_parsing_utils::ConsumeCustomIdent(args, context);
-  if (!identifier) {
-    return nullptr;
-  }
-
+  CSSCustomIdentValue* identifier;
+  CSSCustomIdentValue* list_style = nullptr;
   CSSStringValue* separator = nullptr;
-  if (!counters) {
-    separator = MakeGarbageCollected<CSSStringValue>(String());
-  } else {
-    if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(args) ||
-        args.Peek().GetType() != kStringToken) {
+
+  {
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+
+    identifier = css_parsing_utils::ConsumeCustomIdent(stream, context);
+    if (!identifier) {
       return nullptr;
     }
-    separator = MakeGarbageCollected<CSSStringValue>(
-        args.ConsumeIncludingWhitespace().Value().ToString());
-  }
 
-  CSSCustomIdentValue* list_style = nullptr;
-  if (css_parsing_utils::ConsumeCommaIncludingWhitespace(args)) {
-    // Note: CSS3 spec doesn't allow 'none' but CSS2.1 allows it. We currently
-    // allow it for backward compatibility.
-    // See https://github.com/w3c/csswg-drafts/issues/5795 for details.
-    if (args.Peek().Id() == CSSValueID::kNone) {
-      list_style =
-          MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("none"));
-      args.ConsumeIncludingWhitespace();
+    if (!counters) {
+      separator = MakeGarbageCollected<CSSStringValue>(String());
     } else {
-      list_style = css_parsing_utils::ConsumeCounterStyleName(args, context);
+      if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(stream) ||
+          stream.Peek().GetType() != kStringToken) {
+        return nullptr;
+      }
+      separator = MakeGarbageCollected<CSSStringValue>(
+          stream.ConsumeIncludingWhitespace().Value().ToString());
     }
-  } else {
-    list_style = MakeGarbageCollected<CSSCustomIdentValue>(keywords::kDecimal);
-  }
 
-  if (!list_style || !args.AtEnd()) {
-    // NOTE: This AtEnd() is fine, because we don't take in the entire
-    // stream here, just the contents of a function.
-    return nullptr;
+    if (css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
+      // Note: CSS3 spec doesn't allow 'none' but CSS2.1 allows it. We currently
+      // allow it for backward compatibility.
+      // See https://github.com/w3c/csswg-drafts/issues/5795 for details.
+      if (stream.Peek().Id() == CSSValueID::kNone) {
+        list_style =
+            MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("none"));
+        stream.ConsumeIncludingWhitespace();
+      } else {
+        list_style =
+            css_parsing_utils::ConsumeCounterStyleName(stream, context);
+      }
+    } else {
+      list_style =
+          MakeGarbageCollected<CSSCustomIdentValue>(keywords::kDecimal);
+    }
+
+    if (!list_style || !stream.AtEnd()) {
+      // NOTE: This AtEnd() is fine, because we are inside a function block
+      // (i.e., inside a RestoringBlockGuard).
+      return nullptr;
+    }
+    guard.Release();
   }
+  stream.ConsumeWhitespace();
   return MakeGarbageCollected<cssvalue::CSSCounterValue>(identifier, list_style,
                                                          separator);
 }
@@ -2626,14 +2643,11 @@ const CSSValue* Content::ParseSingleValue(CSSParserTokenStream& stream,
     if (!parsed_value) {
       if (stream.Peek().FunctionId() == CSSValueID::kAttr &&
           !RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
-        parsed_value =
-            ConsumeAttr(css_parsing_utils::ConsumeFunction(stream), context);
+        parsed_value = ConsumeAttr(stream, context);
       } else if (stream.Peek().FunctionId() == CSSValueID::kCounter) {
-        parsed_value = ConsumeCounterContent(
-            css_parsing_utils::ConsumeFunction(stream), context, false);
+        parsed_value = ConsumeCounterContent(stream, context, false);
       } else if (stream.Peek().FunctionId() == CSSValueID::kCounters) {
-        parsed_value = ConsumeCounterContent(
-            css_parsing_utils::ConsumeFunction(stream), context, true);
+        parsed_value = ConsumeCounterContent(stream, context, true);
       }
     }
     if (!parsed_value) {
@@ -2664,8 +2678,7 @@ const CSSValue* Content::ParseSingleValue(CSSParserTokenStream& stream,
         CSSParserSavePoint savepoint(stream);
         if (stream.Peek().FunctionId() == CSSValueID::kAttr &&
             !RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
-          alt_text =
-              ConsumeAttr(css_parsing_utils::ConsumeFunction(stream), context);
+          alt_text = ConsumeAttr(stream, context);
         } else {
           alt_text = css_parsing_utils::ConsumeString(stream);
         }
@@ -3279,20 +3292,23 @@ const CSSValue* Display::ParseSingleValue(CSSParserTokenStream& stream,
     return nullptr;
   }
 
-  CSSParserSavePoint savepoint(stream);
-  CSSParserTokenRange args = css_parsing_utils::ConsumeFunction(stream);
-  CSSCustomIdentValue* name =
-      css_parsing_utils::ConsumeCustomIdent(args, context);
+  CSSCustomIdentValue* name;
+  {
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+    name = css_parsing_utils::ConsumeCustomIdent(stream, context);
 
-  // If we didn't get a custom-ident or didn't exhaust the function arguments
-  // return nothing.
-  // NOTE: This AtEnd() is fine, because we test args, not stream.
-  // But we need the savepoint to rewind in that case.
-  if (!name || !args.AtEnd()) {
-    return nullptr;
+    // If we didn't get a custom-ident or didn't exhaust the function arguments
+    // return nothing.
+    // NOTE: This AtEnd() is fine, because we are inside a RestoringBlockGuard
+    // (i.e., we are testing the end of the argument list).
+    if (!name || !stream.AtEnd()) {
+      return nullptr;
+    }
+
+    guard.Release();
   }
-
-  savepoint.Release();
+  stream.ConsumeWhitespace();
   return MakeGarbageCollected<cssvalue::CSSLayoutFunctionValue>(
       name, /* is_inline */ function == CSSValueID::kInlineLayout);
 }
@@ -3437,53 +3453,49 @@ const CSSValue* DominantBaseline::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.DominantBaseline());
 }
 
-// TODO(sesse): Get rid of this templatization.
-template <class T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-static const CSSValue* DynamicRangeLimit_ParseInternal(
-    T& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context) {
-  if (const CSSValue* const keyword_value = css_parsing_utils::ConsumeIdent<
-          CSSValueID::kStandard, CSSValueID::kHigh,
-          CSSValueID::kConstrainedHigh>(range)) {
-    return keyword_value;
-  }
-
-  if (range.Peek().FunctionId() != CSSValueID::kDynamicRangeLimitMix) {
-    return nullptr;
-  }
-
-  CSSParserTokenRange function_range =
-      css_parsing_utils::ConsumeFunction(range);
-  const CSSValue* const limit1 =
-      DynamicRangeLimit_ParseInternal(function_range, context, local_context);
-  if (limit1 == nullptr ||
-      !css_parsing_utils::ConsumeCommaIncludingWhitespace(function_range)) {
-    return nullptr;
-  }
-  const CSSValue* const limit2 =
-      DynamicRangeLimit_ParseInternal(function_range, context, local_context);
-  if (limit2 == nullptr ||
-      !css_parsing_utils::ConsumeCommaIncludingWhitespace(function_range)) {
-    return nullptr;
-  }
-  const CSSPrimitiveValue* const percentage = css_parsing_utils::ConsumePercent(
-      function_range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-  if (percentage == nullptr) {
-    return nullptr;
-  }
-
-  return MakeGarbageCollected<cssvalue::CSSDynamicRangeLimitMixValue>(
-      limit1, limit2, percentage);
-}
-
 const CSSValue* DynamicRangeLimit::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  return DynamicRangeLimit_ParseInternal(stream, context, local_context);
+  if (const CSSValue* const keyword_value = css_parsing_utils::ConsumeIdent<
+          CSSValueID::kStandard, CSSValueID::kHigh,
+          CSSValueID::kConstrainedHigh>(stream)) {
+    return keyword_value;
+  }
+
+  if (stream.Peek().FunctionId() != CSSValueID::kDynamicRangeLimitMix) {
+    return nullptr;
+  }
+
+  const CSSValue* limit1;
+  const CSSValue* limit2;
+  const CSSPrimitiveValue* percentage;
+  {
+    CSSParserTokenStream::BlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+
+    limit1 =
+        DynamicRangeLimit::ParseSingleValue(stream, context, local_context);
+    if (limit1 == nullptr ||
+        !css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
+      return nullptr;
+    }
+    limit2 =
+        DynamicRangeLimit::ParseSingleValue(stream, context, local_context);
+    if (limit2 == nullptr ||
+        !css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
+      return nullptr;
+    }
+    percentage = css_parsing_utils::ConsumePercent(
+        stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+    if (percentage == nullptr) {
+      return nullptr;
+    }
+  }
+  stream.ConsumeWhitespace();
+
+  return MakeGarbageCollected<cssvalue::CSSDynamicRangeLimitMixValue>(
+      limit1, limit2, percentage);
 }
 
 const CSSValue* DynamicRangeLimit::CSSValueFromComputedStyleInternal(
