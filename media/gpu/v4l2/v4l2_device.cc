@@ -603,6 +603,10 @@ V4L2Device::EnumerateSupportedEncodeProfiles() {
 
     for (const auto& video_codec_profile : video_codec_profiles) {
       profile.profile = video_codec_profile;
+
+      profile.scalability_modes = GetSupportedScalabilityModesForV4L2Codec(
+          base::BindRepeating(&V4L2Device::Ioctl, this), video_codec_profile);
+
       profiles.push_back(profile);
 
       DVLOGF(3) << "Found encoder profile " << GetProfileName(profile.profile)

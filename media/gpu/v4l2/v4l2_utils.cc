@@ -375,6 +375,63 @@ static const std::map<VideoCodecProfile,
 
 }  // namespace
 
+std::vector<SVCScalabilityMode> GetSupportedScalabilityModesForV4L2Codec(
+    const IoctlAsCallback& ioctl_cb,
+    VideoCodecProfile media_profile) {
+  std::vector<SVCScalabilityMode> scalability_modes;
+  scalability_modes.push_back(SVCScalabilityMode::kL1T1);
+
+  if (base::FeatureList::IsEnabled(kV4L2H264TemporalLayerHWEncoding) &&
+      media_profile >= H264PROFILE_MIN && media_profile <= H264PROFILE_MAX) {
+    struct v4l2_queryctrl query_ctrl;
+    memset(&query_ctrl, 0, sizeof(query_ctrl));
+    query_ctrl.id = V4L2_CID_MPEG_VIDEO_H264_HIERARCHICAL_CODING;
+    if (ioctl_cb.Run(VIDIOC_QUERYCTRL, &query_ctrl) != kIoctlOk) {
+      DPLOG(WARNING) << "h.264 hierarchical coding not supported.";
+      return {};
+    }
+
+    memset(&query_ctrl, 0, sizeof(query_ctrl));
+    query_ctrl.id = V4L2_CID_MPEG_VIDEO_H264_HIERARCHICAL_CODING_TYPE;
+    if (ioctl_cb.Run(VIDIOC_QUERYCTRL, &query_ctrl) != kIoctlOk) {
+      DPLOG(WARNING) << "h.264 hierarchical coding type not supported.";
+      return {};
+    }
+
+    struct v4l2_querymenu query_menu = {
+        .id = query_ctrl.id, .index = static_cast<__u32>(query_ctrl.minimum)};
+    for (; static_cast<int>(query_menu.index) <= query_ctrl.maximum;
+         query_menu.index++) {
+      if (ioctl_cb.Run(VIDIOC_QUERYMENU, &query_menu) != kIoctlOk) {
+        continue;
+      }
+
+      if (query_menu.index == V4L2_MPEG_VIDEO_H264_HIERARCHICAL_CODING_P) {
+        break;
+      }
+    }
+
+    if (query_menu.index != V4L2_MPEG_VIDEO_H264_HIERARCHICAL_CODING_P) {
+      DPLOG(WARNING) << "h.264 hierarchical P coding not supported.";
+      return {};
+    }
+
+    memset(&query_ctrl, 0, sizeof(query_ctrl));
+    query_ctrl.id = V4L2_CID_MPEG_VIDEO_H264_HIERARCHICAL_CODING_LAYER;
+    if (ioctl_cb.Run(VIDIOC_QUERYCTRL, &query_ctrl) != kIoctlOk) {
+      DPLOG(WARNING) << "Unable to determine the number of layers supported.";
+      return {};
+    }
+
+    if (query_ctrl.maximum >= 2) {
+      DVLOGF(2) << "h.264 kL1T2 scalability mode supported.";
+      scalability_modes.push_back(SVCScalabilityMode::kL1T2);
+    }
+  }
+
+  return scalability_modes;
+}
+
 std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
     const IoctlAsCallback& ioctl_cb,
     uint32_t codec_as_pix_fmt) {

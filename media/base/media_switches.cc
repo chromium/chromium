@@ -844,6 +844,10 @@ BASE_FEATURE(kVaapiVp9SModeHWEncoding,
 BASE_FEATURE(kV4L2FlatStatefulVideoDecoder,
              "V4L2FlatStatefulVideoDecoder",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Enable H264 temporal layer encoding with V4L2 HW encoder on ChromeOS.
+BASE_FEATURE(kV4L2H264TemporalLayerHWEncoding,
+             "V4L2H264TemporalLayerHWEncoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Inform video blitter of video color space.
