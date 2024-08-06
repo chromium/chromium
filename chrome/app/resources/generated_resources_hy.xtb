@@ -6992,6 +6992,7 @@
 <translation id="6075075631258766703">Հաստատել հեռախոսահամարը</translation>
 <translation id="6075731018162044558">Համակարգը չկարողացավ ձեռք բերել API-ի մուտքի երկարաժամկետ հետքանշիչ այս սարքի համար:</translation>
 <translation id="6075907793831890935">Փոխանակել տվյալները <ph name="HOSTNAME" /> անունով սարքի հետ</translation>
+<translation id="6076092653254552547">Համակարգի կարգավորումներ</translation>
 <translation id="6076491747490570887">Սառը մոխրագույն</translation>
 <translation id="6076576896267434196"><ph name="EXTENSION_NAME" /> ընդլայնումը հայցում է ձեր հաշվի տվյալների օգտագործման թույլտվություն</translation>
 <translation id="6077131872140550515">Հեռացնել նախընտրելի ցանցերից</translation>
@@ -9369,6 +9370,7 @@
 <translation id="7826254698725248775">Սարքերի նույնացուցիչների ընդհարում</translation>
 <translation id="7828642077514646543">Սխալ․ չհաջողվեց ապակոդավորել հավաստագիրը</translation>
 <translation id="7829877209233347340">Խնդրեք ծնողին մուտք գործել հաշիվ և ուսումնական հաշիվ ավելացնելու թույլտվություն տալ</translation>
+<translation id="7830276128493844263">Տեղորոշումն անջատված է համակարգի կարգավորումներում</translation>
 <translation id="7830833461614351956">Պատճենե՞լ <ph name="NUM_OF_FILES" /> ֆայլ <ph name="CLOUD_PROVIDER" />-ում՝ բացելու համար</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Պահված հատուկ բառերը կցուցադրվեն այստեղ</translation>

@@ -6993,6 +6993,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6075075631258766703">Ověřit telefonní číslo</translation>
 <translation id="6075731018162044558">Jejda! Systému se pro toto zařízení nepodařilo získat token dlouhodobého přístupu k rozhraní API.</translation>
 <translation id="6075907793831890935">Výměna dat se zařízením <ph name="HOSTNAME" /></translation>
+<translation id="6076092653254552547">Nastavení systému</translation>
 <translation id="6076491747490570887">Ledově šedá</translation>
 <translation id="6076576896267434196">Rozšíření <ph name="EXTENSION_NAME" /> žádá o přístup k vašemu účtu</translation>
 <translation id="6077131872140550515">Odebrat z preferovaných</translation>
@@ -9375,6 +9376,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7826254698725248775">Konfliktní identifikátor zařízení.</translation>
 <translation id="7828642077514646543">Chyba: Certifikát nelze dekódovat</translation>
 <translation id="7829877209233347340">Požádej rodiče, aby se přihlásil a udělil oprávnění k přidání školního účtu</translation>
+<translation id="7830276128493844263">Poloha je v nastavení systému vypnutá</translation>
 <translation id="7830833461614351956">Zkopírovat soubory (<ph name="NUM_OF_FILES" />) k otevření do úložiště <ph name="CLOUD_PROVIDER" />?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Tady se budou zobrazovat uložená vlastní slova</translation>

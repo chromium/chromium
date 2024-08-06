@@ -6992,6 +6992,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6075075631258766703">Verifiko telefonin</translation>
 <translation id="6075731018162044558">Mos! Sistemi nuk arriti të mbante një kod afatgjatë të qasjes së API-së për këtë pajisje.</translation>
 <translation id="6075907793831890935">Shkëmbe të dhëna me pajisjen me emrin <ph name="HOSTNAME" /></translation>
+<translation id="6076092653254552547">Cilësimet e sistemit</translation>
 <translation id="6076491747490570887">Gri e freskët</translation>
 <translation id="6076576896267434196">Shtesa "<ph name="EXTENSION_NAME" />" dëshiron të ketë qasje te llogaria jote</translation>
 <translation id="6077131872140550515">Hiq nga të preferuarat</translation>
@@ -9367,6 +9368,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7826254698725248775">Identifikuesi i pajisjes është në konflikt.</translation>
 <translation id="7828642077514646543">Gabim: Certifikata nuk mund të dekodohet</translation>
 <translation id="7829877209233347340">Kërkoji prindit që të të japë leje për të shtuar një llogari shkolle</translation>
+<translation id="7830276128493844263">Vendndodhja është çaktivizuar te cilësimet e sistemit</translation>
 <translation id="7830833461614351956">Të kopjohen <ph name="NUM_OF_FILES" /> skedarë te <ph name="CLOUD_PROVIDER" /> për t'i hapur?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Fjalët e personalizuara të ruajtura do të shfaqen këtu</translation>

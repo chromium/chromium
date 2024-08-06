@@ -6991,6 +6991,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6075075631258766703">Egiaztatu telefono-zenbakia</translation>
 <translation id="6075731018162044558">Sistemak ezin izan du lortu APIaren epe luzeko sarbide-tokena gailu honetan erabiltzeko.</translation>
 <translation id="6075907793831890935">Partekatu datuak <ph name="HOSTNAME" /> izeneko gailuarekin</translation>
+<translation id="6076092653254552547">Sistemaren ezarpenak</translation>
 <translation id="6076491747490570887">Gris hotza</translation>
 <translation id="6076576896267434196">"<ph name="EXTENSION_NAME" />" luzapenak zure kontua erabiltzeko baimena behar du</translation>
 <translation id="6077131872140550515">Kendu hobetsietatik</translation>
@@ -9366,6 +9367,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7826254698725248775">Gailu-identifikatzailea gatazkatsua da.</translation>
 <translation id="7828642077514646543">Errorea: ezin da deskodetu ziurtagiria</translation>
 <translation id="7829877209233347340">Eskatu guraso bati saioa hasteko, ikastetxeko kontu bat gehitzeko baimena eman diezazun</translation>
+<translation id="7830276128493844263">Kokapena desaktibatuta dago sistemaren ezarpenetan</translation>
 <translation id="7830833461614351956"><ph name="NUM_OF_FILES" /> fitxategi <ph name="CLOUD_PROVIDER" />-n kopiatu nahi dituzu ireki ahal izateko?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">Hemen agertuko dira gordetako hitz pertsonalizatuak</translation>

@@ -302,6 +302,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2529021024822217800">Ireki guztiak</translation>
 <translation id="2536991091671391962">Gordetako pasahitzak edozein gailutan erabil ditzakezu. <ph name="EMAIL" /> kontuan saioa hasita zeneukala gorde dituzunak Google-ren Pasahitz-kudeatzailea zerbitzuan gordetzen dira.</translation>
 <translation id="2542268842667970959">Ezkutatu "Segurtasun-egiaztapena"</translation>
+<translation id="2545094307889012168">Lens-en gainjartzea</translation>
 <translation id="2547458583188611426">Sinkronizazioak ez du funtzionatzen. Sinkronizatzen hasteko, idatzi pasaesaldia.</translation>
 <translation id="2551153019974022505">Kontuaren errorea</translation>
 <translation id="2556092377360758201">Babesik gabe (ez da gomendatzen)</translation>
@@ -848,6 +849,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5205197603258285592">Gorde irudia hemen…</translation>
 <translation id="5211488077761630279">Zure <ph name="PERMISSION" /> erabiltzeko baimena eman nahi diozu "<ph name="SITE_NAME" />" webguneari?</translation>
+<translation id="5215046161188172474">Partekatu URL osoa</translation>
 <translation id="5219295696240154694">Hobetu sareko segurtasuna denontzat</translation>
 <translation id="5220945116117011963">Sortu egutegiko gertaerak daten bidez</translation>
 <translation id="5221339005270097309">Pasahitzak egiaztatzen…</translation>
@@ -1125,6 +1127,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, hala nola iragarkiak pertsonalizatzeko.</translation>
 <translation id="6476253015009698798">Ezin da egin orri honetako produktuen prezioen jarraipena.</translation>
 <translation id="6476800141292307438">Orria itzultzen ari gara. <ph name="LANGUAGE" /> erabiliko da orria bistaratzeko. Pantailaren behealdean agertzen dira dauden aukerak.</translation>
+<translation id="6477585407014744043">Ezarri izen bat taldeari</translation>
 <translation id="648164694371393720">Autentifikazio-errorea</translation>
 <translation id="6494931198667773526">Amaiera</translation>
 <translation id="6500795388871406244">Erabili iradokitako pasahitza:</translation>

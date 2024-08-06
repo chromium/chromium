@@ -302,6 +302,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2529021024822217800">Hapi të gjithë</translation>
 <translation id="2536991091671391962">Fjalëkalimet e ruajtura mund t'i përdorësh në çdo pajisje. Ato ruhen në "Menaxherin e fjalëkalimeve të Google" për <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Fshih "Kontrollin e sigurisë"</translation>
+<translation id="2545094307889012168">Mbivendosja e "Lentes"</translation>
 <translation id="2547458583188611426">Sinkronizimi nuk po funksionon. Për të nisur sinkronizimin, fut frazën e kalimit.</translation>
 <translation id="2551153019974022505">Gabim i llogarisë</translation>
 <translation id="2556092377360758201">Asnjë mbrojtje (nuk rekomandohet)</translation>
@@ -848,6 +849,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5197255632782567636">Interneti</translation>
 <translation id="5205197603258285592">Ruaj imazhin në...</translation>
 <translation id="5211488077761630279">Të lejohet që "<ph name="SITE_NAME" />" të përdorë <ph name="PERMISSION" />?</translation>
+<translation id="5215046161188172474">Ndaj URL-në e plotë</translation>
 <translation id="5219295696240154694">Ndihmo në përmirësimin e sigurisë në ueb për të gjithë</translation>
 <translation id="5220945116117011963">Krijo ngjarje kalendari nga datat</translation>
 <translation id="5221339005270097309">Po kontrollon fjalëkalimet…</translation>
@@ -1125,6 +1127,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme, për shembull për t'i personalizuar reklamat.</translation>
 <translation id="6476253015009698798">Monitorimi i çmimeve nuk ofrohet për këtë faqe.</translation>
 <translation id="6476800141292307438">Po përkthen faqen në <ph name="LANGUAGE" />. Opsionet që ofrohen janë pranë fundit të ekranit.</translation>
+<translation id="6477585407014744043">Emërto grupin</translation>
 <translation id="648164694371393720">Gabim i vërtetimit</translation>
 <translation id="6494931198667773526">Mbaron</translation>
 <translation id="6500795388871406244">Përdor fjalëkalimin e sugjeruar:</translation>
