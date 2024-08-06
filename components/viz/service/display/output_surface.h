@@ -189,9 +189,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   // Returns true if a main image overlay plane should be scheduled.
   virtual bool IsDisplayedAsOverlayPlane() const = 0;
 
-  // Returns the |mailbox| corresponding to the main image's overlay.
-  virtual gpu::Mailbox GetOverlayMailbox() const;
-
   // Reshape the output surface.
   struct ReshapeParams {
     gfx::Size size;

@@ -595,24 +595,11 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
   }
 }
 
-void SkiaOutputSurfaceImplOnGpu::ScheduleOutputSurfaceAsOverlay(
-    const OverlayProcessorInterface::OutputSurfaceOverlayPlane&
-        output_surface_plane) {
-  DCHECK(!output_surface_plane_);
-  output_surface_plane_ = output_surface_plane;
-}
-
 void SkiaOutputSurfaceImplOnGpu::SwapBuffers(OutputSurfaceFrame frame) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::SwapBuffers");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   SwapBuffersInternal(std::move(frame));
-}
-
-void SkiaOutputSurfaceImplOnGpu::EnsureMinNumberOfBuffers(int n) {
-  if (!output_device_->EnsureMinNumberOfBuffers(n)) {
-    MarkContextLost(CONTEXT_LOST_ALLOCATE_FRAME_BUFFERS_FAILED);
-  }
 }
 
 void SkiaOutputSurfaceImplOnGpu::SetDependenciesResolvedTimings(
@@ -2367,15 +2354,10 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
           frame->sub_buffer_rect->size() != size_) {
         output_device_->SwapBuffersSkipped(buffer_presented_callback_,
                                            std::move(*frame));
-        output_surface_plane_.reset();
         destroy_after_swap_.clear();
         return;
       }
       waiting_for_full_damage_ = false;
-    }
-
-    if (output_surface_plane_) {
-      DCHECK(output_device_->IsPrimaryPlaneOverlay());
     }
 
     if (frame->sub_buffer_rect) {
@@ -2386,10 +2368,6 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
                                         frame->sub_buffer_rect->y() -
                                         frame->sub_buffer_rect->height());
         }
-      }
-
-      if (output_surface_plane_) {
-        output_surface_plane_->damage_rect = frame->sub_buffer_rect;
       }
     }
 
@@ -2414,7 +2392,6 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
     }
 
     output_device_->SetViewportSize(frame->size);
-    output_device_->SchedulePrimaryPlane(output_surface_plane_);
 
     DCHECK(!frame->sub_buffer_rect || capabilities().supports_post_sub_buffer);
 
@@ -2435,7 +2412,6 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
   }
 
   // Reset the overlay plane information even on skipped swap.
-  output_surface_plane_.reset();
   overlays_.clear();
 
   destroy_after_swap_.clear();

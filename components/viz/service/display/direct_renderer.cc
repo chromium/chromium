@@ -302,6 +302,8 @@ void DirectRenderer::DrawFrame(
     OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane =
         nullptr;
     if (output_surface_->IsDisplayedAsOverlayPlane()) {
+      // TODO(crbug.com/40224327): `output_surface_plane` can be changed to an
+      // OverlayCandidate now.
       current_frame()->output_surface_plane =
           overlay_processor_->ProcessOutputSurfaceAsOverlay(
               device_viewport_size, surface_resource_size, frame_si_format,

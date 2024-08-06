@@ -999,18 +999,6 @@ void SkiaOutputSurfaceImpl::SwapBuffersSkipped(
   }
 }
 
-void SkiaOutputSurfaceImpl::ScheduleOutputSurfaceAsOverlay(
-    OverlayProcessorInterface::OutputSurfaceOverlayPlane output_surface_plane) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // impl_on_gpu_ is released on the GPU thread by a posted task from
-  // SkiaOutputSurfaceImpl::dtor. So it is safe to use base::Unretained.
-  auto callback = base::BindOnce(
-      &SkiaOutputSurfaceImplOnGpu::ScheduleOutputSurfaceAsOverlay,
-      base::Unretained(impl_on_gpu_.get()), std::move(output_surface_plane));
-  EnqueueGpuTask(std::move(callback), {}, /*make_current=*/false,
-                 /*need_framebuffer=*/false);
-}
-
 SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
     const AggregatedRenderPassId& id,
     const gfx::Size& surface_size,
@@ -1494,7 +1482,6 @@ void SkiaOutputSurfaceImpl::DidSwapBuffersComplete(
     gfx::GpuFenceHandle release_fence) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(client_);
-  last_swapped_mailbox_ = params.primary_plane_mailbox;
 
   if (frame_buffer_damage_tracker_ &&
       params.swap_response.result ==
@@ -1728,11 +1715,6 @@ bool SkiaOutputSurfaceImpl::IsDisplayedAsOverlayPlane() const {
   return is_displayed_as_overlay_;
 }
 
-gpu::Mailbox SkiaOutputSurfaceImpl::GetOverlayMailbox() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return last_swapped_mailbox_;
-}
-
 void SkiaOutputSurfaceImpl::SetNeedsSwapSizeNotifications(
     bool needs_swap_size_notifications) {
   needs_swap_size_notifications_ = needs_swap_size_notifications;
@@ -1767,29 +1749,6 @@ gpu::SyncToken SkiaOutputSurfaceImpl::Flush() {
                  /*need_framebuffer=*/false);
   FlushGpuTasks(SyncMode::kNoWait);
   return sync_token;
-}
-
-bool SkiaOutputSurfaceImpl::EnsureMinNumberOfBuffers(int n) {
-  DCHECK(capabilities_.supports_dynamic_frame_buffer_allocation);
-  DCHECK_GT(n, 0);
-  DCHECK_LE(n, capabilities_.number_of_buffers);
-
-  if (cached_number_of_buffers_ >= n)
-    return false;
-
-  cached_number_of_buffers_ = n;
-  if (frame_buffer_damage_tracker_) {
-    frame_buffer_damage_tracker_->FrameBuffersChanged(size_);
-  }
-
-  auto task =
-      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::EnsureMinNumberOfBuffers,
-                     base::Unretained(impl_on_gpu_.get()), n);
-  EnqueueGpuTask(std::move(task), std::vector<gpu::SyncToken>(),
-                 /*make_current=*/true,
-                 /*need_framebuffer=*/false);
-  FlushGpuTasks(SyncMode::kNoWait);
-  return true;
 }
 
 void SkiaOutputSurfaceImpl::ContextLost() {

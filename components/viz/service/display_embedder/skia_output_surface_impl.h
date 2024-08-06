@@ -106,7 +106,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   gfx::OverlayTransform GetDisplayTransform() override;
   void SwapBuffers(OutputSurfaceFrame frame) override;
   bool IsDisplayedAsOverlayPlane() const override;
-  gpu::Mailbox GetOverlayMailbox() const override;
   void SetNeedsSwapSizeNotifications(
       bool needs_swap_size_notifications) override;
 #if BUILDFLAG(IS_ANDROID)
@@ -124,9 +123,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       SkYUVAInfo::PlaneConfig plane_config,
       SkYUVAInfo::Subsampling subsampling) override;
   void SwapBuffersSkipped(const gfx::Rect root_pass_damage_rect) override;
-  void ScheduleOutputSurfaceAsOverlay(
-      OverlayProcessorInterface::OutputSurfaceOverlayPlane output_surface_plane)
-      override;
 
   SkCanvas* BeginPaintRenderPass(const AggregatedRenderPassId& id,
                                  const gfx::Size& surface_size,
@@ -167,7 +163,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void RemoveContextLostObserver(ContextLostObserver* observer) override;
   void PreserveChildSurfaceControls() override;
   gpu::SyncToken Flush() override;
-  bool EnsureMinNumberOfBuffers(int n) override;
   gpu::Mailbox CreateSharedImage(SharedImageFormat format,
                                  const gfx::Size& size,
                                  const gfx::ColorSpace& color_space,
@@ -297,7 +292,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   raw_ptr<SkiaOutputSurfaceDependency> dependency_;
   UpdateVSyncParametersCallback update_vsync_parameters_callback_;
   bool is_displayed_as_overlay_ = false;
-  gpu::Mailbox last_swapped_mailbox_;
 
   gfx::Size size_;
   SharedImageFormat format_;
@@ -473,9 +467,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
 
   // Track if the current buffer content is changed.
   bool current_buffer_modified_ = false;
-
-  // Last number sent to `SetNumberOfFrameBuffers` on the GPU.
-  int cached_number_of_buffers_ = 0;
 
   // For accessing tile shared image backings from compositor thread.
   std::unique_ptr<gpu::SharedImageRepresentationFactory>

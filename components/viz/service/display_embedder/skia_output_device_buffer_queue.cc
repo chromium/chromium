@@ -240,13 +240,6 @@ bool SkiaOutputDeviceBufferQueue::IsPrimaryPlaneOverlay() const {
   return true;
 }
 
-void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
-    const std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
-        plane) {
-  // TODO(crbug.com/40224327): Delete this function and plumbing it's not used.
-  CHECK(!plane);
-}
-
 const SkiaOutputDeviceBufferQueue::OverlayData*
 SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
                                                     bool is_root_render_pass,
@@ -455,8 +448,6 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
     return true;
   });
 
-  // TODO(crbug.com/40224327): Remove mailbox parameter from this function it
-  // is unused now.
   FinishSwapBuffers(std::move(result), size, std::move(frame),
                     /*damage_area=*/std::nullopt, std::move(released_overlays));
 
@@ -565,11 +556,6 @@ SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(
 }
 
 void SkiaOutputDeviceBufferQueue::EndPaint() {
-  NOTREACHED();
-}
-
-bool SkiaOutputDeviceBufferQueue::EnsureMinNumberOfBuffers(size_t n) {
-  // TODO(crbug.com/40224327): Delete this function and plumbing it's not used.
   NOTREACHED();
 }
 

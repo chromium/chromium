@@ -87,12 +87,6 @@ void FakeSkiaOutputSurface::SwapBuffers(OutputSurfaceFrame frame) {
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FakeSkiaOutputSurface::ScheduleOutputSurfaceAsOverlay(
-    OverlayProcessorInterface::OutputSurfaceOverlayPlane output_surface_plane) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  NOTIMPLEMENTED();
-}
-
 bool FakeSkiaOutputSurface::IsDisplayedAsOverlayPlane() const {
   return false;
 }
@@ -347,10 +341,6 @@ void FakeSkiaOutputSurface::RemoveContextLostObserver(
 
 gpu::SyncToken FakeSkiaOutputSurface::Flush() {
   return GenerateSyncToken();
-}
-
-bool FakeSkiaOutputSurface::EnsureMinNumberOfBuffers(int n) {
-  return false;
 }
 
 void FakeSkiaOutputSurface::SetOutOfOrderCallbacks(

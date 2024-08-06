@@ -166,11 +166,7 @@ class SkiaOutputSurfaceImplOnGpu
       std::vector<gpu::SyncToken> sync_tokens,
       base::OnceClosure on_finished,
       base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb);
-  void ScheduleOutputSurfaceAsOverlay(
-      const OverlayProcessorInterface::OutputSurfaceOverlayPlane&
-          output_surface_plane);
   void SwapBuffers(OutputSurfaceFrame frame);
-  void EnsureMinNumberOfBuffers(int n);
 
   void SetDependenciesResolvedTimings(base::TimeTicks task_ready);
   void SetDrawTimings(base::TimeTicks task_ready);
@@ -589,8 +585,6 @@ class SkiaOutputSurfaceImplOnGpu
       std::unique_ptr<gpu::SkiaImageRepresentation::ScopedWriteAccess>>
       overlay_pass_accesses_;
 
-  std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
-      output_surface_plane_;
   // Overlays are saved when ScheduleOverlays() is called, then passed to
   // |output_device_| in PostSubmit().
   SkiaOutputSurface::OverlayList overlays_;

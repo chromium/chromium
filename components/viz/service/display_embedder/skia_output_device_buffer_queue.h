@@ -57,12 +57,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   SkSurface* BeginPaint(
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;
-  bool EnsureMinNumberOfBuffers(size_t n) override;
 
   bool IsPrimaryPlaneOverlay() const override;
-  void SchedulePrimaryPlane(
-      const std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
-          plane) override;
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays) override;
 
   // SkiaOutputDevice override
@@ -128,12 +124,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   // key.
   std::unordered_set<OverlayData, OverlayDataHash, OverlayDataKeyEqual>
       overlays_;
-
-  // Set to true if no image is to be used for the primary plane of this frame.
-  bool current_frame_has_no_primary_plane_ = false;
-  // Whether |SchedulePrimaryPlane| needs to wait for a paint before scheduling
-  // This works around an edge case for unpromoting fullscreen quads.
-  bool primary_plane_waiting_on_paint_ = false;
 
   bool has_overlays_scheduled_but_swap_not_finished_ = false;
   raw_ptr<const base::TickClock> swap_time_clock_ =
