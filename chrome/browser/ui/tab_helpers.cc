@@ -195,7 +195,6 @@
 #include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
-#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
@@ -746,16 +745,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     HatsHelper::CreateForWebContents(web_contents);
   }
   SharedHighlightingPromo::CreateForWebContents(web_contents);
-
-  if (!profile->IsIncognitoProfile()) {
-    // TODO(crbug.com/40863325): Consider using the in-memory cache instead.
-    commerce::CommerceUiTabHelper::CreateForWebContents(
-        web_contents,
-        commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
-        BookmarkModelFactory::GetForBrowserContext(profile),
-        ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())
-            ->GetImageFetcher(image_fetcher::ImageFetcherConfig::kNetworkOnly));
-  }
 #endif
 
 #if BUILDFLAG(IS_WIN)

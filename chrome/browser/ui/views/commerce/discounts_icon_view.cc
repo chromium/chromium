@@ -9,9 +9,12 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "components/commerce/core/metrics/discounts_metric_collector.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -128,7 +131,9 @@ commerce::CommerceUiTabHelper* DiscountsIconView::GetTabHelper() {
     return nullptr;
   }
 
-  return commerce::CommerceUiTabHelper::FromWebContents(web_contents);
+  return tabs::TabInterface::GetFromContents(web_contents)
+      ->GetTabFeatures()
+      ->commerce_ui_tab_helper();
 }
 
 void DiscountsIconView::MaybeShowBubble(bool from_user) {

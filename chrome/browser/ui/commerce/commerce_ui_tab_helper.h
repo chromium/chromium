@@ -16,7 +16,6 @@
 #include "components/image_fetcher/core/request_metadata.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "ui/gfx/image/image.h"
 
 class GURL;
@@ -45,10 +44,12 @@ class ProductSpecificationsPageActionController;
 
 // This tab helper is used to update and maintain the state of UI for commerce
 // features.
-class CommerceUiTabHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<CommerceUiTabHelper> {
+class CommerceUiTabHelper : public content::WebContentsObserver {
  public:
+  CommerceUiTabHelper(content::WebContents* contents,
+                      ShoppingService* shopping_service,
+                      bookmarks::BookmarkModel* model,
+                      image_fetcher::ImageFetcher* image_fetcher);
   ~CommerceUiTabHelper() override;
   CommerceUiTabHelper(const CommerceUiTabHelper& other) = delete;
   CommerceUiTabHelper& operator=(const CommerceUiTabHelper& other) =
@@ -141,17 +142,11 @@ class CommerceUiTabHelper
       std::unique_ptr<PriceTrackingPageActionController> controller);
 
  protected:
-  CommerceUiTabHelper(content::WebContents* contents,
-                          ShoppingService* shopping_service,
-                          bookmarks::BookmarkModel* model,
-                          image_fetcher::ImageFetcher* image_fetcher);
-
   const std::optional<bool>& GetPendingTrackingStateForTesting();
 
   virtual std::unique_ptr<views::View> CreateShoppingInsightsWebView();
 
  private:
-  friend class content::WebContentsUserData<CommerceUiTabHelper>;
   friend class CommerceUiTabHelperTest;
 
   void UpdateUiForShoppingServiceReady(ShoppingService* service);
@@ -268,8 +263,6 @@ class CommerceUiTabHelper
       PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
 
   base::WeakPtrFactory<CommerceUiTabHelper> weak_ptr_factory_{this};
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace commerce

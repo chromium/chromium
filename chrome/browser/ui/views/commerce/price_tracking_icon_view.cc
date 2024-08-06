@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -109,8 +111,9 @@ void PriceTrackingIconView::OnExecuting(
 
   auto* web_contents = GetWebContents();
   DCHECK(web_contents);
-  auto* tab_helper =
-      commerce::CommerceUiTabHelper::FromWebContents(web_contents);
+  auto* tab_helper = tabs::TabInterface::GetFromContents(web_contents)
+                         ->GetTabFeatures()
+                         ->commerce_ui_tab_helper();
   CHECK(tab_helper);
 
   const gfx::Image& product_image = tab_helper->GetProductImage();
@@ -153,8 +156,9 @@ bool PriceTrackingIconView::ShouldShow() {
   auto* web_contents = GetWebContents();
   if (!web_contents)
     return false;
-  auto* tab_helper =
-      commerce::CommerceUiTabHelper::FromWebContents(web_contents);
+  auto* tab_helper = tabs::TabInterface::GetFromContents(web_contents)
+                         ->GetTabFeatures()
+                         ->commerce_ui_tab_helper();
 
   return tab_helper && tab_helper->ShouldShowPriceTrackingIconView();
 }
@@ -242,8 +246,9 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
         commerce::metrics::ShoppingAction::kPriceTracked);
   }
 
-  auto* tab_helper =
-      commerce::CommerceUiTabHelper::FromWebContents(GetWebContents());
+  auto* tab_helper = tabs::TabInterface::GetFromContents(GetWebContents())
+                         ->GetTabFeatures()
+                         ->commerce_ui_tab_helper();
   CHECK(tab_helper);
 
   tab_helper->SetPriceTrackingState(
@@ -280,8 +285,9 @@ bool PriceTrackingIconView::IsPriceTracking() const {
   if (!GetWebContents())
     return false;
 
-  auto* tab_helper =
-      commerce::CommerceUiTabHelper::FromWebContents(GetWebContents());
+  auto* tab_helper = tabs::TabInterface::GetFromContents(GetWebContents())
+                         ->GetTabFeatures()
+                         ->commerce_ui_tab_helper();
   CHECK(tab_helper);
 
   return tab_helper->IsPriceTracking();
@@ -300,8 +306,9 @@ void PriceTrackingIconView::MaybeShowPageActionLabel() {
     return;
   }
 
-  auto* tab_helper =
-      commerce::CommerceUiTabHelper::FromWebContents(GetWebContents());
+  auto* tab_helper = tabs::TabInterface::GetFromContents(GetWebContents())
+                         ->GetTabFeatures()
+                         ->commerce_ui_tab_helper();
 
   if (!tab_helper || !tab_helper->ShouldExpandPageActionIcon(
                          PageActionIconType::kPriceTracking)) {

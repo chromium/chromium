@@ -5,19 +5,35 @@
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/view.h"
 
+namespace {
+class TabFeaturesFake : public tabs::TabFeatures {
+ public:
+  TabFeaturesFake() = default;
+
+ protected:
+  std::unique_ptr<commerce::CommerceUiTabHelper> CreateCommerceUiTabHelper(
+      tabs::TabInterface* tab,
+      Profile* profile) override {
+    return std::make_unique<testing::NiceMock<MockCommerceUiTabHelper>>(
+        tab->GetContents());
+  }
+};
+}  // namespace
+
 // static
-void MockCommerceUiTabHelper::CreateForWebContents(
-    content::WebContents* content) {
-  content->SetUserData(
-      UserDataKey(),
-      std::make_unique<testing::NiceMock<MockCommerceUiTabHelper>>(
-          content));
+void MockCommerceUiTabHelper::ReplaceFactory() {
+  tabs::TabFeatures::ReplaceTabFeaturesForTesting(
+      base::BindRepeating([]() -> std::unique_ptr<tabs::TabFeatures> {
+        return std::make_unique<TabFeaturesFake>();
+      }));
 }
 
 MockCommerceUiTabHelper::MockCommerceUiTabHelper(

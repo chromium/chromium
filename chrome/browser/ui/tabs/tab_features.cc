@@ -6,13 +6,18 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/dips/dips_navigation_flow_detector_wrapper.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
+#include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -22,6 +27,7 @@
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_controller.h"
 #include "chrome/browser/user_annotations/user_annotations_web_contents_observer.h"
 #include "components/browsing_topics/browsing_topics_service.h"
+#include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/permissions/permission_indicators_tab_data.h"
 namespace tabs {
 
@@ -84,6 +90,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     user_annotations_web_contents_observer_ =
         user_annotations::UserAnnotationsWebContentsObserver::
             MaybeCreateForWebContents(tab.GetContents());
+
+    if (!profile->IsIncognitoProfile()) {
+      commerce_ui_tab_helper_ = CreateCommerceUiTabHelper(&tab, profile);
+    }
   }
   fedcm_account_selection_view_controller_ =
       std::make_unique<FedCmAccountSelectionViewController>(&tab);
@@ -111,6 +121,17 @@ std::unique_ptr<LensOverlayController> TabFeatures::CreateLensController(
       ThemeServiceFactory::GetForProfile(profile));
 }
 
+std::unique_ptr<commerce::CommerceUiTabHelper>
+TabFeatures::CreateCommerceUiTabHelper(TabInterface* tab, Profile* profile) {
+  // TODO(crbug.com/40863325): Consider using the in-memory cache instead.
+  return std::make_unique<commerce::CommerceUiTabHelper>(
+      tab->GetContents(),
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
+      BookmarkModelFactory::GetForBrowserContext(profile),
+      ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())
+          ->GetImageFetcher(image_fetcher::ImageFetcherConfig::kNetworkOnly));
+}
+
 void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
                                       content::WebContents* old_contents,
                                       content::WebContents* new_contents) {
@@ -118,6 +139,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   // discarding themselves.
   read_anything_side_panel_controller_ =
       std::make_unique<ReadAnythingSidePanelController>(new_contents);
+
+  if (commerce_ui_tab_helper_) {
+    commerce_ui_tab_helper_ = CreateCommerceUiTabHelper(
+        tab, Profile::FromBrowserContext(new_contents->GetBrowserContext()));
+  }
 }
 
 }  // namespace tabs

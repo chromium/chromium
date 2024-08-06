@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -63,8 +65,9 @@ void ProductSpecificationsIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
   auto* web_contents = GetWebContents();
   CHECK(web_contents);
-  auto* tab_helper =
-      commerce::CommerceUiTabHelper::FromWebContents(web_contents);
+  auto* tab_helper = tabs::TabInterface::GetFromContents(web_contents)
+                         ->GetTabFeatures()
+                         ->commerce_ui_tab_helper();
   CHECK(tab_helper);
 
   tab_helper->OnProductSpecificationsIconClicked();
@@ -116,8 +119,9 @@ bool ProductSpecificationsIconView::ShouldShow() {
   if (!web_contents) {
     return false;
   }
-  auto* tab_helper =
-      commerce::CommerceUiTabHelper::FromWebContents(web_contents);
+  auto* tab_helper = tabs::TabInterface::GetFromContents(web_contents)
+                         ->GetTabFeatures()
+                         ->commerce_ui_tab_helper();
 
   return tab_helper && tab_helper->ShouldShowProductSpecificationsIconView();
 }
@@ -126,8 +130,9 @@ void ProductSpecificationsIconView::SetVisualState(bool is_added) {
   icon_ = is_added ? &omnibox::kProductSpecificationsAddedIcon
                    : &omnibox::kProductSpecificationsAddIcon;
   if (GetWebContents()) {
-    auto* tab_helper =
-        commerce::CommerceUiTabHelper::FromWebContents(GetWebContents());
+    auto* tab_helper = tabs::TabInterface::GetFromContents(GetWebContents())
+                           ->GetTabFeatures()
+                           ->commerce_ui_tab_helper();
     CHECK(tab_helper);
 
     SetLabel(tab_helper->GetProductSpecificationsLabel(is_added));
@@ -140,8 +145,9 @@ void ProductSpecificationsIconView::MaybeShowPageActionLabel() {
   if (!base::FeatureList::IsEnabled(commerce::kCommerceAllowChipExpansion)) {
     return;
   }
-  auto* tab_helper =
-      commerce::CommerceUiTabHelper::FromWebContents(GetWebContents());
+  auto* tab_helper = tabs::TabInterface::GetFromContents(GetWebContents())
+                         ->GetTabFeatures()
+                         ->commerce_ui_tab_helper();
   if (!tab_helper || !tab_helper->ShouldExpandPageActionIcon(
                          PageActionIconType::kProductSpecifications)) {
     return;
@@ -160,8 +166,9 @@ bool ProductSpecificationsIconView::IsInProductSpecificationsSet() const {
     return false;
   }
 
-  auto* tab_helper =
-      commerce::CommerceUiTabHelper::FromWebContents(GetWebContents());
+  auto* tab_helper = tabs::TabInterface::GetFromContents(GetWebContents())
+                         ->GetTabFeatures()
+                         ->commerce_ui_tab_helper();
   CHECK(tab_helper);
 
   return tab_helper->IsInRecommendedSet();

@@ -22,6 +22,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/signin/bubble_signin_promo_delegate.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_view.h"
 #include "chrome/browser/ui/views/commerce/shopping_collection_iph_view.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -272,6 +274,7 @@ class PriceTrackingViewFeatureFlagTest
       public testing::WithParamInterface<bool> {
  public:
   PriceTrackingViewFeatureFlagTest() {
+    MockCommerceUiTabHelper::ReplaceFactory();
     const bool is_feature_enabled = GetParam();
     if (is_feature_enabled) {
       test_features_.InitAndEnableFeature(commerce::kShoppingList);
@@ -301,11 +304,11 @@ TEST_P(PriceTrackingViewFeatureFlagTest, PriceTrackingViewCreation) {
   const bool is_feature_enabled = GetParam();
   mock_shopping_service->SetIsShoppingListEligible(is_feature_enabled);
 
-  MockCommerceUiTabHelper::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  auto* mock_tab_helper_ = static_cast<MockCommerceUiTabHelper*>(
-      MockCommerceUiTabHelper::FromWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents()));
+  auto* mock_tab_helper_ =
+      static_cast<MockCommerceUiTabHelper*>(browser()
+                                                ->GetActiveTabInterface()
+                                                ->GetTabFeatures()
+                                                ->commerce_ui_tab_helper());
   const gfx::Image image = mock_tab_helper_->GetValidProductImage();
   ON_CALL(*mock_tab_helper_, GetProductImage)
       .WillByDefault(

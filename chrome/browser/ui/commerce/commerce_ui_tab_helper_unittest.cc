@@ -89,18 +89,16 @@ class CommerceUiTabHelperTest : public testing::Test {
 
   void SetUp() override {
     web_contents_ = test_web_contents_factory_.CreateWebContents(&profile_);
-    CommerceUiTabHelper::CreateForWebContents(
+    tab_helper_ = std::make_unique<commerce::CommerceUiTabHelper>(
         web_contents_.get(), shopping_service_.get(), bookmark_model_.get(),
         image_fetcher_.get());
-    tab_helper_ = CommerceUiTabHelper::FromWebContents(web_contents_.get());
   }
 
   void TestBody() override {}
 
   void TearDown() override {
     // Make sure the tab helper id destroyed before any of its dependencies are.
-    tab_helper_ = nullptr;
-    web_contents_->RemoveUserData(CommerceUiTabHelper::UserDataKey());
+    tab_helper_.reset();
   }
 
   void SetupImageFetcherForSimpleImage() {
@@ -143,7 +141,7 @@ class CommerceUiTabHelperTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<CommerceUiTabHelper> tab_helper_;
+  std::unique_ptr<CommerceUiTabHelper> tab_helper_;
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<image_fetcher::MockImageFetcher> image_fetcher_;

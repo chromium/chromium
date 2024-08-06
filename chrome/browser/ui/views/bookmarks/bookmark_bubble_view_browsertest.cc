@@ -88,8 +88,6 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
       mock_shopping_service_->SetIsShoppingListEligible(true);
       mock_shopping_service_->SetResponseForGetProductInfoForUrl(info);
       mock_shopping_service_->SetIsSubscribedCallbackValue(false);
-      MockCommerceUiTabHelper::CreateForWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents());
     }
 
     const GURL url = GURL("https://www.google.com");
@@ -121,6 +119,7 @@ class PowerBookmarkBubbleViewBrowserTest
     : public BaseBookmarkBubbleViewBrowserTest {
  public:
   PowerBookmarkBubbleViewBrowserTest() {
+    MockCommerceUiTabHelper::ReplaceFactory();
     test_features_.InitWithFeatures({commerce::kShoppingList}, {});
   }
 

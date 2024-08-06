@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
-
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -16,8 +14,10 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
+#include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -169,9 +169,10 @@ class PriceTrackingIconViewInteractiveTest : public InteractiveBrowserTest {
                   .Run(std::move(image), image_fetcher::RequestMetadata());
             });
 
-    tab_helper_ = static_cast<commerce::CommerceUiTabHelper*>(
-        commerce::CommerceUiTabHelper::FromWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents()));
+    tab_helper_ = browser()
+                      ->GetActiveTabInterface()
+                      ->GetTabFeatures()
+                      ->commerce_ui_tab_helper();
     tab_helper_->GetPriceTrackingControllerForTesting()
         ->SetImageFetcherForTesting(image_fetcher_.get());
 

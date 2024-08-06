@@ -7,6 +7,7 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -27,6 +28,10 @@ const char kTestURL[] = "about:blank";
 
 class DiscountsIconViewBrowserTest : public UiBrowserTest {
  public:
+  void SetUp() override {
+    MockCommerceUiTabHelper::ReplaceFactory();
+    UiBrowserTest::SetUp();
+  }
   // UiBrowserTest:
   void PreShow() override {
     std::string detail =
@@ -44,12 +49,11 @@ class DiscountsIconViewBrowserTest : public UiBrowserTest {
     discount_infos_ = {discount_info};
 
     // Setup discount response in tab helper
-    MockCommerceUiTabHelper::CreateForWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
     MockCommerceUiTabHelper* mock_tab_helper =
-        static_cast<MockCommerceUiTabHelper*>(
-            MockCommerceUiTabHelper::FromWebContents(
-                browser()->tab_strip_model()->GetActiveWebContents()));
+        static_cast<MockCommerceUiTabHelper*>(browser()
+                                                  ->GetActiveTabInterface()
+                                                  ->GetTabFeatures()
+                                                  ->commerce_ui_tab_helper());
     ON_CALL(*mock_tab_helper, ShouldShowDiscountsIconView)
         .WillByDefault(testing::Return(true));
     ON_CALL(*mock_tab_helper, GetDiscounts)

@@ -86,7 +86,6 @@ CommerceUiTabHelper::CommerceUiTabHelper(
     bookmarks::BookmarkModel* model,
     image_fetcher::ImageFetcher* image_fetcher)
     : content::WebContentsObserver(content),
-      content::WebContentsUserData<CommerceUiTabHelper>(*content),
       shopping_service_(shopping_service),
       bookmark_model_(model),
       image_fetcher_(image_fetcher) {
@@ -774,7 +773,5 @@ void CommerceUiTabHelper::SetPriceTrackingControllerForTesting(
     std::unique_ptr<PriceTrackingPageActionController> controller) {
   price_tracking_controller_.reset(controller.release());
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(CommerceUiTabHelper);
 
 }  // namespace commerce

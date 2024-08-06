@@ -7,6 +7,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/i18n/time_formatting.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/commerce/discounts_coupon_code_label_view.h"
@@ -214,8 +216,9 @@ void DiscountsBubbleDialogView::CopyButtonClicked() {
   commerce::metrics::DiscountsMetricCollector::
       RecordDiscountsBubbleCopyButtonClicked(ukm_source_id_);
 
-  auto* tab_helper =
-      commerce::CommerceUiTabHelper::FromWebContents(web_contents());
+  auto* tab_helper = tabs::TabInterface::GetFromContents(web_contents())
+                         ->GetTabFeatures()
+                         ->commerce_ui_tab_helper();
 
   if (!tab_helper) {
     return;
@@ -225,8 +228,9 @@ void DiscountsBubbleDialogView::CopyButtonClicked() {
 }
 
 void DiscountsBubbleDialogView::OnDialogClosing() {
-  commerce::CommerceUiTabHelper* tab_helper =
-      commerce::CommerceUiTabHelper::FromWebContents(web_contents());
+  auto* tab_helper = tabs::TabInterface::GetFromContents(web_contents())
+                         ->GetTabFeatures()
+                         ->commerce_ui_tab_helper();
 
   if (!tab_helper) {
     return;

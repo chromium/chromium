@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
-
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -14,7 +12,10 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
+#include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -42,7 +43,9 @@ const char kNonTrackableUrl[] = "about:blank";
 
 class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
  public:
-  PriceTrackingIconViewIntegrationTest() = default;
+  PriceTrackingIconViewIntegrationTest() {
+    MockCommerceUiTabHelper::ReplaceFactory();
+  }
 
   PriceTrackingIconViewIntegrationTest(
       const PriceTrackingIconViewIntegrationTest&) = delete;
@@ -55,8 +58,11 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
     test_features_.InitAndEnableFeature(commerce::kShoppingList);
     TestWithBrowserView::SetUp();
     AddTab(browser(), GURL(kNonTrackableUrl));
-    mock_tab_helper_ = AttachTabHelperToWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+    mock_tab_helper_ =
+        static_cast<MockCommerceUiTabHelper*>(browser()
+                                                  ->GetActiveTabInterface()
+                                                  ->GetTabFeatures()
+                                                  ->commerce_ui_tab_helper());
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
@@ -150,13 +156,6 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
 
  private:
   base::test::ScopedFeatureList test_features_;
-
-  MockCommerceUiTabHelper* AttachTabHelperToWebContents(
-      content::WebContents* web_contents) {
-    MockCommerceUiTabHelper::CreateForWebContents(web_contents);
-    return static_cast<MockCommerceUiTabHelper*>(
-        MockCommerceUiTabHelper::FromWebContents(web_contents));
-  }
 };
 
 TEST_F(PriceTrackingIconViewIntegrationTest,

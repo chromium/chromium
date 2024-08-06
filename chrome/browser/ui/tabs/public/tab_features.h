@@ -18,6 +18,10 @@ class LensOverlayController;
 class Profile;
 class ReadAnythingSidePanelController;
 
+namespace commerce {
+class CommerceUiTabHelper;
+}
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -88,6 +92,10 @@ class TabFeatures {
     return read_anything_side_panel_controller_.get();
   }
 
+  commerce::CommerceUiTabHelper* commerce_ui_tab_helper() {
+    return commerce_ui_tab_helper_.get();
+  }
+
   // Called exactly once to initialize features.
   void Init(TabInterface& tab, Profile* profile);
 
@@ -99,6 +107,9 @@ class TabFeatures {
   virtual std::unique_ptr<LensOverlayController> CreateLensController(
       TabInterface* tab,
       Profile* profile);
+
+  virtual std::unique_ptr<commerce::CommerceUiTabHelper>
+  CreateCommerceUiTabHelper(TabInterface* tab, Profile* profile);
 
  private:
   bool initialized_ = false;
@@ -132,6 +143,9 @@ class TabFeatures {
 
   std::unique_ptr<ReadAnythingSidePanelController>
       read_anything_side_panel_controller_;
+
+  // Responsible for commerce related features.
+  std::unique_ptr<commerce::CommerceUiTabHelper> commerce_ui_tab_helper_;
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
