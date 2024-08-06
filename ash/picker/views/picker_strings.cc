@@ -105,7 +105,7 @@ std::u16string GetSectionTitleForPickerCategoryType(
           IDS_PICKER_MORE_CATEGORY_TYPE_SECTION_TITLE);
     case PickerCategoryType::kCaseTransformations:
       return l10n_util::GetStringUTF16(
-          IDS_PICKER_CASE_TRANSFORMATIONS_CATEGORY_TYPE_SECTION_TITLE);
+          IDS_PICKER_EDIT_TEXT_CATEGORY_TYPE_SECTION_TITLE);
     case PickerCategoryType::kNone:
       return u"";
   }

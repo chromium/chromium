@@ -7424,14 +7424,15 @@ New install
         desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches items from the their clipboard.">
         Search Clipboard
       </message>
-      <message name="IDS_PICKER_GENERAL_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains general categories, i.e. expressions, browsing history, files.">
+      <message name="IDS_PICKER_GENERAL_CATEGORY_TYPE_SECTION_TITLE"
+        desc="This string appears as the heading text of a section. The section contains several selectable menu items that are related to inserting or opening content, such as links, emojis, or files.">
         Content
       </message>
-      <message name="IDS_PICKER_CHANGE_LENGTH_MENU_LABEL" translateable="false"
+      <message name="IDS_PICKER_CHANGE_LENGTH_MENU_LABEL"
         desc="This string appears as a selectable menu item in a menu, when the user has highlighted some text. When the user hovers over this item, it opens a submenu with various options to reword the highlighted text. The submenu options can change the length of the highlighted text in various ways. For example, an option might shorten the text by deleting redundant words.">
         Change length
       </message>
-      <message name="IDS_PICKER_CHANGE_TONE_MENU_LABEL" translateable="false"
+      <message name="IDS_PICKER_CHANGE_TONE_MENU_LABEL"
         desc="This string appears as a selectable menu item in a menu, when the user has highlighted some text. When the user hovers over this item, it opens a submenu with various options to reword the highlighted text. The submenu options can change the tone of the highlighted text in various ways. For example, an option might make the text more casual by using a different vocabulary.">
         Change tone
       </message>
@@ -7459,10 +7460,12 @@ New install
         desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'New'. When selected, this item opens a new Chrome window.">
         Chrome window
       </message>
-      <message name="IDS_PICKER_MORE_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains miscellaneous categories, e.g. Dates and Maths.">
+      <message name="IDS_PICKER_MORE_CATEGORY_TYPE_SECTION_TITLE"
+        desc="This string appears as the heading text of a section. This section contains several selectable menu items. This section is the last section on page, and contains menu items that do not belong to the previous sections.">
         More
       </message>
-      <message name="IDS_PICKER_CASE_TRANSFORMATIONS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains case transformation actions.">
+      <message name="IDS_PICKER_EDIT_TEXT_CATEGORY_TYPE_SECTION_TITLE"
+        desc="This string appears as the heading text of a section. This section contains several selectable menu items related to editing the user's selected text, such as changing the capitalization of the text.">
         Edit text
       </message>
       <message name="IDS_PICKER_HTML_CONTENT" translateable="false" desc="Display text for the clipboard html item.">
