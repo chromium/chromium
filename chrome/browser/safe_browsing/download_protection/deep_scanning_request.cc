@@ -349,7 +349,7 @@ void RecordEnterpriseScan(std::unique_ptr<FileAnalysisRequest> request,
   safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
       request->per_profile_request(), /*access_token*/ "",
       /*upload_info*/ base::StrCat({"Skipped - ", result_info}),
-      request->content_analysis_request());
+      /*upload_url*/ "", request->content_analysis_request());
   safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
       /*token=*/"", result_info,
       enterprise_connectors::ContentAnalysisResponse());

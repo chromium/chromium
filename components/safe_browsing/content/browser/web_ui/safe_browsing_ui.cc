@@ -419,6 +419,7 @@ void WebUIInfoSingleton::AddToDeepScanRequests(
     bool per_profile_request,
     const std::string& access_token,
     const std::string& upload_info,
+    const std::string& upload_url,
     const enterprise_connectors::ContentAnalysisRequest& request) {
   if (!HasListener())
     return;
@@ -445,6 +446,7 @@ void WebUIInfoSingleton::AddToDeepScanRequests(
   }
 
   deep_scan_request.upload_info = upload_info;
+  deep_scan_request.upload_url = upload_url;
 
   for (safe_browsing::SafeBrowsingUIHandler* webui_listener :
        webui_instances_) {
@@ -2805,6 +2807,7 @@ std::string SerializeContentAnalysisRequest(
     bool per_profile_request,
     const std::string& access_token_truncated,
     const std::string& upload_info,
+    const std::string& upload_url,
     const enterprise_connectors::ContentAnalysisRequest& request) {
   base::Value::Dict request_dict;
 
@@ -2927,6 +2930,7 @@ std::string SerializeContentAnalysisRequest(
   request_dict.Set(
       "is_chrome_os_managed_guest_session",
       request.client_metadata().is_chrome_os_managed_guest_session());
+  request_dict.Set("upload_url", upload_url);
 
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);
@@ -3024,7 +3028,7 @@ base::Value::Dict SerializeDeepScanDebugData(const std::string& token,
     value.Set("request",
               SerializeContentAnalysisRequest(
                   data.per_profile_request, data.access_token_truncated,
-                  data.upload_info, data.request.value()));
+                  data.upload_info, data.upload_url, data.request.value()));
   }
 
   if (!data.response_time.is_null()) {

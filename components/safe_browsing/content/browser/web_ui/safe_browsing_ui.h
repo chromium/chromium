@@ -49,6 +49,7 @@ struct DeepScanDebugData {
   bool per_profile_request;
   std::string access_token_truncated;
   std::string upload_info;
+  std::string upload_url;
 
   base::Time response_time;
   std::string response_status;
@@ -539,6 +540,7 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
       bool per_profile_request,
       const std::string& access_token,
       const std::string& upload_info,
+      const std::string& upload_url,
       const enterprise_connectors::ContentAnalysisRequest& request);
 
   // Add the new response to |deep_scan_requests_| and send it to all the open
