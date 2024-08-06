@@ -954,6 +954,105 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
   friend class Deque;
 };
 
+// UncheckedIteraotr<T> is just a wrapper of a T pointer with no bounds
+// checking, and the default iterator implementation of WTF::Vector.
+template <typename T>
+class UncheckedIterator {
+ public:
+  using difference_type = std::ptrdiff_t;
+  using value_type = std::remove_cv_t<T>;
+  using pointer = T*;
+  using reference = T&;
+  using iterator_category = std::contiguous_iterator_tag;
+  using iterator_concept = std::contiguous_iterator_tag;
+
+  constexpr UncheckedIterator() = default;
+  explicit UncheckedIterator(T* cur) : current_(cur) {}
+  UncheckedIterator(const UncheckedIterator& other) = default;
+  ~UncheckedIterator() = default;
+
+  UncheckedIterator& operator=(const UncheckedIterator& other) = default;
+
+  friend constexpr bool operator==(const UncheckedIterator& lhs,
+                                   const UncheckedIterator& rhs) {
+    return lhs.current_ == rhs.current_;
+  }
+  friend auto operator<=>(const UncheckedIterator& lhs,
+                          const UncheckedIterator& rhs) {
+    return lhs.current_ <=> rhs.current_;
+  }
+
+  UNSAFE_BUFFER_USAGE UncheckedIterator& operator++() {
+    ++current_;
+    return *this;
+  }
+  UNSAFE_BUFFER_USAGE UncheckedIterator operator++(int) {
+    auto old = *this;
+    ++current_;
+    return old;
+  }
+  UNSAFE_BUFFER_USAGE UncheckedIterator& operator--() {
+    --current_;
+    return *this;
+  }
+  UNSAFE_BUFFER_USAGE UncheckedIterator operator--(int) {
+    auto old = *this;
+    --current_;
+    return old;
+  }
+  UNSAFE_BUFFER_USAGE UncheckedIterator& operator+=(difference_type rhs) {
+    current_ += rhs;
+    return *this;
+  }
+  UNSAFE_BUFFER_USAGE UncheckedIterator operator+(difference_type rhs) const {
+    auto it = *this;
+    it += rhs;
+    return it;
+  }
+  UNSAFE_BUFFER_USAGE friend UncheckedIterator operator+(
+      difference_type lhs,
+      const UncheckedIterator& rhs) {
+    return rhs + lhs;
+  }
+  UNSAFE_BUFFER_USAGE UncheckedIterator& operator-=(difference_type rhs) {
+    current_ -= rhs;
+    return *this;
+  }
+  UNSAFE_BUFFER_USAGE UncheckedIterator operator-(difference_type rhs) const {
+    auto it = *this;
+    it -= rhs;
+    return it;
+  }
+  friend difference_type operator-(const UncheckedIterator& lhs,
+                                   const UncheckedIterator& rhs) {
+    return lhs.current_ - rhs.current_;
+  }
+
+  T& operator*() const { return *current_; }
+  T* operator->() const { return current_; }
+  UNSAFE_BUFFER_USAGE T& operator[](difference_type rhs) const {
+    return current_[rhs];
+  }
+
+  friend std::ostream& operator<<(std::ostream& out,
+                                  const UncheckedIterator& rhs) {
+    return out << "UncheckedIterator {current_:" << rhs.current_ << "}";
+  }
+
+ private:
+  // Allow current_ access from UncheckedIterator<U>.
+  template <typename>
+  friend class UncheckedIterator;
+
+  // The iterator is convertible to a pointer implicitly only in Vector
+  // implementation.
+  template <typename, wtf_size_t, typename>
+  friend class Vector;
+  operator T*() const { return current_; }
+
+  T* current_ = nullptr;
+};
+
 //
 // Vector
 //
@@ -1097,8 +1196,10 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   using pointer = value_type*;
   using const_pointer = const value_type*;
 
-  using iterator = T*;
-  using const_iterator = const T*;
+  // TODO(crbug.com/355003172): We should try using
+  // base::CheckedContiguousIterator instead of UncheckedIterator.
+  using iterator = UncheckedIterator<T>;
+  using const_iterator = UncheckedIterator<const T>;
   using reverse_iterator = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
@@ -1202,10 +1303,10 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   const T* data() const { return Base::Buffer(); }
 
   // Iterators and reverse iterators. They are invalidated on a reallocation.
-  iterator begin() { return data(); }
-  iterator end() { return begin() + size_; }
-  const_iterator begin() const { return data(); }
-  const_iterator end() const { return begin() + size_; }
+  iterator begin() { return iterator(data()); }
+  iterator end() { return iterator(DataEnd()); }
+  const_iterator begin() const { return const_iterator(data()); }
+  const_iterator end() const { return const_iterator(DataEnd()); }
 
   reverse_iterator rbegin() { return reverse_iterator(end()); }
   reverse_iterator rend() { return reverse_iterator(begin()); }
@@ -1466,6 +1567,12 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   const T* const* GetBufferSlot() const { return Base::BufferSlot(); }
 
  private:
+  template <typename, wtf_size_t, typename>
+  friend class Vector;
+  // Point the next of the last item. We must not dereference the return value.
+  T* DataEnd() { return data() + size(); }
+  const T* DataEnd() const { return data() + size(); }
+
   void ExpandCapacity(wtf_size_t new_min_capacity);
   T* ExpandCapacity(wtf_size_t new_min_capacity, T*);
   T* ExpandCapacity(wtf_size_t new_min_capacity, const T* data) {
@@ -1555,7 +1662,7 @@ Vector<T, InlineCapacity, Allocator>::Vector(const Vector& other)
     : Base(other.capacity()) {
   ANNOTATE_NEW_BUFFER(begin(), capacity(), other.size());
   size_ = other.size();
-  TypeOperations::UninitializedCopy(other.begin(), other.end(), begin(),
+  TypeOperations::UninitializedCopy(other.data(), other.DataEnd(), begin(),
                                     VectorOperationOrigin::kConstruction);
 }
 
@@ -1565,7 +1672,7 @@ Vector<T, InlineCapacity, Allocator>::Vector(const Vector& other, Proj proj)
     : Base(other.capacity()) {
   ANNOTATE_NEW_BUFFER(begin(), capacity(), other.size());
   size_ = other.size();
-  TypeOperations::UninitializedCopy(other.begin(), other.end(), begin(),
+  TypeOperations::UninitializedCopy(other.data(), other.DataEnd(), begin(),
                                     VectorOperationOrigin::kConstruction,
                                     std::move(proj));
 }
@@ -1577,7 +1684,7 @@ Vector<T, InlineCapacity, Allocator>::Vector(
     : Base(other.capacity()) {
   ANNOTATE_NEW_BUFFER(begin(), capacity(), other.size());
   size_ = other.size();
-  TypeOperations::UninitializedCopy(other.begin(), other.end(), begin(),
+  TypeOperations::UninitializedCopy(other.data(), other.DataEnd(), begin(),
                                     VectorOperationOrigin::kConstruction);
 }
 
@@ -1589,7 +1696,7 @@ Vector<T, InlineCapacity, Allocator>::Vector(
     : Base(other.capacity()) {
   ANNOTATE_NEW_BUFFER(begin(), capacity(), other.size());
   size_ = other.size();
-  TypeOperations::UninitializedCopy(other.begin(), other.end(), begin(),
+  TypeOperations::UninitializedCopy(other.data(), other.DataEnd(), begin(),
                                     VectorOperationOrigin::kConstruction,
                                     std::move(proj));
 }
@@ -1614,7 +1721,7 @@ Vector<T, InlineCapacity, Allocator>::operator=(
   TypeOperations::Copy(other.begin(), other.begin() + size(), begin(),
                        VectorOperationOrigin::kRegularModification);
   TypeOperations::UninitializedCopy(
-      other.begin() + size(), other.end(), end(),
+      other.data() + size(), other.DataEnd(), end(),
       VectorOperationOrigin::kRegularModification);
   size_ = other.size();
 
@@ -1645,10 +1752,10 @@ Vector<T, InlineCapacity, Allocator>::operator=(
 
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, begin(), capacity(), size_,
                                      other.size());
-  TypeOperations::Copy(other.begin(), other.begin() + size(), begin(),
+  TypeOperations::Copy(other.data(), other.data() + size(), begin(),
                        VectorOperationOrigin::kRegularModification);
   TypeOperations::UninitializedCopy(
-      other.begin() + size(), other.end(), end(),
+      other.data() + size(), other.DataEnd(), end(),
       VectorOperationOrigin::kRegularModification);
   size_ = other.size();
 
@@ -1826,13 +1933,13 @@ template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 T* Vector<T, InlineCapacity, Allocator>::ExpandCapacity(
     wtf_size_t new_min_capacity,
     T* ptr) {
-  if (ptr < begin() || ptr >= end()) {
+  if (ptr < data() || ptr >= DataEnd()) {
     ExpandCapacity(new_min_capacity);
     return ptr;
   }
-  size_t index = ptr - begin();
+  size_t index = ptr - data();
   ExpandCapacity(new_min_capacity);
-  return begin() + index;
+  return data() + index;
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
@@ -1949,7 +2056,7 @@ void Vector<T, InlineCapacity, Allocator>::ShrinkCapacity(
   if (new_capacity < size())
     Shrink(new_capacity);
 
-  T* old_buffer = begin();
+  T* old_buffer = data();
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
   wtf_size_t old_capacity = capacity();
 #endif
@@ -1966,7 +2073,7 @@ void Vector<T, InlineCapacity, Allocator>::ShrinkCapacity(
   }
   Base::ResetBufferPointer();
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
-  if (old_buffer != begin()) {
+  if (old_buffer != data()) {
     MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, begin(), capacity(), size_);
     ANNOTATE_DELETE_BUFFER(old_buffer, old_capacity, size_);
   }
@@ -2050,7 +2157,7 @@ template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U, wtf_size_t otherCapacity, typename OtherAllocator>
 inline void Vector<T, InlineCapacity, Allocator>::AppendVector(
     const Vector<U, otherCapacity, OtherAllocator>& val) {
-  Append(val.begin(), val.size());
+  Append(val.data(), val.size());
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
@@ -2143,7 +2250,7 @@ template <typename U, wtf_size_t otherCapacity, typename OtherAllocator>
 inline void Vector<T, InlineCapacity, Allocator>::InsertVector(
     wtf_size_t position,
     const Vector<U, otherCapacity, OtherAllocator>& val) {
-  insert(position, val.begin(), val.size());
+  insert(position, val.data(), val.size());
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
@@ -2163,7 +2270,7 @@ template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U, wtf_size_t otherCapacity, typename OtherAllocator>
 inline void Vector<T, InlineCapacity, Allocator>::PrependVector(
     const Vector<U, otherCapacity, OtherAllocator>& val) {
-  insert(0, val.begin(), val.size());
+  insert(0, val.data(), val.size());
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>

@@ -272,7 +272,19 @@ class CORE_EXPORT InspectorPageAgent final
   void Trace(Visitor*) const override;
 
  private:
-  struct IsolatedWorldRequest;
+  struct IsolatedWorldRequest {
+    IsolatedWorldRequest() = delete;
+    IsolatedWorldRequest(String world_name,
+                         bool grant_universal_access,
+                         std::unique_ptr<CreateIsolatedWorldCallback> callback)
+        : world_name(world_name),
+          grant_universal_access(grant_universal_access),
+          callback(std::move(callback)) {}
+
+    const String world_name;
+    const bool grant_universal_access;
+    std::unique_ptr<CreateIsolatedWorldCallback> callback;
+  };
 
   void GetResourceContentAfterResourcesContentLoaded(
       const String& frame_id,

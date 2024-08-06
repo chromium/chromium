@@ -128,7 +128,7 @@ bool TextMatchMarkerListImpl::SetTextMatchMarkersActive(unsigned start_offset,
                                                         unsigned end_offset,
                                                         bool active) {
   bool doc_dirty = false;
-  auto* const start = std::upper_bound(
+  auto const start = std::upper_bound(
       markers_.begin(), markers_.end(), start_offset,
       [](size_t start_offset, const Member<DocumentMarker>& marker) {
         return start_offset < marker->EndOffset();

@@ -224,20 +224,6 @@ std::unique_ptr<protocol::Array<String>> GetEnabledWindowFeatures(
 
 }  // namespace
 
-struct InspectorPageAgent::IsolatedWorldRequest {
-  IsolatedWorldRequest() = delete;
-  IsolatedWorldRequest(String world_name,
-                       bool grant_universal_access,
-                       std::unique_ptr<CreateIsolatedWorldCallback> callback)
-      : world_name(world_name),
-        grant_universal_access(grant_universal_access),
-        callback(std::move(callback)) {}
-
-  const String world_name;
-  const bool grant_universal_access;
-  std::unique_ptr<CreateIsolatedWorldCallback> callback;
-};
-
 static bool PrepareResourceBuffer(const Resource* cached_resource,
                                   bool* has_zero_size) {
   if (!cached_resource)

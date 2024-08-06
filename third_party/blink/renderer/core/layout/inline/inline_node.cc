@@ -1834,7 +1834,6 @@ static LayoutUnit ComputeContentSize(InlineNode node,
     // may break text into multiple lines, and may remove trailing spaces. For
     // max size, use the original text widths from InlineItem instead.
     void AddTextUntil(ItemIterator end) {
-      DCHECK(end);
       for (; next_item != end; ++next_item) {
         if (next_item->Type() == InlineItem::kOpenTag &&
             next_item->GetLayoutObject()->IsInlineRubyText()) {

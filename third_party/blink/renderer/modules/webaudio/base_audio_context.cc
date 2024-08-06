@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/modules/webaudio/channel_splitter_node.h"
 #include "third_party/blink/renderer/modules/webaudio/constant_source_node.h"
 #include "third_party/blink/renderer/modules/webaudio/convolver_node.h"
+#include "third_party/blink/renderer/modules/webaudio/cross_thread_audio_worklet_processor_info.h"
 #include "third_party/blink/renderer/modules/webaudio/delay_node.h"
 #include "third_party/blink/renderer/modules/webaudio/dynamics_compressor_node.h"
 #include "third_party/blink/renderer/modules/webaudio/gain_node.h"
