@@ -100,9 +100,9 @@ std::u16string GetSectionTitleForPickerCategoryType(
     case PickerCategoryType::kGeneral:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_GENERAL_CATEGORY_TYPE_SECTION_TITLE);
-    case PickerCategoryType::kCalculations:
+    case PickerCategoryType::kMore:
       return l10n_util::GetStringUTF16(
-          IDS_PICKER_CALCULATIONS_CATEGORY_TYPE_SECTION_TITLE);
+          IDS_PICKER_MORE_CATEGORY_TYPE_SECTION_TITLE);
     case PickerCategoryType::kCaseTransformations:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_CASE_TRANSFORMATIONS_CATEGORY_TYPE_SECTION_TITLE);

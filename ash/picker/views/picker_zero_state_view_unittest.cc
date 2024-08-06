@@ -121,7 +121,7 @@ TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
   EXPECT_THAT(view.category_section_views_for_testing(),
               ElementsAre(Key(PickerCategoryType::kEditorWrite),
                           Key(PickerCategoryType::kGeneral),
-                          Key(PickerCategoryType::kCalculations)));
+                          Key(PickerCategoryType::kMore)));
 }
 
 TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {

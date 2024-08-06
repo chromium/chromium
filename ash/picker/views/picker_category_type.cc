@@ -22,7 +22,7 @@ ASH_EXPORT PickerCategoryType GetPickerCategoryType(PickerCategory category) {
       return PickerCategoryType::kGeneral;
     case PickerCategory::kDatesTimes:
     case PickerCategory::kUnitsMaths:
-      return PickerCategoryType::kCalculations;
+      return PickerCategoryType::kMore;
   }
 }
 
