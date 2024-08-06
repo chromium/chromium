@@ -494,6 +494,10 @@ void ModelExecutionFeaturesController::OnMainToggleSettingStatePrefChanged() {
     if (!IsSettingVisible(feature)) {
       continue;
     }
+    if (!features::internal::ShouldEnableFeatureWhenMainToggleOn(feature)) {
+      // Do not change features that don't want to be changed with main toggle.
+      continue;
+    }
     // Set the feature pref the same state as the main toggle.
     browser_context_profile_service_->SetInteger(
         prefs::GetSettingEnabledPrefName(feature),

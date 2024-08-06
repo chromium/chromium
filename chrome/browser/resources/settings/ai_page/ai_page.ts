@@ -107,14 +107,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
                                                                           '';
   }
 
-  private getHistorySearchHrCssClass_(): string {
-    if (this.showComposeControl_ || this.showTabOrganizationControl_ ||
-        this.showWallpaperSearchControl_) {
-      return 'hr';
-    }
-    return '';
-  }
-
   private onHistorySearchRowClick_() {
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().HISTORY_SEARCH);
