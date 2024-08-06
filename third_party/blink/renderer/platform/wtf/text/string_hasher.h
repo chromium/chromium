@@ -28,7 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_HASHER_H_
 
 #ifdef __SSE2__
-#include <immintrin.h>
+#include <emmintrin.h>
 #elif defined(__ARM_NEON__)
 #include <arm_neon.h>
 #endif
