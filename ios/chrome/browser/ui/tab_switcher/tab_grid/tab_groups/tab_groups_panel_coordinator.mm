@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/disabled_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_container_view_controller.h"
@@ -79,12 +80,16 @@
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(
           self.browser->GetBrowserState());
+  BrowserList* browserList =
+      BrowserListFactory::GetForBrowserState(self.browser->GetBrowserState());
 
   _mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:tabGroupSyncService
               regularWebStateList:regularWebStateList
                     faviconLoader:faviconLoader
-                 disabledByPolicy:regularModeDisabled];
+                 disabledByPolicy:regularModeDisabled
+                      browserList:browserList];
+
   _mediator.toolbarsMutator = _toolbarsMutator;
   _mediator.toolbarTabGridDelegate = _toolbarTabGridDelegate;
   _mediator.consumer = _gridViewController;

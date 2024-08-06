@@ -254,6 +254,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars:toolbars_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test:fakes",
     "//ios/chrome/browser/ui/tab_switcher/test:fakes",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",

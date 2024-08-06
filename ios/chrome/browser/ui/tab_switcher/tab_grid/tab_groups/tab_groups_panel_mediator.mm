@@ -16,6 +16,7 @@
 #import "components/saved_tab_groups/string_utils.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
@@ -32,6 +33,9 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/gfx/favicon_size.h"
 #import "ui/gfx/image/image.h"
+
+using tab_groups::utils::GetLocalTabGroupInfo;
+using tab_groups::utils::LocalTabGroupInfo;
 
 namespace {
 
@@ -91,13 +95,16 @@ NSString* CreationText(base::Time creation_date) {
   BOOL _isDisabled;
   // Whether this screen is selected in the TabGrid.
   BOOL _selectedGrid;
+  // A list of Browsers.
+  BrowserList* _browserList;
 }
 
 - (instancetype)initWithTabGroupSyncService:
                     (tab_groups::TabGroupSyncService*)tabGroupSyncService
                         regularWebStateList:(WebStateList*)regularWebStateList
                               faviconLoader:(FaviconLoader*)faviconLoader
-                           disabledByPolicy:(BOOL)disabled {
+                           disabledByPolicy:(BOOL)disabled
+                                browserList:(BrowserList*)browserList {
   self = [super init];
   if (self) {
     _tabGroupSyncService = tabGroupSyncService;
@@ -110,6 +117,7 @@ NSString* CreationText(base::Time creation_date) {
     _regularWebStateList = regularWebStateList->AsWeakPtr();
     _faviconLoader = faviconLoader;
     _isDisabled = disabled;
+    _browserList = browserList;
   }
   return self;
 }
@@ -241,6 +249,26 @@ NSString* CreationText(base::Time creation_date) {
 - (void)selectTabGroupsPanelItem:(TabGroupsPanelItem*)item {
   [self.delegate tabGroupsPanelMediator:self
                     openGroupWithSyncID:item.savedTabGroupID];
+}
+
+- (void)deleteTabGroupsPanelItem:(TabGroupsPanelItem*)item {
+  const auto group = _tabGroupSyncService->GetGroup(item.savedTabGroupID);
+  if (!group) {
+    return;
+  }
+
+  LocalTabGroupInfo tabGroupInfo = GetLocalTabGroupInfo(_browserList, *group);
+  if (tabGroupInfo.tab_group) {
+    // Delete the group and tabs in the group locally. It automatically updates
+    // the tab group sync service.
+    CloseAllWebStatesInGroup(*tabGroupInfo.web_state_list,
+                             tabGroupInfo.tab_group,
+                             WebStateList::CLOSE_USER_ACTION);
+  } else {
+    // The group doesn't exist locally. Delete the group from the tab group sync
+    // service.
+    _tabGroupSyncService->RemoveGroup(item.savedTabGroupID);
+  }
 }
 
 #pragma mark TabGroupSyncServiceObserverDelegate
