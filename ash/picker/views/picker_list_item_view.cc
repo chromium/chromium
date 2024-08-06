@@ -232,15 +232,15 @@ void PickerListItemView::SetBadgeAction(PickerActionType action) {
       break;
     case PickerActionType::kInsert:
       trailing_badge_->SetText(
-          l10n_util::GetStringUTF16(IDS_PICKER_RESULT_BADGE_LABEL_INSERT));
+          l10n_util::GetStringUTF16(IDS_PICKER_INSERT_RESULT_BADGE_LABEL));
       break;
     case PickerActionType::kOpen:
       trailing_badge_->SetText(
-          l10n_util::GetStringUTF16(IDS_PICKER_RESULT_BADGE_LABEL_OPEN));
+          l10n_util::GetStringUTF16(IDS_PICKER_OPEN_RESULT_BADGE_LABEL));
       break;
     case PickerActionType::kCreate:
       trailing_badge_->SetText(
-          l10n_util::GetStringUTF16(IDS_PICKER_RESULT_BADGE_LABEL_CREATE));
+          l10n_util::GetStringUTF16(IDS_PICKER_CREATE_RESULT_BADGE_LABEL));
       break;
   }
   badge_action_ = action;

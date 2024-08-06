@@ -7492,13 +7492,15 @@ New install
         desc="This string appears a label inside a list of search results. It indicates that there are no search results found for the given query.">
         No results found.
       </message>
-      <message name="IDS_PICKER_RESULT_BADGE_LABEL_INSERT" translateable="false" desc="Label of the badge in a result that can be inserted.">
+      <message name="IDS_PICKER_INSERT_RESULT_BADGE_LABEL"
+        desc="This string appears as the label for a badge in a search result. It indicates that selecting the search result will insert it into the current page. For example, this badge might appear in a search result for an image, which would insert the image into the page.">
         Insert
       </message>
-      <message name="IDS_PICKER_RESULT_BADGE_LABEL_OPEN" translateable="false" desc="Label of the badge in a result that can be opened.">
+      <message name="IDS_PICKER_OPEN_RESULT_BADGE_LABEL"
+        desc="This string appears as the label for a badge in a search result. It indicates that selecting the search result will open it in a new window. For example, this badge might appear in a search result for an image, which would open the image in a new window.">
         Open
       </message>
-      <message name="IDS_PICKER_RESULT_BADGE_LABEL_CREATE" translateable="false" desc="Label of the badge in a result that can be created.">
+      <message name="IDS_PICKER_CREATE_RESULT_BADGE_LABEL" translateable="false" desc="Label of the badge in a result that can be created.">
         Create
       </message>
       <message name="IDS_PICKER_FEATURE_TOUR_LEARN_MORE_BUTTON_LABEL"
