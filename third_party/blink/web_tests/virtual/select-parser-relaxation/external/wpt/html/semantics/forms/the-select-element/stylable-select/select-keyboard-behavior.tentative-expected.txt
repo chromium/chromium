@@ -18,7 +18,7 @@ This is a testharness.js-based test.
 [FAIL] custombutton-defaultdatalist: When the listbox is closed, the enter key should submit the form or do nothing.
   assert_false: Enter should not open the listbox when outside a form. expected false got true
 [FAIL] custombutton-defaultdatalist: When the listbox is open, the enter key should commit the selected option.
-  assert_equals: The selected option should receive initial focus. expected Element node <option class="two">two</option> but got Element node <select id="custombutton-defaultdatalist">\n    <button ty...
+  assert_equals: The selected option should receive initial focus. expected Element node <option class="two">two</option> but got Element node <select id="custombutton-defaultdatalist">\n    <button>cu...
 [FAIL] custombutton-customdatalist: When the listbox is closed, spacebar should open the listbox.
   assert_true: The select should be open after pressing space. expected true got false
 [FAIL] custombutton-customdatalist: When the listbox is closed, all arrow keys should open the listbox.
@@ -26,6 +26,6 @@ This is a testharness.js-based test.
 [FAIL] custombutton-customdatalist: When the listbox is closed, the enter key should submit the form or do nothing.
   assert_false: Enter should not open the listbox when outside a form. expected false got true
 [FAIL] custombutton-customdatalist: When the listbox is open, the enter key should commit the selected option.
-  assert_equals: The selected option should receive initial focus. expected Element node <option class="two">two</option> but got Element node <select id="custombutton-customdatalist">\n    <button typ...
+  assert_equals: The selected option should receive initial focus. expected Element node <option class="two">two</option> but got Element node <select id="custombutton-customdatalist">\n    <button>cus...
 Harness: the test ran to completion.
 

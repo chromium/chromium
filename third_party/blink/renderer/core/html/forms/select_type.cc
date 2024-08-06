@@ -473,15 +473,15 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
 
 void MenuListSelectType::ManuallyAssignSlots() {
   VectorOf<Node> option_nodes;
-  VectorOf<Node> buttons;
+  HTMLButtonElement* first_button = nullptr;
   VectorOf<Node> all_children_except_button_and_datalist;
   Node* first_datalist = nullptr;
   for (Node& child : NodeTraversal::ChildrenOf(*select_)) {
     if (!child.IsSlotable()) {
       continue;
     }
-    if (IsA<HTMLButtonElement>(child)) {
-      buttons.push_back(child);
+    if (IsA<HTMLButtonElement>(child) && !first_button) {
+      first_button = &To<HTMLButtonElement>(child);
     } else if (IsA<HTMLDataListElement>(child)) {
       if (!first_datalist) {
         first_datalist = &child;
@@ -498,7 +498,7 @@ void MenuListSelectType::ManuallyAssignSlots() {
   if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
     CHECK(button_slot_);
     CHECK(datalist_slot_);
-    button_slot_->Assign(buttons);
+    button_slot_->Assign(first_button);
     datalist_slot_->Assign(first_datalist);
     if (default_datalist_->popoverOpen()) {
       default_datalist_options_slot_->Assign(
