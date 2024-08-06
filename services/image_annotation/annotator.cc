@@ -20,9 +20,11 @@
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/google/core/common/google_util.h"
 #include "components/manta/anchovy/anchovy_requests.h"
+#include "components/manta/manta_status.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -836,10 +838,11 @@ void Annotator::SendRequestBatchToServer() {
       request_keys.insert(key);
       manta::anchovy::ImageDescriptionRequest request = {
           it->source_id, it->desc_lang_tag, it->image_bytes};
+      const auto now = base::Time::Now();
       anchovy_provider_->GetImageDescription(
           request, GetTrafficAnnotation(),
           base::BindOnce(&Annotator::OnMantaResponseReceived,
-                         weak_factory_.GetWeakPtr(), key));
+                         weak_factory_.GetWeakPtr(), key, now));
     }
   } else {
     // The set of (source ID, desc lang) pairs relevant for this request.
@@ -866,8 +869,13 @@ void Annotator::SendRequestBatchToServer() {
 }
 
 void Annotator::OnMantaResponseReceived(const RequestKey& request_key,
+                                        const base::Time request_time,
                                         base::Value::Dict dict,
                                         manta::MantaStatus status) {
+  const auto now = base::Time::Now();
+  const auto delta = now - request_time;
+  ReportServerLatency(delta);
+
   if (dict.empty()) {
     ProcessResult(request_key, {});
     return;
@@ -899,11 +907,16 @@ void Annotator::OnMantaResponseReceived(const RequestKey& request_key,
 
       // The better score in image descriptions is the larger number.
       if (*type == "OCR") {
+        ReportOcrAnnotation(*score, false);
         if (!best_ocr_score.has_value() || *score > *best_ocr_score) {
           best_ocr_score = score;
           best_ocr = result_dict;
         }
       } else {
+        if (auto itr = annotation_types().find(*type);
+            itr != annotation_types().end()) {
+          ReportDescAnnotation(itr->second, *score, false);
+        }
         if (!best_score.has_value() || *score > *best_score) {
           best_score = score;
           best = result_dict;

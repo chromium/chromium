@@ -227,6 +227,7 @@ class Annotator : public mojom::Annotator {
                                 std::unique_ptr<std::string> json_response);
   // Called once a response comes back from anchovy_provider_.
   void OnMantaResponseReceived(const RequestKey& request_key,
+                               base::Time request_time,
                                base::Value::Dict dict,
                                manta::MantaStatus status);
 
