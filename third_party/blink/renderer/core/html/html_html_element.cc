@@ -148,7 +148,7 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
     }
     auto* const text_combine =
         DynamicTo<LayoutTextCombine>(layout_text->Parent());
-    if (UNLIKELY(text_combine)) {
+    if (text_combine) [[unlikely]] {
       layout_text->SetStyle(text_combine->Style());
       continue;
     }

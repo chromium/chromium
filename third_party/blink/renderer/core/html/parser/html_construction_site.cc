@@ -153,7 +153,7 @@ static inline WhitespaceMode RecomputeWhiteSpaceMode(
   auto check_whitespace = [](auto* buffer, size_t length) {
     WhitespaceMode result = WhitespaceMode::kNewlineThenWhitespace;
     for (size_t i = 1; i < length; ++i) {
-      if (LIKELY(buffer[i] == ' ')) {
+      if (buffer[i] == ' ') [[likely]] {
         continue;
       } else if (IsHTMLSpecialWhitespace(buffer[i])) {
         result = WhitespaceMode::kAllWhitespace;
@@ -403,11 +403,14 @@ void HTMLConstructionSite::FlushPendingText() {
       break_index = string.length();
     }
     unsigned substring_view_length = break_index - current_position;
-    StringView substring_view =
-        LIKELY(!current_position && substring_view_length >= string.length())
-            ? string
-            : string.SubstringView(current_position,
-                                   break_index - current_position);
+    StringView substring_view;
+    if (!current_position && substring_view_length >= string.length())
+        [[likely]] {
+      substring_view = string;
+    } else {
+      substring_view = string.SubstringView(current_position,
+                                            break_index - current_position);
+    }
     String substring =
         TryCanonicalizeString(substring_view, pending_text_.whitespace_mode);
 

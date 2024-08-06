@@ -185,7 +185,7 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
     ++current_;
     for (; current_ != end_; ++current_) {
       const UChar ch = characters_[current_];
-      if (LIKELY(ch == ' ')) {
+      if (ch == ' ') [[likely]] {
         continue;
       } else if (IsHTMLSpecialWhitespace(ch)) {
         whitespace_mode = WhitespaceMode::kAllWhitespace;

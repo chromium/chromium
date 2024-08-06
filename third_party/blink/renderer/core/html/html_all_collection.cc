@@ -54,7 +54,7 @@ V8UnionElementOrHTMLCollection* HTMLAllCollection::item(
   }
   AtomicString name = NativeValueTraits<IDLString>::ArgumentValue(
       isolate, 0, nameOrIndex, exception_state);
-  if (UNLIKELY(exception_state.HadException())) {
+  if (exception_state.HadException()) [[unlikely]] {
     return nullptr;
   }
   return NamedGetter(name);

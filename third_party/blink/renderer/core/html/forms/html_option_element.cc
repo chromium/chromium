@@ -223,7 +223,7 @@ void HTMLOptionElement::ParseAttribute(
   if (name == html_names::kValueAttr) {
     if (HTMLDataListElement* data_list = OwnerDataListElement()) {
       data_list->OptionElementChildrenChanged();
-    } else if (UNLIKELY(is_descendant_of_select_list_)) {
+    } else if (is_descendant_of_select_list_) [[unlikely]] {
       if (HTMLSelectListElement* select_list = OwnerSelectList()) {
         select_list->OptionElementValueChanged(*this);
       }
