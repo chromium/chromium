@@ -89,7 +89,7 @@ bool LineBreakCandidateContext::AppendLine(const LineInfo& line_info,
   }
 
   for (const InlineItemResult& item_result : line_info.Results()) {
-    if (UNLIKELY(item_result.inline_size < LayoutUnit())) {
+    if (item_result.inline_size < LayoutUnit()) [[unlikely]] {
       // Negative margins are not supported, break opportunities must increase
       // monotonically. See `ScoreLineBreaker::ComputeScores`.
       return false;

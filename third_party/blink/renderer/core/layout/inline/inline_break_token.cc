@@ -47,7 +47,7 @@ InlineBreakToken* InlineBreakToken::Create(
   // array. Therefore, we need to make sure to allocate enough space for that
   // array here, which requires a manual allocation + placement new.
   wtf_size_t size = sizeof(InlineBreakToken);
-  if (UNLIKELY(sub_break_token || ruby_data)) {
+  if (sub_break_token || ruby_data) [[unlikely]] {
     size += sizeof(RareData);
     flags |= kHasRareData;
   }
@@ -74,7 +74,7 @@ InlineBreakToken::InlineBreakToken(PassKey key,
                                    const BlockBreakToken* sub_break_token,
                                    const RubyBreakTokenData* ruby_data)
     : BreakToken(kInlineBreakToken, node, flags), style_(style), start_(start) {
-  if (UNLIKELY(sub_break_token || ruby_data)) {
+  if (sub_break_token || ruby_data) [[unlikely]] {
     rare_data_[0].sub_break_token = sub_break_token;
     rare_data_[0].ruby_data = ruby_data;
   }

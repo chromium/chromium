@@ -183,7 +183,7 @@ void InlineBoxState::AdjustEdges(const ComputedStyle& style,
                                  FontHeight& metrics) {
   DCHECK(should_apply_over || should_apply_under);
   const SimpleFontData* font_data = font.PrimaryFont();
-  if (UNLIKELY(!font_data)) {
+  if (!font_data) [[unlikely]] {
     return;
   }
   const FontMetrics& font_metrics = font_data->GetFontMetrics();
@@ -651,8 +651,9 @@ void InlineLayoutStateStack::UpdateAfterReorder(LogicalLineItems* line_box) {
 
   // If any inline fragmentation occurred due to BiDi reorder, append them and
   // adjust box edges.
-  if (UNLIKELY(!fragmented_boxes.empty()))
+  if (!fragmented_boxes.empty()) [[unlikely]] {
     UpdateFragmentedBoxDataEdges(&fragmented_boxes);
+  }
 
 #if DCHECK_IS_ON()
   // Check all BoxData have ranges.
@@ -990,7 +991,7 @@ const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
   box.SetBoxType(PhysicalFragment::kInlineBox);
   box.SetStyleVariant(item->GetStyleVariant());
 
-  if (UNLIKELY(is_opaque)) {
+  if (is_opaque) [[unlikely]] {
     box.SetIsOpaque();
     box.SetSidesToInclude({false, false, false, false});
   } else {
@@ -1080,7 +1081,7 @@ InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
                                            FontBaseline baseline_type) {
   // The `vertical-align` property should not apply to the line wrapper for
   // block-in-inline.
-  if (UNLIKELY(has_block_in_inline_)) {
+  if (has_block_in_inline_) [[unlikely]] {
     DCHECK(box->pending_descendants.empty());
     return kPositionNotPending;
   }
@@ -1155,8 +1156,8 @@ InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
   if (!is_svg_text_ && vertical_align == EVerticalAlign::kBaseline)
     return kPositionNotPending;
 
-  if (UNLIKELY(box->item &&
-               IsA<LayoutTextCombine>(box->item->GetLayoutObject()))) {
+  if (box->item && IsA<LayoutTextCombine>(box->item->GetLayoutObject()))
+      [[unlikely]] {
     // Text content in text-combine-upright:all is layout in horizontally, so
     // we don't need to move text combine box.
     // See "text-combine-shrink-to-fit.html".

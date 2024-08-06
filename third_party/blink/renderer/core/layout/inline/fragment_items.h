@@ -48,9 +48,10 @@ class CORE_EXPORT FragmentItems final {
   // Returns |FirstLineText()| if it is available and |first_line| is |true|.
   // Otherwise returns |NormalText()|.
   const String& Text(bool first_line) const {
-    return UNLIKELY(first_line && first_line_text_content_)
-               ? first_line_text_content_
-               : text_content_;
+    if (first_line && first_line_text_content_) [[unlikely]] {
+      return first_line_text_content_;
+    }
+    return text_content_;
   }
 
   // When block-fragmented, returns the number of |FragmentItem| in earlier

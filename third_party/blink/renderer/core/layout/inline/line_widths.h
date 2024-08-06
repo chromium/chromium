@@ -46,7 +46,7 @@ class CORE_EXPORT LineWidths {
 };
 
 inline LayoutUnit LineWidths::operator[](wtf_size_t index) const {
-  if (UNLIKELY(index < num_excluded_lines_)) {
+  if (index < num_excluded_lines_) [[unlikely]] {
     return excluded_width_;
   }
   return default_width_;

@@ -365,8 +365,10 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
   // TODO(layout-dev): Handle cases where the old items are not consecutive.
   const ComputedStyle& new_style = layout_text->StyleRef();
   const bool collapse_spaces = new_style.ShouldCollapseWhiteSpaces();
-  const bool preserve_newlines =
-      new_style.ShouldPreserveBreaks() && LIKELY(!is_text_combine_);
+  bool preserve_newlines = new_style.ShouldPreserveBreaks();
+  if (preserve_newlines && is_text_combine_) [[unlikely]] {
+    preserve_newlines = false;
+  }
   if (InlineItem* last_item = LastItemToCollapseWith(items_)) {
     if (collapse_spaces) {
       switch (last_item->EndCollapseType()) {
@@ -456,9 +458,9 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
     }
   }
 
-  if (UNLIKELY(old_item0.StartOffset() > 0 &&
-               ShouldInsertBreakOpportunityAfterLeadingPreservedSpaces(
-                   layout_text->TransformedText(), new_style))) {
+  if (old_item0.StartOffset() > 0 &&
+      ShouldInsertBreakOpportunityAfterLeadingPreservedSpaces(
+          layout_text->TransformedText(), new_style)) [[unlikely]] {
     // e.g. <p>abc xyz</p> => <p> xyz</p> where "abc" and " xyz" are different
     // Text node. |text_| is " \u200Bxyz".
     return false;
@@ -551,10 +553,10 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
   }
 
   // If not create a new item as needed.
-  if (UNLIKELY(layout_text->IsWordBreak())) {
+  if (layout_text->IsWordBreak()) [[unlikely]] {
     typename MappingBuilder::SourceNodeScope scope(&mapping_builder_,
                                                    layout_text);
-    if (UNLIKELY(is_text_combine_)) {
+    if (is_text_combine_) [[unlikely]] {
       // We don't break text runs in text-combine-upright:all.
       // Note: Even if we have overflow-wrap:normal and word-break:keep-all,
       // <wbr> causes line break.
@@ -619,9 +621,13 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
                                                  &layout_object);
 
   const ComputedStyle& style = layout_object.StyleRef();
-  const bool should_not_preserve_newline =
-      UNLIKELY(layout_object.IsSVGInlineText() || is_text_combine_ ||
-               ruby_text_nesting_level_ > 0);
+  bool should_not_preserve_newline;
+  if (layout_object.IsSVGInlineText() || is_text_combine_ ||
+      ruby_text_nesting_level_ > 0) [[unlikely]] {
+    should_not_preserve_newline = true;
+  } else {
+    should_not_preserve_newline = false;
+  }
 
   RestoreTrailingCollapsibleSpaceIfRemoved();
 
@@ -758,10 +764,10 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
     space_run_has_newline = MoveToEndOfCollapsibleSpaces(string, &i, &c);
 
     // LayoutBR does not set preserve_newline, but should be preserved.
-    if (UNLIKELY(space_run_has_newline && string.length() == 1 &&
-                 layout_object && layout_object->IsBR())) {
+    if (space_run_has_newline && string.length() == 1 && layout_object &&
+        layout_object->IsBR()) [[unlikely]] {
       // https://drafts.csswg.org/css-ruby/#anon-gen-unbreak
-      if (UNLIKELY(is_text_combine_ || ruby_text_nesting_level_ > 0)) {
+      if (is_text_combine_ || ruby_text_nesting_level_ > 0) [[unlikely]] {
         AppendTextItem(TransformedString(" "), layout_object);
       } else {
         AppendForcedBreakCollapseWhitespace(layout_object);
@@ -894,7 +900,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
       bool remove_newline = space_run_has_newline &&
                             ShouldRemoveNewline(text_, text_.length(), style,
                                                 StringView(string, i), style);
-      if (UNLIKELY(remove_newline)) {
+      if (remove_newline) [[unlikely]] {
         // |kNotCollapsible| because the newline is removed, not collapsed.
         end_collapse = InlineItem::kNotCollapsible;
         space_run_has_newline = false;
@@ -918,7 +924,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
   }
 
   DCHECK_GE(text_.length(), start_offset);
-  if (UNLIKELY(text_.length() == start_offset)) {
+  if (text_.length() == start_offset) [[unlikely]] {
     AppendEmptyTextItem(layout_object);
     return;
   }
@@ -937,8 +943,9 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::
         const ComputedStyle& style,
         unsigned index) const {
   DCHECK_LE(index, string.length());
-  if (UNLIKELY(is_text_combine_))
+  if (is_text_combine_) [[unlikely]] {
     return false;
+  }
   // Check if we are at a preserved space character and auto-wrap is enabled.
   if (style.ShouldCollapseWhiteSpaces() || !style.ShouldWrapLine() ||
       !string.length() || index >= string.length() ||
@@ -962,8 +969,8 @@ void InlineItemsBuilderTemplate<MappingBuilder>::
         unsigned* start) {
   DCHECK(start);
   StringView string = transformed.View();
-  if (UNLIKELY(ShouldInsertBreakOpportunityAfterLeadingPreservedSpaces(
-          string, style, *start))) {
+  if (ShouldInsertBreakOpportunityAfterLeadingPreservedSpaces(
+          string, style, *start)) [[unlikely]] {
     wtf_size_t end = *start;
     do {
       ++end;
@@ -995,7 +1002,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveWhitespace(
                                                     layout_object, &start);
   const StringView transformed_view = transformed.View();
   const wtf_size_t length = transformed_view.length();
-  if (UNLIKELY(start >= length)) {
+  if (start >= length) [[unlikely]] {
     return;
   }
   if (layout_object->HasNoControlItems()) {
@@ -1023,7 +1030,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveWhitespace(
     const UChar c = transformed_view[start];
     switch (c) {
       case kNewlineCharacter:
-        if (UNLIKELY(is_text_combine_ || ruby_text_nesting_level_ > 0)) {
+        if (is_text_combine_ || ruby_text_nesting_level_ > 0) [[unlikely]] {
           start++;
           AppendTextItem(TransformedString(" "), layout_object);
           break;
@@ -1180,7 +1187,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitAndEnterSvgTextChunk(
 template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::EnterSvgTextChunk(
     const ComputedStyle* style) {
-  if (LIKELY(!block_flow_->IsSVGText() || !text_chunk_offsets_)) {
+  if (!block_flow_->IsSVGText() || !text_chunk_offsets_) [[likely]] {
     return;
   }
   EnterBidiContext(nullptr, style, kLeftToRightIsolateCharacter,

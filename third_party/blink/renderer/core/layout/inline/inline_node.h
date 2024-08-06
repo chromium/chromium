@@ -205,11 +205,12 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
 };
 
 inline bool InlineNode::IsStickyImagesQuirkForContentSize() const {
-  if (UNLIKELY(GetDocument().InQuirksMode())) {
+  if (GetDocument().InQuirksMode()) [[unlikely]] {
     const ComputedStyle& style = Style();
-    if (UNLIKELY(style.Display() == EDisplay::kTableCell &&
-                 !style.LogicalWidth().IsSpecified()))
+    if (style.Display() == EDisplay::kTableCell &&
+        !style.LogicalWidth().IsSpecified()) [[unlikely]] {
       return true;
+    }
   }
   return false;
 }

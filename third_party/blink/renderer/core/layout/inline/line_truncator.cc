@@ -175,7 +175,7 @@ LayoutUnit LineTruncator::TruncateLine(LayoutUnit line_width,
 
     HideChild(child_to_truncate);
     DCHECK_LE(ellipsized_child->inline_size, child_to_truncate->inline_size);
-    if (UNLIKELY(IsRtl(line_direction_))) {
+    if (IsRtl(line_direction_)) [[unlikely]] {
       ellipsized_child->rect.offset.inline_offset +=
           child_to_truncate->inline_size - ellipsized_child->inline_size;
     }

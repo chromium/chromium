@@ -89,14 +89,18 @@ void ScoreLineBreaker::OptimalBreakPoints(const LeadingFloats& leading_floats,
     LineInfo& line_info = line_info_list.Append();
     line_breaker.NextLine(&line_info);
     break_token_ = line_info.GetBreakToken();
-    if (UNLIKELY(line_breaker.ShouldDisableScoreLineBreak())) {
+    if (line_breaker.ShouldDisableScoreLineBreak()) [[unlikely]] {
       context.SuspendUntilEndParagraph();
       return;
     }
-    if (line_info.IsEndParagraph() ||
-        UNLIKELY(lines_until_clamp > 0 &&
-                 line_info_list.Size() ==
-                     static_cast<wtf_size_t>(lines_until_clamp))) {
+    if (line_info.IsEndParagraph() || [&] {
+          if (lines_until_clamp > 0 &&
+              line_info_list.Size() ==
+                  static_cast<wtf_size_t>(lines_until_clamp)) [[unlikely]] {
+            return true;
+          }
+          return false;
+        }()) {
       context.SuspendUntilEndParagraph();
       break;
     }
@@ -192,7 +196,7 @@ bool ScoreLineBreaker::Optimize(const LineInfoList& line_info_list,
   ComputeBreakPoints(candidates, scores, break_points);
 
   // Copy data for testing.
-  if (UNLIKELY(scores_out_for_testing_)) {
+  if (scores_out_for_testing_) [[unlikely]] {
     for (const LineBreakScore& score : scores) {
       scores_out_for_testing_->push_back(score.score);
     }

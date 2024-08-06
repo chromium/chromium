@@ -121,7 +121,10 @@ void InlineItem::ComputeBoxProperties() {
   DCHECK(!is_empty_item_);
 
   if (type_ == InlineItem::kText || type_ == InlineItem::kAtomicInline ||
-      type_ == InlineItem::kControl || UNLIKELY(type_ == kInitialLetterBox)) {
+      type_ == InlineItem::kControl) {
+    return;
+  }
+  if (type_ == kInitialLetterBox) [[unlikely]] {
     return;
   }
 

@@ -142,7 +142,7 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const InlineCursor& cursor,
       physical_caret_rect.offset + cursor.Current().OffsetInContainerFragment();
   const auto* const text_combine = DynamicTo<LayoutTextCombine>(
       cursor.Current().GetLayoutObject()->Parent());
-  if (UNLIKELY(text_combine)) {
+  if (text_combine) [[unlikely]] {
     caret_location =
         text_combine->AdjustOffsetForLocalCaretRect(caret_location);
   }

@@ -46,7 +46,7 @@ FragmentItemsBuilder::FragmentItemsBuilder(
   // oilpan doesn't get around to collecting it.
   if (!is_block_fragmented) {
     const wtf_size_t estimated_item_count = text_content_.length() / 40 * 3;
-    if (UNLIKELY(estimated_item_count > items_.capacity() * 2)) {
+    if (estimated_item_count > items_.capacity() * 2) [[unlikely]] {
       items_.ReserveInitialCapacity(estimated_item_count);
     }
   }
@@ -257,7 +257,7 @@ FragmentItemsBuilder::AddPreviousItems(const PhysicalBoxFragment& container,
     DCHECK(container_builder);
     DCHECK(text_content_);
 
-    if (UNLIKELY(items.FirstLineText() && !first_line_text_content_)) {
+    if (items.FirstLineText() && !first_line_text_content_) [[unlikely]] {
       // Don't reuse previous items if they have different `::first-line` style
       // but |this| doesn't. Reaching here means that computed style doesn't
       // change, but |FragmentItem| has wrong |StyleVariant|.
@@ -311,14 +311,15 @@ FragmentItemsBuilder::AddPreviousItems(const PhysicalBoxFragment& container,
             To<InlineBreakToken>(line_fragment->GetBreakToken());
         DCHECK(break_token);
         const InlineItemsData* current_items_data;
-        if (UNLIKELY(break_token->UseFirstLineStyle()))
+        if (break_token->UseFirstLineStyle()) [[unlikely]] {
           current_items_data = &node_.ItemsData(true);
-        else if (items_data)
+        } else if (items_data) {
           current_items_data = items_data;
-        else
+        } else {
           current_items_data = items_data = &node_.ItemsData(false);
-        if (UNLIKELY(
-                !current_items_data->IsValidOffset(break_token->Start()))) {
+        }
+        if (!current_items_data->IsValidOffset(break_token->Start()))
+            [[unlikely]] {
           NOTREACHED_IN_MIGRATION();
           break;
         }
