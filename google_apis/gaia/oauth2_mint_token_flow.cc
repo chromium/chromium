@@ -314,7 +314,7 @@ std::string OAuth2MintTokenFlow::CreateAuthorizationHeaderValue(
     const std::string& access_token) {
   if (!parameters_.bound_oauth_token.empty()) {
     // Replace a regular token with the one containing binding assertion.
-    return base::StrCat({"BoundOAuthToken ", parameters_.bound_oauth_token});
+    return base::StrCat({"BoundOAuth ", parameters_.bound_oauth_token});
   }
 
   // Call the base class method to get a regular authorization value.
