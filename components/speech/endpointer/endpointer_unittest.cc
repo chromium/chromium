@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/fixed_array.h"
 #include "components/speech/audio_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,7 +32,7 @@ class FrameProcessor {
 
 void RunEndpointerEventsTest(FrameProcessor* processor, int sample_rate) {
   int frame_size = sample_rate / kFrameRate;
-  int16_t samples[frame_size];
+  base::FixedArray<int16_t> samples(frame_size);
 
   // We will create a white noise signal of 150 frames. The frames from 50 to
   // 100 will have more power, and the endpointer should fire on those frames.
@@ -56,7 +57,8 @@ void RunEndpointerEventsTest(FrameProcessor* processor, int sample_rate) {
       samples[i] = static_cast<int16_t>(gain * randNum);
     }
 
-    EpStatus ep_status = processor->ProcessFrame(time, samples, frame_size);
+    EpStatus ep_status =
+        processor->ProcessFrame(time, samples.data(), frame_size);
     time += static_cast<int64_t>(frame_size * (1e6 / sample_rate));
 
     // Log the status.
