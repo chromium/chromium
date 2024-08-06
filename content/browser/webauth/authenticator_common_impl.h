@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/types/strong_alias.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/authenticator_common.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
@@ -202,6 +203,10 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
  private:
   friend class AuthenticatorImplTest;
   struct RequestState;
+  // A RequestKey is a magic value that identifies a request. Since requests can
+  // be canceled, some callbacks need to ensure that they're still operating on
+  // the same request when they resolve.
+  using RequestKey = base::StrongAlias<class RequestKeyTag, uint64_t>;
 
   // Enumerates whether or not to check that the WebContents has focus.
   enum class Focus {
@@ -210,24 +215,30 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   };
 
   void ContinueMakeCredentialAfterRpIdCheck(
+      RequestKey request_key,
       url::Origin caller_origin,
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       bool is_cross_origin_iframe,
       blink::mojom::AuthenticatorStatus rp_id_validation_result);
   void ContinueMakeCredentialAfterBrowserPasskeysAvailabilityCheck(
+      RequestKey request_key,
       bool available);
   void ContinueMakeCredentialAfterIsUvpaaOverrideCheck(
+      RequestKey request_key,
       std::optional<bool> is_uvpaa_override);
 
   void ContinueGetAssertionAfterRpIdCheck(
+      RequestKey request_key,
       url::Origin caller_origin,
       blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
       blink::mojom::PaymentOptionsPtr payment_options,
       bool is_cross_origin_iframe,
       blink::mojom::AuthenticatorStatus rp_id_validation_result);
   void ContinueGetAssertionAfterBrowserPasskeysAvailabilityCheck(
+      RequestKey request_key,
       bool available);
   void ContinueGetAssertionAfterIsUvpaaOverrideCheck(
+      RequestKey request_key,
       std::optional<bool> is_uvpaa_override);
 
   void ContinueIsUvpaaAfterOverrideCheck(
@@ -242,6 +253,7 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       std::optional<bool> is_uvpaa_override);
 
   void ContinueReportAfterRpIdCheck(
+      RequestKey request_key,
       blink::mojom::PublicKeyCredentialReportOptionsPtr options,
       blink::mojom::AuthenticatorStatus rp_id_validation_result);
 
@@ -347,14 +359,23 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       const url::Origin& caller_origin);
 
   void OnMakeCredentialProxyResponse(
+      RequestKey request_key,
       WebAuthenticationRequestProxy::RequestId request_id,
       blink::mojom::WebAuthnDOMExceptionDetailsPtr error,
       blink::mojom::MakeCredentialAuthenticatorResponsePtr response);
 
   void OnGetAssertionProxyResponse(
+      RequestKey request_key,
       WebAuthenticationRequestProxy::RequestId request_id,
       blink::mojom::WebAuthnDOMExceptionDetailsPtr error,
       blink::mojom::GetAssertionAuthenticatorResponsePtr response);
+
+  // Get an identifier for the current request. Callbacks that might span a
+  // cancelation must hold one of these values to check whether they're still
+  // pertinent when called.
+  RequestKey GetRequestKey();
+  // Check whether the given `RequestKey` identifies the current request.
+  [[nodiscard]] bool CheckRequestKey(RequestKey key);
 
   const GlobalRenderFrameHostId render_frame_host_id_;
   const ServingRequestsFor serving_requests_for_;
@@ -366,6 +387,10 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   bool disable_tls_check_ = false;
   bool disable_ui_ = false;
   bool enable_request_proxy_api_ = false;
+
+  // The RequestKey of the next request. This starts at one so that a
+  // `RequestKey` that was default initialized to zero is invalid.
+  uint64_t next_request_key_ = 1;
 
   // req_state_ contains all state specific to a single WebAuthn call. It
   // only contains a value when a request is being processed.
