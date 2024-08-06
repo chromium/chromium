@@ -37,7 +37,8 @@ void SetExecutionRequest(
                                                          request_metadata);
       return;
     case ModelBasedCapabilityKey::kHistorySearch:
-      // TODO(crbug.com/325108985): Update once we onboard the model.
+      SetExecutionRequestTemplate<HistoryAnswerFeatureTypeMap>(
+          log_ai_request, request_metadata);
       return;
     case ModelBasedCapabilityKey::kPromptApi:
     case ModelBasedCapabilityKey::kTextSafety:
@@ -66,7 +67,8 @@ void SetExecutionResponse(ModelBasedCapabilityKey feature,
                                                           response_metadata);
       return;
     case ModelBasedCapabilityKey::kHistorySearch:
-      // TODO(crbug.com/325108985): Update once we onboard the model.
+      SetExecutionResponseTemplate<HistoryAnswerFeatureTypeMap>(
+          log_ai_request, response_metadata);
       return;
     case ModelBasedCapabilityKey::kPromptApi:
     case ModelBasedCapabilityKey::kTextSafety:
