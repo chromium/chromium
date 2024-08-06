@@ -2337,9 +2337,6 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
     }
     bool skip_to_phone_confirmation =
         is_get_assertion &&
-#if BUILDFLAG(IS_WIN)
-        !WebAuthnApiSupportsHybrid() &&
-#endif
         transport_availability_.has_platform_authenticator_credential ==
             device::FidoRequestHandlerBase::RecognizedCredential::
                 kNoRecognizedCredential &&
