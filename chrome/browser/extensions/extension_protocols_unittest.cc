@@ -813,6 +813,52 @@ TEST_P(ExtensionProtocolsTest, AllowFrameRequests) {
   }
 }
 
+// Make sure requests for paths ending with a separator aren't allowed. See
+// https://crbug.com/356878412.
+TEST_P(ExtensionProtocolsTest, PathsWithTrailingSeparatorsAreNotAllowed) {
+  base::FilePath extension_dir = GetTestPath("simple_with_file");
+  std::string error;
+  scoped_refptr<Extension> extension = file_util::LoadExtension(
+      extension_dir, mojom::ManifestLocation::kInternal, Extension::NO_FLAGS,
+      &error);
+  ASSERT_NE(extension.get(), nullptr) << "error: " << error;
+
+  // Loading "/file.html" should succeed.
+  EXPECT_EQ(net::OK, DoRequestOrLoad(extension, "file.html").result());
+
+  // Loading "/file.html/" should fail.
+  base::FilePath relative_path =
+      base::FilePath(FILE_PATH_LITERAL("file.html")).AsEndingWithSeparator();
+  EXPECT_EQ(net::ERR_FILE_NOT_FOUND,
+            DoRequestOrLoad(extension, relative_path.AsUTF8Unsafe()).result());
+}
+
+// Make sure directories with an index.html file aren't serving the file, i.e.
+// index.html doesn't get any special treatment.
+TEST_P(ExtensionProtocolsTest, DirectoryWithIndexHtml) {
+  base::FilePath extension_dir = GetTestPath("simple_with_index_html");
+  std::string error;
+  scoped_refptr<Extension> extension = file_util::LoadExtension(
+      extension_dir, mojom::ManifestLocation::kInternal, Extension::NO_FLAGS,
+      &error);
+  ASSERT_NE(extension.get(), nullptr) << "error: " << error;
+
+  // Loading "/test_dir" should fail.
+  base::FilePath relative_path(FILE_PATH_LITERAL("test_dir"));
+  EXPECT_EQ(net::ERR_FILE_NOT_FOUND,
+            DoRequestOrLoad(extension, relative_path.AsUTF8Unsafe()).result());
+
+  // Loading "/test_dir/" should fail.
+  relative_path = relative_path.AsEndingWithSeparator();
+  EXPECT_EQ(net::ERR_FILE_NOT_FOUND,
+            DoRequestOrLoad(extension, relative_path.AsUTF8Unsafe()).result());
+
+  // Loading "/test_dir/index.html" explicitly should succeed.
+  relative_path = relative_path.AppendASCII("index.html");
+  EXPECT_EQ(net::OK,
+            DoRequestOrLoad(extension, relative_path.AsUTF8Unsafe()).result());
+}
+
 TEST_P(ExtensionProtocolsTest, MetadataFolder) {
   base::FilePath extension_dir = GetTestPath("metadata_folder");
   std::string error;
