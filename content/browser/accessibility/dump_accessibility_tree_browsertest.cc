@@ -3088,6 +3088,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPermission) {
   RunHtmlTest(FILE_PATH_LITERAL("permission.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityProhibitedName) {
+  // Explicitly enable feature that repairs accessible names on roles where it
+  // prohibited, moving to description.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "AccessibilityProhibitedNames");
+  RunHtmlTest(FILE_PATH_LITERAL("prohibited-name.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPopoverApi) {
   RunHtmlTest(FILE_PATH_LITERAL("popover-api.html"));
 }

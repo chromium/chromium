@@ -1293,10 +1293,58 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   AddAttributeToList(ax::mojom::BoolAttribute::kContainerLiveBusy,
                      "container-busy", attributes);
 
+  // Expose name-from.
+  ax::mojom::NameFrom name_from = GetNameFrom();
+  std::string from;
+  bool is_explicit_name = true;
+  switch (static_cast<ax::mojom::NameFrom>(name_from)) {
+    case ax::mojom::NameFrom::kAttribute:
+      from = "attribute";
+      DCHECK(!GetName().empty());
+      break;
+    case ax::mojom::NameFrom::kCaption:
+      from = "caption";
+      DCHECK(!GetName().empty());
+      break;
+    case ax::mojom::NameFrom::kContents:
+      is_explicit_name = false;
+      from = "contents";
+      DCHECK(!GetName().empty());
+      break;
+    case ax::mojom::NameFrom::kPlaceholder:
+      from = "placeholder";
+      DCHECK(!GetName().empty());
+      break;
+    case ax::mojom::NameFrom::kProhibited:
+    case ax::mojom::NameFrom::kProhibitedAndRedundant:
+      is_explicit_name = false;
+      from = "prohibited";
+      DCHECK(GetName().empty());
+      break;
+    case ax::mojom::NameFrom::kRelatedElement:
+      from = "related-element";
+      DCHECK(!GetName().empty());
+      break;
+    case ax::mojom::NameFrom::kPopoverAttribute:
+    case ax::mojom::NameFrom::kTitle:
+      from = "tooltip";
+      DCHECK(!GetName().empty());
+      break;
+    case ax::mojom::NameFrom::kValue:
+      from = "value";
+      DCHECK(!GetName().empty());
+      break;
+    case ax::mojom::NameFrom::kAttributeExplicitlyEmpty:
+      break;
+    case ax::mojom::NameFrom::kNone:
+      is_explicit_name = false;
+      break;  // Not exposed.
+  }
+  if (!from.empty()) {
+    AddAttributeToList("name-from", from, attributes);
+  }
   // Expose the non-standard explicit-name IA2 attribute.
-  int name_from;
-  if (GetIntAttribute(ax::mojom::IntAttribute::kNameFrom, &name_from) &&
-      name_from != static_cast<int32_t>(ax::mojom::NameFrom::kContents)) {
+  if (is_explicit_name) {
     AddAttributeToList("explicit-name", "true", attributes);
   }
 

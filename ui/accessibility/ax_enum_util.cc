@@ -2380,6 +2380,8 @@ const char* ToString(ax::mojom::NameFrom name_from) {
       return "placeholder";
     case ax::mojom::NameFrom::kProhibited:
       return "prohibited";
+    case ax::mojom::NameFrom::kProhibitedAndRedundant:
+      return "prohibitedAndRedundant";
     case ax::mojom::NameFrom::kRelatedElement:
       return "relatedElement";
     case ax::mojom::NameFrom::kTitle:

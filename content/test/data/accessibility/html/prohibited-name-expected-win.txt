@@ -1,0 +1,7 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION description-from:prohibited-name-repair description='Illegal aria-label'
+++++ROLE_SYSTEM_STATICTEXT name='Illegal aria-label moves to description'
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='Redundant aria-label ignored'
+++IA2_ROLE_SECTION description:Manual description description-from:aria-description description='Manual description'
+++++ROLE_SYSTEM_STATICTEXT name='Some inner content'

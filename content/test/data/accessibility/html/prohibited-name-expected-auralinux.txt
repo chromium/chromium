@@ -1,0 +1,7 @@
+[document web]
+++[section] description='Illegal aria-label' description-from:prohibited-name-repair
+++++[static] name='Illegal aria-label moves to description'
+++[section]
+++++[static] name='Redundant aria-label ignored'
+++[section] description='Manual description' description:Manual description description-from:aria-description
+++++[static] name='Some inner content'

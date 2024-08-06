@@ -1,1 +1,1 @@
-[combo box] name='Choose your language.'
+[combo box] name='Choose your language.' name-from:tooltip

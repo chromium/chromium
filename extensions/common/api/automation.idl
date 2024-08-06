@@ -478,6 +478,7 @@
     placeholder,
     popoverAttribute,
     prohibited,
+    prohibitedAndRedundant,
     relatedElement,
     title,
     value
