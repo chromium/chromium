@@ -26,9 +26,6 @@ WebStateUpdateBrowserAgent::~WebStateUpdateBrowserAgent() {}
 
 void WebStateUpdateBrowserAgent::UpdateWebStateScrollViewOffset(
     CGFloat toolbar_height) {
-  if (!web_state_list_) {
-    return;
-  }
   for (int index = 0; index < web_state_list_->count(); ++index) {
     web::WebState* web_state = web_state_list_->GetWebStateAt(index);
     CRWWebViewScrollViewProxy* scroll_proxy =
