@@ -108,9 +108,10 @@ constexpr Dst checked_cast(Src value) {
   // This throws a compile-time error on evaluating the constexpr if it can be
   // determined at compile-time as failing, otherwise it will CHECK at runtime.
   using SrcType = typename internal::UnderlyingType<Src>::type;
-  return PA_BASE_NUMERICS_LIKELY((IsValueInRangeForNumericType<Dst>(value)))
-             ? static_cast<Dst>(static_cast<SrcType>(value))
-             : CheckHandler::template HandleFailure<Dst>();
+  if (IsValueInRangeForNumericType<Dst>(value)) [[likely]] {
+    return static_cast<Dst>(static_cast<SrcType>(value));
+  }
+  return CheckHandler::template HandleFailure<Dst>();
 }
 
 // Default boundaries for integral/float: max/infinity, lowest/-infinity, 0/NaN.
@@ -188,9 +189,10 @@ struct SaturateFastOp<Dst,
     const Dst saturated = CommonMaxOrMin<Dst, Src>(
         IsMaxInRangeForNumericType<Dst, Src>() ||
         (!IsMinInRangeForNumericType<Dst, Src>() && IsValueNegative(value)));
-    return PA_BASE_NUMERICS_LIKELY(IsValueInRangeForNumericType<Dst>(value))
-               ? static_cast<Dst>(value)
-               : saturated;
+    if (IsValueInRangeForNumericType<Dst>(value)) [[likely]] {
+      return static_cast<Dst>(value);
+    }
+    return saturated;
   }
 };
 

@@ -9,14 +9,6 @@
 #include <limits>
 #include <type_traits>
 
-#if defined(__GNUC__) || defined(__clang__)
-#define PA_BASE_NUMERICS_LIKELY(x) __builtin_expect(!!(x), 1)
-#define PA_BASE_NUMERICS_UNLIKELY(x) __builtin_expect(!!(x), 0)
-#else
-#define PA_BASE_NUMERICS_LIKELY(x) (x)
-#define PA_BASE_NUMERICS_UNLIKELY(x) (x)
-#endif
-
 namespace partition_alloc::internal::base::internal {
 
 // The std library doesn't provide a binary max_exponent for integers, however
