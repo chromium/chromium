@@ -203,6 +203,10 @@ constexpr char kObsoleteBookmarksAndReadingListAccountStorageOptIn[] =
 // Deprecated 08/2024.
 const char kTrialPrefName[] = "trending_queries.trial_version";
 
+// Deprecated 08/2024.
+constexpr char kSafeBrowsingEsbOptInWithFriendlierSettings[] =
+    "safebrowsing.esb_opt_in_with_friendlier_settings";
+
 // Helper function migrating the preference `pref_name` of type "double" from
 // `defaults` to `pref_service`.
 void MigrateDoublePreferenceFromUserDefaults(std::string_view pref_name,
@@ -688,6 +692,11 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   // Register deprecated pref for cleanup.
   registry->RegisterIntegerPref(kTrialPrefName, 0);
+
+  // Pref related to the Enhanced Safe Browsing Opt-in with new friendlier
+  // settings UI on chrome://settings/security.
+  registry->RegisterBooleanPref(kSafeBrowsingEsbOptInWithFriendlierSettings,
+                                false);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -1076,6 +1085,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 08/2024.
   prefs->ClearPref(kTrialPrefName);
+
+  // Added 08/2024
+  prefs->ClearPref(kSafeBrowsingEsbOptInWithFriendlierSettings);
 }
 
 // This method should be periodically pruned of year+ old migrations.

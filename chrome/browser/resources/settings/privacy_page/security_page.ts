@@ -428,9 +428,6 @@ export class SettingsSecurityPageElement extends
       this.recordInteractionHistogramOnRadioChange_(selected);
       this.recordActionOnRadioChange_(selected);
       this.interactedWithPage_(selected);
-      this.setPrefValue(
-          'safebrowsing.esb_opt_in_with_friendlier_settings',
-          selected === SafeBrowsingSetting.ENHANCED);
     }
     if (selected === SafeBrowsingSetting.DISABLED) {
       this.showDisableSafebrowsingDialog_ = true;

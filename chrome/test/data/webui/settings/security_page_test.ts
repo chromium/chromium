@@ -1014,23 +1014,6 @@ suite('SafeBrowsing', function() {
   });
   // </if>
 
-  test('FriendlierSettingsPopulatedOnEsbOptIn', async function() {
-    page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
-    assertTrue(
-        page.getPref('safebrowsing.esb_opt_in_with_friendlier_settings').value);
-  });
-
-  test('FriendlierSettingsClearedOnEsbOptOut', async function() {
-    page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
-    page.setPrefValue('safebrowsing.esb_opt_in_with_friendlier_settings', true);
-    page.$.safeBrowsingStandard.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
-    assertFalse(
-        page.getPref('safebrowsing.esb_opt_in_with_friendlier_settings').value);
-  });
-
   test(
       'SafeBrowsingReportingToggleNotVisibleWhenExtendedReportingDeprecated',
       async function() {

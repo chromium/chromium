@@ -1046,6 +1046,10 @@ constexpr char kObsoleteUserReceivedGMSCoreError[] =
     "user_received_gmscore_error";
 #endif
 
+// Deprecated 08/2024.
+constexpr char kSafeBrowsingEsbOptInWithFriendlierSettings[] =
+    "safebrowsing.esb_opt_in_with_friendlier_settings";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1448,6 +1452,9 @@ void RegisterProfilePrefsForMigration(
       kObsoleteTimesAttemptedToReenrollToGoogleMobileServices, 0);
   registry->RegisterBooleanPref(kObsoleteUserReceivedGMSCoreError, false);
 #endif
+  // Deprecated 08/2024.
+  registry->RegisterBooleanPref(kSafeBrowsingEsbOptInWithFriendlierSettings,
+                                false);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2751,6 +2758,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
       kObsoleteTimesAttemptedToReenrollToGoogleMobileServices);
   profile_prefs->ClearPref(kObsoleteUserReceivedGMSCoreError);
 #endif
+  // Added 08/2024.
+  profile_prefs->ClearPref(kSafeBrowsingEsbOptInWithFriendlierSettings);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -346,8 +346,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::kGeneratedHttpsFirstModePref] =
       settings_api::PrefType::kNumber;
-  (*s_allowlist)[::prefs::kSafeBrowsingEsbOptInWithFriendlierSettings] =
-      settings_api::PrefType::kBoolean;
 
   // Tracking protection page
   (*s_allowlist)[::prefs::kCookieControlsMode] =
