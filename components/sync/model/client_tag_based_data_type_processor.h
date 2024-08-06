@@ -152,7 +152,7 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. Public for tests.
-  // LINT.IfChange(SyncModelTypeErrorSite)
+  // LINT.IfChange(SyncDataTypeErrorSite)
   enum class ErrorSite {
     kReportedByBridge = 0,
     kApplyFullUpdates = 1,
@@ -161,7 +161,7 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
     kSupportsIncrementalUpdatesMismatch = 4,
     kMaxValue = kSupportsIncrementalUpdatesMismatch,
   };
-  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncModelTypeErrorSite)
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncDataTypeErrorSite)
 
  private:
   friend class DataTypeDebugInfo;
