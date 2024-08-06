@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/cpu.h"
 
 #include <stdint.h>
@@ -16,6 +11,8 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/memory/protected_memory.h"
 #include "build/build_config.h"
 
@@ -108,13 +105,14 @@ namespace {
 
 // Requests extended feature information via |ecx|.
 void __cpuidex(int cpu_info[4], int eax, int ecx) {
-  __asm__ volatile(
-      "mov %%ebx, %%edi\n"
-      "cpuid\n"
-      "xchg %%edi, %%ebx\n"
-      : "=a"(cpu_info[0]), "=D"(cpu_info[1]), "=c"(cpu_info[2]),
-        "=d"(cpu_info[3])
-      : "a"(eax), "c"(ecx));
+  // SAFETY: `cpu_info` has length 4 and therefore all accesses below are valid.
+  UNSAFE_BUFFERS(
+      __asm__ volatile("mov %%ebx, %%edi\n"
+                       "cpuid\n"
+                       "xchg %%edi, %%ebx\n"
+                       : "=a"(cpu_info[0]), "=D"(cpu_info[1]),
+                         "=c"(cpu_info[2]), "=d"(cpu_info[3])
+                       : "a"(eax), "c"(ecx)));
 }
 
 void __cpuid(int cpu_info[4], int info_type) {
@@ -125,10 +123,11 @@ void __cpuid(int cpu_info[4], int info_type) {
 
 // Requests extended feature information via |ecx|.
 void __cpuidex(int cpu_info[4], int eax, int ecx) {
-  __asm__ volatile("cpuid\n"
-                   : "=a"(cpu_info[0]), "=b"(cpu_info[1]), "=c"(cpu_info[2]),
-                     "=d"(cpu_info[3])
-                   : "a"(eax), "c"(ecx));
+  // SAFETY: `cpu_info` has length 4 and therefore all accesses below are valid.
+  UNSAFE_BUFFERS(__asm__ volatile("cpuid\n"
+                                  : "=a"(cpu_info[0]), "=b"(cpu_info[1]),
+                                    "=c"(cpu_info[2]), "=d"(cpu_info[3])
+                                  : "a"(eax), "c"(ecx)));
 }
 
 void __cpuid(int cpu_info[4], int info_type) {
@@ -235,12 +234,15 @@ void CPU::Initialize(bool require_branding) {
   // not in linear order. The code below arranges the information
   // in a human readable form. The human readable order is CPUInfo[1] |
   // CPUInfo[3] | CPUInfo[2]. CPUInfo[2] and CPUInfo[3] are swapped
-  // before using memcpy() to copy these three array elements to |cpu_string|.
+  // before copying these three array elements to |cpu_vendor_|.
   __cpuid(cpu_info, 0);
   int num_ids = cpu_info[0];
   std::swap(cpu_info[2], cpu_info[3]);
-  memcpy(cpu_vendor_, &cpu_info[1], kVendorNameSize);
-  cpu_vendor_[kVendorNameSize] = '\0';
+  {
+    SpanWriter writer{span(cpu_vendor_)};
+    writer.Write(as_chars(span(cpu_info)).last<kVendorNameSize>());
+    writer.Write('\0');
+  }
 
   // Interpret CPU feature information.
   if (num_ids > 0) {
@@ -321,14 +323,13 @@ void CPU::Initialize(bool require_branding) {
                 "cpu_brand_ has wrong size");
 
   if (max_parameter >= kParameterEnd) {
-    size_t i = 0;
+    SpanWriter writer{span(cpu_brand_)};
     for (uint32_t parameter = kParameterStart; parameter <= kParameterEnd;
          ++parameter) {
       __cpuid(cpu_info, static_cast<int>(parameter));
-      memcpy(&cpu_brand_[i], cpu_info, sizeof(cpu_info));
-      i += sizeof(cpu_info);
+      writer.Write(as_chars(span(cpu_info)));
     }
-    cpu_brand_[i] = '\0';
+    writer.Write('\0');
   }
 
   static constexpr uint32_t kParameterContainingNonStopTimeStampCounter =
@@ -361,10 +362,9 @@ void CPU::Initialize(bool require_branding) {
     const ProcCpuInfo& info = ParseProcCpu();
 
     // Ensure the brand can be stored in the internal array.
-    CHECK_LE(info.brand.size(), kBrandNameSize);
-
-    const size_t chars_copied = info.brand.copy(cpu_brand_, kBrandNameSize);
-    cpu_brand_[chars_copied] = '\0';
+    SpanWriter writer{span(cpu_brand_)};
+    writer.Write(span(info.brand));
+    writer.Write('\0');
 
     implementer_ = info.implementer;
     part_number_ = info.part_number;
