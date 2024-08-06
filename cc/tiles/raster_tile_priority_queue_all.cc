@@ -78,12 +78,13 @@ void CreateTilingSetRasterQueues(
     }
     bool prioritize_low_res = tree_priority == SMOOTHNESS_TAKES_PRIORITY;
     std::unique_ptr<TilingSetRasterQueueAll> tiling_set_queue =
-        std::make_unique<TilingSetRasterQueueAll>(
+        TilingSetRasterQueueAll::Create(
             tiling_set, prioritize_low_res,
             layer->contributes_to_drawn_render_surface());
     // Queues will only contain non empty tiling sets.
-    if (!tiling_set_queue->IsEmpty())
+    if (tiling_set_queue && !tiling_set_queue->IsEmpty()) {
       queues->push_back(std::move(tiling_set_queue));
+    }
   }
   std::make_heap(queues->begin(), queues->end(),
                  RasterOrderComparator(tree_priority));

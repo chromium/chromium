@@ -27,20 +27,18 @@ TilingSetRasterQueueAll::IterationStage::IterationStage(
     : iterator_type(type), tile_type(bin) {
 }
 
-TilingSetRasterQueueAll::TilingSetRasterQueueAll(
+// static
+std::unique_ptr<TilingSetRasterQueueAll> TilingSetRasterQueueAll::Create(
     PictureLayerTilingSet* tiling_set,
     bool prioritize_low_res,
-    bool is_drawing_layer)
-    : tiling_set_(tiling_set),
-      current_stage_(0),
-      is_drawing_layer_(is_drawing_layer) {
-  DCHECK(tiling_set_);
+    bool is_drawing_layer) {
+  DCHECK(tiling_set);
 
   // Early out if the tiling set has no tiles needing raster.
-  bool done = features::IsCCSlimmingEnabled() ? tiling_set_->all_tiles_done()
-                                              : !tiling_set_->num_tilings();
+  bool done = features::IsCCSlimmingEnabled() ? tiling_set->all_tiles_done()
+                                              : !tiling_set->num_tilings();
   if (done) {
-    return;
+    return nullptr;
   }
 
   const PictureLayerTilingClient* client = tiling_set->client();
@@ -53,8 +51,8 @@ TilingSetRasterQueueAll::TilingSetRasterQueueAll(
   // These tilings are the only non-high res tilings that could have required
   // for activation tiles, so they need to be considered for rasterization.
   PictureLayerTiling* active_non_ideal_pending_high_res_tiling = nullptr;
-  for (size_t i = 0; i < tiling_set_->num_tilings(); ++i) {
-    PictureLayerTiling* tiling = tiling_set_->tiling_at(i);
+  for (size_t i = 0; i < tiling_set->num_tilings(); ++i) {
+    PictureLayerTiling* tiling = tiling_set->tiling_at(i);
     if (tiling->resolution() == HIGH_RESOLUTION)
       high_res_tiling = tiling;
     if (prioritize_low_res && tiling->resolution() == LOW_RESOLUTION)
@@ -76,38 +74,60 @@ TilingSetRasterQueueAll::TilingSetRasterQueueAll(
       active_non_ideal_pending_high_res_tiling->has_tiles() &&
       !active_non_ideal_pending_high_res_tiling->all_tiles_done();
 
+  if (!use_low_res_tiling && !use_high_res_tiling &&
+      !use_active_non_ideal_pending_high_res_tiling) {
+    return nullptr;
+  }
+
+  return base::WrapUnique(new TilingSetRasterQueueAll(
+      use_high_res_tiling ? high_res_tiling : nullptr,
+      use_low_res_tiling ? low_res_tiling : nullptr,
+      use_active_non_ideal_pending_high_res_tiling
+          ? active_non_ideal_pending_high_res_tiling
+          : nullptr,
+      is_drawing_layer));
+}
+
+TilingSetRasterQueueAll::TilingSetRasterQueueAll(
+    PictureLayerTiling* high_res_tiling,
+    PictureLayerTiling* low_res_tiling,
+    PictureLayerTiling* active_non_ideal_pending_high_res_tiling,
+    bool is_drawing_layer)
+    : current_stage_(0), is_drawing_layer_(is_drawing_layer) {
   // Make the tiling iterators.
-  if (use_low_res_tiling)
+  if (low_res_tiling) {
     MakeTilingIterator(LOW_RES, low_res_tiling);
-  if (use_high_res_tiling)
+  }
+  if (high_res_tiling) {
     MakeTilingIterator(HIGH_RES, high_res_tiling);
-  if (use_active_non_ideal_pending_high_res_tiling) {
+  }
+  if (active_non_ideal_pending_high_res_tiling) {
     MakeTilingIterator(ACTIVE_NON_IDEAL_PENDING_HIGH_RES,
                        active_non_ideal_pending_high_res_tiling);
   }
 
   // Set up the stages.
-  if (use_low_res_tiling)
+  if (low_res_tiling) {
     stages_.push_back(IterationStage(LOW_RES, TilePriority::NOW));
+  }
 
-  if (use_high_res_tiling)
+  if (high_res_tiling) {
     stages_.push_back(IterationStage(HIGH_RES, TilePriority::NOW));
+  }
 
-  if (use_active_non_ideal_pending_high_res_tiling) {
+  if (active_non_ideal_pending_high_res_tiling) {
     stages_.push_back(
         IterationStage(ACTIVE_NON_IDEAL_PENDING_HIGH_RES, TilePriority::NOW));
     stages_.push_back(
         IterationStage(ACTIVE_NON_IDEAL_PENDING_HIGH_RES, TilePriority::SOON));
   }
 
-  if (use_high_res_tiling) {
+  if (high_res_tiling) {
     stages_.push_back(IterationStage(HIGH_RES, TilePriority::SOON));
     stages_.push_back(IterationStage(HIGH_RES, TilePriority::EVENTUALLY));
   }
 
-  if (stages_.empty()) {
-    return;
-  }
+  DCHECK(!stages_.empty());
 
   IteratorType index = stages_[current_stage_].iterator_type;
   TilePriority::PriorityBin tile_type = stages_[current_stage_].tile_type;

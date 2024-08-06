@@ -7,10 +7,10 @@
 
 #include <stddef.h>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include <memory>
+
 #include "base/notreached.h"
 #include "cc/cc_export.h"
-#include "cc/tiles/picture_layer_tiling_set.h"
 #include "cc/tiles/prioritized_tile.h"
 #include "cc/tiles/tile.h"
 #include "cc/tiles/tile_priority.h"
@@ -18,13 +18,17 @@
 
 namespace cc {
 
+class PictureLayerTilingSet;
+
 // This queue returns all tiles required to be rasterized from HIGH_RESOLUTION
 // and LOW_RESOLUTION tilings.
 class CC_EXPORT TilingSetRasterQueueAll {
  public:
-  TilingSetRasterQueueAll(PictureLayerTilingSet* tiling_set,
-                          bool prioritize_low_res,
-                          bool is_drawing_layer);
+  static std::unique_ptr<TilingSetRasterQueueAll> Create(
+      PictureLayerTilingSet* tiling_set,
+      bool prioritize_low_res,
+      bool is_drawing_layer);
+
   TilingSetRasterQueueAll(const TilingSetRasterQueueAll&) = delete;
   ~TilingSetRasterQueueAll();
 
@@ -195,12 +199,14 @@ class CC_EXPORT TilingSetRasterQueueAll {
     NUM_ITERATORS
   };
 
+  TilingSetRasterQueueAll(
+      PictureLayerTiling* high_res_tiling,
+      PictureLayerTiling* low_res_tiling,
+      PictureLayerTiling* active_non_ideal_pending_high_res_tiling,
+      bool is_drawing_layer);
+
   void MakeTilingIterator(IteratorType type, PictureLayerTiling* tiling);
   void AdvanceToNextStage();
-
-  // `tiling_set_` is not a raw_ptr<...> for performance reasons (based on
-  // analysis of sampling profiler data).
-  RAW_PTR_EXCLUSION PictureLayerTilingSet* tiling_set_;
 
   struct IterationStage {
     IterationStage(IteratorType type, TilePriority::PriorityBin bin);

@@ -75,9 +75,10 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
     timer_.Reset();
     do {
       int count = num_tiles;
-      std::unique_ptr<TilingSetRasterQueueAll> queue(
-          new TilingSetRasterQueueAll(
-              pending_layer_->picture_layer_tiling_set(), false, true));
+      std::unique_ptr<TilingSetRasterQueueAll> queue =
+          TilingSetRasterQueueAll::Create(
+              pending_layer_->picture_layer_tiling_set(), false, true);
+      ASSERT_TRUE(queue);
       while (count--) {
         ASSERT_TRUE(!queue->IsEmpty()) << "count: " << count;
         ASSERT_TRUE(queue->Top().tile()) << "count: " << count;
@@ -105,9 +106,9 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
 
     timer_.Reset();
     do {
-      std::unique_ptr<TilingSetRasterQueueAll> queue(
-          new TilingSetRasterQueueAll(
-              pending_layer_->picture_layer_tiling_set(), false, true));
+      std::unique_ptr<TilingSetRasterQueueAll> queue =
+          TilingSetRasterQueueAll::Create(
+              pending_layer_->picture_layer_tiling_set(), false, true);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
