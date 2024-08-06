@@ -656,6 +656,13 @@ inline constexpr char kAccessibilityCursorColorEnabled[] =
 // An integer pref which determines the custom cursor color.
 inline constexpr char kAccessibilityCursorColor[] =
     "settings.a11y.cursor_color";
+// A boolean pref which determines whether flash screen for notifications is
+// enabled.
+inline constexpr char kAccessibilityFlashNotificationsEnabled[] =
+    "settings.a11y.flash_notifications_enabled";
+// An integer pref which determines the flash screen color.
+inline constexpr char kAccessibilityFlashNotificationsColor[] =
+    "settings.a11y.flash_notifications_color";
 // A boolean pref which determines whether floating accessibility menu is
 // enabled.
 inline constexpr char kAccessibilityFloatingMenuEnabled[] =

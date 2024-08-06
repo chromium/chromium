@@ -428,6 +428,20 @@ const std::vector<SearchConcept>& GetA11yOverscrollSettingSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetA11yFlashNotificationsSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_A11Y_FLASH_NOTIFICATIONS,
+       mojom::kAudioAndCaptionsSubpagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kFlashNotifications},
+       {IDS_OS_SETTINGS_TAG_A11Y_FLASH_NOTIFICATIONS_ALT1,
+        SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetA11ySwitchAccessKeyboardSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_A11Y_SWITCH_ACCESS_AUTO_SCAN_KEYBOARD,
@@ -565,6 +579,10 @@ bool IsAccessibilityMouseKeysEnabled() {
 
 bool IsAccessibilityOverscrollSettingFeatureEnabled() {
   return ::features::IsAccessibilityOverscrollSettingFeatureEnabled();
+}
+
+bool IsAccessibilityFlashNotificationFeatureEnabled() {
+  return ::features::IsAccessibilityFlashScreenFeatureEnabled();
 }
 
 }  // namespace
@@ -977,6 +995,11 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_SECTION_NAME},
       {"faceGazeCursorSettingsReset",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SETTINGS_RESET},
+      {"flashNotificationsLabel", IDS_SETTINGS_FLASH_NOTIFICATIONS_LABEL},
+      {"flashNotificationsDescription",
+       IDS_SETTINGS_FLASH_NOTIFICATIONS_DESCRIPTION},
+      {"flashNotificationsColorOptionsLabel",
+       IDS_SETTINGS_FLASH_NOTIFICATIONS_COLOR_OPTIONS_LABEL},
       {"keyboardAndTextInputHeading",
        IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_AND_TEXT_INPUT_HEADING},
       {"keyboardAndTextInputLinkDescription",
@@ -1337,6 +1360,9 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("isAccessibilityOverscrollSettingFeatureEnabled",
                           IsAccessibilityOverscrollSettingFeatureEnabled());
 
+  html_source->AddBoolean("isAccessibilityFlashNotificationFeatureEnabled",
+                          IsAccessibilityFlashNotificationFeatureEnabled());
+
   ::settings::AddAxAnnotationsSectionStrings(html_source);
   ::settings::AddCaptionSubpageStrings(html_source);
 }
@@ -1519,6 +1545,10 @@ bool AccessibilitySection::LogMetric(mojom::Setting setting,
           "ChromeOS.Settings.OverscrollHistoryNavigation.Enabled",
           value.GetBool());
       return true;
+    case mojom::Setting::kFlashNotifications:
+      base::UmaHistogramBoolean("ChromeOS.Settings.FlashNotifications.Enabled",
+                                value.GetBool());
+      return true;
     default:
       return false;
   }
@@ -1623,6 +1653,7 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kCaretBlinkInterval,
       mojom::Setting::kReducedAnimationsEnabled,
       mojom::Setting::kOverscrollEnabled,
+      mojom::Setting::kFlashNotifications,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kManageAccessibility,
                             kManageAccessibilitySettings, generator);
@@ -1753,6 +1784,10 @@ void AccessibilitySection::UpdateSearchTags() {
 
   if (IsAccessibilityOverscrollSettingFeatureEnabled()) {
     updater.AddSearchTags(GetA11yOverscrollSettingSearchConcepts());
+  }
+
+  if (IsAccessibilityFlashNotificationFeatureEnabled()) {
+    updater.AddSearchTags(GetA11yFlashNotificationsSearchConcepts());
   }
 
   if (!pref_service_->GetBoolean(prefs::kAccessibilitySwitchAccessEnabled)) {

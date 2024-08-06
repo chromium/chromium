@@ -38,6 +38,9 @@ constexpr int kDefaultCaretBlinkIntervalMs = 500;
 
 constexpr SkColor kDefaultCursorColor = SK_ColorBLACK;
 
+// Default notification flash color is yellow.
+constexpr SkColor kDefaultFlashNotificationsColor = 0xffff00;
+
 // These device types are a subset of ui::InputDeviceType. These strings are
 // also used in Switch Access webui.
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSwitchAccessInternalDevice[];

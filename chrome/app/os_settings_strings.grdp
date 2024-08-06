@@ -1394,6 +1394,15 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SETTINGS_RESET" desc="Label for the 'reset' button in FaceGaze cursor settings, that brings cursor settings back to default.">
     Reset
   </message>
+  <message name="IDS_SETTINGS_FLASH_NOTIFICATIONS_LABEL" desc="The label of a setting that flashes the screen in a color when a notification is received.">
+    Flash notifications
+  </message>
+  <message name="IDS_SETTINGS_FLASH_NOTIFICATIONS_DESCRIPTION" desc="The description of a setting that flashes the screen in a color when a notification is received.">
+    Flash the screen when you receive notifications
+  </message>
+  <message name="IDS_SETTINGS_FLASH_NOTIFICATIONS_COLOR_OPTIONS_LABEL" desc="The label shown for the flash notifications color picker">
+    Flash screen color
+  </message>
   <message name="IDS_OS_SETTINGS_SLIDER_LABEL_100" desc="Label for the side of a slider that goes from or to 100.">
     100
   </message>

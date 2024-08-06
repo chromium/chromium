@@ -142,6 +142,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="CursorHighlight"/>
     <variant name="Dictation"/>
     <variant name="DockedMagnifier"/>
+    <variant name="FlashNotifications"/>
     <variant name="FocusHighlight"/>
     <variant name="FullscreenMagnifier"/>
     <variant name="HighContrast"/>

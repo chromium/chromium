@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_constants.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -33,10 +34,19 @@ class FlashScreenController : public message_center::MessageCenterObserver {
       const message_center::DisplaySource display_source) override;
   void OnNotificationAdded(const std::string& notification_id) override;
 
+  // No need to stop an ongoing flash if one is happening, the duration is too
+  // short.
+  void set_enabled(bool enabled) { enabled_ = enabled; }
+
+  void set_color(const SkColor& color) { color_ = color; }
+
  private:
   void FlashOn();
   void FlashOff();
   void CancelTimer();
+
+  bool enabled_ = false;
+  SkColor color_ = kDefaultFlashNotificationsColor;
 
   // A timer that ends the flash screen color.
   base::RetainingOneShotTimer notification_timer_;

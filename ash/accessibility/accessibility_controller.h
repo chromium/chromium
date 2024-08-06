@@ -246,6 +246,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   Feature& dictation() const;
   Feature& disable_trackpad() const;
   Feature& face_gaze() const;
+  Feature& flash_notifications() const;
   Feature& floating_menu() const;
   Feature& focus_highlight() const;
   Feature& large_cursor() const;
@@ -706,6 +707,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   void UpdateLiveCaptionFromPref();
   void UpdateCursorColorFromPrefs(bool notify);
   void UpdateFaceGazeFromPrefs();
+  void UpdateFlashNotificationsFromPrefs();
   void UpdateColorCorrectionFromPrefs();
   void UpdateCaretBlinkIntervalFromPrefs() const;
   void UpdateSwitchAccessKeyCodesFromPref(SwitchAccessCommand command);

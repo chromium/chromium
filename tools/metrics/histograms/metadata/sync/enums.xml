@@ -637,6 +637,8 @@ chromium-metrics-reviews@google.com.
   <int value="100295" label="AccessibilityMagnifierFollowsChromeVox"/>
   <int value="100296" label="KeyboardHasSplitModifierKeyboard"/>
   <int value="100297" label="HttpsFirstBalancedMode"/>
+  <int value="100298" label="kAccessibilityFlashNotificationsEnabled"/>
+  <int value="100299" label="kAccessibilityFlashNotificationsColor"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

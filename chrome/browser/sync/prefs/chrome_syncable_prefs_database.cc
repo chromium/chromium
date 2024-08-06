@@ -355,6 +355,8 @@ enum {
   kAccessibilityMagnifierFollowsChromeVox = 100295,
   kKeyboardHasSplitModifierKeyboard = 100296,
   kHttpsFirstBalancedMode = 100297,
+  kAccessibilityFlashNotificationsEnabled = 100298,
+  kAccessibilityFlashNotificationsColor = 100299,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1156,6 +1158,14 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilityFaceGazeAdjustSpeedSeparately,
      {syncable_prefs_ids::kAccessibilityFaceGazeAdjustSpeedSeparately,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFlashNotificationsEnabled,
+     {syncable_prefs_ids::kAccessibilityFlashNotificationsEnabled,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFlashNotificationsColor,
+     {syncable_prefs_ids::kAccessibilityFlashNotificationsColor,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kShelfContainerAppPinRolls,

@@ -228,6 +228,19 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool(),
     OSSettingsRevampMochaTestCaretBlinkSettingEnabled::DescribeParams);
 
+class OSSettingsRevampMochaTestFlashNotificationsEnabled
+    : public OSSettingsRevampMochaTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ::features::kAccessibilityFlashScreenFeature};
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampMochaTestFlashNotificationsEnabled,
+    testing::Bool(),
+    OSSettingsRevampMochaTestFlashNotificationsEnabled::DescribeParams);
+
 class OSSettingsMochaTestLacrosOnlyEnabled : public LacrosOnlyMochaBrowserTest {
  protected:
   OSSettingsMochaTestLacrosOnlyEnabled() : LacrosOnlyMochaBrowserTest() {
@@ -1277,6 +1290,11 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
 }
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsA11yPageAudioAndCaptionsPage) {
+  RunSettingsTest("os_a11y_page/audio_and_captions_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestFlashNotificationsEnabled,
                        OsA11yPageAudioAndCaptionsPage) {
   RunSettingsTest("os_a11y_page/audio_and_captions_page_test.js");
 }

@@ -145,6 +145,9 @@ const FeatureData kFeatures[] = {
      &kDictationMenuIcon, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION},
     {FeatureType::kColorCorrection, prefs::kAccessibilityColorCorrectionEnabled,
      &kColorCorrectionIcon, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_COLOR_CORRECTION},
+    {FeatureType::kFlashNotifications,
+     prefs::kAccessibilityFlashNotificationsEnabled, nullptr, 0,
+     /*toggleable_in_quicksettings=*/false},
     {FeatureType::kFocusHighlight, prefs::kAccessibilityFocusHighlightEnabled,
      nullptr, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGHLIGHT_KEYBOARD_FOCUS,
      /*toggleable_in_quicksettings=*/true,
@@ -1232,6 +1235,8 @@ void AccessibilityController::RegisterProfilePrefs(
                                 false);
   registry->RegisterBooleanPref(
       prefs::kAccessibilityColorCorrectionHasBeenSetup, false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityFlashNotificationsEnabled,
+                                false);
 
   registry->RegisterBooleanPref(prefs::kAccessibilityReducedAnimationsEnabled,
                                 false);
@@ -1489,6 +1494,11 @@ void AccessibilityController::RegisterProfilePrefs(
     registry->RegisterIntegerPref(prefs::kAccessibilityCaretBlinkInterval,
                                   kDefaultCaretBlinkIntervalMs);
   }
+
+  if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
+    registry->RegisterIntegerPref(prefs::kAccessibilityFlashNotificationsColor,
+                                  kDefaultFlashNotificationsColor);
+  }
 }
 
 void AccessibilityController::Shutdown() {
@@ -1591,6 +1601,11 @@ AccessibilityController::Feature& AccessibilityController::color_correction()
 
 AccessibilityController::Feature& AccessibilityController::face_gaze() const {
   return GetFeature(FeatureType::kFaceGaze);
+}
+
+AccessibilityController::Feature& AccessibilityController::flash_notifications()
+    const {
+  return GetFeature(FeatureType::kFlashNotifications);
 }
 
 AccessibilityController::Feature& AccessibilityController::focus_highlight()
@@ -2563,6 +2578,13 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
             &AccessibilityController::UpdateCaretBlinkIntervalFromPrefs,
             base::Unretained(this)));
   }
+  if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
+    pref_change_registrar_->Add(
+        prefs::kAccessibilityFlashNotificationsColor,
+        base::BindRepeating(
+            &AccessibilityController::UpdateFlashNotificationsFromPrefs,
+            base::Unretained(this)));
+  }
 
   for (const std::unique_ptr<Feature>& feature : features_) {
     // Log previous duration and clear duration metric if necessary
@@ -2596,6 +2618,9 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
 
   if (::features::IsAccessibilityFaceGazeEnabled()) {
     UpdateFaceGazeFromPrefs();
+  }
+  if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
+    UpdateFlashNotificationsFromPrefs();
   }
 }
 
@@ -2811,6 +2836,16 @@ void AccessibilityController::UpdateFaceGazeFromPrefs() {
     return;
   }
   // TODO(b/309121742): Start getting camera data.
+}
+
+void AccessibilityController::UpdateFlashNotificationsFromPrefs() {
+  if (!::features::IsAccessibilityFlashScreenFeatureEnabled()) {
+    return;
+  }
+  flash_screen_controller_->set_enabled(active_user_prefs_->GetBoolean(
+      prefs::kAccessibilityFlashNotificationsEnabled));
+  flash_screen_controller_->set_color(active_user_prefs_->GetInteger(
+      prefs::kAccessibilityFlashNotificationsColor));
 }
 
 void AccessibilityController::UpdateColorCorrectionFromPrefs() {
@@ -3460,6 +3495,9 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       break;
     case FeatureType::kFaceGaze:
       UpdateFaceGazeFromPrefs();
+      break;
+    case FeatureType::kFlashNotifications:
+      UpdateFlashNotificationsFromPrefs();
       break;
     case FeatureType::kFeatureCount:
     case FeatureType::kNoConflictingFeature:
