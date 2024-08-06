@@ -1646,7 +1646,7 @@ BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,
 // which makes blink expose IWA APIs to be used by the web app.
 BASE_FEATURE(kWebKioskEnableIwaApis,
              "WebKioskEnableIwaApis",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
