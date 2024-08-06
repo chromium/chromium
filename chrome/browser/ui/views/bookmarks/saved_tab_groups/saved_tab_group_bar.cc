@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
@@ -775,11 +775,14 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(const base::Uuid& id,
   bool left_mouse_button_pressed = event.flags() & ui::EF_LEFT_MOUSE_BUTTON;
 
   if (left_mouse_button_pressed || space_pressed) {
-    SavedTabGroupKeyedService* const keyed_service =
-        SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
-
-    keyed_service->OpenSavedTabGroupInBrowser(
-        browser_, group->saved_guid(), OpeningSource::kOpenedFromRevisitUi);
+    // Manually retrieve the wrapper service since this function is used as a
+    // callback which means this code could be run asynchronously.
+    const auto wrapper_service =
+        TabGroupServiceWrapper::GetForProfile(browser_->profile());
+    wrapper_service->OpenTabGroup(
+        group->saved_guid(),
+        std::make_unique<TabGroupActionContextDesktop>(
+            browser_, OpeningSource::kOpenedFromRevisitUi));
   }
 }
 
