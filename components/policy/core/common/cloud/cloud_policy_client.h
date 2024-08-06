@@ -17,6 +17,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -50,6 +51,8 @@ struct DMServerJobResult;
 
 inline constexpr char kPolicyFetchingTimeHistogramName[] =
     "Enterprise.CloudManagement.PolicyFetchingTime";
+
+POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyFetchWithSha256);
 
 // Implements the core logic required to talk to the device management service.
 // Also keeps track of the current state of the association with the service,
@@ -866,6 +869,9 @@ class POLICY_EXPORT CloudPolicyClient {
   // Records the fetch status for each supported type to fetch used by the
   // client.
   void RecordFetchStatus(DeviceManagementStatus status);
+
+  enterprise_management::PolicyFetchRequest::SignatureType
+  GetPolicyFetchRequestSignatureType();
 
 #if BUILDFLAG(IS_WIN)
   // Callback to get browser device identifier.

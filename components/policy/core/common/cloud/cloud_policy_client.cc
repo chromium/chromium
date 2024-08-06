@@ -42,6 +42,10 @@ using PsmExecutionResult = em::DeviceRegisterRequest::PsmExecutionResult;
 
 namespace policy {
 
+BASE_FEATURE(kPolicyFetchWithSha256,
+             "PolicyFetchWithSha256",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 #if BUILDFLAG(IS_WIN)
@@ -583,6 +587,14 @@ void CloudPolicyClient::SetOAuthTokenAsAdditionalAuth(
   oauth_token_ = oauth_token;
 }
 
+em::PolicyFetchRequest::SignatureType
+CloudPolicyClient::GetPolicyFetchRequestSignatureType() {
+  if (base::FeatureList::IsEnabled(policy::kPolicyFetchWithSha256)) {
+    return em::PolicyFetchRequest::SHA256_RSA;
+  }
+  return em::PolicyFetchRequest::SHA1_RSA;
+}
+
 void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -618,6 +630,8 @@ void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
 
   // Build policy fetch requests.
   em::DevicePolicyRequest* policy_request = request->mutable_policy_request();
+  const em::PolicyFetchRequest::SignatureType signature_type =
+      GetPolicyFetchRequestSignatureType();
   for (const auto& type_to_fetch : types_to_fetch_) {
     em::PolicyFetchRequest* fetch_request = policy_request->add_requests();
     fetch_request->set_policy_type(type_to_fetch.first);
@@ -626,7 +640,7 @@ void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
     }
 
     // Request signed policy blobs to help prevent tampering on the client.
-    fetch_request->set_signature_type(em::PolicyFetchRequest::SHA1_RSA);
+    fetch_request->set_signature_type(signature_type);
     if (public_key_version_valid_) {
       fetch_request->set_public_key_version(public_key_version_);
     }

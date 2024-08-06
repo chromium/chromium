@@ -595,10 +595,13 @@ IN_PROC_BROWSER_TEST_P(CloudPolicyTest, FetchPolicyWithRotatedKey) {
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CloudPolicyTest,
-    testing::Values(FeaturesTestParam{},
-                    FeaturesTestParam{
-                        .enabled_features = {
-                            invalidation::kInvalidationsWithDirectMessages}}));
+    testing::Values(
+        FeaturesTestParam{},
+        FeaturesTestParam{.enabled_features =
+                              {invalidation::kInvalidationsWithDirectMessages}},
+        FeaturesTestParam{.enabled_features = {policy::kPolicyFetchWithSha256}},
+        FeaturesTestParam{
+            .disabled_features = {policy::kPolicyFetchWithSha256}}));
 
 TEST(CloudPolicyProtoTest, VerifyProtobufEquivalence) {
   // There are 2 protobufs that can be used for user cloud policy:

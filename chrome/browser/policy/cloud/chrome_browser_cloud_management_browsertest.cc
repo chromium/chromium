@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -36,6 +37,7 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/common/cloud/chrome_browser_cloud_management_metrics.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -653,7 +655,8 @@ class MachineLevelUserCloudPolicyPolicyFetchTest
     : public PlatformBrowserTest,
       public ::testing::WithParamInterface<std::tuple<
           /*dm_token=*/std::string,
-          /*storage_enabled=*/bool>> {
+          /*storage_enabled=*/bool,
+          /*is_policy_fetch_with_sha256_enabled=*/bool>> {
  public:
   MachineLevelUserCloudPolicyPolicyFetchTest() : observer_(&delegate_) {
     BrowserDMTokenStorage::SetForTesting(&storage_);
@@ -662,6 +665,13 @@ class MachineLevelUserCloudPolicyPolicyFetchTest
     storage_.EnableStorage(storage_enabled());
     if (!dm_token().empty()) {
       storage_.SetDMToken(dm_token());
+    }
+
+    if (is_policy_fetch_with_sha256_enabled()) {
+      scoped_feature_list_.InitAndEnableFeature(policy::kPolicyFetchWithSha256);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          policy::kPolicyFetchWithSha256);
     }
   }
   MachineLevelUserCloudPolicyPolicyFetchTest(
@@ -714,6 +724,9 @@ class MachineLevelUserCloudPolicyPolicyFetchTest
 
   const std::string dm_token() const { return std::get<0>(GetParam()); }
   bool storage_enabled() const { return std::get<1>(GetParam()); }
+  bool is_policy_fetch_with_sha256_enabled() const {
+    return std::get<2>(GetParam());
+  }
 
  protected:
   ChromeBrowserCloudManagementBrowserTestDelegateType delegate_;
@@ -721,6 +734,7 @@ class MachineLevelUserCloudPolicyPolicyFetchTest
   base::HistogramTester histogram_tester_;
   std::unique_ptr<EmbeddedPolicyTestServer> test_server_;
   FakeBrowserDMTokenStorage storage_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
@@ -813,14 +827,18 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchTest, Test) {
 //  get an error. There should be no more cloud policy applied.
 //  3) Start Chrome without DM token. Chrome will register itself and fetch
 //  policy after it.
+// The tests also cover the migration of the policy stack to SHA256_RSA
+// signature algorithm.
 INSTANTIATE_TEST_SUITE_P(
     MachineLevelUserCloudPolicyPolicyFetchTest,
     MachineLevelUserCloudPolicyPolicyFetchTest,
-    ::testing::Combine(/*dm_token=*/::testing::Values(kDMToken,
-                                                      kInvalidDMToken,
-                                                      kDeletionDMToken,
-                                                      ""),
-                       /*storage_enabled=*/::testing::Bool()));
+    ::testing::Combine(
+        /*dm_token=*/::testing::Values(kDMToken,
+                                       kInvalidDMToken,
+                                       kDeletionDMToken,
+                                       ""),
+        /*storage_enabled=*/::testing::Bool(),
+        /*is_policy_fetch_with_sha256_enabled=*/::testing::Bool()));
 
 #if !BUILDFLAG(IS_ANDROID)
 class MachineLevelUserCloudPolicyPolicyFetchKeyRotationTest
@@ -908,8 +926,10 @@ IN_PROC_BROWSER_TEST_P(MachineLevelUserCloudPolicyPolicyFetchKeyRotationTest,
 INSTANTIATE_TEST_SUITE_P(
     MachineLevelUserCloudPolicyPolicyFetchKeyRotationTest,
     MachineLevelUserCloudPolicyPolicyFetchKeyRotationTest,
-    ::testing::Combine(/*dm_token=*/::testing::Values(kDMToken),
-                       /*storage_enabled=*/::testing::Values(true)));
+    ::testing::Combine(
+        /*dm_token=*/::testing::Values(kDMToken),
+        /*storage_enabled=*/::testing::Values(true),
+        /*is_policy_fetch_with_sha256_enabled=*/::testing::Bool()));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
