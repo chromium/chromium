@@ -352,6 +352,7 @@ placeSelf
 pointerEvents
 position
 positionAnchor
+positionArea
 positionTry
 positionTryFallbacks
 positionTryOrder

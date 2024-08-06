@@ -1365,14 +1365,13 @@
   "testing inset-area. All tests in this wpt_internal directory can be removed",
   "when inset-area is no longer supported.",
   {
-    "prefix": "inset-area-enabled-position-area-disabled",
+    "prefix": "inset-area-enabled",
     "owners": ["masonf@chromium.org"],
     "platforms": ["Linux"],
     "bases": ["wpt_internal/css/css-anchor-position-inset-area-old"],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-blink-features=CSSInsetAreaProperty",
-      "--disable-blink-features=CSSPositionAreaProperty"
+      "--enable-blink-features=CSSInsetAreaProperty"
     ],
     "expires": "Feb 1, 2025"
    },
