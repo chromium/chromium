@@ -48,6 +48,7 @@
 #include "net/quic/quic_context.h"
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_proxy_datagram_client_socket.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/ssl/ssl_config_service.h"
@@ -281,40 +282,6 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       public CertDatabase::Observer,
       public CertVerifier::Observer {
  public:
-  // This class encompasses |destination| and |server_id|.
-  // |destination| is a HostPortPair which is resolved
-  // and a quic::QuicConnection is made to the resulting IP address.
-  // |server_id| identifies the origin of the request,
-  // the crypto handshake advertises |server_id.host()| to the server,
-  // and the certificate is also matched against |server_id.host()|.
-  class NET_EXPORT_PRIVATE QuicSessionAliasKey {
-   public:
-    QuicSessionAliasKey() = default;
-    QuicSessionAliasKey(url::SchemeHostPort destination,
-                        QuicSessionKey session_key);
-    ~QuicSessionAliasKey() = default;
-
-    QuicSessionAliasKey(const QuicSessionAliasKey& other) = default;
-    QuicSessionAliasKey& operator=(const QuicSessionAliasKey& other) = default;
-
-    QuicSessionAliasKey(QuicSessionAliasKey&& other) = default;
-    QuicSessionAliasKey& operator=(QuicSessionAliasKey&& other) = default;
-
-    // Needed to be an element of std::set.
-    bool operator<(const QuicSessionAliasKey& other) const;
-    bool operator==(const QuicSessionAliasKey& other) const;
-
-    const url::SchemeHostPort& destination() const { return destination_; }
-    const quic::QuicServerId& server_id() const {
-      return session_key_.server_id();
-    }
-    const QuicSessionKey& session_key() const { return session_key_; }
-
-   private:
-    url::SchemeHostPort destination_;
-    QuicSessionKey session_key_;
-  };
-
   QuicSessionPool(
       NetLog* net_log,
       HostResolver* host_resolver,
@@ -518,7 +485,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   class ProxyJob;
   class QuicCryptoClientConfigOwner;
   class CryptoClientConfigHandle;
-  class SessionAttempt;
+  friend class QuicSessionAttempt;
   friend class MockQuicSessionPool;
   friend class test::QuicSessionPoolPeer;
 

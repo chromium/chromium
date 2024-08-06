@@ -203,7 +203,7 @@ int QuicSessionPool::DirectJob::DoAttemptSession() {
       use_dns_aliases_ && resolve_host_request_->GetDnsAliasResults()
           ? *resolve_host_request_->GetDnsAliasResults()
           : std::set<std::string>();
-  session_attempt_ = std::make_unique<SessionAttempt>(
+  session_attempt_ = std::make_unique<QuicSessionAttempt>(
       this, endpoint_result.ip_endpoints.front(), endpoint_result.metadata,
       std::move(quic_version_used), cert_verify_flags_,
       dns_resolution_start_time_, dns_resolution_end_time_,

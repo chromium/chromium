@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/quic/quic_session_pool_session_attempt.h"
+#include "net/quic/quic_session_attempt.h"
 
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
@@ -12,7 +12,7 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/address_utils.h"
-#include "net/quic/quic_session_pool_job.h"
+#include "net/quic/quic_session_pool.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
@@ -46,8 +46,8 @@ void LogValidConnectionTime(base::TimeTicks start_time) {
 
 }  // namespace
 
-QuicSessionPool::SessionAttempt::SessionAttempt(
-    Job* job,
+QuicSessionAttempt::QuicSessionAttempt(
+    Delegate* delegate,
     IPEndPoint ip_endpoint,
     ConnectionEndpointMetadata metadata,
     quic::ParsedQuicVersion quic_version,
@@ -57,7 +57,7 @@ QuicSessionPool::SessionAttempt::SessionAttempt(
     bool retry_on_alternate_network_before_handshake,
     bool use_dns_aliases,
     std::set<std::string> dns_aliases)
-    : job_(job),
+    : delegate_(delegate),
       ip_endpoint_(std::move(ip_endpoint)),
       metadata_(std::move(metadata)),
       quic_version_(std::move(quic_version)),
@@ -70,19 +70,19 @@ QuicSessionPool::SessionAttempt::SessionAttempt(
           retry_on_alternate_network_before_handshake),
       use_dns_aliases_(use_dns_aliases),
       dns_aliases_(std::move(dns_aliases)) {
-  CHECK(job_);
+  CHECK(delegate_);
   DCHECK_NE(quic_version_, quic::ParsedQuicVersion::Unsupported());
 }
 
-QuicSessionPool::SessionAttempt::SessionAttempt(
-    Job* job,
+QuicSessionAttempt::QuicSessionAttempt(
+    Delegate* delegate,
     IPEndPoint local_endpoint,
     IPEndPoint proxy_peer_endpoint,
     quic::ParsedQuicVersion quic_version,
     int cert_verify_flags,
     std::unique_ptr<QuicChromiumClientStream::Handle> proxy_stream,
     const HttpUserAgentSettings* http_user_agent_settings)
-    : job_(job),
+    : delegate_(delegate),
       ip_endpoint_(std::move(proxy_peer_endpoint)),
       quic_version_(std::move(quic_version)),
       cert_verify_flags_(cert_verify_flags),
@@ -93,13 +93,13 @@ QuicSessionPool::SessionAttempt::SessionAttempt(
       proxy_stream_(std::move(proxy_stream)),
       http_user_agent_settings_(http_user_agent_settings),
       local_endpoint_(std::move(local_endpoint)) {
-  CHECK(job_);
+  CHECK(delegate_);
   DCHECK_NE(quic_version_, quic::ParsedQuicVersion::Unsupported());
 }
 
-QuicSessionPool::SessionAttempt::~SessionAttempt() = default;
+QuicSessionAttempt::~QuicSessionAttempt() = default;
 
-int QuicSessionPool::SessionAttempt::Start(CompletionOnceCallback callback) {
+int QuicSessionAttempt::Start(CompletionOnceCallback callback) {
   CHECK_EQ(next_state_, State::kNone);
 
   next_state_ = State::kCreateSession;
@@ -112,7 +112,7 @@ int QuicSessionPool::SessionAttempt::Start(CompletionOnceCallback callback) {
   return rv;
 }
 
-int QuicSessionPool::SessionAttempt::DoLoop(int rv) {
+int QuicSessionAttempt::DoLoop(int rv) {
   CHECK(!in_loop_);
   CHECK_NE(next_state_, State::kNone);
 
@@ -141,7 +141,7 @@ int QuicSessionPool::SessionAttempt::DoLoop(int rv) {
   return rv;
 }
 
-int QuicSessionPool::SessionAttempt::DoCreateSession() {
+int QuicSessionAttempt::DoCreateSession() {
   quic_connection_start_time_ = base::TimeTicks::Now();
   next_state_ = State::kCreateSessionComplete;
 
@@ -159,7 +159,7 @@ int QuicSessionPool::SessionAttempt::DoCreateSession() {
     // Proxied connections are not on any specific network.
     network_ = handles::kInvalidNetworkHandle;
     rv = pool()->CreateSessionOnProxyStream(
-        base::BindOnce(&SessionAttempt::OnCreateSessionComplete,
+        base::BindOnce(&QuicSessionAttempt::OnCreateSessionComplete,
                        weak_ptr_factory_.GetWeakPtr()),
         key(), quic_version_, cert_verify_flags_, require_confirmation,
         std::move(local_endpoint_), std::move(ip_endpoint_),
@@ -167,7 +167,7 @@ int QuicSessionPool::SessionAttempt::DoCreateSession() {
   } else {
     if (base::FeatureList::IsEnabled(net::features::kAsyncQuicSession)) {
       return pool()->CreateSessionAsync(
-          base::BindOnce(&SessionAttempt::OnCreateSessionComplete,
+          base::BindOnce(&QuicSessionAttempt::OnCreateSessionComplete,
                          weak_ptr_factory_.GetWeakPtr()),
           key(), quic_version_, cert_verify_flags_, require_confirmation,
           ip_endpoint_, metadata_, dns_resolution_start_time_,
@@ -190,7 +190,7 @@ int QuicSessionPool::SessionAttempt::DoCreateSession() {
   return rv;
 }
 
-int QuicSessionPool::SessionAttempt::DoCreateSessionComplete(int rv) {
+int QuicSessionAttempt::DoCreateSessionComplete(int rv) {
   session_creation_finished_ = true;
   if (rv != OK) {
     CHECK(!session_);
@@ -217,7 +217,7 @@ int QuicSessionPool::SessionAttempt::DoCreateSessionComplete(int rv) {
   return OK;
 }
 
-int QuicSessionPool::SessionAttempt::DoCryptoConnect(int rv) {
+int QuicSessionAttempt::DoCryptoConnect(int rv) {
   if (rv != OK) {
     return rv;
   }
@@ -225,7 +225,7 @@ int QuicSessionPool::SessionAttempt::DoCryptoConnect(int rv) {
   DCHECK(session_);
   next_state_ = State::kConfirmConnection;
   rv = session_->CryptoConnect(
-      base::BindOnce(&SessionAttempt::OnCryptoConnectComplete,
+      base::BindOnce(&QuicSessionAttempt::OnCryptoConnectComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 
   if (rv != ERR_IO_PENDING) {
@@ -245,7 +245,7 @@ int QuicSessionPool::SessionAttempt::DoCryptoConnect(int rv) {
   return rv;
 }
 
-int QuicSessionPool::SessionAttempt::DoConfirmConnection(int rv) {
+int QuicSessionAttempt::DoConfirmConnection(int rv) {
   UMA_HISTOGRAM_TIMES("Net.QuicSession.TimeFromResolveHostToConfirmConnection",
                       base::TimeTicks::Now() - dns_resolution_start_time_);
   net_log().EndEvent(NetLogEventType::QUIC_SESSION_POOL_JOB_CONNECT);
@@ -282,9 +282,7 @@ int QuicSessionPool::SessionAttempt::DoConfirmConnection(int rv) {
         net_log().AddEvent(
             NetLogEventType::QUIC_SESSION_POOL_JOB_RETRY_ON_ALTERNATE_NETWORK);
         // Notify requests that connection on the default network failed.
-        for (QuicSessionRequest* request : job_->requests()) {
-          request->OnConnectionFailedOnDefaultNetwork();
-        }
+        delegate_->OnConnectionFailedOnDefaultNetwork();
         DVLOG(1) << "Retry connection on alternate network: " << network_;
         session_ = nullptr;
         next_state_ = State::kCreateSession;
@@ -320,7 +318,7 @@ int QuicSessionPool::SessionAttempt::DoConfirmConnection(int rv) {
   if (pool()->HasMatchingIpSession(
           key(), {ToIPEndPoint(session_->connection()->peer_address())},
           /*aliases=*/{}, use_dns_aliases_)) {
-    LogConnectionIpPooling(true);
+    QuicSessionPool::LogConnectionIpPooling(true);
     session_->connection()->CloseConnection(
         quic::QUIC_CONNECTION_IP_POOLED,
         "An active session exists for the given IP.",
@@ -328,7 +326,7 @@ int QuicSessionPool::SessionAttempt::DoConfirmConnection(int rv) {
     session_ = nullptr;
     return OK;
   }
-  LogConnectionIpPooling(false);
+  QuicSessionPool::LogConnectionIpPooling(false);
 
   pool()->ActivateSession(
       key(), session_,
@@ -337,7 +335,7 @@ int QuicSessionPool::SessionAttempt::DoConfirmConnection(int rv) {
   return OK;
 }
 
-void QuicSessionPool::SessionAttempt::OnCreateSessionComplete(int rv) {
+void QuicSessionAttempt::OnCreateSessionComplete(int rv) {
   CHECK_EQ(next_state_, State::kCreateSessionComplete);
 
   if (rv == ERR_QUIC_PROTOCOL_ERROR) {
@@ -351,16 +349,14 @@ void QuicSessionPool::SessionAttempt::OnCreateSessionComplete(int rv) {
 
   rv = DoLoop(rv);
 
-  for (QuicSessionRequest* request : job_->requests()) {
-    request->OnQuicSessionCreationComplete(rv);
-  }
+  delegate_->OnQuicSessionCreationComplete(rv);
 
   if (rv != ERR_IO_PENDING && !callback_.is_null()) {
     std::move(callback_).Run(rv);
   }
 }
 
-void QuicSessionPool::SessionAttempt::OnCryptoConnectComplete(int rv) {
+void QuicSessionAttempt::OnCryptoConnectComplete(int rv) {
   CHECK_EQ(next_state_, State::kConfirmConnection);
 
   // This early return will be triggered when CloseSessionOnError is called

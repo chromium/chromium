@@ -361,24 +361,6 @@ void QuicSessionRequest::SetSession(
   session_ = std::move(session);
 }
 
-QuicSessionPool::QuicSessionAliasKey::QuicSessionAliasKey(
-    url::SchemeHostPort destination,
-    QuicSessionKey session_key)
-    : destination_(std::move(destination)),
-      session_key_(std::move(session_key)) {}
-
-bool QuicSessionPool::QuicSessionAliasKey::operator<(
-    const QuicSessionAliasKey& other) const {
-  return std::tie(destination_, session_key_) <
-         std::tie(other.destination_, other.session_key_);
-}
-
-bool QuicSessionPool::QuicSessionAliasKey::operator==(
-    const QuicSessionAliasKey& other) const {
-  return destination_ == other.destination_ &&
-         session_key_ == other.session_key_;
-}
-
 QuicSessionPool::QuicCryptoClientConfigOwner::QuicCryptoClientConfigOwner(
     std::unique_ptr<quic::ProofVerifier> proof_verifier,
     std::unique_ptr<quic::QuicClientSessionCache> session_cache,
@@ -1152,8 +1134,8 @@ const std::set<std::string>& QuicSessionPool::GetDnsAliasesForSessionKey(
 void QuicSessionPool::ActivateSessionForTesting(
     const url::SchemeHostPort& destination,
     QuicChromiumClientSession* session) {
-  all_sessions_.emplace(session, QuicSessionPool::QuicSessionAliasKey(
-                                     destination, session->quic_session_key()));
+  all_sessions_.emplace(
+      session, QuicSessionAliasKey(destination, session->quic_session_key()));
   ActivateSession(all_sessions_[session], session, std::set<std::string>());
 }
 

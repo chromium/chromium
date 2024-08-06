@@ -18,6 +18,7 @@
 #include "net/quic/platform/impl/quic_chromium_clock.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_http_stream.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/socket/socket_tag.h"
@@ -74,7 +75,7 @@ QuicChromiumClientSession* QuicSessionPoolPeer::GetPendingSession(
                              SessionUsage::kDestination, SocketTag(),
                              NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                              /*require_dns_https_alpn=*/false);
-  QuicSessionPool::QuicSessionAliasKey key(std::move(destination), session_key);
+  QuicSessionAliasKey key(std::move(destination), session_key);
   DCHECK(factory->HasActiveJob(session_key));
   DCHECK_EQ(factory->all_sessions_.size(), 1u);
   DCHECK(key == factory->all_sessions_.begin()->second);

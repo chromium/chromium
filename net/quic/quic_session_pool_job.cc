@@ -26,7 +26,7 @@ namespace net {
 namespace {
 
 base::Value::Dict NetLogQuicSessionPoolJobParams(
-    const QuicSessionPool::QuicSessionAliasKey* key) {
+    const QuicSessionAliasKey* key) {
   const ProxyChain& proxy_chain = key->session_key().proxy_chain();
   return base::Value::Dict()
       .Set("host", key->server_id().host())
@@ -83,6 +83,30 @@ void QuicSessionPool::Job::AssociateWithNetLogSource(
       http_stream_job_net_log.source());
   http_stream_job_net_log.AddEventReferencingSource(
       NetLogEventType::BOUND_TO_QUIC_SESSION_POOL_JOB, net_log().source());
+}
+
+QuicSessionPool* QuicSessionPool::Job::GetQuicSessionPool() {
+  return pool();
+}
+
+const QuicSessionAliasKey& QuicSessionPool::Job::GetKey() {
+  return key();
+}
+
+const NetLogWithSource& QuicSessionPool::Job::GetNetLog() {
+  return net_log();
+}
+
+void QuicSessionPool::Job::OnConnectionFailedOnDefaultNetwork() {
+  for (QuicSessionRequest* request : requests()) {
+    request->OnConnectionFailedOnDefaultNetwork();
+  }
+}
+
+void QuicSessionPool::Job::OnQuicSessionCreationComplete(int rv) {
+  for (QuicSessionRequest* request : requests()) {
+    request->OnQuicSessionCreationComplete(rv);
+  }
 }
 
 void QuicSessionPool::Job::UpdatePriority(RequestPriority old_priority,

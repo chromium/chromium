@@ -10,48 +10,73 @@
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/connection_endpoint_metadata.h"
+#include "net/base/http_user_agent_settings.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/net_export.h"
 #include "net/base/network_handle.h"
 #include "net/quic/quic_chromium_client_session.h"
-#include "net/quic/quic_session_pool.h"
-#include "net/quic/quic_session_pool_job.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
-#ifndef NET_QUIC_QUIC_SESSION_POOL_SESSION_ATTEMPT_H_
-#define NET_QUIC_QUIC_SESSION_POOL_SESSION_ATTEMPT_H_
+#ifndef NET_QUIC_QUIC_SESSION_ATTEMPT_H_
+#define NET_QUIC_QUIC_SESSION_ATTEMPT_H_
 
 namespace net {
+
+class QuicSessionPool;
 
 // Handles a single attempt to create a new QUIC session for an endpoint.
 // On success, the new session is activated unless another session has been
 // activated for the same endpoint. When failed on the default network, it may
 // retry on an alternate network if the system supports non-default networks.
-class QuicSessionPool::SessionAttempt {
+class NET_EXPORT_PRIVATE QuicSessionAttempt {
  public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Returns the QuicSessionPool that the attempt will use.
+    virtual QuicSessionPool* GetQuicSessionPool() = 0;
+
+    // Returns the QuicSessionAliasKey that the attempt will use to identify
+    // the session.
+    virtual const QuicSessionAliasKey& GetKey() = 0;
+
+    // Returns the NetLogWithSource that the attempt should use.
+    virtual const NetLogWithSource& GetNetLog() = 0;
+
+    // Called when the attempt is failed on the default network.
+    virtual void OnConnectionFailedOnDefaultNetwork() {}
+
+    // Called when the attempt completed creating the session.
+    virtual void OnQuicSessionCreationComplete(int rv) {}
+  };
+
   // Create a SessionAttempt for a direct connection.
-  SessionAttempt(Job* job,
-                 IPEndPoint ip_endpoint,
-                 ConnectionEndpointMetadata metadata,
-                 quic::ParsedQuicVersion quic_version,
-                 int cert_verify_flags,
-                 base::TimeTicks dns_resolution_start_time,
-                 base::TimeTicks dns_resolution_end_time,
-                 bool retry_on_alternate_network_before_handshake,
-                 bool use_dns_aliases,
-                 std::set<std::string> dns_aliases);
+  QuicSessionAttempt(Delegate* delegate,
+                     IPEndPoint ip_endpoint,
+                     ConnectionEndpointMetadata metadata,
+                     quic::ParsedQuicVersion quic_version,
+                     int cert_verify_flags,
+                     base::TimeTicks dns_resolution_start_time,
+                     base::TimeTicks dns_resolution_end_time,
+                     bool retry_on_alternate_network_before_handshake,
+                     bool use_dns_aliases,
+                     std::set<std::string> dns_aliases);
   // Create a SessionAttempt for a connection proxied over the given stream.
-  SessionAttempt(Job* job,
-                 IPEndPoint local_endpoint,
-                 IPEndPoint proxy_peer_endpoint,
-                 quic::ParsedQuicVersion quic_version,
-                 int cert_verify_flags,
-                 std::unique_ptr<QuicChromiumClientStream::Handle> proxy_stream,
-                 const HttpUserAgentSettings* http_user_agent_settings);
+  QuicSessionAttempt(
+      Delegate* delegate,
+      IPEndPoint local_endpoint,
+      IPEndPoint proxy_peer_endpoint,
+      quic::ParsedQuicVersion quic_version,
+      int cert_verify_flags,
+      std::unique_ptr<QuicChromiumClientStream::Handle> proxy_stream,
+      const HttpUserAgentSettings* http_user_agent_settings);
 
-  ~SessionAttempt();
+  ~QuicSessionAttempt();
 
-  SessionAttempt(const SessionAttempt&) = delete;
-  SessionAttempt& operator=(const SessionAttempt&) = delete;
+  QuicSessionAttempt(const QuicSessionAttempt&) = delete;
+  QuicSessionAttempt& operator=(const QuicSessionAttempt&) = delete;
 
   int Start(CompletionOnceCallback callback);
 
@@ -68,9 +93,9 @@ class QuicSessionPool::SessionAttempt {
     kConfirmConnection,
   };
 
-  QuicSessionPool* pool() { return job_->pool(); }
-  const QuicSessionAliasKey& key() { return job_->key(); }
-  const NetLogWithSource& net_log() { return job_->net_log(); }
+  QuicSessionPool* pool() { return delegate_->GetQuicSessionPool(); }
+  const QuicSessionAliasKey& key() { return delegate_->GetKey(); }
+  const NetLogWithSource& net_log() { return delegate_->GetNetLog(); }
 
   int DoLoop(int rv);
 
@@ -82,7 +107,7 @@ class QuicSessionPool::SessionAttempt {
   void OnCreateSessionComplete(int rv);
   void OnCryptoConnectComplete(int rv);
 
-  const raw_ptr<Job> job_;
+  const raw_ptr<Delegate> delegate_;
 
   const IPEndPoint ip_endpoint_;
   const ConnectionEndpointMetadata metadata_;
@@ -115,9 +140,9 @@ class QuicSessionPool::SessionAttempt {
 
   CompletionOnceCallback callback_;
 
-  base::WeakPtrFactory<SessionAttempt> weak_ptr_factory_{this};
+  base::WeakPtrFactory<QuicSessionAttempt> weak_ptr_factory_{this};
 };
 
 }  // namespace net
 
-#endif  // NET_QUIC_QUIC_SESSION_POOL_SESSION_ATTEMPT_H_
+#endif  // NET_QUIC_QUIC_SESSION_ATTEMPT_H_
