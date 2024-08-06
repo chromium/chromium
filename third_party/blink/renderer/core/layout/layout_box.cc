@@ -3166,8 +3166,15 @@ void LayoutBox::UpdateScrollMarkerControlsAfterScroll() const {
     // account for its border when If left/top of scroll offset is zero, don't
     // check that dimension for now, since target can have some border/margin
     // and will always be more than zero.
-    if ((target_offset.left <= scroll_offset.left || !scroll_offset.left) &&
-        (target_offset.top <= scroll_offset.top || !scroll_offset.top)) {
+    // Note: use of abs here is determined by the fact that for direction: rtl
+    // the scroll offset starts at zero and goes to the negative side, all the
+    // target offsets go to the negative side as well. We can't end up in
+    // situation of scroll offset to be on the wrong side of zero, so it's safe
+    // to do so.
+    if ((target_offset.left.Abs() <= scroll_offset.left.Abs() ||
+         !scroll_offset.left) &&
+        (target_offset.top.Abs() <= scroll_offset.top.Abs() ||
+         !scroll_offset.top)) {
       selected = scroll_marker;
     }
   }
