@@ -12,6 +12,8 @@
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
 
 class Profile;
 
@@ -85,6 +87,12 @@ class KioskController {
   // * When the internals page feature flag is disabled.
   virtual kiosk_vision::InternalsPageProcessor*
   GetKioskVisionInternalsPageProcessor() = 0;
+
+  // Registers local state prefs relevant for Kiosk.
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+  // Registers profile prefs relevant for Kiosk.
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 };
 
 }  // namespace ash

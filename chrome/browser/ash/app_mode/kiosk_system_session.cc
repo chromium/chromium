@@ -150,13 +150,6 @@ KioskSystemSession::KioskSystemSession(
 
 KioskSystemSession::~KioskSystemSession() = default;
 
-// static
-void KioskSystemSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  kiosk_vision::RegisterLocalStatePrefs(registry);
-  policy::DeviceWeeklyScheduledSuspendPolicyHandler::RegisterLocalStatePrefs(
-      registry);
-}
-
 void KioskSystemSession::InitForChromeAppKiosk() {
   const std::string& app_id = kiosk_app_id_.app_id.value();
   browser_session_.InitForChromeAppKiosk(app_id);

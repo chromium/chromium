@@ -346,10 +346,7 @@
 #include "chrome/browser/ash/account_manager/account_manager_edu_coexistence_controller.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
-#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
@@ -1612,9 +1609,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::FastTransitionObserver::RegisterPrefs(registry);
   ash::HWDataUsageController::RegisterLocalStatePrefs(registry);
   ash::KerberosCredentialsManager::RegisterLocalStatePrefs(registry);
-  ash::KioskChromeAppManager::RegisterLocalStatePrefs(registry);
-  ash::KioskSystemSession::RegisterLocalStatePrefs(registry);
-  ash::KioskCryptohomeRemover::RegisterPrefs(registry);
+  ash::KioskController::RegisterLocalStatePrefs(registry);
   ash::language_prefs::RegisterPrefs(registry);
   ash::local_search_service::SearchMetricsReporter::RegisterLocalStatePrefs(
       registry);
@@ -1639,7 +1634,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::TimeZoneResolver::RegisterPrefs(registry);
   ash::UserImageManagerImpl::RegisterPrefs(registry);
   ash::UserSessionManager::RegisterPrefs(registry);
-  ash::WebKioskAppManager::RegisterPrefs(registry);
   component_updater::MetadataTable::RegisterPrefs(registry);
   ash::CryptAuthDeviceIdProviderImpl::RegisterLocalPrefs(registry);
   extensions::ExtensionAssetsManagerChromeOS::RegisterPrefs(registry);
@@ -2083,7 +2077,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ProjectorAppClientImpl::RegisterProfilePrefs(registry);
   ash::floating_workspace_util::RegisterProfilePrefs(registry);
   policy::RebootNotificationsScheduler::RegisterProfilePrefs(registry);
-  ash::KioskChromeAppManager::RegisterProfilePrefs(registry);
+  ash::KioskController::RegisterProfilePrefs(registry);
   file_manager::file_tasks::RegisterProfilePrefs(registry);
   file_manager::prefs::RegisterProfilePrefs(registry);
   bruschetta::prefs::RegisterProfilePrefs(registry);
