@@ -431,24 +431,13 @@ void ServiceWorkerMainResourceLoader::MaybeDispatchPreload(
       }
       break;
     case RaceNetworkRequestMode::kDefault:
-      if (base::GetFieldTrialParamByFeatureAsBool(
-              features::kServiceWorkerAutoPreload, "respect_navigation_preload",
-              /*default_value=*/true)) {
-        // Prioritize NavigationPreload than AutoPreload if the
-        // respect_navigation_preload feature param is true.
-        if (MaybeStartNavigationPreload(context_wrapper)) {
-          return;
-        }
-        if (MaybeStartAutoPreload(context_wrapper, version)) {
-          return;
-        }
-      } else {
-        if (MaybeStartAutoPreload(context_wrapper, version)) {
-          return;
-        }
-        if (MaybeStartNavigationPreload(context_wrapper)) {
-          return;
-        }
+      // Prioritize NavigationPreload than AutoPreload.
+      // https://github.com/explainers-by-googlers/service-worker-auto-preload#how-is-it-different-from-the-navigation-preload-api
+      if (MaybeStartNavigationPreload(context_wrapper)) {
+        return;
+      }
+      if (MaybeStartAutoPreload(context_wrapper, version)) {
+        return;
       }
       break;
     case RaceNetworkRequestMode::kSkipped:
