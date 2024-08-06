@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/one_shot_event.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
@@ -27,6 +28,8 @@
 #include "extensions/browser/pref_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace extensions {
 
@@ -514,6 +517,16 @@ void ManifestV2ExperimentManager::EmitMetricsForProfileReady() {
   }
 }
 
+void ManifestV2ExperimentManager::RecordUkmForExtension(
+    const GURL& extension_url,
+    ExtensionMV2DeprecationAction action) {
+  ukm::builders::Extensions_MV2ExtensionHandledInSoftDisable(
+      ukm::UkmRecorder::GetSourceIdForExtensionUrl(
+          base::PassKey<ManifestV2ExperimentManager>(), extension_url))
+      .SetAction(static_cast<int64_t>(action))
+      .Record(ukm::UkmRecorder::Get());
+}
+
 void ManifestV2ExperimentManager::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
@@ -527,6 +540,8 @@ void ManifestV2ExperimentManager::OnExtensionLoaded(
 
   extension_prefs()->SetBooleanPref(extension->id(),
                                     kMV2DeprecationUserReEnabledPref, true);
+  RecordUkmForExtension(extension->url(),
+                        ExtensionMV2DeprecationAction::kReEnabled);
 }
 
 void ManifestV2ExperimentManager::OnExtensionInstalled(
@@ -540,6 +555,27 @@ void ManifestV2ExperimentManager::OnExtensionInstalled(
   }
 
   MaybeReEnableExtension(*extension);
+}
+
+void ManifestV2ExperimentManager::OnExtensionUninstalled(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    UninstallReason uninstall_reason) {
+  // We only care about user uninstallations...
+  if (uninstall_reason != UNINSTALL_REASON_USER_INITIATED) {
+    return;
+  }
+  // ... of extensions that were disabled by the MV2 deprecation.
+  bool was_extension_disabled_by_mv2_deprecation = false;
+  extension_prefs()->ReadPrefAsBoolean(
+      extension->id(), kMV2DeprecationDidDisablePref,
+      &was_extension_disabled_by_mv2_deprecation);
+  if (!was_extension_disabled_by_mv2_deprecation) {
+    return;
+  }
+
+  RecordUkmForExtension(extension->url(),
+                        ExtensionMV2DeprecationAction::kRemoved);
 }
 
 void ManifestV2ExperimentManager::OnManagementPolicyChanged() {
