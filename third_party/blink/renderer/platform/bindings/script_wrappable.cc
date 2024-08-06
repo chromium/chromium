@@ -21,8 +21,8 @@ ASSERT_SIZE(ScriptWrappable, SameSizeAsScriptWrappable);
 
 v8::Local<v8::Value> ScriptWrappable::ToV8(ScriptState* script_state) {
   v8::Local<v8::Object> wrapper;
-  if (LIKELY(DOMDataStore::GetWrapper(script_state->GetIsolate(), this)
-                 .ToLocal(&wrapper))) {
+  if (DOMDataStore::GetWrapper(script_state->GetIsolate(), this)
+          .ToLocal(&wrapper)) [[likely]] {
     return wrapper;
   }
   return Wrap(script_state);
@@ -32,7 +32,7 @@ v8::Local<v8::Value> ScriptWrappable::ToV8(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context_object) {
   v8::Local<v8::Object> wrapper;
-  if (LIKELY(DOMDataStore::GetWrapper(isolate, this).ToLocal(&wrapper))) {
+  if (DOMDataStore::GetWrapper(isolate, this).ToLocal(&wrapper)) [[likely]] {
     return wrapper;
   }
   CHECK(!creation_context_object.IsEmpty());

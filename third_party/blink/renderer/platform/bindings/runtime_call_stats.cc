@@ -208,8 +208,9 @@ void RuntimeCallStatsScopedTracer::AddBeginTraceEventIfEnabled(
   bool category_group_enabled;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(s_category_group_,
                                      &category_group_enabled);
-  if (LIKELY(!category_group_enabled))
+  if (!category_group_enabled) [[likely]] {
     return;
+  }
 
   RuntimeCallStats* stats = RuntimeCallStats::From(isolate);
   if (stats->InUse())

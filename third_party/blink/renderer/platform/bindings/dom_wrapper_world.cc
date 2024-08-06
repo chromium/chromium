@@ -84,11 +84,12 @@ DOMWrapperWorld* DOMWrapperWorld::Create(v8::Isolate* isolate,
   DCHECK(isolate);
   DCHECK_NE(WorldType::kIsolated, world_type);
   const auto world_id = GenerateWorldIdForType(world_type);
-  return LIKELY(world_id.has_value())
-             ? MakeGarbageCollected<DOMWrapperWorld>(
-                   PassKey(), isolate, world_type, world_id.value(),
-                   is_default_world_of_isolate)
-             : nullptr;
+  if (world_id.has_value()) [[likely]] {
+    return MakeGarbageCollected<DOMWrapperWorld>(PassKey(), isolate, world_type,
+                                                 world_id.value(),
+                                                 is_default_world_of_isolate);
+  }
+  return nullptr;
 }
 
 DOMWrapperWorld* DOMWrapperWorld::EnsureIsolatedWorld(v8::Isolate* isolate,

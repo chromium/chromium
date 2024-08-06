@@ -134,7 +134,7 @@ class PLATFORM_EXPORT ExceptionState {
   ExceptionState& operator=(const ExceptionState&) = delete;
 
   ~ExceptionState() {
-    if (UNLIKELY(!exception_.IsEmpty())) {
+    if (!exception_.IsEmpty()) [[unlikely]] {
       PropagateException();
     }
   }

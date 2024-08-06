@@ -93,7 +93,7 @@ v8::Local<v8::Object> V8PerContextData::CreateWrapperFromCacheSlowCase(
   DCHECK(!wrapper_boilerplates_.Contains(type));
   v8::Context::Scope scope(GetContext());
   v8::Local<v8::Function> interface_object = ConstructorForType(type);
-  if (UNLIKELY(interface_object.IsEmpty())) {
+  if (interface_object.IsEmpty()) [[unlikely]] {
     // For investigation of crbug.com/1199223
     static crash_reporter::CrashKeyString<64> crash_key(
         "blink__create_interface_object");

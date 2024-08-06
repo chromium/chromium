@@ -345,7 +345,7 @@ bool DOMDataStore::SetWrapperInInlineStorage(
   DCHECK(!wrapper.IsEmpty());
   auto& ref = entered_context ? GetInlineStorage(isolate, object)
                               : GetUncheckedInlineStorage(object);
-  if (UNLIKELY(!ref.IsEmpty())) {
+  if (!ref.IsEmpty()) [[unlikely]] {
     wrapper = ref.Get(isolate);
     return false;
   }
@@ -379,7 +379,7 @@ bool DOMDataStore::Set(v8::Isolate* isolate,
   // TODO(mlippautz): Check whether there's still recursive cases of
   // Wrap()/AssociateWithWrapper() that can run into the case of an existing
   // entry.
-  if (UNLIKELY(!result.is_new_entry)) {
+  if (!result.is_new_entry) [[unlikely]] {
     CHECK(!result.stored_value->value.IsEmpty());
     wrapper = result.stored_value->value.Get(isolate);
   }
@@ -407,7 +407,7 @@ bool DOMDataStore::Contains(const ScriptWrappable* object) const {
 template <typename HandleType>
 bool DOMDataStore::ClearWrapperInAnyWorldIfEqualTo(ScriptWrappable* object,
                                                    const HandleType& handle) {
-  if (LIKELY(ClearInlineStorageWrapperIfEqualTo(object, handle))) {
+  if (ClearInlineStorageWrapperIfEqualTo(object, handle)) [[likely]] {
     return true;
   }
   return DOMWrapperWorld::ClearWrapperInAnyNonInlineStorageWorldIfEqualTo(

@@ -33,7 +33,7 @@ class PLATFORM_EXPORT ScriptForbiddenScope final {
 
    public:
     AllowUserAgentScript() : saved_counter_(&GetMutableCounter(), 0) {
-      if (LIKELY(IsMainThread())) {
+      if (IsMainThread()) [[likely]] {
         saved_blink_counter_.emplace(&g_blink_lifecycle_counter_, 0);
       }
     }
@@ -47,8 +47,9 @@ class PLATFORM_EXPORT ScriptForbiddenScope final {
   };
 
   static bool IsScriptForbidden() {
-    if (LIKELY(!WTF::MayNotBeMainThread()))
+    if (!WTF::MayNotBeMainThread()) [[likely]] {
       return g_main_thread_counter_ > 0;
+    }
     return GetMutableCounter() > 0;
   }
 
@@ -62,8 +63,9 @@ class PLATFORM_EXPORT ScriptForbiddenScope final {
   // TODO(crbug.com/1196853): Remove this once we have discovered and fixed
   // sources of attempted script execution during blink lifecycle.
   static bool WillBeScriptForbidden() {
-    if (LIKELY(IsMainThread()))
+    if (IsMainThread()) [[likely]] {
       return g_blink_lifecycle_counter_ > 0;
+    }
     // Blink lifecycle scope is never entered on other threads.
     return false;
   }
@@ -74,7 +76,7 @@ class PLATFORM_EXPORT ScriptForbiddenScope final {
 
  private:
   static void Enter() {
-    if (LIKELY(!WTF::MayNotBeMainThread())) {
+    if (!WTF::MayNotBeMainThread()) [[likely]] {
       ++g_main_thread_counter_;
     } else {
       ++GetMutableCounter();
@@ -82,7 +84,7 @@ class PLATFORM_EXPORT ScriptForbiddenScope final {
   }
   static void Exit() {
     DCHECK(IsScriptForbidden());
-    if (LIKELY(!WTF::MayNotBeMainThread())) {
+    if (!WTF::MayNotBeMainThread()) [[likely]] {
       --g_main_thread_counter_;
     } else {
       --GetMutableCounter();

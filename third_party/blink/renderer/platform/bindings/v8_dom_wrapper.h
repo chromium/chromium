@@ -124,7 +124,7 @@ class V8WrapperInstantiationScope final {
 
     // For performance, we enter the context only if the currently running
     // context is different from the context that we are about to enter.
-    if (LIKELY(context_for_wrapper == context_)) {
+    if (context_for_wrapper == context_) [[likely]] {
       return;
     }
 
@@ -134,7 +134,7 @@ class V8WrapperInstantiationScope final {
   }
 
   ~V8WrapperInstantiationScope() {
-    if (LIKELY(!did_enter_context_)) {
+    if (!did_enter_context_) [[likely]] {
       return;
     }
     context_->Exit();

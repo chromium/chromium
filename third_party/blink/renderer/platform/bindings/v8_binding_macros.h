@@ -51,12 +51,12 @@ namespace blink {
 // with other macros and ease of code generation
 #define TOSTRING_VOID(type, var, value) \
   type var(value);                      \
-  if (UNLIKELY(!var.Prepare()))         \
+  if (!var.Prepare()) [[unlikely]]      \
     return;
 
 #define TOSTRING_DEFAULT(type, var, value, retVal) \
   type var(value);                                 \
-  if (UNLIKELY(!var.Prepare()))                    \
+  if (!var.Prepare()) [[unlikely]]                 \
     return retVal;
 
 }  // namespace blink

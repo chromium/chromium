@@ -52,7 +52,7 @@ void CallbackFunctionBase::Trace(Visitor* visitor) const {
 ScriptState* CallbackFunctionBase::CallbackRelevantScriptStateOrReportError(
     const char* interface_name,
     const char* operation_name) const {
-  if (LIKELY(callback_relevant_script_state_)) {
+  if (callback_relevant_script_state_) [[likely]] {
     return callback_relevant_script_state_;
   }
 
@@ -71,7 +71,7 @@ ScriptState* CallbackFunctionBase::CallbackRelevantScriptStateOrReportError(
 ScriptState* CallbackFunctionBase::CallbackRelevantScriptStateOrThrowException(
     const char* interface_name,
     const char* operation_name) const {
-  if (LIKELY(callback_relevant_script_state_)) {
+  if (callback_relevant_script_state_) [[likely]] {
     return callback_relevant_script_state_;
   }
 
@@ -87,7 +87,7 @@ ScriptState* CallbackFunctionBase::CallbackRelevantScriptStateOrThrowException(
 
 void CallbackFunctionBase::EvaluateAsPartOfCallback(
     base::OnceCallback<void(ScriptState*)> closure) {
-  if (UNLIKELY(!callback_relevant_script_state_)) {
+  if (!callback_relevant_script_state_) [[unlikely]] {
     return;
   }
 
