@@ -64,7 +64,6 @@ TabOrganizationButton::TabOrganizationButton(
   set_paint_transparent_for_custom_image_theme(false);
 
   SetCloseButton(std::move(close_pressed_callback));
-  layout_manager->SetFlexForView(close_button_, 1);
 
   UpdateColors();
 }
