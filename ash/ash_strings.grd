@@ -7378,11 +7378,11 @@ New install
         desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page where users can enter mathematical calculations or unit conversions (e.g. '1 + 1' or '1 meter to feet').">
         Calculations
       </message>
-      <message name="IDS_PICKER_CAPS_ON_CATEGORY_LABEL" translateable="false"
+      <message name="IDS_PICKER_CAPS_LOCK_ON_MENU_LABEL"
         desc="This string appears as a selectable menu item in a menu. When selected, it turns on the user's keyboard Caps Lock.">
         Turn on Caps Lock
       </message>
-      <message name="IDS_PICKER_CAPS_OFF_CATEGORY_LABEL" translateable="false"
+      <message name="IDS_PICKER_CAPS_LOCK_OFF_MENU_LABEL"
         desc="This string appears a selectable menu item in a menu. When selected, it turns off the user's keyboard Caps Lock.">
         Turn off Caps Lock
       </message>

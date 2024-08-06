@@ -57,10 +57,11 @@ std::vector<PickerSearchResult> PickerActionSearch(
     }
   }
 
-  if (IsMatch(tokenized_query, l10n_util::GetStringUTF16(
-                                   options.caps_lock_state_to_search
-                                       ? IDS_PICKER_CAPS_ON_CATEGORY_LABEL
-                                       : IDS_PICKER_CAPS_OFF_CATEGORY_LABEL))) {
+  if (IsMatch(tokenized_query,
+              l10n_util::GetStringUTF16(
+                  options.caps_lock_state_to_search
+                      ? IDS_PICKER_CAPS_LOCK_ON_MENU_LABEL
+                      : IDS_PICKER_CAPS_LOCK_OFF_MENU_LABEL))) {
     matches.push_back(
         PickerSearchResult::CapsLock(options.caps_lock_state_to_search));
   }

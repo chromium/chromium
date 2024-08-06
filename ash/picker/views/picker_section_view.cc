@@ -304,8 +304,8 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(l10n_util::GetStringUTF16(
-                data.enabled ? IDS_PICKER_CAPS_ON_CATEGORY_LABEL
-                             : IDS_PICKER_CAPS_OFF_CATEGORY_LABEL));
+                data.enabled ? IDS_PICKER_CAPS_LOCK_ON_MENU_LABEL
+                             : IDS_PICKER_CAPS_LOCK_OFF_MENU_LABEL));
             item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
                 data.enabled ? kPickerCapsLockOnIcon : kPickerCapsLockOffIcon,
                 cros_tokens::kCrosSysOnSurface));
