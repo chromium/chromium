@@ -102,15 +102,6 @@ MakeGraphiteRecorderWithImageProvider(skgpu::graphite::Context* context) {
   return context->makeRecorder(options);
 }
 
-#if BUILDFLAG(SKIA_USE_DAWN)
-int32_t GetDawnMaxTextureSize(gpu::DawnContextProvider* context_provider) {
-  wgpu::SupportedLimits limits = {};
-  auto succeded = context_provider->GetDevice().GetLimits(&limits);
-  CHECK(succeded);
-  return limits.limits.maxTextureDimension2D;
-}
-#endif  // BUILDFLAG(SKIA_USE_DAWN)
-
 // Used to represent Skia backend type for UMA.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -1299,24 +1290,23 @@ int32_t SharedContextState::GetMaxTextureSize() const {
     NOTREACHED_NORETURN();
 #endif
   } else {
-    max_texture_size = 8192;
 #if BUILDFLAG(SKIA_USE_DAWN)
-#if BUILDFLAG(IS_IOS)
-    // Note: We currently run tests against the Graphite-Metal backend on iOS;
-    // in these contexts the Dawn context provider is not created.
     if (dawn_context_provider()) {
-      max_texture_size = GetDawnMaxTextureSize(dawn_context_provider());
+      wgpu::SupportedLimits limits = {};
+      auto succeded = dawn_context_provider()->GetDevice().GetLimits(&limits);
+      CHECK(succeded);
+      max_texture_size = limits.limits.maxTextureDimension2D;
     }
-#else
-    CHECK(dawn_context_provider());
-    max_texture_size = GetDawnMaxTextureSize(dawn_context_provider());
-#endif  // BUILDFLAG(IS_IOS)
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
+#if BUILDFLAG(SKIA_USE_METAL)
+    if (metal_context_provider()) {
+      // This is a development only code path, so just assume 16K since that
+      // should be supported on non-ancient HW and ARM Macs in particular.
+      max_texture_size = 16384;
+    }
+#endif  // BUILDFLAG(SKIA_USE_METAL)
   }
-  // Ensure max_texture_size_ is less than INT_MAX so that gfx::Rect and friends
-  // can be used to accurately represent all valid sub-rects, with overflow
-  // cases, clamped to INT_MAX, always invalid.
-  max_texture_size = std::min(max_texture_size, INT32_MAX - 1);
+  CHECK_GT(max_texture_size, 0);
   return max_texture_size;
 }
 
