@@ -232,6 +232,34 @@ suite('ProductSpecificationsTableTest', () => {
         productDetails1[1]!.summary[0]!.text));
   });
 
+  test('product rows show "text" section', async () => {
+    // Arrange.
+    const productDetails = [
+      {
+        title: 'price',
+        text: '$100',
+        description: [],
+        summary: [],
+      },
+    ];
+    // Act.
+    tableElement.columns = [
+      {
+        productDetails: productDetails,
+        selectedItem: {title: '', url: 'https://foo.com', imageUrl: ''},
+      },
+    ];
+    await waitAfterNextRender(tableElement);
+
+    // Assert.
+    const text = $$(tableElement, '.detail-text');
+    assertTrue(!!text);
+    // Titles should only show in the first column.
+    assertNotStyle(text, 'visibility', 'hidden');
+    assertTrue(!!text!.textContent);
+    assertEquals(productDetails[0]!.text, text!.textContent.trim());
+  });
+
   test('fires url change event', async () => {
     // Arrange
     tableElement.columns = [

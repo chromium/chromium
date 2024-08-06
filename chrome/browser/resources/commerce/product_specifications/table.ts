@@ -174,7 +174,7 @@ export class TableElement extends PolymerElement {
 
   private showRow_(title: string, rowIndex: number): boolean {
     return this.showDescription_(title, rowIndex) ||
-        this.showSummary_(title, rowIndex);
+        this.showSummary_(title, rowIndex) || this.rowHasText_(title, rowIndex);
   }
 
   private computeCitationIndex_(
@@ -186,6 +186,14 @@ export class TableElement extends PolymerElement {
       citationIndex += summaries[i].urls.length;
     }
     return citationIndex + urlIndex;
+  }
+
+  private rowHasText_(title: string, rowIndex: number): boolean {
+    const rowDetails = this.columns.map(
+        column => column.productDetails && column.productDetails[rowIndex]);
+
+    return rowDetails.some(
+        detail => detail && detail.title === title && detail.text);
   }
 
   private showDescription_(title: string, rowIndex: number): boolean {
