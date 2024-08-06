@@ -935,8 +935,8 @@ ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(
     const cc::PaintFlags* flags,
     CanvasRenderingContext2DState::ImageType image_type,
     BaseRenderingContext2D::OverdrawOp overdraw_op) {
-  if (UNLIKELY(
-          base::FeatureList::IsEnabled(kDisableCanvasOverdrawOptimization))) {
+  if (base::FeatureList::IsEnabled(kDisableCanvasOverdrawOptimization))
+      [[unlikely]] {
     return;
   }
 
@@ -947,8 +947,9 @@ ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(
     return;
 
   cc::PaintCanvas* c = GetPaintCanvas();
-  if (UNLIKELY(!c))
+  if (!c) [[unlikely]] {
     return;
+  }
 
   // Overdraw in layers is not currently supported. We would need to be able to
   // drop draw ops in the current layer only, which is not currently possible.
@@ -957,28 +958,30 @@ ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(
   }
 
   if (overdraw_op == OverdrawOp::kDrawImage) {  // static branch
-    if (UNLIKELY(flags->getBlendMode() != SkBlendMode::kSrcOver) ||
-        UNLIKELY(flags->getLooper()) || UNLIKELY(flags->getImageFilter()) ||
-        UNLIKELY(!flags->isOpaque()) ||
-        UNLIKELY(image_type ==
-                 CanvasRenderingContext2DState::kNonOpaqueImage)) {
+    if (flags->getBlendMode() != SkBlendMode::kSrcOver || flags->getLooper() ||
+        flags->getImageFilter() || !flags->isOpaque() ||
+        image_type == CanvasRenderingContext2DState::kNonOpaqueImage)
+        [[unlikely]] {
       return;
     }
   }
 
   if (overdraw_op == OverdrawOp::kClearRect ||
       overdraw_op == OverdrawOp::kDrawImage) {  // static branch
-    if (UNLIKELY(GetState().HasComplexClip()))
+    if (GetState().HasComplexClip()) [[unlikely]] {
       return;
+    }
 
     SkIRect sk_i_bounds;
-    if (UNLIKELY(!c->getDeviceClipBounds(&sk_i_bounds)))
+    if (!c->getDeviceClipBounds(&sk_i_bounds)) [[unlikely]] {
       return;
+    }
     SkRect device_rect = SkRect::Make(sk_i_bounds);
     const SkImageInfo& image_info = c->imageInfo();
-    if (LIKELY(!device_rect.contains(
-            SkRect::MakeWH(image_info.width(), image_info.height()))))
+    if (!device_rect.contains(SkRect::MakeWH(image_info.width(),
+                                             image_info.height()))) [[likely]] {
       return;
+    }
   }
 
   WillOverwriteCanvas(overdraw_op);
@@ -996,7 +999,7 @@ void BaseRenderingContext2D::DrawInternal(
     CanvasRenderingContext2DState::ImageType image_type,
     const SkIRect& clip_bounds,
     CanvasPerformanceMonitor::DrawType draw_type) {
-  if (UNLIKELY(!paint_canvas)) {
+  if (!paint_canvas) [[unlikely]] {
     // This is the async draw case.
     paint_canvas = GetPaintCanvas();
     if (!paint_canvas) {
@@ -1035,7 +1038,7 @@ void BaseRenderingContext2D::DrawInternal(
       ResetAlphaIfNeeded(paint_canvas, global_composite, &bounds);
     }
   }
-  if (UNLIKELY(paint_canvas->NeedsFlush())) {
+  if (paint_canvas->NeedsFlush()) [[unlikely]] {
     // This happens if draw_func called flush() on the PaintCanvas. The flush
     // cannot be performed inside the scope of draw_func because it would break
     // the logic of CompositedDraw.
@@ -1053,7 +1056,7 @@ void BaseRenderingContext2D::Draw(
     CanvasRenderingContext2DState::PaintType paint_type,
     CanvasRenderingContext2DState::ImageType image_type,
     CanvasPerformanceMonitor::DrawType draw_type) {
-  if (UNLIKELY(!IsTransformInvertible())) {
+  if (!IsTransformInvertible()) [[unlikely]] {
     return;
   }
 
@@ -1062,7 +1065,7 @@ void BaseRenderingContext2D::Draw(
   if (!paint_canvas || !paint_canvas->getDeviceClipBounds(&clip_bounds))
     return;
 
-  if (UNLIKELY(GetState().IsFilterUnresolved())) {
+  if (GetState().IsFilterUnresolved()) [[unlikely]] {
     // Resolving a filter requires allocating garbage-collected objects.
     DrawInternal<CurrentOverdrawOp, DrawFunc, DrawCoversClipBoundsFunc>(
         nullptr, draw_func, draw_covers_clip_bounds, bounds, paint_type,
@@ -1187,7 +1190,7 @@ ALWAYS_INLINE bool BaseRenderingContext2D::IsFullCanvasCompositeMode(
 
 ALWAYS_INLINE bool BaseRenderingContext2D::StateHasFilter() {
   const CanvasRenderingContext2DState& state = GetState();
-  if (UNLIKELY(state.IsFilterUnresolved())) {
+  if (state.IsFilterUnresolved()) [[unlikely]] {
     return !!StateGetFilter();
   }
   // The fast path avoids the virtual call overhead of StateGetFilter
@@ -1202,7 +1205,7 @@ ALWAYS_INLINE bool BaseRenderingContext2D::ComputeDirtyRect(
   const CanvasRenderingContext2DState& state = GetState();
   gfx::RectF canvas_rect = state.GetTransform().MapRect(local_rect);
 
-  if (UNLIKELY(!state.ShadowColor().IsFullyTransparent())) {
+  if (!state.ShadowColor().IsFullyTransparent()) [[unlikely]] {
     gfx::RectF shadow_rect(canvas_rect);
     shadow_rect.Offset(state.ShadowOffset());
     shadow_rect.Outset(ClampTo<float>(state.ShadowBlur()));
@@ -1210,8 +1213,9 @@ ALWAYS_INLINE bool BaseRenderingContext2D::ComputeDirtyRect(
   }
 
   gfx::RectFToSkRect(canvas_rect).roundOut(dirty_rect);
-  if (UNLIKELY(!dirty_rect->intersect(transformed_clip_bounds)))
+  if (!dirty_rect->intersect(transformed_clip_bounds)) [[unlikely]] {
     return false;
+  }
 
   return true;
 }

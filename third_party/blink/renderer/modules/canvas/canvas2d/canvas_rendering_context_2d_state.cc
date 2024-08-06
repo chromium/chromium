@@ -305,7 +305,7 @@ static bool HasANonZeroElement(const Vector<double>& line_dash) {
 }
 
 ALWAYS_INLINE void CanvasRenderingContext2DState::UpdateLineDash() const {
-  if (LIKELY(!line_dash_dirty_)) {
+  if (!line_dash_dirty_) [[likely]] {
     return;
   }
   if (!HasANonZeroElement(line_dash_)) {
@@ -569,7 +569,7 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
 
     // Must set font in case the filter uses any font-relative units (em, ex)
     // If font_for_filter_ was never set (ie frame-less documents) use base font
-    if (UNLIKELY(!font_for_filter_.GetFontSelector())) {
+    if (!font_for_filter_.GetFontSelector()) [[unlikely]] {
       if (LayoutView* layout_view = document.GetLayoutView()) {
         font = &layout_view->StyleRef().GetFont();
       } else {

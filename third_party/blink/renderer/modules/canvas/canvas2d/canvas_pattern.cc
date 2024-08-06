@@ -70,7 +70,7 @@ CanvasPattern::CanvasPattern(scoped_refptr<Image> image,
                              bool origin_clean)
     : pattern_(Pattern::CreateImagePattern(image, repeat)),
       origin_clean_(origin_clean) {
-  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kCreatePattern, image ? image->width() : 0,
         image ? image->height() : 0, repeat);
@@ -85,7 +85,7 @@ void CanvasPattern::setTransform(DOMMatrix2DInit* transform,
   if (!m) {
     return;
   }
-  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(m->m11(), m->m12(), m->m21(),
                                                 m->m22(), m->m41(), m->m42());
   }

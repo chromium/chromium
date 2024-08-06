@@ -85,7 +85,7 @@ class CanvasStyle final {
   }
 
   bool SetColor(Color color) {
-    if (LIKELY(type_ == kColor)) {
+    if (type_ == kColor) [[likely]] {
       if (color == color_) {
         return false;
       }
@@ -135,7 +135,7 @@ ALWAYS_INLINE void CanvasStyle::ApplyColorToFlags(cc::PaintFlags& flags,
 
 ALWAYS_INLINE void CanvasStyle::SyncFlags(cc::PaintFlags& flags,
                                           float global_alpha) const {
-  if (LIKELY(type_ == kColor)) {
+  if (type_ == kColor) [[likely]] {
     // Color values are immutable so they never need to be sync'ed at draw time.
     return;
   }

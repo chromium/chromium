@@ -243,7 +243,7 @@ void GPUDevice::AddConsoleWarning(const String& message) {
 
 void GPUDevice::AddSingletonWarning(GPUSingletonWarning type) {
   size_t index = static_cast<size_t>(type);
-  if (UNLIKELY(!singleton_warning_fired_[index])) {
+  if (!singleton_warning_fired_[index]) [[unlikely]] {
     singleton_warning_fired_[index] = true;
 
     std::string message;

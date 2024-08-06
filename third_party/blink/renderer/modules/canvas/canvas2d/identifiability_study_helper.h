@@ -116,7 +116,7 @@ class IdentifiabilityStudyHelper final {
   // avoid unnecessary copies of parameters and hashing when GetToken() won't be
   // called.
   ALWAYS_INLINE bool ShouldUpdateBuilder() {
-    if (LIKELY(!is_canvas_type_allowed_)) {
+    if (!is_canvas_type_allowed_) [[likely]] {
       return false;
     }
     if (!execution_context_ ||
