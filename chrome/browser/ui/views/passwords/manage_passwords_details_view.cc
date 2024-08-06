@@ -528,6 +528,7 @@ std::unique_ptr<views::View> ManagePasswordsDetailsView::CreateTitleView(
 
 ManagePasswordsDetailsView::ManagePasswordsDetailsView(
     password_manager::PasswordForm password_form,
+    bool allow_empty_username_edit,
     base::RepeatingCallback<bool(const std::u16string&)>
         username_exists_callback,
     base::RepeatingClosure switched_to_edit_mode_callback,
@@ -562,7 +563,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
         l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_USERNAME),
         std::move(copy_username_button_callback),
         ManagePasswordsViewIDs::kCopyUsernameButton));
-  } else {
+  } else if (allow_empty_username_edit) {
     read_username_row_ = AddChildView(CreateDetailsRowWithActionButton(
         kAccountCircleIcon, std::move(username_label), vector_icons::kEditIcon,
         l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_EDIT_USERNAME_TOOLTIP),
@@ -577,6 +578,9 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
             base::BindRepeating(&ManagePasswordsDetailsView::OnUserInputChanged,
                                 base::Unretained(this))));
     edit_username_row_->SetVisible(false);
+  } else {
+    AddChildView(
+        CreateDetailsRow(kAccountCircleIcon, std::move(username_label)));
   }
 
   std::unique_ptr<views::Label> password_label =

@@ -36,6 +36,8 @@ class ManagePasswordsDetailsView : public views::BoxLayoutView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBackButton);
 
   // `password_form` is the password form to be displayed.
+  // `allow_empty_username_edit` indicates whether the edit button for empty
+  // usernames is available.
   // The view uses `username_exists_callback` to check if the currently entered
   // username in the edit mode already exists and hence should be considered an
   // invalid input. `switched_to_edit_mode_callback` is invoked when the user
@@ -49,6 +51,7 @@ class ManagePasswordsDetailsView : public views::BoxLayoutView {
   // clicks on the "Manage password" button.
   ManagePasswordsDetailsView(
       password_manager::PasswordForm password_form,
+      bool allow_empty_username_edit,
       base::RepeatingCallback<bool(const std::u16string&)>
           username_exists_callback,
       base::RepeatingClosure switched_to_edit_mode_callback,

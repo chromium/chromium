@@ -8,6 +8,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_details_view.h"
+#include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
@@ -59,6 +60,12 @@ class ManagePasswordsViewTest : public PasswordBubbleViewTestBase {
         views::ElementTrackerViews::GetContextForWidget(view_widget_.get());
     return views::ElementTrackerViews::GetInstance()->GetUniqueView(
                ManagePasswordsDetailsView::kBackButton, context) != nullptr;
+  }
+
+  bool PasswordDetailsHasEditUsernameButton() {
+    return view()->GetViewByID(
+               static_cast<int>(password_manager::ManagePasswordsViewIDs::
+                                    kEditUsernameButton)) != nullptr;
   }
 
  private:
@@ -124,6 +131,7 @@ TEST_F(ManagePasswordsViewTest,
        DetailsBubbleHasBackButtonIfInCredentialListMode) {
   password_manager::PasswordForm details_bubble_credentail;
   CreateViewAndShow();
+  view()->DisplayDetailsOfPasswordForTesting(password_manager::PasswordForm());
 
   // Imitate selection from the list.
   view()->DisplayDetailsOfPasswordForTesting(details_bubble_credentail);
@@ -153,4 +161,28 @@ TEST_F(ManagePasswordsViewTest, DetailsBubbleTitleDependsOnFormDisplayName) {
   CreateViewAndShow();
 
   EXPECT_EQ(view()->GetWindowTitle(), u"Netflix");
+}
+
+TEST_F(ManagePasswordsViewTest,
+       PasswordDetailsFromListAllowsEmptyUsernameEdit) {
+  password_manager::PasswordForm form;
+  form.username_value = u"";
+  form.password_value = u"pa$$w0rd";
+  CreateViewAndShow();
+  view()->DisplayDetailsOfPasswordForTesting(form);
+
+  EXPECT_TRUE(PasswordDetailsHasEditUsernameButton());
+}
+
+TEST_F(ManagePasswordsViewTest, DetailsOnlyBubbleDoesntAllowEmptyUsernameEdit) {
+  password_manager::PasswordForm form;
+  form.username_value = u"";
+  form.password_value = u"pa$$w0rd";
+  std::optional details_bubble_credentail(form);
+  ON_CALL(*model_delegate_mock(),
+          GetManagePasswordsSingleCredentialDetailsModeCredential)
+      .WillByDefault(ReturnRef(details_bubble_credentail));
+  CreateViewAndShow();
+
+  EXPECT_FALSE(PasswordDetailsHasEditUsernameButton());
 }

@@ -171,6 +171,8 @@ ManagePasswordsView::CreatePasswordDetailsView() {
   DCHECK(controller_.get_details_bubble_credential().has_value());
   return std::make_unique<ManagePasswordsDetailsView>(
       controller_.get_details_bubble_credential().value(),
+      /*allow_empty_username_edit=*/controller_.bubble_mode() ==
+          ManagePasswordsBubbleController::BubbleMode::kCredentialList,
       base::BindRepeating(&ManagePasswordsBubbleController::UsernameExists,
                           base::Unretained(&controller_)),
       base::BindRepeating(
