@@ -956,7 +956,7 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
       if (const auto& size_for_testing =
               frame_sink_manager_
                   ->copy_output_request_result_size_for_testing();  // IN-TEST
-          UNLIKELY(!size_for_testing.IsEmpty())) {
+          !size_for_testing.IsEmpty()) [[unlikely]] {
         SetCopyOutoutRequestResultSize(copy_request.get(), gfx::Rect(),
                                        size_for_testing,
                                        prev_surface->size_in_pixels());
@@ -1629,13 +1629,13 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
     case CompositorFrameTransitionDirective::Type::kSave:
       // The save directive is used to start a new transition sequence. Ensure
       // we don't have any existing state for this transition.
-      if (UNLIKELY(frame_sink_manager_->ClearSurfaceAnimationManager(
-              transition_token))) {
+      if (frame_sink_manager_->ClearSurfaceAnimationManager(transition_token))
+          [[unlikely]] {
         view_transition_token_to_animation_manager_.erase(transition_token);
         return;
       }
-      if (UNLIKELY(view_transition_token_to_animation_manager_.erase(
-              transition_token))) {
+      if (view_transition_token_to_animation_manager_.erase(transition_token))
+          [[unlikely]] {
         return;
       }
 

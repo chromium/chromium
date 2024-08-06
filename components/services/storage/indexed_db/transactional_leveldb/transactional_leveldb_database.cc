@@ -125,8 +125,9 @@ leveldb::Status TransactionalLevelDBDatabase::Get(std::string_view key,
     *found = true;
     return s;
   }
-  if (LIKELY(s.IsNotFound()))
+  if (s.IsNotFound()) [[likely]] {
     return leveldb::Status::OK();
+  }
   return s;
 }
 

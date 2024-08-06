@@ -217,7 +217,7 @@ void ExternalBeginFrameSourceIOS::SetPreferredInterval(
 base::TimeDelta ExternalBeginFrameSourceIOS::GetMaximumRefreshFrameInterval() {
   const int64_t max_refresh_rate =
       [objc_storage_->display_link_impl maximumRefreshRate];
-  if (UNLIKELY(max_refresh_rate <= 0)) {
+  if (max_refresh_rate <= 0) [[unlikely]] {
     return BeginFrameArgs::DefaultInterval();
   }
   return base::Hertz(max_refresh_rate);

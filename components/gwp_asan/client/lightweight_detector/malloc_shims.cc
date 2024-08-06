@@ -31,7 +31,7 @@ bool MaybeQuarantine(const AllocatorDispatch* self,
                      std::optional<size_t> maybe_size,
                      void* context,
                      FreeFunctionKind kind) {
-  if (LIKELY(!sampling_state.Sample())) {
+  if (!sampling_state.Sample()) [[likely]] {
     return false;
   }
 
@@ -45,7 +45,7 @@ bool MaybeQuarantine(const AllocatorDispatch* self,
   base::CheckedNumeric<size_t> size = maybe_size.value_or(
       self->next->get_size_estimate_function(self->next, address, context));
   info.free_fn_kind = kind;
-  if (UNLIKELY(!size.AssignIfValid(&info.size))) {
+  if (!size.AssignIfValid(&info.size)) [[unlikely]] {
     return false;
   }
 

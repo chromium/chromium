@@ -4,13 +4,17 @@
 
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 
+#include <limits>
 #include <memory>
 #include <sstream>
+#include <utility>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/debug/stack_trace.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
@@ -50,8 +54,9 @@ class LevelDBScope::UndoLogWriter : public leveldb::WriteBatch::Handler {
 
   void Put(const leveldb::Slice& key, const leveldb::Slice& value) override {
     DCHECK(scope_->IsUndoLogMode());
-    if (UNLIKELY(!error_.ok()))
+    if (!error_.ok()) [[unlikely]] {
       return;
+    }
     if (scope_->CanSkipWritingUndoEntry(key))
       return;
     leveldb::ReadOptions read_options;
@@ -66,7 +71,7 @@ class LevelDBScope::UndoLogWriter : public leveldb::WriteBatch::Handler {
       scope_->AddUndoDeleteTask(key.ToString());
       return;
     }
-    if (UNLIKELY(!s.ok())) {
+    if (!s.ok()) [[unlikely]] {
       error_ = std::move(s);
       return;
     }
@@ -75,8 +80,9 @@ class LevelDBScope::UndoLogWriter : public leveldb::WriteBatch::Handler {
 
   void Delete(const leveldb::Slice& key) override {
     DCHECK(scope_->IsUndoLogMode());
-    if (UNLIKELY(!error_.ok()))
+    if (!error_.ok()) [[unlikely]] {
       return;
+    }
     if (scope_->CanSkipWritingUndoEntry(key))
       return;
     leveldb::ReadOptions read_options;
@@ -89,7 +95,7 @@ class LevelDBScope::UndoLogWriter : public leveldb::WriteBatch::Handler {
     leveldb::Status s = db_->Get(read_options, key, &read_buffer_);
     if (s.IsNotFound())
       return;
-    if (UNLIKELY(!s.ok())) {
+    if (!s.ok()) [[unlikely]] {
       error_ = std::move(s);
       return;
     }
@@ -122,7 +128,7 @@ LevelDBScope::LevelDBScope(int64_t scope_id,
 
 LevelDBScope::~LevelDBScope() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (UNLIKELY(has_written_to_disk_ && !committed_ && rollback_callback_)) {
+  if (has_written_to_disk_ && !committed_ && rollback_callback_) [[unlikely]] {
     DCHECK(undo_sequence_number_ < std::numeric_limits<int64_t>::max() ||
            cleanup_sequence_number_ > 0)
         << "A reverting scope that has written to disk must have either an "
@@ -210,8 +216,9 @@ leveldb::Status LevelDBScope::DeleteRange(const leveldb::Slice& begin,
   // tasks) to start with an empty |buffer_batch_|.
   leveldb::Status s = WriteChangesAndUndoLogInternal(false);
   DCHECK(!s.IsNotFound());
-  if (UNLIKELY(!s.ok() && !s.IsNotFound()))
+  if (!s.ok() && !s.IsNotFound()) [[unlikely]] {
     return s;
+  }
   leveldb::ReadOptions options;
   options.verify_checksums = true;
   // Since these are keys that are being deleted, this should not fill the
@@ -237,12 +244,14 @@ leveldb::Status LevelDBScope::DeleteRange(const leveldb::Slice& begin,
     if (GetMemoryUsage() > write_batch_size_) {
       s = WriteBufferBatch(false);
       DCHECK(!s.IsNotFound());
-      if (UNLIKELY(!s.ok() && !s.IsNotFound()))
+      if (!s.ok() && !s.IsNotFound()) [[unlikely]] {
         return s;
+      }
     }
   }
-  if (UNLIKELY(!s.ok() && !s.IsNotFound()))
+  if (!s.ok() && !s.IsNotFound()) [[unlikely]] {
     return s;
+  }
   // This could happen if there were no keys found in the range.
   if (buffer_batch_empty_)
     return leveldb::Status::OK();

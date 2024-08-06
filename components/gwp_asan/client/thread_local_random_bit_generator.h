@@ -72,7 +72,7 @@ class ThreadLocalRandomBitGenerator
 
   result_type operator()() const {
     result_type x = static_cast<result_type>(TLS::GetState());
-    if (UNLIKELY(!x)) {
+    if (!x) [[unlikely]] {
       std::uniform_int_distribution<result_type> distribution;
       base::NonAllocatingRandomBitGenerator generator;
       x = distribution(generator);
