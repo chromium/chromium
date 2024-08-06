@@ -2736,7 +2736,7 @@ public class ReadAloudControllerUnitTest {
         PlaybackTextPart[] paragraphs = new PlaybackTextPart[] {p};
         when(mMetadata.paragraphs()).thenReturn(paragraphs);
         mController.tapToSeek("the quick brown fox", 4, 9);
-        verify(mPlayback, times(1)).seekToWord(0, 8);
+        verify(mPlayback, times(1)).seekToWord(0, 4);
         histogram.assertExpected();
     }
 

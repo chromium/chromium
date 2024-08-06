@@ -93,7 +93,7 @@ public class TapToSeekHandler {
                                 .replaceAll("\\s+", " "); // replaces any white-space with a space.
                 found = BoyerMoore.indexOf(fullText, needle.toCharArray());
                 if (found > 0) {
-                    maybeTapToSeek(found + beginOffset, content, playback);
+                    maybeTapToSeek(found, content, playback);
                 } else {
                     // TODO: b/325654229 Improve heuristics with more substrings to match with.
                     ReadAloudMetrics.recordHasTapToSeekFoundMatch(false);

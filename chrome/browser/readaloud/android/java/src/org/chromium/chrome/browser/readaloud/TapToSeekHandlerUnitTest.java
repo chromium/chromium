@@ -98,7 +98,7 @@ public class TapToSeekHandlerUnitTest {
                         ReadAloudMetrics.HAS_TAP_TO_SEEK_FOUND_MATCH, true);
         tapToSeek("cat jumps  over", 4, 9, "The\nquick brown fox  jumps\nover the lazy dog.");
         histogram.assertExpected();
-        verify(mPlayback, times(1)).seekToWord(0, 25);
+        verify(mPlayback, times(1)).seekToWord(0, 21);
 
         // removes parentheses
         histogram =
@@ -110,7 +110,7 @@ public class TapToSeekHandlerUnitTest {
                 9,
                 "The\nquick brown fox  jumps\nover the lazy dog.");
         histogram.assertExpected();
-        verify(mPlayback, times(1)).seekToWord(0, 8);
+        verify(mPlayback, times(1)).seekToWord(0, 4);
     }
 
     @Test
