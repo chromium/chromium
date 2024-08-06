@@ -797,7 +797,8 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
   ASSERT_FALSE(listener().HasNextMessageForAnyHost());
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
+// Disabled due to flakiness. See https://crbug.com/357879183
+INSTANTIATE_TEST_SUITE_P(DISABLED_All,
                          NavigationListenerBrowserTest,
                          testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
