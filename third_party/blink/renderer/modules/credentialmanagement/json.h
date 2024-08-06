@@ -30,14 +30,12 @@ AuthenticationExtensionsClientOutputsToJSON(
 // Implements `PublicKeyCredential.parseCredentialCreationOptions()` from the
 // WebAuthn API.
 PublicKeyCredentialCreationOptions* PublicKeyCredentialCreationOptionsFromJSON(
-    ScriptState* script_sate,
     const PublicKeyCredentialCreationOptionsJSON* json,
     ExceptionState& exception_state);
 
 // Implements `PublicKeyCredential.parseCredentialRequestOptions()` from the
 // WebAuthn API.
 PublicKeyCredentialRequestOptions* PublicKeyCredentialRequestOptionsFromJSON(
-    ScriptState* script_sate,
     const PublicKeyCredentialRequestOptionsJSON* json,
     ExceptionState& exception_state);
 

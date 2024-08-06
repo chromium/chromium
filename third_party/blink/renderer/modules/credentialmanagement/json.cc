@@ -1,6 +1,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/json.h"
 
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
@@ -54,8 +55,9 @@ PublicKeyCredentialUserEntity* PublicKeyCredentialUserEntityFromJSON(
     result->setId(
         MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(*id));
   } else {
-    exception_state.ThrowDOMException(DOMExceptionCode::kEncodingError,
-                                      "'user.id' contains invalid base64url");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kEncodingError,
+        "'user.id' contains invalid base64url data");
     return nullptr;
   }
   result->setName(json.name());
@@ -64,6 +66,7 @@ PublicKeyCredentialUserEntity* PublicKeyCredentialUserEntityFromJSON(
 }
 
 PublicKeyCredentialDescriptor* PublicKeyCredentialDescriptorFromJSON(
+    const std::string_view field_name,
     const PublicKeyCredentialDescriptorJSON& json,
     ExceptionState& exception_state) {
   auto* result = PublicKeyCredentialDescriptor::Create();
@@ -73,8 +76,9 @@ PublicKeyCredentialDescriptor* PublicKeyCredentialDescriptorFromJSON(
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kEncodingError,
-        "'excludeCredentials' contains PublicKeyCredentialDescriptorJSON "
-        "with invalid base64url data in 'id'");
+        String(base::StrCat({"'", field_name,
+                             "' contains PublicKeyCredentialDescriptorJSON "
+                             "with invalid base64url data in 'id'"})));
     return nullptr;
   }
   result->setType(json.type());
@@ -90,12 +94,13 @@ PublicKeyCredentialDescriptor* PublicKeyCredentialDescriptorFromJSON(
 
 VectorOf<PublicKeyCredentialDescriptor>
 PublicKeyCredentialDescriptorVectorFromJSON(
+    const std::string_view field_name,
     const VectorOf<PublicKeyCredentialDescriptorJSON> json,
     ExceptionState& exception_state) {
   VectorOf<PublicKeyCredentialDescriptor> result;
   for (const PublicKeyCredentialDescriptorJSON* json_descriptor : json) {
-    auto* descriptor = PublicKeyCredentialDescriptorFromJSON(*json_descriptor,
-                                                             exception_state);
+    auto* descriptor = PublicKeyCredentialDescriptorFromJSON(
+        field_name, *json_descriptor, exception_state);
     if (exception_state.HadException()) {
       return {};
     }
@@ -314,7 +319,6 @@ AuthenticationExtensionsClientOutputsToJSON(
 }
 
 PublicKeyCredentialCreationOptions* PublicKeyCredentialCreationOptionsFromJSON(
-    ScriptState* script_sate,
     const PublicKeyCredentialCreationOptionsJSON* json,
     ExceptionState& exception_state) {
   auto* result = PublicKeyCredentialCreationOptions::Create();
@@ -341,8 +345,8 @@ PublicKeyCredentialCreationOptions* PublicKeyCredentialCreationOptionsFromJSON(
   }
   if (json->hasExcludeCredentials()) {
     VectorOf<PublicKeyCredentialDescriptor> credential_descriptors =
-        PublicKeyCredentialDescriptorVectorFromJSON(json->excludeCredentials(),
-                                                    exception_state);
+        PublicKeyCredentialDescriptorVectorFromJSON(
+            "excludeCredentials", json->excludeCredentials(), exception_state);
     if (exception_state.HadException()) {
       return nullptr;
     }
@@ -369,7 +373,6 @@ PublicKeyCredentialCreationOptions* PublicKeyCredentialCreationOptionsFromJSON(
 }
 
 PublicKeyCredentialRequestOptions* PublicKeyCredentialRequestOptionsFromJSON(
-    ScriptState* script_sate,
     const PublicKeyCredentialRequestOptionsJSON* json,
     ExceptionState& exception_state) {
   auto* result = PublicKeyCredentialRequestOptions::Create();
@@ -391,8 +394,8 @@ PublicKeyCredentialRequestOptions* PublicKeyCredentialRequestOptionsFromJSON(
   }
   if (json->hasAllowCredentials()) {
     VectorOf<PublicKeyCredentialDescriptor> credential_descriptors =
-        PublicKeyCredentialDescriptorVectorFromJSON(json->allowCredentials(),
-                                                    exception_state);
+        PublicKeyCredentialDescriptorVectorFromJSON(
+            "allowCredentials", json->allowCredentials(), exception_state);
     if (exception_state.HadException()) {
       return nullptr;
     }
