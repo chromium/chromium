@@ -488,6 +488,7 @@ public abstract class ChromeFeatureList {
     public static final String TAB_STRIP_GROUP_COLLAPSE = "TabStripGroupCollapseAndroid";
     public static final String TAB_STRIP_GROUP_INDICATORS = "TabStripGroupIndicatorsAndroid";
     public static final String TAB_STRIP_GROUP_CONTEXT_MENU = "TabStripGroupContextMenuAndroid";
+    public static final String TAB_STRIP_INCOGNITO_MIGRATION = "TabStripIncognitoMigration";
     public static final String TAB_STRIP_LAYOUT_OPTIMIZATION = "TabStripLayoutOptimization";
     public static final String TAB_STRIP_STARTUP_REFACTORING = "TabStripStartupRefactoring";
     public static final String TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW =
@@ -682,6 +683,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(TAB_RESUMPTION_MODULE_ANDROID, false);
     public static final CachedFlag sTabStateFlatBuffer =
             newCachedFlag(TAB_STATE_FLAT_BUFFER, false);
+    public static final CachedFlag sTabStripIncognitoMigration =
+            newCachedFlag(TAB_STRIP_INCOGNITO_MIGRATION, false);
     public static final CachedFlag sTabStripLayoutOptimization =
             newCachedFlag(TAB_STRIP_LAYOUT_OPTIMIZATION, true);
     public static final CachedFlag sTabStripStartupRefactoring =
@@ -793,6 +796,7 @@ public abstract class ChromeFeatureList {
                     sTabStateFlatBuffer,
                     sTabStripGroupCollapse,
                     sTabStripGroupIndicators,
+                    sTabStripIncognitoMigration,
                     sTabStripLayoutOptimization,
                     sTabStripStartupRefactoring,
                     sTabletToolbarReordering,

@@ -366,7 +366,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private Animator mRunningAnimator;
 
     private final TintedCompositorButton mNewTabButton;
-    private final CompositorButton mModelSelectorButton;
+    @Nullable private final CompositorButton mModelSelectorButton;
 
     // Layout Constants
     private final float mTabOverlapWidth;
@@ -831,7 +831,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         mReservedEndMargin =
                 msbTouchTargetSize
                         + mNewTabButtonWidth
-                        + (mModelSelectorButton.isVisible()
+                        + (mModelSelectorButton != null && mModelSelectorButton.isVisible()
                                 ? NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING
                                 : mFixedEndPadding);
         updateMargins(true);
@@ -2033,15 +2033,18 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
     /** Check whether model selector button or new tab button is being hovered. */
     private void updateCompositorButtonHoverState(float x, float y) {
-        // Model selector button is being hovered.
-        mModelSelectorButton.setHovered(mModelSelectorButton.checkClickedOrHovered(x, y));
+        boolean isModelSelectorHovered = false;
+        if (mModelSelectorButton != null) {
+            // Model selector button is being hovered.
+            isModelSelectorHovered = mModelSelectorButton.checkClickedOrHovered(x, y);
+            mModelSelectorButton.setHovered(isModelSelectorHovered);
+        }
         // There's a delay in updating NTB's position/touch target when MSB initially appears on the
         // strip, taking over NTB's position and moving NTB closer to the tabs. Consequently, hover
         // highlights are observed on both NTB and MSB. To address this, this check is added to
         // ensure only one button can be hovered at a time.
-        if (!mModelSelectorButton.isHovered()) {
-            mNewTabButton.setHovered(
-                    ((CompositorButton) mNewTabButton).checkClickedOrHovered(x, y));
+        if (!isModelSelectorHovered) {
+            mNewTabButton.setHovered(mNewTabButton.checkClickedOrHovered(x, y));
         } else {
             mNewTabButton.setHovered(false);
         }
@@ -2050,7 +2053,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     /** Clear button hover state */
     private void clearCompositorButtonHoverStateIfNotClicked() {
         mNewTabButton.setHovered(false);
-        mModelSelectorButton.setHovered(false);
+        if (mModelSelectorButton != null) {
+            mModelSelectorButton.setHovered(false);
+        }
     }
 
     @VisibleForTesting
@@ -4074,14 +4079,16 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                         endOpacity,
                         ANIM_BUTTONS_FADE_MS)
                 .start();
-        CompositorAnimator.ofFloatProperty(
-                        mUpdateHost.getAnimationHandler(),
-                        mModelSelectorButton,
-                        CompositorButton.OPACITY,
-                        mModelSelectorButton.getOpacity(),
-                        endOpacity,
-                        ANIM_BUTTONS_FADE_MS)
-                .start();
+        if (mModelSelectorButton != null) {
+            CompositorAnimator.ofFloatProperty(
+                            mUpdateHost.getAnimationHandler(),
+                            mModelSelectorButton,
+                            CompositorButton.OPACITY,
+                            mModelSelectorButton.getOpacity(),
+                            endOpacity,
+                            ANIM_BUTTONS_FADE_MS)
+                    .start();
+        }
     }
 
     private void setBackgroundTabContainerVisible(StripLayoutTab tab, boolean visible) {

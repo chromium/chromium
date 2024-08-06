@@ -148,8 +148,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         topPaddingPx);
 
         TintedCompositorButton newTabButton = layoutHelper.getNewTabButton();
-        CompositorButton modelSelectorButton = layoutHelper.getModelSelectorButton();
-        boolean modelSelectorButtonVisible = modelSelectorButton.isVisible();
         boolean newTabButtonVisible = newTabButton.isVisible();
         TabStripSceneLayerJni.get()
                 .updateNewTabButton(
@@ -167,21 +165,26 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         newTabButton.getBackgroundTint(),
                         newTabButton.getOpacity(),
                         resourceManager);
-        TabStripSceneLayerJni.get()
-                .updateModelSelectorButton(
-                        mNativePtr,
-                        TabStripSceneLayer.this,
-                        modelSelectorButton.getResourceId(),
-                        ((TintedCompositorButton) modelSelectorButton).getBackgroundResourceId(),
-                        modelSelectorButton.getDrawX() * mDpToPx,
-                        modelSelectorButton.getDrawY() * mDpToPx,
-                        modelSelectorButtonVisible,
-                        ((TintedCompositorButton) modelSelectorButton)
-                                .getShouldApplyHoverBackground(),
-                        ((TintedCompositorButton) modelSelectorButton).getTint(),
-                        ((TintedCompositorButton) modelSelectorButton).getBackgroundTint(),
-                        modelSelectorButton.getOpacity(),
-                        resourceManager);
+
+        CompositorButton modelSelectorButton = layoutHelper.getModelSelectorButton();
+        if (modelSelectorButton != null) {
+            boolean modelSelectorButtonVisible = modelSelectorButton.isVisible();
+            TabStripSceneLayerJni.get()
+                    .updateModelSelectorButton(
+                            mNativePtr,
+                            TabStripSceneLayer.this,
+                            modelSelectorButton.getResourceId(),
+                            ((TintedCompositorButton) modelSelectorButton)
+                                    .getBackgroundResourceId(),
+                            modelSelectorButton.getDrawX() * mDpToPx,
+                            modelSelectorButton.getDrawY() * mDpToPx,
+                            modelSelectorButtonVisible,
+                            modelSelectorButton.getShouldApplyHoverBackground(),
+                            ((TintedCompositorButton) modelSelectorButton).getTint(),
+                            ((TintedCompositorButton) modelSelectorButton).getBackgroundTint(),
+                            modelSelectorButton.getOpacity(),
+                            resourceManager);
+        }
 
         TabStripSceneLayerJni.get()
                 .updateTabStripLeftFade(
