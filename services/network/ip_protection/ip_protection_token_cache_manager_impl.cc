@@ -13,9 +13,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "ip_protection_config_cache.h"
-#include "ip_protection_token_cache_manager.h"
 #include "net/base/features.h"
+#include "services/network/ip_protection/ip_protection_config_cache.h"
 #include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_geo_utils.h"
 

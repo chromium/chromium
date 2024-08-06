@@ -7,9 +7,11 @@
 #include <deque>
 #include <map>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -116,6 +118,9 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
   IpProtectionProxyListManager* GetIpProtectionProxyListManagerForTesting()
       override {
     return nullptr;
+  }
+  void SetCurrentGeoForTesting(const std::string& geo_id) override {
+    NOTREACHED_NORETURN();
   }
   const std::string& CurrentGeoForTesting() override { NOTREACHED_NORETURN(); }
   bool IsProxyListAvailable() override { return false; }
@@ -373,24 +378,6 @@ TEST_F(IpProtectionProxyListManagerImplTest,
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
 }
 
-// `IsProxyListAvailable`, when the geo caching feature is enabled, should
-// return false if a proxy list is not empty and the geo id is missing.
-TEST_F(IpProtectionProxyListManagerImplTest,
-       IsProxyListAvailableGeoGeoCachingEnabledFalseIfNonEmptyListButEmptyGeo) {
-  SetUpIpProtectionProxyListManager(kEnableTokenCacheByGeo);
-
-  // This is a "failed" `GetProxyListCall`.
-  mock_.ExpectGetProxyListCall(GetProxyListCall{
-      .proxy_chains = std::vector<net::ProxyChain>{MakeChain({"a-proxy"})},
-      .geo_id = ""  // Empty geo id
-  });
-  QuitClosureOnRefresh();
-  ipp_proxy_list_->RequestRefreshProxyList();
-  WaitTillClosureQuit();
-  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
-  EXPECT_FALSE(ipp_proxy_list_->IsProxyListAvailable());
-}
-
 // The manager keeps its existing proxy list if it fails to fetch a new one.
 TEST_F(IpProtectionProxyListManagerImplTest,
        ProxyListKeptAfterFailureGeoCachingDisabled) {
@@ -418,7 +405,6 @@ TEST_F(IpProtectionProxyListManagerImplTest,
   mock_.ExpectGetProxyListCallFailure();
   QuitClosureOnRefresh();
   ipp_proxy_list_->RequestRefreshProxyList();
-  WaitTillClosureQuit();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
   EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
@@ -437,25 +423,6 @@ TEST_F(IpProtectionProxyListManagerImplTest,
   mock_.ExpectGetProxyListCall(expected_call_fail);
   QuitClosureOnRefresh();
   ipp_proxy_list_->RequestRefreshProxyList();
-  WaitTillClosureQuit();
-  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
-  EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
-  EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
-  EXPECT_EQ(ipp_proxy_list_->CurrentGeo(), kDefaultGeoId);
-
-  // Proxy list returns non-empty proxy, but geo hint is missing which showcases
-  // a failed call.
-  // Advance the clock by the min refresh interval, so that the test does not
-  // hang.
-  task_environment_.FastForwardBy(
-      net::features::kIpPrivacyProxyListMinFetchInterval.Get());
-
-  expected_call_fail = GetProxyListCall{
-      .proxy_chains = std::vector{MakeChain({"a-proxy"})}, .geo_id = ""};
-  mock_.ExpectGetProxyListCall(expected_call_fail);
-  QuitClosureOnRefresh();
-  ipp_proxy_list_->RequestRefreshProxyList();
-  WaitTillClosureQuit();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
   EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
@@ -473,7 +440,6 @@ TEST_F(IpProtectionProxyListManagerImplTest,
   mock_.ExpectGetProxyListCall(expected_call);
   QuitClosureOnRefresh();
   ipp_proxy_list_->RequestRefreshProxyList();
-  WaitTillClosureQuit();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
   EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
@@ -487,7 +453,6 @@ TEST_F(IpProtectionProxyListManagerImplTest,
   mock_.ExpectGetProxyListCallFailure();
   QuitClosureOnRefresh();
   ipp_proxy_list_->RequestRefreshProxyList();
-  WaitTillClosureQuit();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
   EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
@@ -504,25 +469,6 @@ TEST_F(IpProtectionProxyListManagerImplTest,
   mock_.ExpectGetProxyListCall(expected_call_fail);
   QuitClosureOnRefresh();
   ipp_proxy_list_->RequestRefreshProxyList();
-  WaitTillClosureQuit();
-  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
-  EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
-  EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
-  EXPECT_EQ(ipp_proxy_list_->CurrentGeo(), kMountainViewGeoId);
-
-  // Proxy list returns non-empty proxy, but geo hint is missing which showcases
-  // a failed call.
-  // Advance the clock by the min refresh interval, so that the test does not
-  // hang.
-  task_environment_.FastForwardBy(
-      net::features::kIpPrivacyProxyListMinFetchInterval.Get());
-
-  expected_call_fail = GetProxyListCall{
-      .proxy_chains = std::vector{MakeChain({"a-proxy"})}, .geo_id = ""};
-  mock_.ExpectGetProxyListCall(expected_call_fail);
-  QuitClosureOnRefresh();
-  ipp_proxy_list_->RequestRefreshProxyList();
-  WaitTillClosureQuit();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
   EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
@@ -535,7 +481,6 @@ TEST_F(IpProtectionProxyListManagerImplTest, GetProxyListFailureRecorded) {
   mock_.ExpectGetProxyListCallFailure();
   QuitClosureOnRefresh();
   ipp_proxy_list_->RequestRefreshProxyList();
-  WaitTillClosureQuit();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   histogram_tester_.ExpectUniqueSample(
       kGetProxyListResultHistogram,

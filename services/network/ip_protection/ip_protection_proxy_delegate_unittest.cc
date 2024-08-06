@@ -4,9 +4,11 @@
 
 #include "services/network/ip_protection/ip_protection_proxy_delegate.h"
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -94,6 +96,10 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
 
   IpProtectionProxyListManager* GetIpProtectionProxyListManagerForTesting()
       override {
+    NOTREACHED_NORETURN();
+  }
+
+  void SetCurrentGeoForTesting(const std::string& geo_id) override {
     NOTREACHED_NORETURN();
   }
 

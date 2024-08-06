@@ -5,8 +5,10 @@
 #include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
 
 #include <deque>
+#include <map>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -14,10 +16,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "ip_protection_geo_utils.h"
 #include "net/base/features.h"
 #include "services/network/ip_protection/ip_protection_config_cache.h"
 #include "services/network/ip_protection/ip_protection_data_types.h"
+#include "services/network/ip_protection/ip_protection_geo_utils.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -146,6 +148,9 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
   IpProtectionProxyListManager* GetIpProtectionProxyListManagerForTesting()
       override {
     return nullptr;
+  }
+  void SetCurrentGeoForTesting(const std::string& geo_id) override {
+    NOTREACHED_NORETURN();
   }
   const std::string& CurrentGeoForTesting() override { NOTREACHED_NORETURN(); }
   bool IsProxyListAvailable() override { return false; }

@@ -8,6 +8,7 @@
 #include <deque>
 #include <map>
 #include <memory>
+#include <string>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
@@ -51,6 +52,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
       override;
   IpProtectionProxyListManager* GetIpProtectionProxyListManagerForTesting()
       override;
+  void SetCurrentGeoForTesting(const std::string& geo_id) override;
   const std::string& CurrentGeoForTesting() override;
   bool IsProxyListAvailable() override;
   void QuicProxiesFailed() override;

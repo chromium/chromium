@@ -4,13 +4,13 @@
 
 #include "services/network/ip_protection/ip_protection_config_cache_impl.h"
 
+#include <string>
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "ip_protection_proxy_list_manager.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
@@ -108,10 +108,15 @@ IpProtectionConfigCacheImpl::~IpProtectionConfigCacheImpl() {
 }
 
 bool IpProtectionConfigCacheImpl::AreAuthTokensAvailable() {
-  // Verify there is at least one cache manager and all have available tokens.
-  bool all_caches_have_tokens = !ipp_token_cache_managers_.empty();
+  // If there is no token cache manager or the current geo is empty, there are
+  // no tokens OR the geo suggests there is no available proxy list.
+  if (ipp_token_cache_managers_.empty() || current_geo_id_ == "") {
+    return false;
+  }
+
+  bool all_caches_have_tokens = true;
   for (const auto& manager : ipp_token_cache_managers_) {
-    if (!manager.second->IsAuthTokenAvailable()) {
+    if (!manager.second->IsAuthTokenAvailable(current_geo_id_)) {
       base::UmaHistogramEnumeration(
           "NetworkService.IpProtection.EmptyTokenCache", manager.first);
       all_caches_have_tokens = false;
@@ -127,7 +132,8 @@ std::optional<BlindSignedAuthToken> IpProtectionConfigCacheImpl::GetAuthToken(
   auto proxy_layer = chain_index == 0 ? IpProtectionProxyLayer::kProxyA
                                       : IpProtectionProxyLayer::kProxyB;
   if (ipp_token_cache_managers_.count(proxy_layer) > 0) {
-    result = ipp_token_cache_managers_[proxy_layer]->GetAuthToken();
+    result =
+        ipp_token_cache_managers_[proxy_layer]->GetAuthToken(current_geo_id_);
   }
   return result;
 }
@@ -158,6 +164,11 @@ void IpProtectionConfigCacheImpl::SetIpProtectionProxyListManagerForTesting(
 IpProtectionProxyListManager*
 IpProtectionConfigCacheImpl::GetIpProtectionProxyListManagerForTesting() {
   return ipp_proxy_list_manager_.get();
+}
+
+void IpProtectionConfigCacheImpl::SetCurrentGeoForTesting(
+    const std::string& geo_id) {
+  current_geo_id_ = geo_id;
 }
 
 const std::string& IpProtectionConfigCacheImpl::CurrentGeoForTesting() {

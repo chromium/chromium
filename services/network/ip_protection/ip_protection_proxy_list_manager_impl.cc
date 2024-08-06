@@ -10,9 +10,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "ip_protection_config_cache.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
+#include "services/network/ip_protection/ip_protection_config_cache.h"
 #include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_geo_utils.h"
 
@@ -23,6 +23,11 @@ namespace {
 // Default Geo used until caching by geo is enabled.
 constexpr char kDefaultGeo[] = "EARTH";
 
+// Based on the logic in the `IpProtectionProxyConfigFetcher`, if there is a
+// non-empty proxy list with an empty `GeoHint`, it would be considered a failed
+// call which means a `proxy_list` with a value of `std::nullopt` would be
+// returned. Thus, the following function captures all states of failure
+// accurately even though we only check the `proxy_chain`.
 IpProtectionProxyListManagerImpl::ProxyListResult GetProxyListResult(
     const std::optional<std::vector<net::ProxyChain>>& proxy_list) {
   if (!proxy_list.has_value()) {
@@ -131,35 +136,36 @@ void IpProtectionProxyListManagerImpl::OnGotProxyList(
       "NetworkService.IpProtection.GetProxyListResult",
       GetProxyListResult(proxy_list));
 
+  // If the request for fetching the proxy list is successful, utilize the new
+  // proxy list, otherwise, continue using the existing list, if any.
   if (proxy_list.has_value()) {
     base::UmaHistogramMediumTimes(
         "NetworkService.IpProtection.ProxyListRefreshTime",
         base::TimeTicks::Now() - refresh_start_time_for_metrics);
-  }
 
-  // If the request for fetching the proxy list is successful, utilize the new
-  // proxy list, otherwise, continue using the existing list, if any. If the
-  // underlying vector of proxy chains is not empty, the geo MUST have a value.
-  // If the geo caching feature is disabled, the requirement for geo_hint to
-  // exist for non-empty proxy lists can be ignored.
-  if (proxy_list.has_value() && (!enable_token_caching_by_geo_ ||
-                                 proxy_list->empty() || geo_hint.has_value())) {
     proxy_list_ = *proxy_list;
     have_fetched_proxy_list_ = true;
 
-    // Only trigger a callback to the config cache if the geo caching feature
-    // is enabled AND the new geo is different than the existing geo.
-    std::string latest_geo_id =
-        network::GetGeoIdFromGeoHint(std::move(geo_hint));
-    if (enable_token_caching_by_geo_ && latest_geo_id != current_geo_id_) {
-      ip_protection_config_cache_->GeoChangeObserved(latest_geo_id);
+    // Only trigger a callback to the config cache if the following requirements
+    // are met:
+    // 1. Token caching by geo is enabled.
+    // 2. The proxy_list is non-empty. An empty list implies there is no
+    //    geo_hint present.
+    // 3. The new geo is different than the existing geo.
+    if (enable_token_caching_by_geo_ && !proxy_list->empty()) {
+      CHECK(geo_hint.has_value());
+      std::string latest_geo_id =
+          network::GetGeoIdFromGeoHint(std::move(geo_hint));
+      if (latest_geo_id != current_geo_id_) {
+        ip_protection_config_cache_->GeoChangeObserved(latest_geo_id);
+      }
     }
-  }
 
-  ScheduleRefreshProxyList(proxy_list_refresh_interval_);
+    ScheduleRefreshProxyList(proxy_list_refresh_interval_);
 
-  if (on_proxy_list_refreshed_for_testing_) {
-    std::move(on_proxy_list_refreshed_for_testing_).Run();
+    if (on_proxy_list_refreshed_for_testing_) {
+      std::move(on_proxy_list_refreshed_for_testing_).Run();
+    }
   }
 }
 
