@@ -55,4 +55,8 @@ suite('DescriptionCitationTest', () => {
     const arg = await mockOpenWindowProxy.whenCalled('openUrl');
     assertEquals(url, arg);
   });
+
+  test('tooltip has no animation delay', async () => {
+    assertEquals(0, citationElement.$.tooltip.animationDelay);
+  });
 });

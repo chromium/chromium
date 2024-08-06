@@ -14,7 +14,8 @@ export function getHtml(this: DescriptionCitationElement) {
       @click="${this.openCitation_}">
     ${this.index}
   </cr-button><cr-tooltip id="tooltip" for="citation"
-      position="${TooltipPosition.TOP}" offset="8" fit-to-visible-bounds>
+      position="${TooltipPosition.TOP}" offset="8" animation-delay="0"
+      fit-to-visible-bounds>
     <span>${getAbbreviatedUrl(this.url)}</span>
   </cr-tooltip>`;
 }
