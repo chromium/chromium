@@ -45,19 +45,22 @@ base::Value::List CreateAttachments() {
   return attachments;
 }
 
-base::Value::List CreateAttendees(bool is_accepted, bool has_other_attendee) {
+base::Value::List CreateAttendees(int index) {
+  std::string self_status = index % 2 == 0 ? "accepted" : "needsAction";
+  if (index == 1) {
+    self_status = "declined";
+  }
   return base::Value::List()
+      .Append(base::Value::Dict()
+                  .Set("email", "test@test.com")
+                  .Set("displayName", "Foo Test")
+                  .Set("self", true)
+                  .Set("responseStatus", self_status))
       .Append(
           base::Value::Dict()
-              .Set("email", "test@test.com")
-              .Set("displayName", "Foo Test")
-              .Set("self", true)
-              .Set("responseStatus", is_accepted ? "accepted" : "needsAction"))
-      .Append(base::Value::Dict()
-                  .Set("email", "test@test2.com")
-                  .Set("displayName", "Bar Test")
-                  .Set("responseStatus",
-                       has_other_attendee ? "accepted" : "declined"));
+              .Set("email", "test@test2.com")
+              .Set("displayName", "Bar Test")
+              .Set("responseStatus", index % 2 == 0 ? "accepted" : "declined"));
 }
 
 base::Value::Dict CreateConferenceData() {
@@ -97,7 +100,7 @@ base::Value::Dict CreateEvent(int index) {
                                   /*is_end_time*/ true))
       .Set("conferenceData", CreateConferenceData())
       .Set("attachments", CreateAttachments())
-      .Set("attendees", CreateAttendees(index % 2 == 0, index % 2 == 0));
+      .Set("attendees", CreateAttendees(index));
 }
 
 bool CreateEventsJson(std::string* json) {
@@ -334,10 +337,11 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
 
   // The test data has 10 events, but we never return more than 6.
   ASSERT_EQ(response.size(), 6u);
-  // The first event was the all day event that was filtered out, so the rest
-  // of the events should have one number higher in their fields.
+  // The first event was an all day event, and the second event was declined by
+  // the user. They were both filtered out, so the rest of the events should be
+  // two numbers higher in their fields.
   for (int i = 0; i < 2; i++) {
-    EXPECT_EQ(response[i]->title, "Test Event " + base::NumberToString(i + 1));
+    EXPECT_EQ(response[i]->title, "Test Event " + base::NumberToString(i + 2));
     base::Time start_time;
     bool success =
         base::Time::FromString("2020-11-02T10:00:00-08:00", &start_time);
@@ -348,12 +352,12 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
     ASSERT_TRUE(success);
     EXPECT_EQ(response[i]->end_time, end_time);
     EXPECT_EQ(response[i]->url.spec(),
-              "https://foo.com/" + base::NumberToString(i + 1));
+              "https://foo.com/" + base::NumberToString(i + 2));
     ASSERT_TRUE(response[i]->conference_url);
     EXPECT_EQ(response[i]->conference_url->spec(),
               "https://meet.google.com/jbe-test");
-    EXPECT_EQ(response[i]->is_accepted, (i + 1) % 2 == 0);
-    EXPECT_EQ(response[i]->has_other_attendee, (i + 1) % 2 == 0);
+    EXPECT_EQ(response[i]->is_accepted, (i + 2) % 2 == 0);
+    EXPECT_EQ(response[i]->has_other_attendee, (i + 2) % 2 == 0);
 
     for (int j = 0; j < 2; j++) {
       ASSERT_EQ(response[i]->attachments.size(), 2u);
