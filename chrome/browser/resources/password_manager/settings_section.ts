@@ -457,6 +457,13 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     this.$.toast.show();
   }
 
+  private getAriaLabelForCloudAuthenticatorButton_(): string {
+    return [
+      this.i18n('disconnectCloudAuthenticatorTitle'),
+      this.i18n('disconnectCloudAuthenticatorDescription'),
+    ].join('. ');
+  }
+
   private showToastForPasswordChange_(success: boolean): void {
     if (!success) {
       return;

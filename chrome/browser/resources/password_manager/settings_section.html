@@ -137,6 +137,7 @@
           if="[[!isDisconnectCloudAuthenticatorInProgress_]]" restamp>
         <cr-button id="disconnectCloudAuthenticatorButton"
             class="cr-row-action-button"
+            aria-label="[[getAriaLabelForCloudAuthenticatorButton_()]]"
             on-click="onDisconnectCloudAuthenticatorClick_">
           $i18n{disconnectCloudAuthenticatorButton}
         </cr-button>
