@@ -204,6 +204,14 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
       views::LayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
+  std::unique_ptr<views::View> step_specific_content;
+  // Compute `should_focus_step_specific_content_` before setting `title_label`
+  // so that the focus behavior of the `title_label` is set correctly.
+  std::tie(step_specific_content, should_focus_step_specific_content_) =
+      BuildStepSpecificContent();
+  DCHECK(should_focus_step_specific_content_ == AutoFocus::kNo ||
+         step_specific_content);
+
   const std::u16string title = model()->GetStepTitle();
   if (!title.empty()) {
     auto title_label = std::make_unique<views::Label>(
@@ -250,11 +258,7 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
           BoxLayout::Orientation::kVertical, gfx::Insets(),
           views::LayoutProvider::Get()->GetDistanceMetric(
               views::DISTANCE_RELATED_CONTROL_VERTICAL)));
-  std::unique_ptr<views::View> step_specific_content;
-  std::tie(step_specific_content, should_focus_step_specific_content_) =
-      BuildStepSpecificContent();
-  DCHECK(should_focus_step_specific_content_ == AutoFocus::kNo ||
-         step_specific_content);
+
   if (step_specific_content) {
     child_views_.step_specific_content_ =
         content_error_and_hint_view->AddChildView(
