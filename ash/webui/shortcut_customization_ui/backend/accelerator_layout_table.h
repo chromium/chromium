@@ -237,7 +237,6 @@ std::optional<AcceleratorLayoutDetails> GetAcceleratorLayout(uint32_t id);
 // been added to `kAcceleratorLayouts` or here.
 constexpr auto kAshAcceleratorsWithoutLayout =
     base::MakeFixedFlatSet<AcceleratorAction>({
-        AcceleratorAction::kAccessibilityAction,
         AcceleratorAction::kCycleBackwardMru,
         AcceleratorAction::kCycleForwardMru,
         AcceleratorAction::kDisableCapsLock,
@@ -491,6 +490,7 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     AcceleratorAction::kMagnifierZoomOut,
 
     // Accessibility > Accessbility navigation
+    AcceleratorAction::kAccessibilityAction,
     NonConfigurableActions::kAmbientSwitchFocusForwards,
     NonConfigurableActions::kAmbientSwitchFocusBackwards,
     NonConfigurableActions::kAmbientCaretBrowsing,

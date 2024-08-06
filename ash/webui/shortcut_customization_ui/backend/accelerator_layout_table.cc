@@ -1778,6 +1778,14 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
             mojom::AcceleratorSubcategory::kVisibility,
             /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
             mojom::AcceleratorSource::kAsh)},
+       {AcceleratorAction::kAccessibilityAction,
+        AcceleratorLayoutDetails(
+            AcceleratorAction::kAccessibilityAction,
+            IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_ACCESSIBILITY_SETTINGS,
+            mojom::AcceleratorCategory::kAccessibility,
+            mojom::AcceleratorSubcategory::kAccessibilityNavigation,
+            /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
+            mojom::AcceleratorSource::kAsh)},
        {NonConfigurableActions::kAmbientSwitchFocusForwards,
         AcceleratorLayoutDetails(
             NonConfigurableActions::kAmbientSwitchFocusForwards,

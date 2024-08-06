@@ -169,6 +169,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"subcategoryAccessibilityNavigation",
        IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_ACCESSIBILITY_NAVIGATION},
       {"noShortcutAssigned", IDS_SHORTCUT_CUSTOMIZATION_NO_SHORTCUT_ASSIGNED},
+      {"iconLabelAccessibility",
+       IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ACCESSIBILITY},
       {"iconLabelArrowDown", IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ARROW_DOWN},
       {"iconLabelArrowLeft", IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ARROW_LEFT},
       {"iconLabelArrowRight",

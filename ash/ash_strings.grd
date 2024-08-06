@@ -4139,6 +4139,10 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_EXIT" desc="Label for accelerator action - Sign out.">
         Sign out
       </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_ACCESSIBILITY_SETTINGS" desc="Label for accelerator action - Open accessibility quick settings.">
+        Open accessibility quick settings
+      </message>
+
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_CAMERA_PREVIEW" translateable="false" desc="Label for accelerator action - Focus on the camera preview.">
         Focus on the camera preview
       </message>
