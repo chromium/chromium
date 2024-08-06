@@ -247,7 +247,7 @@ class PLATFORM_EXPORT SegmentedString {
   void Advance(unsigned num_chars, unsigned num_lines, int current_column);
 
   ALWAYS_INLINE UChar Advance() {
-    if (LIKELY(current_string_.CanAdvance())) {
+    if (current_string_.CanAdvance()) [[likely]] {
       current_char_ = current_string_.Advance();
       return current_char_;
     }
@@ -255,7 +255,7 @@ class PLATFORM_EXPORT SegmentedString {
   }
 
   ALWAYS_INLINE void UpdateLineNumber() {
-    if (LIKELY(current_string_.DoNotExcludeLineNumbers())) {
+    if (current_string_.DoNotExcludeLineNumbers()) [[likely]] {
       ++current_line_;
       // Plus 1 because numberOfCharactersConsumed value hasn't incremented yet;
       // it does with length() decrement below.

@@ -177,7 +177,7 @@ const LayoutLocale* LayoutLocale::LocaleForHan(
     return content_locale;
 
   PerThreadData& data = GetPerThreadData();
-  if (UNLIKELY(!data.default_locale_for_han_computed)) {
+  if (!data.default_locale_for_han_computed) [[unlikely]] {
     // Use the first acceptLanguages that can disambiguate.
     Vector<String> languages;
     data.current_accept_languages.Split(',', languages);
@@ -240,7 +240,7 @@ const LayoutLocale* LayoutLocale::Get(const AtomicString& locale) {
 // static
 const LayoutLocale& LayoutLocale::GetDefault() {
   PerThreadData& data = GetPerThreadData();
-  if (UNLIKELY(!data.default_locale)) {
+  if (!data.default_locale) [[unlikely]] {
     AtomicString language = DefaultLanguage();
     data.default_locale =
         LayoutLocale::Get(!language.empty() ? language : AtomicString("en"));
@@ -251,7 +251,7 @@ const LayoutLocale& LayoutLocale::GetDefault() {
 // static
 const LayoutLocale& LayoutLocale::GetSystem() {
   PerThreadData& data = GetPerThreadData();
-  if (UNLIKELY(!data.system_locale)) {
+  if (!data.system_locale) [[unlikely]] {
     // Platforms such as Windows can give more information than the default
     // locale, such as "en-JP" for English speakers in Japan.
     String name = icu::Locale::getDefault().getName();

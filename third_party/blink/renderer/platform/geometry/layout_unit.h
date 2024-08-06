@@ -253,7 +253,7 @@ class PLATFORM_EXPORT FixedPoint {
 
   FixedPoint Abs() const { return FromRawValue(::abs(value_)); }
   Storage Ceil() const {
-    if (UNLIKELY(value_ >= kRawValueMax - kFixedPointDenominator + 1)) {
+    if (value_ >= kRawValueMax - kFixedPointDenominator + 1) [[unlikely]] {
       return kIntMax;
     }
 
@@ -267,7 +267,7 @@ class PLATFORM_EXPORT FixedPoint {
   }
 
   Storage Floor() const {
-    if (UNLIKELY(value_ <= kRawValueMin + kFixedPointDenominator - 1)) {
+    if (value_ <= kRawValueMin + kFixedPointDenominator - 1) [[unlikely]] {
       return kIntMin;
     }
 
@@ -763,7 +763,8 @@ inline float& operator/=(float& a, const LayoutUnit& b) {
 inline int SnapSizeToPixel(LayoutUnit size, LayoutUnit location) {
   LayoutUnit fraction = location.Fraction();
   int result = (fraction + size).Round() - fraction.Round();
-  if (UNLIKELY(result == 0 && (size.RawValue() > 4 || size.RawValue() < -4))) {
+  if (result == 0 && (size.RawValue() > 4 || size.RawValue() < -4))
+      [[unlikely]] {
     return size > 0 ? 1 : -1;
   }
   return result;
