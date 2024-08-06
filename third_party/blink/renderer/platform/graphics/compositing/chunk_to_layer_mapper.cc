@@ -67,8 +67,9 @@ gfx::Rect ChunkToLayerMapper::MapVisualRect(const gfx::Rect& rect) const {
   if (rect.IsEmpty())
     return gfx::Rect();
 
-  if (UNLIKELY(has_filter_that_moves_pixels_))
+  if (has_filter_that_moves_pixels_) [[unlikely]] {
     return MapUsingGeometryMapper(rect);
+  }
 
   gfx::RectF mapped_rect = transform_.MapRect(gfx::RectF(rect));
   if (!mapped_rect.IsEmpty() && !clip_rect_.IsInfinite())

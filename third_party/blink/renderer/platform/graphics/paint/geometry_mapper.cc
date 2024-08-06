@@ -359,10 +359,12 @@ static FloatClipRect GetClipRect(const ClipPaintPropertyNode& clip_node,
                                  OverlayScrollbarClipBehavior clip_behavior) {
   // TODO(crbug.com/1248598): Do we need to use PaintClipRect when mapping for
   // painting/compositing?
-  FloatClipRect clip_rect =
-      UNLIKELY(clip_behavior == kExcludeOverlayScrollbarSizeForHitTesting)
-          ? clip_node.LayoutClipRectExcludingOverlayScrollbars()
-          : clip_node.LayoutClipRect();
+  FloatClipRect clip_rect;
+  if (clip_behavior == kExcludeOverlayScrollbarSizeForHitTesting) [[unlikely]] {
+    clip_rect = clip_node.LayoutClipRectExcludingOverlayScrollbars();
+  } else {
+    clip_rect = clip_node.LayoutClipRect();
+  }
   if (clip_node.ClipPath())
     clip_rect.ClearIsTight();
   return clip_rect;
@@ -510,7 +512,7 @@ bool GeometryMapper::MightOverlapForCompositing(
     return true;
   }
 
-  if (LIKELY(&scroll_translation1 == &scroll_translation2)) {
+  if (&scroll_translation1 == &scroll_translation2) [[likely]] {
     return MightOverlapForCompositingInternal(common_ancestor, rect1, state1,
                                               rect2, state2);
   }

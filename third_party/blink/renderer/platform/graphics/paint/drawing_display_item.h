@@ -84,14 +84,18 @@ inline DrawingDisplayItem::DrawingDisplayItem(
     PaintRecord record,
     RasterEffectOutset raster_effect_outset,
     PaintInvalidationReason paint_invalidation_reason)
-    : DisplayItem(client_id,
-                  type,
-                  UNLIKELY(ShouldTightenVisualRect(record))
-                      ? TightenVisualRect(visual_rect, record)
-                      : visual_rect,
-                  raster_effect_outset,
-                  paint_invalidation_reason,
-                  /* draws_content*/ !record.empty()),
+    : DisplayItem(
+          client_id,
+          type,
+          [&] {
+            if (ShouldTightenVisualRect(record)) [[unlikely]] {
+              return TightenVisualRect(visual_rect, record);
+            }
+            return visual_rect;
+          }(),
+          raster_effect_outset,
+          paint_invalidation_reason,
+          /* draws_content*/ !record.empty()),
       record_(std::move(record)) {
   DCHECK(IsDrawing());
   DCHECK_EQ(GetOpaqueness(), Opaqueness::kOther);

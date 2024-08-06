@@ -125,7 +125,7 @@ UnacceleratedStaticBitmapImage::ConvertToColorSpace(
     skia_image = skia_image->makeColorTypeAndColorSpace(
         static_cast<GrDirectContext*>(nullptr), color_type, color_space);
   }
-  if (UNLIKELY(!skia_image)) {
+  if (!skia_image) [[unlikely]] {
     // Null value indicates that skia failed to allocate the destination
     // bitmap.
     base::TerminateBecauseOutOfMemory(

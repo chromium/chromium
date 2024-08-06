@@ -63,27 +63,33 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   }
   bool projection_from_screen_is_valid() const {
     DCHECK(screen_transform_updated_);
-    return LIKELY(!screen_transform_) ||
-           screen_transform_->projection_from_screen_is_valid;
+    if (!screen_transform_) [[likely]] {
+      return true;
+    }
+    return screen_transform_->projection_from_screen_is_valid;
   }
   void ApplyToScreen(gfx::Transform& m) const {
     DCHECK(screen_transform_updated_);
-    if (UNLIKELY(screen_transform_))
+    if (screen_transform_) [[unlikely]] {
       m.PreConcat(to_screen());
-    else
+    } else {
       ApplyToPlaneRoot(m);
+    }
   }
   void ApplyProjectionFromScreen(gfx::Transform& m) const {
     DCHECK(screen_transform_updated_);
-    if (UNLIKELY(screen_transform_))
+    if (screen_transform_) [[unlikely]] {
       m.PreConcat(projection_from_screen());
-    else
+    } else {
       ApplyFromPlaneRoot(m);
+    }
   }
   bool has_animation_to_screen() const {
     DCHECK(screen_transform_updated_);
-    return UNLIKELY(screen_transform_) ? screen_transform_->has_animation
-                                       : has_animation_to_plane_root();
+    if (screen_transform_) [[unlikely]] {
+      return screen_transform_->has_animation;
+    }
+    return has_animation_to_plane_root();
   }
 
   const gfx::Transform& to_plane_root() const {
@@ -95,26 +101,30 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
     return plane_root_transform_->from_plane_root;
   }
   void ApplyToPlaneRoot(gfx::Transform& m) const {
-    if (UNLIKELY(plane_root_transform_)) {
+    if (plane_root_transform_) [[unlikely]] {
       m.PreConcat(to_plane_root());
     } else {
       m.Translate(to_2d_translation_root_.x(), to_2d_translation_root_.y());
     }
   }
   void ApplyFromPlaneRoot(gfx::Transform& m) const {
-    if (UNLIKELY(plane_root_transform_)) {
+    if (plane_root_transform_) [[unlikely]] {
       m.PreConcat(from_plane_root());
     } else {
       m.Translate(-to_2d_translation_root_.x(), -to_2d_translation_root_.y());
     }
   }
   const TransformPaintPropertyNode* plane_root() const {
-    return UNLIKELY(plane_root_transform_) ? plane_root_transform_->plane_root
-                                           : root_of_2d_translation();
+    if (plane_root_transform_) [[unlikely]] {
+      return plane_root_transform_->plane_root;
+    }
+    return root_of_2d_translation();
   }
   bool has_animation_to_plane_root() const {
-    return UNLIKELY(plane_root_transform_) &&
-           plane_root_transform_->has_animation;
+    if (plane_root_transform_) [[unlikely]] {
+      return plane_root_transform_->has_animation;
+    }
+    return false;
   }
 
   bool has_sticky_or_anchor_position() const {
