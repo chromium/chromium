@@ -48,6 +48,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Find in page invoked"/>
   <int value="16" label="Preselection toast exit button"/>
   <int value="17" label="Side panel entry replaced"/>
+  <int value="18" label="Search bubble close button"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->

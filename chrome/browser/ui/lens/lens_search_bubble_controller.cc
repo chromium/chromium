@@ -46,7 +46,9 @@ class LensSearchBubbleDialogView : public WebUIBubbleDialogView {
   void CloseUI() override {
     WebUIBubbleDialogView::CloseUI();
     search_bubble_controller_->RemoveLensOverlayControllerGlue();
-    search_bubble_controller_->Close();
+    // The lens overlay controller's CloseUIAsync() will eventually call the
+    // search bubble's Close() function.
+    search_bubble_controller_->CloseLensOverlay();
   }
 
  private:
@@ -108,6 +110,11 @@ void LensSearchBubbleController::Close() {
   contextual_searchbox_handler_.reset();
   bubble_view_ = nullptr;
   web_contents_ = nullptr;
+}
+
+void LensSearchBubbleController::CloseLensOverlay() {
+  lens_overlay_controller_->CloseUISync(
+      lens::LensOverlayDismissalSource::kSearchBubbleCloseButton);
 }
 
 void LensSearchBubbleController::RemoveLensOverlayControllerGlue() {

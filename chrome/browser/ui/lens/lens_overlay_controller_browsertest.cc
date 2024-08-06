@@ -168,6 +168,12 @@ constexpr char kHistoryStateScript[] =
     "(function() {history.replaceState({'test':1}, 'test'); "
     "history.pushState({'test':1}, 'test'); history.back();})();";
 
+constexpr char kCloseSearchBubbleScript[] =
+    "(function() {const appRoot = "
+    "document.getElementsByTagName('search-bubble-app')[0].shadowRoot;"
+    "const closeButton = appRoot.getElementById('closeButton');"
+    "closeButton.click();})();";
+
 constexpr char kTestSuggestSignals[] = "suggest_signals";
 
 constexpr char kStartTimeQueryParamKey[] = "qsubts";
@@ -2009,6 +2015,48 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlayAndResults; }));
   EXPECT_FALSE(!!bubble_controller->bubble_view_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       SearchBubbleCloseButtonClosesOverlay) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should eventually result in overlay state. When the overlay is
+  // bound, it should start the query flow which returns a response for the
+  // interaction data callback.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  auto* bubble_controller =
+      controller->get_lens_search_bubble_controller_for_testing();
+  EXPECT_TRUE(!!bubble_controller->bubble_view_for_testing());
+
+  // We need to flush the Mojo receiver calls to make sure the screenshot was
+  // passed back to the WebUI or else the region selection UI will not render.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->FlushForTesting();
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Click the search bubble close button.
+  EXPECT_TRUE(content::ExecJs(
+      bubble_controller->search_bubble_web_contents_for_testing()
+          ->GetPrimaryMainFrame(),
+      content::JsReplace(kCloseSearchBubbleScript)));
+
+  // Verify the overlay turns off.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOff; }));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

@@ -73,7 +73,10 @@ enum class LensOverlayDismissalSource {
   // Lens overlay.
   kSidePanelEntryReplaced = 17,
 
-  kMaxValue = kSidePanelEntryReplaced
+  // The close button in the search bubble.
+  kSearchBubbleCloseButton = 18,
+
+  kMaxValue = kSearchBubbleCloseButton
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayDismissalSource)
 
