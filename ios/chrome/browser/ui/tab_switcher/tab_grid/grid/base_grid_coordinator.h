@@ -16,6 +16,7 @@ class Browser;
 @protocol GridToolbarsMutator;
 @class LegacyGridTransitionLayout;
 @protocol TabContextMenuDelegate;
+@class TabGridModeHolder;
 @protocol TabGroupPositioner;
 
 @interface BaseGridCoordinator
@@ -38,6 +39,9 @@ class Browser;
 
 // Positioner providing layer information for Tab Group.
 @property(nonatomic, weak) id<TabGroupPositioner> tabGroupPositioner;
+
+// Holder for the current Tab Grid mode.
+@property(nonatomic, strong) TabGridModeHolder* modeHolder;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser

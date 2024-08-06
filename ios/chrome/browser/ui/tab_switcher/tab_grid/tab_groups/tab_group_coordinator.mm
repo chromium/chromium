@@ -81,7 +81,8 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
       initWithWebStateList:self.browser->GetWebStateList()
                   tabGroup:_tabGroup->GetWeakPtr()
                   consumer:_viewController
-              gridConsumer:_viewController.gridViewController];
+              gridConsumer:_viewController.gridViewController
+                modeHolder:self.modeHolder];
   _mediator.browser = self.browser;
   _mediator.tabGroupsHandler = handler;
   _mediator.tabGridIdleStatusHandler = self.tabGridIdleStatusHandler;

@@ -105,8 +105,6 @@ class WebStateID;
     BOOL containedGridEmpty;
 // The visual look of the grid.
 @property(nonatomic, assign) GridTheme theme;
-// The current mode for the grid.
-@property(nonatomic, assign) TabGridMode mode;
 // The current search text to use for filtering results when the search mode is
 // active.
 @property(nonatomic, copy) NSString* searchText;

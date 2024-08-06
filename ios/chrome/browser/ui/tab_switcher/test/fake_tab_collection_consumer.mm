@@ -17,6 +17,10 @@
   std::vector<const TabGroup*> _groups;
 }
 
+- (void)setTabGridMode:(TabGridMode)mode {
+  self.mode = mode;
+}
+
 - (const std::vector<web::WebStateID>&)items {
   return _items;
 }

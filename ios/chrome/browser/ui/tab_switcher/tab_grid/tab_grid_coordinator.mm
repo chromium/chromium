@@ -103,6 +103,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_holder.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_positioner.h"
@@ -206,6 +207,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   // The frame of the Tab Grid when it is presented.
   CGRect _frameWhenEntering;
+
+  // Holder for the current mode of the whole tab grid.
+  TabGridModeHolder* _modeHolder;
 }
 
 // Browser that contain tabs from the main pane (i.e. non-incognito).
@@ -381,7 +385,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)setActiveMode:(TabGridMode)mode {
-  [_mediator setModeOnCurrentPage:mode];
+  _modeHolder.mode = mode;
 }
 
 - (UIViewController*)activeViewController {
@@ -750,13 +754,16 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  _modeHolder = [[TabGridModeHolder alloc] init];
+
   ChromeBrowserState* browser_state = self.regularBrowser->GetBrowserState();
   _mediator = [[TabGridMediator alloc]
        initWithIdentityManager:IdentityManagerFactory::GetForBrowserState(
                                    browser_state)
                    prefService:browser_state->GetPrefs()
       featureEngagementTracker:feature_engagement::TrackerFactory::
-                                   GetForBrowserState(browser_state)];
+                                   GetForBrowserState(browser_state)
+                    modeHolder:_modeHolder];
 
   id<ApplicationCommands> applicationCommandsHandler =
       HandlerForProtocol(self.dispatcher, ApplicationCommands);
@@ -777,6 +784,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                          browser:_regularBrowser];
   _toolbarsCoordinator.searchDelegate = self.baseViewController;
   _toolbarsCoordinator.toolbarTabGridDelegate = self.baseViewController;
+  _toolbarsCoordinator.modeHolder = _modeHolder;
   [_toolbarsCoordinator start];
   self.baseViewController.topToolbar = _toolbarsCoordinator.topToolbar;
   self.baseViewController.bottomToolbar = _toolbarsCoordinator.bottomToolbar;
@@ -790,6 +798,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       self.baseViewController;
   _regularGridCoordinator.tabGroupPositioner = self;
   _regularGridCoordinator.tabContextMenuDelegate = self;
+  _regularGridCoordinator.modeHolder = _modeHolder;
 
   [_regularGridCoordinator start];
 
@@ -837,6 +846,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   _incognitoGridCoordinator.tabGroupPositioner = self;
   _incognitoGridCoordinator.audience = self;
   _incognitoGridCoordinator.tabContextMenuDelegate = self;
+  _incognitoGridCoordinator.modeHolder = _modeHolder;
 
   [_incognitoGridCoordinator start];
 
@@ -920,7 +930,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                   disabledByPolicy:_pageConfiguration ==
                                    TabGridPageConfiguration::kIncognitoPageOnly
                  engagementTracker:feature_engagement::TrackerFactory::
-                                       GetForBrowserState(regularBrowserState)];
+                                       GetForBrowserState(regularBrowserState)
+                        modeHolder:_modeHolder];
     self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
     self.remoteTabsMediator.toolbarTabGridDelegate = self.baseViewController;
     baseViewController.remoteTabsViewController.imageDataSource =

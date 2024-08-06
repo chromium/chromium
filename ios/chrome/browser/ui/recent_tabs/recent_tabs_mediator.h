@@ -20,6 +20,7 @@ class FaviconLoader;
 @protocol GridToolbarsMutator;
 @protocol RecentTabsConsumer;
 @class SceneState;
+@class TabGridModeHolder;
 @protocol TabGridToolbarsMainTabGridDelegate;
 
 namespace feature_engagement {
@@ -75,6 +76,7 @@ class TabRestoreService;
                     sceneState:(SceneState*)sceneState
               disabledByPolicy:(BOOL)disabled
              engagementTracker:(feature_engagement::Tracker*)engagementTracker
+                    modeHolder:(TabGridModeHolder*)modeHolder
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

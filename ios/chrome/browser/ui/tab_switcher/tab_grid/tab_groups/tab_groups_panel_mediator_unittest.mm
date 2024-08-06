@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_holder.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item.h"
@@ -67,6 +68,7 @@ class TabGroupsPanelMediatorTest : public PlatformTest {
     browser_list_ =
         BrowserListFactory::GetForBrowserState(browser_state_.get());
     browser_list_->AddBrowser(browser_.get());
+    mode_holder_ = [[TabGridModeHolder alloc] init];
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -77,6 +79,7 @@ class TabGroupsPanelMediatorTest : public PlatformTest {
   WebStateList web_state_list_;
   ::testing::NiceMock<tab_groups::MockTabGroupSyncService>
       tab_group_sync_service_;
+  TabGridModeHolder* mode_holder_;
 };
 
 // Tests that the service observation starts and stops when the mediator is
@@ -181,7 +184,6 @@ TEST_F(TabGroupsPanelMediatorTest, DisabledByPolicy_DisabledToolbarsConfig) {
             static_cast<id<TabGridToolbarsGridDelegate>>(mediator));
   EXPECT_NE(toolbars_mutator.configuration, nil);
   EXPECT_EQ(TabGridPageTabGroups, toolbars_mutator.configuration.page);
-  EXPECT_EQ(TabGridMode::kNormal, toolbars_mutator.configuration.mode);
 
   // All buttons are disabled.
   EXPECT_FALSE(toolbars_mutator.configuration.doneButton);
@@ -222,7 +224,6 @@ TEST_F(TabGroupsPanelMediatorTest,
             static_cast<id<TabGridToolbarsGridDelegate>>(mediator));
   EXPECT_NE(toolbars_mutator.configuration, nil);
   EXPECT_EQ(TabGridPageTabGroups, toolbars_mutator.configuration.page);
-  EXPECT_EQ(TabGridMode::kNormal, toolbars_mutator.configuration.mode);
 
   // Done button is disabled.
   EXPECT_FALSE(toolbars_mutator.configuration.doneButton);
@@ -270,7 +271,6 @@ TEST_F(TabGroupsPanelMediatorTest,
             static_cast<id<TabGridToolbarsGridDelegate>>(mediator));
   EXPECT_NE(toolbars_mutator.configuration, nil);
   EXPECT_EQ(TabGridPageTabGroups, toolbars_mutator.configuration.page);
-  EXPECT_EQ(TabGridMode::kNormal, toolbars_mutator.configuration.mode);
 
   // Done button is enabled.
   EXPECT_TRUE(toolbars_mutator.configuration.doneButton);

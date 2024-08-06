@@ -9,6 +9,7 @@
 
 @protocol GridToolbarsMutator;
 @class TabGridBottomToolbar;
+@class TabGridModeHolder;
 @protocol TabGridToolbarsMainTabGridDelegate;
 @class TabGridTopToolbar;
 @protocol TabGridToolbarsCommandsWrangler;
@@ -29,6 +30,9 @@
 // Action handler for the actions related to the tab grid .
 @property(nonatomic, weak) id<TabGridToolbarsMainTabGridDelegate>
     toolbarTabGridDelegate;
+
+// Holder for the TabGrid Mode.
+@property(nonatomic, strong) TabGridModeHolder* modeHolder;
 
 @end
 

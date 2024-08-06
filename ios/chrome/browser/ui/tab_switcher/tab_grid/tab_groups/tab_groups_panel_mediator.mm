@@ -149,11 +149,6 @@ NSString* CreationText(base::Time creation_date) {
   }
 }
 
-- (void)switchToMode:(TabGridMode)mode {
-  CHECK(mode == TabGridMode::kNormal)
-      << "Tab Groups panel should only support Normal mode.";
-}
-
 - (void)setPageAsActive {
   NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
 }
@@ -324,7 +319,6 @@ NSString* CreationText(base::Time creation_date) {
 
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] initWithPage:TabGridPageTabGroups];
-  toolbarsConfiguration.mode = TabGridMode::kNormal;
   // Done button is enabled if there is at least one Regular tab.
   toolbarsConfiguration.doneButton =
       _regularWebStateList && !_regularWebStateList->empty();

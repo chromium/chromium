@@ -45,14 +45,15 @@
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                             tabGroup:(base::WeakPtr<const TabGroup>)tabGroup
                             consumer:(id<TabGroupConsumer>)groupConsumer
-                        gridConsumer:(id<TabCollectionConsumer>)gridConsumer {
+                        gridConsumer:(id<TabCollectionConsumer>)gridConsumer
+                          modeHolder:(TabGridModeHolder*)modeHolder {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group mediator outside the "
          "Tab Groups experiment.";
   CHECK(webStateList);
   CHECK(groupConsumer);
   CHECK(tabGroup);
-  if (self = [super init]) {
+  if (self = [super initWithModeHolder:modeHolder]) {
     self.webStateList = webStateList;
     _groupConsumer = groupConsumer;
     self.consumer = gridConsumer;

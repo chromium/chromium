@@ -13,6 +13,7 @@
 
 class TabGroup;
 @protocol TabCollectionConsumer;
+@class TabGridModeHolder;
 @protocol TabGroupsCommands;
 @protocol TabGroupConsumer;
 class WebStateList;
@@ -23,7 +24,8 @@ class WebStateList;
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                             tabGroup:(base::WeakPtr<const TabGroup>)tabGroup
                             consumer:(id<TabGroupConsumer>)consumer
-                        gridConsumer:(id<TabCollectionConsumer>)gridConsumer;
+                        gridConsumer:(id<TabCollectionConsumer>)gridConsumer
+                          modeHolder:(TabGridModeHolder*)modeHolder;
 
 @end
 

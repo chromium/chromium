@@ -23,6 +23,7 @@ class Browser;
 @protocol GridToolbarsMutator;
 @protocol TabCollectionConsumer;
 @protocol TabGridIdleStatusHandler;
+@class TabGridModeHolder;
 @class TabGridToolbarsConfiguration;
 @protocol TabGridToolbarsMainTabGridDelegate;
 @protocol TabGridToolbarCommands;
@@ -71,12 +72,16 @@ class WebState;
 @property(nonatomic, weak) id<TabGridIdleStatusHandler>
     tabGridIdleStatusHandler;
 
+- (instancetype)initWithModeHolder:(TabGridModeHolder*)modeHolder
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
 @end
 
 @interface BaseGridMediator (Subclassing) <WebStateListObserving>
 
-// Current mode.
-@property(nonatomic, assign) TabGridMode currentMode;
+// The mode holder.
+@property(nonatomic, readonly) TabGridModeHolder* modeHolder;
 
 // Disconnects the mediator.
 - (void)disconnect NS_REQUIRES_SUPER;

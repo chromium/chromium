@@ -9,6 +9,7 @@
 
 @protocol TabContextMenuDelegate;
 @protocol TabGridIdleStatusHandler;
+@class TabGridModeHolder;
 class TabGroup;
 @protocol TabGroupPositioner;
 @class TabGroupViewController;
@@ -31,6 +32,9 @@ class TabGroup;
 
 // Positioner providing layer information for Tab Group.
 @property(nonatomic, weak) id<TabGroupPositioner> tabGroupPositioner;
+
+// Holder for the current Tab Grid mode.
+@property(nonatomic, strong) TabGridModeHolder* modeHolder;
 
 // Init the coordinator with the tab group to display.
 // - `tabGroup` should not be nil.

@@ -247,6 +247,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_mode",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:test_fixture",

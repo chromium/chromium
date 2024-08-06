@@ -31,6 +31,9 @@ typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
 // "Undo" the close all.
 @property(nonatomic, readonly) BOOL isClosingAllOrUndoRunning;
 
+// The current mode for the grid.
+@property(nonatomic, assign, readonly) TabGridMode mode;
+
 // Creates the cell and supplementary view registrations and assigns them to the
 // appropriate properties.
 - (void)createRegistrations NS_REQUIRES_SUPER;

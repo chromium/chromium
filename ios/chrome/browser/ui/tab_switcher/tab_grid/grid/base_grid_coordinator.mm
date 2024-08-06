@@ -334,6 +334,8 @@
   _tabGroupCoordinator.tabGroupPositioner = self.tabGroupPositioner;
   _tabGroupCoordinator.tabGridIdleStatusHandler =
       self.mediator.tabGridIdleStatusHandler;
+  _tabGroupCoordinator.modeHolder = self.modeHolder;
+
   [_tabGroupCoordinator start];
 }
 

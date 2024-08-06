@@ -35,6 +35,8 @@
 #import "ios/chrome/browser/ui/recent_tabs/sessions_sync_user_state.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_holder.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_observing.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
@@ -87,6 +89,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
 @interface RecentTabsMediator () <IdentityManagerObserverBridgeDelegate,
                                   SyncedSessionsObserver,
+                                  TabGridModeObserving,
                                   TabGridToolbarsGridDelegate> {
   std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
       _syncedSessionsObserver;
@@ -107,6 +110,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   // Time to ensure that the updates to the consumer are only happening once all
   // the updates are complete.
   std::unique_ptr<base::RetainingOneShotTimer> _timer;
+  // Holder for the current mode of the tab grid.
+  TabGridModeHolder* _modeHolder;
 }
 
 // Return the user's current sign-in and chrome-sync state.
@@ -120,8 +125,6 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 @property(nonatomic, assign) FaviconLoader* faviconLoader;
 @property(nonatomic, assign) syncer::SyncService* syncService;
 @property(nonatomic, assign) BrowserList* browserList;
-// The mode of the TabGrid.
-@property(nonatomic, assign) TabGridMode currentMode;
 @end
 
 @implementation RecentTabsMediator
@@ -136,7 +139,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
                    browserList:(BrowserList*)browserList
                     sceneState:(SceneState*)sceneState
               disabledByPolicy:(BOOL)disabled
-             engagementTracker:(feature_engagement::Tracker*)engagementTracker {
+             engagementTracker:(feature_engagement::Tracker*)engagementTracker
+                    modeHolder:(TabGridModeHolder*)modeHolder {
   self = [super init];
   if (self) {
     _sessionSyncService = sessionSyncService;
@@ -153,6 +157,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
         FROM_HERE, base::Milliseconds(100), base::BindRepeating(^{
           [weakSelf updateConsumerTabs];
         }));
+    _modeHolder = modeHolder;
+    [_modeHolder addObserver:self];
   }
   return self;
 }
@@ -197,21 +203,13 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   }
 
   _sceneState = nil;
+
+  [_modeHolder removeObserver:self];
+  _modeHolder = nil;
 }
 
 - (void)configureConsumer {
   [self refreshSessionsView];
-}
-
-#pragma mark - Accessors
-
-- (void)setCurrentMode:(TabGridMode)currentMode {
-  if (_currentMode == currentMode) {
-    return;
-  }
-  _currentMode = currentMode;
-  [self configureToolbarsButtons];
-  [self.gridConsumer setPageMode:currentMode];
 }
 
 #pragma mark - SyncedSessionsObserver
@@ -320,7 +318,6 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] initWithPage:TabGridPageRemoteTabs];
-  toolbarsConfiguration.mode = self.currentMode;
   toolbarsConfiguration.doneButton = tabsInOtherGrid;
   toolbarsConfiguration.searchButton = YES;
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
@@ -344,6 +341,12 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   [self.consumer refreshUserState:[self userSignedInState]];
 }
 
+#pragma mark - TabGridModeObserving
+
+- (void)tabGridModeDidChange:(TabGridModeHolder*)modeHolder {
+  [self configureToolbarsButtons];
+}
+
 #pragma mark - TabGridPageMutator
 
 - (void)currentlySelectedGrid:(BOOL)selected {
@@ -356,12 +359,6 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
     [self configureToolbarsButtons];
   }
-}
-
-- (void)switchToMode:(TabGridMode)mode {
-  CHECK(mode == TabGridMode::kNormal || mode == TabGridMode::kSearch)
-      << "remote tabs should only support normal and search modes.";
-  self.currentMode = mode;
 }
 
 - (void)setPageAsActive {
@@ -388,12 +385,12 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
 - (void)searchButtonTapped:(id)sender {
   base::RecordAction(base::UserMetricsAction("MobileTabGridSearchTabs"));
-  self.currentMode = TabGridMode::kSearch;
+  _modeHolder.mode = TabGridMode::kSearch;
 }
 
 - (void)cancelSearchButtonTapped:(id)sender {
   base::RecordAction(base::UserMetricsAction("MobileTabGridCancelSearchTabs"));
-  self.currentMode = TabGridMode::kNormal;
+  _modeHolder.mode = TabGridMode::kNormal;
 }
 
 - (void)closeSelectedTabs:(id)sender {

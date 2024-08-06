@@ -15,6 +15,7 @@ source_set("tab_grid") {
 
   deps = [
     ":tab_grid_metrics",
+    ":tab_grid_mode",
     ":tab_grid_page_mutator",
     ":tab_grid_paging",
     ":tab_grid_ui",
@@ -144,6 +145,15 @@ source_set("tab_grid_ui_constants") {
 source_set("tab_grid_paging") {
   sources = [ "tab_grid_paging.h" ]
   deps = [ "//base" ]
+}
+
+source_set("tab_grid_mode") {
+  sources = [
+    "tab_grid_mode_holder.h",
+    "tab_grid_mode_holder.mm",
+    "tab_grid_mode_observing.h",
+  ]
+  deps = [ ":tab_grid_paging" ]
 }
 
 source_set("tab_grid_ui") {

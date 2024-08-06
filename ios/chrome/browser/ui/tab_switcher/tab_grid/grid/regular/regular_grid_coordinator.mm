@@ -129,7 +129,7 @@
 
   self.gridViewController = gridViewController;
 
-  _mediator = [[RegularGridMediator alloc] init];
+  _mediator = [[RegularGridMediator alloc] initWithModeHolder:self.modeHolder];
   _mediator.consumer = gridViewController;
 
   gridViewController.dragDropHandler = _mediator;

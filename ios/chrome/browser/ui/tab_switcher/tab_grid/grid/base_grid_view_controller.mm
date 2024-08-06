@@ -148,6 +148,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   // The supplementary view registration for the grid header.
   UICollectionViewSupplementaryRegistration* _gridHeaderRegistration;
+
+  // Current mode of the Tab Grid. Should be set through consumer protocol.
+  TabGridMode _mode;
 }
 
 - (instancetype)init {
@@ -339,7 +342,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   return YES;
 }
 
-- (void)setMode:(TabGridMode)mode {
+- (void)setTabGridMode:(TabGridMode)mode {
   if (_mode == mode) {
     return;
   }
@@ -1424,6 +1427,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 #pragma mark - Protected
+
+- (TabGridMode)mode {
+  return _mode;
+}
 
 - (void)createRegistrations {
   __weak __typeof(self) weakSelf = self;
