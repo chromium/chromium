@@ -1,7 +1,35 @@
+<!DOCTYPE html>
 <html>
 <body>
 <meter min=10 value=30 max=100>30%</meter>
 <meter min=0 value=70 max=100 style="width:10px; height:60px; writing-mode: vertical-lr;">70%</meter>
 <meter min=0 value=70 max=100 style="width:10px; height:60px; writing-mode: vertical-lr; direction: rtl">70%</meter>
+
+<br>
+
+<div style="writing-mode:sideways-lr; display:inline-block; margin-inline-end:3em">
+sideways-lr:
+<ul>
+  <li><meter min="0" max="100" low="30" high="60" optimum="75" value="25"></meter>
+  <li><meter min="0" max="100" low="30" high="60" optimum="75" value="45"></meter>
+  <li><meter min="0" max="100" low="30" high="60" optimum="75" value="75"></meter>
+  <li dir=rtl><meter min="0" max="100" low="30" high="60" optimum="75" value="25"></meter>
+  <li dir=rtl><meter min="0" max="100" low="30" high="60" optimum="75" value="45"></meter>
+  <li dir=rtl><meter min="0" max="100" low="30" high="60" optimum="75" value="75"></meter>
+</ul>
+</div>
+
+<div style="writing-mode:sideways-rl; display:inline-block; margin-inline-end:3em">
+sideways-rl:
+<ul>
+  <li><meter min="0" max="100" low="30" high="60" optimum="75" value="25"></meter>
+  <li><meter min="0" max="100" low="30" high="60" optimum="75" value="45"></meter>
+  <li><meter min="0" max="100" low="30" high="60" optimum="75" value="75"></meter>
+  <li dir=rtl><meter min="0" max="100" low="30" high="60" optimum="75" value="25"></meter>
+  <li dir=rtl><meter min="0" max="100" low="30" high="60" optimum="75" value="45"></meter>
+  <li dir=rtl><meter min="0" max="100" low="30" high="60" optimum="75" value="75"></meter>
+</ul>
+</div>
+
 </body>
 </html>
