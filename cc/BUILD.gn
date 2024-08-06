@@ -688,7 +688,7 @@ cc_test_static_library("test_support") {
     deps += [ "//gpu/vulkan/init" ]
   }
   if (!is_android) {
-    data_deps = [ "//third_party/mesa_headers" ]
+    data_deps = [ "//third_party/angle:includes" ]
   }
   if (skia_use_dawn) {
     deps += [
@@ -946,7 +946,7 @@ cc_test("cc_unittests") {
   data = [ "//components/test/data/viz/" ]
   data_deps = [
     "//testing/buildbot/filters:cc_unittests_filters",
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
   ]
 
   if (is_android && enable_chrome_android_internal) {

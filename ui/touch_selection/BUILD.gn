@@ -102,7 +102,7 @@ test("ui_touch_selection_unittests") {
     "//ui/gfx:test_support",
   ]
 
-  data_deps = [ "//third_party/mesa_headers" ]
+  data_deps = [ "//third_party/angle:includes" ]
 
   if (use_aura) {
     deps += [ "//ui/compositor:compositor" ]

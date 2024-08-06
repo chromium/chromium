@@ -2342,7 +2342,7 @@ if (!is_android) {
       "//testing:test_scripts_shared",
       "//testing/buildbot/filters:browser_tests_filters",
       "//testing/buildbot/filters:linux_trusty_rel_browser_tests_filters",
-      "//third_party/mesa_headers",
+      "//third_party/angle:includes",
       "//third_party/private_membership:private_membership_proto",
       "//third_party/shell-encryption:serialization_proto",
       "//third_party/widevine/cdm:widevine_test_license_server",
@@ -11092,7 +11092,7 @@ if (!is_android && !is_chromeos_device) {
     data_deps = [
       "//chrome:browser_tests_pak",
       "//testing/buildbot/filters:interactive_ui_tests_filters",
-      "//third_party/mesa_headers",
+      "//third_party/angle:includes",
       "//ui/resources:ui_test_pak_data",
     ]
     if (enable_ppapi) {
@@ -12028,7 +12028,7 @@ if (!is_android) {
     data_deps = [
       "//testing:test_scripts_shared",
       "//testing/buildbot/filters:sync_integration_tests_filters",
-      "//third_party/mesa_headers",
+      "//third_party/angle:includes",
     ]
 
     if (is_linux || is_chromeos || is_win) {

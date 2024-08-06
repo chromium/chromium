@@ -350,7 +350,7 @@ test("aura_unittests") {
     ]
   }
 
-  data_deps = [ "//third_party/mesa_headers" ]
+  data_deps = [ "//third_party/angle:includes" ]
 }
 
 # This target is added as a dependency of browser interactive_ui_tests. It must

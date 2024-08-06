@@ -1056,7 +1056,7 @@ group("content_shell_crash_test") {
   data_deps = [
     ":content_shell",
     "//testing:test_scripts_shared",
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
   ]
   data = [
     "//content/shell/tools/breakpad_integration_test.py",

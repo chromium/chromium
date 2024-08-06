@@ -605,7 +605,7 @@ test("components_unittests") {
 
     data_deps += [
       ":components_tests_pak",
-      "//third_party/mesa_headers",
+      "//third_party/angle:includes",
       "//ui/resources:ui_test_pak_data",
     ]
   }  # iOS / !iOS
@@ -1042,7 +1042,7 @@ if (use_blink) {
 
     data_deps = [
       ":components_tests_pak",
-      "//third_party/mesa_headers",
+      "//third_party/angle:includes",
     ]
 
     if (is_mac) {

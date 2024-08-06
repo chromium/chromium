@@ -275,7 +275,7 @@ test("extensions_unittests") {
 
   data_deps = [
     "//testing/buildbot/filters:extensions_unittests_filters",
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
   ]
 
   if (is_chromeos) {
@@ -301,7 +301,7 @@ test("extensions_browsertests") {
     "//extensions/shell:browser_tests",
   ]
 
-  data_deps = [ "//third_party/mesa_headers" ]
+  data_deps = [ "//third_party/angle:includes" ]
 }
 
 # TODO(rockot) bug 505926: These should be moved to extensions_browsertests but have

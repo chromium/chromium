@@ -22,7 +22,7 @@ target(link_target_type, "service") {
     "media_gpu_channel_manager.h",
   ]
 
-  include_dirs = [ "//third_party/mesa_headers" ]
+  include_dirs = [ "//third_party/angle:includes" ]
 
   public_deps = [
     "//base",

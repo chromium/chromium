@@ -706,7 +706,7 @@ if (use_blink) {
       sources += [ "android/motion_event_android_unittest.cc" ]
       deps += [ "//ui/android:ui_full_java" ]
     } else {
-      data_deps = [ "//third_party/mesa_headers" ]
+      data_deps = [ "//third_party/angle:includes" ]
     }
 
     if (use_ozone) {
