@@ -147,8 +147,9 @@ class SidePanelBorder : public views::Border {
       TopContainerBackground::PaintBackground(canvas, &view, browser_view_);
     }
 
-    // Paint the inner border around SidePanel content.
-    const float stroke_thickness = views::Separator::kThickness;
+    // Paint the inner border around SidePanel content. Since half the stroke
+    // gets painted in the clipped area, make this twice as thick.
+    const float stroke_thickness = views::Separator::kThickness * 2;
 
     cc::PaintFlags flags;
     flags.setStrokeWidth(stroke_thickness);
