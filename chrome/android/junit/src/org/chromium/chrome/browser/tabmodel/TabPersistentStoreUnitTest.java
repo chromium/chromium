@@ -125,6 +125,7 @@ public class TabPersistentStoreUnitTest {
 
         mPersistentStore =
                 new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -153,6 +154,7 @@ public class TabPersistentStoreUnitTest {
     public void testNotActiveEmptyNtpNotIgnoredDuringRestore() {
         mPersistentStore =
                 new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -180,6 +182,7 @@ public class TabPersistentStoreUnitTest {
 
         mPersistentStore =
                 new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -213,6 +216,7 @@ public class TabPersistentStoreUnitTest {
 
         mPersistentStore =
                 new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -252,6 +256,7 @@ public class TabPersistentStoreUnitTest {
     public void testNtpWithStateNotIgnoredDuringRestore() {
         mPersistentStore =
                 new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -275,6 +280,7 @@ public class TabPersistentStoreUnitTest {
 
         mPersistentStore =
                 new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -305,6 +311,7 @@ public class TabPersistentStoreUnitTest {
     public void testNotActiveIncognitoNtpIgnoredDuringRestore() {
         mPersistentStore =
                 new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,
@@ -324,6 +331,7 @@ public class TabPersistentStoreUnitTest {
     public void testActiveEmptyIncognitoNtpIgnoredDuringRestoreIfIncognitoLoadingIsDisabled() {
         mPersistentStore =
                 new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_REGULAR,
                         mPersistencePolicy,
                         mTabModelSelector,
                         mTabCreatorManager,

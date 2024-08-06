@@ -128,6 +128,7 @@ public class RestoreMigrateTest {
                             new TabbedModeTabPersistencePolicy(selectorIndex, false, true);
                     TabPersistentStore store =
                             new TabPersistentStore(
+                                    TabPersistentStore.CLIENT_TAG_REGULAR,
                                     persistencePolicy,
                                     selector,
                                     null,

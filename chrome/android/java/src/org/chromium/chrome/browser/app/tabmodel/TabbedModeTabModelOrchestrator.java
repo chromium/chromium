@@ -117,6 +117,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                         assignedIndex, mergeTabsOnStartup, mTabMergingEnabled);
         mTabPersistentStore =
                 new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_REGULAR,
                         mTabPersistencePolicy,
                         mTabModelSelector,
                         tabCreatorManager,

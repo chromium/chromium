@@ -53,6 +53,7 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
         mTabPersistencePolicy = persistencePolicy;
         mTabPersistentStore =
                 new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_CUSTOM,
                         mTabPersistencePolicy,
                         mTabModelSelector,
                         tabCreatorManager,

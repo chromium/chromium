@@ -221,13 +221,25 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         TabPersistentStore.getMetadataFileName(ARCHIVED_TAB_SELECTOR_UNIQUE_TAG),
                         /* otherMetadataFileName= */ null,
                         /* mergeTabsOnStartup= */ false,
-                        /* tabMergingEnabled= */ false);
+                        /* tabMergingEnabled= */ false) {
+
+                    @Override
+                    public void notifyStateLoaded(int tabCountAtStartup) {
+                        // Intentional no-op.
+                    }
+                };
         mTabPersistentStore =
                 new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_ARCHIVED,
                         mTabPersistencePolicy,
                         mTabModelSelector,
                         mArchivedTabCreatorManager,
-                        mTabWindowManager);
+                        mTabWindowManager) {
+                    @Override
+                    protected void recordLegacyTabCountMetrics() {
+                        // Intentional no-op.
+                    }
+                };
 
         wireSelectorAndStore();
         markTabModelsInitialized();
