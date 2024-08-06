@@ -8,13 +8,6 @@
 
 namespace safe_browsing {
 
-const wchar_t* const kTestDllNames[] = {
-    L"verifier_test_dll_1.dll",
-    L"verifier_test_dll_2.dll",
-};
-
-const size_t kTestDllNamesCount = std::size(kTestDllNames);
-
 const char kTestExportName[] = "DummyExport";
 
 const char kTestDllMainExportName[] = "DllMain";

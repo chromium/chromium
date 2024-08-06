@@ -9,6 +9,8 @@
 
 #include <stddef.h>
 
+#include "base/containers/span.h"
+
 namespace google {
 namespace protobuf {
 template <typename T>
@@ -41,8 +43,7 @@ void RecordLspFeature(ClientIncidentReport_EnvironmentData_Process* process);
 // Checks each module in the provided list for modifications and records these,
 // along with any modified exports, in |process|.
 void CollectModuleVerificationData(
-    const wchar_t* const modules_to_verify[],
-    size_t num_modules_to_verify,
+    base::span<const wchar_t* const> modules_to_verify,
     ClientIncidentReport_EnvironmentData_Process* process);
 
 // Populates |process| with the dll names that have been added to the chrome elf
@@ -53,8 +54,7 @@ void CollectDllBlocklistData(
 // Populates |key_data| with the data in the registry keys specified. In case of
 // error, this data may be incomplete.
 void CollectRegistryData(
-    const RegistryKeyInfo* keys_to_collect,
-    size_t num_keys_to_collect,
+    base::span<const RegistryKeyInfo> keys_to_collect,
     google::protobuf::RepeatedPtrField<
         ClientIncidentReport_EnvironmentData_OS_RegistryKey>* key_data);
 
