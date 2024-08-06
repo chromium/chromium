@@ -14,6 +14,7 @@
  * #css_wrapper_metadata_end */
 
 cr-icon-button {
+  --cr-icon-button-active-background-color: transparent;
   --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-size: 24px;
