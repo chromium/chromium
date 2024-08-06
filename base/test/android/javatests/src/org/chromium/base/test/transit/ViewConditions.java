@@ -119,7 +119,7 @@ public class ViewConditions {
         /** Extra options for declaring DisplayedCondition. */
         public static class Options {
             boolean mExpectEnabled = true;
-            int mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
+            int mDisplayedPercentageRequired = ViewElementInState.MIN_DISPLAYED_PERCENT;
 
             private Options() {}
 

@@ -7,14 +7,18 @@ package org.chromium.chrome.test.transit.page;
 import static androidx.test.espresso.action.ViewActions.click;
 
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.test.transit.MessageFacility;
 
-/** Represents a "Pop-up blocked" message. */
+/**
+ * Represents a "Pop-up blocked" message.
+ *
+ * @param <HostStationT> the type of host {@link WebPageStation} this is scoped to.
+ */
 public class PopupBlockedMessageFacility<HostStationT extends WebPageStation>
         extends MessageFacility<HostStationT> {
 
-    public static final ViewElement ALWAYS_SHOW_BUTTON = primaryButtonViewElement("Always show");
+    public static final ViewSpec ALWAYS_SHOW_BUTTON = primaryButtonViewSpec("Always show");
 
     private final int mCount;
 
@@ -32,7 +36,7 @@ public class PopupBlockedMessageFacility<HostStationT extends WebPageStation>
         } else {
             title = String.format("%s pop-ups blocked", mCount);
         }
-        elements.declareView(titleViewElement(title));
+        elements.declareView(titleViewSpec(title));
 
         elements.declareView(ALWAYS_SHOW_BUTTON);
     }

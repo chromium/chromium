@@ -10,7 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
-import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
 
@@ -18,7 +18,7 @@ import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewElementInState;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupExistsCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
@@ -57,9 +57,8 @@ public class TabSwitcherGroupCardFacility extends Facility<TabSwitcherStation> {
     public void declareElements(Elements.Builder elements) {
         String titleElementId = "Tab Group card title: " + mTitle;
         elements.declareView(
-                scopedViewElement(
-                        allOf(withText(mTitle), withId(R.id.tab_title), withParent(CARD)),
-                        ViewElement.newOptions().elementId(titleElementId).build()));
+                viewSpec(allOf(withText(mTitle), withId(R.id.tab_title), withParent(CARD))),
+                ViewElementInState.elementIdOption(titleElementId));
 
         elements.declareEnterCondition(
                 new TabGroupExistsCondition(

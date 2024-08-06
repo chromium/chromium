@@ -101,9 +101,15 @@ public class Elements {
         }
 
         /** Declare as an element a View that matches |viewMatcher|. */
-        public ViewElementInState declareView(ViewElement viewElement) {
+        public ViewElementInState declareView(ViewSpec viewSpec) {
+            return declareView(viewSpec, ViewElementInState.Options.DEFAULT);
+        }
+
+        /** Declare as an element a View that matches |viewMatcher| with extra Options. */
+        public ViewElementInState declareView(
+                ViewSpec viewSpec, ViewElementInState.Options options) {
             assertNotBuilt();
-            ViewElementInState inState = new ViewElementInState(viewElement);
+            ViewElementInState inState = new ViewElementInState(viewSpec, options);
             mElementsInState.add(inState);
             return inState;
         }

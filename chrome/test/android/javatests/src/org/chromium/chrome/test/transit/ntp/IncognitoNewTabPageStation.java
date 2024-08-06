@@ -8,17 +8,16 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
-
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.transit.page.PageStation;
 
 /** The Incognito New Tab Page screen, with text about Incognito mode. */
 public class IncognitoNewTabPageStation extends PageStation {
-    public ViewElement ICON = scopedViewElement(withId(R.id.new_tab_incognito_icon));
-    public ViewElement GONE_INCOGNITO_TEXT = scopedViewElement(withText("You’ve gone Incognito"));
+    public ViewSpec ICON = ViewSpec.viewSpec(withId(R.id.new_tab_incognito_icon));
+
+    public ViewSpec GONE_INCOGNITO_TEXT = ViewSpec.viewSpec(withText("You’ve gone Incognito"));
 
     protected <T extends IncognitoNewTabPageStation> IncognitoNewTabPageStation(
             Builder<T> builder) {

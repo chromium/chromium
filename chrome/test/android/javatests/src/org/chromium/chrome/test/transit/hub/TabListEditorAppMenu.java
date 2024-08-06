@@ -123,7 +123,7 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
         mHostStation.exitFacilitiesSync(
                 List.of(this, mListEditor, itemOnScreen),
                 Transition.conditionOption(tabCountDecreased),
-                () -> itemOnScreen.getItem().getViewElement().perform(click()));
+                () -> itemOnScreen.getItem().getViewSpec().perform(click()));
 
         return null;
     }
