@@ -7,12 +7,14 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/views/passwords/manage_passwords_details_view.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
 
 using ::testing::Mock;
@@ -51,6 +53,13 @@ class ManagePasswordsViewTest : public PasswordBubbleViewTestBase {
   ManagePasswordsView* view() { return view_; }
 
   void ClearView() { view_ = nullptr; }
+
+  bool PasswordDetailsHasBackButton() {
+    const ui::ElementContext context =
+        views::ElementTrackerViews::GetContextForWidget(view_widget_.get());
+    return views::ElementTrackerViews::GetInstance()->GetUniqueView(
+               ManagePasswordsDetailsView::kBackButton, context) != nullptr;
+  }
 
  private:
   raw_ptr<ManagePasswordsView> view_ = nullptr;
@@ -109,4 +118,26 @@ TEST_F(ManagePasswordsViewTest, DetailsBubbleIsClosedAfterAuthExpiration) {
   task_environment()->FastForwardBy(
       password_manager::constants::kPasswordManagerAuthValidity);
   Mock::VerifyAndClearExpectations(model_delegate_mock());
+}
+
+TEST_F(ManagePasswordsViewTest,
+       DetailsBubbleHasBackButtonIfInCredentialListMode) {
+  password_manager::PasswordForm details_bubble_credentail;
+  CreateViewAndShow();
+
+  // Imitate selection from the list.
+  view()->DisplayDetailsOfPasswordForTesting(details_bubble_credentail);
+
+  EXPECT_TRUE(PasswordDetailsHasBackButton());
+}
+
+TEST_F(ManagePasswordsViewTest,
+       DetailsBubbleHasNoBackButtonIfInSingleCredentialMode) {
+  std::optional details_bubble_credentail((password_manager::PasswordForm()));
+  ON_CALL(*model_delegate_mock(),
+          GetManagePasswordsSingleCredentialDetailsModeCredential)
+      .WillByDefault(ReturnRef(details_bubble_credentail));
+  CreateViewAndShow();
+
+  EXPECT_FALSE(PasswordDetailsHasBackButton());
 }

@@ -294,10 +294,15 @@ void ManagePasswordsView::RecreateLayout() {
   CHECK(frame_view);
   frame_view->SetFootnoteView(nullptr);
   if (controller_.get_details_bubble_credential().has_value()) {
+    bool has_back_button =
+        controller_.bubble_mode() ==
+        ManagePasswordsBubbleController::BubbleMode::kCredentialList;
     frame_view->SetTitleView(ManagePasswordsDetailsView::CreateTitleView(
         controller_.get_details_bubble_credential().value(),
-        base::BindRepeating(&ManagePasswordsView::SwitchToListView,
-                            base::Unretained(this))));
+        has_back_button ? std::make_optional(base::BindRepeating(
+                              &ManagePasswordsView::SwitchToListView,
+                              base::Unretained(this)))
+                        : std::nullopt));
     std::unique_ptr<ManagePasswordsDetailsView> details_view =
         CreatePasswordDetailsView();
     password_details_view_ = details_view.get();

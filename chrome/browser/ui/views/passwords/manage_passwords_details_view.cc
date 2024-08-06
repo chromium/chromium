@@ -495,7 +495,7 @@ std::unique_ptr<RichHoverButton> CreateManagePasswordRow(
 // static
 std::unique_ptr<views::View> ManagePasswordsDetailsView::CreateTitleView(
     const password_manager::PasswordForm& password_form,
-    base::RepeatingClosure on_back_clicked_callback) {
+    std::optional<base::RepeatingClosure> on_back_clicked_callback) {
   const auto* const layout_provider = ChromeLayoutProvider::Get();
   auto header = std::make_unique<views::BoxLayoutView>();
   // Set the space between the icon and title similar to the space in the row
@@ -510,11 +510,14 @@ std::unique_ptr<views::View> ManagePasswordsDetailsView::CreateTitleView(
       layout_provider->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON)
           .right());
 
-  auto back_button = views::CreateVectorImageButtonWithNativeTheme(
-      on_back_clicked_callback, vector_icons::kArrowBackIcon);
-  back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
-  views::InstallCircleHighlightPathGenerator(back_button.get());
-  header->AddChildView(std::move(back_button));
+  if (on_back_clicked_callback) {
+    auto back_button = views::CreateVectorImageButtonWithNativeTheme(
+        *on_back_clicked_callback, vector_icons::kArrowBackIcon);
+    back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
+    views::InstallCircleHighlightPathGenerator(back_button.get());
+    back_button->SetProperty(views::kElementIdentifierKey, kBackButton);
+    header->AddChildView(std::move(back_button));
+  }
 
   std::string shown_origin = password_manager::GetShownOrigin(
       password_manager::CredentialUIEntry(password_form));
@@ -761,6 +764,7 @@ void ManagePasswordsDetailsView::OnUserInputChanged() {
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ManagePasswordsDetailsView, kTopView);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ManagePasswordsDetailsView, kBackButton);
 
 BEGIN_METADATA(ManagePasswordsDetailsView)
 END_METADATA
