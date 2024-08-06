@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.readaloud;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextPart;
@@ -31,7 +30,6 @@ import java.util.Comparator;
  */
 public class TapToSeekHandler {
     ObservableSupplier<Tab> mCurrentTabSupplier;
-    Supplier<Playback> mPlaybackSupplier;
 
     public TapToSeekHandler(ObservableSupplier<Tab> currentTabSupplier) {
         mCurrentTabSupplier = currentTabSupplier;
@@ -46,13 +44,12 @@ public class TapToSeekHandler {
      * @param content Selected word and surrounding content
      * @param beginOffset index of where the selected word starts within the content
      * @param endOffset index of where the selected word ends within the content
+     * @param playback the playback that will be seeked
+     * @param playing whether the playback is in the play state when the tap to seek request was
+     *     started
      */
     public void tapToSeek(
-            String content,
-            int beginOffset,
-            int endOffset,
-            Playback playback,
-            Tab currentlyPlayingTab) {
+            String content, int beginOffset, int endOffset, Playback playback, boolean playing) {
         char[] fullText = playback.getMetadata().fullText().toCharArray();
         // Set the needle to the word +- 15 characters on either side.
         int substringStartIndex = Math.max(0, beginOffset - 15);
@@ -65,7 +62,7 @@ public class TapToSeekHandler {
                         .replaceAll("\\s+", " "); // replaces any white-spaces with a space.
         int found = BoyerMoore.indexOf(fullText, needle.toCharArray());
         if (found > 0) {
-            maybeTapToSeek(found + beginOffset - substringStartIndex, content, playback);
+            maybeTapToSeek(found + beginOffset - substringStartIndex, content, playback, playing);
         } else {
             // Last needle not matched, try with the word and -15 characters.
             substringStartIndex = Math.max(0, beginOffset - 15);
@@ -79,7 +76,8 @@ public class TapToSeekHandler {
                             .replaceAll("\\s+", " "); // replaces any white-spaces with a space.
             found = BoyerMoore.indexOf(fullText, needle.toCharArray());
             if (found > 0) {
-                maybeTapToSeek(found + beginOffset - substringStartIndex, content, playback);
+                maybeTapToSeek(
+                        found + beginOffset - substringStartIndex, content, playback, playing);
             } else {
                 // Last needle not matched, try with the word and +15 characters.
                 substringStartIndex = beginOffset;
@@ -93,7 +91,7 @@ public class TapToSeekHandler {
                                 .replaceAll("\\s+", " "); // replaces any white-space with a space.
                 found = BoyerMoore.indexOf(fullText, needle.toCharArray());
                 if (found > 0) {
-                    maybeTapToSeek(found, content, playback);
+                    maybeTapToSeek(found, content, playback, playing);
                 } else {
                     // TODO: b/325654229 Improve heuristics with more substrings to match with.
                     ReadAloudMetrics.recordHasTapToSeekFoundMatch(false);
@@ -118,14 +116,18 @@ public class TapToSeekHandler {
      * @param content selected word and surrounding content
      * @param playback playback that will be seeked
      */
-    private void maybeTapToSeek(int index, String content, Playback playback) {
+    private void maybeTapToSeek(int index, String content, Playback playback, boolean playing) {
         int paragraphIndex = findParagraph(playback.getMetadata().paragraphs(), index);
         int wordIndex = findWord(playback.getMetadata().paragraphs()[paragraphIndex], index);
         if (wordIndex < 0) {
             ReadAloudMetrics.recordHasTapToSeekFoundMatch(false);
         } else {
             playback.seekToWord(paragraphIndex, wordIndex);
-            playback.play();
+            if (playing) {
+                playback.play();
+            } else {
+                playback.pause();
+            }
             ReadAloudMetrics.recordHasTapToSeekFoundMatch(true);
         }
     }

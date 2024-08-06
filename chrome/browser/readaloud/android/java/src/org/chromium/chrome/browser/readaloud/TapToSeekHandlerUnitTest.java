@@ -27,7 +27,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextPart;
@@ -48,7 +47,6 @@ public class TapToSeekHandlerUnitTest {
 
     @Mock private Profile mProfile;
     @Mock private ObservableSupplier<Tab> mMockTabProvider;
-    private MockTab mTab;
     @Mock private Playback mPlayback;
     @Mock private Playback.Metadata mMetadata;
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
@@ -60,9 +58,6 @@ public class TapToSeekHandlerUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(false).when(mProfile).isOffTheRecord();
-        mTab = new MockTab(1, mProfile);
-        mTab.setGurlOverrideForTesting(sTestGURL);
-        doReturn(mTab).when(mMockTabProvider).get();
         when(mPlayback.getMetadata()).thenReturn(mMetadata);
         mJniMocker.mock(ReadAloudFeaturesJni.TEST_HOOKS, mReadAloudFeaturesNatives);
 
@@ -80,7 +75,8 @@ public class TapToSeekHandlerUnitTest {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         ReadAloudMetrics.HAS_TAP_TO_SEEK_FOUND_MATCH, true);
-        tapToSeek("brown\nfox jumps", 6, 9, "The\nquick brown fox  jumps\nover the lazy dog.");
+        tapToSeek(
+                "brown\nfox jumps", 6, 9, "The\nquick brown fox  jumps\nover the lazy dog.", true);
         histogram.assertExpected();
         verify(mPlayback, times(1)).seekToWord(0, 16);
 
@@ -88,7 +84,12 @@ public class TapToSeekHandlerUnitTest {
         histogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         ReadAloudMetrics.HAS_TAP_TO_SEEK_FOUND_MATCH, true);
-        tapToSeek("over the lazy cat", 5, 13, "The\nquick brown fox  jumps\nover the lazy dog.");
+        tapToSeek(
+                "over the lazy cat",
+                5,
+                13,
+                "The\nquick brown fox  jumps\nover the lazy dog.",
+                true);
         histogram.assertExpected();
         verify(mPlayback, times(1)).seekToWord(0, 32);
 
@@ -96,7 +97,8 @@ public class TapToSeekHandlerUnitTest {
         histogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         ReadAloudMetrics.HAS_TAP_TO_SEEK_FOUND_MATCH, true);
-        tapToSeek("cat jumps  over", 4, 9, "The\nquick brown fox  jumps\nover the lazy dog.");
+        tapToSeek(
+                "cat jumps  over", 4, 9, "The\nquick brown fox  jumps\nover the lazy dog.", false);
         histogram.assertExpected();
         verify(mPlayback, times(1)).seekToWord(0, 21);
 
@@ -108,7 +110,8 @@ public class TapToSeekHandlerUnitTest {
                 "The quick (remove me) brown [It should match] fox",
                 4,
                 9,
-                "The\nquick brown fox  jumps\nover the lazy dog.");
+                "The\nquick brown fox  jumps\nover the lazy dog.",
+                true);
         histogram.assertExpected();
         verify(mPlayback, times(1)).seekToWord(0, 4);
     }
@@ -118,13 +121,30 @@ public class TapToSeekHandlerUnitTest {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         ReadAloudMetrics.HAS_TAP_TO_SEEK_FOUND_MATCH, false);
-        tapToSeek("grey\nmouse danced", 5, 10, "The\nquick brown fox  jumps\nover the lazy dog.");
+        tapToSeek(
+                "grey\nmouse danced",
+                5,
+                10,
+                "The\nquick brown fox  jumps\nover the lazy dog.",
+                true);
         histogram.assertExpected();
 
         verify(mPlayback, never()).seekToWord(anyInt(), anyInt());
     }
 
-    private void tapToSeek(String content, int beginOffset, int endOffset, String fullText) {
+    @Test
+    public void testPlayPauseState() {
+        tapToSeek(
+                "brown\nfox jumps", 6, 9, "The\nquick brown fox  jumps\nover the lazy dog.", true);
+        verify(mPlayback).play();
+
+        tapToSeek(
+                "cat jumps  over", 4, 9, "The\nquick brown fox  jumps\nover the lazy dog.", false);
+        verify(mPlayback).pause();
+    }
+
+    private void tapToSeek(
+            String content, int beginOffset, int endOffset, String fullText, boolean playing) {
         // tap to seek
         when(mMetadata.fullText()).thenReturn(fullText);
         PlaybackTextPart p =
@@ -151,6 +171,6 @@ public class TapToSeekHandlerUnitTest {
                 };
         PlaybackTextPart[] paragraphs = new PlaybackTextPart[] {p};
         when(mMetadata.paragraphs()).thenReturn(paragraphs);
-        mTapToSeekHandler.tapToSeek(content, beginOffset, endOffset, mPlayback, mTab);
+        mTapToSeekHandler.tapToSeek(content, beginOffset, endOffset, mPlayback, playing);
     }
 }

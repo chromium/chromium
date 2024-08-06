@@ -1567,7 +1567,11 @@ public class ReadAloudController
         if (ReadAloudFeatures.isTapToSeekEnabled() && isPlayingCurrentTab()) {
             long timeWhenTapToSeekRequested = sClock.currentTimeMillis();
             mTapToSeekHandler.tapToSeek(
-                    content, beginOffset, endOffset, mPlayback, mActivePlaybackTabSupplier.get());
+                    content,
+                    beginOffset,
+                    endOffset,
+                    mPlayback,
+                    mCurrentPlaybackData.state() == PLAYING);
             ReadAloudMetrics.recordTapToSeekTime(
                     sClock.currentTimeMillis() - timeWhenTapToSeekRequested);
         }

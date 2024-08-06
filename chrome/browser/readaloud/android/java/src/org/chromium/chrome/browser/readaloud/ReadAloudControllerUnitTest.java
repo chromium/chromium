@@ -2703,6 +2703,11 @@ public class ReadAloudControllerUnitTest {
     public void testTapToSeek() {
         // play tab
         requestAndStartPlayback();
+        verify(mPlayback).addListener(mPlaybackListenerCaptor.capture());
+        // update playback data so it isn't null
+        var data = Mockito.mock(PlaybackListener.PlaybackData.class);
+        doReturn(PlaybackListener.State.PLAYING).when(data).state();
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(data);
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(ReadAloudMetrics.TAP_TO_SEEK_TIME, 12);
         when(mMetadata.fullText())
