@@ -123,7 +123,7 @@ void ScriptContextSet::Remove(ScriptContext* context) {
 
 ScriptContext* ScriptContextSet::GetCurrent() const {
   v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
-  if (UNLIKELY(!isolate)) {
+  if (!isolate) [[unlikely]] {
     return nullptr;
   }
   return isolate->InContext() ? GetByV8Context(isolate->GetCurrentContext())
