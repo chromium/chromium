@@ -244,7 +244,7 @@ struct ThreadLocalStorage {
 
     auto* slot = static_cast<SingleSlot*>(tls_system.GetThreadSpecificData());
 
-    if (UNLIKELY(slot == nullptr)) {
+    if (slot == nullptr) [[unlikely]] {
       slot = FindAndAllocateFreeSlot(root_.load(std::memory_order_relaxed));
 
       // We might be called in the course of handling a memory allocation. We do
