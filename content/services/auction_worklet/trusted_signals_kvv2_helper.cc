@@ -170,13 +170,11 @@ ParseCompressionGroup(
     return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
         "Compression group content is not type of Byte String."));
   }
-  const cbor::Value::BinaryValue& content = content_value.GetBytestring();
-  std::string content_string = std::string(content.begin(), content.end());
 
   compression_group_id_out =
       static_cast<int>(compression_group_id_value.GetInteger());
-  return CompressionGroupResult(compression_scheme, std::move(content_string),
-                                ttl);
+  return CompressionGroupResult(compression_scheme,
+                                content_value.GetBytestring(), ttl);
 }
 
 // Extract compression schema and cbor string from response body base on
@@ -620,7 +618,7 @@ CompressionGroupResult::CompressionGroupResult() = default;
 
 CompressionGroupResult::CompressionGroupResult(
     auction_worklet::mojom::TrustedSignalsCompressionScheme scheme,
-    std::string content,
+    std::vector<uint8_t> content,
     base::TimeDelta ttl)
     : compression_scheme(scheme), content(std::move(content)), ttl(ttl) {}
 

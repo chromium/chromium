@@ -48,6 +48,16 @@ const char kTrustedSignalsUrl[] = "https://url.test/";
 const char kOriginFooUrl[] = "https://foo.test/";
 const char kOriginBarUrl[] = "https://bar.test/";
 
+// GzipCompress() doesn't support writing to a vector, only a std::string. This
+// wrapper provides that capability, at the cost of an extra copy.
+std::vector<std::uint8_t> GzipCompressHelper(
+    const std::vector<std::uint8_t>& in) {
+  std::string compressed_string;
+  EXPECT_TRUE(compression::GzipCompress(in, &compressed_string));
+  return std::vector<std::uint8_t>(compressed_string.begin(),
+                                   compressed_string.end());
+}
+
 void ExpectCompressionGroupMapEquals(
     const TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap& map1,
     const TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap& map2) {
@@ -531,14 +541,9 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       "223A317D7DA2647461677381646B657973696B657956616C756573A1646B657943A16576"
       "616C75656B2276616C7565466F724322";
   std::vector<uint8_t> compression_group0_bytes;
-  std::string compression_group0_string;
   base::HexStringToBytes(kCompressionGroup0Hex, &compression_group0_bytes);
-  base::HexStringToString(kCompressionGroup0Hex, &compression_group0_string);
-  std::string compressed_group0_string;
-  compression::GzipCompress(compression_group0_bytes,
-                            &compressed_group0_string);
-  std::vector<uint8_t> compressed_group0_bytes(compressed_group0_string.begin(),
-                                               compressed_group0_string.end());
+  std::vector<uint8_t> compressed_group0_bytes =
+      GzipCompressHelper(compression_group0_bytes);
 
   // User cbor.me to convert from
   // [
@@ -576,14 +581,9 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       "7B227369676E616C44223A317D7DA2647461677381646B657973696B657956616C756573"
       "A1646B657944A16576616C75656B2276616C7565466F724422";
   std::vector<uint8_t> compression_group1_bytes;
-  std::string compression_group1_string;
   base::HexStringToBytes(kCompressionGroup1Hex, &compression_group1_bytes);
-  base::HexStringToString(kCompressionGroup1Hex, &compression_group1_string);
-  std::string compressed_group1_string;
-  compression::GzipCompress(compression_group1_bytes,
-                            &compressed_group1_string);
-  std::vector<uint8_t> compressed_group1_bytes(compressed_group1_string.begin(),
-                                               compressed_group1_string.end());
+  std::vector<uint8_t> compressed_group1_bytes =
+      GzipCompressHelper(compression_group1_bytes);
 
   // Construct a CBOR body:
   // {
@@ -604,15 +604,15 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   compression_group0.try_emplace(cbor::Value("compressionGroupId"),
                                  cbor::Value(0));
   compression_group0.try_emplace(cbor::Value("ttlMs"), cbor::Value(100));
-  compression_group0.try_emplace(
-      cbor::Value("content"), cbor::Value(std::move(compressed_group0_bytes)));
+  compression_group0.try_emplace(cbor::Value("content"),
+                                 cbor::Value(compressed_group0_bytes));
 
   cbor::Value::MapValue compression_group1;
   compression_group1.try_emplace(cbor::Value("compressionGroupId"),
                                  cbor::Value(1));
   compression_group1.try_emplace(cbor::Value("ttlMs"), cbor::Value(200));
-  compression_group1.try_emplace(
-      cbor::Value("content"), cbor::Value(std::move(compressed_group1_bytes)));
+  compression_group1.try_emplace(cbor::Value("content"),
+                                 cbor::Value(compressed_group1_bytes));
 
   cbor::Value::ArrayValue compression_groups;
   compression_groups.emplace_back(std::move(compression_group0));
@@ -641,10 +641,10 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
 
   CompressionGroupResult group0 = CompressionGroupResult(
       auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
-      compressed_group0_string, base::Milliseconds(100));
+      std::move(compressed_group0_bytes), base::Milliseconds(100));
   CompressionGroupResult group1 = CompressionGroupResult(
       auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
-      compressed_group1_string, base::Milliseconds(200));
+      std::move(compressed_group1_bytes), base::Milliseconds(200));
   TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap
       expected_fetch_result;
   expected_fetch_result.emplace(0, std::move(group0));
@@ -937,7 +937,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip;
   // []
   hex_string = "80";
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Failed to decompress content string with Gzip.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -950,7 +950,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   // Random 20 bytes hex string.
   hex_string = "666f421a72ed47aade0c63826288d5d1bbf2dc2a";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Failed to parse content to CBOR.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -959,7 +959,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   // "1"
   hex_string = "6131";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Content is not type of Array.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -968,7 +968,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   // [1]
   hex_string = "8101";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Partition is not type of Map.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -981,7 +981,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   // ]
   hex_string = "81A16F6B657947726F75704F75747075747380";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Key \"id\" is missing in partition map.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -994,7 +994,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   // ]
   hex_string = "81A162696400";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Key \"keyGroupOutputs\" is missing in partition map.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -1008,7 +1008,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   // ]
   hex_string = "81A262696461306F6B657947726F75704F75747075747380";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Partition id is not type of Integer.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -1022,7 +1022,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   // ]
   hex_string = "81A26269641A800000006F6B657947726F75704F75747075747380";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Partition id is out of range for int.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -1036,7 +1036,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   // ]
   hex_string = "81A2626964006F6B657947726F75704F7574707574731864";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Partition key group outputs is not type of Array.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -1053,7 +1053,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       "81A3626964006B6461746156657273696F6E633130326F6B657947726F75704F75747075"
       "747380";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("DataVersion is not type of Integer.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -1070,7 +1070,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       "81A3626964006B6461746156657273696F6E1B00000001000000006F6B657947726F7570"
       "4F75747075747380";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("DataVersion field is out of range for uint32.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -1084,7 +1084,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   // ]
   hex_string = "81A2626964006F6B657947726F75704F757470757473811864";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("KeyGroupOutput value is not type of Map.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -1109,7 +1109,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       "67726F757044A16576616C756578207B227072696F72697479566563746F72223A7B2273"
       "69676E616C44223A317D7D";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Key \"tags\" is missing in keyGroupOutputs map.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -1131,7 +1131,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       "81A2626964006F6B657947726F75704F75747075747381A164746167738172696E746572"
       "65737447726F75704E616D6573";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Key \"keyValues\" is missing in keyGroupOutputs map.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -1157,7 +1157,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       "737447726F75704E616D6573696B657956616C756573A16667726F757044A16576616C75"
       "6578207B227072696F72697479566563746F72223A7B227369676E616C44223A317D7D";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Tags value in keyGroupOutputs map is not type of Array.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -1183,7 +1183,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       "74616732696B657956616C756573A16667726F757044A16576616C756578207B22707269"
       "6F72697479566563746F72223A7B227369676E616C44223A317D7D";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Tags array must only have one tag.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -1211,7 +1211,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       "6563"
       "746F72223A7B227369676E616C44223A317D7D";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ(
       "Tag value in tags array of keyGroupOutputs map is not type of String.",
       GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
@@ -1249,7 +1249,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       "A16667726F757044A16576616C756578207B227072696F72697479566563746F72223A7B"
       "227369676E616C42223A317D7D";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Duplicate tag \"interestGroupNames\" detected in keyGroupOutputs.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -1272,7 +1272,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       "81A2626964006F6B657947726F75704F75747075747381A264746167738172696E746572"
       "65737447726F75704E616D6573696B657956616C7565731864";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("KeyValue value in keyGroupOutputs map is not type of Map.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -1297,7 +1297,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       "81A2626964006F6B657947726F75704F75747075747381A264746167738172696E746572"
       "65737447726F75704E616D6573696B657956616C756573A16667726F7570411864";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Value of \"groupA\" is not type of Map.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -1325,7 +1325,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       "65737447726F75704E616D6573696B657956616C756573A16667726F757041A16376616C"
       "60";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Failed to find key \"value\" in the map.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -1353,7 +1353,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       "65737447726F75704E616D6573696B657956616C756573A16667726F757041A16576616C"
       "75651864";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Failed to read value of key \"value\" as type String.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -1381,7 +1381,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       "65737447726F75704E616D6573696B657956616C756573A16667726F757041A16576616C"
       "7565677369676E616C3A";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Failed to create V8 value from key group output data.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));
@@ -1408,7 +1408,7 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       "81A2626964006F6B657947726F75704F75747075747381A2647461677381646B65797369"
       "6B657956616C756573A1646B657941A16576616C7565643130303A";
   result_map[0].content.clear();
-  base::HexStringToString(hex_string, &result_map[0].content);
+  base::HexStringToBytes(hex_string, &result_map[0].content);
   EXPECT_EQ("Failed to parse key-value string to JSON.",
             GetErrorMessageFromParseBiddingSignalsFetchResultToResultMap(
                 helper_, kInterestGroupNames, kBiddingKeys, result_map));

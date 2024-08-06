@@ -219,7 +219,7 @@ class CONTENT_EXPORT TrustedBiddingSignalsKVv2RequestHelperBuilder
 struct CONTENT_EXPORT CompressionGroupResult {
   CompressionGroupResult();
   CompressionGroupResult(mojom::TrustedSignalsCompressionScheme scheme,
-                         std::string content,
+                         std::vector<uint8_t> content,
                          base::TimeDelta ttl);
   CompressionGroupResult(CompressionGroupResult&&);
   CompressionGroupResult& operator=(CompressionGroupResult&&);
@@ -230,7 +230,7 @@ struct CONTENT_EXPORT CompressionGroupResult {
   mojom::TrustedSignalsCompressionScheme compression_scheme;
 
   // The compressed content string.
-  std::string content;
+  std::vector<uint8_t> content;
 
   // Time until the response expires.
   base::TimeDelta ttl;
