@@ -116,9 +116,11 @@ void PinTextfield::SetObscured(bool obscured) {
   }
 
   obscured_ = obscured;
+  GetViewAccessibility().SetIsProtected(obscured);
   for (int i = 0; i < pin_digits_count_; i++) {
     render_texts_[i]->SetObscured(obscured);
   }
+  UpdateAccessibilityAfterPinChange();
   SchedulePaint();
 }
 
@@ -221,8 +223,12 @@ void PinTextfield::UpdateAccessibilityAfterPinChange() {
   UpdateAccessibleTextSelection();
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged,
                            /*send_native_event=*/true);
-  NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged,
-                           /*send_native_event=*/true);
+
+  // Don't announce the selected text (last typed digit) in `obscured_` mode.
+  if (!obscured_) {
+    NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged,
+                             /*send_native_event=*/true);
+  }
 }
 
 BEGIN_METADATA(PinTextfield)
