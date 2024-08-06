@@ -103,16 +103,16 @@ void QuicChromiumPacketWriter::set_force_write_blocked(
 }
 
 void QuicChromiumPacketWriter::SetPacket(const char* buffer, size_t buf_len) {
-  if (UNLIKELY(!packet_)) {
+  if (!packet_) [[unlikely]] {
     packet_ = base::MakeRefCounted<ReusableIOBuffer>(
         std::max(buf_len, static_cast<size_t>(quic::kMaxOutgoingPacketSize)));
     RecordNotReusableReason(NOT_REUSABLE_NULLPTR);
   }
-  if (UNLIKELY(packet_->capacity() < buf_len)) {
+  if (packet_->capacity() < buf_len) [[unlikely]] {
     packet_ = base::MakeRefCounted<ReusableIOBuffer>(buf_len);
     RecordNotReusableReason(NOT_REUSABLE_TOO_SMALL);
   }
-  if (UNLIKELY(!packet_->HasOneRef())) {
+  if (!packet_->HasOneRef()) [[unlikely]] {
     packet_ = base::MakeRefCounted<ReusableIOBuffer>(
         std::max(buf_len, static_cast<size_t>(quic::kMaxOutgoingPacketSize)));
     RecordNotReusableReason(NOT_REUSABLE_REF_COUNT);

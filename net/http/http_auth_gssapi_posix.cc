@@ -484,8 +484,9 @@ bool GSSAPISharedLibrary::BindMethods(base::NativeLibrary lib,
   ok &=
       BindMethod(lib, name, "gss_wrap_size_limit", &wrap_size_limit_, net_log);
 
-  if (LIKELY(ok))
+  if (ok) [[likely]] {
     return true;
+  }
 
   delete_sec_context_ = nullptr;
   display_name_ = nullptr;

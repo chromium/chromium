@@ -226,8 +226,9 @@ class NET_EXPORT NetLog {
            const NetLogSource& source,
            NetLogEventPhase phase,
            const ParametersCallback& get_params) {
-    if (LIKELY(!IsCapturing()))
+    if (!IsCapturing()) [[likely]] {
       return;
+    }
 
     AddEntryWithMaterializedParams(type, source, phase, get_params());
   }
@@ -243,8 +244,9 @@ class NET_EXPORT NetLog {
            const NetLogSource& source,
            NetLogEventPhase phase,
            const ParametersCallback& get_params) {
-    if (LIKELY(!IsCapturing()))
+    if (!IsCapturing()) [[likely]] {
       return;
+    }
 
     // Indirect through virtual dispatch to reduce code bloat, as this is
     // inlined in a number of places.
