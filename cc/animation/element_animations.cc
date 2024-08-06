@@ -34,8 +34,10 @@ namespace {
 // tracking is done on the KeyframeModel - https://crbug.com/900241
 ElementId CalculateTargetElementId(const ElementAnimations* element_animations,
                                    const gfx::KeyframeModel* keyframe_model) {
-  if (LIKELY(KeyframeModel::ToCcKeyframeModel(keyframe_model)->element_id()))
+  if (KeyframeModel::ToCcKeyframeModel(keyframe_model)->element_id())
+      [[likely]] {
     return KeyframeModel::ToCcKeyframeModel(keyframe_model)->element_id();
+  }
   return element_animations->element_id();
 }
 

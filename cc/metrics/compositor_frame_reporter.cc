@@ -249,10 +249,10 @@ void TraceScrollJankMetrics(const EventMetrics::List& events_metrics,
 
   for (const auto& event : events_metrics) {
     auto type = event->type();
-    if (UNLIKELY(type != EventMetrics::EventType::kGestureScrollUpdate &&
-                 type != EventMetrics::EventType::kFirstGestureScrollUpdate &&
-                 type !=
-                     EventMetrics::EventType::kInertialGestureScrollUpdate)) {
+    if (type != EventMetrics::EventType::kGestureScrollUpdate &&
+        type != EventMetrics::EventType::kFirstGestureScrollUpdate &&
+        type != EventMetrics::EventType::kInertialGestureScrollUpdate)
+        [[unlikely]] {
       continue;
     }
     auto* scroll_update_event = event->AsScrollUpdate();

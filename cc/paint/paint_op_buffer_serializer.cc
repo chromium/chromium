@@ -249,7 +249,7 @@ bool PaintOpBufferSerializer::WillSerializeNextOp<float>(
     const auto& draw_record_op = static_cast<const DrawRecordOp&>(op);
     int save_count = canvas->getSaveCount();
     const PaintOpBuffer& buffer = draw_record_op.record.buffer();
-    if (LIKELY(draw_record_op.local_ctm)) {
+    if (draw_record_op.local_ctm) [[likely]] {
       // This record has a local CTM, meaning that any transforms in `buffer`
       // must be isolated from the parent record. Saving ensures that transforms
       // won't leak out. Then, `SerializeBuffer` will set `original_ctm` to the

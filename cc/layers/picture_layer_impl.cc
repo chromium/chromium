@@ -1704,7 +1704,7 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
   float maximum_area = max_visible_bounds_at_max_scale.width() *
                        max_visible_bounds_at_max_scale.height();
   // Clamp the scale to make the rastered content not larger than the viewport.
-  if (UNLIKELY(maximum_area > squared_viewport_area)) {
+  if (maximum_area > squared_viewport_area) [[unlikely]] {
     raster_contents_scale_.Scale(
         1.f / std::sqrt(maximum_area / squared_viewport_area));
   }
