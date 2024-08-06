@@ -4,10 +4,14 @@
 
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
 
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
+#include "base/task/thread_pool.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/browser_metrics.h"
 #include "ui/display/screen.h"
 
 namespace content {
@@ -54,11 +58,16 @@ NavigationEntryScreenshotManager::NavigationEntryScreenshotManager()
        // entries in the cache.
       managed_caches_(base::LRUCacheSet<int>::NO_AUTO_EVICT) {
   CHECK(AreBackForwardTransitionsEnabled());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   max_cache_size_in_bytes_ = GetMemoryBudget();
   listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE,
       base::BindRepeating(&NavigationEntryScreenshotManager::OnMemoryPressure,
                           base::Unretained(this)));
+
+  // Start recording memory usage.
+  RecordScreenshotCacheSizeAfterDelay();
 }
 
 NavigationEntryScreenshotManager::~NavigationEntryScreenshotManager() = default;
@@ -176,6 +185,22 @@ void NavigationEntryScreenshotManager::OnMemoryPressure(
     it = managed_caches_.begin();
   }
   CHECK(IsEmpty());
+}
+
+void NavigationEntryScreenshotManager::RecordScreenshotCacheSizeAfterDelay() {
+  GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &NavigationEntryScreenshotManager::RecordScreenshotCacheSize,
+          weak_factory_.GetWeakPtr()),
+      memory_instrumentation::GetDelayForNextMemoryLog());
+}
+
+void NavigationEntryScreenshotManager::RecordScreenshotCacheSize() {
+  MEMORY_METRICS_HISTOGRAM_MB(
+      "Navigation.GestureTransition.ScreenshotCacheSize",
+      current_cache_size_in_bytes_ / (1024 * 1024));
+  RecordScreenshotCacheSizeAfterDelay();
 }
 
 }  // namespace content
