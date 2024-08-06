@@ -23,6 +23,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -49,6 +50,7 @@ import org.chromium.ui.base.LocalizationUtils;
 @DisableIf.Build(
         sdk_is_greater_than = Build.VERSION_CODES.Q,
         message = " only works in 3-button mode")
+@DisabledTest(message = "Test is flaky. See https://crbug.com/357884951")
 @Batch(Batch.PER_CLASS)
 public class RtlGestureNavIphTest {
     @Rule
