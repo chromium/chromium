@@ -18,7 +18,7 @@ BASE_FEATURE(kEnableProfileTokenManagement,
 
 BASE_FEATURE(kOidcAuthProfileManagement,
              "OidcAuthProfileManagement",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableGenericOidcAuthProfileManagement,
              "EnableGenericOidcAuthProfileManagement",
