@@ -576,22 +576,6 @@ MinMaxSizes ComputeMinMaxBlockSizes(const ConstraintSpace& space,
   return sizes;
 }
 
-MinMaxSizes ComputeMinMaxBlockSizesDeprecated(
-    const ConstraintSpace& space,
-    const BlockNode& node,
-    const BoxStrut& border_padding,
-    LayoutUnit override_available_size) {
-  const ComputedStyle& style = node.Style();
-  MinMaxSizes sizes = {ResolveMinBlockLengthDeprecated(
-                           space, style, border_padding,
-                           style.LogicalMinHeight(), override_available_size),
-                       ResolveMaxBlockLengthDeprecated(
-                           space, style, border_padding,
-                           style.LogicalMaxHeight(), override_available_size)};
-  sizes.max_size = std::max(sizes.max_size, sizes.min_size);
-  return sizes;
-}
-
 MinMaxSizes ComputeTransferredMinMaxInlineSizes(
     const LogicalSize& ratio,
     const MinMaxSizes& block_min_max,

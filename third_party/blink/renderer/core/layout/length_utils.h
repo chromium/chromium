@@ -164,19 +164,6 @@ inline LayoutUnit ResolveMinBlockLength(
       override_percentage_resolution_size, block_size_func,
       border_padding.BlockSum());
 }
-inline LayoutUnit ResolveMinBlockLengthDeprecated(
-    const ConstraintSpace& constraint_space,
-    const ComputedStyle& style,
-    const BoxStrut& border_padding,
-    const Length& length,
-    LayoutUnit override_available_size = kIndefiniteSize,
-    const LayoutUnit* override_percentage_resolution_size = nullptr) {
-  return ResolveBlockLengthInternal(
-      constraint_space, style, border_padding, length,
-      /* auto_length */ &Length::Auto(), override_available_size,
-      override_percentage_resolution_size,
-      [](SizeType) { return kIndefiniteSize; }, border_padding.BlockSum());
-}
 
 // Used for resolving max block lengths, (|ComputedStyle::MaxLogicalHeight|).
 inline LayoutUnit ResolveInitialMaxBlockLength(
@@ -207,21 +194,6 @@ inline LayoutUnit ResolveMaxBlockLength(
       constraint_space, style, border_padding, length,
       /* auto_length */ &Length::Auto(), override_available_size,
       override_percentage_resolution_size, block_size_func, LayoutUnit::Max());
-}
-inline LayoutUnit ResolveMaxBlockLengthDeprecated(
-    const ConstraintSpace& constraint_space,
-    const ComputedStyle& style,
-    const BoxStrut& border_padding,
-    const Length& length,
-    LayoutUnit override_available_size = kIndefiniteSize,
-    const LayoutUnit* override_percentage_resolution_size = nullptr) {
-  // TODO(https://crbug.com/313072): Ensure that we don't do math on
-  // this LayoutUnit::Max that we pass to ResolveInlineLengthInternal.
-  return ResolveBlockLengthInternal(
-      constraint_space, style, border_padding, length,
-      /* auto_length */ &Length::Auto(), override_available_size,
-      override_percentage_resolution_size,
-      [](SizeType) { return kIndefiniteSize; }, LayoutUnit::Max());
 }
 
 // Used for resolving main block lengths, (|ComputedStyle::LogicalHeight|).
@@ -268,11 +240,6 @@ MinMaxSizes ComputeMinMaxBlockSizes(
     const BoxStrut& border_padding,
     bool apply_automatic_min_size,
     BlockSizeFunctionRef,
-    LayoutUnit override_available_size = kIndefiniteSize);
-MinMaxSizes ComputeMinMaxBlockSizesDeprecated(
-    const ConstraintSpace&,
-    const BlockNode&,
-    const BoxStrut& border_padding,
     LayoutUnit override_available_size = kIndefiniteSize);
 
 MinMaxSizes ComputeTransferredMinMaxInlineSizes(
