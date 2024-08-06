@@ -112,8 +112,8 @@ export class RelatedWebsiteSetListItemElement extends CrLitElement {
             part.toLowerCase() === queryLower ? html`<b>${part}</b>` : part);
   }
 
-  protected getIconImageUrl_(): string {
-    return `${this.primarySite}/favicon.ico`;
+  protected getIconImageUrl_(site: string): string {
+    return `${site}/favicon.ico`;
   }
 }
 
