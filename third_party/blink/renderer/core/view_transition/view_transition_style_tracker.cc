@@ -713,7 +713,7 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
     auto& name = flat_data->name;
     auto& element = flat_data->element;
 
-    if (UNLIKELY(transition_names.Contains(name))) {
+    if (transition_names.Contains(name)) [[unlikely]] {
       StringBuilder message;
       message.Append(kDuplicateTagBaseError);
       message.Append(name);

@@ -1017,10 +1017,12 @@ static LayoutUnit LineDirectionPointForBlockDirectionNavigationOf(
   // This ignores transforms on purpose, for now. Vertical navigation is done
   // without consulting transforms, so that 'up' in transformed text is 'up'
   // relative to the text, not absolute 'up'.
-  PhysicalOffset caret_point =
-      UNLIKELY(caret_rect.layout_object->HasFlippedBlocksWritingMode())
-          ? caret_rect.rect.MaxXMinYCorner()
-          : caret_rect.rect.MinXMinYCorner();
+  PhysicalOffset caret_point;
+  if (caret_rect.layout_object->HasFlippedBlocksWritingMode()) [[unlikely]] {
+    caret_point = caret_rect.rect.MaxXMinYCorner();
+  } else {
+    caret_point = caret_rect.rect.MinXMinYCorner();
+  }
   caret_point = caret_rect.layout_object->LocalToAbsolutePoint(
       caret_point, kIgnoreTransforms);
   return caret_rect.layout_object->IsHorizontalWritingMode() ? caret_point.left

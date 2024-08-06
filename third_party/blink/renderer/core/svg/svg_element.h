@@ -347,7 +347,7 @@ void SVGElement::NotifyIncomingReferences(
     auto* element = member.Get();
     if (!element->GetLayoutObject())
       continue;
-    if (UNLIKELY(!invalidating_dependencies.insert(element).is_new_entry)) {
+    if (!invalidating_dependencies.insert(element).is_new_entry) [[unlikely]] {
       // Reference cycle: we are in process of invalidating this dependant.
       continue;
     }

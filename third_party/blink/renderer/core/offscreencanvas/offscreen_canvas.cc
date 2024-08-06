@@ -225,7 +225,7 @@ ImageBitmap* OffscreenCanvas::transferToImageBitmap(
 
   ImageBitmap* image =
       context_->TransferToImageBitmap(script_state, exception_state);
-  if (UNLIKELY(exception_state.HadException())) {
+  if (exception_state.HadException()) [[unlikely]] {
     return nullptr;
   }
 

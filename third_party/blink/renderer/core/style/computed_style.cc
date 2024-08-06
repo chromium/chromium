@@ -168,7 +168,7 @@ const ComputedStyle* ComputedStyle::GetInitialStyleSingleton() {
       ThreadSpecific<Persistent<const ComputedStyle>>,
       thread_specific_initial_style, ());
   Persistent<const ComputedStyle>& persistent = *thread_specific_initial_style;
-  if (UNLIKELY(!persistent)) {
+  if (!persistent) [[unlikely]] {
     persistent = MakeGarbageCollected<ComputedStyle>(PassKey());
     LEAK_SANITIZER_IGNORE_OBJECT(&persistent);
   }
@@ -196,7 +196,7 @@ const ComputedStyle* ComputedStyle::GetInitialStyleForImgSingleton() {
       ThreadSpecific<Persistent<const ComputedStyle>>,
       thread_specific_initial_style, ());
   Persistent<const ComputedStyle>& persistent = *thread_specific_initial_style;
-  if (UNLIKELY(!persistent)) {
+  if (!persistent) [[unlikely]] {
     persistent = BuildInitialStyleForImg(*GetInitialStyleSingleton());
     LEAK_SANITIZER_IGNORE_OBJECT(&persistent);
   }
@@ -359,10 +359,10 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
 
   // LayoutObject tree structure for <legend> depends on whether it's a
   // rendered legend or not.
-  if (UNLIKELY(IsA<HTMLLegendElement>(element) &&
-               (old_style->IsFloating() != new_style->IsFloating() ||
-                old_style->HasOutOfFlowPosition() !=
-                    new_style->HasOutOfFlowPosition()))) {
+  if (IsA<HTMLLegendElement>(element) &&
+      (old_style->IsFloating() != new_style->IsFloating() ||
+       old_style->HasOutOfFlowPosition() != new_style->HasOutOfFlowPosition()))
+      [[unlikely]] {
     return true;
   }
 

@@ -77,8 +77,8 @@ SyncScrollAttemptHeuristic::GetRequestAnimationFrameScope() {
 }
 
 void SyncScrollAttemptHeuristic::DidAccessScrollOffset() {
-  if (UNLIKELY(g_sync_scroll_attempt_heuristic &&
-               g_sync_scroll_attempt_heuristic->is_observing_)) {
+  if (g_sync_scroll_attempt_heuristic &&
+      g_sync_scroll_attempt_heuristic->is_observing_) [[unlikely]] {
     g_sync_scroll_attempt_heuristic->did_access_scroll_offset_ = true;
   }
 }
@@ -86,9 +86,9 @@ void SyncScrollAttemptHeuristic::DidAccessScrollOffset() {
 void SyncScrollAttemptHeuristic::DidSetScrollOffset() {
   // We only want to record a mutation if we've already accessed the scroll
   // offset.
-  if (UNLIKELY(g_sync_scroll_attempt_heuristic &&
-               g_sync_scroll_attempt_heuristic->is_observing_ &&
-               g_sync_scroll_attempt_heuristic->did_access_scroll_offset_)) {
+  if (g_sync_scroll_attempt_heuristic &&
+      g_sync_scroll_attempt_heuristic->is_observing_ &&
+      g_sync_scroll_attempt_heuristic->did_access_scroll_offset_) [[unlikely]] {
     g_sync_scroll_attempt_heuristic->did_set_scroll_offset_ = true;
   }
 }
@@ -96,29 +96,29 @@ void SyncScrollAttemptHeuristic::DidSetScrollOffset() {
 void SyncScrollAttemptHeuristic::DidSetStyle() {
   // We only want to record a mutation if we've already accessed the scroll
   // offset.
-  if (UNLIKELY(g_sync_scroll_attempt_heuristic &&
-               g_sync_scroll_attempt_heuristic->is_observing_ &&
-               g_sync_scroll_attempt_heuristic->did_access_scroll_offset_)) {
+  if (g_sync_scroll_attempt_heuristic &&
+      g_sync_scroll_attempt_heuristic->is_observing_ &&
+      g_sync_scroll_attempt_heuristic->did_access_scroll_offset_) [[unlikely]] {
     g_sync_scroll_attempt_heuristic->did_set_style_ = true;
   }
 }
 
 void SyncScrollAttemptHeuristic::DidRequestAnimationFrame() {
-  if (UNLIKELY(g_sync_scroll_attempt_heuristic &&
-               g_sync_scroll_attempt_heuristic->is_observing_)) {
+  if (g_sync_scroll_attempt_heuristic &&
+      g_sync_scroll_attempt_heuristic->is_observing_) [[unlikely]] {
     g_sync_scroll_attempt_heuristic->did_request_animation_frame_ = true;
   }
 }
 
 void SyncScrollAttemptHeuristic::EnableObservation() {
-  if (UNLIKELY(g_sync_scroll_attempt_heuristic)) {
+  if (g_sync_scroll_attempt_heuristic) [[unlikely]] {
     CHECK(!g_sync_scroll_attempt_heuristic->is_observing_);
     g_sync_scroll_attempt_heuristic->is_observing_ = true;
   }
 }
 
 void SyncScrollAttemptHeuristic::DisableObservation() {
-  if (UNLIKELY(g_sync_scroll_attempt_heuristic)) {
+  if (g_sync_scroll_attempt_heuristic) [[unlikely]] {
     CHECK(g_sync_scroll_attempt_heuristic->is_observing_);
     g_sync_scroll_attempt_heuristic->is_observing_ = false;
   }

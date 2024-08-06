@@ -988,7 +988,7 @@ class ComputedStyle final : public ComputedStyleBase {
   }
   bool ColumnRuleEquivalent(const ComputedStyle& other_style) const;
   bool HasColumnRule() const {
-    if (LIKELY(!SpecifiesColumns())) {
+    if (!SpecifiesColumns()) [[likely]] {
       return false;
     }
     return ColumnRuleWidth() && !ColumnRuleIsTransparent() &&

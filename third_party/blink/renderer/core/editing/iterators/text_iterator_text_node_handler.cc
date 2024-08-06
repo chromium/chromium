@@ -185,7 +185,7 @@ void TextIteratorTextNodeHandler::HandleTextNodeInRange(const Text* node,
 
   const OffsetMapping* const mapping =
       OffsetMapping::ForceGetFor(Position(node, offset_));
-  if (UNLIKELY(!mapping)) {
+  if (!mapping) [[unlikely]] {
     DUMP_WILL_BE_NOTREACHED()
         << "We have LayoutText outside LayoutBlockFlow " << text_node_;
     return;

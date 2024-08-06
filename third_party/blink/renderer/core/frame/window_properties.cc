@@ -33,7 +33,7 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
   // have a custom message in that case, possibly by actually printing the
   // passed name.
   v8::Isolate* isolate = frame->GetWindowProxyManager()->GetIsolate();
-  if (UNLIKELY(window->IsAccessBlockedByCoopRestrictProperties(isolate))) {
+  if (window->IsAccessBlockedByCoopRestrictProperties(isolate)) [[unlikely]] {
     // We need to not throw an exception if we're dealing with the special
     // "then" property but return undefined instead. See
     // https://html.spec.whatwg.org/#crossoriginpropertyfallback-(-p-). This

@@ -522,7 +522,7 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
   if (!offset_mapping_) {
     offset_mapping_ = InlineNode::GetOffsetMapping(&block_flow);
 
-    if (UNLIKELY(!offset_mapping_)) {
+    if (!offset_mapping_) [[unlikely]] {
       // TODO(crbug.com/955678): There are certain cases where we fail to
       // compute the |OffsetMapping| due to failures in layout. As the root
       // cause is hard to fix at the moment, we just work around it here.

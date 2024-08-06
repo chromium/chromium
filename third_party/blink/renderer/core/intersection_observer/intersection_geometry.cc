@@ -316,9 +316,9 @@ const LayoutObject* IntersectionGeometry::GetTargetLayoutObject(
     return nullptr;
   }
   // If the target is inside a locked subtree, it isn't ever visible.
-  if (UNLIKELY(target->GetFrameView()->IsDisplayLocked() ||
-               DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
-                   target_element))) {
+  if (target->GetFrameView()->IsDisplayLocked() ||
+      DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(target_element))
+      [[unlikely]] {
     return nullptr;
   }
 

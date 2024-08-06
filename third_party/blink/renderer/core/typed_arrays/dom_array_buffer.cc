@@ -206,7 +206,7 @@ DOMArrayBuffer* DOMArrayBuffer::Create(
   ArrayBufferContents contents(shared_buffer->size(), 1,
                                ArrayBufferContents::kNotShared,
                                ArrayBufferContents::kDontInitialize);
-  if (UNLIKELY(!contents.IsValid())) {
+  if (!contents.IsValid()) [[unlikely]] {
     OOM_CRASH(shared_buffer->size());
   }
 
@@ -226,7 +226,7 @@ DOMArrayBuffer* DOMArrayBuffer::Create(
   }
   ArrayBufferContents contents(size, 1, ArrayBufferContents::kNotShared,
                                ArrayBufferContents::kDontInitialize);
-  if (UNLIKELY(!contents.IsValid())) {
+  if (!contents.IsValid()) [[unlikely]] {
     OOM_CRASH(size);
   }
 

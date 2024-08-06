@@ -92,7 +92,7 @@ String AdTracker::ScriptAtTopOfStack() {
   // is the url of the script at the top of the stack. See crbug.com/1057211 for
   // more detail.
   v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
-  if (UNLIKELY(!isolate)) {
+  if (!isolate) [[unlikely]] {
     return String();
   }
 

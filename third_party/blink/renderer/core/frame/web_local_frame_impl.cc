@@ -694,7 +694,7 @@ WebLocalFrame* WebLocalFrame::FromFrameToken(
 
 WebLocalFrame* WebLocalFrame::FrameForCurrentContext() {
   v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
-  if (UNLIKELY(!isolate)) {
+  if (!isolate) [[unlikely]] {
     return nullptr;
   }
   v8::Local<v8::Context> context = isolate->GetCurrentContext();

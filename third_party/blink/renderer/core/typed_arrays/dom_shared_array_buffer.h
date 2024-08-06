@@ -27,7 +27,7 @@ class CORE_EXPORT DOMSharedArrayBuffer final : public DOMArrayBufferBase {
     ArrayBufferContents contents(num_elements, element_byte_size,
                                  ArrayBufferContents::kShared,
                                  ArrayBufferContents::kZeroInitialize);
-    if (UNLIKELY(!contents.DataShared())) {
+    if (!contents.DataShared()) [[unlikely]] {
       OOM_CRASH(num_elements * element_byte_size);
     }
     return Create(std::move(contents));
@@ -37,7 +37,7 @@ class CORE_EXPORT DOMSharedArrayBuffer final : public DOMArrayBufferBase {
                                       unsigned byte_length) {
     ArrayBufferContents contents(byte_length, 1, ArrayBufferContents::kShared,
                                  ArrayBufferContents::kDontInitialize);
-    if (UNLIKELY(!contents.DataShared())) {
+    if (!contents.DataShared()) [[unlikely]] {
       OOM_CRASH(byte_length);
     }
     memcpy(contents.DataShared(), source, byte_length);

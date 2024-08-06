@@ -3101,7 +3101,7 @@ void CSSAnimations::TransitionEventDelegate::Trace(Visitor* visitor) const {
 const StylePropertyShorthand& CSSAnimations::PropertiesForTransitionAll(
     bool with_discrete,
     const ExecutionContext* execution_context) {
-  if (UNLIKELY(with_discrete)) {
+  if (with_discrete) [[unlikely]] {
     return PropertiesForTransitionAllDiscrete(execution_context);
   }
   return PropertiesForTransitionAllNormal(execution_context);

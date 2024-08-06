@@ -137,11 +137,13 @@ bool IdentifiabilityStudySettings::ShouldSampleWebFeature(
 
 bool IdentifiabilityStudySettings::ShouldSampleSurface(
     IdentifiableSurface surface) const {
-  if (LIKELY(!ShouldSampleAnything()))
+  if (!ShouldSampleAnything()) [[likely]] {
     return false;
+  }
 
-  if (LIKELY(!is_any_surface_or_type_blocked_))
+  if (!is_any_surface_or_type_blocked_) [[likely]] {
     return true;
+  }
 
   if (is_meta_experiment_active_) {
     return true;
@@ -152,11 +154,13 @@ bool IdentifiabilityStudySettings::ShouldSampleSurface(
 
 bool IdentifiabilityStudySettings::ShouldSampleType(
     IdentifiableSurface::Type type) const {
-  if (LIKELY(!ShouldSampleAnything()))
+  if (!ShouldSampleAnything()) [[likely]] {
     return false;
+  }
 
-  if (LIKELY(!is_any_surface_or_type_blocked_))
+  if (!is_any_surface_or_type_blocked_) [[likely]] {
     return true;
+  }
 
   if (is_meta_experiment_active_) {
     return true;
@@ -167,11 +171,13 @@ bool IdentifiabilityStudySettings::ShouldSampleType(
 
 bool IdentifiabilityStudySettings::ShouldSampleAnyType(
     std::initializer_list<IdentifiableSurface::Type> types) const {
-  if (LIKELY(!ShouldSampleAnything()))
+  if (!ShouldSampleAnything()) [[likely]] {
     return false;
+  }
 
-  if (LIKELY(!is_any_surface_or_type_blocked_))
+  if (!is_any_surface_or_type_blocked_) [[likely]] {
     return true;
+  }
 
   if (is_meta_experiment_active_) {
     return true;

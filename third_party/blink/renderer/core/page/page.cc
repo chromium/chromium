@@ -866,8 +866,9 @@ bool Page::IsCursorVisible() const {
 
 // static
 int Page::MaxNumberOfFrames() {
-  if (UNLIKELY(g_limit_max_frames_to_ten_for_testing))
+  if (g_limit_max_frames_to_ten_for_testing) [[unlikely]] {
     return kTenFrames;
+  }
   return kMaxNumberOfFrames;
 }
 
