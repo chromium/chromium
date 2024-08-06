@@ -39,6 +39,10 @@
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #endif
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace supervised_user {
 class SupervisedUserService;
 }
@@ -85,11 +89,12 @@ class MostVisitedSites :
   // Construct a MostVisitedSites instance.
   //
   // |prefs| are required and may not be null. |top_sites|,
-  // |popular_sites|, |custom_links|, |supervised_user_service| and
-  // |homepage_client| are
+  // |popular_sites|, |custom_links|, |identity_manager|,
+  // |supervised_user_service| and |homepage_client| are
   //  optional and if null, the associated features will be disabled.
   MostVisitedSites(
       PrefService* prefs,
+      signin::IdentityManager* identity_manager,
       supervised_user::SupervisedUserService* supervised_user_service,
       scoped_refptr<history::TopSites> top_sites,
       std::unique_ptr<PopularSites> popular_sites,
@@ -311,6 +316,7 @@ class MostVisitedSites :
                        ChangeReason change_reason) override;
 
   raw_ptr<PrefService> prefs_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<supervised_user::SupervisedUserService> supervised_user_service_;
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   base::ScopedObservation<supervised_user::SupervisedUserService,

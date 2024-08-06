@@ -298,9 +298,10 @@ class MagicStackRankingModelTest : public PlatformTest {
         IOSChromeLargeIconCacheFactory::GetForBrowserState(GetBrowserState());
     std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites =
         std::make_unique<ntp_tiles::MostVisitedSites>(
-            &pref_service_, /*top_sites*/ nullptr, /*popular_sites*/ nullptr,
-            /*custom_links*/ nullptr, /*icon_cacher*/ nullptr,
-            /*supervisor=*/nullptr, true);
+            &pref_service_, /*identity_manager*/ nullptr,
+            /*supervised_user_service*/ nullptr, /*top_sites*/ nullptr,
+            /*popular_sites*/ nullptr,
+            /*custom_links*/ nullptr, /*icon_cacher*/ nullptr, true);
     _mostVisitedTilesMediator = [[FakeMostVisitedTilesMediator alloc]
         initWithMostVisitedSite:std::move(most_visited_sites)
                     prefService:GetBrowserState()->GetPrefs()

@@ -20,6 +20,7 @@
 #include "chrome/browser/ntp_tiles/chrome_custom_links_manager_factory.h"
 #include "chrome/browser/ntp_tiles/chrome_popular_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "components/history/core/browser/top_sites.h"
@@ -64,7 +65,8 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 #endif
 
   auto most_visited_sites = std::make_unique<ntp_tiles::MostVisitedSites>(
-      profile->GetPrefs(), SupervisedUserServiceFactory::GetForProfile(profile),
+      profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
+      SupervisedUserServiceFactory::GetForProfile(profile),
       TopSitesFactory::GetForProfile(profile),
 #if BUILDFLAG(IS_ANDROID)
       ChromePopularSitesFactory::NewForProfile(profile),
