@@ -188,6 +188,10 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // completed and we don't have ViewAXPlatformNodeDelegate anymore.
   ax::mojom::Role GetCachedRole() const;
 
+  void SetRoleDescription(const std::u16string& role_description);
+  void SetRoleDescription(const std::string& role_description);
+  void RemoveRoleDescription();
+
   // For the same reasons as GetCachedRole, this function cannot
   // follow the established pattern and be named GetName()
   // TODO(crbug.com/325137417): Rename to GetName once the ViewsAX project is

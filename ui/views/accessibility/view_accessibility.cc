@@ -408,21 +408,9 @@ void ViewAccessibility::SetRole(const ax::mojom::Role role) {
 void ViewAccessibility::SetRole(const ax::mojom::Role role,
                                 const std::u16string& role_description) {
   RETURN_IF_UNAVAILABLE();
-  if (role_description == data_.GetString16Attribute(
-                              ax::mojom::StringAttribute::kRoleDescription)) {
-    // No changes to the role description, update the role and return early.
-    SetRole(role);
-    return;
-  }
-
-  if (!role_description.empty()) {
-    data_.AddStringAttribute(ax::mojom::StringAttribute::kRoleDescription,
-                             base::UTF16ToUTF8(role_description));
-  } else {
-    data_.RemoveStringAttribute(ax::mojom::StringAttribute::kRoleDescription);
-  }
 
   SetRole(role);
+  SetRoleDescription(role_description);
 }
 
 void ViewAccessibility::SetName(std::u16string name,
@@ -522,6 +510,30 @@ ax::mojom::NameFrom ViewAccessibility::GetCachedNameFrom() const {
 
 ax::mojom::Role ViewAccessibility::GetCachedRole() const {
   return data_.role;
+}
+
+void ViewAccessibility::SetRoleDescription(
+    const std::u16string& role_description) {
+  if (role_description == data_.GetString16Attribute(
+                              ax::mojom::StringAttribute::kRoleDescription)) {
+    return;
+  }
+
+  if (!role_description.empty()) {
+    data_.AddStringAttribute(ax::mojom::StringAttribute::kRoleDescription,
+                             base::UTF16ToUTF8(role_description));
+  } else {
+    RemoveRoleDescription();
+  }
+}
+
+void ViewAccessibility::SetRoleDescription(
+    const std::string& role_description) {
+  SetRoleDescription(base::UTF8ToUTF16(role_description));
+}
+
+void ViewAccessibility::RemoveRoleDescription() {
+  data_.RemoveStringAttribute(ax::mojom::StringAttribute::kRoleDescription);
 }
 
 void ViewAccessibility::SetIsEditable(bool editable) {
