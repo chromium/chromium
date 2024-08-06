@@ -7386,7 +7386,7 @@ New install
         desc="This string appears a selectable menu item in a menu. When selected, it turns off the user's keyboard Caps Lock.">
         Turn off Caps Lock
       </message>
-      <message name="IDS_PICKER_CLIPBOARD_CATEGORY_LABEL" translateable="false"
+      <message name="IDS_PICKER_CLIPBOARD_CATEGORY_LABEL"
         desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page showing the items in the user's clipboard.">
         Clipboard
       </message>
@@ -7435,7 +7435,7 @@ New install
         desc="This string appears as a selectable menu item in a menu, when the user has highlighted some text. When the user hovers over this item, it opens a submenu with various options to reword the highlighted text. The submenu options can change the tone of the highlighted text in various ways. For example, an option might make the text more casual by using a different vocabulary.">
         Change tone
       </message>
-      <message name="IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL" translateable="false"
+      <message name="IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL"
         desc="This string appears as a selectable menu item in a menu, when the user has highlighted some text. When the user hovers over this item, it opens a submenu with various options to change the capitalization of the text. For example, one of the submenu options might convert the text into uppercase.">
         Change capitalization
       </message>
