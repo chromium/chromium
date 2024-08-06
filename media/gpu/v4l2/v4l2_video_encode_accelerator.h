@@ -63,6 +63,10 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
       const Bitrate& bitrate,
       uint32_t framerate,
       const std::optional<gfx::Size>& size) override;
+  void RequestEncodingParametersChange(
+      const VideoBitrateAllocation& bitrate_allocation,
+      uint32_t framerate,
+      const std::optional<gfx::Size>& size) override;
   void Destroy() override;
   void Flush(FlushCallback flush_callback) override;
   bool IsFlushSupported() override;
@@ -200,7 +204,7 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
 
   // Change encoding parameters.
   void RequestEncodingParametersChangeTask(
-      const Bitrate& bitrate,
+      const VideoBitrateAllocation& bitrate_allocation,
       uint32_t framerate,
       const std::optional<gfx::Size>& size);
 
@@ -301,7 +305,7 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   size_t output_buffer_byte_size_;
   uint32_t output_format_fourcc_;
 
-  Bitrate current_bitrate_;
+  VideoBitrateAllocation current_bitrate_allocation_;
   size_t current_framerate_;
 
   // Encoder state, owned and operated by |encoder_task_runner_|.

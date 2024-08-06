@@ -346,28 +346,28 @@ void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config) {
     return;
   }
 
-  uint32_t bitrate_mode = V4L2_MPEG_VIDEO_BITRATE_MODE_CBR;
-  switch (config.bitrate.mode()) {
-    case Bitrate::Mode::kConstant:
-      current_bitrate_ = Bitrate::ConstantBitrate(0u);
-      bitrate_mode = V4L2_MPEG_VIDEO_BITRATE_MODE_CBR;
-      break;
-    case Bitrate::Mode::kVariable:
-      if (!base::FeatureList::IsEnabled(kChromeOSHWVBREncoding)) {
-        SetErrorState({EncoderStatus::Codes::kEncoderUnsupportedConfig,
-                       "VBR encoding is disabled"});
-        return;
-      }
-      current_bitrate_ = Bitrate::VariableBitrate(0u, 0u);
-      bitrate_mode = V4L2_MPEG_VIDEO_BITRATE_MODE_VBR;
-      break;
-    default:
-      SetErrorState({EncoderStatus::Codes::kEncoderUnsupportedConfig,
-                     base::StrCat({"Invalid bitrate mode: ",
-                                   base::NumberToString(base::strict_cast<int>(
-                                       config.bitrate.mode()))})});
-      return;
+  if (config.bitrate.mode() != Bitrate::Mode::kConstant &&
+      config.bitrate.mode() != Bitrate::Mode::kVariable) {
+    SetErrorState({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                   base::StrCat({"Invalid bitrate mode: ",
+                                 base::NumberToString(base::strict_cast<int>(
+                                     config.bitrate.mode()))})});
+    return;
   }
+
+  if (config.bitrate.mode() == Bitrate::Mode::kVariable &&
+      !base::FeatureList::IsEnabled(kChromeOSHWVBREncoding)) {
+    SetErrorState({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                   "VBR encoding is disabled"});
+    return;
+  }
+
+  const uint32_t bitrate_mode =
+      config.bitrate.mode() == Bitrate::Mode::kConstant
+          ? V4L2_MPEG_VIDEO_BITRATE_MODE_CBR
+          : V4L2_MPEG_VIDEO_BITRATE_MODE_VBR;
+  const VideoBitrateAllocation bitrate_allocation =
+      AllocateBitrateForDefaultEncoding(config);
 
   if (!device_->SetExtCtrls(
           V4L2_CID_MPEG_CLASS,
@@ -375,11 +375,13 @@ void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config) {
     SetErrorState({EncoderStatus::Codes::kEncoderHardwareDriverError,
                    base::StrCat({"Failed to configure bitrate mode: ",
                                  base::NumberToString(base::strict_cast<int>(
-                                     config.bitrate.mode()))})});
+                                     bitrate_allocation.GetMode()))})});
     return;
   }
 
-  RequestEncodingParametersChangeTask(config.bitrate, config.framerate,
+  current_bitrate_allocation_ = VideoBitrateAllocation(config.bitrate.mode());
+
+  RequestEncodingParametersChangeTask(bitrate_allocation, config.framerate,
                                       std::nullopt);
 
   // input_frame_size_ is the size of input_config of |image_processor_|.
@@ -589,11 +591,24 @@ void V4L2VideoEncodeAccelerator::RequestEncodingParametersChange(
     const std::optional<gfx::Size>& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
 
+  VideoBitrateAllocation allocation(bitrate.mode());
+  allocation.SetBitrate(0u, 0u, bitrate.target_bps());
+  allocation.SetPeakBps(bitrate.peak_bps());
+
+  RequestEncodingParametersChange(allocation, framerate, size);
+}
+
+void V4L2VideoEncodeAccelerator::RequestEncodingParametersChange(
+    const VideoBitrateAllocation& bitrate_allocation,
+    uint32_t framerate,
+    const std::optional<gfx::Size>& size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
+
   encoder_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &V4L2VideoEncodeAccelerator::RequestEncodingParametersChangeTask,
-          weak_this_, bitrate, framerate, size));
+          weak_this_, bitrate_allocation, framerate, size));
 }
 
 void V4L2VideoEncodeAccelerator::Destroy() {
@@ -1609,7 +1624,7 @@ void V4L2VideoEncodeAccelerator::SetErrorState(EncoderStatus status) {
 }
 
 void V4L2VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
-    const Bitrate& bitrate,
+    const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate,
     const std::optional<gfx::Size>& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
@@ -1618,33 +1633,37 @@ void V4L2VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
                    "Update output frame size is not supported"});
     return;
   }
-  if (current_bitrate_ == bitrate && current_framerate_ == framerate) {
+  if (current_bitrate_allocation_ == bitrate_allocation &&
+      current_framerate_ == framerate) {
     return;
   }
 
-  VLOGF(2) << "bitrate=" << bitrate.ToString() << ", framerate=" << framerate;
-  if (bitrate.mode() != current_bitrate_.mode()) {
+  DVLOGF(2) << "bitrate=" << bitrate_allocation.ToString()
+            << ", framerate=" << framerate;
+  if (bitrate_allocation.GetMode() != current_bitrate_allocation_.GetMode()) {
     SetErrorState({EncoderStatus::Codes::kEncoderUnsupportedConfig,
                    "Bitrate mode changed during encoding"});
     return;
   }
 
   TRACE_EVENT2("media,gpu", "V4L2VEA::RequestEncodingParametersChangeTask",
-               "bitrate", bitrate.ToString(), "framerate", framerate);
-  if (current_bitrate_ != bitrate) {
-    switch (bitrate.mode()) {
+               "bitrate", current_bitrate_allocation_.ToString(), "framerate",
+               framerate);
+  if (current_bitrate_allocation_ != bitrate_allocation) {
+    switch (bitrate_allocation.GetMode()) {
       case Bitrate::Mode::kVariable:
         device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG,
                              {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_BITRATE_PEAK,
-                                          bitrate.peak_bps())});
+                                          bitrate_allocation.GetPeakBps())});
 
         // Both the average and peak bitrate are to be set in VBR.
         // Only the average bitrate are to be set in CBR.
         [[fallthrough]];
       case Bitrate::Mode::kConstant:
-        if (!device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG,
-                                  {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_BITRATE,
-                                               bitrate.target_bps())})) {
+        if (!device_->SetExtCtrls(
+                V4L2_CTRL_CLASS_MPEG,
+                {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_BITRATE,
+                             bitrate_allocation.GetBitrateBps(0u, 0u))})) {
           SetErrorState({EncoderStatus::Codes::kEncoderHardwareDriverError,
                          "Failed to change average bitrate"});
           return;
@@ -1673,7 +1692,7 @@ void V4L2VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
     }
   }
 
-  current_bitrate_ = bitrate;
+  current_bitrate_allocation_ = bitrate_allocation;
   current_framerate_ = framerate;
 }
 
