@@ -307,8 +307,6 @@ class ChromiumDepGraph {
         io_perfmark_perfmark_api: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),
-        com_google_android_gms_play_services_identity_credentials: new PropertyOverride(
-          overrideLatest: true),
     ]
 
     // Bill of materials (BOM) deps are used to specify versions for other dependencies and don't have children or
