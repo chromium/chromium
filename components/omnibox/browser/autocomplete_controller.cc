@@ -2395,24 +2395,31 @@ void AutocompleteController::MaybeRemoveCompanyEntityImages(
   if (result->match_at(0)->type == AutocompleteMatchType::HISTORY_URL) {
     history_domain = GetDomain(*result->match_at(0));
   }
-  if (history_domain.empty()) {
+
+  auto iter = base::ranges::find_if(result->matches_, [](const auto& match) {
+    return match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
+  });
+  if (iter == result->matches_.end()) {
     return;
   }
-  for (size_t i = 1; i < result->size(); i++) {
-    // Do not attempt to change image to search loupe if not an entity
-    // suggestion.
-    if (result->match_at(i)->type !=
-        AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
-      continue;
-    }
-    // Check that entity domain has a matching history domain.
-    if (history_domain == GetDomain(*result->match_at(i)) &&
-        (!result->match_at(i)->image_url.is_empty() ||
-         !result->match_at(i)->image_dominant_color.empty())) {
-      result->match_at(i)->image_url = GURL();
-      result->match_at(i)->image_dominant_color.clear();
+
+  bool image_ablated = false;
+  if (!history_domain.empty()) {
+    for (auto it = iter; it != result->matches_.end(); it++) {
+      // Do not attempt to change image to search loupe if not an entity
+      // suggestion.
+      if (it->type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
+        continue;
+      }
+      // Check that the entity domain matches the history domain.
+      if (history_domain == GetDomain(*it)) {
+        it->image_url = GURL();
+        it->image_dominant_color.clear();
+        image_ablated = true;
+      }
     }
   }
+  base::UmaHistogramBoolean("Omnibox.CompanyEntityImageAblated", image_ablated);
 }
 
 void AutocompleteController::MaybeCleanSuggestionsForKeywordMode(

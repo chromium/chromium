@@ -652,6 +652,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.CompanyEntityImageAblated" enum="Boolean"
+    expires_after="2025-08-04">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Records whether any company entity image was ablated. This histogram is
+    logged to once per autocomplete pass when there exists a suggestion of
+    entity type. Recorded after attempting to find matching domains between a
+    historical URL and a company entity website URI.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.CutOrCopyAllText" units="count"
     expires_after="2024-12-08">
   <owner>jdonnelly@chromium.org</owner>
