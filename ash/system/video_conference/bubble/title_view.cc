@@ -11,6 +11,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "ash/system/video_conference/bubble/mic_indicator.h"
+#include "ash/system/video_conference/bubble/settings_button.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -64,6 +65,7 @@ TitleView::TitleView() {
   SetOrientation(views::LayoutOrientation::kHorizontal);
   SetInsideBorderInsets(kTitleViewPadding);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
+  SetBetweenChildSpacing(kTitleChildSpacing);
 
   auto* title_column =
       AddChildView(views::Builder<views::BoxLayoutView>()
@@ -115,6 +117,8 @@ TitleView::TitleView() {
       VideoConferenceTrayController::Get()->GetSidetoneEnabled());
 
   VideoConferenceTrayController::Get()->UpdateSidetoneSupportedState();
+
+  AddChildView(std::make_unique<SettingsButton>());
 }
 
 void TitleView::OnSidetoneButtonClicked(const ui::Event& event) {
