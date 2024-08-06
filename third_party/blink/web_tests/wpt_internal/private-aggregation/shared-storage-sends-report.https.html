@@ -209,5 +209,149 @@ private_aggregation_promise_test(async () => {
   assert_equals(debug_reports.length, 2);
 }, 'reports from multiple operations aren\'t batched');
 
+private_aggregation_promise_test(async () => {
+  await addModuleOnce("resources/shared-storage-module.js");
+
+  const data = {
+    enableDebugMode: true,
+    contributions: [
+        {bucket: 1n, value: 2}, {bucket: 3n, value: 3}, {bucket: 3n, value: 1}]
+  };
+  await sharedStorage.run("contribute-to-histogram", {data, keepAlive: true});
+
+  const reports = await pollReports(
+      "/.well-known/private-aggregation/report-shared-storage")
+  assert_equals(reports.length, 1);
+
+  const report = JSON.parse(reports[0]);
+  verifyReport(report, /*api=*/'shared-storage', /*is_debug_enabled=*/true,
+               /*debug_key=*/undefined,
+               /*expected_cleartext_payload=*/MULTIPLE_CONTRIBUTIONS_EXAMPLE_PAYLOAD);
+
+  const debug_reports = await pollReports(
+      "/.well-known/private-aggregation/debug/report-shared-storage")
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+
+}, 'run() that calls Private Aggregation with mergeable contributions');
+
+private_aggregation_promise_test(async () => {
+  await addModuleOnce("resources/shared-storage-module.js");
+
+  const data = {
+    enableDebugMode: true,
+    contributions: [
+        {bucket: 1n, value: 2}, {bucket: 3n, value: 4}, {bucket: 4n, value: 0}]
+  };
+  await sharedStorage.run("contribute-to-histogram", {data, keepAlive: true});
+
+  const reports = await pollReports(
+      "/.well-known/private-aggregation/report-shared-storage")
+  assert_equals(reports.length, 1);
+
+  const report = JSON.parse(reports[0]);
+  verifyReport(report, /*api=*/'shared-storage', /*is_debug_enabled=*/true,
+               /*debug_key=*/undefined,
+               /*expected_cleartext_payload=*/MULTIPLE_CONTRIBUTIONS_EXAMPLE_PAYLOAD);
+
+  const debug_reports = await pollReports(
+      "/.well-known/private-aggregation/debug/report-shared-storage")
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+
+}, 'run() that calls Private Aggregation with zero-value contributions');
+
+private_aggregation_promise_test(async () => {
+  await addModuleOnce("resources/shared-storage-module.js");
+
+  let contributions = []
+  for (let i = 1n; i <= 21n; i++) {  // Too many contributions
+    contributions.push({bucket: i, value: 1});
+  }
+
+  const data = {
+    enableDebugMode: true,
+    contributions
+  };
+  await sharedStorage.run("contribute-to-histogram", {data, keepAlive: true});
+
+  const reports = await pollReports(
+      "/.well-known/private-aggregation/report-shared-storage")
+  assert_equals(reports.length, 1);
+
+  const report = JSON.parse(reports[0]);
+  verifyReport(report, /*api=*/'shared-storage', /*is_debug_enabled=*/true,
+               /*debug_key=*/undefined,
+               /*expected_cleartext_payload=*/CONTRIBUTIONS_UP_TO_LIMIT_EXAMPLE_PAYLOAD);
+
+  const debug_reports = await pollReports(
+      "/.well-known/private-aggregation/debug/report-shared-storage")
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+
+}, 'run() that calls Private Aggregation with too many contributions');
+
+private_aggregation_promise_test(async () => {
+  await addModuleOnce("resources/shared-storage-module.js");
+
+  let contributions = []
+  for (let i = 1n; i <= 21n; i++) {  // Too many contributions ignoring merging
+    contributions.push({bucket: 1n, value: 1});
+  }
+
+  const data = {
+    enableDebugMode: true,
+    contributions
+  };
+  await sharedStorage.run("contribute-to-histogram", {data, keepAlive: true});
+
+  const reports = await pollReports(
+      "/.well-known/private-aggregation/report-shared-storage")
+  assert_equals(reports.length, 1);
+
+  const report = JSON.parse(reports[0]);
+  verifyReport(report, /*api=*/'shared-storage', /*is_debug_enabled=*/true,
+               /*debug_key=*/undefined,
+               /*expected_cleartext_payload=*/
+               ONE_CONTRIBUTION_HIGHER_VALUE_EXAMPLE_PAYLOAD);
+
+  const debug_reports = await pollReports(
+      "/.well-known/private-aggregation/debug/report-shared-storage")
+  assert_equals(debug_reports.length, 1);
+
+  verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
+
+}, 'run() that calls Private Aggregation with many mergeable contributions');
+
+private_aggregation_promise_test(async () => {
+  await addModuleOnce("resources/shared-storage-module.js");
+
+  let contributions = []
+  // Sums to value 1 if overflow is allowed.
+  contributions.push({bucket: 1n, value: 2147483647});
+  contributions.push({bucket: 1n, value: 2147483647});
+  contributions.push({bucket: 1n, value: 3});
+
+  const data = {
+    enableDebugMode: true,
+    contributions
+  };
+  await sharedStorage.run("contribute-to-histogram", {data, keepAlive: true});
+
+  // No reports are expected as the budget has surely been exceeded.
+  const reports = await pollReports(
+      "/.well-known/private-aggregation/report-shared-storage",
+      /*wait_for=*/1, /*timeout=*/50)
+  assert_equals(reports, null);
+
+  const debug_reports = await pollReports(
+      "/.well-known/private-aggregation/debug/report-shared-storage",
+      /*wait_for=*/1, /*timeout=*/50)
+  assert_equals(debug_reports, null);
+}, 'run() that calls Private Aggregation with values that sum to more than the max long');
+
 </script>
 </body>
