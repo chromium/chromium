@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/download/drag_download_item.h"
-
 #include <string>
 
+#include "base/files/file_path.h"
+#include "base/task/current_thread.h"
 #include "build/build_config.h"
+#include "chrome/browser/download/drag_download_item.h"
 #include "components/download/public/common/download_item.h"
 #include "net/base/mime_util.h"
 #include "ui/aura/client/drag_drop_client.h"
@@ -46,6 +47,11 @@ void DragDownloadItem(const download::DownloadItem* download,
   data->SetFilenames(file_infos);
 
   gfx::Point location = display::Screen::GetScreen()->GetCursorScreenPoint();
+
+  // The following call to StartDragAndDrop() causes re-entrancy inside which
+  // application tasks must be run (to support dragging downloads into
+  // WebContents).
+  base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
   // TODO(varunjain): Properly determine and send DragEventSource below.
   aura::client::GetDragDropClient(root_window)
       ->StartDragAndDrop(
