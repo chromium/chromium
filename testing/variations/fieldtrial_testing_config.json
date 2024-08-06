@@ -6430,11 +6430,11 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledEarlyDiscard_20240730",
+                    "name": "EnabledEarlyDiscard_20240802",
                     "params": {
                         "CompleteStallMs": "700",
                         "PartialStallMs": "20",
-                        "VmmmsReclaimProportion": "50"
+                        "VmmmsReclaimProportion": "0"
                     },
                     "enable_features": [
                         "CrOSLateBootDiscardStaleAtModeratePressure",
@@ -6446,7 +6446,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledAvailableAdjustmentPsi_20240730",
+                    "name": "EnabledAvailableAdjustmentPsi_20240802",
                     "params": {
                         "PsiTopThreshold": "80.0"
                     },
@@ -6460,7 +6460,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledAvailableAdjustmentPsiTopThreshold60_20240730",
+                    "name": "EnabledAvailableAdjustmentPsiTopThreshold60_20240802",
                     "params": {
                         "PsiTopThreshold": "60.0"
                     },
@@ -6474,7 +6474,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledAvailableAdjustmentPsiFull_20240730",
+                    "name": "EnabledAvailableAdjustmentPsiFull_20240802",
                     "params": {
                         "PsiTopThreshold": "40.0",
                         "PsiUseFull": "true"
@@ -6489,12 +6489,12 @@
                     ]
                 },
                 {
-                    "name": "EnabledAvailableAdjustmentPsiWithEarlyDiscard_20240730",
+                    "name": "EnabledAvailableAdjustmentPsiWithEarlyDiscard_20240802",
                     "params": {
                         "CompleteStallMs": "700",
                         "PartialStallMs": "20",
                         "PsiTopThreshold": "80.0",
-                        "VmmmsReclaimProportion": "50"
+                        "VmmmsReclaimProportion": "0"
                     },
                     "enable_features": [
                         "CrOSLateBootDiscardStaleAtModeratePressure",
@@ -6506,7 +6506,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledMlockChrome_20240730",
+                    "name": "EnabledMlockChrome_20240802",
                     "enable_features": [
                         "CrOSLockMainProgramText"
                     ],
@@ -6517,7 +6517,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledMlockChromeWithAvailableAdjustmentPsi_20240730",
+                    "name": "EnabledMlockChromeWithAvailableAdjustmentPsi_20240802",
                     "params": {
                         "PsiTopThreshold": "80.0"
                     },
@@ -6531,12 +6531,12 @@
                     ]
                 },
                 {
-                    "name": "EnabledAvailableAdjustmentPsiWithEarlyDiscardAndMlockChrome_20240730",
+                    "name": "EnabledAvailableAdjustmentPsiWithEarlyDiscardAndMlockChrome_20240802",
                     "params": {
                         "CompleteStallMs": "700",
                         "PartialStallMs": "20",
                         "PsiTopThreshold": "80.0",
-                        "VmmmsReclaimProportion": "50"
+                        "VmmmsReclaimProportion": "0"
                     },
                     "enable_features": [
                         "CrOSLateBootDiscardStaleAtModeratePressure",
