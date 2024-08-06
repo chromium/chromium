@@ -902,9 +902,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OOBE.MarketingOptInScreen.BackendConnector.{OOBEMarketingCountry}"
-    enum="MarketingOptInBackendConnectorEvent" expires_after="2024-09-03">
-  <owner>rrsilva@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+    enum="MarketingOptInBackendConnectorEvent" expires_after="2025-01-26">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
   <summary>
     The result of a request performed by the MarketingBackendConnector used in
     the OOBE MarketingOptInScreen when subscribing users in
@@ -915,9 +915,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.MarketingOptInScreen.Event.{OOBEMarketingCountry}"
-    enum="MarketingOptInScreenEvent" expires_after="2024-09-03">
-  <owner>rrsilva@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+    enum="MarketingOptInScreenEvent" expires_after="2025-01-26">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
   <summary>
     Records the choice users in {OOBEMarketingCountry} takes when prompted with
     a toggle on the OOBE MarketingOptInScreen to subscribe to Chromebook emails.
@@ -926,9 +926,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.MarketingOptInScreen.GeolocationResolve"
-    enum="MarketingOptInGeolocationEvent" expires_after="2024-12-08">
-  <owner>rrsilva@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+    enum="MarketingOptInGeolocationEvent" expires_after="2025-01-26">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
   <summary>
     Records whether the user's geolocation was resolved successfully.
   </summary>
@@ -1112,7 +1112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.DownloadTime" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2025-01-26">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
