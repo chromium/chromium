@@ -111,7 +111,6 @@ BrowserStateDirectoryBuilder::CreateDirectories(
   // synchronously on an as-needed basis on the UI thread, so creation of its
   // stash state directory cannot easily be done at that point.
   if (!base::PathExists(otr_path)) {
-    DCHECK(created);
     if (!base::CreateDirectory(otr_path)) {
       return Result::Failure();
     }
@@ -120,16 +119,15 @@ BrowserStateDirectoryBuilder::CreateDirectories(
 
   base::FilePath base_cache_path;
   ios::GetUserCacheDirectory(state_path, &base_cache_path);
+  base::FilePath cache_path = base_cache_path.Append(kIOSChromeCacheDirname);
 
-  if (!base::PathExists(base_cache_path)) {
-    DCHECK(created);
-    if (!base::CreateDirectory(base_cache_path)) {
+  if (!base::PathExists(cache_path)) {
+    if (!base::CreateDirectory(cache_path)) {
       return Result::Failure();
     }
   }
 
-  return Result::Success(created,
-                         base_cache_path.Append(kIOSChromeCacheDirname));
+  return Result::Success(created, cache_path);
 }
 
 // static
