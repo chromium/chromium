@@ -17,8 +17,8 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
@@ -99,11 +99,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   // Make sure that only the allowed types got activated. Note that, depending
   // on some other feature flags, not all of the allowed types are necessarily
   // active, and that's okay.
-  syncer::ModelTypeSet bad_types =
+  syncer::DataTypeSet bad_types =
       base::Difference(GetSyncService(0)->GetActiveDataTypes(),
                        AllowedTypesInStandaloneTransportMode());
-  EXPECT_TRUE(bad_types.empty())
-      << syncer::ModelTypeSetToDebugString(bad_types);
+  EXPECT_TRUE(bad_types.empty()) << syncer::DataTypeSetToDebugString(bad_types);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -122,11 +121,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
             GetSyncService(0)->GetTransportState());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
 
-  syncer::ModelTypeSet bad_types =
+  syncer::DataTypeSet bad_types =
       base::Difference(GetSyncService(0)->GetActiveDataTypes(),
                        AllowedTypesInStandaloneTransportMode());
-  EXPECT_TRUE(bad_types.empty())
-      << syncer::ModelTypeSetToDebugString(bad_types);
+  EXPECT_TRUE(bad_types.empty()) << syncer::DataTypeSetToDebugString(bad_types);
 
   // Turn Sync-the-feature on.
   ASSERT_TRUE(GetClient(0)->SetupSync());

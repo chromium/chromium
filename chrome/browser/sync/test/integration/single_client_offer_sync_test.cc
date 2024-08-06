@@ -15,7 +15,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/fake_server.h"
@@ -72,7 +72,7 @@ class SingleClientOfferSyncTest : public SyncTest {
   bool TriggerGetUpdatesAndWait() {
     const base::Time now = base::Time::Now();
     // Trigger a sync and wait for the new data to arrive.
-    TriggerSyncForModelTypes(0, {syncer::AUTOFILL_WALLET_OFFER});
+    TriggerSyncForDataTypes(0, {syncer::AUTOFILL_WALLET_OFFER});
     return FullUpdateTypeProgressMarkerChecker(now, GetSyncService(0),
                                                syncer::AUTOFILL_WALLET_OFFER)
         .Wait();

@@ -8,8 +8,8 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "content/public/test/browser_test.h"
 

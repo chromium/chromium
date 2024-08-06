@@ -22,7 +22,7 @@ namespace {
 
 // Returns true if and only if |client_entity| is a bookmark.
 bool IsBookmark(const sync_pb::SyncEntity& client_entity) {
-  return syncer::GetModelTypeFromSpecifics(client_entity.specifics()) ==
+  return syncer::GetDataTypeFromSpecifics(client_entity.specifics()) ==
          syncer::BOOKMARKS;
 }
 

@@ -68,8 +68,7 @@ IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, MAYBE_OfflineToOnline) {
 
   // Double check that the folder hasn't been committed.
   ASSERT_EQ(
-      1u,
-      GetFakeServer()->GetSyncEntitiesByModelType(syncer::BOOKMARKS).size());
+      1u, GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS).size());
 
   // Trigger network change notification and remember time when it happened.
   // Ensure that scheduler runs canary job immediately.

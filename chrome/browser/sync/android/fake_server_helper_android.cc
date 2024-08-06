@@ -17,7 +17,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -119,14 +119,14 @@ static jboolean JNI_FakeServerHelper_VerifyEntityCountByTypeAndName(
     JNIEnv* env,
     jlong fake_server,
     jint count,
-    jint model_type,
+    jint data_type,
     const JavaParamRef<jstring>& name) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
   fake_server::FakeServerVerifier fake_server_verifier(fake_server_ptr);
   testing::AssertionResult result =
       fake_server_verifier.VerifyEntityCountByTypeAndName(
-          count, static_cast<syncer::ModelType>(model_type),
+          count, static_cast<syncer::DataType>(data_type),
           base::android::ConvertJavaStringToUTF8(env, name));
 
   if (!result)
@@ -159,14 +159,14 @@ static jboolean JNI_FakeServerHelper_VerifySessions(
 }
 
 static base::android::ScopedJavaLocalRef<jobjectArray>
-JNI_FakeServerHelper_GetSyncEntitiesByModelType(JNIEnv* env,
-                                                jlong fake_server,
-                                                jint model_type) {
+JNI_FakeServerHelper_GetSyncEntitiesByDataType(JNIEnv* env,
+                                               jlong fake_server,
+                                               jint data_type) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
   std::vector<sync_pb::SyncEntity> entities =
-      fake_server_ptr->GetSyncEntitiesByModelType(
-          static_cast<syncer::ModelType>(model_type));
+      fake_server_ptr->GetSyncEntitiesByDataType(
+          static_cast<syncer::DataType>(data_type));
 
   std::vector<std::string> entity_strings;
   for (const sync_pb::SyncEntity& entity : entities) {

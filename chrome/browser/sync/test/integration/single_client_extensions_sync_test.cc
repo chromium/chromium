@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionsSyncTest, UninstallWinsConflicts) {
 
   // Simulate a delete at the server.
   std::vector<sync_pb::SyncEntity> server_extensions =
-      GetFakeServer()->GetSyncEntitiesByModelType(syncer::EXTENSIONS);
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::EXTENSIONS);
   ASSERT_EQ(1ul, server_extensions.size());
   std::unique_ptr<syncer::LoopbackServerEntity> tombstone(
       syncer::PersistentTombstoneEntity::CreateNew(
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionsSyncTest, UninstallWinsConflicts) {
 
   // Expect the extension to remain uninstalled at the server.
   server_extensions =
-      GetFakeServer()->GetSyncEntitiesByModelType(syncer::EXTENSIONS);
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::EXTENSIONS);
   EXPECT_EQ(0ul, server_extensions.size());
 }
 

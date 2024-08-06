@@ -19,7 +19,7 @@
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/test/fake_server.h"
 
@@ -82,7 +82,7 @@ void ChangeListPref(int index,
 // Returns a server-side preference in FakeServer for |pref_name| or nullopt if
 // no preference exists.
 std::optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const std::string& pref_name,
     fake_server::FakeServer* fake_server);
 
@@ -178,7 +178,7 @@ class ClearedPrefMatchChecker : public PrefMatchChecker {
 class FakeServerPrefMatchesValueChecker
     : public fake_server::FakeServerMatchStatusChecker {
  public:
-  FakeServerPrefMatchesValueChecker(syncer::ModelType model_type,
+  FakeServerPrefMatchesValueChecker(syncer::DataType data_type,
                                     const std::string& pref_name,
                                     const std::string& expected_value);
 
@@ -187,7 +187,7 @@ class FakeServerPrefMatchesValueChecker
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  const syncer::ModelType model_type_;
+  const syncer::DataType data_type_;
   const std::string pref_name_;
   const std::string expected_value_;
 };

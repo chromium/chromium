@@ -14,8 +14,8 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -94,7 +94,7 @@ class SingleClientSavedTabGroupsSyncTest
 
   void RemoveDataFromFakeServer(base::Uuid uuid) {
     std::vector<sync_pb::SyncEntity> server_tabs_and_groups =
-        GetFakeServer()->GetSyncEntitiesByModelType(syncer::SAVED_TAB_GROUP);
+        GetFakeServer()->GetSyncEntitiesByDataType(syncer::SAVED_TAB_GROUP);
 
     // Remove the entity with a matching `uuid`.
     for (const sync_pb::SyncEntity& tab_or_group : server_tabs_and_groups) {
@@ -113,7 +113,7 @@ class SingleClientSavedTabGroupsSyncTest
 
   bool ContainsUuidInFakeServer(base::Uuid uuid) {
     const std::vector<sync_pb::SyncEntity> server_tabs_and_groups =
-        GetFakeServer()->GetSyncEntitiesByModelType(syncer::SAVED_TAB_GROUP);
+        GetFakeServer()->GetSyncEntitiesByDataType(syncer::SAVED_TAB_GROUP);
 
     const std::string& uuid_string = uuid.AsLowercaseString();
 

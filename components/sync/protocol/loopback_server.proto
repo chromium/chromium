@@ -28,7 +28,7 @@ message LoopbackServerEntity {
 
   optional Type type = 1;
   optional SyncEntity entity = 2;
-  optional int64 model_type = 3;
+  optional int64 data_type = 3;
 }
 
 // Contains the loopback server state.

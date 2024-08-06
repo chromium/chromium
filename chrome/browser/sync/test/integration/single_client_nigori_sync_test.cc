@@ -41,8 +41,8 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(
   // so it's an incremental update.
   ASSERT_FALSE(
       GetSyncService(0)->GetUserSettings()->GetAllEncryptedDataTypes().Has(
-          syncer::ModelType::BOOKMARKS));
+          syncer::DataType::BOOKMARKS));
   const std::string kTitle = "Bookmark title";
   const GURL kUrl = GURL("https://g.com");
   std::unique_ptr<syncer::LoopbackServerEntity> bookmark =
@@ -689,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(
   // 3. Rewrite server-side nigori with keystore one (this also triggers an
   // invalidation, so client should see CLIENT_DATA_OBSOLETE).
   GetFakeServer()->TriggerError(sync_pb::SyncEnums::CLIENT_DATA_OBSOLETE);
-  GetFakeServer()->DeleteAllEntitiesForModelType(syncer::PASSWORDS);
+  GetFakeServer()->DeleteAllEntitiesForDataType(syncer::PASSWORDS);
 
   const std::vector<std::vector<uint8_t>>& keystore_keys =
       GetFakeServer()->GetKeystoreKeys();
@@ -761,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(
   // 3. Rewrite server-side nigori with keystore one (this also triggers an
   // invalidation, so client should see CLIENT_DATA_OBSOLETE).
   GetFakeServer()->TriggerError(sync_pb::SyncEnums::CLIENT_DATA_OBSOLETE);
-  GetFakeServer()->DeleteAllEntitiesForModelType(syncer::PASSWORDS);
+  GetFakeServer()->DeleteAllEntitiesForDataType(syncer::PASSWORDS);
 
   const std::vector<std::vector<uint8_t>>& keystore_keys =
       GetFakeServer()->GetKeystoreKeys();

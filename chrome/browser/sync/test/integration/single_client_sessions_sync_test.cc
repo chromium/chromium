@@ -134,7 +134,7 @@ class IsIconURLSyncedChecker : public SingleClientStatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting for URLs to be commited to the server";
     std::vector<sync_pb::SyncEntity> sessions =
-        fake_server_->GetSyncEntitiesByModelType(syncer::SESSIONS);
+        fake_server_->GetSyncEntitiesByDataType(syncer::SESSIONS);
     for (const sync_pb::SyncEntity& entity : sessions) {
       const sync_pb::SessionSpecifics& session_specifics =
           entity.specifics().session();
@@ -667,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   WaitForHierarchyOnServer(SessionsHierarchy());
 
   std::vector<sync_pb::SyncEntity> entities =
-      fake_server_->GetSyncEntitiesByModelType(syncer::SESSIONS);
+      fake_server_->GetSyncEntitiesByDataType(syncer::SESSIONS);
   for (const sync_pb::SyncEntity& entity : entities) {
     EXPECT_NE(kForeignSessionTag, entity.specifics().session().session_tag());
   }
@@ -713,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   WaitForHierarchyOnServer(SessionsHierarchy());
 
   std::vector<sync_pb::SyncEntity> entities =
-      fake_server_->GetSyncEntitiesByModelType(syncer::SESSIONS);
+      fake_server_->GetSyncEntitiesByDataType(syncer::SESSIONS);
   for (const sync_pb::SyncEntity& entity : entities) {
     EXPECT_NE(kForeignSessionTag, entity.specifics().session().session_tag());
   }

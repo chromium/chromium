@@ -9,9 +9,9 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/app_constants/constants.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"
@@ -63,7 +63,7 @@ class FakeServerAppChecker : public fake_server::FakeServerMatchStatusChecker {
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
     std::vector<sync_pb::SyncEntity> app_entities =
-        fake_server()->GetSyncEntitiesByModelType(syncer::APPS);
+        fake_server()->GetSyncEntitiesByDataType(syncer::APPS);
     base::flat_set<std::string> actual_app_ids = base::MakeFlatSet<std::string>(
         app_entities,
         /*comp=*/{}, /*proj=*/[](const sync_pb::SyncEntity& e) {
@@ -186,7 +186,7 @@ class NoBookmarkAppServerChecker
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override {
     std::vector<sync_pb::SyncEntity> bookmark_entities = FilterForBookmarkApps(
-        fake_server()->GetSyncEntitiesByModelType(syncer::APPS));
+        fake_server()->GetSyncEntitiesByDataType(syncer::APPS));
     testing::StringMatchResultListener result_listener;
     const bool matches = testing::ExplainMatchResult(
         testing::IsEmpty(), bookmark_entities, &result_listener);
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsSyncTest, NoBookmarkApps) {
   const int64_t kDefaultTime = 1234L;
 
   std::vector<sync_pb::SyncEntity> server_apps =
-      GetFakeServer()->GetSyncEntitiesByModelType(syncer::APPS);
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::APPS);
   ASSERT_EQ(0ul, server_apps.size());
 
   // This creates a "google photos" bookmark app specifics.
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsSyncTest, NoBookmarkApps) {
           /*non_unique_name=*/"", "ncmjhecbjeaamljdfahankockkkdmedg", specifics,
           kDefaultTime, kDefaultTime));
   server_apps = FilterForBookmarkApps(
-      GetFakeServer()->GetSyncEntitiesByModelType(syncer::APPS));
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::APPS));
   ASSERT_EQ(1u, server_apps.size());
 
   ASSERT_TRUE(SetupSync());

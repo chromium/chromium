@@ -129,7 +129,7 @@ class ServerWebApkMatchChecker
   ServerWebApkMatchChecker& operator=(const ServerWebApkMatchChecker&) = delete;
 
   // FakeServer::Observer overrides.
-  void OnCommit(syncer::ModelTypeSet committed_model_types) override;
+  void OnCommit(syncer::DataTypeSet committed_data_types) override;
 
   // StatusChangeChecker overrides.
   bool IsExitConditionSatisfied(std::ostream* os) override;

@@ -455,7 +455,7 @@ bool ServerPasswordsEqualityChecker::IsExitConditionSatisfied(
   *os << "Waiting for server passwords to match the expected value.";
 
   std::vector<sync_pb::SyncEntity> entities =
-      fake_server()->GetSyncEntitiesByModelType(syncer::PASSWORDS);
+      fake_server()->GetSyncEntitiesByDataType(syncer::PASSWORDS);
   if (expected_forms_.size() != entities.size()) {
     *os << "Server doesn't not contain same amount of passwords ("
         << entities.size() << ") as expected (" << expected_forms_.size()

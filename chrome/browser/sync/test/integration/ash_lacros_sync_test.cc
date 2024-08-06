@@ -50,10 +50,10 @@ IN_PROC_BROWSER_TEST_F(LacrosOnlyAshSyncTest, AshSyncsOnlyOSTypes) {
       << syncer::UserSelectableOsTypeSetToString(
              user_settings->GetRegisteredSelectableOsTypes());
 
-  // Only OS ModelTypes should be active
+  // Only OS DataTypes should be active
   EXPECT_EQ(
       sync_service->GetActiveDataTypes(),
-      syncer::ModelTypeSet(
+      syncer::DataTypeSet(
           {syncer::DEVICE_INFO, syncer::APP_LIST, syncer::ARC_PACKAGE,
            syncer::PRINTERS, syncer::USER_CONSENTS, syncer::WIFI_CONFIGURATIONS,
            syncer::OS_PREFERENCES, syncer::OS_PRIORITY_PREFERENCES,

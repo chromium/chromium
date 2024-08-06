@@ -510,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientLacrosWebAppsSyncTest,
   {
     EXPECT_TRUE(GetProfile(0)->IsMainProfile());
     syncer::SyncServiceImpl* service = GetSyncService(0);
-    syncer::ModelTypeSet types = service->GetActiveDataTypes();
+    syncer::DataTypeSet types = service->GetActiveDataTypes();
     EXPECT_TRUE(types.Has(syncer::APPS));
     EXPECT_TRUE(types.Has(syncer::APP_SETTINGS));
     EXPECT_TRUE(types.Has(syncer::WEB_APPS));
@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientLacrosWebAppsSyncTest,
   {
     EXPECT_FALSE(GetProfile(1)->IsMainProfile());
     syncer::SyncServiceImpl* service = GetSyncService(1);
-    syncer::ModelTypeSet types = service->GetActiveDataTypes();
+    syncer::DataTypeSet types = service->GetActiveDataTypes();
     EXPECT_FALSE(types.Has(syncer::APPS));
     EXPECT_FALSE(types.Has(syncer::APP_SETTINGS));
     EXPECT_FALSE(types.Has(syncer::WEB_APPS));

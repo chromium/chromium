@@ -6,7 +6,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/data_sharing/public/features.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "content/public/test/browser_test.h"
 
 namespace {

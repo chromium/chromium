@@ -24,7 +24,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
@@ -114,7 +114,7 @@ class ServerPasswordInvitationChecker
         << expected_count_ << ". ";
 
     size_t actual_count = fake_server()
-                              ->GetSyncEntitiesByModelType(
+                              ->GetSyncEntitiesByDataType(
                                   syncer::INCOMING_PASSWORD_SHARING_INVITATION)
                               .size();
     *os << "Actual count: " << actual_count;

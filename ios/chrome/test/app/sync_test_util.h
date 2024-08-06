@@ -6,9 +6,10 @@
 #define IOS_CHROME_TEST_APP_SYNC_TEST_UTIL_H_
 
 #import <Foundation/Foundation.h>
+
 #include <string>
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
 #include "url/gurl.h"
 
@@ -44,14 +45,14 @@ void ClearFakeSyncServerData();
 void FlushFakeSyncServerToDisk();
 
 // Triggers a sync cycle for a `type`.
-void TriggerSyncCycle(syncer::ModelType type);
+void TriggerSyncCycle(syncer::DataType type);
 
 // Gets the number of entities of the given `type`.
-int GetNumberOfSyncEntities(syncer::ModelType type);
+int GetNumberOfSyncEntities(syncer::DataType type);
 
 // Verifies that `count` entities of the given `type` and `name` exist on the
 // sync FakeServer. Folders are not included in this count.
-BOOL VerifyNumberOfSyncEntitiesWithName(syncer::ModelType type,
+BOOL VerifyNumberOfSyncEntitiesWithName(syncer::DataType type,
                                         std::string name,
                                         size_t count,
                                         NSError** error);

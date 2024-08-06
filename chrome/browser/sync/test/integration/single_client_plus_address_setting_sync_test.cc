@@ -13,8 +13,8 @@
 #include "components/plus_addresses/settings/plus_address_setting_sync_test_util.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/plus_address_setting_specifics.pb.h"
@@ -74,7 +74,7 @@ class FakeServerSpecificsChecker
             Property(&sync_pb::SyncEntity::specifics,
                      Property(&sync_pb::EntitySpecifics::plus_address_setting,
                               matcher_))),
-        fake_server()->GetSyncEntitiesByModelType(syncer::PLUS_ADDRESS_SETTING),
+        fake_server()->GetSyncEntitiesByDataType(syncer::PLUS_ADDRESS_SETTING),
         &listener);
     *os << listener.str();
     return matches;

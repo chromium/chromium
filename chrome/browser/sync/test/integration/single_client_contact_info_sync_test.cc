@@ -20,8 +20,8 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -103,7 +103,7 @@ class FakeServerSpecificsChecker
   bool IsExitConditionSatisfied(std::ostream* os) override {
     std::vector<std::string> specifics;
     for (const sync_pb::SyncEntity& entity :
-         fake_server()->GetSyncEntitiesByModelType(syncer::CONTACT_INFO)) {
+         fake_server()->GetSyncEntitiesByDataType(syncer::CONTACT_INFO)) {
       specifics.push_back(
           entity.specifics().contact_info().SerializeAsString());
     }
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
   ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::CONTACT_INFO, 2).Wait());
   // Verifies that the profile with `profile.guid()` has preserved
   // unknown_fields while they are completely stripped for `profile2`.
-  EXPECT_THAT(fake_server_->GetSyncEntitiesByModelType(syncer::CONTACT_INFO),
+  EXPECT_THAT(fake_server_->GetSyncEntitiesByDataType(syncer::CONTACT_INFO),
               UnorderedElementsAre(
                   HasContactInfoWithGuidAndUnknownFields(profile.guid(),
                                                          kUnsupportedField),

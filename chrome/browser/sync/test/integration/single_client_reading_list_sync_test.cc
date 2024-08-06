@@ -11,8 +11,8 @@
 #include "components/reading_list/core/mock_reading_list_model_observer.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -41,7 +41,7 @@ class ServerReadingListURLsEqualityChecker
     *os << "Waiting for server-side reading list URLs to match expected.";
 
     std::vector<sync_pb::SyncEntity> entities =
-        fake_server()->GetSyncEntitiesByModelType(syncer::READING_LIST);
+        fake_server()->GetSyncEntitiesByDataType(syncer::READING_LIST);
 
     std::set<GURL> actual_urls;
     for (const sync_pb::SyncEntity& entity : entities) {
@@ -119,7 +119,7 @@ class ServerReadingListTitlesEqualityChecker
     *os << "Waiting for server-side reading list titles to match expected.";
 
     std::vector<sync_pb::SyncEntity> entities =
-        fake_server()->GetSyncEntitiesByModelType(syncer::READING_LIST);
+        fake_server()->GetSyncEntitiesByDataType(syncer::READING_LIST);
 
     std::set<std::string> actual_titles;
     for (const sync_pb::SyncEntity& entity : entities) {
@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
   EXPECT_TRUE(ServerReadingListURLsEqualityChecker({}).Wait());
 
   EXPECT_THAT(GetFakeServer()->GetCommittedDeletionOrigins(
-                  syncer::ModelType::READING_LIST),
+                  syncer::DataType::READING_LIST),
               ElementsAre(MatchesDeletionOrigin(
                   version_info::GetVersionNumber(), kLocation)));
 }
@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 
   EXPECT_THAT(
       GetFakeServer()->GetCommittedDeletionOrigins(
-          syncer::ModelType::READING_LIST),
+          syncer::DataType::READING_LIST),
       ElementsAre(
           MatchesDeletionOrigin(version_info::GetVersionNumber(), kLocation),
           MatchesDeletionOrigin(version_info::GetVersionNumber(), kLocation)));

@@ -16,7 +16,7 @@
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/saved_tab_groups/types.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"

@@ -14,9 +14,9 @@ using google::protobuf::RepeatedPtrField;
 
 namespace syncer {
 
-SingleTypeMockServer::SingleTypeMockServer(ModelType type)
+SingleTypeMockServer::SingleTypeMockServer(DataType type)
     : type_(type),
-      type_root_id_(ModelTypeToProtocolRootTag(type)),
+      type_root_id_(DataTypeToProtocolRootTag(type)),
       progress_marker_token_("non_null_progress_token") {}
 
 SingleTypeMockServer::~SingleTypeMockServer() = default;
@@ -29,7 +29,7 @@ sync_pb::SyncEntity SingleTypeMockServer::TypeRootUpdate() {
   entity.set_version(1000);
   entity.set_ctime(TimeToProtoTime(base::Time::UnixEpoch()));
   entity.set_mtime(TimeToProtoTime(base::Time::UnixEpoch()));
-  entity.set_server_defined_unique_tag(ModelTypeToProtocolRootTag(type_));
+  entity.set_server_defined_unique_tag(DataTypeToProtocolRootTag(type_));
   entity.set_deleted(false);
   AddDefaultFieldValue(type_, entity.mutable_specifics());
 

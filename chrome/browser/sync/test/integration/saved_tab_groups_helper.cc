@@ -10,7 +10,7 @@
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 
@@ -304,7 +304,7 @@ bool ServerSavedTabGroupMatchChecker::IsExitConditionSatisfied(
 
   std::vector<sync_pb::SavedTabGroupSpecifics> entities =
       SyncEntitiesToSavedTabGroupSpecifics(
-          fake_server()->GetSyncEntitiesByModelType(syncer::SAVED_TAB_GROUP));
+          fake_server()->GetSyncEntitiesByDataType(syncer::SAVED_TAB_GROUP));
 
   testing::StringMatchResultListener result_listener;
   const bool matches =

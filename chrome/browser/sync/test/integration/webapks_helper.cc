@@ -46,8 +46,8 @@ ServerWebApkMatchChecker::ServerWebApkMatchChecker(const Matcher& matcher)
 ServerWebApkMatchChecker::~ServerWebApkMatchChecker() = default;
 
 void ServerWebApkMatchChecker::OnCommit(
-    syncer::ModelTypeSet committed_model_types) {
-  if (committed_model_types.Has(syncer::WEB_APKS)) {
+    syncer::DataTypeSet committed_data_types) {
+  if (committed_data_types.Has(syncer::WEB_APKS)) {
     CheckExitCondition();
   }
 }
@@ -55,7 +55,7 @@ void ServerWebApkMatchChecker::OnCommit(
 bool ServerWebApkMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   std::vector<sync_pb::WebApkSpecifics> entities =
       SyncEntitiesToWebApkSpecifics(
-          fake_server()->GetSyncEntitiesByModelType(syncer::WEB_APKS));
+          fake_server()->GetSyncEntitiesByDataType(syncer::WEB_APKS));
 
   testing::StringMatchResultListener result_listener;
   const bool matches =

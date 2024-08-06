@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 
 namespace sync_pb {
@@ -24,7 +24,7 @@ namespace syncer {
 class PersistentUniqueClientEntity : public LoopbackServerEntity {
  public:
   PersistentUniqueClientEntity(const std::string& id,
-                               syncer::ModelType model_type,
+                               syncer::DataType data_type,
                                int64_t version,
                                const std::string& non_unique_name,
                                const std::string& client_tag_hash,

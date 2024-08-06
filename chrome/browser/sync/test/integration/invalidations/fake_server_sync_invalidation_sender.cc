@@ -52,7 +52,7 @@ void FakeServerSyncInvalidationSender::OnWillCommit() {
 }
 
 void FakeServerSyncInvalidationSender::OnCommit(
-    syncer::ModelTypeSet committed_model_types) {
+    syncer::DataTypeSet committed_data_types) {
   // Update token to interested data types mapping. This is needed to support
   // newly added DeviceInfos during commit request.
   UpdateTokenToInterestedDataTypesMap();
@@ -60,16 +60,16 @@ void FakeServerSyncInvalidationSender::OnCommit(
     const std::string& token = token_and_data_types.first;
 
     // Send the invalidation only for interested types.
-    const syncer::ModelTypeSet invalidated_data_types =
-        Intersection(committed_model_types, token_and_data_types.second);
+    const syncer::DataTypeSet invalidated_data_types =
+        Intersection(committed_data_types, token_and_data_types.second);
     if (invalidated_data_types.empty()) {
       continue;
     }
 
     sync_pb::SyncInvalidationsPayload payload;
-    for (const syncer::ModelType data_type : invalidated_data_types) {
+    for (const syncer::DataType data_type : invalidated_data_types) {
       payload.add_data_type_invalidations()->set_data_type_id(
-          syncer::GetSpecificsFieldNumberFromModelType(data_type));
+          syncer::GetSpecificsFieldNumberFromDataType(data_type));
     }
 
     // Versions are used to keep hints ordered. Versions are not really used by
@@ -151,7 +151,7 @@ FakeServerSyncInvalidationSender::GetFakeGCMDriverByToken(
 void FakeServerSyncInvalidationSender::UpdateTokenToInterestedDataTypesMap() {
   std::map<std::string, base::Time> token_to_mtime;
   for (const sync_pb::SyncEntity& entity :
-       fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO)) {
+       fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO)) {
     const sync_pb::InvalidationSpecificFields& invalidation_fields =
         entity.specifics().device_info().invalidation_fields();
     const std::string& token = invalidation_fields.instance_id_token();
@@ -171,11 +171,11 @@ void FakeServerSyncInvalidationSender::UpdateTokenToInterestedDataTypesMap() {
     }
 
     token_to_mtime[token] = last_updated;
-    token_to_interested_data_types_[token] = syncer::ModelTypeSet();
+    token_to_interested_data_types_[token] = syncer::DataTypeSet();
     for (const int field_number :
          invalidation_fields.interested_data_type_ids()) {
-      const syncer::ModelType data_type =
-          syncer::GetModelTypeFromSpecificsFieldNumber(field_number);
+      const syncer::DataType data_type =
+          syncer::GetDataTypeFromSpecificsFieldNumber(field_number);
       DCHECK(syncer::IsRealDataType(data_type));
       token_to_interested_data_types_[token].Put(data_type);
     }

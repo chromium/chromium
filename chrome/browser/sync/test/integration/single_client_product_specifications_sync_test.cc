@@ -16,8 +16,8 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/hash_util.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientProductSpecificationsSyncTest,
   // new_product_specifications_set should not have an unknown field as it
   // originated from a client unaware of the new field.
   EXPECT_THAT(
-      fake_server_->GetSyncEntitiesByModelType(syncer::PRODUCT_COMPARISON),
+      fake_server_->GetSyncEntitiesByDataType(syncer::PRODUCT_COMPARISON),
       UnorderedElementsAre(
           HasUnknownFields(kUuid, kUnsupportedField),
           HasUnknownFields(

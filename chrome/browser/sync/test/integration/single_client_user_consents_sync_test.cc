@@ -50,7 +50,7 @@ class UserConsentEqualityChecker : public SingleClientStatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting server side USER_CONSENTS to match expected.";
     std::vector<SyncEntity> entities =
-        fake_server_->GetSyncEntitiesByModelType(syncer::USER_CONSENTS);
+        fake_server_->GetSyncEntitiesByDataType(syncer::USER_CONSENTS);
 
     // |entities.size()| is only going to grow, if |entities.size()| ever
     // becomes bigger then all hope is lost of passing, stop now.
@@ -100,9 +100,9 @@ class SingleClientUserConsentsSyncTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserConsentsSyncTest, ShouldSubmit) {
   ASSERT_TRUE(SetupSync());
-  ASSERT_EQ(0u, GetFakeServer()
-                    ->GetSyncEntitiesByModelType(syncer::USER_CONSENTS)
-                    .size());
+  ASSERT_EQ(
+      0u,
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::USER_CONSENTS).size());
   consent_auditor::ConsentAuditor* consent_service =
       ConsentAuditorFactory::GetForProfile(GetProfile(0));
   UserConsentSpecifics specifics;

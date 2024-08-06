@@ -20,8 +20,8 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/protocol/history_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/browser/navigation_entry.h"
@@ -1019,7 +1019,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   // Turn Sync back on.
   ASSERT_TRUE(GetClient(0)->SetupSync());
   ASSERT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::ModelType::HISTORY));
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::DataType::HISTORY));
 
   // Wait for the remote data to be re-downloaded.
   ASSERT_TRUE(

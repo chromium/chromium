@@ -111,7 +111,7 @@ public class FakeServerHelper {
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 FakeServerHelperJni.get()
-                                        .getSyncEntitiesByModelType(mNativeFakeServer, dataType));
+                                        .getSyncEntitiesByDataType(mNativeFakeServer, dataType));
         List<SyncEntity> entities = new ArrayList<SyncEntity>(serializedEntities.length);
         for (byte[] serializedEntity : serializedEntities) {
             entities.add(SyncEntity.parseFrom(serializedEntity));
@@ -361,7 +361,7 @@ public class FakeServerHelper {
 
         boolean verifySessions(long fakeServer, String[] urlArray);
 
-        byte[][] getSyncEntitiesByModelType(long fakeServer, int dataType);
+        byte[][] getSyncEntitiesByDataType(long fakeServer, int dataType);
 
         void injectUniqueClientEntity(
                 long fakeServer,

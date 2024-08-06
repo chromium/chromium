@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/shared_tab_group_data_helper.h"
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 
@@ -39,7 +39,7 @@ bool ServerSharedTabGroupMatchChecker::IsExitConditionSatisfied(
 
   std::vector<sync_pb::SharedTabGroupDataSpecifics> entities =
       SyncEntitiesToSharedTabGroupSpecifics(
-          fake_server()->GetSyncEntitiesByModelType(
+          fake_server()->GetSyncEntitiesByDataType(
               syncer::SHARED_TAB_GROUP_DATA));
 
   testing::StringMatchResultListener result_listener;

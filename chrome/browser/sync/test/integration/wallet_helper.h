@@ -30,7 +30,7 @@ struct ServerCvc;
 
 namespace sync_pb {
 class SyncEntity;
-class ModelType;
+class DataType;
 class ModelTypeState;
 }  // namespace sync_pb
 
@@ -81,7 +81,7 @@ void UpdateServerCardMetadata(int profile,
 std::vector<autofill::PaymentsMetadata> GetServerCardsMetadata(int profile);
 
 // Function supports AUTOFILL_WALLET_DATA and AUTOFILL_WALLET_OFFER.
-sync_pb::ModelTypeState GetWalletModelTypeState(syncer::ModelType type,
+sync_pb::ModelTypeState GetWalletModelTypeState(syncer::DataType type,
                                                 int profile);
 
 sync_pb::SyncEntity CreateDefaultSyncWalletCard();
@@ -171,7 +171,7 @@ class FullUpdateTypeProgressMarkerChecker : public StatusChangeChecker,
   FullUpdateTypeProgressMarkerChecker(
       base::Time min_required_progress_marker_timestamp,
       syncer::SyncService* service,
-      syncer::ModelType model_type);
+      syncer::DataType data_type);
   ~FullUpdateTypeProgressMarkerChecker() override;
 
   FullUpdateTypeProgressMarkerChecker(
@@ -188,7 +188,7 @@ class FullUpdateTypeProgressMarkerChecker : public StatusChangeChecker,
  private:
   const base::Time min_required_progress_marker_timestamp_;
   const raw_ptr<const syncer::SyncService> service_;
-  const syncer::ModelType model_type_;
+  const syncer::DataType data_type_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       scoped_observation_{this};

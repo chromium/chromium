@@ -232,13 +232,13 @@ void GetServerCardsMetadataOnDBSequence(
       ->GetServerCardsMetadata(*cards_metadata);
 }
 
-void GetModelTypeStateOnDBSequence(syncer::ModelType model_type,
+void GetModelTypeStateOnDBSequence(syncer::DataType data_type,
                                    AutofillWebDataService* wds,
                                    sync_pb::ModelTypeState* model_type_state) {
   DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
   syncer::MetadataBatch metadata_batch;
   autofill::AutofillSyncMetadataTable::FromWebDatabase(wds->GetDatabase())
-      ->GetAllSyncMetadata(model_type, &metadata_batch);
+      ->GetAllSyncMetadata(data_type, &metadata_batch);
   *model_type_state = metadata_batch.GetModelTypeState();
 }
 
@@ -326,14 +326,14 @@ std::vector<PaymentsMetadata> GetServerCardsMetadata(int profile) {
   return cards_metadata;
 }
 
-sync_pb::ModelTypeState GetWalletModelTypeState(syncer::ModelType model_type,
+sync_pb::ModelTypeState GetWalletModelTypeState(syncer::DataType data_type,
                                                 int profile) {
-  DCHECK(model_type == syncer::AUTOFILL_WALLET_DATA ||
-         model_type == syncer::AUTOFILL_WALLET_OFFER);
+  DCHECK(data_type == syncer::AUTOFILL_WALLET_DATA ||
+         data_type == syncer::AUTOFILL_WALLET_OFFER);
   sync_pb::ModelTypeState result;
   scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
   wds->GetDBTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&GetModelTypeStateOnDBSequence, model_type,
+      FROM_HERE, base::BindOnce(&GetModelTypeStateOnDBSequence, data_type,
                                 base::Unretained(wds.get()), &result));
   WaitForCurrentTasksToComplete(wds->GetDBTaskRunner());
   return result;
@@ -590,11 +590,11 @@ bool AutofillWalletMetadataSizeChecker::IsExitConditionSatisfiedImpl() {
 FullUpdateTypeProgressMarkerChecker::FullUpdateTypeProgressMarkerChecker(
     base::Time min_required_progress_marker_timestamp,
     syncer::SyncService* service,
-    syncer::ModelType model_type)
+    syncer::DataType data_type)
     : min_required_progress_marker_timestamp_(
           min_required_progress_marker_timestamp),
       service_(service),
-      model_type_(model_type) {
+      data_type_(data_type) {
   scoped_observation_.Observe(service);
 }
 
@@ -609,7 +609,7 @@ bool FullUpdateTypeProgressMarkerChecker::IsExitConditionSatisfied(
       service_->GetLastCycleSnapshotForDebugging();
   const syncer::ProgressMarkerMap& progress_markers =
       snap.download_progress_markers();
-  auto marker_it = progress_markers.find(model_type_);
+  auto marker_it = progress_markers.find(data_type_);
   if (marker_it == progress_markers.end()) {
     *os << "Waiting for an updated progress marker timestamp "
         << min_required_progress_marker_timestamp_

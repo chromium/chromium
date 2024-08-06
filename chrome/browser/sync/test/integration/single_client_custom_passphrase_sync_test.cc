@@ -35,11 +35,11 @@ using fake_server::SetNigoriInFakeServer;
 using sync_pb::NigoriSpecifics;
 using syncer::BuildCustomPassphraseNigoriSpecifics;
 using syncer::Cryptographer;
+using syncer::DataTypeSet;
 using syncer::GetEncryptedBookmarkEntitySpecifics;
 using syncer::InitCustomPassphraseCryptographerFromNigori;
 using syncer::KeyParamsForTesting;
 using syncer::LoopbackServerEntity;
-using syncer::ModelTypeSet;
 using syncer::PassphraseType;
 using syncer::Pbkdf2PassphraseKeyParamsForTesting;
 using syncer::ProtoPassphraseInt32ToEnum;
@@ -59,11 +59,11 @@ class CommittedBookmarkEntityNameObserver : public FakeServer::Observer {
     fake_server_->RemoveObserver(this);
   }
 
-  void OnCommit(ModelTypeSet committed_model_types) override {
+  void OnCommit(DataTypeSet committed_data_types) override {
     sync_pb::ClientToServerMessage message;
     fake_server_->GetLastCommitMessage(&message);
     for (const sync_pb::SyncEntity& entity : message.commit().entries()) {
-      if (syncer::GetModelTypeFromSpecifics(entity.specifics()) ==
+      if (syncer::GetDataTypeFromSpecifics(entity.specifics()) ==
           syncer::BOOKMARKS) {
         committed_names_.insert(entity.name());
       }

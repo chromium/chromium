@@ -27,7 +27,7 @@ bool MigrationWatcher::HasPendingBackendMigration() const {
   return migrator && migrator->state() != syncer::BackendMigrator::IDLE;
 }
 
-syncer::ModelTypeSet MigrationWatcher::GetMigratedTypes() const {
+syncer::DataTypeSet MigrationWatcher::GetMigratedTypes() const {
   return migrated_types_;
 }
 
@@ -40,14 +40,14 @@ void MigrationWatcher::OnMigrationStateChange() {
                               ->GetPendingMigrationTypesForTest());
     DVLOG(1) << harness_->profile_debug_name()
              << ": new pending migration types "
-             << syncer::ModelTypeSetToDebugString(pending_types_);
+             << syncer::DataTypeSetToDebugString(pending_types_);
   } else {
     // Migration just finished for a bunch of data types. Merge them into
     // |migrated_types_|.
     migrated_types_.PutAll(pending_types_);
     pending_types_.Clear();
     DVLOG(1) << harness_->profile_debug_name() << ": new migrated types "
-             << syncer::ModelTypeSetToDebugString(migrated_types_);
+             << syncer::DataTypeSetToDebugString(migrated_types_);
   }
 
   // Manually trigger a check of the exit condition.

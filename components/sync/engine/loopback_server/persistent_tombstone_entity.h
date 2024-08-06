@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 
 namespace sync_pb {
@@ -47,7 +47,7 @@ class PersistentTombstoneEntity : public LoopbackServerEntity {
 
   PersistentTombstoneEntity(const std::string& id,
                             int64_t version,
-                            const syncer::ModelType& model_type,
+                            const syncer::DataType& data_type,
                             const std::string& client_tag_hash);
 
   // The tag hash for this entity.

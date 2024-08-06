@@ -26,7 +26,7 @@
 using std::string;
 using std::vector;
 
-using syncer::ModelType;
+using syncer::DataType;
 
 namespace {
 // The separator used when formatting IDs.
@@ -51,7 +51,7 @@ LoopbackServerEntity::CreateEntityFromProto(
     case sync_pb::LoopbackServerEntity_Type_PERMANENT:
       return std::make_unique<PersistentPermanentEntity>(
           entity.entity().id_string(), entity.entity().version(),
-          syncer::GetModelTypeFromSpecifics(entity.entity().specifics()),
+          syncer::GetDataTypeFromSpecifics(entity.entity().specifics()),
           entity.entity().name(), entity.entity().parent_id_string(),
           entity.entity().server_defined_unique_tag(),
           entity.entity().specifics());
@@ -69,8 +69,8 @@ const std::string& LoopbackServerEntity::GetId() const {
   return id_;
 }
 
-ModelType LoopbackServerEntity::GetModelType() const {
-  return model_type_;
+DataType LoopbackServerEntity::GetDataType() const {
+  return data_type_;
 }
 
 int64_t LoopbackServerEntity::GetVersion() const {
@@ -117,21 +117,21 @@ LoopbackServerEntity::GetLoopbackServerEntityType() const {
 }
 
 // static
-string LoopbackServerEntity::CreateId(const ModelType& model_type,
+string LoopbackServerEntity::CreateId(const DataType& data_type,
                                       const string& inner_id) {
-  int field_number = GetSpecificsFieldNumberFromModelType(model_type);
+  int field_number = GetSpecificsFieldNumberFromDataType(data_type);
   return base::StringPrintf("%d%s%s", field_number, kIdSeparator,
                             inner_id.c_str());
 }
 
 // static
-std::string LoopbackServerEntity::GetTopLevelId(const ModelType& model_type) {
+std::string LoopbackServerEntity::GetTopLevelId(const DataType& data_type) {
   return LoopbackServerEntity::CreateId(
-      model_type, syncer::ModelTypeToProtocolRootTag(model_type));
+      data_type, syncer::DataTypeToProtocolRootTag(data_type));
 }
 
 // static
-ModelType LoopbackServerEntity::GetModelTypeFromId(const string& id) {
+DataType LoopbackServerEntity::GetDataTypeFromId(const string& id) {
   vector<std::string_view> tokens = base::SplitStringPiece(
       id, kIdSeparator, base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
@@ -140,7 +140,7 @@ ModelType LoopbackServerEntity::GetModelTypeFromId(const string& id) {
     return syncer::UNSPECIFIED;
   }
 
-  return syncer::GetModelTypeFromSpecificsFieldNumber(field_number);
+  return syncer::GetDataTypeFromSpecificsFieldNumber(field_number);
 }
 
 // static
@@ -156,10 +156,10 @@ std::string LoopbackServerEntity::GetInnerIdFromId(const std::string& id) {
 }
 
 LoopbackServerEntity::LoopbackServerEntity(const string& id,
-                                           const ModelType& model_type,
+                                           const DataType& data_type,
                                            int64_t version,
                                            const string& name)
-    : id_(id), model_type_(model_type), version_(version), name_(name) {}
+    : id_(id), data_type_(data_type), version_(version), name_(name) {}
 
 void LoopbackServerEntity::SerializeBaseProtoFields(
     sync_pb::SyncEntity* sync_entity) const {
@@ -182,7 +182,7 @@ void LoopbackServerEntity::SerializeBaseProtoFields(
 void LoopbackServerEntity::SerializeAsLoopbackServerEntity(
     sync_pb::LoopbackServerEntity* entity) const {
   entity->set_type(GetLoopbackServerEntityType());
-  entity->set_model_type(static_cast<int64_t>(GetModelType()));
+  entity->set_data_type(static_cast<int64_t>(GetDataType()));
   SerializeAsProto(entity->mutable_entity());
 }
 

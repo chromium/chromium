@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, SingleClientClosed) {
   EXPECT_TRUE(WaitForForeignSessionsToSync(0, 1));
 
   std::vector<sync_pb::SyncEntity> entities =
-      GetFakeServer()->GetSyncEntitiesByModelType(syncer::SESSIONS);
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::SESSIONS);
   // Two header entities and one tab entity (the other one has been deleted).
   EXPECT_EQ(3U, entities.size());
 }

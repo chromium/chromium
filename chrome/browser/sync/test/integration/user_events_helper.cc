@@ -40,7 +40,7 @@ bool UserEventEqualityChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting server side USER_EVENTS to match expected.";
 
   std::vector<SyncEntity> entities =
-      fake_server_->GetSyncEntitiesByModelType(syncer::USER_EVENTS);
+      fake_server_->GetSyncEntitiesByDataType(syncer::USER_EVENTS);
 
   // |entities.size()| is only going to grow, if |entities.size()| ever
   // becomes bigger then all hope is lost of passing, stop now.

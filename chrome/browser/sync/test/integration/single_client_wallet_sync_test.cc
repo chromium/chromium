@@ -36,8 +36,8 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
@@ -225,7 +225,7 @@ class SingleClientWalletSyncTest : public SyncTest {
   bool TriggerGetUpdatesAndWait() {
     const base::Time now = base::Time::Now();
     // Trigger a sync and wait for the new data to arrive.
-    TriggerSyncForModelTypes(0, {syncer::AUTOFILL_WALLET_DATA});
+    TriggerSyncForDataTypes(0, {syncer::AUTOFILL_WALLET_DATA});
     return FullUpdateTypeProgressMarkerChecker(now, GetSyncService(0),
                                                syncer::AUTOFILL_WALLET_DATA)
         .Wait();
