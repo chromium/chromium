@@ -357,7 +357,8 @@ void MakeSuperPageExtentEntriesShared(PartitionRoot* root,
   }
 
   // For normal-bucketed.
-  for (internal::PartitionSuperPageExtentEntry* extent = root->first_extent;
+  for (const internal::ReadOnlyPartitionSuperPageExtentEntry* extent =
+           root->first_extent;
        extent != nullptr; extent = extent->next) {
     //  The page which contains the extent is in-used and shared mapping.
     uintptr_t super_page = SuperPagesBeginFromExtent(extent);

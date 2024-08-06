@@ -41,15 +41,13 @@ PA_ALWAYS_INLINE void PartitionDirectUnmap(SlotSpanMetadata* slot_span) {
   // Maintain the doubly-linked list of all direct mappings.
   if (extent->prev_extent) {
     PA_DCHECK(extent->prev_extent->next_extent == extent);
-    extent->prev_extent->ToWritable(root->ShadowPoolOffset())->next_extent =
-        extent->next_extent;
+    extent->prev_extent->ToWritable(root)->next_extent = extent->next_extent;
   } else {
     root->direct_map_list = extent->next_extent;
   }
   if (extent->next_extent) {
     PA_DCHECK(extent->next_extent->prev_extent == extent);
-    extent->next_extent->ToWritable(root->ShadowPoolOffset())->prev_extent =
-        extent->prev_extent;
+    extent->next_extent->ToWritable(root)->prev_extent = extent->prev_extent;
   }
 
   // The actual decommit is deferred below after releasing the lock.
@@ -90,7 +88,9 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::RegisterEmpty() {
   root->empty_slot_spans_dirty_bytes +=
       base::bits::AlignUp(GetProvisionedSize(), SystemPageSize());
 
-  ToSuperPageExtent()->DecrementNumberOfNonemptySlotSpans();
+  // TODO(crbug.com/40238514): SlotSpanMetadata::RegisterEmpty() will be
+  // WritableSlotSpanMetadata::RegisterEmpty(). So ToWritable() will be removed.
+  ToSuperPageExtent()->ToWritable(root)->DecrementNumberOfNonemptySlotSpans();
 
   // If the slot span is already registered as empty, don't do anything. This
   // prevents continually reusing a slot span from decommitting a bunch of other
@@ -311,6 +311,18 @@ void SlotSpanMetadata::SortFreelist() {
   }
 
   freelist_is_sorted_ = true;
+}
+
+void SlotSpanMetadata::IncrementNumberOfNonemptySlotSpans() {
+  // TODO(crbug.com/40238514):
+  // SlotSpanMetadata::IncrementNumberOfNonemptySlotSpans() will be
+  // WritableSlotSpanMetadata::IncrementNumberOfNonemptySlotSpans(). So
+  // we will remove |root| and |ToWritable()| after introducing
+  // WritableSlotSpanMetadata.
+  auto* root = PartitionRoot::FromSlotSpanMetadata(this);
+  WritablePartitionSuperPageExtentEntry* extent =
+      ToSuperPageExtent()->ToWritable(root);
+  extent->IncrementNumberOfNonemptySlotSpans();
 }
 
 namespace {

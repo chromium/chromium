@@ -332,7 +332,8 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
     }
 
     auto* super_page_extent = PartitionSuperPageToExtent(reservation_start);
-    super_page_extent->root = root;
+    auto* writable_super_page_extent = super_page_extent->ToWritable(root);
+    writable_super_page_extent->root = root;
     // The new structures are all located inside a fresh system page so they
     // will all be zeroed out. These DCHECKs are for documentation and to assert
     // our expectations of the kernel.
@@ -340,7 +341,8 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
     PA_DCHECK(!super_page_extent->next);
 
     PartitionPageMetadata* first_page_metadata =
-        reinterpret_cast<PartitionPageMetadata*>(super_page_extent) + 1;
+        reinterpret_cast<PartitionPageMetadata*>(writable_super_page_extent) +
+        1;
     page_metadata = PartitionPageMetadata::FromAddr(slot_start);
     // |first_page_metadata| and |page_metadata| may be equal, if there is no
     // alignment padding.
@@ -454,8 +456,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
   // Maintain the doubly-linked list of all direct mappings.
   writable_map_extent->next_extent = root->direct_map_list;
   if (map_extent->next_extent) {
-    map_extent->next_extent->ToWritable(root->ShadowPoolOffset())->prev_extent =
-        map_extent;
+    map_extent->next_extent->ToWritable(root)->prev_extent = map_extent;
   }
   writable_map_extent->prev_extent = nullptr;
   root->direct_map_list = map_extent;
@@ -849,17 +850,25 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
   // We allocated a new super page so update super page metadata.
   // First check if this is a new extent or not.
   auto* latest_extent = PartitionSuperPageToExtent(super_page);
+  auto* writable_latest_extent = latest_extent->ToWritable(root);
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+  PA_DCHECK(writable_latest_extent->ToReadOnly(root) == latest_extent);
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
   // By storing the root in every extent metadata object, we have a fast way
   // to go from a pointer within the partition to the root object.
-  latest_extent->root = root;
+  writable_latest_extent->root = root;
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+  PA_DCHECK(writable_latest_extent->root == root);
+  PA_DCHECK(latest_extent->root == root);
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
   // Most new extents will be part of a larger extent, and these two fields
   // are unused, but we initialize them to 0 so that we get a clear signal
   // in case they are accidentally used.
-  latest_extent->number_of_consecutive_super_pages = 0;
-  latest_extent->next = nullptr;
-  latest_extent->number_of_nonempty_slot_spans = 0;
+  writable_latest_extent->number_of_consecutive_super_pages = 0;
+  writable_latest_extent->next = nullptr;
+  writable_latest_extent->number_of_nonempty_slot_spans = 0;
 
-  PartitionSuperPageExtentEntry* current_extent = root->current_extent;
+  ReadOnlyPartitionSuperPageExtentEntry* current_extent = root->current_extent;
   const bool is_new_extent = super_page != requested_address;
   if (PA_UNLIKELY(is_new_extent)) {
     if (PA_UNLIKELY(!current_extent)) {
@@ -867,15 +876,15 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
       root->first_extent = latest_extent;
     } else {
       PA_DCHECK(current_extent->number_of_consecutive_super_pages);
-      current_extent->next = latest_extent;
+      current_extent->ToWritable(root)->next = latest_extent;
     }
     root->current_extent = latest_extent;
-    latest_extent->number_of_consecutive_super_pages = 1;
+    writable_latest_extent->number_of_consecutive_super_pages = 1;
   } else {
     // We allocated next to an existing extent so just nudge the size up a
     // little.
     PA_DCHECK(current_extent->number_of_consecutive_super_pages);
-    ++current_extent->number_of_consecutive_super_pages;
+    ++current_extent->ToWritable(root)->number_of_consecutive_super_pages;
     PA_DCHECK(payload > SuperPagesBeginFromExtent(current_extent) &&
               payload < SuperPagesEndFromExtent(current_extent));
   }
@@ -1377,6 +1386,7 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
       if (new_slot_span->get_freelist_head()) {
         new_slot_span->next_slot_span = nullptr;
         new_slot_span->ToSuperPageExtent()
+            ->ToWritable(root)
             ->IncrementNumberOfNonemptySlotSpans();
 
         // Re-activating an empty slot span, update accounting.

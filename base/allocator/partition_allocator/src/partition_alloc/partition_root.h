@@ -206,7 +206,10 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   using SlotSpanMetadata = internal::SlotSpanMetadata;
   using Bucket = internal::PartitionBucket;
   using FreeListEntry = internal::PartitionFreelistEntry;
-  using SuperPageExtentEntry = internal::PartitionSuperPageExtentEntry;
+  using WritableSuperPageExtentEntry =
+      internal::WritablePartitionSuperPageExtentEntry;
+  using ReadOnlySuperPageExtentEntry =
+      internal::ReadOnlyPartitionSuperPageExtentEntry;
   using WritableDirectMapExtent = internal::WritablePartitionDirectMapExtent;
   using ReadOnlyDirectMapExtent = internal::ReadOnlyPartitionDirectMapExtent;
 
@@ -352,8 +355,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   uintptr_t next_super_page = 0;
   uintptr_t next_partition_page = 0;
   uintptr_t next_partition_page_end = 0;
-  SuperPageExtentEntry* current_extent = nullptr;
-  SuperPageExtentEntry* first_extent = nullptr;
+  ReadOnlySuperPageExtentEntry* current_extent = nullptr;
+  ReadOnlySuperPageExtentEntry* first_extent = nullptr;
   ReadOnlyDirectMapExtent* direct_map_list
       PA_GUARDED_BY(internal::PartitionRootLock(this)) = nullptr;
   SlotSpanMetadata*
@@ -1792,7 +1795,7 @@ PA_ALWAYS_INLINE void PartitionRoot::RawFreeLocked(uintptr_t slot_start) {
 
 PA_ALWAYS_INLINE PartitionRoot* PartitionRoot::FromSlotSpanMetadata(
     SlotSpanMetadata* slot_span) {
-  auto* extent_entry = reinterpret_cast<SuperPageExtentEntry*>(
+  auto* extent_entry = reinterpret_cast<ReadOnlySuperPageExtentEntry*>(
       reinterpret_cast<uintptr_t>(slot_span) & internal::SystemPageBaseMask());
   return extent_entry->root;
 }

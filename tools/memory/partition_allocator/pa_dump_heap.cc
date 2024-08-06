@@ -39,7 +39,7 @@ using partition_alloc::internal::kInvalidBucketSize;
 using partition_alloc::internal::kSuperPageSize;
 using partition_alloc::internal::PartitionPageMetadata;
 using partition_alloc::internal::PartitionPageSize;
-using partition_alloc::internal::PartitionSuperPageExtentEntry;
+using partition_alloc::internal::ReadOnlyPartitionSuperPageExtentEntry;
 using partition_alloc::internal::SystemPageSize;
 
 // See https://www.kernel.org/doc/Documentation/vm/pagemap.txt.
@@ -128,11 +128,11 @@ class HeapDumper {
     uintptr_t extent_address =
         reinterpret_cast<uintptr_t>(root_.get()->first_extent);
     while (extent_address) {
-      auto extent =
-          RawBuffer<PartitionSuperPageExtentEntry>::ReadFromProcessMemory(
-              reader_, extent_address);
+      auto extent = RawBuffer<ReadOnlyPartitionSuperPageExtentEntry>::
+          ReadFromProcessMemory(reader_, extent_address);
       uintptr_t first_super_page_address = SuperPagesBeginFromExtent(
-          reinterpret_cast<PartitionSuperPageExtentEntry*>(extent_address));
+          reinterpret_cast<ReadOnlyPartitionSuperPageExtentEntry*>(
+              extent_address));
       for (uintptr_t super_page = first_super_page_address;
            super_page < first_super_page_address +
                             extent->get()->number_of_consecutive_super_pages *
