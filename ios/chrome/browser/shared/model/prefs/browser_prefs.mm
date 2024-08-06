@@ -130,9 +130,6 @@ const char kDeprecatedReadingListHasUnseenEntries[] =
 const char* kTrialGroupMICeAndDefaultBrowserVersionPrefName =
     "fre_refactoring_mice_and_default_browser.trial_version";
 
-// Deprecated 04/2023.
-const char kTrialPrefName[] = "trending_queries.trial_version";
-
 // Deprecated 07/2023.
 const char kUnifiedConsentMigrationState[] = "unified_consent.migration_state";
 // Deprecated 07/2023.
@@ -202,6 +199,9 @@ constexpr char kObsoletePasswordsPerAccountPrefMigrationDone[] =
     "sync.passwords_per_account_pref_migration_done";
 constexpr char kObsoleteBookmarksAndReadingListAccountStorageOptIn[] =
     "sync.bookmarks_and_reading_list_account_storage_opt_in";
+
+// Deprecated 08/2024.
+const char kTrialPrefName[] = "trending_queries.trial_version";
 
 // Helper function migrating the preference `pref_name` of type "double" from
 // `defaults` to `pref_service`.
@@ -685,6 +685,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Preferences related to the Docking Promo feature (used only if
   // `kIOSDockingPromoForEligibleUsersOnly` is enabled).
   registry->RegisterBooleanPref(prefs::kIosDockingPromoEligibilityMet, false);
+
+  // Register deprecated pref for cleanup.
+  registry->RegisterIntegerPref(kTrialPrefName, 0);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -1036,11 +1039,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 01/2023
   prefs->ClearPref(kTrialGroupMICeAndDefaultBrowserVersionPrefName);
 
-  // Added 04/2023
-  if (prefs->FindPreference(kTrialPrefName)) {
-    prefs->ClearPref(kTrialPrefName);
-  }
-
   // Added 10/2023.
   prefs->ClearPref(kAutofillBrandingKeyboardAccessoriesTapped);
 
@@ -1075,6 +1073,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   prefs->ClearPref(prefs::kTabPickupEnabled);
   prefs->ClearPref(prefs::kTabPickupLastDisplayedTime);
   prefs->ClearPref(prefs::kTabPickupLastDisplayedURL);
+
+  // Added 08/2024.
+  prefs->ClearPref(kTrialPrefName);
 }
 
 // This method should be periodically pruned of year+ old migrations.
