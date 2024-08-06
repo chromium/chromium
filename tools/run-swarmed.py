@@ -76,6 +76,9 @@ def _DoSpawn(args):
       '-dump-json',
       json_file,
       '-tag=purpose:user-debug-run-swarmed',
+      # 30 is try level. So use the same here.
+      '-priority',
+      '30',
   ]
   if args.target_os == 'fuchsia':
     trigger_args += [
