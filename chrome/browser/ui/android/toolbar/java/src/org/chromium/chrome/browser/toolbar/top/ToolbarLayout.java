@@ -99,6 +99,8 @@ public abstract class ToolbarLayout extends FrameLayout
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private AppMenuButtonHelper mAppMenuButtonHelper;
 
+    private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
+
     private TopToolbarOverlayCoordinator mOverlayCoordinator;
 
     private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
@@ -164,6 +166,7 @@ public abstract class ToolbarLayout extends FrameLayout
             ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController,
             MenuButtonCoordinator menuButtonCoordinator,
+            ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
             HistoryDelegate historyDelegate,
             BooleanSupplier partnerHomepageEnabledSupplier,
             OfflineDownloader offlineDownloader,
@@ -172,6 +175,7 @@ public abstract class ToolbarLayout extends FrameLayout
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarTabController = tabController;
         mMenuButtonCoordinator = menuButtonCoordinator;
+        mTabSwitcherButtonCoordinator = tabSwitcherButtonCoordinator;
         mPartnerHomepageEnabledSupplier = partnerHomepageEnabledSupplier;
         mProgressBar = createProgressBar();
     }
@@ -322,14 +326,9 @@ public abstract class ToolbarLayout extends FrameLayout
 
     // Set hover tooltip text for buttons shared between phones and tablets.
     public void setTooltipTextForToolbarButtons() {
-        // Set hover tooltip text for home and tab switcher buttons.
+        // Set hover tooltip text for home.
         setTooltipText(
-                ((View) getHomeButton()),
-                getContext().getString(R.string.accessibility_toolbar_btn_home));
-        setTooltipText(
-                ((View) getTabSwitcherButton()),
-                getContext()
-                        .getString(R.string.accessibility_toolbar_btn_tabswitcher_toggle_default));
+                getHomeButton(), getContext().getString(R.string.accessibility_toolbar_btn_home));
     }
 
     /**
@@ -472,8 +471,17 @@ public abstract class ToolbarLayout extends FrameLayout
         return mMenuButtonCoordinator;
     }
 
+    ToggleTabStackButtonCoordinator getTabSwitcherButtonCoordinator() {
+        return mTabSwitcherButtonCoordinator;
+    }
+
     void setMenuButtonCoordinatorForTesting(MenuButtonCoordinator menuButtonCoordinator) {
         mMenuButtonCoordinator = menuButtonCoordinator;
+    }
+
+    void setTabSwitcherButtonCoordinatorForTesting(
+            ToggleTabStackButtonCoordinator toggleTabStackButtonCoordinator) {
+        mTabSwitcherButtonCoordinator = toggleTabStackButtonCoordinator;
     }
 
     /**
@@ -520,21 +528,8 @@ public abstract class ToolbarLayout extends FrameLayout
     }
 
     /**
-     * Sets the OnClickListener that will be notified when the TabSwitcher button is pressed.
-     * @param listener The callback that will be notified when the TabSwitcher button is pressed.
-     */
-    void setOnTabSwitcherClickHandler(OnClickListener listener) {}
-
-    /**
-     * Sets the OnLongClickListener that will be notified when the TabSwitcher button is long
-     *         pressed.
-     * @param listener The callback that will be notified when the TabSwitcher button is long
-     *         pressed.
-     */
-    void setOnTabSwitcherLongClickHandler(OnLongClickListener listener) {}
-
-    /**
      * Sets the OnClickListener that will be notified when the bookmark button is pressed.
+     *
      * @param listener The callback that will be notified when the bookmark button is pressed.
      */
     void setBookmarkClickHandler(OnClickListener listener) {}
@@ -573,22 +568,17 @@ public abstract class ToolbarLayout extends FrameLayout
     void updateReloadButtonVisibility(boolean isReloading) {}
 
     /**
-     * Gives inheriting classes the chance to update the visual status of the
-     * bookmark button.
+     * Gives inheriting classes the chance to update the visual status of the bookmark button.
+     *
      * @param isBookmarked Whether or not the current tab is already bookmarked.
      * @param editingAllowed Whether or not bookmarks can be modified (added, edited, or removed).
      */
     void updateBookmarkButton(boolean isBookmarked, boolean editingAllowed) {}
 
     /**
-     * Gives inheriting classes the chance to do the necessary UI operations after Chrome is
-     * restored to a previously saved state.
-     */
-    void onStateRestored() {}
-
-    /**
      * Gives inheriting classes the chance to update home button UI if home button preference is
      * changed.
+     *
      * @param homeButtonEnabled Whether or not home button is enabled in preference.
      */
     void onHomeButtonUpdate(boolean homeButtonEnabled) {}

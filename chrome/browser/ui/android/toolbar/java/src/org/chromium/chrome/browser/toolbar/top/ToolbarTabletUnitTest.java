@@ -43,8 +43,6 @@ import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -74,6 +72,7 @@ import java.util.List;
 public final class ToolbarTabletUnitTest {
     @Mock private LocationBarCoordinator mLocationBar;
     @Mock private LocationBarCoordinatorTablet mLocationBarTablet;
+    @Mock private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
     @Mock private StatusCoordinator mStatusCoordinator;
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
     @Mock private TabStripTransitionCoordinator mTabStripTransitionCoordinator;
@@ -86,7 +85,7 @@ public final class ToolbarTabletUnitTest {
     private ImageButton mBackButton;
     private ImageButton mForwardButton;
     private ImageButton mMenuButton;
-    private ImageButton mTabSwitcherButton;
+    private ToggleTabStackButton mTabSwitcherButton;
     private ImageButton mBookmarkButton;
     private ImageButton mSaveOfflineButton;
     private View mLocationBarButton;
@@ -105,6 +104,7 @@ public final class ToolbarTabletUnitTest {
         LocationBarLayout locationBarLayout = mToolbarTablet.findViewById(R.id.location_bar);
         locationBarLayout.setStatusCoordinatorForTesting(mStatusCoordinator);
         mToolbarTablet.setMenuButtonCoordinatorForTesting(mMenuButtonCoordinator);
+        mToolbarTablet.setTabSwitcherButtonCoordinatorForTesting(mTabSwitcherButtonCoordinator);
         mToolbarTablet.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
         mToolbarTablet.setToolbarColorObserver(mToolbarColorObserver);
         mToolbarTabletLayout =
@@ -115,6 +115,7 @@ public final class ToolbarTabletUnitTest {
         mReloadingButton = mToolbarTablet.findViewById(R.id.refresh_button);
         mMenuButton = mToolbarTablet.findViewById(R.id.menu_button);
         mTabSwitcherButton = mToolbarTablet.findViewById(R.id.tab_switcher_button);
+        when(mTabSwitcherButtonCoordinator.getContainerView()).thenReturn(mTabSwitcherButton);
         mLocationBarButton = mToolbarTablet.findViewById(R.id.location_bar_status_icon);
         mBookmarkButton = mToolbarTablet.findViewById(R.id.bookmark_button);
         mSaveOfflineButton = mToolbarTablet.findViewById(R.id.save_offline_button);
@@ -578,19 +579,6 @@ public final class ToolbarTabletUnitTest {
             Assert.assertEquals(
                     ToolbarSnapshotDifference.BOOKMARK_BUTTON, result.snapshotDifference);
         }
-    }
-
-    @Test
-    @Features.EnableFeatures(ChromeFeatureList.TABLET_TAB_SWITCHER_LONG_PRESS_MENU)
-    public void longPressTabSwitcherMenu() {
-        CallbackHelper callback = new CallbackHelper();
-        mToolbarTablet.setOnTabSwitcherLongClickHandler(
-                (v) -> {
-                    callback.notifyCalled();
-                    return true;
-                });
-        mTabSwitcherButton.performLongClick();
-        Assert.assertEquals("Long press callback not triggered.", 1, callback.getCallCount());
     }
 
     @Test

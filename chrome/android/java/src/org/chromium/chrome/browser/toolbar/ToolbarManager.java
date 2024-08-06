@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
 import android.view.View.OnClickListener;
 import android.view.View.OnLayoutChangeListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
@@ -131,6 +132,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonState;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController.ActionBarDelegate;
+import org.chromium.chrome.browser.toolbar.top.TabSwitcherActionMenuCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
@@ -275,7 +277,7 @@ public class ToolbarManager
     private final UserEducationHelper mUserEducationHelper;
 
     private HomeButtonCoordinator mHomeButtonCoordinator;
-    private ToggleTabStackButtonCoordinator mToggleTabStackButtonCoordinator;
+    private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
 
     private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private int mFullscreenFocusToken = TokenHolder.INVALID_TOKEN;
@@ -761,6 +763,20 @@ public class ToolbarManager
                         menuButtonStateSupplier,
                         onMenuButtonClicked,
                         R.id.none);
+
+        ToggleTabStackButton tabSwitcherButton =
+                mControlContainer.findViewById(R.id.tab_switcher_button);
+        if (tabSwitcherButton != null) {
+            mTabSwitcherButtonCoordinator =
+                    new ToggleTabStackButtonCoordinator(
+                            mActivity,
+                            tabSwitcherButton,
+                            mUserEducationHelper,
+                            mIncognitoStateProvider::isIncognitoSelected,
+                            mPromoShownOneshotSupplier,
+                            mLayoutStateProviderSupplier,
+                            mActivityTabProvider);
+        }
 
         mToolbar =
                 createTopToolbarCoordinator(
@@ -1333,6 +1349,7 @@ public class ToolbarManager
                         browsingModeThemeColorProvider,
                         mMenuButtonCoordinator,
                         mMenuButtonCoordinator.getMenuButtonHelperSupplier(),
+                        mTabSwitcherButtonCoordinator,
                         mTabModelSelectorSupplier,
                         mHomepageEnabledSupplier,
                         mCompositorViewHolder::getResourceManager,
@@ -1603,20 +1620,27 @@ public class ToolbarManager
         assert mTabModelSelectorSupplier.get() != null;
 
         mTabModelSelector = mTabModelSelectorSupplier.get();
+        Profile profile = mTabModelSelector.getModel(false).getProfile();
+        assert profile != null;
 
         // Must be initialized before Toolbar attempts to use it.
         mLocationBarModel.initializeWithNative();
-
-        Profile profile = mTabModelSelector.getModel(false).getProfile();
-        assert profile != null;
+        if (mTabSwitcherButtonCoordinator != null) {
+            OnLongClickListener tabSwitcherLongClickListener =
+                    TabSwitcherActionMenuCoordinator.createOnLongClickListener(
+                            menuItemId -> mAppMenuDelegate.onOptionsItemSelected(menuItemId, null),
+                            profile);
+            mTabSwitcherButtonCoordinator.initializeWithNative(
+                    newTabClickHandler,
+                    tabSwitcherLongClickListener,
+                    mTabModelSelectorSupplier.get().getCurrentModelTabCountSupplier());
+        }
 
         mToolbar.initializeWithNative(
                 profile,
                 layoutManager::requestUpdate,
-                newTabClickHandler,
                 bookmarkClickHandler,
                 customTabsBackClickHandler,
-                mAppMenuDelegate,
                 layoutManager,
                 mActivityTabProvider,
                 mBrowserControlsVisibilityManager,
@@ -1695,17 +1719,6 @@ public class ToolbarManager
             mControlContainer.setReadyForBitmapCapture(true);
         }
 
-        ToggleTabStackButton toggleTabStackButton =
-                mControlContainer.findViewById(R.id.tab_switcher_button);
-        mToggleTabStackButtonCoordinator =
-                new ToggleTabStackButtonCoordinator(
-                        mActivity,
-                        toggleTabStackButton,
-                        mUserEducationHelper,
-                        mIncognitoStateProvider::isIncognitoSelected,
-                        mPromoShownOneshotSupplier,
-                        mLayoutStateProviderSupplier,
-                        mActivityTabProvider);
         TraceEvent.end("ToolbarManager.initializeWithNative");
     }
 
@@ -1876,9 +1889,9 @@ public class ToolbarManager
 
         mUpdateMenuItemHelper = null;
 
-        if (mToggleTabStackButtonCoordinator != null) {
-            mToggleTabStackButtonCoordinator.destroy();
-            mToggleTabStackButtonCoordinator = null;
+        if (mTabSwitcherButtonCoordinator != null) {
+            mTabSwitcherButtonCoordinator.destroy();
+            mTabSwitcherButtonCoordinator = null;
         }
 
         if (mCallbackController != null) {
@@ -1948,7 +1961,10 @@ public class ToolbarManager
 
     private void handleTabRestoreCompleted() {
         if (!mTabRestoreCompleted || !mInitializedWithNative) return;
-        mToolbar.onStateRestored();
+        // Enable tab switcher button.
+        if (mTabSwitcherButtonCoordinator != null) {
+            mTabSwitcherButtonCoordinator.getContainerView().setClickable(true);
+        }
     }
 
     // TODO(crbug.com/40585866): remove the below two methods if possible.
@@ -2559,5 +2575,9 @@ public class ToolbarManager
 
     public BottomControlsCoordinator getBottomControlsCoordinatorForTesting() {
         return mBottomControlsCoordinatorSupplier.get();
+    }
+
+    public ToggleTabStackButtonCoordinator getTabSwitcherButtonCoordinatorForTesting() {
+        return mTabSwitcherButtonCoordinator;
     }
 }
