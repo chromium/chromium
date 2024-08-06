@@ -149,40 +149,43 @@ VideoDecodeAcceleratorTestSuite* VideoDecodeAcceleratorTestSuite::Create(
     }
 
     if (it->first == "validator_type") {
-      if (it->second == "none") {
+      auto validator_type_str = cmd_line->GetSwitchValueASCII("validator_type");
+      if (validator_type_str == "none") {
         validator_type =
             media::test::VideoPlayerTestEnvironment::ValidatorType::kNone;
-      } else if (it->second == "md5") {
+      } else if (validator_type_str == "md5") {
         validator_type =
             media::test::VideoPlayerTestEnvironment::ValidatorType::kMD5;
-      } else if (it->second == "ssim") {
+      } else if (validator_type_str == "ssim") {
         validator_type =
             media::test::VideoPlayerTestEnvironment::ValidatorType::kSSIM;
       } else {
-        std::cout << "unknown validator type \"" << it->second
+        std::cout << "unknown validator type \"" << validator_type_str
                   << "\", possible values are \"none|md5|ssim\"\n";
         return nullptr;
       }
     } else if (it->first == "output_frames") {
-      if (it->second == "all") {
+      auto output_frames_str = cmd_line->GetSwitchValueASCII("output_frames");
+      if (output_frames_str == "all") {
         frame_output_config.output_mode = media::test::FrameOutputMode::kAll;
-      } else if (it->second == "corrupt") {
+      } else if (output_frames_str == "corrupt") {
         frame_output_config.output_mode =
             media::test::FrameOutputMode::kCorrupt;
       } else {
-        std::cout << "unknown frame output mode \"" << it->second
+        std::cout << "unknown frame output mode \"" << output_frames_str
                   << "\", possible values are \"all|corrupt\"\n";
         return nullptr;
       }
     } else if (it->first == "output_format") {
-      if (it->second == "png") {
+      auto output_format_str = cmd_line->GetSwitchValueASCII("output_format");
+      if (output_format_str == "png") {
         frame_output_config.output_format =
             media::test::VideoFrameFileWriter::OutputFormat::kPNG;
-      } else if (it->second == "yuv") {
+      } else if (output_format_str == "yuv") {
         frame_output_config.output_format =
             media::test::VideoFrameFileWriter::OutputFormat::kYUV;
       } else {
-        std::cout << "unknown frame output format \"" << it->second
+        std::cout << "unknown frame output format \"" << output_format_str
                   << "\", possible values are \"png|yuv\"\n";
         return nullptr;
       }

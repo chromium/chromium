@@ -25,7 +25,6 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_transformation.h"
 #include "media/filters/dav1d_video_decoder.h"
-#include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/test/video_bitstream.h"
 #include "media/gpu/test/video_decode_accelerator_test_suite.h"
 #include "media/gpu/test/video_frame_file_writer.h"
@@ -41,6 +40,10 @@
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#include "media/gpu/chromeos/platform_video_frame_pool.h"
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 namespace media {
 namespace test {
@@ -112,10 +115,14 @@ class VideoDecoderTest : public ::testing::Test {
       }
     }
 
+// Set the frame rate for the decoder. This is required for the
+// VideoDecoderPipeline to work.
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
     command_line.AppendSwitchASCII(
         switches::kHardwareVideoDecodeFrameRate,
         base::NumberToString(g_env->Video()->FrameRate()));
+#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
     config.implementation = g_env->GetDecoderImplementation();
     config.linear_output = g_env->ShouldOutputLinearBuffers();
@@ -144,6 +151,9 @@ class VideoDecoderTest : public ::testing::Test {
   }
 
   bool InitializeDecoderWithConfig(VideoDecoderConfig& decoder_config) {
+    // TODO(https://crbugs.com/350994517): Enable this test for Windows once
+    // PlatformVideoFramePool is implemented for that.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
     auto frame_pool = std::make_unique<PlatformVideoFramePool>();
     std::unique_ptr<VideoDecoder> decoder = VideoDecoderPipeline::Create(
         gpu::GpuDriverBugWorkarounds(),
@@ -164,6 +174,9 @@ class VideoDecoderTest : public ::testing::Test {
                                             base::Unretained(this)),
                         /*waiting_cb=*/base::NullCallback());
     return init_result;
+#else
+    return false;
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   }
 
  private:
@@ -548,9 +561,11 @@ TEST_F(VideoDecoderTest, ResetAfterFirstConfigInfo) {
       g_env->Video()->Codec() != media::VideoCodec::kHEVC)
     GTEST_SKIP();
 
+#if BUILDFLAG(USE_V4L2_CODEC)
   if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
     GTEST_SKIP() << "Temporarily disabled due to b/298073737";
   }
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
 
   auto tvp = CreateDecoderListener(g_env->Video());
 

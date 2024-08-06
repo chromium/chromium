@@ -291,6 +291,11 @@ test("media_perftests") {
     # Needed for isolate script to execute.
     "//testing:run_perf_test",
   ]
+
+  if (enable_av1_decoder &&
+      ((is_chromeos && (use_v4l2_codec || use_vaapi)) || is_win)) {
+    data_deps += [ "//media/gpu/test/:video_encode_accelerator_tests" ]
+  }
 }
 
 # Note: Most external components should just depend on //media unless they
