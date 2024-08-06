@@ -202,6 +202,7 @@ class FencedFrameMPArchBrowserTest_IsolateAllSites
 // browser-side content::FencedFrame also being created.
 IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
                        CreateFromScriptAndDestroy) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(https_server()->Start());
   const GURL main_url =
       https_server()->GetURL("c.test", "/fenced_frames/title1.html");
@@ -239,6 +240,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
 
   EXPECT_TRUE(primary_rfh->GetFencedFrames().empty());
   EXPECT_TRUE(fenced_frame_rfh.IsDestroyed());
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.AdNavigationStarted", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest, CreateFromParser) {

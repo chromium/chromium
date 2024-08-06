@@ -8970,6 +8970,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
   URLLoaderMonitor url_loader_monitor;
+  base::HistogramTester histogram_tester;
 
   GURL test_url =
       embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
@@ -9095,6 +9096,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
                 ->trusted_params->isolation_info.network_isolation_key(),
             url_loader_monitor.GetRequestInfo(kExpectedReportUrls[1])
                 ->trusted_params->isolation_info.network_isolation_key());
+  // Two reporting requests should result in two AdNavigationStarted.
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.AdNavigationStarted", 2);
 }
 
 // Runs auction just like test InterestGroupBrowserTest.RunAdAuctionWithWinner,
@@ -18074,6 +18078,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedURNToURLValidURN) {
       }};
 
   for (const auto& test_case : kTestCases) {
+    base::HistogramTester histogram_tester;
     GURL test_url =
         embedded_https_test_server().GetURL(test_case.host, "/echo");
     ASSERT_TRUE(NavigateToURL(shell(), test_url));
@@ -18110,6 +18115,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedURNToURLValidURN) {
     EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
     EXPECT_EQ(ad_url,
               ConvertFencedFrameURNToURLInJS(urn_url, test_case.send_reports));
+    histogram_tester.ExpectTotalCount(
+        "Ads.InterestGroup.Auction.AdNavigationStarted", 1);
   }
 
   // Only the `send_reports` == true case should have sent a report. Wait for

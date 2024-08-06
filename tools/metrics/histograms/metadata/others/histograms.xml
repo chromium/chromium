@@ -546,6 +546,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.AdNavigationStarted" enum="Boolean"
+    expires_after="2024-10-27">
+  <owner>elius@chromium.org</owner>
+  <owner>alxchen@chromium.org</owner>
+  <summary>
+    Records when an ad that won a Protected Audience auction is navigated to.
+    (This includes calls to deprecatedURNtoURL, regardless of whether the url is
+    eventually loaded). Only True values are recorded, the buckets can be
+    ignored. Recorded at navigation start. At the time of recording, the auction
+    type is not distinguishable, so the number of started ad navigations should
+    be compared to the sum across all values of AuctionType in
+    Ads.InterestGroup.{AuctionType}.Result.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram
     name="Ads.InterestGroup.Auction.BidderWorkletIsolateTotalHeapSizeKilobytes"
     units="KB" expires_after="2024-12-01">
