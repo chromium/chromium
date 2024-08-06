@@ -12,11 +12,13 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/hash/hash.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chromecast/media/base/decrypt_context_impl.h"
+#include "chromecast/starboard/media/cdm/starboard_drm_key_tracker.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "google_apis/google_api_keys.h"
 #include "media/base/cdm_callback_promise.h"
@@ -58,6 +60,25 @@ class DummyDecryptContext : public DecryptContextImpl {
     return OutputType::kSecure;
   }
 };
+
+std::string DrmKeyStatusToString(StarboardDrmKeyStatus status) {
+  switch (status) {
+    case kStarboardDrmKeyStatusUsable:
+      return "kStarboardDrmKeyStatusUsable";
+    case kStarboardDrmKeyStatusExpired:
+      return "kStarboardDrmKeyStatusExpired";
+    case kStarboardDrmKeyStatusReleased:
+      return "kStarboardDrmKeyStatusReleased";
+    case kStarboardDrmKeyStatusRestricted:
+      return "kStarboardDrmKeyStatusRestricted";
+    case kStarboardDrmKeyStatusDownscaled:
+      return "kStarboardDrmKeyStatusDownscaled";
+    case kStarboardDrmKeyStatusPending:
+      return "kStarboardDrmKeyStatusPending";
+    case kStarboardDrmKeyStatusError:
+      return "kStarboardDrmKeyStatusError";
+  }
+}
 
 // Converts a starboard DRM status to a CdmPromise exception. This must not be
 // called for a success status. Defaults to NotSupportedError.
@@ -241,8 +262,9 @@ void StarboardDecryptorCast::CloseSession(
   promises.push_back(std::move(promise));
 
   if (promises.size() == 1) {
-    // This is the first request to close the session; call starboard to perform
-    // the close logic.
+    // This is the first request to close the session; mark the session as
+    // removed and call starboard to perform the close logic
+    StarboardDrmKeyTracker::GetInstance().RemoveKeysForSession(web_session_id);
     starboard_->DrmCloseSession(drm_system_, web_session_id.c_str(),
                                 web_session_id.size());
   } else {
@@ -308,9 +330,14 @@ StarboardDecryptorCast::~StarboardDecryptorCast() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (drm_system_) {
+    LOG(INFO) << "Destroying DRM system with address " << drm_system_;
     // Once this call returns, all DRM-related callbacks from Starboard are
     // guaranteed to be finished.
     starboard_->DrmDestroySystem(drm_system_);
+
+    for (const std::string& session_id : session_ids_) {
+      StarboardDrmKeyTracker::GetInstance().RemoveKeysForSession(session_id);
+    }
   }
 
   RejectPendingPromises();
@@ -328,6 +355,7 @@ void StarboardDecryptorCast::InitializeInternal() {
       /*key_system=*/"com.widevine.alpha",
       /*callback_handler=*/&callback_handler_);
   CHECK(drm_system_) << "Failed to create an SbDrmSystem";
+  LOG(INFO) << "Created DRM system with address " << drm_system_;
 
   server_certificate_updatable_ =
       starboard_->DrmIsServerCertificateUpdatable(drm_system_);
@@ -583,6 +611,16 @@ void StarboardDecryptorCast::OnKeyStatusesChanged(
     const StarboardDrmKeyId& key_id = key_id_and_status.first;
     const StarboardDrmKeyStatus status = key_id_and_status.second;
 
+    const std::string key_name(
+        reinterpret_cast<const char*>(&key_id.identifier),
+        key_id.identifier_size);
+    CHECK_GE(key_id.identifier_size, 0);
+    const size_t key_hash = base::FastHash(base::make_span(
+        key_id.identifier, static_cast<size_t>(key_id.identifier_size)));
+    LOG(INFO) << "DRM key (hash) " << key_hash << " changed status to "
+              << DrmKeyStatusToString(status) << " for DRM system with address "
+              << drm_system << ", for session " << session_id;
+
     auto key_info = std::make_unique<::media::CdmKeyInformation>();
     key_info->key_id.assign(key_id.identifier,
                             key_id.identifier + key_id.identifier_size);
@@ -591,6 +629,32 @@ void StarboardDecryptorCast::OnKeyStatusesChanged(
 
     usable_keys_exist =
         usable_keys_exist || (status == kStarboardDrmKeyStatusUsable);
+
+    switch (status) {
+      case kStarboardDrmKeyStatusUsable:
+      case kStarboardDrmKeyStatusRestricted:
+      case kStarboardDrmKeyStatusDownscaled:
+        // As long as the key is available to the DRM system in some way, we
+        // should treat the key as available so that the MediaPipelineBackend
+        // can push buffers for the given key.
+        StarboardDrmKeyTracker::GetInstance().AddKey(key_name, session_id);
+        break;
+      case kStarboardDrmKeyStatusPending:
+        // The key status will be updated later; do nothing for now.
+        break;
+      case kStarboardDrmKeyStatusExpired:
+      case kStarboardDrmKeyStatusReleased:
+      case kStarboardDrmKeyStatusError:
+        // The key is no longer usable.
+        StarboardDrmKeyTracker::GetInstance().RemoveKey(key_name, session_id);
+        break;
+    }
+  }
+
+  if (usable_keys_exist) {
+    // At least one key is available for the session, so we need to track the
+    // session to clean it up on destruction.
+    session_ids_.insert(session_id);
   }
 
   OnSessionKeysChange(session_id, usable_keys_exist, std::move(keys_info));

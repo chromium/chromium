@@ -11,6 +11,7 @@
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 #include "chromecast/public/graphics_types.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
+#include "chromecast/starboard/media/cdm/starboard_drm_key_tracker.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
@@ -131,7 +132,10 @@ class MockDelegate : public MediaPipelineBackend::Decoder::Delegate {
 class StarboardVideoDecoderTest : public ::testing::Test {
  protected:
   StarboardVideoDecoderTest()
-      : starboard_(std::make_unique<MockStarboardApiWrapper>()) {}
+      : starboard_(std::make_unique<MockStarboardApiWrapper>()) {
+    // Ensure that tests begin with a clean slate regarding DRM keys.
+    StarboardDrmKeyTracker::GetInstance().ClearStateForTesting();
+  }
 
   ~StarboardVideoDecoderTest() override = default;
 
@@ -211,6 +215,9 @@ TEST_F(StarboardVideoDecoderTest, PopulatesDrmInfoInSamples) {
       ::media::SubsampleEntry(/*clear_bytes=*/3, /*cypher_bytes=*/4),
   };
 
+  // If we do not add this key, buffers will not be pushed to starboard.
+  StarboardDrmKeyTracker::GetInstance().AddKey(kKeyId, "session_id");
+
   VideoConfig config = GetBasicConfig();
   config.encryption_scheme = EncryptionScheme::kAesCbc;
 
@@ -222,7 +229,7 @@ TEST_F(StarboardVideoDecoderTest, PopulatesDrmInfoInSamples) {
 
   const std::vector<uint8_t> buffer_data = {1, 2, 3, 4, 5};
   scoped_refptr<::media::DecoderBuffer> decoder_buffer =
-      ::media::DecoderBuffer::CopyFrom(buffer_data.data(), buffer_data.size());
+      ::media::DecoderBuffer::CopyFrom(buffer_data);
   CHECK(decoder_buffer);
   decoder_buffer->set_decrypt_config(std::move(decrypt_config));
 
@@ -264,6 +271,147 @@ TEST_F(StarboardVideoDecoderTest, PopulatesDrmInfoInSamples) {
 
   EXPECT_EQ(decoder.PushBuffer(buffer.get()),
             MediaPipelineBackend::BufferStatus::kBufferPending);
+
+  EXPECT_EQ(actual_drm_info.encryption_scheme,
+            kStarboardDrmEncryptionSchemeAesCbc);
+  EXPECT_EQ(actual_drm_info.encryption_pattern.crypt_byte_block,
+            encryption_pattern.crypt_byte_block());
+  EXPECT_EQ(actual_drm_info.encryption_pattern.skip_byte_block,
+            encryption_pattern.skip_byte_block());
+  EXPECT_THAT(std::string(reinterpret_cast<const char*>(
+                              actual_drm_info.initialization_vector),
+                          actual_drm_info.initialization_vector_size),
+              StrEq(kIv));
+  EXPECT_THAT(
+      std::string(reinterpret_cast<const char*>(actual_drm_info.identifier),
+                  actual_drm_info.identifier_size),
+      StrEq(kKeyId));
+  EXPECT_THAT(
+      actual_subsamples,
+      ElementsAre(
+          AllOf(Field(&StarboardDrmSubSampleMapping::clear_byte_count, 1),
+                Field(&StarboardDrmSubSampleMapping::encrypted_byte_count, 2)),
+          AllOf(
+              Field(&StarboardDrmSubSampleMapping::clear_byte_count, 3),
+              Field(&StarboardDrmSubSampleMapping::encrypted_byte_count, 4))));
+}
+
+TEST_F(StarboardVideoDecoderTest, DoesNotPushToStarboardIfDrmKeyIsUnavailable) {
+  // The length should be at most 16 bytes.
+  constexpr char kKeyId[] = "key_id";
+  // This must be 16 bytes.
+  constexpr char kIv[] = "abcdefghijklmnop";
+  // This must contain at least one subsample.
+  const std::vector<::media::SubsampleEntry> subsamples = {
+      ::media::SubsampleEntry(/*clear_bytes=*/1, /*cypher_bytes=*/2),
+      ::media::SubsampleEntry(/*clear_bytes=*/3, /*cypher_bytes=*/4),
+  };
+
+  // Since we do not add kKeyId to StarboardDrmKeyTracker, no buffer with this
+  // key ID should be pushed to starboard.
+
+  VideoConfig config = GetBasicConfig();
+  config.encryption_scheme = EncryptionScheme::kAesCtr;
+
+  const ::media::EncryptionPattern encryption_pattern(5, 6);
+  std::unique_ptr<::media::DecryptConfig> decrypt_config =
+      ::media::DecryptConfig::CreateCbcsConfig(kKeyId, kIv, subsamples,
+                                               encryption_pattern);
+  CHECK(decrypt_config);
+
+  const std::vector<uint8_t> buffer_data = {1, 2, 3, 4, 5};
+  scoped_refptr<::media::DecoderBuffer> decoder_buffer =
+      ::media::DecoderBuffer::CopyFrom(buffer_data);
+  CHECK(decoder_buffer);
+  decoder_buffer->set_decrypt_config(std::move(decrypt_config));
+
+  scoped_refptr<DecoderBufferAdapter> buffer =
+      new DecoderBufferAdapter(decoder_buffer);
+
+  EXPECT_CALL(*starboard_, WriteSample).Times(0);
+
+  StarboardVideoDecoder decoder(starboard_.get());
+  MockDelegate delegate;
+
+  decoder.Initialize(&fake_player_);
+  decoder.SetConfig(config);
+  decoder.SetDelegate(&delegate);
+
+  EXPECT_EQ(decoder.PushBuffer(buffer.get()),
+            MediaPipelineBackend::BufferStatus::kBufferPending);
+}
+
+TEST_F(StarboardVideoDecoderTest,
+       PushesBufferToStarboardAfterDrmKeyIsAvailable) {
+  // The length should be at most 16 bytes.
+  constexpr char kKeyId[] = "key_id";
+  // This must be 16 bytes.
+  constexpr char kIv[] = "abcdefghijklmnop";
+  // This must contain at least one subsample.
+  const std::vector<::media::SubsampleEntry> subsamples = {
+      ::media::SubsampleEntry(/*clear_bytes=*/1, /*cypher_bytes=*/2),
+      ::media::SubsampleEntry(/*clear_bytes=*/3, /*cypher_bytes=*/4),
+  };
+
+  VideoConfig config = GetBasicConfig();
+  config.encryption_scheme = EncryptionScheme::kAesCbc;
+
+  const ::media::EncryptionPattern encryption_pattern(5, 6);
+  std::unique_ptr<::media::DecryptConfig> decrypt_config =
+      ::media::DecryptConfig::CreateCbcsConfig(kKeyId, kIv, subsamples,
+                                               encryption_pattern);
+  CHECK(decrypt_config);
+
+  const std::vector<uint8_t> buffer_data = {1, 2, 3, 4, 5};
+  scoped_refptr<::media::DecoderBuffer> decoder_buffer =
+      ::media::DecoderBuffer::CopyFrom(buffer_data);
+  CHECK(decoder_buffer);
+  decoder_buffer->set_decrypt_config(std::move(decrypt_config));
+
+  scoped_refptr<DecoderBufferAdapter> buffer =
+      new DecoderBufferAdapter(decoder_buffer);
+
+  StarboardDrmSampleInfo actual_drm_info = {};
+  // The actual subsamples may be deleted after the call to
+  // SbPlayerWriteSample2, so we need to store a copy.
+  std::vector<StarboardDrmSubSampleMapping> actual_subsamples;
+  EXPECT_CALL(
+      *starboard_,
+      WriteSample(&fake_player_, kStarboardMediaTypeVideo,
+                  Pointee(AllOf(MatchesVideoConfigAndBuffer(config, buffer))),
+                  1))
+      .WillOnce(WithArg<2>([&actual_drm_info, &actual_subsamples](
+                               StarboardSampleInfo* sample_infos) {
+        // Since this is only called when the fourth argument is 1, that
+        // means that sample_infos_count is 1.
+        StarboardSampleInfo sample_info = sample_infos[0];
+        if (!sample_info.drm_info) {
+          return;
+        }
+        actual_drm_info = *sample_info.drm_info;
+        const int subsample_count = actual_drm_info.subsample_count;
+        if (subsample_count > 0) {
+          actual_subsamples.assign(
+              actual_drm_info.subsample_mapping,
+              actual_drm_info.subsample_mapping + subsample_count);
+        }
+      }));
+
+  StarboardVideoDecoder decoder(starboard_.get());
+  MockDelegate delegate;
+
+  decoder.Initialize(&fake_player_);
+  decoder.SetConfig(config);
+  decoder.SetDelegate(&delegate);
+
+  EXPECT_EQ(decoder.PushBuffer(buffer.get()),
+            MediaPipelineBackend::BufferStatus::kBufferPending);
+
+  // Now that the key is available, the buffer should be pushed to starboard.
+  StarboardDrmKeyTracker::GetInstance().AddKey(kKeyId, "session_id");
+  // The callback provided by the decoder will post a task; run until the
+  // callback runs.
+  task_environment_.RunUntilIdle();
 
   EXPECT_EQ(actual_drm_info.encryption_scheme,
             kStarboardDrmEncryptionSchemeAesCbc);
@@ -526,7 +674,7 @@ TEST_F(StarboardVideoDecoderTest,
 TEST_F(StarboardVideoDecoderTest, PopulatesMimeTypeForHEVCDolbyVision) {
   VideoConfig config = GetBasicConfig();
   config.codec = kCodecDolbyVisionHEVC;
-  config.profile = kDolbyVisionNonCompatible_BL_MD;
+  config.profile = kDolbyVisionProfile5;
   config.codec_profile_level = 6;
 
   StarboardVideoDecoder decoder(starboard_.get());

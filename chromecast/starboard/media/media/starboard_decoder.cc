@@ -6,8 +6,13 @@
 
 #include <utility>
 
+#include "base/check_op.h"
+#include "base/hash/hash.h"
 #include "base/logging.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromecast/public/media/cast_decoder_buffer.h"
+#include "chromecast/starboard/media/cdm/starboard_drm_key_tracker.h"
 
 namespace chromecast {
 namespace media {
@@ -22,6 +27,10 @@ StarboardDecoder::StarboardDecoder(StarboardApiWrapper* starboard,
 
 StarboardDecoder::~StarboardDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (drm_key_token_) {
+    StarboardDrmKeyTracker::GetInstance().UnregisterCallback(*drm_key_token_);
+  }
 }
 
 void StarboardDecoder::Deallocate(const uint8_t* buffer) {
@@ -63,6 +72,11 @@ void StarboardDecoder::Stop() {
             << "decoder";
 
   pending_first_push_.Reset();
+  pending_drm_key_.Reset();
+  if (drm_key_token_) {
+    StarboardDrmKeyTracker::GetInstance().UnregisterCallback(*drm_key_token_);
+    drm_key_token_ = std::nullopt;
+  }
 
   // By setting this to null, we will not push any more buffers until Initialize
   // is called again.
@@ -121,6 +135,44 @@ BufferStatus StarboardDecoder::PushBufferInternal(
   DCHECK(delegate_);
   DCHECK(!pending_first_push_);
 
+  // For encrypted buffers, we should not push data to starboard util the
+  // buffer's DRM key is available to the CDM. To accomplish this, we check with
+  // the StarboardDrmKeyTracker singleton -- which is updated by the CDM,
+  // StarboardDecryptorCast -- to see whether the key is available. If the key
+  // is not available yet, we register a callback that will be run once the key
+  // becomes available.
+  if (StarboardDrmSampleInfo* drm_sample_info = drm_info.GetDrmSampleInfo();
+      drm_sample_info != nullptr) {
+    const std::string drm_key(
+        reinterpret_cast<const char*>(&drm_sample_info->identifier),
+        drm_sample_info->identifier_size);
+    if (!StarboardDrmKeyTracker::GetInstance().HasKey(drm_key)) {
+      // They key is not available yet; register a callback to push the buffer
+      // once the key becomes available.
+      CHECK_GE(drm_sample_info->identifier_size, 0);
+      const size_t key_hash = base::FastHash(base::make_span(
+          drm_sample_info->identifier,
+          static_cast<size_t>(drm_sample_info->identifier_size)));
+      LOG(INFO) << "Waiting for DRM key with hash: " << key_hash;
+      pending_drm_key_ = base::BindOnce(
+          &StarboardDecoder::PushBufferInternal, base::Unretained(this),
+          std::move(sample_info), std::move(drm_info), std::move(buffer_data),
+          buffer_data_size);
+
+      CHECK(base::SequencedTaskRunner::HasCurrentDefault());
+      drm_key_token_ = StarboardDrmKeyTracker::GetInstance().WaitForKey(
+          drm_key,
+          base::BindPostTask(
+              base::SequencedTaskRunner::GetCurrentDefault(),
+              base::BindOnce(&StarboardDecoder::RunPendingDrmKeyCallback,
+                             weak_factory_.GetWeakPtr())));
+      return BufferStatus::kBufferPending;
+    }
+
+    // The key is already available; continue the logic of pushing the buffer to
+    // starboard.
+  }
+
   const uint8_t* buffer_addr = buffer_data.get();
 
   // Ensure that we do not delete the media data until Deallocate is called.
@@ -176,6 +228,29 @@ void StarboardDecoder::OnStarboardDecodeError() {
   if (delegate_) {
     delegate_->OnDecoderError();
   }
+}
+
+void StarboardDecoder::RunPendingDrmKeyCallback(int64_t token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!drm_key_token_) {
+    LOG(INFO)
+        << "Pending DRM key callback was run after drm_key_token_ was cleared.";
+    return;
+  }
+
+  if (*drm_key_token_ != token) {
+    LOG(INFO) << "Pending DRM key callback was called for a token that does "
+                 "not match the expected token. Expected token: "
+              << *drm_key_token_ << ", received token: " << token;
+    return;
+  }
+
+  // Clear the token, since we are no longer waiting to run the callback.
+  drm_key_token_ = std::nullopt;
+
+  LOG(INFO) << "Running DRM key callback";
+  CHECK_EQ(std::move(pending_drm_key_).Run(), BufferStatus::kBufferPending);
 }
 
 }  // namespace media
