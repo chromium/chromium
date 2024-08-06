@@ -209,7 +209,6 @@ void BirchChipButton::Init(BirchItem* item) {
     button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CALENDAR_JOIN_BUTTON_TOOLTIP));
   }
-
   item_->LoadIcon(base::BindOnce(&BirchChipButton::SetIconImage,
                                  weak_factory_.GetWeakPtr()));
 

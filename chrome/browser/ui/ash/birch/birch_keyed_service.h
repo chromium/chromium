@@ -64,12 +64,9 @@ class BirchKeyedService : public KeyedService,
   base::FilePath GetRemovedItemsFilePath() override;
   void RemoveFileItemFromLauncher(const base::FilePath& path) override;
 
-  void GetFaviconImageForIconURL(
-      const GURL& icon_url,
-      base::OnceCallback<void(const ui::ImageModel&)> callback) override;
-
-  void GetFaviconImageForPageURL(
+  void GetFaviconImage(
       const GURL& page_url,
+      const bool is_page_url,
       base::OnceCallback<void(const ui::ImageModel&)> callback) override;
 
   void set_calendar_provider_for_test(BirchDataProvider* provider) {

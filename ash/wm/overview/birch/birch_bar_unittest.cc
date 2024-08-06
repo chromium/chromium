@@ -266,12 +266,9 @@ class TestBirchClient : public BirchClient {
 
   void RemoveFileItemFromLauncher(const base::FilePath& path) override {}
 
-  void GetFaviconImageForIconURL(
+  void GetFaviconImage(
       const GURL& url,
-      base::OnceCallback<void(const ui::ImageModel&)> callback) override {}
-
-  void GetFaviconImageForPageURL(
-      const GURL& url,
+      const bool is_page_url,
       base::OnceCallback<void(const ui::ImageModel&)> callback) override {}
 
  private:

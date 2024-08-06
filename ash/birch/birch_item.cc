@@ -142,39 +142,24 @@ void OnGotFaviconImage(
                          std::move(load_icon_callback));
     return;
   }
-
   std::move(load_icon_callback).Run(image, secondary_icon_type);
 }
 
-// Loads a favicon image based on the `icon_url`. First tries the browser's
-// FaviconService cache, then if not found downloads off the network.
-void GetFaviconImageForIconURL(
-    const GURL& icon_url,
+// Loads a favicon image based on the `page_url` or `icon_url` with the
+// FaviconService. Invokes the callback either with a valid image (success) or
+// an empty image (failure).
+void GetFaviconImage(
+    const GURL& url,
+    const bool is_page_url,
     const ui::ImageModel& backup_icon,
     SecondaryIconType secondary_icon_type,
     base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)>
         load_icon_callback) {
   BirchClient* client = Shell::Get()->birch_model()->birch_client();
-  client->GetFaviconImageForIconURL(
-      icon_url,
-      base::BindOnce(&OnGotFaviconImage, icon_url, backup_icon,
-                     secondary_icon_type, std::move(load_icon_callback)));
-}
-
-// Loads a favicon image based on the `page_url` with the FaviconService.
-// Invokes the callback either with a valid image (success) or an empty image
-// (failure).
-void GetFaviconImageForPageURL(
-    const GURL& page_url,
-    const ui::ImageModel& backup_icon,
-    SecondaryIconType secondary_icon_type,
-    base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)>
-        load_icon_callback) {
-  BirchClient* client = Shell::Get()->birch_model()->birch_client();
-  client->GetFaviconImageForPageURL(
-      page_url,
-      base::BindOnce(&OnGotFaviconImage, page_url, backup_icon,
-                     secondary_icon_type, std::move(load_icon_callback)));
+  client->GetFaviconImage(
+      url, is_page_url,
+      base::BindOnce(&OnGotFaviconImage, url, backup_icon, secondary_icon_type,
+                     std::move(load_icon_callback)));
 }
 
 // Returns the pref service to use for Birch item prefs.
@@ -613,7 +598,21 @@ BirchTabItem::BirchTabItem(const std::u16string& title,
       favicon_url_(favicon_url),
       session_name_(session_name),
       form_factor_(form_factor),
-      backup_icon_(backup_icon) {}
+      backup_icon_(backup_icon) {
+  switch (form_factor) {
+    case BirchTabItem::DeviceFormFactor::kDesktop:
+      secondary_icon_type_ = SecondaryIconType::kTabFromDesktop;
+      break;
+    case BirchTabItem::DeviceFormFactor::kPhone:
+      secondary_icon_type_ = SecondaryIconType::kTabFromPhone;
+      break;
+    case BirchTabItem::DeviceFormFactor::kTablet:
+      secondary_icon_type_ = SecondaryIconType::kTabFromTablet;
+      break;
+    default:
+      secondary_icon_type_ = SecondaryIconType::kNoIcon;
+  }
+}
 
 BirchTabItem::BirchTabItem(BirchTabItem&&) = default;
 
@@ -635,7 +634,9 @@ std::string BirchTabItem::ToString() const {
      << ", title: " << base::UTF16ToUTF8(title()) << ", url:" << url_
      << ", timestamp:" << timestamp_ << ", favicon_url:" << favicon_url_
      << ", session_name:" << session_name_
-     << ", form_factor:" << static_cast<int>(form_factor_) << "}";
+     << ", form_factor:" << static_cast<int>(form_factor_)
+     << ", Secondary Icon Type: "
+     << SecondaryIconTypeToString(secondary_icon_type_) << "}";
   return ss.str();
 }
 
@@ -655,10 +656,8 @@ void BirchTabItem::PerformSecondaryAction() {
 }
 
 void BirchTabItem::LoadIcon(LoadIconCallback callback) const {
-  // TODO(b/354043357): Replace placeholder `secondary_icon_type_` and switch to
-  // new larger icon loading method.
-  GetFaviconImageForIconURL(favicon_url_, backup_icon_,
-                            SecondaryIconType::kNoIcon, std::move(callback));
+  GetFaviconImage(favicon_url_, /*is_page_url=*/false, backup_icon_,
+                  secondary_icon_type_, std::move(callback));
 }
 
 // static
@@ -882,8 +881,8 @@ void BirchSelfShareItem::PerformSecondaryAction() {
 }
 
 void BirchSelfShareItem::LoadIcon(LoadIconCallback callback) const {
-  GetFaviconImageForPageURL(url_, backup_icon_, secondary_icon_type_,
-                            std::move(callback));
+  GetFaviconImage(url_, /*is_page_url=*/true, backup_icon_,
+                  secondary_icon_type_, std::move(callback));
 }
 
 // static
@@ -967,8 +966,8 @@ void BirchLostMediaItem::PerformSecondaryAction() {
 }
 
 void BirchLostMediaItem::LoadIcon(LoadIconCallback callback) const {
-  GetFaviconImageForPageURL(source_url_, backup_icon_, secondary_icon_type_,
-                            std::move(callback));
+  GetFaviconImage(source_url_, /*is_page_url=*/true, backup_icon_,
+                  secondary_icon_type_, std::move(callback));
 }
 
 // static

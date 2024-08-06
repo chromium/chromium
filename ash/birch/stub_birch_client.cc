@@ -124,18 +124,11 @@ void StubBirchClient::RemoveFileItemFromLauncher(const base::FilePath& path) {
   last_removed_path_ = path;
 }
 
-void StubBirchClient::GetFaviconImageForIconURL(
+void StubBirchClient::GetFaviconImage(
     const GURL& url,
+    const bool is_page_url,
     base::OnceCallback<void(const ui::ImageModel&)> callback) {
   did_get_favicon_image_ = true;
   std::move(callback).Run(ui::ImageModel());
 }
-
-void StubBirchClient::GetFaviconImageForPageURL(
-    const GURL& url,
-    base::OnceCallback<void(const ui::ImageModel&)> callback) {
-  did_get_favicon_image_for_page_ = true;
-  std::move(callback).Run(ui::ImageModel());
-}
-
 }  // namespace ash

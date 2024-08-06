@@ -68,7 +68,8 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
           /*timestamp=*/base::Time(),
           /*favicon_url=*/kTestFaviconURL,
           /*session_name=*/"session",
-          /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop, kTestIcon));
+          /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop,
+          /*backup_icon=*/kTestIcon));
       break;
     case BirchItemType::kWeather:
       items.push_back(std::make_unique<BirchWeatherItem>(

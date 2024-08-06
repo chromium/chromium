@@ -34,6 +34,9 @@ namespace {
 // The file within the cryptohome to save removed items into.
 constexpr char kRemovedBirchItemsFile[] = "birch/removed_items.pb";
 
+// The minimum size to query for favicons.
+constexpr int kMinimumFaviconSize = 32;
+
 // Utility method to resize the raw favicon bitmap into a `gfx::Image`.
 gfx::Image ResizeLargeIcon(
     const favicon_base::FaviconRawBitmapResult& db_result,
@@ -48,17 +51,6 @@ gfx::Image ResizeLargeIcon(
 }
 
 // Callback for FaviconService icon lookup that uses the
-// `favicon_base::FaviconImageResult`.
-void OnGotFaviconImage(base::OnceCallback<void(const ui::ImageModel&)> callback,
-                       const favicon_base::FaviconImageResult& image_result) {
-  if (image_result.image.IsEmpty()) {
-    std::move(callback).Run(ui::ImageModel());
-    return;
-  }
-  std::move(callback).Run(ui::ImageModel::FromImage(image_result.image));
-}
-
-// Callback for FaviconService icon lookup that uses the
 // `favicon_base::FaviconRawBitmapResult`.
 void OnGotFaviconImageRaw(
     base::OnceCallback<void(const ui::ImageModel&)> callback,
@@ -68,7 +60,7 @@ void OnGotFaviconImageRaw(
     return;
   }
 
-  gfx::Image image = ResizeLargeIcon(image_result, 32);
+  gfx::Image image = ResizeLargeIcon(image_result, kMinimumFaviconSize);
 
   std::move(callback).Run(ui::ImageModel::FromImage(image));
 }
@@ -174,30 +166,27 @@ void BirchKeyedService::RemoveFileItemFromLauncher(const base::FilePath& path) {
   file_suggest_keyed_service->RemoveSuggestionsAndNotify(file_paths);
 }
 
-void BirchKeyedService::GetFaviconImageForIconURL(
-    const GURL& icon_url,
+void BirchKeyedService::GetFaviconImage(
+    const GURL& url,
+    const bool is_page_url,
     base::OnceCallback<void(const ui::ImageModel&)> callback) {
   favicon::FaviconService* service =
       FaviconServiceFactory::GetInstance()->GetForProfile(
           profile_, ServiceAccessType::EXPLICIT_ACCESS);
-  service->GetFaviconImage(
-      icon_url, base::BindOnce(&OnGotFaviconImage, std::move(callback)),
-      &cancelable_task_tracker_);
-}
+  favicon_base::IconType icon_type = favicon_base::IconType::kFavicon;
 
-void BirchKeyedService::GetFaviconImageForPageURL(
-    const GURL& page_url,
-    base::OnceCallback<void(const ui::ImageModel&)> callback) {
-  favicon::FaviconService* service =
-      FaviconServiceFactory::GetInstance()->GetForProfile(
-          profile_, ServiceAccessType::EXPLICIT_ACCESS);
-  const favicon_base::IconTypeSet icon_types = {
-      favicon_base::IconType::kFavicon};
-
-  service->GetLargestRawFaviconForPageURL(
-      page_url, {icon_types}, /*minimum_size_in_pixels=*/32,
-      base::BindOnce(&OnGotFaviconImageRaw, std::move(callback)),
-      &cancelable_task_tracker_);
+  if (is_page_url) {
+    const favicon_base::IconTypeSet icon_types = {icon_type};
+    service->GetLargestRawFaviconForPageURL(
+        url, {icon_types}, kMinimumFaviconSize,
+        base::BindOnce(&OnGotFaviconImageRaw, std::move(callback)),
+        &cancelable_task_tracker_);
+  } else {
+    service->GetRawFavicon(
+        url, icon_type, kMinimumFaviconSize,
+        base::BindOnce(&OnGotFaviconImageRaw, std::move(callback)),
+        &cancelable_task_tracker_);
+  }
 }
 
 void BirchKeyedService::ShutdownBirch() {

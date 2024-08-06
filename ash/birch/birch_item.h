@@ -300,6 +300,9 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
   const base::Time& timestamp() const { return timestamp_; }
   const std::string& session_name() const { return session_name_; }
   DeviceFormFactor form_factor() const { return form_factor_; }
+  const SecondaryIconType& secondary_icon_type() const {
+    return secondary_icon_type_;
+  }
 
  private:
   static std::u16string GetSubtitle(const std::string& session_name,
@@ -310,6 +313,7 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
   GURL favicon_url_;
   std::string session_name_;
   DeviceFormFactor form_factor_;
+  SecondaryIconType secondary_icon_type_;
   ui::ImageModel backup_icon_;
 };
 

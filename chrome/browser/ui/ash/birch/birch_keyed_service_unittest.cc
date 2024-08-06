@@ -338,6 +338,11 @@ class FaviconServiceMock : public favicon::MockFaviconService {
                                            testing::_, testing::_))
         .WillByDefault(testing::Invoke(
             this, &FaviconServiceMock::DefaultGetLargestRawFaviconForPageURL));
+
+    ON_CALL(*this, GetRawFavicon(testing::_, testing::_, testing::_, testing::_,
+                                 testing::_))
+        .WillByDefault(
+            testing::Invoke(this, &FaviconServiceMock::DefaultGetRawFavicon));
   }
   ~FaviconServiceMock() override = default;
   FaviconServiceMock(const FaviconServiceMock&) = delete;
@@ -348,6 +353,19 @@ class FaviconServiceMock : public favicon::MockFaviconService {
       const GURL& page_url,
       const std::vector<favicon_base::IconTypeSet>& icon_types,
       int minimum_size_in_pixels,
+      favicon_base::FaviconRawBitmapCallback callback,
+      base::CancelableTaskTracker* tracker) {
+    favicon_base::FaviconRawBitmapResult result;
+
+    std::move(callback).Run(result);
+
+    return base::CancelableTaskTracker::kBadTaskId;
+  }
+
+  base::CancelableTaskTracker::TaskId DefaultGetRawFavicon(
+      const GURL& icon_url,
+      const favicon_base::IconType& icon_type,
+      int desired_size_in_pixels,
       favicon_base::FaviconRawBitmapCallback callback,
       base::CancelableTaskTracker* tracker) {
     favicon_base::FaviconRawBitmapResult result;
@@ -792,11 +810,13 @@ TEST_F(BirchKeyedServiceTest, BirchRecentTabProvider) {
   EXPECT_EQ(tabs[0].url(), GURL(kExampleURL1));
   EXPECT_EQ(tabs[0].session_name(), kSessionName1);
   EXPECT_EQ(tabs[0].form_factor(), BirchTabItem::DeviceFormFactor::kDesktop);
+  EXPECT_EQ(tabs[0].secondary_icon_type(), SecondaryIconType::kTabFromDesktop);
 
   EXPECT_EQ(tabs[1].title(), kTabTitle2);
   EXPECT_EQ(tabs[1].url(), GURL(kExampleURL2));
   EXPECT_EQ(tabs[1].session_name(), kSessionName2);
   EXPECT_EQ(tabs[1].form_factor(), BirchTabItem::DeviceFormFactor::kPhone);
+  EXPECT_EQ(tabs[1].secondary_icon_type(), SecondaryIconType::kTabFromPhone);
 
   // Disable tab sync, then try fetching again and expect an empty list of tabs.
   sync_service()->GetUserSettings()->SetSelectedTypes(
@@ -1203,21 +1223,26 @@ TEST_F(BirchKeyedServiceTest, RemoveFileItemFromLauncher) {
   birch_keyed_service()->RemoveFileItemFromLauncher(test_path);
 }
 
-// Verifies that `GetFaviconImageForIconURL` calls the favicon service.
-TEST_F(BirchKeyedServiceTest, GetFaviconImageForIconURL) {
+// Verifies that `GetFaviconImage` for icon urls calls `GetRawFavicon` in
+// favicon service.
+TEST_F(BirchKeyedServiceTest, GetFaviconImage_ForIconUrl) {
   GURL icon_url("http://example.com/favicon.ico");
-  EXPECT_CALL(*favicon_service(),
-              GetFaviconImage(icon_url, testing::_, testing::_));
-  birch_keyed_service()->GetFaviconImageForIconURL(icon_url, base::DoNothing());
+  EXPECT_CALL(
+      *favicon_service(),
+      GetRawFavicon(icon_url, testing::_, testing::_, testing::_, testing::_));
+  birch_keyed_service()->GetFaviconImage(icon_url, /*is_page_url=*/false,
+                                         base::DoNothing());
 }
 
-// Verifies that `GetFaviconImageForPageURL` calls the favicon service.
-TEST_F(BirchKeyedServiceTest, GetFaviconImageForPageURL) {
+// Verifies that `GetFaviconImage` for page urls calls
+// `GetLargestRawFaviconForPageURL` in favicon service.
+TEST_F(BirchKeyedServiceTest, GetFaviconImage_ForPageUrl) {
   GURL page_url("http://example.com/");
   EXPECT_CALL(*favicon_service(),
               GetLargestRawFaviconForPageURL(page_url, testing::_, testing::_,
                                              testing::_, testing::_));
-  birch_keyed_service()->GetFaviconImageForPageURL(page_url, base::DoNothing());
+  birch_keyed_service()->GetFaviconImage(page_url, /*is_page_url=*/true,
+                                         base::DoNothing());
 }
 
 }  // namespace ash
