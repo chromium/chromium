@@ -371,6 +371,12 @@ crbug.com/1093709 [ Mac13-arm64 ] external/wpt/html/canvas/offscreen/manual/the-
 crbug.com/1315282 [ Mac ] external/wpt/html/canvas/element/text/direction-inherit-rtl.html [ Failure ]
 crbug.com/1315282 [ Mac ] external/wpt/html/canvas/element/text/direction-rtl.html [ Failure ]
 
+
+# Off by one pixel error on ref test
+crbug.com/1259367 [ Mac11-arm64 Release ] printing/offscreencanvas-webgl-printing.html [ Failure ]
+crbug.com/1259367 [ Mac12-arm64 Release ] printing/offscreencanvas-webgl-printing.html [ Failure ]
+crbug.com/1259367 [ Mac13-arm64 ] printing/offscreencanvas-webgl-printing.html [ Failure ]
+
 # These are testing deprecated features: https://github.com/web-platform-tests/wpt/issues/35662
 external/wpt/editing/run/inserttext.html?2001-last [ Failure ]
 external/wpt/editing/run/forecolor.html?1-1000 [ Failure ]
