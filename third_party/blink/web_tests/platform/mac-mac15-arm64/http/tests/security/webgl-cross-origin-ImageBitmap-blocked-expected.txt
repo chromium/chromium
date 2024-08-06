@@ -1,0 +1,10 @@
+CONSOLE ERROR: Uncaught TypeError: Cannot read properties of null (reading 'createTexture')
+WebGL's tex(Sub)Image2D should throw a SecurityError exception when the ImageBitmap is not origin clean.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+FAIL Unexpected error: Uncaught TypeError: Cannot read properties of null (reading 'createTexture')
+FAIL successfullyParsed should be true. Was false.
+
+TEST COMPLETE
+

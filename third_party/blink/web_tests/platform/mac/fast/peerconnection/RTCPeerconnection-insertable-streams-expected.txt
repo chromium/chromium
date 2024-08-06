@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Senders with encodedInsertableStreams:true but no transform don't send packets
+  step_wait_func: Wait for a frame to be encoded Timed out waiting on condition
+[FAIL] Receivers with encodedInsertableStreams:true but no transform don't receive frames
+  step_wait_func: Wait for packets to be received Timed out waiting on condition
+Harness: the test ran to completion.
+

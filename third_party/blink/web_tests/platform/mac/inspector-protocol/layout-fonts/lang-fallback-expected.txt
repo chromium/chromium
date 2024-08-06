@@ -96,7 +96,7 @@
 
 בג
 #he:
-"Lucida Grande" : 2
+"Times New Roman" : 2
 
 កខ
 #km:

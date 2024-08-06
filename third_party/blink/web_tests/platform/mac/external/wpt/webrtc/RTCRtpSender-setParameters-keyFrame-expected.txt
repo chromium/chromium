@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] setParameters() second argument can be used to trigger keyFrame generation
+  assert_true: expected true got false
+[FAIL] setParameters() second argument can be used to trigger keyFrame generation (simulcast)
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

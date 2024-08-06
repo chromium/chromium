@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] instanceNormalization float32 4D tensor options.layout='nhwc'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported input layout."
+[FAIL] instanceNormalization float32 4D tensor all options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported input layout."
+Harness: the test ran to completion.
+

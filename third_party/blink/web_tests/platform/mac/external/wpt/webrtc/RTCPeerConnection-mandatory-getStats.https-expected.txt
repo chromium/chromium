@@ -1,0 +1,42 @@
+This is a testharness.js-based test.
+Found 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] RTCInboundRtpStreamStats's remoteId
+  assert_true: Is remoteId present expected true got false
+[FAIL] RTCRemoteInboundRtpStreamStats's localId
+  assert_true: Is localId present expected true got false
+[FAIL] RTCRemoteInboundRtpStreamStats's roundTripTime
+  assert_true: Is roundTripTime present expected true got false
+[FAIL] RTCOutboundRtpStreamStats's remoteId
+  assert_true: Is remoteId present expected true got false
+[FAIL] RTCRemoteOutboundRtpStreamStats's localId
+  assert_true: Is localId present expected true got false
+[FAIL] RTCRemoteOutboundRtpStreamStats's remoteTimestamp
+  assert_true: Is remoteTimestamp present expected true got false
+[FAIL] RTCTransportStats's selectedCandidatePairId
+  assert_true: Is selectedCandidatePairId present expected true got false
+[FAIL] RTCTransportStats's remoteCertificateId
+  assert_true: Is remoteCertificateId present expected true got false
+[FAIL] RTCIceCandidatePairStats's transportId
+  assert_true: Is transportId present expected true got false
+[FAIL] RTCIceCandidatePairStats's localCandidateId
+  assert_true: Is localCandidateId present expected true got false
+[FAIL] RTCIceCandidatePairStats's remoteCandidateId
+  assert_true: Is remoteCandidateId present expected true got false
+[FAIL] RTCIceCandidatePairStats's state
+  assert_true: Is state present expected true got false
+[FAIL] RTCIceCandidatePairStats's nominated
+  assert_true: Is nominated present expected true got false
+[FAIL] RTCIceCandidatePairStats's bytesSent
+  assert_true: Is bytesSent present expected true got false
+[FAIL] RTCIceCandidatePairStats's bytesReceived
+  assert_true: Is bytesReceived present expected true got false
+[FAIL] RTCIceCandidatePairStats's totalRoundTripTime
+  assert_true: Is totalRoundTripTime present expected true got false
+[FAIL] RTCIceCandidatePairStats's responsesReceived
+  assert_true: Is responsesReceived present expected true got false
+[FAIL] RTCIceCandidatePairStats's currentRoundTripTime
+  assert_true: Is currentRoundTripTime present expected true got false
+[FAIL] RTCIceCandidateStats's url
+  assert_true: Is url present expected true got false
+Harness: the test ran to completion.
+

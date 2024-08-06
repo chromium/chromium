@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Stats output-rtp should match the selected codec in simulcast usecase on a video sender
+  assert_array_equals: lengths differ, expected array ["video/VP8", "video/VP8", "video/VP8"] length 3, got ["video/VP8"] length 1
+[FAIL] Stats output-rtp should match the selected mixed codecs in simulcast usecase on a video sender
+  promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setParameters' on 'RTCRtpSender': Attempted to use different codec values for different encodings."
+Harness: the test ran to completion.
+

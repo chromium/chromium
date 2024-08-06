@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] expected mismatch: .kernOFF .cjk vs .kernON .cjk
+  assert_not_equals: got disallowed value 384
+[FAIL] expected mismatch: .paltOFFkernON .cjk vs .paltONkernON .cjk
+  assert_not_equals: got disallowed value 384
+Harness: the test ran to completion.
+

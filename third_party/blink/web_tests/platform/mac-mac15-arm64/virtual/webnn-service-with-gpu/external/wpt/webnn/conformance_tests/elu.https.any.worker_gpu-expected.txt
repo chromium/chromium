@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] elu float32 4D tensor negative options.alpha
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'elu' on 'MLGraphBuilder': The value of alpha must be greater than 0."
+Harness: the test ran to completion.
+
