@@ -9,11 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -31,11 +30,21 @@ public class PriceInsightsBottomSheetCoordinator {
     /** Delegate interface for price insights feature. */
     public interface PriceInsightsDelegate {
         /**
+         * Check whether price is tracked for a {@link Tab}.
+         *
          * @param tab Tab whose current URL is checked against.
-         * @return BookmarkId or {@link null} if bookmark backend is not loaded.
+         * @return Whether the tab is price tracked or not.
          */
-        @Nullable
-        BookmarkId getBookmarkIdForTab(Tab tab);
+        Boolean isTabPriceTracked(Tab tab);
+
+        /**
+         * Set price tracking state for a {@link Tab}.
+         *
+         * @param tab The {@link Tab} to set price tracking state.
+         * @param enabled The price tracking state to be set.
+         * @param callback The callback when price tracking state is set success or not.
+         */
+        void setPriceTrackingStateForTab(Tab tab, boolean enabled, Callback<Boolean> callback);
     }
 
     private final Context mContext;

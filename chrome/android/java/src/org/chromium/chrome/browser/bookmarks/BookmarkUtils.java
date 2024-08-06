@@ -408,6 +408,29 @@ public class BookmarkUtils {
     }
 
     /**
+     * Adds a bookmark with the given {@link Tab} without showing save flow.
+     *
+     * @param context The current Android {@link Context}.
+     * @param tab The tab to add or edit a bookmark.
+     * @param bookmarkModel The current {@link BookmarkModel} which talks to native.
+     */
+    public static BookmarkId addBookmarkWithoutShowingSaveFlow(
+            Context context, Tab tab, BookmarkModel bookmarkModel) {
+        BookmarkId parent =
+                bookmarkModel.areAccountBookmarkFoldersActive()
+                        ? bookmarkModel.getAccountMobileFolderId()
+                        : bookmarkModel.getMobileFolderId();
+        return addBookmarkInternal(
+                context,
+                tab.getProfile(),
+                bookmarkModel,
+                tab.getTitle(),
+                tab.getOriginalUrl(),
+                parent,
+                BookmarkType.NORMAL);
+    }
+
+    /**
      * Adds a bookmark with the given {@link Tab}. This will reset last used parent if it fails to
      * add a bookmark.
      *

@@ -5,16 +5,16 @@
 package org.chromium.chrome.browser.price_insights;
 
 import android.content.Context;
+import android.view.View.OnClickListener;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.components.commerce.core.ShoppingService.ProductInfo;
@@ -54,28 +54,7 @@ public class PriceInsightsBottomSheetMediator {
                 mContext.getResources()
                         .getString(R.string.price_insights_content_price_tracking_description));
 
-        boolean priceTrackingEligible = isPriceTrackingEligible();
-
-        mPropertyModel.set(
-                PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ENABLED,
-                priceTrackingEligible);
-        if (!priceTrackingEligible) {
-            updatePriceTrackingButtonIneligible();
-        } else {
-            updatePriceTrackingButtonDisabled();
-        }
-
-        BookmarkId bookmarkId = mPriceInsightsDelegate.getBookmarkIdForTab(mTab);
-        if (priceTrackingEligible && bookmarkId != null) {
-            PriceTrackingUtils.isBookmarkPriceTracked(
-                    mTab.getProfile(),
-                    bookmarkId.getId(),
-                    isTracked -> {
-                        if (isTracked) {
-                            updatePriceTrackingButtonEnabled();
-                        }
-                    });
-        }
+        updatePriceTrackingButtonModel();
 
         mPropertyModel.set(
                 PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE,
@@ -87,6 +66,25 @@ public class PriceInsightsBottomSheetMediator {
                         (url, info) -> {
                             updatePriceInsightsInfo(info);
                         });
+    }
+
+    private void updatePriceTrackingButtonModel() {
+        boolean priceTrackingEligible = isPriceTrackingEligible();
+
+        mPropertyModel.set(
+                PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ENABLED,
+                priceTrackingEligible);
+
+        if (!priceTrackingEligible) {
+            updatePriceTrackingButtonIneligible();
+            return;
+        }
+
+        boolean isTabPriceTracked = mPriceInsightsDelegate.isTabPriceTracked(mTab);
+        updatePriceTrackingButtonState(isTabPriceTracked);
+        mPropertyModel.set(
+                PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER,
+                createPriceTrackingButtonListener(!isTabPriceTracked));
     }
 
     private boolean isPriceTrackingEligible() {
@@ -114,40 +112,51 @@ public class PriceInsightsBottomSheetMediator {
                 R.color.price_insights_sheet_price_tracking_ineligible_button_bg_color);
     }
 
-    private void updatePriceTrackingButtonDisabled() {
+    private void updatePriceTrackingButtonState(boolean enabled) {
+        int buttonTextResId =
+                enabled
+                        ? R.string.price_insights_content_price_tracking_enabled_button_text
+                        : R.string.price_insights_content_price_tracking_disabled_button_text;
+        int buttonIconResId =
+                enabled
+                        ? R.drawable.price_insights_sheet_price_tracking_button_enabled
+                        : R.drawable.price_insights_sheet_price_tracking_button_disabled;
+        int buttonForegroundColorResId =
+                enabled
+                        ? R.color
+                                .price_insights_sheet_price_tracking_enabled_button_foreground_color
+                        : R.color
+                                .price_insights_sheet_price_tracking_disabled_button_foreground_color;
+        int buttonBackgroundColorResId =
+                enabled
+                        ? R.color.price_insights_sheet_price_tracking_enabled_button_bg_color
+                        : R.color.price_insights_sheet_price_tracking_disabled_button_bg_color;
+
         mPropertyModel.set(
                 PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_TEXT,
-                mContext.getResources()
-                        .getString(
-                                R.string
-                                        .price_insights_content_price_tracking_disabled_button_text));
+                mContext.getResources().getString(buttonTextResId));
         mPropertyModel.set(
-                PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ICON,
-                R.drawable.price_insights_sheet_price_tracking_button_disabled);
+                PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ICON, buttonIconResId);
         mPropertyModel.set(
                 PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_FOREGROUND_COLOR,
-                R.color.price_insights_sheet_price_tracking_disabled_button_foreground_color);
+                buttonForegroundColorResId);
         mPropertyModel.set(
                 PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_BACKGROUND_COLOR,
-                R.color.price_insights_sheet_price_tracking_disabled_button_bg_color);
+                buttonBackgroundColorResId);
     }
 
-    private void updatePriceTrackingButtonEnabled() {
-        mPropertyModel.set(
-                PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_TEXT,
-                mContext.getResources()
-                        .getString(
-                                R.string
-                                        .price_insights_content_price_tracking_enabled_button_text));
-        mPropertyModel.set(
-                PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ICON,
-                R.drawable.price_insights_sheet_price_tracking_button_enabled);
-        mPropertyModel.set(
-                PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_FOREGROUND_COLOR,
-                R.color.price_insights_sheet_price_tracking_enabled_button_foreground_color);
-        mPropertyModel.set(
-                PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_BACKGROUND_COLOR,
-                R.color.price_insights_sheet_price_tracking_enabled_button_bg_color);
+    private OnClickListener createPriceTrackingButtonListener(boolean shouldBeTracked) {
+        return view -> {
+            Callback<Boolean> callback =
+                    (success) -> {
+                        updatePriceTrackingButtonModel();
+                        if (!success) {
+                            // TODO(qib): Add error message.
+                        }
+                    };
+            updatePriceTrackingButtonState(shouldBeTracked);
+            mPriceInsightsDelegate.setPriceTrackingStateForTab(mTab, shouldBeTracked, callback);
+        };
     }
 
     private void updatePriceInsightsInfo(PriceInsightsInfo info) {

@@ -71,6 +71,12 @@ public class PriceInsightsBottomSheetViewBinder {
                 == propertyKey) {
             priceTrackingButton.setEnabled(
                     model.get(PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ENABLED));
+        } else if (PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER
+                == propertyKey) {
+            priceTrackingButton.setOnClickListener(
+                    model.get(
+                            PriceInsightsBottomSheetProperties
+                                    .PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER));
         } else if (PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE == propertyKey) {
             ((TextView) view.findViewById(R.id.price_history_title))
                     .setText(model.get(PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE));

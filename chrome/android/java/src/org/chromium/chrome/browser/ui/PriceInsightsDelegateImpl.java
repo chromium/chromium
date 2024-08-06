@@ -1,0 +1,62 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ui;
+
+import android.content.Context;
+
+import org.chromium.base.Callback;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
+import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
+import org.chromium.chrome.browser.price_tracking.CurrentTabPriceTrackingStateSupplier;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.bookmarks.BookmarkId;
+
+public class PriceInsightsDelegateImpl implements PriceInsightsDelegate {
+
+    private final Context mContext;
+    private final CurrentTabPriceTrackingStateSupplier mCurrentTabPriceTrackingStateSupplier;
+
+    public PriceInsightsDelegateImpl(
+            Context context,
+            CurrentTabPriceTrackingStateSupplier currentTabPriceTrackingStateSupplier) {
+        mContext = context;
+        mCurrentTabPriceTrackingStateSupplier = currentTabPriceTrackingStateSupplier;
+    }
+
+    @Override
+    public Boolean isTabPriceTracked(Tab tab) {
+        return mCurrentTabPriceTrackingStateSupplier.get();
+    }
+
+    @Override
+    public void setPriceTrackingStateForTab(Tab tab, boolean enabled, Callback<Boolean> callback) {
+        BookmarkModel bookmarkModel = BookmarkModel.getForProfile(tab.getProfile());
+        if (bookmarkModel == null) {
+            callback.onResult(false);
+            return;
+        }
+        BookmarkId bookmarkId = bookmarkModel.getUserBookmarkIdForTab(tab);
+        bookmarkId =
+                bookmarkId != null
+                        ? bookmarkId
+                        : BookmarkUtils.addBookmarkWithoutShowingSaveFlow(
+                                mContext, tab, bookmarkModel);
+
+        Callback<Boolean> wrapperCallback =
+                (success) -> {
+                    callback.onResult(success);
+                    if (success) {
+                        PriceDropNotificationManagerFactory.create(tab.getProfile())
+                                .createNotificationChannel();
+                    }
+                };
+
+        PriceTrackingUtils.setPriceTrackingStateForBookmark(
+                tab.getProfile(), bookmarkId.getId(), enabled, wrapperCallback);
+    }
+}
