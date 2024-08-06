@@ -79,6 +79,9 @@ const float kMaxModuleEngagementIndex = 50;
           kMagicStackModuleEngagementParcelTrackingIndexHistogram, index,
           kMaxModuleEngagementIndex);
       break;
+    case ContentSuggestionsModuleType::kPriceTrackingPromo:
+      // TODO(crbug.com/357829366) Add histogram for PriceTrackingPromo
+      break;
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:

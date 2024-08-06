@@ -27,7 +27,7 @@ constexpr SegmentId kSegmentId =
 // Default parameters for TestIosModuleRanker model.
 constexpr SegmentId kTestSegmentId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_IOS_MODULE_RANKER_TEST;
-constexpr int64_t kModelVersion = 3;
+constexpr int64_t kModelVersion = 4;
 // Store 28 buckets of input data (28 days).
 constexpr int64_t kSignalStorageLength = 28;
 // Wait until we have 0 days of data.
@@ -35,13 +35,14 @@ constexpr int64_t kMinSignalCollectionLength = 0;
 // Refresh the result every time.
 constexpr int64_t kResultTTLMinutes = 1;
 
-constexpr std::array<const char*, 5> kIosModuleLabels = {
-    kMostVisitedTiles, kShortcuts, kSafetyCheck, kTabResumption,
-    kParcelTracking};
+constexpr std::array<const char*, 6> kIosModuleLabels = {
+    kMostVisitedTiles, kShortcuts,      kSafetyCheck,
+    kTabResumption,    kParcelTracking, kPriceTrackingPromo};
 
-constexpr std::array<const char*, 5> kIosModuleInputContextKeys = {
-    kMostVisitedTilesFreshness, kShortcutsFreshness, kSafetyCheckFreshness,
-    kTabResumptionFreshness, kParcelTrackingFreshness};
+constexpr std::array<const char*, 6> kIosModuleInputContextKeys = {
+    kMostVisitedTilesFreshness, kShortcutsFreshness,
+    kSafetyCheckFreshness,      kTabResumptionFreshness,
+    kParcelTrackingFreshness,   kPriceTrackingPromoFreshness};
 
 // Output features:
 
@@ -68,10 +69,12 @@ constexpr std::array<int32_t, 1> kEnumValueForTabResumption{
     /*TabResumption=*/10};
 constexpr std::array<int32_t, 1> kEnumValueForParcelTracking{
     /*ParcelTracking=*/11};
+constexpr std::array<int32_t, 1> kEnumValueForPriceTrackingPromo{
+    /*PriceTrackingPromo=*/15};
 
 // TODO(ritikagup) : Loop through all the modules for these features for better
 // readability. Set UMA metrics to use as input.
-constexpr std::array<MetadataWriter::UMAFeature, 30> kUMAFeatures = {
+constexpr std::array<MetadataWriter::UMAFeature, 34> kUMAFeatures = {
     // Most Visited Tiles
     // 0
     MetadataWriter::UMAFeature::FromEnumHistogram("IOS.MagicStack.Module.Click",
@@ -238,6 +241,33 @@ constexpr std::array<MetadataWriter::UMAFeature, 30> kUMAFeatures = {
         28,
         kEnumValueForParcelTracking.data(),
         kEnumValueForParcelTracking.size()),
+
+    // Price Tracking Promo
+    // 30
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "IOS.MagicStack.Module.Click",
+        7,
+        kEnumValueForPriceTrackingPromo.data(),
+        kEnumValueForPriceTrackingPromo.size()),
+    // 31
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "IOS.MagicStack.Module.TopImpression",
+        7,
+        kEnumValueForPriceTrackingPromo.data(),
+        kEnumValueForPriceTrackingPromo.size()),
+    // 32
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "IOS.MagicStack.Module.Click",
+        28,
+        kEnumValueForPriceTrackingPromo.data(),
+        kEnumValueForPriceTrackingPromo.size()),
+    // 33
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "IOS.MagicStack.Module.TopImpression",
+        28,
+        kEnumValueForPriceTrackingPromo.data(),
+        kEnumValueForPriceTrackingPromo.size()),
+
 };
 
 float TransformFreshness(float freshness_score, float freshness_threshold) {
@@ -294,6 +324,8 @@ IosModuleRanker::GetModelConfig() {
   writer.AddFromInputContext("safety_check_input", kSafetyCheckFreshness);
   writer.AddFromInputContext("tab_resumption_input", kTabResumptionFreshness);
   writer.AddFromInputContext("parcel_tracking_input", kParcelTrackingFreshness);
+  writer.AddFromInputContext("price_tracking_promo_input",
+                             kPriceTrackingPromoFreshness);
 
   if (base::GetFieldTrialParamByFeatureAsBool(
           features::kSegmentationPlatformIosModuleRanker, "add-trigger-config",
@@ -331,7 +363,7 @@ void IosModuleRanker::ExecuteModelWithInput(
   float mvt_weights[3] = {3.0, -0.3, 1.5};
   float mvt_engagement = inputs[6];
   float mvt_impression = inputs[7];
-  float mvt_freshness = TransformFreshness(inputs[30], 1.0);
+  float mvt_freshness = TransformFreshness(inputs[34], 1.0);
   float mvt_score = mvt_weights[0] * mvt_engagement +
                     mvt_weights[1] * mvt_impression +
                     mvt_weights[2] * mvt_freshness;
@@ -340,7 +372,7 @@ void IosModuleRanker::ExecuteModelWithInput(
   float shortcuts_weights[3] = {1.5, -1.0, 2.0};
   float shortcuts_engagement = inputs[8];
   float shortcuts_impression = inputs[9];
-  float shortcuts_freshness = TransformFreshness(inputs[31], 1.0);
+  float shortcuts_freshness = TransformFreshness(inputs[35], 1.0);
   float shortcuts_score = shortcuts_weights[0] * shortcuts_engagement +
                           shortcuts_weights[1] * shortcuts_impression +
                           shortcuts_weights[2] * shortcuts_freshness;
@@ -349,7 +381,7 @@ void IosModuleRanker::ExecuteModelWithInput(
   float safety_check_weights[3] = {4.0, -12.0, 6.0};
   float safety_check_engagement = inputs[10];
   float safety_check_impression = inputs[11];
-  float safety_check_freshness = TransformFreshness(inputs[32], 3.0);
+  float safety_check_freshness = TransformFreshness(inputs[36], 3.0);
   float safety_check_score = safety_check_weights[0] * safety_check_engagement +
                              safety_check_weights[1] * safety_check_impression +
                              safety_check_weights[2] * safety_check_freshness;
@@ -358,7 +390,7 @@ void IosModuleRanker::ExecuteModelWithInput(
   float tab_resumption_weights[3] = {1.5, -0.5, 1.0};
   float tab_resumption_engagement = inputs[24];
   float tab_resumption_impression = inputs[25];
-  float tab_resumption_freshness = TransformFreshness(inputs[33], 1.0);
+  float tab_resumption_freshness = TransformFreshness(inputs[37], 1.0);
   float tab_resumption_score =
       tab_resumption_weights[0] * tab_resumption_engagement +
       tab_resumption_weights[1] * tab_resumption_impression +
@@ -368,11 +400,22 @@ void IosModuleRanker::ExecuteModelWithInput(
   float parcel_tracking_weights[3] = {6.0, -7.0, 7.0};
   float parcel_tracking_engagement = inputs[28];
   float parcel_tracking_impression = inputs[29];
-  float parcel_tracking_freshness = TransformFreshness(inputs[34], 1.0);
+  float parcel_tracking_freshness = TransformFreshness(inputs[38], 1.0);
   float parcel_tracking_score =
       parcel_tracking_weights[0] * parcel_tracking_engagement +
       parcel_tracking_weights[1] * parcel_tracking_impression +
       parcel_tracking_weights[2] * parcel_tracking_freshness;
+
+  // TODO(crbug.com/356716102) Determine weights for price tracking promo.
+  // Currently using the same weights as parcel tracking.
+  float price_tracking_promo_weights[3] = {6.0, -7.0, 7.0};
+  float price_tracking_promo_engagement = inputs[32];
+  float price_tracking_promo_impression = inputs[33];
+  float price_tracking_promo_freshness = TransformFreshness(inputs[39], 1.0);
+  float price_tracking_promo_score =
+      price_tracking_promo_weights[0] * price_tracking_promo_engagement +
+      price_tracking_promo_weights[1] * price_tracking_promo_impression +
+      price_tracking_promo_weights[2] * price_tracking_promo_freshness;
 
   ModelProvider::Response response(kIosModuleLabels.size(), 0);
   // Default ranking
@@ -381,6 +424,7 @@ void IosModuleRanker::ExecuteModelWithInput(
   response[2] = safety_check_score;     // Safety Check
   response[3] = tab_resumption_score;   // Tab resumption
   response[4] = parcel_tracking_score;  // Parcel Tracking
+  response[5] = price_tracking_promo_score;  // Price Tracking Promo
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), response));
@@ -427,6 +471,8 @@ TestIosModuleRanker::GetModelConfig() {
   writer.AddFromInputContext("safety_check_input", kSafetyCheckFreshness);
   writer.AddFromInputContext("tab_resumption_input", kTabResumptionFreshness);
   writer.AddFromInputContext("parcel_tracking_input", kParcelTrackingFreshness);
+  writer.AddFromInputContext("price_tracking_promo_input",
+                             kPriceTrackingPromoFreshness);
 
   return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
 }
@@ -456,6 +502,8 @@ void TestIosModuleRanker::ExecuteModelWithInput(
     response[3] = 6;
   } else if (card_type == "parcel_tracking") {
     response[4] = 6;
+  } else if (card_type == "price_tracking_promo") {
+    response[5] = 6;
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

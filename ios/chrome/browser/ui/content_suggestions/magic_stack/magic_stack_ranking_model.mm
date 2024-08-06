@@ -315,6 +315,13 @@
       segmentation_platform::kParcelTrackingFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           parcelTrackingFreshnessImpressionCount));
+  int priceTrackingPromoFreshnessImpressionCount = _localState->GetInteger(
+      prefs::
+          kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness);
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kPriceTrackingPromoFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          priceTrackingPromoFreshnessImpressionCount));
   __weak MagicStackRankingModel* weakSelf = self;
   segmentation_platform::PredictionOptions options;
 

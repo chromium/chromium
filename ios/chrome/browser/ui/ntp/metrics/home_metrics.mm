@@ -188,6 +188,9 @@ void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type) {
       }
       break;
     }
+    case ContentSuggestionsModuleType::kPriceTrackingPromo:
+      // TODO(crbug.com/357828494) add freshness impressions count update.
+      break;
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
