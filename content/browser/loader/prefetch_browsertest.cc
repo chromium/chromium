@@ -1380,8 +1380,11 @@ IN_PROC_BROWSER_TEST_F(FencedFramePrefetchTest,
 // request url. This allows the first prefetch request to go through. However,
 // the second prefetch request, which is changed from a preload request because
 // of the recursive prefetch token, is blocked.
+// TODO(crbug.com/336778624): This test is based on
+// PrefetchBrowserTest.CrossOriginWithPreloadCredentialled, which is flaky. Once
+// the flakiness is addressed, re-enable this test as well.
 IN_PROC_BROWSER_TEST_F(FencedFramePrefetchTest,
-                       NetworkCutoffDisablesRecursivePrefetch) {
+                       DISABLED_NetworkCutoffDisablesRecursivePrefetch) {
   ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
   const auto port = embedded_https_test_server().port();
   const char target_path[] = "/target.html";
