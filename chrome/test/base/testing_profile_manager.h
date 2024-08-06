@@ -135,9 +135,6 @@ class TestingProfileManager : public ProfileObserver {
   // is properly persisting data.
   void DeleteProfileAttributesStorage();
 
-  // Sets the last used profile; also sets the active time to now.
-  void UpdateLastUser(Profile* last_active);
-
   // Get the full profile path from the profile name.
   base::FilePath GetProfilePath(const std::string& profile_name);
 

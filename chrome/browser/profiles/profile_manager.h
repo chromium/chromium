@@ -507,11 +507,9 @@ class ProfileManager : public Profile::Delegate {
   void OnBrowserOpened(Browser* browser);
   void OnBrowserClosed(Browser* browser);
 
-  // Updates the last active user of the current session.
-  // On Chrome OS updating this user will have no effect since when browser is
-  // restored after crash there's another preference that is taken into account.
-  // See kLastActiveUser in UserManagerBase.
-  void UpdateLastUser(Profile* last_active);
+  // Sets the last-used profile to `last_active`, and also sets that profile's
+  // last-active time to now.
+  void SetProfileAsLastUsed(Profile* last_active);
 
   class BrowserListObserver : public ::BrowserListObserver {
    public:
