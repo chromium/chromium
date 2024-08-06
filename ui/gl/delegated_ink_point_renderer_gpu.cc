@@ -231,14 +231,10 @@ void DelegatedInkPointRendererGpu::StoreDelegatedInkPoint(
 
   const int32_t pointer_id = point.pointer_id();
 
-  // TODO(crbug.com/40784171): Understand why we are being sent points from
-  // browser process that break this assertion so frequently and prevent it from
-  // happening.
-  // DCHECK(delegated_ink_points_.find(pointer_id) ==
-  //            delegated_ink_points_.end() ||
-  //        point.timestamp() >
-  //            delegated_ink_points_[pointer_id].rbegin()->
-  //                first.timestamp());
+  DCHECK(delegated_ink_points_.find(pointer_id) ==
+             delegated_ink_points_.end() ||
+         point.timestamp() >
+             delegated_ink_points_[pointer_id].rbegin()->first.timestamp());
 
   if (metadata_ && point.timestamp() < metadata_->timestamp()) {
     return;

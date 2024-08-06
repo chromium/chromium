@@ -33,6 +33,7 @@ class DelegatedInkPointDataView;
 class GFX_EXPORT DelegatedInkPoint {
  public:
   DelegatedInkPoint() = default;
+  bool operator==(const DelegatedInkPoint& o) const = default;
   DelegatedInkPoint(const PointF& pt,
                     base::TimeTicks timestamp,
                     int32_t pointer_id = std::numeric_limits<int32_t>::min())

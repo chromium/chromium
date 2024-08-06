@@ -2439,6 +2439,13 @@ void RenderWidgetHostImpl::ForwardDelegatedInkPoint(
     return;
   }
 
+  // If being given the same point twice, return early and avoid an unnecessary
+  // call to the GPU process.
+  if (last_delegated_ink_point_sent_ == delegated_ink_point) {
+    return;
+  }
+  last_delegated_ink_point_sent_ = delegated_ink_point;
+
   auto* delegated_ink_point_renderer =
       delegate_->GetDelegatedInkRenderer(view_->GetCompositor());
   if (!delegated_ink_point_renderer) {
