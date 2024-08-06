@@ -69,9 +69,10 @@ std::unique_ptr<KeyedService> BuildOfflinePageModel(SimpleFactoryKey* key) {
 class SigninManagerAndroidTest : public ::testing::Test {
  public:
   SigninManagerAndroidTest() {
-    // TODO(crbug.com/346556567): Switch with the WithLocalUpmTest, i.e. run
-    // most tests with UPM enabled rather than disabled.
-    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test("0");
+    // Override the GMS version to be big enough for local UPM support, so
+    // DoNotWipePasswordsIfLocalUpmOn still passes on bots with outdated GMS.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(password_manager::GetLocalUpmMinGmsVersion()));
   }
 
   SigninManagerAndroidTest(const SigninManagerAndroidTest&) = delete;
@@ -180,30 +181,7 @@ TEST_F(SigninManagerAndroidTest, DontDeleteBookmarksWhenDeletingSWCaches) {
             bookmark_model->bookmark_bar_node()->children().size());
 }
 
-TEST_F(SigninManagerAndroidTest, WipePasswordsIfLocalUpmOff) {
-  password_manager::PasswordForm form;
-  form.username_value = u"username";
-  form.password_value = u"password";
-  form.signon_realm = "https://g.com";
-  profile_password_store()->AddLogin(form);
-  ASSERT_FALSE(account_password_store());
-
-  WipeData(/*all_data=*/true);
-
-  EXPECT_THAT(profile_password_store()->stored_passwords(), IsEmpty());
-}
-
-class SigninManagerAndroidWithLocalUpmTest : public SigninManagerAndroidTest {
- public:
-  SigninManagerAndroidWithLocalUpmTest() {
-    // Override the GMS version to be big enough for local UPM support, so these
-    // tests still pass in bots with an outdated version.
-    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
-        base::NumberToString(password_manager::GetLocalUpmMinGmsVersion()));
-  }
-};
-
-TEST_F(SigninManagerAndroidWithLocalUpmTest, DoNotWipePasswordsIfLocalUpmOn) {
+TEST_F(SigninManagerAndroidTest, DoNotWipePasswordsIfLocalUpmOn) {
   password_manager::PasswordForm profile_store_form;
   profile_store_form.username_value = u"username";
   profile_store_form.password_value = u"password";
@@ -222,4 +200,26 @@ TEST_F(SigninManagerAndroidWithLocalUpmTest, DoNotWipePasswordsIfLocalUpmOn) {
   EXPECT_THAT(
       account_password_store()->stored_passwords(),
       UnorderedElementsAre(Pair(account_store_form.signon_realm, SizeIs(1))));
+}
+
+class SigninManagerAndroidWithoutLocalUpmTest
+    : public SigninManagerAndroidTest {
+ public:
+  SigninManagerAndroidWithoutLocalUpmTest() {
+    // Fake a user with outdated GmsCore.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test("0");
+  }
+};
+
+TEST_F(SigninManagerAndroidWithoutLocalUpmTest, WipePasswordsIfLocalUpmOff) {
+  password_manager::PasswordForm form;
+  form.username_value = u"username";
+  form.password_value = u"password";
+  form.signon_realm = "https://g.com";
+  profile_password_store()->AddLogin(form);
+  ASSERT_FALSE(account_password_store());
+
+  WipeData(/*all_data=*/true);
+
+  EXPECT_THAT(profile_password_store()->stored_passwords(), IsEmpty());
 }
