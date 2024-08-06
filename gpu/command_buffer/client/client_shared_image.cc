@@ -256,6 +256,7 @@ ClientSharedImage::ClientSharedImage(
       sii_holder_(std::move(sii_holder)) {
   CHECK(!mailbox.IsZero());
   CHECK(sii_holder_);
+  CHECK(gpu_memory_buffer_);
   texture_target_ = ComputeTextureTargetForSharedImage(
       metadata_, gpu_memory_buffer_->GetType(), sii_holder_->Get());
 }
