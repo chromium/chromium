@@ -42,7 +42,6 @@ class SecurePaymentConfirmationDialogView
   enum class DialogViewID : int {
     VIEW_ID_NONE = 0,
     HEADER_ICON,
-    PROGRESS_BAR,
     TITLE,
     DESCRIPTION,
     MERCHANT_LABEL,

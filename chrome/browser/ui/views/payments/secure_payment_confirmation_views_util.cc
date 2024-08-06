@@ -22,7 +22,6 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/progress_bar.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -55,20 +54,20 @@ ui::ImageModel GetHeaderImageSkia(bool dark_mode) {
                                                   : IDR_SAVE_CARD);
 }
 
-class SecurePaymentConfirmationIconView : public NonAccessibleImageView {
-  METADATA_HEADER(SecurePaymentConfirmationIconView, NonAccessibleImageView)
+class SecurePaymentConfirmationHeaderIconView : public NonAccessibleImageView {
+  METADATA_HEADER(SecurePaymentConfirmationHeaderIconView,
+                  NonAccessibleImageView)
 
  public:
-  explicit SecurePaymentConfirmationIconView(bool use_cart_image = false)
+  explicit SecurePaymentConfirmationHeaderIconView(bool use_cart_image = false)
       : use_cart_image_{use_cart_image} {
     const gfx::Size header_size(
         GetSecurePaymentConfirmationHeaderWidth(),
         use_cart_image_ ? kShoppingCartHeaderIconHeight : kHeaderIconHeight);
-    SetSize(header_size);
     SetPreferredSize(header_size);
     SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   }
-  ~SecurePaymentConfirmationIconView() override = default;
+  ~SecurePaymentConfirmationHeaderIconView() override = default;
 
   // NonAccessibleImageView:
   void OnThemeChanged() override {
@@ -85,7 +84,7 @@ class SecurePaymentConfirmationIconView : public NonAccessibleImageView {
   bool use_cart_image_;
 };
 
-BEGIN_METADATA(SecurePaymentConfirmationIconView)
+BEGIN_METADATA(SecurePaymentConfirmationHeaderIconView)
 END_METADATA
 
 std::unique_ptr<views::View> CreateInlineHeaderIconView(
@@ -118,50 +117,15 @@ std::unique_ptr<views::View> CreateInlineHeaderIconView(
 
 }  // namespace
 
-std::unique_ptr<views::ProgressBar>
-CreateSecurePaymentConfirmationProgressBarView() {
-  auto progress_bar = std::make_unique<views::ProgressBar>();
-  progress_bar->SetPreferredHeight(kProgressBarHeight);
-  progress_bar->SetPreferredCornerRadii(std::nullopt);
-  progress_bar->SetValue(-1);  // infinite animation.
-  progress_bar->SetBackgroundColor(SK_ColorTRANSPARENT);
-  progress_bar->SetPreferredSize(
-      gfx::Size(GetSecurePaymentConfirmationHeaderWidth(), kProgressBarHeight));
-  progress_bar->SizeToPreferredSize();
-
-  return progress_bar;
-}
-
-std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
-    int progress_bar_id,
+std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderIcon(
     int header_icon_id,
     bool use_cart_image) {
-  auto header = std::make_unique<views::BoxLayoutView>();
-  header->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  header->SetBetweenChildSpacing(kHeaderIconTopPadding);
-
-  // Progress bar
-  auto progress_bar = CreateSecurePaymentConfirmationProgressBarView();
-  progress_bar->SetID(progress_bar_id);
-  progress_bar->SetVisible(false);
-  auto* container = header->AddChildView(std::make_unique<views::View>());
-  container->SetPreferredSize(progress_bar->GetPreferredSize());
-  container->AddChildView(std::move(progress_bar));
-
-  // When the network/issuer icons are inline with the title for the transaction
-  // UX, we don't draw an additional logo on top. For the no matching
-  // credentials UX, where we use the cart image, we still draw it.
-  if (use_cart_image ||
-      features::GetNetworkAndIssuerIconsTreatment() !=
-          SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kInline) {
-    // Header icon
-    auto image_view =
-        std::make_unique<SecurePaymentConfirmationIconView>(use_cart_image);
-    image_view->SetID(header_icon_id);
-    header->AddChildView(std::move(image_view));
-  }
-
-  return header;
+  auto image_view =
+      std::make_unique<SecurePaymentConfirmationHeaderIconView>(use_cart_image);
+  image_view->SetID(header_icon_id);
+  image_view->SetProperty(views::kMarginsKey,
+                          gfx::Insets().set_top(kHeaderIconTopPadding));
+  return image_view;
 }
 
 std::unique_ptr<views::View>

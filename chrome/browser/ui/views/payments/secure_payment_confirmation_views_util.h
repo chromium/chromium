@@ -13,7 +13,6 @@
 
 namespace views {
 class Label;
-class ProgressBar;
 class View;
 class ImageView;
 class StyledLabel;
@@ -32,10 +31,7 @@ inline constexpr int kHeaderIconHeight = 148;
 inline constexpr int kShoppingCartHeaderIconHeight = 114;
 
 // Padding above the header icon.
-inline constexpr int kHeaderIconTopPadding = 12;
-
-// Height of the progress bar at the top of the dialog.
-inline constexpr int kProgressBarHeight = 4;
+inline constexpr int kHeaderIconTopPadding = 16;
 
 // Line height of the title text.
 inline constexpr int kTitleLineHeight = 24;
@@ -64,19 +60,9 @@ inline constexpr int kBodyExtraInset = 16;
 // Height of each payment information row.
 inline constexpr int kPaymentInfoRowHeight = 48;
 
-// Creates the view for the SPC progress bar.
-std::unique_ptr<views::ProgressBar>
-CreateSecurePaymentConfirmationProgressBarView();
-
-// Creates the header view, which contains the icon and a progress bar. The icon
-// covers the whole header view with the progress bar at the top of the header.
-// +------------------------------------------+
-// |===============progress bar===============|
-// |                                          |
-// |                   icon                   |
-// +------------------------------------------+
-std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
-    int progress_bar_id,
+// Creates the header icon, showing either the transaction dialog logo or the no
+// matching credentials dialog logo.
+std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderIcon(
     int header_icon_id,
     bool use_cart_image = false);
 

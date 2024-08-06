@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_NE(nullptr, dialog_view_->GetViewByID(static_cast<int>(
                          SecurePaymentConfirmationNoCredsDialogView::
-                             DialogViewID::HEADER_IMAGE)));
+                             DialogViewID::HEADER_ICON)));
 }
 
 }  // namespace payments

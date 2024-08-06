@@ -122,9 +122,8 @@ void SecurePaymentConfirmationNoCredsDialogView::InitChildViews() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
-  AddChildView(CreateSecurePaymentConfirmationHeaderView(
-      static_cast<int>(DialogViewID::PROGRESS_BAR),
-      static_cast<int>(DialogViewID::HEADER_IMAGE), /*use_cart_image=*/true));
+  AddChildView(CreateSecurePaymentConfirmationHeaderIcon(
+      static_cast<int>(DialogViewID::HEADER_ICON), /*use_cart_image=*/true));
 
   AddChildView(CreateBodyView());
 

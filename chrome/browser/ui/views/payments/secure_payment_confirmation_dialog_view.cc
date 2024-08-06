@@ -20,10 +20,10 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
-#include "ui/views/controls/progress_bar.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
@@ -67,6 +67,15 @@ std::u16string GetTitleText(std::u16string title_text,
     return title_text;
   }
   return base::ReplaceStringPlaceholders(title_text, relying_party_id, nullptr);
+}
+
+void UpdateProgressBarVisiblity(views::BubbleFrameView* bubble_frame_view,
+                                bool visible) {
+  if (bubble_frame_view) {
+    // -1 indicates an infinitely animating progress
+    bubble_frame_view->SetProgress(visible ? std::optional<double>(-1)
+                                           : std::nullopt);
+  }
 }
 
 }  // namespace
@@ -129,6 +138,11 @@ void SecurePaymentConfirmationDialogView::ShowDialog(
 
   constrained_window::ShowWebModalDialogViews(this, web_contents);
 
+  // The progress bar doesn't exist until after ShowWebModalDialogViews, so we
+  // have to update it here in case it starts visible.
+  UpdateProgressBarVisiblity(GetBubbleFrameView(),
+                             model_->progress_bar_visible());
+
   // ui_observer_for_test_ is used in platform browsertests.
   if (ui_observer_for_test_)
     ui_observer_for_test_->OnUIDisplayed();
@@ -172,10 +186,8 @@ void SecurePaymentConfirmationDialogView::OnOptOutClicked() {
 }
 
 void SecurePaymentConfirmationDialogView::OnModelUpdated() {
-  views::View* progress_bar =
-      GetViewByID(static_cast<int>(DialogViewID::PROGRESS_BAR));
-  if (progress_bar)
-    progress_bar->SetVisible(model_->progress_bar_visible());
+  UpdateProgressBarVisiblity(GetBubbleFrameView(),
+                             model_->progress_bar_visible());
 
   SetButtonLabel(ui::DIALOG_BUTTON_OK, model_->verify_button_label());
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, model_->verify_button_enabled());
@@ -273,9 +285,13 @@ void SecurePaymentConfirmationDialogView::InitChildViews() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
-  AddChildView(CreateSecurePaymentConfirmationHeaderView(
-      static_cast<int>(DialogViewID::PROGRESS_BAR),
-      static_cast<int>(DialogViewID::HEADER_ICON)));
+  // When the network/issuer icons are inline with the title for the transaction
+  // UX, we don't draw an additional logo on top.
+  if (features::GetNetworkAndIssuerIconsTreatment() !=
+      SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kInline) {
+    AddChildView(CreateSecurePaymentConfirmationHeaderIcon(
+        static_cast<int>(DialogViewID::HEADER_ICON)));
+  }
 
   AddChildView(CreateBodyView());
 
