@@ -49,6 +49,7 @@ source_set("eg2_tests") {
     "//components/plus_addresses:test_support",
     "//components/plus_addresses/metrics",
     "//components/strings:components_strings_grit",
+    "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:fake_system_identity",

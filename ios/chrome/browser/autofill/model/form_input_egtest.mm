@@ -5,6 +5,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -64,9 +65,13 @@ void AssertElementIsFocused(const std::string& element_id) {
   // This test is not relevant on iPads:
   // the previous and next buttons are not shown in our keyboard input
   // accessory. Instead, they appear in the native keyboard's shortcut bar (to
-  // the left and right of the QuickType suggestions).
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no hidden toolbar in tablet)");
+  // the left and right of the QuickType suggestions). Those buttons are also
+  // not shown when the Keyboard Accessory Upgrade feature is enabled.
+  if ([ChromeEarlGrey isIPadIdiom] ||
+      [AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped for iPad (no hidden toolbar in tablet) or when the Keyboard "
+        @"Accessory Upgrade feature is enabled.");
   }
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");

@@ -10,6 +10,7 @@
 #import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_test_utils.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -164,14 +165,19 @@ void ExpectModalTimeSample(
   // Tap an element that is eligible for plus_address autofilling.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
-  id<GREYMatcher> user_chip =
-      grey_text(base::SysUTF8ToNSString(kFakeSuggestionLabel));
+
+  NSString* suggestionLabel = base::SysUTF8ToNSString(kFakeSuggestionLabel);
+  id<GREYMatcher> userChip =
+      [AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]
+          ? grey_accessibilityLabel([NSString
+                stringWithFormat:@"%@, %@", suggestionLabel, suggestionLabel])
+          : grey_text(suggestionLabel);
 
   // Ensure the plus_address suggestion appears.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:user_chip];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:userChip];
 
   // Tapping it will trigger the UI.
-  [[EarlGrey selectElementWithMatcher:user_chip] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:userChip] performAction:grey_tap()];
 }
 
 id<GREYMatcher> GetMatcherForErrorReportLink() {
