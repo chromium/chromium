@@ -9,43 +9,60 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import type {HealthdInternalsLineChartElement} from '../line_chart/line_chart.js';
 import type {DataSeries} from '../line_chart/utils/data_series.js';
 
-import {getTemplate} from './thermal_chart.html.js';
+import {getTemplate} from './generic_chart.html.js';
 import {HealthdInternalsPage} from './utils/page_interface.js';
 import {UiUpdateHelper} from './utils/ui_update_helper.js';
 
-export interface HealthdInternalsThermalChartElement {
+export interface HealthdInternalsGenericChartElement {
   $: {
     lineChart: HealthdInternalsLineChartElement,
   };
 }
 
-export class HealthdInternalsThermalChartElement extends PolymerElement
+export class HealthdInternalsGenericChartElement extends PolymerElement
     implements HealthdInternalsPage {
   static get is() {
-    return 'healthd-internals-thermal-chart';
+    return 'healthd-internals-generic-chart';
   }
 
   static get template() {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      chartHeader: {type: String},
+    };
+  }
+
   override connectedCallback() {
     super.connectedCallback();
-
-    const UNITBASE_NO_CARRY: number = 1;
-    const UNIT_CELSIUS: string[] = ['C'];
-    this.$.lineChart.initCanvasDrawer(UNIT_CELSIUS, UNITBASE_NO_CARRY);
 
     this.updateHelper = new UiUpdateHelper(() => {
       this.$.lineChart.updateEndTime(Date.now());
     });
   }
 
+  // Header of the line chart.
+  private chartHeader: string = '';
+
   // Helper for updating UI regularly. Init in `connectedCallback`.
   private updateHelper: UiUpdateHelper;
 
-  addDataSeries(thermalDataSeries: DataSeries[]) {
-    for (const dataSeries of thermalDataSeries) {
+  setupChartHeader(header: string) {
+    this.chartHeader = header;
+  }
+
+  initCanvasDrawer(units: string[], unitBase: number) {
+    this.$.lineChart.initCanvasDrawer(units, unitBase);
+  }
+
+  setChartMaxValue(maxValue: number) {
+    this.$.lineChart.setChartMaxValue(maxValue);
+  }
+
+  addDataSeries(dataSeriesList: DataSeries[]) {
+    for (const dataSeries of dataSeriesList) {
       this.$.lineChart.addDataSeries(dataSeries);
     }
   }
@@ -66,10 +83,10 @@ export class HealthdInternalsThermalChartElement extends PolymerElement
 
 declare global {
   interface HTMLElementTagNameMap {
-    'healthd-internals-thermal-chart': HealthdInternalsThermalChartElement;
+    'healthd-internals-generic-chart': HealthdInternalsGenericChartElement;
   }
 }
 
 customElements.define(
-    HealthdInternalsThermalChartElement.is,
-    HealthdInternalsThermalChartElement);
+    HealthdInternalsGenericChartElement.is,
+    HealthdInternalsGenericChartElement);

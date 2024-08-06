@@ -10,12 +10,8 @@ import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-location/iron-location.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './healthd_internals_shared.css.js';
-import './pages/battery_chart.js';
-import './pages/cpu_frequency_chart.js';
-import './pages/cpu_usage_chart.js';
-import './pages/memory_chart.js';
+import './pages/generic_chart.js';
 import './pages/telemetry.js';
-import './pages/thermal_chart.js';
 import './settings/settings_dialog.js';
 
 import {sendWithPromise} from '//resources/js/cr.js';
@@ -25,12 +21,8 @@ import {getTemplate} from './app.html.js';
 import {PagePath} from './constants.js';
 import {DataManager} from './data_manager.js';
 import type {HealthdInternalsFeatureFlagResult} from './externs.js';
-import type {HealthdInternalsBatteryChartElement} from './pages/battery_chart.js';
-import type {HealthdInternalsCpuFrequencyChartElement} from './pages/cpu_frequency_chart.js';
-import type {HealthdInternalsCpuUsageChartElement} from './pages/cpu_usage_chart.js';
-import type {HealthdInternalsMemoryChartElement} from './pages/memory_chart.js';
+import type {HealthdInternalsGenericChartElement} from './pages/generic_chart.js';
 import type {HealthdInternalsTelemetryElement} from './pages/telemetry.js';
-import type {HealthdInternalsThermalChartElement} from './pages/thermal_chart.js';
 import {HealthdInternalsPage} from './pages/utils/page_interface.js';
 import type {HealthdInternalsSettingsDialogElement} from './settings/settings_dialog.js';
 
@@ -44,11 +36,11 @@ interface Page {
 export interface HealthdInternalsAppElement {
   $: {
     telemetryPage: HealthdInternalsTelemetryElement,
-    batteryChart: HealthdInternalsBatteryChartElement,
-    cpuFrequencyChart: HealthdInternalsCpuFrequencyChartElement,
-    cpuUsageChart: HealthdInternalsCpuUsageChartElement,
-    memoryUsageChart: HealthdInternalsMemoryChartElement,
-    thermalChart: HealthdInternalsThermalChartElement,
+    batteryChart: HealthdInternalsGenericChartElement,
+    cpuFrequencyChart: HealthdInternalsGenericChartElement,
+    cpuUsageChart: HealthdInternalsGenericChartElement,
+    memoryChart: HealthdInternalsGenericChartElement,
+    thermalChart: HealthdInternalsGenericChartElement,
     settingsDialog: HealthdInternalsSettingsDialogElement,
     sidebar: HTMLElement,
     sidebarToggleButton: HTMLElement,
@@ -81,15 +73,16 @@ export class HealthdInternalsAppElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
+    this.initLineChartPages();
     this.dataManager = new DataManager(
-        this.$.settingsDialog.getDataRetentionDuration(),
-        this.$.telemetryPage,
-        this.$.batteryChart,
-        this.$.cpuFrequencyChart,
-        this.$.cpuUsageChart,
-        this.$.memoryUsageChart,
-        this.$.thermalChart,
-    );
+        this.$.settingsDialog.getDataRetentionDuration(), this.$.telemetryPage,
+        {
+          battery: this.$.batteryChart,
+          cpuFrequency: this.$.cpuFrequencyChart,
+          cpuUsage: this.$.cpuUsageChart,
+          memory: this.$.memoryChart,
+          thermal: this.$.thermalChart,
+        });
 
     this.$.settingsDialog.addEventListener('ui-update-interval-updated', () => {
       this.updateUiUpdateInterval();
@@ -134,7 +127,7 @@ export class HealthdInternalsAppElement extends PolymerElement {
             {
               name: 'Memory Chart',
               path: PagePath.MEMORY,
-              obj: this.$.memoryUsageChart,
+              obj: this.$.memoryChart,
             },
             {
               name: 'Thermal Chart',
@@ -169,6 +162,25 @@ export class HealthdInternalsAppElement extends PolymerElement {
   // Return true if the menu tabs are not displayed.
   private areTabsHidden(): boolean {
     return !this.pageList.length;
+  }
+
+  // Init all line chart pages.
+  private initLineChartPages() {
+    this.$.batteryChart.setupChartHeader('Battery');
+    this.$.batteryChart.initCanvasDrawer([''], 1);
+
+    this.$.cpuFrequencyChart.setupChartHeader('CPU Frequency');
+    this.$.cpuFrequencyChart.initCanvasDrawer(['kHz', 'mHz', 'GHz'], 1000);
+
+    this.$.cpuUsageChart.setupChartHeader('CPU Usage');
+    this.$.cpuUsageChart.initCanvasDrawer(['%'], 1);
+    this.$.cpuUsageChart.setChartMaxValue(100);
+
+    this.$.memoryChart.setupChartHeader('Memory');
+    this.$.memoryChart.initCanvasDrawer(['KiB', 'MiB', 'GiB'], 1024);
+
+    this.$.thermalChart.setupChartHeader('Thermal');
+    this.$.thermalChart.initCanvasDrawer(['C'], 1);
   }
 
   // Handle path changes caused by popstate events (back/forward navigation).
