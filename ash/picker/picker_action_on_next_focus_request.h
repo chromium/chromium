@@ -41,10 +41,13 @@ class ASH_EXPORT PickerActionOnNextFocusRequest
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override;
 
  private:
+  void OnTimeout();
+
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       observation_{this};
   base::OneShotTimer action_timeout_timer_;
   base::OnceClosure action_callback_;
+  base::OnceClosure timeout_callback_;
 };
 
 }  // namespace ash

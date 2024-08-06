@@ -24,10 +24,11 @@ PickerActionOnNextFocusRequest::PickerActionOnNextFocusRequest(
     base::TimeDelta action_timeout,
     base::OnceClosure action_callback,
     base::OnceClosure timeout_callback)
-    : action_callback_(std::move(action_callback)) {
+    : action_callback_(std::move(action_callback)),
+      timeout_callback_(std::move(timeout_callback)) {
   observation_.Observe(input_method);
-  action_timeout_timer_.Start(FROM_HERE, action_timeout,
-                              std::move(timeout_callback));
+  action_timeout_timer_.Start(FROM_HERE, action_timeout, this,
+                              &PickerActionOnNextFocusRequest::OnTimeout);
 }
 
 PickerActionOnNextFocusRequest::~PickerActionOnNextFocusRequest() = default;
@@ -43,7 +44,7 @@ void PickerActionOnNextFocusRequest::OnTextInputStateChanged(
     return;
   }
 
-  action_timeout_timer_.Reset();
+  action_timeout_timer_.Stop();
   observation_.Reset();
   std::move(action_callback_).Run();
 }
@@ -53,6 +54,11 @@ void PickerActionOnNextFocusRequest::OnInputMethodDestroyed(
   if (observation_.GetSource() == input_method) {
     observation_.Reset();
   }
+}
+
+void PickerActionOnNextFocusRequest::OnTimeout() {
+  observation_.Reset();
+  std::move(timeout_callback_).Run();
 }
 
 }  // namespace ash
