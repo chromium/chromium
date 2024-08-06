@@ -2349,7 +2349,7 @@ bool AtkTableCellInterface::Exists() {
 void AXPlatformNodeAuraLinux::EnsureGTypeInit() {
 #if !GLIB_CHECK_VERSION(2, 36, 0)
   static bool first_time = true;
-  if (UNLIKELY(first_time)) {
+  if (first_time) [[unlikely]] {
     g_type_init();
     first_time = false;
   }

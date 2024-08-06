@@ -131,8 +131,9 @@ class GEOMETRY_SKIA_EXPORT Transform {
   }
 
   bool operator==(const Transform& rhs) const {
-    if (LIKELY(!full_matrix_ && !rhs.full_matrix_))
+    if (!full_matrix_ && !rhs.full_matrix_) [[likely]] {
       return axis_2d_ == rhs.axis_2d_;
+    }
     if (full_matrix_ && rhs.full_matrix_)
       return matrix_ == rhs.matrix_;
     return GetFullMatrix() == rhs.GetFullMatrix();
@@ -143,7 +144,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
   constexpr double rc(int row, int col) const {
     DCHECK_LE(static_cast<unsigned>(row), 3u);
     DCHECK_LE(static_cast<unsigned>(col), 3u);
-    if (LIKELY(!full_matrix_)) {
+    if (!full_matrix_) [[likely]] {
       float m[4][4] = {{axis_2d_.scale().x(), 0, 0, axis_2d_.translation().x()},
                        {0, axis_2d_.scale().y(), 0, axis_2d_.translation().y()},
                        {0, 0, 1, 0},
@@ -250,21 +251,26 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Returns true if this is the identity matrix.
   // This function modifies a mutable variable in |matrix_|.
   bool IsIdentity() const {
-    return LIKELY(!full_matrix_) ? axis_2d_ == AxisTransform2d()
-                                 : matrix_.IsIdentity();
+    if (!full_matrix_) [[likely]] {
+      return axis_2d_ == AxisTransform2d();
+    }
+    return matrix_.IsIdentity();
   }
 
   // Returns true if the matrix is either identity or pure translation.
   bool IsIdentityOrTranslation() const {
-    return LIKELY(!full_matrix_) ? axis_2d_.scale() == Vector2dF(1, 1)
-                                 : matrix_.IsIdentityOrTranslation();
+    if (!full_matrix_) [[likely]] {
+      return axis_2d_.scale() == Vector2dF(1, 1);
+    }
+    return matrix_.IsIdentityOrTranslation();
   }
 
   // Returns true if the matrix is either the identity or a 2d translation.
   bool IsIdentityOr2dTranslation() const {
-    return LIKELY(!full_matrix_)
-               ? axis_2d_.scale() == Vector2dF(1, 1)
-               : matrix_.IsIdentityOrTranslation() && matrix_.rc(2, 3) == 0;
+    if (!full_matrix_) [[likely]] {
+      return axis_2d_.scale() == Vector2dF(1, 1);
+    }
+    return matrix_.IsIdentityOrTranslation() && matrix_.rc(2, 3) == 0;
   }
 
   // Returns true if the matrix is either identity or pure translation,
@@ -274,8 +280,9 @@ class GEOMETRY_SKIA_EXPORT Transform {
 
   // Returns true if the matrix is either a positive scale and/or a translation.
   bool IsPositiveScaleOrTranslation() const {
-    if (LIKELY(!full_matrix_))
+    if (!full_matrix_) [[likely]] {
       return axis_2d_.scale().x() > 0.0 && axis_2d_.scale().y() > 0.0;
+    }
 
     if (!matrix_.IsScaleOrTranslation())
       return false;
@@ -302,14 +309,19 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Returns true if the matrix has only x and y scaling components, including
   // identity.
   bool IsScale2d() const {
-    return LIKELY(!full_matrix_) ? axis_2d_.translation().IsZero()
-                                 : matrix_.IsScale() && matrix_.rc(2, 2) == 1;
+    if (!full_matrix_) [[likely]] {
+      return axis_2d_.translation().IsZero();
+    }
+    return matrix_.IsScale() && matrix_.rc(2, 2) == 1;
   }
 
   // Returns true if the matrix is has only scaling and translation components,
   // including identity.
   bool IsScaleOrTranslation() const {
-    return LIKELY(!full_matrix_) || matrix_.IsScaleOrTranslation();
+    if (!full_matrix_) [[likely]] {
+      return true;
+    }
+    return matrix_.IsScaleOrTranslation();
   }
 
   // Returns true if, for 2d rects on the x/y plane, this matrix can be
@@ -329,13 +341,18 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Returns true if the matrix has any perspective component that would
   // change the w-component of a homogeneous point.
   bool HasPerspective() const {
-    return UNLIKELY(full_matrix_) && matrix_.HasPerspective();
+    if (!full_matrix_) [[likely]] {
+      return false;
+    }
+    return matrix_.HasPerspective();
   }
 
   // Returns true if this transform is non-singular.
   bool IsInvertible() const {
-    return LIKELY(!full_matrix_) ? axis_2d_.IsInvertible()
-                                 : matrix_.IsInvertible();
+    if (!full_matrix_) [[likely]] {
+      return axis_2d_.IsInvertible();
+    }
+    return matrix_.IsInvertible();
   }
 
   // If |this| is invertible, inverts |this| and stores the result in

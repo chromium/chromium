@@ -154,11 +154,11 @@ void RectF::UnionEvenIfEmpty(const RectF& rect) {
   // contain the original rects at the right/bottom side. Expand the rect in
   // the case.
   constexpr auto kFloatMax = std::numeric_limits<float>::max();
-  if (UNLIKELY(right() < rr && width() < kFloatMax)) {
+  if (right() < rr && width() < kFloatMax) [[unlikely]] {
     size_.SetToNextWidth();
     DCHECK_GE(right(), rr);
   }
-  if (UNLIKELY(bottom() < rb && height() < kFloatMax)) {
+  if (bottom() < rb && height() < kFloatMax) [[unlikely]] {
     size_.SetToNextHeight();
     DCHECK_GE(bottom(), rb);
   }
