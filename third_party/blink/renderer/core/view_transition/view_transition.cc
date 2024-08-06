@@ -887,6 +887,7 @@ void ViewTransition::PauseRendering() {
 
   if (rendering_paused_scope_->ShouldThrottleRendering() && document_->View()) {
     document_->View()->SetThrottledForViewTransition(true);
+    style_tracker_->DidThrottleLocalSubframeRendering();
   }
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("blink", "ViewTransition::PauseRendering",

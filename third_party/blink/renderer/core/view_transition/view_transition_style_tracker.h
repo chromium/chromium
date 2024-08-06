@@ -113,6 +113,10 @@ class ViewTransitionStyleTracker
   // is initiated.
   void Abort();
 
+  // Notifies when rendering is throttled for the local subframe associated with
+  // this transition.
+  void DidThrottleLocalSubframeRendering();
+
   // Returns the snapshot ID to identify the render pass based image produced by
   // this Element. Returns an invalid ID if this element is not participating in
   // the transition.

@@ -848,12 +848,6 @@ void ViewTransitionStyleTracker::CaptureResolved() {
     element_data->target_element = nullptr;
   }
   is_root_transitioning_ = false;
-
-  if (subframe_snapshot_layer_) {
-    auto resource_id = subframe_snapshot_layer_->ViewTransitionResourceId();
-    subframe_snapshot_layer_ = cc::ViewTransitionContentLayer::Create(
-        resource_id, /*is_live_content_layer=*/false);
-  }
 }
 
 VectorOf<Element> ViewTransitionStyleTracker::GetTransitioningElements() const {
@@ -1000,6 +994,16 @@ void ViewTransitionStyleTracker::StartFinished() {
 
 void ViewTransitionStyleTracker::Abort() {
   EndTransition();
+}
+
+void ViewTransitionStyleTracker::DidThrottleLocalSubframeRendering() {
+  DCHECK_EQ(state_, State::kCapturing);
+
+  if (subframe_snapshot_layer_) {
+    auto resource_id = subframe_snapshot_layer_->ViewTransitionResourceId();
+    subframe_snapshot_layer_ = cc::ViewTransitionContentLayer::Create(
+        resource_id, /*is_live_content_layer=*/false);
+  }
 }
 
 void ViewTransitionStyleTracker::EndTransition() {
