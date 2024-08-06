@@ -56,8 +56,9 @@ struct GlyphBoundsAccumulator {
   // Unite a glyph bounding box to |bounds|.
   template <bool is_horizontal_run>
   void Unite(gfx::RectF bounds_for_glyph, GlyphOffset glyph_offset) {
-    if (UNLIKELY(bounds_for_glyph.IsEmpty()))
+    if (bounds_for_glyph.IsEmpty()) [[unlikely]] {
       return;
+    }
 
     // Glyphs are drawn at |origin + offset|. Move glyph_bounds to that point.
     // All positions in hb_glyph_position_t are relative to the current point.

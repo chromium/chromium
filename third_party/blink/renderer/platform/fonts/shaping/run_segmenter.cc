@@ -23,7 +23,7 @@ RunSegmenter::RunSegmenter(const UChar* buffer,
       script_run_iterator_(buffer, buffer_size),
       symbols_iterator_(buffer, buffer_size),
       at_end_(!buffer_size) {
-  if (UNLIKELY(run_orientation == FontOrientation::kVerticalMixed)) {
+  if (run_orientation == FontOrientation::kVerticalMixed) [[unlikely]] {
     orientation_iterator_.emplace(buffer, buffer_size, run_orientation);
   }
 }
@@ -53,7 +53,7 @@ bool RunSegmenter::Consume(RunSegmenterRange* next_range) {
   ConsumeIteratorPastLastSplit(symbols_iterator_, &symbols_iterator_position_,
                                &candidate_range_.font_fallback_priority);
 
-  if (UNLIKELY(orientation_iterator_)) {
+  if (orientation_iterator_) [[unlikely]] {
     ConsumeIteratorPastLastSplit(*orientation_iterator_,
                                  &orientation_iterator_position_,
                                  &candidate_range_.render_orientation);

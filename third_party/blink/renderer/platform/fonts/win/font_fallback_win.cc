@@ -331,7 +331,8 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
       {USCRIPT_YI, kYiFonts}};
   script_font_map.Set(kScriptToFontFamilies);
 
-  if (UNLIKELY(!RuntimeEnabledFeatures::FontSystemFallbackNotoCjkEnabled())) {
+  if (!RuntimeEnabledFeatures::FontSystemFallbackNotoCjkEnabled())
+      [[unlikely]] {
     const ScriptToFontFamilies no_noto[] = {
         {USCRIPT_HANGUL, kHangulFontsNoNoto},
         {USCRIPT_HIRAGANA, kKatakanaOrHiraganaFontsNoNoto},
@@ -487,7 +488,7 @@ const AtomicString& GetFontFamilyForScript(
     UScriptCode script,
     FontDescription::GenericFamilyType generic,
     const SkFontMgr& font_manager) {
-  if (UNLIKELY(script < 0 || script >= ScriptToFontMap::kSize)) {
+  if (script < 0 || script >= ScriptToFontMap::kSize) [[unlikely]] {
     return g_null_atom;
   }
 
@@ -531,7 +532,7 @@ const AtomicString& GetFallbackFamily(
     const SkFontMgr& font_manager,
     UScriptCode& script_out) {
   DCHECK(character);
-  if (UNLIKELY(fallback_priority == FontFallbackPriority::kEmojiEmoji)) {
+  if (fallback_priority == FontFallbackPriority::kEmojiEmoji) [[unlikely]] {
     if (const AtomicString& family = GetEmojiFont(font_manager)) {
       script_out = USCRIPT_INVALID_CODE;
       return family;

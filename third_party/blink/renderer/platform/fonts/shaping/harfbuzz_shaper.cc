@@ -270,7 +270,7 @@ namespace {
 // A port of hb_icu_script_to_script because harfbuzz on CrOS is built
 // without hb-icu. See http://crbug.com/356929
 static inline hb_script_t ICUScriptToHBScript(UScriptCode script) {
-  if (UNLIKELY(script == USCRIPT_INVALID_CODE)) {
+  if (script == USCRIPT_INVALID_CODE) [[unlikely]] {
     return HB_SCRIPT_INVALID;
   }
 
@@ -1000,7 +1000,7 @@ void HarfBuzzShaper::ShapeSegment(
                         adjusted_font, segment.script, canvas_rotation,
                         fallback_stage, result);
 
-    if (UNLIKELY(!han_kerning.UnsafeToBreakBefore().empty())) {
+    if (!han_kerning.UnsafeToBreakBefore().empty()) [[unlikely]] {
       result->AddUnsafeToBreak(han_kerning.UnsafeToBreakBefore());
     }
 

@@ -229,7 +229,7 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
     return true;
   }
 
-  if (UNLIKELY(run.DirectionalOverride())) {
+  if (run.DirectionalOverride()) [[unlikely]] {
     // If directional override, create a new string with Unicode directional
     // override characters.
     const String text_with_override =
@@ -528,8 +528,9 @@ void Font::ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,
 void Font::WillUseFontData(const String& text) const {
   const FontDescription& font_description = GetFontDescription();
   const FontFamily& family = font_description.Family();
-  if (UNLIKELY(family.FamilyName().empty()))
+  if (family.FamilyName().empty()) [[unlikely]] {
     return;
+  }
   if (FontSelector* font_selector = GetFontSelector()) {
     font_selector->WillUseFontData(font_description, family, text);
     return;

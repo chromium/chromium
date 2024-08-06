@@ -59,8 +59,8 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
     // cannot mix x-only/xy offsets
     DCHECK(!HasPendingVerticalOffsets());
 
-    if (UNLIKELY(font_data != pending_font_data_) ||
-        UNLIKELY(canvas_rotation != pending_canvas_rotation_)) {
+    if (font_data != pending_font_data_ ||
+        canvas_rotation != pending_canvas_rotation_) [[unlikely]] {
       CommitPendingRun();
       pending_font_data_ = font_data;
       pending_canvas_rotation_ = canvas_rotation;
@@ -70,7 +70,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
 
     pending_glyphs_.push_back(glyph);
     pending_offsets_.push_back(h_offset);
-    if (UNLIKELY(!current_text_.IsNull())) {
+    if (!current_text_.IsNull()) [[unlikely]] {
       DVLOG(5) << "  Appending glyph " << glyph << " with start index "
                << character_index;
       current_character_indexes_.push_back(character_index);
@@ -85,8 +85,8 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
     // cannot mix x-only/xy offsets
     DCHECK(pending_glyphs_.empty() || HasPendingVerticalOffsets());
 
-    if (UNLIKELY(font_data != pending_font_data_) ||
-        UNLIKELY(canvas_rotation != pending_canvas_rotation_)) {
+    if (font_data != pending_font_data_ ||
+        canvas_rotation != pending_canvas_rotation_) [[unlikely]] {
       CommitPendingRun();
       pending_font_data_ = font_data;
       pending_canvas_rotation_ = canvas_rotation;
@@ -101,7 +101,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
     pending_offsets_.push_back(offset.x() +
                                pending_vertical_baseline_x_offset_);
     pending_offsets_.push_back(offset.y());
-    if (UNLIKELY(!current_text_.IsNull())) {
+    if (!current_text_.IsNull()) [[unlikely]] {
       DVLOG(5) << "  Appending glyph " << glyph << " with start index "
                << character_index;
       current_character_indexes_.push_back(character_index);

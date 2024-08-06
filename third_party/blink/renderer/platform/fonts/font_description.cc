@@ -360,8 +360,9 @@ namespace {
 // This converts -0.0 to 0.0, so that they have the same hash value. This
 // ensures that equal FontDescription have the same hash value.
 float NormalizeSign(float number) {
-  if (UNLIKELY(number == 0.0))
+  if (number == 0.0) [[unlikely]] {
     return 0.0;
+  }
   return number;
 }
 
