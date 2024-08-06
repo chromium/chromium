@@ -13,6 +13,7 @@
   <release seq="1">
     <structures fallback_to_low_resolution="true">
       <part file="autofill_scaled_resources.grdp" />
+      <part file="commerce_scaled_resources.grdp" />
       <part file="crash_scaled_resources.grdp" />
       <part file="flags_ui_scaled_resources.grdp" />
       <part file="neterror_scaled_resources.grdp" />

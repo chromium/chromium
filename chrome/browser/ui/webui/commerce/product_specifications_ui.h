@@ -7,11 +7,16 @@
 
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 #include "url/gurl.h"
+
+namespace base {
+class RefCountedMemory;
+}
 
 namespace ui {
 class ColorChangeHandler;
@@ -43,6 +48,9 @@ class ProductSpecificationsUI
       mojo::PendingRemote<shopping_service::mojom::Page> page,
       mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
           receiver) override;
+
+  static base::RefCountedMemory* GetFaviconResourceBytes(
+      ui::ResourceScaleFactor scale_factor);
 
  private:
   mojo::Receiver<shopping_service::mojom::ShoppingServiceHandlerFactory>

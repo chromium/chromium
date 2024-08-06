@@ -31,11 +31,13 @@
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/webui/shopping_service_handler.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace commerce {
@@ -153,6 +155,13 @@ void ProductSpecificationsUI::CreateShoppingServiceHandler(
               ? optimization_guide_keyed_service
                     ->GetModelQualityLogsUploaderService()
               : nullptr);
+}
+
+// static
+base::RefCountedMemory* ProductSpecificationsUI::GetFaviconResourceBytes(
+    ui::ResourceScaleFactor scale_factor) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+      IDR_COMMERCE_PRODUCT_SPECIFICATIONS_FAVICON, scale_factor);
 }
 
 ProductSpecificationsUI::~ProductSpecificationsUI() = default;

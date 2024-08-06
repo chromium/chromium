@@ -68,6 +68,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/commerce/content/browser/commerce_internals_ui.h"
 #include "components/commerce/core/commerce_constants.h"
+#include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_util.h"
 #include "components/favicon_base/select_favicon_frames.h"
@@ -214,6 +215,7 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/commerce/product_specifications_ui.h"
 #include "chrome/browser/ui/webui/discards/discards_ui.h"
 #endif
 
@@ -932,6 +934,15 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
 
   if (page_url.host_piece() == chrome::kChromeUIManagementHost)
     return ManagementUI::GetFaviconResourceBytes(scale_factor);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  if (page_url.host_piece() == commerce::kChromeUICompareHost) {
+    return commerce::ProductSpecificationsUI::GetFaviconResourceBytes(
+        scale_factor);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (page_url.host_piece() == chrome::kChromeUIExtensionsHost) {
