@@ -61,6 +61,8 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   TestAppBannerManagerDesktop* AsTestAppBannerManagerDesktopForTesting()
       override;
 
+  const base::Value::List& debug_log() const { return debug_log_; }
+
  protected:
   // AppBannerManager:
   void OnInstall(blink::mojom::DisplayMode display,
