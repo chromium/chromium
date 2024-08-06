@@ -6,6 +6,8 @@
 
 #import "base/check.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_omnibox_mutator.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/omnibox/text_field_view_containing.h"
@@ -54,20 +56,22 @@ const CGFloat kWebContainerTopPadding = 8;
   /// Back button.
   UIButton* _backButton;
   /// Container for the omnibox.
-  UIButton* _omniboxContainer;
+  UIView* _omniboxContainer;
   /// Cancel button.
   UIButton* _cancelButton;
   /// StackView for the `_backButton`, `_omniboxContainer` and `_cancelButton`.
   UIStackView* _horizontalStackView;
   /// Container for the omnibox popup.
-  UIView* _omniboxPopupContainer;
+  UIButton* _omniboxPopupContainer;
+  /// Button to focus the omnibox.
+  UIButton* _omniboxTapTarget;
 }
 
 - (instancetype)init {
   self = [super init];
   if (self) {
     _webViewContainer = [[UIView alloc] init];
-    _omniboxPopupContainer = [[UIView alloc] init];
+    _omniboxPopupContainer = [[UIButton alloc] init];
   }
   return self;
 }
@@ -87,6 +91,9 @@ const CGFloat kWebContainerTopPadding = 8;
   _omniboxPopupContainer.hidden = YES;
   _omniboxPopupContainer.layer.zPosition = 1;
   _omniboxPopupContainer.clipsToBounds = YES;
+  [_omniboxPopupContainer addTarget:self
+                             action:@selector(didTapOmniboxPopupContainer:)
+                   forControlEvents:UIControlEventTouchUpInside];
   [self.view addSubview:_omniboxPopupContainer];
 
   // Back Button.
@@ -101,16 +108,23 @@ const CGFloat kWebContainerTopPadding = 8;
         forControlEvents:UIControlEventTouchUpInside];
 
   // Omnibox container.
-  _omniboxContainer = [[UIButton alloc] init];
+  _omniboxContainer = [[UIView alloc] init];
   _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
   _omniboxContainer.backgroundColor = [UIColor colorNamed:kGrey200Color];
   _omniboxContainer.layer.cornerRadius = 21;
   [_omniboxContainer
       setContentHuggingPriority:UILayoutPriorityDefaultLow
                         forAxis:UILayoutConstraintAxisHorizontal];
-  [_omniboxContainer addTarget:self
-                        action:@selector(didTapOmniboxContainer:)
+
+  // Omnibox tap target.
+  _omniboxTapTarget = [[UIButton alloc] init];
+  _omniboxTapTarget.translatesAutoresizingMaskIntoConstraints = NO;
+  _omniboxTapTarget.backgroundColor = UIColor.clearColor;
+  [_omniboxTapTarget addTarget:self
+                        action:@selector(didTapOmniboxTapTarget:)
               forControlEvents:UIControlEventTouchUpInside];
+  [_omniboxContainer addSubview:_omniboxTapTarget];
+  AddSameConstraints(_omniboxContainer, _omniboxTapTarget);
 
   // Cancel button.
   _cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -185,8 +199,24 @@ const CGFloat kWebContainerTopPadding = 8;
   CHECK(_omniboxContainer, kLensOverlayNotFatalUntil);
   _editView = editView;
   _editView.translatesAutoresizingMaskIntoConstraints = NO;
-  [_omniboxContainer addSubview:_editView];
+  [_omniboxContainer insertSubview:_editView belowSubview:_omniboxTapTarget];
   AddSameConstraints(_editView, _omniboxContainer);
+}
+
+#pragma mark - UIResponder
+
+- (BOOL)canBecomeFirstResponder {
+  // Capture key command close when the omnibox is focused to defocus the
+  // omnibox instead of closing the overlay.
+  return !_omniboxPopupContainer.hidden;
+}
+
+- (NSArray<UIKeyCommand*>*)keyCommands {
+  return @[ UIKeyCommand.cr_close ];
+}
+
+- (void)keyCommand_close {
+  [self.omniboxMutator defocusOmnibox];
 }
 
 #pragma mark - LensResultPageConsumer
@@ -230,11 +260,20 @@ const CGFloat kWebContainerTopPadding = 8;
 }
 
 - (void)popupDidOpenForPresenter:(OmniboxPopupPresenter*)presenter {
-  _omniboxPopupContainer.hidden = NO;
 }
 
 - (void)popupDidCloseForPresenter:(OmniboxPopupPresenter*)presenter {
-  _omniboxPopupContainer.hidden = YES;
+}
+
+#pragma mark - LensToolbarConsumer
+
+- (void)setOmniboxFocused:(BOOL)isFocused {
+  // Visible when omnibox is focused.
+  _cancelButton.hidden = !isFocused;
+  _omniboxPopupContainer.hidden = !isFocused;
+
+  // Hidden when omnibox is focused.
+  _omniboxTapTarget.hidden = isFocused;
 }
 
 #pragma mark - Private
@@ -244,14 +283,19 @@ const CGFloat kWebContainerTopPadding = 8;
   // TODO(crbug.com/347239663): Handle back button tap.
 }
 
-/// Handles omnibox taps.
-- (void)didTapOmniboxContainer:(UIView*)view {
-  // TODO(crbug.com/347237539): Handle omnibox tap.
+/// Handles omnibox tap target taps.
+- (void)didTapOmniboxTapTarget:(UIView*)view {
+  [self.omniboxMutator focusOmnibox];
+}
+
+/// Handles omnibox popup container taps, acting like a typing shield.
+- (void)didTapOmniboxPopupContainer:(UIView*)view {
+  [self.omniboxMutator defocusOmnibox];
 }
 
 /// Handles cancel button taps.
 - (void)didTapCancelButton:(UIView*)button {
-  // TODO(crbug.com/355179721): Handle cancel button tap.
+  [self.omniboxMutator defocusOmnibox];
 }
 
 @end

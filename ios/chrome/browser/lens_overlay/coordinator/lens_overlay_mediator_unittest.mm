@@ -6,10 +6,12 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -44,8 +46,15 @@ class LensOverlayMediatorTest : public PlatformTest {
     mediator_ = [[LensOverlayMediator alloc] init];
     mock_result_consumer_ = [[FakeResultConsumer alloc] init];
     fake_snapshot_consumer_ = [[FakeSnapshotConsumer alloc] init];
+    mock_omnibox_coordinator_ =
+        [OCMockObject mockForClass:OmniboxCoordinator.class];
+    mock_toolbar_consumer_ =
+        [OCMockObject mockForProtocol:@protocol(LensToolbarConsumer)];
+
     mediator_.resultConsumer = mock_result_consumer_;
     mediator_.snapshotConsumer = fake_snapshot_consumer_;
+    mediator_.omniboxCoordinator = mock_omnibox_coordinator_;
+    mediator_.toolbarConsumer = mock_toolbar_consumer_;
   }
 
  protected:
@@ -53,6 +62,8 @@ class LensOverlayMediatorTest : public PlatformTest {
 
   FakeResultConsumer* mock_result_consumer_;
   FakeSnapshotConsumer* fake_snapshot_consumer_;
+  id mock_omnibox_coordinator_;
+  OCMockObject<LensToolbarConsumer>* mock_toolbar_consumer_;
 };
 
 TEST_F(LensOverlayMediatorTest, ShouldPushURLToConsumerOnSelection) {
@@ -80,6 +91,40 @@ TEST_F(LensOverlayMediatorTest, ShouldRouteTheImageToTheConsumerWhenStarted) {
 
   // Then the consumer should receive the snapshot.
   EXPECT_TRUE(didReceiveSnapshot);
+}
+
+/// Tests that the omnibox and toolbar are updated on omnibox focus.
+TEST_F(LensOverlayMediatorTest, FocusOmnibox) {
+  // Focus from LensOmniboxMutator.
+  OCMExpect([mock_omnibox_coordinator_ focusOmnibox]);
+  OCMExpect([mock_toolbar_consumer_ setOmniboxFocused:YES]);
+  [mediator_ focusOmnibox];
+  EXPECT_OCMOCK_VERIFY(mock_omnibox_coordinator_);
+  EXPECT_OCMOCK_VERIFY(mock_toolbar_consumer_);
+
+  // Focus from OmniboxFocusDelegate.
+  OCMExpect([mock_omnibox_coordinator_ focusOmnibox]);
+  OCMExpect([mock_toolbar_consumer_ setOmniboxFocused:YES]);
+  [mediator_ omniboxDidBecomeFirstResponder];
+  EXPECT_OCMOCK_VERIFY(mock_omnibox_coordinator_);
+  EXPECT_OCMOCK_VERIFY(mock_toolbar_consumer_);
+}
+
+/// Tests that the omnibox and toolbar are updated on omnibox defocus.
+TEST_F(LensOverlayMediatorTest, DefocusOmnibox) {
+  // Defocus from LensOmniboxMutator.
+  OCMExpect([mock_omnibox_coordinator_ endEditing]);
+  OCMExpect([mock_toolbar_consumer_ setOmniboxFocused:NO]);
+  [mediator_ defocusOmnibox];
+  EXPECT_OCMOCK_VERIFY(mock_omnibox_coordinator_);
+  EXPECT_OCMOCK_VERIFY(mock_toolbar_consumer_);
+
+  // Defocus from OmniboxFocusDelegate.
+  OCMExpect([mock_omnibox_coordinator_ endEditing]);
+  OCMExpect([mock_toolbar_consumer_ setOmniboxFocused:NO]);
+  [mediator_ omniboxDidResignFirstResponder];
+  EXPECT_OCMOCK_VERIFY(mock_omnibox_coordinator_);
+  EXPECT_OCMOCK_VERIFY(mock_toolbar_consumer_);
 }
 
 }  // namespace

@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_web_state_delegate.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -288,6 +289,11 @@
       didMoveToParentViewController:_resultViewController];
 
   [_omniboxCoordinator updateOmniboxState];
+
+  _mediator.omniboxCoordinator = _omniboxCoordinator;
+  _mediator.toolbarConsumer = _resultViewController;
+  _resultViewController.omniboxMutator = _mediator;
+  _omniboxCoordinator.focusDelegate = _mediator;
 }
 
 - (void)stopResultPage {

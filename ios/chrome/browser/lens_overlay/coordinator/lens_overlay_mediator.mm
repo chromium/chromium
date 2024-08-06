@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 
+#import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
 #import "url/gurl.h"
 
 @implementation LensOverlayMediator
@@ -27,6 +29,28 @@
 }
 
 - (void)selectionUISuccessfullyCompletedFullImageRequest:(id)selectionUI {
+}
+
+#pragma mark - LensOmniboxMutator
+
+- (void)focusOmnibox {
+  [self.omniboxCoordinator focusOmnibox];
+  [self.toolbarConsumer setOmniboxFocused:YES];
+}
+
+- (void)defocusOmnibox {
+  [self.omniboxCoordinator endEditing];
+  [self.toolbarConsumer setOmniboxFocused:NO];
+}
+
+#pragma mark - OmniboxFocusDelegate
+
+- (void)omniboxDidBecomeFirstResponder {
+  [self focusOmnibox];
+}
+
+- (void)omniboxDidResignFirstResponder {
+  [self defocusOmnibox];
 }
 
 @end
