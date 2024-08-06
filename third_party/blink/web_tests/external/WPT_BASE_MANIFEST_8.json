@@ -233603,19 +233603,6 @@
        {}
       ]
      ],
-     "attr-invalid-type-008.html": [
-      "a76be44d76a1c1f03d818b8b11a3ee5830815e38",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square.xht",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "attr-length-invalid-cast.html": [
       "930832363605fa85651b075f17d6c109535c0b41",
       [
@@ -234777,6 +234764,64 @@
         ]
        ],
        {}
+      ]
+     ],
+     "lh-unit-same-element-font-size-dependency.html": [
+      "0646f2d876c0322f0bf6e0f6701becb7fd9178bb",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            5000
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "lh-unit-same-element-line-height-dependency.html": [
+      "0a9da7d536d77923c4ffbcadee67945c6cd2fd8d",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            5000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "max-20-arguments.html": [
@@ -335044,6 +335089,10 @@
        []
       ]
      },
+     "at-property-expected.txt": [
+      "2331c6cdc6cd52991c67c68ceb7525f930192cbc",
+      []
+     ],
      "at-property-shadow-expected.txt": [
       "c901a08d39299de0a4d731262b8bd42cd7025637",
       []
@@ -351830,10 +351879,6 @@
      ],
      "CSSStyleSheet-constructable-concat-ref.html": [
       "b45332345902c6197f02a8181f737e1e4ab7cc81",
-      []
-     ],
-     "CSSStyleSheet-constructable-expected.txt": [
-      "c7d7c1507c08fbb80262807811c31781877f177f",
       []
      ],
      "CSSStyleSheet-constructable-insertRule-base-uri-ref.html": [
@@ -383990,6 +384035,12 @@
      ]
     },
     "webdriver": {
+     "bidi": {
+      "subscription-expected.txt": [
+       "2b9a148a7fb58b68f78715303930c355215d30b0",
+       []
+      ]
+     },
      "tests": {
       "conftest.py": [
        "cbc4f83421bb4868d1e6958a0622676895eac9ca",
@@ -385739,7 +385790,7 @@
     ]
    },
    "lint.ignore": [
-    "ca22175f33cf197d13a9fe0ef7d67b474579e30f",
+    "62ad931cb83b0fb0681f02f92b24ffd895973663",
     []
    ],
    "loading": {
@@ -393570,7 +393621,7 @@
      []
     ],
     "testdriver.js": [
-     "d079efba8a4a9042ad8de614bb13e318545a27e4",
+     "985dbb0e4030aaaeb9e912367262d8cee3de3806",
      []
     ],
     "testdriver.js.headers": [
@@ -406322,7 +406373,7 @@
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "80c0b2d01e6a4716503c587e96d72c3fac86d623",
+     "51fde15b3db5bd6bb9b5ed1652be6dab96f1fb8d",
      []
     ],
     "legacy": {
@@ -468335,7 +468386,7 @@
       ]
      ],
      "at-property.html": [
-      "950d9b02d7b7d336262ec82a36a85c32635d47e3",
+      "56a1956f56dd552779db4e3ad0d41078f4e6c80f",
       [
        null,
        {}
@@ -484931,6 +484982,13 @@
        {}
       ]
      ],
+     "link-element-stylesheet-title.html": [
+      "bca6a3082e96b06925370a5400fb53e1be3df00b",
+      [
+       null,
+       {}
+      ]
+     ],
      "medialist-interfaces-001.html": [
       "f436177fb8ec210d878418883d7876f64d1c45df",
       [
@@ -488827,6 +488885,13 @@
      ],
      "not-specificity.html": [
       "d9a2a4ddffad5de8c0896dc23d710f4eb9931ef1",
+      [
+       null,
+       {}
+      ]
+     ],
+     "nth-last-child-invalid.html": [
+      "ae768b8698e35f74bf34b310993381834dda3c9f",
       [
        null,
        {}
@@ -496052,6 +496117,13 @@
         "testdriver": true,
         "timeout": "long"
        }
+      ]
+     ],
+     "html-text-copy-paste-of-anchor-with-href-in-content-editable.html": [
+      "5724b59ada4bb34fe416cb0031643e1fd4973667",
+      [
+       null,
+       {}
       ]
      ],
      "indent-preserving-selection.tentative.html": [
@@ -515313,7 +515385,7 @@
      ]
     ],
     "document-activeelement.https.html": [
-     "3ac1fd866fc58c7bc957054976cf70baa92eacf6",
+     "4f5bbb67655fe1d87bff78f6830e3ac12d8ce750",
      [
       null,
       {
@@ -606381,6 +606453,19 @@
        {}
       ]
      ]
+    },
+    "webdriver": {
+     "bidi": {
+      "subscription.html": [
+       "056c2e5f77fb9593c0e8c9d9a09c5afc853856d9",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ]
+     }
     }
    },
    "input-device-capabilities": {
@@ -658925,7 +659010,7 @@
       ]
      ],
      "transfer-with-messageport.window.js": [
-      "37f8c9df169607a4565f76d04c7cc56bc408af47",
+      "3bfe634a6e153d3a80a8a78ced9d1c2325c59daf",
       [
        "streams/transferable/transfer-with-messageport.window.html",
        {}
@@ -706821,7 +706906,7 @@
      ]
     ],
     "idlharness.https.window.js": [
-     "58e696f73c15a0c5fd2f38e625577096df0af318",
+     "611494f641d6060e69fe79e7ab975341703969fa",
      [
       "webrtc/idlharness.https.window.html",
       {

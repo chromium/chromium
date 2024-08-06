@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Assert testdriver can subscribe and receive events
+  promise_test: Unhandled rejection with value: object "Error: bidi.log.entry_added.subscribe is not implemented by testdriver-vendor.js"
+Harness: the test ran to completion.
+
