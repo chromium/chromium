@@ -3,8 +3,14 @@
 # found in the LICENSE file.
 
 import logging
+import os
 import sys
 
+_THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+_CHROMIUM_SRC_DIR = os.path.realpath(os.path.join(_THIS_DIR, '..', '..', '..'))
+
+# //build imports.
+sys.path.append(os.path.join(_CHROMIUM_SRC_DIR, 'build'))
 from skia_gold_common.skia_gold_properties import SkiaGoldProperties
 from skia_gold_common.skia_gold_session_manager import SkiaGoldSessionManager
 

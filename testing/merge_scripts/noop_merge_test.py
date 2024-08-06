@@ -6,15 +6,10 @@
 import json
 import os
 import shutil
-import sys
 import tempfile
 import unittest
 
 import common_merge_script_tests
-
-THIS_DIR = os.path.dirname(__file__)
-
-sys.path.insert(0, os.path.abspath(os.path.join(THIS_DIR, '..', 'resources')))
 import noop_merge
 
 

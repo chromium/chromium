@@ -3,26 +3,16 @@
 # found in the LICENSE file.
 """Methods related to querying the ResultDB BigQuery tables."""
 
-import concurrent.futures
-import json
 import logging
-import math
-import multiprocessing.pool
-import os
-import subprocess
-import threading
 import time
-from typing import (Any, Collection, Dict, Generator, Iterable, List, Optional,
-                    Tuple, Union)
+from typing import Collection, Dict, Generator, Iterable, List, Optional, Tuple
 
 from google.cloud import bigquery
 from google.cloud import bigquery_storage
 import pandas
-import six
 
 from typ import expectations_parser
 from typ import json_results
-from unexpected_passes_common import builders as builders_module
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 from unexpected_passes_common import expectations

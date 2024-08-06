@@ -6,7 +6,6 @@
 
 import argparse
 import logging
-import os
 import sys
 
 import merge_lib as merger

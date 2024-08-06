@@ -10,11 +10,8 @@ import os
 import unittest
 import unittest.mock as mock
 
-from typing import List, Tuple
-
 from flake_suppressor_common import common_typing as ct
 from flake_suppressor_common import data_types
-from flake_suppressor_common import results
 from flake_suppressor_common import tag_utils as common_tag_utils
 from flake_suppressor_common import unittest_utils as uu
 

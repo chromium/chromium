@@ -13,8 +13,6 @@ from flake_suppressor_common import common_typing as ct
 from flake_suppressor_common import results as results_module
 from flake_suppressor_common import tag_utils
 
-from unexpected_passes_common import queries as upc_queries
-
 MAX_ROWS = (2**31) - 1
 
 # A note about the try version of the queries: The submitted builds subquery is

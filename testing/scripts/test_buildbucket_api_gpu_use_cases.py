@@ -3,24 +3,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import argparse
 import json
 import os
 import sys
 
-# Add src/testing/ into sys.path for importing common without pylint errors.
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-from scripts import common
+import common
 
-# Add src/content/test/gpu into sys.path for importing common.
 sys.path.append(
     os.path.abspath(
         os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir,
                      'content', 'test', 'gpu')))
 
+# //content/test/gpu imports.
 import gather_power_measurement_results
 import gather_swarming_json_results
 

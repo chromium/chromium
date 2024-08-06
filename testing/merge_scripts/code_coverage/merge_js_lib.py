@@ -13,9 +13,13 @@ _HERE_PATH = os.path.dirname(__file__)
 _THIRD_PARTY_PATH = os.path.normpath(
     os.path.join(_HERE_PATH, '..', '..', '..', 'third_party'))
 _SRC_PATH = os.path.normpath(os.path.join(_HERE_PATH, '..', '..', '..'))
+
+# //third_party/node imports.
 sys.path.append(os.path.join(_THIRD_PARTY_PATH, 'node'))
-sys.path.append(os.path.join(_THIRD_PARTY_PATH, 'js_code_coverage'))
 import node
+
+# //third_party/js_code_coverage imports.
+sys.path.append(os.path.join(_THIRD_PARTY_PATH, 'js_code_coverage'))
 import coverage_modules
 
 logging.basicConfig(format='[%(asctime)s %(levelname)s] %(message)s',

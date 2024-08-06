@@ -6,9 +6,10 @@
 
 import argparse
 import os
-from pyfakefs import fake_filesystem_unittest
 import tempfile
 import unittest
+
+from pyfakefs import fake_filesystem_unittest
 
 import test_filtering
 from test_filtering import _TestFilter

@@ -7,21 +7,14 @@ import json
 import logging
 import os
 import shutil
-import six
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
-import common_merge_script_tests
 import six
 
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# For 'standard_gtest_merge.py'.
-sys.path.insert(0, os.path.abspath(os.path.join(THIS_DIR, '..', 'resources')))
-
-import mock
-
+import common_merge_script_tests
 import standard_gtest_merge
 
 # gtest json output for successfully finished shard #0.
