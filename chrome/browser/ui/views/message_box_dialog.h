@@ -50,8 +50,7 @@ class MessageBoxDialog : public views::DialogDelegate,
                    chrome::MessageBoxType type,
                    std::u16string_view yes_text,
                    std::u16string_view no_text,
-                   std::u16string_view checkbox_text,
-                   bool is_system_modal);
+                   std::u16string_view checkbox_text);
   ~MessageBoxDialog() override;
 
   void Run(MessageBoxResultCallback result_callback);
