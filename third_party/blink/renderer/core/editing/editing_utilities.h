@@ -401,8 +401,10 @@ DispatchEventResult DispatchBeforeInputDataTransfer(Node*,
 
 // Helper function to dispatch beforeinput and input events whose inputType is
 // insertReplacementText.
-void InsertTextAndSendInputEventsOfTypeInsertReplacementText(LocalFrame&,
-                                                             const String&);
+void InsertTextAndSendInputEventsOfTypeInsertReplacementText(
+    LocalFrame&,
+    const String&,
+    bool allow_edit_context = false);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_EDITING_UTILITIES_H_
