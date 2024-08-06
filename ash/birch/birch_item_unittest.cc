@@ -127,7 +127,8 @@ class BirchItemTest : public testing::Test {
 
 TEST_F(BirchItemTest, RecordActionMetrics_Basics) {
   base::HistogramTester histograms;
-  BirchWeatherItem item(u"item", 72.f, ui::ImageModel());
+  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"),
+                        ui::ImageModel());
   item.set_ranking(5.f);
   item.RecordActionMetrics();
   histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 1);
@@ -138,7 +139,8 @@ TEST_F(BirchItemTest, RecordActionMetrics_Basics) {
 
 TEST_F(BirchItemTest, RecordActionMetrics_FirstSecondThird) {
   base::HistogramTester histograms;
-  BirchWeatherItem item(u"item", 72.f, ui::ImageModel());
+  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"),
+                        ui::ImageModel());
 
   // First action records in "ActivateFirst" metric.
   item.RecordActionMetrics();
@@ -433,7 +435,8 @@ TEST_F(BirchItemTest, File_PerformAction_Histograms) {
 }
 
 TEST_F(BirchItemTest, Weather_PerformAction) {
-  BirchWeatherItem item(u"item", 72.f, ui::ImageModel());
+  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"),
+                        ui::ImageModel());
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_,
             GURL("https://google.com/search?q=weather"));
@@ -441,7 +444,8 @@ TEST_F(BirchItemTest, Weather_PerformAction) {
 
 TEST_F(BirchItemTest, Weather_PerformAction_Histograms) {
   base::HistogramTester histograms;
-  BirchWeatherItem item(u"item", 72.f, ui::ImageModel());
+  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"),
+                        ui::ImageModel());
   item.PerformAction();
   histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.Chip.Activate",
@@ -453,13 +457,15 @@ using BirchWeatherItemTest = AshTestBase;
 
 TEST_F(BirchWeatherItemTest, SubtitleInFahrenheit) {
   GetPrefService()->SetBoolean(prefs::kBirchUseCelsius, false);
-  BirchWeatherItem item(u"item", 72.f, ui::ImageModel());
+  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"),
+                        ui::ImageModel());
   EXPECT_EQ(item.subtitle(), u"72\xB0 F");
 }
 
 TEST_F(BirchWeatherItemTest, SubtitleInCelsius) {
   GetPrefService()->SetBoolean(prefs::kBirchUseCelsius, true);
-  BirchWeatherItem item(u"item", 72.f, ui::ImageModel());
+  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"),
+                        ui::ImageModel());
   EXPECT_EQ(item.subtitle(), u"22\xB0 C");
 }
 
@@ -690,8 +696,8 @@ TEST_F(BirchItemIconTest, Tab_LoadIcon_InvalidUrl) {
 }
 
 TEST_F(BirchItemIconTest, Weather_LoadIcon) {
-  gfx::ImageSkia image = gfx::test::CreateImageSkia(10);
-  BirchWeatherItem item(u"Sunny", 72.f, ui::ImageModel::FromImageSkia(image));
+  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"),
+                        ui::ImageModel());
 
   item.LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
@@ -701,7 +707,7 @@ TEST_F(BirchItemIconTest, Weather_LoadIcon) {
 }
 
 TEST_F(BirchItemIconTest, Weather_LoadIcon_NoIcon) {
-  BirchWeatherItem item(u"Sunny", 72.f, ui::ImageModel());
+  BirchWeatherItem item(u"Sunny", 72.f, GURL(), ui::ImageModel());
 
   item.LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {

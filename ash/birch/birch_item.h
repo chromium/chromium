@@ -461,7 +461,8 @@ class ASH_EXPORT BirchWeatherItem : public BirchItem {
  public:
   BirchWeatherItem(const std::u16string& weather_description,
                    float temp_f,
-                   ui::ImageModel icon);
+                   const GURL& icon_url,
+                   const ui::ImageModel& backup_icon);
   BirchWeatherItem(BirchWeatherItem&&);
   BirchWeatherItem(const BirchWeatherItem&);
   BirchWeatherItem& operator=(const BirchWeatherItem&);
@@ -481,7 +482,8 @@ class ASH_EXPORT BirchWeatherItem : public BirchItem {
   static std::u16string GetSubtitle(float temp_f);
 
   float temp_f_;
-  ui::ImageModel icon_;
+  GURL icon_url_;
+  ui::ImageModel backup_icon_;
 };
 
 class ASH_EXPORT BirchCoralItem : public BirchItem {

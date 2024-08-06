@@ -6,6 +6,7 @@
 #define ASH_BIRCH_BIRCH_WEATHER_PROVIDER_H_
 
 #include <optional>
+#include <string>
 
 #include "ash/ash_export.h"
 #include "ash/birch/birch_data_provider.h"
@@ -53,7 +54,7 @@ class ASH_EXPORT BirchWeatherProvider : public BirchDataProvider {
   // Adds the weather item to the birch model.
   void AddItemToBirchModel(const std::u16string& weather_description,
                            float temp_f,
-                           const gfx::ImageSkia& icon);
+                           const std::string& icon_url);
 
   const raw_ptr<BirchModel> birch_model_;
   bool is_fetching_ = false;

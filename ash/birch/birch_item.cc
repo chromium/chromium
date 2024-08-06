@@ -531,10 +531,12 @@ std::u16string BirchFileItem::GetTitle(
 
 BirchWeatherItem::BirchWeatherItem(const std::u16string& weather_description,
                                    float temp_f,
-                                   ui::ImageModel icon)
+                                   const GURL& icon_url,
+                                   const ui::ImageModel& backup_icon)
     : BirchItem(weather_description, GetSubtitle(temp_f)),
       temp_f_(temp_f),
-      icon_(std::move(icon)) {}
+      icon_url_(icon_url),
+      backup_icon_(backup_icon) {}
 
 BirchWeatherItem::BirchWeatherItem(BirchWeatherItem&&) = default;
 
@@ -573,7 +575,8 @@ void BirchWeatherItem::PerformSecondaryAction() {
 }
 
 void BirchWeatherItem::LoadIcon(LoadIconCallback callback) const {
-  std::move(callback).Run(icon_, SecondaryIconType::kNoIcon);
+  DownloadImageFromUrl(icon_url_, backup_icon_, SecondaryIconType::kNoIcon,
+                       std::move(callback));
 }
 
 // static

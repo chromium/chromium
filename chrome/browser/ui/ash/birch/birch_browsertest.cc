@@ -33,6 +33,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -46,7 +47,8 @@ class TestWeatherProvider : public BirchDataProvider {
   // BirchDataProvider:
   void RequestBirchDataFetch() override {
     std::vector<BirchWeatherItem> items;
-    items.emplace_back(u"Cloudy", 70.f, ui::ImageModel());
+    items.emplace_back(u"Cloudy", 70.f, GURL("http://icon.com/"),
+                       ui::ImageModel());
     Shell::Get()->birch_model()->SetWeatherItems(std::move(items));
   }
 };

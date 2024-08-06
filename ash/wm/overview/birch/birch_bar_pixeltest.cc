@@ -74,6 +74,7 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
       items.push_back(std::make_unique<BirchWeatherItem>(
           /*weather_description=*/u"cloudy",
           /*temperature=*/72.f,
+          /*icon_url=*/GURL("http://icon.com/"),
           /*icon=*/kTestIcon));
       break;
     case BirchItemType::kReleaseNotes:

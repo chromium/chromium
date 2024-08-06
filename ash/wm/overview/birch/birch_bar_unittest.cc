@@ -483,7 +483,8 @@ class BirchBarTest : public AshTestBase {
     for (size_t i = 0; i < num; i++) {
       item_list.emplace_back(/*weather_description=*/u"cloudy",
                              /*temperature=*/72.f,
-                             /*icon*/ ui::ImageModel());
+                             /*icon_url=*/GURL("http://icon.com/"),
+                             /*backup_icon=*/ui::ImageModel());
       item_list.back().set_ranking(1.0f);
     }
     weather_provider_->set_items(item_list);
