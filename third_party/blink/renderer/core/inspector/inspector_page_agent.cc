@@ -122,16 +122,17 @@ String ClientNavigationReasonToProtocol(ClientNavigationReason reason) {
       return ReasonEnum::HttpHeaderRefresh;
     case ClientNavigationReason::kFrameNavigation:
       return ReasonEnum::ScriptInitiated;
+    case ClientNavigationReason::kInitialFrameNavigation:
+      return ReasonEnum::InitialFrameNavigation;
     case ClientNavigationReason::kMetaTagRefresh:
       return ReasonEnum::MetaTagRefresh;
     case ClientNavigationReason::kPageBlock:
       return ReasonEnum::PageBlockInterstitial;
     case ClientNavigationReason::kReload:
       return ReasonEnum::Reload;
-    default:
-      NOTREACHED_IN_MIGRATION();
+    case ClientNavigationReason::kNone:
+      return ReasonEnum::Other;
   }
-  return ReasonEnum::Reload;
 }
 
 String NavigationPolicyToProtocol(NavigationPolicy policy) {

@@ -78,11 +78,11 @@ struct CORE_EXPORT FrameLoadRequest {
     return resource_request_;
   }
 
-  void SetClientRedirectReason(ClientNavigationReason reason) {
+  void SetClientNavigationReason(ClientNavigationReason reason) {
     client_navigation_reason_ = reason;
   }
 
-  ClientNavigationReason ClientRedirectReason() const {
+  ClientNavigationReason GetClientNavigationReason() const {
     return client_navigation_reason_;
   }
 

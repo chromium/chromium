@@ -8369,14 +8369,16 @@ domain Page
 
   experimental type ClientNavigationReason extends string
     enum
+      anchorClick
       formSubmissionGet
       formSubmissionPost
       httpHeaderRefresh
-      scriptInitiated
+      initialFrameNavigation
       metaTagRefresh
+      other
       pageBlockInterstitial
       reload
-      anchorClick
+      scriptInitiated
 
   experimental type ClientNavigationDisposition extends string
     enum

@@ -332,7 +332,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
     return nullptr;
   }
   frame_request.SetNavigationPolicy(navigation_policy);
-  frame_request.SetClientRedirectReason(reason);
+  frame_request.SetClientNavigationReason(reason);
   if (submit_button) {
     frame_request.SetSourceElement(submit_button);
   } else {
@@ -398,7 +398,7 @@ void FormSubmission::Trace(Visitor* visitor) const {
 void FormSubmission::Navigate() {
   FrameLoadRequest frame_request(origin_window_.Get(), *resource_request_);
   frame_request.SetNavigationPolicy(navigation_policy_);
-  frame_request.SetClientRedirectReason(reason_);
+  frame_request.SetClientNavigationReason(reason_);
   frame_request.SetSourceElement(submitter_);
   frame_request.SetTriggeringEventInfo(triggering_event_info_);
   frame_request.SetInitiatorFrameToken(initiator_frame_token_);

@@ -554,20 +554,26 @@ void LocalFrame::Navigate(FrameLoadRequest& request,
                request.GetResourceRequest().Url().GetString().Utf8(),
                "load_type", static_cast<int>(frame_load_type));
 
-  if (request.ClientRedirectReason() != ClientNavigationReason::kNone)
+  if (request.GetClientNavigationReason() != ClientNavigationReason::kNone &&
+      request.GetClientNavigationReason() !=
+          ClientNavigationReason::kInitialFrameNavigation) {
     probe::FrameScheduledNavigation(this, request.GetResourceRequest().Url(),
                                     base::TimeDelta(),
-                                    request.ClientRedirectReason());
+                                    request.GetClientNavigationReason());
+  }
 
   if (NavigationShouldReplaceCurrentHistoryEntry(request, frame_load_type))
     frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
 
   const ClientNavigationReason client_redirect_reason =
-      request.ClientRedirectReason();
+      request.GetClientNavigationReason();
   loader_.StartNavigation(request, frame_load_type);
 
-  if (client_redirect_reason != ClientNavigationReason::kNone)
+  if (client_redirect_reason != ClientNavigationReason::kNone &&
+      client_redirect_reason !=
+          ClientNavigationReason::kInitialFrameNavigation) {
     probe::FrameClearedScheduledNavigation(this);
+  }
 }
 
 // Much of this function is redundant with the browser process
@@ -651,8 +657,9 @@ bool LocalFrame::NavigationShouldReplaceCurrentHistoryEntry(
   // Most non-user-initiated navigations before the load event replace. The
   // exceptions are "internal" navigations (e.g., drag-and-drop triggered
   // navigations), and anchor clicks.
-  if (request.ClientRedirectReason() == ClientNavigationReason::kNone ||
-      request.ClientRedirectReason() == ClientNavigationReason::kAnchorClick) {
+  if (request.GetClientNavigationReason() == ClientNavigationReason::kNone ||
+      request.GetClientNavigationReason() ==
+          ClientNavigationReason::kAnchorClick) {
     return false;
   }
   return true;
@@ -1026,7 +1033,7 @@ void LocalFrame::Reload(WebFrameLoadType load_type) {
   FrameLoadRequest request(
       DomWindow(), loader_.ResourceRequestForReload(
                        load_type, ClientRedirectPolicy::kClientRedirect));
-  request.SetClientRedirectReason(ClientNavigationReason::kReload);
+  request.SetClientNavigationReason(ClientNavigationReason::kReload);
   probe::FrameScheduledNavigation(this, request.GetResourceRequest().Url(),
                                   base::TimeDelta(),
                                   ClientNavigationReason::kReload);

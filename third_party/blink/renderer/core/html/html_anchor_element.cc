@@ -540,7 +540,7 @@ void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
   request.SetRequestContext(mojom::blink::RequestContextType::HYPERLINK);
   FrameLoadRequest frame_request(window, request);
   frame_request.SetNavigationPolicy(navigation_policy);
-  frame_request.SetClientRedirectReason(ClientNavigationReason::kAnchorClick);
+  frame_request.SetClientNavigationReason(ClientNavigationReason::kAnchorClick);
   frame_request.SetSourceElement(this);
   const AtomicString& target =
       frame_request.CleanNavigationTarget(GetEffectiveTarget());

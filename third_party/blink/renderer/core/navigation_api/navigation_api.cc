@@ -496,7 +496,7 @@ NavigationResult* NavigationApi::navigate(ScriptState* script_state,
   }
 
   FrameLoadRequest request(window_, ResourceRequest(completed_url));
-  request.SetClientRedirectReason(ClientNavigationReason::kFrameNavigation);
+  request.SetClientNavigationReason(ClientNavigationReason::kFrameNavigation);
 
   if (options->history() == V8NavigationHistoryBehavior::Enum::kPush) {
     LocalFrame* frame = window_->GetFrame();
@@ -562,7 +562,7 @@ NavigationResult* NavigationApi::reload(ScriptState* script_state,
   }
 
   FrameLoadRequest request(window_, ResourceRequest(window_->Url()));
-  request.SetClientRedirectReason(ClientNavigationReason::kFrameNavigation);
+  request.SetClientNavigationReason(ClientNavigationReason::kFrameNavigation);
 
   return PerformNonTraverseNavigation(script_state, request,
                                       std::move(serialized_state), options,

@@ -50,6 +50,7 @@ enum class ClientNavigationReason {
   kAnchorClick,
   kHttpHeaderRefresh,
   kFrameNavigation,
+  kInitialFrameNavigation,
   kMetaTagRefresh,
   kPageBlock,
   kReload,

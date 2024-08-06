@@ -234,11 +234,9 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
     initiator_frame_is_ad = window->GetFrame()->IsAdFrame();
     is_ad_script_in_stack = window->GetFrame()->IsAdScriptInStack();
 
-    if (frame_request.ClientRedirectReason() != ClientNavigationReason::kNone) {
-      probe::FrameRequestedNavigation(window->GetFrame(), this, url,
-                                      frame_request.ClientRedirectReason(),
-                                      kNavigationPolicyCurrentTab);
-    }
+    probe::FrameRequestedNavigation(window->GetFrame(), this, url,
+                                    frame_request.GetClientNavigationReason(),
+                                    kNavigationPolicyCurrentTab);
 
     if (!initiator_frame_token) {
       initiator_frame_token = window->GetFrame()->GetLocalFrameToken();

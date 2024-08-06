@@ -282,6 +282,8 @@ ClientRedirectPolicy CalculateClientRedirectPolicy(
     bool is_on_initial_empty_document) {
   if (is_on_initial_empty_document ||
       client_navigation_reason == ClientNavigationReason::kNone ||
+      client_navigation_reason ==
+          ClientNavigationReason::kInitialFrameNavigation ||
       client_navigation_reason == ClientNavigationReason::kFormSubmissionGet ||
       client_navigation_reason == ClientNavigationReason::kFormSubmissionPost ||
       client_navigation_reason == ClientNavigationReason::kAnchorClick) {
@@ -669,7 +671,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   // embedder figure out what to do with it. Navigations to filesystem URLs are
   // always blocked here.
   if (frame_->IsMainFrame() && origin_window &&
-      request.ClientRedirectReason() != ClientNavigationReason::kReload &&
+      request.GetClientNavigationReason() != ClientNavigationReason::kReload &&
       !frame_->Client()->AllowContentInitiatedDataUrlNavigations(
           origin_window->Url()) &&
       (url.ProtocolIs("filesystem") ||
@@ -714,7 +716,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     DCHECK(origin_window);
     document_loader_->CommitSameDocumentNavigation(
         url, frame_load_type, nullptr,
-        CalculateClientRedirectPolicy(request.ClientRedirectReason(),
+        CalculateClientRedirectPolicy(request.GetClientNavigationReason(),
                                       frame_load_type,
                                       IsOnInitialEmptyDocument()),
         resource_request.HasUserGesture(), origin_window->GetSecurityOrigin(),
@@ -864,11 +866,9 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     }
   }
 
-  if (request.ClientRedirectReason() != ClientNavigationReason::kNone) {
-    probe::FrameRequestedNavigation(frame_.Get(), frame_.Get(), url,
-                                    request.ClientRedirectReason(),
-                                    request.GetNavigationPolicy());
-  }
+  probe::FrameRequestedNavigation(frame_.Get(), frame_.Get(), url,
+                                  request.GetClientNavigationReason(),
+                                  request.GetNavigationPolicy());
 
   // TODO(crbug.com/896041): Instead of just bypassing the CSP for navigations
   // from isolated world, ideally we should enforce the isolated world CSP by
@@ -910,7 +910,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       request.GetNavigationPolicy(), frame_load_type,
       request.ForceHistoryPush(),
       CalculateClientRedirectPolicy(
-          request.ClientRedirectReason(), frame_load_type,
+          request.GetClientNavigationReason(), frame_load_type,
           IsOnInitialEmptyDocument()) == ClientRedirectPolicy::kClientRedirect,
       request.IsUnfencedTopNavigation(), request.GetTriggeringEventInfo(),
       request.Form(), should_check_main_world_csp, request.GetBlobURLToken(),

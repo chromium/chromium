@@ -144,7 +144,7 @@ void SVGAElement::DefaultEventHandler(Event& event) {
         return;
       }
       frame_request.SetNavigationPolicy(navigation_policy);
-      frame_request.SetClientRedirectReason(
+      frame_request.SetClientNavigationReason(
           ClientNavigationReason::kAnchorClick);
       frame_request.SetSourceElement(this);
       frame_request.SetTriggeringEventInfo(
