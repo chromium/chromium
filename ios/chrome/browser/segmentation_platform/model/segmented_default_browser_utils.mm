@@ -33,7 +33,11 @@ DefaultBrowserUserSegment GetDefaultBrowserUserSegment(
 
   if (shopper_result &&
       shopper_result->status == PredictionStatus::kSucceeded) {
-    if (shopper_result->ordered_labels[0] == kShoppingUserUmaName) {
+    // A shopper segment classification result is binary, `ordered_labels`
+    // should only have one label.
+    if (std::find(shopper_result->ordered_labels.begin(),
+                  shopper_result->ordered_labels.end(), kShoppingUserUmaName) !=
+        shopper_result->ordered_labels.end()) {
       return DefaultBrowserUserSegment::kShopper;
     }
   }

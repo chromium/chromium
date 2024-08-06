@@ -21,6 +21,7 @@
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/segmentation_platform/public/features.h"
+#import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
@@ -201,56 +202,56 @@
   TabResumptionMediator* _tabResumptionMediator;
 
   MagicStackCollectionViewController* _magicStackCollectionView;
+  segmentation_platform::SegmentationPlatformService* _segmentationService;
+  segmentation_platform::DeviceSwitcherResultDispatcher*
+      _deviceSwitcherResultDispatcher;
 }
 
 - (void)start {
   DCHECK(self.browser);
   DCHECK(self.NTPMetricsDelegate);
-
   if (self.started) {
     // Prevent this coordinator from being started twice in a row
     return;
   }
-
   _started = YES;
 
-  self.authService = AuthenticationServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  _segmentationService = segmentation_platform::
+      SegmentationPlatformServiceFactory::GetForBrowserState(browserState);
+  _deviceSwitcherResultDispatcher =
+      segmentation_platform::SegmentationPlatformServiceFactory::
+          GetDispatcherForBrowserState(browserState);
+  self.authService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
 
   PrefService* prefs =
-      ChromeBrowserState::FromBrowserState(self.browser->GetBrowserState())
-          ->GetPrefs();
+      ChromeBrowserState::FromBrowserState(browserState)->GetPrefs();
 
   favicon::LargeIconService* largeIconService =
-      IOSChromeLargeIconServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  LargeIconCache* cache = IOSChromeLargeIconCacheFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+      IOSChromeLargeIconServiceFactory::GetForBrowserState(browserState);
+  LargeIconCache* cache =
+      IOSChromeLargeIconCacheFactory::GetForBrowserState(browserState);
   std::unique_ptr<ntp_tiles::MostVisitedSites> mostVisitedFactory =
-      IOSMostVisitedSitesFactory::NewForBrowserState(
-          self.browser->GetBrowserState());
+      IOSMostVisitedSitesFactory::NewForBrowserState(browserState);
   ReadingListModel* readingListModel =
-      ReadingListModelFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ReadingListModelFactory::GetForBrowserState(browserState);
 
   self.contentSuggestionsMetricsRecorder =
       [[ContentSuggestionsMetricsRecorder alloc]
           initWithLocalState:GetApplicationContext()->GetLocalState()];
 
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
+      SyncServiceFactory::GetForBrowserState(browserState);
 
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
 
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      IdentityManagerFactory::GetForBrowserState(browserState);
 
   commerce::ShoppingService* shoppingService =
-      commerce::ShoppingServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      commerce::ShoppingServiceFactory::GetForBrowserState(browserState);
 
   self.contentSuggestionsMediator = [[ContentSuggestionsMediator alloc] init];
 
@@ -277,8 +278,7 @@
   _shortcutsMediator = [[ShortcutsMediator alloc]
       initWithReadingListModel:readingListModel
       featureEngagementTracker:feature_engagement::TrackerFactory::
-                                   GetForBrowserState(
-                                       self.browser->GetBrowserState())
+                                   GetForBrowserState(browserState)
                    authService:authenticationService];
   _shortcutsMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
@@ -293,8 +293,7 @@
       GetApplicationContext()->GetLocalState(), prefs);
   if (isSetupListEnabled) {
     const TemplateURL* defaultSearchURLTemplate =
-        ios::TemplateURLServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState())
+        ios::TemplateURLServiceFactory::GetForBrowserState(browserState)
             ->GetDefaultSearchProvider();
     BOOL isDefaultSearchEngine = defaultSearchURLTemplate &&
                                  defaultSearchURLTemplate->prepopulate_id() ==
@@ -336,8 +335,7 @@
   }
   if (IsSafetyCheckMagicStackEnabled()) {
     IOSChromeSafetyCheckManager* safetyCheckManager =
-        IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+        IOSChromeSafetyCheckManagerFactory::GetForBrowserState(browserState);
     _safetyCheckMediator = [[SafetyCheckMagicStackMediator alloc]
         initWithSafetyCheckManager:safetyCheckManager
                         localState:GetApplicationContext()->GetLocalState()
@@ -348,9 +346,7 @@
   }
 
   _magicStackRankingModel = [[MagicStackRankingModel alloc]
-      initWithSegmentationService:
-          segmentation_platform::SegmentationPlatformServiceFactory::
-              GetForBrowserState(self.browser->GetBrowserState())
+      initWithSegmentationService:_segmentationService
                       prefService:prefs
                        localState:GetApplicationContext()->GetLocalState()
                   moduleMediators:moduleMediators];
@@ -386,6 +382,8 @@
 }
 
 - (void)stop {
+  _segmentationService = nullptr;
+  _deviceSwitcherResultDispatcher = nullptr;
   [self.parcelTrackingMediator disconnect];
   self.parcelTrackingMediator = nil;
   [_shortcutsMediator disconnect];
@@ -799,11 +797,23 @@
   // dismiss a previous instance and then clicks the item again the
   // previous instance may not have been stopped yet due to the animation.
   [_defaultBrowserPromoCoordinator stop];
-  _defaultBrowserPromoCoordinator =
-      [[SetUpListDefaultBrowserPromoCoordinator alloc]
-          initWithBaseViewController:[self viewController]
-                             browser:self.browser
-                         application:[UIApplication sharedApplication]];
+  if (IsSegmentedDefaultBrowserPromoEnabled()) {
+    _defaultBrowserPromoCoordinator =
+        [[SetUpListDefaultBrowserPromoCoordinator alloc]
+                initWithBaseViewController:[self viewController]
+                                   browser:self.browser
+                               application:[UIApplication sharedApplication]
+                       segmentationService:_segmentationService
+            deviceSwitcherResultDispatcher:_deviceSwitcherResultDispatcher];
+  } else {
+    _defaultBrowserPromoCoordinator =
+        [[SetUpListDefaultBrowserPromoCoordinator alloc]
+                initWithBaseViewController:[self viewController]
+                                   browser:self.browser
+                               application:[UIApplication sharedApplication]
+                       segmentationService:nullptr
+            deviceSwitcherResultDispatcher:nullptr];
+  }
   _defaultBrowserPromoCoordinator.delegate = self;
   [_defaultBrowserPromoCoordinator start];
 }
@@ -820,9 +830,9 @@
         }
       };
   // If there are 0 identities, kInstantSignin requires less taps.
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   AuthenticationOperation operation =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState)
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState())
               ->HasIdentities()
           ? AuthenticationOperation::kSigninOnly
           : AuthenticationOperation::kInstantSignin;
