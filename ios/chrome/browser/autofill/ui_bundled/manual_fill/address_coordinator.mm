@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_mediator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
@@ -42,6 +43,8 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+             manualFillPlusAddressMediator:
+                 (ManualFillPlusAddressMediator*)manualFillPlusAddressMediator
                           injectionHandler:
                               (ManualFillInjectionHandler*)injectionHandler
                     showAutofillFormButton:(BOOL)showAutofillFormButton {
@@ -71,6 +74,9 @@
     _addressMediator.navigationDelegate = self;
     _addressMediator.contentInjector = super.injectionHandler;
     _addressMediator.consumer = _addressViewController;
+    if (manualFillPlusAddressMediator) {
+      manualFillPlusAddressMediator.consumer = _addressViewController;
+    }
   }
   return self;
 }

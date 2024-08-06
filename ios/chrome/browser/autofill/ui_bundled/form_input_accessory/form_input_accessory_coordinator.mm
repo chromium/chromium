@@ -325,10 +325,11 @@ const base::Feature* FetchIPHFeatureFromEnum(
 // Starts the address coordinator and displays its view controller.
 - (void)startAddressFromButton:(UIButton*)button {
   AddressCoordinator* addressCoordinator = [[AddressCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                injectionHandler:self.injectionHandler
-          showAutofillFormButton:NO];
+         initWithBaseViewController:self.baseViewController
+                            browser:self.browser
+      manualFillPlusAddressMediator:nil
+                   injectionHandler:self.injectionHandler
+             showAutofillFormButton:NO];
   addressCoordinator.delegate = self;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [addressCoordinator presentFromButton:button];

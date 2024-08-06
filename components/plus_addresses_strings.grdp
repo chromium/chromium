@@ -77,6 +77,11 @@
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_REFRESH_TEMPORARY_LABEL_CONTENT_IOS" desc="The content shown in the plus address label of the bottomsheet on iOS while a refresh is ongoing." translateable="false">
       Refreshing ...
     </message>
+    <message name="IDS_IOS_MANUAL_FALLBACK_PLUS_ADDRESS_CELL_INDEX" desc="Accessibility label for the plus address suggestions in the manual fallback view to indicate the position of the plus address suggestion in the list of plus address suggestions.">
+      {count, plural,
+           =1 {{position} of {count} plus address}
+           other {{position} of {count} plus addresses}}
+    </message>
 
     <!-- Desktop strings -->
     <message name="IDS_PLUS_ADDRESS_MODAL_TITLE" desc="Title for the experimental enterprise plus addresses feature modal" translateable="false">
