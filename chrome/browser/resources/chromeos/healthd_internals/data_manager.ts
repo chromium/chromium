@@ -156,14 +156,27 @@ export class DataManager {
 
   private removeOutdatedData(endTime: number) {
     const newStartTime = endTime - this.dataRetentionDuration;
-    for (const dataSeries of this.batteryDataSeries) {
-      dataSeries.removeOutdatedData(newStartTime);
+    const shouldUpdateChart = (dataSeriesList: DataSeries[]) => {
+      return dataSeriesList.reduce(
+          (isDataRemoved, dataSeries) =>
+              isDataRemoved || dataSeries.removeOutdatedData(newStartTime),
+          false);
+    };
+
+    if (shouldUpdateChart(this.batteryDataSeries)) {
+      this.batteryChart.updateStartTime(newStartTime);
     }
-    for (const dataSeries of this.cpuFrequencyDataSeries) {
-      dataSeries.removeOutdatedData(newStartTime);
+    if (shouldUpdateChart(this.cpuFrequencyDataSeries)) {
+      this.cpuFrequencyChart.updateStartTime(newStartTime);
     }
-    for (const dataSeries of this.thermalDataSeries) {
-      dataSeries.removeOutdatedData(newStartTime);
+    if (shouldUpdateChart(this.cpuUsageDataSeries)) {
+      this.cpuUsageChart.updateStartTime(newStartTime);
+    }
+    if (shouldUpdateChart(this.memoryDataSeries)) {
+      this.memoryChart.updateStartTime(newStartTime);
+    }
+    if (shouldUpdateChart(this.thermalDataSeries)) {
+      this.thermalChart.updateStartTime(newStartTime);
     }
   }
 

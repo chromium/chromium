@@ -50,6 +50,10 @@ export class HealthdInternalsCpuFrequencyChartElement extends PolymerElement
     }
   }
 
+  updateStartTime(startTime: number) {
+    this.$.lineChart.updateStartTime(startTime);
+  }
+
   updateVisibility(isVisible: boolean) {
     this.$.lineChart.updateVisibility(isVisible);
     this.updateHelper.updateVisibility(isVisible);

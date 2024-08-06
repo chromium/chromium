@@ -220,8 +220,9 @@ export class DataSeries {
    *
    * @param startTime - The new start time. Data points which time before this
    *                    should be removed.
+   * @returns - Whether any data points are removed.
    */
-  removeOutdatedData(startTime: number) {
+  removeOutdatedData(startTime: number): boolean {
     // Retain one hour more of data points as buffer so we only need to update
     // `dataPoints` every hour.
     const dataRetentionBuffer: number = 1 * 60 * 60 * 1000;
@@ -235,6 +236,8 @@ export class DataSeries {
       const newStartIndex: number = this.findLowerBoundPointIndex(startTime);
       assert(newStartIndex >= bufferStartIndex);
       this.dataPoints.splice(0, newStartIndex);
+      return true;
     }
+    return false;
   }
 }
