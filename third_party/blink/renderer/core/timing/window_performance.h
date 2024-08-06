@@ -76,14 +76,16 @@ class CORE_EXPORT WindowPerformance final : public Performance,
               base::TimeTicks processing_start,
               base::TimeTicks processing_end,
               std::optional<int> key_code,
-              std::optional<PointerId> pointer_id)
+              std::optional<PointerId> pointer_id,
+              bool prevent_counting_as_interaction)
         : event_timing_(event_timing),
           presentation_index_(presentation_index),
           event_timestamp_(event_timestamp),
           processing_start_(processing_start),
           processing_end_(processing_end),
           key_code_(key_code),
-          pointer_id_(pointer_id) {}
+          pointer_id_(pointer_id),
+          prevent_counting_as_interaction_(prevent_counting_as_interaction) {}
 
     static EventData* Create(PerformanceEventTiming* event_timing,
                              uint64_t presentation_index,
@@ -91,10 +93,12 @@ class CORE_EXPORT WindowPerformance final : public Performance,
                              base::TimeTicks processing_start,
                              base::TimeTicks processing_end,
                              std::optional<int> key_code,
-                             std::optional<PointerId> pointer_id) {
+                             std::optional<PointerId> pointer_id,
+                             bool prevent_counting_as_interaction) {
       return MakeGarbageCollected<EventData>(
           event_timing, presentation_index, event_timestamp, processing_start,
-          processing_end, key_code, pointer_id);
+          processing_end, key_code, pointer_id,
+          prevent_counting_as_interaction);
     }
     ~EventData() = default;
     void Trace(Visitor*) const;
@@ -107,6 +111,9 @@ class CORE_EXPORT WindowPerformance final : public Performance,
     base::TimeTicks GetProcessingEnd() const { return processing_end_; }
     std::optional<int> GetKeyCode() const { return key_code_; }
     std::optional<PointerId> GetPointerId() const { return pointer_id_; }
+    bool GetPreventCountingAsInteraction() const {
+      return prevent_counting_as_interaction_;
+    }
 
    private:
     // Event PerformanceEventTiming entry that has not been sent to observers
@@ -128,6 +135,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
     // PointerId for the event. If the event is not a pointer event, the
     // PointerId wouldn't be set.
     std::optional<PointerId> pointer_id_;
+    // Whether this event should be excluded from counting into INP metrics.
+    bool prevent_counting_as_interaction_;
   };
 
  public:
@@ -251,7 +260,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
       PerformanceEventTiming* entry,
       std::optional<int> key_code,
       std::optional<PointerId> pointer_id,
-      ResponsivenessMetrics::EventTimestamps event_timestamps);
+      ResponsivenessMetrics::EventTimestamps event_timestamps,
+      bool prevent_counting_as_interaction = false);
 
   // Notify observer that an event timing entry is ready and add it to the event
   // timing buffer if needed.

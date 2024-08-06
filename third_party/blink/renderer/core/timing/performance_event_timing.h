@@ -51,6 +51,10 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   uint32_t interactionId() const;
 
+  void SetInteractionId(uint32_t interaction_id);
+
+  bool HasKnownInteractionID();
+
   uint32_t interactionOffset() const;
 
   void SetInteractionIdAndOffset(uint32_t interaction_id,
@@ -82,7 +86,7 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   DOMHighResTimeStamp processing_end_;
   bool cancelable_;
   WeakMember<Node> target_;
-  uint32_t interaction_id_ = 0;
+  std::optional<uint32_t> interaction_id_ = std::nullopt;
   uint32_t interaction_offset_ = 0;
 
   // This is the exact (non-rounded) monotonic timestamp for presentation, which

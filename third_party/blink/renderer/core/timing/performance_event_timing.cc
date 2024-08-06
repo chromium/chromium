@@ -40,8 +40,10 @@ PerformanceEventTiming* PerformanceEventTiming::CreateFirstInputTiming(
           entry->startTime(), entry->processingStart(), entry->processingEnd(),
           entry->cancelable(), entry->target(), entry->source());
   first_input->SetDuration(entry->duration());
-  first_input->SetInteractionIdAndOffset(entry->interactionId(),
-                                         entry->interactionOffset());
+  if (entry->HasKnownInteractionID()) {
+    first_input->SetInteractionIdAndOffset(entry->interactionId(),
+                                           entry->interactionOffset());
+  }
   return first_input;
 }
 
@@ -82,7 +84,15 @@ Node* PerformanceEventTiming::target() const {
 }
 
 uint32_t PerformanceEventTiming::interactionId() const {
-  return interaction_id_;
+  return interaction_id_.value_or(0);
+}
+
+void PerformanceEventTiming::SetInteractionId(uint32_t interaction_id) {
+  interaction_id_ = interaction_id;
+}
+
+bool PerformanceEventTiming::HasKnownInteractionID() {
+  return interaction_id_.has_value();
 }
 
 uint32_t PerformanceEventTiming::interactionOffset() const {

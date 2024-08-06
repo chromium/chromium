@@ -367,6 +367,16 @@ class BLINK_COMMON_EXPORT WebInputEvent {
   // ui::EventType and not all types do convert.
   ui::EventType GetTypeAsUiEventType() const;
 
+  // For the events that are received during an active scroll/fling, we don't
+  // count them into the INP metrics. Set by the renderer compositor based on
+  // its current gesture-handling state.
+  bool GetPreventCountingAsInteraction() const {
+    return prevent_counting_as_interaction_;
+  }
+  void SetPreventCountingAsInteractionTrue() {
+    prevent_counting_as_interaction_ = true;
+  }
+
  protected:
   // The root frame scale.
   float frame_scale_ = 1;
@@ -388,6 +398,8 @@ class BLINK_COMMON_EXPORT WebInputEvent {
   int modifiers_ = kNoModifiers;
 
   ui::EventLatencyMetadata event_latency_metadata_;
+
+  bool prevent_counting_as_interaction_ = false;
 };
 
 }  // namespace blink

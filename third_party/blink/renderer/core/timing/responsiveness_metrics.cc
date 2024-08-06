@@ -276,6 +276,9 @@ void ResponsivenessMetrics::RecordDragTapOrClickUKM(
       pointer_info.GetTimeStamps().size() == 1u) {
     return;
   }
+  if (pointer_info.GetEntry()->interactionId() == 0u) {
+    return;
+  }
   RecordUserInteractionUKM(window,
                            pointer_info.IsDrag()
                                ? UserInteractionType::kDrag
@@ -293,7 +296,8 @@ void ResponsivenessMetrics::RecordDragTapOrClickUKM(
 bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     PerformanceEventTiming* entry,
     PointerId pointer_id,
-    EventTimestamps event_timestamps) {
+    EventTimestamps event_timestamps,
+    bool prevent_counting_as_interaction) {
   const AtomicString& event_type = entry->name();
   auto* pointer_info = pointer_id_entry_map_.Contains(pointer_id)
                            ? pointer_id_entry_map_.at(pointer_id)
@@ -325,6 +329,10 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
       }
       // Any existing pointerup in the map cannot fire a click.
       FlushPointerup();
+    }
+
+    if (prevent_counting_as_interaction) {
+      entry->SetInteractionId(0);
     }
     pointer_id_entry_map_.Set(
         pointer_id, PointerEntryAndInfo::Create(entry, event_timestamps));
@@ -364,16 +372,24 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     }
 
     // Generate a new interaction id.
-    UpdateInteractionId();
-    entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
-                                     GetInteractionCount());
+    // Do not generate any interaction id for the events when the scroll is
+    // active.
+    if (!RuntimeEnabledFeaturesBase::
+            EventTimingTapStopScrollNoInteractionIdEnabled() ||
+        (pointer_info && !pointer_info->GetEntry()->HasKnownInteractionID())) {
+      UpdateInteractionId();
+      entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
+                                       GetInteractionCount());
+    }
 
     if (pointer_info &&
         pointer_info->GetEntry()->name() == event_type_names::kPointerdown) {
       // Set interaction id and notify the pointer down entry.
       PerformanceEventTiming* pointer_down_entry = pointer_info->GetEntry();
-      pointer_down_entry->SetInteractionIdAndOffset(entry->interactionId(),
-                                                    entry->interactionOffset());
+      if (entry->HasKnownInteractionID()) {
+        pointer_down_entry->SetInteractionIdAndOffset(
+            entry->interactionId(), entry->interactionOffset());
+      }
       NotifyPointerdown(pointer_down_entry);
       pointer_info->GetTimeStamps().push_back(event_timestamps);
     } else {
@@ -460,7 +476,7 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
 
       // There are cases where we only see pointerdown and click, for instance
       // with contextmenu.
-      if (previous_entry->interactionId() == 0u) {
+      if (!previous_entry->HasKnownInteractionID()) {
         UpdateInteractionId();
         previous_entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
                                                   GetInteractionCount());
@@ -584,9 +600,11 @@ bool ResponsivenessMetrics::SetKeyIdAndRecordLatency(
         GetCurrentInteractionId(), GetInteractionCount());
     window_performance_->NotifyAndAddEventTimingBuffer(
         previous_entry->GetEntry());
-    entry->SetInteractionIdAndOffset(
-        previous_entry->GetEntry()->interactionId(),
-        previous_entry->GetEntry()->interactionOffset());
+    if (previous_entry->GetEntry()->HasKnownInteractionID()) {
+      entry->SetInteractionIdAndOffset(
+          previous_entry->GetEntry()->interactionId(),
+          previous_entry->GetEntry()->interactionOffset());
+    }
     RecordKeyboardUKM(window_performance_->DomWindow(),
                       {previous_entry->GetTimeStamps(), event_timestamps},
                       entry->interactionOffset());

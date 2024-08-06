@@ -164,7 +164,8 @@ class CORE_EXPORT ResponsivenessMetrics
   // PerformanceObservers and the Performance Timeline.
   bool SetPointerIdAndRecordLatency(PerformanceEventTiming* entry,
                                     PointerId pointer_id,
-                                    EventTimestamps event_timestamps);
+                                    EventTimestamps event_timestamps,
+                                    bool prevent_counting_as_interaction);
 
   // Assigns interactionId and records interaction latency for keyboard events.
   // We care about input, compositionstart, and compositionend events, so

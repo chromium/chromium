@@ -283,6 +283,12 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
                                        trace_id);
               });
 
+  // Prevent the events to be counted into INP metrics if there is an active
+  // scroll.
+  if (handling_gesture_on_impl_thread_) {
+    event->EventPointer()->SetPreventCountingAsInteractionTrue();
+  }
+
   auto event_with_callback = std::make_unique<EventWithCallback>(
       std::move(event), std::move(callback), std::move(metrics));
 

@@ -385,8 +385,10 @@ PointerEvent* PointerEventFactory::Create(
   pointer_event_init->setPersistentDeviceId(
       GetBlinkDeviceId(web_pointer_event));
 
-  return PointerEvent::Create(type, pointer_event_init,
-                              web_pointer_event.TimeStamp());
+  return PointerEvent::Create(
+      type, pointer_event_init, web_pointer_event.TimeStamp(),
+      MouseEvent::kRealOrIndistinguishable, kMenuSourceNone,
+      web_pointer_event.GetPreventCountingAsInteraction());
 }
 
 void PointerEventFactory::SetLastPosition(int pointer_id,

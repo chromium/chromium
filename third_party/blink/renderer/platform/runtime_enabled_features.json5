@@ -1635,6 +1635,13 @@
       name: "EventTimingInteractionCount",
       status: "experimental",
     },
+    {
+      // When the fling is active, a tap on the page can stop scroll. When
+      // calculating the input latency, we should exclude all the input events
+      // caused by this tap.
+      name: "EventTimingTapStopScrollNoInteractionId",
+      status: "experimental",
+    },
     // Killswitch. Remove after 1-2 stable releases.
     {
       name: "ExcludePopupMainThreadScrollingReason",

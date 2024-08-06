@@ -24,17 +24,19 @@ class CORE_EXPORT PointerEvent : public MouseEvent {
       base::TimeTicks platform_time_stamp = base::TimeTicks::Now(),
       MouseEvent::SyntheticEventType synthetic_event_type =
           kRealOrIndistinguishable,
-      WebMenuSourceType menu_source_type = kMenuSourceNone) {
+      WebMenuSourceType menu_source_type = kMenuSourceNone,
+      bool prevent_counting_as_interaction = false) {
     return MakeGarbageCollected<PointerEvent>(
         type, initializer, platform_time_stamp, synthetic_event_type,
-        menu_source_type);
+        menu_source_type, prevent_counting_as_interaction);
   }
 
   PointerEvent(const AtomicString&,
                const PointerEventInit*,
                base::TimeTicks platform_time_stamp,
                MouseEvent::SyntheticEventType synthetic_event_type,
-               WebMenuSourceType menu_source_type = kMenuSourceNone);
+               WebMenuSourceType menu_source_type = kMenuSourceNone,
+               bool prevent_counting_as_interaction = false);
 
   PointerId pointerId() const { return pointer_id_; }
   PointerId pointerIdForBindings() const;
@@ -105,6 +107,10 @@ class CORE_EXPORT PointerEvent : public MouseEvent {
 
   int32_t persistentDeviceId() const { return persistent_device_id_; }
 
+  bool GetPreventCountingAsInteraction() const {
+    return prevent_counting_as_interaction_;
+  }
+
   void Trace(Visitor*) const override;
 
  private:
@@ -131,6 +137,9 @@ class CORE_EXPORT PointerEvent : public MouseEvent {
   HeapVector<Member<PointerEvent>> predicted_events_;
 
   int32_t persistent_device_id_;
+
+  // See equivalent member in web_input_event.h.
+  bool prevent_counting_as_interaction_ = false;
 };
 
 template <>

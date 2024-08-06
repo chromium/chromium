@@ -564,9 +564,11 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
   // Add |entry| to in the order of processing_start, along with the
   // presentation promise index in order to match with corresponding
   // presentation feedback later.
-  auto* event_data =
-      EventData::Create(entry, event_presentation_promise_count_, start_time,
-                        processing_start, processing_end, key_code, pointer_id);
+  bool prevent_counting_as_interaction =
+      pointer_event ? pointer_event->GetPreventCountingAsInteraction() : false;
+  auto* event_data = EventData::Create(
+      entry, event_presentation_promise_count_, start_time, processing_start,
+      processing_end, key_code, pointer_id, prevent_counting_as_interaction);
 
   // Insert EventData object in the ascending order of the processingStart.
   auto reverse_iter =
@@ -739,8 +741,9 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
   ResponsivenessMetrics::EventTimestamps event_timestamps = {
       event_timestamp, event_queued_timestamp, commit_finish_timestamp,
       entry_end_timetick};
-  if (SetInteractionIdAndRecordLatency(entry, key_code, pointer_id,
-                                       event_timestamps)) {
+  if (SetInteractionIdAndRecordLatency(
+          entry, key_code, pointer_id, event_timestamps,
+          event_data->GetPreventCountingAsInteraction())) {
     NotifyAndAddEventTimingBuffer(entry);
   }
 
@@ -755,8 +758,10 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
           PerformanceEventTiming::CreateFirstInputTiming(entry);
     } else if (entry->name() == event_type_names::kPointerup &&
                first_pointer_down_event_timing_) {
-      first_pointer_down_event_timing_->SetInteractionIdAndOffset(
-          entry->interactionId(), entry->interactionOffset());
+      if (entry->HasKnownInteractionID()) {
+        first_pointer_down_event_timing_->SetInteractionIdAndOffset(
+            entry->interactionId(), entry->interactionOffset());
+      }
       DispatchFirstInputTiming(first_pointer_down_event_timing_);
     } else if (entry->name() == event_type_names::kPointercancel) {
       first_pointer_down_event_timing_.Clear();
@@ -869,7 +874,8 @@ bool WindowPerformance::SetInteractionIdAndRecordLatency(
     PerformanceEventTiming* entry,
     std::optional<int> key_code,
     std::optional<PointerId> pointer_id,
-    ResponsivenessMetrics::EventTimestamps event_timestamps) {
+    ResponsivenessMetrics::EventTimestamps event_timestamps,
+    bool prevent_counting_as_interaction) {
   if (!IsEventTypeForInteractionId(entry->name())) {
     return true;
   }
@@ -878,7 +884,7 @@ bool WindowPerformance::SetInteractionIdAndRecordLatency(
   // disabled.
   if (pointer_id.has_value()) {
     return responsiveness_metrics_->SetPointerIdAndRecordLatency(
-        entry, *pointer_id, event_timestamps);
+        entry, *pointer_id, event_timestamps, prevent_counting_as_interaction);
   }
   return responsiveness_metrics_->SetKeyIdAndRecordLatency(entry, key_code,
                                                            event_timestamps);
