@@ -69,8 +69,7 @@ TEST_F(PickerSearchFieldViewTest, ClearButtonHasTooltip) {
                              &key_event_handler, &metrics);
 
   EXPECT_EQ(view.clear_button_for_testing().GetTooltipText(),
-            l10n_util::GetStringUTF16(
-                IDS_PICKER_SEARCH_FIELD_CLEAR_BUTTON_TOOLTIP_TEXT));
+            l10n_util::GetStringUTF16(IDS_APP_LIST_CLEAR_SEARCHBOX));
 }
 
 TEST_F(PickerSearchFieldViewTest, BackButtonHasTooltip) {

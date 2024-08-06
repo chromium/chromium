@@ -96,7 +96,7 @@ PickerSearchFieldView::PickerSearchFieldView(
                             &PickerSearchFieldView::ClearButtonPressed,
                             base::Unretained(this)),
                         IconButton::Type::kSmallFloating, &views::kIcCloseIcon,
-                        IDS_PICKER_SEARCH_FIELD_CLEAR_BUTTON_TOOLTIP_TEXT))
+                        IDS_APP_LIST_CLEAR_SEARCHBOX))
                     .CopyAddressTo(&clear_button_)
                     .SetProperty(views::kMarginsKey, kButtonHorizontalMargin)
                     .SetVisible(false))

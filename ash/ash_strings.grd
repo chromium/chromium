@@ -7503,9 +7503,6 @@ New install
         desc="This string appears as the label of a button in a feature tour dialog. When selected, this button closes the dialog and activates the feature.">
         Get started
       </message>
-      <message name="IDS_PICKER_SEARCH_FIELD_CLEAR_BUTTON_TOOLTIP_TEXT" translateable="false" desc="Tooltip text for the button that clears all text from the Picker search field.">
-        Clear searchbox text
-      </message>
       <message name="IDS_PICKER_SEARCH_FIELD_BACK_BUTTON_TOOLTIP_TEXT" translateable="false" desc="Tooltip text for the button that goes back to the Picker zero state page.">
         Back
       </message>

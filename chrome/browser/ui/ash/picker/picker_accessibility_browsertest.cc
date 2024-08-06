@@ -314,8 +314,8 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
     view->clear_button_for_testing().RequestFocus();
   });
 
-  sm_.ExpectSpeechPattern(l10n_util::GetStringUTF8(
-      IDS_PICKER_SEARCH_FIELD_CLEAR_BUTTON_TOOLTIP_TEXT));
+  sm_.ExpectSpeechPattern(
+      l10n_util::GetStringUTF8(IDS_APP_LIST_CLEAR_SEARCHBOX));
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("Press * to activate");
   sm_.Replay();
