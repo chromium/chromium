@@ -68,6 +68,8 @@ component("display") {
     sources += [
       "mac/ca_display_link_mac.h",
       "mac/ca_display_link_mac.mm",
+      "mac/cv_display_link_mac.h",
+      "mac/cv_display_link_mac.mm",
       "mac/display_link_mac.h",
       "mac/display_link_mac.mm",
       "mac/screen_mac.mm",

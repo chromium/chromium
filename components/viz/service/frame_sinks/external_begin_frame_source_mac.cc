@@ -179,8 +179,7 @@ void ExternalBeginFrameSourceMac::StartBeginFrame() {
     // Request the callback to be called on the register thread.
     vsync_callback_mac_ = display_link_mac_->RegisterCallback(
         base::BindRepeating(&ExternalBeginFrameSourceMac::OnDisplayLinkCallback,
-                            base::Unretained(this)),
-        /*do_callback_on_register_thread=*/true);
+                            weak_ptr_factory_.GetWeakPtr()));
     if (vsync_callback_mac_) {
       // RegisterCallback succeeded.
       return;

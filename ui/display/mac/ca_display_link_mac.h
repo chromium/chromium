@@ -8,29 +8,27 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "ui/display/mac/display_link_mac.h"
 
 namespace ui {
-struct VSyncParamsMac;
+class Wrapper;
 
-// An implementation of ExternalBeginFrameSource which is driven by VSync
-// signals coming from CADisplayLink.
-class CADisplayLinkWrapper {
+class CADisplayLinkMac : public DisplayLinkMac {
  public:
-  using DisplayLinkCallback = base::RepeatingCallback<void(ui::VSyncParamsMac)>;
+  // Create a CVDisplayLinkMac for the specified display.
+  static scoped_refptr<CADisplayLinkMac> GetForDisplayOnCurrentThread(
+      CGDirectDisplayID display_id);
 
-  static std::unique_ptr<CADisplayLinkWrapper> Create(
-      CGDirectDisplayID display_id,
-      DisplayLinkCallback callback);
+  // DisplayLinkMac implementation
+  std::unique_ptr<VSyncCallbackMac> RegisterCallback(
+      VSyncCallbackMac::Callback callback) override;
 
-  ~CADisplayLinkWrapper();
-
-  void Start();
-  void Stop();
-
-  double GetRefreshRate();
+  double GetRefreshRate() const override;
   void GetRefreshIntervalRange(base::TimeDelta& min_interval,
                                base::TimeDelta& max_interval,
-                               base::TimeDelta& granularity);
+                               base::TimeDelta& granularity) const override;
+
+  void SetPreferredInterval(base::TimeDelta interval) override;
 
   // Use the same minimum, maximum and preferred frame rate for the fixed frame
   // rate rerquest. If different minimum and maximum frame rates are set, the
@@ -38,40 +36,28 @@ class CADisplayLinkWrapper {
   // other animation sources.
   void SetPreferredIntervalRange(base::TimeDelta min_interval,
                                  base::TimeDelta max_interval,
-                                 base::TimeDelta preferred_interval);
+                                 base::TimeDelta preferred_interval) override;
 
-  // CVDisplayLink callback.
-  void Step();
+  base::TimeTicks GetCurrentTime() const override;
 
  private:
-  struct ObjCState;
+  explicit CADisplayLinkMac(Wrapper* wrapper);
+  ~CADisplayLinkMac() override;
 
-  explicit CADisplayLinkWrapper(std::unique_ptr<ObjCState> objc_state);
-  CADisplayLinkWrapper(const CADisplayLinkWrapper&) = delete;
-  CADisplayLinkWrapper& operator=(const CADisplayLinkWrapper&) = delete;
+  CADisplayLinkMac(const CADisplayLinkMac&) = delete;
+  CADisplayLinkMac& operator=(const CADisplayLinkMac&) = delete;
+
+  // This is called by VSyncCallbackMac's destructor.
+  void UnregisterCallback(VSyncCallbackMac* callback);
 
   // Return a nearest refresh interval that is supported by CADisplaylink.
   base::TimeDelta AdjustedToSupportedInterval(base::TimeDelta interval);
 
-  std::unique_ptr<ObjCState> objc_state_;
+  // A single Wrapper is shared between all CADisplayLinkMac instances that have
+  // same display ID on the same thread. This is manually retained and released.
+  raw_ptr<Wrapper> wrapper_;
 
-  CGDirectDisplayID display_id_;
-
-  bool paused_ = true;
-
-  // The system can change the available range of frame rates because it factors
-  // in system policies and a person’s preferences. For example, Low Power Mode,
-  // critical thermal state, and accessibility settings can affect the system’s
-  // frame rate. The system typically provides a consistent frame rate by
-  // choosing one that’s a factor of the display’s maximum refresh rate.
-
-  // The current frame interval range set in
-  // CADisplayLink setPreferredFrameRateRange().
-  base::TimeDelta preferred_interval_;
-  base::TimeDelta max_interval_;
-  base::TimeDelta min_interval_;
-
-  DisplayLinkCallback callback_;
+  base::WeakPtrFactory<CADisplayLinkMac> weak_factory_{this};
 };
 
 }  // namespace ui
