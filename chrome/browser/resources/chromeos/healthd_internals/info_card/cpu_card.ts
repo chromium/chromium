@@ -52,7 +52,16 @@ export class HealthdInternalsCpuCardElement extends PolymerElement {
 
     const nextIdx: number = 1;
     for (let i: number = 0; i < physicalCpus.length; ++i) {
-      this.$.infoCard.updateDisplayedInfo(nextIdx + i, physicalCpus[i]);
+      this.$.infoCard.updateDisplayedInfo(nextIdx + i, {
+        'modelName': physicalCpus[i].modelName,
+        'logicalCpus': physicalCpus[i].logicalCpus.map((logicalCpu) => {
+          return {
+            'coreId': logicalCpu.coreId,
+            'currentFrequency': logicalCpu.frequency.current,
+            'maxFrequency': logicalCpu.frequency.max,
+          };
+        }),
+      });
     }
   }
 }
