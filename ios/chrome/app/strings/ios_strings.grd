@@ -5251,6 +5251,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GRID_REGULAR_TABS_TITLE" desc="The accessibility label of the Regular Tabs page (as opposed to the Incognito Tabs page) in the tab grid UI. [iOS only]">
         Open Tabs
       </message>
+      <message name="IDS_IOS_TAB_GRID_REGULAR_TABS_WITH_GROUPS_TITLE" desc="The accessibility label of the Regular Tabs page (as opposed to the Incognito Tabs page) in the tab grid UI when Tab Groups are enabled. [iOS only]">
+        Open Tabs and Tab Groups
+      </message>
       <message name="IDS_IOS_TAB_GRID_REGULAR_TABS_UNAVAILABLE_MESSAGE" desc="Message shown in the Regular Tabs page of the tab grid when the IncognitoModeAvailability enterprise policy is set to forced. [iOS only]">
         Your organization requires you to browse privately.
 <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
@@ -5292,7 +5295,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         You’ll find your tab groups here
       </message>
       <message name="IDS_IOS_TAB_GRID_TAB_GROUPS_TITLE" desc="The accessibility label of the Tab Groups page in the tab grid UI. [iOS only]">
-        Tab Groups
+        Tab Groups from all devices
       </message>
       <message name="IDS_IOS_TAB_GRID_TAB_GROUPS_UNAVAILABLE_MESSAGE" desc="Message shown in the Tab Groups page of the tab grid when the IncognitoModeAvailability enterprise policy is set to forced. [iOS only]">
         Your organization requires you to browse privately. Tab Groups aren't synced in Incognito mode.
