@@ -9,7 +9,7 @@ bundle that need to be signed, as well as providing utilities to sign them.
 import os.path
 import re
 
-from signing import commands, invoker
+from signing import commands, invoker, logger
 
 
 class InvalidLipoArchCountException(ValueError):
@@ -60,6 +60,10 @@ def _binary_architectures_offsets(binary_path):
     """
     command = ['lipo', '-detailed_info', binary_path]
     output = commands.run_command_output(command)
+
+    # Log the detailed macho info. This includes the slice sizes, which will
+    # be helpful when recalculating padding for https://crbug.com/1300598.
+    logger.info('%s', output.decode('utf-8'))
 
     # Find the architecture for a non-universal binary.
     match = re.search(rb'^Non-fat file:.+architecture:\s(.+)$', output,
