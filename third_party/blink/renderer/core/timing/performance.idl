@@ -35,7 +35,7 @@
 // should have a default value.
 [Exposed=(Window,Worker)]
 interface Performance : EventTarget {
-    [Affects=Nothing] DOMHighResTimeStamp now();
+    [Affects=Nothing, NoAllocDirectCall] DOMHighResTimeStamp now();
     readonly attribute DOMHighResTimeStamp timeOrigin;
 
     // Performance Timeline
