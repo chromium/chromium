@@ -350,7 +350,8 @@ class PendingConsentStatusMahiUiBrowserTest : public MahiUiBrowserTestBase {
   // MahiUiBrowserTestBase:
   void SetUpOnMainThread() override {
     MahiUiBrowserTestBase::SetUpOnMainThread();
-    ApplyHMRConsentStatusAndWait(chromeos::HMRConsentStatus::kPending);
+    ApplyHMRConsentStatusAndWait(
+        chromeos::HMRConsentStatus::kPendingDisclaimer);
   }
 
   base::test::ScopedFeatureList feature_list_;

@@ -120,7 +120,7 @@ TEST_F(MahiNudgeControllerTest, NudgeDoesNotShow_WhenConsentStatusSet) {
   test_magic_boost_state_.AsyncWriteHMREnabled(false);
 
   test_magic_boost_state_.AsyncWriteConsentStatus(
-      chromeos::HMRConsentStatus::kPending);
+      chromeos::HMRConsentStatus::kPendingDisclaimer);
 
   EXPECT_FALSE(IsMahiNudgeShown());
   nudge_controller()->MaybeShowNudge();

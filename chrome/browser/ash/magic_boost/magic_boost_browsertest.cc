@@ -306,7 +306,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(chromeos::HMRConsentStatus::kUnset,
                         chromeos::HMRConsentStatus::kApproved,
                         chromeos::HMRConsentStatus::kDeclined,
-                        chromeos::HMRConsentStatus::kPending)));
+                        chromeos::HMRConsentStatus::kPendingDisclaimer)));
 
 IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromReadOnlyContent) {
   EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));

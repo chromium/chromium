@@ -138,7 +138,7 @@ TEST_F(MagicBoostOptInCardTest, PrimaryButtonActions) {
   LeftClickOn(primary_button);
   EXPECT_FALSE(card_controller_.opt_in_widget_for_test());
 
-  EXPECT_EQ(chromeos::HMRConsentStatus::kPending,
+  EXPECT_EQ(chromeos::HMRConsentStatus::kPendingDisclaimer,
             mock_magic_boost_state_->hmr_consent_status());
 
   // Records the `kAcceptButtonPressed` metrics.
