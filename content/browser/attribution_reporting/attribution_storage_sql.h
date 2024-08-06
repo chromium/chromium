@@ -42,6 +42,10 @@ class TimeDelta;
 class Uuid;
 }  // namespace base
 
+namespace net {
+class SchemefulSite;
+}  // namespace net
+
 namespace sql {
 class Statement;
 }  // namespace sql
@@ -353,15 +357,9 @@ class CONTENT_EXPORT AttributionStorageSql {
   std::optional<StoredSourceData> ReadSourceToAttribute(
       StoredSource::Id source_id);
 
-  enum class ConversionCapacityStatus {
-    kHasCapacity,
-    kNoCapacity,
-    kError,
-  };
-
-  ConversionCapacityStatus CapacityForStoringReport(
-      const url::Origin& context_origin,
-      AttributionReport::Type);
+  // Returns a negative value on failure.
+  int64_t CountReportsWithDestinationSite(const net::SchemefulSite& destination,
+                                          AttributionReport::Type);
 
   // Stores the data associated with the aggregatable report, e.g. budget
   // consumed and dedup keys. The report itself will be stored in

@@ -1344,25 +1344,20 @@ int64_t AttributionStorageSql::CountActiveSourcesWithSourceOrigin(
   return statement.ColumnInt64(0);
 }
 
-AttributionStorageSql::ConversionCapacityStatus
-AttributionStorageSql::CapacityForStoringReport(
-    const url::Origin& destination_origin,
+int64_t AttributionStorageSql::CountReportsWithDestinationSite(
+    const net::SchemefulSite& destination,
     AttributionReport::Type report_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kCountReportsForDestinationSql));
-  statement.BindString(0, net::SchemefulSite(destination_origin).Serialize());
+  statement.BindString(0, destination.Serialize());
   statement.BindInt(1, SerializeReportType(report_type));
 
   if (!statement.Step()) {
-    return ConversionCapacityStatus::kError;
+    return -1;
   }
-  int64_t count = statement.ColumnInt64(0);
-  int max = delegate_->GetMaxReportsPerDestination(report_type);
-  DCHECK_GT(max, 0);
-  return count < max ? ConversionCapacityStatus::kHasCapacity
-                     : ConversionCapacityStatus::kNoCapacity;
+  return statement.ColumnInt64(0);
 }
 
 std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {

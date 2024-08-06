@@ -61,8 +61,6 @@ using ::attribution_reporting::mojom::TriggerDataMatching;
 using AggregatableResult = AttributionTrigger::AggregatableResult;
 using EventLevelResult = AttributionTrigger::EventLevelResult;
 using StoredSourceData = AttributionStorageSql::StoredSourceData;
-using ConversionCapacityStatus =
-    AttributionStorageSql::ConversionCapacityStatus;
 
 constexpr int64_t kUnsetRecordId = -1;
 
@@ -891,18 +889,16 @@ AttributionResolverImpl::MaybeCreateAggregatableAttributionReport(
     return AggregatableResult::kNoHistograms;
   }
 
-  switch (storage_.CapacityForStoringReport(
-      attribution_info.context_origin,
-      AttributionReport::Type::kAggregatableAttribution)) {
-    case ConversionCapacityStatus::kHasCapacity:
-      break;
-    case ConversionCapacityStatus::kNoCapacity:
-      max_aggregatable_reports_per_destination =
-          delegate_->GetMaxReportsPerDestination(
-              AttributionReport::Type::kAggregatableAttribution);
-      return AggregatableResult::kNoCapacityForConversionDestination;
-    case ConversionCapacityStatus::kError:
-      return AggregatableResult::kInternalError;
+  if (int64_t count = storage_.CountReportsWithDestinationSite(
+          net::SchemefulSite(attribution_info.context_origin),
+          AttributionReport::Type::kAggregatableAttribution);
+      count < 0) {
+    return AggregatableResult::kInternalError;
+  } else if (max_aggregatable_reports_per_destination =
+                 delegate_->GetMaxReportsPerDestination(
+                     AttributionReport::Type::kAggregatableAttribution);
+             count >= *max_aggregatable_reports_per_destination) {
+    return AggregatableResult::kNoCapacityForConversionDestination;
   }
 
   switch (storage_.AttributionAllowedForAttributionLimit(
@@ -1348,19 +1344,17 @@ EventLevelResult AttributionResolverImpl::MaybeStoreEventLevelReport(
           return EventLevelResult::kInternalError;
       }
 
-      switch (storage_.CapacityForStoringReport(
-          report.attribution_info().context_origin,
-          AttributionReport::Type::kEventLevel)) {
-        case ConversionCapacityStatus::kHasCapacity:
-          break;
-        case ConversionCapacityStatus::kNoCapacity:
-          max_event_level_reports_per_destination =
-              delegate_->GetMaxReportsPerDestination(
-                  AttributionReport::Type::kEventLevel);
-          return commit_and_return(
-              EventLevelResult::kNoCapacityForConversionDestination);
-        case ConversionCapacityStatus::kError:
-          return EventLevelResult::kInternalError;
+      if (int64_t count = storage_.CountReportsWithDestinationSite(
+              net::SchemefulSite(report.attribution_info().context_origin),
+              AttributionReport::Type::kEventLevel);
+          count < 0) {
+        return EventLevelResult::kInternalError;
+      } else if (max_event_level_reports_per_destination =
+                     delegate_->GetMaxReportsPerDestination(
+                         AttributionReport::Type::kEventLevel);
+                 count >= *max_event_level_reports_per_destination) {
+        return commit_and_return(
+            EventLevelResult::kNoCapacityForConversionDestination);
       }
 
       // Only increment the number of conversions associated with the source if
