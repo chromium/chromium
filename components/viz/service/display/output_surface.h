@@ -58,6 +58,18 @@ class VIZ_SERVICE_EXPORT OutputSurface {
                 // the user.
     kHardware,  // The orientation same to the hardware.
   };
+
+  // Level of DComp support. Each value implies support for the features
+  // provided by the values before it.
+  enum class DCSupportLevel {
+    // Direct composition is not supported.
+    kNone,
+    // Support for presenting |IDXGISwapChain| and |IDCompositionSurface|.
+    kDCLayers,
+    // Support for presenting |IDCompositionTexture|.
+    kDCompTexture,
+  };
+
   struct Capabilities {
     Capabilities();
     ~Capabilities();
@@ -83,7 +95,7 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     // OutputSurface's orientation mode.
     OrientationMode orientation_mode = OrientationMode::kLogic;
     // Whether this OutputSurface supports direct composition layers.
-    bool supports_dc_layers = false;
+    DCSupportLevel dc_support_level = DCSupportLevel::kNone;
     // Whether this OutputSurface should skip DrawAndSwap(). This is true for
     // the unified display on Chrome OS. All drawing is handled by the physical
     // displays so the unified display should skip that work.

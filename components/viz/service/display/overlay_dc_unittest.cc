@@ -66,9 +66,7 @@ class MockDCLayerOutputSurface : public FakeSkiaOutputSurface {
   }
 
   explicit MockDCLayerOutputSurface(scoped_refptr<ContextProvider> provider)
-      : FakeSkiaOutputSurface(std::move(provider)) {
-    capabilities_.supports_dc_layers = true;
-  }
+      : FakeSkiaOutputSurface(std::move(provider)) {}
 
   // OutputSurface implementation.
   MOCK_METHOD1(SetEnableDCLayers, void(bool));
@@ -2277,9 +2275,8 @@ TEST_F(OverlayProcessorWinStaticTest,
 
 class TestOverlayProcessorWin : public OverlayProcessorWin {
  public:
-  TestOverlayProcessorWin(OutputSurface* output_surface,
-                          int allowed_yuv_overlay_count)
-      : OverlayProcessorWin(output_surface,
+  explicit TestOverlayProcessorWin(int allowed_yuv_overlay_count)
+      : OverlayProcessorWin(OutputSurface::DCSupportLevel::kDCompTexture,
                             &debug_settings_,
                             std::make_unique<DCLayerOverlayProcessor>(
                                 allowed_yuv_overlay_count,
@@ -2293,7 +2290,7 @@ class OverlayProcessorWinTest : public OverlayProcessorTestBase {
     OverlayProcessorTestBase::SetUp();
 
     overlay_processor_ = std::make_unique<TestOverlayProcessorWin>(
-        output_surface_.get(), /*allowed_yuv_overlay_count=*/1);
+        /*allowed_yuv_overlay_count=*/1);
     overlay_processor_->SetUsingDCLayersForTesting(kDefaultRootPassId, true);
     overlay_processor_->SetViewportSize(gfx::Size(256, 256));
 

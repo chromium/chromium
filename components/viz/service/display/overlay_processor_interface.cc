@@ -106,11 +106,12 @@ OverlayProcessorInterface::CreateOverlayProcessor(
   DCHECK(capabilities.supports_surfaceless);
   return std::make_unique<OverlayProcessorMac>();
 #elif BUILDFLAG(IS_WIN)
-  if (!capabilities.supports_dc_layers)
+  if (capabilities.dc_support_level == OutputSurface::DCSupportLevel::kNone) {
     return std::make_unique<OverlayProcessorStub>();
+  }
 
   return std::make_unique<OverlayProcessorWin>(
-      output_surface, debug_settings,
+      capabilities.dc_support_level, debug_settings,
       std::make_unique<DCLayerOverlayProcessor>(
           capabilities.allowed_yuv_overlay_count));
 #elif BUILDFLAG(IS_OZONE)

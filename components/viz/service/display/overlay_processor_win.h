@@ -30,7 +30,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
     : public OverlayProcessorInterface {
  public:
   OverlayProcessorWin(
-      OutputSurface* output_surface,
+      OutputSurface::DCSupportLevel dc_support_level,
       const DebugRendererSettings* debug_settings,
       std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor);
 
@@ -194,7 +194,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
           surface_content_render_passes,
       OverlayCandidateList& candidates);
 
-  const raw_ptr<OutputSurface> output_surface_;
+  const OutputSurface::DCSupportLevel dc_support_level_;
 
   // Reference to the global viz singleton.
   const raw_ptr<const DebugRendererSettings> debug_settings_;

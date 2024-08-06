@@ -123,7 +123,10 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
           features::kDirectCompositionUnlimitedOverlays)) {
     capabilities_.allowed_yuv_overlay_count = INT_MAX;
   }
-  capabilities_.supports_dc_layers = true;
+  capabilities_.dc_support_level =
+      gl::DirectCompositionTextureSupported()
+          ? OutputSurface::DCSupportLevel::kDCompTexture
+          : OutputSurface::DCSupportLevel::kDCLayers;
   capabilities_.supports_post_sub_buffer = true;
   capabilities_.supports_delegated_ink = presenter_->SupportsDelegatedInk();
   capabilities_.pending_swap_params.max_pending_swaps = 1;

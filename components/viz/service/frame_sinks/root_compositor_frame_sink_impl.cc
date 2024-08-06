@@ -160,7 +160,8 @@ RootCompositorFrameSinkImpl::Create(
     } else {
 #if BUILDFLAG(IS_WIN)
       // ExternalBeginFrameSourceWin also uses the D3D11 device used by dcomp.
-      if (output_surface->capabilities().supports_dc_layers) {
+      if (output_surface->capabilities().dc_support_level !=
+          OutputSurface::DCSupportLevel::kNone) {
         // Vsync updates are required to update the FrameRateDecider with
         // supported refresh rates.
         wants_vsync_updates = true;

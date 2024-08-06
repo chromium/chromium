@@ -124,13 +124,13 @@ OverlayCandidateFactory::OverlayContext WindowsDelegatedOverlayContext() {
 }  // anonymous namespace
 
 OverlayProcessorWin::OverlayProcessorWin(
-    OutputSurface* output_surface,
+    OutputSurface::DCSupportLevel dc_support_level,
     const DebugRendererSettings* debug_settings,
     std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor)
-    : output_surface_(output_surface),
+    : dc_support_level_(dc_support_level),
       debug_settings_(debug_settings),
       dc_layer_overlay_processor_(std::move(dc_layer_overlay_processor)) {
-  DCHECK(output_surface_->capabilities().supports_dc_layers);
+  DCHECK_GT(dc_support_level_, OutputSurface::DCSupportLevel::kNone);
 }
 
 OverlayProcessorWin::~OverlayProcessorWin() = default;
@@ -208,7 +208,11 @@ DelegationStatus OverlayProcessorWin::ProcessOverlaysForDelegation(
     const SurfaceDamageRectList& surface_damage_rect_list_in_root_space,
     CandidateList* candidates,
     gfx::Rect* root_damage_rect) {
-  if (!features::IsDelegatedCompositingEnabled() || ForceDisableDelegation()) {
+  // Do not attempt delegated compositing if we do not support DComp textures
+  // (and therefore cannot possibly scanout quad resources) or if the feature is
+  // disabled.
+  if (dc_support_level_ < OutputSurface::DCSupportLevel::kDCompTexture ||
+      !features::IsDelegatedCompositingEnabled() || ForceDisableDelegation()) {
     return DelegationStatus::kCompositedFeatureDisabled;
   }
 

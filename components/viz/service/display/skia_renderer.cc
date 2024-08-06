@@ -2942,7 +2942,8 @@ void SkiaRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
   // compositing-overlay switch here. In addition drawing a HDR video using sRGB
   // can cancel the advantages of HDR.
   const bool supports_dc_layers =
-      output_surface_->capabilities().supports_dc_layers;
+      output_surface_->capabilities().dc_support_level !=
+      OutputSurface::DCSupportLevel::kNone;
   if (supports_dc_layers && !src_color_space.IsHDR() &&
       resource_provider()->IsOverlayCandidate(quad->y_plane_resource_id())) {
     DCHECK(
