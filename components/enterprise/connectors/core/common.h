@@ -14,17 +14,18 @@
 
 #include "base/files/file_path.h"
 #include "base/supports_user_data.h"
+#include "build/blink_buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
 #include "components/download/public/common/download_danger_type.h"
 
 namespace download {
 class DownloadItem;
 }  // namespace download
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(USE_BLINK)
 
 namespace enterprise_connectors {
 
@@ -213,13 +214,13 @@ ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
 CreateSampleCustomRuleMessage(const std::u16string& msg,
                               const std::string& url);
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
 // Extracts the custom rule message from `download_item`. The rule for that
 // message needs to have an action (WARN, BLOCK) corresponding to `danger_type`.
 std::optional<ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage>
 GetDownloadsCustomRuleMessage(const download::DownloadItem* download_item,
                               download::DownloadDangerType danger_type);
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(USE_BLINK)
 
 // Checks if |response| contains a negative malware verdict.
 bool ContainsMalwareVerdict(const ContentAnalysisResponse& response);

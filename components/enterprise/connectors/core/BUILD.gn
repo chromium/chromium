@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 
 source_set("core") {
@@ -25,6 +26,7 @@ source_set("core") {
 
   deps = [
     "//base",
+    "//build:blink_buildflags",
     "//components/enterprise/buildflags",
     "//components/enterprise/connectors",
     "//components/policy/core/browser",
@@ -35,7 +37,7 @@ source_set("core") {
     "//ui/gfx/range",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     deps += [ "//components/download/public/common:public" ]
   }
 

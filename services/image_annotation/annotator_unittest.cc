@@ -2706,12 +2706,12 @@ TEST(AnnotatorTest, CrashIfNoText) {
   std::unique_ptr<manta::AnchovyProvider> fake_provider_ptr =
       std::make_unique<FakeAnchovyProvider>(
           base::Value::Dict().Set("results", std::move(results)));
-
-  EXPECT_DEATH(RunAnchovyAnnotatorTest(std::move(fake_provider_ptr), {}), "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      RunAnchovyAnnotatorTest(std::move(fake_provider_ptr), {}), "");
 }
 
 TEST(AnnotatorTest, CrashIfNoAnchovyProvider) {
-  EXPECT_DEATH(RunAnchovyAnnotatorTest(nullptr, {}), "");
+  EXPECT_DEATH_IF_SUPPORTED(RunAnchovyAnnotatorTest(nullptr, {}), "");
 }
 
 }  // namespace image_annotation
