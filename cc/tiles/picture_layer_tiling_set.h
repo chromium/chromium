@@ -142,7 +142,8 @@ class CC_EXPORT PictureLayerTilingSet {
                             float ideal_contents_scale,
                             double current_frame_time_in_seconds,
                             const Occlusion& occlusion_in_layer_space,
-                            bool can_require_tiles_for_activation);
+                            bool can_require_tiles_for_activation,
+                            TileMemoryLimitPolicy memory_limit_policy);
 
   void GetAllPrioritizedTilesForTracing(
       std::vector<PrioritizedTile>* prioritized_tiles) const;

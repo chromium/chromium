@@ -326,7 +326,8 @@ class CC_EXPORT PictureLayerTiling {
       const gfx::Rect& soon_border_rect_in_layer_space,
       const gfx::Rect& eventually_rect_in_layer_space,
       float ideal_contents_scale,
-      const Occlusion& occlusion_in_layer_space);
+      const Occlusion& occlusion_in_layer_space,
+      TileMemoryLimitPolicy memory_limit_policy);
 
   void GetAllPrioritizedTilesForTracing(
       std::vector<PrioritizedTile>* prioritized_tiles) const;

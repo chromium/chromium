@@ -626,7 +626,8 @@ void PictureLayerTiling::ComputeTilePriorityRects(
     const gfx::Rect& soon_border_rect_in_layer_space,
     const gfx::Rect& eventually_rect_in_layer_space,
     float ideal_contents_scale,
-    const Occlusion& occlusion_in_layer_space) {
+    const Occlusion& occlusion_in_layer_space,
+    TileMemoryLimitPolicy) {
   // If we have, or had occlusions, mark the tiles as 'not done' to ensure that
   // we reiterate the tiles for rasterization.
   if (occlusion_in_layer_space.HasOcclusion() ||

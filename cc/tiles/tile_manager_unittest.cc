@@ -216,9 +216,11 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterTilePriorityQueue) {
   // Renew all of the tile priorities.
   gfx::Rect viewport(50, 50, 100, 100);
   pending_layer()->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
   active_layer()->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // Populate all tiles directly from the tilings.
   all_tiles.clear();
@@ -559,10 +561,12 @@ TEST_F(TileManagerTilePriorityQueueTest,
       gfx::AxisTransform2d(1.7f, gfx::Vector2dF()),
       active_layer()->raster_source());
 
-  pending_layer()->tilings()->UpdateTilePriorities(gfx::Rect(viewport), 1.f,
-                                                   5.0, Occlusion(), true);
-  active_layer()->tilings()->UpdateTilePriorities(gfx::Rect(viewport), 1.f, 5.0,
-                                                  Occlusion(), true);
+  pending_layer()->tilings()->UpdateTilePriorities(
+      gfx::Rect(viewport), 1.f, 5.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  active_layer()->tilings()->UpdateTilePriorities(
+      gfx::Rect(viewport), 1.f, 5.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   std::set<Tile*> all_expected_tiles;
   for (size_t i = 0; i < pending_layer()->num_tilings(); ++i) {
@@ -634,10 +638,12 @@ TEST_F(TileManagerTilePriorityQueueTest,
       gfx::AxisTransform2d(1.7f, gfx::Vector2dF()),
       active_layer()->raster_source());
 
-  pending_layer()->tilings()->UpdateTilePriorities(gfx::Rect(viewport), 1.f,
-                                                   5.0, Occlusion(), true);
-  active_layer()->tilings()->UpdateTilePriorities(gfx::Rect(viewport), 1.f, 5.0,
-                                                  Occlusion(), true);
+  pending_layer()->tilings()->UpdateTilePriorities(
+      gfx::Rect(viewport), 1.f, 5.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  active_layer()->tilings()->UpdateTilePriorities(
+      gfx::Rect(viewport), 1.f, 5.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   std::set<Tile*> all_expected_tiles;
   for (size_t i = 0; i < pending_layer()->num_tilings(); ++i) {
@@ -898,9 +904,11 @@ TEST_F(TileManagerTilePriorityQueueTest, EvictionTilePriorityQueue) {
   // Renew all of the tile priorities.
   gfx::Rect viewport(50, 50, 100, 100);
   pending_layer()->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
   active_layer()->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // Populate all tiles directly from the tilings.
   all_tiles.clear();
@@ -1099,14 +1107,18 @@ TEST_F(TileManagerTilePriorityQueueTest,
   // Renew all of the tile priorities.
   gfx::Rect viewport(layer_bounds);
   pending_layer()->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
   pending_child_layer->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   active_layer()->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
   active_child_layer->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // Populate all tiles directly from the tilings.
   all_tiles.clear();
@@ -1199,9 +1211,11 @@ TEST_F(TileManagerTilePriorityQueueTest,
   // Renew all of the tile priorities.
   gfx::Rect viewport(layer_bounds);
   pending_layer()->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
   pending_child_layer->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // Populate all tiles directly from the tilings.
   std::set<Tile*> all_pending_tiles;
@@ -1375,7 +1389,8 @@ TEST_F(TileManagerTilePriorityQueueTest,
       tiling_set->AddTiling(gfx::AxisTransform2d(), raster_source);
   tiling->set_resolution(HIGH_RESOLUTION);
 
-  tiling_set->UpdateTilePriorities(viewport, 1.0f, 1.0, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport, 1.0f, 1.0, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
   std::vector<Tile*> all_tiles = tiling->AllTilesForTesting();
   // Sanity check.
   EXPECT_EQ(3364u, all_tiles.size());
@@ -1487,9 +1502,10 @@ TEST_F(TileManagerTilePriorityQueueTest,
       tiling_set->AddTiling(gfx::AxisTransform2d(), raster_source);
   tiling->set_resolution(HIGH_RESOLUTION);
 
-  tiling_set->UpdateTilePriorities(viewport, 1.0f, 1.0, Occlusion(), true);
-  tiling_set->UpdateTilePriorities(moved_viewport, 1.0f, 2.0, Occlusion(),
-                                   true);
+  tiling_set->UpdateTilePriorities(viewport, 1.0f, 1.0, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  tiling_set->UpdateTilePriorities(moved_viewport, 1.0f, 2.0, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   const int soon_border_outset = 312;
   gfx::Rect soon_rect = moved_viewport;

@@ -536,7 +536,8 @@ bool PictureLayerTilingSet::UpdateTilePriorities(
     float ideal_contents_scale,
     double current_frame_time_in_seconds,
     const Occlusion& occlusion_in_layer_space,
-    bool can_require_tiles_for_activation) {
+    bool can_require_tiles_for_activation,
+    TileMemoryLimitPolicy memory_limit_policy) {
   StateSinceLastTilePriorityUpdate::AutoClear auto_clear_state(
       &state_since_last_tile_priority_update_);
 
@@ -555,7 +556,7 @@ bool PictureLayerTilingSet::UpdateTilePriorities(
     tiling->ComputeTilePriorityRects(
         visible_rect_in_layer_space_, skewport_in_layer_space_,
         soon_border_rect_in_layer_space_, eventually_rect_in_layer_space_,
-        ideal_contents_scale, occlusion_in_layer_space);
+        ideal_contents_scale, occlusion_in_layer_space, memory_limit_policy);
     all_tiles_done_ &= tiling->all_tiles_done();
   }
   return true;

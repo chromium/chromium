@@ -591,7 +591,7 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   SanityCheckTilingState();
 }
 
-bool PictureLayerImpl::UpdateTiles() {
+bool PictureLayerImpl::UpdateTiles(TileMemoryLimitPolicy memory_limit_policy) {
   if (!CanHaveTilings()) {
     ideal_page_scale_ = 0.f;
     ideal_device_scale_ = 0.f;
@@ -667,7 +667,8 @@ bool PictureLayerImpl::UpdateTiles() {
   bool updated = tilings_->UpdateTilePriorities(
       viewport_rect_for_tile_priority_in_content_space_,
       ideal_contents_scale_key(), current_frame_time_in_seconds,
-      occlusion_in_content_space, can_require_tiles_for_activation);
+      occlusion_in_content_space, can_require_tiles_for_activation,
+      memory_limit_policy);
   DCHECK_GT(tilings_->num_tilings(), 0u);
   SanityCheckTilingState();
   return updated;
