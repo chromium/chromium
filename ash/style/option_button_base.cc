@@ -10,6 +10,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -38,6 +39,8 @@ OptionButtonBase::OptionButtonBase(int button_width,
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
+
+  SetAndUpdateAccessibleDefaultActionVerb();
 }
 
 OptionButtonBase::~OptionButtonBase() = default;
@@ -53,7 +56,7 @@ void OptionButtonBase::SetSelected(bool selected) {
   if (delegate_) {
     delegate_->OnButtonSelected(this);
   }
-
+  SetAndUpdateAccessibleDefaultActionVerb();
   NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
                            /*send_native_event=*/true);
 }
@@ -134,11 +137,6 @@ void OptionButtonBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       selected_ ? ax::mojom::CheckedState::kTrue
                 : ax::mojom::CheckedState::kFalse;
   node_data->SetCheckedState(checked_state);
-  if (GetEnabled()) {
-    node_data->SetDefaultActionVerb(selected_
-                                        ? ax::mojom::DefaultActionVerb::kUncheck
-                                        : ax::mojom::DefaultActionVerb::kCheck);
-  }
 }
 
 SkColor OptionButtonBase::GetIconImageColor() const {
@@ -154,6 +152,12 @@ SkColor OptionButtonBase::GetIconImageColor() const {
 void OptionButtonBase::UpdateTextColor() {
   SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface);
   SetTextColorId(ButtonState::STATE_DISABLED, KColorAshTextDisabledColor);
+}
+
+void OptionButtonBase::SetAndUpdateAccessibleDefaultActionVerb() {
+  SetDefaultActionVerb(selected_ ? ax::mojom::DefaultActionVerb::kUncheck
+                                 : ax::mojom::DefaultActionVerb::kCheck);
+  UpdateAccessibleDefaultActionVerb();
 }
 
 void OptionButtonBase::SetLabelFontList(const gfx::FontList& font_list) {

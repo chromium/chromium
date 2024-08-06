@@ -23,10 +23,13 @@
 #include "ash/wm/desks/desks_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/test/widget_test.h"
@@ -270,6 +273,43 @@ TEST_F(SystemComponentsTest, CheckboxGroup) {
   EXPECT_FALSE(button_2->GetEnabled());
   EXPECT_FALSE(button_3->GetEnabled());
   EXPECT_FALSE(button_4->GetEnabled());
+}
+
+TEST_F(SystemComponentsTest, AccessibleDefaultActionVerb) {
+  std::unique_ptr<RadioButtonGroup> radio_button_group =
+      std::make_unique<RadioButtonGroup>(198);
+  auto* button = radio_button_group->AddButton(RadioButton::PressedCallback(),
+                                               u"Test Button");
+  ui::AXNodeData data;
+
+  // Enabled
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kCheck);
+
+  button->SetSelected(true);
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(),
+            ax::mojom::DefaultActionVerb::kUncheck);
+
+  button->SetSelected(false);
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kCheck);
+
+  // Disabled
+  button->SetEnabled(false);
+  button->SetSelected(true);
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(
+      data.HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
+
+  button->SetSelected(false);
+  data = ui::AXNodeData();
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(
+      data.HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
 }
 
 struct DialogTestParams {

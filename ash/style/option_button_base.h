@@ -87,6 +87,8 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
   // Update the label's color based on the enable state.
   void UpdateTextColor();
 
+  void SetAndUpdateAccessibleDefaultActionVerb();
+
   const int min_width_;
 
   const int image_label_spacing_;
