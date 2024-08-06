@@ -11556,6 +11556,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"ash-forest-feature-key", flag_descriptions::kForestKeyName,
      flag_descriptions::kForestKeyDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kForestFeatureKey, "")},
+    {"birch-weather", flag_descriptions::kBirchWeatherName,
+     flag_descriptions::kBirchWeatherDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kBirchWeather)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)

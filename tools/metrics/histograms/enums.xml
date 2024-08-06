@@ -18980,6 +18980,7 @@ from previous Chrome versions.
   <int value="-581236612" label="ConnectivityDiagnosticsWebUi:disabled"/>
   <int value="-581218894" label="TabResumptionModuleAndroid:disabled"/>
   <int value="-580897686" label="SharedHighlightingAmp:enabled"/>
+  <int value="-580051880" label="BirchWeather:disabled"/>
   <int value="-579897981" label="EnableEdgeDetection:enabled"/>
   <int value="-579656054" label="CCTResizableSideSheetForThirdParties:enabled"/>
   <int value="-579655251"
@@ -21254,6 +21255,7 @@ from previous Chrome versions.
   <int value="370926002" label="FirmwareUpdateUIV2:enabled"/>
   <int value="371268743" label="OmniboxUIExperimentVerticalMargin:disabled"/>
   <int value="371496127" label="HoldingSpaceWallpaperNudge:enabled"/>
+  <int value="372251880" label="BirchWeather:enabled"/>
   <int value="372460068" label="QuickUnlockFingerprint:disabled"/>
   <int value="373177941" label="DockedMagnifier:enabled"/>
   <int value="373193557" label="LongPressBackNewDesign:enabled"/>

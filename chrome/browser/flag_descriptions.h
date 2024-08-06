@@ -90,6 +90,9 @@ extern const char kBackgroundResourceFetchName[];
 extern const char kBackgroundResourceFetchDescription[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kBirchWeatherName[];
+extern const char kBirchWeatherDescription[];
+
 extern const char kCampaignsComponentUpdaterTestTagName[];
 extern const char kCampaignsComponentUpdaterTestTagDescription[];
 extern const char kCampaignsOverrideName[];

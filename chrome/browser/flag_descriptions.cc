@@ -99,6 +99,14 @@ const char kBackgroundResourceFetchName[] = "Background Resource Fetch";
 const char kBackgroundResourceFetchDescription[] =
     "Process resource requests in a background thread inside Blink.";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kBirchWeatherName[] = "Birch weather";
+const char kBirchWeatherDescription[] =
+    "Shows the weather suggestion chip in the birch suggestions UI. Note that "
+    "the chip only shows certain times of day, so it may not immediately "
+    "appear after enabling this feature.";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 const char kCdmStorageDatabaseName[] = "Cdm Storage Database";
 const char kCdmStorageDatabaseDescription[] =
     "Start to use the CdmStorageDatabase to store data alongside the "
