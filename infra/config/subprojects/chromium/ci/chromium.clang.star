@@ -1387,6 +1387,7 @@ ci.builder(
     builderless = False,
     cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|public",
@@ -1428,6 +1429,7 @@ ci.builder(
     builderless = False,
     cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|public",
