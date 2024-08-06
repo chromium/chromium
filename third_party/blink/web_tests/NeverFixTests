@@ -931,29 +931,6 @@ crbug.com/254753 external/wpt/css/css-images/css-image-fallbacks-and-annotations
 crbug.com/254753 external/wpt/css/css-images/css-image-fallbacks-and-annotations004.html [ Skip ]
 crbug.com/254753 external/wpt/css/css-images/css-image-fallbacks-and-annotations005.html [ Skip ]
 
-# 'writing-mode: sideways-lr' and 'sideways-rl' are not implemented.
-# Note other tests for these properties are skipped in W3CImportExpectations.
-crbug.com/680331 external/wpt/css/css-writing-modes/slr-alongside-vlr-floats.html [ Skip ]
-crbug.com/680331 external/wpt/css/css-writing-modes/srl-alongside-vrl-floats.html [ Skip ]
-crbug.com/680331 external/wpt/css/css-writing-modes/wm-propagation-body-034.html [ Skip ]
-crbug.com/680331 external/wpt/css/css-writing-modes/wm-propagation-body-035.html [ Skip ]
-crbug.com/680331 external/wpt/css/css-writing-modes/wm-propagation-body-038.html [ Skip ]
-crbug.com/680331 external/wpt/css/css-writing-modes/wm-propagation-body-039.html [ Skip ]
-crbug.com/680331 external/wpt/css/css-writing-modes/wm-propagation-body-042.html [ Skip ]
-crbug.com/680331 external/wpt/css/css-writing-modes/wm-propagation-body-043.html [ Skip ]
-crbug.com/680331 external/wpt/css/css-writing-modes/wm-propagation-body-046.html [ Skip ]
-crbug.com/680331 external/wpt/css/css-writing-modes/wm-propagation-body-047.html [ Skip ]
-crbug.com/680331 external/wpt/css/css-writing-modes/wm-propagation-body-048.html [ Skip ]
-crbug.com/680331 external/wpt/css/css-writing-modes/wm-propagation-body-049.html [ Skip ]
-crbug.com/680331 external/wpt/css/css-writing-modes/wm-propagation-body-050.html [ Skip ]
-crbug.com/680331 external/wpt/css/css-writing-modes/wm-propagation-body-051.html [ Skip ]
-crbug.com/680331 external/wpt/css/css-writing-modes/wm-propagation-body-052.html [ Skip ]
-crbug.com/680331 external/wpt/css/css-writing-modes/wm-propagation-body-053.html [ Skip ]
-crbug.com/680331 external/wpt/css/css-writing-modes/wm-propagation-body-054.html [ Skip ]
-crbug.com/680331 external/wpt/css/css-writing-modes/wm-propagation-body-055.html [ Skip ]
-crbug.com/680331 external/wpt/css/cssom-view/scrollIntoView-sideways-lr-writing-mode-and-rtl-direction.html [ Skip ]
-crbug.com/680331 external/wpt/css/cssom-view/scrollIntoView-sideways-rl-writing-mode-and-rtl-direction.html [ Skip ]
-
 # The expected results of this test are actually wrong, and the output of Blink
 # depends upon whether ng or non-ng is used. This should be fixed by adding the
 # ability for horizontal scrollbars to be dependent upon vertical scrollbars.
