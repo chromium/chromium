@@ -5,6 +5,8 @@
 #ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_TEST_UTILS_H_
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_TEST_UTILS_H_
 
+#include <string>
+
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_position.h"
 
@@ -19,6 +21,8 @@ ui::AXNodeData TextNode(int id);
 ui::AXNodeData TextNodeWithTextFromId(int id);
 ui::AXNodeData ExplicitlyEmptyTextNode(int id);
 ui::AXNodeData LinkNode(int id, std::string url);
+ui::AXNodeData GenericContainerNode(int id);
+ui::AXNodeData SuperscriptNode(int id, std::u16string text_content);
 
 }  // namespace test
 

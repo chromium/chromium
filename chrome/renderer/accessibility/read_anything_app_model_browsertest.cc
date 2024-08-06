@@ -704,9 +704,7 @@ TEST_F(ReadAnythingAppModelTest, ChangeActiveTreeWithPendingUpdates_UnknownID) {
 
   // Create an update which has no tree id.
   ui::AXTreeUpdate update;
-  ui::AXNodeData node;
-  node.id = 1;
-  node.role = ax::mojom::Role::kGenericContainer;
+  ui::AXNodeData node = test::GenericContainerNode(/* id= */ 1);
   update.nodes = {node};
   updates.push_back(update);
 
@@ -1555,13 +1553,9 @@ TEST_F(ReadAnythingAppModelTest,
 
   ui::AXNodeData static_text_node1 = test::TextNode(/* id= */ 2);
   ui::AXNodeData static_text_node2 = test::TextNode(/* id= */ 3);
-
-  ui::AXNodeData generic_container_node;
-  generic_container_node.id = 4;
-  generic_container_node.role = ax::mojom::Role::kGenericContainer;
-
+  ui::AXNodeData generic_container_node =
+      test::GenericContainerNode(/*id= */ 4);
   ui::AXNodeData static_text_child_node1 = test::TextNode(/* id= */ 5);
-
   ui::AXNodeData static_text_child_node2 = test::TextNode(/* id= */ 6);
 
   ui::AXNodeData parent_node = test::TextNode(/* id= */ 1);
@@ -1693,9 +1687,8 @@ TEST_F(ReadAnythingAppModelTest,
   SetUpdateTreeID(&update);
   ui::AXNodeData static_text_node = test::TextNode(/* id= */ 2);
 
-  ui::AXNodeData generic_container_node;
-  generic_container_node.id = 3;
-  generic_container_node.role = ax::mojom::Role::kGenericContainer;
+  ui::AXNodeData generic_container_node =
+      test::GenericContainerNode(/*id= */ 3);
   generic_container_node.AddStringAttribute(
       ax::mojom::StringAttribute::kDisplay, "block");
   ui::AXNodeData inline_node = test::TextNode(/* id= */ 4);
@@ -1733,13 +1726,9 @@ TEST_F(
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
   ui::AXNodeData static_text_node = test::TextNode(/* id= */ 2);
-
-  ui::AXNodeData generic_container_node;
-  generic_container_node.role = ax::mojom::Role::kGenericContainer;
-  generic_container_node.id = 3;
-
+  ui::AXNodeData generic_container_node =
+      test::GenericContainerNode(/* id= */ 3);
   ui::AXNodeData static_text_child_node1 = test::TextNode(/* id= */ 4);
-
   ui::AXNodeData static_text_child_node2 = test::TextNode(/* id= */ 5);
   generic_container_node.child_ids = {static_text_child_node1.id,
                                       static_text_child_node2.id};

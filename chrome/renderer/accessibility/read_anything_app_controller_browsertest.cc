@@ -2121,9 +2121,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
   // Create an update which has no tree id.
   ui::AXTreeUpdate update;
-  ui::AXNodeData generic_container_node;
-  generic_container_node.id = 1;
-  generic_container_node.role = ax::mojom::Role::kGenericContainer;
+  ui::AXNodeData generic_container_node = test::GenericContainerNode(/*id =*/1);
   update.nodes = {generic_container_node};
   updates.push_back(update);
 
@@ -2306,9 +2304,7 @@ TEST_F(ReadAnythingAppControllerTest,
   text_field_node1.id = 2;
   text_field_node1.role = ax::mojom::Role::kTextField;
 
-  ui::AXNodeData container_node;
-  container_node.id = 3;
-  container_node.role = ax::mojom::Role::kGenericContainer;
+  ui::AXNodeData container_node = test::GenericContainerNode(/*id= */ 3);
 
   ui::AXNodeData text_field_node2;
   text_field_node2.id = 4;
@@ -2980,9 +2976,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXNodeData static_text3 = test::TextNode(/* id= */ 4, sentence3);
   ui::AXNodeData static_text4 = test::TextNode(/* id= */ 12, sentence4);
 
-  ui::AXNodeData superscript;
-  superscript.id = 13;
-  superscript.role = ax::mojom::Role::kGenericContainer;
+  ui::AXNodeData superscript = test::GenericContainerNode(/* id= */ 13);
   superscript.child_ids = {static_text2.id, static_text3.id, static_text4.id};
 
   ui::AXNodeData root;
@@ -3033,8 +3027,7 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence1 = u"And I am almost there.";
   std::u16string sentence2 = u"2";
   ui::AXNodeData static_text1 = test::TextNode(/* id= */ 2, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(/* id= */ 3, sentence2);
-  static_text2.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
+  ui::AXNodeData static_text2 = test::SuperscriptNode(/* id= */ 3, sentence2);
 
   SendUpdateAndDistillNodes({static_text1, static_text2});
 
@@ -3061,8 +3054,7 @@ TEST_F(ReadAnythingAppControllerTest,
   std::u16string sentence1 = u"And I am almost there.";
   std::u16string sentence2 = u"[2]";
   ui::AXNodeData static_text1 = test::TextNode(/* id= */ 2, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(/* id= */ 3, sentence2);
-  static_text2.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
+  ui::AXNodeData static_text2 = test::SuperscriptNode(/* id= */ 3, sentence2);
 
   SendUpdateAndDistillNodes({static_text1, static_text2});
 
@@ -3096,15 +3088,9 @@ TEST_F(ReadAnythingAppControllerTest,
   test::SetUpdateTreeID(&update, id_1);
 
   ui::AXNodeData static_text1 = test::TextNode(/* id= */ 2, sentence1);
-
-  ui::AXNodeData static_text2 = test::TextNode(/* id= */ 3, sentence2);
-  static_text2.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
-
-  ui::AXNodeData static_text3 = test::TextNode(/* id= */ 4, sentence3);
-  static_text3.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
-
-  ui::AXNodeData static_text4 = test::TextNode(/* id= */ 12, sentence4);
-  static_text4.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
+  ui::AXNodeData static_text2 = test::SuperscriptNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = test::SuperscriptNode(/* id= */ 4, sentence3);
+  ui::AXNodeData static_text4 = test::SuperscriptNode(/* id= */ 12, sentence4);
 
   ui::AXNodeData superscript;
   superscript.id = 13;
@@ -3162,15 +3148,9 @@ TEST_F(ReadAnythingAppControllerTest,
   test::SetUpdateTreeID(&update, id_1);
 
   ui::AXNodeData static_text1 = test::TextNode(/* id= */ 2, sentence1);
-
-  ui::AXNodeData static_text2 = test::TextNode(/* id= */ 3, sentence2);
-  static_text2.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
-
-  ui::AXNodeData static_text3 = test::TextNode(/* id= */ 4, sentence3);
-  static_text3.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
-
-  ui::AXNodeData static_text4 = test::TextNode(/* id= */ 12, sentence4);
-  static_text4.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
+  ui::AXNodeData static_text2 = test::SuperscriptNode(/* id= */ 3, sentence2);
+  ui::AXNodeData static_text3 = test::SuperscriptNode(/* id= */ 4, sentence3);
+  ui::AXNodeData static_text4 = test::SuperscriptNode(/* id= */ 12, sentence4);
 
   ui::AXNodeData superscript;
   superscript.id = 13;

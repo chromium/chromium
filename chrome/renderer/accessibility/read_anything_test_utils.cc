@@ -64,4 +64,17 @@ ui::AXNodeData LinkNode(int id, std::string url) {
   return node;
 }
 
+ui::AXNodeData GenericContainerNode(int id) {
+  ui::AXNodeData node;
+  node.id = id;
+  node.role = ax::mojom::Role::kGenericContainer;
+  return node;
+}
+
+ui::AXNodeData SuperscriptNode(int id, std::u16string text_content) {
+  ui::AXNodeData node = TextNode(id, text_content);
+  node.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
+  return node;
+}
+
 }  // namespace test
