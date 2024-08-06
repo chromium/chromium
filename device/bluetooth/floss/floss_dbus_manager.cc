@@ -11,6 +11,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "components/device_event_log/device_event_log.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_manager.h"
@@ -33,6 +34,7 @@
 #include "device/bluetooth/floss/floss_logging_client.h"
 #include "device/bluetooth/floss/floss_manager_client.h"
 #include "device/bluetooth/floss/floss_socket_manager.h"
+#include "floss_dbus_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/floss/floss_admin_client.h"
@@ -50,6 +52,8 @@ static bool g_using_floss_dbus_manager_for_testing = false;
 
 // Wait 2s for clients to become ready before timing out.
 const int FlossDBusManager::kClientReadyTimeoutMs = 2000;
+// Wait 10s for bluetooth service to become ready before timing out.
+const int FlossDBusManager::kWaitServiceTimeoutMs = 10000;
 
 FlossDBusManager::ClientInitializer::ClientInitializer(
     base::OnceClosure on_ready,
@@ -73,20 +77,24 @@ FlossDBusManager::FlossDBusManager(dbus::Bus* bus, bool use_stubs) : bus_(bus) {
 
   CHECK(GetSystemBus()) << "Can't initialize real clients without DBus.";
 
-  dbus::MethodCall method_call(dbus::kObjectManagerInterface,
-                               dbus::kObjectManagerGetManagedObjects);
+  BLUETOOTH_LOG(ERROR) << "FlossDBusManager checking for object manager";
 
-  VLOG(1) << "FlossDBusManager checking for object manager";
-  // Sets up callbacks checking for object manager support. Object manager is
-  // registered on the root object "/"
+  // Wait for the Floss Manager to be available
   GetSystemBus()
       ->GetObjectProxy(kManagerService, dbus::ObjectPath("/"))
-      ->CallMethodWithErrorCallback(
-          &method_call, kDBusTimeoutMs,
-          base::BindOnce(&FlossDBusManager::OnObjectManagerSupported,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&FlossDBusManager::OnObjectManagerNotSupported,
+      ->WaitForServiceToBeAvailable(
+          base::BindOnce(&FlossDBusManager::OnManagerServiceAvailable,
                          weak_ptr_factory_.GetWeakPtr()));
+
+  // TODO(b/356992163):
+  // It is observed that in betty-chrome, login is blocked by the Floss
+  // initialization callback. Add a timeout to ensure that the callback
+  // will be called as a workaround.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FlossDBusManager::OnWaitServiceAvailableTimeout,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Milliseconds(kWaitServiceTimeoutMs));
 }
 
 FlossDBusManager::~FlossDBusManager() = default;
@@ -369,9 +377,47 @@ void FlossDBusManager::OnObjectManagerSupported(dbus::Response* response) {
   object_manager_->RegisterInterface(kSocketManagerInterface, this);
 }
 
+void FlossDBusManager::OnWaitServiceAvailableTimeout() {
+  BLUETOOTH_LOG(ERROR) << "Timeout to wait Floss Manager to be available.";
+  if (!object_manager_support_known_) {
+    object_manager_support_known_ = true;
+    if (object_manager_support_known_callback_) {
+      std::move(object_manager_support_known_callback_).Run();
+    }
+  }
+  return;
+}
+
+void FlossDBusManager::OnManagerServiceAvailable(bool is_available) {
+  if (!is_available) {
+    BLUETOOTH_LOG(ERROR) << "Floss Manager is not available.";
+    if (!object_manager_support_known_) {
+      object_manager_support_known_ = true;
+      if (object_manager_support_known_callback_) {
+        std::move(object_manager_support_known_callback_).Run();
+      }
+    }
+    return;
+  }
+
+  dbus::MethodCall method_call(dbus::kObjectManagerInterface,
+                               dbus::kObjectManagerGetManagedObjects);
+
+  // Sets up callbacks checking for object manager support. Object manager is
+  // registered on the root object "/"
+  GetSystemBus()
+      ->GetObjectProxy(kManagerService, dbus::ObjectPath("/"))
+      ->CallMethodWithErrorCallback(
+          &method_call, kDBusTimeoutMs,
+          base::BindOnce(&FlossDBusManager::OnObjectManagerSupported,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(&FlossDBusManager::OnObjectManagerNotSupported,
+                         weak_ptr_factory_.GetWeakPtr()));
+}
+
 void FlossDBusManager::OnObjectManagerNotSupported(
     dbus::ErrorResponse* response) {
-  DVLOG(1) << "Floss Bluetooth not supported.";
+  BLUETOOTH_LOG(ERROR) << "Floss Bluetooth not supported.";
   object_manager_supported_ = false;
 
   // Don't initialize any clients since they need ObjectManager.
