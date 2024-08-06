@@ -104,17 +104,43 @@ uint64_t DelegatedInkPointRendererGpu::GetMaximumNumberOfPointerIdsForTesting()
 }
 
 void DelegatedInkPointRendererGpu::ReportPointsDrawn() {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  // If there is a point that matches the metadata and the histogram has not yet
+  // been fired, then this is the first frame that the metadata point will be
+  // painted via the JS API.
+  if (metadata_paint_time_.has_value()) {
+    base::UmaHistogramCustomTimes(
+        "Renderer.DelegatedInkTrail.OS.TimeFromDelegatedInkToApiPaint",
+        now - metadata_paint_time_.value(), base::Milliseconds(1),
+        base::Seconds(1), 50);
+    metadata_paint_time_ = std::nullopt;
+  }
+
   if (points_to_be_drawn_.empty()) {
     return;
   }
+
   CHECK(metadata_);
-  const base::TimeTicks now = base::TimeTicks::Now();
   base::TimeTicks most_recent_timestamp = base::TimeTicks::Min();
-  for (const auto& timestamp : points_to_be_drawn_) {
+  for (const auto& point : points_to_be_drawn_) {
     UMA_HISTOGRAM_TIMES("Renderer.DelegatedInkTrail.OS.TimeToDrawPointsMillis",
-                        now - timestamp);
-    most_recent_timestamp = std::max(timestamp, most_recent_timestamp);
+                        now - point.timestamp());
+    most_recent_timestamp = std::max(point.timestamp(), most_recent_timestamp);
+
+    // Update the point's `paint_timestamp` if this is the first time it is
+    // being painted so that it can later be compared with the metadata's first
+    // paint time.
+    DelegatedInkPointRendererGpu::DelegatedInkPointTokenMap& token_map =
+        delegated_ink_points_[point.pointer_id()];
+    auto trail_point_it = token_map.find(point);
+    if (trail_point_it != token_map.end()) {
+      gfx::DelegatedInkPoint& trail_point = trail_point_it->first;
+      if (!trail_point.paint_timestamp().has_value()) {
+        trail_point.set_paint_timestamp(now);
+      }
+    }
   }
+
   CHECK_GE(most_recent_timestamp, metadata_->timestamp());
   base::UmaHistogramTimes(
       "Renderer.DelegatedInkTrail.LatencyImprovement.OS.WithoutPrediction",
@@ -174,6 +200,7 @@ void DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint(
       // altogether.
       if (point_matching_metadata.MatchesDelegatedInkMetadata(metadata.get()) &&
           token) {
+        metadata_paint_time_ = point_matching_metadata.paint_timestamp();
         bool remove_trail_points_failed = TraceEventOnFailure(
             delegated_ink_trail_->RemoveTrailPoints(token.value()),
             "DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint - "
@@ -190,8 +217,8 @@ void DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint(
           points_to_be_drawn_.erase(
               std::remove_if(points_to_be_drawn_.begin(),
                              points_to_be_drawn_.end(),
-                             [&](const base::TimeTicks& x) {
-                               return metadata->timestamp() > x;
+                             [&](const gfx::DelegatedInkPoint& x) {
+                               return metadata->timestamp() > x.timestamp();
                              }),
               points_to_be_drawn_.end());
           metadata_ = std::move(metadata);
@@ -496,7 +523,7 @@ bool DelegatedInkPointRendererGpu::DrawDelegatedInkPoint(
 
   if (point.timestamp().IsHighResolution() &&
       point.timestamp().IsConsistentAcrossProcesses()) {
-    points_to_be_drawn_.push_back(point.timestamp());
+    points_to_be_drawn_.push_back(point);
   }
   delegated_ink_points_[point.pointer_id()][point] = token;
   return true;

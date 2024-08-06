@@ -14,8 +14,10 @@
 #include "base/check_is_test.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/delegated_ink_metadata.h"
+#include "ui/gfx/delegated_ink_point.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 #include "ui/gl/dc_layer_overlay_params.h"
@@ -100,7 +102,7 @@ class GL_EXPORT DelegatedInkPointRendererGpu
     return wait_for_new_trail_to_draw_;
   }
 
-  std::vector<base::TimeTicks> PointstoBeDrawnForTesting() const {
+  std::vector<gfx::DelegatedInkPoint> PointstoBeDrawnForTesting() const {
     CHECK_IS_TEST();
     return points_to_be_drawn_;
   }
@@ -180,7 +182,11 @@ class GL_EXPORT DelegatedInkPointRendererGpu
 
   // Holds the timestamp of points added to the Delegated Ink's Trail to measure
   // the time between point creation and draw operation called.
-  std::vector<base::TimeTicks> points_to_be_drawn_;
+  std::vector<gfx::DelegatedInkPoint> points_to_be_drawn_;
+
+  // The timestamp in which a Delegated Ink point that matches the metadata was
+  // first painted.
+  std::optional<base::TimeTicks> metadata_paint_time_;
 };
 
 }  // namespace gl

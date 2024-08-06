@@ -332,6 +332,26 @@ chromium-metrics-reviews@google.com.
   <token key="Renderer" variants="DelegatedInkRenderer"/>
 </histogram>
 
+<histogram
+    name="Renderer.DelegatedInkTrail.{Renderer}.TimeFromDelegatedInkToApiPaint"
+    units="ms" expires_after="2025-08-01">
+  <owner>jonross@chromium.org</owner>
+  <owner>gastonr@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
+  <summary>
+    Time in milliseconds between the first moment a point is drawn in the screen
+    via the Delegated Ink API using the {Renderer} and the call to
+    updateInkTrailStartPoint is made. This histogram assumes that the point
+    represented by the metadata is painted in the same frame that the metadata
+    is reported in. Note that not all points received as metadata will match a
+    point in the trail. Thus, not all metadata points will generate a histogram
+    fire.
+  </summary>
+  <token key="Renderer" variants="DelegatedInkRenderer"/>
+</histogram>
+
 <histogram name="Renderer.DelegatedInkTrail.{Renderer}.TimeToDrawPointsMillis"
     units="ms" expires_after="2025-08-01">
   <owner>jonross@chromium.org</owner>
