@@ -208,14 +208,12 @@ std::vector<std::string> CursorNamesFromType(mojom::CursorType type) {
     case mojom::CursorType::kCustom:
       // kCustom is for custom image cursors. The platform cursor will be set
       // at WebCursor::GetNativeCursor().
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case mojom::CursorType::kNull:
     case mojom::CursorType::kPointer:
       return {"left_ptr"};
   }
-  NOTREACHED_IN_MIGRATION();
-  return {"left_ptr"};
+  NOTREACHED();
 }
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

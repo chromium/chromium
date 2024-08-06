@@ -9,7 +9,7 @@
 namespace ui {
 
 void TreeModel::SetTitle(TreeModelNode* node, const std::u16string& title) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::optional<size_t> TreeModel::GetIconIndex(TreeModelNode* node) {

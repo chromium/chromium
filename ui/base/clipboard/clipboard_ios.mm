@@ -451,10 +451,7 @@ void ClipboardIOS::WriteBitmap(const SkBitmap& bitmap) {
       CGColorSpaceCreateDeviceRGB());
   UIImage* image =
       skia::SkBitmapToUIImageWithColorSpace(bitmap, 1.0f, color_space.get());
-  if (!image) {
-    NOTREACHED_IN_MIGRATION() << "SkBitmapToUIImageWithColorSpace failed";
-    return;
-  }
+  CHECK(image) << "SkBitmapToUIImageWithColorSpace failed";
 
   [GetPasteboard() setImage:image];
 }

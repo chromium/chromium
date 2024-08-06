@@ -62,11 +62,8 @@ int TableModel::CompareValues(size_t row1, size_t row2, int column_id) {
   std::u16string value2 = GetText(row2, column_id);
   icu::Collator* collator = GetCollator();
 
-  if (collator)
-    return base::i18n::CompareString16WithCollator(*collator, value1, value2);
-
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  CHECK(collator);
+  return base::i18n::CompareString16WithCollator(*collator, value1, value2);
 }
 
 void TableModel::ClearCollator() {
@@ -80,10 +77,7 @@ icu::Collator* TableModel::GetCollator() {
   if (!g_collator) {
     UErrorCode create_status = U_ZERO_ERROR;
     g_collator = icu::Collator::createInstance(create_status);
-    if (!U_SUCCESS(create_status)) {
-      g_collator = nullptr;
-      NOTREACHED_IN_MIGRATION();
-    }
+    CHECK(U_SUCCESS(create_status));
   }
   return g_collator;
 }

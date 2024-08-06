@@ -92,10 +92,7 @@ class ScopedClipboard {
   bool Acquire(HWND owner) {
     const int kMaxAttemptsToOpenClipboard = 5;
 
-    if (opened_) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
-    }
+    CHECK(!opened_);
 
     // Attempt to open the clipboard, which will acquire the Windows clipboard
     // lock.  This may fail if another process currently holds this lock.
@@ -126,17 +123,14 @@ class ScopedClipboard {
   }
 
   void Release() {
-    if (opened_) {
-      // Impersonate the anonymous token during the call to CloseClipboard
-      // This prevents Windows 8+ capturing the broker's access token which
-      // could be accessed by lower-privileges chrome processes leading to
-      // a risk of EoP
-      AnonymousImpersonator impersonator;
-      ::CloseClipboard();
-      opened_ = false;
-    } else {
-      NOTREACHED_IN_MIGRATION();
-    }
+    CHECK(opened_);
+    // Impersonate the anonymous token during the call to CloseClipboard
+    // This prevents Windows 8+ capturing the broker's access token which
+    // could be accessed by lower-privileges chrome processes leading to
+    // a risk of EoP
+    AnonymousImpersonator impersonator;
+    ::CloseClipboard();
+    opened_ = false;
   }
 
  private:
@@ -386,10 +380,7 @@ void ClipboardWin::ReadText(ClipboardBuffer buffer,
                             std::u16string* result) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kText);
-  if (!result) {
-    NOTREACHED_IN_MIGRATION();
-    return;
-  }
+  CHECK(result);
 
   result->clear();
 
@@ -415,10 +406,7 @@ void ClipboardWin::ReadAsciiText(ClipboardBuffer buffer,
                                  std::string* result) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kText);
-  if (!result) {
-    NOTREACHED_IN_MIGRATION();
-    return;
-  }
+  CHECK(result);
 
   result->clear();
 
@@ -684,10 +672,7 @@ void ClipboardWin::ReadData(const ClipboardFormatType& format,
                             const DataTransferEndpoint* data_dst,
                             std::string* result) const {
   RecordRead(ClipboardFormatMetric::kData);
-  if (!result) {
-    NOTREACHED_IN_MIGRATION();
-    return;
-  }
+  CHECK(result);
 
   ScopedClipboard clipboard;
   if (!clipboard.Acquire(GetClipboardWindow()))
@@ -949,7 +934,7 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer) const {
     case 24:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   const void* bitmap_bits = reinterpret_cast<const char*>(bitmap) +
                             bitmap->bmiHeader.biSize +

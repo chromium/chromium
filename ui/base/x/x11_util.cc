@@ -553,8 +553,7 @@ UMALinuxWindowManager GetWindowManagerUMA() {
     case WM_XMONAD:
       return UMALinuxWindowManager::kXmonad;
   }
-  NOTREACHED_IN_MIGRATION();
-  return UMALinuxWindowManager::kOther;
+  NOTREACHED();
 }
 
 bool IsX11WindowFullScreen(x11::Window window) {

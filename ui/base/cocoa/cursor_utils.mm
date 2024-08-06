@@ -268,8 +268,7 @@ NSCursor* GetNativeCursor(const ui::Cursor& cursor) {
       // These cursors do not apply on Mac.
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 float GetCursorAccessibilityScaleFactor(bool force_update) {

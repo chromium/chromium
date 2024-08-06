@@ -63,8 +63,7 @@ PropertyHandler* PropertyHandler::GetParentHandler() const {
   // to return the "parent" handler. If you want to use cascading properties in
   // scenarios where there isn't a notion of a parent, just override this method
   // and return null.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 int64_t PropertyHandler::GetPropertyInternal(const void* key,

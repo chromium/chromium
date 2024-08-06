@@ -135,11 +135,9 @@ std::string TextEditCommandAuraLinux::GetCommandString() const {
     case TextEditCommand::SCROLL_TO_END_OF_DOCUMENT:
       // Scroll commands are used by Mac only
     case TextEditCommand::INVALID_COMMAND:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 }  // namespace ui

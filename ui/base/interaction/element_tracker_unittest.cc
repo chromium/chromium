@@ -808,7 +808,7 @@ TEST(ElementTrackerTest, HideDuringShowCallbackMultipleListeners) {
           ->AddElementShownInAnyContextCallback(
               e1.identifier(),
               base::BindLambdaForTesting(
-                  [&](TrackedElement* element) { NOTREACHED_IN_MIGRATION(); }));
+                  [&](TrackedElement* element) { NOTREACHED(); }));
   e1.Show();
   EXPECT_TRUE(called1);
   EXPECT_TRUE(called2);

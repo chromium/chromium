@@ -148,12 +148,7 @@ gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {
                                       orientation:UIImageOrientationUp];
     }
 
-    if (!ui_image) {
-      LOG(WARNING) << "Unable to load image with id " << resource_id;
-      NOTREACHED_IN_MIGRATION();  // Want to assert in debug mode.
-      return GetEmptyImage();
-    }
-
+    CHECK(ui_image) << "Unable to load image with id " << resource_id;
     image = gfx::Image(ui_image);
   }
 

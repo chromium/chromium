@@ -195,11 +195,8 @@ NSEvent* KeyEventForWindow(NSWindow* window, NSEvent* event) {
 
   DCHECK(event);
   NSEventType eventType = event.type;
-  if (eventType != NSEventTypeKeyDown && eventType != NSEventTypeKeyUp &&
-      eventType != NSEventTypeFlagsChanged) {
-    NOTREACHED_IN_MIGRATION();
-    return YES;  // Pretend it's been handled in an effort to limit damage.
-  }
+  CHECK(eventType == NSEventTypeKeyDown || eventType == NSEventTypeKeyUp ||
+        eventType == NSEventTypeFlagsChanged);
 
   // Sometimes, an event will be redispatched from a child window to a parent
   // window to allow the parent window a chance to handle it. In that case, fix

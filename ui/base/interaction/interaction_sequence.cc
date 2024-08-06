@@ -499,13 +499,8 @@ void InteractionSequence::NameElement(TrackedElement* element,
 
 TrackedElement* InteractionSequence::GetNamedElement(std::string_view name) {
   const auto it = named_elements_.find(std::string(name));
-  TrackedElement* result = nullptr;
-  if (it != named_elements_.end()) {
-    result = it->second.get();
-  } else {
-    NOTREACHED_IN_MIGRATION();
-  }
-  return result;
+  CHECK(it != named_elements_.end());
+  return it->second.get();
 }
 
 const TrackedElement* InteractionSequence::GetNamedElement(
@@ -675,8 +670,7 @@ void InteractionSequence::OnTriggerDuringStepTransition(
         return;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   // Barring disaster, we will immediately transition as soon as we finish
@@ -741,9 +735,8 @@ void InteractionSequence::OnElementHiddenWaitingForEvent(
       case ContextMode::kAny:
         break;
       case ContextMode::kFromPreviousStep:
-        NOTREACHED_IN_MIGRATION()
+        NOTREACHED()
             << "Context should always have been updated by this point.";
-        break;
     }
   }
 
@@ -1222,16 +1215,14 @@ ElementContext InteractionSequence::UpdateNextStepContext(
       return context();
     case ContextMode::kFromPreviousStep: {
       ElementContext current_context = context();
-      if (current_step) {
-        const ElementContext* const temp =
-            std::get_if<ElementContext>(&current_step->context);
-        DCHECK(temp)
-            << "Previous step should always have a context set at this point.";
-        if (temp)
-          current_context = *temp;
-      } else {
-        NOTREACHED_IN_MIGRATION()
-            << "Should not specify kFromPreviousStep without a previous step.";
+      CHECK(current_step)
+          << "Should not specify kFromPreviousStep without a previous step.";
+      const ElementContext* const temp =
+          std::get_if<ElementContext>(&current_step->context);
+      DCHECK(temp)
+          << "Previous step should always have a context set at this point.";
+      if (temp) {
+        current_context = *temp;
       }
       next.context = current_context;
       return current_context;

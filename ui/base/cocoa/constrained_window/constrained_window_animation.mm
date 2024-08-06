@@ -281,7 +281,7 @@ bool AreWindowServerEffectsDisabled() {
 
 - (void)setWindowStateForValue:(float)value {
   // Subclasses must override this method.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)setWindowStateForEnd {

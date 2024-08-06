@@ -414,15 +414,13 @@ bool SendMouseEventsNotifyWhenDone(MouseButton type,
     } else {
       event_type = NSEventTypeOtherMouseDown;
     }
-  } else if (type == RIGHT) {
+  } else {
+    CHECK_EQ(type, RIGHT);
     if (button_state == UP) {
       event_type = NSEventTypeRightMouseUp;
     } else {
       event_type = NSEventTypeRightMouseDown;
     }
-  } else {
-    NOTREACHED_IN_MIGRATION();
-    return false;
   }
   g_mouse_button_down[type] = button_state == DOWN;
 

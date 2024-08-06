@@ -129,8 +129,7 @@ EnumTraits<ui::mojom::TextInputType, ui::TextInputType>::ToMojom(
     case ui::TEXT_INPUT_TYPE_NULL:
       return ui::mojom::TextInputType::TYPE_NULL;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ui::mojom::TextInputType::NONE;
+  NOTREACHED();
 }
 
 #undef UI_TO_MOJO_TYPE_CASE
@@ -213,8 +212,7 @@ EnumTraits<ui::mojom::ImeTextSpanType, ui::ImeTextSpan::Type>::ToMojom(
       return ui::mojom::ImeTextSpanType::kGrammarSuggestion;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ui::mojom::ImeTextSpanType::kComposition;
+  NOTREACHED();
 }
 
 // static
@@ -239,8 +237,7 @@ bool EnumTraits<ui::mojom::ImeTextSpanType, ui::ImeTextSpan::Type>::FromMojom(
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -256,8 +253,7 @@ ui::mojom::ImeTextSpanThickness EnumTraits<
       return ui::mojom::ImeTextSpanThickness::kThick;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ui::mojom::ImeTextSpanThickness::kThin;
+  NOTREACHED();
 }
 
 // static
@@ -276,8 +272,7 @@ bool EnumTraits<ui::mojom::ImeTextSpanThickness, ui::ImeTextSpan::Thickness>::
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -298,8 +293,7 @@ ui::mojom::ImeTextSpanUnderlineStyle EnumTraits<
       return ui::mojom::ImeTextSpanUnderlineStyle::kSquiggle;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ui::mojom::ImeTextSpanUnderlineStyle::kSolid;
+  NOTREACHED();
 }
 
 // static
@@ -325,8 +319,7 @@ bool EnumTraits<ui::mojom::ImeTextSpanUnderlineStyle,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo
