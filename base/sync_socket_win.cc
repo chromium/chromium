@@ -278,6 +278,10 @@ size_t SyncSocket::Receive(span<uint8_t> buffer) {
   return count;
 }
 
+size_t SyncSocket::Receive(void* buffer, size_t length) {
+  return Receive(make_span(static_cast<uint8_t*>(buffer), length));
+}
+
 size_t SyncSocket::Peek() {
   DWORD available = 0;
   PeekNamedPipe(handle(), NULL, 0, NULL, &available, NULL);
@@ -322,6 +326,10 @@ size_t CancelableSyncSocket::Receive(span<uint8_t> buffer) {
   return CancelableFileOperation(&::ReadFile, handle(), buffer,
                                  &file_operation_, &shutdown_event_, this,
                                  INFINITE);
+}
+
+size_t CancelableSyncSocket::Receive(void* buffer, size_t length) {
+  return Receive(make_span(static_cast<uint8_t*>(buffer), length));
 }
 
 size_t CancelableSyncSocket::ReceiveWithTimeout(span<uint8_t> buffer,

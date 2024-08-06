@@ -14,8 +14,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/heap_array.h"
-#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -166,10 +164,9 @@ void InputSyncWriter::Write(const media::AudioBus* data,
   // writing. We verify that each buffer index is in sequence.
   size_t number_of_indices_available = socket_->Peek() / sizeof(uint32_t);
   if (number_of_indices_available > 0) {
-    auto indices =
-        base::HeapArray<uint32_t>::WithSize(number_of_indices_available);
-    size_t bytes_received =
-        socket_->Receive(base::as_writable_bytes(indices.as_span()));
+    auto indices = std::make_unique<uint32_t[]>(number_of_indices_available);
+    size_t bytes_received = socket_->Receive(
+        &indices[0], number_of_indices_available * sizeof(indices[0]));
     CHECK_EQ(number_of_indices_available * sizeof(indices[0]), bytes_received);
     for (size_t i = 0; i < number_of_indices_available; ++i) {
       ++next_read_buffer_index_;

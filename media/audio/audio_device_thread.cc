@@ -8,7 +8,6 @@
 #include <ostream>
 
 #include "base/check_op.h"
-#include "base/containers/span.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 
@@ -84,7 +83,7 @@ void AudioDeviceThread::ThreadMain() {
   uint32_t buffer_index = 0;
   while (true) {
     uint32_t pending_data = 0;
-    size_t bytes_read = socket_.Receive(base::byte_span_from_ref(pending_data));
+    size_t bytes_read = socket_.Receive(&pending_data, sizeof(pending_data));
     if (bytes_read != sizeof(pending_data))
       break;
 

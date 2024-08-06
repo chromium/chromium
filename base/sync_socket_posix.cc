@@ -109,6 +109,10 @@ size_t SyncSocket::Receive(span<uint8_t> buffer) {
   return 0;
 }
 
+size_t SyncSocket::Receive(void* buffer, size_t length) {
+  return Receive(make_span(static_cast<uint8_t*>(buffer), length));
+}
+
 size_t SyncSocket::ReceiveWithTimeout(span<uint8_t> buffer, TimeDelta timeout) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   CHECK_LE(buffer.size(), kMaxMessageLength);

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
@@ -221,7 +220,7 @@ void PPB_Audio_Shared::CallRun(void* self) {
 void PPB_Audio_Shared::Run() {
   int control_signal = 0;
   while (sizeof(control_signal) ==
-         socket_->Receive(base::byte_span_from_ref(control_signal))) {
+         socket_->Receive(&control_signal, sizeof(control_signal))) {
     // |buffer_index_| must track the number of Receive() calls.  See the Send()
     // call below for why this is important.
     ++buffer_index_;

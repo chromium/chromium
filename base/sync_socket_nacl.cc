@@ -39,6 +39,10 @@ size_t SyncSocket::Receive(span<uint8_t> buffer) {
   return bytes_read > 0 ? static_cast<size_t>(bytes_read) : 0;
 }
 
+size_t SyncSocket::Receive(void* buffer, size_t length) {
+  return Receive(make_span(static_cast<uint8_t*>(buffer), length));
+}
+
 size_t SyncSocket::ReceiveWithTimeout(span<uint8_t> buffer, TimeDelta timeout) {
   NOTIMPLEMENTED();
   return 0;
