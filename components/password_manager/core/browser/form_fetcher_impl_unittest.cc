@@ -37,7 +37,6 @@
 
 using base::ASCIIToUTF16;
 using signin::GaiaIdHash;
-using std::string_view;
 using testing::_;
 using testing::IsEmpty;
 using testing::Optional;

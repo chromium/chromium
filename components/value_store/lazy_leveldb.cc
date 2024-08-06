@@ -15,8 +15,6 @@
 #include "third_party/leveldatabase/src/include/leveldb/iterator.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
-using std::string_view;
-
 namespace value_store {
 
 namespace {
