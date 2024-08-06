@@ -50,7 +50,7 @@
     label="$i18n{fullResetTitle}"
     sub-label="$i18n{fullResetRowDescription}">
     <cr-button id="deleteAllButton" class="cr-row-action-button"
-        on-click="onDeleteAllClick_">
+        on-click="onDeleteAllClick_" aria-label="[[getAriaLabel_()]]">
       $i18n{fullResetDeleteAll}
     </cr-button>
 </cr-link-row>
