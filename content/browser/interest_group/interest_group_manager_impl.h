@@ -156,10 +156,6 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // navigator.joinAdInterestGroup() was invoked, and will be used for the
   // .well-known fetch if one is needed.
   //
-  // `url_loader_factory_for_keyfetch`  will  be used to pre-fetch
-  // B&A server keys if the B&A server is enabled and if this is the first
-  // joinAdInterestGroup call since browser start.
-  //
   // `report_result_only`, if true, results in calling `callback` with the
   // result of the permissions check, but not actually joining the interest
   // group, regardless of success or failure. This is used to avoid leaking
@@ -175,8 +171,6 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const net::NetworkIsolationKey& network_isolation_key,
       bool report_result_only,
       network::mojom::URLLoaderFactory& url_loader_factory,
-      scoped_refptr<network::SharedURLLoaderFactory>
-          url_loader_factory_for_keyfetch,
       AreReportingOriginsAttestedCallback attestation_callback,
       blink::mojom::AdAuctionService::JoinInterestGroupCallback callback);
 
@@ -492,7 +486,6 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // may be called synchronously if the key is already available or the
   // coordinator is not recognized.
   void GetBiddingAndAuctionServerKey(
-      scoped_refptr<network::SharedURLLoaderFactory> loader,
       std::optional<url::Origin> coordinator,
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback);
@@ -566,8 +559,6 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       blink::InterestGroup group,
       const GURL& joining_url,
       bool report_result_only,
-      scoped_refptr<network::SharedURLLoaderFactory>
-          url_loader_factory_for_keyfetch,
       AreReportingOriginsAttestedCallback attestation_callback,
       blink::mojom::AdAuctionService::JoinInterestGroupCallback callback,
       bool can_join);

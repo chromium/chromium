@@ -36,7 +36,8 @@ struct BiddingAndAuctionServerKey {
 
 // BiddingAndAuctionServerKeyFetcher manages fetching and caching of the public
 // keys for Bidding and Auction Server endpoints from each of the designated
-// Coordinators. Values are cached both in memory and in the database.
+// Coordinators with the provided `loader_factory`. Values are cached both in
+// memory and in the database.
 class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
  public:
   using BiddingAndAuctionServerKeyFetcherCallback = base::OnceCallback<void(
@@ -44,7 +45,9 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
 
   // `manager` should be the InterestGroupManagerImpl that owns this
   // BiddingAndAuctionServerKeyFetcher.
-  explicit BiddingAndAuctionServerKeyFetcher(InterestGroupManagerImpl* manager);
+  BiddingAndAuctionServerKeyFetcher(
+      InterestGroupManagerImpl* manager,
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
   ~BiddingAndAuctionServerKeyFetcher();
   // no copy
   BiddingAndAuctionServerKeyFetcher(const BiddingAndAuctionServerKeyFetcher&) =
@@ -55,16 +58,12 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
   // Fetch keys for all coordinators in kFledgeBiddingAndAuctionKeyConfig if
   // kFledgePrefetchBandAKeys and kFledgeBiddingAndAuctionServer are enabled and
   // if the keys haven't been fetched yet.
-  void MaybePrefetchKeys(
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
+  void MaybePrefetchKeys();
 
-  // GetOrFetchKey provides a key in the callback, fetching the key over the
-  // network with the provided loader_factory if necessary. If the key is
+  // GetOrFetchKey provides a key in the callback if necessary. If the key is
   // immediately available then the callback may be called synchronously.
-  void GetOrFetchKey(
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-      std::optional<url::Origin> maybe_coordinator,
-      BiddingAndAuctionServerKeyFetcherCallback callback);
+  void GetOrFetchKey(std::optional<url::Origin> maybe_coordinator,
+                     BiddingAndAuctionServerKeyFetcherCallback callback);
 
  private:
   struct PerCoordinatorFetcherState {
@@ -99,19 +98,15 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
 
   // Fetch keys for a particular coordinator, first checking if the key is
   // in the database.
-  void FetchKeys(scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-                 const url::Origin& coordinator,
+  void FetchKeys(const url::Origin& coordinator,
                  PerCoordinatorFetcherState& state,
                  BiddingAndAuctionServerKeyFetcherCallback callback);
 
   void OnFetchKeysFromDatabaseComplete(
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       const url::Origin coordinator,
       std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>> keys);
 
-  void FetchKeysFromNetwork(
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-      const url::Origin& coordinator);
+  void FetchKeysFromNetwork(const url::Origin& coordinator);
 
   // Called when the JSON blob containing the keys have been successfully
   // fetched over the network.
@@ -132,6 +127,10 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
   void FailAllCallbacks(url::Origin coordinator);
 
   bool did_prefetch_keys_ = false;
+
+  // May be referenced by the fetcher_state_map, so the loader_factory_ should
+  // be destructed last.
+  const scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
 
   base::flat_map<url::Origin, PerCoordinatorFetcherState> fetcher_state_map_;
 
