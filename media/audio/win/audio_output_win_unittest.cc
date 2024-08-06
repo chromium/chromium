@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/base_paths.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
@@ -513,7 +514,8 @@ class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
       output_buffer()->params.delay_us = delay.InMicroseconds();
       output_buffer()->params.delay_timestamp_us =
           (delay_timestamp - base::TimeTicks()).InMicroseconds();
-      uint32_t size = socket_->Receive(data_.get(), packet_size_);
+      uint32_t size = socket_->Receive(base::as_writable_bytes(
+          base::span(data_.get(), static_cast<size_t>(packet_size_))));
       ++current_packet_count_;
 
       DCHECK_EQ(static_cast<size_t>(size) % sizeof(*audio_bus_->channel(0)),
@@ -583,8 +585,9 @@ DWORD __stdcall SyncSocketThread(void* context) {
   for (int ix = 0; ix < ctx.total_packets; ++ix) {
     // Listen for a signal from the Audio Stream that it wants data. This is a
     // blocking call and will not proceed until we receive the signal.
-    if (ctx.socket->Receive(&control_signal, sizeof(control_signal)) == 0)
+    if (ctx.socket->Receive(base::byte_span_from_ref(control_signal)) == 0) {
       break;
+    }
     base::TimeDelta delay = base::Microseconds(ctx.buffer->params.delay_us);
     base::TimeTicks delay_timestamp =
         base::TimeTicks() +

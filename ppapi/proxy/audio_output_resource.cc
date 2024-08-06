@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "ipc/ipc_platform_file.h"
@@ -238,7 +239,8 @@ void AudioOutputResource::Run() {
 
   while (true) {
     int pending_data = 0;
-    size_t bytes_read = socket_->Receive(&pending_data, sizeof(pending_data));
+    size_t bytes_read =
+        socket_->Receive(base::byte_span_from_ref(pending_data));
     if (bytes_read != sizeof(pending_data)) {
       DCHECK_EQ(bytes_read, 0U);
       break;
