@@ -26,7 +26,6 @@ namespace segmentation_platform {
 class DeviceSwitcherResultDispatcher;
 }  // namespace segmentation_platform
 
-// TODO(crbug.com/40272358): refactor the class.
 // Object handling the presentation of the different bubbles tips. The class is
 // holding all the bubble presenters.
 @interface BubblePresenter : NSObject
@@ -34,29 +33,23 @@ class DeviceSwitcherResultDispatcher;
 // Initializes a BubblePresenter whose bubbles are presented on the
 // `rootViewController`.
 - (instancetype)
-    initWithDeviceSwitcherResultDispatcher:
-        (segmentation_platform::DeviceSwitcherResultDispatcher*)
-            deviceSwitcherResultDispatcher
-                    hostContentSettingsMap:(HostContentSettingsMap*)settingsMap
-                   tabStripCommandsHandler:
-                       (id<TabStripCommands>)tabStripCommandsHandler
-                                   tracker:(feature_engagement::Tracker*)
-                                               engagementTracker
-                              webStateList:(WebStateList*)webStateList
+        initWithLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
+                engagementTracker:
+                    (raw_ptr<feature_engagement::Tracker>)engagementTracker
+                     webStateList:(raw_ptr<WebStateList>)webStateList
+    overlayPresenterForWebContent:
+        (raw_ptr<OverlayPresenter>)webContentOverlayPresenter
+                    infobarBanner:(raw_ptr<OverlayPresenter>)bannerPresenter
+                     infobarModal:(raw_ptr<OverlayPresenter>)modalPresenter
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Delegate object to handle interactions.
 @property(nonatomic, weak) id<BubblePresenterDelegate> delegate;
-@property(nonatomic, weak) UIViewController* rootViewController;
-@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
-@property(nonatomic, weak) id<ToolbarCommands> toolbarCommandsHandler;
 
-// Overlay observers.
-@property(nonatomic, assign) raw_ptr<OverlayPresenter>
-    webContentOverlayPresenter;
-@property(nonatomic, assign) raw_ptr<OverlayPresenter> infobarBannerPresenter;
-@property(nonatomic, assign) raw_ptr<OverlayPresenter> infobarModalPresenter;
+// The view controller that presents the bubbles.
+@property(nonatomic, weak) UIViewController* rootViewController;
 
 // Optionally presents a bubble associated with the Discover feed's menu button.
 // The eligibility can depend on the UI hierarchy at the moment, the
@@ -72,7 +65,8 @@ class DeviceSwitcherResultDispatcher;
 // the default mode (Desktop/Mobile) of the websites. The eligibility can depend
 // on the UI hierarchy at the moment, the configuration and the display history
 // of the bubble, etc.
-- (void)presentDefaultSiteViewTipBubble;
+- (void)presentDefaultSiteViewTipBubbleWithSettingsMap:
+    (raw_ptr<HostContentSettingsMap>)settingsMap;
 
 // Optionally presents a help bubble for What's New.
 // The eligibility can depend on the UI hierarchy at the moment, the
@@ -100,28 +94,44 @@ class DeviceSwitcherResultDispatcher;
 // Optionally presents a help bubble for the share button.
 // The eligibility can depend on the UI hierarchy at the moment, the
 // configuration and the display history of the bubble, etc.
-- (void)presentShareButtonHelpBubbleIfEligible;
+- (void)presentShareButtonHelpBubbleWithDeviceSwitcherResultDispatcher:
+    (raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>)
+        deviceSwitcherResultDispatcher;
 
 // Optionally presents a bubble associated with the tab grid iph.
 // The eligibility can depend on the UI hierarchy at the moment, the
 // configuration and the display history of the bubble, etc.
-- (void)presentTabGridToolbarItemBubble;
+- (void)presentTabGridToolbarItemTipWithToolbarHandler:
+            (id<ToolbarCommands>)toolbarHandler
+                        deviceSwitcherResultDispatcher:
+                            (raw_ptr<segmentation_platform::
+                                         DeviceSwitcherResultDispatcher>)
+                                deviceSwitcherResultDispatcher;
 
 // Optionally presents a bubble associated with the new tab iph.
 // The eligibility can depend on the UI hierarchy at the moment, the
 // configuration and the display history of the bubble, etc.
-- (void)presentNewTabToolbarItemBubble;
+- (void)presentNewTabToolbarItemTipWithHandlerForToolbar:
+            (id<ToolbarCommands>)toolbarHandler
+                                             forTabStrip:(id<TabStripCommands>)
+                                                             tabStripHandler
+                          deviceSwitcherResultDispatcher:
+                              (raw_ptr<segmentation_platform::
+                                           DeviceSwitcherResultDispatcher>)
+                                  deviceSwitcherResultDispatcher;
 
-// Optionally presents a gesture IPH associated with
-// the pull-to-refresh feature.
-// The eligibility can depend on the UI hierarchy at the moment, the
+// Optionally presents a gesture IPH associated with the pull-to-refresh
+// feature. The eligibility can depend on the UI hierarchy at the moment, the
 // configuration and the display history of the bubble, etc.
-- (void)presentPullToRefreshGestureInProductHelp;
+- (void)
+    presentPullToRefreshGestureInProductHelpWithDeviceSwitcherResultDispatcher:
+        (raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>)
+            deviceSwitcherResultDispatcher;
 
-// Optionally presents a full screen IPH associated with the swipe to navigate
-// back/forward feature.
-// The eligibility can depend on the UI hierarchy at the moment, the
-// configuration and the display history of the bubble, etc.
+// Optionally presents a full screen IPH associated with the swipe to
+// navigate back/forward feature. The eligibility can depend on the UI
+// hierarchy at the moment, the configuration and the display history of
+// the bubble, etc.
 - (void)presentBackForwardSwipeGestureInProductHelp;
 
 // Optionally presents a full screen IPH associated with the swipe to navigate
@@ -142,8 +152,8 @@ class DeviceSwitcherResultDispatcher;
 // Dismisses all bubbles.
 - (void)hideAllHelpBubbles;
 
-// Stops this presenter.
-- (void)stop;
+// Stops observing all objects.
+- (void)disconnect;
 
 @end
 

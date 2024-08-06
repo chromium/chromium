@@ -27,8 +27,6 @@
   BubblePresenter* _presenter;
 }
 
-@synthesize baseViewController = _baseViewController;
-
 - (instancetype)initWithBrowser:(Browser*)browser {
   return [super initWithBaseViewController:nil browser:browser];
 }
@@ -36,40 +34,23 @@
 - (void)start {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
 
-  // TODO(crbug.com/40272358): refactor by instantiating bubble dependencies as
-  // needed.
-  segmentation_platform::DeviceSwitcherResultDispatcher*
-      deviceSwitcherResultDispatcher = nullptr;
-  if (!browserState->IsOffTheRecord()) {
-    deviceSwitcherResultDispatcher =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForBrowserState(browserState);
-  }
-  id<TabStripCommands> tabStripCommandsHandler = nil;
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    // The -startDispatching for TabStripCommands will be called at a later
-    // point for tablet only, so cannot use `HandlerForProtocol`.
-    tabStripCommandsHandler =
-        static_cast<id<TabStripCommands>>(self.browser->GetCommandDispatcher());
-  }
-  HostContentSettingsMap* settingsMap =
-      ios::HostContentSettingsMapFactory::GetForBrowserState(browserState);
   feature_engagement::Tracker* engagementTracker =
       feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+  OverlayPresenter* webContentPresenter = OverlayPresenter::FromBrowser(
+      self.browser, OverlayModality::kWebContentArea);
+  OverlayPresenter* infobarBannerPresenter = OverlayPresenter::FromBrowser(
+      self.browser, OverlayModality::kInfobarBanner);
+  OverlayPresenter* infobarModalPresenter = OverlayPresenter::FromBrowser(
+      self.browser, OverlayModality::kInfobarModal);
 
   _presenter = [[BubblePresenter alloc]
-      initWithDeviceSwitcherResultDispatcher:deviceSwitcherResultDispatcher
-                      hostContentSettingsMap:settingsMap
-                     tabStripCommandsHandler:tabStripCommandsHandler
-                                     tracker:engagementTracker
-                                webStateList:self.browser->GetWebStateList()];
-  _presenter.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
-  _presenter.webContentOverlayPresenter = OverlayPresenter::FromBrowser(
-      self.browser, OverlayModality::kWebContentArea);
-  _presenter.infobarBannerPresenter = OverlayPresenter::FromBrowser(
-      self.browser, OverlayModality::kInfobarBanner);
-  _presenter.infobarModalPresenter = OverlayPresenter::FromBrowser(
-      self.browser, OverlayModality::kInfobarModal);
+          initWithLayoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)
+                  engagementTracker:engagementTracker
+                       webStateList:self.browser->GetWebStateList()
+      overlayPresenterForWebContent:webContentPresenter
+                      infobarBanner:infobarBannerPresenter
+                       infobarModal:infobarModalPresenter];
+
   _presenter.delegate = self.bubblePresenterDelegate;
 
   [self.browser->GetCommandDispatcher()
@@ -80,57 +61,108 @@
 - (void)stop {
   [self.browser->GetCommandDispatcher()
       stopDispatchingForProtocol:@protocol(HelpCommands)];
-  [_presenter stop];
+  [_presenter hideAllHelpBubbles];
+  [_presenter disconnect];
+  _presenter = nil;
+}
+
+#pragma mark - Accessors
+
+- (UIViewController*)baseViewController {
+  return _presenter.rootViewController;
 }
 
 - (void)setBaseViewController:(UIViewController*)baseViewController {
-  _baseViewController = baseViewController;
+  CHECK(_presenter);
   _presenter.rootViewController = baseViewController;
 }
 
 #pragma mark - HelpCommands
 
 - (void)presentInProductHelpWithType:(InProductHelpType)type {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>
+      deviceSwitcherResultDispatcher = nullptr;
+  if (!browserState->IsOffTheRecord()) {
+    deviceSwitcherResultDispatcher =
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetDispatcherForBrowserState(browserState);
+  }
+  CommandDispatcher* commandDispatcher = self.browser->GetCommandDispatcher();
+
   switch (type) {
-    case InProductHelpType::kDiscoverFeedMenu:
+    case InProductHelpType::kDiscoverFeedMenu: {
       [_presenter presentDiscoverFeedMenuTipBubble];
       break;
-    case InProductHelpType::kFollowWhileBrowsing:
+    }
+    case InProductHelpType::kFollowWhileBrowsing: {
       [_presenter presentFollowWhileBrowsingTipBubble];
       break;
-    case InProductHelpType::kDefaultSiteView:
-      [_presenter presentDefaultSiteViewTipBubble];
+    }
+    case InProductHelpType::kDefaultSiteView: {
+      [_presenter presentDefaultSiteViewTipBubbleWithSettingsMap:
+                      ios::HostContentSettingsMapFactory::GetForBrowserState(
+                          browserState)];
       break;
-    case InProductHelpType::kWhatsNew:
+    }
+    case InProductHelpType::kWhatsNew: {
       [_presenter presentWhatsNewBottomToolbarBubble];
       break;
-    case InProductHelpType::kPriceNotificationsWhileBrowsing:
+    }
+    case InProductHelpType::kPriceNotificationsWhileBrowsing: {
       [_presenter presentPriceNotificationsWhileBrowsingTipBubble];
       break;
-    case InProductHelpType::kLensKeyboard:
+    }
+    case InProductHelpType::kLensKeyboard: {
       [_presenter presentLensKeyboardTipBubble];
       break;
-    case InProductHelpType::kParcelTracking:
+    }
+    case InProductHelpType::kParcelTracking: {
       [_presenter presentParcelTrackingTipBubble];
       break;
-    case InProductHelpType::kShareButton:
-      [_presenter presentShareButtonHelpBubbleIfEligible];
+    }
+    case InProductHelpType::kShareButton: {
+      [_presenter
+          presentShareButtonHelpBubbleWithDeviceSwitcherResultDispatcher:
+              deviceSwitcherResultDispatcher];
       break;
-    case InProductHelpType::kTabGridToolbarItem:
-      [_presenter presentTabGridToolbarItemBubble];
+    }
+    case InProductHelpType::kTabGridToolbarItem: {
+      id<ToolbarCommands> toolbarHandler =
+          HandlerForProtocol(commandDispatcher, ToolbarCommands);
+      [_presenter presentTabGridToolbarItemTipWithToolbarHandler:toolbarHandler
+                                  deviceSwitcherResultDispatcher:
+                                      deviceSwitcherResultDispatcher];
       break;
-    case InProductHelpType::kNewTabToolbarItem:
-      [_presenter presentNewTabToolbarItemBubble];
+    }
+    case InProductHelpType::kNewTabToolbarItem: {
+      id<ToolbarCommands> toolbarHandler =
+          HandlerForProtocol(commandDispatcher, ToolbarCommands);
+      id<TabStripCommands> tabStripHandler =
+          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+              ? HandlerForProtocol(commandDispatcher, TabStripCommands)
+              : nil;
+      [_presenter
+          presentNewTabToolbarItemTipWithHandlerForToolbar:toolbarHandler
+                                               forTabStrip:tabStripHandler
+                            deviceSwitcherResultDispatcher:
+                                deviceSwitcherResultDispatcher];
       break;
-    case InProductHelpType::kPullToRefresh:
-      [_presenter presentPullToRefreshGestureInProductHelp];
+    }
+    case InProductHelpType::kPullToRefresh: {
+      [_presenter
+          presentPullToRefreshGestureInProductHelpWithDeviceSwitcherResultDispatcher:
+              deviceSwitcherResultDispatcher];
       break;
-    case InProductHelpType::kBackForwardSwipe:
+    }
+    case InProductHelpType::kBackForwardSwipe: {
       [_presenter presentBackForwardSwipeGestureInProductHelp];
       break;
-    case InProductHelpType::kToolbarSwipe:
+    }
+    case InProductHelpType::kToolbarSwipe: {
       [_presenter presentToolbarSwipeGestureInProductHelp];
       break;
+    }
   }
 }
 
