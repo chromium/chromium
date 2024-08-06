@@ -42,6 +42,7 @@ source_set("tab_groups") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:items",
+    "//ios/chrome/browser/ui/tab_switcher:tab_group_confirmation",
     "//ios/chrome/browser/ui/tab_switcher:utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_activity_observer",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_idle_status_handler",

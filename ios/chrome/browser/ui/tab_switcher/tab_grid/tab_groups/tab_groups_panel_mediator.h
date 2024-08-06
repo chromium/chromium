@@ -11,6 +11,9 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mutator.h"
 
+namespace base {
+class Uuid;
+}
 class BrowserList;
 class FaviconLoader;
 @protocol GridToolbarsMutator;
@@ -53,6 +56,9 @@ class TabGroupSyncService;
 // Delegate handling the Tab Grid modifications.
 @property(nonatomic, weak) id<TabGridToolbarsMainTabGridDelegate>
     toolbarTabGridDelegate;
+
+// Deletes a synced group for `syncID`.
+- (void)deleteSyncedTabGroup:(const base::Uuid&)syncID;
 
 // Disconnects the mediator.
 - (void)disconnect;

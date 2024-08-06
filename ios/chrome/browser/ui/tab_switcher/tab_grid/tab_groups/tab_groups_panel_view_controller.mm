@@ -406,7 +406,8 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
   __weak TabGroupsPanelViewController* weakSelf = self;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                  [weakSelf.mutator deleteTabGroupsPanelItem:cell.item];
+                  [weakSelf.mutator deleteTabGroupsPanelItem:cell.item
+                                                  sourceView:cell];
                 }]];
 
   UIContextMenuActionProvider actionProvider =

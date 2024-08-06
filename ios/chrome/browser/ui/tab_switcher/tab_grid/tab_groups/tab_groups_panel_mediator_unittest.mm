@@ -503,7 +503,7 @@ TEST_F(TabGroupsPanelMediatorTest, DeleteRemoteGroup) {
 
   TabGroupsPanelItem* item = [[TabGroupsPanelItem alloc] init];
   item.savedTabGroupID = group.saved_guid();
-  [mediator deleteTabGroupsPanelItem:item];
+  [mediator deleteSyncedTabGroup:item.savedTabGroupID];
 
   EXPECT_FALSE(sync_service->GetGroup(group.saved_guid()).has_value());
 }
@@ -541,7 +541,7 @@ TEST_F(TabGroupsPanelMediatorTest, DeleteLocalGroup) {
 
   TabGroupsPanelItem* item = [[TabGroupsPanelItem alloc] init];
   item.savedTabGroupID = group.saved_guid();
-  [mediator deleteTabGroupsPanelItem:item];
+  [mediator deleteSyncedTabGroup:item.savedTabGroupID];
 
   // Check if the number of groups and tabs is 0.
   EXPECT_EQ(0u, browser_->GetWebStateList()->GetGroups().size());

@@ -129,6 +129,26 @@ NSString* CreationText(base::Time creation_date) {
   }
 }
 
+- (void)deleteSyncedTabGroup:(const base::Uuid&)syncID {
+  const auto group = _tabGroupSyncService->GetGroup(syncID);
+  if (!group) {
+    return;
+  }
+
+  LocalTabGroupInfo tabGroupInfo = GetLocalTabGroupInfo(_browserList, *group);
+  if (tabGroupInfo.tab_group) {
+    // Delete the group and tabs in the group locally. It automatically updates
+    // the tab group sync service.
+    CloseAllWebStatesInGroup(*tabGroupInfo.web_state_list,
+                             tabGroupInfo.tab_group,
+                             WebStateList::CLOSE_USER_ACTION);
+  } else {
+    // The group doesn't exist locally. Delete the group from the tab group
+    // sync service.
+    _tabGroupSyncService->RemoveGroup(syncID);
+  }
+}
+
 - (void)disconnect {
   _consumer = nil;
   _scopedSyncServiceObservation.reset();
@@ -246,24 +266,11 @@ NSString* CreationText(base::Time creation_date) {
                     openGroupWithSyncID:item.savedTabGroupID];
 }
 
-- (void)deleteTabGroupsPanelItem:(TabGroupsPanelItem*)item {
-  const auto group = _tabGroupSyncService->GetGroup(item.savedTabGroupID);
-  if (!group) {
-    return;
-  }
-
-  LocalTabGroupInfo tabGroupInfo = GetLocalTabGroupInfo(_browserList, *group);
-  if (tabGroupInfo.tab_group) {
-    // Delete the group and tabs in the group locally. It automatically updates
-    // the tab group sync service.
-    CloseAllWebStatesInGroup(*tabGroupInfo.web_state_list,
-                             tabGroupInfo.tab_group,
-                             WebStateList::CLOSE_USER_ACTION);
-  } else {
-    // The group doesn't exist locally. Delete the group from the tab group sync
-    // service.
-    _tabGroupSyncService->RemoveGroup(item.savedTabGroupID);
-  }
+- (void)deleteTabGroupsPanelItem:(TabGroupsPanelItem*)item
+                      sourceView:(UIView*)sourceView {
+  [self.delegate tabGroupsPanelMediator:self
+       showDeleteConfirmationWithSyncID:item.savedTabGroupID
+                             sourceView:sourceView];
 }
 
 #pragma mark TabGroupSyncServiceObserverDelegate

@@ -19,6 +19,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_action_type.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_confirmation_coordinator.h"
 
 @interface TabGroupsPanelCoordinator () <TabGroupsPanelMediatorDelegate>
 @end
@@ -30,6 +32,9 @@
   __weak id<TabGridToolbarsMainTabGridDelegate> _toolbarTabGridDelegate;
   // Delegate that handles the screen when the Tab Groups panel is disabled.
   __weak id<DisabledGridViewControllerDelegate> _disabledViewControllerDelegate;
+  // The coordinator to handle the confirmation dialog for the action taken for
+  // a tab group.
+  TabGroupConfirmationCoordinator* _tabGroupConfirmationCoordinator;
 }
 
 - (instancetype)
@@ -101,6 +106,10 @@
 - (void)stop {
   [super stop];
 
+  if (_tabGroupConfirmationCoordinator) {
+    [_tabGroupConfirmationCoordinator stop];
+    _tabGroupConfirmationCoordinator = nil;
+  }
   [_mediator disconnect];
   _mediator.toolbarsMutator = nil;
   _mediator.toolbarTabGridDelegate = nil;
@@ -122,6 +131,31 @@
   tabGroupSyncService->OpenTabGroup(
       syncID,
       std::make_unique<tab_groups::IOSTabGroupActionContext>(self.browser));
+}
+
+- (void)tabGroupsPanelMediator:(TabGroupsPanelMediator*)tabGroupsPanelMediator
+    showDeleteConfirmationWithSyncID:(const base::Uuid)syncID
+                          sourceView:(UIView*)sourceView {
+  _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                      actionType:TabGroupActionType::kDeleteTabGroup
+                      sourceView:sourceView];
+  __weak TabGroupsPanelCoordinator* weakSelf = self;
+  _tabGroupConfirmationCoordinator.action = ^{
+    [weakSelf deleteSyncedTabGroup:syncID];
+  };
+
+  [_tabGroupConfirmationCoordinator start];
+}
+
+#pragma mark - Private
+
+// Deletes a synced tab group and dismisses the confirmation coordinator.
+- (void)deleteSyncedTabGroup:(const base::Uuid&)syncID {
+  [_mediator deleteSyncedTabGroup:syncID];
+  [_tabGroupConfirmationCoordinator stop];
+  _tabGroupConfirmationCoordinator = nil;
 }
 
 @end
