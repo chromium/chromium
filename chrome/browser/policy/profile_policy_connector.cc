@@ -731,6 +731,11 @@ void ProfilePolicyConnector::RevertUseLocalTestPolicyProvider() {
   }
 }
 
+bool ProfilePolicyConnector::IsUsingLocalTestPolicyProvider() const {
+  return local_test_policy_provider_ &&
+         local_test_policy_provider_->is_active();
+}
+
 void ProfilePolicyConnector::RecordAffiliationMetrics() {
   auto* management_service = ManagementServiceFactory::GetForPlatform();
   const PolicyMap& chrome_policies = policy_service()->GetPolicies(

@@ -40,7 +40,7 @@ policy::PolicyMap GetPolicyMapWithEntry(base::Value::Dict* policy_dict) {
   base::Value value = policy_dict->Find(kValue)->Clone();
 
   policy::PolicyMap::Entry entry(level, scope, source, std::move(value),
-                                 nullptr);
+                                 nullptr, policy::GetChromePolicyDetails(name));
 
   policy::PolicyMap entry_map = policy::PolicyMap();
   entry_map.Set(name, std::move(entry));

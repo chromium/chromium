@@ -105,6 +105,9 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
   // Reverts the effects of UseLocalTestPolicyProvider.
   void RevertUseLocalTestPolicyProvider();
 
+  // Returns true if policies from chrome://policy/test are applied.
+  bool IsUsingLocalTestPolicyProvider() const;
+
  private:
   void DoPostInit();
   void ReportChromePolicyInitialized();

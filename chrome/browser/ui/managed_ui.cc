@@ -480,6 +480,10 @@ std::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
   if (managed_by)
     return *managed_by;
 
+  if (profile->GetProfilePolicyConnector()->IsUsingLocalTestPolicyProvider()) {
+    return "Local Test Policies";
+  }
+
   return GetEnterpriseAccountDomain(profile);
 }
 
