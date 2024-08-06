@@ -72,6 +72,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
  private:
   void OnCategorySelected(PickerCategory category);
   void OnResultSelected(const PickerSearchResult& result);
+  void RecordCapsLockIgnored(bool ignored);
 
   // Gets or creates the category type section for `category_type`.
   PickerSectionView* GetOrCreateSectionView(PickerCategoryType category_type);

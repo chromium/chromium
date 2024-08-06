@@ -93,6 +93,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   void GetZeroStateSuggestedResults(SuggestedResultsCallback callback) override;
   void RequestPseudoFocus(views::View* view) override;
   void OnZeroStateViewHeightChanged() override;
+  void SetCapsLockDisplayed(bool displayed) override;
 
   // PickerSearchResultsViewDelegate:
   void SelectSearchResult(const PickerSearchResult& result) override;

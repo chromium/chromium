@@ -16,6 +16,9 @@ namespace ui {
 class TextInputClient;
 }  // namespace ui
 
+class PrefRegistrySimple;
+class PrefService;
+
 namespace ash {
 
 // Records metrics for a session of using Picker.
@@ -38,7 +41,11 @@ class ASH_EXPORT PickerSessionMetrics {
   };
 
   PickerSessionMetrics();
+  explicit PickerSessionMetrics(PrefService* prefs);
   ~PickerSessionMetrics();
+
+  // Registers prefs to the provided `registry`.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Sets session outcome. This is expected to be called exactly once during
   // a session.
@@ -58,9 +65,15 @@ class ASH_EXPORT PickerSessionMetrics {
   // Records CrOS event metrics when a picker session starts.
   void OnStartSession(ui::TextInputClient* client);
 
+  // Records if caps lock toggle is displayed in the zero state view.
+  void SetCapsLockDisplayed(bool displayed);
+
  private:
   // Records CrOS event metrics when a picker session finishes.
   void OnFinishSession();
+
+  // Updates caps lock related prefs.
+  void UpdateCapLockPrefs(bool caps_lock_selected);
 
   SessionOutcome outcome_ = SessionOutcome::kUnknown;
 
@@ -71,6 +84,10 @@ class ASH_EXPORT PickerSessionMetrics {
 
   int search_query_total_edits_ = 0;
   int search_query_length_ = 0;
+
+  bool caps_lock_displayed_ = false;
+
+  raw_ptr<PrefService> prefs_;
 };
 
 }  // namespace ash

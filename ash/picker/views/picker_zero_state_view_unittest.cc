@@ -32,6 +32,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/test_future.h"
 #include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,6 +57,7 @@ using ::testing::Key;
 using ::testing::Not;
 using ::testing::Pointee;
 using ::testing::Property;
+using ::testing::Return;
 using ::testing::VariantWith;
 
 constexpr int kPickerWidth = 320;
@@ -96,6 +99,7 @@ class MockZeroStateViewDelegate : public PickerZeroStateViewDelegate {
               (const PickerSearchResult& result),
               (override));
   MOCK_METHOD(void, OnZeroStateViewHeightChanged, (), (override));
+  MOCK_METHOD(void, SetCapsLockDisplayed, (bool), (override));
 };
 
 class PickerZeroStateViewTest : public views::ViewsTestBase {
@@ -179,6 +183,34 @@ TEST_F(PickerZeroStateViewTest, ShowsSuggestedResults) {
   ASSERT_THAT(
       view->primary_section_view_for_testing()->item_views_for_testing(),
       Not(IsEmpty()));
+  PickerItemView* item_view =
+      view->primary_section_view_for_testing()->item_views_for_testing()[0];
+  ViewDrawnWaiter().Wait(item_view);
+  LeftClickOn(*item_view);
+}
+
+TEST_F(PickerZeroStateViewTest, ClickingCapsLockResultSetsCapsLockDisplayed) {
+  MockZeroStateViewDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
+      .WillOnce(
+          [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
+            std::move(callback).Run({PickerSearchResult::DriveFile(
+                                         /*id=*/std::nullopt,
+                                         /*title=*/u"test drive file",
+                                         /*url=*/GURL(), base::FilePath()),
+                                     PickerSearchResult::CapsLock(true)});
+          });
+  EXPECT_CALL(mock_delegate, SetCapsLockDisplayed(true)).Times(1);
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
+  base::test::TestFuture<const PickerSearchResult&> future;
+  auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
+      &mock_delegate, kAllCategories, kPickerWidth, &asset_fetcher_,
+      &submenu_controller_, &preview_controller_));
+  widget->Show();
+
   PickerItemView* item_view =
       view->primary_section_view_for_testing()->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(item_view);

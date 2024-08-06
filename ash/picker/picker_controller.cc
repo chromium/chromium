@@ -366,7 +366,7 @@ void PickerController::ToggleWidget(
   const bool has_focus =
       focused_client != nullptr && focused_client->GetTextInputType() !=
                                        ui::TextInputType::TEXT_INPUT_TYPE_NONE;
-  if (PrefService* prefs = client_->GetPrefs();
+  if (PrefService* prefs = GetPrefs();
       g_feature_tour_enabled && prefs &&
       feature_tour_.MaybeShowForFirstUse(
           prefs,
@@ -588,8 +588,12 @@ std::vector<PickerSearchResult> PickerController::GetSuggestedEmoji() {
 
 bool PickerController::IsGifsEnabled() {
   CHECK(model_);
+  return model_->IsGifsEnabled(GetPrefs());
+}
+
+PrefService* PickerController::GetPrefs() {
   CHECK(client_);
-  return model_->IsGifsEnabled(client_->GetPrefs());
+  return client_->GetPrefs();
 }
 
 PickerModeType PickerController::GetMode() {
@@ -640,11 +644,10 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp) {
     return;
   }
 
-  emoji_history_model_ =
-      std::make_unique<PickerEmojiHistoryModel>(client_->GetPrefs());
+  emoji_history_model_ = std::make_unique<PickerEmojiHistoryModel>(GetPrefs());
   emoji_suggester_ =
       std::make_unique<PickerEmojiSuggester>(emoji_history_model_.get());
-  session_metrics_ = std::make_unique<PickerSessionMetrics>();
+  session_metrics_ = std::make_unique<PickerSessionMetrics>(GetPrefs());
 
   widget_ = PickerWidget::Create(
       this,

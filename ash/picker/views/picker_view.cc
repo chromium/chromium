@@ -353,6 +353,10 @@ void PickerView::OnZeroStateViewHeightChanged() {
   SetWidgetBoundsNeedsUpdate();
 }
 
+void PickerView::SetCapsLockDisplayed(bool displayed) {
+  delegate_->GetSessionMetrics().SetCapsLockDisplayed(displayed);
+}
+
 void PickerView::SelectSearchResult(const PickerSearchResult& result) {
   if (const PickerSearchResult::CategoryData* category_data =
           std::get_if<PickerSearchResult::CategoryData>(&result.data())) {

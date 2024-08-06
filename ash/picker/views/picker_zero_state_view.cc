@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/picker_clipboard_history_provider.h"
 #include "ash/picker/views/picker_category_type.h"
@@ -34,6 +35,8 @@
 #include "base/time/time.h"
 #include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -251,6 +254,10 @@ void PickerZeroStateView::OnFetchSuggestedResults(
           .Build();
 
   for (const PickerSearchResult& result : results) {
+    if (std::holds_alternative<PickerSearchResult::CapsLockData>(
+            result.data())) {
+      delegate_->SetCapsLockDisplayed(true);
+    }
     if (std::holds_alternative<PickerSearchResult::NewWindowData>(
             result.data())) {
       new_window_submenu->AddEntry(

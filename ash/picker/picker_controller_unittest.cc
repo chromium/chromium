@@ -13,6 +13,7 @@
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/model/picker_search_results_section.h"
@@ -168,6 +169,7 @@ class PickerControllerTest : public AshTestBase {
     client_ = std::make_unique<NiceMock<TestPickerClient>>(controller_.get(),
                                                            &prefs_);
     prefs_.registry()->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
+    PickerSessionMetrics::RegisterProfilePrefs(prefs_.registry());
   }
 
   void TearDown() override {

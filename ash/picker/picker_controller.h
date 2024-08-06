@@ -143,6 +143,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   void InsertResultOnNextFocus(const PickerSearchResult& result);
   void OnInsertCompleted(const PickerRichMedia& media,
                          PickerInsertMediaRequest::Result result);
+  PrefService* GetPrefs();
 
   std::optional<PickerWebPasteTarget> GetWebPasteTarget();
 

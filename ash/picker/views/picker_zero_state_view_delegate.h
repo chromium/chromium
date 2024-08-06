@@ -44,6 +44,8 @@ class ASH_EXPORT PickerZeroStateViewDelegate {
 
   // Informs that the height of the zero state view may change.
   virtual void OnZeroStateViewHeightChanged() = 0;
+
+  virtual void SetCapsLockDisplayed(bool displayed) = 0;
 };
 
 }  // namespace ash

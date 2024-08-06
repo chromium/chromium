@@ -109,6 +109,21 @@ inline constexpr char kEmojiPickerHistory[] = "emoji_picker.history";
 // A dictionary storing user preferences for emoji picker.
 inline constexpr char kEmojiPickerPreferences[] = "emoji_picker.preferences";
 
+// An integer pref which indicates the number of times the user selects the caps
+// lock toggle in the picker. The number will be halved together with
+// `caps_lock_displayed_count` whenever `caps_lock_displayed_count` reaches a
+// threshold so that recent usages have more weights when calculating the ratio
+// between them.
+inline constexpr char kPickerCapsLockSelectedCountPrefName[] =
+    "ash.picker.caps_lock_selected_count";
+
+// An integer pref which indicates the number of times the caps lock toggle is
+// displayed in the picker zero state view. Only used to calculate the ratio
+// between `caps_lock_selected_count` and itself. It will not grow infinitely
+// but will be halved whenever it reaches a threshold.
+inline constexpr char kPickerCapsLockDislayedCountPrefName[] =
+    "ash.picker.caps_lock_displayed_count";
+
 // Pref which stores a list of Embedded Universal Integrated Circuit Card
 // (EUICC) D-Bus paths which have had their installed profiles refreshed from
 // Hermes. Each path is stored as a string.
