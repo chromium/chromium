@@ -22,8 +22,9 @@ inline LayoutObject* GetLayoutObjectForFirstChildNode(LayoutBlock* parent) {
   LayoutObject* child = parent->FirstChild();
   if (!child)
     return nullptr;
-  if (UNLIKELY(child->IsLayoutFlowThread()))
+  if (child->IsLayoutFlowThread()) [[unlikely]] {
     child = To<LayoutBlockFlow>(child)->FirstChild();
+  }
   return child;
 }
 
@@ -42,11 +43,13 @@ inline Type GetLayoutObjectForParentNode(Type object) {
   DCHECK(!object->IsLayoutMultiColumnSpannerPlaceholder());
 
   Type parent = object->Parent();
-  if (UNLIKELY(!parent))
+  if (!parent) [[unlikely]] {
     return nullptr;
+  }
 
-  if (UNLIKELY(parent->IsLayoutFlowThread()))
+  if (parent->IsLayoutFlowThread()) [[unlikely]] {
     return parent->Parent();
+  }
   return parent;
 }
 
@@ -56,8 +59,9 @@ inline bool AreNGBlockFlowChildrenInline(const LayoutBlock* block) {
   if (block->ChildrenInline())
     return true;
   if (const auto* first_child = block->FirstChild()) {
-    if (UNLIKELY(first_child->IsLayoutFlowThread()))
+    if (first_child->IsLayoutFlowThread()) [[unlikely]] {
       return first_child->ChildrenInline();
+    }
   }
   return false;
 }

@@ -314,7 +314,7 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
 
   PositionAnyUnclaimedListMarker();
 
-  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
     // In addition to establishing one, we're nested inside another
     // fragmentation context.
     FinishFragmentation(BorderScrollbarPadding().block_end,
@@ -1083,8 +1083,9 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
       CreateConstraintSpaceForSpanner(spanner_node, block_offset);
 
   const EarlyBreak* early_break_in_child = nullptr;
-  if (UNLIKELY(early_break_))
+  if (early_break_) [[unlikely]] {
     early_break_in_child = EnterEarlyBreakInChild(spanner_node, *early_break_);
+  }
 
   auto* result =
       spanner_node.Layout(spanner_space, break_token, early_break_in_child);

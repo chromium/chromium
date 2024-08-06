@@ -57,8 +57,8 @@ const LayoutResult* TableSectionLayoutAlgorithm::Layout() {
     DCHECK_LT(row_index, start_row_index + section.row_count);
     bool is_row_collapsed = table_data.rows[row_index].is_collapsed;
 
-    if (UNLIKELY(early_break_ &&
-                 IsEarlyBreakTarget(*early_break_, container_builder_, row))) {
+    if (early_break_ && IsEarlyBreakTarget(*early_break_, container_builder_,
+                                           row)) [[unlikely]] {
       container_builder_.AddBreakBeforeChild(row, kBreakAppealPerfect,
                                              /* is_forced_break */ false);
       break;
@@ -163,7 +163,7 @@ const LayoutResult* TableSectionLayoutAlgorithm::Layout() {
         actual_start_row_index, std::move(row_offsets));
   }
 
-  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
     BreakStatus status = FinishFragmentation(
         /*trailing_border_padding=*/LayoutUnit(), &container_builder_);
     DCHECK_EQ(status, BreakStatus::kContinue);

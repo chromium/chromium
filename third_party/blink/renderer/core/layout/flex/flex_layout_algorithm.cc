@@ -238,7 +238,7 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
   // position belongs. However, the last fragment has the most up-to-date flex
   // size information (e.g. any expanded rows, etc), so for center aligned
   // items, we could end up with an incorrect static position.
-  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
     should_process_block_end = !container_builder_.DidBreakSelf() &&
                                !container_builder_.ShouldBreakInside();
     if (should_process_block_end) {
@@ -1090,13 +1090,13 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   }
 
   LayoutUnit previously_consumed_block_size;
-  if (UNLIKELY(GetBreakToken())) {
+  if (GetBreakToken()) [[unlikely]] {
     previously_consumed_block_size = GetBreakToken()->ConsumedBlockSize();
   }
 
   intrinsic_block_size_ = BorderScrollbarPadding().block_start;
   LayoutUnit block_size;
-  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
     if (use_empty_line_block_size) {
       intrinsic_block_size_ =
           (total_intrinsic_block_size_ - BorderScrollbarPadding().block_end -
@@ -1129,12 +1129,12 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
 
   if (has_column_percent_flex_basis_)
     container_builder_.SetHasDescendantThatDependsOnPercentageBlockSize(true);
-  if (UNLIKELY(layout_info_for_devtools_)) {
+  if (layout_info_for_devtools_) [[unlikely]] {
     container_builder_.TransferFlexLayoutData(
         std::move(layout_info_for_devtools_));
   }
 
-  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
     BreakStatus break_status = FinishFragmentation(
         BorderScrollbarPadding().block_end, &container_builder_);
     if (break_status != BreakStatus::kContinue) {
@@ -1229,8 +1229,9 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       continue;
     }
 
-    if (UNLIKELY(layout_info_for_devtools_))
+    if (layout_info_for_devtools_) [[unlikely]] {
       layout_info_for_devtools_->lines.push_back(DevtoolsFlexInfo::Line());
+    }
 
     flex_line_outputs->push_back(NGFlexLine(line->line_items_.size()));
     for (wtf_size_t i = 0; i < line->line_items_.size(); ++i) {
@@ -1696,7 +1697,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     }
 
     const EarlyBreak* early_break_in_child = nullptr;
-    if (UNLIKELY(early_break_)) {
+    if (early_break_) [[unlikely]] {
       if (!is_column_)
         container_builder_.SetLineCount(flex_line_idx);
       if (IsEarlyBreakTarget(*early_break_, container_builder_,
@@ -1730,7 +1731,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     // If we are re-laying out one or more rows with an updated cross-size,
     // adjust the row info to reflect this change (but only if this is the first
     // time we are processing the current row in this layout pass).
-    if (UNLIKELY(cross_size_adjustments_)) {
+    if (cross_size_adjustments_) [[unlikely]] {
       DCHECK(!is_column_);
       // Maps don't allow keys of 0, so adjust the index by 1.
       if (cross_size_adjustments_->Contains(flex_line_idx + 1) &&
@@ -2053,7 +2054,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::PropagateFlexItemInfo(
   DCHECK(flex_item);
   LayoutResult::EStatus status = LayoutResult::kSuccess;
 
-  if (UNLIKELY(layout_info_for_devtools_)) {
+  if (layout_info_for_devtools_) [[unlikely]] {
     // If this is a "devtools layout", execution speed isn't critical but we
     // have to not adversely affect execution speed of a regular layout.
     PhysicalRect item_rect;

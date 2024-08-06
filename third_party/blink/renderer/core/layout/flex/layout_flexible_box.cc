@@ -68,7 +68,7 @@ void MergeAnonymousFlexItems(LayoutObject* remove_child) {
 bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
                                        const ComputedStyle& style) const {
   const auto* select = DynamicTo<HTMLSelectElement>(GetNode());
-  if (UNLIKELY(select && select->UsesMenuList())) {
+  if (select && select->UsesMenuList()) [[unlikely]] {
     if (select->IsAppearanceBaseSelect()) {
       CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
       if (IsA<HTMLOptionElement>(object->GetNode())) {

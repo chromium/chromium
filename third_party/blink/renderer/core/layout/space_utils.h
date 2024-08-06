@@ -37,9 +37,10 @@ inline void SetOrthogonalFallbackInlineSizeIfNeeded(
     const ComputedStyle& parent_style,
     const LayoutInputNode child,
     ConstraintSpaceBuilder* builder) {
-  if (LIKELY(IsParallelWritingMode(parent_style.GetWritingMode(),
-                                   child.Style().GetWritingMode())))
+  if (IsParallelWritingMode(parent_style.GetWritingMode(),
+                            child.Style().GetWritingMode())) [[likely]] {
     return;
+  }
   SetOrthogonalFallbackInlineSize(parent_style, child, builder);
 }
 

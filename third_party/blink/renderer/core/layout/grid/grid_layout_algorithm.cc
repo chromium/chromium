@@ -247,7 +247,7 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
 
   const auto& layout_data = grid_sizing_tree.TreeRootData().layout_data;
 
-  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
     // Either retrieve all items offsets, or generate them using the
     // non-fragmented |PlaceGridItems| pass.
     if (IsBreakInside(GetBreakToken())) {
@@ -313,7 +313,7 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   }
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
     auto status =
         FinishFragmentation(border_padding.block_end, &container_builder_);
     if (status == BreakStatus::kDisableFragmentation) {
@@ -4152,7 +4152,7 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
   std::swap(oofs, oof_children);
 
   bool should_process_block_end = true;
-  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
     should_process_block_end = !container_builder_.DidBreakSelf() &&
                                !container_builder_.ShouldBreakInside();
   }

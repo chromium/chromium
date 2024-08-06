@@ -240,7 +240,7 @@ const LayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
     layout_remaining_items_with_zero_inline_stretch_size = false;
   }
 
-  if (UNLIKELY(layout_remaining_items_with_zero_inline_stretch_size)) {
+  if (layout_remaining_items_with_zero_inline_stretch_size) [[unlikely]] {
     // "If LNotToStretch is empty, perform layout with stretch size constraint 0
     // on all the items of LToStretch.
     for (LayoutInputNode child = Node().FirstChild(); child;

@@ -874,7 +874,7 @@ void PhysicalFragment::AddOutlineRectsForCursor(
   while (*cursor) {
     DCHECK(cursor->Current().Item());
     const FragmentItem& item = *cursor->Current().Item();
-    if (UNLIKELY(item.IsLayoutObjectDestroyedOrMoved())) {
+    if (item.IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
       cursor->MoveToNext();
       continue;
     }
@@ -896,8 +896,9 @@ void PhysicalFragment::AddOutlineRectsForCursor(
             item.IsSvgText() ? PhysicalRect::EnclosingRect(
                                    cursor->Current().ObjectBoundingBox(*cursor))
                              : item.RectInContainerFragment();
-        if (UNLIKELY(text_combine))
+        if (text_combine) [[unlikely]] {
           rect = text_combine->AdjustRectForBoundingBox(rect);
+        }
         rect.Move(additional_offset);
         collector.AddRect(rect);
         break;

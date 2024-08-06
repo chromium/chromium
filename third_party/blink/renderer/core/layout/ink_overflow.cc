@@ -561,7 +561,7 @@ LogicalRect InkOverflow::ComputeDecorationOverflow(
   }
 
   // Text decorations due to selection
-  if (UNLIKELY(cursor.Current().GetLayoutObject()->IsSelected())) {
+  if (cursor.Current().GetLayoutObject()->IsSelected()) [[unlikely]] {
     const ComputedStyle* selection_style = style.HighlightData().Selection();
     if (selection_style) {
       if (selection_style->HasAppliedTextDecorations()) {
@@ -736,7 +736,7 @@ LogicalRect InkOverflow::ComputeMarkerOverflow(
             inline_context, &synthesised);
       }
       accumulated_bound.Unite(decoration_bound);
-      if (UNLIKELY(text_shadow)) {
+      if (text_shadow) [[unlikely]] {
         ExpandForShadowOverflow(accumulated_bound, *text_shadow, writing_mode);
       }
     }

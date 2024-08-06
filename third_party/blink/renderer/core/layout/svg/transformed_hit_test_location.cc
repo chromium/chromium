@@ -15,7 +15,7 @@ void LocationTransformHelper(const HitTestLocation& location,
                              std::optional<HitTestLocation>& storage) {
   gfx::PointF transformed_point =
       transform.MapPoint(location.TransformedPoint());
-  if (UNLIKELY(location.IsRectBasedTest())) {
+  if (location.IsRectBasedTest()) [[unlikely]] {
     storage.emplace(transformed_point,
                     transform.MapQuad(location.TransformedRect()));
   } else {

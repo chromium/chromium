@@ -349,7 +349,7 @@ inline LayoutUnit ComputeInlineSizeForFragment(
     const BoxStrut& border_padding,
     const MinMaxSizes* override_min_max_sizes_for_test = nullptr) {
   auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
-    if (UNLIKELY(override_min_max_sizes_for_test)) {
+    if (override_min_max_sizes_for_test) [[unlikely]] {
       return MinMaxSizesResult(*override_min_max_sizes_for_test,
                                /* depends_on_block_constraints */ false);
     }

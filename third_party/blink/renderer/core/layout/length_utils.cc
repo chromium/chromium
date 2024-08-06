@@ -38,10 +38,14 @@ LayoutUnit ResolveInlineLengthInternal(
 
   CHECK(!original_length.IsAuto() || auto_length);
   // for min-inline-size, this might still be 'auto'
-  const Length& length =
-      LIKELY(original_length.IsAuto()) ? *auto_length : original_length;
+  const Length* length;
+  if (original_length.IsAuto()) [[likely]] {
+    length = auto_length;
+  } else {
+    length = &original_length;
+  }
 
-  switch (length.GetType()) {
+  switch (length->GetType()) {
     case Length::kFillAvailable: {
       const LayoutUnit available_size =
           override_available_size == kIndefiniteSize
@@ -60,12 +64,12 @@ LayoutUnit ResolveInlineLengthInternal(
     case Length::kCalculated: {
       const LayoutUnit percentage_resolution_size =
           constraint_space.PercentageResolutionInlineSize();
-      if (length.HasPercent() &&
+      if (length->HasPercent() &&
           percentage_resolution_size == kIndefiniteSize) {
         return unresolvable_length_result;
       }
       LayoutUnit value = MinimumValueForLength(
-          length, percentage_resolution_size,
+          *length, percentage_resolution_size,
           {.intrinsic_evaluator = [&](const Length& length_to_evaluate) {
             return ResolveInlineLengthInternal(
                 constraint_space, style, border_padding, min_max_sizes_func,
@@ -130,10 +134,14 @@ LayoutUnit ResolveBlockLengthInternal(
 
   CHECK(!original_length.IsAuto() || auto_length);
   // for min-block-size, this might still be 'auto'
-  const Length& length =
-      LIKELY(original_length.IsAuto()) ? *auto_length : original_length;
+  const Length* length;
+  if (original_length.IsAuto()) [[likely]] {
+    length = auto_length;
+  } else {
+    length = &original_length;
+  }
 
-  switch (length.GetType()) {
+  switch (length->GetType()) {
     case Length::kFillAvailable: {
       const LayoutUnit available_size =
           override_available_size == kIndefiniteSize
@@ -156,14 +164,14 @@ LayoutUnit ResolveBlockLengthInternal(
           override_percentage_resolution_size
               ? *override_percentage_resolution_size
               : constraint_space.PercentageResolutionBlockSize();
-      if (length.HasPercent() &&
+      if (length->HasPercent() &&
           percentage_resolution_size == kIndefiniteSize) {
         return unresolvable_length_result == kIndefiniteSize
                    ? block_size_func(SizeType::kContent)
                    : unresolvable_length_result;
       }
       LayoutUnit value = MinimumValueForLength(
-          length, percentage_resolution_size,
+          *length, percentage_resolution_size,
           {.intrinsic_evaluator = [&](const Length& length_to_evaluate) {
             return ResolveBlockLengthInternal(
                 constraint_space, style, border_padding, length_to_evaluate,
@@ -184,7 +192,7 @@ LayoutUnit ResolveBlockLengthInternal(
     case Length::kMinIntrinsic:
     case Length::kFitContent: {
       const LayoutUnit intrinsic_size = block_size_func(
-          length.IsMinIntrinsic() ? SizeType::kIntrinsic : SizeType::kContent);
+          length->IsMinIntrinsic() ? SizeType::kIntrinsic : SizeType::kContent);
 #if DCHECK_IS_ON()
       // Due to how intrinsic_size is calculated, it should always include
       // border and padding. We cannot check for this if we are
@@ -450,7 +458,7 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
     }
   }
 
-  if (LIKELY(extent == kIndefiniteSize)) {
+  if (extent == kIndefiniteSize) [[likely]] {
     const Length& auto_length = ([&]() {
       if (space.AvailableSize().inline_size == kIndefiniteSize) {
         return Length::MinContent();
@@ -1438,8 +1446,9 @@ LayoutUnit LineOffsetForTextAlign(ETextAlign text_align,
     case ETextAlign::kRight:
     case ETextAlign::kWebkitRight: {
       // In RTL, trailing spaces appear on the left of the line.
-      if (UNLIKELY(!is_ltr))
+      if (!is_ltr) [[unlikely]] {
         return space_left;
+      }
       // Wide lines spill out of the block based off direction.
       // So even if text-align is right, if direction is LTR, wide lines
       // should overflow out of the right side of the block.
@@ -1522,9 +1531,9 @@ FragmentGeometry CalculateInitialFragmentGeometry(
                    : ComputeInlineSizeForFragment(space, node, border_padding,
                                                   min_max_sizes_func);
 
-  if (UNLIKELY(inline_size != kIndefiniteSize &&
-               inline_size < border_scrollbar_padding.InlineSum() &&
-               scrollbar.InlineSum() && !space.IsAnonymous())) {
+  if (inline_size != kIndefiniteSize &&
+      inline_size < border_scrollbar_padding.InlineSum() &&
+      scrollbar.InlineSum() && !space.IsAnonymous()) [[unlikely]] {
     // Clamp the inline size of the scrollbar, unless it's larger than the
     // inline size of the content box, in which case we'll return that instead.
     // Scrollbar handling is quite bad in such situations, and this method here

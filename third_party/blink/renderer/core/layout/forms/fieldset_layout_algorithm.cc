@@ -123,7 +123,7 @@ const LayoutResult* FieldsetLayoutAlgorithm::Layout() {
   container_builder_.SetFragmentsTotalBlockSize(all_fragments_block_size);
   container_builder_.SetIsFieldsetContainer();
 
-  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
     BreakStatus status =
         FinishFragmentation(Borders().block_end, &container_builder_);
     if (status == BreakStatus::kNeedsEarlierBreak) {
@@ -324,7 +324,7 @@ BreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
     LogicalSize adjusted_padding_box_size,
     bool has_legend) {
   const EarlyBreak* early_break_in_child = nullptr;
-  if (UNLIKELY(early_break_)) {
+  if (early_break_) [[unlikely]] {
     if (IsEarlyBreakTarget(*early_break_, container_builder_,
                            fieldset_content)) {
       container_builder_.AddBreakBeforeChild(fieldset_content,

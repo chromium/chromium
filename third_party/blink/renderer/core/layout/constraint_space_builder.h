@@ -87,7 +87,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     is_available_size_set_ = true;
 #endif
 
-    if (LIKELY(is_in_parallel_flow_)) {
+    if (is_in_parallel_flow_) [[likely]] {
       space_.available_size_ = available_size;
     } else {
       space_.available_size_ = {available_size.block_size,
@@ -202,26 +202,30 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   }
 
   void SetIsFixedInlineSize(bool b) {
-    if (LIKELY(is_in_parallel_flow_))
+    if (is_in_parallel_flow_) [[likely]] {
       space_.bitfields_.is_fixed_inline_size = b;
-    else
+    } else {
       space_.bitfields_.is_fixed_block_size = b;
+    }
   }
 
   void SetIsFixedBlockSize(bool b) {
-    if (LIKELY(is_in_parallel_flow_))
+    if (is_in_parallel_flow_) [[likely]] {
       space_.bitfields_.is_fixed_block_size = b;
-    else
+    } else {
       space_.bitfields_.is_fixed_inline_size = b;
+    }
   }
 
   void SetIsInitialBlockSizeIndefinite(bool b) {
-    if (LIKELY(is_in_parallel_flow_ || !force_orthogonal_writing_mode_root_))
+    if (is_in_parallel_flow_ || !force_orthogonal_writing_mode_root_)
+        [[likely]] {
       space_.bitfields_.is_initial_block_size_indefinite = b;
+    }
   }
 
   void SetInlineAutoBehavior(AutoSizeBehavior auto_behavior) {
-    if (LIKELY(is_in_parallel_flow_)) {
+    if (is_in_parallel_flow_) [[likely]] {
       space_.bitfields_.inline_auto_behavior =
           static_cast<unsigned>(auto_behavior);
     } else {
@@ -231,7 +235,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   }
 
   void SetBlockAutoBehavior(AutoSizeBehavior auto_behavior) {
-    if (LIKELY(is_in_parallel_flow_)) {
+    if (is_in_parallel_flow_) [[likely]] {
       space_.bitfields_.block_auto_behavior =
           static_cast<unsigned>(auto_behavior);
     } else {
@@ -366,7 +370,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     DCHECK(!is_optimistic_bfc_block_offset_set_);
     is_optimistic_bfc_block_offset_set_ = true;
 #endif
-    if (LIKELY(!is_new_fc_)) {
+    if (!is_new_fc_) [[likely]] {
       space_.EnsureRareData()->SetOptimisticBfcBlockOffset(
           optimistic_bfc_block_offset);
     }

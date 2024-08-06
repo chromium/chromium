@@ -16,7 +16,7 @@ inline StyleVariant ToParentStyleVariant(StyleVariant variant) {
   // Ancestors of ellipsis should not use the ellipsis style variant. Use
   // first-line style if exists since most cases it is the first line. See also
   // |LayoutObject::SlowEffectiveStyle|.
-  if (UNLIKELY(variant == StyleVariant::kEllipsis)) {
+  if (variant == StyleVariant::kEllipsis) [[unlikely]] {
     return StyleVariant::kFirstLine;
   }
   return variant;
