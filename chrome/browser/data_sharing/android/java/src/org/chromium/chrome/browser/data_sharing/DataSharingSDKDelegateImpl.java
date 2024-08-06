@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.data_sharing;
 
 import org.chromium.base.Callback;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.data_sharing.DataSharingNetworkLoader;
 import org.chromium.components.data_sharing.DataSharingSDKDelegate;
@@ -39,34 +41,58 @@ public class DataSharingSDKDelegateImpl implements DataSharingSDKDelegate {
     @Override
     public void createGroup(
             CreateGroupParams params, DataSharingSDKDelegateProtoResponseCallback callback) {
-        callback.run(new byte[0], Status.FAILURE);
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    callback.run(new byte[0], Status.FAILURE);
+                });
     }
 
     @Override
     public void readGroups(
             ReadGroupsParams params, DataSharingSDKDelegateProtoResponseCallback callback) {
-        callback.run(new byte[0], Status.FAILURE);
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    callback.run(new byte[0], Status.FAILURE);
+                });
     }
 
     @Override
     public void addMember(AddMemberParams params, Callback<Integer> callback) {
-        callback.onResult(Status.FAILURE);
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    callback.onResult(Status.FAILURE);
+                });
     }
 
     @Override
     public void removeMember(RemoveMemberParams params, Callback<Integer> callback) {
-        callback.onResult(Status.FAILURE);
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    callback.onResult(Status.FAILURE);
+                });
     }
 
     @Override
     public void deleteGroup(DeleteGroupParams params, Callback<Integer> callback) {
-        callback.onResult(Status.FAILURE);
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    callback.onResult(Status.FAILURE);
+                });
     }
 
     @Override
     public void lookupGaiaIdByEmail(
             LookupGaiaIdByEmailParams params,
             DataSharingSDKDelegateProtoResponseCallback callback) {
-        callback.run(new byte[0], Status.FAILURE);
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    callback.run(new byte[0], Status.FAILURE);
+                });
     }
 }
