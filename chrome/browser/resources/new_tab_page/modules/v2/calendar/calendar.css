@@ -8,6 +8,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --calendar-event-group-gutter-size: 8px;
   display: block;
   padding: 0 8px;
 }
@@ -25,7 +26,7 @@ ntp-calendar-event:first-of-type,
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
   margin-top: 8px;
-  padding-top: 12px;
+  padding-top: var(--calendar-event-group-gutter-size);
 }
 
 .row:last-child,
@@ -34,14 +35,14 @@ ntp-calendar-event:first-of-type,
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
   margin-bottom: 8px;
-  padding-bottom: 12px;
+  padding-bottom: var(--calendar-event-group-gutter-size);
 }
 
 .row[double-booked],
 .row[expanded] {
   border-radius: 12px;
   margin: 8px 0;
-  padding: 12px 0;
+  padding: var(--calendar-event-group-gutter-size) 0;
 }
 
 #seeMore a {
