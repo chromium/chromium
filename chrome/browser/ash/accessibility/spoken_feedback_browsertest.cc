@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeHardwareKeys) {
   sm_.Call([this]() { SendKeyPress(ui::VKEY_F4); });
   sm_.ExpectSpeech("toggle full screen");
   sm_.Call([this]() { SendKeyPress(ui::VKEY_F5); });
-  sm_.ExpectSpeech("window overview");
+  sm_.ExpectSpeech("show windows");
   sm_.Call([this]() { SendKeyPress(ui::VKEY_F6); });
   sm_.ExpectSpeech("Brightness down");
   sm_.Call([this]() { SendKeyPress(ui::VKEY_F7); });
