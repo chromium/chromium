@@ -940,14 +940,7 @@ void GaiaScreenHandler::CompleteAuthentication(
       signin_artifacts.using_saml && !signin_artifacts.password.has_value() &&
       !signin_artifacts.challenge_response_key.has_value();
 
-  bool need_password_gaia =
-      !signin_artifacts.using_saml &&
-      signin_artifacts.password.value_or(std::string()).empty() &&
-      !ash::features::AreLocalPasswordsEnabledForConsumers();
-  const bool needs_saml_confirm_password =
-      confirm_saml_password || need_password_gaia;
-
-  if (needs_saml_confirm_password) {
+  if (confirm_saml_password) {
     auto scraped_saml_passwords =
         signin_artifacts.scraped_saml_passwords.value_or(::login::StringList{});
     CHECK_NE(scraped_saml_passwords.size(), 1u);

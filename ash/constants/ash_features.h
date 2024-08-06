@@ -633,7 +633,6 @@ BASE_DECLARE_FEATURE(kLobster);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFeatureManagementLobster);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kLocalPasswordForConsumers);
 BASE_DECLARE_FEATURE(kLockScreenHideSensitiveNotificationsSupport);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kLockScreenInlineReply);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kLockScreenNotifications);
@@ -1269,8 +1268,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherSearchControlEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLinkCrossDeviceDogfoodFeedbackEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLinkCrossDeviceInternalsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool AreLocalPasswordsEnabledForConsumers();
-COMPONENT_EXPORT(ASH_CONSTANTS) void ForceEnableLocalPasswordsForConsumers();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsLockScreenHideSensitiveNotificationsSupported();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLockScreenInlineReplyEnabled();

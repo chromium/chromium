@@ -279,9 +279,6 @@ void QuickStartController::ForceEnableQuickStart() {
 
   InitTargetDeviceBootstrapController();
   StartObservingBluetoothState();
-
-  QS_LOG(INFO) << "Force enabling LocalPasswordsForConsumers!";
-  ash::features::ForceEnableLocalPasswordsForConsumers();
 }
 
 void QuickStartController::DetermineEntryPointVisibility(

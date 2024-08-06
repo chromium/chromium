@@ -189,8 +189,7 @@ std::unique_ptr<UserContext> BuildUserContextForGaiaSignIn(
     if (using_saml) {
       user_context->SetSamlPassword(SamlPassword{password});
     } else {
-      if (!features::AreLocalPasswordsEnabledForConsumers() ||
-          !password.empty()) {
+      if (!password.empty()) {
         user_context->SetGaiaPassword(GaiaPassword{password});
       }
     }

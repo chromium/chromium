@@ -20,10 +20,6 @@
 namespace ash::features {
 namespace {
 
-// Whether 'LocalPasswordsForConsumers' has been force enabled.
-// TODO(b/323178117) - Remove once enabled by default, or by M123 branch.
-static bool g_local_password_for_consumers_force_enable = false;
-
 // Controls whether Instant Tethering supports hosts which use the background
 // advertisement model.
 BASE_FEATURE(kInstantTetheringBackgroundAdvertisementSupport,
@@ -1880,12 +1876,6 @@ BASE_FEATURE(kLinkCrossDeviceDogfoodFeedback,
 BASE_FEATURE(kLinkCrossDeviceInternals,
              "LinkCrossDeviceInternals",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables local password as an option for local authentication.
-// (This feature is only available for consumer users)
-BASE_FEATURE(kLocalPasswordForConsumers,
-             "LocalPasswordForConsumers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Supports the feature to hide sensitive content in notifications on the lock
 // screen. This option is effective when |kLockScreenNotification| is enabled.
@@ -4108,18 +4098,6 @@ bool IsLobsterEnabled() {
          base::FeatureList::IsEnabled(kFeatureManagementLobster);
 }
 
-bool AreLocalPasswordsEnabledForConsumers() {
-  if (g_local_password_for_consumers_force_enable) {
-    return true;
-  }
-
-  return base::FeatureList::IsEnabled(kLocalPasswordForConsumers);
-}
-
-void ForceEnableLocalPasswordsForConsumers() {
-  g_local_password_for_consumers_force_enable = true;
-}
-
 bool IsLockScreenHideSensitiveNotificationsSupported() {
   return base::FeatureList::IsEnabled(
       kLockScreenHideSensitiveNotificationsSupport);
@@ -4336,11 +4314,6 @@ bool IsOobePerksDiscoveryEnabled() {
 }
 
 bool IsOobeQuickStartEnabled() {
-  // QuickStart directly depends on the 'Local Password' feature.
-  if (!base::FeatureList::IsEnabled(kLocalPasswordForConsumers)) {
-    return false;
-  }
-
   return IsCrossDeviceFeatureSuiteAllowed() &&
          base::FeatureList::IsEnabled(kOobeQuickStart);
 }

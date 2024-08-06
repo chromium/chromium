@@ -2362,11 +2362,7 @@ void WizardController::OnCryptohomeRecoverySetupScreenExit(
     CryptohomeRecoverySetupScreen::Result result) {
   OnScreenExit(CryptohomeRecoverySetupScreenView::kScreenId,
                CryptohomeRecoverySetupScreen::GetResultString(result));
-  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
-    ShowPasswordSelectionScreen();
-  } else {
-    ShowFingerprintSetupScreen();
-  }
+  ShowPasswordSelectionScreen();
 }
 
 void WizardController::OnPasswordSelectionScreenExit(

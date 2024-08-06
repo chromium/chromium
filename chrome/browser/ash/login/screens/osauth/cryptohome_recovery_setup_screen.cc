@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -118,20 +117,6 @@ void CryptohomeRecoverySetupScreen::SetupRecovery() {
 void CryptohomeRecoverySetupScreen::ExitScreen(
     WizardContext& wizard_context,
     CryptohomeRecoverySetupScreen::Result result) {
-  // Clear the auth session if it's not needed for PIN setup.
-  if (wizard_context.extra_factors_token.has_value()) {
-    auto& token = wizard_context.extra_factors_token.value();
-    auto* storage = ash::AuthSessionStorage::Get();
-    const bool authsession_required =
-        ash::features::AreLocalPasswordsEnabledForConsumers();
-    if (storage->IsValid(token) && !authsession_required &&
-        cryptohome_pin_engine_.ShouldSkipSetupBecauseOfPolicy(
-            storage->Peek(token)->GetAccountId())) {
-      storage->Invalidate(token, base::DoNothing());
-      wizard_context.extra_factors_token = std::nullopt;
-    }
-  }
-
   exit_callback_.Run(result);
 }
 
