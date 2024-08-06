@@ -800,10 +800,7 @@ void LensOverlayQueryController::FetchEndpoint(
           /*annotation_tag=*/kTrafficAnnotationTag, chrome::GetChannel(),
           /*request_params=*/
           EndpointFetcher::RequestParams::Builder()
-              .SetCredentialsMode(
-                  lens::features::UseOauthForLensOverlayRequests()
-                      ? CredentialsMode::kOmit
-                      : CredentialsMode::kInclude)
+              .SetCredentialsMode(CredentialsMode::kInclude)
               .Build());
   EndpointFetcher* fetcher = endpoint_fetcher.get();
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
