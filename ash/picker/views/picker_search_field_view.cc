@@ -19,6 +19,7 @@
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -72,8 +73,7 @@ PickerSearchFieldView::PickerSearchFieldView(
           views::Builder<views::ImageButton>(
               std::make_unique<IconButton>(
                   std::move(back_callback), IconButton::Type::kSmallFloating,
-                  &vector_icons::kArrowBackIcon,
-                  IDS_PICKER_SEARCH_FIELD_BACK_BUTTON_TOOLTIP_TEXT))
+                  &vector_icons::kArrowBackIcon, IDS_ACCNAME_BACK))
               .CopyAddressTo(&back_button_)
               .SetProperty(views::kMarginsKey, kButtonHorizontalMargin)
               .SetVisible(false),

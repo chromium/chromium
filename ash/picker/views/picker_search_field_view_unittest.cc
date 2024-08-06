@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -79,8 +80,7 @@ TEST_F(PickerSearchFieldViewTest, BackButtonHasTooltip) {
                              &key_event_handler, &metrics);
 
   EXPECT_EQ(view.back_button_for_testing().GetTooltipText(),
-            l10n_util::GetStringUTF16(
-                IDS_PICKER_SEARCH_FIELD_BACK_BUTTON_TOOLTIP_TEXT));
+            l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
 }
 
 TEST_F(PickerSearchFieldViewTest, DoesNotTriggerSearchOnConstruction) {

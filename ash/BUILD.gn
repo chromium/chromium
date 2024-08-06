@@ -4572,6 +4572,7 @@ test("ash_unittests") {
     "//components/services/app_service",
     "//components/session_manager/core",
     "//components/soda",
+    "//components/strings:components_strings_grit",
     "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
     "//components/user_education/common",

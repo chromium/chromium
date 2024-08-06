@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/ash/picker/picker_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/browsertest_util.h"
@@ -337,8 +338,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.Call([view]() { view->back_button_for_testing().RequestFocus(); });
 
-  sm_.ExpectSpeechPattern(l10n_util::GetStringUTF8(
-      IDS_PICKER_SEARCH_FIELD_BACK_BUTTON_TOOLTIP_TEXT));
+  sm_.ExpectSpeechPattern(l10n_util::GetStringUTF8(IDS_ACCNAME_BACK));
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("Press * to activate");
   sm_.Replay();
