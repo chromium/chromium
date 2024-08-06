@@ -31,7 +31,13 @@ bool ShouldSkipInvisibleTextAt(const Text& text,
 
 String TextIgnoringCSSTextTransforms(const LayoutText& layout_text,
                                      const OffsetMappingUnit& unit) {
-  String text = layout_text.OriginalText();
+  // LayoutTextFragment represents text substring of the element that is split
+  // because of first-letter css. In that case, OriginalText() returns only a
+  // portion of the text. Use CompleteText() instead to get all text from the
+  // associated DOM node.
+  String text = layout_text.IsTextFragment()
+                    ? To<LayoutTextFragment>(layout_text).CompleteText()
+                    : layout_text.OriginalText();
   text = text.Substring(unit.DOMStart(), unit.DOMEnd() - unit.DOMStart());
   // Per the white space processing spec
   // https://drafts.csswg.org/css-text-3/#white-space-processing,
