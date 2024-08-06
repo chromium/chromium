@@ -699,67 +699,80 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
                                         override_available_size);
   }
 
-  MinMaxSizes min_max = ComputeMinMaxBlockSizesDeprecated(
-      space, node, border_padding, override_available_size);
-
-  // Encompass intrinsic block-size, but not beyond computed max-block-size.
-  if (space.MinBlockSizeShouldEncompassIntrinsicSize()) {
-    min_max.Encompass(std::min(intrinsic_size, min_max.max_size));
-  }
-
-  const bool has_aspect_ratio = !style.AspectRatio().IsAuto();
   const Length& logical_height = style.LogicalHeight();
-  const bool has_implicit_stretch =
-      logical_height.HasAuto() &&
-      space.BlockAutoBehavior() == AutoSizeBehavior::kStretchImplicit;
+  const bool has_aspect_ratio = !style.AspectRatio().IsAuto();
+  const bool may_apply_aspect_ratio =
+      has_aspect_ratio && inline_size != kIndefiniteSize;
 
-  const Length& auto_length =
-      (space.IsBlockAutoBehaviorStretch() &&
-       space.AvailableSize().block_size != kIndefiniteSize)
-          ? Length::FillAvailable()
-          : Length::FitContent();
-
-  LayoutUnit extent = kIndefiniteSize;
-  if (has_aspect_ratio && inline_size != kIndefiniteSize) {
-    DCHECK_GE(inline_size, LayoutUnit());
-
-    if (!has_implicit_stretch) {
-      extent = ResolveMainBlockLength(space, style, border_padding,
-                                      logical_height, &auto_length,
-                                      kIndefiniteSize, override_available_size);
+  const Length& auto_length = ([&]() {
+    if (space.AvailableSize().block_size == kIndefiniteSize) {
+      return Length::FitContent();
     }
+    if (space.BlockAutoBehavior() == AutoSizeBehavior::kStretchExplicit) {
+      return Length::FillAvailable();
+    }
+    if (may_apply_aspect_ratio) {
+      return Length::FitContent();
+    }
+    if (space.BlockAutoBehavior() == AutoSizeBehavior::kStretchImplicit) {
+      return Length::FillAvailable();
+    }
+    DCHECK_EQ(space.BlockAutoBehavior(), AutoSizeBehavior::kFitContent);
+    return Length::FitContent();
+  })();
 
-    if (extent == kIndefiniteSize) {
-      extent = BlockSizeFromAspectRatio(
+  // Check if we should apply the automatic minimum size.
+  // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
+  bool apply_automatic_min_size = ([&]() {
+    // We check for LayoutUnit::Max() as flexbox uses this as a "placeholder"
+    // to compute the flex line length while still respecting max-block-size.
+    if (intrinsic_size == kIndefiniteSize ||
+        intrinsic_size == LayoutUnit::Max()) {
+      return false;
+    }
+    if (style.IsScrollContainer()) {
+      return false;
+    }
+    if (!may_apply_aspect_ratio) {
+      return false;
+    }
+    if (logical_height.HasContentOrIntrinsic()) {
+      return true;
+    }
+    if (logical_height.HasAuto() && auto_length.HasContentOrIntrinsic()) {
+      return true;
+    }
+    return false;
+  })();
+
+  auto BlockSizeFunc = [&](SizeType type) {
+    if (type == SizeType::kContent && has_aspect_ratio &&
+        inline_size != kIndefiniteSize) {
+      return BlockSizeFromAspectRatio(
           border_padding, style.LogicalAspectRatio(),
           style.BoxSizingForAspectRatio(), inline_size);
-
-      DCHECK_NE(extent, kIndefiniteSize);
-      // Apply the automatic minimum size for aspect ratio:
-      // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
-      // We also check for LayoutUnit::Max() because flexbox uses that as a
-      // "placeholder" to compute the flex line length while still respecting
-      // max-block-size.
-      if (style.LogicalMinHeight().HasAuto() &&
-          style.OverflowBlockDirection() == EOverflow::kVisible &&
-          intrinsic_size != kIndefiniteSize &&
-          intrinsic_size != LayoutUnit::Max()) {
-        min_max.min_size = std::min(intrinsic_size, min_max.max_size);
-      }
     }
-  }
+    return intrinsic_size;
+  };
 
-  if (extent == kIndefiniteSize) {
-    // TODO(cbiesinger): Audit callers of ResolveMainBlockLength to see whether
-    // they need to respect aspect ratio.
-    extent = ResolveMainBlockLength(space, style, border_padding,
-                                    logical_height, &auto_length,
-                                    intrinsic_size, override_available_size);
-  }
-
+  const LayoutUnit extent = ResolveMainBlockLength(
+      space, style, border_padding, logical_height, &auto_length, BlockSizeFunc,
+      override_available_size);
   if (extent == kIndefiniteSize) {
     DCHECK_EQ(intrinsic_size, kIndefiniteSize);
     return extent;
+  }
+
+  MinMaxSizes min_max = ComputeMinMaxBlockSizesDeprecated(
+      space, node, border_padding, override_available_size);
+
+  // When fragmentation is present often want to encompass the intrinsic size.
+  //
+  // TODO(40339056): For calc-size() we should pass a Length::MinIntrinsic()
+  // for the "auto_length".
+  if (space.MinBlockSizeShouldEncompassIntrinsicSize() ||
+      (apply_automatic_min_size && style.LogicalMinHeight().HasAuto())) {
+    min_max.Encompass(std::min(intrinsic_size, min_max.max_size));
   }
 
   return min_max.ClampSizeToMinAndMax(extent);
