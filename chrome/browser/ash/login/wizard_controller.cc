@@ -1913,15 +1913,7 @@ void WizardController::OnPersonalizedRecomendAppsScreenExit(
     case PersonalizedRecommendAppsScreen::Result::kDataMalformed:
     case PersonalizedRecommendAppsScreen::Result::kError:
     case PersonalizedRecommendAppsScreen::Result::kTimeout:
-      if (features::IsOobePerksDiscoveryEnabled()) {
         ShowPerksDiscoveryScreen();
-      } else if (features::IsOobeAiIntroEnabled()) {
-        ShowAiIntroScreen();
-      } else if (features::IsOobeGeminiIntroEnabled()) {
-        ShowGeminiIntroScreen();
-      } else {
-        ShowAssistantOptInFlowScreen();
-      }
       break;
   }
 }
@@ -2593,15 +2585,7 @@ void WizardController::OnRecommendAppsScreenExit(
     case RecommendAppsScreen::Result::kSkipped:
     case RecommendAppsScreen::Result::kNotApplicable:
     case RecommendAppsScreen::Result::kLoadError:
-      if (features::IsOobePerksDiscoveryEnabled()) {
         ShowPerksDiscoveryScreen();
-      } else if (features::IsOobeAiIntroEnabled()) {
-        ShowAiIntroScreen();
-      } else if (features::IsOobeGeminiIntroEnabled()) {
-        ShowGeminiIntroScreen();
-      } else {
-        ShowAssistantOptInFlowScreen();
-      }
       break;
   }
 }
@@ -2625,16 +2609,7 @@ void WizardController::OnRemoteActivityNotificationScreenExit() {
 
 void WizardController::OnAppDownloadingScreenExit() {
   OnScreenExit(AppDownloadingScreenView::kScreenId, kDefaultExitReason);
-
-  if (features::IsOobePerksDiscoveryEnabled()) {
-    ShowPerksDiscoveryScreen();
-  } else if (features::IsOobeAiIntroEnabled()) {
-    ShowAiIntroScreen();
-  } else if (features::IsOobeGeminiIntroEnabled()) {
-    ShowGeminiIntroScreen();
-  } else {
-    ShowAssistantOptInFlowScreen();
-  }
+  ShowPerksDiscoveryScreen();
 }
 
 void WizardController::OnAiIntroScreenExit(AiIntroScreen::Result result) {
