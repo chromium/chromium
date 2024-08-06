@@ -1242,6 +1242,52 @@ TEST_F(EnclaveManagerTest, UnenrollWithoutRegistering) {
   ASSERT_FALSE(manager_.is_registered());
 }
 
+TEST_F(EnclaveManagerTest, LockPINThenChange) {
+  const std::string pin = "123456";
+  const std::string wrong_pin = "654321";
+
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(pin, setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+
+  std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> entity;
+  DoCreate(/*claimed_pin=*/nullptr, &entity);
+
+  // Use the wrong PIN until it's locked at the enclave.
+  for (int i = 0; i < 5; i++) {
+    std::unique_ptr<device::enclave::ClaimedPIN> wrong_claimed_pin =
+        EnclaveManager::MakeClaimedPINSlowly(wrong_pin,
+                                             manager_.GetWrappedPIN());
+    DoAssertion(
+        std::make_unique<sync_pb::WebauthnCredentialSpecifics>(*entity.get()),
+        std::move(wrong_claimed_pin),
+        GetAssertionResponseExpectation{
+            .result = device::GetAssertionStatus::kUserConsentDenied,
+            .size = 0});
+  }
+
+  // Even the correct PIN should fail now.
+  std::unique_ptr<device::enclave::ClaimedPIN> correct_claimed_pin =
+      EnclaveManager::MakeClaimedPINSlowly(pin, manager_.GetWrappedPIN());
+  DoAssertion(
+      std::make_unique<sync_pb::WebauthnCredentialSpecifics>(*entity.get()),
+      std::move(correct_claimed_pin),
+      GetAssertionResponseExpectation{
+          .result = device::GetAssertionStatus::kUserConsentDenied, .size = 0});
+
+  // Change the PIN.
+  const std::string new_pin = "123123";
+  BoolFuture change_future;
+  manager_.ChangePIN(new_pin, "rapt", change_future.GetCallback());
+  ASSERT_TRUE(change_future.Get());
+
+  // The new PIN should work.
+  std::unique_ptr<device::enclave::ClaimedPIN> new_correct_claimed_pin =
+      EnclaveManager::MakeClaimedPINSlowly(new_pin, manager_.GetWrappedPIN());
+  DoAssertion(std::move(entity), std::move(new_correct_claimed_pin),
+              GetAssertionResponseExpectation());
+}
+
 // Tests that rely on `ScopedMockUnexportableKeyProvider` only work on
 // platforms where EnclaveManager uses `GetUnexportableKeyProvider`, as opposed
 // to `GetSoftwareUnsecureUnexportableKeyProvider`.

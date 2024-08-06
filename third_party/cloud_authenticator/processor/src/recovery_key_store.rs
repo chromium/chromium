@@ -1541,7 +1541,7 @@ pub(crate) fn do_wrap(
 /// done user verification or else reauthenticated very recently.
 pub(crate) fn do_wrap_as_member(
     auth: &Authentication,
-    state: &DirtyFlag<ParsedState>,
+    state: &mut DirtyFlag<ParsedState>,
     current_time_epoch_millis: i64,
     request: BTreeMap<MapKey, Value>,
 ) -> Result<cbor::Value, RequestError> {
@@ -1568,6 +1568,13 @@ pub(crate) fn do_wrap_as_member(
         current_time_epoch_millis,
     )
     .map_err(RequestError::Debug)?;
+
+    // Reset the PIN count. This operation allows the client to change the PIN thus
+    // they could request the security domain secret from Folsom. Getting another
+    // batch of PIN attempts is less powerful than that and it allows the device to
+    // use the new PIN immediately, without reregistering with the enclave.
+    state.get_mut().set_pin_state(device_id, super::PINState { attempts: 0 })?;
+
     include_security_domain_member_fields(wrapped, &security_domain_secret)
 }
 
