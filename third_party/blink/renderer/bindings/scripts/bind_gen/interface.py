@@ -2616,15 +2616,27 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
     # Pass ${exception_state} after the method arguments.
     if cg_context.may_throw_exception:
         blink_arguments.append("${exception_state}")
-    body.append(
-        F("${blink_receiver}->{member_func}({blink_arguments});",
-          member_func=backward_compatible_api_func(cg_context),
-          blink_arguments=", ".join(blink_arguments)))
+
+    is_return_type_void = function_like.return_type.is_undefined
+
+    if is_return_type_void:
+        body.append(
+            F("${blink_receiver}->{member_func}({blink_arguments});",
+              member_func=backward_compatible_api_func(cg_context),
+              blink_arguments=", ".join(blink_arguments)))
+    else:
+        body.append(
+            F("auto&& return_value = ${blink_receiver}->{member_func}({blink_arguments});",
+              member_func=backward_compatible_api_func(cg_context),
+              blink_arguments=", ".join(blink_arguments)))
     if cg_context.may_throw_exception:
         body.append(
             CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
                               attribute="[[unlikely]]",
                               body=T("return;")))
+
+    if not is_return_type_void:
+        body.extend([T("return return_value;")])
 
     return func_def
 
