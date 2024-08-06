@@ -21,6 +21,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
@@ -93,6 +94,7 @@ std::unique_ptr<views::Widget> CreateWidget(
           .SetCancelCallback(std::move(learn_more_callback))
           .SetTopContentView(
               views::Builder<views::ImageView>().SetImage(GetIllustration()))
+          .SetModalType(ui::ModalType::MODAL_TYPE_SYSTEM)
           .Build();
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
