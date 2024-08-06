@@ -774,6 +774,16 @@ def main():
         # changes that move submodules.
         GitApplyCherryPicks()
 
+        # TODO(crbug.com/356618943): Workaround for https://github.com/rust-lang/cargo/issues/14253
+        bootstrap_cargo = os.path.join(RUST_SRC_DIR, 'src', 'bootstrap',
+                                       'Cargo.toml')
+        with open(bootstrap_cargo, 'r') as f:
+            lines = f.readlines()
+        with open(bootstrap_cargo, 'w') as f:
+            for l in lines:
+                if l.strip('\n') != 'debug = 0':
+                    f.write(l)
+
         CargoVendor(cargo_bin)
 
     # Gnrt needs the checkout to be up-to-date, workspace submodules to be
