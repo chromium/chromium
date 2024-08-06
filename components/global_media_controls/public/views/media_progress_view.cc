@@ -55,6 +55,9 @@ constexpr int kProgressPhaseSpeed = 28;
 constexpr gfx::SizeF kSquigglyProgressIndicatorSize = gfx::SizeF(6, 14);
 constexpr gfx::SizeF kStraightProgressIndicatorSize = gfx::SizeF(4, 16);
 
+// The width of the gap between the progress indicator and the straight lines.
+constexpr int kStraightProgressIndicatorGap = 4;
+
 // Defines how long the animation for progress transitioning between squiggly
 // and straight lines will take.
 constexpr base::TimeDelta kSlideAnimationDuration = base::Milliseconds(200);
@@ -206,12 +209,17 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
     canvas->ClipRect(gfx::Rect(0, 0, progress_width, view_height));
     canvas->DrawPath(progress_path, flags);
   } else {
-    // Paint a foreground straight progress line with rounded corners.
+    // Paint the foreground straight progress line with rounded corners.
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    canvas->DrawRoundRect(
-        gfx::RectF(0, (view_height - foreground_straight_line_width_) / 2,
-                   progress_width, foreground_straight_line_width_),
-        foreground_straight_line_width_ / 2, flags);
+    int straight_progress_width = progress_width -
+                                  kStraightProgressIndicatorGap -
+                                  kStraightProgressIndicatorSize.width() / 2;
+    if (straight_progress_width > 0) {
+      canvas->DrawRoundRect(
+          gfx::RectF(0, (view_height - foreground_straight_line_width_) / 2,
+                     straight_progress_width, foreground_straight_line_width_),
+          foreground_straight_line_width_ / 2, flags);
+    }
   }
   canvas->Restore();
 
@@ -226,15 +234,18 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
                  indicator_size),
       indicator_size.width() / 2, flags);
 
-  // Paint the background straight line.
-  if (progress_width + indicator_size.width() / 2 < view_width) {
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
+  // Paint the background straight line with rounded corners.
+  int background_line_x =
+      progress_width + indicator_size.width() / 2 +
+      (use_squiggly_line_ ? 0 : kStraightProgressIndicatorGap);
+  if (background_line_x < view_width) {
     flags.setColor(
         color_provider->GetColor(is_paused_ ? paused_background_color_id_
                                             : playing_background_color_id_));
-    canvas->DrawLine(gfx::PointF(progress_width + indicator_size.width() / 2,
-                                 view_height / 2),
-                     gfx::PointF(view_width, view_height / 2), flags);
+    canvas->DrawRoundRect(
+        gfx::RectF(background_line_x, (view_height - kStrokeWidth) / 2,
+                   view_width - background_line_x, kStrokeWidth),
+        kStrokeWidth / 2, flags);
   }
   canvas->Restore();
 
