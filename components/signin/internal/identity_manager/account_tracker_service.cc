@@ -71,10 +71,6 @@ const char kAdvancedProtectionAccountStatusKey[] =
     "is_under_advanced_protection";
 const char kAccountAccessPoint[] = "access_point";
 
-// This key is deprecated since 2021/07 and should be removed after migration.
-// It was replaced by kAccountChildAttributeKey.
-const char kDeprecatedChildStatusKey[] = "is_child_account";
-
 // This key is deprecated since 2022/02 and should be removed after migration.
 // It was replaced by GetCapabilityPrefPath(capability_name) method that derives
 // pref name based on the Capabilities service key.
@@ -667,21 +663,8 @@ void AccountTrackerService::LoadFromPrefs() {
     GetString(*dict, kLastDownloadedImageURLWithSizeKey,
               account_info.last_downloaded_image_url_with_size);
 
-    if (std::optional<bool> is_child_status =
-            dict->FindBool(kDeprecatedChildStatusKey)) {
-      account_info.is_child_account = is_child_status.value()
-                                          ? signin::Tribool::kTrue
-                                          : signin::Tribool::kFalse;
-      // Migrate to kAccountChildAttributeKey.
-      ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-      base::Value::Dict& update_dict = (*update)[i].GetDict();
-      update_dict.Set(kAccountChildAttributeKey,
-                      static_cast<int>(account_info.is_child_account));
-      update_dict.Remove(kDeprecatedChildStatusKey);
-    } else {
-      account_info.is_child_account =
-          ParseTribool(dict->FindInt(kAccountChildAttributeKey));
-    }
+    account_info.is_child_account =
+        ParseTribool(dict->FindInt(kAccountChildAttributeKey));
 
     std::optional<bool> is_under_advanced_protection =
         dict->FindBool(kAdvancedProtectionAccountStatusKey);
