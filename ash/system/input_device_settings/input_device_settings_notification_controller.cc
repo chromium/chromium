@@ -352,9 +352,6 @@ std::u16string GetSixPackShortcutUpdatedString(ui::KeyboardCode key_code) {
     case ui::VKEY_DELETE:
       return l10n_util::GetStringUTF16(
           IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_DELETE_NUDGE_DESCRIPTION);
-    case ui::VKEY_INSERT:
-      return l10n_util::GetStringUTF16(
-          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_INSERT_NUDGE_DESCRIPTION);
     default:
       NOTREACHED_NORETURN();
   }
@@ -1160,8 +1157,6 @@ void InputDeviceSettingsNotificationController::ShowTopRowRewritingNudge() {
       kTopRowKeyNoMatchNudgeId, NudgeCatalogName::kSearchTopRowKeyPressed,
       l10n_util::GetStringUTF16(
           IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_TOP_ROW_NUDGE_DESCRIPTION));
-  nudge_data.title_text = l10n_util::GetStringUTF16(
-      IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_NUDGE_TITLE);
   nudge_data.image_model =
       ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
           IDR_KEYBOARD_FN_KEY_NUDGE_IMAGE);
@@ -1174,6 +1169,12 @@ void InputDeviceSettingsNotificationController::ShowSixPackKeyRewritingNudge(
     SixPackShortcutModifier old_matched_modifier) {
   if (!IsActiveUserSession() ||
       !ui::KeyboardCapability::IsSixPackKey(key_code)) {
+    return;
+  }
+
+  // Insert does not have a notification to show even though it is a six-pack
+  // key.
+  if (key_code == ui::VKEY_INSERT) {
     return;
   }
 
@@ -1231,8 +1232,6 @@ void InputDeviceSettingsNotificationController::ShowSixPackKeyRewritingNudge(
   AnchoredNudgeData nudge_data(kSixPackKeyNoMatchNudgeId,
                                NudgeCatalogName::kSixPackRemappingPressed,
                                GetSixPackShortcutUpdatedString(key_code));
-  nudge_data.title_text = l10n_util::GetStringUTF16(
-      IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_NUDGE_TITLE);
   std::vector<ui::KeyboardCode> keyboard_codes = {ui::VKEY_FUNCTION};
   InsertSixPackShortcutKeyboardCodes(key_code, keyboard_codes);
   nudge_data.keyboard_codes = std::move(keyboard_codes);
@@ -1270,8 +1269,6 @@ void InputDeviceSettingsNotificationController::ShowCapsLockRewritingNudge() {
       kCapsLockNoMatchNudgeId, NudgeCatalogName::kCapsLockShortcutPressed,
       l10n_util::GetStringUTF16(
           IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_CAPS_LOCK_NUDGE_DESCRIPTION));
-  nudge_data.title_text = l10n_util::GetStringUTF16(
-      IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_NUDGE_TITLE);
   nudge_data.keyboard_codes = {ui::VKEY_FUNCTION, ui::VKEY_RIGHT_ALT};
   nudge_data.image_model =
       ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(

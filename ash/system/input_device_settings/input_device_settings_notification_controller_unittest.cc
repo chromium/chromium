@@ -670,18 +670,6 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
       Shell::Get()->anchored_nudge_manager();
   ASSERT_TRUE(nudge_manager);
 
-  // Display nudge for VKEY_INSERT.
-  controller()->ShowSixPackKeyRewritingNudge(
-      ui::VKEY_INSERT, ui::mojom::SixPackShortcutModifier::kSearch);
-
-  EXPECT_TRUE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
-  EXPECT_EQ(
-      nudge_manager->GetNudgeBodyTextForTest(kSixPackKeyNoMatchNudgeId),
-      l10n_util::GetStringUTF16(
-          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_INSERT_NUDGE_DESCRIPTION));
-  CancelNudge(kSixPackKeyNoMatchNudgeId);
-  EXPECT_FALSE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
-
   // Display nudge for VKEY_DELETE.
   controller()->ShowSixPackKeyRewritingNudge(
       ui::VKEY_DELETE, ui::mojom::SixPackShortcutModifier::kSearch);
