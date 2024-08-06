@@ -130,6 +130,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     }
 
     private void onReadAloudControllerSupplierReady(ReadAloudController readAloudController) {
+        if (readAloudController == null) return;
         if (mReadAloudActivePlaybackTab == null) {
             mReadAloudActivePlaybackTab = readAloudController.getActivePlaybackTabSupplier();
         }
