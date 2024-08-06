@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/test/popup_test_base.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -198,6 +199,51 @@ IN_PROC_BROWSER_TEST_F(PopupTest, NoopenerPositioning) {
 
   EXPECT_EQ(noopener_popup->window()->GetBounds().ToString(),
             opener_popup->window()->GetBounds().ToString());
+}
+
+// Tests for Additional Windowing Controls on popup windows.
+// https://chromestatus.com/feature/5201832664629248
+// For PWA tests see WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
+class PopupTest_AdditionalWindowingControls : public PopupTest {
+ private:
+  base::test::ScopedFeatureList feature_list{
+      blink::features::kDesktopPWAsAdditionalWindowingControls};
+};
+
+// Ensure that moving a popup by moveTo/moveBy generates a `move` event.
+// Note: window.moveTo/moveBy API is enabled only for popups and web apps.
+IN_PROC_BROWSER_TEST_F(PopupTest_AdditionalWindowingControls,
+                       MoveCallFiresMoveEvent) {
+  const char popup_script[] =
+      R"(var command = "%s";
+      var coordString = (x, y) => `(X: ${x}, Y: ${y})`;
+      new Promise((resolve, reject) => {
+        const coord_before = coordString(screenX, screenY);
+        addEventListener('move', e => resolve(`move fired`));
+        setTimeout(() => {
+          const coord_after = coordString(screenX, screenY);
+          reject(`move not fired by ${command}; window position: `
+               + `${coord_before} -> ${coord_after}`); }, 1000);
+        %s;
+        }).finally(()=>close()); )";
+
+  for (const char* const move_command : {"moveBy(10, 10)", "moveTo(50, 50)"}) {
+    std::string script =
+        base::StringPrintf(popup_script, move_command, move_command);
+
+    Browser* popup = OpenPopup(
+        browser(), "open('.', '', 'left=0,top=0,width=50,height=50')");
+    content::WebContents* popup_contents =
+        popup->tab_strip_model()->GetActiveWebContents();
+
+    gfx::Rect bounds_before = popup->window()->GetBounds();
+    SCOPED_TRACE(testing::Message()
+                 << " move-command: " << move_command
+                 << " popup-before: " << bounds_before.ToString());
+    EXPECT_EQ(content::EvalJs(popup_contents, script), "move fired");
+    gfx::Rect bounds_after = popup->window()->GetBounds();
+    EXPECT_NE(bounds_before.ToString(), bounds_after.ToString());
+  }
 }
 
 }  // namespace

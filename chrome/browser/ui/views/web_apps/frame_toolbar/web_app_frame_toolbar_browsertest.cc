@@ -1825,6 +1825,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_FALSE(draggable_region.value().isEmpty());
 }
 
+// Tests for Additional Windowing Controls on web app windows.
+// https://chromestatus.com/feature/5201832664629248
+// For popup tests see PopupTest_AdditionalWindowingControls
 #if !BUILDFLAG(IS_ANDROID)
 class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
     : public WebAppFrameToolbarBrowserTest {
@@ -2268,6 +2271,50 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(browser_view->IsMaximized());
 }
 #endif  // !BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    MoveCallFiresMoveEvent) {
+  InstallAndLaunchWebApp();
+  helper()->browser_view()->SetCanResize(true);
+  auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+
+  // Ensure the window is small enough to be moved within the screen boundaries.
+  const char resize_script[] =
+      R"(new Promise((resolve, reject) => {
+        addEventListener('resize', e => resolve('resized'));
+        setTimeout(() => reject('The window failed to resize.'), 1000);
+        resizeTo(100, 100);
+      }); )";
+  EXPECT_EQ(content::EvalJs(web_contents, resize_script), "resized");
+
+  const char script_template[] =
+      R"(var command = "%s";
+      var coordString = (x, y) => `(X: ${x}, Y: ${y})`;
+      moveTest = new Promise((resolve, reject) => {
+        const coord_before = coordString(screenX, screenY);
+        addEventListener('move', e => resolve(`move fired`));
+        setTimeout(() => {
+          const coord_after = coordString(screenX, screenY);
+          reject(`move not fired by ${command}; window position: `
+               + `${coord_before} -> ${coord_after}`); }, 1000);
+        %s;});
+      )";
+
+  for (const char* const move_command : {"moveBy(10,10)", "moveTo(50,50)"}) {
+    std::string script =
+        base::StringPrintf(script_template, move_command, move_command);
+
+    gfx::Rect bounds_before = helper()->app_browser()->window()->GetBounds();
+    SCOPED_TRACE(testing::Message()
+                 << " move-command: " << move_command
+                 << " popup-before: " << bounds_before.ToString());
+    EXPECT_EQ(content::EvalJs(web_contents, script), "move fired");
+    gfx::Rect bounds_after = helper()->app_browser()->window()->GetBounds();
+    EXPECT_NE(bounds_before.ToString(), bounds_after.ToString());
+  }
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class OriginTextVisibilityWaiter : public views::ViewObserver {
