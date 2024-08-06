@@ -89,13 +89,13 @@ class EmojiSearch {
     std::map<std::string, std::string, std::less<>> names;
   };
 
-  std::map<LanguageCode, LanguageData> language_data_;
-
   std::optional<LanguageResourceIds> GetLanguageResourceIds(LanguageCode code);
 
   std::optional<LanguageCode> GetLanguageCode(std::string_view code) const;
 
   void LoadLanguage(std::string_view language_code);
+
+  std::map<LanguageCode, LanguageData> language_data_;
 };
 }  // namespace emoji
 
