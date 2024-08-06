@@ -3471,6 +3471,41 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   CheckPasswordManagerVisitMetricCount(0);
 }
 
+// Checks that the user is prompt to set a passcode after backgrounding and
+// foregrounding the app and no passcode is set, while in a surface that
+// requires Local Authentication.
+- (void)testSetPasscodeAlertPresentedAfterBackgroundingApp {
+  OpenPasswordManager();
+
+  // Password Manager should be visible.
+  CheckVisibilityOfElement(/*matcher=*/PasswordsTableViewMatcher(),
+                           /*is_visible=*/true);
+  // Simulate passcode not set.
+  [PasswordSettingsAppInterface mockReauthenticationModuleCanAttempt:NO];
+  // Trigger local authentication by backgrounding the app.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  if ([PasswordSettingsAppInterface isPasscodeSettingsAvailable]) {
+    // Go to Settings should be present.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::AlertAction(
+                                            @"Go to Settings")]
+        assertWithMatcher:grey_notNil()];
+  } else {
+    // Dismiss the passcode alert, this should dismiss the Password Manager.
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                     IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE))]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
+        performAction:grey_tap()];
+
+    // Check for the Settings page after Password Manager is gone.
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
+}
+
 // Tests that the Password Manager is opened is search mode when opened from the
 // Search Passwords widget.
 - (void)testOpenSearchPasswordsWidget {
