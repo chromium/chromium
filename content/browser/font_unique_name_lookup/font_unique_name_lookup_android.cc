@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/font_unique_name_lookup/font_unique_name_lookup.h"
+#include "content/browser/font_unique_name_lookup/font_unique_name_lookup_android.h"
 
 #include <set>
 #include <vector>
 
+#include "build/build_config.h"
 #include "base/android/build_info.h"
 #include "base/check.h"
 #include "base/files/file.h"
@@ -38,12 +39,21 @@
 #include FT_TRUETYPE_IDS_H
 // clang-format on
 
+static_assert(BUILDFLAG(IS_ANDROID), "This implementation only works safely "
+              "on Android due to the way it assumes font files to be "
+              "read-only and unmodifiable.");
+
 namespace {
 
 // Increment this suffix when changes are needed to the cache structure, e.g.
 // counting up after the dash "-1", "-2", etc.
 const char kFingerprintSuffixForceUpdateCache[] = "-2";
 const char kProtobufFilename[] = "font_unique_name_table.pb";
+
+// These directories contain read-only font files stored in ROM.
+// Memory-mapping these files avoids large RAM allocations.
+// DO NOT add directories here unless the files are guaranteed read-only.
+// Modifying these files typically requires a firmware or system update.
 static const char* const kAndroidFontPaths[] = {
     "/system/fonts", "/vendor/fonts", "/product/fonts"};
 

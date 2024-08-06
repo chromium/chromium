@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FONT_UNIQUE_NAME_LOOKUP_FONT_UNIQUE_NAME_LOOKUP_H_
-#define CONTENT_BROWSER_FONT_UNIQUE_NAME_LOOKUP_FONT_UNIQUE_NAME_LOOKUP_H_
+#ifndef CONTENT_BROWSER_FONT_UNIQUE_NAME_LOOKUP_FONT_UNIQUE_NAME_LOOKUP_ANDROID_H_
+#define CONTENT_BROWSER_FONT_UNIQUE_NAME_LOOKUP_FONT_UNIQUE_NAME_LOOKUP_ANDROID_H_
 
 #include "base/files/file_path.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -13,6 +13,10 @@
 #include "third_party/blink/public/mojom/font_unique_name_lookup/font_unique_name_lookup.mojom.h"
 
 #include <string>
+
+static_assert(BUILDFLAG(IS_ANDROID), "This implementation only works safely "
+              "on Android due to the way it assumes font files to be "
+              "read-only and unmodifiable.");
 
 namespace content {
 
@@ -142,4 +146,4 @@ class CONTENT_EXPORT FontUniqueNameLookup {
 };
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FONT_UNIQUE_NAME_LOOKUP_FONT_UNIQUE_NAME_LOOKUP_H_
+#endif  // CONTENT_BROWSER_FONT_UNIQUE_NAME_LOOKUP_FONT_UNIQUE_NAME_LOOKUP_ANDROID_H_

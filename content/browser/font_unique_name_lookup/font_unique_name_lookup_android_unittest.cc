@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/font_unique_name_lookup/font_unique_name_lookup.h"
+#include "content/browser/font_unique_name_lookup/font_unique_name_lookup_android.h"
 
 #include <functional>
 #include <memory>
@@ -12,6 +12,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/function_ref.h"
 #include "base/strings/string_util.h"
 #include "content/browser/font_unique_name_lookup/name_table_ffi.rs.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -275,7 +276,8 @@ class FontFileCorruptor {
   std::vector<std::string> GetFontFilesList() { return copied_files_; }
 
  private:
-  void ForEachCopiedFontFile(std::function<void(base::File&)> manipulate_file) {
+  void ForEachCopiedFontFile(
+      base::FunctionRef<void(base::File&)> manipulate_file) {
     for (const auto& filename : copied_files_) {
       base::File font_file(base::FilePath(filename),
                            base::File::FLAG_OPEN | base::File::FLAG_READ |

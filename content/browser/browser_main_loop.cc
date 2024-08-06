@@ -178,7 +178,7 @@
 #include "content/browser/android/launcher_thread.h"
 #include "content/browser/android/scoped_surface_request_manager.h"
 #include "content/browser/android/tracing_controller_android.h"
-#include "content/browser/font_unique_name_lookup/font_unique_name_lookup.h"
+#include "content/browser/font_unique_name_lookup/font_unique_name_lookup_android.h"
 #include "content/browser/screen_orientation/screen_orientation_delegate_android.h"
 #include "media/base/android/media_drm_bridge_client.h"
 #include "ui/android/screen_android.h"
