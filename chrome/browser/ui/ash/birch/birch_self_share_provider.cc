@@ -9,6 +9,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -19,6 +20,19 @@
 #include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
+
+namespace {
+
+// The time before a `SendTabToSelfEntry` should be excluded from the
+// `BirchModel`. This is the same expiration time for a device in
+// `GetTargetDeviceInfoSortedList` for `SendTabToSelfBridge`.
+constexpr base::TimeDelta kEntryExpiration = base::Days(10);
+
+bool IsEntryExpired(base::Time shared_time) {
+  return base::Time::Now() - shared_time > kEntryExpiration;
+}
+
+}  // namespace
 
 BirchSelfShareProvider::BirchSelfShareProvider(Profile* profile)
     : profile_(profile),
@@ -82,7 +96,8 @@ void BirchSelfShareProvider::RequestBirchDataFetch() {
   for (std::string guid : new_guids) {
     const send_tab_to_self::SendTabToSelfEntry* entry =
         model->GetEntryByGUID(guid);
-    if (entry && !entry->IsOpened()) {
+    if (entry && !entry->IsOpened() &&
+        !IsEntryExpired(entry->GetSharedTime())) {
       const std::string entry_guid = entry->GetGUID();
       const std::string device_cache_guid =
           entry->GetTargetDeviceSyncCacheGuid();
