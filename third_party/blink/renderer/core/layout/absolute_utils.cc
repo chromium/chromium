@@ -368,7 +368,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
     WritingDirectionMode self_writing_direction) {
   bool force_x_insets_to_zero = false;
   bool force_y_insets_to_zero = false;
-  std::optional<InsetAreaOffsets> offsets = style.InsetAreaOffsets();
+  std::optional<PositionAreaOffsets> offsets = style.PositionAreaOffsets();
   if (offsets.has_value()) {
     force_x_insets_to_zero = force_y_insets_to_zero = true;
   }
@@ -430,11 +430,11 @@ LogicalAlignment ComputeAlignment(
     WritingDirectionMode self_writing_direction) {
   ItemPosition align_normal_behavior = ItemPosition::kNormal;
   ItemPosition justify_normal_behavior = ItemPosition::kNormal;
-  const InsetArea inset_area = style.GetInsetArea().ToPhysical(
+  const PositionArea position_area = style.GetPositionArea().ToPhysical(
       container_writing_direction, self_writing_direction);
-  if (!inset_area.IsNone()) {
+  if (!position_area.IsNone()) {
     std::tie(align_normal_behavior, justify_normal_behavior) =
-        inset_area.AlignJustifySelfFromPhysical(container_writing_direction);
+        position_area.AlignJustifySelfFromPhysical(container_writing_direction);
   }
   const bool is_parallel =
       IsParallelWritingMode(container_writing_direction.GetWritingMode(),

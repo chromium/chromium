@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_POSITION_TRY_DESCRIPTORS_H_
 
 #include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -57,6 +58,8 @@ class CORE_EXPORT CSSPositionTryDescriptors
   String alignSelf() { return Get(CSSPropertyID::kAlignSelf); }
   String justifySelf() { return Get(CSSPropertyID::kJustifySelf); }
   String positionAnchor() { return Get(CSSPropertyID::kPositionAnchor); }
+  String positionArea() { return Get(CSSPropertyID::kPositionArea); }
+  // TODO(crbug.com/352360007): this can be removed when inset-area is removed.
   String insetArea() { return Get(CSSPropertyID::kInsetArea); }
 
   void setMargin(const ExecutionContext* execution_context,
@@ -264,9 +267,18 @@ class CORE_EXPORT CSSPositionTryDescriptors
     Set(execution_context, CSSPropertyID::kPositionAnchor, value,
         exception_state);
   }
+  void setPositionArea(const ExecutionContext* execution_context,
+                       const String& value,
+                       ExceptionState& exception_state) {
+    DCHECK(RuntimeEnabledFeatures::CSSPositionAreaPropertyEnabled());
+    Set(execution_context, CSSPropertyID::kPositionArea, value,
+        exception_state);
+  }
+  // TODO(crbug.com/352360007): this can be removed when inset-area is removed.
   void setInsetArea(const ExecutionContext* execution_context,
                     const String& value,
                     ExceptionState& exception_state) {
+    DCHECK(RuntimeEnabledFeatures::CSSInsetAreaPropertyEnabled());
     Set(execution_context, CSSPropertyID::kInsetArea, value, exception_state);
   }
 

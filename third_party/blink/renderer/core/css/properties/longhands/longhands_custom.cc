@@ -4709,6 +4709,17 @@ bool InlineSize::IsLayoutDependent(const ComputedStyle* style,
   return layout_object && (layout_object->IsBox() || layout_object->IsSVG());
 }
 
+const CSSValue* PositionArea::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext&,
+    const CSSParserLocalContext&) const {
+  if (stream.Peek().Id() == CSSValueID::kNone) {
+    return css_parsing_utils::ConsumeIdent(stream);
+  }
+  return css_parsing_utils::ConsumePositionArea(stream);
+}
+
+// TODO(crbug.com/352360007): this can be removed when inset-area is removed.
 const CSSValue* InsetArea::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext&,
@@ -4716,47 +4727,57 @@ const CSSValue* InsetArea::ParseSingleValue(
   if (stream.Peek().Id() == CSSValueID::kNone) {
     return css_parsing_utils::ConsumeIdent(stream);
   }
-  return css_parsing_utils::ConsumeInsetArea(stream);
+  return css_parsing_utils::ConsumePositionArea(stream);
 }
 
+const CSSValue* PositionArea::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValueForPositionArea(style.GetPositionArea());
+}
+
+// TODO(crbug.com/352360007): this can be removed when inset-area is removed.
 const CSSValue* InsetArea::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForInsetArea(style.GetInsetArea());
+  return ComputedStyleUtils::ValueForPositionArea(style.GetPositionArea());
 }
 
 namespace {
 
-void ComputeAnchorEdgeOffsetsForInsetArea(StyleResolverState& state,
-                                          blink::InsetArea inset_area) {
+void ComputeAnchorEdgeOffsetsForPositionArea(
+    StyleResolverState& state,
+    blink::PositionArea position_area) {
   if (AnchorEvaluator* evaluator =
           state.CssToLengthConversionData().GetAnchorEvaluator()) {
-    state.SetInsetAreaOffsets(evaluator->ComputeInsetAreaOffsetsForLayout(
-        state.StyleBuilder().PositionAnchor(), inset_area));
+    state.SetPositionAreaOffsets(evaluator->ComputePositionAreaOffsetsForLayout(
+        state.StyleBuilder().PositionAnchor(), position_area));
   }
   state.StyleBuilder().SetHasAnchorFunctions();
 }
 
 }  // namespace
 
-void InsetArea::ApplyValue(StyleResolverState& state,
-                           const CSSValue& value,
-                           ValueMode) const {
-  blink::InsetArea inset_area =
-      StyleBuilderConverter::ConvertInsetArea(state, value);
-  state.StyleBuilder().SetInsetArea(inset_area);
-  if (!inset_area.IsNone()) {
-    ComputeAnchorEdgeOffsetsForInsetArea(state, inset_area);
+void PositionArea::ApplyValue(StyleResolverState& state,
+                              const CSSValue& value,
+                              ValueMode) const {
+  blink::PositionArea position_area =
+      StyleBuilderConverter::ConvertPositionArea(state, value);
+  state.StyleBuilder().SetPositionArea(position_area);
+  if (!position_area.IsNone()) {
+    ComputeAnchorEdgeOffsetsForPositionArea(state, position_area);
   }
 }
 
-void InsetArea::ApplyInherit(StyleResolverState& state) const {
-  blink::InsetArea inset_area = state.ParentStyle()->GetInsetArea();
-  state.StyleBuilder().SetInsetArea(inset_area);
-  if (!inset_area.IsNone()) {
-    ComputeAnchorEdgeOffsetsForInsetArea(state, inset_area);
+void PositionArea::ApplyInherit(StyleResolverState& state) const {
+  blink::PositionArea position_area = state.ParentStyle()->GetPositionArea();
+  state.StyleBuilder().SetPositionArea(position_area);
+  if (!position_area.IsNone()) {
+    ComputeAnchorEdgeOffsetsForPositionArea(state, position_area);
   }
 }
 
@@ -7186,21 +7207,21 @@ void PositionTryFallbacks::ApplyValue(StyleResolverState& state,
   }
   HeapVector<PositionTryFallback> fallbacks;
   for (const auto& fallback : To<CSSValueList>(value)) {
-    // inset-area( <inset-area> )
+    // position-area( <position-area> )
     if (const auto* function = DynamicTo<CSSFunctionValue>(fallback.Get())) {
-      CHECK(!RuntimeEnabledFeatures::CSSInsetAreaValueEnabled());
+      CHECK(!RuntimeEnabledFeatures::CSSPositionAreaValueEnabled());
       CHECK_EQ(1u, function->length());
-      blink::InsetArea inset_area =
-          StyleBuilderConverter::ConvertInsetArea(state, function->First());
-      fallbacks.push_back(PositionTryFallback(inset_area));
+      blink::PositionArea position_area =
+          StyleBuilderConverter::ConvertPositionArea(state, function->First());
+      fallbacks.push_back(PositionTryFallback(position_area));
       continue;
     }
-    // <'inset-area'>
+    // <'position-area'>
     if (IsA<CSSValuePair>(fallback.Get()) ||
         IsA<CSSIdentifierValue>(fallback.Get())) {
-      blink::InsetArea inset_area =
-          StyleBuilderConverter::ConvertInsetArea(state, *fallback.Get());
-      fallbacks.push_back(PositionTryFallback(inset_area));
+      blink::PositionArea position_area =
+          StyleBuilderConverter::ConvertPositionArea(state, *fallback.Get());
+      fallbacks.push_back(PositionTryFallback(position_area));
       continue;
     }
     // [<dashed-ident> || <try-tactic>]

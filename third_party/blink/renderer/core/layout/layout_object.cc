@@ -1357,13 +1357,13 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
 
   // OOF-positioned objects which rely on their static-position for placement
   // cannot be relayout boundaries (their final position would be incorrect).
-  // TODO(crbug.com/1477314): Ignoring inset-area means we may not allow using
-  // the object as a relayout boundary even if inset-area causes the object to
-  // not rely on static position.
+  // TODO(crbug.com/40280256): Ignoring position-area means we may not allow
+  // using the object as a relayout boundary even if position-area causes the
+  // object to not rely on static position.
   const ComputedStyle* style = box->Style();
   if (box->IsOutOfFlowPositioned() &&
-      (style->HasAutoLeftAndRightIgnoringInsetArea() ||
-       style->HasAutoTopAndBottomIgnoringInsetArea())) {
+      (style->HasAutoLeftAndRightIgnoringPositionArea() ||
+       style->HasAutoTopAndBottomIgnoringPositionArea())) {
     return false;
   }
 

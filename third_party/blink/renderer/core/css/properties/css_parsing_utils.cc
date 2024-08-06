@@ -8479,21 +8479,21 @@ CSSValue* ConsumeDashedIdentOrTactic(CSSParserTokenStream& stream,
   return list;
 }
 
-// inset-area( <inset-area> )
-CSSValue* ConsumeInsetAreaFunction(CSSParserTokenStream& stream) {
-  CHECK(!RuntimeEnabledFeatures::CSSInsetAreaValueEnabled());
+// position-area( <position-area> )
+CSSValue* ConsumePositionAreaFunction(CSSParserTokenStream& stream) {
+  CHECK(!RuntimeEnabledFeatures::CSSPositionAreaValueEnabled());
 
-  if (stream.Peek().FunctionId() != CSSValueID::kInsetArea) {
+  if (stream.Peek().FunctionId() != CSSValueID::kPositionArea) {
     return nullptr;
   }
   CSSParserTokenRange arg = ConsumeFunction(stream);
-  const CSSValue* inset_area = ConsumeInsetArea(arg);
-  if (!inset_area) {
+  const CSSValue* position_area = ConsumePositionArea(arg);
+  if (!position_area) {
     return nullptr;
   }
   auto* function =
-      MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kInsetArea);
-  function->Append(*inset_area);
+      MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPositionArea);
+  function->Append(*position_area);
   return function;
 }
 
@@ -8505,17 +8505,17 @@ CSSValue* ConsumeSinglePositionTryFallback(CSSParserTokenStream& stream,
   if (CSSValue* value = ConsumeDashedIdentOrTactic(stream, context)) {
     return value;
   }
-  if (RuntimeEnabledFeatures::CSSInsetAreaValueEnabled()) {
-    // <inset-area>
-    return ConsumeInsetArea(stream);
+  if (RuntimeEnabledFeatures::CSSPositionAreaValueEnabled()) {
+    // <position-area>
+    return ConsumePositionArea(stream);
   }
-  // inset-area( <inset-area> )
-  return ConsumeInsetAreaFunction(stream);
+  // position-area( <position-area> )
+  return ConsumePositionAreaFunction(stream);
 }
 
 CSSValue* ConsumePositionTryFallbacks(CSSParserTokenStream& stream,
                                       const CSSParserContext& context) {
-  // none | [ [<dashed-ident> || <try-tactic>] | <'inset-area'> ]#
+  // none | [ [<dashed-ident> || <try-tactic>] | <'position-area'> ]#
   if (stream.Peek().Id() == CSSValueID::kNone) {
     return ConsumeIdent(stream);
   }
@@ -8525,7 +8525,7 @@ CSSValue* ConsumePositionTryFallbacks(CSSParserTokenStream& stream,
 
 namespace {
 
-struct InsetAreaKeyword {
+struct PositionAreaKeyword {
   STACK_ALLOCATED();
 
  public:
@@ -8558,8 +8558,8 @@ struct InsetAreaKeyword {
     kSelfStartEnd,
   };
 
-  static bool IsCompatiblePair(const InsetAreaKeyword& first,
-                               const InsetAreaKeyword& second) {
+  static bool IsCompatiblePair(const PositionAreaKeyword& first,
+                               const PositionAreaKeyword& second) {
     if (first.type == kGeneral || second.type == kGeneral) {
       return true;
     }
@@ -8582,8 +8582,8 @@ struct InsetAreaKeyword {
 template <class T>
   requires std::is_same_v<T, CSSParserTokenStream> ||
            std::is_same_v<T, CSSParserTokenRange>
-std::optional<InsetAreaKeyword> ConsumeInsetAreaKeyword(T& stream) {
-  InsetAreaKeyword::Type type = InsetAreaKeyword::kGeneral;
+std::optional<PositionAreaKeyword> ConsumePositionAreaKeyword(T& stream) {
+  PositionAreaKeyword::Type type = PositionAreaKeyword::kGeneral;
   switch (stream.Peek().Id()) {
     case CSSValueID::kSpanAll:
     case CSSValueID::kCenter:
@@ -8601,7 +8601,7 @@ std::optional<InsetAreaKeyword> ConsumeInsetAreaKeyword(T& stream) {
     case CSSValueID::kXSelfEnd:
     case CSSValueID::kSpanXSelfStart:
     case CSSValueID::kSpanXSelfEnd:
-      type = InsetAreaKeyword::kHorizontal;
+      type = PositionAreaKeyword::kHorizontal;
       break;
     case CSSValueID::kTop:
     case CSSValueID::kBottom:
@@ -8615,53 +8615,53 @@ std::optional<InsetAreaKeyword> ConsumeInsetAreaKeyword(T& stream) {
     case CSSValueID::kYSelfEnd:
     case CSSValueID::kSpanYSelfStart:
     case CSSValueID::kSpanYSelfEnd:
-      type = InsetAreaKeyword::kVertical;
+      type = PositionAreaKeyword::kVertical;
       break;
     case CSSValueID::kBlockStart:
     case CSSValueID::kBlockEnd:
     case CSSValueID::kSpanBlockStart:
     case CSSValueID::kSpanBlockEnd:
-      type = InsetAreaKeyword::kBlock;
+      type = PositionAreaKeyword::kBlock;
       break;
     case CSSValueID::kInlineStart:
     case CSSValueID::kInlineEnd:
     case CSSValueID::kSpanInlineStart:
     case CSSValueID::kSpanInlineEnd:
-      type = InsetAreaKeyword::kInline;
+      type = PositionAreaKeyword::kInline;
       break;
     case CSSValueID::kSelfBlockStart:
     case CSSValueID::kSelfBlockEnd:
     case CSSValueID::kSpanSelfBlockStart:
     case CSSValueID::kSpanSelfBlockEnd:
-      type = InsetAreaKeyword::kSelfBlock;
+      type = PositionAreaKeyword::kSelfBlock;
       break;
     case CSSValueID::kSelfInlineStart:
     case CSSValueID::kSelfInlineEnd:
     case CSSValueID::kSpanSelfInlineStart:
     case CSSValueID::kSpanSelfInlineEnd:
-      type = InsetAreaKeyword::kSelfInline;
+      type = PositionAreaKeyword::kSelfInline;
       break;
     case CSSValueID::kStart:
     case CSSValueID::kEnd:
     case CSSValueID::kSpanStart:
     case CSSValueID::kSpanEnd:
-      type = InsetAreaKeyword::kStartEnd;
+      type = PositionAreaKeyword::kStartEnd;
       break;
     case CSSValueID::kSelfStart:
     case CSSValueID::kSelfEnd:
     case CSSValueID::kSpanSelfStart:
     case CSSValueID::kSpanSelfEnd:
-      type = InsetAreaKeyword::kSelfStartEnd;
+      type = PositionAreaKeyword::kSelfStartEnd;
       break;
     default:
       return std::nullopt;
   }
-  return InsetAreaKeyword(css_parsing_utils::ConsumeIdent(stream), type);
+  return PositionAreaKeyword(css_parsing_utils::ConsumeIdent(stream), type);
 }
 
 }  // namespace
 
-// <inset-area> = [
+// <position-area> = [
 //                  [ left | center | right | span-left | span-right |
 //                    x-start | x-end | span-x-start | span-x-end |
 //                    x-self-start | x-self-end | span-x-self-start |
@@ -8692,25 +8692,25 @@ std::optional<InsetAreaKeyword> ConsumeInsetAreaKeyword(T& stream) {
 template <class T>
   requires std::is_same_v<T, CSSParserTokenStream> ||
            std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeInsetArea(T& range) {
-  std::optional<InsetAreaKeyword> first = ConsumeInsetAreaKeyword(range);
+CSSValue* ConsumePositionArea(T& range) {
+  std::optional<PositionAreaKeyword> first = ConsumePositionAreaKeyword(range);
   if (!first.has_value()) {
     return nullptr;
   }
-  std::optional<InsetAreaKeyword> second = ConsumeInsetAreaKeyword(range);
+  std::optional<PositionAreaKeyword> second = ConsumePositionAreaKeyword(range);
   if (!second.has_value()) {
     return first.value().value;
   }
-  if (first.value().type == InsetAreaKeyword::kVertical ||
-      first.value().type == InsetAreaKeyword::kInline ||
-      first.value().type == InsetAreaKeyword::kSelfInline ||
-      second.value().type == InsetAreaKeyword::kHorizontal ||
-      second.value().type == InsetAreaKeyword::kBlock ||
-      second.value().type == InsetAreaKeyword::kSelfBlock) {
+  if (first.value().type == PositionAreaKeyword::kVertical ||
+      first.value().type == PositionAreaKeyword::kInline ||
+      first.value().type == PositionAreaKeyword::kSelfInline ||
+      second.value().type == PositionAreaKeyword::kHorizontal ||
+      second.value().type == PositionAreaKeyword::kBlock ||
+      second.value().type == PositionAreaKeyword::kSelfBlock) {
     // Use grammar order.
     std::swap(first, second);
   }
-  if (!InsetAreaKeyword::IsCompatiblePair(first.value(), second.value())) {
+  if (!PositionAreaKeyword::IsCompatiblePair(first.value(), second.value())) {
     return nullptr;
   }
   CSSIdentifierValue* first_value = first.value().value;
@@ -8719,21 +8719,22 @@ CSSValue* ConsumeInsetArea(T& range) {
     return first_value;
   }
   if (first_value->GetValueID() == CSSValueID::kSpanAll &&
-      !css_parsing_utils::IsRepeatedInsetAreaValue(
+      !css_parsing_utils::IsRepeatedPositionAreaValue(
           second_value->GetValueID())) {
     return second_value;
   }
   if (second_value->GetValueID() == CSSValueID::kSpanAll &&
-      !css_parsing_utils::IsRepeatedInsetAreaValue(first_value->GetValueID())) {
+      !css_parsing_utils::IsRepeatedPositionAreaValue(
+          first_value->GetValueID())) {
     return first_value;
   }
   return MakeGarbageCollected<CSSValuePair>(first_value, second_value,
                                             CSSValuePair::kDropIdenticalValues);
 }
 
-template CSSValue* ConsumeInsetArea(CSSParserTokenStream& range);
+template CSSValue* ConsumePositionArea(CSSParserTokenStream& range);
 
-bool IsRepeatedInsetAreaValue(CSSValueID value_id) {
+bool IsRepeatedPositionAreaValue(CSSValueID value_id) {
   switch (value_id) {
     case CSSValueID::kCenter:
     case CSSValueID::kStart:

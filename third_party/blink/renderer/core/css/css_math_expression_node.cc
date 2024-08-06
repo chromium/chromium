@@ -3184,7 +3184,7 @@ std::optional<LayoutUnit> CSSMathExpressionAnchorQuery::EvaluateQuery(
           length_resolver.GetAnchorEvaluator()) {
     return anchor_evaluator->Evaluate(query,
                                       length_resolver.GetPositionAnchor(),
-                                      length_resolver.GetInsetAreaOffsets());
+                                      length_resolver.GetPositionAreaOffsets());
   }
   return std::nullopt;
 }

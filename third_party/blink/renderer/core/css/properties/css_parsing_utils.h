@@ -753,16 +753,16 @@ CSSValue* ConsumeFontSizeAdjust(CSSParserTokenStream&, const CSSParserContext&);
 bool ShouldLowerCaseCounterStyleNameOnParse(const AtomicString&,
                                             const CSSParserContext&);
 
-// https://drafts.csswg.org/css-anchor-position-1/#typedef-inset-area
+// https://drafts.csswg.org/css-anchor-position-1/#typedef-position-area
 template <class T>
   requires std::is_same_v<T, CSSParserTokenStream> ||
            std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeInsetArea(T&);
+CSSValue* ConsumePositionArea(T&);
 
-// inset-area can take one or two keywords. If the second is omitted, either the
-// first is repeated, or the second is span-all. This method returns true if the
-// omitted value should be the first one repeated.
-bool IsRepeatedInsetAreaValue(CSSValueID value_id);
+// position-area can take one or two keywords. If the second is omitted, either
+// the first is repeated, or the second is span-all. This method returns true if
+// the omitted value should be the first one repeated.
+bool IsRepeatedPositionAreaValue(CSSValueID value_id);
 
 // Template implementations are at the bottom of the file for readability.
 

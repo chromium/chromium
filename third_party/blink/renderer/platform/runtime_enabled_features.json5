@@ -1000,9 +1000,12 @@
       status: "stable",
     },
     {
-      // For the position-try-fallbacks property, replaces the inset-area()
-      // syntax with just <'inset-area'>.
-      name: "CSSInsetAreaValue",
+      // The `inset-area` CSS property has been renamed to `position-area`. This
+      // feature (CSSInsetAreaProperty) enables the old `inset-area` property.
+      // This is enabled by default for now, but deprecated in M129. The plan is
+      // to disable it starting in M131.
+      name: "CSSInsetAreaProperty",
+      depends_on: ["CSSAnchorPositioning"],
       status: "stable",
     },
     {
@@ -1043,6 +1046,21 @@
       // Ignore the stylesheet encoding when parsing URLs, always using UTF-8.
       // See crbug.com/1485525.
       name: "CSSParserIgnoreCharsetForURLs",
+    },
+    {
+      // The `inset-area` CSS property has been renamed to `position-area`. This
+      // feature (CSSPositionAreaProperty) enables the new `position-area`
+      // property. This is experimental for now, but we plan to ship it in M129.
+      name: "CSSPositionAreaProperty",
+      depends_on: ["CSSAnchorPositioning"],
+      status: "experimental",
+    },
+    {
+      // For the position-try-fallbacks property, replaces the inset-area()
+      // syntax (which had the old "inset-area" name) with just a
+      // <'position-area'>.
+      name: "CSSPositionAreaValue",
+      status: "stable",
     },
     {
       name: "CSSPositionStickyStaticScrollPosition",

@@ -298,6 +298,7 @@ popover-hide-delay: infinity * 1s
 popover-show-delay: 0.5s
 position: static
 position-anchor: auto
+position-area: none
 position-try-fallbacks: none
 position-try-order: normal
 position-visibility: always

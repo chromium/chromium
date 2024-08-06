@@ -189,7 +189,7 @@ class CORE_EXPORT StyleResolverState {
   void SetTextSizeAdjust(TextSizeAdjust);
   void SetTextOrientation(ETextOrientation);
   void SetPositionAnchor(ScopedCSSName*);
-  void SetInsetAreaOffsets(const std::optional<InsetAreaOffsets>&);
+  void SetPositionAreaOffsets(const std::optional<PositionAreaOffsets>&);
 
   void SetHasAttrFunction() { has_attr_function_ = true; }
   bool HasAttrFunction() const { return has_attr_function_; }

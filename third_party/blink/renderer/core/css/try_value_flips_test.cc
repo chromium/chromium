@@ -70,6 +70,9 @@ class TryValueFlipsTest : public PageTestBase {
     add_if_flipped(CSSPropertyID::kMarginInlineEnd, flips.margin_inline_end);
     add(CSSPropertyID::kAlignSelf, flips.align_self);
     add(CSSPropertyID::kJustifySelf, flips.justify_self);
+    add(CSSPropertyID::kPositionArea, CSSPropertyID::kPositionArea);
+    // TODO(crbug.com/352360007): this can be removed when inset-area is
+    // removed.
     add(CSSPropertyID::kInsetArea, CSSPropertyID::kInsetArea);
     add_if_flipped(CSSPropertyID::kBlockSize, flips.block_size);
     add_if_flipped(CSSPropertyID::kInlineSize, flips.inline_size);

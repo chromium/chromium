@@ -55,7 +55,7 @@
     const anchoredElement = document.getElementById('anchored-element');
     anchoredElement.style.width = '100px';
     anchoredElement.style.height = '200px';
-    anchoredElement.style.insetArea = 'top center';
+    anchoredElement.style.positionArea = 'top center';
   }
 </script>
 <div id='containing-block'>

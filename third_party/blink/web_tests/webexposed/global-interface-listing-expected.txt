@@ -980,7 +980,9 @@ interface CSSPositionTryDescriptors : CSSStyleDeclaration
     getter place-self
     getter placeSelf
     getter position-anchor
+    getter position-area
     getter positionAnchor
+    getter positionArea
     getter right
     getter top
     getter width
@@ -1051,7 +1053,9 @@ interface CSSPositionTryDescriptors : CSSStyleDeclaration
     setter place-self
     setter placeSelf
     setter position-anchor
+    setter position-area
     setter positionAnchor
+    setter positionArea
     setter right
     setter top
     setter width

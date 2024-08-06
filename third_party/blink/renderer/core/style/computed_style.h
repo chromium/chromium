@@ -1427,10 +1427,10 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Whether or not a positioned element requires normal flow x/y to be computed
   // to determine its position.
-  bool HasAutoLeftAndRightIgnoringInsetArea() const {
+  bool HasAutoLeftAndRightIgnoringPositionArea() const {
     return Left().IsAuto() && Right().IsAuto();
   }
-  bool HasAutoTopAndBottomIgnoringInsetArea() const {
+  bool HasAutoTopAndBottomIgnoringPositionArea() const {
     return Top().IsAuto() && Bottom().IsAuto();
   }
 
@@ -1438,18 +1438,20 @@ class ComputedStyle final : public ComputedStyleBase {
   // fallback calculation purposes.
   // https://drafts.csswg.org/css-anchor-position-1/#determine-the-position-fallback-styles
   bool IsTopInsetNonAuto() const {
-    return !Top().IsAuto() || (InsetAreaOffsets() && InsetAreaOffsets()->top);
+    return !Top().IsAuto() ||
+           (PositionAreaOffsets() && PositionAreaOffsets()->top);
   }
   bool IsRightInsetNonAuto() const {
     return !Right().IsAuto() ||
-           (InsetAreaOffsets() && InsetAreaOffsets()->right);
+           (PositionAreaOffsets() && PositionAreaOffsets()->right);
   }
   bool IsBottomInsetNonAuto() const {
     return !Bottom().IsAuto() ||
-           (InsetAreaOffsets() && InsetAreaOffsets()->bottom);
+           (PositionAreaOffsets() && PositionAreaOffsets()->bottom);
   }
   bool IsLeftInsetNonAuto() const {
-    return !Left().IsAuto() || (InsetAreaOffsets() && InsetAreaOffsets()->left);
+    return !Left().IsAuto() ||
+           (PositionAreaOffsets() && PositionAreaOffsets()->left);
   }
 
   // Content utility functions.

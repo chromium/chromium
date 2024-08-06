@@ -63,7 +63,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/core/style/inset_area.h"
+#include "third_party/blink/renderer/core/style/position_area.h"
 #include "third_party/blink/renderer/core/style/style_intrinsic_length.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
@@ -4160,93 +4160,93 @@ CSSValue* ComputedStyleUtils::ValueForScrollStart(const ComputedStyle& style,
 
 namespace {
 
-CSSIdentifierValue* InsetAreaSpanToCSSIdentifierValue(
-    InsetAreaRegion span_start,
-    InsetAreaRegion span_end) {
+CSSIdentifierValue* PositionAreaSpanToCSSIdentifierValue(
+    PositionAreaRegion span_start,
+    PositionAreaRegion span_end) {
   if (span_start == span_end) {
     return CSSIdentifierValue::Create(span_start);
   }
-  CHECK(span_start == InsetAreaRegion::kCenter ||
-        span_end == InsetAreaRegion::kCenter);
-  InsetAreaRegion span_towards =
-      span_start == InsetAreaRegion::kCenter ? span_end : span_start;
+  CHECK(span_start == PositionAreaRegion::kCenter ||
+        span_end == PositionAreaRegion::kCenter);
+  PositionAreaRegion span_towards =
+      span_start == PositionAreaRegion::kCenter ? span_end : span_start;
   CSSValueID value_id = CSSValueID::kSpanAll;
   switch (span_towards) {
-    case InsetAreaRegion::kLeft:
+    case PositionAreaRegion::kLeft:
       value_id = CSSValueID::kSpanLeft;
       break;
-    case InsetAreaRegion::kRight:
+    case PositionAreaRegion::kRight:
       value_id = CSSValueID::kSpanRight;
       break;
-    case InsetAreaRegion::kXStart:
+    case PositionAreaRegion::kXStart:
       value_id = CSSValueID::kSpanXStart;
       break;
-    case InsetAreaRegion::kXEnd:
+    case PositionAreaRegion::kXEnd:
       value_id = CSSValueID::kSpanXEnd;
       break;
-    case InsetAreaRegion::kXSelfStart:
+    case PositionAreaRegion::kXSelfStart:
       value_id = CSSValueID::kSpanXSelfStart;
       break;
-    case InsetAreaRegion::kXSelfEnd:
+    case PositionAreaRegion::kXSelfEnd:
       value_id = CSSValueID::kSpanXSelfEnd;
       break;
-    case InsetAreaRegion::kTop:
+    case PositionAreaRegion::kTop:
       value_id = CSSValueID::kSpanTop;
       break;
-    case InsetAreaRegion::kBottom:
+    case PositionAreaRegion::kBottom:
       value_id = CSSValueID::kSpanBottom;
       break;
-    case InsetAreaRegion::kYStart:
+    case PositionAreaRegion::kYStart:
       value_id = CSSValueID::kSpanYStart;
       break;
-    case InsetAreaRegion::kYEnd:
+    case PositionAreaRegion::kYEnd:
       value_id = CSSValueID::kSpanYEnd;
       break;
-    case InsetAreaRegion::kYSelfStart:
+    case PositionAreaRegion::kYSelfStart:
       value_id = CSSValueID::kSpanYSelfStart;
       break;
-    case InsetAreaRegion::kYSelfEnd:
+    case PositionAreaRegion::kYSelfEnd:
       value_id = CSSValueID::kSpanYSelfEnd;
       break;
-    case InsetAreaRegion::kBlockStart:
+    case PositionAreaRegion::kBlockStart:
       value_id = CSSValueID::kSpanBlockStart;
       break;
-    case InsetAreaRegion::kBlockEnd:
+    case PositionAreaRegion::kBlockEnd:
       value_id = CSSValueID::kSpanBlockEnd;
       break;
-    case InsetAreaRegion::kSelfBlockStart:
+    case PositionAreaRegion::kSelfBlockStart:
       value_id = CSSValueID::kSpanSelfBlockStart;
       break;
-    case InsetAreaRegion::kSelfBlockEnd:
+    case PositionAreaRegion::kSelfBlockEnd:
       value_id = CSSValueID::kSpanSelfBlockEnd;
       break;
-    case InsetAreaRegion::kInlineStart:
+    case PositionAreaRegion::kInlineStart:
       value_id = CSSValueID::kSpanInlineStart;
       break;
-    case InsetAreaRegion::kInlineEnd:
+    case PositionAreaRegion::kInlineEnd:
       value_id = CSSValueID::kSpanInlineEnd;
       break;
-    case InsetAreaRegion::kSelfInlineStart:
+    case PositionAreaRegion::kSelfInlineStart:
       value_id = CSSValueID::kSpanSelfInlineStart;
       break;
-    case InsetAreaRegion::kSelfInlineEnd:
+    case PositionAreaRegion::kSelfInlineEnd:
       value_id = CSSValueID::kSpanSelfInlineEnd;
       break;
-    case InsetAreaRegion::kStart:
+    case PositionAreaRegion::kStart:
       value_id = CSSValueID::kSpanStart;
       break;
-    case InsetAreaRegion::kEnd:
+    case PositionAreaRegion::kEnd:
       value_id = CSSValueID::kSpanEnd;
       break;
-    case InsetAreaRegion::kSelfStart:
+    case PositionAreaRegion::kSelfStart:
       value_id = CSSValueID::kSpanSelfStart;
       break;
-    case InsetAreaRegion::kSelfEnd:
+    case PositionAreaRegion::kSelfEnd:
       value_id = CSSValueID::kSpanSelfEnd;
       break;
-    case InsetAreaRegion::kNone:
-    case InsetAreaRegion::kAll:
-    case InsetAreaRegion::kCenter:
+    case PositionAreaRegion::kNone:
+    case PositionAreaRegion::kAll:
+    case PositionAreaRegion::kCenter:
       // Should have been handled above
       NOTREACHED_IN_MIGRATION();
       break;
@@ -4256,19 +4256,20 @@ CSSIdentifierValue* InsetAreaSpanToCSSIdentifierValue(
 
 }  // namespace
 
-CSSValue* ComputedStyleUtils::ValueForInsetArea(const blink::InsetArea& area) {
-  if (area.FirstStart() == InsetAreaRegion::kNone) {
+CSSValue* ComputedStyleUtils::ValueForPositionArea(
+    const blink::PositionArea& area) {
+  if (area.FirstStart() == PositionAreaRegion::kNone) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
   CSSIdentifierValue* first_value =
-      InsetAreaSpanToCSSIdentifierValue(area.FirstStart(), area.FirstEnd());
-  CSSIdentifierValue* second_value =
-      InsetAreaSpanToCSSIdentifierValue(area.SecondStart(), area.SecondEnd());
+      PositionAreaSpanToCSSIdentifierValue(area.FirstStart(), area.FirstEnd());
+  CSSIdentifierValue* second_value = PositionAreaSpanToCSSIdentifierValue(
+      area.SecondStart(), area.SecondEnd());
 
   CSSValueID second_default = CSSValueID::kSpanAll;
   CSSValueID first_value_id = first_value->GetValueID();
 
-  if (css_parsing_utils::IsRepeatedInsetAreaValue(first_value_id)) {
+  if (css_parsing_utils::IsRepeatedPositionAreaValue(first_value_id)) {
     second_default = first_value_id;
   }
   if (second_value->GetValueID() == second_default) {
@@ -4313,15 +4314,16 @@ CSSValue* ComputedStyleUtils::ValueForPositionTryFallbacks(
     const PositionTryFallbacks& fallbacks) {
   CSSValueList* fallback_list = CSSValueList::CreateCommaSeparated();
   for (const PositionTryFallback& fallback : fallbacks.GetFallbacks()) {
-    if (!fallback.GetInsetArea().IsNone()) {
-      if (RuntimeEnabledFeatures::CSSInsetAreaValueEnabled()) {
-        // <inset-area>
-        fallback_list->Append(*ValueForInsetArea(fallback.GetInsetArea()));
+    if (!fallback.GetPositionArea().IsNone()) {
+      if (RuntimeEnabledFeatures::CSSPositionAreaValueEnabled()) {
+        // <position-area>
+        fallback_list->Append(
+            *ValueForPositionArea(fallback.GetPositionArea()));
       } else {
-        // inset-area( <inset-area> )
+        // position-area( <position-area> )
         auto* function =
-            MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kInsetArea);
-        function->Append(*ValueForInsetArea(fallback.GetInsetArea()));
+            MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPositionArea);
+        function->Append(*ValueForPositionArea(fallback.GetPositionArea()));
         fallback_list->Append(*function);
       }
       continue;

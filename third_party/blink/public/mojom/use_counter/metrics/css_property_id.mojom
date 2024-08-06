@@ -853,6 +853,7 @@ enum CSSSampleId {
     kPositionTryFallbacks = 797,
     kInterpolateSize = 798,
     kViewTransitionGroup = 799,
+    kPositionArea = 800,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

@@ -4536,7 +4536,7 @@
       // @position-try-styling rely on this being high-priority, so that
       // declarations from @position-try blocks can be applied conditionally
       // based on whether or not we're out-of-flow positioned. Also, it needs to
-      // have a priority higher than inset-area which is already at priority:1.
+      // have a priority higher than position-area which is already at priority:1.
       priority: 2,
       valid_for_permission_element: true,
       invalidate: ["clip", "layout", "scroll-anchor"],
@@ -4557,7 +4557,7 @@
       runtime_flag: "CSSAnchorPositioning",
       valid_for_permission_element: true,
       valid_for_position_try: true,
-      // Needs to be applied before inset-area which in turn needs to be applied
+      // Needs to be applied before position-area which in turn needs to be applied
       // before inset properties.
       priority: 2,
       invalidate: ["layout", "paint"],
@@ -7619,30 +7619,43 @@
       runtime_flag: "ViewTransitionOnNavigation",
     },
     {
-      name: "inset-area",
+      name: "position-area",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       style_builder_custom_functions: ["value", "inherit"],
       field_group: "*",
       field_template: "external",
-      include_paths: ["third_party/blink/renderer/core/style/inset_area.h"],
-      converter: "ConvertInsetArea",
-      default_value: "InsetArea()",
-      type_name: "InsetArea",
+      include_paths: ["third_party/blink/renderer/core/style/position_area.h"],
+      converter: "ConvertPositionArea",
+      default_value: "PositionArea()",
+      type_name: "PositionArea",
       keywords: [
         "none", "top", "bottom", "center", "left", "right", "x-start", "x-end",
         "y-start", "y-end", "start", "end", "self-start", "self-end", "all"
       ],
       typedom_types: ["Keyword"],
       valid_for_position_try: true,
-      runtime_flag: "CSSAnchorPositioning",
+      runtime_flag: "CSSPositionAreaProperty",
       valid_for_permission_element: true,
-      // inset-area needs to be applied before inset properties since
+      // position-area needs to be applied before inset properties since
       // anchor() functions compute relative to the containing block that is
-      // modified by inset-area in AnchorEvaluatorImpl.
+      // modified by position-area in AnchorEvaluatorImpl.
       priority: 1,
       invalidate: ["layout", "out-of-flow", "paint"],
     },
+    {
+      name: "inset-area",
+      surrogate_for: "position-area",
+      runtime_flag: "CSSInsetAreaProperty",
 
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      keywords: [
+        "none", "top", "bottom", "center", "left", "right", "x-start", "x-end",
+        "y-start", "y-end", "start", "end", "self-start", "self-end", "all"
+      ],
+      typedom_types: ["Keyword"],
+      valid_for_position_try: true,
+      priority: 1,
+    },
     // Shorthands
     {
       name: "animation",

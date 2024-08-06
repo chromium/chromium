@@ -320,8 +320,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       const BlockNode& candidate,
       const LogicalAnchorQueryMap* anchor_queries) const;
 
-  ContainingBlockInfo ApplyInsetAreaOffsets(
-      const InsetAreaOffsets& offsets,
+  ContainingBlockInfo ApplyPositionAreaOffsets(
+      const PositionAreaOffsets& offsets,
       const ContainingBlockInfo& container_info) const;
 
   NodeInfo SetupNodeInfo(const LogicalOofPositionedNode& oof_node);

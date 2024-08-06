@@ -9,7 +9,7 @@ namespace blink {
 bool PositionTryFallback::operator==(const PositionTryFallback& other) const {
   return tactic_list_ == other.tactic_list_ &&
          base::ValuesEquivalent(position_try_name_, other.position_try_name_) &&
-         inset_area_ == other.inset_area_;
+         position_area_ == other.position_area_;
 }
 
 void PositionTryFallback::Trace(Visitor* visitor) const {

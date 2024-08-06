@@ -4176,16 +4176,16 @@ class TopAnchorEvaluator : public AnchorEvaluator {
   std::optional<LayoutUnit> Evaluate(
       const AnchorQuery&,
       const ScopedCSSName* position_anchor,
-      const std::optional<InsetAreaOffsets>&) override {
+      const std::optional<PositionAreaOffsets>&) override {
     if (GetMode() == Mode::kTop) {
       return LayoutUnit(1);
     }
     return std::nullopt;
   }
-  std::optional<InsetAreaOffsets> ComputeInsetAreaOffsetsForLayout(
+  std::optional<PositionAreaOffsets> ComputePositionAreaOffsetsForLayout(
       const ScopedCSSName*,
-      InsetArea) override {
-    return InsetAreaOffsets();
+      PositionArea) override {
+    return PositionAreaOffsets();
   }
   std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
       const ComputedStyleBuilder&) override {

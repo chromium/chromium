@@ -1787,7 +1787,7 @@
     "initial-only",
     // none
 
-    // inset-area
+    // position-area
     // none,
     // left,
     // center,
@@ -1839,8 +1839,8 @@
     // self-end,
     "span-self-start",
     "span-self-end",
-    // inset-area()
-    "inset-area",
+    // inset-area() (deprecated)
+    "position-area",
 
     // resize
     // none

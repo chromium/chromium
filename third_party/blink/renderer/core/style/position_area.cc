@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "third_party/blink/renderer/core/style/inset_area.h"
+#include "third_party/blink/renderer/core/style/position_area.h"
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
@@ -21,40 +21,40 @@ namespace blink {
 namespace {
 
 inline PhysicalAxes PhysicalAxisFromRegion(
-    InsetAreaRegion region,
+    PositionAreaRegion region,
     const WritingDirectionMode& container_writing_direction,
     const WritingDirectionMode& self_writing_direction) {
   switch (region) {
-    case InsetAreaRegion::kTop:
-    case InsetAreaRegion::kBottom:
-    case InsetAreaRegion::kYStart:
-    case InsetAreaRegion::kYEnd:
-    case InsetAreaRegion::kYSelfStart:
-    case InsetAreaRegion::kYSelfEnd:
+    case PositionAreaRegion::kTop:
+    case PositionAreaRegion::kBottom:
+    case PositionAreaRegion::kYStart:
+    case PositionAreaRegion::kYEnd:
+    case PositionAreaRegion::kYSelfStart:
+    case PositionAreaRegion::kYSelfEnd:
       return kPhysicalAxesVertical;
-    case InsetAreaRegion::kLeft:
-    case InsetAreaRegion::kRight:
-    case InsetAreaRegion::kXStart:
-    case InsetAreaRegion::kXEnd:
-    case InsetAreaRegion::kXSelfStart:
-    case InsetAreaRegion::kXSelfEnd:
+    case PositionAreaRegion::kLeft:
+    case PositionAreaRegion::kRight:
+    case PositionAreaRegion::kXStart:
+    case PositionAreaRegion::kXEnd:
+    case PositionAreaRegion::kXSelfStart:
+    case PositionAreaRegion::kXSelfEnd:
       return kPhysicalAxesHorizontal;
-    case InsetAreaRegion::kInlineStart:
-    case InsetAreaRegion::kInlineEnd:
+    case PositionAreaRegion::kInlineStart:
+    case PositionAreaRegion::kInlineEnd:
       return container_writing_direction.IsHorizontal()
                  ? kPhysicalAxesHorizontal
                  : kPhysicalAxesVertical;
-    case InsetAreaRegion::kSelfInlineStart:
-    case InsetAreaRegion::kSelfInlineEnd:
+    case PositionAreaRegion::kSelfInlineStart:
+    case PositionAreaRegion::kSelfInlineEnd:
       return self_writing_direction.IsHorizontal() ? kPhysicalAxesHorizontal
                                                    : kPhysicalAxesVertical;
-    case InsetAreaRegion::kBlockStart:
-    case InsetAreaRegion::kBlockEnd:
+    case PositionAreaRegion::kBlockStart:
+    case PositionAreaRegion::kBlockEnd:
       return container_writing_direction.IsHorizontal()
                  ? kPhysicalAxesVertical
                  : kPhysicalAxesHorizontal;
-    case InsetAreaRegion::kSelfBlockStart:
-    case InsetAreaRegion::kSelfBlockEnd:
+    case PositionAreaRegion::kSelfBlockStart:
+    case PositionAreaRegion::kSelfBlockEnd:
       return self_writing_direction.IsHorizontal() ? kPhysicalAxesVertical
                                                    : kPhysicalAxesHorizontal;
     default:
@@ -64,17 +64,17 @@ inline PhysicalAxes PhysicalAxisFromRegion(
   }
 }
 
-// Return the physical axis for an inset-area span if given by the regions, or
+// Return the physical axis for an position-area span if given by the regions, or
 // kPhysicalAxesNone if we need the direction/writing-mode to decide.
 inline PhysicalAxes PhysicalAxisFromSpan(
-    InsetAreaRegion start,
-    InsetAreaRegion end,
+    PositionAreaRegion start,
+    PositionAreaRegion end,
     const WritingDirectionMode& container_writing_direction,
     const WritingDirectionMode& self_writing_direction) {
-  if (start == InsetAreaRegion::kAll) {
+  if (start == PositionAreaRegion::kAll) {
     return kPhysicalAxesNone;
   }
-  InsetAreaRegion indicator = start == InsetAreaRegion::kCenter ? end : start;
+  PositionAreaRegion indicator = start == PositionAreaRegion::kCenter ? end : start;
   return PhysicalAxisFromRegion(indicator, container_writing_direction,
                                 self_writing_direction);
 }
@@ -82,83 +82,83 @@ inline PhysicalAxes PhysicalAxisFromSpan(
 // Convert a logical region to the corresponding physical region based on the
 // span's axis and the direction/writing-mode of the anchored element and its
 // containing block.
-InsetAreaRegion ToPhysicalRegion(
-    InsetAreaRegion region,
+PositionAreaRegion ToPhysicalRegion(
+    PositionAreaRegion region,
     PhysicalAxes axis,
     const WritingDirectionMode& container_writing_direction,
     const WritingDirectionMode& self_writing_direction) {
   bool is_horizontal = axis == kPhysicalAxesHorizontal;
-  InsetAreaRegion axis_region = region;
+  PositionAreaRegion axis_region = region;
   switch (region) {
-    case InsetAreaRegion::kNone:
-    case InsetAreaRegion::kAll:
+    case PositionAreaRegion::kNone:
+    case PositionAreaRegion::kAll:
       NOTREACHED_IN_MIGRATION()
-          << "Should be handled directly in InsetArea::ToPhysical";
+          << "Should be handled directly in PositionArea::ToPhysical";
       [[fallthrough]];
-    case InsetAreaRegion::kCenter:
-    case InsetAreaRegion::kTop:
-    case InsetAreaRegion::kBottom:
-    case InsetAreaRegion::kLeft:
-    case InsetAreaRegion::kRight:
+    case PositionAreaRegion::kCenter:
+    case PositionAreaRegion::kTop:
+    case PositionAreaRegion::kBottom:
+    case PositionAreaRegion::kLeft:
+    case PositionAreaRegion::kRight:
       return region;
-    case InsetAreaRegion::kStart:
-    case InsetAreaRegion::kInlineStart:
-    case InsetAreaRegion::kBlockStart:
+    case PositionAreaRegion::kStart:
+    case PositionAreaRegion::kInlineStart:
+    case PositionAreaRegion::kBlockStart:
       axis_region =
-          is_horizontal ? InsetAreaRegion::kXStart : InsetAreaRegion::kYStart;
+          is_horizontal ? PositionAreaRegion::kXStart : PositionAreaRegion::kYStart;
       break;
-    case InsetAreaRegion::kEnd:
-    case InsetAreaRegion::kInlineEnd:
-    case InsetAreaRegion::kBlockEnd:
+    case PositionAreaRegion::kEnd:
+    case PositionAreaRegion::kInlineEnd:
+    case PositionAreaRegion::kBlockEnd:
       axis_region =
-          is_horizontal ? InsetAreaRegion::kXEnd : InsetAreaRegion::kYEnd;
+          is_horizontal ? PositionAreaRegion::kXEnd : PositionAreaRegion::kYEnd;
       break;
-    case InsetAreaRegion::kSelfStart:
-    case InsetAreaRegion::kSelfInlineStart:
-    case InsetAreaRegion::kSelfBlockStart:
-      axis_region = is_horizontal ? InsetAreaRegion::kXSelfStart
-                                  : InsetAreaRegion::kYSelfStart;
+    case PositionAreaRegion::kSelfStart:
+    case PositionAreaRegion::kSelfInlineStart:
+    case PositionAreaRegion::kSelfBlockStart:
+      axis_region = is_horizontal ? PositionAreaRegion::kXSelfStart
+                                  : PositionAreaRegion::kYSelfStart;
       break;
-    case InsetAreaRegion::kSelfEnd:
-    case InsetAreaRegion::kSelfInlineEnd:
-    case InsetAreaRegion::kSelfBlockEnd:
-      axis_region = is_horizontal ? InsetAreaRegion::kXSelfEnd
-                                  : InsetAreaRegion::kYSelfEnd;
+    case PositionAreaRegion::kSelfEnd:
+    case PositionAreaRegion::kSelfInlineEnd:
+    case PositionAreaRegion::kSelfBlockEnd:
+      axis_region = is_horizontal ? PositionAreaRegion::kXSelfEnd
+                                  : PositionAreaRegion::kYSelfEnd;
       break;
     default:
       break;
   }
 
   if (is_horizontal) {
-    if ((axis_region == InsetAreaRegion::kXStart &&
+    if ((axis_region == PositionAreaRegion::kXStart &&
          container_writing_direction.IsFlippedX()) ||
-        (axis_region == InsetAreaRegion::kXEnd &&
+        (axis_region == PositionAreaRegion::kXEnd &&
          !container_writing_direction.IsFlippedX()) ||
-        (axis_region == InsetAreaRegion::kXSelfStart &&
+        (axis_region == PositionAreaRegion::kXSelfStart &&
          self_writing_direction.IsFlippedX()) ||
-        (axis_region == InsetAreaRegion::kXSelfEnd &&
+        (axis_region == PositionAreaRegion::kXSelfEnd &&
          !self_writing_direction.IsFlippedX())) {
-      return InsetAreaRegion::kRight;
+      return PositionAreaRegion::kRight;
     }
-    return InsetAreaRegion::kLeft;
+    return PositionAreaRegion::kLeft;
   }
 
-  if ((axis_region == InsetAreaRegion::kYStart &&
+  if ((axis_region == PositionAreaRegion::kYStart &&
        container_writing_direction.IsFlippedY()) ||
-      (axis_region == InsetAreaRegion::kYEnd &&
+      (axis_region == PositionAreaRegion::kYEnd &&
        !container_writing_direction.IsFlippedY()) ||
-      (axis_region == InsetAreaRegion::kYSelfStart &&
+      (axis_region == PositionAreaRegion::kYSelfStart &&
        self_writing_direction.IsFlippedY()) ||
-      (axis_region == InsetAreaRegion::kYSelfEnd &&
+      (axis_region == PositionAreaRegion::kYSelfEnd &&
        !self_writing_direction.IsFlippedY())) {
-    return InsetAreaRegion::kBottom;
+    return PositionAreaRegion::kBottom;
   }
-  return InsetAreaRegion::kTop;
+  return PositionAreaRegion::kTop;
 }
 
 }  // namespace
 
-InsetArea InsetArea::ToPhysical(
+PositionArea PositionArea::ToPhysical(
     const WritingDirectionMode& container_writing_direction,
     const WritingDirectionMode& self_writing_direction) const {
   if (IsNone()) {
@@ -190,14 +190,14 @@ InsetArea InsetArea::ToPhysical(
   DCHECK_EQ(first_axis ^ second_axis, kPhysicalAxesBoth)
       << "Both axes should be defined and orthogonal";
 
-  InsetAreaRegion regions[4] = {InsetAreaRegion::kTop, InsetAreaRegion::kBottom,
-                                InsetAreaRegion::kLeft,
-                                InsetAreaRegion::kRight};
+  PositionAreaRegion regions[4] = {PositionAreaRegion::kTop, PositionAreaRegion::kBottom,
+                                PositionAreaRegion::kLeft,
+                                PositionAreaRegion::kRight};
 
   // Adjust the index to always make the first span the vertical one in the
-  // resulting InsetArea, regardless of the original ordering.
+  // resulting PositionArea, regardless of the original ordering.
   size_t index = first_axis == kPhysicalAxesHorizontal ? 2 : 0;
-  if (FirstStart() != InsetAreaRegion::kAll) {
+  if (FirstStart() != PositionAreaRegion::kAll) {
     regions[index] =
         ToPhysicalRegion(FirstStart(), first_axis, container_writing_direction,
                          self_writing_direction);
@@ -206,7 +206,7 @@ InsetArea InsetArea::ToPhysical(
                          self_writing_direction);
   }
   index = (index + 2) % 4;
-  if (SecondStart() != InsetAreaRegion::kAll) {
+  if (SecondStart() != PositionAreaRegion::kAll) {
     regions[index] =
         ToPhysicalRegion(SecondStart(), second_axis,
                          container_writing_direction, self_writing_direction);
@@ -214,111 +214,111 @@ InsetArea InsetArea::ToPhysical(
         ToPhysicalRegion(SecondEnd(), second_axis, container_writing_direction,
                          self_writing_direction);
   }
-  if (regions[0] == InsetAreaRegion::kBottom ||
-      regions[1] == InsetAreaRegion::kTop) {
+  if (regions[0] == PositionAreaRegion::kBottom ||
+      regions[1] == PositionAreaRegion::kTop) {
     std::swap(regions[0], regions[1]);
   }
-  if (regions[2] == InsetAreaRegion::kRight ||
-      regions[3] == InsetAreaRegion::kLeft) {
+  if (regions[2] == PositionAreaRegion::kRight ||
+      regions[3] == PositionAreaRegion::kLeft) {
     std::swap(regions[2], regions[3]);
   }
-  return InsetArea(regions[0], regions[1], regions[2], regions[3]);
+  return PositionArea(regions[0], regions[1], regions[2], regions[3]);
 }
 
-std::optional<AnchorQuery> InsetArea::UsedTop() const {
+std::optional<AnchorQuery> PositionArea::UsedTop() const {
   switch (FirstStart()) {
-    case InsetAreaRegion::kTop:
+    case PositionAreaRegion::kTop:
       return std::nullopt;
-    case InsetAreaRegion::kCenter:
+    case PositionAreaRegion::kCenter:
       return AnchorTop();
-    case InsetAreaRegion::kBottom:
+    case PositionAreaRegion::kBottom:
       return AnchorBottom();
     default:
       NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
-    case InsetAreaRegion::kNone:
+    case PositionAreaRegion::kNone:
       return std::nullopt;
   }
 }
 
-std::optional<AnchorQuery> InsetArea::UsedBottom() const {
+std::optional<AnchorQuery> PositionArea::UsedBottom() const {
   switch (FirstEnd()) {
-    case InsetAreaRegion::kTop:
+    case PositionAreaRegion::kTop:
       return AnchorTop();
-    case InsetAreaRegion::kCenter:
+    case PositionAreaRegion::kCenter:
       return AnchorBottom();
-    case InsetAreaRegion::kBottom:
+    case PositionAreaRegion::kBottom:
       return std::nullopt;
     default:
       NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
-    case InsetAreaRegion::kNone:
+    case PositionAreaRegion::kNone:
       return std::nullopt;
   }
 }
 
-std::optional<AnchorQuery> InsetArea::UsedLeft() const {
+std::optional<AnchorQuery> PositionArea::UsedLeft() const {
   switch (SecondStart()) {
-    case InsetAreaRegion::kLeft:
+    case PositionAreaRegion::kLeft:
       return std::nullopt;
-    case InsetAreaRegion::kCenter:
+    case PositionAreaRegion::kCenter:
       return AnchorLeft();
-    case InsetAreaRegion::kRight:
+    case PositionAreaRegion::kRight:
       return AnchorRight();
     default:
       NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
-    case InsetAreaRegion::kNone:
+    case PositionAreaRegion::kNone:
       return std::nullopt;
   }
 }
 
-std::optional<AnchorQuery> InsetArea::UsedRight() const {
+std::optional<AnchorQuery> PositionArea::UsedRight() const {
   switch (SecondEnd()) {
-    case InsetAreaRegion::kLeft:
+    case PositionAreaRegion::kLeft:
       return AnchorLeft();
-    case InsetAreaRegion::kCenter:
+    case PositionAreaRegion::kCenter:
       return AnchorRight();
-    case InsetAreaRegion::kRight:
+    case PositionAreaRegion::kRight:
       return std::nullopt;
     default:
       NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
-    case InsetAreaRegion::kNone:
+    case PositionAreaRegion::kNone:
       return std::nullopt;
   }
 }
 
-std::pair<ItemPosition, ItemPosition> InsetArea::AlignJustifySelfFromPhysical(
+std::pair<ItemPosition, ItemPosition> PositionArea::AlignJustifySelfFromPhysical(
     WritingDirectionMode container_writing_direction) const {
   ItemPosition align = ItemPosition::kStart;
   ItemPosition align_reverse = ItemPosition::kEnd;
   ItemPosition justify = ItemPosition::kStart;
   ItemPosition justify_reverse = ItemPosition::kEnd;
 
-  if ((FirstStart() == InsetAreaRegion::kTop &&
-       FirstEnd() == InsetAreaRegion::kBottom) ||
-      (FirstStart() == InsetAreaRegion::kCenter &&
-       FirstEnd() == InsetAreaRegion::kCenter)) {
+  if ((FirstStart() == PositionAreaRegion::kTop &&
+       FirstEnd() == PositionAreaRegion::kBottom) ||
+      (FirstStart() == PositionAreaRegion::kCenter &&
+       FirstEnd() == PositionAreaRegion::kCenter)) {
     // 'center' or 'all' should align with anchor center.
     align = align_reverse = ItemPosition::kAnchorCenter;
   } else {
     // 'top' and 'top center' aligns with end, 'bottom' and 'center bottom' with
     // start.
-    if (FirstStart() == InsetAreaRegion::kTop) {
+    if (FirstStart() == PositionAreaRegion::kTop) {
       std::swap(align, align_reverse);
     }
   }
-  if ((SecondStart() == InsetAreaRegion::kLeft &&
-       SecondEnd() == InsetAreaRegion::kRight) ||
-      (SecondStart() == InsetAreaRegion::kCenter &&
-       SecondEnd() == InsetAreaRegion::kCenter)) {
+  if ((SecondStart() == PositionAreaRegion::kLeft &&
+       SecondEnd() == PositionAreaRegion::kRight) ||
+      (SecondStart() == PositionAreaRegion::kCenter &&
+       SecondEnd() == PositionAreaRegion::kCenter)) {
     // 'center' or 'all' should align with anchor center.
     justify = justify_reverse = ItemPosition::kAnchorCenter;
   } else {
     // 'left' and 'left center' aligns with end, 'right' and 'center right' with
     // start.
-    if (SecondStart() == InsetAreaRegion::kLeft) {
+    if (SecondStart() == PositionAreaRegion::kLeft) {
       std::swap(justify, justify_reverse);
     }
   }
@@ -329,25 +329,25 @@ std::pair<ItemPosition, ItemPosition> InsetArea::AlignJustifySelfFromPhysical(
                                                     converter.InlineStart());
 }
 
-AnchorQuery InsetArea::AnchorTop() {
+AnchorQuery PositionArea::AnchorTop() {
   return AnchorQuery(CSSAnchorQueryType::kAnchor,
                      AnchorSpecifierValue::Default(), /* percentage */ 0,
                      CSSAnchorValue::kTop);
 }
 
-AnchorQuery InsetArea::AnchorBottom() {
+AnchorQuery PositionArea::AnchorBottom() {
   return AnchorQuery(CSSAnchorQueryType::kAnchor,
                      AnchorSpecifierValue::Default(), /* percentage */ 0,
                      CSSAnchorValue::kBottom);
 }
 
-AnchorQuery InsetArea::AnchorLeft() {
+AnchorQuery PositionArea::AnchorLeft() {
   return AnchorQuery(CSSAnchorQueryType::kAnchor,
                      AnchorSpecifierValue::Default(), /* percentage */ 0,
                      CSSAnchorValue::kLeft);
 }
 
-AnchorQuery InsetArea::AnchorRight() {
+AnchorQuery PositionArea::AnchorRight() {
   return AnchorQuery(CSSAnchorQueryType::kAnchor,
                      AnchorSpecifierValue::Default(), /* percentage */ 0,
                      CSSAnchorValue::kRight);
