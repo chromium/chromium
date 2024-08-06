@@ -30,6 +30,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -222,6 +223,7 @@ public class ScreenshotCaptureTest {
     @Feature({"RenderTest"})
     // The test is based on 3-button mode. The newer version defaults to gesture mode.
     @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q)
+    @DisabledTest(message = "https://crbug.com/357833738")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testNavigatingBackToNtpFromNormalPage(boolean nightModeEnabled)
             throws IOException, TimeoutException, InterruptedException {
@@ -259,6 +261,7 @@ public class ScreenshotCaptureTest {
     @Feature({"RenderTest"})
     // The test is based on 3-button mode. The newer version defaults to gesture mode.
     @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q)
+    @DisabledTest(message = "https://crbug.com/357833738")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testNavigatingBackToNtpFromNormalPageWithoutTopControls(boolean nightModeEnabled)
             throws Throwable {
@@ -342,6 +345,7 @@ public class ScreenshotCaptureTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/357833738")
     public void testNavigateToNTPByHomeButton()
             throws InterruptedException, IOException, TimeoutException {
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PAGE));
