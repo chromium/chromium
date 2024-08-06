@@ -6,5 +6,3 @@ per-file raw_ref*=file://base/memory/MIRACLE_PTR_OWNERS
 per-file madv_free*=lizeb@chromium.org
 per-file madv_free*=pasko@chromium.org
 per-file madv_free*=mthiesse@chromium.org
-per-file nonscannable_memory*=bikineev@chromium.org
-per-file nonscannable_memory*=mlippautz@chromium.org

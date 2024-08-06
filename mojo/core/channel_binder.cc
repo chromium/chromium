@@ -25,7 +25,6 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
-#include "base/memory/nonscannable_memory.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
@@ -158,7 +157,7 @@ base::android::BinderStatusOr<void> WriteMessagePayload(
 }
 
 struct PayloadBuffer {
-  std::unique_ptr<uint8_t, base::NonScannableDeleter> data;
+  std::unique_ptr<uint8_t> data;
   size_t size;
 };
 using ReceivedPayload =
@@ -170,7 +169,7 @@ base::android::BinderStatusOr<ReceivedPayload> ReadMessagePayload(
     case WirePayloadType::kInline: {
       PayloadBuffer buffer;
       RETURN_IF_ERROR(in.ReadByteArray([&buffer](size_t size) {
-        buffer.data.reset(static_cast<uint8_t*>(base::AllocNonScannable(size)));
+        buffer.data.reset(static_cast<uint8_t*>(operator new(size)));
         buffer.size = size;
         return buffer.data.get();
       }));

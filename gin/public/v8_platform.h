@@ -36,7 +36,6 @@ class GIN_EXPORT V8Platform : public v8::Platform {
   ThreadIsolatedAllocator* GetThreadIsolatedAllocator() override;
 #endif
   void OnCriticalMemoryPressure() override;
-  v8::ZoneBackingAllocator* GetZoneBackingAllocator() override;
 #endif
 
   std::shared_ptr<v8::TaskRunner> GetForegroundTaskRunner(

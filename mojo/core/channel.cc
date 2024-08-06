@@ -19,7 +19,6 @@
 #include "base/check_op.h"
 #include "base/functional/overloaded.h"
 #include "base/logging.h"
-#include "base/memory/nonscannable_memory.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -86,7 +85,7 @@ Channel::AlignedBuffer MakeAlignedBuffer(size_t size) {
   // Generic allocators (such as malloc) return a pointer that is suitably
   // aligned for storing any type of object with a fundamental alignment
   // requirement. Buffers have no additional alignment requirement beyond that.
-  void* ptr = base::AllocNonScannable(size);
+  void* ptr = operator new(size);
   // Even though the allocator is configured in such a way that it crashes
   // rather than return nullptr, ASAN and friends don't know about that. This
   // CHECK() prevents Clusterfuzz from complaining. crbug.com/1180576.
@@ -103,7 +102,7 @@ struct IpczMessage : public Channel::Message {
   IpczMessage(base::span<const uint8_t> data,
               std::vector<PlatformHandle> handles) {
     size_ = sizeof(IpczHeader) + data.size();
-    data_.reset(static_cast<char*>(base::AllocNonScannable(size_)));
+    data_.reset(static_cast<char*>(operator new(size_)));
 
     IpczHeader& header = *reinterpret_cast<IpczHeader*>(data_.get());
     header.size = sizeof(IpczHeader);

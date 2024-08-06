@@ -383,8 +383,6 @@ component("base") {
     "memory/memory_pressure_listener.h",
     "memory/memory_pressure_monitor.cc",
     "memory/memory_pressure_monitor.h",
-    "memory/nonscannable_memory.cc",
-    "memory/nonscannable_memory.h",
     "memory/page_size.h",
     "memory/platform_shared_memory_handle.cc",
     "memory/platform_shared_memory_handle.h",

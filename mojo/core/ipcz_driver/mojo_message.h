@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/memory/nonscannable_memory.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_span.h"
 #include "mojo/core/scoped_ipcz_handle.h"
@@ -130,7 +129,7 @@ class MojoMessage {
   ScopedIpczHandle parcel_;
 
   // A heap buffer of message data, used only when `parcel_` is null.
-  using DataPtr = std::unique_ptr<uint8_t, base::NonScannableDeleter>;
+  using DataPtr = std::unique_ptr<uint8_t>;
   DataPtr data_storage_;
   size_t data_storage_size_ = 0;
 

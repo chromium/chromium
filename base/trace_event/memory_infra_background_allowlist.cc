@@ -203,8 +203,6 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "malloc/partitions/allocator/thread_cache/main_thread",
         "malloc/partitions/aligned",
         "malloc/partitions/original",
-        "malloc/partitions/nonscannable",
-        "malloc/partitions/nonquarantinable",
         "malloc/sys_malloc",
         "malloc/win_heap",
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
