@@ -215,6 +215,7 @@ struct Suggestion {
         return absl::holds_alternative<BackendId>(payload) ||
                absl::holds_alternative<PasswordSuggestionDetails>(payload);
       case SuggestionType::kFillPassword:
+      case SuggestionType::kViewPasswordDetails:
         return absl::holds_alternative<PasswordSuggestionDetails>(payload);
       case SuggestionType::kSeePromoCodeDetails:
         return absl::holds_alternative<GURL>(payload);

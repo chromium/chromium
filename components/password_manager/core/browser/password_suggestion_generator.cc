@@ -238,12 +238,15 @@ void AddFillPasswordChildSuggestion(Suggestion& suggestion,
   suggestion.children.emplace_back(std::move(fill_password));
 }
 
-void AddViewPasswordDetailsChildSuggestion(Suggestion& suggestion) {
+void AddViewPasswordDetailsChildSuggestion(
+    Suggestion& suggestion,
+    const Suggestion::PasswordSuggestionDetails& payload) {
   Suggestion view_password_details(
       l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_VIEW_DETAILS_ENTRY),
       SuggestionType::kViewPasswordDetails);
   view_password_details.icon = Suggestion::Icon::kKey;
+  view_password_details.payload = payload;
   suggestion.children.emplace_back(std::move(view_password_details));
 }
 
@@ -265,10 +268,11 @@ void AppendManualFallbackSuggestions(const CredentialUIEntry& credential,
     const std::u16string maybe_username =
         ReplaceEmptyUsername(credential.username, &replaced);
     suggestion.labels = {{autofill::Suggestion::Text(maybe_username)}};
-    suggestion.payload = Suggestion::PasswordSuggestionDetails(
+    Suggestion::PasswordSuggestionDetails payload(
         credential.username, credential.password, domain_info.signon_realm,
         /*display_signon_realm=*/base::UTF8ToUTF16(domain_info.name),
         is_cross_origin.value());
+    suggestion.payload = payload;
     suggestion.is_acceptable = on_password_form.value();
     if (FacetURI::FromPotentiallyInvalidSpec(domain_info.signon_realm)
             .IsValidWebFacetURI()) {
@@ -281,7 +285,7 @@ void AppendManualFallbackSuggestions(const CredentialUIEntry& credential,
     }
     AddFillPasswordChildSuggestion(suggestion, credential, is_cross_origin);
     suggestion.children.emplace_back(SuggestionType::kSeparator);
-    AddViewPasswordDetailsChildSuggestion(suggestion);
+    AddViewPasswordDetailsChildSuggestion(suggestion, payload);
 
     suggestions->emplace_back(std::move(suggestion));
   }

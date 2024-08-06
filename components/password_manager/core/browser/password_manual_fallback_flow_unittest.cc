@@ -54,6 +54,7 @@ using testing::Field;
 using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRef;
+using testing::Test;
 
 constexpr const char kUrl[] = "https://example.com/";
 constexpr const char kPSLExtension[] = "https://psl.example.com/";
@@ -125,6 +126,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (const override));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
+  MOCK_METHOD(void,
+              OpenPasswordDetailsBubble,
+              (const password_manager::PasswordForm& form),
+              (override));
   MOCK_METHOD(std::unique_ptr<PasswordCrossDomainConfirmationPopupController>,
               ShowCrossDomainConfirmationPopup,
               (const gfx::RectF& element_bounds,
@@ -147,7 +152,7 @@ class MockAffiliationService : public affiliations::FakeAffiliationService {
               (const override));
 };
 
-class PasswordManualFallbackFlowTest : public ::testing::Test {
+class PasswordManualFallbackFlowTest : public Test {
  public:
   PasswordManualFallbackFlowTest() {
     ON_CALL(password_manager_client(), GetProfilePasswordStore)
@@ -159,16 +164,25 @@ class PasswordManualFallbackFlowTest : public ::testing::Test {
     mock_affiliated_match_helper_ = profile_store_match_helper.get();
     profile_password_store().Init(/*prefs=*/nullptr,
                                   std::move(profile_store_match_helper));
-    // Add 1 password form to the password store.
-    PasswordForm form =
-        CreateEntry("username@example.com", "password", GURL(kUrl),
-                    PasswordForm::MatchType::kExact);
-    profile_password_store().AddLogin(form);
   }
 
   ~PasswordManualFallbackFlowTest() override {
     mock_affiliated_match_helper_ = nullptr;
     profile_password_store_->ShutdownOnUIThread();
+  }
+
+  void SetUp() override {
+    Test::SetUp();
+
+    // Add 1 password form to the password store.
+    profile_password_store().AddLogin(
+        CreateEntry("username@example.com", "password", GURL(kUrl),
+                    PasswordForm::MatchType::kExact));
+  }
+
+  void TearDown() override {
+    profile_password_store().Clear();
+    Test::TearDown();
   }
 
   PasswordManualFallbackFlow& flow() { return *flow_; }
@@ -1051,6 +1065,36 @@ TEST_F(PasswordManualFallbackFlowTest, AcceptManagePasswordsEntry) {
       "PasswordManager.PasswordDropdownItemSelected",
       metrics_util::PasswordDropdownSelectedOption::kShowAll, 1);
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS)
+TEST_F(PasswordManualFallbackFlowTest, ShowPasswordDetails) {
+  PasswordForm form_com =
+      CreateEntry("username@google.com", "password",
+                  GURL("https://google.com/"), PasswordForm::MatchType::kExact);
+  PasswordForm form_de =
+      CreateEntry("username@google.com", "password", GURL("https://google.de/"),
+                  PasswordForm::MatchType::kExact);
+  profile_password_store().AddLogins({form_com, form_de});
+
+  InitializeFlow();
+  ProcessPasswordStoreUpdates();
+
+  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+
+  EXPECT_CALL(password_manager_client(), OpenPasswordDetailsBubble(form_de));
+  ShowAndAcceptSuggestion(
+      autofill::test::CreateAutofillSuggestion(
+          SuggestionType::kViewPasswordDetails, u"View details",
+          Suggestion::PasswordSuggestionDetails(
+              u"username@google.com", u"password", "https://google.de/",
+              u"google.de", false)),
+      AutofillSuggestionDelegate::SuggestionPosition{.row = 0,
+                                                     .sub_popup_level = 1});
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 // This class tests that "FillAfterSuggestion" password metrics are recorded
 // correctly.
