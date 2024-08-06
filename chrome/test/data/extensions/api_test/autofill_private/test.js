@@ -13,7 +13,6 @@ var ADDRESS_LEVEL1 = 'Address level 1';
 var ADDRESS_LEVEL2 = 'Address level 2';
 var ADDRESS_LEVEL3 = 'Address level 3';
 var POSTAL_CODE = 'Postal code';
-var SORTING_CODE = 'Sorting code';
 var COUNTRY_CODE = 'ES';
 var PHONE = '1 123-123-1234';
 var EMAIL = 'johndoe@gmail.com';
@@ -246,7 +245,6 @@ var availableTests = [
                   ADDRESS_HOME_CITY: ADDRESS_LEVEL2,
                   ADDRESS_HOME_DEPENDENT_LOCALITY: ADDRESS_LEVEL3,
                   ADDRESS_HOME_ZIP: POSTAL_CODE,
-                  ADDRESS_HOME_SORTING_CODE: SORTING_CODE,
                   ADDRESS_HOME_COUNTRY: COUNTRY_CODE,
                   PHONE_HOME_WHOLE_NUMBER: PHONE,
                   EMAIL_ADDRESS: EMAIL,
@@ -280,11 +278,6 @@ var availableTests = [
               {
                 type: chrome.autofillPrivate.FieldType.ADDRESS_HOME_ZIP,
                 value: POSTAL_CODE
-              },
-              {
-                type: chrome.autofillPrivate.FieldType
-                          .ADDRESS_HOME_SORTING_CODE,
-                value: SORTING_CODE
               },
               {
                 type:
@@ -340,7 +333,6 @@ var availableTests = [
                   ADDRESS_HOME_CITY: ADDRESS_LEVEL2,
                   ADDRESS_HOME_DEPENDENT_LOCALITY: ADDRESS_LEVEL3,
                   ADDRESS_HOME_ZIP: POSTAL_CODE,
-                  ADDRESS_HOME_SORTING_CODE: SORTING_CODE,
                   ADDRESS_HOME_COUNTRY: COUNTRY_CODE,
                   PHONE_HOME_WHOLE_NUMBER: UPDATED_PHONE,
                   EMAIL_ADDRESS: EMAIL,

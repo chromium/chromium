@@ -424,10 +424,6 @@ AutofillProfileSpecifics ConstructBaseSpecifics() {
   specifics.set_address_home_admin_level_2_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
-  specifics.set_address_home_sorting_code("CEDEX");
-  specifics.set_address_home_sorting_code_status(
-      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
-
   specifics.set_address_home_dependent_locality("Santa Clara");
   specifics.set_address_home_dependent_locality_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
@@ -571,10 +567,6 @@ AutofillProfileSpecifics ConstructCompleteSpecificsBR() {
   specifics.set_address_home_floor_status(
       sync_pb::
           AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
-  specifics.set_address_home_sorting_code("");
-  specifics.set_address_home_sorting_code_status(
-      sync_pb::
-          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
   specifics.set_address_home_admin_level_2("");
   specifics.set_address_home_admin_level_2_status(
       sync_pb::
@@ -636,10 +628,6 @@ AutofillProfileSpecifics ConstructCompleteSpecificsAU() {
       sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
 
   // Reset unused tokens from the default info.
-  specifics.set_address_home_sorting_code("");
-  specifics.set_address_home_sorting_code_status(
-      sync_pb::
-          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
   specifics.set_address_home_admin_level_2("");
 
   specifics.set_address_home_admin_level_2_status(
@@ -691,10 +679,6 @@ AutofillProfileSpecifics ConstructCompleteSpecificsDE() {
       sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
 
   // Reset unused tokens from the default info.
-  specifics.set_address_home_sorting_code("");
-  specifics.set_address_home_sorting_code_status(
-      sync_pb::
-          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
   specifics.set_address_home_admin_level_2("");
 
   specifics.set_address_home_admin_level_2_status(
@@ -816,11 +800,6 @@ AutofillProfileSpecifics ConstructCompleteSpecificsMX() {
   specifics.set_address_home_floor_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
 
-  specifics.set_address_home_sorting_code("");
-  specifics.set_address_home_sorting_code_status(
-      sync_pb::
-          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
-
   return specifics;
 }
 
@@ -888,11 +867,6 @@ AutofillProfileSpecifics ConstructCompleteSpecificsIN() {
 
   specifics.set_address_home_floor("");
   specifics.set_address_home_floor_status(
-      sync_pb::
-          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
-
-  specifics.set_address_home_sorting_code("");
-  specifics.set_address_home_sorting_code_status(
       sync_pb::
           AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
 

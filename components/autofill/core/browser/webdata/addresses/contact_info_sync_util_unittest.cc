@@ -363,8 +363,6 @@ ContactInfoSpecifics ConstructBaseSpecifics() {
            "123 Fake St. Premise Marcos y Oliva\n"
            "Apt. 10 Floor 2 Red tree",
            ContactInfoSpecifics::OBSERVED);
-  SetToken(specifics.mutable_address_sorting_code(), "CEDEX",
-           ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_address_dependent_locality(), "Santa Clara",
            ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_address_thoroughfare_name(), "Fake St.",
@@ -464,8 +462,6 @@ ContactInfoSpecifics ConstructCompleteSpecificsAU() {
            ContactInfoSpecifics::PARSED);
 
   // Reset unused tokens from the default info.
-  SetToken(specifics.mutable_address_sorting_code(), "",
-           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   SetToken(specifics.mutable_address_admin_level_2(), "",
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   SetToken(specifics.mutable_address_dependent_locality(), "",
@@ -495,8 +491,6 @@ ContactInfoSpecifics ConstructCompleteSpecificsDE() {
            ContactInfoSpecifics::PARSED);
 
   // Reset unused tokens from the default info.
-  SetToken(specifics.mutable_address_sorting_code(), "",
-           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   SetToken(specifics.mutable_address_admin_level_2(), "",
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   SetToken(specifics.mutable_address_dependent_locality(), "",
@@ -550,8 +544,6 @@ ContactInfoSpecifics ConstructCompleteSpecificsBR() {
 
   // Reset unused tokens from the default info.
   SetToken(specifics.mutable_address_floor(), "",
-           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
-  SetToken(specifics.mutable_address_sorting_code(), "",
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   SetToken(specifics.mutable_address_admin_level_2(), "",
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
@@ -607,11 +599,6 @@ ContactInfoSpecifics ConstructCompleteSpecificsMX() {
            ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_address_floor(), "4",
            ContactInfoSpecifics::PARSED);
-
-  // Reset unused tokens from the default info.
-  SetToken(specifics.mutable_address_sorting_code(), "",
-           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
-
   return specifics;
 }
 
@@ -651,8 +638,6 @@ ContactInfoSpecifics ConstructCompleteSpecificsIN() {
   SetToken(specifics.mutable_address_apt_num(), "",
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   SetToken(specifics.mutable_address_floor(), "",
-           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
-  SetToken(specifics.mutable_address_sorting_code(), "",
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   return specifics;
 }

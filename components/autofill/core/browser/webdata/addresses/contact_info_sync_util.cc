@@ -207,7 +207,6 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_address_country(), ADDRESS_HOME_COUNTRY);
   s.Set(specifics.mutable_address_street_address(),
         ADDRESS_HOME_STREET_ADDRESS);
-  s.Set(specifics.mutable_address_sorting_code(), ADDRESS_HOME_SORTING_CODE);
   s.Set(specifics.mutable_address_dependent_locality(),
         ADDRESS_HOME_DEPENDENT_LOCALITY);
   s.Set(specifics.mutable_address_thoroughfare_name(),
@@ -346,7 +345,6 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   s.Set(specifics.address_state(), ADDRESS_HOME_STATE);
   s.Set(specifics.address_zip(), ADDRESS_HOME_ZIP);
   s.Set(specifics.address_street_address(), ADDRESS_HOME_STREET_ADDRESS);
-  s.Set(specifics.address_sorting_code(), ADDRESS_HOME_SORTING_CODE);
   s.Set(specifics.address_dependent_locality(),
         ADDRESS_HOME_DEPENDENT_LOCALITY);
   s.Set(specifics.address_thoroughfare_name(), ADDRESS_HOME_STREET_NAME);
@@ -463,9 +461,6 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   }
   if (d.Delete(trimmed_specifics.mutable_address_street_address())) {
     trimmed_specifics.clear_address_street_address();
-  }
-  if (d.Delete(trimmed_specifics.mutable_address_sorting_code())) {
-    trimmed_specifics.clear_address_sorting_code();
   }
   if (d.Delete(trimmed_specifics.mutable_address_dependent_locality())) {
     trimmed_specifics.clear_address_dependent_locality();

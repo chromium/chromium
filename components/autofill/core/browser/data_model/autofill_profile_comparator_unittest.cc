@@ -603,8 +603,6 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableAddresses) {
                          {ADDRESS_HOME_LINE2, u"Suite 150"}});
   AutofillProfile differentLocality =
       CopyAndModify(p1, {{ADDRESS_HOME_DEPENDENT_LOCALITY, u"Funky Chicken"}});
-  AutofillProfile differentSortingCode =
-      CopyAndModify(p1, {{ADDRESS_HOME_SORTING_CODE, u"98000 Monaco"}});
 
   // A profile with no country uses the legacy address and can be merged with
   // other profiles using the same hierarchy.
@@ -628,7 +626,6 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableAddresses) {
   EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentCity));
   EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentAddress));
   EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentLocality));
-  EXPECT_FALSE(comparator_.HaveMergeableAddresses(p1, differentSortingCode));
 }
 
 TEST_F(AutofillProfileComparatorTest, AreMergeable) {
