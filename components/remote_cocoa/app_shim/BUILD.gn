@@ -49,6 +49,8 @@ component("app_shim") {
     "native_widget_mac_frameless_nswindow.mm",
     "native_widget_mac_nswindow.h",
     "native_widget_mac_nswindow.mm",
+    "native_widget_mac_overlay_nswindow.h",
+    "native_widget_mac_overlay_nswindow.mm",
     "native_widget_ns_window_bridge.h",
     "native_widget_ns_window_bridge.mm",
     "native_widget_ns_window_fullscreen_controller.h",
@@ -92,5 +94,17 @@ component("app_shim") {
   ]
   weak_frameworks = [
     "UniformTypeIdentifiers.framework",  # macOS 11
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "native_widget_mac_overlay_nswindow_unittests.mm" ]
+  deps = [
+    ":app_shim",
+    "//base",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+    "//ui/base",
   ]
 }

@@ -986,6 +986,14 @@ NativeWidgetMac::RegisterInitNativeWidgetCallback(
   return g_init_native_widget_callbacks.Get().Add(callback);
 }
 
+void NativeWidgetMac::PopulateCreateWindowParams(
+    const Widget::InitParams& widget_params,
+    remote_cocoa::mojom::CreateWindowParams* params) {
+  if (widget_params.is_overlay) {
+    params->window_class = remote_cocoa::mojom::WindowClass::kOverlay;
+  }
+}
+
 NativeWidgetMacNSWindow* NativeWidgetMac::CreateNSWindow(
     const remote_cocoa::mojom::CreateWindowParams* params) {
   return remote_cocoa::NativeWidgetNSWindowBridge::CreateNSWindow(params);

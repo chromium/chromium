@@ -229,7 +229,7 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
 
   virtual void PopulateCreateWindowParams(
       const Widget::InitParams& widget_params,
-      remote_cocoa::mojom::CreateWindowParams* params) {}
+      remote_cocoa::mojom::CreateWindowParams* params);
 
   // Creates the NSWindow that will be passed to the NativeWidgetNSWindowBridge.
   // Called by InitNativeWidget.
