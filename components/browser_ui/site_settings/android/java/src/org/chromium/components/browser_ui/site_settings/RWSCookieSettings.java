@@ -19,44 +19,44 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
-/** First Party Sets preference page. It's a TriStateCookieSettingsPreference subpage. */
-public class FPSCookieSettings extends BaseSiteSettingsFragment
+/** Related Web Sets preference page. It's a TriStateCookieSettingsPreference subpage. */
+public class RWSCookieSettings extends BaseSiteSettingsFragment
         implements Preference.OnPreferenceChangeListener {
-    public static final String ALLOW_FPS_COOKIE_PREFERENCE = "allow_fps";
+    public static final String ALLOW_RWS_COOKIE_PREFERENCE = "allow_rws";
     public static final String SUBTITLE = "subtitle";
     public static final String BULLET_TWO = "bullet_two";
 
     public static final String EXTRA_COOKIE_PAGE_STATE = "cookie_page_state";
 
     // UI Elements.
-    private ChromeSwitchPreference mAllowFPSPreference;
+    private ChromeSwitchPreference mAllowRWSPreference;
     private TextMessagePreference mSubtitle;
     private TextMessagePreference mBulletTwo;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        SettingsUtils.addPreferencesFromResource(this, R.xml.fps_cookie_settings);
+        SettingsUtils.addPreferencesFromResource(this, R.xml.rws_cookie_settings);
 
         getActivity().setTitle(getContext().getString(R.string.cookies_title));
         mSubtitle = (TextMessagePreference) findPreference(SUBTITLE);
         mBulletTwo = (TextMessagePreference) findPreference(BULLET_TWO);
-        mAllowFPSPreference = (ChromeSwitchPreference) findPreference(ALLOW_FPS_COOKIE_PREFERENCE);
+        mAllowRWSPreference = (ChromeSwitchPreference) findPreference(ALLOW_RWS_COOKIE_PREFERENCE);
 
         @CookieControlsMode
-        int pageState = getArguments().getInt(FPSCookieSettings.EXTRA_COOKIE_PAGE_STATE);
+        int pageState = getArguments().getInt(RWSCookieSettings.EXTRA_COOKIE_PAGE_STATE);
 
         if (pageState == CookieControlsMode.BLOCK_THIRD_PARTY) {
-            setupAllowFPSPreference();
+            setupAllowRWSPreference();
             mSubtitle.setTitle(
                     R.string.website_settings_category_cookie_block_third_party_subtitle);
             mBulletTwo.setSummary(R.string.website_settings_category_cookie_subpage_bullet_two);
-            mAllowFPSPreference.setVisible(true);
+            mAllowRWSPreference.setVisible(true);
         } else if (pageState == CookieControlsMode.INCOGNITO_ONLY) {
             mSubtitle.setTitle(
                     R.string.website_settings_category_cookie_block_third_party_incognito_subtitle);
             mBulletTwo.setSummary(
                     R.string.website_settings_category_cookie_subpage_incognito_bullet_two);
-            mAllowFPSPreference.setVisible(false);
+            mAllowRWSPreference.setVisible(false);
         } else {
             assert false
                     : "Unexpected cookies subpage state: "
@@ -69,18 +69,18 @@ public class FPSCookieSettings extends BaseSiteSettingsFragment
         }
     }
 
-    private void setupAllowFPSPreference() {
+    private void setupAllowRWSPreference() {
         var mManagedPreferenceDelegate =
-                new FPSCookieSettingsManagedPreferenceDelegate(
+                new RWSCookieSettingsManagedPreferenceDelegate(
                         getSiteSettingsDelegate().getManagedPreferenceDelegate());
-        mAllowFPSPreference.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
-        mAllowFPSPreference.setChecked(
-                getSiteSettingsDelegate().isFirstPartySetsDataAccessEnabled());
+        mAllowRWSPreference.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
+        mAllowRWSPreference.setChecked(
+                getSiteSettingsDelegate().isRelatedWebSetsDataAccessEnabled());
 
         if (!isBlockThirdPartyCookieSelected()) {
-            mAllowFPSPreference.setEnabled(false);
+            mAllowRWSPreference.setEnabled(false);
         }
-        mAllowFPSPreference.setOnPreferenceChangeListener(this);
+        mAllowRWSPreference.setOnPreferenceChangeListener(this);
     }
 
     private boolean isBlockThirdPartyCookieSelected() {
@@ -92,25 +92,25 @@ public class FPSCookieSettings extends BaseSiteSettingsFragment
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String key = preference.getKey();
-        if (ALLOW_FPS_COOKIE_PREFERENCE.equals(key)) {
-            getSiteSettingsDelegate().setFirstPartySetsDataAccessEnabled((boolean) newValue);
+        if (ALLOW_RWS_COOKIE_PREFERENCE.equals(key)) {
+            getSiteSettingsDelegate().setRelatedWebSetsDataAccessEnabled((boolean) newValue);
         } else {
             assert false : "Should not be reached";
         }
         return true;
     }
 
-    private class FPSCookieSettingsManagedPreferenceDelegate
+    private class RWSCookieSettingsManagedPreferenceDelegate
             extends ForwardingManagedPreferenceDelegate {
-        FPSCookieSettingsManagedPreferenceDelegate(ManagedPreferenceDelegate base) {
+        RWSCookieSettingsManagedPreferenceDelegate(ManagedPreferenceDelegate base) {
             super(base);
         }
 
         @Override
         public boolean isPreferenceControlledByPolicy(Preference preference) {
             String key = preference.getKey();
-            if (ALLOW_FPS_COOKIE_PREFERENCE.equals(key)) {
-                return getSiteSettingsDelegate().isFirstPartySetsDataAccessManaged();
+            if (ALLOW_RWS_COOKIE_PREFERENCE.equals(key)) {
+                return getSiteSettingsDelegate().isRelatedWebSetsDataAccessManaged();
             } else {
                 assert false : "Should not be reached";
             }

@@ -9,12 +9,12 @@ import com.google.common.collect.ImmutableList;
 import java.io.Serializable;
 import java.util.List;
 
-/** First Party Sets information for a given website. */
-public class FPSCookieInfo implements Serializable {
+/** Related Web Sets information for a given website. */
+public class RWSCookieInfo implements Serializable {
     private final String mOwnerHost;
     private final List<Website> mMembers;
 
-    public FPSCookieInfo(String ownerHost, List<Website> members) {
+    public RWSCookieInfo(String ownerHost, List<Website> members) {
         mOwnerHost = ownerHost;
         mMembers = members;
     }

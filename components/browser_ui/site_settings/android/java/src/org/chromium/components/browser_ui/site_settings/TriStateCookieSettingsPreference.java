@@ -45,8 +45,8 @@ public class TriStateCookieSettingsPreference extends Preference
 
         // Whether third-party blocking is enforced.
         public boolean cookieControlsModeEnforced;
-        // Whether First Party Sets are enabled.
-        public boolean isFirstPartySetsDataAccessEnabled;
+        // Whether Related Web Sets are enabled.
+        public boolean isRelatedWebSetsDataAccessEnabled;
     }
 
     public static final String TP_LEARN_MORE_URL =
@@ -169,7 +169,7 @@ public class TriStateCookieSettingsPreference extends Preference
     }
 
     private void setBlockThirdPartyCookieDescription(Params params) {
-        if (params.isFirstPartySetsDataAccessEnabled) {
+        if (params.isRelatedWebSetsDataAccessEnabled) {
             mBlockThirdPartyButton.setDescriptionText(
                     getResources()
                             .getString(

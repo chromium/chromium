@@ -141,16 +141,16 @@ class WebsitePreference extends ChromeImageViewPreference {
 
     protected String buildSummary() {
         if (mSiteSettingsDelegate.isPrivacySandboxFirstPartySetsUIFeatureEnabled()
-                && mSiteSettingsDelegate.isFirstPartySetsDataAccessEnabled()
-                && mSite.getFPSCookieInfo() != null) {
-            var fpsInfo = mSite.getFPSCookieInfo();
+                && mSiteSettingsDelegate.isRelatedWebSetsDataAccessEnabled()
+                && mSite.getRWSCookieInfo() != null) {
+            var rwsInfo = mSite.getRWSCookieInfo();
             return getContext()
                     .getResources()
                     .getQuantityString(
                             R.plurals.allsites_fps_list_summary,
-                            fpsInfo.getMembersCount(),
-                            Integer.toString(fpsInfo.getMembersCount()),
-                            fpsInfo.getOwner());
+                            rwsInfo.getMembersCount(),
+                            Integer.toString(rwsInfo.getMembersCount()),
+                            rwsInfo.getOwner());
         }
 
         if (hasSubPage()) {
