@@ -296,7 +296,10 @@ class CheckBoxMenuItemView : public views::MenuItemView {
       : views::MenuItemView(parent,
                             command,
                             views::MenuItemView::Type::kNormal),
-        view_delegate_(view_delegate) {}
+        view_delegate_(view_delegate) {
+    // Set the role of the toggleable menu items to checkbox.
+    GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItemCheckBox);
+  }
 
   CheckBoxMenuItemView(const CheckBoxMenuItemView&) = delete;
   CheckBoxMenuItemView& operator=(const CheckBoxMenuItemView&) = delete;
@@ -305,8 +308,6 @@ class CheckBoxMenuItemView : public views::MenuItemView {
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     views::MenuItemView::GetAccessibleNodeData(node_data);
-    // Set the role of the toggleable menu items to checkbox.
-    node_data->role = ax::mojom::Role::kMenuItemCheckBox;
     node_data->SetCheckedState(
         view_delegate_->IsCategoryEnabled(
             static_cast<AppListSearchControlCategory>(GetCommand()))
@@ -557,6 +558,8 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   assistant_button->GetViewAccessibility().SetName(assistant_button_label);
   assistant_button->SetTooltipText(assistant_button_label);
   SetShowAssistantButton(search_box_model->show_assistant_button());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTextField);
 }
 
 SearchBoxView::~SearchBoxView() {
@@ -965,7 +968,6 @@ void SearchBoxView::OnKeyEvent(ui::KeyEvent* evt) {
 
 void SearchBoxView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (HasAutocompleteText()) {
-    node_data->role = ax::mojom::Role::kTextField;
     node_data->SetValue(l10n_util::GetStringFUTF16(
         IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE, search_box()->GetText()));
   }

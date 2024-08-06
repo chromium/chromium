@@ -152,6 +152,9 @@ AppListSearchView::AppListSearchView(
 
   AppListModelProvider* const model_provider = AppListModelProvider::Get();
   model_provider->AddObserver(this);
+
+  // Set the role of AppListSearchView to ListBox.
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
 }
 
 AppListSearchView::~AppListSearchView() {
@@ -285,11 +288,8 @@ void AppListSearchView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     return;
   }
 
-  // Set the role of AppListSearchView to ListBox along with notifying value
-  // change to "interject" the node announcement before the search result is
-  // announced.
-  node_data->role = ax::mojom::Role::kListBox;
-
+  // Notify value change to "interject" the node announcement before the search
+  // result is announced.
   std::u16string value;
   const std::u16string& query = search_box_view_->current_query();
   if (!query.empty()) {

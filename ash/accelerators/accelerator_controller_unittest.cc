@@ -46,6 +46,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/power/power_button_controller_test_api.h"
@@ -100,6 +101,7 @@
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/mock_input_method.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -118,6 +120,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/accelerator_filter.h"
 
@@ -470,6 +473,10 @@ class AcceleratorControllerTest : public AshTestBase {
     ewh->TimerAction();
   }
   static bool is_ui_shown(ExitWarningHandler* ewh) { return !!ewh->widget_; }
+  // Adding a test API in test fixture to extract the view.
+  static views::View* GetContentsView(ExitWarningHandler* ewh) {
+    return ewh->widget_->GetContentsView();
+  }
   static bool is_idle(ExitWarningHandler* ewh) {
     return ewh->state_ == ExitWarningHandler::IDLE;
   }
@@ -566,6 +573,20 @@ TEST_F(AcceleratorControllerTest, LingeringExitWarningBubble) {
   EXPECT_TRUE(is_ui_shown(ewh));
 
   // Exit ash and there should be no crash
+}
+
+TEST_F(AcceleratorControllerTest,
+       ExitWarningWidgetDelegateViewAccessibleProperties) {
+  ExitWarningHandler* ewh = test_api_->GetExitWarningHandler();
+  ewh->HandleAccelerator();
+  auto* delegate_view = GetContentsView(ewh);
+  ui::AXNodeData data;
+
+  delegate_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kAlert);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_SIGN_OUT_WARNING_POPUP_TEXT_ACCESSIBLE));
 }
 
 TEST_F(AcceleratorControllerTest, Register) {

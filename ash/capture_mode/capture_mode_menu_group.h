@@ -143,6 +143,8 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   // clicked/pressed button, and unselect any previously selected button.
   void HandleOptionClick(int option_id);
 
+  views::View* menu_header() const;
+
   // CaptureModeSettingsView is the |delegate_| here. It's owned by
   // its views hierarchy.
   const raw_ptr<const Delegate> delegate_;

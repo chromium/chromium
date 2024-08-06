@@ -23,6 +23,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
@@ -46,10 +47,7 @@ const int kVerticalMarginAroundText = 100;
 
 class ExitWarningWidgetDelegateView : public views::WidgetDelegateView {
  public:
-  ExitWarningWidgetDelegateView()
-      : accessible_name_(l10n_util::GetStringUTF16(
-            IDS_ASH_SIGN_OUT_WARNING_POPUP_TEXT_ACCESSIBLE)),
-        text_width_(0) {
+  ExitWarningWidgetDelegateView() : text_width_(0) {
     std::vector<AcceleratorDetails> accelerators =
         Shell::Get()->accelerator_lookup()->GetAvailableAcceleratorsForAction(
             AcceleratorAction::kExit);
@@ -77,6 +75,10 @@ class ExitWarningWidgetDelegateView : public views::WidgetDelegateView {
     label->SetSubpixelRenderingEnabled(false);
     AddChildView(std::move(label));
     SetLayoutManager(std::make_unique<views::FillLayout>());
+
+    GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+        IDS_ASH_SIGN_OUT_WARNING_POPUP_TEXT_ACCESSIBLE));
   }
 
   ExitWarningWidgetDelegateView(const ExitWarningWidgetDelegateView&) = delete;
@@ -91,14 +93,8 @@ class ExitWarningWidgetDelegateView : public views::WidgetDelegateView {
     views::WidgetDelegateView::OnPaint(canvas);
   }
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kAlert;
-    node_data->SetName(accessible_name_);
-  }
-
  private:
   std::u16string text_;
-  std::u16string accessible_name_;
   int text_width_;
 };
 

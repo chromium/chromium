@@ -123,7 +123,6 @@ class CameraPreviewView
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void Layout(PassKey) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // CaptureModeSessionFocusCycler::HighlightableView:
   views::View* GetView() override;

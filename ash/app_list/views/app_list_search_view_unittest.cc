@@ -43,6 +43,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -1684,7 +1685,8 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchPageA11y) {
   EXPECT_TRUE(search_view->GetVisible());
 
   ui::AXNodeData data;
-  search_view->GetAccessibleNodeData(&data);
+  search_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kListBox);
   EXPECT_EQ("Displaying 0 results for a",
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
   // Create a single search result and and verify A11yNodeData.
@@ -1692,7 +1694,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchPageA11y) {
   for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
-  search_view->GetAccessibleNodeData(&data);
+  search_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ("Displaying 1 result for a",
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
 
@@ -1703,7 +1705,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchPageA11y) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
   ui::AXNodeData data2;
-  search_view->GetAccessibleNodeData(&data);
+  search_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ("Displaying 3 results for a",
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
 }

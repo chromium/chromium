@@ -720,6 +720,13 @@ TEST_F(SearchBoxViewTest, SearchTextfieldAccessibleActiveDescendantId) {
       ax::mojom::IntAttribute::kActivedescendantId));
 }
 
+TEST_F(SearchBoxViewTest, AccessibleProperties) {
+  ui::AXNodeData data;
+
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kTextField, data.role);
+}
+
 class SearchBoxViewAssistantButtonTest : public SearchBoxViewTest {
  public:
   SearchBoxViewAssistantButtonTest() = default;

@@ -101,6 +101,8 @@ class CaptureModeMenuHeader
     capture_mode_util::ConfigLabelView(label_view_);
     auto* box_layout = capture_mode_util::CreateAndInitBoxLayoutForView(this);
     box_layout->SetFlexForView(label_view_, 1);
+
+    GetViewAccessibility().SetRole(ax::mojom::Role::kHeader);
   }
 
   CaptureModeMenuHeader(const CaptureModeMenuHeader&) = delete;
@@ -116,7 +118,6 @@ class CaptureModeMenuHeader
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     View::GetAccessibleNodeData(node_data);
-    node_data->role = ax::mojom::Role::kHeader;
     node_data->SetName(GetHeaderLabel());
   }
 
@@ -504,6 +505,10 @@ void CaptureModeMenuGroup::HandleOptionClick(int option_id) {
   // need to query the delegate.
   delegate_->OnOptionSelected(option_id);
   RefreshOptionsSelections();
+}
+
+views::View* CaptureModeMenuGroup::menu_header() const {
+  return menu_header_;
 }
 
 BEGIN_METADATA(CaptureModeMenuGroup)

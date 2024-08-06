@@ -50,7 +50,6 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
   gfx::Size GetMinimumSize() const override;
   void OnBoundsChanged(const gfx::Rect& prev_bounds) override;
   void RequestFocus() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
   void OnAnimationStarted(AppListState from_state,

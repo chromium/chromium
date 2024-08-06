@@ -114,4 +114,18 @@ TEST_F(AppListFolderViewTest, ExpandedCollapsedAccessibleState) {
   EXPECT_TRUE(node_data.HasState(ax::mojom::State::kCollapsed));
 }
 
+TEST_F(AppListFolderViewTest, AccessibleProperties) {
+  GetAppListTestHelper()->model()->CreateSingleWebAppShortcutItemFolder(
+      "folder_id", "shortcut_id");
+
+  GetAppListTestHelper()->ShowAppList();
+  LeftClickOn(
+      GetAppListTestHelper()->GetScrollableAppsGridView()->GetItemViewAt(0));
+  auto* folder_view = GetAppListTestHelper()->GetBubbleFolderView();
+
+  ui::AXNodeData node_data;
+  folder_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kGenericContainer);
+}
+
 }  // namespace ash

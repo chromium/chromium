@@ -49,6 +49,7 @@ class CaptureModeSettingsTestApi {
 
   CaptureModeMenuGroup* GetCameraMenuGroup();
   views::View* GetCameraOption(int option_id);
+  views::View* GetCameraMenuHeader();
 
   // Sets a callback that will be triggered once the settings menu is refreshed.
   void SetOnSettingsMenuRefreshedCallback(base::OnceClosure callback);

@@ -700,6 +700,8 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
                                      views::LayerRegion::kBelow);
 
   AppListModelProvider::Get()->AddObserver(this);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
   UpdateExpandedCollapsedAccessibleState();
 }
 
@@ -1271,10 +1273,6 @@ void AppListFolderView::HandleKeyboardReparent(AppListItemView* reparented_view,
                                                folder_item_view_, key_code);
   folder_controller_->ReparentDragEnded();
   HideViewImmediately();
-}
-
-void AppListFolderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kGenericContainer;
 }
 
 void AppListFolderView::OnGestureEvent(ui::GestureEvent* event) {

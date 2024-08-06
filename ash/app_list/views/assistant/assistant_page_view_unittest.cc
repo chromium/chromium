@@ -14,6 +14,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
@@ -24,6 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkTypes.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
@@ -686,6 +688,17 @@ TEST_F(AssistantPageViewTest, BackgroundColorInDarkLightMode) {
   EXPECT_EQ(
       page_view()->layer()->GetTargetColor(),
       page_view()->GetColorProvider()->GetColor(kColorAshShieldAndBase80));
+}
+
+TEST_F(AssistantPageViewTest, AccessibleProperties) {
+  SetTabletMode(true);
+  ShowAssistantUi();
+  ui::AXNodeData data;
+
+  page_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kPane);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_WINDOW));
 }
 
 //------------------------------------------------------------------------------

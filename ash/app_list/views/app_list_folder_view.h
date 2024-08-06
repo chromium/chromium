@@ -110,7 +110,6 @@ class ASH_EXPORT AppListFolderView : public views::View,
   void AddedToWidget() override;
   void Layout(PassKey) override;
   void ChildPreferredSizeChanged(View* child) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   // AppListModelProvider::Observer:

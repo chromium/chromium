@@ -18,6 +18,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
 
@@ -125,6 +126,14 @@ TEST_P(PinKeyboardViewUnitTest, ClickOnDisabledDigit) {
   EXPECT_FALSE(view_test_api_->GetEnabled());
   EXPECT_CALL(*this, OnDigitButtonPressed(digit)).Times(0);
   LeftClickOn(button_ptr);
+}
+
+TEST_P(PinKeyboardViewUnitTest, AccessibleProperties) {
+  ui::AXNodeData data;
+
+  view_test_api_->GetView()->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kKeyboard);
 }
 
 INSTANTIATE_TEST_SUITE_P(, PinKeyboardViewUnitTest, ::testing::Range(0, 10));

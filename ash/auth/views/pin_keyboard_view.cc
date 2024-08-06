@@ -96,6 +96,7 @@ PinKeyboardView* PinKeyboardView::TestApi::GetView() {
 //----------------------- PinKeyboardView ------------------------
 
 PinKeyboardView::PinKeyboardView() {
+  GetViewAccessibility().SetRole(ax::mojom::Role::kKeyboard);
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_AUTH_PIN_KEYBOARD));
   // The pin pad is always LTR.
@@ -163,11 +164,6 @@ PinKeyboardView::~PinKeyboardView() = default;
 gfx::Size PinKeyboardView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   return gfx::Size(kPinKeyboardWidthDp, kPinKeyboardHeightDp);
-}
-
-void PinKeyboardView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kKeyboard;
-  node_data->SetName(GetViewAccessibility().GetCachedName());
 }
 
 void PinKeyboardView::OnDigitButtonPressed(int digit) {

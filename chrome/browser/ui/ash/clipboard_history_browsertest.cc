@@ -694,6 +694,17 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest, ReorderOnCopy) {
             clipboard_data_a.sequence_number_token());
 }
 
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest, AccessibleProperties) {
+  SetClipboardText("A");
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
+  ui::AXNodeData data;
+
+  GetMenuItemViewForClipboardHistoryItemAtIndex(/*index=*/0u)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kMenuItem);
+}
+
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
                        ItemViewAccessibleSelectionState) {
   SetClipboardText("A");
