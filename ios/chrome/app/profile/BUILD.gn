@@ -6,6 +6,7 @@ source_set("profile") {
   sources = [
     "profile_controller.h",
     "profile_controller.mm",
+    "profile_init_stage.h",
     "profile_state.h",
     "profile_state.mm",
   ]
