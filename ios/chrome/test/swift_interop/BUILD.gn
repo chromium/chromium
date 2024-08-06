@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/swift_source_set.gni")
 import("//build/config/ios/ios_test_runner_xcuitest.gni")
 import("//build/config/ios/rules.gni")
-import("//build/config/ios/swift_source_set.gni")
 
 source_set("objc_interop_tests") {
   testonly = true

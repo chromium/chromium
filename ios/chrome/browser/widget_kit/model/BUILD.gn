@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/apple/swift_source_set.gni")
 import("//build/config/ios/ios_sdk.gni")
-import("//build/config/ios/swift_source_set.gni")
 import("//ios/build/chrome_build.gni")
 
 buildflag_header("features") {

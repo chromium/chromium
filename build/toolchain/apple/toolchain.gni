@@ -87,7 +87,7 @@ tool_versions = exec_script(
                       "//build/toolchain/apple/linker_driver.py",
                       "//build/toolchain/ios/compile_xcassets.py",
                       "//build/toolchain/ios/const_extract_protocols.json",
-                      "//build/toolchain/ios/swiftc.py",
+                      "//build/toolchain/apple/swiftc.py",
                     ],
                     root_build_dir),
         "trim scope")
@@ -629,7 +629,7 @@ template("single_apple_toolchain") {
     # disallow future uses of Swift on macOS. https://crbug.com/965663.
     if (toolchain_args.current_os == "ios") {
       tool("swift") {
-        _tool = rebase_path("//build/toolchain/ios/swiftc.py", root_build_dir)
+        _tool = rebase_path("//build/toolchain/apple/swiftc.py", root_build_dir)
 
         depfile = "{{target_out_dir}}/{{module_name}}.d"
         depsformat = "gcc"
