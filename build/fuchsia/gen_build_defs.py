@@ -273,7 +273,7 @@ def ConvertPackage(json):
   # Extrapolate the manifest_file's path from the first variant, assuming that
   # they all follow the same format.
   variant = json['variants'][0]
-  replace_pattern = '/%s-api-%d/' % (variant['arch'], variant['api_level'])
+  replace_pattern = '/%s-api-%s/' % (variant['arch'], variant['api_level'])
   segments = variant['manifest_file'].split(replace_pattern)
   if len(segments) != 2:
     raise RuntimeError('Unsupported pattern: %s' % variant['manifest_file'])
