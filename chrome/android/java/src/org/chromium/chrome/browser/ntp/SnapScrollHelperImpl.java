@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.SnapScrollHelper;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** This class handles snap scroll for the search box on a {@link NewTabPage}. */
 public class SnapScrollHelperImpl implements SnapScrollHelper {
@@ -25,8 +24,8 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
     private final Runnable mSnapScrollRunnable;
     private final Runnable mUpdateSearchBoxOnScrollRunnable;
     private final int mToolbarHeight;
-    private final int mSearchBoxTransitionLength;
-    private final int mSearchBoxTransitionLengthOffset;
+    private final int mSearchBoxTransitionStartOffset;
+    private final int mSearchBoxTransitionEndOffset;
 
     private View mView;
     private boolean mPendingSnapScroll;
@@ -47,16 +46,15 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
         mToolbarHeight =
                 res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
                         + res.getDimensionPixelSize(R.dimen.toolbar_progress_bar_height);
-        mSearchBoxTransitionLength =
-                res.getDimensionPixelSize(R.dimen.ntp_search_box_transition_length);
-        mSearchBoxTransitionLengthOffset =
-                ChromeFeatureList.sSurfacePolish.isEnabled()
-                        ? res.getDimensionPixelSize(
-                                R.dimen.ntp_search_box_transition_length_polish_offset)
-                        : 0;
+        mSearchBoxTransitionStartOffset =
+                res.getDimensionPixelSize(R.dimen.ntp_search_box_transition_start_offset);
+        mSearchBoxTransitionEndOffset =
+                res.getDimensionPixelSize(R.dimen.ntp_search_box_transition_end_offset);
     }
 
-    /** @param view The view on which this class needs to handle snap scroll. */
+    /**
+     * @param view The view on which this class needs to handle snap scroll.
+     */
     @Override
     public void setView(@NonNull View view) {
         if (mView != null) {
@@ -129,8 +127,8 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
             scrollPosition =
                     calculateSnapPositionForRegion(
                             scrollPosition,
-                            fakeBoxUpperBound - mSearchBoxTransitionLength,
-                            fakeBoxUpperBound + mSearchBoxTransitionLengthOffset);
+                            fakeBoxUpperBound - mSearchBoxTransitionStartOffset,
+                            fakeBoxUpperBound + mSearchBoxTransitionEndOffset);
         }
 
         return scrollPosition;

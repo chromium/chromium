@@ -24,7 +24,6 @@ import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.MathUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
@@ -64,8 +63,7 @@ public class LocationBarLayout extends FrameLayout {
     protected SearchEngineUtils mSearchEngineUtils;
     private float mUrlFocusPercentage;
     private boolean mUrlBarLaidOutAtFocusedWidth;
-    private final boolean mIsSurfacePolishEnabled;
-    private int mStatusIconAndUrlBarOffsetForSurfacePolish;
+    private int mStatusIconAndUrlBarOffset;
     private int mUrlActionContainerEndMargin;
     private boolean mIsUrlFocusChangeInProgress;
 
@@ -90,8 +88,7 @@ public class LocationBarLayout extends FrameLayout {
         mStatusViewRightSpace = findViewById(R.id.location_bar_status_view_right_space);
         mMinimumUrlBarWidthPx =
                 context.getResources().getDimensionPixelSize(R.dimen.location_bar_min_url_width);
-        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
-        mStatusIconAndUrlBarOffsetForSurfacePolish =
+        mStatusIconAndUrlBarOffset =
                 OmniboxResourceProvider.getToolbarSidePaddingForNtp(context)
                         - OmniboxResourceProvider.getToolbarSidePadding(context);
         mUrlActionContainerEndMargin =
@@ -427,16 +424,10 @@ public class LocationBarLayout extends FrameLayout {
         boolean isOnTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext());
         // The tablet UI doesn't have status view spacer elements so must use translation.
         float translationX;
-        if (mIsSurfacePolishEnabled
-                && !isOnTablet
-                && isUrlFocusChangeInProgress
-                && ntpSearchBoxScrollFraction == 1) {
-            // Ignore the case that the new modernize visual UI update is not shown for
-            // surface polish.
+        if (!isOnTablet && isUrlFocusChangeInProgress && ntpSearchBoxScrollFraction == 1) {
             translationX =
                     OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(getContext())
-                            + mStatusIconAndUrlBarOffsetForSurfacePolish
-                                    * (1 - urlFocusChangeFraction);
+                            + mStatusIconAndUrlBarOffset * (1 - urlFocusChangeFraction);
         } else {
             translationX =
                     OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(getContext())
@@ -495,13 +486,10 @@ public class LocationBarLayout extends FrameLayout {
             boolean isUrlFocusChangeInProgress,
             boolean isOnTablet) {
 
-        if (mIsSurfacePolishEnabled
-                && !isOnTablet
-                && isUrlFocusChangeInProgress
-                && ntpSearchBoxScrollFraction == 1) {
+        if (!isOnTablet && isUrlFocusChangeInProgress && ntpSearchBoxScrollFraction == 1) {
             // For the focus and un-focus animation when the real search box is visible
             // on NTP.
-            return mStatusIconAndUrlBarOffsetForSurfacePolish * (1 - urlFocusChangeFraction);
+            return mStatusIconAndUrlBarOffset * (1 - urlFocusChangeFraction);
         }
 
         float translationX = -getFocusedStatusViewSpacingDelta();
@@ -524,7 +512,7 @@ public class LocationBarLayout extends FrameLayout {
                 isNtpOnPhone
                         && mSearchEngineUtils != null
                         && mSearchEngineUtils.doesDefaultSearchEngineHaveLogo();
-        if (mIsSurfacePolishEnabled && isInSingleUrlBarMode) {
+        if (isInSingleUrlBarMode) {
             translationX +=
                     (getResources().getDimensionPixelSize(R.dimen.fake_search_box_start_padding)
                             - getResources()

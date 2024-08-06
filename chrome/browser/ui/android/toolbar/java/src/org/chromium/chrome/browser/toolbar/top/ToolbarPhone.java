@@ -274,8 +274,6 @@ public class ToolbarPhone extends ToolbarLayout
     // If we're in a layout transition, between startHiding to doneShowing.
     private boolean mInLayoutTransition;
 
-    private final boolean mIsSurfacePolishEnabled;
-
     // For NTP, we have a different appearance (G logo background, search text color and style) of
     // the real search box after it's pinned at top when scrolling up the surface. This variable
     // distinguishes whether the current page is NTP with unfocused real omnibox, to indicate that
@@ -310,7 +308,6 @@ public class ToolbarPhone extends ToolbarLayout
      */
     public ToolbarPhone(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         mToolbarSidePadding = OmniboxResourceProvider.getToolbarSidePadding(context);
         mToolbarSidePaddingForNtp = OmniboxResourceProvider.getToolbarSidePaddingForNtp(context);
         mBackgroundHeightIncreaseWhenFocus =
@@ -1062,7 +1059,7 @@ public class ToolbarPhone extends ToolbarLayout
 
         boolean isInNtp = mVisualState == VisualState.NEW_TAB_NORMAL;
         float locationBarBaseTranslationX =
-                (mIsSurfacePolishEnabled && mUrlFocusChangeInProgress && isInNtp
+                (mUrlFocusChangeInProgress && isInNtp
                                 ? getFocusedLeftPositionOfLocationBarBackground()
                                 : mUnfocusedLocationBarLayoutLeft)
                         - currentLeftMargin;
@@ -1132,9 +1129,7 @@ public class ToolbarPhone extends ToolbarLayout
 
         if (!mOptionalButtonAnimationRunning) {
             boolean isUrlFocusChangeInProgressWithScrollCompleted =
-                    mIsSurfacePolishEnabled
-                            && mNtpSearchBoxScrollFraction == 1
-                            && mUrlFocusChangeInProgress;
+                    mNtpSearchBoxScrollFraction == 1 && mUrlFocusChangeInProgress;
             mUrlActionContainer.setTranslationX(
                     getUrlActionsTranslationXForExpansionAnimation(
                             isLocationBarRtl,
@@ -1207,25 +1202,22 @@ public class ToolbarPhone extends ToolbarLayout
         float urlActionsTranslationX = 0;
 
         if (isUrlFocusChangeInProgressWithScrollCompleted) {
-            int urlActionContainerEndMarginChangeForSurfacePolish =
+            int urlActionContainerEndMarginChange =
                     getResources().getDimensionPixelSize(R.dimen.location_bar_url_action_offset_ntp)
                             - getResources()
                                     .getDimensionPixelSize(R.dimen.location_bar_url_action_offset);
-            int toolbarSidePaddingChangeForSurfacePolish =
-                    mToolbarSidePaddingForNtp - mToolbarSidePadding;
+            int toolbarSidePaddingChange = mToolbarSidePaddingForNtp - mToolbarSidePadding;
             if (mLocationBar.getPhoneCoordinator().hasFocus()) {
                 urlActionsTranslationX =
                         MathUtils.flipSignIf(
-                                (toolbarSidePaddingChangeForSurfacePolish
-                                                + urlActionContainerEndMarginChangeForSurfacePolish)
+                                (toolbarSidePaddingChange + urlActionContainerEndMarginChange)
                                         * (mUrlFocusChangeFraction - 1),
                                 isRtl);
             } else {
                 urlActionsTranslationX =
                         MathUtils.flipSignIf(
-                                toolbarSidePaddingChangeForSurfacePolish
-                                                * (mUrlFocusChangeFraction - 1)
-                                        + urlActionContainerEndMarginChangeForSurfacePolish
+                                toolbarSidePaddingChange * (mUrlFocusChangeFraction - 1)
+                                        + urlActionContainerEndMarginChange
                                                 * mUrlFocusChangeFraction,
                                 isRtl);
             }
@@ -1326,11 +1318,11 @@ public class ToolbarPhone extends ToolbarLayout
                                     mUrlExpansionFraction);
 
             int leftBoundDifference =
-                    mIsSurfacePolishEnabled && mUrlFocusChangeInProgress
+                    mUrlFocusChangeInProgress
                             ? 0
                             : mNtpSearchBoxBounds.left - mLocationBarBackgroundBounds.left;
             int rightBoundDifference =
-                    mIsSurfacePolishEnabled && mUrlFocusChangeInProgress
+                    mUrlFocusChangeInProgress
                             ? 0
                             : mNtpSearchBoxBounds.right - mLocationBarBackgroundBounds.right;
             mLocationBarBackgroundNtpOffset.set(
@@ -1339,36 +1331,24 @@ public class ToolbarPhone extends ToolbarLayout
                     Math.round(rightBoundDifference * shrinkage),
                     locationBarTranslationY);
             float urlExpansionFractionComplement = 1.f - mUrlExpansionFraction;
-            int verticalInset;
             var resources = getResources();
-            if (mIsSurfacePolishEnabled) {
-                int baseInset =
-                        resources.getDimensionPixelSize(R.dimen.modern_toolbar_background_size)
-                                - resources.getDimensionPixelSize(R.dimen.ntp_search_box_height);
-                verticalInset = (int) (((float) (baseInset) / 2) * urlExpansionFractionComplement);
+            int baseInset =
+                    resources.getDimensionPixelSize(R.dimen.modern_toolbar_background_size)
+                            - resources.getDimensionPixelSize(R.dimen.ntp_search_box_height);
+            int verticalInset = (int) (((float) (baseInset) / 2) * urlExpansionFractionComplement);
 
-                int locationBarUrlActionOffsetChangeForSurfacePolish =
-                        resources.getDimensionPixelSize(R.dimen.location_bar_url_action_offset_ntp)
-                                - resources.getDimensionPixelSize(
-                                        R.dimen.location_bar_url_action_offset);
-                int focusChangeDelta =
-                        mUrlFocusChangeInProgress
-                                ? 0
-                                : locationBarUrlActionOffsetChangeForSurfacePolish;
-                mUrlActionsNtpEndOffset =
-                        (resources.getDimensionPixelSize(R.dimen.fake_search_box_end_padding)
-                                        - focusChangeDelta)
-                                * shrinkage;
-            } else {
-                verticalInset =
-                        (int)
-                                (resources.getDimensionPixelSize(
-                                                R.dimen.ntp_search_box_bounds_vertical_inset_modern)
-                                        * urlExpansionFractionComplement);
-            }
+            int locationBarUrlActionOffsetChange =
+                    resources.getDimensionPixelSize(R.dimen.location_bar_url_action_offset_ntp)
+                            - resources.getDimensionPixelSize(
+                                    R.dimen.location_bar_url_action_offset);
+            int focusChangeDelta = mUrlFocusChangeInProgress ? 0 : locationBarUrlActionOffsetChange;
+            mUrlActionsNtpEndOffset =
+                    (resources.getDimensionPixelSize(R.dimen.fake_search_box_end_padding)
+                                    - focusChangeDelta)
+                            * shrinkage;
             mLocationBarBackgroundNtpOffset.inset(0, verticalInset);
 
-            if (mIsSurfacePolishEnabled && mUrlFocusChangeInProgress) {
+            if (mUrlFocusChangeInProgress) {
                 leftBoundDifference =
                         mNtpSearchBoxBounds.left - getFocusedLeftPositionOfLocationBarBackground();
                 rightBoundDifference =
