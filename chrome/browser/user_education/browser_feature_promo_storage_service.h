@@ -49,6 +49,10 @@ class BrowserFeaturePromoStorageService
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Clear any data that should be wiped when the user elects to erase some or
+  // all of their browsing history.
+  static void ClearUsageHistory(Profile* profile);
+
   // FeaturePromoStorageService:
   void Reset(const base::Feature& iph_feature) override;
   std::optional<user_education::FeaturePromoData> ReadPromoData(

@@ -131,6 +131,12 @@ base::Value WriteKeyData(const std::string& key,
   return base::Value(std::move(value));
 }
 
+// Common logic for clearing recent sessions.
+void ClearRecentSessionData(Profile& profile) {
+  profile.GetPrefs()->ClearPref(kRecentSessionStartTimesPath);
+  profile.GetPrefs()->ClearPref(kRecentSessionEnabledTimePath);
+}
+
 }  // namespace
 
 RecentSessionData::RecentSessionData() = default;
@@ -163,6 +169,13 @@ void BrowserFeaturePromoStorageService::RegisterProfilePrefs(
   registry->RegisterTimePref(kIPHPolicyLastHeavyweightPromoPath, base::Time());
   registry->RegisterListPref(kRecentSessionStartTimesPath);
   registry->RegisterTimePref(kRecentSessionEnabledTimePath, base::Time());
+}
+
+// static
+void BrowserFeaturePromoStorageService::ClearUsageHistory(Profile* profile) {
+  // Recent session data stores timestamps of recent sessions in prefs, so
+  // should be cleared when the user clears their browsing data.
+  ClearRecentSessionData(*profile);
 }
 
 void BrowserFeaturePromoStorageService::Reset(
@@ -427,6 +440,5 @@ void BrowserFeaturePromoStorageService::SaveRecentSessionData(
 }
 
 void BrowserFeaturePromoStorageService::ResetRecentSessionData() {
-  profile_->GetPrefs()->ClearPref(kRecentSessionStartTimesPath);
-  profile_->GetPrefs()->ClearPref(kRecentSessionEnabledTimePath);
+  ClearRecentSessionData(*profile_);
 }
