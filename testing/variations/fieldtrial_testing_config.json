@@ -2711,7 +2711,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "AvoidEntryCreationForNoStoreCacheSize": "10000"
+                        "AvoidEntryCreationForNoStoreCacheSize": "40000"
                     },
                     "enable_features": [
                         "AvoidEntryCreationForNoStore"
