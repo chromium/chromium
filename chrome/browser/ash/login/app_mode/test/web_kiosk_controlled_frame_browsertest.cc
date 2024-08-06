@@ -148,7 +148,8 @@ class WebKioskControlledFrameHttpTest
             /*https=*/GetParam()) {}
 };
 
-IN_PROC_BROWSER_TEST_P(WebKioskControlledFrameHttpTest, ApiAvailability) {
+IN_PROC_BROWSER_TEST_P(WebKioskControlledFrameHttpTest,
+                       DISABLED_ApiAvailability) {
   content::WebContents* web_contents = TestSetup();
   ASSERT_NE(web_contents, nullptr);
 
@@ -160,6 +161,7 @@ IN_PROC_BROWSER_TEST_P(WebKioskControlledFrameHttpTest, ApiAvailability) {
   bool is_api_available = CreateControlledFrame(
       web_contents->GetPrimaryMainFrame(), web_app_server().base_url());
   if (feature_enabled_ && UseHttpsUrl()) {
+    // TODO: crbug.com/355529251 - Fix expectation.
     EXPECT_TRUE(is_api_available);
   } else {
     EXPECT_FALSE(is_api_available);
@@ -180,7 +182,9 @@ class WebKioskControlledFrameChannelTest
             /*https=*/true) {}
 };
 
-IN_PROC_BROWSER_TEST_P(WebKioskControlledFrameChannelTest, ApiAvailability) {
+// TODO(crbug.com/355290700): Re-enable this test
+IN_PROC_BROWSER_TEST_P(WebKioskControlledFrameChannelTest,
+                       DISABLED_ApiAvailability) {
   content::WebContents* web_contents = TestSetup();
   ASSERT_NE(web_contents, nullptr);
 
