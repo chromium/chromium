@@ -69,7 +69,7 @@ class ImeListItemView : public views::Button {
                   const std::u16string& label,
                   bool selected,
                   const ui::ColorId button_color_id)
-      : ime_list_view_(list_view), selected_(selected) {
+      : ime_list_view_(list_view) {
     SetCallback(base::BindRepeating(&ImeListItemView::PerformAction,
                                     base::Unretained(this)));
     TrayPopupUtils::ConfigureRowButtonInkdrop(views::InkDrop::Get(this));
@@ -125,7 +125,7 @@ class ImeListItemView : public views::Button {
     GetViewAccessibility().SetName(label_view->GetText());
     GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
     GetViewAccessibility().SetCheckedState(
-        selected_ ? ax::mojom::CheckedState::kTrue
+        selected ? ax::mojom::CheckedState::kTrue
                   : ax::mojom::CheckedState::kFalse);
   }
   ImeListItemView(const ImeListItemView&) = delete;
@@ -140,12 +140,6 @@ class ImeListItemView : public views::Button {
     }
   }
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    views::Button::GetAccessibleNodeData(node_data);
-    node_data->SetCheckedState(selected_ ? ax::mojom::CheckedState::kTrue
-                                         : ax::mojom::CheckedState::kFalse);
-  }
-
   void PerformAction(const ui::Event& event) {
     ime_list_view_->set_last_item_selected_with_keyboard(
         ime_list_view_->should_focus_ime_after_selection_with_keyboard() &&
@@ -155,7 +149,6 @@ class ImeListItemView : public views::Button {
 
  private:
   raw_ptr<ImeListView> ime_list_view_;
-  bool selected_;
 };
 
 BEGIN_METADATA(ImeListItemView)
