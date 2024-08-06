@@ -16404,6 +16404,21 @@
             ]
         }
     ],
+    "PasswordlessGaiaForConsumers": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PasswordlessGaiaForConsumers"
+                    ]
+                }
+            ]
+        }
+    ],
     "Path2DPaintCache": [
         {
             "platforms": [
