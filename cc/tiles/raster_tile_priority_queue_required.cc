@@ -26,12 +26,13 @@ void AppendTilingSetRequiredQueues(
     if (cc_slimming_enabled && tiling_set->all_tiles_done()) {
       continue;
     }
-    std::unique_ptr<TilingSetRasterQueueRequired> tiling_set_queue(
-        new TilingSetRasterQueueRequired(
+    std::unique_ptr<TilingSetRasterQueueRequired> tiling_set_queue =
+        TilingSetRasterQueueRequired::Create(
             tiling_set,
-            RasterTilePriorityQueueRequired::Type::REQUIRED_FOR_ACTIVATION));
-    if (!tiling_set_queue->IsEmpty())
+            RasterTilePriorityQueueRequired::Type::REQUIRED_FOR_ACTIVATION);
+    if (tiling_set_queue && !tiling_set_queue->IsEmpty()) {
       queues->push_back(std::move(tiling_set_queue));
+    }
   }
 }
 
@@ -66,10 +67,12 @@ void RasterTilePriorityQueueRequired::BuildRequiredForDraw(
     if (cc_slimming_enabled && tiling_set->all_tiles_done()) {
       continue;
     }
-    std::unique_ptr<TilingSetRasterQueueRequired> tiling_set_queue(
-        new TilingSetRasterQueueRequired(tiling_set, Type::REQUIRED_FOR_DRAW));
-    if (!tiling_set_queue->IsEmpty())
+    std::unique_ptr<TilingSetRasterQueueRequired> tiling_set_queue =
+        TilingSetRasterQueueRequired::Create(tiling_set,
+                                             Type::REQUIRED_FOR_DRAW);
+    if (tiling_set_queue && !tiling_set_queue->IsEmpty()) {
       tiling_set_queues_.push_back(std::move(tiling_set_queue));
+    }
   }
 }
 
