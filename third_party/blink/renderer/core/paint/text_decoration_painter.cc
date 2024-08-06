@@ -67,7 +67,7 @@ void TextDecorationPainter::UpdateDecorationInfo(
   TextDecorationLine effective_selection_decoration_lines =
       TextDecorationLine::kNone;
   Color effective_selection_decoration_color;
-  if (UNLIKELY(phase_ == kSelection)) {
+  if (phase_ == kSelection) [[unlikely]] {
     effective_selection_decoration_lines =
         selection_->GetSelectionStyle().selection_decoration_lines;
     effective_selection_decoration_color =
@@ -125,8 +125,8 @@ void TextDecorationPainter::Begin(const FragmentItem& text_item, Phase phase) {
   UpdateDecorationInfo(decoration_info_, text_item, style_);
   clip_rect_.reset();
 
-  if (decoration_info_ && UNLIKELY(selection_)) {
-    if (UNLIKELY(text_item.IsSvgText())) {
+  if (decoration_info_ && selection_) [[unlikely]] {
+    if (text_item.IsSvgText()) [[unlikely]] {
       clip_rect_.emplace(
           ExpandRectForSVGDecorations(selection_->LineRelativeSelectionRect()));
     } else {

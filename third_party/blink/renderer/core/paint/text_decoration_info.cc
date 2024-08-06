@@ -349,7 +349,7 @@ void TextDecorationInfo::UpdateForDecorationIndex() {
     // TODO(kojii): The vertical flow in alphabetic baseline may want to use the
     // decorating box. It needs supporting the rotated coordinate system text
     // painters use when painting vertical text.
-    if (UNLIKELY(!decorating_box_style->IsHorizontalWritingMode())) {
+    if (!decorating_box_style->IsHorizontalWritingMode()) [[unlikely]] {
       use_decorating_box_ = false;
       decorating_box_ = nullptr;
       decorating_box_style = &target_style_;
@@ -369,7 +369,7 @@ void TextDecorationInfo::UpdateForDecorationIndex() {
         original_underline_position_ == ResolvedUnderlinePosition::kOver;
   }
 
-  if (UNLIKELY(flip_underline_and_overline_)) {
+  if (flip_underline_and_overline_) [[unlikely]] {
     flipped_underline_position_ = ResolvedUnderlinePosition::kUnder;
     std::swap(has_underline_, has_overline_);
   } else {
@@ -464,9 +464,12 @@ void TextDecorationInfo::SetUnderlineLineData(
     const TextDecorationOffset& decoration_offset) {
   DCHECK(HasUnderline());
   // Don't apply text-underline-offset to overlines. |line_offset| is zero.
-  const Length line_offset = UNLIKELY(flip_underline_and_overline_)
-                                 ? Length()
-                                 : applied_text_decoration_->UnderlineOffset();
+  Length line_offset;
+  if (flip_underline_and_overline_) [[unlikely]] {
+    line_offset = Length();
+  } else {
+    line_offset = applied_text_decoration_->UnderlineOffset();
+  }
   float paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
       FlippedUnderlinePosition(), ComputedFontSize(), FontData(), line_offset,
       ResolvedThickness());
@@ -481,13 +484,15 @@ void TextDecorationInfo::SetOverlineLineData(
     const TextDecorationOffset& decoration_offset) {
   DCHECK(HasOverline());
   // Don't apply text-underline-offset to overline.
-  const Length line_offset = UNLIKELY(flip_underline_and_overline_)
-                                 ? applied_text_decoration_->UnderlineOffset()
-                                 : Length();
-  const FontVerticalPositionType position =
-      UNLIKELY(flip_underline_and_overline_)
-          ? FontVerticalPositionType::TopOfEmHeight
-          : FontVerticalPositionType::TextTop;
+  Length line_offset;
+  FontVerticalPositionType position;
+  if (flip_underline_and_overline_) [[unlikely]] {
+    line_offset = applied_text_decoration_->UnderlineOffset();
+    position = FontVerticalPositionType::TopOfEmHeight;
+  } else {
+    line_offset = Length();
+    position = FontVerticalPositionType::TextTop;
+  }
   const int paint_overline_offset =
       decoration_offset.ComputeUnderlineOffsetForUnder(
           line_offset, TargetStyle().ComputedFontSize(), FontData(),

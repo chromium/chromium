@@ -37,14 +37,18 @@ bool HasMultipleItems(const Items items) {
 
 inline bool MayHaveMultipleFragmentItems(const FragmentItem& item,
                                          const LayoutObject& layout_object) {
-  return !item.IsFirstForNode() || !item.IsLastForNode() ||
-         // TODO(crbug.com/1061423): InlineCursor is currently unable to deal
-         // with objects split into multiple fragmentainers (e.g. columns). Just
-         // return true if it's possible that this object participates in a
-         // fragmentation context. This will give false positives, but that
-         // should be harmless, given the way the return value is used by the
-         // caller.
-         UNLIKELY(layout_object.IsInsideFlowThread());
+  if (!item.IsFirstForNode() || !item.IsLastForNode()) {
+    return true;
+  }
+  // TODO(crbug.com/40122434): InlineCursor is currently unable to deal with
+  // objects split into multiple fragmentainers (e.g. columns). Just return true
+  // if it's possible that this object participates in a fragmentation context.
+  // This will give false positives, but that should be harmless, given the way
+  // the return value is used by the caller.
+  if (layout_object.IsInsideFlowThread()) [[unlikely]] {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -492,8 +496,9 @@ void InlineBoxFragmentPainter::PaintAllFragments(
   // TODO(kojii): If the block flow is dirty, children of these fragments
   // maybe already deleted. crbug.com/963103
   const LayoutBlockFlow* block_flow = layout_inline.FragmentItemsContainer();
-  if (UNLIKELY(block_flow->NeedsLayout()))
+  if (block_flow->NeedsLayout()) [[unlikely]] {
     return;
+  }
 
   ScopedPaintState paint_state(layout_inline, paint_info, &fragment_data);
   PhysicalOffset paint_offset = paint_state.PaintOffset();
