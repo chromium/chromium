@@ -212,6 +212,16 @@ void PerksDiscoveryScreen::ShowImpl() {
     exit_callback_.Run(Result::kError);
     return;
   }
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile) {
+    LOG(ERROR)
+        << "Profile object is null. Failed to retrieve profile instance.";
+    exit_callback_.Run(Result::kError);
+    return;
+  }
+  campaigns_manager->SetPrefs(profile->GetPrefs());
+
   campaigns_manager->LoadCampaigns(
       base::BindOnce(&PerksDiscoveryScreen::GetOobePerksPayloadAndShow,
                      weak_factory_.GetWeakPtr()) , true);
