@@ -24,7 +24,6 @@ namespace {
 
 constexpr int kDeviceIconSize = 20;
 constexpr auto kDeviceIconBorder = gfx::Insets(6);
-constexpr gfx::Size kDeviceEntryViewSize{400, 30};
 
 void ChangeEntryColor(views::ImageView* image_view,
                       views::StyledLabel* title_view,
@@ -111,7 +110,6 @@ AudioDeviceEntryView::AudioDeviceEntryView(PressedCallback callback,
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(this)->SetBaseColor(foreground_color);
   SetHasInkDropActionOnClick(true);
-  SetPreferredSize(kDeviceEntryViewSize);
 }
 
 void AudioDeviceEntryView::SetHighlighted(bool highlighted) {
@@ -171,7 +169,6 @@ CastDeviceEntryView::CastDeviceEntryView(
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(this)->SetBaseColor(foreground_color);
   SetHasInkDropActionOnClick(true);
-  SetPreferredSize(kDeviceEntryViewSize);
 }
 
 CastDeviceEntryView::~CastDeviceEntryView() = default;
@@ -220,7 +217,6 @@ CastDeviceEntryViewAsh::CastDeviceEntryViewAsh(
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(this)->SetBaseColorId(background_color_id);
   SetHasInkDropActionOnClick(true);
-  SetPreferredSize(kDeviceEntryViewSize);
 }
 
 CastDeviceEntryViewAsh::~CastDeviceEntryViewAsh() = default;
