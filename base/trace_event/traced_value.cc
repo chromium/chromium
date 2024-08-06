@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/trace_event/traced_value.h"
 
 #include <inttypes.h>
@@ -31,25 +26,24 @@
 #include "base/trace_event/trace_log.h"
 #include "base/values.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
-const char kTypeStartDict = '{';
-const char kTypeEndDict = '}';
-const char kTypeStartArray = '[';
-const char kTypeEndArray = ']';
-const char kTypeBool = 'b';
-const char kTypeInt = 'i';
-const char kTypeDouble = 'd';
-const char kTypeString = 's';
-const char kTypeCStr = '*';  // only used for key names
+constexpr char kTypeStartDict = '{';
+constexpr char kTypeEndDict = '}';
+constexpr char kTypeStartArray = '[';
+constexpr char kTypeEndArray = ']';
+constexpr char kTypeBool = 'b';
+constexpr char kTypeInt = 'i';
+constexpr char kTypeDouble = 'd';
+constexpr char kTypeString = 's';
+constexpr char kTypeCStr = '*';  // only used for key names
 
 std::atomic<TracedValue::WriterFactoryCallback> g_writer_factory_callback;
 
 #ifndef NDEBUG
-const bool kStackTypeDict = false;
-const bool kStackTypeArray = true;
+constexpr bool kStackTypeDict = false;
+constexpr bool kStackTypeArray = true;
 #define DCHECK_CURRENT_CONTAINER_IS(x) DCHECK_EQ(x, nesting_stack_.back())
 #define DCHECK_CONTAINER_STACK_DEPTH_EQ(x) DCHECK_EQ(x, nesting_stack_.size())
 #define DEBUG_PUSH_CONTAINER(x) nesting_stack_.push_back(x)
@@ -942,5 +936,4 @@ TracedValue::DictionaryScope TracedValue::BeginDictionaryScopedWithCopiedName(
   return TracedValue::DictionaryScope(this);
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event
