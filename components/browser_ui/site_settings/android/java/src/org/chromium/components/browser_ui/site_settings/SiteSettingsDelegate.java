@@ -24,12 +24,14 @@ import java.util.Set;
  * embedder-specific logic.
  */
 public interface SiteSettingsDelegate {
-    /** @return The BrowserContextHandle that should be used to read and update settings. */
+    /**
+     * @return The BrowserContextHandle that should be used to read and update settings.
+     */
     BrowserContextHandle getBrowserContextHandle();
 
     /**
      * @return the ManagedPreferenceDelegate instance that should be used when rendering
-     *         Preferences.
+     *     Preferences.
      */
     ManagedPreferenceDelegate getManagedPreferenceDelegate();
 
@@ -96,7 +98,9 @@ public interface SiteSettingsDelegate {
     @Nullable
     String getDelegatePackageNameForOrigin(Origin origin, @ContentSettingsType.EnumType int type);
 
-    /** @return true if Help and Feedback links and menu items should be shown to the user. */
+    /**
+     * @return true if Help and Feedback links and menu items should be shown to the user.
+     */
     boolean isHelpAndFeedbackEnabled();
 
     /**
@@ -116,10 +120,14 @@ public interface SiteSettingsDelegate {
     /** Launches the Storage Access API help center link in a Chrome Custom Tab. */
     void launchStorageAccessHelpActivity(Activity currentActivity);
 
-    /** @return The set of all origins that have a WebAPK or TWA installed. */
+    /**
+     * @return The set of all origins that have a WebAPK or TWA installed.
+     */
     Set<String> getOriginsWithInstalledApp();
 
-    /** @return The set of all origins whose notification permissions are delegated to another app. */
+    /**
+     * @return The set of all origins whose notification permissions are delegated to another app.
+     */
     Set<String> getAllDelegatedNotificationOrigins();
 
     /**
@@ -152,13 +160,25 @@ public interface SiteSettingsDelegate {
      */
     boolean shouldShowTrackingProtectionUI();
 
-    /**
-     * @return whether the 100% 3PCD Tracking Protection launch UI should be shown.
+    /***
+     * @return true if the IP Protection UI should be displayed in User Bypass.
      */
-    boolean shouldShowTrackingProtectionLaunchUI();
+    boolean shouldDisplayIpProtection();
 
     /***
-     * @return true if all third-party cookies are blocked when Tracking Protection is on.
+     * @return true if the Fingerprinting Protection UI should be displayed in User
+     *         Bypass.
+     */
+    boolean shouldDisplayFingerprintingProtection();
+
+    /**
+     * @return whether the 100% 3PCD Tracking Protection with ACT features UI should be shown.
+     */
+    boolean shouldShowTrackingProtectionACTFeaturesUI();
+
+    /***
+     * @return true if all third-party cookies are blocked when Tracking Protection
+     *         is on.
      */
     boolean isBlockAll3PCDEnabledInTrackingProtection();
 
@@ -168,9 +188,9 @@ public interface SiteSettingsDelegate {
     void setRelatedWebSetsDataAccessEnabled(boolean enabled);
 
     /**
-     * Gets the Related Web Sets owner hostname given a RWS member origin.
+     * Gets the First Party Sets owner hostname given a FPS member origin.
      *
-     * @param memberOrigin RWS member origin.
+     * @param memberOrigin FPS member origin.
      * @return A string containing the owner hostname, null if it doesn't exist.
      */
     String getRelatedWebSetOwner(String memberOrigin);

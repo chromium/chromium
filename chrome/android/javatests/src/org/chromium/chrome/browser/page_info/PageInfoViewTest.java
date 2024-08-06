@@ -123,7 +123,8 @@ import java.util.concurrent.TimeoutException;
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
 })
 // TODO(crbug.com/344672095): Failing when batched, batch this again.
-// Disable TrackingProtection3pcd as we use prefs instead of the feature in these tests.
+// Disable TrackingProtection3pcd as we use prefs instead of the feature in
+// these tests.
 @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
 public class PageInfoViewTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
@@ -254,7 +255,9 @@ public class PageInfoViewTest {
     private void enableTrackingProtectionFixedExpiration() {
         PageInfoController controller = PageInfoController.getLastPageInfoControllerForTesting();
         assertNotNull(controller);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_USER_BYPASS)
+                || ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS)) {
             var tpController = controller.getTrackingProtectionLaunchControllerForTesting();
             tpController.setFixedExceptionExpirationForTesting(true);
         } else {
@@ -416,7 +419,8 @@ public class PageInfoViewTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        // Some test devices have geolocation disabled. Override LocationUtils for a stable result.
+        // Some test devices have geolocation disabled. Override LocationUtils for a
+        // stable result.
         LocationUtils.setFactory(TestLocationUtils::new);
 
         // Choose a fixed, "random" port to create stable screenshots.
@@ -430,7 +434,8 @@ public class PageInfoViewTest {
     public void tearDown() throws TimeoutException {
         LocationUtils.setFactory(null);
         // Notification channels don't get cleaned up automatically.
-        // TODO(crbug.com/41452182): Find a general solution to avoid leaking channels between
+        // TODO(crbug.com/41452182): Find a general solution to avoid leaking channels
+        // between
         // tests.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             ThreadUtils.runOnUiThreadBlocking(
@@ -746,32 +751,11 @@ public class PageInfoViewTest {
                 });
     }
 
-    /** Tests the cookies page of the PageInfo UI with the 100% Tracking Protection UI enabled. */
-    @Test
-    @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH)
-    @Features.DisableFeatures({
-        ChromeFeatureList.IP_PROTECTION_V1,
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING
-    })
-    @Feature({"RenderTest"})
-    public void testShowCookiesSubpageTrackingProtectionLaunch() throws IOException {
-        setBlockAll3PC(false);
-        // TODO(crbug.com/330745124: Remove when the backend logic is updated for the Launch flag)
-        enableTrackingProtection();
-        launchAndCheckTrackingProtectionLaunchUI();
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionLaunch_Toggle_Off");
-        // Check that the cookie toggle is displayed and try clicking it.
-        onViewWaiting(allOf(withText(containsString("You have extra protections")), isDisplayed()));
-        onView(withText(containsString("You have extra protections"))).perform(click());
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionLaunch_Toggle_On");
-    }
-
     /** Same as the previous one but with IP Protection feature enabled. */
     @Test
     @MediumTest
     @Features.EnableFeatures({
-        ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH,
+        ChromeFeatureList.IP_PROTECTION_USER_BYPASS,
         ChromeFeatureList.IP_PROTECTION_V1
     })
     @Features.DisableFeatures(ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING)
@@ -797,7 +781,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({
-        ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH,
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS,
         ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING
     })
     @Features.DisableFeatures(ChromeFeatureList.IP_PROTECTION_V1)
@@ -823,8 +807,9 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({
-        ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH,
+        ChromeFeatureList.IP_PROTECTION_USER_BYPASS,
         ChromeFeatureList.IP_PROTECTION_V1,
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS,
         ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING
     })
     @Feature({"RenderTest"})
@@ -875,35 +860,6 @@ public class PageInfoViewTest {
         onView(withText(containsString("Third-party cookies"))).perform(click());
         mRenderTestRule.render(
                 getPageInfoView(), "PageInfo_TrackingProtectionSubpage_Block_All_Toggle_On");
-    }
-
-    /** Tests the cookies page of the PageInfo UI with the 100% Tracking Protection UI enabled. */
-    @Test
-    @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH)
-    @Feature({"RenderTest"})
-    public void testShowCookiesSubpageTrackingProtectionLaunchBlockAll() throws IOException {
-        setBlockAll3PC(true);
-        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        enableTrackingProtectionFixedExpiration();
-        onView(withId(R.id.page_info_cookies_row)).perform(click());
-        onViewWaiting(
-                allOf(withText(containsString("You blocked sites from using")), isDisplayed()));
-        // Verify that the pref was recorded successfully.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    assertTrue(
-                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                                    .getBoolean(IN_CONTEXT_COOKIE_CONTROLS_OPENED));
-                });
-        mRenderTestRule.render(
-                getPageInfoView(), "PageInfo_TrackingProtectionLaunch_Block_All_Toggle_Off");
-        // Check that the cookie toggle is displayed and try clicking it.
-        onViewWaiting(allOf(withText(containsString("You have extra protections")), isDisplayed()));
-        onView(withText(containsString("You have extra protections"))).perform(click());
-        mRenderTestRule.render(
-                getPageInfoView(), "PageInfo_TrackingProtectionLaunch_Block_All_Toggle_On");
     }
 
     /** Tests the history page of the PageInfo UI. */
@@ -1026,7 +982,8 @@ public class PageInfoViewTest {
         onView(withText("Reset")).perform(click());
         // Wait until the UI navigates back and check permissions are reset.
         onViewWaiting(allOf(withId(R.id.page_info_row_wrapper), isDisplayed()));
-        // Make sure that the permission section is gone because there are no longer exceptions.
+        // Make sure that the permission section is gone because there are no longer
+        // exceptions.
         onView(withId(R.id.page_info_permissions_row))
                 .check(matches(withEffectiveVisibility(GONE)));
         expectHasPermissions(url, false);
@@ -1105,7 +1062,8 @@ public class PageInfoViewTest {
                             pageInfoControllerDelegate,
                             ChromePageInfoHighlight.noHighlight());
                 });
-        onViewWaiting(allOf(withText(R.string.page_info_connection_paint_preview), isDisplayed()), true);
+        onViewWaiting(
+                allOf(withText(R.string.page_info_connection_paint_preview), isDisplayed()), true);
     }
 
     /** Tests that page info view is shown correctly for transient pdf pages. */
@@ -1386,6 +1344,7 @@ public class PageInfoViewTest {
         onView(withText(R.string.ad_privacy_page_topics_link_row_label)).check(doesNotExist());
     }
 
-    // TODO(crbug.com/40685274): Add tests for preview pages, offline pages, offline state and other
+    // TODO(crbug.com/40685274): Add tests for preview pages, offline pages, offline
+    // state and other
     // states.
 }

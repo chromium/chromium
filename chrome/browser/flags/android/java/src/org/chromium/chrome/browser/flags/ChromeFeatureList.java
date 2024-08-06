@@ -47,8 +47,8 @@ public abstract class ChromeFeatureList {
     }
 
     /**
-     * Convenience method to get Chrome-layer feature field trial params, see
-     * {@link FeatureMap#getFieldTrialParamByFeature(String, String)}.
+     * Convenience method to get Chrome-layer feature field trial params, see {@link
+     * FeatureMap#getFieldTrialParamByFeature(String, String)}.
      *
      * <p>Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
@@ -58,8 +58,8 @@ public abstract class ChromeFeatureList {
     }
 
     /**
-     * Convenience method to get Chrome-layer feature field trial params, see
-     * {@link FeatureMap#getFieldTrialParamByFeatureAsBoolean(String, String, boolean)}.
+     * Convenience method to get Chrome-layer feature field trial params, see {@link
+     * FeatureMap#getFieldTrialParamByFeatureAsBoolean(String, String, boolean)}.
      *
      * <p>Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
@@ -71,8 +71,8 @@ public abstract class ChromeFeatureList {
     }
 
     /**
-     * Convenience method to get Chrome-layer feature field trial params, see
-     * {@link FeatureMap#getFieldTrialParamByFeatureAsInt(String, String, int)}.
+     * Convenience method to get Chrome-layer feature field trial params, see {@link
+     * FeatureMap#getFieldTrialParamByFeatureAsInt(String, String, int)}.
      *
      * <p>Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
@@ -84,8 +84,8 @@ public abstract class ChromeFeatureList {
     }
 
     /**
-     * Convenience method to get Chrome-layer feature field trial params, see
-     * {@link FeatureMap#getFieldTrialParamByFeatureAsDouble(String, String, double)}.
+     * Convenience method to get Chrome-layer feature field trial params, see {@link
+     * FeatureMap#getFieldTrialParamByFeatureAsDouble(String, String, double)}.
      *
      * <p>Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
@@ -97,8 +97,8 @@ public abstract class ChromeFeatureList {
     }
 
     /**
-     * Convenience method to get Chrome-layer feature field trial params, see
-     * {@link FeatureMap#getFieldTrialParamsForFeature(String)}.
+     * Convenience method to get Chrome-layer feature field trial params, see {@link
+     * FeatureMap#getFieldTrialParamsForFeature(String)}.
      *
      * <p>Note: Features queried through this API must be added to the array
      * |kFeaturesExposedToJava| in chrome/browser/flags/android/chrome_feature_list.cc
@@ -258,7 +258,8 @@ public abstract class ChromeFeatureList {
     public static final String CCT_GOOGLE_BOTTOM_BAR = "CCTGoogleBottomBar";
     public static final String CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS =
             "CCTGoogleBottomBarVariantLayouts";
-    // NOTE: Do not query this feature directly, use WarmupManager#isCCTPrewarmTabFeatureEnabled.
+    // NOTE: Do not query this feature directly, use
+    // WarmupManager#isCCTPrewarmTabFeatureEnabled.
     public static final String CCT_PREWARM_TAB = "CCTPrewarmTab";
     public static final String CCT_REPORT_PARALLEL_REQUEST_STATUS =
             "CCTReportParallelRequestStatus";
@@ -319,6 +320,8 @@ public abstract class ChromeFeatureList {
     public static final String FILLING_PASSWORDS_FROM_ANY_ORIGIN = "FillingPasswordsFromAnyOrigin";
     public static final String FINGERPRINTING_PROTECTION_SETTING =
             "FingerprintingProtectionSetting";
+    public static final String FINGERPRINTING_PROTECTION_USER_BYPASS =
+            "FingerprintingProtectionUserBypass";
     public static final String FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS =
             "FocusOmniboxInIncognitoTabIntents";
     public static final String FORCE_DISABLE_EXTENDED_SYNC_PROMOS =
@@ -339,6 +342,7 @@ public abstract class ChromeFeatureList {
     public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";
     public static final String INTEREST_FEED_V2_HEARTS = "InterestFeedV2Hearts";
     public static final String IP_PROTECTION_V1 = "IpProtectionV1";
+    public static final String IP_PROTECTION_USER_BYPASS = "IpProtectionUserBypass";
     public static final String KID_FRIENDLY_CONTENT_FEED = "KidFriendlyContentFeed";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
     public static final String LINKED_SERVICES_SETTING = "LinkedServicesSetting";
