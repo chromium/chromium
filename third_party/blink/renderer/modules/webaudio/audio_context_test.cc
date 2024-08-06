@@ -913,6 +913,11 @@ TEST_F(AudioContextTest, AecConstructor) {
   AudioContext::Create(execution_context, options_b, ASSERT_NO_EXCEPTION);
   EXPECT_EQ(GetAecDevice(execution_context), kFakeAudioOutput2);
 
+  // Creating another AudioContext with no options should not change the AEC
+  // device.
+  AudioContext::Create(execution_context, options_empty, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(GetAecDevice(execution_context), kFakeAudioOutput2);
+
   // An explicit default will set the AEC device to default.
   AudioContextOptions* options_explicit_default = AudioContextOptions::Create();
   options_explicit_default->setSinkId(
