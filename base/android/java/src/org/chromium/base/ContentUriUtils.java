@@ -321,24 +321,4 @@ public abstract class ContentUriUtils {
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
         return resolver.delete(parsedUri, null, null) > 0;
     }
-
-    /**
-     * Retrieve the content URI from the file path.
-     *
-     * @param filePathString the file path.
-     * @return content URI or null if the input params are invalid.
-     */
-    @CalledByNative
-    public static String getContentUriFromFilePath(String filePathString) {
-        try {
-            Uri contentUri = getContentUriFromFile(new File(filePathString));
-            if (contentUri != null) {
-                return contentUri.toString();
-            }
-        } catch (IllegalArgumentException e) {
-            // This happens when the given File is outside the paths supported by the provider.
-            Log.e(TAG, "Cannot retrieve content uri from file: %s", filePathString, e);
-        }
-        return null;
-    }
 }

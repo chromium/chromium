@@ -44,10 +44,6 @@ BASE_EXPORT bool MaybeGetFileDisplayName(const FilePath& content_uri,
 // Deletes a content URI.
 BASE_EXPORT bool DeleteContentUri(const FilePath& content_uri);
 
-// Gets content URI's file path (eg: "content://org.chromium...") from normal
-// file path (eg: "/data/user/0/...").
-BASE_EXPORT FilePath GetContentUriFromFilePath(const FilePath& file_path);
-
 }  // namespace base
 
 #endif  // BASE_ANDROID_CONTENT_URI_UTILS_H_

@@ -257,6 +257,8 @@ static_library("test_support") {
 
   if (is_android) {
     sources += [
+      "android/content_uri_test_utils.cc",
+      "android/content_uri_test_utils.h",
       "android/java_handler_thread_helpers.cc",
       "android/java_handler_thread_helpers.h",
       "android/url_utils.cc",
@@ -480,7 +482,11 @@ if (is_android) {
   android_library("test_support_java") {
     testonly = true
 
+    mergeable_android_manifests =
+        [ "android/java/AndroidManifest_file_provider.xml" ]
+
     deps = [
+      ":file_provider_resources",
       "//base:base_java",
       "//base:process_launcher_java",
       "//testing/android/native_test:native_main_runner_java",
@@ -518,6 +524,11 @@ if (is_android) {
       "android/java/src/org/chromium/base/ITestCallback.aidl",
       "android/java/src/org/chromium/base/ITestController.aidl",
     ]
+  }
+
+  android_resources("file_provider_resources") {
+    testonly = true
+    sources = [ "android/java/res/xml/file_paths_file_provider.xml" ]
   }
 }
 
