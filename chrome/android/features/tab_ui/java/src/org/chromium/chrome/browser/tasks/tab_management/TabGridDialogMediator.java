@@ -137,7 +137,7 @@ public class TabGridDialogMediator
         View getAnimationSourceViewForTab(int tabId);
     }
 
-    private final Context mContext;
+    private final Activity mActivity;
     private final PropertyModel mModel;
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final ValueChangedCallback<TabModelFilter> mOnTabModelFilterChanged =
@@ -168,7 +168,6 @@ public class TabGridDialogMediator
     private int mCurrentTabId = Tab.INVALID_TAB_ID;
     private boolean mIsUpdatingTitle;
     private String mCurrentGroupModifiedTitle;
-    private Activity mActivity;
 
     TabGridDialogMediator(
             Activity activity,
@@ -187,7 +186,6 @@ public class TabGridDialogMediator
             Runnable showColorPickerPopupRunnable,
             Runnable showInviteFlowUIRunnable,
             @Nullable ActionConfirmationManager actionConfirmationManager) {
-        mContext = activity;
         mModel = model;
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
         mTabCreatorManager = tabCreatorManager;
@@ -312,9 +310,9 @@ public class TabGridDialogMediator
                                                 Snackbar.TYPE_ACTION,
                                                 Snackbar.UMA_TAB_CLOSE_MULTIPLE_UNDO)
                                         .setTemplateText(
-                                                mContext.getString(
+                                                mActivity.getString(
                                                         R.string.undo_bar_close_all_message))
-                                        .setAction(mContext.getString(R.string.undo), closedTabs));
+                                        .setAction(mActivity.getString(R.string.undo), closedTabs));
                     }
 
                     @Override
@@ -348,8 +346,8 @@ public class TabGridDialogMediator
                                                 Snackbar.TYPE_ACTION,
                                                 Snackbar.UMA_TAB_CLOSE_UNDO)
                                         .setTemplateText(
-                                                mContext.getString(R.string.undo_bar_close_message))
-                                        .setAction(mContext.getString(R.string.undo), tab.getId()));
+                                                mActivity.getString(R.string.undo_bar_close_message))
+                                        .setAction(mActivity.getString(R.string.undo), tab.getId()));
                     }
 
                     private void dismissMultipleTabSnackbar(List<Tab> tabs) {
@@ -573,7 +571,7 @@ public class TabGridDialogMediator
             return;
         }
 
-        Resources res = mContext.getResources();
+        Resources res = mActivity.getResources();
         // Change the ungroup bar text if the tab being ungrouped is the last tab in the group.
         final @StringRes int ungroupBarTextId =
                 tabsCount == 1
@@ -593,7 +591,7 @@ public class TabGridDialogMediator
     }
 
     private void updateTitle(int tabsCount) {
-        Resources res = mContext.getResources();
+        Resources res = mActivity.getResources();
 
         TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
         Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
@@ -618,7 +616,7 @@ public class TabGridDialogMediator
                         R.plurals.accessibility_dialog_back_button, tabsCount, tabsCount));
         mModel.set(
                 TabGridDialogProperties.HEADER_TITLE,
-                TabGroupTitleEditor.getDefaultTitle(mContext, tabsCount));
+                TabGroupTitleEditor.getDefaultTitle(mActivity, tabsCount));
     }
 
     private void updateColorProperties(Context context, boolean isIncognito) {
@@ -628,9 +626,9 @@ public class TabGridDialogMediator
         ColorStateList tintList =
                 isIncognito
                         ? AppCompatResources.getColorStateList(
-                                mContext, R.color.default_icon_color_light_tint_list)
+                                mActivity, R.color.default_icon_color_light_tint_list)
                         : AppCompatResources.getColorStateList(
-                                mContext, R.color.default_icon_color_tint_list);
+                                mActivity, R.color.default_icon_color_tint_list);
         @ColorInt
         int ungroupBarBackgroundColor =
                 TabUiThemeProvider.getTabGridDialogUngroupBarBackgroundColor(context, isIncognito);
@@ -670,7 +668,7 @@ public class TabGridDialogMediator
         if (TabUiFeatureUtilities.shouldUseListMode()) {
             int animationBackgroundColor =
                     TabUiThemeUtils.getCardViewBackgroundColor(
-                            mContext, isIncognito, /* isSelected= */ false);
+                            mActivity, isIncognito, /* isSelected= */ false);
             mModel.set(
                     TabGridDialogProperties.ANIMATION_BACKGROUND_COLOR, animationBackgroundColor);
         }
@@ -709,17 +707,17 @@ public class TabGridDialogMediator
         List<TabListEditorAction> actions = new ArrayList<>();
         actions.add(
                 TabListEditorSelectionAction.createAction(
-                        mContext, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.END));
+                        mActivity, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.END));
         actions.add(
                 TabListEditorCloseAction.createAction(
-                        mContext,
+                        mActivity,
                         ShowMode.MENU_ONLY,
                         ButtonType.ICON_AND_TEXT,
                         IconPosition.START,
                         mActionConfirmationManager));
         actions.add(
                 TabListEditorUngroupAction.createAction(
-                        mContext,
+                        mActivity,
                         ShowMode.MENU_ONLY,
                         ButtonType.ICON_AND_TEXT,
                         IconPosition.START,
@@ -740,7 +738,7 @@ public class TabGridDialogMediator
         }
         actions.add(
                 TabListEditorShareAction.createAction(
-                        mContext,
+                        mActivity,
                         ShowMode.MENU_ONLY,
                         ButtonType.ICON_AND_TEXT,
                         IconPosition.START));
@@ -795,7 +793,7 @@ public class TabGridDialogMediator
 
             // Reset the list of tabs so the new tab doesn't appear on the dialog before the
             // animation.
-            if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
                 mDialogController.resetWithListOfTabs(null);
             }
 
@@ -826,7 +824,7 @@ public class TabGridDialogMediator
             mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
             if (setupAndShowTabListEditor(tabId)) {
                 TabUiMetricsHelper.recordSelectionEditorOpenMetrics(
-                        TabListEditorOpenMetricGroups.OPEN_FROM_DIALOG, mContext);
+                        TabListEditorOpenMetricGroups.OPEN_FROM_DIALOG, mActivity);
             }
         } else if (menuId == R.id.edit_group_name) {
             RecordUserAction.record("TabGridDialogMenu.Rename");
@@ -907,9 +905,9 @@ public class TabGridDialogMediator
 
             // TODO(b/325082444): This is used for prototyping purposes for now, should be removed
             // and called from Data Sharing service.
-            new DataSharingNotificationManager(mContext)
+            new DataSharingNotificationManager(mActivity)
                     .showNotification(
-                            mContext.getResources()
+                            mActivity.getResources()
                                     .getString(R.string.data_sharing_origin_fallback));
         };
     }
@@ -958,10 +956,10 @@ public class TabGridDialogMediator
             // restore default title.
             mTabGroupTitleEditor.deleteTabGroupTitle(currentTab.getRootId());
 
-            String originalTitle = TabGroupTitleEditor.getDefaultTitle(mContext, tabsCount);
+            String originalTitle = TabGroupTitleEditor.getDefaultTitle(mActivity, tabsCount);
             mModel.set(
                     TabGridDialogProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
-                    mContext.getResources()
+                    mActivity.getResources()
                             .getQuantityString(
                                     R.plurals.accessibility_dialog_back_button,
                                     tabsCount,
@@ -977,7 +975,7 @@ public class TabGridDialogMediator
         int relatedTabsCount = getRelatedTabs(mCurrentTabId).size();
         mModel.set(
                 TabGridDialogProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
-                mContext.getResources()
+                mActivity.getResources()
                         .getQuantityString(
                                 R.plurals.accessibility_dialog_back_button_with_group_name,
                                 relatedTabsCount,
@@ -1056,7 +1054,7 @@ public class TabGridDialogMediator
 
         if (newFilter != null) {
             boolean isIncognito = newFilter.isIncognito();
-            updateColorProperties(mContext, isIncognito);
+            updateColorProperties(mActivity, isIncognito);
             newFilter.addObserver(mTabModelObserver);
             ((TabGroupModelFilter) newFilter).addTabGroupObserver(mTabGroupModelFilterObserver);
         }
