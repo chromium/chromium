@@ -591,33 +591,17 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 #pragma mark - UICollectionViewDelegate
 
-// This method is used instead of -didSelectItemAtIndexPath, because any
-// selection events will be signaled through the model layer and handled in
+// Selection events will be signaled through the model layer and handled in
 // the TabCollectionConsumer -selectItemWithID: method.
 - (BOOL)collectionView:(UICollectionView*)collectionView
     shouldSelectItemAtIndexPath:(NSIndexPath*)indexPath {
-  if (@available(iOS 16, *)) {
-    // This is handled by
-    // `collectionView:performPrimaryActionForItemAtIndexPath:` on iOS 16. The
-    // method comment should be updated once iOS 15 is dropped.
-    return NO;
-  } else {
-    [self tappedItemAtIndexPath:indexPath];
-  }
-  // Tapping on a non-selected cell should not select it immediately. The
-  // delegate will trigger a transition to show the item.
   return NO;
 }
 
+// Selection events will be signaled through the model layer and handled in
+// the TabCollectionConsumer -selectItemWithID: method.
 - (BOOL)collectionView:(UICollectionView*)collectionView
     shouldDeselectItemAtIndexPath:(NSIndexPath*)indexPath {
-  if (@available(iOS 16, *)) {
-    // This is handled by
-    // `collectionView:performPrimaryActionForItemAtIndexPath:` on iOS 16.
-  } else {
-    [self tappedItemAtIndexPath:indexPath];
-  }
-  // Tapping on the current selected cell should not deselect it.
   return NO;
 }
 

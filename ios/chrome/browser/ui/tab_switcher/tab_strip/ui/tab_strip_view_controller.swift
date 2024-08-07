@@ -699,7 +699,7 @@ class TabStripViewController: UIViewController,
 
   /// Scrolls the collection view to the given horizontal `offset`.
   func scrollToContentOffset(_ offset: CGFloat) {
-    // TODO(crbug.com/325415449): Update this when #unavailable is rocognized by
+    // TODO(crbug.com/325415449): Update this when #unavailable is recognized by
     // the formatter.
     if #available(iOS 17.0, *) {
     } else {
@@ -784,13 +784,6 @@ class TabStripViewController: UIViewController,
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension TabStripViewController: UICollectionViewDelegateFlowLayout {
-
-  func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    if #available(iOS 16, *) {
-    } else {
-      self.collectionView(collectionView, performPrimaryActionForItemAt: indexPath)
-    }
-  }
 
   func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath)
     -> Bool

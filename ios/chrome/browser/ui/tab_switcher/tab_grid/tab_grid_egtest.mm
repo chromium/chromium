@@ -1846,13 +1846,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                            inStorage:BookmarkStorageType::kLocalOrSyncable];
 }
 
-// Tests adding items to the readinglist from the tab grid edit mode.
-- (void)testTabGridBulkActionAddToReadingList {
-  // TODO(crbug.com/40900596): Test flakes when run on iOS 16.
-  if (@available(iOS 16, *)) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 16.");
-  }
-
+// Tests adding items to the Reading List from the tab grid edit mode.
+// TODO(crbug.com/40900596): Test flakes.
+- (void)FLAKY_testTabGridBulkActionAddToReadingList {
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
