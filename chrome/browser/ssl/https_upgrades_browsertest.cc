@@ -3353,20 +3353,36 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsBrowserTest, PrefStatesRecorded) {
       "Security.HttpsFirstMode.SettingEnabledAtStartup", 1);
 }
 
+enum class BalancedModeParam {
+  kNotAutoEnabled,
+  kAutoEnabled,
+};
+
 // A simple test fixture that constructs a HistogramTester (so that it gets
 // initialized before browser startup). Used for testing pref tracking logic.
 // Variant of HttpsUpgradesPrefsBrowserTest but with the
-// HttpsFirstBalanced feature enabled.
-class HttpsUpgradesPrefsBalancedModeEnabledBrowserTest
-    : public InProcessBrowserTest {
- public:
-  HttpsUpgradesPrefsBalancedModeEnabledBrowserTest() = default;
-  ~HttpsUpgradesPrefsBalancedModeEnabledBrowserTest() override = default;
-
+// HttpsFirstBalancedMode feature enabled.
+class HttpsUpgradesBalancedModePrefsBrowserTest
+    : public testing::WithParamInterface<BalancedModeParam>,
+      public InProcessBrowserTest {
  protected:
   void SetUp() override {
     // Feature flag must be enabled before SetUp() continues.
-    feature_list_.InitAndEnableFeature(features::kHttpsFirstBalancedMode);
+    switch (GetParam()) {
+      case BalancedModeParam::kNotAutoEnabled:
+        feature_list()->InitWithFeatures(
+            /*enabled_features=*/{features::kHttpsFirstBalancedMode},
+            /*disabled_features=*/{
+                features::kHttpsFirstBalancedModeAutoEnable});
+        break;
+
+      case BalancedModeParam::kAutoEnabled:
+        feature_list()->InitWithFeatures(
+            /*enabled_features=*/{features::kHttpsFirstBalancedMode,
+                                  features::kHttpsFirstBalancedModeAutoEnable},
+            /*disabled_features=*/{});
+        break;
+    }
     InProcessBrowserTest::SetUp();
   }
 
@@ -3380,6 +3396,7 @@ class HttpsUpgradesPrefsBalancedModeEnabledBrowserTest
     return prefs->GetBoolean(prefs::kHttpsFirstBalancedMode);
   }
 
+  base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
   base::HistogramTester* histograms() { return &histograms_; }
 
  private:
@@ -3387,21 +3404,47 @@ class HttpsUpgradesPrefsBalancedModeEnabledBrowserTest
   base::HistogramTester histograms_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    HttpsUpgradesBalancedModePrefsBrowserTest,
+    ::testing::Values(BalancedModeParam::kNotAutoEnabled,
+                      BalancedModeParam::kAutoEnabled),
+    // Map param to a human-readable string for better test output.
+    [](testing::TestParamInfo<BalancedModeParam> input_type) -> std::string {
+      switch (input_type.param) {
+        case BalancedModeParam::kNotAutoEnabled:
+          return "BalancedModeNotAutoEnabled";
+        case BalancedModeParam::kAutoEnabled:
+          return "BalancedModeAutoEnabled";
+      }
+    });
+
 // Tests that the HTTPS-First Mode pref is recorded at startup and when
 // changed, when the HFM-Balanced-Mode feature flag is enabled. This test
 // requires restarting the browser to test the "at startup" metric in order
 // for the preference state to be set up before the HttpsFirstModeService is
 // created.
-IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsBalancedModeEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBalancedModePrefsBrowserTest,
                        PRE_PrefStatesRecorded) {
-  // The default Balanced Mode pref state is false, which should get recorded
-  // when the initial browser instance is started here.
-  histograms()->ExpectUniqueSample(
-      "Security.HttpsFirstMode.SettingEnabledAtStartup2",
-      HttpsFirstModeSetting::kDisabled, 1);
+  if (GetParam() == BalancedModeParam::kNotAutoEnabled) {
+    // The default Balanced Mode pref state is false, which should get recorded
+    // when the initial browser instance is started here.
+    histograms()->ExpectUniqueSample(
+        "Security.HttpsFirstMode.SettingEnabledAtStartup2",
+        HttpsFirstModeSetting::kDisabled, 1);
 
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("HttpsFirstModeClientSetting",
-                                                  "Disabled"));
+    EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
+        "HttpsFirstModeClientSetting", "Disabled"));
+  } else if (GetParam() == BalancedModeParam::kAutoEnabled) {
+    // The default Balanced Mode pref state is false, but Balanced Mode is auto
+    // enabled.
+    histograms()->ExpectUniqueSample(
+        "Security.HttpsFirstMode.SettingEnabledAtStartup2",
+        HttpsFirstModeSetting::kEnabledBalanced, 1);
+
+    EXPECT_TRUE(variations::IsInSyntheticTrialGroup(
+        "HttpsFirstModeClientSetting", "Balanced"));
+  }
 
   // Change the Balanced Mode pref to true. This should get recorded in the
   // histogram.
@@ -3412,7 +3455,7 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsBalancedModeEnabledBrowserTest,
                                                   "Balanced"));
 }
 
-IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsBalancedModeEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBalancedModePrefsBrowserTest,
                        PrefStatesRecorded) {
   // Restarting the browser from the PRE_ test should record the startup pref
   // histogram. Checking the unique count also ensures that other profile

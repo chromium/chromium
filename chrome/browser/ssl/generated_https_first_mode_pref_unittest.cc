@@ -62,7 +62,6 @@ class GeneratedHttpsFirstModePrefTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
  private:
-  // network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;

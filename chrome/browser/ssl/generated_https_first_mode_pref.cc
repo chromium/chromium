@@ -11,6 +11,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "chrome/common/pref_names.h"
@@ -79,7 +80,7 @@ GeneratedHttpsFirstModePref::SetPref(const base::Value* value) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kHttpsFirstBalancedMode) &&
+  if (!IsBalancedModeAvailable() &&
       selection == HttpsFirstModeSetting::kEnabledBalanced) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_UNSUPPORTED;
   }
@@ -99,7 +100,7 @@ GeneratedHttpsFirstModePref::SetPref(const base::Value* value) {
   // Note that the HttpsFirstModeSetting::kEnabledBalanced is not available by
   // default. If the feature flag is disabled, then the kEnabledFull and
   // kDisabled settings will only be mapped to the kHttpsOnlyModeEnabled pref.
-  if (base::FeatureList::IsEnabled(features::kHttpsFirstBalancedMode)) {
+  if (IsBalancedModeAvailable()) {
     switch (selection) {
       case HttpsFirstModeSetting::kDisabled:
         profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
@@ -142,12 +143,9 @@ settings_api::PrefObject GeneratedHttpsFirstModePref::GetPrefObject() const {
   bool fully_enabled = hfm_fully_enabled_pref->GetValue()->GetBool() ||
                        is_advanced_protection_enabled;
 
-  // Balanced Mode is not available by default -- if the kHttpsFirstBalancedMode
-  // feature flag is disabled, then only the kHttpsOnlyMode pref will be mapped
-  // to the kEnabledFull and kDisabled settings states.
-  bool balanced_enabled =
-      base::FeatureList::IsEnabled(features::kHttpsFirstBalancedMode) &&
-      profile_->GetPrefs()->GetBoolean(prefs::kHttpsFirstBalancedMode);
+  // Balanced Mode can be enabled by the user or automatically. In both cases,
+  // the UI setting should look the same.
+  bool balanced_enabled = IsBalancedModeEnabled(profile_->GetPrefs());
 
   settings_api::PrefObject pref_object;
   pref_object.key = kGeneratedHttpsFirstModePref;

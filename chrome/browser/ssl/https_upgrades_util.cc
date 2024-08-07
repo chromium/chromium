@@ -61,8 +61,17 @@ bool IsBalancedModeAvailable() {
 }
 
 bool IsBalancedModeEnabled(PrefService* prefs) {
-  return IsBalancedModeAvailable() && prefs &&
-         prefs->GetBoolean(prefs::kHttpsFirstBalancedMode);
+  if (!prefs || !IsBalancedModeAvailable()) {
+    return false;
+  }
+  bool user_has_modified_settings =
+      prefs->HasPrefPath(prefs::kHttpsOnlyModeEnabled) ||
+      prefs->HasPrefPath(prefs::kHttpsFirstBalancedMode);
+  if (!user_has_modified_settings) {
+    return base::FeatureList::IsEnabled(
+        features::kHttpsFirstBalancedModeAutoEnable);
+  }
+  return prefs->GetBoolean(prefs::kHttpsFirstBalancedMode);
 }
 
 bool IsBalancedModeUniquelyEnabled(const HttpInterstitialState& state) {
