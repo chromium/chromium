@@ -68,6 +68,7 @@ public class EdgeToEdgeControllerFactory {
     /**
      * Build the coordinator that manages the edge-to-edge bottom chin.
      *
+     * @param androidView The Android view for the bottom chin.
      * @param layoutManager The {@link LayoutManager} for adding new scene overlays.
      * @param edgeToEdgeController The {@link EdgeToEdgeController} for observing the edge-to-edge
      *     status and window bottom insets.
@@ -77,12 +78,14 @@ public class EdgeToEdgeControllerFactory {
      *     browser controls heights.
      */
     public static Destroyable createBottomChin(
+            View androidView,
             LayoutManager layoutManager,
             EdgeToEdgeController edgeToEdgeController,
             NavigationBarColorProvider navigationBarColorProvider,
             BottomControlsStacker bottomControlsStacker) {
         assert isEdgeToEdgeBottomChinEnabled();
         return new EdgeToEdgeBottomChinCoordinator(
+                androidView,
                 layoutManager,
                 edgeToEdgeController,
                 navigationBarColorProvider,

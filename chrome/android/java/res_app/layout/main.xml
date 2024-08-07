@@ -49,6 +49,14 @@ found in the LICENSE file.
             android:background="@drawable/capture_overlay_border"
             android:visibility="gone" />
 
+        <View
+            android:id="@+id/edge_to_edge_bottom_chin"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="start|bottom"
+            android:visibility="gone"
+            android:background="@android:color/transparent" />
+
         <org.chromium.chrome.browser.ui.BottomContainer
             android:id="@+id/bottom_container"
             android:layout_width="match_parent"
