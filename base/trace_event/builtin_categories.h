@@ -379,6 +379,7 @@
   X("navigation,benchmark,rail")                                              \
   X("navigation,rail")                                                        \
   X("renderer,benchmark,rail")                                                \
+  X("renderer,benchmark,rail,input.scrolling")                                \
   X("renderer,webkit")                                                        \
   X("renderer_host,navigation")                                               \
   X("renderer_host," TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"))        \
@@ -397,6 +398,8 @@
   X("viz,android.adpf")                                                       \
   X("viz,benchmark")                                                          \
   X("viz,benchmark,graphics.pipeline")                                        \
+  X("viz,benchmark,input.scrolling")                                          \
+  X("viz,input.scrolling")                                                    \
   X("wakeup.flow,toplevel.flow")                                              \
   X("WebCore,benchmark,rail")                                                 \
   X(TRACE_DISABLED_BY_DEFAULT("cc.debug") "," TRACE_DISABLED_BY_DEFAULT(      \

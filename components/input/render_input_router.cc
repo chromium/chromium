@@ -434,7 +434,7 @@ void RenderInputRouter::DispatchInputEventWithLatencyInfo(
 void RenderInputRouter::ForwardTouchEventWithLatencyInfo(
     const blink::WebTouchEvent& touch_event,
     const ui::LatencyInfo& latency) {
-  TRACE_EVENT0("input", "RenderInputRouter::ForwardTouchEvent");
+  TRACE_EVENT0("input,input.scrolling", "RenderInputRouter::ForwardTouchEvent");
 
   // Always forward TouchEvents for touch stream consistency. They will be
   // ignored if appropriate in FilterInputEvent().

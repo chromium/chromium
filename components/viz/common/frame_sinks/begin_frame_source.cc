@@ -559,9 +559,9 @@ void ExternalBeginFrameSource::OnBeginFrame(const BeginFrameArgs& args) {
     return;
   }
 
-  TRACE_EVENT2("viz", "ExternalBeginFrameSource::OnBeginFrame", "frame_time",
-               args.frame_time.since_origin().InMicroseconds(), "interval",
-               args.interval.InMicroseconds());
+  TRACE_EVENT2("viz,input.scrolling", "ExternalBeginFrameSource::OnBeginFrame",
+               "frame_time", args.frame_time.since_origin().InMicroseconds(),
+               "interval", args.interval.InMicroseconds());
 
   last_begin_frame_args_ = args;
   base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>> observers(

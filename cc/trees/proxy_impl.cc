@@ -923,7 +923,7 @@ DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
   DCHECK(IsImplThread());
   DCHECK(host_impl_.get());
 
-  TRACE_EVENT_WITH_FLOW0("viz,benchmark", "MainFrame.Draw",
+  TRACE_EVENT_WITH_FLOW0("viz,benchmark,input.scrolling", "MainFrame.Draw",
                          TRACE_ID_LOCAL(host_impl_->active_tree()->trace_id()),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
