@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -51,7 +52,8 @@ void ConfigureCommandLineForGuestMode(base::CommandLine* command_line);
 
 void InitCrosapiFeaturesForParam(
     web_app::test::CrosapiParam crosapi_state,
-    base::test::ScopedFeatureList* scoped_feature_list);
+    base::test::ScopedFeatureList* scoped_feature_list,
+    base::test::ScopedCommandLine* scoped_command_line);
 
 // "Mixin" for configuring a test harness to parameterize on different profile
 // types. To use it, inherit from
@@ -75,8 +77,8 @@ class TestProfileTypeMixin
   template <class... Args>
   explicit TestProfileTypeMixin(Args&&... args)
       : T(std::forward<Args>(args)...) {
-    InitCrosapiFeaturesForParam(GetParam().crosapi_state,
-                                &scoped_feature_list_);
+    InitCrosapiFeaturesForParam(GetParam().crosapi_state, &scoped_feature_list_,
+                                &scoped_command_line_);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -107,6 +109,7 @@ class TestProfileTypeMixin
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 #define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(SUITE, PARAMS) \

@@ -8,10 +8,14 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace web_app {
-namespace test {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/test/scoped_command_line.h"
+#endif
+
+namespace web_app::test {
 
 enum class CrosapiParam {
   kDisabled = 0,
@@ -30,9 +34,11 @@ class WithCrosapiParam : public testing::WithParamInterface<CrosapiParam> {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::test::ScopedCommandLine scoped_command_line_;
+#endif
 };
 
-}  // namespace test
-}  // namespace web_app
+}  // namespace web_app::test
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_WITH_CROSAPI_PARAM_H_
