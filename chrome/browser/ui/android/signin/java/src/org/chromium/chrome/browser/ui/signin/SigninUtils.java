@@ -10,11 +10,14 @@ import android.content.Intent;
 import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.View;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Helper functions for sign-in and accounts. */
 public final class SigninUtils {
@@ -123,5 +126,16 @@ public final class SigninUtils {
     public static boolean shouldShowNewSigninFlow() {
         return ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
+    }
+
+    /** Wraps the view into layout that resembles DialogWhenLarge. */
+    public static View wrapInDialogWhenLargeLayout(View promoContentView) {
+        return DialogWhenLargeContentLayout.wrapInDialogWhenLargeLayout(promoContentView);
+    }
+
+    /** Returns whether the activity shows on tablet or automotive. */
+    public static boolean isTabletOrAuto(Activity activity) {
+        return BuildInfo.getInstance().isAutomotive
+                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
     }
 }

@@ -5,9 +5,10 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<resources>
-    <!-- Copy of corresponding abc_* values from AppCompat. Used by
-         TabbedModeFirstRunActivity to simulate DialogWhenLarge layout. -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Copy of corresponding abc_* values from AppCompat. Used for the
+          fullscreen promo dialog mode (FullscreenPromoDialogHelper) to
+          simulate DialogWhenLarge layout. -->
     <item type="dimen" name="dialog_fixed_width_major">60%</item>
     <item type="dimen" name="dialog_fixed_width_minor">90%</item>
     <item type="dimen" name="dialog_fixed_height_major">60%</item>

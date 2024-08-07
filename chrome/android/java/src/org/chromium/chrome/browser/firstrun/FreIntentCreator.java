@@ -15,15 +15,14 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
+import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
-import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * This class makes a decision what FRE type to launch and creates a corresponding intent. Should be
@@ -105,12 +104,20 @@ public class FreIntentCreator {
 
     /**
      * Returns a generic intent to show the First Run Activity.
-     * @param context                        The context.
-     * @param fromIntent                     The intent that was used to launch Chrome.
+     *
+     * @param context The context.
+     * @param fromIntent The intent that was used to launch Chrome.
      */
     private static Intent createGenericFirstRunIntent(Context context, Intent fromIntent) {
+        // On tablets, where FRE activity is a dialog, transitions from fullscreen activities
+        // (the ones that use Theme.Chromium.TabbedMode, e.g. ChromeTabbedActivity) look ugly,
+        // because when FRE is started from CTA.onCreate(), currently running animation for CTA
+        // window is aborted. This is perceived as a flash of white and doesn't look good.
+        //
+        // To solve this, we added TabbedMode FRE activity, which has the same window background
+        // as Theme.Chromium.TabbedMode activities, but shows content in a FRE-like dialog.
         Class<?> activityClass =
-                shouldSwitchToTabbedMode(context)
+                (context instanceof Activity) && SigninUtils.isTabletOrAuto((Activity) context)
                         ? TabbedModeFirstRunActivity.class
                         : FirstRunActivity.class;
         Intent intent = new Intent(context, activityClass);
@@ -166,29 +173,5 @@ public class FreIntentCreator {
             }
         }
         return false;
-    }
-
-    /**
-     * On tablets, where FRE activity is a dialog, transitions from fillscreen activities
-     * (the ones that use Theme.Chromium.TabbedMode, e.g. ChromeTabbedActivity) look ugly, because
-     * when FRE is started from CTA.onCreate(), currently running animation for CTA window
-     * is aborted. This is perceived as a flash of white and doesn't look good.
-     *
-     * To solve this, we added TabbedMode FRE activity, which has the same window background
-     * as Theme.Chromium.TabbedMode activities, but shows content in a FRE-like dialog.
-     *
-     * This function returns whether to use the TabbedModeFRE.
-     */
-    private static boolean shouldSwitchToTabbedMode(Context caller) {
-        // Caller must be an activity.
-        if (!(caller instanceof Activity)) return false;
-
-        // Always show TabbedMode on automotive devices.
-        if (BuildInfo.getInstance().isAutomotive) return true;
-
-        // We must be on a tablet (where FRE is a dialog).
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(caller)) return false;
-
-        return true;
     }
 }
