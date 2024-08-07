@@ -57,8 +57,6 @@ void PortalProxy::Start() {
 }
 
 void PortalProxy::Flush() {
-  base::AutoLock lock(flush_lock_);
-
   CHECK(!in_flush_);
   in_flush_ = true;
   while (!disconnected_ && (!watching_portal_ || !watching_pipe_)) {

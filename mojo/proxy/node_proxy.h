@@ -9,9 +9,8 @@
 #include <set>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
-#include "base/synchronization/lock.h"
-#include "base/synchronization/waitable_event.h"
 #include "mojo/core/scoped_ipcz_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
@@ -26,9 +25,9 @@ class PortalProxy;
 // message pipes, new proxies are established for those new endpoints.
 class NodeProxy {
  public:
-  // Constructs a new NodeProxy which will signal `dead_event` once its last
+  // Constructs a new NodeProxy which will call `dead_callback` once its last
   // proxy is removed.
-  NodeProxy(const IpczAPI& ipcz, base::WaitableEvent& dead_event);
+  NodeProxy(const IpczAPI& ipcz, base::OnceClosure dead_callback);
   ~NodeProxy();
 
   // Registers a new PortalProxy to forward messages between `portal` and
@@ -36,16 +35,15 @@ class NodeProxy {
   void AddPortalProxy(mojo::core::ScopedIpczHandle portal,
                       mojo::ScopedMessagePipeHandle pipe);
 
-  // Removes `proxy` from this NodeProxy, effectively destroying it. Signals
-  // `dead_event_` if this was our last remaining portal proxy.
+  // Removes `proxy` from this NodeProxy, effectively destroying it. Calls
+  // `dead_callback_` if this was our last remaining portal proxy.
   void RemovePortalProxy(PortalProxy* proxy);
 
  private:
   const raw_ref<const IpczAPI> ipcz_;
-  raw_ref<base::WaitableEvent> dead_event_;
-  base::Lock lock_;
+  base::OnceClosure dead_callback_;
   std::set<std::unique_ptr<PortalProxy>, base::UniquePtrComparator>
-      portal_proxies_ GUARDED_BY(lock_);
+      portal_proxies_;
 };
 
 }  // namespace mojo_proxy

@@ -12,10 +12,10 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/synchronization/waitable_event.h"
-#include "base/threading/thread.h"
+#include "base/task/single_thread_task_executor.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/core/ipcz_api.h"
@@ -37,9 +37,7 @@ void RunProxy(int argc, char** argv) {
   logging::InitLogging({});
   logging::SetLogItems(true, true, true, true);
 
-  base::Thread io_thread{"IO thread"};
-  io_thread.StartWithOptions(
-      base::Thread::Options{base::MessagePumpType::IO, 0});
+  base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
 
   // We initialize Mojo with ipcz disabled, since pre-ipcz Mojo Core only works
   // as a process-wide singleton. This means that all Mojo C APIs in this
@@ -53,8 +51,9 @@ void RunProxy(int argc, char** argv) {
   mojo_config.is_broker_process = true;
   mojo_config.disable_ipcz = true;
   mojo::core::Init(mojo_config);
+  at_exit.RegisterTask(base::BindOnce(&mojo::core::ShutDown));
   auto ipc_support = std::make_unique<mojo::core::ScopedIPCSupport>(
-      io_thread.task_runner(),
+      io_task_executor.task_runner(),
       mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
 
   // Also initialize the global MojoIpcz node, but don't re-initialize Mojo
@@ -132,24 +131,22 @@ void RunProxy(int argc, char** argv) {
   // Seed the server with proxies between each of the attached pipes on the
   // legacy invitation and their corresponding initial portals from the host
   // connection.
-  base::WaitableEvent proxy_dead;
-  NodeProxy proxy(ipcz, proxy_dead);
+  base::RunLoop run_loop;
+  NodeProxy proxy(ipcz, /*dead_callback=*/run_loop.QuitClosure());
   mojo::OutgoingInvitation invitation;
   for (size_t i = 0; i < attachment_names.size(); ++i) {
     proxy.AddPortalProxy(mojo::core::ScopedIpczHandle(initial_portals[i + 1]),
                          invitation.AttachMessagePipe(attachment_names[i]));
   }
 
-  // After sending the legacy invitation, the main thread sleeps until the IO
-  // thread is done proxying.
+  // After sending the legacy invitation, we wait until all proxies are dead.
   mojo::OutgoingInvitation::Send(std::move(invitation),
                                  base::kNullProcessHandle,
                                  std::move(legacy_endpoint));
-  proxy_dead.Wait();
+  run_loop.Run();
 
   mojo::core::DestroyIpczNodeForProcess();
   ipc_support.reset();
-  mojo::core::ShutDown();
 }
 
 }  // namespace mojo_proxy

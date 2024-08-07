@@ -8,7 +8,6 @@
 #include <cstdint>
 
 #include "base/memory/raw_ref.h"
-#include "base/synchronization/lock.h"
 #include "mojo/core/scoped_ipcz_handle.h"
 #include "mojo/public/c/system/trap.h"
 #include "mojo/public/c/system/types.h"
@@ -59,8 +58,6 @@ class PortalProxy {
   void HandlePortalActivity(IpczTrapConditionFlags flags);
   void HandlePipeActivity(MojoResult result);
   void Die();
-
-  base::Lock flush_lock_;
 
   bool in_flush_ = false;
   bool disconnected_ = false;
