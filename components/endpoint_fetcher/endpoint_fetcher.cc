@@ -261,7 +261,7 @@ void EndpointFetcher::PerformRequest(
   if (base::EqualsCaseInsensitiveASCII(http_method_, "POST")) {
     simple_url_loader_->AttachStringForUpload(post_data_, content_type_);
   }
-  simple_url_loader_->SetRetryOptions(kNumRetries,
+  simple_url_loader_->SetRetryOptions(GetMaxRetries(),
                                       network::SimpleURLLoader::RETRY_ON_5XX);
   simple_url_loader_->SetTimeoutDuration(timeout_);
   simple_url_loader_->SetAllowHttpErrorResults(true);
@@ -365,6 +365,16 @@ network::mojom::CredentialsMode EndpointFetcher::GetCredentialsMode() {
   DCHECK(0) << base::StringPrintf(
       "Credentials mode %d not currently supported by EndpointFetcher\n",
       static_cast<int>(request_params_.value().credentials_mode.value()));
+}
+
+int EndpointFetcher::GetMaxRetries() {
+  if (!request_params_.has_value()) {
+    return kNumRetries;
+  }
+  if (!request_params_.value().max_retries.has_value()) {
+    return kNumRetries;
+  }
+  return request_params_.value().max_retries.value();
 }
 
 std::string EndpointFetcher::GetUrlForTesting() {

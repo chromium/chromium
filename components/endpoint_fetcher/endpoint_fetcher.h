@@ -90,6 +90,7 @@ class EndpointFetcher {
     ~RequestParams() = default;
 
     std::optional<CredentialsMode> credentials_mode;
+    std::optional<int> max_retries;
 
     class Builder final {
      public:
@@ -104,6 +105,11 @@ class EndpointFetcher {
 
       Builder& SetCredentialsMode(const CredentialsMode& mode) {
         request_params_->credentials_mode = mode;
+        return *this;
+      }
+
+      Builder& SetMaxRetries(const int retries) {
+        request_params_->max_retries = retries;
         return *this;
       }
 
@@ -205,6 +211,7 @@ class EndpointFetcher {
                             data_decoder::JsonSanitizer::Result result);
 
   network::mojom::CredentialsMode GetCredentialsMode();
+  int GetMaxRetries();
 
   enum AuthType { CHROME_API_KEY, OAUTH, NO_AUTH };
   AuthType auth_type_;

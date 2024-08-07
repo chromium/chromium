@@ -110,19 +110,16 @@ class EndpointFetcherTest : public testing::Test {
                                          response_data, status);
   }
 
-  EndpointFetcher GetAPIKeyEndpointFetcherWithCredentialMode(
-      const std::optional<CredentialsMode> mode) {
+  EndpointFetcher GetAPIKeyEndpointFetcherWithRequestParams(
+      const std::optional<EndpointFetcher::RequestParams> request_params) {
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             test_url_loader_factory());
-    if (mode.has_value()) {
+    if (request_params.has_value()) {
       return EndpointFetcher(loader_factory, GURL("https://example.com"), "GET",
                              "", base::Milliseconds(3000), "", {}, {},
                              TRAFFIC_ANNOTATION_FOR_TESTS,
-                             version_info::Channel::CANARY,
-                             EndpointFetcher::RequestParams::Builder()
-                                 .SetCredentialsMode(mode.value())
-                                 .Build());
+                             version_info::Channel::CANARY, request_params);
     }
     return EndpointFetcher(loader_factory, GURL("https://example.com"), "GET",
                            "", base::Milliseconds(3000), "", {}, {},
@@ -133,6 +130,10 @@ class EndpointFetcherTest : public testing::Test {
   network::mojom::CredentialsMode GetCredentialsMode(
       EndpointFetcher& endpoint_fetcher) {
     return endpoint_fetcher.GetCredentialsMode();
+  }
+
+  int GetMaxRetries(EndpointFetcher& endpoint_fetcher) {
+    return endpoint_fetcher.GetMaxRetries();
   }
 
  private:
@@ -294,21 +295,37 @@ TEST_F(EndpointFetcherTest, FetchNonJsonResponse) {
 
 TEST_F(EndpointFetcherTest, TestCredentialsModeUnspecified) {
   EndpointFetcher fetcher =
-      GetAPIKeyEndpointFetcherWithCredentialMode(std::nullopt);
+      GetAPIKeyEndpointFetcherWithRequestParams(std::nullopt);
   EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
             GetCredentialsMode(fetcher));
 }
 
 TEST_F(EndpointFetcherTest, TestOmitCredentialsMode) {
-  EndpointFetcher fetcher =
-      GetAPIKeyEndpointFetcherWithCredentialMode(CredentialsMode::kOmit);
+  EndpointFetcher fetcher = GetAPIKeyEndpointFetcherWithRequestParams(
+      EndpointFetcher::RequestParams::Builder()
+          .SetCredentialsMode(CredentialsMode::kOmit)
+          .Build());
   EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
             GetCredentialsMode(fetcher));
 }
 
 TEST_F(EndpointFetcherTest, TestIncludeCredentialsMode) {
-  EndpointFetcher fetcher =
-      GetAPIKeyEndpointFetcherWithCredentialMode(CredentialsMode::kInclude);
+  EndpointFetcher fetcher = GetAPIKeyEndpointFetcherWithRequestParams(
+      EndpointFetcher::RequestParams::Builder()
+          .SetCredentialsMode(CredentialsMode::kInclude)
+          .Build());
   EXPECT_EQ(network::mojom::CredentialsMode::kInclude,
             GetCredentialsMode(fetcher));
+}
+
+TEST_F(EndpointFetcherTest, TestMaxRetriesUnspecified) {
+  EndpointFetcher fetcher =
+      GetAPIKeyEndpointFetcherWithRequestParams(std::nullopt);
+  EXPECT_EQ(3 /*=kNumRetries*/, GetMaxRetries(fetcher));
+}
+
+TEST_F(EndpointFetcherTest, TestMaxRetries) {
+  EndpointFetcher fetcher = GetAPIKeyEndpointFetcherWithRequestParams(
+      EndpointFetcher::RequestParams::Builder().SetMaxRetries(42).Build());
+  EXPECT_EQ(42, GetMaxRetries(fetcher));
 }
