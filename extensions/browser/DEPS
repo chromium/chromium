@@ -60,6 +60,7 @@ include_rules = [
 specific_include_rules = {
   ".*(test|test_util)\.(cc|h)$": [
     "+ash/constants/ash_features.h",
+    "+ash/constants/ash_switches.h",
 
     "+components/account_id",
     "+components/javascript_dialogs",
