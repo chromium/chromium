@@ -1393,9 +1393,11 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   // Append(buffer, size)
   // AppendVector(vector)
   // AppendRange(begin, end)
+  // AppendSpan(span)
   //     Insert multiple elements represented by (1) |buffer| and |size|
-  //     (for append), (2) |vector| (for AppendVector), or (3) a pair of
-  //     iterators (for AppendRange) to the back. The elements will be copied.
+  //     (for append), (2) |vector| (for AppendVector), (3) a pair of
+  //     iterators (for AppendRange), or (4) |span| (for AppendSpan) to the
+  //     back. The elements will be copied.
   // UncheckedAppend(value)
   //     Insert a single element like push_back(), but this function assumes
   //     the vector has enough capacity such that it can store the new element
@@ -1415,6 +1417,8 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   void AppendVector(const Vector<U, otherCapacity, V>&);
   template <typename Iterator>
   void AppendRange(Iterator begin, Iterator end);
+  template <typename U, size_t N>
+  void AppendSpan(base::span<U, N>);
   template <typename U>
   void UncheckedAppend(U&&);
 
@@ -2170,6 +2174,12 @@ void Vector<T, InlineCapacity, Allocator>::AppendRange(Iterator begin,
                                                        Iterator end) {
   for (Iterator it = begin; it != end; ++it)
     push_back(*it);
+}
+
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+template <typename U, size_t N>
+void Vector<T, InlineCapacity, Allocator>::AppendSpan(base::span<U, N> data) {
+  Append(data.data(), base::checked_cast<wtf_size_t>(data.size()));
 }
 
 // This version of append saves a branch in the case where you know that the
