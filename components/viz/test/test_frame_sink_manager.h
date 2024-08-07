@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
+#include "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom.h"
 
 namespace viz {
 
@@ -80,18 +81,11 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
                 base::TimeDelta interval) override {}
   void StartThrottlingAllFrameSinks(base::TimeDelta interval) override {}
   void StopThrottlingAllFrameSinks() override {}
-  void StartFrameCountingForTest(base::TimeTicks start_time,
-                                 base::TimeDelta bucket_size) override {}
-  void StopFrameCountingForTest(
-      StopFrameCountingForTestCallback callback) override {}
-  void StartOverdrawTrackingForTest(const FrameSinkId& root_frame_sink_id,
-                                    base::TimeDelta bucket_size) override {}
-  void StopOverdrawTrackingForTest(
-      const FrameSinkId& root_frame_sink_id,
-      mojom::FrameSinkManager::StopOverdrawTrackingForTestCallback callback)
-      override {}
   void ClearUnclaimedViewTransitionResources(
       const blink::ViewTransitionToken& transition_token) override {}
+  void CreateMetricsRecorderForTest(
+      mojo::PendingReceiver<mojom::FrameSinksMetricsRecorder> receiver)
+      override {}
   void HasUnclaimedViewTransitionResourcesForTest(
       HasUnclaimedViewTransitionResourcesForTestCallback callback) override {}
   void SetSameDocNavigationScreenshotSizeForTesting(

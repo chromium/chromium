@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_HOST_HOST_FRAME_SINK_MANAGER_H_
 #define COMPONENTS_VIZ_HOST_HOST_FRAME_SINK_MANAGER_H_
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -12,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -32,6 +34,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
+#include "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom.h"
 #include "services/viz/public/mojom/compositing/frame_sink_bundle.mojom.h"
 
 namespace base {
@@ -251,23 +254,7 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
 
   void UpdateDebugRendererSettings(const DebugRendererSettings& debug_settings);
 
-  // Starts the frame counting in viz.
-  void StartFrameCountingForTest(base::TimeTicks start_time,
-                                 base::TimeDelta bucket_size);
-
-  // Ends the frame counting in viz and returns data to the client.
-  void StopFrameCountingForTest(
-      mojom::FrameSinkManager::StopFrameCountingForTestCallback callback);
-
-  // Starts overdraw tacking for a root frame sink in viz.
-  void StartOverdrawTrackingForTest(const FrameSinkId& root_frame_sink_id,
-                                    base::TimeDelta bucket_size);
-
-  // Ends overdraw tracking in viz and returns data to the client via the
-  // `callback`.
-  void StopOverdrawTrackingForTest(
-      const FrameSinkId& root_frame_sink_id,
-      mojom::FrameSinkManager::StopOverdrawTrackingForTestCallback callback);
+  mojom::FrameSinksMetricsRecorder& GetFrameSinksMetricsRecorderForTest();
 
   void ClearUnclaimedViewTransitionResources(
       const blink::ViewTransitionToken& transition_token);
@@ -367,8 +354,9 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // point directly at FrameSinkManagerImpl in tests. Use this to make function
   // calls.
   raw_ptr<mojom::FrameSinkManager> frame_sink_manager_ = nullptr;
-
-  mojo::Receiver<mojom::FrameSinkManagerClient> receiver_{this};
+  mojo::Receiver<mojom::FrameSinkManagerClient>
+      frame_sink_manager_client_receiver_{this};
+  mojo::Remote<mojom::FrameSinksMetricsRecorder> metrics_recorder_remote_;
 
   // Per CompositorFrameSink data.
   std::unordered_map<FrameSinkId, FrameSinkData, FrameSinkIdHash>

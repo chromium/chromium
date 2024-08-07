@@ -4,6 +4,7 @@
 
 #include "components/viz/host/host_frame_sink_manager.h"
 
+#include <cstddef>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -20,6 +21,7 @@
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/renderer_settings_creation.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom.h"
 #include "services/viz/privileged/mojom/compositing/renderer_settings.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 
@@ -40,9 +42,10 @@ void HostFrameSinkManager::BindAndSetManager(
     mojo::PendingReceiver<mojom::FrameSinkManagerClient> receiver,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     mojo::PendingRemote<mojom::FrameSinkManager> remote) {
-  DCHECK(!receiver_.is_bound());
+  DCHECK(!frame_sink_manager_client_receiver_.is_bound());
 
-  receiver_.Bind(std::move(receiver), std::move(task_runner));
+  frame_sink_manager_client_receiver_.Bind(std::move(receiver),
+                                           std::move(task_runner));
   frame_sink_manager_remote_.Bind(std::move(remote));
   frame_sink_manager_ = frame_sink_manager_remote_.get();
 
@@ -363,12 +366,15 @@ const DisplayHitTestQueryMap& HostFrameSinkManager::GetDisplayHitTestQuery()
 void HostFrameSinkManager::OnConnectionLost() {
   connection_was_lost_ = true;
 
-  receiver_.reset();
-  // frame_sink_manager_ points to |frame_sink_manager_remote_| if using mojo.
-  // Set frame_sink_manager_ to nullptr before
+  frame_sink_manager_client_receiver_.reset();
+
+  // `frame_sink_manager_` points to `frame_sink_manager_remote_` if using mojo.
+  // Set `frame_sink_manager_` to nullptr before
   // frame_sink_manager_remote_.reset() to avoid dangling ptr.
   frame_sink_manager_ = nullptr;
   frame_sink_manager_remote_.reset();
+
+  metrics_recorder_remote_.reset();
 
 #if BUILDFLAG(IS_ANDROID)
   // Any cached back buffers are invalid once the connection to the
@@ -511,32 +517,19 @@ void HostFrameSinkManager::UpdateDebugRendererSettings(
   frame_sink_manager_->UpdateDebugRendererSettings(debug_settings);
 }
 
-void HostFrameSinkManager::StartFrameCountingForTest(
-    base::TimeTicks start_time,
-    base::TimeDelta bucket_size) {
-  frame_sink_manager_->StartFrameCountingForTest(start_time,  // IN-TEST
-                                                 bucket_size);
-}
+mojom::FrameSinksMetricsRecorder&
+HostFrameSinkManager::GetFrameSinksMetricsRecorderForTest() {
+  if (metrics_recorder_remote_) {
+    return *metrics_recorder_remote_.get();
+  }
 
-void HostFrameSinkManager::StopFrameCountingForTest(
-    mojom::FrameSinkManager::StopFrameCountingForTestCallback callback) {
-  frame_sink_manager_->StopFrameCountingForTest(  // IN-TEST
-      std::move(callback));
-}
+  CHECK(frame_sink_manager_);
+  mojo::PendingRemote<mojom::FrameSinksMetricsRecorder> metric_recorder;
+  frame_sink_manager_->CreateMetricsRecorderForTest(  // IN-TEST
+      metric_recorder.InitWithNewPipeAndPassReceiver());
+  metrics_recorder_remote_.Bind(std::move(metric_recorder));
 
-void HostFrameSinkManager::StartOverdrawTrackingForTest(
-    const FrameSinkId& root_frame_sink_id,
-    base::TimeDelta bucket_size) {
-  frame_sink_manager_->StartOverdrawTrackingForTest(root_frame_sink_id,
-                                                    bucket_size);  // IN-TEST
-}
-
-void HostFrameSinkManager::StopOverdrawTrackingForTest(
-    const FrameSinkId& root_frame_sink_id,
-    mojom::FrameSinkManager::StopOverdrawTrackingForTestCallback callback) {
-  frame_sink_manager_->StopOverdrawTrackingForTest(
-      root_frame_sink_id,
-      std::move(callback));  // IN-TEST
+  return *metrics_recorder_remote_.get();
 }
 
 void HostFrameSinkManager::ClearUnclaimedViewTransitionResources(

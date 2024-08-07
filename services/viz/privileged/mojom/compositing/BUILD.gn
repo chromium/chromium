@@ -13,6 +13,7 @@ mojom("compositing") {
     "external_begin_frame_controller.mojom",
     "frame_sink_manager.mojom",
     "frame_sink_video_capture.mojom",
+    "frame_sinks_metrics_recorder.mojom",  # test helpers
     "layered_window_updater.mojom",
     "overlay_strategy.mojom",
     "renderer_settings.mojom",

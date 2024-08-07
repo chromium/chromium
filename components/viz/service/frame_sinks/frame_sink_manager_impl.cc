@@ -11,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
@@ -136,10 +137,11 @@ void FrameSinkManagerImpl::BindAndSetClient(
     mojo::PendingRemote<mojom::FrameSinkManagerClient> client,
     SharedImageInterfaceProvider* shared_image_interface_provider) {
   DCHECK(!client_);
-  DCHECK(!receiver_.is_bound());
+  DCHECK(!frame_sink_manager_receiver_.is_bound());
   DCHECK(shared_image_interface_provider);
   shared_image_interface_provider_ = shared_image_interface_provider;
-  receiver_.Bind(std::move(receiver), std::move(task_runner));
+  frame_sink_manager_receiver_.Bind(std::move(receiver),
+                                    std::move(task_runner));
   client_remote_.Bind(std::move(client));
   client_ = client_remote_.get();
 }
@@ -224,7 +226,8 @@ void FrameSinkManagerImpl::CreateFrameSinkBundle(
   if (base::Contains(bundle_map_, bundle_id)) {
     uint32_t client_id = bundle_id.client_id();
     uint32_t bundle_id_value = bundle_id.bundle_id();
-    receiver_.ReportBadMessage("Duplicate FrameSinkBundle ID");
+    frame_sink_manager_receiver_.ReportBadMessage(
+        "Duplicate FrameSinkBundle ID");
     base::debug::Alias(&client_id);
     base::debug::Alias(&bundle_id_value);
     return;
@@ -242,7 +245,7 @@ void FrameSinkManagerImpl::CreateCompositorFrameSink(
     mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (base::Contains(sink_map_, frame_sink_id)) {
-    receiver_.ReportBadMessage("Duplicate FrameSinkId");
+    frame_sink_manager_receiver_.ReportBadMessage("Duplicate FrameSinkId");
     return;
   }
   if (bundle_id && !GetFrameSinkBundle(*bundle_id)) {
@@ -927,9 +930,8 @@ gpu::SharedImageInterface* FrameSinkManagerImpl::GetSharedImageInterface() {
   return shared_image_interface_provider_->GetSharedImageInterface();
 }
 
-void FrameSinkManagerImpl::StartFrameCountingForTest(
-    base::TimeTicks start_time,
-    base::TimeDelta bucket_size) {
+void FrameSinkManagerImpl::StartFrameCounting(base::TimeTicks start_time,
+                                              base::TimeDelta bucket_size) {
   DCHECK(!frame_counter_.has_value());
   frame_counter_.emplace(start_time, bucket_size);
 
@@ -941,8 +943,8 @@ void FrameSinkManagerImpl::StartFrameCountingForTest(
   }
 }
 
-void FrameSinkManagerImpl::StopFrameCountingForTest(
-    StopFrameCountingForTestCallback callback) {
+void FrameSinkManagerImpl::StopFrameCounting(
+    StopFrameCountingCallback callback) {
   // Returns empty data if `frame_counter_` has no value. This could happen
   // when gpu-process is restarted in middle of test and test scripts still
   // calls this at the end.
@@ -955,7 +957,7 @@ void FrameSinkManagerImpl::StopFrameCountingForTest(
   frame_counter_.reset();
 }
 
-void FrameSinkManagerImpl::StartOverdrawTrackingForTest(
+void FrameSinkManagerImpl::StartOverdrawTracking(
     const FrameSinkId& root_frame_sink_id,
     base::TimeDelta bucket_size) {
   auto iter = root_sink_map_.find(root_frame_sink_id);
@@ -969,9 +971,9 @@ void FrameSinkManagerImpl::StartOverdrawTrackingForTest(
   root_frame_sink->StartOverdrawTracking(bucket_size.InSeconds());
 }
 
-void FrameSinkManagerImpl::StopOverdrawTrackingForTest(
+void FrameSinkManagerImpl::StopOverdrawTracking(
     const FrameSinkId& root_frame_sink_id,
-    StopOverdrawTrackingForTestCallback callback) {
+    StopOverdrawTrackingCallback callback) {
   auto iter = root_sink_map_.find(root_frame_sink_id);
   if (iter == root_sink_map_.end()) {
     LOG(ERROR) << "No RootCompositorFrameSink for root_frame_sink_id:"
@@ -990,6 +992,12 @@ void FrameSinkManagerImpl::StopOverdrawTrackingForTest(
 void FrameSinkManagerImpl::ClearUnclaimedViewTransitionResources(
     const blink::ViewTransitionToken& transition_token) {
   transition_token_to_animation_manager_.erase(transition_token);
+}
+
+void FrameSinkManagerImpl::CreateMetricsRecorderForTest(
+    mojo::PendingReceiver<mojom::FrameSinksMetricsRecorder> receiver) {
+  CHECK(!metrics_receiver_.is_bound());
+  metrics_receiver_.Bind(std::move(receiver));
 }
 
 void FrameSinkManagerImpl::HasUnclaimedViewTransitionResourcesForTest(

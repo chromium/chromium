@@ -11,6 +11,7 @@ import "services/viz/privileged/mojom/compositing/display_private.mojom";
 import "services/viz/privileged/mojom/compositing/external_begin_frame_controller.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom";
 import "services/viz/privileged/mojom/compositing/renderer_settings.mojom";
+import "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom";
 import "services/viz/public/mojom/compositing/compositor_frame_sink.mojom";
 import "services/viz/public/mojom/compositing/copy_output_request.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_bundle.mojom";
@@ -47,33 +48,6 @@ struct RootCompositorFrameSinkParams {
 
   pending_associated_receiver<ExternalBeginFrameController>?
       external_begin_frame_controller;
-};
-
-// Response from StopFrameCounting that contains counted frames for all frame
-// sinks during the tracked time window.
-struct FrameCountingData {
-  array<FrameCountingPerSinkData> per_sink_data;
-};
-
-// Container for collected data for a given frame sink.
-struct FrameCountingPerSinkData {
-  CompositorFrameSinkType type;
-  bool is_root;
-  string debug_label;
-
-  // Bucket index of the first bucket in `presented_frames` based on the
-  // timestamp of the first presented frame in the bucket and start time.
-  uint16 start_bucket;
-
-  // Collected number of presented frames for the specified bucket size.
-  array<uint16> presented_frames;
-};
-
-struct OverdrawData {
-  // Average overdraw as percentage of the root frame sink size for
-  // each AggregatedFrame, grouped using `bucket_size` arg of
-  // `StartOverdrawTrackingForTest`.
-  array<float> average_overdraws;
 };
 
 // The FrameSinkManager interface is a privileged interface that allows the
@@ -216,29 +190,17 @@ interface FrameSinkManager {
   // |debug_settings| (show_overdraw_feedback, etc.).
   UpdateDebugRendererSettings(DebugRendererSettings debug_settings);
 
-  // Starts frame counting per frame sink on the viz.
-  StartFrameCountingForTest(mojo_base.mojom.TimeTicks start_time,
-                            mojo_base.mojom.TimeDelta bucket_size);
-
-  // Stops frame counting on the viz and returns all records to the
-  // caller.
-  StopFrameCountingForTest() => (FrameCountingData? data);
-
-  // Starts overdraw tracking for the root_frame_sink_id in viz.
-  StartOverdrawTrackingForTest(
-    FrameSinkId root_frame_sink_id,
-    mojo_base.mojom.TimeDelta bucket_size);
-
-  // Stops overdraw tracking for the root_frame_sink in viz and returns
-  // all records to the caller.
-  StopOverdrawTrackingForTest(FrameSinkId root_frame_sink_id) =>
-                                                  (OverdrawData? data);
-
   // Clears the ViewTransition resources if they have not been claimed by a
   // CompositorFrameSink. `transition_token` identifies the navigation for which
   // the resources were cached.
   ClearUnclaimedViewTransitionResources(
     blink.mojom.ViewTransitionToken transition_token);
+
+  // Initializes FrameSinksMetricsRecorder to enable the collection of metrics
+  // related to frame sinks.
+  // TODO(b/356017406): Add the method behind a feature flag.
+  CreateMetricsRecorderForTest(
+    pending_receiver<FrameSinksMetricsRecorder> receiver);
 
   // Returns true if there are any unclaimed ViewTransition resources. For
   // testing only.

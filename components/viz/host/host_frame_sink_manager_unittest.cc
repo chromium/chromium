@@ -127,7 +127,7 @@ class HostFrameSinkManagerTest : public testing::Test {
 
   bool IsBoundToFrameSinkManager() {
     return host_manager_.frame_sink_manager_remote_.is_bound() ||
-           host_manager_.receiver_.is_bound();
+           host_manager_.frame_sink_manager_client_receiver_.is_bound();
   }
 
   bool DisplayHitTestQueryExists(const FrameSinkId& frame_sink_id) {

@@ -1,0 +1,58 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "services/viz/public/mojom/compositing/compositor_frame_sink.mojom";
+import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
+
+// Note: These mojo definitions are intended for exclusive use in testing.
+
+// Container for collected data for a given frame sink.
+struct FrameCountingPerSinkData {
+  CompositorFrameSinkType type;
+  bool is_root;
+  string debug_label;
+
+  // Bucket index of the first bucket in `presented_frames` based on the
+  // timestamp of the first presented frame in the bucket and start time.
+  uint16 start_bucket;
+
+  // Collected number of presented frames for the specified bucket size.
+  array<uint16> presented_frames;
+};
+
+// Response from StopFrameCounting that contains counted frames for all
+// frame sinks during the tracked time window.
+struct FrameCountingData {
+  array<FrameCountingPerSinkData> per_sink_data;
+};
+
+struct OverdrawData {
+  // Average overdraw as percentage of the root frame sink size for
+  // each AggregatedFrame, grouped using `bucket_size` arg of
+  // `StartOverdrawTrackingForTest`.
+  array<float> average_overdraws;
+};
+
+// The interface allows clients to collect metrics related to frame sinks.
+interface FrameSinksMetricsRecorder {
+  // Starts frame counting per frame sink on the viz.
+  StartFrameCounting(mojo_base.mojom.TimeTicks start_time,
+                     mojo_base.mojom.TimeDelta bucket_size);
+
+  // Stops frame counting on the viz and returns all records to the
+  // caller.
+  StopFrameCounting() => (FrameCountingData? data);
+
+  // Starts overdraw tracking for the root_frame_sink_id in viz.
+  StartOverdrawTracking(
+      FrameSinkId root_frame_sink_id, mojo_base.mojom.TimeDelta bucket_size);
+
+  // Stops overdraw tracking for the root_frame_sink in viz and returns
+  // all records to the caller.
+  StopOverdrawTracking(FrameSinkId root_frame_sink_id)
+      => (OverdrawData? data);
+};
