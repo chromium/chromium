@@ -128,7 +128,8 @@
         <p id="survey-title">$i18n{warningBypassInterstitialSurveyTitle}</p>
         <cr-radio-group
             aria-label="$i18n{warningBypassInterstitialSurveyTitleAccessible}"
-            selected="{{selectedRadioOption_}}">
+            selected="[[selectedRadioOption_]]"
+            on-selected-changed="onSelectedRadioOptionChanged_">
           <cr-radio-button name="CreatedFile"
             label="$i18n{warningBypassInterstitialSurveyCreatedFileAccessible}"
             hide-label-text>

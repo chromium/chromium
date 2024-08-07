@@ -156,4 +156,29 @@ suite('interstitial tests', function() {
     assertEquals(0, cancelCounter);
     assertTrue(interstitial.$.dialog.open);
   });
+
+  test('selected radio option is set correctly', async () => {
+    const surveyGroup =
+        interstitial.shadowRoot!.querySelector('cr-radio-group');
+    assertTrue(!!surveyGroup);
+
+    const surveyOptions =
+        interstitial.shadowRoot!.querySelectorAll('cr-radio-button');
+    assertEquals(3, surveyOptions.length);
+
+    assertTrue(!!surveyOptions[0]);
+    surveyOptions[0].click();
+    await microtasksFinished();
+    assertTrue(surveyOptions[0].checked);
+
+    assertTrue(!!surveyOptions[1]);
+    surveyOptions[1].click();
+    await microtasksFinished();
+    assertTrue(surveyOptions[1].checked);
+
+    assertTrue(!!surveyOptions[2]);
+    surveyOptions[2].click();
+    await microtasksFinished();
+    assertTrue(surveyOptions[2].checked);
+  });
 });

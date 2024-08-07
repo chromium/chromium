@@ -158,6 +158,10 @@ export class DownloadsDangerousDownloadInterstitialElement extends
     document.body.removeEventListener('keydown', this.boundKeydown_);
     this.boundKeydown_ = null;
   }
+
+  private onSelectedRadioOptionChanged_(e: CustomEvent<{value: string}>) {
+    this.selectedRadioOption_ = e.detail.value;
+  }
 }
 
 declare global {
