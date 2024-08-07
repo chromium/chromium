@@ -161,6 +161,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     commerce_ui_tab_helper_ = CreateCommerceUiTabHelper(
         tab, Profile::FromBrowserContext(new_contents->GetBrowserContext()));
   }
+  if (user_annotations_web_contents_observer_) {
+    user_annotations_web_contents_observer_ =
+        user_annotations::UserAnnotationsWebContentsObserver::
+            MaybeCreateForWebContents(new_contents);
+  }
 }
 
 }  // namespace tabs
