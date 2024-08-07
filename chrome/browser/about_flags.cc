@@ -3034,6 +3034,10 @@ const FeatureEntry::FeatureParam kLensOverlayPersistentOmniboxEntryPoint[] = {
     {"omnibox-entry-point", "true"},
     {"omnibox-entry-point-always-visible", "true"},
 };
+const FeatureEntry::FeatureParam kLensOverlaySearchBubble[] = {
+    {"search-bubble", "true"},
+    {"use-search-context-for-text-only-requests", "true"},
+};
 
 const FeatureEntry::FeatureVariation kLensOverlayVariations[] = {
     {"with no omnibox entry point", kLensOverlayNoOmniboxEntryPoint,
@@ -3044,6 +3048,8 @@ const FeatureEntry::FeatureVariation kLensOverlayVariations[] = {
     {"with persistent icon omnibox entry point",
      kLensOverlayPersistentOmniboxEntryPoint,
      std::size(kLensOverlayPersistentOmniboxEntryPoint), nullptr},
+    {"with contextualization", kLensOverlaySearchBubble,
+     std::size(kLensOverlaySearchBubble), nullptr},
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
