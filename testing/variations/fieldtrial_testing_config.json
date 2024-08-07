@@ -22054,6 +22054,7 @@
                 {
                     "name": "Auto_Dogfood",
                     "enable_features": [
+                        "DeleteOrphanLocalStorageOnStartup",
                         "DeleteStaleLocalStorageOnStartup",
                         "DeleteStaleSessionCookiesOnStartup",
                         "EvictStaleQuotaStorage"
@@ -22062,6 +22063,7 @@
                 {
                     "name": "Opt_In_Dogfood",
                     "enable_features": [
+                        "DeleteOrphanLocalStorageOnStartup",
                         "DeleteStaleLocalStorageOnStartup",
                         "DeleteStaleSessionCookiesOnStartup",
                         "EvictStaleQuotaStorage"

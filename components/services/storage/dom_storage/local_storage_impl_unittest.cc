@@ -1226,15 +1226,23 @@ TEST_F(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
 
 class LocalStorageImplStaleDeletionTest
     : public LocalStorageImplTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   LocalStorageImplStaleDeletionTest() {
-    feature_list_.InitWithFeatureState(
-        kDeleteStaleLocalStorageOnStartup,
-        ShouldDeleteStaleLocalStorageOnStartup());
+    feature_list_.InitWithFeatureStates(
+        {{kDeleteStaleLocalStorageOnStartup,
+          ShouldDeleteStaleLocalStorageOnStartup()},
+         {kDeleteOrphanLocalStorageOnStartup,
+          ShouldDeleteOrphanLocalStorageOnStartup()}});
   }
 
-  bool ShouldDeleteStaleLocalStorageOnStartup() { return GetParam(); }
+  bool ShouldDeleteStaleLocalStorageOnStartup() {
+    return std::get<0>(GetParam());
+  }
+
+  bool ShouldDeleteOrphanLocalStorageOnStartup() {
+    return std::get<1>(GetParam());
+  }
 
   void UpdateAccessMetaData(const blink::StorageKey& storage_key,
                             const base::Time& last_accessed) {
@@ -1261,7 +1269,7 @@ class LocalStorageImplStaleDeletionTest
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     LocalStorageImplStaleDeletionTest,
-    testing::Bool());
+    testing::Combine(testing::Bool(), testing::Bool()));
 
 TEST_P(LocalStorageImplStaleDeletionTest, StaleStorageAreaDeletion) {
   const auto storage_key1 =
@@ -1353,7 +1361,9 @@ TEST_P(LocalStorageImplStaleDeletionTest, Orphan) {
                              area.BindNewPipeAndPassReceiver());
   area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
             std::nullopt, "source", base::DoNothing());
+  area.FlushForTesting();
   area.reset();
+  RunUntilIdle();
   {
     base::HistogramTester histograms;
     ResetStorage(storage_path());
@@ -1362,15 +1372,18 @@ TEST_P(LocalStorageImplStaleDeletionTest, Orphan) {
     RunUntilIdle();
     EXPECT_EQ(0, histograms.GetTotalSum(
                      "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ(4u, GetDatabaseContents().size());
 
     UpdateAccessMetaData(first_party_key, base::Time::Now() - base::Days(2));
     UpdateWriteMetaData(first_party_key, base::Time::Now() - base::Days(2), 0);
+    context()->FlushStorageKeyForTesting(first_party_key);
     ResetStorage(storage_path());
     context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
     WaitForDatabaseOpen();
     RunUntilIdle();
     EXPECT_EQ(0, histograms.GetTotalSum(
                      "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ(4u, GetDatabaseContents().size());
   }
 
   // First party nonce bucket does qualify, but only if it's old.
@@ -1381,7 +1394,9 @@ TEST_P(LocalStorageImplStaleDeletionTest, Orphan) {
                              area.BindNewPipeAndPassReceiver());
   area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
             std::nullopt, "source", base::DoNothing());
+  area.FlushForTesting();
   area.reset();
+  RunUntilIdle();
   {
     base::HistogramTester histograms;
     ResetStorage(storage_path());
@@ -1390,18 +1405,28 @@ TEST_P(LocalStorageImplStaleDeletionTest, Orphan) {
     RunUntilIdle();
     EXPECT_EQ(0, histograms.GetTotalSum(
                      "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ(7u, GetDatabaseContents().size());
 
     UpdateAccessMetaData(first_party_nonce_key,
                          base::Time::Now() - base::Days(2));
     UpdateWriteMetaData(first_party_nonce_key,
                         base::Time::Now() - base::Days(2), 0);
+    context()->FlushStorageKeyForTesting(first_party_nonce_key);
     ResetStorage(storage_path());
     context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
     WaitForDatabaseOpen();
     RunUntilIdle();
-    EXPECT_EQ(ShouldDeleteStaleLocalStorageOnStartup() ? 1 : 0,
+    EXPECT_EQ((ShouldDeleteStaleLocalStorageOnStartup() &&
+               ShouldDeleteOrphanLocalStorageOnStartup())
+                  ? 1
+                  : 0,
               histograms.GetTotalSum(
                   "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ((ShouldDeleteStaleLocalStorageOnStartup() &&
+               ShouldDeleteOrphanLocalStorageOnStartup())
+                  ? 4u
+                  : 7u,
+              GetDatabaseContents().size());
   }
 
   // Third party bucket doesn't qualify, even if it's old.
@@ -1413,26 +1438,37 @@ TEST_P(LocalStorageImplStaleDeletionTest, Orphan) {
                              area.BindNewPipeAndPassReceiver());
   area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
             std::nullopt, "source", base::DoNothing());
+  area.FlushForTesting();
   area.reset();
+  RunUntilIdle();
   {
     base::HistogramTester histograms;
     ResetStorage(storage_path());
     context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
     WaitForDatabaseOpen();
     RunUntilIdle();
-    EXPECT_EQ(ShouldDeleteStaleLocalStorageOnStartup() ? 1 : 0,
-              histograms.GetTotalSum(
-                  "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ(0, histograms.GetTotalSum(
+                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ((ShouldDeleteStaleLocalStorageOnStartup() &&
+               ShouldDeleteOrphanLocalStorageOnStartup())
+                  ? 7u
+                  : 10u,
+              GetDatabaseContents().size());
 
     UpdateAccessMetaData(third_party_key, base::Time::Now() - base::Days(2));
     UpdateWriteMetaData(third_party_key, base::Time::Now() - base::Days(2), 0);
+    context()->FlushStorageKeyForTesting(third_party_key);
     ResetStorage(storage_path());
     context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
     WaitForDatabaseOpen();
     RunUntilIdle();
-    EXPECT_EQ(ShouldDeleteStaleLocalStorageOnStartup() ? 2 : 0,
-              histograms.GetTotalSum(
-                  "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ(0, histograms.GetTotalSum(
+                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ((ShouldDeleteStaleLocalStorageOnStartup() &&
+               ShouldDeleteOrphanLocalStorageOnStartup())
+                  ? 7u
+                  : 10u,
+              GetDatabaseContents().size());
   }
 
   // Third party nonce bucket does qualify, but only if it's old.
@@ -1445,28 +1481,43 @@ TEST_P(LocalStorageImplStaleDeletionTest, Orphan) {
                              area.BindNewPipeAndPassReceiver());
   area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
             std::nullopt, "source", base::DoNothing());
+  area.FlushForTesting();
   area.reset();
+  RunUntilIdle();
   {
     base::HistogramTester histograms;
     ResetStorage(storage_path());
     context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
     WaitForDatabaseOpen();
     RunUntilIdle();
-    EXPECT_EQ(ShouldDeleteStaleLocalStorageOnStartup() ? 1 : 0,
-              histograms.GetTotalSum(
-                  "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ(0, histograms.GetTotalSum(
+                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ((ShouldDeleteStaleLocalStorageOnStartup() &&
+               ShouldDeleteOrphanLocalStorageOnStartup())
+                  ? 10u
+                  : 13u,
+              GetDatabaseContents().size());
 
     UpdateAccessMetaData(third_party_nonce_key,
                          base::Time::Now() - base::Days(2));
     UpdateWriteMetaData(third_party_nonce_key,
                         base::Time::Now() - base::Days(2), 0);
+    context()->FlushStorageKeyForTesting(third_party_nonce_key);
     ResetStorage(storage_path());
     context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
     WaitForDatabaseOpen();
     RunUntilIdle();
-    EXPECT_EQ(ShouldDeleteStaleLocalStorageOnStartup() ? 3 : 0,
+    EXPECT_EQ((ShouldDeleteStaleLocalStorageOnStartup() &&
+               ShouldDeleteOrphanLocalStorageOnStartup())
+                  ? 1
+                  : 0,
               histograms.GetTotalSum(
                   "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ((ShouldDeleteStaleLocalStorageOnStartup() &&
+               ShouldDeleteOrphanLocalStorageOnStartup())
+                  ? 7u
+                  : 13u,
+              GetDatabaseContents().size());
   }
 }
 
