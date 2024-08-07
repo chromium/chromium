@@ -5,6 +5,7 @@
 #include "ash/shelf/home_button.h"
 
 #include <math.h>  // std::ceil
+
 #include <memory>
 
 #include "ash/app_list/app_list_controller_impl.h"
@@ -45,6 +46,8 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -260,24 +263,28 @@ class HomeButton::ButtonImageView : public views::View {
     const std::string campbell_config = base::GetFieldTrialParamValueByFeature(
         features::kCampbellGlyph, "icon");
 
-    if (campbell_config.empty() || !switches::IsCampbellSecretKeyMatched()) {
+    if (!campbell_config.empty() && switches::IsCampbellSecretKeyMatched()) {
+      if (campbell_config == "hero") {
+        image_model_ =
+            ui::ImageModel::FromVectorIcon(kCampbellHeroIcon, GetIconColorId());
+      } else if (campbell_config == "action") {
+        image_model_ = ui::ImageModel::FromVectorIcon(kCampbellActionIcon,
+                                                      GetIconColorId());
+      } else if (campbell_config == "text") {
+        image_model_ =
+            ui::ImageModel::FromVectorIcon(kCampbellTextIcon, GetIconColorId());
+      } else if (campbell_config == "9dot") {
+        image_model_ =
+            ui::ImageModel::FromVectorIcon(kCampbell9dotIcon, GetIconColorId());
+      }
+    } else if (Shell::Get()->keyboard_capability()->GetMetaKeyToDisplay() ==
+               ui::mojom::MetaKey::kLauncherRefresh) {
+      image_model_ =
+          ui::ImageModel::FromVectorIcon(kCampbellHeroIcon, GetIconColorId());
+    } else {
       image_model_ = std::nullopt;
       image_ = gfx::ImageSkia();
       return;
-    }
-
-    if (campbell_config == "hero") {
-      image_model_ =
-          ui::ImageModel::FromVectorIcon(kCampbellHeroIcon, GetIconColorId());
-    } else if (campbell_config == "action") {
-      image_model_ =
-          ui::ImageModel::FromVectorIcon(kCampbellActionIcon, GetIconColorId());
-    } else if (campbell_config == "text") {
-      image_model_ =
-          ui::ImageModel::FromVectorIcon(kCampbellTextIcon, GetIconColorId());
-    } else if (campbell_config == "9dot") {
-      image_model_ =
-          ui::ImageModel::FromVectorIcon(kCampbell9dotIcon, GetIconColorId());
     }
 
     if (image_model_ && GetColorProvider()) {
@@ -360,10 +367,12 @@ HomeButton::HomeButton(Shelf* shelf)
   }
   SetProperty(views::kElementIdentifierKey, kHomeButtonElementId);
 
+  ui::DeviceDataManager::GetInstance()->AddObserver(this);
   ShelfConfig::Get()->AddObserver(this);
 }
 
 HomeButton::~HomeButton() {
+  ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
   ShelfConfig::Get()->RemoveObserver(this);
 }
 
@@ -987,6 +996,16 @@ bool HomeButton::DoesIntersectRect(const views::View* target,
                       -ShelfConfig::Get()->control_button_edge_spacing(
                           shelf()->IsHorizontalAlignment())));
   return button_bounds.Intersects(rect);
+}
+
+void HomeButton::OnInputDeviceConfigurationChanged(uint8_t input_device_types) {
+  if (input_device_types & InputDeviceEventObserver::kKeyboard) {
+    button_image_view_->UpdateForShelfConfigChange();
+  }
+}
+
+void HomeButton::OnDeviceListsComplete() {
+  button_image_view_->UpdateForShelfConfigChange();
 }
 
 void HomeButton::OnShellDestroying() {

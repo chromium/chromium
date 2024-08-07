@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/events/devices/input_device_event_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -55,7 +56,8 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
                               public ShellObserver,
                               public ShelfConfig::Observer,
                               public AppListModelProvider::Observer,
-                              public QuickAppAccessModel::Observer {
+                              public QuickAppAccessModel::Observer,
+                              public ui::InputDeviceEventObserver {
   METADATA_HEADER(HomeButton, ShelfControlButton)
 
  public:
@@ -113,6 +115,10 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
 
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;
+
+  // ui::InputDeviceEventObserver:
+  void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
+  void OnDeviceListsComplete() override;
 
   // Called when the availability of a long-press gesture may have changed, e.g.
   // when Assistant becomes enabled.
