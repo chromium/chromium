@@ -138,6 +138,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
       base::OnceCallback<void(bool, const base::FilePath&)> callback,
       const base::FilePath& path) override;
   base::FilePath RedirectFilePath(const base::FilePath& path) override;
+  std::unique_ptr<AshWebView> CreateSearchResultsView() const override;
 
  private:
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;

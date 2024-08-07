@@ -209,4 +209,9 @@ base::FilePath TestCaptureModeDelegate::RedirectFilePath(
   return path;
 }
 
+std::unique_ptr<AshWebView> TestCaptureModeDelegate::CreateSearchResultsView()
+    const {
+  return nullptr;
+}
+
 }  // namespace ash

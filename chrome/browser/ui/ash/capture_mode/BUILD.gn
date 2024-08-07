@@ -10,6 +10,8 @@ static_library("capture_mode") {
   sources = [
     "chrome_capture_mode_delegate.cc",
     "chrome_capture_mode_delegate.h",
+    "search_results_view.cc",
+    "search_results_view.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -57,6 +59,7 @@ source_set("browser_tests") {
     "capture_mode_browsertest.cc",
     "chrome_capture_mode_delegate_browsertest.cc",
     "recording_service_browsertest.cc",
+    "sunfish_browsertest.cc",
   ]
 
   deps = [

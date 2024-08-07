@@ -87,6 +87,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       base::OnceCallback<void(bool, const base::FilePath&)> callback,
       const base::FilePath& path) override;
   base::FilePath RedirectFilePath(const base::FilePath& path) override;
+  std::unique_ptr<ash::AshWebView> CreateSearchResultsView() const override;
 
  private:
   // Called back by the Drive integration service when the quota usage is
