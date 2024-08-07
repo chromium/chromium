@@ -472,7 +472,6 @@ void Combobox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::Button::GetAccessibleNodeData(node_data);
 
   node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
-  node_data->SetValue(title_->GetText());
 }
 
 void Combobox::AddedToWidget() {
@@ -648,7 +647,7 @@ void Combobox::OnPerformAction() {
     GetViewAccessibility().ClearSetSize();
   }
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+  GetViewAccessibility().SetValue(title_->GetText());
 
   if (selected_index_.has_value() && callback_) {
     callback_.Run();

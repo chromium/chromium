@@ -797,4 +797,28 @@ TEST_F(GlanceablesTasksViewTest, ComboboxAccessibleActiveDescendantId) {
       node_data.HasIntAttribute(ax::mojom::IntAttribute::kActivedescendantId));
 }
 
+TEST_F(GlanceablesTasksViewTest, ComboboxAccessibleValue) {
+  auto* combobox = GetComboBoxView();
+
+  // default selection is first item in combobox
+  ui::AXNodeData node_data;
+  combobox->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ("Task List 1 Title",
+            node_data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
+
+  // Select second item in combobox menu items.
+  MenuSelectionAt(1);
+  node_data = ui::AXNodeData();
+  combobox->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ("Task List 2 Title",
+            node_data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
+
+  // Select third item in combobox menu items.
+  MenuSelectionAt(2);
+  node_data = ui::AXNodeData();
+  combobox->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ("Task List 3 Title (empty)",
+            node_data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
+}
+
 }  // namespace ash
