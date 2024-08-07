@@ -7,6 +7,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/bind.h"
@@ -25,6 +27,18 @@ const char kMockPackageName[] = "org.chromium.components.ip_protection_auth";
 const char kMockClassNameForDefault[] =
     "org.chromium.components.ip_protection_auth.mock_service."
     "IpProtectionAuthServiceMock";
+const char kMockClassNameForNonexistant[] =
+    "org.chromium.components.ip_protection_auth.mock_service."
+    "IntentionallyNonexistantClass";
+const char kMockClassNameForNullBinding[] =
+    "org.chromium.components.ip_protection_auth.mock_service."
+    "NullBindingService";
+const char kMockClassNameForDisabled[] =
+    "org.chromium.components.ip_protection_auth.mock_service."
+    "NullBindingService$DisabledService";
+const char kMockClassNameForRestricted[] =
+    "org.chromium.components.ip_protection_auth.mock_service."
+    "NullBindingService$RestrictedService";
 const char kMockClassNameForTransientError[] =
     "org.chromium.components.ip_protection_auth.mock_service."
     "ConstantResponseService$TransientError";
@@ -175,6 +189,7 @@ static void JNI_IpProtectionAuthTestNatives_Initialize(JNIEnv* env) {
   TestTimeouts::Initialize();
 }
 
+// Tests a normal case where the service is available.
 static void JNI_IpProtectionAuthTestNatives_CreateConnectedInstanceForTesting(
     JNIEnv* env) {
   base::test::SingleThreadTaskEnvironment task_environment;
@@ -182,10 +197,79 @@ static void JNI_IpProtectionAuthTestNatives_CreateConnectedInstanceForTesting(
   CreateAndExpectClientBlocking(kMockClassNameForDefault);
 }
 
+// Tests a normal case where the service isn't installed.
+static void JNI_IpProtectionAuthTestNatives_TestNonexistantService(
+    JNIEnv* env) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::expected<
+      std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>,
+      std::string>
+      client = CreateClientBlocking(kMockClassNameForNonexistant);
+
+  const std::string expected_error =
+      "Unable to locate the IP Protection authentication provider package "
+      "(android.net.http.IpProtectionAuthService action). This is expected if "
+      "the host system is not set up to provide IP Protection services.";
+
+  CHECK(!client.has_value());
+  CHECK_EQ(client.error(), expected_error);
+}
+
+// Tests a normal case where the service is installed but rejects bindings, for
+// example, due to a feature flag.
+static void JNI_IpProtectionAuthTestNatives_TestNullBindingService(
+    JNIEnv* env) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::expected<
+      std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>,
+      std::string>
+      client = CreateClientBlocking(kMockClassNameForNullBinding);
+
+  const std::string expected_error = "Service returned null from onBind()";
+
+  CHECK(!client.has_value());
+  CHECK_EQ(client.error(), expected_error);
+}
+
+// Tests an abnormal case where bindService would return false.
+static void JNI_IpProtectionAuthTestNatives_TestDisabledService(JNIEnv* env) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::expected<
+      std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>,
+      std::string>
+      client = CreateClientBlocking(kMockClassNameForDisabled);
+
+  const std::string expected_error = "bindService() failed: returned false";
+
+  CHECK(!client.has_value());
+  CHECK_EQ(client.error(), expected_error);
+}
+
+// Tests an abnormal case where bindService fails with a SecurityException. Note
+// that the only permission which would apply in production is the INTERNET
+// permission. IpProtectionAuthClient code shouldn't be reached if the app
+// doesn't have INTERNET permission. This test case instead tests for resiliance
+// against an unusual service implementation with unexpected restrictions.
+static void JNI_IpProtectionAuthTestNatives_TestRestrictedService(JNIEnv* env) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::expected<
+      std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>,
+      std::string>
+      client = CreateClientBlocking(kMockClassNameForRestricted);
+
+  const std::string expected_error_substr =
+      "Failed to bind service: java.lang.SecurityException: ";
+
+  CHECK(!client.has_value());
+  CHECK(base::Contains(client.error(), expected_error_substr));
+}
+
 static void JNI_IpProtectionAuthTestNatives_TestGetInitialData(JNIEnv* env) {
   base::test::SingleThreadTaskEnvironment task_environment;
   std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
       client = CreateAndExpectClientBlocking(kMockClassNameForDefault);
+  // TODO(b/344853279): This request is missing required fields. It should be
+  // updated.
   privacy::ppn::GetInitialDataRequest get_initial_data_request;
   get_initial_data_request.set_service_type("webviewipblinding");
 
@@ -204,6 +288,8 @@ static void JNI_IpProtectionAuthTestNatives_TestAuthAndSign(JNIEnv* env) {
   base::test::SingleThreadTaskEnvironment task_environment;
   std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
       client = CreateAndExpectClientBlocking(kMockClassNameForDefault);
+  // TODO(b/344853279): This request has deprecated OAuth field and is missing
+  // required fields. It should be updated.
   privacy::ppn::AuthAndSignRequest auth_and_sign_request;
   auth_and_sign_request.set_oauth_token("test");
 

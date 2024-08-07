@@ -17,6 +17,14 @@ public final class IpProtectionAuthTestNatives {
 
         void createConnectedInstanceForTesting();
 
+        void testNonexistantService();
+
+        void testNullBindingService();
+
+        void testDisabledService();
+
+        void testRestrictedService();
+
         void testGetInitialData();
 
         void testAuthAndSign();
@@ -46,6 +54,22 @@ public final class IpProtectionAuthTestNatives {
 
     public static void createConnectedInstanceForTesting() {
         IpProtectionAuthTestNativesJni.get().createConnectedInstanceForTesting();
+    }
+
+    public static void testNonexistantService() {
+        IpProtectionAuthTestNativesJni.get().testNonexistantService();
+    }
+
+    public static void testNullBindingService() {
+        IpProtectionAuthTestNativesJni.get().testNullBindingService();
+    }
+
+    public static void testDisabledService() {
+        IpProtectionAuthTestNativesJni.get().testDisabledService();
+    }
+
+    public static void testRestrictedService() {
+        IpProtectionAuthTestNativesJni.get().testRestrictedService();
     }
 
     public static void testGetInitialData() {
