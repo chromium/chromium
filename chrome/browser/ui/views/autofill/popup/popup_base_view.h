@@ -109,9 +109,6 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
 
   class Widget;
 
-  // views::Views implementation.
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   // views::WidgetFocusChangeListener implementation.
   void OnNativeFocusChanged(gfx::NativeView focused_now) override;
 

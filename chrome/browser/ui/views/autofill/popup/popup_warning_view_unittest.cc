@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
 namespace autofill {
@@ -45,12 +46,12 @@ class PopupWarningViewTest : public ChromeViewsTestBase {
   raw_ptr<PopupWarningView> view_ = nullptr;
 };
 
-TEST_F(PopupWarningViewTest, AccessibleNodeData) {
+TEST_F(PopupWarningViewTest, AccessibleProperties) {
   constexpr char16_t kText[] = u"Sample text";
   ShowView(Suggestion(kText));
-
   ui::AXNodeData node_data;
-  view().GetAccessibleNodeData(&node_data);
+
+  view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(ax::mojom::Role::kAlert, node_data.role);
   EXPECT_EQ(kText,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));

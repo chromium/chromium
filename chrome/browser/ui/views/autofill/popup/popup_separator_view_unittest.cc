@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
 namespace autofill {
@@ -46,9 +47,9 @@ TEST_F(PopupSeparatorViewTest, FocusBehavior) {
   EXPECT_EQ(view().GetFocusBehavior(), views::View::FocusBehavior::NEVER);
 }
 
-TEST_F(PopupSeparatorViewTest, AccessibleNodeData) {
+TEST_F(PopupSeparatorViewTest, AccessibleProperties) {
   ui::AXNodeData node_data;
-  view().GetAccessibleNodeData(&node_data);
+  view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(ax::mojom::Role::kSplitter, node_data.role);
 }
 

@@ -12,6 +12,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_class_properties.h"
@@ -33,13 +34,11 @@ PopupTitleView::PopupTitleView(std::u16string_view title) {
                    .SetTextStyle(views::style::STYLE_CAPTION_BOLD)
                    .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                    .Build());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kLabelText);
 }
 
 PopupTitleView::~PopupTitleView() = default;
-
-void PopupTitleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kLabelText;
-}
 
 BEGIN_METADATA(PopupTitleView)
 END_METADATA

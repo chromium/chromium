@@ -402,6 +402,16 @@ TEST_F(PopupViewViewsTest, ExpandedCollapsedAccessiblityStateTest) {
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
 }
 
+TEST_F(PopupViewViewsTest, AccessibleProperties) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry});
+  ui::AXNodeData node_data;
+
+  view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(ax::mojom::Role::kListBox, node_data.role);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA),
+            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+}
+
 TEST_F(PopupViewViewsTest, CanShowDropdownInBounds) {
   CreateAndShowView({SuggestionType::kAutocompleteEntry,
                      SuggestionType::kSeparator,

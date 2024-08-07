@@ -442,13 +442,14 @@ TEST_F(PopupRowViewTest, ContentViewA11yAttributes) {
   EXPECT_FALSE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 }
 
-TEST_F(PopupRowViewTest, SetSizePosInSetAccessibleProperties) {
+TEST_F(PopupRowViewTest, AccessibleProperties) {
   ShowView(/*line_number=*/0,
            {Suggestion("test_value", "test_label", Suggestion::Icon::kNoIcon,
                        SuggestionType::kAddressEntry)});
 
   ui::AXNodeData node_data;
   row_view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kListBoxOption);
   EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet), 1);
   EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize), 1);
 }

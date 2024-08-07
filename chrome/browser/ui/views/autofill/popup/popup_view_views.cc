@@ -199,6 +199,10 @@ PopupViewViews::PopupViewViews(
       controller_(controller),
       parent_(parent) {
   InitViews();
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA));
 }
 
 PopupViewViews::PopupViewViews(
@@ -213,18 +217,16 @@ PopupViewViews::PopupViewViews(
       controller_(controller),
       search_bar_config_(std::move(search_bar_config)) {
   InitViews();
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
 }
 
 PopupViewViews::~PopupViewViews() = default;
 
 void PopupViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kListBox;
-
   if (!controller_) {
     node_data->AddState(ax::mojom::State::kInvisible);
   }
-  node_data->SetNameChecked(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA));
 }
 
 void PopupViewViews::OnMouseEntered(const ui::MouseEvent& event) {
