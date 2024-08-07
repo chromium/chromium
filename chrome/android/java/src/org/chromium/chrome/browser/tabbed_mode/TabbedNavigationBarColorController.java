@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -87,8 +89,11 @@ class TabbedNavigationBarColorController
      */
     private @ColorInt int mNavigationBarColor;
 
-    /** The color that was set for the {@link Window}'s navigation bar. */
-    private @ColorInt int mWindowNavigationBarColor;
+    /**
+     * The target color for the {@link Window}'s navigation bar. This will have a value set during
+     * animations, and will be null otherwise.
+     */
+    private @Nullable @ColorInt Integer mTargetWindowNavigationBarColor;
 
     private boolean mForceDarkNavigationBarColor;
     private boolean mIsInFullscreen;
@@ -253,9 +258,6 @@ class TabbedNavigationBarColorController
         // TODO(crbug.com/40560014): Observe tab loads to restrict black bottom nav to
         // incognito NTP.
 
-        // Ensure that the recorded window navbar color matches the existing color, otherwise there
-        // may be a mismatch and future updates could be filtered out incorrectly.
-        mWindowNavigationBarColor = mWindow.getNavigationBarColor();
         updateNavigationBarColor();
     }
 
@@ -357,7 +359,10 @@ class TabbedNavigationBarColorController
         final @ColorInt int newNavigationBarColor = getNavigationBarColor(forceDarkNavigation);
         final @ColorInt int dividerColor =
                 getNavigationBarDividerColor(forceDarkNavigation, forceShowDivider);
-        final @ColorInt int currentWindowNavigationBarColor = mWindowNavigationBarColor;
+        // Check the window for the current navigation bar color - though ideally all window
+        // navigation bar color changes would be done through this class, it is possible for other
+        // classes to have changed the color (directly or through applying certain themes/styling.
+        final @ColorInt int currentWindowNavigationBarColor = mWindow.getNavigationBarColor();
         final @ColorInt int newWindowNavigationBarColor =
                 toEdge ? Color.TRANSPARENT : newNavigationBarColor;
         final @ColorInt int windowDividerColor = toEdge ? Color.TRANSPARENT : dividerColor;
@@ -365,12 +370,15 @@ class TabbedNavigationBarColorController
         boolean updateDivider = mForceShowDivider != forceShowDivider;
         boolean updateNavBarColor = mNavigationBarColor != newNavigationBarColor;
         boolean updateDividerColor = updateNavBarColor || updateDivider;
+        boolean alreadyAnimatingToWindowNavBarColor =
+                mTargetWindowNavigationBarColor != null
+                        && mTargetWindowNavigationBarColor.equals(newWindowNavigationBarColor);
         boolean updateWindowNavBarColor =
-                currentWindowNavigationBarColor != newWindowNavigationBarColor;
+                currentWindowNavigationBarColor != newWindowNavigationBarColor
+                        && !alreadyAnimatingToWindowNavBarColor;
 
         mNavigationBarColor = newNavigationBarColor;
         mForceShowDivider = forceShowDivider;
-        mWindowNavigationBarColor = newWindowNavigationBarColor;
 
         // 3. Notify observer about color updates.
         if (updateNavBarColor) {
@@ -391,36 +399,58 @@ class TabbedNavigationBarColorController
                 ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
                         && !isNavBarColorAnimationDisabled()
                         && !disableAnimation;
+
+        endNavigationBarColorAnimationIfRunning();
         if (toEdge) {
             // When drawing to edge, the new window nav bar color is always transparent.
             // This is called only once when |currentWindowNavigationBarColor| is another color.
             mWindow.setNavigationBarColor(Color.TRANSPARENT);
         } else if (animateColorUpdate) { // if (!toEdge)
-            animateNavigationBarColor(currentWindowNavigationBarColor, mWindowNavigationBarColor);
+            animateNavigationBarColor(currentWindowNavigationBarColor, newWindowNavigationBarColor);
         } else { // if (!toEdge && !animateColorUpdate)
-            mWindow.setNavigationBarColor(mWindowNavigationBarColor);
+            mWindow.setNavigationBarColor(newWindowNavigationBarColor);
             setWindowNavigationBarDividerColor(windowDividerColor);
             UiUtils.setNavigationBarIconColor(
                     mRootView, !mForceDarkNavigationBarColor && mLightNavigationBar);
         }
     }
 
-    private void animateNavigationBarColor(
-            @ColorInt int currentNavigationBarColor, @ColorInt int newNavigationBarColor) {
+    private void endNavigationBarColorAnimationIfRunning() {
         if (mNavbarColorTransitionAnimation != null
                 && mNavbarColorTransitionAnimation.isRunning()) {
             mNavbarColorTransitionAnimation.end();
         }
+    }
+
+    private void animateNavigationBarColor(
+            @ColorInt int currentNavigationBarColor, @ColorInt int newNavigationBarColor) {
         mNavbarColorTransitionAnimation =
                 ValueAnimator.ofFloat(0, 1).setDuration(NAVBAR_COLOR_TRANSITION_DURATION_MS);
         mNavbarColorTransitionAnimation.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+        mTargetWindowNavigationBarColor = newNavigationBarColor;
 
+        mNavbarColorTransitionAnimation.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        mTargetWindowNavigationBarColor = null;
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mTargetWindowNavigationBarColor = null;
+                    }
+                });
         mNavbarColorTransitionAnimation.addUpdateListener(
                 (ValueAnimator animation) -> {
+                    assert mTargetWindowNavigationBarColor != null;
+
                     float fraction = animation.getAnimatedFraction();
                     int blendedColor =
                             ColorUtils.blendColorsMultiply(
-                                    currentNavigationBarColor, newNavigationBarColor, fraction);
+                                    currentNavigationBarColor,
+                                    mTargetWindowNavigationBarColor,
+                                    fraction);
                     mWindow.setNavigationBarColor(blendedColor);
 
                     if (mForceShowDivider) {
@@ -549,10 +579,6 @@ class TabbedNavigationBarColorController
 
     int getNavigationBarColorForTesting() {
         return mNavigationBarColor;
-    }
-
-    int getWindowNavigationBarColorForTesting() {
-        return mWindowNavigationBarColor;
     }
 
     private static boolean isNavBarColorAnimationDisabled() {

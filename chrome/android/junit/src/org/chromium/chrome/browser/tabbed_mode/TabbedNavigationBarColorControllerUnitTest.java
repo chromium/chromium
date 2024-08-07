@@ -83,6 +83,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
     @Mock private NavigationBarColorProvider.Observer mObserver;
     @Mock private ObservableSupplierImpl<TabModel> mTabModelSupplier;
 
+    @Captor private ArgumentCaptor<Integer> mWindowColorCaptor;
     @Captor private ArgumentCaptor<Integer> mWindowDividerColorCaptor;
     @Captor private ArgumentCaptor<Integer> mNavigationBarColorChangedCaptor;
     @Captor private ArgumentCaptor<Integer> mNavigationBarDividerColorChangedCaptor;
@@ -120,6 +121,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         // Setup the capture after TabbedNavigationBarColorController is initialized so it does
         // not capture value during the initializations.
         runColorUpdateAnimation();
+        doNothing().when(mWindow).setNavigationBarColor(mWindowColorCaptor.capture());
         doNothing().when(mWindow).setNavigationBarDividerColor(mWindowDividerColorCaptor.capture());
         doNothing()
                 .when(mObserver)
@@ -164,6 +166,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         when(mEdgeToEdgeController.isDrawingToEdge()).thenReturn(true);
+        when(mWindow.getNavigationBarColor()).thenReturn(Color.RED);
         mNavColorController.updateActiveTabForTesting();
         runColorUpdateAnimation();
 
@@ -269,6 +272,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         when(mEdgeToEdgeController.getBottomInset()).thenReturn(100);
         when(mEdgeToEdgeController.isDrawingToEdge()).thenReturn(true);
+        when(mWindow.getNavigationBarColor()).thenReturn(Color.RED);
 
         Mockito.clearInvocations(mWindow);
         mNavColorController.updateActiveTabForTesting();
@@ -303,7 +307,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
         assertEquals(
                 "The window (OS) nav bar color is different.",
                 color,
-                mNavColorController.getWindowNavigationBarColorForTesting());
+                (int) mWindowColorCaptor.getValue());
     }
 
     private void assertNavBarDividerColor(int color) {
