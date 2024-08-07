@@ -475,6 +475,7 @@ SellerWorklet::SellerWorklet(
                  *trusted_scoring_signals_url,
                  /*experiment_group_id=*/experiment_group_id,
                  /*trusted_bidding_signals_slot_size_param=*/std::string(),
+                 /*public_key=*/nullptr,
                  v8_helpers_[get_next_thread_index_callback_.Run()].get())
            : nullptr);
   trusted_signals_relation_ = ClassifyTrustedSignals(

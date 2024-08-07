@@ -266,6 +266,7 @@ TrustedSignalsRequestManager::TrustedSignalsRequestManager(
     const GURL& trusted_signals_url,
     std::optional<uint16_t> experiment_group_id,
     const std::string& trusted_bidding_signals_slot_size_param,
+    mojom::TrustedSignalsPublicKeyPtr public_key,
     AuctionV8Helper* v8_helper)
     : type_(type),
       url_loader_factory_(url_loader_factory),
@@ -275,6 +276,7 @@ TrustedSignalsRequestManager::TrustedSignalsRequestManager(
       experiment_group_id_(experiment_group_id),
       trusted_bidding_signals_slot_size_param_(
           trusted_bidding_signals_slot_size_param),
+      public_key_(std::move(public_key)),
       v8_helper_(v8_helper),
       auction_network_events_handler_(
           std::move(auction_network_events_handler)) {
