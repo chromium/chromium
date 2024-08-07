@@ -42,17 +42,21 @@ source_set("test_support") {
   testonly = true
 
   sources = [
-    "fake_tachyon_client.cc",
-    "fake_tachyon_client.h",
-    "fake_token_fetcher.cc",
-    "fake_token_fetcher.h",
-    "fake_token_manager.cc",
-    "fake_token_manager.h",
+    "fakes/fake_tachyon_authed_client.cc",
+    "fakes/fake_tachyon_authed_client.h",
+    "fakes/fake_tachyon_client.cc",
+    "fakes/fake_tachyon_client.h",
+    "fakes/fake_token_fetcher.cc",
+    "fakes/fake_token_fetcher.h",
+    "fakes/fake_token_manager.cc",
+    "fakes/fake_token_manager.h",
   ]
 
   deps = [
     ":babelorca",
     "//base",
+    "//net/traffic_annotation",
+    "//third_party/protobuf:protobuf_lite",
   ]
 }
 

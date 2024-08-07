@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/boca/babelorca/fake_token_fetcher.h"
+#include "chromeos/ash/components/boca/babelorca/fakes/fake_token_fetcher.h"
 
 #include <optional>
 #include <utility>

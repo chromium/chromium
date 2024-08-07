@@ -11,7 +11,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/boca/babelorca/fake_token_fetcher.h"
+#include "chromeos/ash/components/boca/babelorca/fakes/fake_token_fetcher.h"
 #include "chromeos/ash/components/boca/babelorca/token_data_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

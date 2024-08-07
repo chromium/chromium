@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_FAKE_TACHYON_CLIENT_H_
-#define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_FAKE_TACHYON_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_FAKES_FAKE_TACHYON_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_FAKES_FAKE_TACHYON_CLIENT_H_
 
 #include <memory>
 #include <string>
@@ -43,4 +43,4 @@ class FakeTachyonClient : public TachyonClient {
 
 }  // namespace babelorca
 
-#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_FAKE_TACHYON_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_FAKES_FAKE_TACHYON_CLIENT_H_
