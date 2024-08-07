@@ -910,6 +910,11 @@
     public void handleIntent(android.content.Intent);
 }
 
+# File: obj/third_party/android_deps/google_play_services_identity_credentials_java/proguard.txt
+# Proguard cannot process META-INF/versions/9.
+# See https://discuss.gradle.org/t/meta-inf-version-duplicate-error-when-using-proguard/31380
+-dontwarn module-info
+
 # File: obj/third_party/android_deps/google_play_services_vision_common_java/proguard.txt
 # We keep all fields for every generated proto file as the runtime uses
 # reflection over them that ProGuard cannot detect. Without this keep
