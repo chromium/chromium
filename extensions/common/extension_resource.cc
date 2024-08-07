@@ -6,20 +6,9 @@
 
 #include "base/check.h"
 #include "base/files/file_util.h"
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "base/feature_list.h"
-#endif
+#include "extensions/common/extension_features.h"
 
 namespace extensions {
-
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/357636604): Remove this feature flag in M132.
-BASE_FEATURE(kMacRejectFilePathsEndingWithSeparator,
-             "MacRejectFilePathsEndingWithSeparator",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 ExtensionResource::ExtensionResource() : follow_symlinks_anywhere_(false) {}
 
@@ -112,7 +101,8 @@ base::FilePath ExtensionResource::GetFilePath(
   // Reject file paths ending with a separator. Unlike other platforms, macOS
   // strips the trailing separator when `realpath` is used, which causes
   // inconsistencies. See https://crbug.com/356878412.
-  if (base::FeatureList::IsEnabled(kMacRejectFilePathsEndingWithSeparator) &&
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kMacRejectFilePathsEndingWithSeparator) &&
       relative_path.EndsWithSeparator() && !base::DirectoryExists(full_path)) {
     return base::FilePath();
   }
