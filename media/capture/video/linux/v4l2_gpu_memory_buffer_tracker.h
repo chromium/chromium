@@ -11,9 +11,13 @@
 #include "media/capture/video/video_capture_buffer_tracker.h"
 #include "media/capture/video/video_capture_gpu_channel_host.h"
 
+namespace gpu {
+class ClientSharedImage;
+}
+
 namespace media {
 
-// Tracker specifics for Linux GpuMemoryBuffer.
+// Tracker specifics for Linux Mappable shared image.
 // This class is owned by `VideoCaptureBufferPoolImpl`, which instantiates
 // `this` using its `CreateTracker()` method. It is then accessed on both the
 // main thread and the `VideoCaptureDeviceLinux::task_runner_`'s thread pool.
@@ -33,6 +37,9 @@ namespace media {
 // from the thread pool to the tracker's `IsReusableForFormat()` method will
 // then return false. The `VideoCaptureBufferPoolImpl` will then no longer
 // use this tracker and will release it when the buffer pool is full.
+// TODO(crbug.com/40263579): Rename this class, file name, comments as well as
+// related unit tests in follow up CL as it uses MappableSI now instead of
+// GpuMemoryBuffers.
 class CAPTURE_EXPORT V4L2GpuMemoryBufferTracker final
     : public VideoCaptureBufferTracker,
       public VideoCaptureGpuContextLostObserver {
@@ -65,7 +72,7 @@ class CAPTURE_EXPORT V4L2GpuMemoryBufferTracker final
 
  private:
   std::atomic_bool is_valid_{false};
-  std::unique_ptr<gfx::GpuMemoryBuffer> buffer_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
   base::WeakPtrFactory<VideoCaptureGpuContextLostObserver> weak_ptr_factory_{
       this};
 };
