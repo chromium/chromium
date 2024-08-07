@@ -12,6 +12,7 @@
 #import "components/browsing_data/core/counters/browsing_data_counter.h"
 #import "ios/chrome/browser/browsing_data/model/tabs_closure_util.h"
 
+class Browser;
 class BrowserList;
 class SessionRestorationService;
 
@@ -59,7 +60,8 @@ class TabsCounter : public browsing_data::BrowsingDataCounter {
   // navigation timestamp. It then increments `total_tab_count_` and
   // `total_window_count_` and reports the result if all callbacks have been
   // received, i.e. if `pending_tasks_count_ == 0`.
-  void OnLoadDataFromStorageResult(tabs_closure_util::WebStateIDToTime result);
+  void OnLoadDataFromStorageResult(base::WeakPtr<Browser> weak_browser,
+                                   tabs_closure_util::WebStateIDToTime result);
 
   // Reports the results to the caller of `TabsCounters`.
   void ReportTabsResult();

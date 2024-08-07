@@ -165,9 +165,8 @@
   id<TabsAnimationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabsAnimationCommands);
 
-  std::set<web::WebStateID> tabsToClose =
-      tabs_closure_util::GetTabsToCloseFromCache(
-          self.browser->GetWebStateList(), beginTime, endTime, cachedTabsInfo);
+  std::set<web::WebStateID> tabsToClose = tabs_closure_util::GetTabsToClose(
+      self.browser->GetWebStateList(), beginTime, endTime, cachedTabsInfo);
   [handler animateTabsClosureForTabs:tabsToClose];
 }
 

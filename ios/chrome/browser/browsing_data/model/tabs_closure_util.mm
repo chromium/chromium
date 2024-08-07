@@ -70,7 +70,7 @@ base::Time GetLastCommittedTimestampFromStorage(
   return web::TimeFromProto(item_storage.timestamp());
 }
 
-WebStateIDToTime GetTabsToClose(
+WebStateIDToTime GetTabsInfoForCache(
     const WebStateIDToTime& tabs_to_last_navigation_time,
     base::Time begin_time,
     base::Time end_time) {
@@ -84,7 +84,7 @@ WebStateIDToTime GetTabsToClose(
   return tabs_to_close;
 }
 
-std::set<web::WebStateID> GetTabsToCloseFromCache(
+std::set<web::WebStateID> GetTabsToClose(
     WebStateList* web_state_list,
     base::Time begin_time,
     base::Time end_time,
@@ -92,7 +92,9 @@ std::set<web::WebStateID> GetTabsToCloseFromCache(
   CHECK(web_state_list);
 
   std::set<web::WebStateID> webstates_to_close;
-  for (int index = 0; index < web_state_list->count(); ++index) {
+  // Exclude web states that are pinned.
+  for (int index = web_state_list->pinned_tabs_count();
+       index < web_state_list->count(); ++index) {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
     base::Time last_navigation_time =
         GetWebStateLastNavigationTime(web_state, cached_tabs_to_close);
@@ -101,7 +103,6 @@ std::set<web::WebStateID> GetTabsToCloseFromCache(
       webstates_to_close.insert(web_state->GetUniqueIdentifier());
     }
   }
-
   return webstates_to_close;
 }
 
@@ -111,7 +112,7 @@ void CloseTabs(WebStateList* web_state_list,
                const WebStateIDToTime& cached_tabs_to_close) {
   CHECK(web_state_list);
 
-  std::set<web::WebStateID> web_state_ids_to_close = GetTabsToCloseFromCache(
+  std::set<web::WebStateID> web_state_ids_to_close = GetTabsToClose(
       web_state_list, begin_time, end_time, cached_tabs_to_close);
 
   if (web_state_ids_to_close.empty()) {
@@ -119,7 +120,9 @@ void CloseTabs(WebStateList* web_state_list,
   }
 
   std::vector<int> indices_to_close;
-  for (int index = 0; index < web_state_list->count(); ++index) {
+  // Exclude web states that are pinned.
+  for (int index = web_state_list->pinned_tabs_count();
+       index < web_state_list->count(); ++index) {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
     if (web_state_ids_to_close.contains(web_state->GetUniqueIdentifier())) {
       indices_to_close.push_back(index);

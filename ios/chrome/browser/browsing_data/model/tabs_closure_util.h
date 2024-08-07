@@ -22,24 +22,25 @@ base::Time GetLastCommittedTimestampFromStorage(
     web::proto::WebStateStorage storage);
 
 // Returns the tabs in `tabs_to_last_navigation_time` and their timestamp that
-// have a last navigation time between `begin_time` and `end_time`.
-WebStateIDToTime GetTabsToClose(
+// have a last navigation time between `begin_time` and `end_time`. Also
+// includes the information of pinned WebStates.
+WebStateIDToTime GetTabsInfoForCache(
     const WebStateIDToTime& tabs_to_last_navigation_time,
     base::Time begin_time,
     base::Time end_time);
 
 // Returns the WebStates in `web_state_list` that are between `begin_time` and
-// `end_time`. For unrelaized webstates, uses the information in
-// `cached_tabs_to_close`.
-std::set<web::WebStateID> GetTabsToCloseFromCache(
+// `end_time`. For unrealized webstates, uses the information in
+// `cached_tabs_to_close`. Excludes pinned WebStates.
+std::set<web::WebStateID> GetTabsToClose(
     WebStateList* web_state_list,
     base::Time begin_time,
     base::Time end_time,
     const WebStateIDToTime& cached_tabs_to_close);
 
 // Closes all the WebStates in `web_state_list` that are between `begin_time`
-// and `end_time`. For unrelaized webstates, uses the information in
-// `cached_tabs_to_close`.
+// and `end_time`. For unrealized webstates, uses the information in
+// `cached_tabs_to_close`. Excludes pinned WebStates.
 void CloseTabs(WebStateList* web_state_list,
                base::Time begin_time,
                base::Time end_time,
