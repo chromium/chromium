@@ -1046,8 +1046,9 @@ TEST_F(GaiaCookieManagerServiceTest, GaiaCookieLastListAccountsDataSaved) {
     // as the pref should be cleared.
     expected_accounts.clear();
     expected_signed_out_accounts.clear();
-    GoogleServiceAuthError error(
-        GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE);
+    GoogleServiceAuthError error =
+        GoogleServiceAuthError::FromUnexpectedServiceResponse(
+            "Error parsing ListAccounts response");
     EXPECT_CALL(observer,
                 OnGaiaAccountsInCookieUpdated(
                     ListedAccountEquals(expected_accounts),
