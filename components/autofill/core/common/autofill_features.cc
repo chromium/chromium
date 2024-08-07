@@ -676,7 +676,7 @@ BASE_FEATURE(kAutofillForUnclassifiedFieldsAvailable,
 // TODO(crbug.com/40270486): Clean up when launched.
 BASE_FEATURE(kAutofillTestFormWithTestAddresses,
              "AutofillTestFormWithTestAddresses",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows silent profile updates even when the profile import requirements are
 // not met.
