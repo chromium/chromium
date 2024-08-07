@@ -16727,7 +16727,7 @@
             ]
         }
     ],
-    "PerformanceInterventionUI": [
+    "PerformanceInterventionUILaunch": [
         {
             "platforms": [
                 "chromeos",
