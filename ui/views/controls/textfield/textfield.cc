@@ -1604,6 +1604,10 @@ void Textfield::ExecuteCommand(int command_id, int event_flags) {
 ////////////////////////////////////////////////////////////////////////////////
 // Textfield, ui::TextInputClient overrides:
 
+base::WeakPtr<ui::TextInputClient> Textfield::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void Textfield::SetCompositionText(const ui::CompositionText& composition) {
   if (GetTextInputType() == ui::TEXT_INPUT_TYPE_NONE)
     return;

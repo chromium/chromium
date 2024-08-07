@@ -97,7 +97,6 @@ class WorkerNodeImpl;
 // these classes as friends so they have access to the constructor.
 namespace ui {
 class MenuModel;
-class TextInputClient;
 }  // namespace ui
 
 namespace base {
@@ -506,7 +505,6 @@ class SupportsWeakPtr : public internal::SupportsWeakPtrBase {
   friend struct Producer;
   friend struct weak_ptr_unittest::Target;
   friend class ui::MenuModel;
-  friend class ui::TextInputClient;
 
   // The constructor is private so only the declared friends can construct
   // instances.

@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/ime/text_input_client.h"
@@ -61,6 +62,7 @@ class FakeTextInputClient : public TextInputClient {
   void Blur();
 
   // TextInputClient:
+  base::WeakPtr<ui::TextInputClient> AsWeakPtr() override;
   void SetCompositionText(const CompositionText& composition) override;
   size_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
@@ -140,6 +142,8 @@ class FakeTextInputClient : public TextInputClient {
   std::optional<GURL> last_inserted_image_url_;
   gfx::Rect caret_bounds_;
   bool should_do_learning_ = false;
+
+  base::WeakPtrFactory<FakeTextInputClient> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

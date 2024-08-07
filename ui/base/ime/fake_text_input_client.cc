@@ -60,6 +60,10 @@ void FakeTextInputClient::Blur() {
   }
 }
 
+base::WeakPtr<ui::TextInputClient> FakeTextInputClient::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void FakeTextInputClient::SetCompositionText(
     const CompositionText& composition) {
   text_.insert(selection_.start(), composition.text);

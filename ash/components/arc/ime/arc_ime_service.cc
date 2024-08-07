@@ -420,6 +420,10 @@ void ArcImeService::OnKeyboardAppearanceChanged(
 ////////////////////////////////////////////////////////////////////////////////
 // Overridden from ui::TextInputClient:
 
+base::WeakPtr<ui::TextInputClient> ArcImeService::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void ArcImeService::SetCompositionText(const ui::CompositionText& composition) {
   InvalidateSurroundingTextAndSelectionRange();
   has_composition_text_ = !composition.text.empty();

@@ -363,8 +363,9 @@ void WaylandInputMethodContext::Reset() {
 
 void WaylandInputMethodContext::WillUpdateFocus(TextInputClient* old_client,
                                                 TextInputClient* new_client) {
-  if (old_client)
-    past_clients_.try_emplace(old_client, base::AsWeakPtr(old_client));
+  if (old_client) {
+    past_clients_.try_emplace(old_client, old_client->AsWeakPtr());
+  }
 }
 
 void WaylandInputMethodContext::UpdateFocus(

@@ -72,6 +72,10 @@ class MockTextInputClient : public TextInputClient {
 
   TextInputType GetTextInputType() const override { return text_input_type_; }
 
+  base::WeakPtr<TextInputClient> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   MOCK_METHOD(void,
               SetCompositionText,
               (const ui::CompositionText&),
@@ -147,6 +151,7 @@ class MockTextInputClient : public TextInputClient {
 
  private:
   TextInputType text_input_type_;
+  base::WeakPtrFactory<MockTextInputClient> weak_ptr_factory_{this};
 };
 
 class MockZWPTextInputWrapper : public ZWPTextInputWrapper {

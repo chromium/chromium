@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -46,6 +47,7 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
   bool ShouldContinueSelection() const;
 
   // ui::TextInputClient:
+  base::WeakPtr<ui::TextInputClient> AsWeakPtr() override;
   void SetCompositionText(const ui::CompositionText& composition) override;
   size_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
@@ -134,6 +136,8 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
   // TickClock used for getting the time of the current keystroke, used for
   // continuing or restarting selections.
   raw_ptr<const base::TickClock> tick_clock_;
+
+  base::WeakPtrFactory<PrefixSelector> weak_ptr_factory_{this};
 };
 
 }  // namespace views

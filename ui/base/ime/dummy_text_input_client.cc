@@ -29,6 +29,10 @@ DummyTextInputClient::DummyTextInputClient(TextInputType text_input_type,
 DummyTextInputClient::~DummyTextInputClient() {
 }
 
+base::WeakPtr<ui::TextInputClient> DummyTextInputClient::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void DummyTextInputClient::SetCompositionText(
     const CompositionText& composition) {
   composition_history_.push_back(composition);

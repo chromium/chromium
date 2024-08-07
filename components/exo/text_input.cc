@@ -207,6 +207,10 @@ void TextInput::FinalizeVirtualKeyboardChanges() {
   pending_vk_finalize_ = false;
 }
 
+base::WeakPtr<ui::TextInputClient> TextInput::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void TextInput::SetCompositionText(const ui::CompositionText& composition) {
   delegate_->SetCompositionText(composition);
   surrounding_text_tracker_.OnSetCompositionText(composition);

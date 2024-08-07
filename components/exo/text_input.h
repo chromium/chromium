@@ -11,6 +11,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/exo/seat_observer.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -201,6 +202,7 @@ class TextInput : public ui::TextInputClient,
   Delegate* delegate() { return delegate_.get(); }
 
   // ui::TextInputClient:
+  base::WeakPtr<ui::TextInputClient> AsWeakPtr() override;
   void SetCompositionText(const ui::CompositionText& composition) override;
   size_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
@@ -343,6 +345,7 @@ class TextInput : public ui::TextInputClient,
   std::optional<bool> staged_vk_visible_;
   // Holds the vk occluded bounds to send to the client.
   std::optional<gfx::Rect> staged_vk_occluded_bounds_;
+  base::WeakPtrFactory<TextInput> weak_ptr_factory_{this};
 };
 
 }  // namespace exo
