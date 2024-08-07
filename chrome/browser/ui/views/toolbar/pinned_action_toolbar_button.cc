@@ -203,6 +203,8 @@ bool PinnedActionToolbarButton::OnMousePressed(const ui::MouseEvent& event) {
 void PinnedActionToolbarButton::OnMouseReleased(const ui::MouseEvent& event) {
   if (!skip_execution_) {
     ToolbarButton::OnMouseReleased(event);
+  } else {
+    OnClickCanceled(event);
   }
   skip_execution_ = false;
 }
