@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
+#include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_data_fetcher.h"
 
@@ -30,6 +31,7 @@ class HistoryURLVisitDataFetcher : public URLVisitDataFetcher {
 
   // URLVisitDataFetcher::
   void FetchURLVisitData(const FetchOptions& options,
+                         const FetcherConfig& config,
                          FetchResultCallback callback) override;
 
  private:
@@ -37,6 +39,7 @@ class HistoryURLVisitDataFetcher : public URLVisitDataFetcher {
   void OnGotAnnotatedVisits(
       FetchResultCallback callback,
       FetchOptions::FetchSources requested_fetch_sources,
+      const FetcherConfig& config,
       std::vector<history::AnnotatedVisit> annotated_visits);
 
   const raw_ptr<history::HistoryService> history_service_;

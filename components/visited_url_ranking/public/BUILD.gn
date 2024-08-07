@@ -10,6 +10,8 @@ source_set("public") {
     "fetch_options.h",
     "fetch_result.cc",
     "fetch_result.h",
+    "fetcher_config.cc",
+    "fetcher_config.h",
     "url_visit.cc",
     "url_visit.h",
     "url_visit_aggregates_transformer.h",
@@ -27,6 +29,7 @@ source_set("public") {
     "//components/keyed_service/core",
     "//components/segmentation_platform/public",
     "//components/sync_device_info",
+    "//components/url_deduplication",
     "//url",
   ]
 }

@@ -16,7 +16,9 @@
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
+#include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
+#include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
 #include "url/gurl.h"
@@ -30,7 +32,8 @@ void AddAggregateVisitDataFromSession(
     const sync_sessions::SyncedSession* session,
     Source source,
     const std::optional<base::Time>& modified_on_or_after_timestamp,
-    std::map<URLMergeKey, URLVisitAggregate::TabData>& url_visit_tab_data_map) {
+    std::map<URLMergeKey, URLVisitAggregate::TabData>& url_visit_tab_data_map,
+    url_deduplication::URLDeduplicationHelper* deduplication_helper) {
   for (const auto& session_and_window : session->windows) {
     const auto& window = session_and_window.second->wrapped_window;
     for (const auto& tab : window.tabs) {
@@ -46,7 +49,7 @@ void AddAggregateVisitDataFromSession(
           continue;
         }
 
-        auto url_key = ComputeURLMergeKey(tab_url);
+        auto url_key = ComputeURLMergeKey(tab_url, deduplication_helper);
         bool tab_data_map_already_has_url_entry =
             url_visit_tab_data_map.find(url_key) !=
             url_visit_tab_data_map.end();
@@ -95,6 +98,7 @@ SessionURLVisitDataFetcher::~SessionURLVisitDataFetcher() = default;
 
 void SessionURLVisitDataFetcher::FetchURLVisitData(
     const FetchOptions& options,
+    const FetcherConfig& config,
     FetchResultCallback callback) {
   auto& fetcher_sources = options.fetcher_sources.at(Fetcher::kSession);
   sync_sessions::OpenTabsUIDelegate* open_tabs_ui_delegate =
@@ -112,18 +116,18 @@ void SessionURLVisitDataFetcher::FetchURLVisitData(
         sessions;
     open_tabs_ui_delegate->GetAllForeignSessions(&sessions);
     for (const sync_sessions::SyncedSession* session : sessions) {
-      AddAggregateVisitDataFromSession(session, Source::kForeign,
-                                       options.begin_time,
-                                       url_visit_tab_data_map);
+      AddAggregateVisitDataFromSession(
+          session, Source::kForeign, options.begin_time, url_visit_tab_data_map,
+          config.deduplication_helper);
     }
   }
   if (base::Contains(fetcher_sources, Source::kLocal)) {
     const sync_sessions::SyncedSession* local_session = nullptr;
     open_tabs_ui_delegate->GetLocalSession(&local_session);
     if (local_session) {
-      AddAggregateVisitDataFromSession(local_session, Source::kLocal,
-                                       options.begin_time,
-                                       url_visit_tab_data_map);
+      AddAggregateVisitDataFromSession(
+          local_session, Source::kLocal, options.begin_time,
+          url_visit_tab_data_map, config.deduplication_helper);
     }
   }
 

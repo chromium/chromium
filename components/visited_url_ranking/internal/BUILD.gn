@@ -43,6 +43,7 @@ static_library("internal") {
     "//components/segmentation_platform/public",
     "//components/sessions",
     "//components/sync_sessions",
+    "//components/url_deduplication",
     "//components/visited_url_ranking/public",
     "//url",
   ]
@@ -95,6 +96,7 @@ source_set("unit_tests") {
     "//components/segmentation_platform/public:test_support",
     "//components/sessions",
     "//components/sync_sessions",
+    "//components/url_deduplication",
     "//components/visited_url_ranking/public",
     "//components/visited_url_ranking/public:test_support",
     "//testing/gmock",

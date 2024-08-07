@@ -14,6 +14,10 @@
 #include "components/visited_url_ranking/public/url_visit_schema.h"
 #include "url/gurl.h"
 
+namespace url_deduplication {
+class URLDeduplicationHelper;
+}  // namespace url_deduplication
+
 namespace visited_url_ranking {
 
 // TODO(crbug.com/330580421): Remove/replace the category blocklist array
@@ -33,9 +37,14 @@ inline constexpr auto kDefaultAppBlocklist =
          "drive.google.com", "mail.google.com", "music.youtube.com",
          "m.youtube.com", "photos.google.com", "www.youtube.com"});
 
+std::unique_ptr<url_deduplication::URLDeduplicationHelper>
+CreateDefaultURLDeduplicationHelper();
+
 // Generates an identifier for the given URL leveraged for merging and
 // deduplication of similar URLs.
-URLMergeKey ComputeURLMergeKey(const GURL& url);
+URLMergeKey ComputeURLMergeKey(
+    const GURL& url,
+    url_deduplication::URLDeduplicationHelper* deduplication_helper);
 
 // Generates an input context from a given `URLVisitAggregate` object given a
 // schema definition.

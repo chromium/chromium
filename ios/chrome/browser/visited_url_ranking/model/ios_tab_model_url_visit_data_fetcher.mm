@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/visited_url_ranking/model/ios_tab_model_url_visit_data_fetcher.h"
 
 #import "components/sync_device_info/device_info.h"
+#import "components/url_deduplication/url_deduplication_helper.h"
+#import "components/visited_url_ranking/public/fetcher_config.h"
 #import "components/visited_url_ranking/public/url_visit.h"
 #import "components/visited_url_ranking/public/url_visit_util.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
@@ -63,6 +65,7 @@ IOSTabModelURLVisitDataFetcher::~IOSTabModelURLVisitDataFetcher() {}
 
 void IOSTabModelURLVisitDataFetcher::FetchURLVisitData(
     const FetchOptions& options,
+    const FetcherConfig& config,
     FetchResultCallback callback) {
   // OTR URL should never be processed.
   CHECK(!browser_state_->IsOffTheRecord());
@@ -84,7 +87,7 @@ void IOSTabModelURLVisitDataFetcher::FetchURLVisitData(
         continue;
       }
 
-      auto url_key = ComputeURLMergeKey(url);
+      auto url_key = ComputeURLMergeKey(url, config.deduplication_helper);
       auto it = url_visit_tab_data_map.find(url_key);
       bool tab_data_map_already_has_url_entry =
           (it != url_visit_tab_data_map.end());

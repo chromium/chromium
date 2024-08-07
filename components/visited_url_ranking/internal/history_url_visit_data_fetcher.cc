@@ -12,7 +12,9 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
+#include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
+#include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
 #include "url/gurl.h"
 
@@ -29,6 +31,7 @@ HistoryURLVisitDataFetcher::~HistoryURLVisitDataFetcher() = default;
 
 void HistoryURLVisitDataFetcher::FetchURLVisitData(
     const FetchOptions& options,
+    const FetcherConfig& config,
     FetchResultCallback callback) {
   history::QueryOptions query_options;
   query_options.begin_time = options.begin_time;
@@ -42,7 +45,7 @@ void HistoryURLVisitDataFetcher::FetchURLVisitData(
         /*get_unclustered_visits_only=*/false,
         base::BindOnce(&HistoryURLVisitDataFetcher::OnGotAnnotatedVisits,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       options.fetcher_sources.at(Fetcher::kHistory)),
+                       options.fetcher_sources.at(Fetcher::kHistory), config),
         &task_tracker_);
     return;
   }
@@ -53,6 +56,7 @@ void HistoryURLVisitDataFetcher::FetchURLVisitData(
 void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
     FetchResultCallback callback,
     FetchOptions::FetchSources requested_fetch_sources,
+    const FetcherConfig& config,
     std::vector<history::AnnotatedVisit> annotated_visits) {
   std::map<std::string, URLVisitAggregate::HistoryData> url_annotations;
   for (auto& annotated_visit : annotated_visits) {
@@ -65,7 +69,8 @@ void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
       continue;
     }
 
-    auto url_key = ComputeURLMergeKey(annotated_visit.url_row.url());
+    auto url_key = ComputeURLMergeKey(annotated_visit.url_row.url(),
+                                      config.deduplication_helper);
     if (url_annotations.find(url_key) == url_annotations.end()) {
       // `GetAnnotatedVisits` returns a reverse-chronological sorted list of
       // annotated visits, thus, the first visit in the vector is the most

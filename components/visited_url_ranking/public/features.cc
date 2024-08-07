@@ -4,6 +4,7 @@
 
 #include "components/visited_url_ranking/public/features.h"
 
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
 namespace visited_url_ranking::features {
@@ -33,5 +34,33 @@ BASE_FEATURE(kVisitedURLRankingHistoryVisibilityScoreFilter,
 BASE_FEATURE(kVisitedURLRankingSegmentationMetricsData,
              "VisitedURLRankingSegmentationMetricsData",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kVisitedURLRankingDeduplication,
+             "VisitedURLRankingDeduplication",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<bool> kVisitedURLRankingDeduplicationDocs{
+    &kVisitedURLRankingDeduplication, /*name=*/"url_deduplication_docs",
+    /*default_value=*/true};
+
+constexpr base::FeatureParam<bool> kVisitedURLRankingDeduplicationSearchEngine{
+    &kVisitedURLRankingDeduplication,
+    /*name=*/"url_deduplication_search_engine",
+    /*default_value=*/true};
+
+constexpr base::FeatureParam<bool> kVisitedURLRankingDeduplicationFallback{
+    &kVisitedURLRankingDeduplication, /*name=*/"url_deduplication_fallback",
+    /*default_value=*/true};
+
+constexpr base::FeatureParam<bool> kVisitedURLRankingDeduplicationUpdateScheme{
+    &kVisitedURLRankingDeduplication,
+    /*name=*/"url_deduplication_update_scheme",
+    /*default_value=*/true};
+
+constexpr base::FeatureParam<std::string>
+    kVisitedURLRankingDeduplicationExcludedPrefixes{
+        &kVisitedURLRankingDeduplication,
+        /*name=*/"url_deduplication_excluded_prefixes",
+        /*default_value=*/"www."};
 
 }  // namespace visited_url_ranking::features

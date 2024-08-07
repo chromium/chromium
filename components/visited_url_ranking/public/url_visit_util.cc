@@ -11,9 +11,17 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/strings/string_split.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
+#include "components/url_deduplication/deduplication_strategy.h"
+#include "components/url_deduplication/docs_url_strip_handler.h"
+#include "components/url_deduplication/url_deduplication_helper.h"
+#include "components/url_deduplication/url_strip_handler.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
 #include "components/visited_url_ranking/public/url_visit_schema.h"
 #include "url/gurl.h"
@@ -67,10 +75,46 @@ PlatformType GetPlatformInput() {
 
 }  // namespace
 
-// TODO(crbug.com/335200723): Integrate client configurable merging and
-// deduplication logic to produce "merge" keys for provided URLs.
-URLMergeKey ComputeURLMergeKey(const GURL& url) {
-  return url.spec();
+std::unique_ptr<url_deduplication::URLDeduplicationHelper>
+CreateDefaultURLDeduplicationHelper() {
+  std::vector<std::unique_ptr<url_deduplication::URLStripHandler>> handlers;
+  url_deduplication::DeduplicationStrategy strategy =
+      url_deduplication::DeduplicationStrategy();
+  if (features::kVisitedURLRankingDeduplicationDocs.Get()) {
+    handlers.push_back(
+        std::make_unique<url_deduplication::DocsURLStripHandler>());
+  }
+
+  if (features::kVisitedURLRankingDeduplicationFallback.Get()) {
+    strategy.clear_query = true;
+  }
+
+  if (features::kVisitedURLRankingDeduplicationUpdateScheme.Get()) {
+    strategy.update_scheme = true;
+  }
+
+  auto prefix_list = base::SplitString(
+      features::kVisitedURLRankingDeduplicationExcludedPrefixes.Get(), ",:;",
+      base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
+  strategy.excluded_prefixes = prefix_list;
+
+  strategy.clear_username = true;
+  strategy.clear_password = true;
+  strategy.clear_ref = true;
+  strategy.clear_port = true;
+
+  return std::make_unique<url_deduplication::URLDeduplicationHelper>(
+      std::move(handlers), strategy);
+}
+
+URLMergeKey ComputeURLMergeKey(
+    const GURL& url,
+    url_deduplication::URLDeduplicationHelper* deduplication_helper) {
+  if (!deduplication_helper) {
+    return url.spec();
+  }
+  return deduplication_helper->ComputeURLDeduplicationKey(url);
 }
 
 scoped_refptr<InputContext> AsInputContext(

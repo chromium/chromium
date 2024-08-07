@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
+#include "components/visited_url_ranking/public/fetcher_config.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_data_fetcher.h"
 
@@ -25,6 +26,7 @@ class SessionURLVisitDataFetcher : public URLVisitDataFetcher {
 
   // URLVisitDataFetcher:
   void FetchURLVisitData(const FetchOptions& options,
+                         const FetcherConfig& config,
                          FetchResultCallback callback) override;
 
  private:

@@ -10,12 +10,11 @@
 #include <vector>
 
 #include "components/url_deduplication/deduplication_strategy.h"
+#include "components/url_deduplication/url_strip_handler.h"
 
 class GURL;
 
 namespace url_deduplication {
-
-class URLStripHandler;
 
 class URLDeduplicationHelper {
  public:
@@ -32,6 +31,10 @@ class URLDeduplicationHelper {
   // that two similar looking URLs belong to / represent the same visit or
   // visit intention/goal.
   std::string ComputeURLDeduplicationKey(GURL url);
+
+  void AddStripHandler(std::unique_ptr<URLStripHandler> handler) {
+    strip_handlers_.push_back(std::move(handler));
+  }
 
  private:
   std::vector<std::unique_ptr<URLStripHandler>> strip_handlers_;

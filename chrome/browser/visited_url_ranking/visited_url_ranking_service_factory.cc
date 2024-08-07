@@ -15,13 +15,16 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/visited_url_ranking/url_deduplication/search_engine_url_strip_handler.h"
 #include "chrome/common/channel_info.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history_clusters/core/config.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/internal/session_url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/internal/transformer/bookmarks_url_visit_aggregates_transformer.h"
@@ -96,6 +99,19 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  std::unique_ptr<url_deduplication::URLDeduplicationHelper>
+      deduplication_helper;
+  if (base::FeatureList::IsEnabled(
+          visited_url_ranking::features::kVisitedURLRankingDeduplication)) {
+    deduplication_helper = CreateDefaultURLDeduplicationHelper();
+    if (features::kVisitedURLRankingDeduplicationSearchEngine.Get() &&
+        profile) {
+      deduplication_helper->AddStripHandler(
+          std::make_unique<url_deduplication::SearchEngineURLStripHandler>(
+              TemplateURLServiceFactory::GetForProfile(profile)));
+    }
+  }
+
   std::map<Fetcher, std::unique_ptr<URLVisitDataFetcher>> data_fetchers;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -164,7 +180,8 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceForBrowserContext(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return std::make_unique<VisitedURLRankingServiceImpl>(
-      sps, std::move(data_fetchers), std::move(transformers));
+      sps, std::move(data_fetchers), std::move(transformers),
+      std::move(deduplication_helper));
 }
 
 bool VisitedURLRankingServiceFactory::ServiceIsCreatedWithBrowserContext()

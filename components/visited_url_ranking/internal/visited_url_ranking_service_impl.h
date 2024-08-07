@@ -19,6 +19,8 @@
 #include "components/segmentation_platform/public/database_client.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/trigger.h"
+#include "components/url_deduplication/deduplication_strategy.h"
+#include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
 #include "components/visited_url_ranking/public/url_visit.h"
@@ -63,7 +65,11 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
           segmentation_platform_service,
       std::map<Fetcher, std::unique_ptr<URLVisitDataFetcher>> data_fetchers,
       std::map<URLVisitAggregatesTransformType,
-               std::unique_ptr<URLVisitAggregatesTransformer>> transformers);
+               std::unique_ptr<URLVisitAggregatesTransformer>> transformers,
+      std::unique_ptr<url_deduplication::URLDeduplicationHelper>
+          deduplication_helper =
+              std::make_unique<url_deduplication::URLDeduplicationHelper>(
+                  url_deduplication::DeduplicationStrategy()));
   ~VisitedURLRankingServiceImpl() override;
 
   // Disallow copy/assign.
@@ -139,6 +145,10 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
 
   // Sampling rate for kSeen events to balance training collection.
   const int seen_records_sampling_rate_;
+
+  // The helper used by the fetchers to deduplicate URLs.
+  std::unique_ptr<url_deduplication::URLDeduplicationHelper>
+      deduplication_helper_;
 
   base::WeakPtrFactory<VisitedURLRankingServiceImpl> weak_ptr_factory_{this};
 };
