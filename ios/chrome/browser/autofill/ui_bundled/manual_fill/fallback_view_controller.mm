@@ -24,6 +24,7 @@
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   HeaderSectionIdentifier = kSectionIdentifierEnumZero,
+  NoDataItemsSectionIdentifier,
   ActionsSectionIdentifier,
   // Must be declared last as it is used as the starting point to dynamically
   // create section identifiers for each data item when the
@@ -111,8 +112,6 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
   }
-  self.tableView.sectionHeaderHeight = kSectionHeaderHeight;
-  self.tableView.sectionFooterHeight = kSectionFooterHeight;
   self.tableView.estimatedRowHeight = 1;
   self.tableView.allowsSelection = NO;
   self.definesPresentationContext = YES;
@@ -197,6 +196,23 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
     return UITableViewAutomaticDimension;
   }
   return kSectionHeaderHeight;
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  if (self.noDataItemsToShowHeaderItem &&
+      [self.tableViewModel
+          hasSectionForSectionIdentifier:NoDataItemsSectionIdentifier] &&
+      section ==
+          [self.tableViewModel
+              sectionForSectionIdentifier:NoDataItemsSectionIdentifier]) {
+    return 0;
+  }
+
+  if ([self.tableViewModel footerForSectionIndex:section]) {
+    return UITableViewAutomaticDimension;
+  }
+  return kSectionFooterHeight;
 }
 
 - (UIView*)tableView:(UITableView*)tableView
@@ -300,13 +316,8 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 
   BOOL sectionExists = [self.tableViewModel
       hasSectionForSectionIdentifier:ActionsSectionIdentifier];
-  BOOL sectionHasHeader =
-      sectionExists &&
-      [self.tableViewModel
-          headerForSectionWithIdentifier:ActionsSectionIdentifier];
-  // If there are no passed items, remove section if it exists and it doesn't
-  // have a header.
-  if (!self.queuedActionItems.count && sectionExists && !sectionHasHeader) {
+  // If there are no passed items, remove section if it exists.
+  if (!self.queuedActionItems.count && sectionExists) {
     [self.tableViewModel removeSectionWithIdentifier:ActionsSectionIdentifier];
   } else if (self.queuedActionItems.count && !sectionExists) {
     [self.tableViewModel addSectionWithIdentifier:ActionsSectionIdentifier];
@@ -395,10 +406,7 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 }
 
 // Adds or removes the `noDataItemsToShowHeaderItem` if needed. This header item
-// is displayed to let the user know that there are no data items to show. Given
-// the table view style, `noDataItemsToShowHeaderItem` needs to be set as the
-// actions section's header in order to achieve the desired spacing between this
-// item and the action items.
+// is displayed to let the user know that there are no data items to show.
 - (void)updateEmptyStateMessage {
   if (!IsKeyboardAccessoryUpgradeEnabled()) {
     return;
@@ -406,38 +414,24 @@ constexpr CGFloat kSectionSepatatorLeftInset = 16;
 
   BOOL needsEmptyStateHeader =
       !self.queuedDataItems.count && self.noDataItemsToShowHeaderItem;
-  BOOL hasActionsSection = [self.tableViewModel
-      hasSectionForSectionIdentifier:ActionsSectionIdentifier];
+  BOOL hasEmptyStateSection = [self.tableViewModel
+      hasSectionForSectionIdentifier:NoDataItemsSectionIdentifier];
   BOOL hasEmptyStateHeader =
-      hasActionsSection &&
+      hasEmptyStateSection &&
       [self.tableViewModel
-          headerForSectionWithIdentifier:ActionsSectionIdentifier];
+          headerForSectionWithIdentifier:NoDataItemsSectionIdentifier];
 
   if (needsEmptyStateHeader == hasEmptyStateHeader) {
     return;
   }
 
   if (needsEmptyStateHeader) {
-    // The header needs to be added to the model: Add the actions section if it
-    // doesn't already exist. Then, set `noDataItemsToShowHeaderItem` as the
-    // actions section's header.
-    if (!hasActionsSection) {
-      [self.tableViewModel addSectionWithIdentifier:ActionsSectionIdentifier];
-    }
+    [self.tableViewModel addSectionWithIdentifier:NoDataItemsSectionIdentifier];
     [self.tableViewModel setHeader:self.noDataItemsToShowHeaderItem
-          forSectionWithIdentifier:ActionsSectionIdentifier];
+          forSectionWithIdentifier:NoDataItemsSectionIdentifier];
   } else {
-    // The header needs to be removed from the model: If the actions section
-    // contains items, set its header to `nil`. Otherwise, remove the whole
-    // section.
-    if ([self.tableViewModel
-            itemsInSectionWithIdentifier:ActionsSectionIdentifier]) {
-      [self.tableViewModel setHeader:nil
-            forSectionWithIdentifier:ActionsSectionIdentifier];
-    } else {
-      [self.tableViewModel
-          removeSectionWithIdentifier:ActionsSectionIdentifier];
-    }
+    [self.tableViewModel
+        removeSectionWithIdentifier:NoDataItemsSectionIdentifier];
     self.noDataItemsToShowHeaderItem = nil;
   }
 }
