@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_parsing_expression_components.h"
 #include "components/autofill/core/browser/field_types.h"
 
@@ -364,7 +365,11 @@ class AddressComponent {
   // country set, the other should assume the non-empty one while merging. This
   // is required to do consistent address rewriting.
   // Returns the common country to be used.
-  std::u16string GetCommonCountry(const AddressComponent& other) const;
+  AddressCountryCode GetCommonCountry(const AddressComponent& other) const;
+
+  // If the tree this node is part of contains country code information, this
+  // function retrieves it. Otherwise it returns an empty country code.
+  AddressCountryCode GetCountryCode() const;
 
   // Deletes the stored structure and returns true if |IsStructureValid()|
   // returns false.

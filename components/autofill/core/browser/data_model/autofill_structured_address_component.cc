@@ -17,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_format_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
@@ -164,20 +163,24 @@ bool AddressComponent::IsValueValid() const {
   return true;
 }
 
-std::u16string AddressComponent::GetCommonCountry(
+AddressCountryCode AddressComponent::GetCommonCountry(
     const AddressComponent& other) const {
-  const std::u16string country_a =
-      GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY);
-  const std::u16string country_b =
-      other.GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY);
-  if (country_a.empty()) {
+  const AddressCountryCode country_a = GetCountryCode();
+  const AddressCountryCode country_b = other.GetCountryCode();
+  if (country_a->empty()) {
     return country_b;
   }
-  if (country_b.empty()) {
+  if (country_b->empty()) {
     return country_a;
   }
-  return base::EqualsCaseInsensitiveASCII(country_a, country_b) ? country_a
-                                                                : u"";
+  return base::EqualsCaseInsensitiveASCII(country_a.value(), country_b.value())
+             ? country_a
+             : AddressCountryCode("");
+}
+
+AddressCountryCode AddressComponent::GetCountryCode() const {
+  return AddressCountryCode(
+      base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY)));
 }
 
 bool AddressComponent::IsValueForTypeValid(FieldType field_type,
@@ -295,11 +298,8 @@ std::u16string AddressComponent::GetValueForOtherSupportedType(
 }
 
 std::u16string AddressComponent::GetFormatString() const {
-  const std::string country_code =
-      base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY));
-
   std::u16string result = i18n_model_definition::GetFormattingExpression(
-      GetStorageType(), AddressCountryCode(country_code));
+      GetStorageType(), GetCountryCode());
   if (!result.empty()) {
     return result;
   }
@@ -502,13 +502,9 @@ void AddressComponent::ParseValueAndAssignSubcomponents() {
 }
 
 bool AddressComponent::ParseValueAndAssignSubcomponentsByI18nParsingRules() {
-  const AddressCountryCode country_code = AddressCountryCode(
-      base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY)));
-
   i18n_model_definition::ValueParsingResults results =
       i18n_model_definition::ParseValueByI18nRegularExpression(
-          base::UTF16ToUTF8(GetValue()), GetStorageType(),
-          AddressCountryCode(country_code));
+          base::UTF16ToUTF8(GetValue()), GetStorageType(), GetCountryCode());
 
   if (results) {
     AssignParsedValuesToSubcomponents(std::move(results));
@@ -532,13 +528,9 @@ void AddressComponent::
     TryParseValueAndAssignSubcomponentsRespectingSetValues() {
   if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel) &&
       GroupTypeOfFieldType(GetStorageType()) == FieldTypeGroup::kAddress) {
-    const AddressCountryCode country_code = AddressCountryCode(
-        base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY)));
-
     i18n_model_definition::ValueParsingResults results =
         i18n_model_definition::ParseValueByI18nRegularExpression(
-            base::UTF16ToUTF8(GetValue()), GetStorageType(),
-            AddressCountryCode(country_code));
+            base::UTF16ToUTF8(GetValue()), GetStorageType(), GetCountryCode());
 
     AssignParsedValuesToSubcomponentsRespectingSetValues(std::move(results));
     return;
