@@ -360,8 +360,8 @@ src/webgpu/compat/api/validation/encoding/cmds/copyTextureToTexture.spec.ts
 src/webgpu/compat/api/validation/encoding/programmable/pipeline_bind_group_compat.spec.ts
 src/webgpu/compat/api/validation/render_pipeline/depth_stencil_state.spec.ts
 src/webgpu/compat/api/validation/render_pipeline/fragment_state.spec.ts
+src/webgpu/compat/api/validation/render_pipeline/unsupported_wgsl.spec.ts
 src/webgpu/compat/api/validation/render_pipeline/vertex_state.spec.ts
-src/webgpu/compat/api/validation/shader_module/shader_module.spec.ts
 src/webgpu/compat/api/validation/texture/createTexture.spec.ts
 src/webgpu/compat/api/validation/texture/cubeArray.spec.ts
 src/webgpu/idl/idl_test.ts
