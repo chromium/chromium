@@ -331,6 +331,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
         mRecyclerView = mView.findViewById(R.id.tab_list_recycler_view);
         mRecyclerView.addOnScrollListener(mRecyclerScrollListener);
+        mShadowView.setVisibility(mRecyclerView.canScrollVertically(1) ? View.VISIBLE : View.GONE);
 
         // Register the dialog to handle back press events.
         mBackPressManager.addHandler(controller, BackPressHandler.Type.ARCHIVED_TABS_DIALOG);

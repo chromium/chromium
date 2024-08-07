@@ -149,6 +149,9 @@ public class ArchivedTabsDialogCoordinatorTest {
         addArchivedTab(new GURL("https://google.com"), "test 2");
         showDialog(2);
         onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
+        // The dialog isn't scrollable, so the shadow should be hidden.
+        onView(withId(R.id.close_all_tabs_button_container_shadow))
+                .check(matches(not(isDisplayed())));
     }
 
     @Test

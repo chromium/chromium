@@ -14,7 +14,6 @@ found in the LICENSE file.
         android:id="@+id/tab_list_editor_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
         android:paddingBottom="@dimen/archived_tabs_dialog_bottom_button_container_height"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
