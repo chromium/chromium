@@ -289,6 +289,28 @@ class WebTestFinderTests(unittest.TestCase):
             set(tests[1]),
             set(['path/test.html','virtual/path/test.html',]))
 
+    def test_empty_test_list_find_tests(self):
+        host = MockHost()
+        port = host.port_factory.get('test-win-win7')
+        host.filesystem.write_text_file(
+            'test-list.txt',
+            textwrap.dedent("""\
+                # this file is deliberately empty to signal no tests to run
+                """))
+        all_tests = [
+            'path/test.html',
+        ]
+
+        finder = web_test_finder.WebTestFinder(port, {})
+        with mock.patch.object(port, 'tests',
+                               lambda paths: paths or all_tests):
+            paths, all_test_names, running_all_tests = finder.find_tests(
+                args=[], test_lists=['test-list.txt'])
+
+        self.assertEqual(paths, [])
+        self.assertEqual(all_test_names, [])
+        self.assertFalse(running_all_tests)
+
     def test_exclude_test_list_find_tests(self):
         host = MockHost()
         port = host.port_factory.get('test-win-win7', None)

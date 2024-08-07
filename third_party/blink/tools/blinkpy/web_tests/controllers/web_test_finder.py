@@ -84,7 +84,7 @@ class WebTestFinder(object):
                 )
                 running_all_tests = True
         else:
-            running_all_tests = not paths
+            running_all_tests = not paths and not test_lists
 
         if running_all_tests:
             test_files.update(all_tests)
