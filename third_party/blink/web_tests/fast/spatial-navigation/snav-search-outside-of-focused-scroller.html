@@ -25,19 +25,15 @@
 <script src="resources/snav-testharness.js"></script>
 
 <script>
-  function onload() {
-    test(function(t) {
-        assert_true(internals.runtimeFlags.keyboardFocusableScrollersEnabled);
-    }, "Make sure KeyboardFocusableScrollers is set.");
+  test(function(t) {
+      assert_true(internals.runtimeFlags.keyboardFocusableScrollersEnabled);
+  }, "Make sure KeyboardFocusableScrollers is set.");
 
-    var resultMap = [
-      ["Up", "end"],
-    ];
+  var resultMap = [
+    ["Up", "end"],
+  ];
 
-    // Start at a known place.
-    document.getElementById("start").focus();
-    snav.assertFocusMoves(resultMap);
-  }
+  // Start at a known place.
+  document.getElementById("start").focus();
+  snav.assertFocusMoves(resultMap);
 </script>
-<body onload="onload();">
-</body>
