@@ -51,11 +51,11 @@ namespace syncer {
 namespace {
 
 const char kTimeUntilEncryptionKeyFoundHistogramName[] =
-    "Sync.ModelTypeTimeUntilEncryptionKeyFound2";
+    "Sync.DataTypeTimeUntilEncryptionKeyFound";
 const char kUndecryptablePendingUpdatesDroppedHistogramName[] =
-    "Sync.ModelTypeUndecryptablePendingUpdatesDropped";
+    "Sync.DataTypeUndecryptablePendingUpdatesDropped";
 const char kBlockedByUndecryptableUpdateHistogramName[] =
-    "Sync.ModelTypeBlockedDueToUndecryptableUpdate";
+    "Sync.DataTypeBlockedDueToUndecryptableUpdate";
 const char kPasswordNotesStateHistogramName[] =
     "Sync.PasswordNotesStateInUpdate";
 constexpr char kEntityEncryptionResultHistogramName[] =
@@ -531,15 +531,13 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
 
   for (const sync_pb::SyncEntity* update_entity : applicable_updates) {
     RecordEntityChangeMetrics(
-        type_, is_initial_sync
-                   ? ModelTypeEntityChange::kRemoteInitialUpdate
-                   : ModelTypeEntityChange::kRemoteNonInitialUpdate);
+        type_, is_initial_sync ? DataTypeEntityChange::kRemoteInitialUpdate
+                               : DataTypeEntityChange::kRemoteNonInitialUpdate);
 
     if (update_entity->deleted()) {
       status->increment_num_tombstone_updates_downloaded_by(1);
       if (!is_initial_sync) {
-        RecordEntityChangeMetrics(type_,
-                                  ModelTypeEntityChange::kRemoteDeletion);
+        RecordEntityChangeMetrics(type_, DataTypeEntityChange::kRemoteDeletion);
       }
     }
 

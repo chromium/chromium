@@ -14,7 +14,7 @@ void RecordDataTypeEntityConflictResolution(
     DataType data_type,
     ConflictResolution resolution_type) {
   base::UmaHistogramEnumeration(
-      std::string("Sync.ModelTypeEntityConflictResolution.") +
+      std::string("Sync.DataTypeEntityConflictResolution.") +
           DataTypeToHistogramSuffix(data_type),
       resolution_type);
 }

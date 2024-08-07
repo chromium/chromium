@@ -44,7 +44,7 @@
 namespace syncer {
 namespace {
 
-const char kErrorSiteHistogramPrefix[] = "Sync.ModelTypeErrorSite.";
+const char kErrorSiteHistogramPrefix[] = "Sync.DataTypeErrorSite.";
 
 size_t CountDuplicateClientTags(const EntityMetadataMap& metadata_map) {
   size_t count = 0u;
@@ -519,7 +519,7 @@ void ClientTagBasedDataTypeProcessor::Put(
         // The bridge overrides an entity that is not deleted. This is
         // unexpected but the processor tolerates it. It is very likely a
         // metadata orphan; report it to metrics.
-        UMA_HISTOGRAM_ENUMERATION("Sync.ModelTypeOrphanMetadata.Put",
+        UMA_HISTOGRAM_ENUMERATION("Sync.DataTypeOrphanMetadata.Put",
                                   DataTypeHistogramValue(type_));
       }
       // Remove the old storage key from the tracker and the corresponding
@@ -1164,7 +1164,7 @@ void ClientTagBasedDataTypeProcessor::ConsumeDataBatch(
     // effects of this inconsistent state, we treat it as if UntrackEntity()
     // had been called.
     storage_keys_to_untrack.push_back(storage_key);
-    UMA_HISTOGRAM_ENUMERATION("Sync.ModelTypeOrphanMetadata.GetData",
+    UMA_HISTOGRAM_ENUMERATION("Sync.DataTypeOrphanMetadata.GetData",
                               DataTypeHistogramValue(type_));
   }
 
@@ -1384,7 +1384,7 @@ bool ClientTagBasedDataTypeProcessor::ClearPersistedMetadataIfInvalid(
           data_type_state.initial_sync_state()) &&
       !metadata_map.empty()) {
     base::UmaHistogramEnumeration(
-        "Sync.ModelTypeEntityMetadataWithoutInitialSync",
+        "Sync.DataTypeEntityMetadataWithoutInitialSync",
         DataTypeHistogramValue(type_));
 
     ClearAllProvidedMetadataAndResetState(metadata_map);
@@ -1400,7 +1400,7 @@ bool ClientTagBasedDataTypeProcessor::ClearPersistedMetadataIfInvalid(
     // from metadata orphans; report their count to metrics.
     for (size_t i = 0; i < count_of_duplicates; i++) {
       base::UmaHistogramEnumeration(
-          "Sync.ModelTypeOrphanMetadata.ModelReadyToSync",
+          "Sync.DataTypeOrphanMetadata.ModelReadyToSync",
           DataTypeHistogramValue(type_));
     }
 

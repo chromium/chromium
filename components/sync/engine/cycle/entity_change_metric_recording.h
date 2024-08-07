@@ -14,7 +14,7 @@ namespace syncer {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // LINT.IfChange(SyncEntityChange)
-enum class ModelTypeEntityChange {
+enum class DataTypeEntityChange {
   kLocalDeletion = 0,
   kLocalCreation = 1,
   kLocalUpdate = 2,
@@ -25,7 +25,7 @@ enum class ModelTypeEntityChange {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncEntityChange)
 
-void RecordEntityChangeMetrics(DataType type, ModelTypeEntityChange change);
+void RecordEntityChangeMetrics(DataType type, DataTypeEntityChange change);
 
 std::string GetEntityChangeHistogramNameForTest(DataType type);
 

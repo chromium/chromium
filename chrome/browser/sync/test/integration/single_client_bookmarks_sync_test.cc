@@ -1173,11 +1173,11 @@ IN_PROC_BROWSER_TEST_F(
 
   // There should have been one creation and no deletions.
   EXPECT_EQ(1, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeEntityChange3.BOOKMARK",
-                   syncer::ModelTypeEntityChange::kLocalCreation));
+                   "Sync.DataTypeEntityChange.BOOKMARK",
+                   syncer::DataTypeEntityChange::kLocalCreation));
   EXPECT_EQ(0, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeEntityChange3.BOOKMARK",
-                   syncer::ModelTypeEntityChange::kLocalDeletion));
+                   "Sync.DataTypeEntityChange.BOOKMARK",
+                   syncer::DataTypeEntityChange::kLocalDeletion));
 }
 
 // Android doesn't currently support PRE_ tests, see crbug.com/1117345.
@@ -1197,8 +1197,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   ASSERT_EQ(1u, GetBookmarkBarNode(kSingleProfileIndex)->children().size());
 
   EXPECT_NE(0, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeEntityChange3.BOOKMARK",
-                   syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
+                   "Sync.DataTypeEntityChange.BOOKMARK",
+                   syncer::DataTypeEntityChange::kRemoteInitialUpdate));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
@@ -1225,8 +1225,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   ASSERT_EQ(1u, GetBookmarkBarNode(kSingleProfileIndex)->children().size());
 
   EXPECT_EQ(0, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeEntityChange3.BOOKMARK",
-                   syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
+                   "Sync.DataTypeEntityChange.BOOKMARK",
+                   syncer::DataTypeEntityChange::kRemoteInitialUpdate));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1884,8 +1884,8 @@ IN_PROC_BROWSER_TEST_F(
   // legacy bookmark without the most recent fields (e.g. GUID), because loading
   // favicons should not lead to commits unless the favicon itself changed.
   EXPECT_EQ(0, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeEntityChange3.BOOKMARK",
-                   syncer::ModelTypeEntityChange::kLocalUpdate));
+                   "Sync.DataTypeEntityChange.BOOKMARK",
+                   syncer::DataTypeEntityChange::kLocalUpdate));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -2036,7 +2036,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(server_bookmarks.front().specifics().bookmark().has_guid());
 
   EXPECT_EQ(
-      1, histogram_tester.GetBucketCount("Sync.ModelTypeEntityChange3.BOOKMARK",
+      1, histogram_tester.GetBucketCount("Sync.DataTypeEntityChange.BOOKMARK",
                                          /*LOCAL_UPDATE*/ 2));
   EXPECT_EQ(1, histogram_tester.GetBucketCount(
                    "Sync.BookmarkEntityReuploadNeeded.OnInitialMerge", true));
@@ -2142,7 +2142,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest, DepleteQuota) {
                   GetFakeServer())
                   .Wait());
   EXPECT_EQ(1, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeCommitMessageHasDepletedQuota",
+                   "Sync.DataTypeCommitMessageHasDepletedQuota",
                    DataTypeHistogramValue(syncer::BOOKMARKS)));
   // Recovering from depleted quota is tested by another test.
 }
@@ -2178,7 +2178,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
                   GetFakeServer())
                   .Wait());
   EXPECT_EQ(4 + 1, histogram_tester.GetBucketCount(
-                       "Sync.ModelTypeCommitMessageHasDepletedQuota",
+                       "Sync.DataTypeCommitMessageHasDepletedQuota",
                        DataTypeHistogramValue(syncer::BOOKMARKS)));
 }
 
@@ -2221,8 +2221,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
 
   // There is no record in the depleted quota histogram.
   histogram_tester.ExpectTotalCount(
-      "Sync.ModelTypeCommitMessageHasDepletedQuota", 0);
-  histogram_tester.ExpectTotalCount("Sync.ModelTypeCommitWithDepletedQuota", 0);
+      "Sync.DataTypeCommitMessageHasDepletedQuota", 0);
+  histogram_tester.ExpectTotalCount("Sync.DataTypeCommitWithDepletedQuota", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
@@ -2256,7 +2256,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
                     .Wait());
     // The quota should *just* be depleted now.
     EXPECT_EQ(1, histogram_tester.GetBucketCount(
-                     "Sync.ModelTypeCommitMessageHasDepletedQuota",
+                     "Sync.DataTypeCommitMessageHasDepletedQuota",
                      DataTypeHistogramValue(syncer::BOOKMARKS)));
   }
 
@@ -2288,10 +2288,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
     EXPECT_GT(base::TimeTicks::Now() - time, base::Seconds(1));
 
     EXPECT_EQ(1, histogram_tester.GetBucketCount(
-                     "Sync.ModelTypeCommitMessageHasDepletedQuota",
+                     "Sync.DataTypeCommitMessageHasDepletedQuota",
                      DataTypeHistogramValue(syncer::BOOKMARKS)));
     EXPECT_GT(histogram_tester.GetBucketCount(
-                  "Sync.ModelTypeCommitWithDepletedQuota",
+                  "Sync.DataTypeCommitWithDepletedQuota",
                   DataTypeHistogramValue(syncer::BOOKMARKS)),
               0);
   }

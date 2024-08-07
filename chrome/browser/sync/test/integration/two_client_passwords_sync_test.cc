@@ -435,8 +435,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier,
   // (crbug.com/1046309) where the USS client was local deletions when receiving
   // remote deletions.
   EXPECT_EQ(1, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeEntityChange3.PASSWORD",
-                   syncer::ModelTypeEntityChange::kLocalDeletion));
+                   "Sync.DataTypeEntityChange.PASSWORD",
+                   syncer::DataTypeEntityChange::kLocalDeletion));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,

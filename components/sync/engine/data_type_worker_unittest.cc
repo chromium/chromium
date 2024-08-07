@@ -604,10 +604,10 @@ TEST_F(DataTypeWorkerTest, SimpleCommit) {
   EXPECT_EQ(0U, processor()->GetNumCommitResponses());
   histogram_tester.ExpectBucketCount(
       GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
-      ModelTypeEntityChange::kLocalCreation, 0);
+      DataTypeEntityChange::kLocalCreation, 0);
   histogram_tester.ExpectBucketCount(
       GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
-      ModelTypeEntityChange::kLocalDeletion, 0);
+      DataTypeEntityChange::kLocalDeletion, 0);
 
   worker()->NudgeForCommit();
   EXPECT_EQ(1, nudge_handler()->GetNumCommitNudges());
@@ -634,10 +634,10 @@ TEST_F(DataTypeWorkerTest, SimpleCommit) {
 
   histogram_tester.ExpectBucketCount(
       GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
-      ModelTypeEntityChange::kLocalCreation, 1);
+      DataTypeEntityChange::kLocalCreation, 1);
   histogram_tester.ExpectBucketCount(
       GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
-      ModelTypeEntityChange::kLocalDeletion, 0);
+      DataTypeEntityChange::kLocalDeletion, 0);
 
   // Exhaustively verify the commit response returned to the model thread.
   ASSERT_EQ(0U, processor()->GetNumCommitFailures());
@@ -665,19 +665,19 @@ TEST_F(DataTypeWorkerTest, SimpleDelete) {
   // Step 1 is to create and commit a new entity.
   histogram_tester.ExpectBucketCount(
       GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
-      ModelTypeEntityChange::kLocalCreation, 0);
+      DataTypeEntityChange::kLocalCreation, 0);
   histogram_tester.ExpectBucketCount(
       GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
-      ModelTypeEntityChange::kLocalDeletion, 0);
+      DataTypeEntityChange::kLocalDeletion, 0);
   processor()->SetCommitRequest(GenerateCommitRequest(kTag1, kValue1));
   DoSuccessfulCommit();
 
   histogram_tester.ExpectBucketCount(
       GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
-      ModelTypeEntityChange::kLocalCreation, 1);
+      DataTypeEntityChange::kLocalCreation, 1);
   histogram_tester.ExpectBucketCount(
       GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
-      ModelTypeEntityChange::kLocalDeletion, 0);
+      DataTypeEntityChange::kLocalDeletion, 0);
 
   ASSERT_TRUE(processor()->HasCommitResponse(kHash1));
   const CommitResponseData& initial_commit_response =
@@ -690,10 +690,10 @@ TEST_F(DataTypeWorkerTest, SimpleDelete) {
 
   histogram_tester.ExpectBucketCount(
       GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
-      ModelTypeEntityChange::kLocalCreation, 1);
+      DataTypeEntityChange::kLocalCreation, 1);
   histogram_tester.ExpectBucketCount(
       GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
-      ModelTypeEntityChange::kLocalDeletion, 1);
+      DataTypeEntityChange::kLocalDeletion, 1);
 
   // Verify the SyncEntity sent in the commit message.
   ASSERT_EQ(2U, server()->GetNumCommitMessages());
@@ -787,7 +787,7 @@ TEST_F(DataTypeWorkerTest, ReceiveUpdates) {
 
   histogram_tester.ExpectBucketCount(
       GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
-      ModelTypeEntityChange::kRemoteNonInitialUpdate, 0);
+      DataTypeEntityChange::kRemoteNonInitialUpdate, 0);
 
   const ClientTagHash tag_hash = GeneratePreferenceTagHash(kTag1);
 
@@ -816,7 +816,7 @@ TEST_F(DataTypeWorkerTest, ReceiveUpdates) {
 
   histogram_tester.ExpectBucketCount(
       GetEntityChangeHistogramNameForTest(worker()->GetDataType()),
-      ModelTypeEntityChange::kRemoteNonInitialUpdate, 1);
+      DataTypeEntityChange::kRemoteNonInitialUpdate, 1);
 }
 
 TEST_F(DataTypeWorkerTest,
@@ -1507,7 +1507,7 @@ TEST_F(DataTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
 
   // The fact that the data type is now blocked should have been recorded.
   histogram_tester.ExpectUniqueSample(
-      "Sync.ModelTypeBlockedDueToUndecryptableUpdate",
+      "Sync.DataTypeBlockedDueToUndecryptableUpdate",
       DataTypeForHistograms::kPreferences, 1);
 
   // Send empty GetUpdatesResponse. The counter shouldn't change.
@@ -1529,23 +1529,23 @@ TEST_F(DataTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
   TriggerEmptyUpdateFromServer();
 
   // Double check the histogram hasn't been recorded so far.
-  EXPECT_TRUE(histogram_tester
-                  .GetAllSamples("Sync.ModelTypeTimeUntilEncryptionKeyFound2")
-                  .empty());
-  EXPECT_TRUE(histogram_tester
-                  .GetAllSamples(
-                      "Sync.ModelTypeTimeUntilEncryptionKeyFound2.PREFERENCE")
-                  .empty());
+  EXPECT_TRUE(
+      histogram_tester.GetAllSamples("Sync.DataTypeTimeUntilEncryptionKeyFound")
+          .empty());
+  EXPECT_TRUE(
+      histogram_tester
+          .GetAllSamples("Sync.DataTypeTimeUntilEncryptionKeyFound.PREFERENCE")
+          .empty());
 
   // Make the key available. The correct number of GetUpdates cycles should
   // have been recorded.
   DecryptPendingKey();
   ASSERT_EQ(2, get_updates_while_should_have_been_known);
   histogram_tester.ExpectUniqueSample(
-      "Sync.ModelTypeTimeUntilEncryptionKeyFound2",
+      "Sync.DataTypeTimeUntilEncryptionKeyFound",
       get_updates_while_should_have_been_known, 1);
   histogram_tester.ExpectUniqueSample(
-      "Sync.ModelTypeTimeUntilEncryptionKeyFound2.PREFERENCE",
+      "Sync.DataTypeTimeUntilEncryptionKeyFound.PREFERENCE",
       get_updates_while_should_have_been_known, 1);
 }
 
@@ -1578,9 +1578,9 @@ TEST_F(DataTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
 
   // Should have recorded that 1 entity was dropped.
   histogram_tester.ExpectUniqueSample(
-      "Sync.ModelTypeUndecryptablePendingUpdatesDropped", 1, 1);
+      "Sync.DataTypeUndecryptablePendingUpdatesDropped", 1, 1);
   histogram_tester.ExpectUniqueSample(
-      "Sync.ModelTypeUndecryptablePendingUpdatesDropped.PREFERENCE", 1, 1);
+      "Sync.DataTypeUndecryptablePendingUpdatesDropped.PREFERENCE", 1, 1);
 
   // From now on, incoming updates encrypted with the missing key don't block
   // the worker.
@@ -1589,7 +1589,7 @@ TEST_F(DataTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
 
   // Should have recorded that 1 incoming update was ignored.
   histogram_tester.ExpectUniqueSample(
-      "Sync.ModelTypeUpdateDrop.DecryptionPendingForTooLong",
+      "Sync.DataTypeUpdateDrop.DecryptionPendingForTooLong",
       DataTypeForHistograms::kPreferences, 1);
 }
 
@@ -1658,10 +1658,10 @@ TEST_F(DataTypeWorkerTest, CommitOnly) {
 
   histogram_tester.ExpectBucketCount(
       GetEntityChangeHistogramNameForTest(data_type),
-      ModelTypeEntityChange::kLocalCreation, 1);
+      DataTypeEntityChange::kLocalCreation, 1);
   histogram_tester.ExpectBucketCount(
       GetEntityChangeHistogramNameForTest(data_type),
-      ModelTypeEntityChange::kLocalDeletion, 0);
+      DataTypeEntityChange::kLocalDeletion, 0);
 
   ASSERT_EQ(1U, processor()->GetNumCommitResponses());
   EXPECT_EQ(1U, processor()->GetNthCommitResponse(0).size());

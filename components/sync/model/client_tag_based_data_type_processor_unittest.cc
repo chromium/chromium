@@ -509,7 +509,7 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
 
   void ErrorReceived(const ModelError& error) {
     EXPECT_TRUE(expect_error_);
-    histogram_tester_->ExpectBucketCount("Sync.ModelTypeErrorSite.PREFERENCE",
+    histogram_tester_->ExpectBucketCount("Sync.DataTypeErrorSite.PREFERENCE",
                                          *expect_error_, /*count=*/1);
     expect_error_ = std::nullopt;
     error_reported_ = true;
@@ -988,7 +988,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldCommitLocalCreation) {
   EXPECT_EQ(1, acked_metadata.server_version());
 
   histogram_tester.ExpectBucketCount(
-      "Sync.ModelTypeOrphanMetadata.Put",
+      "Sync.DataTypeOrphanMetadata.Put",
       /*bucket=*/DataTypeHistogramValue(GetDataType()), /*count=*/0);
 }
 
@@ -1022,7 +1022,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   EXPECT_TRUE(db()->GetMetadata(kKey2).has_possibly_trimmed_base_specifics());
 
   histogram_tester.ExpectBucketCount(
-      "Sync.ModelTypeOrphanMetadata.Put",
+      "Sync.DataTypeOrphanMetadata.Put",
       /*bucket=*/DataTypeHistogramValue(GetDataType()),
       /*count=*/1);
 }
@@ -1539,7 +1539,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   base::HistogramTester histogram_tester;
   worker()->UpdateFromServer(GetPrefHash(kKey1), specifics);
   histogram_tester.ExpectUniqueSample(
-      "Sync.ModelTypeEntityConflictResolution.PREFERENCE",
+      "Sync.DataTypeEntityConflictResolution.PREFERENCE",
       ConflictResolution::kChangesMatch, /*expected_bucket_count=*/1);
 
   // Updated metadata but not data; no new commit request.
@@ -1562,7 +1562,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   worker()->UpdateFromServer(GetPrefHash(kKey1),
                              GeneratePrefSpecifics(kKey1, kValue3));
   histogram_tester.ExpectUniqueSample(
-      "Sync.ModelTypeEntityConflictResolution.PREFERENCE",
+      "Sync.DataTypeEntityConflictResolution.PREFERENCE",
       ConflictResolution::kUseLocal, /*expected_bucket_count=*/1);
 
   // Updated metadata but not data; new commit request.
@@ -1644,7 +1644,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   worker()->UpdateFromServer(GetPrefHash(kKey1),
                              GeneratePrefSpecifics(kKey1, kValue2));
   histogram_tester.ExpectUniqueSample(
-      "Sync.ModelTypeEntityConflictResolution.PREFERENCE",
+      "Sync.DataTypeEntityConflictResolution.PREFERENCE",
       ConflictResolution::kUseRemote, /*expected_bucket_count=*/1);
 
   // Updated client data and metadata; no new commit request.
@@ -2019,10 +2019,10 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   ASSERT_EQ(1, bridge()->merge_call_count());
   // The duration should get recorded into the right histogram.
   histogram_tester.ExpectTotalCount(
-      "Sync.ModelTypeConfigurationTime.Ephemeral.PREFERENCE",
+      "Sync.DataTypeConfigurationTime.Ephemeral.PREFERENCE",
       /*count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Sync.ModelTypeConfigurationTime.Persistent.PREFERENCE",
+      "Sync.DataTypeConfigurationTime.Persistent.PREFERENCE",
       /*count=*/0);
 }
 
@@ -2044,10 +2044,10 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   ASSERT_EQ(1, bridge()->merge_call_count());
   // The duration should get recorded into the right histogram.
   histogram_tester.ExpectTotalCount(
-      "Sync.ModelTypeConfigurationTime.Ephemeral.PREFERENCE",
+      "Sync.DataTypeConfigurationTime.Ephemeral.PREFERENCE",
       /*count=*/0);
   histogram_tester.ExpectTotalCount(
-      "Sync.ModelTypeConfigurationTime.Persistent.PREFERENCE",
+      "Sync.DataTypeConfigurationTime.Persistent.PREFERENCE",
       /*count=*/1);
 }
 
@@ -2118,7 +2118,7 @@ TEST_F(FullUpdateClientTagBasedDataTypeProcessorTest,
 
     // The duration should get recorded.
     histogram_tester.ExpectTotalCount(
-        "Sync.ModelTypeConfigurationTime.Ephemeral.PREFERENCE",
+        "Sync.DataTypeConfigurationTime.Ephemeral.PREFERENCE",
         /*count=*/1);
   }
 
@@ -2134,7 +2134,7 @@ TEST_F(FullUpdateClientTagBasedDataTypeProcessorTest,
 
     // The duration should not get recorded again.
     histogram_tester.ExpectTotalCount(
-        "Sync.ModelTypeConfigurationTime.Ephemeral.PREFERENCE",
+        "Sync.DataTypeConfigurationTime.Ephemeral.PREFERENCE",
         /*count=*/0);
   }
 }
@@ -2497,7 +2497,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
     InitializeToReadyState();
 
     histogram_tester.ExpectBucketCount(
-        "Sync.ModelTypeOrphanMetadata.GetData",
+        "Sync.DataTypeOrphanMetadata.GetData",
         /*bucket=*/DataTypeHistogramValue(GetDataType()), /*count=*/1);
   }
 
@@ -2517,7 +2517,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 
   // The processor should not report orphan again in UMA.
   histogram_tester.ExpectBucketCount(
-      "Sync.ModelTypeOrphanMetadata.GetData",
+      "Sync.DataTypeOrphanMetadata.GetData",
       /*bucket=*/DataTypeHistogramValue(GetDataType()), /*count=*/0);
 }
 
@@ -2545,7 +2545,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   EXPECT_EQ(0U, commit_request.size());
 
   // The processor never reports any orphan.
-  histogram_tester.ExpectTotalCount("Sync.ModelTypeOrphanMetadata.GetData",
+  histogram_tester.ExpectTotalCount("Sync.DataTypeOrphanMetadata.GetData",
                                     /*count=*/0);
 
   EXPECT_TRUE(db()->HasData(kKey1));
@@ -2560,7 +2560,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
     InitializeToReadyState();
     // There are no local unsynced entities.
     histogram_tester.ExpectUniqueSample(
-        "Sync.ModelTypeNumUnsyncedEntitiesOnModelReady.PREFERENCE",
+        "Sync.DataTypeNumUnsyncedEntitiesOnModelReady.PREFERENCE",
         /*sample=*/0, /*expected_bucket_count=*/1);
   }
   WritePrefItem(bridge(), kKey1, kValue1);
@@ -2577,7 +2577,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
     InitializeToReadyState();
     // Entity with kKey1 is unsynced.
     histogram_tester.ExpectUniqueSample(
-        "Sync.ModelTypeNumUnsyncedEntitiesOnModelReady.PREFERENCE",
+        "Sync.DataTypeNumUnsyncedEntitiesOnModelReady.PREFERENCE",
         /*sample=*/1, /*expected_bucket_count=*/1);
   }
 }
@@ -2879,7 +2879,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   EXPECT_TRUE(type_processor()->IsTrackingMetadata());
 
   histogram_tester.ExpectBucketCount(
-      "Sync.ModelTypeEntityMetadataWithoutInitialSync",
+      "Sync.DataTypeEntityMetadataWithoutInitialSync",
       /*sample=*/DataTypeHistogramValue(GetDataType()),
       /*expected_count=*/1);
 }
@@ -2912,7 +2912,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   EXPECT_TRUE(type_processor()->IsTrackingMetadata());
 
   histogram_tester.ExpectTotalCount(
-      "Sync.ModelTypeEntityMetadataWithoutInitialSync",
+      "Sync.DataTypeEntityMetadataWithoutInitialSync",
       /*expected_count=*/0);
 }
 
@@ -2949,7 +2949,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   // There were three entities with the same client-tag-hash which indicates
   // that two of them were metadata oprhans.
   histogram_tester.ExpectBucketCount(
-      "Sync.ModelTypeOrphanMetadata.ModelReadyToSync",
+      "Sync.DataTypeOrphanMetadata.ModelReadyToSync",
       /*sample=*/DataTypeHistogramValue(GetDataType()),
       /*expected_count=*/2);
 }
@@ -2996,7 +2996,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 
   // Update was dropped by the bridge.
   histogram_tester.ExpectBucketCount(
-      "Sync.ModelTypeUpdateDrop.DroppedByBridge",
+      "Sync.DataTypeUpdateDrop.DroppedByBridge",
       /*bucket=*/DataTypeHistogramValue(GetDataType()),
       /*count=*/1);
 }

@@ -170,7 +170,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Sync.BackedOffModelType" enum="SyncDataTypes"
+<histogram name="Sync.BackedOffDataType" enum="SyncDataTypes"
     expires_after="2024-12-08">
   <owner>victorvianna@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
@@ -584,6 +584,188 @@ chromium-metrics-reviews@google.com.
   <token key="SyncDataType" variants="SyncDataType"/>
 </histogram>
 
+<histogram name="Sync.DataTypeBlockedDueToUndecryptableUpdate"
+    enum="SyncDataTypes" expires_after="2024-12-08">
+  <owner>victorvianna@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Recorded on every GetUpdatesResponse if the data type is blocked because due
+    to the existence of undecryptable updates sent by the server. This is *not*
+    recorded for the cases where sync encryption is in a valid pending state,
+    e.g. user hasn't entered their passphrase yet.
+  </summary>
+</histogram>
+
+<histogram name="Sync.DataTypeClearedOnce" enum="SyncDataTypes"
+    expires_after="2025-04-04">
+  <owner>mastiz@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Recorded when the model (including both data and metadata) for a given data
+    type was cleared due to
+    `WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata`. In practice,
+    this happens only on iOS, when Chrome was just restored from an OS-level
+    backup. As a denominator, look at e.g. `Sync.InitialState2`.
+  </summary>
+</histogram>
+
+<histogram name="Sync.DataTypeCommitMessageHasDepletedQuota"
+    enum="SyncDataTypes" expires_after="2025-08-04">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Recorded once per commit message after which the quota for the given data
+    type is depleted. If the commit cycle contains 150 commit messages for a
+    given data type and the quota has initially 100 tokens, the quota gets
+    depleted after first 100 messages and this histogram gets recorded for all
+    the remaining messages (i.e. ~50 times) for the data type. Quota is tracked
+    (and this metric gets recorded) only for data types that can be committed
+    via JS API of extensions.
+  </summary>
+</histogram>
+
+<histogram name="Sync.DataTypeCommitWithDepletedQuota" enum="SyncDataTypes"
+    expires_after="2024-11-04">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Recorded once per local change that gets scheduled for committing with an
+    extra long nudge delay. This happens if and only if the commit quota for
+    this data type for this user is depleted. Quota is tracked (and this metric
+    gets recorded) only for data types that can be committed via JS API of
+    extensions. This metric is not very reliable as nudging for local changes
+    happens via thread hopping and there is no guarantee whether a local change
+    will nudge for commit _before_ or _after_ it actually gets committed.
+  </summary>
+</histogram>
+
+<histogram name="Sync.DataTypeConfigurationTime.{StorageType}{SyncDataType}"
+    units="ms" expires_after="2025-01-26">
+  <owner>rushans@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Recorded once per activation of a(n) {StorageType} data type; the value is
+    the duration of the setup (time from the start of the configuration of sync
+    until the data type receives all its sync data and the data is ready for the
+    user). This metric is used for monitoring general health of sync client-side
+    code.
+  </summary>
+  <token key="StorageType">
+    <variant name="Ephemeral" summary="ephemeral (in-memory)"/>
+    <variant name="Persistent" summary="persistent (on-disk)"/>
+  </token>
+  <token key="SyncDataType" variants="SyncDataType"/>
+</histogram>
+
+<histogram name="Sync.DataTypeCount{SyncDataType}" units="entries"
+    expires_after="2024-12-29">
+  <owner>rushans@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Counts the number of entries for each data type. The count is based on
+    metadata entries for the type. Recorded after sync configuration. This
+    metric is used for monitoring general health of sync client-side code.
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType"/>
+</histogram>
+
+<histogram name="Sync.DataTypeEntityChange{SyncDataType}"
+    enum="SyncEntityChange" expires_after="2024-12-29">
+  <owner>treib@chromium.org</owner>
+  <owner>rushans@google.com</owner>
+  <summary>
+    Recorded once for every sync entity change (whenever it is commited to the
+    server or updated from the server). This metric is used for monitoring
+    general health of sync client-side code. Note: This is only recorded with a
+    data type suffix. The base version is never recorded.
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType"/>
+</histogram>
+
+<histogram name="Sync.DataTypeEntityConflictResolution{SyncDataType}"
+    enum="SyncConflictResolution" expires_after="2025-06-11">
+  <owner>rushans@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the resolution of a conflict per sync entity on incremental update.
+    This metric should be compared against Sync.DataTypeEntityChange to compare
+    with the total number of incremental updates. Not recorded for NIGORI.
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType"/>
+</histogram>
+
+<histogram name="Sync.DataTypeEntityMetadataWithoutInitialSync"
+    enum="SyncDataTypes" expires_after="2024-12-08">
+  <owner>mastiz@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Records whenever ClientTagBasedDataTypeProcessor finds entity metadata
+    during ModelReadyToSync() but initial_sync_done is false.
+  </summary>
+</histogram>
+
+<histogram name="Sync.DataTypeErrorSite{SyncDataType}"
+    enum="SyncDataTypeErrorSite" expires_after="2025-01-05">
+  <owner>treib@chromium.org</owner>
+  <owner>rushans@google.com</owner>
+  <summary>
+    Recorded whenever ClientTagBasedDataTypeProcessor triggers a data type
+    failure (recorded for both Start and Run failures). It distinguishes call
+    sites for triggering such failures.
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType"/>
+</histogram>
+
+<histogram name="Sync.DataTypeMemoryKB{SyncDataType}" units="KB"
+    expires_after="2025-01-26">
+  <owner>mastiz@chromium.org</owner>
+  <owner>rushans@google.com</owner>
+  <summary>
+    Estimated memory usage by sync datatype in kilobytes. Recorded after sync
+    configuration. This metric is used for monitoring general health of sync
+    client-side code.
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType"/>
+</histogram>
+
+<histogram name="Sync.DataTypeNumUnsyncedEntitiesOnModelReady{SyncDataType}"
+    units="entities" expires_after="2025-01-22">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Counts the number of unsynced entities for each data type, including
+    tombstones. Recorded once model is ready to sync, i.e. typically soon after
+    browser startup. Recorded only if initial sync is done.
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType"/>
+</histogram>
+
+<histogram name="Sync.DataTypeOrphanMetadata.{Operation}" enum="SyncDataTypes"
+    expires_after="2025-01-05">
+  <owner>mastiz@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Records whenever an orphan metadata is encountered by the
+    ClientTagBasedDataTypeProcessor.
+  </summary>
+  <token key="Operation">
+    <variant name="GetData"
+        summary="This happens as a result of missing data in response from
+                 GetDataForCommit() call."/>
+    <variant name="ModelReadyToSync"
+        summary="This happens as a result of a ModelReadyToSync() call with
+                 metadata batch containing entities with duplicate
+                 client-tag-hashes (which indicates that all but one from
+                 each equivalence class are previous orphans). The type of
+                 the orphan is reported in this histogram, one for each
+                 orphan."/>
+    <variant name="Put"
+        summary="This happens as a result of a Put() call with an entity
+                 whose client-tag-hash is already tracked by the processor
+                 (which indicates an orphan)."/>
+  </token>
+</histogram>
+
 <histogram name="Sync.DataTypeRunFailures2" enum="SyncDataTypes"
     expires_after="2025-01-26">
   <owner>rushans@google.com</owner>
@@ -591,8 +773,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Histogram of the run failures for the different sync datatypes. These are
     failures that occur after startup while the datatype is syncing. This is one
-    of the base sync health metrics. The Sync.ModelTypeStoreBackendError and
-    Sync.ModelTypeErrorSite histograms may help diagnosing the problem.
+    of the base sync health metrics. The Sync.DataTypeStoreBackendError and
+    Sync.DataTypeErrorSite histograms may help diagnosing the problem.
   </summary>
 </histogram>
 
@@ -605,9 +787,108 @@ chromium-metrics-reviews@google.com.
     are failures that occur during startup before the data type is fully loaded.
     These errors are caused by failures in reading metadata (or data) from the
     DB or by another failure in interaction with the model. The
-    Sync.ModelTypeStoreBackendError and Sync.ModelTypeErrorSite histograms may
+    Sync.DataTypeStoreBackendError and Sync.DataTypeErrorSite histograms may
     help diagnosing the problem.
   </summary>
+</histogram>
+
+<histogram name="Sync.DataTypeStoreBackendError.{Operation}"
+    enum="LevelDBStatus" expires_after="2024-12-08">
+  <owner>treib@chromium.org</owner>
+  <owner>rushans@google.com</owner>
+  <summary>
+    Records the LevelDB Status error code for DataTypeStore {Operation}
+    operations. Recorded when there is an error while communicating with the DB
+    for any data type that uses the DataTypeStore. This metric should be used
+    together with Sync.DataType[Run|Start]Failures2 to figure out the root cause
+    of the data type failure.
+  </summary>
+  <token key="Operation">
+    <variant name="DeleteData"/>
+    <variant name="GetStoreVersion"/>
+    <variant name="Init"/>
+    <variant name="ReadAllRecords"/>
+    <variant name="ReadRecords"/>
+    <variant name="WriteModifications"/>
+  </token>
+</histogram>
+
+<histogram name="Sync.DataTypeStoreInitializationSuccess" enum="BooleanSuccess"
+    expires_after="2024-09-30">
+  <owner>treib@chromium.org</owner>
+  <owner>rushans@google.com</owner>
+  <summary>
+    Records the outcome of the initialization of the DataTypeStoreBackend, which
+    typically happens once every browser startup (or more precisely, profile
+    initialization).
+  </summary>
+</histogram>
+
+<histogram name="Sync.DataTypeTimeUntilEncryptionKeyFound{SyncDataType}"
+    units="GetUpdates" expires_after="2024-10-10">
+  <owner>victorvianna@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Records how long it took from the moment the first update encrypted with
+    this key was received by DataTypeWorker, to the moment where the key was
+    available to the Cryptographer. The time is measured by the number of
+    GetUpdates cycles performed by the worker *while* the Cryptographer didn't
+    have pending keys (and thus the key should have been known in theory).
+
+    This replaced Sync.DataTypeTimeUntilEncryptionKeyFound which used to measure
+    the same time in GetUpdatesResponse-s.
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Sync.DataTypeUndecryptablePendingUpdatesDropped{SyncDataType}"
+    units="SyncEntity" expires_after="2024-12-15">
+  <owner>victorvianna@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Records the number of entities dropped when the data type decided that a
+    certain encryption key was lost and dropped all pending updates encrypted
+    with it. Future updates encrypted with such key will also be ignored by the
+    data type, but those are *not* counted in this metric.
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Sync.DataTypeUpdateDrop.{Reason}" enum="SyncDataTypes"
+    expires_after="2024-12-30">
+  <owner>treib@chromium.org</owner>
+  <owner>rushans@google.com</owner>
+  <summary>
+    Recorded whenever a remote update for a particular data type gets dropped
+    for the following reason: {Reason}.
+  </summary>
+  <token key="Reason">
+    <variant name="CannotGenerateStorageKey"
+        summary="The bridge cannot generate a valid storage key based on the
+                 entity data."/>
+    <variant name="DecryptionPending"
+        summary="Decryption keys are missing at the moment (it is queued for
+                 later decryption which may or may not happen)."/>
+    <variant name="DecryptionPendingForTooLong"
+        summary="Decryption keys were missing for so long that the update was
+                 ignored."/>
+    <variant name="DroppedByBridge"
+        summary="The bridge classified the data as bad/invalid."/>
+    <variant name="FailedToDecrypt"
+        summary="Decryption is not successful (maybe the data is corrupt)."/>
+    <variant name="InconsistentClientTag"
+        summary="Client tag hash from the server does not match the one
+                 computed by the bridge based on the entity data."/>
+    <variant name="TombstoneForNonexistentInIncrementalUpdate"
+        summary="It was a tombstone for an entity that does not exist
+                 locally."/>
+    <variant name="TombstoneInFullUpdate"
+        summary="It was a tombstone in a full update."/>
+  </token>
 </histogram>
 
 <histogram name="Sync.DeviceCount2" units="devices" expires_after="never">
@@ -747,7 +1028,7 @@ chromium-metrics-reviews@google.com.
     Recorded when HistorySyncBridge encounters an incoming entity that is
     invalid, i.e. that fails some validity check. Counts in this histogram
     should be compared to counts in the &quot;Remote&quot; buckets of
-    Sync.ModelTypeEntityChange3.History.
+    Sync.DataTypeEntityChange.History.
   </summary>
 </histogram>
 
@@ -811,8 +1092,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.InvalidationPerModelType" enum="SyncDataTypes"
+<histogram name="Sync.InvalidationPerDataType" enum="SyncDataTypes"
     expires_after="never">
+<!-- expires-never: For monitoring FCM based invalidations. -->
+
+  <owner>mmoskvitin@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Histogram tracks the number of invalidations received per sync data type.
+  </summary>
+</histogram>
+
+<histogram name="Sync.InvalidationPerModelType" enum="SyncDataTypes"
+    expires_after="M135">
 <!-- expires-never: For monitoring FCM based invalidations. -->
 
   <owner>mmoskvitin@google.com</owner>
@@ -923,20 +1215,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.ModelTypeBlockedDueToUndecryptableUpdate"
-    enum="SyncDataTypes" expires_after="2024-12-08">
-  <owner>victorvianna@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>
-    Recorded on every GetUpdatesResponse if the data type is blocked because due
-    to the existence of undecryptable updates sent by the server. This is *not*
-    recorded for the cases where sync encryption is in a valid pending state,
-    e.g. user hasn't entered their passphrase yet.
-  </summary>
-</histogram>
-
 <histogram name="Sync.ModelTypeClearedOnce" enum="SyncDataTypes"
-    expires_after="2025-04-04">
+    expires_after="M135">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -949,7 +1229,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeCommitMessageHasDepletedQuota"
-    enum="SyncDataTypes" expires_after="2025-08-04">
+    enum="SyncDataTypes" expires_after="M135">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -964,7 +1244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeCommitWithDepletedQuota" enum="SyncDataTypes"
-    expires_after="2024-11-04">
+    expires_after="M135">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -978,26 +1258,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.ModelTypeConfigurationTime.{StorageType}{SyncDataType}"
-    units="ms" expires_after="2025-01-26">
-  <owner>rushans@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>
-    Recorded once per activation of a(n) {StorageType} data type; the value is
-    the duration of the setup (time from the start of the configuration of sync
-    until the data type receives all its sync data and the data is ready for the
-    user). This metric is used for monitoring general health of sync client-side
-    code.
-  </summary>
-  <token key="StorageType">
-    <variant name="Ephemeral" summary="ephemeral (in-memory)"/>
-    <variant name="Persistent" summary="persistent (on-disk)"/>
-  </token>
-  <token key="SyncDataType" variants="SyncDataType"/>
-</histogram>
-
 <histogram name="Sync.ModelTypeCount4{SyncDataType}" units="entries"
-    expires_after="2024-12-29">
+    expires_after="M135">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -1009,7 +1271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeEntityChange3{SyncDataType}"
-    enum="SyncEntityChange" expires_after="2024-12-29">
+    enum="SyncEntityChange" expires_after="M135">
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -1021,43 +1283,8 @@ chromium-metrics-reviews@google.com.
   <token key="SyncDataType" variants="SyncDataType"/>
 </histogram>
 
-<histogram name="Sync.ModelTypeEntityConflictResolution{SyncDataType}"
-    enum="SyncConflictResolution" expires_after="2025-06-11">
-  <owner>rushans@google.com</owner>
-  <owner>src/components/sync/OWNERS</owner>
-  <summary>
-    Records the resolution of a conflict per sync entity on incremental update.
-    This metric should be compared against Sync.ModelTypeEntityChange3 to
-    compare with the total number of incremental updates. Not recorded for
-    NIGORI.
-  </summary>
-  <token key="SyncDataType" variants="SyncDataType"/>
-</histogram>
-
-<histogram name="Sync.ModelTypeEntityMetadataWithoutInitialSync"
-    enum="SyncDataTypes" expires_after="2024-12-08">
-  <owner>mastiz@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    Records whenever ClientTagBasedDataTypeProcessor finds entity metadata
-    during ModelReadyToSync() but initial_sync_done is false.
-  </summary>
-</histogram>
-
-<histogram name="Sync.ModelTypeErrorSite{SyncDataType}"
-    enum="SyncDataTypeErrorSite" expires_after="2025-01-05">
-  <owner>treib@chromium.org</owner>
-  <owner>rushans@google.com</owner>
-  <summary>
-    Recorded whenever ClientTagBasedDataTypeProcessor triggers a data type
-    failure (recorded for both Start and Run failures). It distinguishes call
-    sites for triggering such failures.
-  </summary>
-  <token key="SyncDataType" variants="SyncDataType"/>
-</histogram>
-
 <histogram name="Sync.ModelTypeMemoryKB{SyncDataType}" units="KB"
-    expires_after="2025-01-26">
+    expires_after="M135">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -1068,46 +1295,8 @@ chromium-metrics-reviews@google.com.
   <token key="SyncDataType" variants="SyncDataType"/>
 </histogram>
 
-<histogram name="Sync.ModelTypeNumUnsyncedEntitiesOnModelReady{SyncDataType}"
-    units="entities" expires_after="2025-01-22">
-  <owner>mmoskvitin@google.com</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    Counts the number of unsynced entities for each data type, including
-    tombstones. Recorded once model is ready to sync, i.e. typically soon after
-    browser startup. Recorded only if initial sync is done.
-  </summary>
-  <token key="SyncDataType" variants="SyncDataType"/>
-</histogram>
-
-<histogram name="Sync.ModelTypeOrphanMetadata.{Operation}" enum="SyncDataTypes"
-    expires_after="2025-01-05">
-  <owner>mastiz@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    Records whenever an orphan metadata is encountered by the
-    ClientTagBasedDataTypeProcessor.
-  </summary>
-  <token key="Operation">
-    <variant name="GetData"
-        summary="This happens as a result of missing data in response from
-                 GetDataForCommit() call."/>
-    <variant name="ModelReadyToSync"
-        summary="This happens as a result of a ModelReadyToSync() call with
-                 metadata batch containing entities with duplicate
-                 client-tag-hashes (which indicates that all but one from
-                 each equivalence class are previous orphans). The type of
-                 the orphan is reported in this histogram, one for each
-                 orphan."/>
-    <variant name="Put"
-        summary="This happens as a result of a Put() call with an entity
-                 whose client-tag-hash is already tracked by the processor
-                 (which indicates an orphan)."/>
-  </token>
-</histogram>
-
 <histogram name="Sync.ModelTypeStoreBackendError.{Operation}"
-    enum="LevelDBStatus" expires_after="2024-12-08">
+    enum="LevelDBStatus" expires_after="M135">
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -1128,7 +1317,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeStoreInitializationSuccess"
-    enum="BooleanSuccess" expires_after="2024-09-30">
+    enum="BooleanSuccess" expires_after="M135">
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -1136,74 +1325,6 @@ chromium-metrics-reviews@google.com.
     typically happens once every browser startup (or more precisely, profile
     initialization).
   </summary>
-</histogram>
-
-<histogram name="Sync.ModelTypeTimeUntilEncryptionKeyFound2{SyncDataType}"
-    units="GetUpdates" expires_after="2024-10-10">
-  <owner>victorvianna@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>
-    Records how long it took from the moment the first update encrypted with
-    this key was received by DataTypeWorker, to the moment where the key was
-    available to the Cryptographer. The time is measured by the number of
-    GetUpdates cycles performed by the worker *while* the Cryptographer didn't
-    have pending keys (and thus the key should have been known in theory).
-
-    This replaced Sync.ModelTypeTimeUntilEncryptionKeyFound which used to
-    measure the same time in GetUpdatesResponse-s.
-  </summary>
-  <token key="SyncDataType" variants="SyncDataType">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram
-    name="Sync.ModelTypeUndecryptablePendingUpdatesDropped{SyncDataType}"
-    units="SyncEntity" expires_after="2024-12-15">
-  <owner>victorvianna@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>
-    Records the number of entities dropped when the data type decided that a
-    certain encryption key was lost and dropped all pending updates encrypted
-    with it. Future updates encrypted with such key will also be ignored by the
-    data type, but those are *not* counted in this metric.
-  </summary>
-  <token key="SyncDataType" variants="SyncDataType">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="Sync.ModelTypeUpdateDrop.{Reason}" enum="SyncDataTypes"
-    expires_after="2024-12-30">
-  <owner>treib@chromium.org</owner>
-  <owner>rushans@google.com</owner>
-  <summary>
-    Recorded whenever a remote update for a particular data type gets dropped
-    for the following reason: {Reason}.
-  </summary>
-  <token key="Reason">
-    <variant name="CannotGenerateStorageKey"
-        summary="The bridge cannot generate a valid storage key based on the
-                 entity data."/>
-    <variant name="DecryptionPending"
-        summary="Decryption keys are missing at the moment (it is queued for
-                 later decryption which may or may not happen)."/>
-    <variant name="DecryptionPendingForTooLong"
-        summary="Decryption keys were missing for so long that the update was
-                 ignored."/>
-    <variant name="DroppedByBridge"
-        summary="The bridge classified the data as bad/invalid."/>
-    <variant name="FailedToDecrypt"
-        summary="Decryption is not successful (maybe the data is corrupt)."/>
-    <variant name="InconsistentClientTag"
-        summary="Client tag hash from the server does not match the one
-                 computed by the bridge based on the entity data."/>
-    <variant name="TombstoneForNonexistentInIncrementalUpdate"
-        summary="It was a tombstone for an entity that does not exist
-                 locally."/>
-    <variant name="TombstoneInFullUpdate"
-        summary="It was a tombstone in a full update."/>
-  </token>
 </histogram>
 
 <histogram
@@ -1744,27 +1865,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.ThrottledAllModelTypes" enum="Boolean"
+<histogram name="Sync.ThrottledAllDataTypes" enum="Boolean"
     expires_after="2025-02-12">
   <owner>victorvianna@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
     Logged when the server instructs the client to throttle all its data types.
-    See also Sync.ThrottledSomeModelTypes which records a different event.
+    See also Sync.ThrottledSomeDataTypes which records a different event.
 
     This histogram can help explain changes in
     Sync.PostedClientToServerMessageError2::THROTTLED.
   </summary>
 </histogram>
 
-<histogram name="Sync.ThrottledSomeModelTypes" enum="SyncDataTypes"
+<histogram name="Sync.ThrottledSomeDataTypes" enum="SyncDataTypes"
     expires_after="2025-04-28">
   <owner>victorvianna@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
     Logged when the sync server instructs this client to throttle a special list
-    of data types. See also Sync.ThrottledAllModelTypes which records a
-    different event.
+    of data types. See also Sync.ThrottledAllDataTypes which records a different
+    event.
 
     This histogram can help explain changes in
     Sync.PostedClientToServerMessageError2::THROTTLED.

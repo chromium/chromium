@@ -366,7 +366,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   base::HistogramTester histogram_tester;
   ProcessSingleUpdate(std::move(update));
   histogram_tester.ExpectUniqueSample(
-      "Sync.ModelTypeEntityConflictResolution.PREFERENCE",
+      "Sync.DataTypeEntityConflictResolution.PREFERENCE",
       ConflictResolution::kChangesMatch, /*expected_bucket_count=*/1);
 
   EXPECT_EQ(1U, db()->data_change_count());
@@ -401,7 +401,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   base::HistogramTester histogram_tester;
   ProcessSingleUpdate(std::move(update));
   histogram_tester.ExpectUniqueSample(
-      "Sync.ModelTypeEntityConflictResolution.PREFERENCE",
+      "Sync.DataTypeEntityConflictResolution.PREFERENCE",
       ConflictResolution::kUseRemote, /*expected_bucket_count=*/1);
 
   EXPECT_EQ(3U, db()->data_change_count());
@@ -433,7 +433,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   base::HistogramTester histogram_tester;
   ProcessSingleUpdate(std::move(update));
   histogram_tester.ExpectUniqueSample(
-      "Sync.ModelTypeEntityConflictResolution.PREFERENCE",
+      "Sync.DataTypeEntityConflictResolution.PREFERENCE",
       ConflictResolution::kIgnoreLocalEncryption, /*expected_bucket_count=*/1);
 
   EXPECT_EQ(2U, db()->data_change_count());
@@ -467,7 +467,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   base::HistogramTester histogram_tester;
   ProcessSingleUpdate(std::move(update));
   histogram_tester.ExpectUniqueSample(
-      "Sync.ModelTypeEntityConflictResolution.PREFERENCE",
+      "Sync.DataTypeEntityConflictResolution.PREFERENCE",
       ConflictResolution::kIgnoreRemoteEncryption, /*expected_bucket_count=*/1);
 
   EXPECT_EQ(1U, db()->data_change_count());

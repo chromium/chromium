@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest, Sanity) {
 // Regression test to verify that pagination during GetUpdates() contributes
 // properly to UMA histograms.
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
-                       EmitModelTypeEntityChangeToUma) {
+                       EmitDataTypeEntityChangeToUma) {
   const int kNumEntities = 17;
 
   fake_server_->SetMaxGetUpdatesBatchSize(7);
@@ -165,8 +165,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
   ASSERT_TRUE(SetupSync());
   EXPECT_EQ(kNumEntities,
             histogram_tester.GetBucketCount(
-                "Sync.ModelTypeEntityChange3.PREFERENCE",
-                syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
+                "Sync.DataTypeEntityChange.PREFERENCE",
+                syncer::DataTypeEntityChange::kRemoteInitialUpdate));
 }
 
 // TODO(crbug.com/40200835): PRE_ tests are not supported on Android.
@@ -185,8 +185,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupSync());
   EXPECT_EQ(1, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeEntityChange3.PREFERENCE",
-                   syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
+                   "Sync.DataTypeEntityChange.PREFERENCE",
+                   syncer::DataTypeEntityChange::kRemoteInitialUpdate));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
@@ -211,8 +211,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
   EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   EXPECT_EQ(0, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeEntityChange3.PREFERENCE",
-                   syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
+                   "Sync.DataTypeEntityChange.PREFERENCE",
+                   syncer::DataTypeEntityChange::kRemoteInitialUpdate));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

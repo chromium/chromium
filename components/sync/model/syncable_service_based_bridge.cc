@@ -479,7 +479,7 @@ void SyncableServiceBasedBridge::OnSyncableServiceReady(
     if (auto error = StartSyncableService()) {
       change_processor()->ReportError(*error);
     } else {
-      // Using the same range as Sync.ModelTypeConfigurationTime.* metric.
+      // Using the same range as Sync.DataTypeConfigurationTime.* metric.
       base::UmaHistogramCustomTimes(
           base::StringPrintf("Sync.SyncableServiceStartTime.%s",
                              DataTypeToHistogramSuffix(type_)),

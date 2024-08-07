@@ -673,8 +673,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   }
 
   EXPECT_EQ(3, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeEntityChange3.SESSION",
-                   syncer::ModelTypeEntityChange::kLocalDeletion));
+                   "Sync.DataTypeEntityChange.SESSION",
+                   syncer::DataTypeEntityChange::kLocalDeletion));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
@@ -719,8 +719,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   }
 
   EXPECT_EQ(2, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeEntityChange3.SESSION",
-                   syncer::ModelTypeEntityChange::kLocalDeletion));
+                   "Sync.DataTypeEntityChange.SESSION",
+                   syncer::DataTypeEntityChange::kLocalDeletion));
 }
 
 // Regression test for crbug.com/915133 that verifies the browser doesn't crash

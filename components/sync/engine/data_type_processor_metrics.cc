@@ -19,7 +19,7 @@ void LogDataTypeConfigurationTime(DataType data_type,
 
   base::UmaHistogramCustomTimes(
       base::StringPrintf(
-          "Sync.ModelTypeConfigurationTime.%s.%s",
+          "Sync.DataTypeConfigurationTime.%s.%s",
           (mode == SyncMode::kTransportOnly) ? "Ephemeral" : "Persistent",
           DataTypeToHistogramSuffix(data_type)),
       configuration_duration,

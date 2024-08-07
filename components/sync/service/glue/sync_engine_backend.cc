@@ -47,6 +47,9 @@ const base::FilePath::CharType kNigoriStorageFilename[] =
     FILE_PATH_LITERAL("Nigori.bin");
 
 void RecordInvalidationPerDataType(DataType type) {
+  UMA_HISTOGRAM_ENUMERATION("Sync.InvalidationPerDataType",
+                            DataTypeHistogramValue(type));
+  // Legacy equivalent, before the metric was renamed.
   UMA_HISTOGRAM_ENUMERATION("Sync.InvalidationPerModelType",
                             DataTypeHistogramValue(type));
 }

@@ -890,8 +890,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="(Obsolete) DEPRECATED_ACCESS_DENIED"/>
   <int value="2" label="NOT_MY_BIRTHDAY"/>
   <int value="3" label="THROTTLED">
-    You might want to look at Sync.ThrottledSomeModelTypes to correlate this
-    with throttling of a specific data type, or Sync.ThrottledAllModelTypes for
+    You might want to look at Sync.ThrottledSomeDataTypes to correlate this with
+    throttling of a specific data type, or Sync.ThrottledAllDataTypes for
     throttling of the whole client.
   </int>
   <int value="4" label="(Obsolete) DEPRECATED_AUTH_EXPIRED"/>
@@ -903,7 +903,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="DISABLED_BY_ADMIN"/>
   <int value="11" label="(Obsolete) DEPRECATED_USER_ROLLBACK"/>
   <int value="12" label="PARTIAL_FAILURE">
-    You might want to look at Sync.BackedOffModelType to see the per-type effect
+    You might want to look at Sync.BackedOffDataType to see the per-type effect
     of this.
   </int>
   <int value="13" label="CLIENT_DATA_OBSOLETE"/>

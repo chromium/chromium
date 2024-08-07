@@ -153,6 +153,9 @@ void DataTypeStoreServiceImpl::BackendInitializationDone(
               : ReadingListMigrationStep::kMigrationFinishedAndPrefCleared);
   }
 
+  base::UmaHistogramBoolean("Sync.DataTypeStoreBackendInitializationSuccess",
+                            !error.has_value());
+  // Legacy equivalent, before the metric was renamed.
   base::UmaHistogramBoolean("Sync.ModelTypeStoreBackendInitializationSuccess",
                             !error.has_value());
   if (error) {

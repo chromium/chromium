@@ -12,11 +12,15 @@
 namespace syncer {
 
 namespace {
-const char kModelTypeMemoryHistogramPrefix[] = "Sync.ModelTypeMemoryKB.";
-const char kModelTypeCountHistogramPrefix[] = "Sync.ModelTypeCount4.";
-const char kModelTypeUpdateDropHistogramPrefix[] = "Sync.ModelTypeUpdateDrop.";
-const char kModelTypeNumUnsyncedEntitiesOnModelReady[] =
-    "Sync.ModelTypeNumUnsyncedEntitiesOnModelReady.";
+
+const char kLegacyModelTypeMemoryHistogramPrefix[] = "Sync.ModelTypeMemoryKB.";
+const char kLegacyModelTypeCountHistogramPrefix[] = "Sync.ModelTypeCount4.";
+
+const char kDataTypeMemoryHistogramPrefix[] = "Sync.DataTypeMemoryKB.";
+const char kDataTypeCountHistogramPrefix[] = "Sync.DataTypeCount.";
+const char kDataTypeUpdateDropHistogramPrefix[] = "Sync.DataTypeUpdateDrop.";
+const char kDataTypeNumUnsyncedEntitiesOnModelReady[] =
+    "Sync.DataTypeNumUnsyncedEntitiesOnModelReady.";
 
 const char kEntitySizeWithMetadataHistogramPrefix[] =
     "Sync.EntitySizeOnCommit.Entity.WithMetadata.";
@@ -51,7 +55,7 @@ std::string GetHistogramSuffixForUpdateDropReason(UpdateDropReason reason) {
 void SyncRecordDataTypeUpdateDropReason(UpdateDropReason reason,
                                         DataType type) {
   std::string full_histogram_name =
-      kModelTypeUpdateDropHistogramPrefix +
+      kDataTypeUpdateDropHistogramPrefix +
       GetHistogramSuffixForUpdateDropReason(reason);
   base::UmaHistogramEnumeration(full_histogram_name,
                                 DataTypeHistogramValue(type));
@@ -60,15 +64,22 @@ void SyncRecordDataTypeUpdateDropReason(UpdateDropReason reason,
 void SyncRecordDataTypeMemoryHistogram(DataType data_type, size_t bytes) {
   std::string type_string = DataTypeToHistogramSuffix(data_type);
   std::string full_histogram_name =
-      kModelTypeMemoryHistogramPrefix + type_string;
+      kDataTypeMemoryHistogramPrefix + type_string;
   base::UmaHistogramCounts1M(full_histogram_name, bytes / 1024);
+
+  std::string legacy_histogram_name =
+      kLegacyModelTypeMemoryHistogramPrefix + type_string;
+  base::UmaHistogramCounts1M(legacy_histogram_name, bytes / 1024);
 }
 
 void SyncRecordDataTypeCountHistogram(DataType data_type, size_t count) {
   std::string type_string = DataTypeToHistogramSuffix(data_type);
-  std::string full_histogram_name =
-      kModelTypeCountHistogramPrefix + type_string;
+  std::string full_histogram_name = kDataTypeCountHistogramPrefix + type_string;
   base::UmaHistogramCounts1M(full_histogram_name, count);
+
+  std::string legacy_histogram_name =
+      kLegacyModelTypeCountHistogramPrefix + type_string;
+  base::UmaHistogramCounts1M(legacy_histogram_name, count);
 }
 
 void SyncRecordDataTypeEntitySizeHistogram(DataType data_type,
@@ -93,12 +104,15 @@ void SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(
     DataType data_type,
     size_t num_unsynced_entities) {
   const std::string full_histogram_name =
-      std::string(kModelTypeNumUnsyncedEntitiesOnModelReady) +
+      std::string(kDataTypeNumUnsyncedEntitiesOnModelReady) +
       DataTypeToHistogramSuffix(data_type);
   base::UmaHistogramCounts1000(full_histogram_name, num_unsynced_entities);
 }
 
 void SyncRecordModelClearedOnceHistogram(DataType data_type) {
+  base::UmaHistogramEnumeration("Sync.DataTypeClearedOnce",
+                                DataTypeHistogramValue(data_type));
+  // Legacy equivalent, before the metric was renamed.
   base::UmaHistogramEnumeration("Sync.ModelTypeClearedOnce",
                                 DataTypeHistogramValue(data_type));
 }

@@ -64,7 +64,7 @@ const char kMobileBookmarksId[] = "mobile_bookmarks_id";
 const char kBookmarksRootId[] = "root_id";
 const char kCacheGuid[] = "generated_id";
 const char kPersistentDataTypeConfigurationTimeMetricName[] =
-    "Sync.ModelTypeConfigurationTime.Persistent.BOOKMARK";
+    "Sync.DataTypeConfigurationTime.Persistent.BOOKMARK";
 
 struct BookmarkInfo {
   std::string server_id;
@@ -542,7 +542,7 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldUpdateModelAfterRemoteCreation) {
               Eq(ASCIIToUTF16(kTitle)));
   EXPECT_THAT(bookmark_bar->children().front()->url(), Eq(GURL(kUrl)));
 
-  // Incremental updates to not contribute to Sync.ModelTypeConfigurationTime.
+  // Incremental updates to not contribute to Sync.DataTypeConfigurationTime.
   histogram_tester.ExpectTotalCount(
       kPersistentDataTypeConfigurationTimeMetricName,
       /*count=*/0);
@@ -2020,7 +2020,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
     SimulateModelReadyToSyncWithInitialSyncDone();
     // There are no local unsynced entities.
     histogram_tester.ExpectUniqueSample(
-        "Sync.ModelTypeNumUnsyncedEntitiesOnModelReady.BOOKMARK", /*sample=*/0,
+        "Sync.DataTypeNumUnsyncedEntitiesOnModelReady.BOOKMARK", /*sample=*/0,
         /*expected_bucket_count=*/1);
   }
 
@@ -2043,7 +2043,7 @@ TEST_F(BookmarkDataTypeProcessorTest,
 
     // Bookmark added above is unsynced.
     histogram_tester.ExpectUniqueSample(
-        "Sync.ModelTypeNumUnsyncedEntitiesOnModelReady.BOOKMARK", /*sample=*/1,
+        "Sync.DataTypeNumUnsyncedEntitiesOnModelReady.BOOKMARK", /*sample=*/1,
         /*expected_bucket_count=*/1);
   }
 }

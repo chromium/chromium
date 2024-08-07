@@ -10,7 +10,7 @@
 namespace syncer {
 
 // The enum values are used for histogram suffixes. When adding a new type here,
-// extend also the "Sync.ModelTypeUpdateDrop" histogram in histograms.xml.
+// extend also the "Sync.DataTypeUpdateDrop" histogram in histograms.xml.
 enum class UpdateDropReason {
   kInconsistentClientTag,
   kCannotGenerateStorageKey,
