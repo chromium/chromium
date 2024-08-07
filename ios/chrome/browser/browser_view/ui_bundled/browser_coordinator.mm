@@ -86,7 +86,6 @@
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/model/followed_web_site.h"
 #import "ios/chrome/browser/follow/ui_bundled/first_follow_coordinator.h"
-#import "ios/chrome/browser/follow/ui_bundled/follow_iph_coordinator.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -214,7 +213,6 @@
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
-#import "ios/chrome/browser/ui/price_notifications/price_notifications_iph_coordinator.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_view_coordinator.h"
 #import "ios/chrome/browser/ui/print/print_coordinator.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator.h"
@@ -436,9 +434,6 @@ enum class ToolbarKind {
 // Coordinator for the First Follow modal.
 @property(nonatomic, strong) FirstFollowCoordinator* firstFollowCoordinator;
 
-// Coordinator for the Follow IPH feature.
-@property(nonatomic, strong) FollowIPHCoordinator* followIPHCoordinator;
-
 // Coordinator in charge of the presenting autofill options above the
 // keyboard.
 @property(nonatomic, strong)
@@ -491,10 +486,6 @@ enum class ToolbarKind {
 
 // Coordinator for the popup menu.
 @property(nonatomic, strong) PopupMenuCoordinator* popupMenuCoordinator;
-
-// Coordinator for the price notifications IPH feature.
-@property(nonatomic, strong)
-    PriceNotificationsIPHCoordinator* priceNotificationsIPHCoordinator;
 
 // Coordinator for the price notifications UI presentation.
 @property(nonatomic, strong)
@@ -1238,13 +1229,6 @@ enum class ToolbarKind {
                          browser:self.browser];
   [self.ARQuickLookCoordinator start];
 
-  self.followIPHCoordinator = [[FollowIPHCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  [self.followIPHCoordinator start];
-  // Updates the followIPHPresenter value inside tabLifecycleMediator.
-  self.tabLifecycleMediator.followIPHPresenter = self.followIPHCoordinator;
-
   self.SafariDownloadCoordinator = [[SafariDownloadCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
@@ -1351,16 +1335,6 @@ enum class ToolbarKind {
   self.viewController.infobarBannerOverlayContainerViewController =
       self.infobarBannerOverlayContainerCoordinator.viewController;
 
-  self.priceNotificationsIPHCoordinator =
-      [[PriceNotificationsIPHCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser];
-  [self.priceNotificationsIPHCoordinator start];
-  // Updates the priceNotificationsIPHPresenter value inside
-  // tabLifecycleMediator.
-  self.tabLifecycleMediator.priceNotificationsIPHPresenter =
-      self.priceNotificationsIPHCoordinator;
-
   _credentialProviderPromoCoordinator =
       [[CredentialProviderPromoCoordinator alloc]
           initWithBaseViewController:self.viewController
@@ -1393,9 +1367,6 @@ enum class ToolbarKind {
 
   [self.firstFollowCoordinator stop];
   self.firstFollowCoordinator = nil;
-
-  [self.followIPHCoordinator stop];
-  self.followIPHCoordinator = nil;
 
   [self.formInputAccessoryCoordinator stop];
   self.formInputAccessoryCoordinator = nil;
@@ -1498,9 +1469,6 @@ enum class ToolbarKind {
   [self.passwordSettingsCoordinator stop];
   self.passwordSettingsCoordinator.delegate = nil;
   self.passwordSettingsCoordinator = nil;
-
-  [self.priceNotificationsIPHCoordinator stop];
-  self.priceNotificationsIPHCoordinator = nil;
 
   [_credentialProviderPromoCoordinator stop];
   _credentialProviderPromoCoordinator = nil;

@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -293,7 +294,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   _discoverFeedHeaderMenuTipBubblePresenter = presenter;
 }
 
-- (void)presentFollowWhileBrowsingTipBubble {
+- (void)presentFollowWhileBrowsingTipBubbleAndLogWithRecorder:
+    (FeedMetricsRecorder*)recorder {
   if (![self canPresentBubble])
     return;
 
@@ -317,6 +319,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   if (presenter) {
     _followWhileBrowsingBubbleTipPresenter = presenter;
   }
+  [recorder recordFollowRecommendationIPHShown];
 }
 
 - (void)presentDefaultSiteViewTipBubbleWithSettingsMap:
@@ -551,7 +554,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     return;
   }
 
-  // only present the IPH when tab count > 1.
+  // Only present the IPH when tab count > 1.
   if (_webStateList->count() <= 1) {
     return;
   }

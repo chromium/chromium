@@ -7,44 +7,23 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_iph_presenter.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-
-// Helper object to weakly bind `presenter` in the callback.
-@interface WeakPriceNotificationsPresenter : NSObject
-- (instancetype)initWithPresenter:(id<PriceNotificationsIPHPresenter>)presenter
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
-
-@property(nonatomic, weak) id<PriceNotificationsIPHPresenter> presenter;
-@end
-
-@implementation WeakPriceNotificationsPresenter
-- (instancetype)initWithPresenter:
-    (id<PriceNotificationsIPHPresenter>)presenter {
-  if ((self = [super init])) {
-    _presenter = presenter;
-  }
-
-  return self;
-}
-@end
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 
 namespace {
 
 void OnProductInfoUrl(
-    WeakPriceNotificationsPresenter* presenter,
+    id<HelpCommands> help_handler,
     const GURL& product_url,
     const std::optional<const commerce::ProductInfo>& product_info) {
-  DCHECK(presenter);
   if (!product_info) {
     return;
   }
-
-  [presenter.presenter presentPriceNotificationsWhileBrowsingIPH];
+  [help_handler presentInProductHelpWithType:
+                    InProductHelpType::kPriceNotificationsWhileBrowsing];
 }
 
 // Returns whether the price notification should be presented
@@ -86,13 +65,11 @@ void PriceNotificationsTabHelper::DidFinishNavigation(
   if (!ShouldPresentPriceNotifications(web_state)) {
     return;
   }
-
-  WeakPriceNotificationsPresenter* weak_presenter =
-      [[WeakPriceNotificationsPresenter alloc]
-          initWithPresenter:price_notifications_iph_presenter_];
+  // Local strong reference for binding to the callback below.
+  id<HelpCommands> help_handler = help_handler_;
   shopping_service_->GetProductInfoForUrl(
       web_state->GetVisibleURL(),
-      base::BindOnce(&OnProductInfoUrl, weak_presenter));
+      base::BindOnce(&OnProductInfoUrl, help_handler));
 }
 
 void PriceNotificationsTabHelper::WebStateDestroyed(web::WebState* web_state) {

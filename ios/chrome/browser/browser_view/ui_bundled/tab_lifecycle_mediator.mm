@@ -7,13 +7,11 @@
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
-#import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_iph_presenter.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/download/ui_bundled/download_manager_coordinator.h"
-#import "ios/chrome/browser/follow/model/follow_iph_presenter.h"
 #import "ios/chrome/browser/follow/model/follow_tab_helper.h"
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
@@ -28,6 +26,7 @@
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
@@ -144,8 +143,8 @@
 
   FollowTabHelper* followTabHelper = FollowTabHelper::FromWebState(webState);
   if (followTabHelper) {
-    DCHECK(_followIPHPresenter);
-    followTabHelper->set_follow_iph_presenter(_followIPHPresenter);
+    followTabHelper->set_help_handler(
+        HandlerForProtocol(_commandDispatcher, HelpCommands));
   }
 
   DCHECK(_tabInsertionBrowserAgent);
@@ -174,9 +173,8 @@
   PriceNotificationsTabHelper* priceNotificationsTabHelper =
       PriceNotificationsTabHelper::FromWebState(webState);
   if (priceNotificationsTabHelper) {
-    DCHECK(_priceNotificationsIPHPresenter);
-    priceNotificationsTabHelper->SetPriceNotificationsIPHPresenter(
-        _priceNotificationsIPHPresenter);
+    priceNotificationsTabHelper->SetHelpHandler(
+        HandlerForProtocol(_commandDispatcher, HelpCommands));
   }
   AppLauncherTabHelper::FromWebState(webState)->SetBrowserPresentationProvider(
       _appLauncherBrowserPresentationProvider);
@@ -229,7 +227,7 @@
 
   FollowTabHelper* followTabHelper = FollowTabHelper::FromWebState(webState);
   if (followTabHelper) {
-    followTabHelper->set_follow_iph_presenter(nil);
+    followTabHelper->set_help_handler(nil);
   }
 
   CaptivePortalTabHelper::GetOrCreateForWebState(webState)
@@ -248,7 +246,7 @@
   PriceNotificationsTabHelper* priceNotificationsTabHelper =
       PriceNotificationsTabHelper::FromWebState(webState);
   if (priceNotificationsTabHelper) {
-    priceNotificationsTabHelper->SetPriceNotificationsIPHPresenter(nil);
+    priceNotificationsTabHelper->SetHelpHandler(nil);
   }
 
   AppLauncherTabHelper::FromWebState(webState)->SetBrowserPresentationProvider(

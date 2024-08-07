@@ -11,6 +11,7 @@
 
 @protocol BubblePresenterDelegate;
 @class BubbleViewControllerPresenter;
+@class FeedMetricsRecorder;
 class HostContentSettingsMap;
 @class LayoutGuideCenter;
 class OverlayPresenter;
@@ -31,7 +32,7 @@ class DeviceSwitcherResultDispatcher;
 @interface BubblePresenter : NSObject
 
 // Initializes a BubblePresenter whose bubbles are presented on the
-// `rootViewController`.
+// root view controller of the owning browser.
 - (instancetype)
         initWithLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
                 engagementTracker:
@@ -59,7 +60,8 @@ class DeviceSwitcherResultDispatcher;
 // Optionally presents a relevant Follow help bubble while browsing a site.
 // The eligibility can depend on the UI hierarchy at the moment, the
 // configuration and the display history of the bubble, etc.
-- (void)presentFollowWhileBrowsingTipBubble;
+- (void)presentFollowWhileBrowsingTipBubbleAndLogWithRecorder:
+    (FeedMetricsRecorder*)recorder;
 
 // Optionally presents a help bubble to let the user know that they can change
 // the default mode (Desktop/Mobile) of the websites. The eligibility can depend

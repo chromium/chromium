@@ -7,6 +7,8 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
@@ -96,7 +98,10 @@
       break;
     }
     case InProductHelpType::kFollowWhileBrowsing: {
-      [_presenter presentFollowWhileBrowsingTipBubble];
+      [_presenter
+          presentFollowWhileBrowsingTipBubbleAndLogWithRecorder:
+              DiscoverFeedServiceFactory::GetForBrowserState(browserState)
+                  ->GetFeedMetricsRecorder()];
       break;
     }
     case InProductHelpType::kDefaultSiteView: {

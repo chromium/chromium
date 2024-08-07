@@ -14,22 +14,6 @@ source_set("ui_bundled") {
   ]
 }
 
-source_set("follow_iph") {
-  sources = [
-    "follow_iph_coordinator.h",
-    "follow_iph_coordinator.mm",
-  ]
-  deps = [
-    "//ios/chrome/browser/discover_feed/model",
-    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
-    "//ios/chrome/browser/follow/model:tab_helper",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/ntp/metrics",
-  ]
-}
-
 source_set("first_follow") {
   sources = [
     "first_follow_coordinator.h",
