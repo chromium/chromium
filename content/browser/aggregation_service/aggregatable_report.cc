@@ -220,10 +220,7 @@ void AppendEncodedContributionToCborArray(
 // more detail on the expected format. Returns `std::nullopt` if serialization
 // fails.
 std::optional<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
-    const AggregatableReportRequest& request) {
-  const AggregationServicePayloadContents& payload_contents =
-      request.payload_contents();
-
+    const AggregationServicePayloadContents& payload_contents) {
   cbor::Value::MapValue value;
   value.emplace(kOperationKey, kHistogramValue);
 
@@ -876,7 +873,8 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
   switch (report_request.payload_contents().aggregation_mode) {
     case blink::mojom::AggregationServiceMode::kTeeBased: {
       std::optional<std::vector<uint8_t>> payload =
-          ConstructUnencryptedTeeBasedPayload(report_request);
+          ConstructUnencryptedTeeBasedPayload(
+              report_request.payload_contents());
       if (!payload.has_value()) {
         return std::nullopt;
       }
@@ -887,7 +885,7 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
           ComputeTeeBasedPayloadLengthInBytes(
               report_request.payload_contents().max_contributions_allowed,
               report_request.payload_contents().filtering_id_max_bytes)
-              .ValueOrDie();
+              .value();
       CHECK_EQ(payload->size(), expected_payload_length);
 
       unencrypted_payloads.emplace_back(*std::move(payload));
@@ -1020,6 +1018,13 @@ bool AggregatableReport::IsNumberOfHistogramContributionsValid(
     case blink::mojom::AggregationServiceMode::kExperimentalPoplar:
       return number == 1u;
   }
+}
+
+// static
+std::optional<std::vector<uint8_t>>
+AggregatableReport::SerializeTeeBasedPayloadForTesting(
+    const AggregationServicePayloadContents& payload_contents) {
+  return ConstructUnencryptedTeeBasedPayload(payload_contents);
 }
 
 std::vector<uint8_t> EncryptAggregatableReportPayloadWithHpke(

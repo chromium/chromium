@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -270,18 +271,26 @@ class CONTENT_EXPORT AggregatableReport {
       blink::mojom::AggregationServiceMode aggregation_mode);
 
   // Computes the length in bytes of a TEE-based payload's plaintext CBOR
-  // serialization. See `AggregationServicePayload` for the format's definition.
-  static constexpr base::CheckedNumeric<size_t>
-  ComputeTeeBasedPayloadLengthInBytes(
+  // serialization. Returns `std::nullopt` if the computation would overflow or
+  // if `num_contributions` exceeds the maximum value of `uint32_t`. See
+  // `AggregationServicePayload` for the format's definition.
+  static constexpr std::optional<size_t> ComputeTeeBasedPayloadLengthInBytes(
       size_t num_contributions,
       std::optional<size_t> filtering_id_max_bytes) {
-    constexpr base::CheckedNumeric<size_t> kOverheadLen{
+    constexpr base::CheckedNumeric<size_t> kPayloadLenBeforeArray{
         1                                           // map(2)
         + 1 + std::string_view("operation").size()  // text(9)
         + 1 + std::string_view("histogram").size()  // text(9)
         + 1 + std::string_view("data").size()       // text(4)
-        + 1                                         // array(_)
     };
+    static_assert(kPayloadLenBeforeArray.ValueOrDie() == 26);
+
+    const std::optional<size_t> array_overhead_len =
+        ComputeCborArrayOverheadLen(num_contributions);
+    if (!array_overhead_len.has_value()) {
+      return std::nullopt;
+    }
+
     constexpr base::CheckedNumeric<size_t> kContributionLenWithoutId{
         1                                        // map(_)
         + 1 + std::string_view("bucket").size()  // text(6)
@@ -289,22 +298,43 @@ class CONTENT_EXPORT AggregatableReport {
         + 1 + std::string_view("value").size()   // text(5)
         + 1 + 4                                  // bytes(4)
     };
-    static_assert(kOverheadLen.ValueOrDie() == 27);
     static_assert(kContributionLenWithoutId.ValueOrDie() == 36);
 
-    if (!filtering_id_max_bytes.has_value()) {
-      return kOverheadLen + (num_contributions * kContributionLenWithoutId);
+    const base::CheckedNumeric<size_t> filtering_id_len =
+        !filtering_id_max_bytes.has_value()
+            ? 0
+            : 1 + std::string_view("id").size()           // text(2)
+                  + 1 + size_t{*filtering_id_max_bytes};  // bytes(_)
+
+    const base::CheckedNumeric<size_t> payload_len =
+        kPayloadLenBeforeArray + *array_overhead_len +
+        (num_contributions * (kContributionLenWithoutId + filtering_id_len));
+    if (!payload_len.IsValid()) {
+      return std::nullopt;
     }
-
-    const base::CheckedNumeric<size_t> contribution_len_with_id =
-        kContributionLenWithoutId            //
-        + 1 + std::string_view("id").size()  // text(2)
-        + 1 + *filtering_id_max_bytes;       // bytes(_)
-
-    return kOverheadLen + (num_contributions * contribution_len_with_id);
+    return payload_len.ValueOrDie();
   }
 
+  static std::optional<std::vector<uint8_t>> SerializeTeeBasedPayloadForTesting(
+      const AggregationServicePayloadContents& payload_contents);
+
  private:
+  static constexpr std::optional<size_t> ComputeCborArrayOverheadLen(
+      size_t num_elements) {
+    if (num_elements <= 0x17) {
+      return 1;  // The length fits in the array's "initial byte".
+    } else if (num_elements <= std::numeric_limits<uint8_t>::max()) {
+      return 1 + sizeof(uint8_t);
+    } else if (num_elements <= std::numeric_limits<uint16_t>::max()) {
+      return 1 + sizeof(uint16_t);
+    } else if (num_elements <= std::numeric_limits<uint32_t>::max()) {
+      return 1 + sizeof(uint32_t);
+    }
+    // We will never generate reports with 2**32 or more contributions, so
+    // there's no reason to model CBOR's behavior on such large arrays.
+    return std::nullopt;
+  }
+
   // This vector should have an entry for each processing URL specified in
   // the original AggregatableReportRequest. Might be empty for reports created
   // for the WebUI if prior to assembly or if assembly failed.
