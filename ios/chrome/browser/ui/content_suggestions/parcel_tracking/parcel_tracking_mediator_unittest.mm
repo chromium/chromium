@@ -73,7 +73,8 @@ class ParcelTrackingMediatorTest : public PlatformTest {
   void SetupMediator() {
     mediator_ = [[ParcelTrackingMediator alloc]
         initWithShoppingService:shopping_service_.get()
-         URLLoadingBrowserAgent:url_loader_];
+         URLLoadingBrowserAgent:url_loader_
+                    prefService:local_state()];
     delegate_ = OCMProtocolMock(@protocol(ParcelTrackingMediatorDelegate));
     mediator_.delegate = delegate_;
   }

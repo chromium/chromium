@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -32,6 +33,7 @@
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
@@ -163,8 +165,14 @@
         HandlerForProtocol(_commandDispatcher, MiniMapCommands));
     annotationsTabHelper->SetUnitConversionCommands(
         HandlerForProtocol(_commandDispatcher, UnitConversionCommands));
-    if (IsIOSParcelTrackingEnabled() &&
-        !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) {
+
+    PrefService* prefs =
+        IsHomeCustomizationEnabled()
+            ? ChromeBrowserState::FromBrowserState(webState->GetBrowserState())
+                  ->GetPrefs()
+            : GetApplicationContext()->GetLocalState();
+
+    if (IsIOSParcelTrackingEnabled() && !IsParcelTrackingDisabled(prefs)) {
       annotationsTabHelper->SetParcelTrackingOptInCommands(
           HandlerForProtocol(_commandDispatcher, ParcelTrackingOptInCommands));
     }

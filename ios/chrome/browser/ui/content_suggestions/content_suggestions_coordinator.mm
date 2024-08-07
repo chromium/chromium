@@ -325,11 +325,17 @@
     [moduleMediators addObject:_tabResumptionMediator];
   }
   if (IsIOSParcelTrackingEnabled() &&
-      !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) {
+      !IsParcelTrackingDisabled(
+          IsHomeCustomizationEnabled()
+              ? prefs
+              : GetApplicationContext()->GetLocalState())) {
     _parcelTrackingMediator = [[ParcelTrackingMediator alloc]
         initWithShoppingService:shoppingService
          URLLoadingBrowserAgent:UrlLoadingBrowserAgent::FromBrowser(
-                                    self.browser)];
+                                    self.browser)
+                    prefService:IsHomeCustomizationEnabled()
+                                    ? prefs
+                                    : GetApplicationContext()->GetLocalState()];
     _parcelTrackingMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
     [moduleMediators addObject:_parcelTrackingMediator];
   }

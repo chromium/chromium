@@ -286,7 +286,8 @@ class MagicStackRankingModelTest : public PlatformTest {
     _setUpListMediator.shouldShowSetUpList = YES;
     _parcelTrackingMediator = [[FakeParcelTrackingMediator alloc]
         initWithShoppingService:shopping_service_.get()
-         URLLoadingBrowserAgent:url_loader_];
+         URLLoadingBrowserAgent:url_loader_
+                    prefService:GetLocalState()];
     _tabResumptionMediator = [[FakeTabResumptionMediator alloc]
         initWithLocalState:GetLocalState()
                prefService:GetBrowserState()->GetPrefs()

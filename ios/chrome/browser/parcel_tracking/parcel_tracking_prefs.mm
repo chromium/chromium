@@ -6,6 +6,8 @@
 
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 const char kParcelTrackingDisabled[] = "parcel_tracking.disabled";
 
@@ -14,9 +16,18 @@ void RegisterParcelTrackingPrefs(PrefRegistrySimple* registry) {
 }
 
 bool IsParcelTrackingDisabled(PrefService* prefs) {
+  if (IsHomeCustomizationEnabled()) {
+    return prefs->GetBoolean(
+        prefs::kHomeCustomizationMagicStackParcelTrackingEnabled);
+  }
   return prefs->GetBoolean(kParcelTrackingDisabled);
 }
 
 void DisableParcelTracking(PrefService* prefs) {
-  prefs->SetBoolean(kParcelTrackingDisabled, true);
+  if (IsHomeCustomizationEnabled()) {
+    prefs->SetBoolean(prefs::kHomeCustomizationMagicStackParcelTrackingEnabled,
+                      false);
+  } else {
+    prefs->SetBoolean(kParcelTrackingDisabled, true);
+  }
 }

@@ -11,6 +11,8 @@ source_set("tab_resumption_prefs") {
     "//base",
     "//components/pref_registry",
     "//components/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
     "//url",
   ]
 }
