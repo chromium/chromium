@@ -52,13 +52,6 @@ using ::testing::WithArg;
 using Type = PasswordStoreChange::Type;
 using RemoveChangesReceived = PasswordStoreBackend::RemoteChangesReceived;
 
-const PasswordStoreBackendError kUnrecoverableError = PasswordStoreBackendError(
-    PasswordStoreBackendErrorType::kUncategorized,
-    PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
-const PasswordStoreBackendError kRecoverableError = PasswordStoreBackendError(
-    PasswordStoreBackendErrorType::kUncategorized,
-    PasswordStoreBackendErrorRecoveryType::kRecoverable);
-
 PasswordForm CreateTestForm() {
   PasswordForm form;
   form.username_value = u"Todd Tester";
@@ -93,11 +86,6 @@ MATCHER_P(PasswordChangesAre, expectations, "") {
   }
 
   return changes.value() == expectations;
-}
-
-std::string GetFallbackHistogramNameForMethodName(std::string method_name) {
-  return base::StrCat(
-      {"PasswordManager.PasswordStoreProxyBackend.", method_name, ".Fallback"});
 }
 
 }  // namespace
@@ -701,146 +689,6 @@ INSTANTIATE_TEST_SUITE_P(
       name += info.param.is_initial_migration_finished ? "" : "NotMigrated";
       name += info.param.is_login_db_empty ? "EmptyDB" : "";
       return name;
-    });
-
-struct FallbackParam {
-  PasswordStoreBackendError error;
-  bool should_fallback;
-};
-
-class PasswordStoreProxyBackendTestWithErrorsForFallbacks
-    : public PasswordStoreProxyBackendBaseTest,
-      public testing::WithParamInterface<FallbackParam> {
- public:
-  void SetUp() override {
-    PasswordStoreProxyBackendBaseTest::SetUp();
-    EXPECT_CALL(android_backend(), InitBackend);
-    EXPECT_CALL(built_in_backend(), InitBackend);
-    proxy_backend().InitBackend(nullptr, base::DoNothing(), base::DoNothing(),
-                                base::DoNothing());
-    EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
-    proxy_backend().OnSyncServiceInitialized(sync_service());
-  }
-};
-
-TEST_P(PasswordStoreProxyBackendTestWithErrorsForFallbacks,
-       AddLoginFallsBackOnBuiltInBackend) {
-  const FallbackParam& p = GetParam();
-
-  base::HistogramTester histogram_tester;
-
-  EnablePasswordSync();
-
-  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-
-  EXPECT_CALL(android_backend(), AddLoginAsync)
-      .WillOnce(WithArg<1>(
-          Invoke([&p](auto reply) -> void { std::move(reply).Run(p.error); })));
-  const PasswordStoreChangeList changes = {
-      PasswordStoreChange(PasswordStoreChange::Type::ADD, CreateTestForm())};
-  if (p.should_fallback) {
-    EXPECT_CALL(built_in_backend(), AddLoginAsync)
-        .WillOnce(WithArg<1>(Invoke([&changes](auto reply) -> void {
-          std::move(reply).Run(changes);
-        })));
-    // Check that caller doesn't receive an error from android backend.
-    EXPECT_CALL(mock_reply, Run(PasswordChangesAre(changes)));
-  } else {
-    EXPECT_CALL(built_in_backend(), AddLoginAsync).Times(0);
-    // Check that caller gets an error from android backend.
-    EXPECT_CALL(mock_reply, Run(PasswordChangesOrError(p.error)));
-  }
-  proxy_backend().AddLoginAsync(CreateTestForm(), mock_reply.Get());
-
-  if (p.should_fallback) {
-    histogram_tester.ExpectUniqueSample(
-        GetFallbackHistogramNameForMethodName("AddLoginAsync"), true, 1);
-  }
-}
-
-TEST_P(PasswordStoreProxyBackendTestWithErrorsForFallbacks,
-       UpdateLoginFallsBackOnBuiltInBackend) {
-  const FallbackParam& p = GetParam();
-  base::HistogramTester histogram_tester;
-
-  EnablePasswordSync();
-
-  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-
-  EXPECT_CALL(android_backend(), UpdateLoginAsync)
-      .WillOnce(WithArg<1>(
-          Invoke([&p](auto reply) -> void { std::move(reply).Run(p.error); })));
-  const PasswordStoreChangeList changes = {
-      PasswordStoreChange(PasswordStoreChange::Type::ADD, CreateTestForm())};
-  if (p.should_fallback) {
-    EXPECT_CALL(built_in_backend(), UpdateLoginAsync)
-        .WillOnce(WithArg<1>(Invoke([&changes](auto reply) -> void {
-          std::move(reply).Run(changes);
-        })));
-    // Check that caller doesn't receive an error from android backend.
-    EXPECT_CALL(mock_reply, Run(PasswordChangesAre(changes)));
-  } else {
-    EXPECT_CALL(built_in_backend(), UpdateLoginAsync).Times(0);
-    // Check that caller gets an error from android backend.
-    EXPECT_CALL(mock_reply, Run(PasswordChangesOrError(p.error)));
-  }
-  proxy_backend().UpdateLoginAsync(CreateTestForm(), mock_reply.Get());
-
-  if (p.should_fallback) {
-    histogram_tester.ExpectUniqueSample(
-        GetFallbackHistogramNameForMethodName("UpdateLoginAsync"), true, 1);
-  }
-}
-
-TEST_P(PasswordStoreProxyBackendTestWithErrorsForFallbacks,
-       FillMatchingLoginsFallsBackOnBuiltInBackend) {
-  const FallbackParam& p = GetParam();
-  base::HistogramTester histogram_tester;
-  EnablePasswordSync();
-
-  base::MockCallback<LoginsOrErrorReply> mock_reply;
-
-  EXPECT_CALL(android_backend(), FillMatchingLoginsAsync)
-      .WillOnce(WithArg<0>(Invoke([&p](LoginsOrErrorReply reply) -> void {
-        std::move(reply).Run(p.error);
-      })));
-  if (p.should_fallback) {
-    EXPECT_CALL(built_in_backend(), FillMatchingLoginsAsync)
-        .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
-          std::move(reply).Run(CreateTestLogins());
-        })));
-    // Check that caller doesn't receive an error from android backend.
-    EXPECT_CALL(
-        mock_reply,
-        Run(VariantWith<LoginsResult>(ElementsAreArray(CreateTestLogins()))));
-  } else {
-    EXPECT_CALL(built_in_backend(), FillMatchingLoginsAsync).Times(0);
-    // Check that caller gets an error from android backend.
-    EXPECT_CALL(mock_reply,
-                Run(VariantWith<PasswordStoreBackendError>(p.error)));
-  }
-
-  proxy_backend().FillMatchingLoginsAsync(mock_reply.Get(),
-                                          /*include_psl=*/false,
-                                          std::vector<PasswordFormDigest>());
-  if (p.should_fallback) {
-    histogram_tester.ExpectUniqueSample(
-        GetFallbackHistogramNameForMethodName("FillMatchingLoginsAsync"), true,
-        1);
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    PasswordStoreProxyBackendBaseTest,
-    PasswordStoreProxyBackendTestWithErrorsForFallbacks,
-    testing::Values(
-        FallbackParam{.error = kUnrecoverableError, .should_fallback = true},
-        FallbackParam{.error = kRecoverableError, .should_fallback = false}),
-    [](const ::testing::TestParamInfo<FallbackParam>& info) {
-      if (info.param.error == kUnrecoverableError) {
-        return "Unrecoverable";
-      }
-      return "Recoverable";
     });
 
 }  // namespace password_manager

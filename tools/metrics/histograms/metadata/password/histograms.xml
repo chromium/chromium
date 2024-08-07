@@ -3037,19 +3037,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.PasswordStoreProxyBackend.{Function}.Fallback"
-    enum="Boolean" expires_after="2024-11-03">
-  <owner>ioanap@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records true if the fallback to the build-in backend occurred during
-    {Function} execution due to error returned by the GMS Core backend. True is
-    recorded when the Android backend function returned with error and fallback
-    is about to be called. False is never recorded.
-  </summary>
-  <token key="Function" variants="PasswordStoreBackendFunction"/>
-</histogram>
-
 <histogram name="PasswordManager.PasswordStore{Backend}.{Function}"
     enum="PasswordStoreAndroidBackendRequestStatus" expires_after="2025-01-05">
   <owner>maxan@chromium.org</owner>

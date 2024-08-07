@@ -36,25 +36,9 @@ namespace password_manager {
 
 namespace {
 
-bool ShouldErrorResultInFallback(PasswordStoreBackendError error) {
-  switch (error.recovery_type) {
-    case PasswordStoreBackendErrorRecoveryType::kUnrecoverable:
-      return true;
-    case PasswordStoreBackendErrorRecoveryType::kRecoverable:
-      return false;
-  }
-}
-
-using MethodName = base::StrongAlias<struct MethodNameTag, std::string>;
-
 void InvokeCallbackWithCombinedStatus(base::OnceCallback<void(bool)> completion,
                                       std::vector<bool> statuses) {
   std::move(completion).Run(base::ranges::all_of(statuses, std::identity()));
-}
-
-std::string GetFallbackMetricNameForMethod(const MethodName& method_name) {
-  return base::StrCat({"PasswordManager.PasswordStoreProxyBackend.",
-                       method_name.value(), ".Fallback"});
 }
 
 void RecordPasswordDeletionResult(PasswordChangesOrError result) {
@@ -165,92 +149,29 @@ void PasswordStoreProxyBackend::FillMatchingLoginsAsync(
     LoginsOrErrorReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
-  LoginsOrErrorReply result_callback;
-  if (UsesAndroidBackendAsMainBackend()) {
-    // Lambda is used to reorder |FillMatchingLoginsAsync| arguments so all but
-    // the |reply_callback| could be binded.
-    auto execute_on_built_in_backend = base::BindOnce(
-        [](PasswordStoreBackend* backend, bool include_psl,
-           const std::vector<PasswordFormDigest>& forms,
-           LoginsOrErrorReply reply_callback) {
-          backend->FillMatchingLoginsAsync(std::move(reply_callback),
-                                           include_psl, forms);
-        },
-        base::Unretained(built_in_backend_.get()), include_psl, forms);
-
-    result_callback = base::BindOnce(
-        &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
-            LoginsResultOrError>,
-        weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
-        MethodName("FillMatchingLoginsAsync"), std::move(callback));
-  } else {
-    result_callback = std::move(callback);
-  }
-
-  main_backend()->FillMatchingLoginsAsync(std::move(result_callback),
-                                          include_psl, forms);
+  main_backend()->FillMatchingLoginsAsync(std::move(callback), include_psl,
+                                          forms);
 }
 
 void PasswordStoreProxyBackend::GetGroupedMatchingLoginsAsync(
     const PasswordFormDigest& form_digest,
     LoginsOrErrorReply callback) {
-  LoginsOrErrorReply result_callback;
-  if (UsesAndroidBackendAsMainBackend()) {
-    auto execute_on_built_in_backend =
-        base::BindOnce(&PasswordStoreBackend::GetGroupedMatchingLoginsAsync,
-                       base::Unretained(built_in_backend_.get()), form_digest);
-
-    result_callback = base::BindOnce(
-        &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
-            LoginsResultOrError>,
-        weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
-        MethodName("GetGroupedMatchingLoginsAsync"), std::move(callback));
-  } else {
-    result_callback = std::move(callback);
-  }
-
   main_backend()->GetGroupedMatchingLoginsAsync(form_digest,
-                                                std::move(result_callback));
+                                                std::move(callback));
 }
 
 void PasswordStoreProxyBackend::AddLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
   PasswordChangesOrErrorReply result_callback;
-  if (UsesAndroidBackendAsMainBackend()) {
-    auto execute_on_built_in_backend =
-        base::BindOnce(&PasswordStoreBackend::AddLoginAsync,
-                       base::Unretained(built_in_backend_.get()), form);
-    result_callback = base::BindOnce(
-        &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
-            PasswordChangesOrError>,
-        weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
-        MethodName("AddLoginAsync"), std::move(callback));
-  } else {
-    result_callback = std::move(callback);
-  }
-
-  main_backend()->AddLoginAsync(form, std::move(result_callback));
+  main_backend()->AddLoginAsync(form, std::move(callback));
 }
 
 void PasswordStoreProxyBackend::UpdateLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
   PasswordChangesOrErrorReply result_callback;
-  if (UsesAndroidBackendAsMainBackend()) {
-    auto execute_on_built_in_backend =
-        base::BindOnce(&PasswordStoreBackend::UpdateLoginAsync,
-                       base::Unretained(built_in_backend_.get()), form);
-    result_callback = base::BindOnce(
-        &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
-            PasswordChangesOrError>,
-        weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
-        MethodName("UpdateLoginAsync"), std::move(callback));
-  } else {
-    result_callback = std::move(callback);
-  }
-
-  main_backend()->UpdateLoginAsync(form, std::move(result_callback));
+  main_backend()->UpdateLoginAsync(form, std::move(callback));
 }
 
 void PasswordStoreProxyBackend::RemoveLoginAsync(
@@ -340,24 +261,6 @@ void PasswordStoreProxyBackend::RecordUpdateLoginAsyncCalledFromTheStore() {
 
 base::WeakPtr<PasswordStoreBackend> PasswordStoreProxyBackend::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-template <typename ResultT>
-void PasswordStoreProxyBackend::MaybeFallbackOnOperation(
-    base::OnceCallback<void(base::OnceCallback<void(ResultT)> callback)>
-        fallback_callback,
-    const MethodName& method_name,
-    base::OnceCallback<void(ResultT)> result_callback,
-    ResultT result) {
-  if (absl::holds_alternative<PasswordStoreBackendError>(result) &&
-      ShouldErrorResultInFallback(
-          absl::get<PasswordStoreBackendError>(result))) {
-    base::UmaHistogramBoolean(GetFallbackMetricNameForMethod(method_name),
-                              true);
-    std::move(fallback_callback).Run(std::move(result_callback));
-  } else {
-    std::move(result_callback).Run(std::move(result));
-  }
 }
 
 PasswordStoreBackend* PasswordStoreProxyBackend::main_backend() {

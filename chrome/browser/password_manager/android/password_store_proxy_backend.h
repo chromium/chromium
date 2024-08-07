@@ -105,26 +105,8 @@ class PasswordStoreProxyBackend final : public PasswordStoreBackend,
       RemoteChangesReceived remote_form_changes_received,
       std::optional<PasswordStoreChangeList> changes);
 
-  // Helper used to determine main *and* fallback backends.
-  // The account store doesn't use any fallback backend.
-  // The profile store only uses the built-in backend as a fallback
-  // if it's being used for synced passwords (pre store split).
+  // Helper used to determine on which backend to run operations.
   bool UsesAndroidBackendAsMainBackend();
-
-  // Retries to execute operation on |built_in_backend| in case of an
-  // unrecoverable error inside |android_backend|. |retry_callback| is the
-  // pending operation with binded parameters, |result_callback| is the original
-  // operation callback.
-  // |ResultT| is the resulting type of the backend operation that will be
-  // passed to the result callback. Could be either |LoginsResultOrError| or
-  // |PasswordChangesOrError|.
-  template <typename ResultT>
-  void MaybeFallbackOnOperation(
-      base::OnceCallback<void(base::OnceCallback<void(ResultT)> callback)>
-          retry_callback,
-      const base::StrongAlias<struct MethodNameTag, std::string>& method_name,
-      base::OnceCallback<void(ResultT)> result_callback,
-      ResultT result);
 
   // Clears all passwords from `built_in_backend_` if all conditions bellow are
   // satisfied:
