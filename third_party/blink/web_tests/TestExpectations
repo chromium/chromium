@@ -7789,3 +7789,8 @@ crbug.com/356963272 [ Linux ] external/wpt/webrtc/RTCDataChannel-send-close.html
 
 # Gardener 2024-08-05
 crbug.com/353256758 virtual/fenced-frame-mparch/external/wpt/fenced-frame/document-activeelement.https.html [ Failure Pass ]
+
+# Gardener 2024-08-07
+crbug.com/357976373 [ Mac ] fast/forms/accent-color/accent-color-contrast.html [ Failure Pass ]
+crbug.com/357976373 [ Mac ] fast/forms/accent-color/checkbox-accent-color-appearance.html [ Failure Pass ]
+crbug.com/357976373 [ Mac ] fast/forms/color-scheme/checkbox/checkbox-appearance-basic.html [ Failure Pass ]
