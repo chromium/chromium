@@ -134,7 +134,18 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   static void DisableFeatureTourForTesting();
 
  private:
-  void ShowWidget(base::TimeTicks trigger_event_timestamp);
+  // Trigger source for showing the Picker widget. This is used to determine
+  // how the widget should be shown on the screen.
+  enum class WidgetTriggerSource {
+    // The user triggered Picker as part of their usual user flow, e.g. toggled
+    // Picker with a key press.
+    kDefault,
+    // The user triggered Picker by completing the feature tour.
+    kFeatureTour,
+  };
+
+  void ShowWidget(base::TimeTicks trigger_event_timestamp,
+                  WidgetTriggerSource trigger_source);
   void CloseWidget();
   void OnFeatureTourLearnMore();
   void OnFeatureTourCompleted(bool had_focus_before_feature_tour);

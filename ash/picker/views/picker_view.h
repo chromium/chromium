@@ -41,6 +41,7 @@ class NonClientFrameView;
 namespace ash {
 
 enum class PickerLayoutType;
+enum class PickerPositionType;
 enum class PickerPseudoFocusDirection;
 class PickerEmojiBarView;
 class PickerMainContainerView;
@@ -67,6 +68,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   explicit PickerView(PickerViewDelegate* delegate,
                       const gfx::Rect& anchor_bounds,
                       PickerLayoutType layout_type,
+                      PickerPositionType position_type,
                       base::TimeTicks trigger_event_timestamp);
   PickerView(const PickerView&) = delete;
   PickerView& operator=(const PickerView&) = delete;

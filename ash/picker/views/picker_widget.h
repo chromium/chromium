@@ -16,6 +16,8 @@ class Rect;
 }  // namespace gfx
 
 namespace ash {
+
+enum class PickerPositionType;
 class PickerViewDelegate;
 
 class ASH_EXPORT PickerWidget : public views::Widget {
@@ -35,12 +37,21 @@ class ASH_EXPORT PickerWidget : public views::Widget {
       const gfx::Rect& anchor_bounds,
       base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
 
+  // Same as `Create`, except the created PickerWidget tries to position itself
+  // at the center of the display containing `anchor_bounds`. `anchor_bounds` is
+  // in screen coordinates.
+  static views::UniqueWidgetPtr CreateCentered(
+      PickerViewDelegate* delegate,
+      const gfx::Rect& anchor_bounds,
+      base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
+
   // views::Widget:
   void OnNativeBlur() override;
 
  private:
   explicit PickerWidget(PickerViewDelegate* delegate,
                         const gfx::Rect& anchor_bounds,
+                        PickerPositionType position_type,
                         base::TimeTicks trigger_event_timestamp);
 
   // Used to close the Picker widget when the user clicks outside of it.

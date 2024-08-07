@@ -22,6 +22,7 @@
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_main_container_view.h"
 #include "ash/picker/views/picker_page_view.h"
+#include "ash/picker/views/picker_positioning.h"
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_search_bar_textfield.h"
 #include "ash/picker/views/picker_search_field_view.h"
@@ -230,17 +231,21 @@ bool IsEditorAvailable(base::span<PickerCategory> available_categories) {
 PickerView::PickerView(PickerViewDelegate* delegate,
                        const gfx::Rect& anchor_bounds,
                        PickerLayoutType layout_type,
+                       PickerPositionType position_type,
                        const base::TimeTicks trigger_event_timestamp)
     : performance_metrics_(trigger_event_timestamp), delegate_(delegate) {
   SetShowCloseButton(false);
   SetProperty(views::kElementIdentifierKey, kPickerElementId);
-  // TODO: b/333020345 - This is *not* used by the Widget because PickerWidget
-  // does not use `autosize`. For this class, this is only used by PickerView to
-  // adjust the Widget bounds to realign the search field with the caret
-  // position. Move this logic to a standalone class.
-  set_desired_bounds_delegate(base::BindRepeating(&PickerView::GetTargetBounds,
-                                                  base::Unretained(this),
-                                                  anchor_bounds, layout_type));
+  // TODO: b/357991165 - The desired bounds delegate here is *not* used directly
+  // by the widget, because PickerWidget does not use `autosize`. Rather,
+  // PickerView manually calls GetDesiredWidgetBounds to adjust the Widget
+  // bounds to realign the search field with the caret position. Move this logic
+  // to a standalone class.
+  if (position_type == PickerPositionType::kNearAnchor) {
+    set_desired_bounds_delegate(base::BindRepeating(
+        &PickerView::GetTargetBounds, base::Unretained(this), anchor_bounds,
+        layout_type));
+  }
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)

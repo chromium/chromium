@@ -16,6 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -139,6 +140,19 @@ TEST_F(PickerWidgetTest, PreviewBubbleDoesNotStealFocusPickerWidget) {
   EXPECT_FALSE(picker_widget->IsClosed());
 
   bubble_view->GetWidget()->CloseNow();
+}
+
+TEST_F(PickerWidgetTest, CreatesCenteredWidget) {
+  FakePickerViewDelegate delegate;
+  auto widget =
+      PickerWidget::CreateCentered(&delegate, gfx::Rect(10, 10, 10, 10));
+  widget->Show();
+
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().CenterPoint(),
+            display::Screen::GetScreen()
+                ->GetPrimaryDisplay()
+                .work_area()
+                .CenterPoint());
 }
 
 }  // namespace

@@ -14,6 +14,14 @@ class Point;
 
 namespace ash {
 
+// How Picker should try to position itself relative to its anchor.
+enum class PickerPositionType {
+  // Near the anchor bounds.
+  kNearAnchor,
+  // Centered on the display containing the anchor bounds.
+  kCentered,
+};
+
 // Gets the anchor bounds to use for positioning the Picker. We prefer to anchor
 // at `caret_bounds`, but may use `cursor_point` as a fallback. `caret_bounds`,
 // `cursor_point`, `focused_window_bounds` and returned anchor bounds should be

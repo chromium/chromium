@@ -383,7 +383,7 @@ void PickerController::ToggleWidget(
   if (widget_) {
     CloseWidget();
   } else {
-    ShowWidget(trigger_event_timestamp);
+    ShowWidget(trigger_event_timestamp, WidgetTriggerSource::kDefault);
   }
 }
 
@@ -618,7 +618,8 @@ void PickerController::FetchFileThumbnail(const base::FilePath& path,
   client_->FetchFileThumbnail(path, size, std::move(callback));
 }
 
-void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp) {
+void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
+                                  WidgetTriggerSource trigger_source) {
   CloseCapsLockStateView();
   show_editor_callback_ = client_->CacheEditorContext();
 
@@ -649,11 +650,16 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp) {
       std::make_unique<PickerEmojiSuggester>(emoji_history_model_.get());
   session_metrics_ = std::make_unique<PickerSessionMetrics>(GetPrefs());
 
-  widget_ = PickerWidget::Create(
-      this,
-      GetPickerAnchorBounds(GetCaretBounds(), GetCursorPoint(),
-                            GetFocusedWindowBounds()),
-      trigger_event_timestamp);
+  const gfx::Rect anchor_bounds = GetPickerAnchorBounds(
+      GetCaretBounds(), GetCursorPoint(), GetFocusedWindowBounds());
+  if (trigger_source == WidgetTriggerSource::kFeatureTour &&
+      model_->GetMode() == PickerModeType::kUnfocused) {
+    widget_ = PickerWidget::CreateCentered(this, anchor_bounds,
+                                           trigger_event_timestamp);
+  } else {
+    widget_ =
+        PickerWidget::Create(this, anchor_bounds, trigger_event_timestamp);
+  }
   widget_->Show();
 
   session_metrics_->OnStartSession(GetFocusedTextInputClient());
@@ -703,7 +709,7 @@ void PickerController::OnFeatureTourCompleted(
 }
 
 void PickerController::ShowWidgetPostFeatureTour() {
-  ShowWidget(base::TimeTicks::Now());
+  ShowWidget(base::TimeTicks::Now(), WidgetTriggerSource::kFeatureTour);
 }
 
 std::optional<PickerWebPasteTarget> PickerController::GetWebPasteTarget() {
