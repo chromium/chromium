@@ -107,12 +107,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, Calendar) {
 }
 
 // TODO(crbug.com/357958395): Re-enable the test.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_CalendarEvent DISABLED_CalendarEvent
-#else
-#define MAYBE_CalendarEvent CalendarEvent
-#endif
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, MAYBE_CalendarEvent) {
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DISABLED_CalendarEvent) {
   RunTest("new_tab_page/modules/v2/calendar/calendar_event_test.js",
           "mocha.run()");
 }
