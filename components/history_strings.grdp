@@ -124,6 +124,12 @@
   <message name="IDS_HISTORY_EMBEDDINGS_DISCLAIMER" desc="On the history page, the persistent disclaimer text shown below the search box indicating what content is sent to Google for the history search feature.">
     Your searches, best matches, and their page contents are sent to Google and may be seen by human reviewers to improve this feature.
   </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_LABEL" desc="On the history page, the accessiblility label for the promo for history search powered by AI.">
+    Promo
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_CLOSE" desc="On the history page, the accessiblility label for the close button for the promo for history search powered by AI.">
+    Close promo
+  </message>
   <message name="IDS_HISTORY_EMBEDDINGS_PROMO_HEADING" desc="On the history page, the heading of the promo for history search powered by AI.">
     Search your history, powered by AI
   </message>
