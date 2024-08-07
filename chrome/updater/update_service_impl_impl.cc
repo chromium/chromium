@@ -37,6 +37,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "chrome/updater/auto_run_on_os_upgrade_task.h"
 #include "chrome/updater/change_owners_task.h"
 #include "chrome/updater/check_for_updates_task.h"
@@ -61,6 +62,10 @@
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
+
+#if BUILDFLAG(IS_MAC)
+#include <sys/mount.h>
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
 #include <winhttp.h>
@@ -598,6 +603,22 @@ MakeUpdateClientCrxStateChangeCallback(
       config, persisted_data, new_install, callback);
 }
 
+bool IsPathOnReadOnlyMount(const base::FilePath& path) {
+  if (path.empty()) {
+    return false;
+  }
+#if BUILDFLAG(IS_MAC)
+  struct statfs fsinfo = {};
+  if (statfs(path.value().c_str(), &fsinfo) == -1) {
+    LOG(ERROR) << "Failed to stat: " << path;
+    return false;
+  }
+  return fsinfo.f_flags & MNT_RDONLY;
+#else
+  return false;
+#endif  // BUILDFLAG(IS_MAC)
+}
+
 }  // namespace
 
 UpdateServiceImplImpl::UpdateServiceImplImpl(scoped_refptr<Configurator> config)
@@ -632,6 +653,14 @@ void UpdateServiceImplImpl::RegisterApp(
     base::OnceCallback<void(int)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (IsPathOnReadOnlyMount(request.existence_checker_path)) {
+    VLOG(1) << "Existence check path " << request.existence_checker_path
+            << " is on read-only file system. Registration of "
+            << request.app_id << " is skipped.";
+    std::move(callback).Run(kRegistrationError);
+    return;
+  }
+
   if (!base::EqualsCaseInsensitiveASCII(request.app_id, kUpdaterAppId)) {
     config_->GetUpdaterPersistedData()->SetHadApps();
   }

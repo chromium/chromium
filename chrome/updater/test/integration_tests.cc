@@ -1709,7 +1709,7 @@ TEST_F(IntegrationTest, RegisterApp) {
   registration.brand_path = base::FilePath::FromASCII("/bp");
   registration.ap = "TestAp";
   registration.version = base::Version("11.22.33.44");
-  registration.existence_checker_path = base::FilePath::FromASCII("/");
+  registration.existence_checker_path = base::FilePath::FromASCII("/tmp");
   registration.cohort = "cohort_test";
   test_commands_->RegisterApp(registration);
 
@@ -1719,7 +1719,7 @@ TEST_F(IntegrationTest, RegisterApp) {
   expected_app_state.Set("brand_path", "/bp");
   expected_app_state.Set("ap", "TestAp");
   expected_app_state.Set("version", "11.22.33.44");
-  expected_app_state.Set("ecp", "/");
+  expected_app_state.Set("ecp", "/tmp");
 #if BUILDFLAG(IS_POSIX)
   // Cohort is only communicated over IPC on POSIX. Refer to crbug.com/40283110.
   expected_app_state.Set("cohort", "cohort_test");
