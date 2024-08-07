@@ -12,7 +12,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/protocol/unique_position.pb.h"
@@ -105,7 +105,7 @@ class DataTypeLocalChangeProcessor {
   virtual void ModelReadyToSync(std::unique_ptr<MetadataBatch> batch) = 0;
 
   // Returns a boolean representing whether the processor's metadata is
-  // currently tracking the model type's data. This typically becomes true after
+  // currently tracking the data type's data. This typically becomes true after
   // ModelReadyToSync() was called (if the data type is enabled). If false,
   // then Put() and Delete() will no-op and can be omitted by bridge.
   virtual bool IsTrackingMetadata() const = 0;
@@ -122,7 +122,7 @@ class DataTypeLocalChangeProcessor {
   // or consistency error the bridge encounters outside of a method that allows
   // returning a ModelError directly. Outstanding callbacks are not expected to
   // be called after an error. This will result in sync being temporarily
-  // disabled for the model type (generally until the next restart).
+  // disabled for the data type (generally until the next restart).
   virtual void ReportError(const ModelError& error) = 0;
 
   // Returns whether the processor has encountered any error, either reported

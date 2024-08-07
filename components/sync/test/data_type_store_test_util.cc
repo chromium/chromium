@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/blocking_data_type_store_impl.h"
 #include "components/sync/model/data_type_store_backend.h"
 #include "components/sync/model/data_type_store_impl.h"
@@ -72,7 +72,7 @@ class ForwardingDataTypeStore : public DataTypeStore {
 
 // static
 std::unique_ptr<DataTypeStore>
-DataTypeStoreTestUtil::CreateInMemoryStoreForTest(ModelType type,
+DataTypeStoreTestUtil::CreateInMemoryStoreForTest(DataType type,
                                                   StorageType storage_type) {
   std::unique_ptr<BlockingDataTypeStoreImpl, base::OnTaskRunnerDeleter>
       blocking_store(new BlockingDataTypeStoreImpl(
@@ -93,7 +93,7 @@ DataTypeStoreTestUtil::CreateInMemoryStoreForTest(ModelType type,
 RepeatingDataTypeStoreFactory
 DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest() {
   return base::BindRepeating(
-      [](ModelType type, DataTypeStore::InitCallback callback) {
+      [](DataType type, DataTypeStore::InitCallback callback) {
         std::move(callback).Run(/*error=*/std::nullopt,
                                 CreateInMemoryStoreForTest(type));
       });
@@ -103,7 +103,7 @@ DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest() {
 OnceDataTypeStoreFactory DataTypeStoreTestUtil::MoveStoreToFactory(
     std::unique_ptr<DataTypeStore> store) {
   return base::BindOnce(
-      [](std::unique_ptr<DataTypeStore> store, ModelType type,
+      [](std::unique_ptr<DataTypeStore> store, DataType type,
          DataTypeStore::InitCallback callback) {
         std::move(callback).Run(/*error=*/std::nullopt, std::move(store));
       },
@@ -114,7 +114,7 @@ OnceDataTypeStoreFactory DataTypeStoreTestUtil::MoveStoreToFactory(
 RepeatingDataTypeStoreFactory DataTypeStoreTestUtil::FactoryForForwardingStore(
     DataTypeStore* target) {
   return base::BindRepeating(
-      [](DataTypeStore* target, ModelType,
+      [](DataTypeStore* target, DataType,
          DataTypeStore::InitCallback callback) {
         std::move(callback).Run(
             /*error=*/std::nullopt,

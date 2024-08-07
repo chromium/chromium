@@ -11,8 +11,8 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_processor_metrics.h"
@@ -42,7 +42,7 @@ std::optional<sync_pb::UniquePosition> ExtractUniquePositionIfSupported(
 }  // namespace
 
 ClientTagBasedRemoteUpdateHandler::ClientTagBasedRemoteUpdateHandler(
-    ModelType type,
+    DataType type,
     DataTypeSyncBridge* bridge,
     ProcessorEntityTracker* entity_tracker)
     : type_(type), bridge_(bridge), entity_tracker_(entity_tracker) {
@@ -177,7 +177,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     SyncRecordDataTypeUpdateDropReason(UpdateDropReason::kInconsistentClientTag,
                                        type_);
     DLOG(WARNING) << "Received unexpected client tag hash: " << client_tag_hash
-                  << " for " << ModelTypeToDebugString(type_);
+                  << " for " << DataTypeToDebugString(type_);
     return nullptr;
   }
 
@@ -191,7 +191,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
         UpdateDropReason::kTombstoneForNonexistentInIncrementalUpdate, type_);
     DLOG(WARNING) << "Received remote delete for a non-existing item."
                   << " client_tag_hash: " << client_tag_hash << " for "
-                  << ModelTypeToDebugString(type_);
+                  << DataTypeToDebugString(type_);
     return nullptr;
   }
 
@@ -208,7 +208,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
                               bridge_->GetStorageKey(data).empty()))) {
     DLOG(WARNING) << "Received invalid remote update."
                   << " client_tag_hash: " << client_tag_hash << " for "
-                  << ModelTypeToDebugString(type_);
+                  << DataTypeToDebugString(type_);
     return nullptr;
   }
 
@@ -257,7 +257,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
   if (!update_is_tombstone &&
       entity_tracker_->data_type_state().encryption_key_name() !=
           update_encryption_key_name) {
-    DVLOG(2) << ModelTypeToDebugString(type_)
+    DVLOG(2) << DataTypeToDebugString(type_)
              << ": Requesting re-encrypt commit " << update_encryption_key_name
              << " -> "
              << entity_tracker_->data_type_state().encryption_key_name();
@@ -297,7 +297,7 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
     resolution_type =
         bridge_->ResolveConflict(entity->storage_key(), remote_data);
   }
-  RecordModelTypeEntityConflictResolution(type_, resolution_type);
+  RecordDataTypeEntityConflictResolution(type_, resolution_type);
 
   // Apply the resolution.
   switch (resolution_type) {

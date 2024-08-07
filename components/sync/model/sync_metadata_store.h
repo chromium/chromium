@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace sync_pb {
 class DataTypeState;
@@ -16,12 +16,12 @@ class EntityMetadata;
 
 namespace syncer {
 
-// SyncMetadataStore defines the interface implemented by model types for
+// SyncMetadataStore defines the interface implemented by data types for
 // persisting sync metadata, both per-entity metadata and the overall datatype
-// state. It allows model types to use a common implementation of
+// state. It allows data types to use a common implementation of
 // MetadataChangeList (SyncMetadataStoreChangeList) instead of implementing
 // their own. In their implementation of
-// DataTypeSyncBridge::CreateMetadataChangeList, model types should create an
+// DataTypeSyncBridge::CreateMetadataChangeList, data types should create an
 // instance of SyncMetadataStoreChangeList, passing a pointer to their
 // SyncMetadataStore to its constructor. Implementations of SyncMetadataStore
 // methods should support add/update/delete operations in the
@@ -31,29 +31,29 @@ class SyncMetadataStore {
   SyncMetadataStore() = default;
   virtual ~SyncMetadataStore() = default;
 
-  // Updates the metadata row of type |model_type| for the entity identified by
+  // Updates the metadata row of type |data_type| for the entity identified by
   // |storage_key| to contain the contents of |metadata|.
   // Returns true on success.
   virtual bool UpdateEntityMetadata(
-      syncer::ModelType model_type,
+      syncer::DataType data_type,
       const std::string& storage_key,
       const sync_pb::EntityMetadata& metadata) = 0;
 
-  // Removes the metadata row of type |model_type| for the entity identified by
+  // Removes the metadata row of type |data_type| for the entity identified by
   // |storage_key|.
   // Returns true on success.
-  virtual bool ClearEntityMetadata(syncer::ModelType model_type,
+  virtual bool ClearEntityMetadata(syncer::DataType data_type,
                                    const std::string& storage_key) = 0;
 
-  // Updates the per-type DataTypeState state for the |model_type|.
+  // Updates the per-type DataTypeState state for the |data_type|.
   // Returns true on success.
   virtual bool UpdateDataTypeState(
-      syncer::ModelType model_type,
+      syncer::DataType data_type,
       const sync_pb::DataTypeState& data_type_state) = 0;
 
-  // Clears the per-type DataTypeState for |model_type|.
+  // Clears the per-type DataTypeState for |data_type|.
   // Returns true on success.
-  virtual bool ClearDataTypeState(syncer::ModelType model_type) = 0;
+  virtual bool ClearDataTypeState(syncer::DataType data_type) = 0;
 };
 
 }  // namespace syncer

@@ -215,12 +215,12 @@ TEST_F(SyncBackendMigratorTest, InterruptedWhileDisablingTypes) {
 
   EXPECT_CALL(*manager(), state())
       .WillOnce(Return(DataTypeManager::CONFIGURED));
-  EXPECT_CALL(*manager(), PurgeForMigration(HasModelTypes(to_migrate)));
+  EXPECT_CALL(*manager(), PurgeForMigration(HasDataTypes(to_migrate)));
   migrator()->MigrateTypes(to_migrate);
   EXPECT_EQ(BackendMigrator::DISABLING_TYPES, migrator()->state());
 
   Mock::VerifyAndClearExpectations(manager());
-  EXPECT_CALL(*manager(), PurgeForMigration(HasModelTypes(to_migrate)));
+  EXPECT_CALL(*manager(), PurgeForMigration(HasDataTypes(to_migrate)));
   SetUnsyncedTypes(ModelTypeSet());
   SendConfigureDone(DataTypeManager::OK, preferred_types());
 

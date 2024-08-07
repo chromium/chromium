@@ -21,8 +21,8 @@
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
@@ -67,7 +67,7 @@ const char kCacheGuid[] = "TestCacheGuid";
 // worker/processor will not have been initialized and thus empty.
 const EntitySpecifics kEmptySpecifics;
 
-ClientTagHash GetHash(ModelType type, const std::string& key) {
+ClientTagHash GetHash(DataType type, const std::string& key) {
   return ClientTagHash::FromUnhashed(
       type, FakeDataTypeSyncBridge::ClientTagFromKey(key));
 }
@@ -108,7 +108,7 @@ EntitySpecifics GenerateSharedTabSpecifics(
 }
 
 std::unique_ptr<EntityData> GenerateEntityData(
-    ModelType type,
+    DataType type,
     const std::string& key,
     const EntitySpecifics& specifics) {
   std::unique_ptr<EntityData> entity_data = std::make_unique<EntityData>();
@@ -173,19 +173,18 @@ sync_pb::UniquePosition ExtractUniquePositionFromSharedTab(
 
 class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
  public:
-  TestDataTypeSyncBridge(ModelType model_type,
-                          bool supports_incremental_updates)
+  TestDataTypeSyncBridge(DataType data_type, bool supports_incremental_updates)
       : FakeDataTypeSyncBridge(
-            model_type,
+            data_type,
             std::make_unique<ClientTagBasedDataTypeProcessor>(
-                model_type,
+                data_type,
                 /*dump_stack=*/base::RepeatingClosure())),
         supports_incremental_updates_(supports_incremental_updates) {}
 
   TestDataTypeSyncBridge(std::unique_ptr<TestDataTypeSyncBridge> other,
-                          ModelType model_type,
-                          bool supports_clear_all)
-      : TestDataTypeSyncBridge(model_type, supports_clear_all) {
+                         DataType data_type,
+                         bool supports_clear_all)
+      : TestDataTypeSyncBridge(data_type, supports_clear_all) {
     std::swap(db_, other->db_);
   }
 
@@ -231,7 +230,7 @@ class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
     data_type_state.set_initial_sync_state(initial_sync_state);
     data_type_state.set_cache_guid(kCacheGuid);
     data_type_state.mutable_progress_marker()->set_data_type_id(
-        GetSpecificsFieldNumberFromModelType(type()));
+        GetSpecificsFieldNumberFromDataType(type()));
     data_type_state.set_authenticated_account_id(
         kDefaultAuthenticatedAccountId);
     db_->set_data_type_state(data_type_state);
@@ -335,7 +334,7 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
 
   void SetUp() override {
     bridge_ = std::make_unique<TestDataTypeSyncBridge>(
-        GetModelType(), SupportsIncrementalUpdates());
+        GetDataType(), SupportsIncrementalUpdates());
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
@@ -420,17 +419,17 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
 
   void ResetState(bool keep_db) {
     bridge_ = keep_db ? std::make_unique<TestDataTypeSyncBridge>(
-                            std::move(bridge_), GetModelType(),
+                            std::move(bridge_), GetDataType(),
                             SupportsIncrementalUpdates())
                       : std::make_unique<TestDataTypeSyncBridge>(
-                            GetModelType(), SupportsIncrementalUpdates());
+                            GetDataType(), SupportsIncrementalUpdates());
     worker_ = nullptr;
     run_loop_.reset();
     CheckPostConditions();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
-  virtual ModelType GetModelType() { return PREFERENCES; }
+  virtual DataType GetDataType() { return PREFERENCES; }
 
   virtual bool SupportsIncrementalUpdates() { return true; }
 
@@ -573,7 +572,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   data_type_state.set_cache_guid(kCacheGuid);
   data_type_state.set_authenticated_account_id("PersistedAccountId");
   data_type_state.mutable_progress_marker()->set_data_type_id(
-      GetSpecificsFieldNumberFromModelType(GetModelType()));
+      GetSpecificsFieldNumberFromDataType(GetDataType()));
   metadata_batch->SetDataTypeState(data_type_state);
   type_processor()->ModelReadyToSync(std::move(metadata_batch));
 
@@ -594,7 +593,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   data_type_state.set_cache_guid(kCacheGuid);
   data_type_state.set_authenticated_account_id("PersistedAccountId");
   data_type_state.mutable_progress_marker()->set_data_type_id(
-      GetSpecificsFieldNumberFromModelType(GetModelType()));
+      GetSpecificsFieldNumberFromDataType(GetDataType()));
   metadata_batch->SetDataTypeState(data_type_state);
   type_processor()->ModelReadyToSync(std::move(metadata_batch));
 
@@ -644,7 +643,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   data_type_state.set_cache_guid("PersistedCacheGuid");
   data_type_state.set_authenticated_account_id(kDefaultAuthenticatedAccountId);
   data_type_state.mutable_progress_marker()->set_data_type_id(
-      GetSpecificsFieldNumberFromModelType(GetModelType()));
+      GetSpecificsFieldNumberFromDataType(GetDataType()));
   metadata_batch->SetDataTypeState(data_type_state);
   type_processor()->ModelReadyToSync(std::move(metadata_batch));
 
@@ -735,7 +734,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldFilterOutInitialRootNodes) {
   OnSyncStarting();
 
   UpdateResponseDataList update;
-  update.push_back(worker()->GenerateTypeRootUpdateData(ModelType::SESSIONS));
+  update.push_back(worker()->GenerateTypeRootUpdateData(DataType::SESSIONS));
 
   worker()->UpdateFromServer(std::move(update));
   // Root node update should be filtered out.
@@ -990,7 +989,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldCommitLocalCreation) {
 
   histogram_tester.ExpectBucketCount(
       "Sync.ModelTypeOrphanMetadata.Put",
-      /*bucket=*/ModelTypeHistogramValue(GetModelType()), /*count=*/0);
+      /*bucket=*/DataTypeHistogramValue(GetDataType()), /*count=*/0);
 }
 
 // Creates a new item locally while another item exists for the same client tag
@@ -1024,7 +1023,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 
   histogram_tester.ExpectBucketCount(
       "Sync.ModelTypeOrphanMetadata.Put",
-      /*bucket=*/ModelTypeHistogramValue(GetModelType()),
+      /*bucket=*/DataTypeHistogramValue(GetDataType()),
       /*count=*/1);
 }
 
@@ -2181,7 +2180,7 @@ TEST_F(FullUpdateClientTagBasedDataTypeProcessorTest,
 // without any gc directives (as it happens in the migration to USS).
 TEST_F(FullUpdateClientTagBasedDataTypeProcessorTest,
        ShouldProcessInitialUpdate) {
-  // Do not set any model type state to emulate that initial sync has not been
+  // Do not set any data type state to emulate that initial sync has not been
   // done yet.
   ModelReadyToSync();
   OnSyncStarting();
@@ -2327,7 +2326,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldUntrackEntityForStorageKey) {
   worker()->AckOnePendingCommit();
 
   // Check the processor tracks the entity.
-  TypeEntitiesCount count(GetModelType());
+  TypeEntitiesCount count(GetDataType());
   type_processor()->GetTypeEntitiesCountForDebugging(
       base::BindOnce(&CaptureTypeEntitiesCount, &count));
   ASSERT_EQ(1, count.non_tombstone_entities);
@@ -2359,7 +2358,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   // No deletion is not synced up.
   worker()->VerifyPendingCommits({});
   // The processor tracks no entity.
-  TypeEntitiesCount count(GetModelType());
+  TypeEntitiesCount count(GetDataType());
   type_processor()->GetTypeEntitiesCountForDebugging(
       base::BindOnce(&CaptureTypeEntitiesCount, &count));
   EXPECT_EQ(0, count.non_tombstone_entities);
@@ -2378,7 +2377,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   worker()->AckOnePendingCommit();
 
   // Check the processor tracks the entity.
-  TypeEntitiesCount count(GetModelType());
+  TypeEntitiesCount count(GetDataType());
   type_processor()->GetTypeEntitiesCountForDebugging(
       base::BindOnce(&CaptureTypeEntitiesCount, &count));
   ASSERT_EQ(1, count.non_tombstone_entities);
@@ -2457,10 +2456,10 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 
   std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
   sync_pb::DataTypeState data_type_state(metadata_batch->GetDataTypeState());
-  // This processor is supposed to process Preferences. Mark the model type
+  // This processor is supposed to process Preferences. Mark the data type
   // state to be for sessions to simulate a data type id mismatch.
   data_type_state.mutable_progress_marker()->set_data_type_id(
-      GetSpecificsFieldNumberFromModelType(SESSIONS));
+      GetSpecificsFieldNumberFromDataType(SESSIONS));
   metadata_batch->SetDataTypeState(data_type_state);
 
   type_processor()->ModelReadyToSync(std::move(metadata_batch));
@@ -2499,7 +2498,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 
     histogram_tester.ExpectBucketCount(
         "Sync.ModelTypeOrphanMetadata.GetData",
-        /*bucket=*/ModelTypeHistogramValue(GetModelType()), /*count=*/1);
+        /*bucket=*/DataTypeHistogramValue(GetDataType()), /*count=*/1);
   }
 
   // Orphan metadata should have been deleted.
@@ -2519,7 +2518,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   // The processor should not report orphan again in UMA.
   histogram_tester.ExpectBucketCount(
       "Sync.ModelTypeOrphanMetadata.GetData",
-      /*bucket=*/ModelTypeHistogramValue(GetModelType()), /*count=*/0);
+      /*bucket=*/DataTypeHistogramValue(GetDataType()), /*count=*/0);
 }
 
 TEST_F(ClientTagBasedDataTypeProcessorTest,
@@ -2688,7 +2687,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldPropagateFullCommitFailure) {
 class CommitOnlyClientTagBasedDataTypeProcessorTest
     : public ClientTagBasedDataTypeProcessorTest {
  protected:
-  ModelType GetModelType() override {
+  DataType GetDataType() override {
     DCHECK(CommitOnlyTypes().Has(USER_EVENTS));
     return USER_EVENTS;
   }
@@ -2713,7 +2712,7 @@ TEST_F(CommitOnlyClientTagBasedDataTypeProcessorTest,
   data_type_state.set_cache_guid(kCacheGuid);
   data_type_state.set_authenticated_account_id("PersistedAccountId");
   data_type_state.mutable_progress_marker()->set_data_type_id(
-      GetSpecificsFieldNumberFromModelType(GetModelType()));
+      GetSpecificsFieldNumberFromDataType(GetDataType()));
   metadata_batch->SetDataTypeState(data_type_state);
   type_processor()->ModelReadyToSync(std::move(metadata_batch));
 
@@ -2743,7 +2742,7 @@ TEST_F(CommitOnlyClientTagBasedDataTypeProcessorTest,
   data_type_state.set_cache_guid(kCacheGuid);
   data_type_state.set_authenticated_account_id("PersistedAccountId");
   data_type_state.mutable_progress_marker()->set_data_type_id(
-      GetSpecificsFieldNumberFromModelType(GetModelType()));
+      GetSpecificsFieldNumberFromDataType(GetDataType()));
   metadata_batch->SetDataTypeState(data_type_state);
   type_processor()->ModelReadyToSync(std::move(metadata_batch));
 
@@ -2842,9 +2841,9 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldResetOnInvalidDataTypeId) {
   sync_pb::DataTypeState data_type_state = db()->data_type_state();
 
   ASSERT_NE(data_type_state.progress_marker().data_type_id(),
-            GetSpecificsFieldNumberFromModelType(AUTOFILL));
+            GetSpecificsFieldNumberFromDataType(AUTOFILL));
   data_type_state.mutable_progress_marker()->set_data_type_id(
-      GetSpecificsFieldNumberFromModelType(AUTOFILL));
+      GetSpecificsFieldNumberFromDataType(AUTOFILL));
   db()->set_data_type_state(data_type_state);
 
   ModelReadyToSync();
@@ -2857,11 +2856,11 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 
   sync_pb::EntityMetadata entity_metadata1;
   entity_metadata1.set_client_tag_hash(
-      ClientTagHash::FromUnhashed(GetModelType(), "tag1").value());
+      ClientTagHash::FromUnhashed(GetDataType(), "tag1").value());
   entity_metadata1.set_creation_time(0);
   sync_pb::EntityMetadata entity_metadata2;
   entity_metadata2.set_client_tag_hash(
-      ClientTagHash::FromUnhashed(GetModelType(), "tag2").value());
+      ClientTagHash::FromUnhashed(GetDataType(), "tag2").value());
   entity_metadata2.set_creation_time(0);
 
   db()->PutMetadata(kKey1, std::move(entity_metadata1));
@@ -2881,7 +2880,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 
   histogram_tester.ExpectBucketCount(
       "Sync.ModelTypeEntityMetadataWithoutInitialSync",
-      /*sample=*/ModelTypeHistogramValue(GetModelType()),
+      /*sample=*/DataTypeHistogramValue(GetDataType()),
       /*expected_count=*/1);
 }
 
@@ -2892,11 +2891,11 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 
   sync_pb::EntityMetadata entity_metadata1;
   entity_metadata1.set_client_tag_hash(
-      ClientTagHash::FromUnhashed(GetModelType(), "tag1").value());
+      ClientTagHash::FromUnhashed(GetDataType(), "tag1").value());
   entity_metadata1.set_creation_time(0);
   sync_pb::EntityMetadata entity_metadata2;
   entity_metadata2.set_client_tag_hash(
-      ClientTagHash::FromUnhashed(GetModelType(), "tag2").value());
+      ClientTagHash::FromUnhashed(GetDataType(), "tag2").value());
   entity_metadata2.set_creation_time(0);
 
   db()->PutMetadata(kKey1, std::move(entity_metadata1));
@@ -2922,7 +2921,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   base::HistogramTester histogram_tester;
 
   const syncer::ClientTagHash kClientTagHash =
-      ClientTagHash::FromUnhashed(GetModelType(), "tag");
+      ClientTagHash::FromUnhashed(GetDataType(), "tag");
   sync_pb::EntityMetadata entity_metadata1;
   entity_metadata1.set_client_tag_hash(kClientTagHash.value());
   entity_metadata1.set_creation_time(0);
@@ -2951,7 +2950,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   // that two of them were metadata oprhans.
   histogram_tester.ExpectBucketCount(
       "Sync.ModelTypeOrphanMetadata.ModelReadyToSync",
-      /*sample=*/ModelTypeHistogramValue(GetModelType()),
+      /*sample=*/DataTypeHistogramValue(GetDataType()),
       /*expected_count=*/2);
 }
 
@@ -2998,7 +2997,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   // Update was dropped by the bridge.
   histogram_tester.ExpectBucketCount(
       "Sync.ModelTypeUpdateDrop.DroppedByBridge",
-      /*bucket=*/ModelTypeHistogramValue(GetModelType()),
+      /*bucket=*/DataTypeHistogramValue(GetDataType()),
       /*count=*/1);
 }
 
@@ -3212,7 +3211,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 class PasswordsClientTagBasedDataTypeProcessorTest
     : public ClientTagBasedDataTypeProcessorTest {
  protected:
-  ModelType GetModelType() override { return PASSWORDS; }
+  DataType GetDataType() override { return PASSWORDS; }
 };
 
 TEST_F(PasswordsClientTagBasedDataTypeProcessorTest,
@@ -3247,7 +3246,7 @@ class ClientTagBasedDataTypeProcessorWithUniquePositionTest
   }
 
  protected:
-  ModelType GetModelType() override { return SHARED_TAB_GROUP_DATA; }
+  DataType GetDataType() override { return SHARED_TAB_GROUP_DATA; }
 };
 
 TEST_F(ClientTagBasedDataTypeProcessorWithUniquePositionTest,

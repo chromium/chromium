@@ -9,21 +9,21 @@
 #include <optional>
 
 #include "base/functional/callback.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/model/model_error.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_store_base.h"
+#include "components/sync/model/model_error.h"
 
 namespace syncer {
 
 class MetadataBatch;
 
-// DataTypeStore is leveldb backed store for model type's data, metadata and
+// DataTypeStore is leveldb backed store for data type's data, metadata and
 // global metadata.
 //
 // Store keeps records for entries identified by ids. For each entry store keeps
 // data and metadata. Also store keeps one record for global metadata.
 //
-// To create store call one of Create*Store static factory functions. Model type
+// To create store call one of Create*Store static factory functions. Data type
 // controls store's lifetime with returned unique_ptr. Call to Create*Store
 // function triggers asynchronous store backend initialization, callback will be
 // called with results when initialization is done.
@@ -109,11 +109,11 @@ class DataTypeStore : public DataTypeStoreBase {
 
 // Typedef for a store factory that has all params bound except InitCallback.
 using RepeatingDataTypeStoreFactory =
-    base::RepeatingCallback<void(ModelType type, DataTypeStore::InitCallback)>;
+    base::RepeatingCallback<void(DataType type, DataTypeStore::InitCallback)>;
 
 // Same as above but as a OnceCallback.
 using OnceDataTypeStoreFactory =
-    base::OnceCallback<void(ModelType type, DataTypeStore::InitCallback)>;
+    base::OnceCallback<void(DataType type, DataTypeStore::InitCallback)>;
 
 }  // namespace syncer
 

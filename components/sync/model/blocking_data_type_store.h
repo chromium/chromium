@@ -8,9 +8,9 @@
 #include <memory>
 #include <optional>
 
-#include "components/sync/base/model_type.h"
-#include "components/sync/model/model_error.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_store_base.h"
+#include "components/sync/model/model_error.h"
 
 namespace syncer {
 

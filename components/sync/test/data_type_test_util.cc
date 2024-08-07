@@ -6,47 +6,47 @@
 
 namespace syncer {
 
-void PrintTo(ModelTypeSet model_types, ::std::ostream* os) {
-  *os << ModelTypeSetToDebugString(model_types);
+void PrintTo(DataTypeSet data_types, ::std::ostream* os) {
+  *os << DataTypeSetToDebugString(data_types);
 }
 
 namespace {
 
-// Matcher implementation for HasModelTypes().
-class HasModelTypesMatcher : public ::testing::MatcherInterface<ModelTypeSet> {
+// Matcher implementation for HasDataTypes().
+class HasDataTypesMatcher : public ::testing::MatcherInterface<DataTypeSet> {
  public:
-  explicit HasModelTypesMatcher(ModelTypeSet expected_types)
+  explicit HasDataTypesMatcher(DataTypeSet expected_types)
       : expected_types_(expected_types) {}
 
-  HasModelTypesMatcher(const HasModelTypesMatcher&) = delete;
-  HasModelTypesMatcher& operator=(const HasModelTypesMatcher&) = delete;
+  HasDataTypesMatcher(const HasDataTypesMatcher&) = delete;
+  HasDataTypesMatcher& operator=(const HasDataTypesMatcher&) = delete;
 
-  ~HasModelTypesMatcher() override = default;
+  ~HasDataTypesMatcher() override = default;
 
   bool MatchAndExplain(
-      ModelTypeSet model_types,
+      DataTypeSet data_types,
       ::testing::MatchResultListener* listener) const override {
     // No need to annotate listener since we already define PrintTo().
-    return model_types == expected_types_;
+    return data_types == expected_types_;
   }
 
   void DescribeTo(::std::ostream* os) const override {
-    *os << "has model types " << ModelTypeSetToDebugString(expected_types_);
+    *os << "has data types " << DataTypeSetToDebugString(expected_types_);
   }
 
   void DescribeNegationTo(::std::ostream* os) const override {
-    *os << "doesn't have model types "
-        << ModelTypeSetToDebugString(expected_types_);
+    *os << "doesn't have data types "
+        << DataTypeSetToDebugString(expected_types_);
   }
 
  private:
-  const ModelTypeSet expected_types_;
+  const DataTypeSet expected_types_;
 };
 
 }  // namespace
 
-::testing::Matcher<ModelTypeSet> HasModelTypes(ModelTypeSet expected_types) {
-  return ::testing::MakeMatcher(new HasModelTypesMatcher(expected_types));
+::testing::Matcher<DataTypeSet> HasDataTypes(DataTypeSet expected_types) {
+  return ::testing::MakeMatcher(new HasDataTypesMatcher(expected_types));
 }
 
 }  // namespace syncer

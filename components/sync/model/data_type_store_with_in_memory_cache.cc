@@ -20,7 +20,7 @@ namespace syncer {
 template <typename Entry>
 void DataTypeStoreWithInMemoryCache<Entry>::CreateAndLoad(
     OnceDataTypeStoreFactory store_factory,
-    ModelType type,
+    DataType type,
     CreateCallback callback) {
   // Initialization happens in two phases:
   // 1. Create the underlying DataTypeStore.

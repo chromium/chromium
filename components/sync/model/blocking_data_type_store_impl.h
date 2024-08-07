@@ -10,7 +10,7 @@
 
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/blocking_data_type_store.h"
 
@@ -21,14 +21,14 @@ namespace syncer {
 // they are not needed anymore. See crbug.com/1147556 for more
 // context on move migration.
 
-// Formats key prefix for data records of |model_type| using |storage_type|.
-std::string FormatDataPrefix(ModelType model_type, StorageType storage_type);
+// Formats key prefix for data records of |data_type| using |storage_type|.
+std::string FormatDataPrefix(DataType data_type, StorageType storage_type);
 
-// Formats key prefix for metadata records of |model_type| using |storage_type|.
-std::string FormatMetaPrefix(ModelType model_type, StorageType storage_type);
+// Formats key prefix for metadata records of |data_type| using |storage_type|.
+std::string FormatMetaPrefix(DataType data_type, StorageType storage_type);
 
-// Formats key for global metadata record of |model_type| using |storage_type|.
-std::string FormatGlobalMetadataKey(ModelType model_type,
+// Formats key for global metadata record of |data_type| using |storage_type|.
+std::string FormatGlobalMetadataKey(DataType data_type,
                                     StorageType storage_type);
 
 class DataTypeStoreBackend;
@@ -36,7 +36,7 @@ class DataTypeStoreBackend;
 class BlockingDataTypeStoreImpl : public BlockingDataTypeStore {
  public:
   // |backend| must not be null.
-  BlockingDataTypeStoreImpl(ModelType model_type,
+  BlockingDataTypeStoreImpl(DataType data_type,
                             StorageType storage_type,
                             scoped_refptr<DataTypeStoreBackend> backend);
 
@@ -60,22 +60,22 @@ class BlockingDataTypeStoreImpl : public BlockingDataTypeStore {
 
   // For advanced uses that require cross-thread batch posting. Avoid if
   // possible.
-  static std::unique_ptr<WriteBatch> CreateWriteBatch(ModelType model_type,
+  static std::unique_ptr<WriteBatch> CreateWriteBatch(DataType data_type,
                                                       StorageType storage_type);
 
   // Returns the common prefix for all records (data, metadata, and global
-  // metadata aka model type state) with a given ModelType and StorageType. Can
+  // metadata aka data type state) with a given DataType and StorageType. Can
   // be useful for data migrations; should not be required otherwise.
-  static std::string FormatPrefixForModelTypeAndStorageType(
-      ModelType model_type,
+  static std::string FormatPrefixForDataTypeAndStorageType(
+      DataType data_type,
       StorageType storage_type);
 
  private:
-  const ModelType model_type_;
+  const DataType data_type_;
   const StorageType storage_type_;
   const scoped_refptr<DataTypeStoreBackend> backend_;
 
-  // Key prefix for data/metadata records of this model type.
+  // Key prefix for data/metadata records of this data type.
   const std::string data_prefix_;
   const std::string metadata_prefix_;
 

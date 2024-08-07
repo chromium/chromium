@@ -20,9 +20,9 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/hash_util.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_queue.h"
@@ -59,8 +59,8 @@ size_t CountDuplicateClientTags(const EntityMetadataMap& metadata_map) {
   return count;
 }
 
-void RecordModelTypeNumUnsyncedEntitiesOnModelReady(
-    ModelType model_type,
+void RecordDataTypeNumUnsyncedEntitiesOnModelReady(
+    DataType data_type,
     const ProcessorEntityTracker& entity_tracker) {
   size_t num_unsynced_entities = 0;
   for (const auto* entity :
@@ -69,7 +69,7 @@ void RecordModelTypeNumUnsyncedEntitiesOnModelReady(
       num_unsynced_entities++;
     }
   }
-  SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(model_type,
+  SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(data_type,
                                                     num_unsynced_entities);
 }
 
@@ -110,7 +110,7 @@ bool ShouldReuseTrackedUniquePositionFor(const ProcessorEntity* target_entity,
 }  // namespace
 
 ClientTagBasedDataTypeProcessor::ClientTagBasedDataTypeProcessor(
-    ModelType type,
+    DataType type,
     const base::RepeatingClosure& dump_stack)
     : type_(type), dump_stack_(dump_stack) {}
 
@@ -122,11 +122,11 @@ void ClientTagBasedDataTypeProcessor::OnSyncStarting(
     const DataTypeActivationRequest& request,
     StartCallback start_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "Sync is starting for " << ModelTypeToDebugString(type_);
-  DUMP_WILL_BE_CHECK(request.IsValid()) << ModelTypeToDebugString(type_);
-  DUMP_WILL_BE_CHECK(start_callback) << ModelTypeToDebugString(type_);
-  DUMP_WILL_BE_CHECK(!start_callback_) << ModelTypeToDebugString(type_);
-  DUMP_WILL_BE_CHECK(!IsConnected()) << ModelTypeToDebugString(type_);
+  DVLOG(1) << "Sync is starting for " << DataTypeToDebugString(type_);
+  DUMP_WILL_BE_CHECK(request.IsValid()) << DataTypeToDebugString(type_);
+  DUMP_WILL_BE_CHECK(start_callback) << DataTypeToDebugString(type_);
+  DUMP_WILL_BE_CHECK(!start_callback_) << DataTypeToDebugString(type_);
+  DUMP_WILL_BE_CHECK(!IsConnected()) << DataTypeToDebugString(type_);
 
   start_callback_ = std::move(start_callback);
   activation_request_ = request;
@@ -160,14 +160,14 @@ void ClientTagBasedDataTypeProcessor::ModelReadyToSync(
 
   if (ClearPersistedMetadataIfInvalid(*batch)) {
     DLOG(ERROR) << "The persisted metadata was invalid and was cleared for "
-                << ModelTypeToDebugString(type_) << ". Start over fresh.";
+                << DataTypeToDebugString(type_) << ". Start over fresh.";
   } else {
     sync_pb::DataTypeState data_type_state = batch->GetDataTypeState();
     if (IsInitialSyncAtLeastPartiallyDone(
             data_type_state.initial_sync_state())) {
       entity_tracker_ = std::make_unique<ProcessorEntityTracker>(
           data_type_state, batch->TakeAllMetadata());
-      RecordModelTypeNumUnsyncedEntitiesOnModelReady(type_, *entity_tracker_);
+      RecordDataTypeNumUnsyncedEntitiesOnModelReady(type_, *entity_tracker_);
     } else {
       // If initial sync isn't done, there must be no entity metadata (if there
       // was, ClearPersistedMetadataIfInvalid() would've detected the
@@ -206,7 +206,7 @@ void ClientTagBasedDataTypeProcessor::ConnectIfReady() {
   if (!entity_tracker_) {
     sync_pb::DataTypeState data_type_state;
     data_type_state.mutable_progress_marker()->set_data_type_id(
-        GetSpecificsFieldNumberFromModelType(type_));
+        GetSpecificsFieldNumberFromDataType(type_));
     data_type_state.set_cache_guid(activation_request_.cache_guid);
     data_type_state.set_authenticated_account_id(
         activation_request_.authenticated_account_id.ToString());
@@ -214,7 +214,7 @@ void ClientTagBasedDataTypeProcessor::ConnectIfReady() {
     // potential notes from the sync server that were ignored by earlier
     // versions of the browser that didn't support notes. This should be done
     // first when the browser is upgraded to a version that support passwords
-    // notes. Store in the model type store that this redownload has happened
+    // notes. Store in the data type store that this redownload has happened
     // already to ensure it happens only once.
     if (type_ == PASSWORDS) {
       data_type_state.set_notes_enabled_before_initial_sync_for_passwords(true);
@@ -388,7 +388,7 @@ void ClientTagBasedDataTypeProcessor::ReportErrorImpl(const ModelError& error,
     return;
   }
 
-  const std::string type_suffix = ModelTypeToHistogramSuffix(type_);
+  const std::string type_suffix = DataTypeToHistogramSuffix(type_);
   base::UmaHistogramEnumeration(kErrorSiteHistogramPrefix + type_suffix, site);
 
   if (dump_stack_) {
@@ -432,7 +432,7 @@ void ClientTagBasedDataTypeProcessor::ConnectSync(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DUMP_WILL_BE_CHECK(!model_error_);
 
-  DVLOG(1) << "Successfully connected " << ModelTypeToDebugString(type_);
+  DVLOG(1) << "Successfully connected " << DataTypeToDebugString(type_);
 
   worker_ = std::move(worker);
 
@@ -443,7 +443,7 @@ void ClientTagBasedDataTypeProcessor::DisconnectSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DUMP_WILL_BE_CHECK(IsConnected());
 
-  DVLOG(1) << "Disconnecting sync for " << ModelTypeToDebugString(type_);
+  DVLOG(1) << "Disconnecting sync for " << DataTypeToDebugString(type_);
   weak_ptr_factory_for_worker_.InvalidateWeakPtrs();
   worker_.reset();
 
@@ -462,7 +462,7 @@ void ClientTagBasedDataTypeProcessor::Put(
   DUMP_WILL_BE_CHECK(!data->is_deleted());
   DUMP_WILL_BE_CHECK(!data->specifics.has_encrypted());
   DUMP_WILL_BE_CHECK(!storage_key.empty());
-  DUMP_WILL_BE_CHECK_EQ(type_, GetModelTypeFromSpecifics(data->specifics));
+  DUMP_WILL_BE_CHECK_EQ(type_, GetDataTypeFromSpecifics(data->specifics));
 
   if (!entity_tracker_) {
     // Ignore changes before the initial sync is done.
@@ -476,7 +476,7 @@ void ClientTagBasedDataTypeProcessor::Put(
   // find out first which data types have such behavior.
   if (processing_incremental_updates_) {
     base::UmaHistogramEnumeration("Sync.LocalChangeDuringRemoteUpdate",
-                                  ModelTypeHistogramValue(type_));
+                                  DataTypeHistogramValue(type_));
   }
 
   // |data->specifics| is about to be committed, and therefore represents the
@@ -520,7 +520,7 @@ void ClientTagBasedDataTypeProcessor::Put(
         // unexpected but the processor tolerates it. It is very likely a
         // metadata orphan; report it to metrics.
         UMA_HISTOGRAM_ENUMERATION("Sync.ModelTypeOrphanMetadata.Put",
-                                  ModelTypeHistogramValue(type_));
+                                  DataTypeHistogramValue(type_));
       }
       // Remove the old storage key from the tracker and the corresponding
       // metadata record.
@@ -702,9 +702,9 @@ void ClientTagBasedDataTypeProcessor::GetLocalChanges(
   DUMP_WILL_BE_CHECK(!model_error_);
 
   // Use base::debug::Alias() to ensure that crash dumps in reports include
-  // ModelType.
-  const ModelType model_type = type_;
-  base::debug::Alias(&model_type);
+  // DataType.
+  const DataType data_type = type_;
+  base::debug::Alias(&data_type);
 
   // In some cases local changes may be requested before entity tracker is
   // loaded. Just invoke the callback with empty list.
@@ -750,12 +750,12 @@ void ClientTagBasedDataTypeProcessor::OnCommitCompleted(
 
   DUMP_WILL_BE_CHECK(entity_tracker_)
       << "Received commit response when entity tracker is null. Type: "
-      << ModelTypeToDebugString(type_);
+      << DataTypeToDebugString(type_);
 
   // Use base::debug::Alias() to ensure that crash dumps in reports include
-  // ModelType.
-  const ModelType model_type = type_;
-  base::debug::Alias(&model_type);
+  // DataType.
+  const DataType data_type = type_;
+  base::debug::Alias(&data_type);
 
   // |error_response_list| is ignored, because all errors are treated as
   // transientand the processor with eventually retry.
@@ -774,10 +774,10 @@ void ClientTagBasedDataTypeProcessor::OnCommitCompleted(
       // This can happen (rarely) if the entity got untracked while a Commit was
       // ongoing, or if the server sent a bogus response (unlikely).
       DLOG(ERROR) << "Received commit response for missing item."
-                  << " type: " << ModelTypeToDebugString(type_)
+                  << " type: " << DataTypeToDebugString(type_)
                   << " client_tag_hash: " << data.client_tag_hash;
       base::UmaHistogramEnumeration("Sync.CommitResponseForUnknownEntity",
-                                    ModelTypeHistogramValue(type_));
+                                    DataTypeHistogramValue(type_));
       continue;
     }
 
@@ -838,9 +838,9 @@ void ClientTagBasedDataTypeProcessor::OnCommitFailed(
   DUMP_WILL_BE_CHECK(!model_error_);
 
   // Use base::debug::Alias() to ensure that crash dumps in reports include
-  // ModelType.
-  const ModelType model_type = type_;
-  base::debug::Alias(&model_type);
+  // DataType.
+  const DataType data_type = type_;
+  base::debug::Alias(&data_type);
 
   switch (bridge_->OnCommitAttemptFailed(commit_error)) {
     case DataTypeSyncBridge::CommitAttemptFailedBehavior::
@@ -868,9 +868,9 @@ void ClientTagBasedDataTypeProcessor::OnUpdateReceived(
   DUMP_WILL_BE_CHECK(!data_type_state.progress_marker().has_gc_directive());
 
   // Use base::debug::Alias() to ensure that crash dumps in reports include
-  // ModelType.
-  const ModelType model_type = type_;
-  base::debug::Alias(&model_type);
+  // DataType.
+  const DataType data_type = type_;
+  base::debug::Alias(&data_type);
 
   if (!ValidateUpdate(data_type_state, updates, gc_directive)) {
     return;
@@ -923,9 +923,9 @@ void ClientTagBasedDataTypeProcessor::StorePendingInvalidations(
   CHECK(bridge_);
 
   // Use base::debug::Alias() to ensure that crash dumps in reports include
-  // ModelType.
-  const ModelType model_type = type_;
-  base::debug::Alias(&model_type);
+  // DataType.
+  const DataType data_type = type_;
+  base::debug::Alias(&data_type);
 
   if (model_error_ || !entity_tracker_) {
     // It's possible to have incoming invalidations while the data type is not
@@ -1031,7 +1031,7 @@ std::optional<ModelError> ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
           UpdateDropReason::kTombstoneInFullUpdate, type_);
       DLOG(WARNING) << "Ignoring tombstone found during initial update: "
                     << "client_tag_hash = " << client_tag_hash << " for "
-                    << ModelTypeToDebugString(type_);
+                    << DataTypeToDebugString(type_);
       continue;
     }
 
@@ -1039,7 +1039,7 @@ std::optional<ModelError> ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
       SyncRecordDataTypeUpdateDropReason(UpdateDropReason::kDroppedByBridge,
                                          type_);
       DLOG(WARNING) << "Received entity with invalid update for "
-                    << ModelTypeToDebugString(type_);
+                    << DataTypeToDebugString(type_);
       continue;
     }
 
@@ -1050,7 +1050,7 @@ std::optional<ModelError> ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
           UpdateDropReason::kInconsistentClientTag, type_);
       DLOG(WARNING) << "Received unexpected client tag hash: "
                     << client_tag_hash << " for "
-                    << ModelTypeToDebugString(type_);
+                    << DataTypeToDebugString(type_);
       continue;
     }
 
@@ -1064,7 +1064,7 @@ std::optional<ModelError> ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
         SyncRecordDataTypeUpdateDropReason(
             UpdateDropReason::kCannotGenerateStorageKey, type_);
         DLOG(WARNING) << "Received entity with invalid update for "
-                      << ModelTypeToDebugString(type_);
+                      << DataTypeToDebugString(type_);
         continue;
       }
     }
@@ -1074,7 +1074,7 @@ std::optional<ModelError> ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
     // does.
     if (entity_tracker_->GetEntityForTagHash(client_tag_hash)) {
       DLOG(ERROR) << "Received duplicate client_tag_hash " << client_tag_hash
-                  << " for " << ModelTypeToDebugString(type_);
+                  << " for " << DataTypeToDebugString(type_);
     }
 #endif  // DCHECK_IS_ON()
     std::optional<sync_pb::UniquePosition> unique_position;
@@ -1165,7 +1165,7 @@ void ClientTagBasedDataTypeProcessor::ConsumeDataBatch(
     // had been called.
     storage_keys_to_untrack.push_back(storage_key);
     UMA_HISTOGRAM_ENUMERATION("Sync.ModelTypeOrphanMetadata.GetData",
-                              ModelTypeHistogramValue(type_));
+                              DataTypeHistogramValue(type_));
   }
 
   if (storage_keys_to_untrack.empty()) {
@@ -1301,7 +1301,7 @@ void ClientTagBasedDataTypeProcessor::GetAllNodesForDebugging(
   }
 
   base::Value::List all_nodes;
-  std::string type_string = ModelTypeToDebugString(type_);
+  std::string type_string = DataTypeToDebugString(type_);
 
   while (batch->HasNext()) {
     auto [storage_key, data] = batch->Next();
@@ -1385,7 +1385,7 @@ bool ClientTagBasedDataTypeProcessor::ClearPersistedMetadataIfInvalid(
       !metadata_map.empty()) {
     base::UmaHistogramEnumeration(
         "Sync.ModelTypeEntityMetadataWithoutInitialSync",
-        ModelTypeHistogramValue(type_));
+        DataTypeHistogramValue(type_));
 
     ClearAllProvidedMetadataAndResetState(metadata_map);
     // Not having `entity_tracker_` results in doing the initial sync again.
@@ -1401,7 +1401,7 @@ bool ClientTagBasedDataTypeProcessor::ClearPersistedMetadataIfInvalid(
     for (size_t i = 0; i < count_of_duplicates; i++) {
       base::UmaHistogramEnumeration(
           "Sync.ModelTypeOrphanMetadata.ModelReadyToSync",
-          ModelTypeHistogramValue(type_));
+          DataTypeHistogramValue(type_));
     }
 
     ClearAllProvidedMetadataAndResetState(metadata_map);
@@ -1443,7 +1443,7 @@ void ClientTagBasedDataTypeProcessor::
   // don't belong to the current syncing client.
   const bool valid_data_type_id =
       data_type_state.progress_marker().data_type_id() ==
-      GetSpecificsFieldNumberFromModelType(type_);
+      GetSpecificsFieldNumberFromDataType(type_);
   if (valid_cache_guid && valid_data_type_id) {
     return;
   }

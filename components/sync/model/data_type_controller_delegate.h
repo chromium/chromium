@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/model/model_error.h"
 
@@ -27,7 +27,7 @@ struct TypeEntitiesCount;
 class DataTypeControllerDelegate {
  public:
   using AllNodesCallback =
-      base::OnceCallback<void(ModelType, base::Value::List)>;
+      base::OnceCallback<void(DataType, base::Value::List)>;
   using StartCallback =
       base::OnceCallback<void(std::unique_ptr<DataTypeActivationResponse>)>;
 

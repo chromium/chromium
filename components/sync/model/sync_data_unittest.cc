@@ -17,7 +17,7 @@ namespace syncer {
 namespace {
 
 const char kSyncTag[] = "3984729834";
-const ModelType kDatatype = PREFERENCES;
+const DataType kDatatype = PREFERENCES;
 const char kNonUniqueTitle[] = "my preference";
 
 TEST(SyncDataTest, NoArgCtor) {

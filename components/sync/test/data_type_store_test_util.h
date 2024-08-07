@@ -18,7 +18,7 @@ class DataTypeStoreTestUtil {
  public:
   // Creates an in memory store synchronously.
   static std::unique_ptr<DataTypeStore> CreateInMemoryStoreForTest(
-      ModelType type = PREFERENCES,
+      DataType type = PREFERENCES,
       StorageType storage_type = StorageType::kUnspecified);
 
   // Creates a factory callback to synchronously return in memory stores.

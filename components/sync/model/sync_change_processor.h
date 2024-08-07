@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SYNC_MODEL_SYNC_CHANGE_PROCESSOR_H_
 #define COMPONENTS_SYNC_MODEL_SYNC_CHANGE_PROCESSOR_H_
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"

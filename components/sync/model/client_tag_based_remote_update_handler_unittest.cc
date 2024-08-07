@@ -110,7 +110,7 @@ class ClientTagBasedRemoteUpdateHandlerTest : public ::testing::Test {
   ClientTagBasedRemoteUpdateHandlerTest()
       : ClientTagBasedRemoteUpdateHandlerTest(PREFERENCES) {}
 
-  explicit ClientTagBasedRemoteUpdateHandlerTest(ModelType type)
+  explicit ClientTagBasedRemoteUpdateHandlerTest(DataType type)
       : processor_entity_tracker_(GenerateDataTypeState(), EntityMetadataMap()),
         data_type_sync_bridge_(type,
                                change_processor_.CreateForwardingProcessor()),
@@ -118,7 +118,7 @@ class ClientTagBasedRemoteUpdateHandlerTest : public ::testing::Test {
                                &data_type_sync_bridge_,
                                &processor_entity_tracker_),
         worker_(MockDataTypeWorker::CreateWorkerAndConnectSync(
-            GenerateDataTypeActivationResponse(&model_type_processor_))) {}
+            GenerateDataTypeActivationResponse(&data_type_processor_))) {}
 
   ~ClientTagBasedRemoteUpdateHandlerTest() override = default;
 
@@ -190,7 +190,7 @@ class ClientTagBasedRemoteUpdateHandlerTest : public ::testing::Test {
   ProcessorEntityTracker processor_entity_tracker_;
   FakeDataTypeSyncBridge data_type_sync_bridge_;
   ClientTagBasedRemoteUpdateHandler remote_update_handler_;
-  testing::NiceMock<MockDataTypeProcessor> model_type_processor_;
+  testing::NiceMock<MockDataTypeProcessor> data_type_processor_;
   std::unique_ptr<MockDataTypeWorker> worker_;
 };
 
@@ -226,8 +226,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest, ShouldProcessRemoteCreation) {
 TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
        ShouldIgnoreRemoteUpdatesForRootNodes) {
   ASSERT_EQ(0U, ProcessorEntityCount());
-  ProcessSingleUpdate(
-      worker()->GenerateTypeRootUpdateData(ModelType::SESSIONS));
+  ProcessSingleUpdate(worker()->GenerateTypeRootUpdateData(DataType::SESSIONS));
   // Root node update should be filtered out.
   EXPECT_EQ(0U, db()->data_count());
   EXPECT_EQ(0U, db()->metadata_count());

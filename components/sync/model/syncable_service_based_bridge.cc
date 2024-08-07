@@ -108,7 +108,7 @@ std::optional<ModelError> ParseInMemoryStoreOnBackendSequence(
 class LocalChangeProcessor : public SyncChangeProcessor {
  public:
   LocalChangeProcessor(
-      ModelType type,
+      DataType type,
       const base::RepeatingCallback<void(const std::optional<ModelError>&)>&
           error_callback,
       DataTypeStore* store,
@@ -205,7 +205,7 @@ class LocalChangeProcessor : public SyncChangeProcessor {
   }
 
  private:
-  const ModelType type_;
+  const DataType type_;
   const base::RepeatingCallback<void(const std::optional<ModelError>&)>
       error_callback_;
   const raw_ptr<DataTypeStore> store_;
@@ -218,7 +218,7 @@ class LocalChangeProcessor : public SyncChangeProcessor {
 }  // namespace
 
 SyncableServiceBasedBridge::SyncableServiceBasedBridge(
-    ModelType type,
+    DataType type,
     OnceDataTypeStoreFactory store_factory,
     std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
     SyncableService* syncable_service)
@@ -382,7 +382,7 @@ size_t SyncableServiceBasedBridge::EstimateSyncOverheadMemoryUsage() const {
 // static
 std::unique_ptr<SyncChangeProcessor>
 SyncableServiceBasedBridge::CreateLocalChangeProcessorForTesting(
-    ModelType type,
+    DataType type,
     DataTypeStore* store,
     InMemoryStore* in_memory_store,
     DataTypeLocalChangeProcessor* other) {
@@ -482,7 +482,7 @@ void SyncableServiceBasedBridge::OnSyncableServiceReady(
       // Using the same range as Sync.ModelTypeConfigurationTime.* metric.
       base::UmaHistogramCustomTimes(
           base::StringPrintf("Sync.SyncableServiceStartTime.%s",
-                             ModelTypeToHistogramSuffix(type_)),
+                             DataTypeToHistogramSuffix(type_)),
           base::Time::Now() - init_start_time_,
           /*min=*/base::Milliseconds(1),
           /*max=*/base::Seconds(60), /*buckets=*/50);
@@ -538,7 +538,7 @@ SyncChangeList SyncableServiceBasedBridge::StoreAndConvertRemoteChanges(
       case EntityChange::ACTION_DELETE: {
         const std::string& storage_key = change->storage_key();
         DCHECK_NE(0U, in_memory_store_.count(storage_key));
-        DVLOG(1) << ModelTypeToDebugString(type_)
+        DVLOG(1) << DataTypeToDebugString(type_)
                  << ": Processing deletion with storage key: " << storage_key;
         output_sync_change_list.emplace_back(
             FROM_HERE, SyncChange::ACTION_DELETE,
@@ -565,7 +565,7 @@ SyncChangeList SyncableServiceBasedBridge::StoreAndConvertRemoteChanges(
 
       case EntityChange::ACTION_UPDATE: {
         const std::string& storage_key = change->data().client_tag_hash.value();
-        DVLOG(1) << ModelTypeToDebugString(type_)
+        DVLOG(1) << DataTypeToDebugString(type_)
                  << ": Processing add/update with key: " << storage_key;
 
         output_sync_change_list.emplace_back(

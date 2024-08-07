@@ -15,7 +15,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/protocol/data_type_state.pb.h"
@@ -432,7 +432,7 @@ TEST(DataTypeStoreImplWithTwoStoreTest, DeleteAllWithSharedBackend) {
 }
 
 TEST(DataTypeStoreImplWithTwoStoreTest,
-     AccountStoreDeleteAllWithSharedBackendAndSameModelType) {
+     AccountStoreDeleteAllWithSharedBackendAndSameDataType) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
   std::unique_ptr<DataTypeStore> store_1 =
@@ -481,7 +481,7 @@ TEST(DataTypeStoreImplWithTwoStoreTest,
 }
 
 TEST(DataTypeStoreImplWithTwoStoreTest,
-     UnspecifiedStoreDeleteAllWithSharedBackendAndSameModelType) {
+     UnspecifiedStoreDeleteAllWithSharedBackendAndSameDataType) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
   std::unique_ptr<DataTypeStore> store_1 =

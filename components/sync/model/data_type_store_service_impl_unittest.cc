@@ -14,7 +14,7 @@
 #include "base/test/test_file_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,16 +29,16 @@ using testing::SizeIs;
 
 std::unique_ptr<DataTypeStore> ExerciseStoreFactoryAndWait(
     const RepeatingDataTypeStoreFactory& store_factory,
-    ModelType model_type = ModelType::PREFERENCES) {
+    DataType data_type = DataType::PREFERENCES) {
   std::unique_ptr<DataTypeStore> result;
   base::RunLoop loop;
-  store_factory.Run(model_type, base::BindLambdaForTesting(
-                                    [&](const std::optional<ModelError>& error,
-                                        std::unique_ptr<DataTypeStore> store) {
-                                      EXPECT_FALSE(error.has_value());
-                                      result = std::move(store);
-                                      loop.Quit();
-                                    }));
+  store_factory.Run(data_type, base::BindLambdaForTesting(
+                                   [&](const std::optional<ModelError>& error,
+                                       std::unique_ptr<DataTypeStore> store) {
+                                     EXPECT_FALSE(error.has_value());
+                                     result = std::move(store);
+                                     loop.Quit();
+                                   }));
   loop.Run();
   return result;
 }
@@ -142,7 +142,7 @@ TEST_F(DataTypeStoreServiceImplTest,
     const RepeatingDataTypeStoreFactory default_store_factory =
         service->GetStoreFactory();
     std::unique_ptr<DataTypeStore> default_store = ExerciseStoreFactoryAndWait(
-        default_store_factory, ModelType::READING_LIST);
+        default_store_factory, DataType::READING_LIST);
     WriteDataAndWait(default_store.get(), "key", "data");
   }
 
@@ -158,14 +158,14 @@ TEST_F(DataTypeStoreServiceImplTest,
     const RepeatingDataTypeStoreFactory default_store_factory =
         service->GetStoreFactory();
     std::unique_ptr<DataTypeStore> default_store = ExerciseStoreFactoryAndWait(
-        default_store_factory, ModelType::READING_LIST);
+        default_store_factory, DataType::READING_LIST);
     EXPECT_THAT(ReadDataAndWait(default_store.get(), "key"), Eq("data"));
 
     // And not in the account store.
     const RepeatingDataTypeStoreFactory account_store_factory =
         service->GetStoreFactoryForAccountStorage();
     std::unique_ptr<DataTypeStore> account_store = ExerciseStoreFactoryAndWait(
-        account_store_factory, ModelType::READING_LIST);
+        account_store_factory, DataType::READING_LIST);
     EXPECT_THAT(ReadDataAndWait(account_store.get(), "key"), Eq(std::nullopt));
   }
 
@@ -181,14 +181,14 @@ TEST_F(DataTypeStoreServiceImplTest,
     const RepeatingDataTypeStoreFactory default_store_factory =
         service->GetStoreFactory();
     std::unique_ptr<DataTypeStore> default_store = ExerciseStoreFactoryAndWait(
-        default_store_factory, ModelType::READING_LIST);
+        default_store_factory, DataType::READING_LIST);
     EXPECT_THAT(ReadDataAndWait(default_store.get(), "key"), std::nullopt);
 
     // It should be in the *account* store now.
     const RepeatingDataTypeStoreFactory account_store_factory =
         service->GetStoreFactoryForAccountStorage();
     std::unique_ptr<DataTypeStore> account_store = ExerciseStoreFactoryAndWait(
-        account_store_factory, ModelType::READING_LIST);
+        account_store_factory, DataType::READING_LIST);
     EXPECT_THAT(ReadDataAndWait(account_store.get(), "key"), Eq("data"));
 
     // The migration pref should've been reset to false.

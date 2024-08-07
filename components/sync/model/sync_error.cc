@@ -19,9 +19,9 @@ SyncError::SyncError() {
 SyncError::SyncError(const base::Location& location,
                      ErrorType error_type,
                      const std::string& message,
-                     ModelType model_type) {
+                     DataType data_type) {
   DCHECK(error_type != UNSET);
-  Init(location, message, model_type, error_type);
+  Init(location, message, data_type, error_type);
   PrintLogError();
 }
 
@@ -41,7 +41,7 @@ SyncError& SyncError::operator=(const SyncError& other) {
 
 void SyncError::Copy(const SyncError& other) {
   if (other.IsSet()) {
-    Init(other.location(), other.message(), other.model_type(),
+    Init(other.location(), other.message(), other.data_type(),
          other.error_type());
   } else {
     Clear();
@@ -51,24 +51,24 @@ void SyncError::Copy(const SyncError& other) {
 void SyncError::Clear() {
   location_.reset();
   message_ = std::string();
-  model_type_ = UNSPECIFIED;
+  data_type_ = UNSPECIFIED;
   error_type_ = UNSET;
 }
 
 void SyncError::Reset(const base::Location& location,
                       const std::string& message,
-                      ModelType model_type) {
-  Init(location, message, model_type, DATATYPE_ERROR);
+                      DataType data_type) {
+  Init(location, message, data_type, DATATYPE_ERROR);
   PrintLogError();
 }
 
 void SyncError::Init(const base::Location& location,
                      const std::string& message,
-                     ModelType model_type,
+                     DataType data_type,
                      ErrorType error_type) {
   location_ = std::make_unique<base::Location>(location);
   message_ = message;
-  model_type_ = model_type;
+  data_type_ = data_type;
   error_type_ = error_type;
 }
 
@@ -86,9 +86,9 @@ const std::string& SyncError::message() const {
   return message_;
 }
 
-ModelType SyncError::model_type() const {
+DataType SyncError::data_type() const {
   DCHECK(IsSet());
-  return model_type_;
+  return data_type_;
 }
 
 SyncError::ErrorType SyncError::error_type() const {
@@ -134,7 +134,7 @@ std::string SyncError::ToString() const {
   if (!IsSet()) {
     return std::string();
   }
-  return location_->ToString() + ", " + ModelTypeToDebugString(model_type_) +
+  return location_->ToString() + ", " + DataTypeToDebugString(data_type_) +
          " " + GetMessagePrefix() + message_;
 }
 
@@ -147,7 +147,7 @@ void SyncError::PrintLogError() const {
                                   location_->line_number(), logSeverity)
                   .stream(),
               logSeverity >= ::logging::GetMinLogLevel())
-      << ModelTypeToDebugString(model_type_) << " " << GetMessagePrefix()
+      << DataTypeToDebugString(data_type_) << " " << GetMessagePrefix()
       << message_;
 }
 

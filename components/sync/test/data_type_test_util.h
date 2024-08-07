@@ -7,18 +7,18 @@
 
 #include <ostream>
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace syncer {
 
-// Defined for googletest.  Forwards to ModelTypeSetToDebugString().
-void PrintTo(ModelTypeSet model_types, ::std::ostream* os);
+// Defined for googletest.  Forwards to DataTypeSetToDebugString().
+void PrintTo(DataTypeSet data_types, ::std::ostream* os);
 
-// A gmock matcher for ModelTypeSet.  Use like:
+// A gmock matcher for DataTypeSet.  Use like:
 //
-//   EXPECT_CALL(mock, ProcessModelTypes(HasModelTypes(expected_types)));
-::testing::Matcher<ModelTypeSet> HasModelTypes(ModelTypeSet expected_types);
+//   EXPECT_CALL(mock, ProcessDataTypes(HasDataTypes(expected_types)));
+::testing::Matcher<DataTypeSet> HasDataTypes(DataTypeSet expected_types);
 
 }  // namespace syncer
 

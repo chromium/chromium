@@ -39,7 +39,7 @@ class SyncableServiceBasedBridge : public DataTypeSyncBridge {
 
   // Pointers must not be null and |syncable_service| must outlive this object.
   SyncableServiceBasedBridge(
-      ModelType type,
+      DataType type,
       OnceDataTypeStoreFactory store_factory,
       std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
       SyncableService* syncable_service);
@@ -74,7 +74,7 @@ class SyncableServiceBasedBridge : public DataTypeSyncBridge {
 
   // For testing.
   static std::unique_ptr<SyncChangeProcessor>
-  CreateLocalChangeProcessorForTesting(ModelType type,
+  CreateLocalChangeProcessorForTesting(DataType type,
                                        DataTypeStore* store,
                                        InMemoryStore* in_memory_store,
                                        DataTypeLocalChangeProcessor* other);
@@ -93,7 +93,7 @@ class SyncableServiceBasedBridge : public DataTypeSyncBridge {
       EntityChangeList input_entity_change_list);
   void ReportErrorIfSet(const std::optional<ModelError>& error);
 
-  const ModelType type_;
+  const DataType type_;
   const raw_ptr<SyncableService> syncable_service_;
 
   std::unique_ptr<DataTypeStore> store_;

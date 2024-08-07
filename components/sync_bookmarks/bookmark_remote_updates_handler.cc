@@ -695,7 +695,7 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
   if (tracked_entity->metadata().is_deleted() && update_entity.is_deleted()) {
     // Both have been deleted, delete the corresponding entity from the tracker.
     bookmark_tracker_->Remove(tracked_entity);
-    syncer::RecordModelTypeEntityConflictResolution(
+    syncer::RecordDataTypeEntityConflictResolution(
         syncer::BOOKMARKS, syncer::ConflictResolution::kChangesMatch);
     return nullptr;
   }
@@ -705,7 +705,7 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
     // update from the server but leave the pending commit intact.
     bookmark_tracker_->UpdateServerVersion(tracked_entity,
                                            update.response_version);
-    syncer::RecordModelTypeEntityConflictResolution(
+    syncer::RecordDataTypeEntityConflictResolution(
         syncer::BOOKMARKS, syncer::ConflictResolution::kUseLocal);
     return tracked_entity;
   }
@@ -716,7 +716,7 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
     // Only local node has been deleted. It should be restored from the server
     // data as a remote creation.
     bookmark_tracker_->Remove(tracked_entity);
-    syncer::RecordModelTypeEntityConflictResolution(
+    syncer::RecordDataTypeEntityConflictResolution(
         syncer::BOOKMARKS, syncer::ConflictResolution::kUseRemote);
     return ProcessCreate(update);
   }
@@ -738,7 +738,7 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
   if (!new_parent_entity) {
     LogProblematicBookmark(
         RemoteBookmarkUpdateError::kMissingParentEntityInConflict);
-    syncer::RecordModelTypeEntityConflictResolution(
+    syncer::RecordDataTypeEntityConflictResolution(
         syncer::BOOKMARKS, syncer::ConflictResolution::kUseLocal);
     return tracked_entity;
   }
@@ -751,7 +751,7 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
   if (!new_parent) {
     LogProblematicBookmark(
         RemoteBookmarkUpdateError::kMissingParentNodeInConflict);
-    syncer::RecordModelTypeEntityConflictResolution(
+    syncer::RecordDataTypeEntityConflictResolution(
         syncer::BOOKMARKS, syncer::ConflictResolution::kUseLocal);
     return tracked_entity;
   }
@@ -769,12 +769,12 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
                               update_entity.specifics);
 
     // The changes are identical so there isn't a real conflict.
-    syncer::RecordModelTypeEntityConflictResolution(
+    syncer::RecordDataTypeEntityConflictResolution(
         syncer::BOOKMARKS, syncer::ConflictResolution::kChangesMatch);
   } else {
     // Conflict where data don't match and no remote deletion, and hence server
     // wins. Update the model from server data.
-    syncer::RecordModelTypeEntityConflictResolution(
+    syncer::RecordDataTypeEntityConflictResolution(
         syncer::BOOKMARKS, syncer::ConflictResolution::kUseRemote);
     ApplyRemoteUpdate(update, tracked_entity, new_parent_entity,
                       bookmark_model_, bookmark_tracker_, favicon_service_);

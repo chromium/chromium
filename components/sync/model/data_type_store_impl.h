@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/data_type_store.h"
 
@@ -27,7 +27,7 @@ class DataTypeStoreImpl : public DataTypeStore {
   // |backend_store| must not be null and must have been created in
   // |backend_task_runner|.
   DataTypeStoreImpl(
-      ModelType model_type,
+      DataType data_type,
       StorageType storage_type,
       std::unique_ptr<BlockingDataTypeStoreImpl, base::OnTaskRunnerDeleter>
           backend_store,
@@ -77,7 +77,7 @@ class DataTypeStoreImpl : public DataTypeStore {
   void WriteModificationsDone(CallbackWithResult callback,
                               const std::optional<ModelError>& error);
 
-  const ModelType model_type_;
+  const DataType data_type_;
   const StorageType storage_type_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
   // |backend_store_| should be deleted on backend thread.

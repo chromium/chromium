@@ -41,12 +41,12 @@ std::optional<ModelError> ReadAllDataAndPreprocessOnBackendSequence(
 }  // namespace
 
 DataTypeStoreImpl::DataTypeStoreImpl(
-    ModelType model_type,
+    DataType data_type,
     StorageType storage_type,
     std::unique_ptr<BlockingDataTypeStoreImpl, base::OnTaskRunnerDeleter>
         backend_store,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
-    : model_type_(model_type),
+    : data_type_(data_type),
       storage_type_(storage_type),
       backend_task_runner_(std::move(backend_task_runner)),
       backend_store_(std::move(backend_store)) {
@@ -61,7 +61,7 @@ DataTypeStoreImpl::~DataTypeStoreImpl() {
 // Note on pattern for communicating with backend:
 //  - API function (e.g. ReadData) allocates lists for output.
 //  - API function prepares two callbacks: task that will be posted on backend
-//    thread and reply which will be posted on model type thread once task
+//    thread and reply which will be posted on data type thread once task
 //    finishes.
 //  - Task for backend thread takes raw pointers to output lists while reply
 //    takes ownership of those lists. This allows backend interface to be simple
@@ -230,8 +230,7 @@ void DataTypeStoreImpl::DeleteAllDataAndMetadata(CallbackWithResult callback) {
 std::unique_ptr<DataTypeStore::WriteBatch>
 DataTypeStoreImpl::CreateWriteBatch() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return BlockingDataTypeStoreImpl::CreateWriteBatch(model_type_,
-                                                     storage_type_);
+  return BlockingDataTypeStoreImpl::CreateWriteBatch(data_type_, storage_type_);
 }
 
 void DataTypeStoreImpl::CommitWriteBatch(

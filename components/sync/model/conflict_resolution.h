@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SYNC_MODEL_CONFLICT_RESOLUTION_H_
 #define COMPONENTS_SYNC_MODEL_CONFLICT_RESOLUTION_H_
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace syncer {
 
@@ -28,9 +28,8 @@ enum class ConflictResolution {
 
 // Records the conflict resolution outcome if there is any during applying
 // remote updates.
-void RecordModelTypeEntityConflictResolution(
-    ModelType model_type,
-    ConflictResolution resolution_type);
+void RecordDataTypeEntityConflictResolution(DataType data_type,
+                                            ConflictResolution resolution_type);
 
 }  // namespace syncer
 

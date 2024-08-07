@@ -31,7 +31,7 @@ class ProcessorEntity;
 class ClientTagBasedRemoteUpdateHandler {
  public:
   // All parameters must not be nullptr and they must outlive this object.
-  ClientTagBasedRemoteUpdateHandler(ModelType type,
+  ClientTagBasedRemoteUpdateHandler(DataType type,
                                     DataTypeSyncBridge* bridge,
                                     ProcessorEntityTracker* entities);
 
@@ -71,8 +71,8 @@ class ClientTagBasedRemoteUpdateHandler {
   // non-empty) must not exist in the entity tracker.
   ProcessorEntity* CreateEntity(const UpdateResponseData& update);
 
-  // The model type this object syncs.
-  const ModelType type_;
+  // The data type this object syncs.
+  const DataType type_;
 
   // DataTypeSyncBridge linked to associated processor.
   const raw_ptr<DataTypeSyncBridge> bridge_;

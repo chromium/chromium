@@ -14,7 +14,7 @@ namespace syncer {
 
 SyncMetadataStoreChangeList::SyncMetadataStoreChangeList(
     SyncMetadataStore* store,
-    syncer::ModelType type,
+    syncer::DataType type,
     ErrorCallback error_callback)
     : store_(store), type_(type), error_callback_(std::move(error_callback)) {
   if (!store_) {

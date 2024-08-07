@@ -12,8 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -143,7 +143,7 @@ void FakeDataTypeSyncBridge::Store::Reset() {
 }
 
 FakeDataTypeSyncBridge::FakeDataTypeSyncBridge(
-    ModelType type,
+    DataType type,
     std::unique_ptr<DataTypeLocalChangeProcessor> change_processor)
     : DataTypeSyncBridge(std::move(change_processor)),
       db_(std::make_unique<Store>()),

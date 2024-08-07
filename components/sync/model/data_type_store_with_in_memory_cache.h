@@ -10,10 +10,10 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/model/model_error.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_store_base.h"
+#include "components/sync/model/model_error.h"
 
 namespace syncer {
 
@@ -55,7 +55,7 @@ class DataTypeStoreWithInMemoryCache {
   // the in-memory cache, and returns the ready-to-use store to the callback.
   // In case of errors, both store and metadata_batch will be nullptr.
   static void CreateAndLoad(OnceDataTypeStoreFactory store_factory,
-                            ModelType type,
+                            DataType type,
                             CreateCallback callback);
 
   ~DataTypeStoreWithInMemoryCache();

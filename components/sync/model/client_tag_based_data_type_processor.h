@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_processor.h"
@@ -38,9 +38,9 @@ namespace syncer {
 
 class CommitQueue;
 
-// A sync component embedded on the model type's sequence that tracks entity
+// A sync component embedded on the data type's sequence that tracks entity
 // metadata in the model store and coordinates communication between sync and
-// model type sequences. All changes in flight (either incoming from the server
+// data type sequences. All changes in flight (either incoming from the server
 // or local changes reported by the bridge) must specify a client tag.
 // Lives on the model sequence.
 //
@@ -51,8 +51,8 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
                                          public DataTypeLocalChangeProcessor,
                                          public DataTypeControllerDelegate {
  public:
-  ClientTagBasedDataTypeProcessor(ModelType type,
-                                   const base::RepeatingClosure& dump_stack);
+  ClientTagBasedDataTypeProcessor(DataType type,
+                                  const base::RepeatingClosure& dump_stack);
 
   ClientTagBasedDataTypeProcessor(const ClientTagBasedDataTypeProcessor&) =
       delete;
@@ -178,7 +178,7 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   void ClearAllMetadataAndResetStateImpl(
       std::unique_ptr<MetadataChangeList> change_list);
 
-  // Whether the processor is allowing changes to its model type. If this is
+  // Whether the processor is allowing changes to its data type. If this is
   // false, the bridge should not allow any changes to its data.
   bool IsAllowingChanges() const;
 
@@ -266,8 +266,8 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   // Processor state //
   /////////////////////
 
-  // The model type this object syncs.
-  const ModelType type_;
+  // The data type this object syncs.
+  const DataType type_;
 
   // DataTypeSyncBridge linked to this processor. The bridge owns this
   // processor instance so the pointer should never become invalid.

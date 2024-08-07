@@ -88,11 +88,11 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
   };
 
   FakeDataTypeSyncBridge(
-      ModelType type,
+      DataType type,
       std::unique_ptr<DataTypeLocalChangeProcessor> change_processor);
   ~FakeDataTypeSyncBridge() override;
 
-  ModelType type() { return type_; }
+  DataType type() { return type_; }
 
   // Local data modification. Emulates signals from the model thread.
   void WriteItem(const std::string& key,
@@ -165,7 +165,7 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
   std::string GetLastGeneratedStorageKey() const;
 
   // Add preference values that will be ignored by bridge. Must only be called
-  // if the bridge's ModelType is PREFERENCES.
+  // if the bridge's DataType is PREFERENCES.
   void AddPrefValueToIgnore(const std::string& value);
 
   // Sets the flag to mark entities with client tag hash `client_tag_hash` as
@@ -204,7 +204,7 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
   // generates and returns a new unique storage key.
   std::string GenerateStorageKey(const EntityData& entity_data);
 
-  const ModelType type_;
+  const DataType type_;
 
   // The conflict resolution to use for calls to ResolveConflict.
   ConflictResolution conflict_resolution_;

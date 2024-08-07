@@ -70,7 +70,7 @@ CreateAndLoadStoreWithCache(OnceDataTypeStoreFactory store_factory) {
         run_loop.Quit();
       });
   StoreWithCache::CreateAndLoad(std::move(store_factory),
-                                ModelType::SECURITY_EVENTS,
+                                DataType::SECURITY_EVENTS,
                                 create_callback.Get());
   run_loop.Run();
 
@@ -104,7 +104,7 @@ TEST_F(DataTypeStoreWithInMemoryCacheTest, LoadsEmptyStore) {
 TEST_F(DataTypeStoreWithInMemoryCacheTest, LoadsPopulatedStore) {
   std::unique_ptr<DataTypeStore> underlying_store =
       DataTypeStoreTestUtil::CreateInMemoryStoreForTest(
-          ModelType::SECURITY_EVENTS);
+          DataType::SECURITY_EVENTS);
 
   const std::string storage_key = "12345";
   sync_pb::SecurityEventSpecifics entry_in_store;

@@ -43,9 +43,9 @@ std::optional<ModelError> InitOnBackendSequence(
   std::vector<std::pair<std::string, std::string>> prefixes_to_migrate;
   if (migrate_rl_from_local_to_account) {
     prefixes_to_migrate.emplace_back(
-        BlockingDataTypeStoreImpl::FormatPrefixForModelTypeAndStorageType(
+        BlockingDataTypeStoreImpl::FormatPrefixForDataTypeAndStorageType(
             READING_LIST, StorageType::kUnspecified),
-        BlockingDataTypeStoreImpl::FormatPrefixForModelTypeAndStorageType(
+        BlockingDataTypeStoreImpl::FormatPrefixForDataTypeAndStorageType(
             READING_LIST, StorageType::kAccount));
     RecordSyncToSigninMigrationReadingListStep(
         ReadingListMigrationStep::kMigrationStarted);
@@ -55,13 +55,13 @@ std::optional<ModelError> InitOnBackendSequence(
 
 std::unique_ptr<BlockingDataTypeStoreImpl, base::OnTaskRunnerDeleter>
 CreateBlockingDataTypeStoreOnBackendSequence(
-    ModelType model_type,
+    DataType data_type,
     StorageType storage_type,
     scoped_refptr<DataTypeStoreBackend> store_backend) {
   BlockingDataTypeStoreImpl* blocking_store = nullptr;
   if (store_backend->IsInitialized()) {
     blocking_store =
-        new BlockingDataTypeStoreImpl(model_type, storage_type, store_backend);
+        new BlockingDataTypeStoreImpl(data_type, storage_type, store_backend);
   }
   return std::unique_ptr<BlockingDataTypeStoreImpl,
                          base::OnTaskRunnerDeleter /*[]*/>(
@@ -70,7 +70,7 @@ CreateBlockingDataTypeStoreOnBackendSequence(
 }
 
 void ConstructDataTypeStoreOnFrontendSequence(
-    ModelType model_type,
+    DataType data_type,
     StorageType storage_type,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
     DataTypeStore::InitCallback callback,
@@ -79,7 +79,7 @@ void ConstructDataTypeStoreOnFrontendSequence(
   if (blocking_store) {
     std::move(callback).Run(
         /*error=*/std::nullopt,
-        std::make_unique<DataTypeStoreImpl>(model_type, storage_type,
+        std::make_unique<DataTypeStoreImpl>(data_type, storage_type,
                                             std::move(blocking_store),
                                             backend_task_runner));
   } else {
@@ -93,17 +93,17 @@ void CreateDataTypeStoreOnFrontendSequence(
     StorageType storage_type,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
     scoped_refptr<DataTypeStoreBackend> store_backend,
-    ModelType model_type,
+    DataType data_type,
     DataTypeStore::InitCallback callback) {
   // BlockingDataTypeStoreImpl must be instantiated in the backend sequence.
   // This also guarantees that the creation is sequenced with the backend's
   // initialization, since we can't know for sure that InitOnBackendSequence()
   // has already run.
   auto task = base::BindOnce(&CreateBlockingDataTypeStoreOnBackendSequence,
-                             model_type, storage_type, store_backend);
+                             data_type, storage_type, store_backend);
 
   auto reply =
-      base::BindOnce(&ConstructDataTypeStoreOnFrontendSequence, model_type,
+      base::BindOnce(&ConstructDataTypeStoreOnFrontendSequence, data_type,
                      storage_type, backend_task_runner, std::move(callback));
 
   backend_task_runner->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
