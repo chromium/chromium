@@ -60,8 +60,6 @@ class CORE_EXPORT EmbeddedContentView : public GarbageCollectedMixin {
 
   gfx::Rect FrameRect() const { return gfx::Rect(Location(), Size()); }
   gfx::Point Location() const;
-  int X() const { return Location().x(); }
-  int Y() const { return Location().y(); }
   int Width() const { return Size().width(); }
   int Height() const { return Size().height(); }
   gfx::Size Size() const { return frame_rect_.size(); }
