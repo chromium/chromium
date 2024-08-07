@@ -35,8 +35,7 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organization/metrics.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -2886,23 +2885,19 @@ void TabDragController::MaybePauseTrackingSavedTabGroup() {
       BrowserView::GetBrowserViewForNativeWindow(
           GetAttachedBrowserWidget()->GetNativeWindow())
           ->browser();
-  tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          browser->profile());
 
-  if (!saved_tab_group_service ||
-      !saved_tab_group_service->model()->Contains(group_.value())) {
+  const auto wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
+
+  if (!wrapper_service || !wrapper_service->GetGroup(group_.value())) {
     return;
   }
 
-  paused_saved_group_id_ =
-      saved_tab_group_service->model()->Get(group_.value())->saved_guid();
-  saved_tab_group_service->PauseTrackingLocalTabGroup(group_.value());
+  observation_pauser_ = wrapper_service->CreateScopedLocalObserverPauser();
 }
 
 void TabDragController::MaybeResumeTrackingSavedTabGroup() {
-  if (!header_drag_ ||
-      !paused_saved_group_id_.has_value()) {
+  if (!header_drag_ || !observation_pauser_) {
     return;
   }
 
@@ -2910,15 +2905,13 @@ void TabDragController::MaybeResumeTrackingSavedTabGroup() {
       BrowserView::GetBrowserViewForNativeWindow(
           GetAttachedBrowserWidget()->GetNativeWindow())
           ->browser();
-  tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          browser->profile());
 
-  if (!saved_tab_group_service) {
+  const auto wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
+
+  if (!wrapper_service) {
     return;
   }
 
-  saved_tab_group_service->ResumeTrackingLocalTabGroup(
-      paused_saved_group_id_.value(), group_.value());
-  paused_saved_group_id_ = std::nullopt;
+  observation_pauser_.reset();
 }
