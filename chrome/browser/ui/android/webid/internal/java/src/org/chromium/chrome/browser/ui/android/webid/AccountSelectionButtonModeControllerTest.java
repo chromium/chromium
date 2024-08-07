@@ -103,8 +103,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
     @Test
     public void testShowLoadingDialog() {
         // Button flow can be triggered regardless of the requestShowContent result.
-        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
-                .thenReturn(anyBoolean());
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(false);
         mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne1, RpContext.SIGN_IN);
         assertEquals(0, mSheetAccountItems.size());
         assertEquals(HeaderType.LOADING, mModel.get(ItemProperties.HEADER).get(TYPE));

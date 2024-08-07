@@ -8,12 +8,14 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
  * This view renders content that gets displayed inside the bottom sheet. This is a simple container
@@ -22,11 +24,15 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     /**
      * The maximum number of accounts that should be fully visible when the the account picker is
-     * displayed.
+     * displayed. Button mode UI is generally bigger because it requires user interaction to
+     * trigger. Therefore, we are able to show more accounts at once compared to widget mode.
      */
-    private final float mMaxVisibleAccounts;
+    private static final float MAX_VISIBLE_ACCOUNTS_WIDGET_MODE = 2.5f;
+
+    private static final float MAX_VISIBLE_ACCOUNTS_BUTTON_MODE = 3.5f;
 
     private final View mContentView;
+    private final BottomSheetController mBottomSheetController;
     private final Supplier<Integer> mScrollOffsetSupplier;
     private final @RpMode.EnumType int mRpMode;
     private @Nullable Runnable mBackPressHandler;
@@ -35,13 +41,14 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
 
     /** Constructs the AccountSelection bottom sheet view. */
     AccountSelectionBottomSheetContent(
-            View contentView, Supplier<Integer> scrollOffsetSupplier, @RpMode.EnumType int rpMode) {
+            View contentView,
+            BottomSheetController bottomSheetController,
+            Supplier<Integer> scrollOffsetSupplier,
+            @RpMode.EnumType int rpMode) {
         mContentView = contentView;
+        mBottomSheetController = bottomSheetController;
         mScrollOffsetSupplier = scrollOffsetSupplier;
         mRpMode = rpMode;
-        // Button mode UI is generally bigger because it requires user interaction to trigger.
-        // Therefore, we are able to show more accounts at once compared to widget mode.
-        mMaxVisibleAccounts = mRpMode == RpMode.BUTTON ? 3.5f : 2.5f;
     }
 
     /**
@@ -62,23 +69,67 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
 
         View sheetContainer = mContentView.findViewById(R.id.sheet_item_list_container);
         // When we're in the multi-account chooser and there are more than {@link
-        // mMaxVisibleAccounts} accounts, resize the list so that only {@link mMaxVisibleAccounts}
+        // MAX_VISIBLE_ACCOUNTS_WIDGET_MODE} accounts, resize the list so that only {@link
+        // MAX_VISIBLE_ACCOUNTS_WIDGET_MODE}
         // accounts and part of the next one are visible.
         RecyclerView sheetItemListView = sheetContainer.findViewById(R.id.sheet_item_list);
         int numAccounts = sheetItemListView.getAdapter().getItemCount();
-        if (numAccounts > mMaxVisibleAccounts) {
+        if (numAccounts > MAX_VISIBLE_ACCOUNTS_WIDGET_MODE) {
             sheetItemListView.measure(
                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
             int measuredHeight = sheetItemListView.getMeasuredHeight();
             int containerHeight =
-                    Math.round(((float) measuredHeight / numAccounts) * mMaxVisibleAccounts);
+                    Math.round(
+                            ((float) measuredHeight / numAccounts)
+                                    * MAX_VISIBLE_ACCOUNTS_WIDGET_MODE);
             sheetContainer.getLayoutParams().height = containerHeight;
         } else {
             // Need to set the height here in case it was changed by a previous {@link
             // computeAndUpdateAccountListHeight()} call.
             sheetContainer.getLayoutParams().height = FrameLayout.LayoutParams.WRAP_CONTENT;
         }
+    }
+
+    /**
+     * Returns the height of the full state in button mode.
+     *
+     * @return the full state height in pixels. Never 0. Can theoretically exceed the screen height.
+     */
+    private @Px int getMaximumButtonModeSheetHeightPx() {
+        View accountSelectionSheet = mContentView.findViewById(R.id.account_selection_sheet);
+        accountSelectionSheet.measure(
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        return accountSelectionSheet.getMeasuredHeight();
+    }
+
+    /**
+     * Returns the height of the half state in button mode. For up to 3 accounts, it shows all
+     * accounts fully. For 4+ accounts, it shows the first 3.5 accounts to encourage scrolling.
+     *
+     * @return the half state height in pixels. Never 0. Can theoretically exceed the screen height.
+     */
+    private @Px int getDesiredButtonModeSheetHeightPx() {
+        View sheetContainer = mContentView.findViewById(R.id.sheet_item_list_container);
+        // When we're in the multi-account chooser and there are more than {@link
+        // MAX_VISIBLE_ACCOUNTS_BUTTON_MODE} accounts, resize the list so that only {@link
+        // MAX_VISIBLE_ACCOUNTS_BUTTON_MODE}
+        // accounts and part of the next one are visible.
+        RecyclerView sheetItemListView = sheetContainer.findViewById(R.id.sheet_item_list);
+        int numAccounts = sheetItemListView.getAdapter().getItemCount();
+        if (numAccounts > MAX_VISIBLE_ACCOUNTS_BUTTON_MODE) {
+            sheetItemListView.measure(
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            View accountRow = sheetItemListView.getChildAt(0);
+            @Px int measuredHeight = sheetItemListView.getMeasuredHeight();
+            @Px
+            int desiredHeight =
+                    Math.round(accountRow.getMeasuredHeight() * MAX_VISIBLE_ACCOUNTS_BUTTON_MODE);
+            return getMaximumButtonModeSheetHeightPx() - measuredHeight + desiredHeight;
+        }
+        return getMaximumButtonModeSheetHeightPx();
     }
 
     @Override
@@ -128,7 +179,24 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getFullHeightRatio() {
-        return HeightMode.WRAP_CONTENT;
+        if (mRpMode == RpMode.WIDGET) return HeightMode.WRAP_CONTENT;
+        // WRAP_CONTENT would be the right fit but this disables the HALF state.
+        return Math.min(
+                        getMaximumButtonModeSheetHeightPx(),
+                        mBottomSheetController.getContainerHeight())
+                / (float) mBottomSheetController.getContainerHeight();
+    }
+
+    @Override
+    public float getHalfHeightRatio() {
+        if (mRpMode == RpMode.WIDGET) {
+            computeAndUpdateAccountListHeight();
+            return HeightMode.WRAP_CONTENT;
+        }
+        return Math.min(
+                        getDesiredButtonModeSheetHeightPx(),
+                        mBottomSheetController.getContainerHeight())
+                / (float) mBottomSheetController.getContainerHeight();
     }
 
     @Override

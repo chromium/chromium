@@ -495,6 +495,9 @@ class AccountSelectionMediator {
         }
         mIdpBrandIcon = bitmap;
         updateHeader();
+
+        // Resizes bottom sheet to the desired height, taking the icon into account.
+        mBottomSheetController.expandSheet();
     }
 
     private void updateRpBrandIcon(Bitmap bitmap) {
@@ -503,6 +506,9 @@ class AccountSelectionMediator {
         }
         mRpBrandIcon = bitmap;
         updateHeader();
+
+        // Resizes bottom sheet to the desired height, taking the icon into account.
+        mBottomSheetController.expandSheet();
     }
 
     private void maybeRecordAccountChooserResult(int result) {
@@ -811,7 +817,7 @@ class AccountSelectionMediator {
                                 || mHeaderType == HeaderType.VERIFY
                                 || mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN));
 
-        mBottomSheetContent.computeAndUpdateAccountListHeight();
+        mBottomSheetController.expandSheet();
         // When a user opens a page that invokes the FedCM API in a new tab, the tab will be hidden
         // and we should not show the bottom sheet to avoid confusion.
         mTab.addObserver(mTabObserver);

@@ -222,7 +222,12 @@ public class AccountSelectionJUnitTestBase {
                             mResources = activity.getResources();
                         });
 
-        mBottomSheetContent = new AccountSelectionBottomSheetContent(null, null, mRpMode);
+        mBottomSheetContent =
+                new AccountSelectionBottomSheetContent(
+                        /* contentView= */ null,
+                        /* bottomSheetController= */ null,
+                        /* scrollOffsetSupplier= */ null,
+                        mRpMode);
         mMediator =
                 new AccountSelectionMediator(
                         mTab,

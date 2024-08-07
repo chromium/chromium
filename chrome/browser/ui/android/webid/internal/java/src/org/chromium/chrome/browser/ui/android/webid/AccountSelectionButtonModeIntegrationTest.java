@@ -88,7 +88,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
 
         View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
         assertNotNull(contentView);
@@ -157,7 +157,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
 
         // This should be the "multi-account chooser", so clicking an account should go
         // to the disclosure text screen.
@@ -206,7 +206,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
 
         View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
         assertNotNull(contentView);
@@ -238,7 +238,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
 
         View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
         assertNotNull(contentView);
@@ -272,7 +272,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
 
         View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
         assertNotNull(contentView);
@@ -303,7 +303,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                     mAccountSelection.showLoadingDialog(
                             EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_2, RpContext.SIGN_IN);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
 
         Espresso.pressBack();
 
@@ -319,7 +319,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                     mAccountSelection.showLoadingDialog(
                             EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_2, RpContext.SIGN_IN);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
         BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
         runOnUiThreadBlocking(
                 () -> {
@@ -346,7 +346,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
         View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
         assertNotNull(contentView);
 
@@ -382,7 +382,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
         View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
         assertNotNull(contentView);
 
@@ -413,7 +413,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
         View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
         assertNotNull(contentView);
 
@@ -444,7 +444,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
         View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
         assertNotNull(contentView);
 
@@ -478,7 +478,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
         View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
         assertNotNull(contentView);
 
@@ -525,7 +525,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
         View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
         assertNotNull(contentView);
 
@@ -578,7 +578,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
         View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
         assertNotNull(contentView);
 
@@ -628,7 +628,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -657,7 +657,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
 
         View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
         assertNotNull(contentView);
@@ -692,7 +692,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* requestPermission= */ true,
                             /* newAccountsIdp= */ null);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -725,7 +725,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -754,7 +754,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -788,7 +788,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             /* newAccountsIdp= */ null);
                     mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -803,6 +803,31 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testMaximizeSheet() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(NEW_BOB),
+                            IDP_METADATA_WITH_ADD_ACCOUNT,
+                            mClientIdMetadata,
+                            /* isAutoReauthn= */ false,
+                            RpContext.SIGN_IN,
+                            /* requestPermission= */ true,
+                            /* newAccountsIdp= */ null);
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+
+        BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
+        runOnUiThreadBlocking(
+                () -> sheetSupport.setSheetState(BottomSheetController.SheetState.FULL, false));
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
     }
 
     private void clickFirstAccountInAccountsList() {
