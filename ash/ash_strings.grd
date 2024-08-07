@@ -7497,11 +7497,11 @@ New install
         No results found.
       </message>
       <message name="IDS_PICKER_INSERT_RESULT_BADGE_LABEL"
-        desc="This string appears as the label for a badge in a search result. It indicates that selecting the search result will insert it into the current page. For example, this badge might appear in a search result for an image, which would insert the image into the page.">
+        desc="This string appears as the label for a badge in a search result. It indicates that selecting the search result will insert it into the current page. For example, this badge might appear in a search result for an image, which would insert the image into the page. Try to limit translations to 10 characters.">
         Insert
       </message>
       <message name="IDS_PICKER_OPEN_RESULT_BADGE_LABEL"
-        desc="This string appears as the label for a badge in a search result. It indicates that selecting the search result will open it in a new window. For example, this badge might appear in a search result for an image, which would open the image in a new window.">
+        desc="This string appears as the label for a badge in a search result. It indicates that selecting the search result will open it in a new window. For example, this badge might appear in a search result for an image, which would open the image in a new window. Try to limit translations to 10 characters.">
         Open
       </message>
       <message name="IDS_PICKER_CREATE_RESULT_BADGE_LABEL" translateable="false" desc="Label of the badge in a result that can be created.">
