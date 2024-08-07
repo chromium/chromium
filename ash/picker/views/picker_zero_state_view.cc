@@ -101,10 +101,6 @@ PickerZeroStateView::PickerZeroStateView(
   section_list_view_ = AddChildView(std::make_unique<PickerSectionListView>(
       picker_view_width, asset_fetcher, submenu_controller_));
 
-  delegate_->GetZeroStateSuggestedResults(
-      base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResults,
-                          weak_ptr_factory_.GetWeakPtr()));
-
   for (PickerCategory category : available_categories) {
     // kEditorRewrite is not visible in the zero-state, since it's replaced with
     // the rewrite suggestions.
@@ -118,6 +114,10 @@ PickerZeroStateView::PickerZeroStateView(
         base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
                             weak_ptr_factory_.GetWeakPtr(), category));
   }
+
+  delegate_->GetZeroStateSuggestedResults(
+      base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResults,
+                          weak_ptr_factory_.GetWeakPtr()));
 
   delegate_->OnZeroStateViewHeightChanged();
 }
