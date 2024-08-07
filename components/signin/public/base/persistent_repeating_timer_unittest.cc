@@ -13,7 +13,7 @@ namespace signin {
 
 namespace {
 
-const char kLastUpdatedTimePref[] = "test.last_updated_time";
+constexpr char kLastUpdatedTimePref[] = "test.last_updated_time";
 constexpr base::TimeDelta kTestDelay = base::Hours(2);
 
 }  // namespace
@@ -27,11 +27,6 @@ class PersistentRepeatingTimerTest : public ::testing::Test {
 
   void RunTask() { ++call_count_; }
 
-  void CheckCallCount(int call_count) {
-    base::RunLoop().RunUntilIdle();
-    EXPECT_EQ(call_count, call_count_);
-  }
-
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
@@ -44,18 +39,18 @@ TEST_F(PersistentRepeatingTimerTest, MissingPref) {
       &pref_service_, kLastUpdatedTimePref, kTestDelay,
       base::BindRepeating(&PersistentRepeatingTimerTest::RunTask,
                           base::Unretained(this)));
-  CheckCallCount(0);
+  EXPECT_EQ(0, call_count_);
 
   // The task is run immediately on start.
   timer.Start();
-  CheckCallCount(1);
+  EXPECT_EQ(1, call_count_);
 
   task_environment_.FastForwardBy(base::Minutes(1));
-  CheckCallCount(1);
+  EXPECT_EQ(1, call_count_);
 
   // And after the delay.
   task_environment_.FastForwardBy(kTestDelay);
-  CheckCallCount(2);
+  EXPECT_EQ(2, call_count_);
 }
 
 // Checks that spurious calls to Start() have no effect.
@@ -64,25 +59,25 @@ TEST_F(PersistentRepeatingTimerTest, MultipleStarts) {
       &pref_service_, kLastUpdatedTimePref, kTestDelay,
       base::BindRepeating(&PersistentRepeatingTimerTest::RunTask,
                           base::Unretained(this)));
-  CheckCallCount(0);
+  EXPECT_EQ(0, call_count_);
 
   // The task is run immediately on start.
   timer.Start();
-  CheckCallCount(1);
+  EXPECT_EQ(1, call_count_);
   timer.Start();
-  CheckCallCount(1);
+  EXPECT_EQ(1, call_count_);
 
   task_environment_.FastForwardBy(base::Minutes(1));
-  CheckCallCount(1);
+  EXPECT_EQ(1, call_count_);
   task_environment_.FastForwardBy(base::Minutes(1));
   timer.Start();
-  CheckCallCount(1);
+  EXPECT_EQ(1, call_count_);
 
   // And after the delay.
   task_environment_.FastForwardBy(kTestDelay);
-  CheckCallCount(2);
+  EXPECT_EQ(2, call_count_);
   timer.Start();
-  CheckCallCount(2);
+  EXPECT_EQ(2, call_count_);
 }
 
 TEST_F(PersistentRepeatingTimerTest, RecentPref) {
@@ -93,23 +88,23 @@ TEST_F(PersistentRepeatingTimerTest, RecentPref) {
       &pref_service_, kLastUpdatedTimePref, kTestDelay,
       base::BindRepeating(&PersistentRepeatingTimerTest::RunTask,
                           base::Unretained(this)));
-  CheckCallCount(0);
+  EXPECT_EQ(0, call_count_);
 
   // The task is NOT run immediately on start.
   timer.Start();
-  CheckCallCount(0);
+  EXPECT_EQ(0, call_count_);
 
   task_environment_.FastForwardBy(base::Minutes(1));
-  CheckCallCount(0);
+  EXPECT_EQ(0, call_count_);
 
   // It is run after te delay.
   task_environment_.FastForwardBy(base::Hours(1));
-  CheckCallCount(1);
+  EXPECT_EQ(1, call_count_);
   task_environment_.FastForwardBy(base::Hours(1));
-  CheckCallCount(1);
+  EXPECT_EQ(1, call_count_);
 
   task_environment_.FastForwardBy(base::Hours(1));
-  CheckCallCount(2);
+  EXPECT_EQ(2, call_count_);
 }
 
 TEST_F(PersistentRepeatingTimerTest, OldPref) {
@@ -120,18 +115,18 @@ TEST_F(PersistentRepeatingTimerTest, OldPref) {
       &pref_service_, kLastUpdatedTimePref, kTestDelay,
       base::BindRepeating(&PersistentRepeatingTimerTest::RunTask,
                           base::Unretained(this)));
-  CheckCallCount(0);
+  EXPECT_EQ(0, call_count_);
 
   // The task is run immediately on start.
   timer.Start();
-  CheckCallCount(1);
+  EXPECT_EQ(1, call_count_);
 
   task_environment_.FastForwardBy(base::Minutes(1));
-  CheckCallCount(1);
+  EXPECT_EQ(1, call_count_);
 
   // And after the delay.
   task_environment_.FastForwardBy(kTestDelay);
-  CheckCallCount(2);
+  EXPECT_EQ(2, call_count_);
 }
 
 }  // namespace signin
