@@ -2154,6 +2154,7 @@ chromium-metrics-reviews@google.com.
   <int value="1288" label="PrintingLPACSandboxEnabled"/>
   <int value="1289" label="ShowGeminiIntroScreenEnabled"/>
   <int value="1290" label="DeviceRestrictionSchedule"/>
+  <int value="1291" label="TabCompareSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
