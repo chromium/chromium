@@ -50,6 +50,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -674,6 +675,8 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
                               views::CreateEmptyBorder(kInputTextfieldPadding))
                           .SetPlaceholderText(l10n_util::GetStringUTF16(
                               IDS_ASH_MAHI_PANEL_INPUT_PLACEHOLDER_TEXT))
+                          .SetAccessibleName(l10n_util::GetStringUTF16(
+                              IDS_ASH_MAHI_PANEL_INPUT_PLACEHOLDER_TEXT))
                           .SetFontList(
                               TypographyProvider::Get()->ResolveTypographyToken(
                                   TypographyToken::kCrosAnnotation1))
@@ -889,6 +892,8 @@ void MahiPanelView::OnLearnMoreLinkClicked() {
       NewWindowDelegate::Disposition::kNewForegroundTab);
   base::UmaHistogramEnumeration(mahi_constants::kMahiButtonClickHistogramName,
                                 mahi_constants::PanelButton::kLearnMoreLink);
+  GetViewAccessibility().AnnounceText((l10n_util::GetStringUTF16(
+      IDS_ASH_MAHI_LEARN_MORE_CLICK_ACTIVATION_ACCESSIBLE_NAME)));
 }
 
 void MahiPanelView::OnSendButtonPressed() {

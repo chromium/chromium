@@ -13,6 +13,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
+namespace ui {
+struct AXNodeData;
+}  // namespace ui
+
 namespace views {
 class FlexLayoutView;
 class ImageButton;
@@ -50,6 +54,7 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
 
   // chromeos::editor_menu::PreTargetHandlerView:
   void RequestFocus() override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // Updates the bounds of the view according to the given `anchor_view_bounds`.
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);
