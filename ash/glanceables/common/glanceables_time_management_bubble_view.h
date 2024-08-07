@@ -16,6 +16,10 @@
 
 namespace ash {
 
+class GlanceablesContentsScrollView;
+class GlanceablesListFooterView;
+class GlanceablesProgressBarView;
+
 // Glanceables Time Management bubble container that is a child of
 // `GlanceableTrayChildBubble`.
 class ASH_EXPORT GlanceablesTimeManagementBubbleView
@@ -39,7 +43,7 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
                                       bool expand_by_overscroll) = 0;
   };
 
-  GlanceablesTimeManagementBubbleView();
+  explicit GlanceablesTimeManagementBubbleView(Context context);
   GlanceablesTimeManagementBubbleView(
       const GlanceablesTimeManagementBubbleView&) = delete;
   GlanceablesTimeManagementBubbleView& operator=(
@@ -120,6 +124,9 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
     const int end_height_;
   };
 
+  // Handles press on the "See all" button in `GlanceablesListFooterView`.
+  virtual void OnFooterButtonPressed() = 0;
+
   // Updates the interior margin according to the current view state.
   void UpdateInteriorMargin();
 
@@ -132,6 +139,12 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
                         GlanceablesErrorMessageView::ButtonActionType type);
 
   views::FlexLayoutView* header_view() { return header_view_; }
+  GlanceablesProgressBarView* progress_bar() { return progress_bar_; }
+  GlanceablesContentsScrollView* content_scroll_view() {
+    return content_scroll_view_;
+  }
+  views::View* items_container_view() { return items_container_view_; }
+  GlanceablesListFooterView* list_footer_view() { return list_footer_view_; }
   GlanceablesErrorMessageView* error_message() { return error_message_; }
 
   // Whether the view is expanded and showing the contents in contents scroll
@@ -149,6 +162,10 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
  private:
   // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView> header_view_ = nullptr;
+  raw_ptr<GlanceablesProgressBarView> progress_bar_ = nullptr;
+  raw_ptr<GlanceablesContentsScrollView> content_scroll_view_ = nullptr;
+  raw_ptr<views::View> items_container_view_ = nullptr;
+  raw_ptr<GlanceablesListFooterView> list_footer_view_ = nullptr;
 
   // Measure animation smoothness metrics for `resize_animation_`.
   std::optional<ui::ThroughputTracker> resize_throughput_tracker_;

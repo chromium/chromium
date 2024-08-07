@@ -22,7 +22,6 @@ class PrefRegistrySimple;
 class PrefService;
 
 namespace views {
-class BoxLayoutView;
 class Label;
 }  // namespace views
 
@@ -30,9 +29,6 @@ namespace ash {
 
 class Combobox;
 class CounterExpandButton;
-class GlanceablesContentsScrollView;
-class GlanceablesListFooterView;
-class GlanceablesProgressBarView;
 struct GlanceablesClassroomAssignment;
 
 // This enum is used for metrics, so enum values should not be changed. New enum
@@ -78,16 +74,15 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   void SetExpandState(bool is_expanded, bool expand_by_overscroll = false);
 
  private:
+  // GlanceablesTimeManagementBubbleView:
+  void OnFooterButtonPressed() override;
+
   // Triggers classroom bubble resize animation to new preferred size, if an
   // animation is required.
   void AnimateResize();
 
   // Toggles `is_expanded_` and updates the layout.
   void ToggleExpandState();
-
-  // Handles press on the "See all" button in `GlanceablesListFooterView`. Opens
-  // classroom web UI based on the selected menu option.
-  void OnSeeAllPressed();
 
   // Opens classroom url.
   void OpenUrl(const GURL& url) const;
@@ -117,10 +112,6 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   // This is a simple label that copies the label style on `combo_box_view_` so
   // that it can visually replace it when `combo_box_view_` is hidden.
   raw_ptr<views::Label> combobox_replacement_label_ = nullptr;
-  raw_ptr<GlanceablesContentsScrollView> content_scroll_view_ = nullptr;
-  raw_ptr<views::BoxLayoutView> list_container_view_ = nullptr;
-  raw_ptr<GlanceablesListFooterView> list_footer_view_ = nullptr;
-  raw_ptr<GlanceablesProgressBarView> progress_bar_ = nullptr;
   raw_ptr<views::Label> empty_list_label_ = nullptr;
   raw_ptr<CounterExpandButton> expand_button_ = nullptr;
 

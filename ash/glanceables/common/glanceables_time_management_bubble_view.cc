@@ -4,6 +4,9 @@
 
 #include "ash/glanceables/common/glanceables_time_management_bubble_view.h"
 
+#include "ash/glanceables/common/glanceables_contents_scroll_view.h"
+#include "ash/glanceables/common/glanceables_list_footer_view.h"
+#include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -14,6 +17,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget.h"
 
@@ -26,6 +30,10 @@ constexpr int kTotalInteriorMargin = 12;
 constexpr int kSpaceForFocusRing = 4;
 constexpr int kInteriorGlanceableBubbleMargin =
     kTotalInteriorMargin - kSpaceForFocusRing;
+
+constexpr int kScrollViewBottomMargin = 12;
+constexpr int kListViewBetweenChildSpacing = 4;
+constexpr gfx::Insets kFooterBorderInsets = gfx::Insets::TLBR(4, 6, 8, 2);
 
 constexpr base::TimeDelta kExpandStateChangeAnimationDuration =
     base::Milliseconds(300);
@@ -103,7 +111,8 @@ int GlanceablesTimeManagementBubbleView::ResizeAnimation::GetCurrentHeight()
       end_height_);
 }
 
-GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView() {
+GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
+    Context context) {
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
 
   UpdateInteriorMargin();
@@ -130,6 +139,39 @@ GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView() {
                                views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithWeight(1));
+
+  progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
+  progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
+
+  content_scroll_view_ =
+      AddChildView(std::make_unique<GlanceablesContentsScrollView>(context));
+
+  auto* const list_view = content_scroll_view_->SetContents(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetInsideBorderInsets(gfx::Insets::TLBR(0, kSpaceForFocusRing,
+                                                   kScrollViewBottomMargin,
+                                                   kSpaceForFocusRing))
+          .SetBetweenChildSpacing(kListViewBetweenChildSpacing)
+          .Build());
+
+  items_container_view_ =
+      list_view->AddChildView(std::make_unique<views::View>());
+  items_container_view_->GetViewAccessibility().SetRole(ax::mojom::Role::kList);
+  items_container_view_->SetID(base::to_underlying(
+      GlanceablesViewId::kTimeManagementBubbleListContainer));
+  items_container_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      /*inside_border_insets=*/gfx::Insets(), kListViewBetweenChildSpacing));
+
+  list_footer_view_ = list_view->AddChildView(
+      std::make_unique<GlanceablesListFooterView>(base::BindRepeating(
+          &GlanceablesTimeManagementBubbleView::OnFooterButtonPressed,
+          base::Unretained(this))));
+  list_footer_view_->SetID(
+      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleListFooter));
+  list_footer_view_->SetBorder(views::CreateEmptyBorder(kFooterBorderInsets));
+  list_footer_view_->SetVisible(false);
 }
 
 GlanceablesTimeManagementBubbleView::~GlanceablesTimeManagementBubbleView() =

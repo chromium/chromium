@@ -27,13 +27,14 @@ class ASH_EXPORT GlanceablesListFooterView : public views::FlexLayoutView {
  public:
   using GlanceablesContext = GlanceablesTimeManagementBubbleView::Context;
 
-  GlanceablesListFooterView(std::u16string title_text,
-                            std::u16string see_all_accessible_name,
-                            base::RepeatingClosure on_see_all_pressed);
+  explicit GlanceablesListFooterView(base::RepeatingClosure on_see_all_pressed);
   GlanceablesListFooterView(const GlanceablesListFooterView&) = delete;
   GlanceablesListFooterView& operator=(const GlanceablesListFooterView&) =
       delete;
   ~GlanceablesListFooterView() override = default;
+
+  void SetTitleText(const std::u16string& title_text);
+  void SetSeeAllAccessibleName(const std::u16string& see_all_accessible_name);
 
   views::Label* title_label() const { return title_label_; }
   views::LabelButton* see_all_button() const { return see_all_button_; }
