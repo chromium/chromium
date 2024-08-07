@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -40,6 +41,7 @@ class ManagedMenuView : public views::BubbleDialogDelegateView {
 
   const std::u16string& profile_management_label() const;
   const std::u16string& browser_management_label() const;
+  const views::Label* inline_management_title() const;
 
  private:
   Profile* GetProfile() const;
@@ -56,13 +58,17 @@ class ManagedMenuView : public views::BubbleDialogDelegateView {
       info_container_background_callback_ = base::DoNothing();
 
   raw_ptr<views::View> info_container_ = nullptr;
+  raw_ptr<views::Label> inline_title_ = nullptr;
   const raw_ptr<Browser> browser_;
+  std::u16string inline_management_title_;
   std::u16string profile_management_label_;
   std::u16string browser_management_label_;
   gfx::Image profile_management_icon_;
   gfx::Image browser_management_icon_;
   PrefChangeRegistrar profile_pref_change_registrar_;
   PrefChangeRegistrar local_state_change_registrar_;
+
+  base::WeakPtrFactory<ManagedMenuView> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_ENTERPRISE_MANAGED_MENU_VIEW_H_
