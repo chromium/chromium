@@ -200,6 +200,7 @@ class FixedLengthCodeInput : public AccessCodeInput {
   // Inserts |value| into the |active_field_| and moves focus to the next field
   // if it exists.
   void InsertDigit(int value) override;
+  void OnTextSelectionChanged();
 
   // Clears input from the |active_field_|. If |active_field| is empty moves
   // focus to the previous field (if exists) and clears input there.

@@ -147,7 +147,8 @@ class PinRequestViewTest : public LoginTestBase,
   void ExpectTextSelection(int start, int end) {
     PinRequestView::TestApi test_api(view_);
     ui::AXNodeData ax_node_data;
-    test_api.access_code_view()->GetAccessibleNodeData(&ax_node_data);
+    test_api.access_code_view()->GetViewAccessibility().GetAccessibleNodeData(
+        &ax_node_data);
     EXPECT_EQ(start, ax_node_data.GetIntAttribute(
                          ax::mojom::IntAttribute::kTextSelStart));
     EXPECT_EQ(end, ax_node_data.GetIntAttribute(

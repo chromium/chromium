@@ -109,6 +109,40 @@ TEST_F(FixedLengthCodeInputTest, AccessibleProperties) {
   EXPECT_TRUE(data.HasState(ax::mojom::State::kProtected));
 }
 
+TEST_F(FixedLengthCodeInputTest, AccessibilityTextSelectionBound) {
+  ui::AXNodeData data;
+
+  input_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 0);
+
+  input_view_->InsertDigit(4);
+  input_view_->InsertDigit(4);
+  input_view_->InsertDigit(4);
+  data = ui::AXNodeData();
+  input_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 3);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 3);
+
+  input_view_->Backspace();
+  data = ui::AXNodeData();
+  input_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 2);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 2);
+
+  input_view_->ClearInput();
+  data = ui::AXNodeData();
+  input_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 0);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 1);
+
+  input_view_->InsertDigit(4);
+  data = ui::AXNodeData();
+  input_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 1);
+  EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 1);
+}
+
 // Validates that the FixedLengthCodeInput::ContentsChanged() method handles
 // and ignores correctly when the Textfield::InsertText() method is called
 // with multipledigit.
