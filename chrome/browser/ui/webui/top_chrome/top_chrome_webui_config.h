@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TOP_CHROME_TOP_CHROME_WEBUI_CONFIG_H_
 #define CHROME_BROWSER_UI_WEBUI_TOP_CHROME_TOP_CHROME_WEBUI_CONFIG_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <type_traits>
