@@ -317,6 +317,23 @@ class MockAcceleratorObserver
               (override));
 };
 
+class VoidEventHandler : public ui::EventHandler {
+ public:
+  VoidEventHandler() = default;
+
+  void OnEvent(ui::Event* event) override {
+    num_events_received_++;
+    event->SetHandled();
+    event->StopPropagation();
+  }
+
+  void ResetEventCounter() { num_events_received_ = 0; }
+  int num_events_received() const { return num_events_received_; }
+
+ private:
+  int num_events_received_ = 0;
+};
+
 }  // namespace
 
 // Note AcceleratorControllerTest can't be in the anonymous namespace because
@@ -2627,6 +2644,59 @@ TEST_F(SystemShortcutBehaviorTest, IgnoreCommonVdiShortcuts) {
 
   user_prefs_->RemoveManagedPref(ash::prefs::kSystemShortcutBehavior);
   EXPECT_TRUE(ProcessInController(press_d_and_search));
+}
+
+TEST_F(SystemShortcutBehaviorTest, IgnoreCommonVdiShortcutsFullscreenOnly) {
+  VoidEventHandler event_handler;
+  aura::Window* w1 = CreateTestWindowInShellWithId(0);
+  w1->AddPostTargetHandler(&event_handler);
+  wm::ActivateWindow(w1);
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+
+  user_prefs_->SetManagedPref(
+      ash::prefs::kSystemShortcutBehavior,
+      base::Value(
+          static_cast<int>(SystemShortcutBehaviorType::
+                               kIgnoreCommonVdiShortcutsFullscreenOnly)));
+  {
+    // Generates 4 events, Search + D event does get consumed because the target
+    // window is not fullscreen.
+    generator->PressAndReleaseKeyAndModifierKeys(ui::VKEY_D,
+                                                 ui::EF_COMMAND_DOWN);
+    // Since we generate 4 events, but one gets eaten, we expect 3 at the end of
+    // this test.
+    EXPECT_EQ(3, event_handler.num_events_received());
+    event_handler.ResetEventCounter();
+  }
+
+  // Make the window fullscreen.
+  WMEvent fullscreen(WM_EVENT_FULLSCREEN);
+  WindowState* w1_state = WindowState::Get(w1);
+  w1_state->OnWMEvent(&fullscreen);
+  ASSERT_TRUE(w1_state->IsFullscreen());
+
+  // Tests that while fullscreen all events flow through since Search + D is in
+  // the common VDI shortcut list.
+  {
+    generator->PressAndReleaseKeyAndModifierKeys(ui::VKEY_D,
+                                                 ui::EF_COMMAND_DOWN);
+    EXPECT_EQ(4, event_handler.num_events_received());
+    event_handler.ResetEventCounter();
+  }
+
+  // Take out of fullscreen to verify the shortcuts still work.
+  WMEvent normal(WM_EVENT_NORMAL);
+  w1_state->OnWMEvent(&normal);
+  ASSERT_FALSE(w1_state->IsFullscreen());
+
+  // Tests that once the window is not fullscreen again, the event gets
+  // consumed.
+  {
+    generator->PressAndReleaseKeyAndModifierKeys(ui::VKEY_D,
+                                                 ui::EF_COMMAND_DOWN);
+    EXPECT_EQ(3, event_handler.num_events_received());
+  }
 }
 
 class AcceleratorControllerImprovedKeyboardShortcutsTest

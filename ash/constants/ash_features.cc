@@ -2902,10 +2902,12 @@ BASE_FEATURE(kSystemShortcutBehavior,
              "SystemShortcutBehavior",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<SystemShortcutBehaviorParam>::Option
-    system_shortcut_behavior_options[] = {
-        {SystemShortcutBehaviorParam::kIgnoreCommonVdiShortcutList,
-         "ignore_common_vdi_shortcuts"}};
+const base::FeatureParam<
+    SystemShortcutBehaviorParam>::Option system_shortcut_behavior_options[] = {
+    {SystemShortcutBehaviorParam::kIgnoreCommonVdiShortcutList,
+     "ignore_common_vdi_shortcuts"},
+    {SystemShortcutBehaviorParam::kIgnoreCommonVdiShortcutListFullscreenOnly,
+     "ignore_common_vdi_shortcut_fullscreen_only"}};
 const base::FeatureParam<SystemShortcutBehaviorParam>
     kSystemShortcutBehaviorParam{
         &kSystemShortcutBehavior, "behavior_type",

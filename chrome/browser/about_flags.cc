@@ -3170,11 +3170,18 @@ const FeatureEntry::FeatureVariation
 const FeatureEntry::FeatureParam
     kSystemShortcutBehaviorIgnoreCommonVdiShortcuts[] = {
         {"behavior_type", "ignore_common_vdi_shortcuts"}};
+const FeatureEntry::FeatureParam
+    kSystemShortcutBehaviorIgnoreCommonVdiShortcutsFullscreenOnly[] = {
+        {"behavior_type", "ignore_common_vdi_shortcut_fullscreen_only"}};
 
 const FeatureEntry::FeatureVariation kSystemShortcutBehaviorVariations[] = {
     {"Ignore Common VDI Shortcuts",
      kSystemShortcutBehaviorIgnoreCommonVdiShortcuts,
-     std::size(kSystemShortcutBehaviorIgnoreCommonVdiShortcuts), nullptr}};
+     std::size(kSystemShortcutBehaviorIgnoreCommonVdiShortcuts), nullptr},
+    {"Ignore Common VDI Shortcuts while Fullscreen",
+     kSystemShortcutBehaviorIgnoreCommonVdiShortcutsFullscreenOnly,
+     std::size(kSystemShortcutBehaviorIgnoreCommonVdiShortcutsFullscreenOnly),
+     nullptr}};
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

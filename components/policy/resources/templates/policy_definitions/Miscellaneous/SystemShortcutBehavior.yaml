@@ -5,6 +5,8 @@ desc: |-
   If this policy is unset or set to <ph name="NORMAL_SYSTEM_PRIORITY">NormalSystemPriority</ph>, all <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> system shortcuts will always activate as expected.
 
   If this policy is set to <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS">ShouldIgnoreCommonVdiShortcuts</ph>, a predetermined list of Launcher key shortcuts will never activate a shortcut.
+
+  If this policy is set to <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY">ShouldIgnoreCommonVdiShortcutsFullscreenOnly</ph>, a predetermined list of Launcher key shortcuts will never activate a shortcut while an app is fullscreen.
 default: 0
 example_value: 0
 features:
@@ -17,6 +19,9 @@ items:
 - caption: A predetermined list of shortcuts with the launcher key will never perform an action.
   name: ShouldIgnoreCommonVdiShortcuts
   value: 1
+- caption: A predetermined list of shortcuts with the launcher key will never perform an action while fullscreen only.
+  name: ShouldIgnoreCommonVdiShortcutsFullscreenOnly
+  value: 2
 owners:
 - gavinwill@google.com
 - dpad@google.com
@@ -25,6 +30,7 @@ schema:
   enum:
   - 0
   - 1
+  - 2
   type: integer
 supported_on:
 - chrome_os:127-

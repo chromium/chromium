@@ -28,6 +28,10 @@ SystemShortcutBehaviorType GetSystemShortcutBehaviorFromFlags() {
       return SystemShortcutBehaviorType::kNormalShortcutBehavior;
     case features::SystemShortcutBehaviorParam::kIgnoreCommonVdiShortcutList:
       return SystemShortcutBehaviorType::kIgnoreCommonVdiShortcuts;
+    case features::SystemShortcutBehaviorParam::
+        kIgnoreCommonVdiShortcutListFullscreenOnly:
+      return SystemShortcutBehaviorType::
+          kIgnoreCommonVdiShortcutsFullscreenOnly;
   }
 }
 
