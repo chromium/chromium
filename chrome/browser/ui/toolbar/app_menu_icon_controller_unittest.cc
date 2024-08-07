@@ -26,6 +26,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
@@ -166,9 +169,9 @@ TEST_P(AppMenuIconControllerTest, UpgradeNotification) {
   // Forcibly enable Lacros Profile migration, so that IDC_LACROS_DATA_MIGRATION
   // becomes visible. Note that profile migration is only enabled if Lacros is
   // the only browser.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::standalone_browser::features::kLacrosOnly}, {});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
 #endif
 
   ::testing::StrictMock<MockAppMenuIconControllerDelegate> mock_delegate;

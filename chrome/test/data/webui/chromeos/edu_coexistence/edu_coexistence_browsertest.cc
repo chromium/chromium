@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/strings/strcat.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
@@ -43,10 +46,11 @@ class EduCoexistenceWithArcRestrictionsMochaTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled=*/
         {
-            ash::standalone_browser::features::kLacrosOnly,
             ash::standalone_browser::features::kLacrosProfileMigrationForceOff,
         },
         /*disabled=*/{});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   void RunEduCoexistenceTest(const std::string& test_path) {
@@ -56,6 +60,7 @@ class EduCoexistenceWithArcRestrictionsMochaTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 IN_PROC_BROWSER_TEST_F(EduCoexistenceWithArcRestrictionsMochaTest, App) {

@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chrome/test/base/chromeos/lacros_only_mocha_browser_test.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/test/browser_test.h"
-
-#include "ash/constants/ash_features.h"
-#include "chrome/test/base/chromeos/ash_browser_test_starter.h"
-#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 
 class InlineLoginBrowserTestWithArcAccountRestrictionsEnabledBase
     : public LacrosOnlyMochaBrowserTest {
@@ -22,14 +24,16 @@ class InlineLoginBrowserTestWithArcAccountRestrictionsEnabledBase
     set_test_loader_host(chrome::kChromeUIChromeSigninHost);
     scoped_feature_list_.InitWithFeatures(
         {
-            ash::standalone_browser::features::kLacrosOnly,
             ash::standalone_browser::features::kLacrosProfileMigrationForceOff,
         },
         {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 class InlineLoginBrowserTest : public WebUIMochaBrowserTest {

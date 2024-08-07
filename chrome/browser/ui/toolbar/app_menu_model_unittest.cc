@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -213,9 +215,9 @@ TEST_F(AppMenuModelTest, Basics) {
   // Forcibly enable Lacros Profile migration, so that IDC_LACROS_DATA_MIGRATION
   // becomes visible. Note that profile migration is only enabled if Lacros is
   // the only browser.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      ash::standalone_browser::features::kLacrosOnly);
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
 #endif
 
   FakeIconDelegate fake_delegate;
