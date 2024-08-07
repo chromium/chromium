@@ -54982,9 +54982,7 @@
           "print-reftest",
           "--exit-after-n-crashes-or-timeouts=10000",
           "--exit-after-n-failures=10000",
-          "--no-retry-failures",
-          "--target",
-          "Release_x64"
+          "--no-retry-failures"
         ],
         "experiment_percentage": 100,
         "isolate_profile_data": true,

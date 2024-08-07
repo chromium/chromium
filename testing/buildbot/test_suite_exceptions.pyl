@@ -737,10 +737,6 @@
         },
       },
       'Win10 Tests x64': {
-        'args': [
-          '--target',
-          'Release_x64',
-        ],
         'swarming': {
           "shards": 18,
         },
@@ -3144,8 +3140,6 @@
           '--exit-after-n-crashes-or-timeouts=10000',
           '--exit-after-n-failures=10000',
           '--no-retry-failures',
-          '--target',
-          'Release_x64',
         ],
         'experiment_percentage': 100,
       },

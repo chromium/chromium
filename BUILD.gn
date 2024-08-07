@@ -1122,9 +1122,12 @@ if (use_blink && !is_cronet_build) {
   }
 
   if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android && !is_castos) {
+    out_dir = get_path_info(root_build_dir, "name")
     script_test("chrome_wpt_tests") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
       args = [
+        "--target",
+        out_dir,
         "--product=chrome",
         "--no-show-results",
         "--zero-tests-executed-ok",
@@ -1149,6 +1152,8 @@ if (use_blink && !is_cronet_build) {
     script_test("headless_shell_wpt") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
       args = [
+        "--target",
+        out_dir,
         "--product=headless_shell",
         "--no-wpt-internal",
         "--no-show-results",
