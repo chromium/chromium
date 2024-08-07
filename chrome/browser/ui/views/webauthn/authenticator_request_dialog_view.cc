@@ -196,9 +196,8 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
   if (model_->ui_disabled_ && sheet_->model()->IsActivityIndicatorVisible()) {
     // Announce the loading state after request focus; otherwise the view that
     // has the focus will suppress the loading announcement.
-    // TODO(b/356417228): Replace with a WebAuthn string.
     GetViewAccessibility().AnnounceText(
-        l10n_util::GetStringUTF16(IDS_TAB_LOADING_TITLE));
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_LOADING));
   }
 }
 

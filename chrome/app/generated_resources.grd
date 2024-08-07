@@ -16227,6 +16227,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_BLUETOOTH_POWER_ON_MANUAL_NEXT" desc="Button text. The user clicks this once they manually turned on Bluetooth, so that Chrome would retry connecting to security keys over Bluetooth.">
         Try again
       </message>
+      <message name="IDS_WEBAUTHN_LOADING" is_accessibility_with_no_ui="true" desc="Accesibility text which is announced while a WebAuthn request is being processed. This text will be announced while the loading dialog is displayed.">
+        Loading...
+      </message>
 
       <if expr="is_macosx">
         <message name="IDS_WEBAUTHN_BLUETOOTH_PERMISSION" desc="Body text in a dialog that appears when the user has requested some function that depends on Bluetooth, but Chrome doesn't have permission to use Bluetooth. The action on this dialog is a button that will open the macOS System Preferences so that the user can grant permission.">
