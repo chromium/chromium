@@ -18,6 +18,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_SERVICE_IS_GOOGLE;
+import static org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus.ANDROID_VERSION_TOO_OLD;
 import static org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus.AVAILABLE;
 import static org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus.NOT_ALLOWED_BY_POLICY;
 import static org.chromium.chrome.browser.autofill.AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting;
@@ -79,6 +80,10 @@ import java.util.Optional;
 @Config(manifest = Config.NONE)
 @EnableFeatures(AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)
 public class AutofillOptionsTest {
+
+    private static final String SKIP_ALL_CHECKS_PARAM_VALUE = "skip_all_checks";
+    private static final String ONLY_SKIP_AWG_CHECK_PARAM_VALUE = "only_skip_awg_check";
+
     // Shorthand for frequent enums that can't be static imports.
     private static final @RadioButtonGroupThirdPartyPreference.ThirdPartyOption int DEFAULT =
             RadioButtonGroupThirdPartyPreference.ThirdPartyOption.DEFAULT;
@@ -201,9 +206,63 @@ public class AutofillOptionsTest {
 
     @Test
     @SmallTest
-    public void optionEnabledWithOverrideForAwg() {
+    public void optionEnabledWithSpecialOverrideForAwg() {
         setAutofillAvailabilityToUseForTesting(ANDROID_AUTOFILL_SERVICE_IS_GOOGLE);
-        addFeatureOverrideForAwG();
+        addFeatureOverrideToSkipChecks(ONLY_SKIP_AWG_CHECK_PARAM_VALUE);
+        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+
+        // Toggling on resume is to align with prefs and shouldn't trigger restart/dialogs.
+        PropertyModel model =
+                new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                        .initializeNow();
+
+        // On construction (assuming Awg is set), the setting is turned off but may change.
+        assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        assertTrue(getRadioButtonComponent().isEnabled());
+        assertFalse(getHint().isShown());
+    }
+
+    @Test
+    @SmallTest
+    public void overrideForAwgDoesntAllowOtherChecksToBeSkipped() {
+        setAutofillAvailabilityToUseForTesting(ANDROID_VERSION_TOO_OLD);
+        addFeatureOverrideToSkipChecks(ONLY_SKIP_AWG_CHECK_PARAM_VALUE);
+        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+
+        // Toggling on resume is to align with prefs and shouldn't trigger restart/dialogs.
+        PropertyModel model =
+                new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                        .initializeNow();
+
+        // On construction, the setting is turned off and can't change.
+        assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        assertFalse(getRadioButtonComponent().isEnabled());
+        assertTrue(getHint().isShown());
+    }
+
+    @Test
+    @SmallTest
+    public void genericGverrideAllowsOtherChecksToBeSkipped() {
+        setAutofillAvailabilityToUseForTesting(ANDROID_VERSION_TOO_OLD);
+        addFeatureOverrideToSkipChecks(SKIP_ALL_CHECKS_PARAM_VALUE);
+        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+
+        // Toggling on resume is to align with prefs and shouldn't trigger restart/dialogs.
+        PropertyModel model =
+                new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                        .initializeNow();
+
+        // On construction, the setting is turned off but can change.
+        assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        assertTrue(getRadioButtonComponent().isEnabled());
+        assertFalse(getHint().isShown());
+    }
+
+    @Test
+    @SmallTest
+    public void optionEnabledWithGenericOverrideForAwg() {
+        setAutofillAvailabilityToUseForTesting(ANDROID_AUTOFILL_SERVICE_IS_GOOGLE);
+        addFeatureOverrideToSkipChecks(SKIP_ALL_CHECKS_PARAM_VALUE);
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
 
         // Toggling on resume is to align with prefs and shouldn't trigger restart/dialogs.
@@ -487,14 +546,14 @@ public class AutofillOptionsTest {
         return mFragment.getHint();
     }
 
-    private void addFeatureOverrideForAwG() {
+    private void addFeatureOverrideToSkipChecks(String checksToSkip) {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(
                 ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID, true);
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID,
                 "skip_compatibility_check",
-                Boolean.toString(true));
+                checksToSkip);
         FeatureList.setTestValues(testValues);
     }
 }

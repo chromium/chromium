@@ -64,9 +64,19 @@ bool UsesVirtualViewStructureForAutofill(PrefService& prefs) {
     case AndroidAutofillAvailabilityStatus::kAndroidAutofillManagerNotAvailable:
     case AndroidAutofillAvailabilityStatus::kAndroidAutofillNotSupported:
     case AndroidAutofillAvailabilityStatus::kUnknownAndroidAutofillService:
+      return features::
+                 kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck
+                     .Get() ==
+             features::VirtualViewStructureSkipChecks::kSkipAllChecks;
     case AndroidAutofillAvailabilityStatus::kAndroidAutofillServiceIsGoogle:
       return features::
-          kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck.Get();
+                     kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck
+                         .Get() ==
+                 features::VirtualViewStructureSkipChecks::kSkipAllChecks ||
+             features::
+                     kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck
+                         .Get() ==
+                 features::VirtualViewStructureSkipChecks::kOnlySkipAwGCheck;
   }
 #else
   return false;

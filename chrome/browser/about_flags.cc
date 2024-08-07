@@ -3913,15 +3913,24 @@ const FeatureEntry::FeatureVariation kAutofillGranularFillingAvailableVariations
 
 #if BUILDFLAG(IS_ANDROID)
 inline constexpr flags_ui::FeatureEntry::FeatureParam
-    kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheckParam = {
+    kAutofillVirtualViewStructureAndroidSkipCompatibilityCheck = {
         autofill::features::
             kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck.name,
-        "true"};
+        "skip_all_checks"};
+inline constexpr flags_ui::FeatureEntry::FeatureParam
+    kAutofillVirtualViewStructureAndroidOnlySkipAwgCheck = {
+        autofill::features::
+            kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck.name,
+        "only_skip_awg_check"};
+
 inline constexpr flags_ui::FeatureEntry::FeatureVariation
     kAutofillVirtualViewStructureVariation[] = {
-        {"Enabled without compatibility check",
-         &kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheckParam, 1,
-         nullptr}};
+        {" without any compatibility check",
+         &kAutofillVirtualViewStructureAndroidSkipCompatibilityCheck, 1,
+         nullptr},
+        {" without AwG restriction",
+         &kAutofillVirtualViewStructureAndroidOnlySkipAwgCheck, 1, nullptr}};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kDefaultBrowserPromptRefreshAggressive[] = {
