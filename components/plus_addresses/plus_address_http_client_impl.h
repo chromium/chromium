@@ -108,13 +108,6 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
                       GoogleServiceAuthError error,
                       signin::AccessTokenInfo access_token_info);
 
-  // Creates a resource request for a given `endpoint`, `method` and
-  // `auth_token`.
-  std::unique_ptr<network::ResourceRequest> CreateRequest(
-      std::string_view endpoint,
-      std::string_view method,
-      std::string_view auth_token) const;
-
   // The IdentityManager instance for the current profile.
   const raw_ref<signin::IdentityManager> identity_manager_;
 
