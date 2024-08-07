@@ -132,7 +132,6 @@ constexpr const int kPasswordRowHorizontalSpacingDp = 6;
 // the password textfield.
 constexpr const int kPasswordTextfieldMarginDp = 2;
 
-constexpr const int kPasswordRowCornerRadiusDp = 4;
 constexpr const int kJellyPasswordRowCornerRadiusDp = 8;
 
 // Delay after which the password gets cleared if nothing has been typed. It is
@@ -152,13 +151,9 @@ class LoginPasswordView::LoginPasswordRow : public views::View {
 
  public:
   explicit LoginPasswordRow() {
-    const bool is_jelly = chromeos::features::IsJellyEnabled();
-    const int corner_radius =
-        is_jelly ? kJellyPasswordRowCornerRadiusDp : kPasswordRowCornerRadiusDp;
+    const int corner_radius = kJellyPasswordRowCornerRadiusDp;
     const ui::ColorId background_color =
-        is_jelly
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
-            : kColorAshControlBackgroundColorInactive;
+        cros_tokens::kCrosSysSystemBaseElevated;
 
     SetBackground(views::CreateThemedRoundedRectBackground(background_color,
                                                            corner_radius));
@@ -276,13 +271,8 @@ class LoginPasswordView::DisplayPasswordButton
     SetInstallFocusRingOnFocus(true);
     views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 
-    const bool is_jelly = chromeos::features::IsJellyrollEnabled();
-    const ui::ColorId enabled_icon_color_id =
-        is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-                 : kColorAshIconColorPrimary;
-    const ui::ColorId disabled_icon_color_id =
-        is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysDisabled)
-                 : kColorAshIconPrimaryDisabledColor;
+    const ui::ColorId enabled_icon_color_id = cros_tokens::kCrosSysOnSurface;
+    const ui::ColorId disabled_icon_color_id = cros_tokens::kCrosSysDisabled;
 
     const ui::ImageModel invisible_icon = ui::ImageModel::FromVectorIcon(
         kLockScreenPasswordInvisibleIcon, enabled_icon_color_id, kIconSizeDp);
@@ -645,13 +635,8 @@ void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
       Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()
           ? kModifierSplitLockScreenCapsLockIcon
           : kLockScreenCapsLockIcon;
-  const bool is_jelly = chromeos::features::IsJellyrollEnabled();
-  const ui::ColorId enabled_icon_color_id =
-      is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-               : kColorAshIconColorPrimary;
-  const ui::ColorId disabled_icon_color_id =
-      is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysDisabled)
-               : kColorAshIconPrimaryDisabledColor;
+  const ui::ColorId enabled_icon_color_id = cros_tokens::kCrosSysOnSurface;
+  const ui::ColorId disabled_icon_color_id = cros_tokens::kCrosSysDisabled;
   capslock_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       capslock_icon,
       highlight ? enabled_icon_color_id : disabled_icon_color_id));

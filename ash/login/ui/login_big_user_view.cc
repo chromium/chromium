@@ -130,10 +130,7 @@ void LoginBigUserView::OnWallpaperBlurChanged() {
   } else {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    const ui::ColorId background_color_id =
-        chromeos::features::IsJellyEnabled()
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysScrim2)
-            : kColorAshShieldAndBase80;
+    const ui::ColorId background_color_id = cros_tokens::kCrosSysScrim2;
     SetBackground(views::CreateThemedRoundedRectBackground(
         background_color_id, login::kNonBlurredWallpaperBackgroundRadiusDp, 0));
   }

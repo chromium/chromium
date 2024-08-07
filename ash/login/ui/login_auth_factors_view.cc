@@ -264,9 +264,7 @@ LoginAuthFactorsView::LoginAuthFactorsView(
   label_wrapper_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kSpacingBetweenIconsAndLabelDp, 0, 0, 0));
-  if (chromeos::features::IsJellyEnabled()) {
-    label_wrapper_->label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-  }
+  label_wrapper_->label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
 }
 
 LoginAuthFactorsView::~LoginAuthFactorsView() = default;
