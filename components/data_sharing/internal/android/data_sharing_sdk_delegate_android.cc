@@ -192,15 +192,10 @@ static void JNI_DataSharingSDKDelegateBridge_RunCreateGroupCallback(
               callback));
   std::string str;
   base::android::JavaByteArrayToString(env, j_serlialized_proto, &str);
-  absl::Status error_status =
-      (j_status == 0) ? absl::OkStatus() : absl::CancelledError();
-  if (str.empty()) {
-    std::move(*callback_ptr).Run(base::unexpected(error_status));
+  data_sharing_pb::CreateGroupResult result;
+  if (j_status != 0 || str.empty() || !result.ParseFromString(str)) {
+    std::move(*callback_ptr).Run(base::unexpected(absl::CancelledError()));
   } else {
-    data_sharing_pb::CreateGroupResult result;
-    if (!result.ParseFromString(str)) {
-      std::move(*callback_ptr).Run(base::unexpected(absl::CancelledError()));
-    }
     std::move(*callback_ptr).Run(std::move(result));
   }
 }
@@ -216,15 +211,10 @@ static void JNI_DataSharingSDKDelegateBridge_RunReadGroupsCallback(
               callback));
   std::string str;
   base::android::JavaByteArrayToString(env, j_serlialized_proto, &str);
-  absl::Status error_status =
-      (j_status == 0) ? absl::OkStatus() : absl::CancelledError();
-  if (str.empty()) {
-    std::move(*callback_ptr).Run(base::unexpected(error_status));
+  data_sharing_pb::ReadGroupsResult result;
+  if (j_status != 0 || str.empty() || !result.ParseFromString(str)) {
+    std::move(*callback_ptr).Run(base::unexpected(absl::CancelledError()));
   } else {
-    data_sharing_pb::ReadGroupsResult result;
-    if (!result.ParseFromString(str)) {
-      std::move(*callback_ptr).Run(base::unexpected(absl::CancelledError()));
-    }
     std::move(*callback_ptr).Run(std::move(result));
   }
 }
@@ -253,15 +243,10 @@ static void JNI_DataSharingSDKDelegateBridge_RunLookupGaiaIdByEmailCallback(
           callback));
   std::string str;
   base::android::JavaByteArrayToString(env, j_serlialized_proto, &str);
-  absl::Status error_status =
-      (j_status == 0) ? absl::OkStatus() : absl::CancelledError();
-  if (str.empty()) {
-    std::move(*callback_ptr).Run(base::unexpected(error_status));
+  data_sharing_pb::LookupGaiaIdByEmailResult result;
+  if (j_status != 0 || str.empty() || !result.ParseFromString(str)) {
+    std::move(*callback_ptr).Run(base::unexpected(absl::CancelledError()));
   } else {
-    data_sharing_pb::LookupGaiaIdByEmailResult result;
-    if (!result.ParseFromString(str)) {
-      std::move(*callback_ptr).Run(base::unexpected(absl::CancelledError()));
-    }
     std::move(*callback_ptr).Run(std::move(result));
   }
 }
@@ -277,15 +262,10 @@ static void JNI_DataSharingSDKDelegateBridge_RunAddAccessTokenCallback(
           callback));
   std::string str;
   base::android::JavaByteArrayToString(env, j_serlialized_proto, &str);
-  absl::Status error_status =
-      (j_status == 0) ? absl::OkStatus() : absl::CancelledError();
-  if (str.empty()) {
-    std::move(*callback_ptr).Run(base::unexpected(error_status));
+  data_sharing_pb::AddAccessTokenResult result;
+  if (j_status != 0 || str.empty() || !result.ParseFromString(str)) {
+    std::move(*callback_ptr).Run(base::unexpected(absl::CancelledError()));
   } else {
-    data_sharing_pb::AddAccessTokenResult result;
-    if (!result.ParseFromString(str)) {
-      std::move(*callback_ptr).Run(base::unexpected(absl::CancelledError()));
-    }
     std::move(*callback_ptr).Run(std::move(result));
   }
 }
