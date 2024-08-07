@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.app.Activity;
 import android.content.res.Resources;
 
 import androidx.annotation.DimenRes;
@@ -56,7 +57,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
      */
     TabListMediator.TabActionListener getTabActionListener() {
         return (view, tabId) -> {
-            createAndShowMenu(view, tabId);
+            createAndShowMenu(view, tabId, (Activity) view.getContext());
         };
     }
 

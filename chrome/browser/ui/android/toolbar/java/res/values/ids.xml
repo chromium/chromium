@@ -17,6 +17,9 @@ found in the LICENSE file.
     <item type="id" name="manage_sharing" />
     <item type="id" name="recent_activity" />
     <item type="id" name="leave_group" />
+    <item type="id" name="open_new_tab_in_group" />
+    <item type="id" name="share_group" />
+
     <!-- Presentation is the same as delete_tab, but helps handler impl. -->
     <item type="id" name="delete_shared_group" />
 

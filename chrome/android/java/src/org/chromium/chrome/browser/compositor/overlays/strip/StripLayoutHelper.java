@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIphController;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -487,6 +488,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     // Tab group delete dialog.
     private int mTabGroupIdToHide = Tab.INVALID_TAB_ID;
     private PrefService mPrefService;
+
+    // Tab group context menu.
+    private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
 
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
@@ -1929,20 +1933,42 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
     /**
      * Called on long press touch event.
+     *
      * @param time The current time of the app in ms.
-     * @param x    The x coordinate of the position of the press event.
-     * @param y    The y coordinate of the position of the press event.
+     * @param x The x coordinate of the position of the press event.
+     * @param y The y coordinate of the position of the press event.
      */
     public void onLongPress(long time, float x, float y) {
-        final StripLayoutTab clickedTab = getTabAtPosition(x);
-        if (clickedTab != null && clickedTab.checkCloseHitTest(x, y)) {
-            clickedTab.setClosePressed(false, false);
-            mRenderHost.requestRender();
-            showTabMenu(clickedTab);
-        } else {
-            resetResizeTimeout(false);
-            startDragOrReorderTab(time, x, y, clickedTab);
+        StripLayoutView stripView = getViewAtPositionX(x, true);
+        if (stripView == null || stripView instanceof StripLayoutTab) {
+            StripLayoutTab clickedTab = stripView != null ? (StripLayoutTab) stripView : null;
+            if (clickedTab != null && clickedTab.checkCloseHitTest(x, y)) {
+                clickedTab.setClosePressed(false, false);
+                mRenderHost.requestRender();
+                showTabMenu(clickedTab);
+            } else {
+                resetResizeTimeout(false);
+
+                startDragOrReorderTab(time, x, y, clickedTab);
+            }
+        } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)
+                && ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+            showTabGroupContextMenu((StripLayoutGroupTitle) stripView);
         }
+    }
+
+    private void showTabGroupContextMenu(StripLayoutGroupTitle groupTitle) {
+        // TODO(crbug.com/354258700): Set the correct view position to anchor the context menu.
+        View tabView = TabModelUtils.getCurrentTab(mModel).getView();
+        if (mTabGroupContextMenuCoordinator == null) {
+            mTabGroupContextMenuCoordinator =
+                    new TabGroupContextMenuCoordinator(
+                            /* onItemClicked= */ null,
+                            () -> mModel,
+                            TabGroupSyncFeatures.isTabGroupSyncEnabled(mModel.getProfile()));
+        }
+        mTabGroupContextMenuCoordinator.showMenu(
+                tabView, groupTitle.getRootId(), mWindowAndroid.getActivity().get());
     }
 
     private void startDragOrReorderTab(long time, float x, float y, StripLayoutTab clickedTab) {
@@ -1956,6 +1982,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         } else {
             // Broadcast to start moving the window instance as the user has long pressed on the
             // open space of the tab strip.
+            // TODO(crbug.com/358191015): Decouple the move window broadcast from this method and
+            // maybe move to #onLongPress when `stripView` is null.
             sendMoveWindowBroadcast(mToolbarContainerView, x, y);
         }
     }
@@ -2074,6 +2102,11 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
     StripLayoutTab getLastHoveredTab() {
         return mLastHoveredTab;
+    }
+
+    void setTabGroupContextMenuCoordinatorForTesting(
+            TabGroupContextMenuCoordinator tabGroupContextMenuCoordinator) {
+        mTabGroupContextMenuCoordinator = tabGroupContextMenuCoordinator;
     }
 
     private void clearLastHoveredTab() {

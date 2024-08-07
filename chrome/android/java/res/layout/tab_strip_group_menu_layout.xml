@@ -22,8 +22,5 @@ found in the LICENSE file.
       android:layout="@layout/tab_group_color_picker_container" />
 
   <include
-    layout="@layout/horizontal_divider" />
-
-  <include
       layout="@layout/tab_switcher_action_menu_layout" />
 </LinearLayout>

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.app.Activity;
 import android.view.View;
 
 import androidx.annotation.DimenRes;
@@ -66,7 +67,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
      * @return The on click listener.
      */
     public View.OnClickListener getOnClickListener() {
-        return view -> createAndShowMenu(view, mTabIdSupplier.get());
+        return view -> createAndShowMenu(view, mTabIdSupplier.get(), (Activity) view.getContext());
     }
 
     @VisibleForTesting

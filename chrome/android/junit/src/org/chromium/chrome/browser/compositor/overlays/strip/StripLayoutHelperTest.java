@@ -126,6 +126,7 @@ public class StripLayoutHelperTest {
     @Mock private LayerTitleCache mLayerTitleCache;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private PrefService mPrefService;
+    @Mock private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     @Captor private ArgumentCaptor<Callback<Integer>> mConfirmationResultCaptor;
 
     private Activity mActivity;
@@ -133,7 +134,6 @@ public class StripLayoutHelperTest {
     private TestTabModel mModel = new TestTabModel();
     private StripLayoutHelper mStripLayoutHelper;
     private boolean mIncognito;
-
     private static final String[] TEST_TAB_TITLES = {"Tab 1", "Tab 2", "Tab 3", "", null};
     private static final String TEST_GROUP_TITLE = "Group";
     private static final String EXPECTED_MARGIN = "The tab should have a trailing margin.";
@@ -1262,6 +1262,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)
     @Feature("Advanced Peripherals Support")
     public void testCloseButtonHoverOnDown() {
         // Setup
@@ -1790,7 +1791,10 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
+        ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU
+    })
     public void testOnLongPress_OnTab() {
         onLongPress_OnTab();
         // Verify we directly enter reorder mode.SS
@@ -1800,7 +1804,35 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU,
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS
+    })
+    public void testOnLongPress_OnGroupTitle() {
+        // Initialize.
+        initializeTest(false, false, 0);
+        groupTabs(0, 1);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
+        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+
+        // Set up tabModel and menu coordinator.
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        tabModel.setActive(true);
+        mStripLayoutHelper.setTabGroupContextMenuCoordinatorForTesting(
+                mTabGroupContextMenuCoordinator);
+
+        // Long press on group title
+        mStripLayoutHelper.onLongPress(TIMESTAMP, 10f, 0f);
+
+        // Verify tab group context menu is showing.
+        verify(mTabGroupContextMenuCoordinator).showMenu(any(), anyInt(), any());
+    }
+
+    @Test
     @Config(sdk = Build.VERSION_CODES.R)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)
     public void testOnLongPress_WithDragDrop_OnTab() {
         // Extra setup for DragDrop
         setTabDragSourceMock();
@@ -1853,13 +1885,17 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
+        ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU
+    })
     public void testOnLongPress_OffTab() {
         onLongPress_OffTab();
     }
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)
     public void testOnLongPress_WithDragDrop_OffTab() {
         // Extra setup for DragDrop
         setTabDragSourceMock();
@@ -4142,6 +4178,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)
     @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag_sendMoveWindowBroadcast_success() {
         // Setup with tabs and select first tab.
