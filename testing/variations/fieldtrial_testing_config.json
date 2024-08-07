@@ -17405,7 +17405,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240628",
+                    "name": "Enabled_20240807",
                     "params": {
                         "prerender_new_tab_page_on_touch_trigger": "47"
                     },
