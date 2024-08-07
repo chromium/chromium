@@ -12,7 +12,6 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/sessions/core/tab_restore_service_impl.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
-#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_client.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -51,14 +50,6 @@ const char kWebState2Url[] = "http://www.url2.com/";
 // Title for a second sample WebState.
 const char16_t kWebState2Title[] = u"Web State 2";
 
-std::unique_ptr<KeyedService> BuildTabRestoreService(
-    web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<sessions::TabRestoreServiceImpl>(
-      base::WrapUnique(new IOSChromeTabRestoreServiceClient(browser_state)),
-      browser_state->GetPrefs(), nullptr);
-}
 }  // namespace
 
 // Test fixture to test the search service.
@@ -68,7 +59,7 @@ class TabsSearchServiceTest : public PlatformTest {
     TestChromeBrowserState::Builder test_browser_state_builder;
     test_browser_state_builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildTabRestoreService));
+        IOSChromeTabRestoreServiceFactory::GetDefaultFactory());
     test_browser_state_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());

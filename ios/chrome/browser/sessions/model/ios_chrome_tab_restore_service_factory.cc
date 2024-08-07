@@ -10,6 +10,7 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
 #include "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_client.h"
+#include "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 namespace {
@@ -21,8 +22,10 @@ std::unique_ptr<KeyedService> BuildTabRestoreService(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<sessions::TabRestoreServiceImpl>(
-      base::WrapUnique(new IOSChromeTabRestoreServiceClient(browser_state)),
-      browser_state->GetPrefs(), nullptr);
+      std::make_unique<IOSChromeTabRestoreServiceClient>(
+          browser_state->GetStatePath(),
+          BrowserListFactory::GetForBrowserState(browser_state)),
+      browser_state->GetPrefs(), /*time_factory=*/nullptr);
 }
 
 }  // namespace
@@ -51,7 +54,9 @@ IOSChromeTabRestoreServiceFactory::GetDefaultFactory() {
 IOSChromeTabRestoreServiceFactory::IOSChromeTabRestoreServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "TabRestoreService",
-          BrowserStateDependencyManager::GetInstance()) {}
+          BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(BrowserListFactory::GetInstance());
+}
 
 IOSChromeTabRestoreServiceFactory::~IOSChromeTabRestoreServiceFactory() {}
 

@@ -8,17 +8,19 @@
 #include <map>
 #include <string>
 
-#import "base/memory/raw_ptr.h"
+#include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sessions/core/tab_restore_service_client.h"
 
-class ChromeBrowserState;
+class BrowserList;
 
 // IOSChromeTabRestoreServiceClient provides an implementation of
 // TabRestoreServiceClient that depends on ios/chrome/.
 class IOSChromeTabRestoreServiceClient
     : public sessions::TabRestoreServiceClient {
  public:
-  explicit IOSChromeTabRestoreServiceClient(ChromeBrowserState* browser_state);
+  IOSChromeTabRestoreServiceClient(const base::FilePath& state_path,
+                                   BrowserList* browser_list);
 
   IOSChromeTabRestoreServiceClient(const IOSChromeTabRestoreServiceClient&) =
       delete;
@@ -51,7 +53,8 @@ class IOSChromeTabRestoreServiceClient
   bool HasLastSession() override;
   void GetLastSession(sessions::GetLastSessionCallback callback) override;
 
-  raw_ptr<ChromeBrowserState> browser_state_;
+  const base::FilePath browser_state_path_;
+  raw_ptr<BrowserList> browser_list_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_MODEL_IOS_CHROME_TAB_RESTORE_SERVICE_CLIENT_H_
