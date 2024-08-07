@@ -110,6 +110,12 @@ public class DataSharingServiceImpl implements DataSharingService {
         return DataSharingServiceImplJni.get().parseDataSharingURL(mNativePtr, url);
     }
 
+    @Override
+    public void ensureGroupVisibility(
+            String groupId, Callback<GroupDataOrFailureOutcome> callback) {
+        DataSharingServiceImplJni.get().ensureGroupVisibility(mNativePtr, groupId, callback);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -162,5 +168,10 @@ public class DataSharingServiceImpl implements DataSharingService {
 
         DataSharingService.ParseURLResult parseDataSharingURL(
                 long nativeDataSharingServiceAndroid, GURL url);
+
+        void ensureGroupVisibility(
+                long nativeDataSharingServiceAndroid,
+                String groupId,
+                Callback<GroupDataOrFailureOutcome> callback);
     }
 }

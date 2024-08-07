@@ -163,6 +163,24 @@ void DataSharingSDKDelegateAndroid::LookupGaiaIdByEmail(
   wrapped_callback.release();
 }
 
+void DataSharingSDKDelegateAndroid::AddAccessToken(
+    const data_sharing_pb::AddAccessTokenParams& params,
+    AddAccessTokenCallback callback) {
+  JNIEnv* env = AttachCurrentThread();
+  std::string add_access_token_params;
+  params.SerializeToString(&add_access_token_params);
+  std::unique_ptr<AddAccessTokenCallback> wrapped_callback =
+      std::make_unique<AddAccessTokenCallback>(std::move(callback));
+  CHECK(wrapped_callback.get());
+  jlong j_native_ptr = reinterpret_cast<jlong>(wrapped_callback.get());
+  Java_DataSharingSDKDelegateBridge_addAccessToken(
+      env, java_obj_, ConvertUTF8ToJavaString(env, add_access_token_params),
+      j_native_ptr);
+  // We expect Java to always call us back through
+  // JNI_DataSharingSDKDelegateBridge_RunAddAccessTokenCallback.
+  wrapped_callback.release();
+}
+
 static void JNI_DataSharingSDKDelegateBridge_RunCreateGroupCallback(
     JNIEnv* env,
     jlong callback,
@@ -241,6 +259,30 @@ static void JNI_DataSharingSDKDelegateBridge_RunLookupGaiaIdByEmailCallback(
     std::move(*callback_ptr).Run(base::unexpected(error_status));
   } else {
     data_sharing_pb::LookupGaiaIdByEmailResult result;
+    if (!result.ParseFromString(str)) {
+      std::move(*callback_ptr).Run(base::unexpected(absl::CancelledError()));
+    }
+    std::move(*callback_ptr).Run(std::move(result));
+  }
+}
+
+static void JNI_DataSharingSDKDelegateBridge_RunAddAccessTokenCallback(
+    JNIEnv* env,
+    jlong callback,
+    const jni_zero::JavaParamRef<jbyteArray>& j_serlialized_proto,
+    jint j_status) {
+  std::unique_ptr<DataSharingSDKDelegateAndroid::AddAccessTokenCallback>
+      callback_ptr(reinterpret_cast<
+                   DataSharingSDKDelegateAndroid::AddAccessTokenCallback*>(
+          callback));
+  std::string str;
+  base::android::JavaByteArrayToString(env, j_serlialized_proto, &str);
+  absl::Status error_status =
+      (j_status == 0) ? absl::OkStatus() : absl::CancelledError();
+  if (str.empty()) {
+    std::move(*callback_ptr).Run(base::unexpected(error_status));
+  } else {
+    data_sharing_pb::AddAccessTokenResult result;
     if (!result.ParseFromString(str)) {
       std::move(*callback_ptr).Run(base::unexpected(absl::CancelledError()));
     }

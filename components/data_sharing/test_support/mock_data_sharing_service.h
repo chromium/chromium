@@ -59,6 +59,10 @@ class MockDataSharingService : public DataSharingService {
   MOCK_METHOD1(HandleShareURLNavigationIntercepted, void(const GURL&));
   MOCK_METHOD1(GetDataSharingURL, std::unique_ptr<GURL>(const GroupData&));
   MOCK_METHOD1(ParseDataSharingURL, ParseURLResult(const GURL&));
+  MOCK_METHOD2(
+      EnsureGroupVisibility,
+      void(const GroupId&,
+           base::OnceCallback<void(const GroupDataOrFailureOutcome&)>));
 };
 
 }  // namespace data_sharing

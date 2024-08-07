@@ -69,6 +69,12 @@ class DataSharingSDKDelegateDesktop : public DataSharingSDKDelegate,
   // DataSharingUI::Delegate:
   void ApiInitComplete() override;
 
+  void AddAccessToken(
+      const data_sharing_pb::AddAccessTokenParams& params,
+      base::OnceCallback<
+          void(const base::expected<data_sharing_pb::AddAccessTokenResult,
+                                    absl::Status>&)> callback) override;
+
  private:
   // Load the WebContents if it's not loaded and invoke the callback when
   // finish, otherwise invoke the callback immediately.

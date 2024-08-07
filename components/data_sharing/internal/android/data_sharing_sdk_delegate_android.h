@@ -35,6 +35,10 @@ class DataSharingSDKDelegateAndroid : public DataSharingSDKDelegate {
       const base::expected<data_sharing_pb::LookupGaiaIdByEmailResult,
                            absl::Status>&)>;
 
+  using AddAccessTokenCallback = base::OnceCallback<void(
+      const base::expected<data_sharing_pb::AddAccessTokenResult,
+                           absl::Status>&)>;
+
   using GetStatusCallback = base::OnceCallback<void(const absl::Status&)>;
 
   explicit DataSharingSDKDelegateAndroid(const JavaRef<jobject>& sdk_delegate);
@@ -68,6 +72,8 @@ class DataSharingSDKDelegateAndroid : public DataSharingSDKDelegate {
   void LookupGaiaIdByEmail(
       const data_sharing_pb::LookupGaiaIdByEmailParams& params,
       LookupGaiaIdByEmailCallback callback) override;
+  void AddAccessToken(const data_sharing_pb::AddAccessTokenParams& params,
+                      AddAccessTokenCallback callback) override;
 
  private:
   std::unique_ptr<DataSharingNetworkLoaderAndroid> network_loader_;

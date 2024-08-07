@@ -272,6 +272,16 @@ ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::ParseDataSharingURL(
   return DataSharingConversionBridge::CreateParseURLResult(env, parse_result);
 }
 
+void DataSharingServiceAndroid::EnsureGroupVisibility(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& group_id,
+    const JavaParamRef<jobject>& j_callback) {
+  data_sharing_service_->EnsureGroupVisibility(
+      GroupId(ConvertJavaStringToUTF8(env, group_id)),
+      base::BindOnce(&RunGroupDataOrFailureOutcomeCallback,
+                     ScopedJavaGlobalRef<jobject>(j_callback)));
+}
+
 ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(java_obj_);
 }

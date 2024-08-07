@@ -12,6 +12,7 @@ import org.chromium.components.data_sharing.DataSharingNetworkLoader;
 import org.chromium.components.data_sharing.DataSharingSDKDelegate;
 import org.chromium.components.data_sharing.DataSharingSDKDelegateProtoResponseCallback;
 import org.chromium.components.data_sharing.DataSharingSDKDelegateProtoResponseCallback.Status;
+import org.chromium.components.data_sharing.protocol.AddAccessTokenParams;
 import org.chromium.components.data_sharing.protocol.AddMemberParams;
 import org.chromium.components.data_sharing.protocol.CreateGroupParams;
 import org.chromium.components.data_sharing.protocol.DeleteGroupParams;
@@ -89,6 +90,16 @@ public class DataSharingSDKDelegateImpl implements DataSharingSDKDelegate {
     public void lookupGaiaIdByEmail(
             LookupGaiaIdByEmailParams params,
             DataSharingSDKDelegateProtoResponseCallback callback) {
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    callback.run(new byte[0], Status.FAILURE);
+                });
+    }
+
+    @Override
+    public void addAccessToken(
+            AddAccessTokenParams params, DataSharingSDKDelegateProtoResponseCallback callback) {
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {

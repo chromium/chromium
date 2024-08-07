@@ -77,6 +77,14 @@ void DataSharingSDKDelegateDesktop::LookupGaiaIdByEmail(
   NOTIMPLEMENTED();
 }
 
+void DataSharingSDKDelegateDesktop::AddAccessToken(
+    const data_sharing_pb::AddAccessTokenParams& params,
+    base::OnceCallback<
+        void(const base::expected<data_sharing_pb::AddAccessTokenResult,
+                                  absl::Status>&)> callback) {
+  NOTIMPLEMENTED();
+}
+
 void DataSharingSDKDelegateDesktop::MaybeLoadWebContents(
     LoadFinishedCallback callback) {
   // Load the WebContents if it's not loaded yet.

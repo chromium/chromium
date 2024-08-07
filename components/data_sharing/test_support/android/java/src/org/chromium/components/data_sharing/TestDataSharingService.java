@@ -96,4 +96,13 @@ public class TestDataSharingService implements DataSharingService {
                 new GroupToken(/* groupId= */ null, /* accessToken= */ null),
                 ParseURLStatus.UNKNOWN);
     }
+
+    @Override
+    public void ensureGroupVisibility(
+            String groupId, Callback<GroupDataOrFailureOutcome> callback) {
+        Callback.runNullSafe(
+                callback,
+                new DataSharingService.GroupDataOrFailureOutcome(
+                        null, PeopleGroupActionFailure.PERSISTENT_FAILURE));
+    }
 }

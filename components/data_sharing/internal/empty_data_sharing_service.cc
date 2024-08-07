@@ -78,4 +78,8 @@ DataSharingService::ParseURLResult EmptyDataSharingService::ParseDataSharingURL(
   return GroupToken();
 }
 
+void EmptyDataSharingService::EnsureGroupVisibility(
+    const GroupId& group_id,
+    base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {}
+
 }  // namespace data_sharing

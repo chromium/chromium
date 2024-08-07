@@ -151,7 +151,8 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
 
   // Create a data sharing URL used for sharing. This does not validate if the
   // group is still active nor guarantee that the URL is not expired. The caller
-  // needs to get the valid group info from the other APIs above.
+  // needs to get the valid group info from the other APIs above. Make sure
+  // EnsureGroupVisibility API is called before getting the URL for the group.
   virtual std::unique_ptr<GURL> GetDataSharingURL(
       const GroupData& group_data) = 0;
 
@@ -159,6 +160,13 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   // returned group may not be valid, the caller needs to check ReadGroup or
   // other apis to validate the group.
   virtual ParseURLResult ParseDataSharingURL(const GURL& url) = 0;
+
+  // This ensures that the group is open for new members to join. Only owner can
+  // call this API. The owner must always call this API before
+  // GetDataSharingURL().
+  virtual void EnsureGroupVisibility(
+      const GroupId& group_id,
+      base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) = 0;
 };
 
 }  // namespace data_sharing

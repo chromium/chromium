@@ -56,6 +56,10 @@ class EmptyDataSharingService : public DataSharingService {
   void HandleShareURLNavigationIntercepted(const GURL& url) override;
   std::unique_ptr<GURL> GetDataSharingURL(const GroupData& group_data) override;
   ParseURLResult ParseDataSharingURL(const GURL& url) override;
+  void EnsureGroupVisibility(
+      const GroupId& group_id,
+      base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback)
+      override;
 };
 
 }  // namespace data_sharing

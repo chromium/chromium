@@ -556,4 +556,40 @@ DataSharingService::ParseURLResult DataSharingServiceImpl::ParseDataSharingURL(
   return GroupToken(GroupId(group_id), access_token);
 }
 
+void DataSharingServiceImpl::EnsureGroupVisibility(
+    const GroupId& group_id,
+    base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {
+  if (!sdk_delegate_) {
+    // Reply in a posted task to avoid reentrance on the calling side.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            base::unexpected(PeopleGroupActionFailure::kPersistentFailure)));
+    return;
+  }
+
+  // TODO(ritikagup@): If a token was added recently then skip adding and return
+  // read group.
+  data_sharing_pb::AddAccessTokenParams params;
+  params.set_group_id(group_id.value());
+  sdk_delegate_->AddAccessToken(
+      params,
+      base::BindOnce(&DataSharingServiceImpl::OnAccessTokenAdded,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void DataSharingServiceImpl::OnAccessTokenAdded(
+    base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback,
+    const base::expected<data_sharing_pb::AddAccessTokenResult, absl::Status>&
+        result) {
+  if (result.has_value()) {
+    std::move(callback).Run(GroupDataFromProto(result.value().group_data()));
+    return;
+  }
+
+  std::move(callback).Run(
+      base::unexpected(StatusToPeopleGroupActionFailure(result.error())));
+}
+
 }  // namespace data_sharing

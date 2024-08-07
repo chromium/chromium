@@ -27,6 +27,7 @@ class IdentityManager;
 
 namespace data_sharing_pb {
 
+class AddAccessTokenResult;
 class CreateGroupResult;
 class LookupGaiaIdByEmailResult;
 class ReadGroupsResult;
@@ -92,6 +93,10 @@ class DataSharingServiceImpl : public DataSharingService,
   std::unique_ptr<GURL> GetDataSharingURL(const GroupData& group_data) override;
   ParseURLResult ParseDataSharingURL(const GURL& url) override;
   void Shutdown() override;
+  void EnsureGroupVisibility(
+      const GroupId& group_id,
+      base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback)
+      override;
 
   // CollaborationGroupSyncBridge::Observer implementation.
   void OnGroupsUpdated(const std::vector<GroupId>& added_group_ids,
@@ -136,6 +141,10 @@ class DataSharingServiceImpl : public DataSharingService,
   void OnSimpleGroupActionCompleted(
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback,
       const absl::Status& result);
+  void OnAccessTokenAdded(
+      base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback,
+      const base::expected<data_sharing_pb::AddAccessTokenResult, absl::Status>&
+          result);
 
   // It must be destroyed after the `sdk_delegate_` member because
   // `sdk_delegate` needs the `data_sharing_network_loader_`.

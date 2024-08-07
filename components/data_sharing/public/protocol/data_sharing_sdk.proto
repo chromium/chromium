@@ -55,3 +55,11 @@ message LookupGaiaIdByEmailParams {
 message LookupGaiaIdByEmailResult {
   optional string gaia_id = 1;
 };
+
+message AddAccessTokenParams {
+  optional string group_id = 1;
+}
+
+message AddAccessTokenResult {
+  optional GroupData group_data = 1;
+}
