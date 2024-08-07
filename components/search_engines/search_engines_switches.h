@@ -30,6 +30,9 @@ inline const char kDefaultListCountryOverride[] = "DEFAULT_EEA";
 inline const char kEeaListCountryOverride[] = "EEA_ALL";
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+extern const char kIgnoreNoFirstRunForSearchEngineChoiceScreen[];
+
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 extern const char kDisableSearchEngineChoiceScreen[];
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)

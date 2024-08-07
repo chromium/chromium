@@ -216,6 +216,8 @@ class ProfilePickerParametrizedInteractiveUiTest
       // is only displayed for EEA countries.
       command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry,
                                       "BE");
+      command_line->AppendSwitch(
+          switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
     }
   }
 

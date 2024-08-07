@@ -358,6 +358,9 @@ class FirstRunParameterizedInteractiveUiTest
     // as intended.
     command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry, "BE");
 
+    command_line->AppendSwitch(
+        switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
+
     // The default browser step is normally only shown on Windows. If it's
     // forced, it should be shown on the other platforms for testing.
     command_line->AppendSwitch(switches::kForceFreDefaultBrowserStep);

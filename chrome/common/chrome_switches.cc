@@ -441,12 +441,14 @@ const char kNoExperiments[] = "no-experiments";
 // switch is used by automation (including performance benchmarks) where it's
 // important only a browser window is shown.
 //
-// This may not actually be the first run or the What's New page. Overridden by
-// kForceFirstRun (for FRE) and kForceWhatsNew (for What's New). This does not
-// drop the First Run sentinel and thus doesn't prevent first run from
-// occurring the next time chrome is launched without this flag. It also does
-// not update the last What's New milestone, so does not prevent What's New
-// from occurring the next time chrome is launched without this flag.
+// This may not actually be the first run or the What's New page. Its effect can
+// be partially ignored by adding kForceFirstRun (for FRE), kForceWhatsNew (for
+// What's New) and/or kIgnoreNoFirstRunForSearchEngineChoiceScreen (for the DSE
+// choice screen). This does not drop the First Run sentinel and thus doesn't
+// prevent first run from occurring the next time chrome is launched without
+// this flag. It also does not update the last What's New milestone, so does not
+// prevent What's New from occurring the next time chrome is launched without
+// this flag.
 const char kNoFirstRun[] = "no-first-run";
 
 // Don't send hyperlink auditing pings

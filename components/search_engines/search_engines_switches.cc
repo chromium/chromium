@@ -18,6 +18,12 @@ const char kExtraSearchQueryParams[] = "extra-search-query-params";
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 const char kSearchEngineChoiceCountry[] = "search-engine-choice-country";
 
+// Override the --no-first-run dialog suppression for the search dialog
+// for testing
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+const char kIgnoreNoFirstRunForSearchEngineChoiceScreen[] =
+    "ignore-no-first-run-for-search-engine-choice-screen";
+
 // Disable the search engine choice screen for testing / autmation.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 const char kDisableSearchEngineChoiceScreen[] =

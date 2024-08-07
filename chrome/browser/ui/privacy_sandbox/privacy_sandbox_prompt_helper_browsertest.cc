@@ -591,6 +591,8 @@ class PrivacySandboxPromptHelperTestWithSearchEngineChoiceEnabled
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PrivacySandboxPromptHelperTestWithParam::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry, "BE");
+    command_line->AppendSwitch(
+        switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
   }
 
  private:

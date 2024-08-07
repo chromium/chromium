@@ -85,6 +85,9 @@ class FirstRunLacrosInteractiveUiTest
     // Change the country to Belgium because the search engine choice screen is
     // only displayed for EEA countries.
     command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry, "BE");
+
+    command_line->AppendSwitch(
+        switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
   }
 
   void TearDownOnMainThread() override {
