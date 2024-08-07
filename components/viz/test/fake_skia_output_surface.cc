@@ -87,10 +87,6 @@ void FakeSkiaOutputSurface::SwapBuffers(OutputSurfaceFrame frame) {
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-bool FakeSkiaOutputSurface::IsDisplayedAsOverlayPlane() const {
-  return false;
-}
-
 void FakeSkiaOutputSurface::SetNeedsSwapSizeNotifications(
     bool needs_swap_size_notifications) {
   NOTIMPLEMENTED();

@@ -236,10 +236,6 @@ SkiaOutputDeviceBufferQueue::~SkiaOutputDeviceBufferQueue() {
   }
 }
 
-bool SkiaOutputDeviceBufferQueue::IsPrimaryPlaneOverlay() const {
-  return true;
-}
-
 const SkiaOutputDeviceBufferQueue::OverlayData*
 SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
                                                     bool is_root_render_pass,

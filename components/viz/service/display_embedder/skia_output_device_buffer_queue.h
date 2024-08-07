@@ -58,7 +58,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;
 
-  bool IsPrimaryPlaneOverlay() const override;
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays) override;
 
   // SkiaOutputDevice override

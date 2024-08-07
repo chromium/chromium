@@ -53,7 +53,6 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   void DiscardBackbuffer() override;
   void Reshape(const ReshapeParams& params) override;
   void SwapBuffers(OutputSurfaceFrame frame) override;
-  bool IsDisplayedAsOverlayPlane() const override;
   void SetNeedsSwapSizeNotifications(
       bool needs_swap_size_notifications) override;
   void SetUpdateVSyncParametersCallback(

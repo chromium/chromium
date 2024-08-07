@@ -1322,7 +1322,6 @@ void SkiaOutputSurfaceImpl::InitializeOnGpuThread(bool* result) {
     return;
   }
   capabilities_ = impl_on_gpu_->capabilities();
-  is_displayed_as_overlay_ = impl_on_gpu_->IsDisplayedAsOverlay();
 
   auto shared_context_state = dependency_->GetSharedContextState();
   gr_context_type_ = shared_context_state->gr_context_type();
@@ -1709,10 +1708,6 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
 
     return GrBackendFormats::MakeGL(texture_storage_format, gl_texture_target);
   }
-}
-
-bool SkiaOutputSurfaceImpl::IsDisplayedAsOverlayPlane() const {
-  return is_displayed_as_overlay_;
 }
 
 void SkiaOutputSurfaceImpl::SetNeedsSwapSizeNotifications(

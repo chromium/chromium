@@ -58,10 +58,6 @@ void FakeSoftwareOutputSurface::BindToClient(OutputSurfaceClient* client) {
   client_ = client;
 }
 
-bool FakeSoftwareOutputSurface::IsDisplayedAsOverlayPlane() const {
-  return false;
-}
-
 void FakeSoftwareOutputSurface::SetUpdateVSyncParametersCallback(
     UpdateVSyncParametersCallback callback) {}
 

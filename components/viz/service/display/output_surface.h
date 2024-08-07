@@ -198,9 +198,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   virtual void EnsureBackbuffer() = 0;
   virtual void DiscardBackbuffer() = 0;
 
-  // Returns true if a main image overlay plane should be scheduled.
-  virtual bool IsDisplayedAsOverlayPlane() const = 0;
-
   // Reshape the output surface.
   struct ReshapeParams {
     gfx::Size size;

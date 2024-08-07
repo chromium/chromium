@@ -225,8 +225,6 @@ class SkiaOutputSurfaceImplOnGpu
   void SetCapabilitiesForTesting(
       const OutputSurface::Capabilities& capabilities);
 
-  bool IsDisplayedAsOverlay();
-
   // gpu::SharedContextState::ContextLostObserver implementation:
   void OnContextLost() override;
 

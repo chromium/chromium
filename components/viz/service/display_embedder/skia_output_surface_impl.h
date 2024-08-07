@@ -105,7 +105,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override;
   gfx::OverlayTransform GetDisplayTransform() override;
   void SwapBuffers(OutputSurfaceFrame frame) override;
-  bool IsDisplayedAsOverlayPlane() const override;
   void SetNeedsSwapSizeNotifications(
       bool needs_swap_size_notifications) override;
 #if BUILDFLAG(IS_ANDROID)
@@ -291,7 +290,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   uint64_t sync_fence_release_ = 0;
   raw_ptr<SkiaOutputSurfaceDependency> dependency_;
   UpdateVSyncParametersCallback update_vsync_parameters_callback_;
-  bool is_displayed_as_overlay_ = false;
 
   gfx::Size size_;
   SharedImageFormat format_;

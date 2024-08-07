@@ -2421,10 +2421,6 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
                              200);
 }
 
-bool SkiaOutputSurfaceImplOnGpu::IsDisplayedAsOverlay() {
-  return output_device_->IsPrimaryPlaneOverlay();
-}
-
 #if BUILDFLAG(IS_WIN)
 void SkiaOutputSurfaceImplOnGpu::AddChildWindowToBrowser(
     gpu::SurfaceHandle child_window) {

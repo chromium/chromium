@@ -113,7 +113,6 @@ class SynchronousLayerTreeFrameSink::SoftwareOutputSurface
   void DiscardBackbuffer() override {}
   void SwapBuffers(viz::OutputSurfaceFrame frame) override {}
   void Reshape(const ReshapeParams& params) override {}
-  bool IsDisplayedAsOverlayPlane() const override { return false; }
   void SetUpdateVSyncParametersCallback(
       viz::UpdateVSyncParametersCallback callback) override {}
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}

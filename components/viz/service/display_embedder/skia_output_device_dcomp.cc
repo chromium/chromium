@@ -317,8 +317,4 @@ void SkiaOutputDeviceDComp::EndPaint() {
   NOTIMPLEMENTED();
 }
 
-bool SkiaOutputDeviceDComp::IsPrimaryPlaneOverlay() const {
-  return true;
-}
-
 }  // namespace viz

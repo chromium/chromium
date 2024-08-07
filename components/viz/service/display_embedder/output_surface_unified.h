@@ -36,7 +36,6 @@ class OutputSurfaceUnified : public OutputSurface {
   void DiscardBackbuffer() override {}
   void Reshape(const ReshapeParams& params) override {}
   void SwapBuffers(OutputSurfaceFrame frame) override;
-  bool IsDisplayedAsOverlayPlane() const override;
   void SetUpdateVSyncParametersCallback(
       UpdateVSyncParametersCallback callback) override {}
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}

@@ -151,10 +151,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
 
   virtual void SetVSyncDisplayID(int64_t display_id) {}
 
-  // Whether the output device's primary plane is an overlay. This returns true
-  // is the SchedulePrimaryPlane function is implemented.
-  virtual bool IsPrimaryPlaneOverlay() const;
-
   // Schedule overlays which will be on screen when SwapBuffers() or
   // PostSubBuffer() is called.
   virtual void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays);

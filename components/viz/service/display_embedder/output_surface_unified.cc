@@ -25,10 +25,6 @@ void OutputSurfaceUnified::SwapBuffers(OutputSurfaceFrame frame) {
   NOTREACHED_IN_MIGRATION();
 }
 
-bool OutputSurfaceUnified::IsDisplayedAsOverlayPlane() const {
-  return false;
-}
-
 gfx::OverlayTransform OutputSurfaceUnified::GetDisplayTransform() {
   return gfx::OVERLAY_TRANSFORM_NONE;
 }

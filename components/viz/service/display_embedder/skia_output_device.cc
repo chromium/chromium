@@ -135,10 +135,6 @@ void SkiaOutputDevice::Submit(bool sync_cpu, base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-bool SkiaOutputDevice::IsPrimaryPlaneOverlay() const {
-  return false;
-}
-
 void SkiaOutputDevice::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays) {
   NOTIMPLEMENTED();

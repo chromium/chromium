@@ -176,7 +176,7 @@ void DirectRenderer::DecideRenderPassAllocationsForFrame(
     // If a previous frame fell out of delegated compositing we want to make
     // sure that we deallocate its backing when switching back to delegated
     // compositing.
-    if (is_root && output_surface_->IsDisplayedAsOverlayPlane() &&
+    if (is_root && output_surface_->capabilities().renderer_allocates_images &&
         !current_frame()->output_surface_plane) {
       // We expect to be in delegated compositing mode, which means the root
       // damage rect has been cleared.
@@ -301,7 +301,7 @@ void DirectRenderer::DrawFrame(
     // overlay setup can be handled, we need to set up the primary plane.
     OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane =
         nullptr;
-    if (output_surface_->IsDisplayedAsOverlayPlane()) {
+    if (output_surface_->capabilities().renderer_allocates_images) {
       // TODO(crbug.com/40224327): `output_surface_plane` can be changed to an
       // OverlayCandidate now.
       current_frame()->output_surface_plane =
@@ -375,7 +375,7 @@ void DirectRenderer::DrawFrame(
     // and we should not trigger a redraw of the root render pass.
     // Pixel tests will not be displayed as overlay planes, so they need redraw.
     if (current_frame()->output_surface_plane ||
-        !output_surface_->IsDisplayedAsOverlayPlane()) {
+        !output_surface_->capabilities().renderer_allocates_images) {
       needs_full_frame_redraw = true;
     }
 #else
