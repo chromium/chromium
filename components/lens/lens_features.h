@@ -465,6 +465,10 @@ extern bool GetLensOverlayEnableInFullscreen();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlaySegmentationMaskCornerRadius();
 
+// Number identifying variant sets of strings to use in the find bar.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayFindBarStringsVariant();
+
 // Whether to show the translate button in the Lens Overlay to allow translation
 // of the screenshot of the page.
 COMPONENT_EXPORT(LENS_FEATURES)

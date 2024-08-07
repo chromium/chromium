@@ -198,6 +198,9 @@ const base::FeatureParam<bool> kLensOverlayEnableInFullscreen{
 constexpr base::FeatureParam<int> kLensOverlaySegmentationMaskCornerRadius{
     &kLensOverlay, "segmentation-mask-corner-radius", 12};
 
+constexpr base::FeatureParam<int> kLensOverlayFindBarStringsVariant{
+    &kLensOverlay, "find-bar-strings-variant", 0};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -538,6 +541,10 @@ bool GetLensOverlayEnableInFullscreen() {
 
 int GetLensOverlaySegmentationMaskCornerRadius() {
   return kLensOverlaySegmentationMaskCornerRadius.Get();
+}
+
+int GetLensOverlayFindBarStringsVariant() {
+  return kLensOverlayFindBarStringsVariant.Get();
 }
 
 bool GetLensOverlayEnableTranslateButton() {

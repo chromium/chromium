@@ -119,6 +119,12 @@ class FindBarView : public views::BoxLayoutView,
   // the button.
   void UpdateLensButtonVisibility(const std::u16string& search_text);
 
+  // Returns the IDS to use for the Lens message.
+  int GetLensOverlayFindBarMessageIds();
+
+  // Returns the IDS to use for the Lens button label.
+  int GetLensOverlayFindBarButtonLabelIds();
+
   // The OS-specific view for the find bar that acts as an intermediary
   // between us and the WebContentsView.
   raw_ptr<FindBarHost> find_bar_host_;
