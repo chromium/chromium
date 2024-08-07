@@ -9,7 +9,7 @@
 #include "components/plus_addresses/features.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/sync_service.h"
 #include "components/variations/service/google_groups_manager.h"
@@ -20,7 +20,7 @@ namespace {
 
 using PreconditionState = syncer::DataTypeController::PreconditionState;
 
-// Determines the eligibility of the model type based on the accounts managed
+// Determines the eligibility of the data type based on the accounts managed
 // status. Dasher accounts are not supported.
 PreconditionState GetPreconditionStateFromAccountManagedStatus(
     const signin::AccountManagedStatusFinder& finder) {
@@ -43,7 +43,7 @@ PreconditionState GetPreconditionStateFromAccountManagedStatus(
 }  // namespace
 
 PlusAddressDataTypeController::PlusAddressDataTypeController(
-    syncer::ModelType type,
+    syncer::DataType type,
     std::unique_ptr<syncer::DataTypeControllerDelegate>
         delegate_for_full_sync_mode,
     std::unique_ptr<syncer::DataTypeControllerDelegate>
@@ -52,13 +52,13 @@ PlusAddressDataTypeController::PlusAddressDataTypeController(
     signin::IdentityManager* identity_manager,
     GoogleGroupsManager* google_groups_manager)
     : syncer::DataTypeController(type,
-                                  std::move(delegate_for_full_sync_mode),
-                                  std::move(delegate_for_transport_mode)),
+                                 std::move(delegate_for_full_sync_mode),
+                                 std::move(delegate_for_transport_mode)),
       sync_service_(sync_service),
       identity_manager_(identity_manager),
       google_groups_manager_(CHECK_DEREF(google_groups_manager)) {
-  CHECK(type == syncer::ModelType::PLUS_ADDRESS ||
-        type == syncer::ModelType::PLUS_ADDRESS_SETTING);
+  CHECK(type == syncer::DataType::PLUS_ADDRESS ||
+        type == syncer::DataType::PLUS_ADDRESS_SETTING);
   sync_service_observation_.Observe(sync_service_);
   RecreateManagedStatusFinder();
 }

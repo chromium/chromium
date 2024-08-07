@@ -9,7 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -107,7 +107,7 @@ TEST_F(PlusAddressTableTest, ClearPlusProfiles) {
 }
 
 // Tests that when no sync metadata is persisted, `GetAllSyncMetadata()` returns
-// the default model type state without any entity metadata.
+// the default data type state without any entity metadata.
 TEST_F(PlusAddressTableTest, SyncMetadataStore_NoData) {
   syncer::MetadataBatch metadata;
   EXPECT_TRUE(table_.GetAllSyncMetadata(syncer::PLUS_ADDRESS, metadata));
@@ -116,7 +116,7 @@ TEST_F(PlusAddressTableTest, SyncMetadataStore_NoData) {
   EXPECT_THAT(metadata.TakeAllMetadata(), testing::IsEmpty());
 }
 
-// Tests adding and updating the sync model type state.
+// Tests adding and updating the sync data type state.
 TEST_F(PlusAddressTableTest, SyncMetadataStore_ModifyDataTypeState) {
   // Add
   sync_pb::DataTypeState data_type_state;
@@ -166,7 +166,7 @@ TEST_F(PlusAddressTableTest, SyncMetadataStore_ModifyEntityMetadata) {
                                             KeyAndProto("key2", entity2)));
 }
 
-// Tests clearing the sync model type state + entity metadata.
+// Tests clearing the sync data type state + entity metadata.
 TEST_F(PlusAddressTableTest, SyncMetadataStore_Clear) {
   // Add some dummy data.
   sync_pb::DataTypeState data_type_state;
@@ -178,7 +178,7 @@ TEST_F(PlusAddressTableTest, SyncMetadataStore_Clear) {
   entity.set_creation_time(123);
   ASSERT_TRUE(table_.UpdateEntityMetadata(syncer::PLUS_ADDRESS, "key", entity));
 
-  // Clear model type state and entity metadata.
+  // Clear data type state and entity metadata.
   EXPECT_TRUE(table_.ClearDataTypeState(syncer::PLUS_ADDRESS));
   EXPECT_TRUE(table_.ClearEntityMetadata(syncer::PLUS_ADDRESS, "key"));
 

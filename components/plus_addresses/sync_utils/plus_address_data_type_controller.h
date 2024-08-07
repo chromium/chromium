@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/variations/service/google_groups_manager.h"
@@ -27,7 +27,7 @@ class SyncService;
 
 namespace plus_addresses {
 
-// Shared model type controller for PLUS_ADDRESS and PLUS_ADDRESS_SETTING.
+// Shared data type controller for PLUS_ADDRESS and PLUS_ADDRESS_SETTING.
 // It is responsible for disabling the types when the feature is not enabled or
 // the user type not supported.
 // Tested by the sync integration tests.
@@ -35,7 +35,7 @@ class PlusAddressDataTypeController : public syncer::DataTypeController,
                                        public syncer::SyncServiceObserver {
  public:
   PlusAddressDataTypeController(
-      syncer::ModelType type,
+      syncer::DataType type,
       std::unique_ptr<syncer::DataTypeControllerDelegate>
           delegate_for_full_sync_mode,
       std::unique_ptr<syncer::DataTypeControllerDelegate>
