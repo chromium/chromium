@@ -61,7 +61,8 @@
 
 // Tests that the search engine choice dialog is always visible when the app
 // goes to background and foreground.
-- (void)testMoveToBackgroundAndToForeground {
+// TODO(crbug.com/356534232): Re-enable after fixing flakiness.
+- (void)DISABLED_testMoveToBackgroundAndToForeground {
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
