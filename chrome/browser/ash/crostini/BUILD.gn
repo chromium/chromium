@@ -265,6 +265,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/crostini_upgrader",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
