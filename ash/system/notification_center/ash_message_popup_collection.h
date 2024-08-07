@@ -98,7 +98,7 @@ class ASH_EXPORT AshMessagePopupCollection
   void AnimationFinished() override;
   message_center::MessagePopupView* CreatePopup(
       const message_center::Notification& notification) override;
-  void ClosePopupItem(const PopupItem& item) override;
+  void ClosePopupItem(PopupItem& item) override;
 
   // Returns true if `widget` is a popup widget belongs to this popup
   // collection.

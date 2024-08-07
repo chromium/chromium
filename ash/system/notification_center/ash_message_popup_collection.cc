@@ -476,7 +476,7 @@ message_center::MessagePopupView* AshMessagePopupCollection::CreatePopup(
   return popup_view;
 }
 
-void AshMessagePopupCollection::ClosePopupItem(const PopupItem& item) {
+void AshMessagePopupCollection::ClosePopupItem(PopupItem& item) {
   // We lock closing tray bubble here to prevent a bubble close when popup item
   // is removed (b/291988617).
   auto lock = TrayBackgroundView::DisableCloseBubbleOnWindowActivated();
