@@ -25121,6 +25121,33 @@
             ]
         }
     ],
+    "WebAssemblyDeopt": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebAssemblyDeopt"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "WebAssemblyDeopt"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebAssemblyGenericWrapper": [
         {
             "platforms": [
