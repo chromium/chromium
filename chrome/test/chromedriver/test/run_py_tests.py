@@ -1052,6 +1052,15 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual(body1._id, obj1['a']._id)
     self.assertEqual(root1._id, obj1['b']['c']._id)
 
+  def testOverrideArrayPrototypeIncludes(self):
+    """
+    Tests that executing script with overridden Array.prototype.includes
+    still works.
+    """
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    self._driver.ExecuteScript('Array.prototype.includes = () => true;')
+    self.assertEqual(self._driver.ExecuteScript('return {a: {b: {c: {d: 4}}}}'),
+                     {'a': {'b': {'c': {'d': 4}}}})
 
   def testEvaluateScriptWithArgs(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))

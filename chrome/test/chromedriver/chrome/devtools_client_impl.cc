@@ -582,6 +582,7 @@ Status DevToolsClientImpl::SetUpDevTools() {
         "window.cdc_adoQpoasnfa76pfcZLmcfl_Proxy = window.Proxy;"
         "window.cdc_adoQpoasnfa76pfcZLmcfl_Symbol = window.Symbol;"
         "window.cdc_adoQpoasnfa76pfcZLmcfl_JSON = window.JSON;"
+        "window.cdc_adoQpoasnfa76pfcZLmcfl_Set = window.Set;"
         "}) ();";
     params.Set("source", script);
     Status status = SendCommandAndIgnoreResponse(
