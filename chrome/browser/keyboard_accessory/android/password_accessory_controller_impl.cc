@@ -30,7 +30,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
@@ -783,7 +783,7 @@ bool PasswordAccessoryControllerImpl::IsSecureSite() const {
     return security_level_for_testing_ == security_state::SECURE;
   }
 
-  SecurityStateTabHelper::CreateForWebContents(&GetWebContents());
+  ChromeSecurityStateTabHelper::CreateForWebContents(&GetWebContents());
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(&GetWebContents());
 

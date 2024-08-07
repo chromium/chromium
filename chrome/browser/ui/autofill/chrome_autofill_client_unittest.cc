@@ -18,7 +18,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -164,7 +164,7 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
         std::move(autofill_field_promo_controller_manual_fallback));
 
 #if !BUILDFLAG(IS_ANDROID)
-    SecurityStateTabHelper::CreateForWebContents(web_contents());
+    ChromeSecurityStateTabHelper::CreateForWebContents(web_contents());
 
     auto save_card_bubble_controller =
         std::make_unique<MockSaveCardBubbleController>(web_contents());

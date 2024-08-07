@@ -861,6 +861,7 @@ source_set("extensions") {
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/saved_tab_groups:model",
     "//components/security_interstitials/content:security_interstitial_page",
+    "//components/security_state/content",
     "//components/site_engagement/core/mojom:mojo_bindings",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common:common",

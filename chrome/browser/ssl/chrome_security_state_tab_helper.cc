@@ -1,8 +1,7 @@
-// Copyright 2015 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 
 #include <string>
 
@@ -62,25 +61,30 @@
 
 using password_manager::metrics_util::PasswordType;
 using safe_browsing::SafeBrowsingUIManager;
+using UsesEmbedderInformation = SecurityStateTabHelper::UsesEmbedderInformation;
 
-SecurityStateTabHelper::SecurityStateTabHelper(
-    content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<SecurityStateTabHelper>(*web_contents) {}
-
-SecurityStateTabHelper::~SecurityStateTabHelper() {}
-
-security_state::SecurityLevel SecurityStateTabHelper::GetSecurityLevel() {
-  if (get_security_level_callback_for_tests_) {
-    std::move(get_security_level_callback_for_tests_).Run();
+void ChromeSecurityStateTabHelper::CreateForWebContents(
+    content::WebContents* contents) {
+  DCHECK(contents);
+  SecurityStateTabHelper* helper = FromWebContents(contents);
+  if (!helper) {
+    helper = new ChromeSecurityStateTabHelper(contents);
+    contents->SetUserData(UserDataKey(), base::WrapUnique(helper));
   }
-  return security_state::GetSecurityLevel(*GetVisibleSecurityState(),
-                                          UsedPolicyInstalledCertificate());
+  CHECK(helper->uses_embedder_information())
+      << "Do not create a SecurityStateTabHelper in chrome/!";
 }
 
+ChromeSecurityStateTabHelper::ChromeSecurityStateTabHelper(
+    content::WebContents* web_contents)
+    : SecurityStateTabHelper(web_contents, UsesEmbedderInformation(true)),
+      content::WebContentsObserver(web_contents) {}
+
+ChromeSecurityStateTabHelper::~ChromeSecurityStateTabHelper() = default;
+
 std::unique_ptr<security_state::VisibleSecurityState>
-SecurityStateTabHelper::GetVisibleSecurityState() {
-  auto state = security_state::GetVisibleSecurityState(web_contents());
+ChromeSecurityStateTabHelper::GetVisibleSecurityState() {
+  auto state = SecurityStateTabHelper::GetVisibleSecurityState();
 
   // Malware status might already be known even if connection security
   // information is still being initialized, thus no need to check for that.
@@ -120,7 +124,7 @@ SecurityStateTabHelper::GetVisibleSecurityState() {
   return state;
 }
 
-void SecurityStateTabHelper::DidStartNavigation(
+void ChromeSecurityStateTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsFormSubmission()) {
     return;
@@ -146,7 +150,7 @@ void SecurityStateTabHelper::DidStartNavigation(
   }
 }
 
-void SecurityStateTabHelper::PrimaryPageChanged(content::Page& page) {
+void ChromeSecurityStateTabHelper::PrimaryPageChanged(content::Page& page) {
   net::CertStatus cert_status = GetVisibleSecurityState()->cert_status;
   if (net::IsCertStatusError(cert_status) &&
       !page.GetMainDocument().IsErrorDocument()) {
@@ -161,29 +165,32 @@ void SecurityStateTabHelper::PrimaryPageChanged(content::Page& page) {
   MaybeShowKnownInterceptionDisclosureDialog(web_contents(), cert_status);
 }
 
-bool SecurityStateTabHelper::UsedPolicyInstalledCertificate() const {
+bool ChromeSecurityStateTabHelper::UsedPolicyInstalledCertificate() const {
 #if BUILDFLAG(IS_CHROMEOS)
   policy::PolicyCertService* service =
       policy::PolicyCertServiceFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-  if (service && service->UsedPolicyCertificates())
+  if (service && service->UsedPolicyCertificates()) {
     return true;
+  }
 #endif
   return false;
 }
 
 security_state::MaliciousContentStatus
-SecurityStateTabHelper::GetMaliciousContentStatus() const {
+ChromeSecurityStateTabHelper::GetMaliciousContentStatus() const {
   using enum safe_browsing::SBThreatType;
 
   content::NavigationEntry* entry =
       web_contents()->GetController().GetVisibleEntry();
-  if (!entry)
+  if (!entry) {
     return security_state::MALICIOUS_CONTENT_STATUS_NONE;
+  }
   safe_browsing::SafeBrowsingService* sb_service =
       g_browser_process->safe_browsing_service();
-  if (!sb_service)
+  if (!sb_service) {
     return security_state::MALICIOUS_CONTENT_STATUS_NONE;
+  }
   scoped_refptr<SafeBrowsingUIManager> sb_ui_manager = sb_service->ui_manager();
   safe_browsing::SBThreatType threat_type;
   if (sb_ui_manager->IsUrlAllowlistedOrPendingForWebContents(
@@ -262,5 +269,3 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
   }
   return security_state::MALICIOUS_CONTENT_STATUS_NONE;
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SecurityStateTabHelper);

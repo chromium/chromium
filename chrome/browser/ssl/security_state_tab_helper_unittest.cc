@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ssl/security_state_tab_helper.h"
-
 #include <string>
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -22,23 +21,57 @@ const char kFormSubmissionSecurityLevelHistogram[] =
 const char kInsecureMainFrameFormSubmissionSecurityLevelHistogram[] =
     "Security.SecurityLevel.InsecureMainFrameFormSubmission";
 
-class SecurityStateTabHelperHistogramTest
+class SecurityStateTabHelperTest : public ChromeRenderViewHostTestHarness {
+ public:
+  SecurityStateTabHelperTest() = default;
+  SecurityStateTabHelperTest(const SecurityStateTabHelperTest&) = delete;
+  SecurityStateTabHelperTest& operator=(const SecurityStateTabHelperTest&) =
+      delete;
+  ~SecurityStateTabHelperTest() override {}
+};
+
+TEST_F(SecurityStateTabHelperTest, DoesNotRecreateHelper) {
+  ASSERT_FALSE(SecurityStateTabHelper::FromWebContents(web_contents()));
+  SecurityStateTabHelper::CreateForWebContents(web_contents());
+  SecurityStateTabHelper* helper =
+      SecurityStateTabHelper::FromWebContents(web_contents());
+  EXPECT_FALSE(helper->uses_embedder_information());
+
+  // This should be a noop.
+  SecurityStateTabHelper::CreateForWebContents(web_contents());
+  EXPECT_EQ(helper, SecurityStateTabHelper::FromWebContents(web_contents()));
+}
+
+TEST_F(SecurityStateTabHelperTest, DoesNotRecreateChromeHelper) {
+  ASSERT_FALSE(SecurityStateTabHelper::FromWebContents(web_contents()));
+  ChromeSecurityStateTabHelper::CreateForWebContents(web_contents());
+  SecurityStateTabHelper* helper =
+      SecurityStateTabHelper::FromWebContents(web_contents());
+  EXPECT_TRUE(helper->uses_embedder_information());
+
+  // This should be a noop.
+  ChromeSecurityStateTabHelper::CreateForWebContents(web_contents());
+  EXPECT_EQ(helper, SecurityStateTabHelper::FromWebContents(web_contents()));
+}
+
+class ChromeSecurityStateTabHelperHistogramTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  SecurityStateTabHelperHistogramTest() : helper_(nullptr) {}
+  ChromeSecurityStateTabHelperHistogramTest() : helper_(nullptr) {}
 
-  SecurityStateTabHelperHistogramTest(
-      const SecurityStateTabHelperHistogramTest&) = delete;
-  SecurityStateTabHelperHistogramTest& operator=(
-      const SecurityStateTabHelperHistogramTest&) = delete;
+  ChromeSecurityStateTabHelperHistogramTest(
+      const ChromeSecurityStateTabHelperHistogramTest&) = delete;
+  ChromeSecurityStateTabHelperHistogramTest& operator=(
+      const ChromeSecurityStateTabHelperHistogramTest&) = delete;
 
-  ~SecurityStateTabHelperHistogramTest() override {}
+  ~ChromeSecurityStateTabHelperHistogramTest() override {}
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    SecurityStateTabHelper::CreateForWebContents(web_contents());
-    helper_ = SecurityStateTabHelper::FromWebContents(web_contents());
+    ChromeSecurityStateTabHelper::CreateForWebContents(web_contents());
+    helper_ = static_cast<ChromeSecurityStateTabHelper*>(
+        ChromeSecurityStateTabHelper::FromWebContents(web_contents()));
     NavigateToHTTP();
   }
 
@@ -77,10 +110,10 @@ class SecurityStateTabHelperHistogramTest
   void NavigateToHTTPS() { NavigateAndCommit(GURL("https://example.test")); }
 
  private:
-  raw_ptr<SecurityStateTabHelper, DanglingUntriaged> helper_;
+  raw_ptr<ChromeSecurityStateTabHelper, DanglingUntriaged> helper_;
 };
 
-TEST_F(SecurityStateTabHelperHistogramTest, FormSubmissionHistogram) {
+TEST_F(ChromeSecurityStateTabHelperHistogramTest, FormSubmissionHistogram) {
   base::HistogramTester histograms;
   StartNavigation(/*is_form=*/true, /*is_main_frame=*/true);
   histograms.ExpectUniqueSample(kFormSubmissionSecurityLevelHistogram,
@@ -89,7 +122,7 @@ TEST_F(SecurityStateTabHelperHistogramTest, FormSubmissionHistogram) {
 
 // Tests that insecure mainframe form submission histograms are recorded
 // correctly.
-TEST_F(SecurityStateTabHelperHistogramTest,
+TEST_F(ChromeSecurityStateTabHelperHistogramTest,
        InsecureMainFrameFormSubmissionHistogram) {
   base::HistogramTester histograms;
   // Subframe submissions should not be logged.

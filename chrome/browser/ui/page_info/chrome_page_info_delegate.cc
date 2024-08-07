@@ -19,7 +19,7 @@
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/ui/url_identity.h"
@@ -378,7 +378,7 @@ security_state::SecurityLevel ChromePageInfoDelegate::GetSecurityLevel() {
 
   // This is a no-op if a SecurityStateTabHelper already exists for
   // |web_contents|.
-  SecurityStateTabHelper::CreateForWebContents(web_contents_);
+  ChromeSecurityStateTabHelper::CreateForWebContents(web_contents_);
 
   auto* helper = SecurityStateTabHelper::FromWebContents(web_contents_);
   DCHECK(helper);
@@ -393,7 +393,7 @@ ChromePageInfoDelegate::GetVisibleSecurityState() {
 
   // This is a no-op if a SecurityStateTabHelper already exists for
   // |web_contents|.
-  SecurityStateTabHelper::CreateForWebContents(web_contents_);
+  ChromeSecurityStateTabHelper::CreateForWebContents(web_contents_);
 
   auto* helper = SecurityStateTabHelper::FromWebContents(web_contents_);
   DCHECK(helper);
