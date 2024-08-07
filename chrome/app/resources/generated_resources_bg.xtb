@@ -6144,6 +6144,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5435779377906857208">Достъпът на <ph name="HOST" /> до местоположението ви да е разрешен винаги</translation>
 <translation id="5436492226391861498">Изчаква се прокси тунел...</translation>
 <translation id="5436510242972373446">Търсене с <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> прозорец вече е с широчина <ph name="WINDOW_SIZE_PERCENT" />, а <ph name="PANE_SIDE" /> панел вече е с широчина <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5440425659852470030">Затваряне на страничния панел</translation>
 <translation id="544083962418256601">Създаване на преки пътища...</translation>
 <translation id="5441133529460183413">Уеб приложение, инсталирано от браузъра Chrome</translation>
@@ -8548,6 +8549,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 сайт в групата на <ph name="FPS_OWNER" />}other{{MEMBERS} сайта в групата на <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Използване на Windows Hello при попълването на пароли</translation>
 <translation id="7225179976675429563">Липсва типът мрежа</translation>
+<translation id="7227235818314667565">Управление на споделянето</translation>
 <translation id="7227458944009118910">Приложенията по-долу също могат да обработват връзки с протокол. Другите приложения ще искат разрешение.</translation>
 <translation id="7228056665272655255">За да настрои отпечатък, детето ви трябва да докосне сензора за отпечатъци в горния десен ъгъл на клавиатурата. Данните за отпечатъка му се съхраняват надеждно и никога не напускат устройството <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Заключване на екрана и влизане в профила</translation>
@@ -8596,6 +8598,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7258192266780953209">Трансформации</translation>
 <translation id="7258225044283673131">Приложението не реагира. Изберете „Принудително затваряне“, за да го затворите.</translation>
 <translation id="7260186537988033909">Регистрирането на устройството за павилионен режим или режим за дигитални знаци и надписи завърши</translation>
+<translation id="7261217796641151584">Споделяне на групата</translation>
 <translation id="7261612856573623172">Системен глас за синтезиран говор</translation>
 <translation id="7262004276116528033">Тази услуга за вход се хоства от <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Винаги ли да се използва приложението <ph name="APP" /> за отваряне на поддържани уеб връзки?</translation>
@@ -10533,6 +10536,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8656888282555543604">Активиране на записването в регистрационен файл за брайловото писмо</translation>
 <translation id="8657393004602556571">Искате ли да отхвърлите отзивите?</translation>
 <translation id="8657542881463614516">Навигиране между страниците с прекарване на пръст</translation>
+<translation id="865936634714975126">За да изберете типове при зареждането на страницата, добавете към URL адреса параметър на заявката. Пример: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Контакти в „<ph name="FEATURE_NAME" />“</translation>
 <translation id="8659609431223166673">Прозорецът бе преместен надолу</translation>
 <translation id="8661290697478713397">Отваряне на връзката в прозорец при използване на функ&amp;цията „инкогнито“</translation>

@@ -220,6 +220,7 @@
 <translation id="2080769225927880590">Zaloguj się na prawidłowe konto</translation>
 <translation id="2103075008456228677">Otwórz history.google.com</translation>
 <translation id="21133533946938348">Przypnij kartę</translation>
+<translation id="2120859803436824248">Wyłącz powiadomienia o kontroli zabezpieczeń…</translation>
 <translation id="2122754583996902531">Twoja przeglądarka jest zarządzana. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Włączyć powiadomienia o cenie?</translation>
 <translation id="2139867232736819575">Wyszukaj skopiowany tekst</translation>
@@ -320,6 +321,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="261305050785128654">Informuj witryny o językach, którymi się posługujesz. Witryny w miarę możliwości będą wyświetlać treści w tych językach.</translation>
 <translation id="2617210333344098964">Przenieś adres na konto</translation>
 <translation id="261739049332372104">Aby otrzymywać powiadomienia o treściach, które są dla Ciebie ważne, włącz powiadomienia w ustawieniach iOS.</translation>
+<translation id="2623536180761008356">Ukryj „kontrolę zabezpieczeń”</translation>
 <translation id="2625189173221582860">Hasło zostało skopiowane</translation>
 <translation id="2626236249646841566">Sprawdź połączenie i zaloguj się ponownie.</translation>
 <translation id="2635918910848538771">Automatycznie uzupełnij kod CVC</translation>
@@ -613,6 +615,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4049507953662678203">Upewnij się, że masz połączenie z siecią, i spróbuj ponownie.</translation>
 <translation id="4054572406751135230">Śledź na bieżąco wiadomości, sport i inne treści.</translation>
 <translation id="4068959193278821990">Włącz silniejszą ochronę…</translation>
+<translation id="407435320163086788">Włącz powiadomienia o kontroli zabezpieczeń…</translation>
 <translation id="4088879333319441249">Rozgrupować karty?</translation>
 <translation id="4092655288299341041">Pokaż pomoc</translation>
 <translation id="4094361089640885693">Łatwo śledź ceny i otrzymuj statystyki dotyczące cen.</translation>
@@ -640,6 +643,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="421070604241073551">Gdy ta opcja jest włączona, dane są zapisywane na Twoim koncie Google. Gdy jest wyłączona, dane są zapisywane tylko na tym urządzeniu.</translation>
 <translation id="4216918546378735658">Anuluj</translation>
 <translation id="422474357428465195">Występuje kilka problemów z hasłami, a to może narazić Cię na niebezpieczeństwo.</translation>
+<translation id="4231395118547300571">Powiadomienia o kontroli zabezpieczeń są włączone</translation>
 <translation id="4232900911558558076">Poznaj nowe menu</translation>
 <translation id="4233831822770018312">Edytuj uprawnienia</translation>
 <translation id="4236584471598725073">Monitoruję cenę</translation>
@@ -683,6 +687,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4402672425188312225">{COUNT,plural, =1{1 karta}few{# karty}many{# kart}other{# karty}}</translation>
 <translation id="4405320213589929829">Używaj adresów na stronach internetowych, aby uzyskiwać informacje lokalne i wskazówki dojazdu.</translation>
 <translation id="4420409367264901497">Edytuj zakładkę</translation>
+<translation id="4424654658080265901">Włącz powiadomienia dotyczące kontroli zabezpieczeń</translation>
 <translation id="4431224949908513835">Wybierz formę płatności, której dane chcesz podać.</translation>
 <translation id="4442550905108052454">Otwórz <ph name="BEGIN_BOLD" />Ustawienia<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Dodaj język</translation>
@@ -811,6 +816,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5016420433031926653">Wysyłaj na adres <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Przypomnij później</translation>
 <translation id="5024511550058813796">Będziesz mieć dostęp do swojej historii na wszystkich zsynchronizowanych urządzeniach, aby możliwe było kontynuowanie przerwanych działań</translation>
+<translation id="5032181563676357724">Powiadomienia o kontroli zabezpieczeń zostały wyłączone</translation>
 <translation id="5037676449506322593">Wybierz wszystko</translation>
 <translation id="5038113048373546701">Otrzymuj powiadomienia o wiadomościach, wydarzeniach sportowych i inne na podstawie swoich zainteresowań</translation>
 <translation id="5039804452771397117">Zezwalaj</translation>
@@ -951,6 +957,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5702108177581350218">Gdy udostępnisz swoją nazwę użytkownika i hasło, członek grupy rodzinnej będzie mógł wstawić te dane za pomocą Menedżera haseł Google.</translation>
 <translation id="5704908597376970822">Nie można się zalogować.</translation>
 <translation id="5706552126692816153">Aktywność 1 dzień temu</translation>
+<translation id="5709005673595820640">{count,plural, =1{Masz {count} hasło, które zostało użyte ponownie, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}few{Masz {count} hasła, które zostały użyte ponownie, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}many{Masz {count} haseł, które zostały użyte ponownie, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}other{Masz {count} hasła, które zostały użyte ponownie, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}}</translation>
 <translation id="5718049162805123412">Należy je teraz zmienić</translation>
 <translation id="5724941645893276623">Aby przeglądać strony internetowe prywatnie, dodaj nową kartę</translation>
 <translation id="5728072125198221967">Połączone usługi Google</translation>
@@ -966,6 +973,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5765456154762864099">Menu → Ustawienia → Domyślna przeglądarka</translation>
 <translation id="5777888488419460501">Zapisz na koncie</translation>
 <translation id="5778292857689789362">Grupa kart, <ph name="GROUP_TITLE" />, liczba kart: <ph name="TABS_NUMBER" />.</translation>
+<translation id="5779117921996157216">{count,plural, =1{Masz {count} hasło, które zostało przejęte, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}few{Masz {count} hasła, które zostały przejęte, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}many{Masz {count} haseł, które zostały przejęte, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}other{Masz {count} hasła, które zostały przejęte, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}}</translation>
 <translation id="5782227691023083829">Trwa tłumaczenie...</translation>
 <translation id="5791632441210678828">Przycisk sortowania obserwowanych kanałów.</translation>
 <translation id="5793373065989412701">Sprawdzam członków Twojej grupy rodzinnej…</translation>
@@ -1132,6 +1140,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="6494931198667773526">Zakończenie</translation>
 <translation id="6500795388871406244">Użyj proponowanego hasła:</translation>
 <translation id="650279896687777322">Więcej informacji…</translation>
+<translation id="6503763061813913607">Powiadomienia o kontroli zabezpieczeń</translation>
 <translation id="6505334220040167806">Zwiń grupę kart.</translation>
 <translation id="6507973708545996744">Zaloguj się, aby pobrać listę Do przeczytania na wszystkich urządzeniach.</translation>
 <translation id="6510072653668207258">Przypomnij później</translation>
@@ -1353,7 +1362,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7600965453749440009">Nigdy nie tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="7603308509262646847">Automatycznie uzupełnij dane posiadacza karty (<ph name="NAME" />)</translation>
 <translation id="7603852183842204213">Zablokowano pop-upy (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Grupy kart</translation>
+<translation id="760667371114328991">Wyłącz powiadomienia dotyczące kontroli zabezpieczeń</translation>
 <translation id="7607521702806708809">Usuń hasło</translation>
 <translation id="7609559547731036746">Zakładki</translation>
 <translation id="7638584964844754484">Nieprawidłowe hasło wielowyrazowe</translation>
@@ -1673,6 +1682,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9079935439869366234">Oznacz wszystkie jako nieprzeczytane</translation>
 <translation id="9081058212938299310">Zaktualizować hasło dla <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Aby synchronizować i personalizować wszystkie swoje urządzenia, włącz synchronizację.</translation>
+<translation id="9084367296493549256">{count,plural, =1{Masz {count} słabe hasło, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}few{Masz {count} słabe hasła, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}many{Masz {count} słabych haseł, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}other{Masz {count} słabego hasła, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}}</translation>
 <translation id="9087339162317338348">Używaj protokołu HTTPS, kiedy to możliwe, i wyświetlaj ostrzeżenia przed wczytaniem stron, które go nie obsługują.</translation>
 <translation id="9093271241977565440">U góry ekranu kliknij ikonę wyszukiwania</translation>
 <translation id="9094033019050270033">Aktualizuj hasło</translation>

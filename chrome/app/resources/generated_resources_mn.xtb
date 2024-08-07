@@ -6142,6 +6142,7 @@
 <translation id="5435779377906857208">Байршилд тань хандахыг <ph name="HOST" />-д үргэлж зөвшөөрөх</translation>
 <translation id="5436492226391861498">Прокси туннелыг хүлээж байна...</translation>
 <translation id="5436510242972373446">Хайлт <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> цонх одоо <ph name="WINDOW_SIZE_PERCENT" />ийн өргөнтэй болсон бөгөөд <ph name="PANE_SIDE" /> хэсэг одоо <ph name="PANE_SIZE_PERCENT" />-ийн өргөнтэй болсон.</translation>
 <translation id="5440425659852470030">Хажуугийн самбарыг хаах</translation>
 <translation id="544083962418256601">Богино холболтууд үүсгэх...</translation>
 <translation id="5441133529460183413">Chrome хөтчөөс суулгасан веб апп</translation>
@@ -8544,6 +8545,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 сайт <ph name="FPS_OWNER" />-н бүлэгт байна}other{{MEMBERS} сайт <ph name="FPS_OWNER" />-н бүлэгт байна}}</translation>
 <translation id="7225082563376899794">Нууц үг оруулахдаа Windows Hello ашиглана уу</translation>
 <translation id="7225179976675429563">Сүлжээний төрөл алга байна</translation>
+<translation id="7227235818314667565">Хуваалцахыг удирдах</translation>
 <translation id="7227458944009118910">Доор жагсаасан аппууд мөн протоколын холбоосыг зохицуулах боломжтой. Бусад апп зөвшөөрөл хүснэ.</translation>
 <translation id="7228056665272655255">Хурууны хээ тохируулахын тулд хүүхдээрээ гарын баруун дээд буланд байх хурууны хээ мэдрэгчид хурууг нь хүргүүлнэ үү. Таны хүүхдийн хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ өгөгдөл энэ <ph name="DEVICE_TYPE" />-с гадагш хэзээ ч гарахгүй.</translation>
 <translation id="7228523857728654909">Дэлгэцийн түгжээ болон нэвтрэлт</translation>
@@ -8592,6 +8594,7 @@
 <translation id="7258192266780953209">Хувиргалт</translation>
 <translation id="7258225044283673131">Хэрэглээний программ хариу өгөхгүй байна. Аппыг хаахын тулд "Хүчээр хаах"-г сонгоно уу.</translation>
 <translation id="7260186537988033909">Киоск болон пайзны төхөөрөмжийг бүртгүүлж дууслаа</translation>
+<translation id="7261217796641151584">Бүлэг хуваалцах</translation>
 <translation id="7261612856573623172">Бичвэрийг ярианд хувиргах дуу хоолойн систем</translation>
 <translation id="7262004276116528033">Энэ нэвтрэх үйлчилгээг <ph name="SAML_DOMAIN" />-с хост хийсэн</translation>
 <translation id="7264695323040866038">Дэмжигдсэн веб холбооснуудыг нээхийн тулд <ph name="APP" />-г үргэлж ашиглах уу?</translation>
@@ -10526,6 +10529,7 @@
 <translation id="8656888282555543604">Брайл нэвтрэлтийг идэвхжүүлэх</translation>
 <translation id="8657393004602556571">Та санал хүсэлтээ болихыг хүсэж байна уу?</translation>
 <translation id="8657542881463614516">Хуудаснуудын хооронд шилжихийн тулд шудрах зангааг ашиглана уу</translation>
+<translation id="865936634714975126">Хуудасны ачаалал дээр төрөл сонгохын тулд URL-д асуулгын параметр нэмнэ үү. Жишээ нь: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" />-н харилцагчид</translation>
 <translation id="8659609431223166673">Цонхыг доош зөөсөн</translation>
 <translation id="8661290697478713397">Холбоосыг нууцлалтай цонхонд нээх</translation>

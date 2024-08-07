@@ -634,6 +634,7 @@
 <translation id="4422041425070339732">pil ned</translation>
 <translation id="4425149324548788773">Mit drev</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> er deaktiveret</translation>
+<translation id="4428840632568803690">Taler <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Din Kerberos-billet er ved at udløbe</translation>
 <translation id="4431821876790500265">Se rapport</translation>
 <translation id="4443192710976771874">rød</translation>
@@ -1290,6 +1291,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="7802764839223122985">Du mangler at angive en tast. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Nej tak</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7811024689617730980">Vælg en dag (fra 1 til 31) til automatisk nulstilling, inklusiv</translation>
 <translation id="7813073042185856802">et bjerg</translation>
 <translation id="7819857487979277519">PSK (WPA eller RSN)</translation>
 <translation id="7824219488248240180">postimpressionisme</translation>

@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">слабкий сигнал</translation>
 <translation id="1300115153046603471">Тип точки доступу: APN за умовчанням і APN <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">Дата створення</translation>
 <translation id="1308754910631152188">Оновлення (завершено на <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> хв</translation>
 <translation id="1310380015393971138">Немає доступних мереж <ph name="NETWORK_NAME" /></translation>
@@ -505,6 +506,7 @@
 <translation id="3708186454126126312">Підключені раніше</translation>
 <translation id="3715651196924935218">Закрити плаваюче вікно</translation>
 <translation id="3716250181321371108">Створити елемент керування</translation>
+<translation id="3716830479327464973">Якщо ви надасте дозвіл, Диктофон аналізуватиме ваші аудіозаписи, щоб:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (відгуків: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Не з’єднано</translation>
 <translation id="3749289110408117711">Ім’я файлу</translation>
@@ -531,6 +533,7 @@
 <translation id="3869314628814282185">тюлю</translation>
 <translation id="387301095347517405">Кількість повних циклів заряджання акумулятора</translation>
 <translation id="3877066159641251281">Слухати переклад</translation>
+<translation id="3880601782712134623">автоматично виявляти різні голоси й призначати кожному мовцю загальні мітки, як-от "Мовець 1" і "Мовець 2";</translation>
 <translation id="3885327323343477505">Змінити заставку</translation>
 <translation id="3889914174935857450">Скинути дату</translation>
 <translation id="3897092660631435901">Меню</translation>
@@ -756,6 +759,7 @@
 <translation id="5049856988445523908">SIM-карту заблоковано (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Назва групи</translation>
 <translation id="5051044138948155788">Це єдина сторінка. Ви перейдете на екран початку сканування.</translation>
+<translation id="5078711626843651677">Зразки голосу тимчасово зберігаються на пристрої, доки не завершиться позначення мовців. Цю функцію можна будь-коли вимкнути в налаштуваннях.</translation>
 <translation id="5078983345702708852">Футуристичний</translation>
 <translation id="5087864757604726239">назад</translation>
 <translation id="5088172560898466307">Ім’я хоста сервера</translation>
@@ -1106,6 +1110,7 @@
 <translation id="6905163627763043954">Спробувати</translation>
 <translation id="6905724422583748843">Повернутися на сторінку <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Кришка сканера відкрита. Закрийте її та повторіть спробу.</translation>
+<translation id="6910845598686542904">створювати моделі кожного з виявлених голосів у записі;</translation>
 <translation id="6911383237894364323">Не вдалося підключитися до медіасерверів</translation>
 <translation id="6930242544192836755">Тривалість</translation>
 <translation id="6930597342185648547">Про фон</translation>
@@ -1571,6 +1576,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Надіслати відгук</translation>
 <translation id="950520315903467048">Відсутня клавіша для такої дії: <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">порівнювати голоси протягом запису, щоб текстова версія відображала, що саме й коли сказав кожний мовець.</translation>
 <translation id="952992212772159698">Не активовано</translation>
 <translation id="95718197892796296">глини</translation>
 <translation id="960719561871045870">Код оператора</translation>

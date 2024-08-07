@@ -6135,6 +6135,7 @@
 <translation id="5435779377906857208">一律允許 <ph name="HOST" /> 存取您的位置</translation>
 <translation id="5436492226391861498">正在等待 Proxy 通道…</translation>
 <translation id="5436510242972373446">搜尋 <ph name="SITE_NAME" />：</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" />視窗宜家嘅闊度係 <ph name="WINDOW_SIZE_PERCENT" />，<ph name="PANE_SIDE" />窗格宜家嘅闊度係 <ph name="PANE_SIZE_PERCENT" />。</translation>
 <translation id="5440425659852470030">關閉側面板</translation>
 <translation id="544083962418256601">建立捷徑…</translation>
 <translation id="5441133529460183413">從 Chrome 瀏覽器安裝的網絡應用程式</translation>
@@ -8535,6 +8536,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" /> 的群組中有 1 個網站}other{<ph name="FPS_OWNER" /> 的群組中有 {MEMBERS} 個網站}}</translation>
 <translation id="7225082563376899794">在填寫密碼時使用 Windows Hello</translation>
 <translation id="7225179976675429563">找不到網絡類型</translation>
+<translation id="7227235818314667565">管理共用設定</translation>
 <translation id="7227458944009118910">以下應用程式亦可處理通訊協定連結。其他應用程式則會要求授權。</translation>
 <translation id="7228056665272655255">如要設定指紋，請讓子女輕觸鍵盤右上角的指紋感應器。子女的指紋資料會安全儲存在此 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="7228523857728654909">螢幕鎖定和登入</translation>
@@ -8583,6 +8585,7 @@
 <translation id="7258192266780953209">變形</translation>
 <translation id="7258225044283673131">應用程式沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
 <translation id="7260186537988033909">Kiosk 和標牌裝置註冊完成</translation>
+<translation id="7261217796641151584">分享群組</translation>
 <translation id="7261612856573623172">「文字轉語音」系統聲音</translation>
 <translation id="7262004276116528033">此登入服務是由 <ph name="SAML_DOMAIN" /> 代管</translation>
 <translation id="7264695323040866038">一律使用「<ph name="APP" />」開啟支援的網頁連結嗎？</translation>
@@ -10519,6 +10522,7 @@
 <translation id="8656888282555543604">啟用點字記錄</translation>
 <translation id="8657393004602556571">您要捨棄這則意見嗎？</translation>
 <translation id="8657542881463614516">使用滑動手勢瀏覽不同頁面</translation>
+<translation id="865936634714975126">在網址中新增查詢參數以選擇網頁載入類型。範例：chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">「<ph name="FEATURE_NAME" />」聯絡人</translation>
 <translation id="8659609431223166673">視窗移咗去下面</translation>
 <translation id="8661290697478713397">在無痕式視窗中開啟連結(&amp;G)</translation>

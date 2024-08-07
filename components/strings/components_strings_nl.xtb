@@ -1504,6 +1504,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Cult- en indiefilms</translation>
 <translation id="3793574014653384240">Aantallen en oorzaken van de crashes die onlangs hebben plaatsgevonden</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> voorkomt dat Chrome een beveiligde verbinding tot stand brengt</translation>
 <translation id="3799805948399000906">Lettertype aangevraagd</translation>
 <translation id="3801265110651850478">Een Do Not Track-verzoek versturen met je browseverkeer</translation>
 <translation id="380329542618494757">Naam</translation>
@@ -1935,6 +1936,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4652440160515225514">Je organisatie heeft deze site geblokkeerd omdat de site een beleid schendt.</translation>
 <translation id="4658638640878098064">Nietje linksboven</translation>
 <translation id="4661556981531699496">Huisdieren en dieren</translation>
+<translation id="4661868874067696603">Meer koopopties zoeken</translation>
 <translation id="4663373278480897665">Camera toegestaan</translation>
 <translation id="466561305373967878">Bordspellen</translation>
 <translation id="4668929960204016307">,</translation>
@@ -2423,6 +2425,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5559311991468302423">Adres verwijderen</translation>
 <translation id="5560088892362098740">Vervaldatum</translation>
 <translation id="55635442646131152">Documentoverzicht</translation>
+<translation id="5563589142503817291">Als je je locatie wilt gebruiken, geef je Chrome toegang via <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Incognitotabblad openen</translation>
 <translation id="5565735124758917034">Actief</translation>
 <translation id="5569030697349375295">Software voor boekhouding en financiën</translation>
@@ -2696,6 +2699,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6106989379647458772">De webpagina op <ph name="PAGE" /> is mogelijk tijdelijk niet beschikbaar of is permanent verplaatst naar een nieuw webadres.</translation>
 <translation id="6107012941649240045">Verleend aan</translation>
 <translation id="6107924765192360631">Begin met een paar woorden of een eerste concept om schrijfsuggesties te krijgen.</translation>
+<translation id="6108580855199168381">Certificaatgegevens</translation>
 <translation id="6108702513636120202">Je zoekmachine in Chromium</translation>
 <translation id="6108849843016142864">Reptielen en amfibieën</translation>
 <translation id="610911394827799129">Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -2903,6 +2907,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6458606150257356946">Toch plakken</translation>
 <translation id="6464094930452079790">afbeeldingen</translation>
 <translation id="6465306955648956876">Wachtwoorden beheren...</translation>
+<translation id="646789491285795429">Je volgt dit product al</translation>
 <translation id="6468485451923838994">Lettertypen</translation>
 <translation id="647261751007945333">Apparaatbeleid</translation>
 <translation id="6472874020827012601">Stof (mat)</translation>
@@ -3464,6 +3469,12 @@ Aanvullende informatie:
 <translation id="7535087603100972091">Waarde</translation>
 <translation id="753556296624075801">Mogelijk gemaakt door Google</translation>
 <translation id="7537536606612762813">Verplicht</translation>
+<translation id="7541586907443866208">Aanvallers kunnen gegevens zien en wijzigen die tussen jou en deze site worden verstuurd.
+    &lt;ul&gt;
+&lt;li&gt;Als je op dit moment een openbaar netwerk gebruikt, zoals een wifi-netwerk op een luchthaven of in een hotel, kun je het opnieuw proberen als je verbinding hebt met een vertrouwd netwerk (bijvoorbeeld thuis of op het werk).&lt;/li&gt;
+&lt;li&gt;Als je de site-eigenaar kent, kun je deze vragen dit probleem op te lossen.&lt;/li&gt;
+&lt;/ul&gt;
+<ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie over deze waarschuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">Het automatisch invullen van creditcardnummers staat uit omdat dit formulier geen beveiligde verbinding gebruikt.</translation>
 <translation id="7543525346216957623">Vraag het aan je ouder of voogd</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> starten</translation>

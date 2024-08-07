@@ -6119,6 +6119,7 @@
 <translation id="5435779377906857208"><ph name="HOST" /> による位置情報へのアクセスを常に許可する</translation>
 <translation id="5436492226391861498">プロキシ トンネルの待機中...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> を検索:</translation>
+<translation id="5438014818441491616">現在、<ph name="WINDOW_SIDE" />ウィンドウの幅は <ph name="WINDOW_SIZE_PERCENT" />、<ph name="PANE_SIDE" />ペインの幅は <ph name="PANE_SIZE_PERCENT" /> です。</translation>
 <translation id="5440425659852470030">サイドパネルを閉じる</translation>
 <translation id="544083962418256601">ショートカットを作成...</translation>
 <translation id="5441133529460183413">Chrome ブラウザからインストールしたウェブアプリ</translation>
@@ -8520,6 +8521,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" /> のグループ内の 1 件のサイト}other{<ph name="FPS_OWNER" /> のグループ内の {MEMBERS} 件のサイト}}</translation>
 <translation id="7225082563376899794">Windows Hello を使用してパスワードを入力する</translation>
 <translation id="7225179976675429563">ネットワークの種類が指定されていません</translation>
+<translation id="7227235818314667565">共有を管理</translation>
 <translation id="7227458944009118910">以下のアプリでもプロトコル リンクを処理できます。他のアプリでは許可が必要となります。</translation>
 <translation id="7228056665272655255">指紋を設定するには、キーボードの右上にある指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="7228523857728654909">画面ロックとログイン</translation>
@@ -8567,6 +8569,7 @@
 <translation id="7258192266780953209">変換</translation>
 <translation id="7258225044283673131">アプリケーションから応答がありません。終了するには [強制終了] を選択してください。</translation>
 <translation id="7260186537988033909">キオスクとサイネージ デバイスの登録が完了しました</translation>
+<translation id="7261217796641151584">グループを共有</translation>
 <translation id="7261612856573623172">システムのテキスト読み上げの音声</translation>
 <translation id="7262004276116528033">このログイン サービスは <ph name="SAML_DOMAIN" /> でホストされています</translation>
 <translation id="7264695323040866038">サポートされているウェブリンクを開く際に、常に <ph name="APP" /> アプリを使用しますか？</translation>
@@ -10503,6 +10506,7 @@
 <translation id="8656888282555543604">点字のログを有効にする</translation>
 <translation id="8657393004602556571">フィードバックを破棄してもよろしいですか？</translation>
 <translation id="8657542881463614516">スワイプ操作でページ間を移動する</translation>
+<translation id="865936634714975126">ページ読み込み時にタイプを選択するには、URL にクエリ パラメータを追加します。例: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> の連絡先</translation>
 <translation id="8659609431223166673">ウィンドウを下に移動しました</translation>
 <translation id="8661290697478713397">シークレット ウインドウでリンクを開く(&amp;G)</translation>

@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">Муу дохио</translation>
 <translation id="1300115153046603471">APN нь өгөгдмөл бөгөөд <ph name="ATTACH" /> төрөл юм.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">Үүсгэсэн огноо</translation>
 <translation id="1308754910631152188">Шинэчилж байна (<ph name="PERCENTAGE_VALUE" />% дууссан)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> минут</translation>
 <translation id="1310380015393971138">Боломжтой <ph name="NETWORK_NAME" /> сүлжээ байхгүй байна</translation>
@@ -505,6 +506,7 @@
 <translation id="3708186454126126312">Өмнө нь холбогдсон</translation>
 <translation id="3715651196924935218">Хөвөгч төлөвөөс гарах</translation>
 <translation id="3716250181321371108">Удирдлага үүсгэх</translation>
+<translation id="3716830479327464973">Таныг үүнийг зөвшөөрөх үед Дуу хураагуур дараахыг хийхийн тулд таны аудио бичлэгийг задлан шинжилнэ:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> шүүмж)</translation>
 <translation id="3748026146096797577">Холбогдоогүй</translation>
 <translation id="3749289110408117711">Файлын нэр</translation>
@@ -531,6 +533,7 @@
 <translation id="3869314628814282185">торон</translation>
 <translation id="387301095347517405">Таны батарейн бүтэн цэнэглэлийн мөчлөгт орсон тоо</translation>
 <translation id="3877066159641251281">Орчуулгыг сонсох</translation>
+<translation id="3880601782712134623">Ялгаатай дуу хоолойг автоматаар илрүүлж, яригч тус бүрд 1-р яригч болон 2-р яригч зэрэг ерөнхий шошго өгөх</translation>
 <translation id="3885327323343477505">Дэлгэц амраагчийг өөрчлөх</translation>
 <translation id="3889914174935857450">Огноог шинэчлэх</translation>
 <translation id="3897092660631435901">Цэс</translation>
@@ -756,6 +759,7 @@
 <translation id="5049856988445523908">SIM-г түгжсэн (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Бүлгийн нэр</translation>
 <translation id="5051044138948155788">Энэ нь цорын ганц хуудас байна. Энэ нь таныг скан хийхийг эхлүүлэх дэлгэц рүү аваачна.</translation>
+<translation id="5078711626843651677">Дуу хоолойн загваруудыг яригчийг шошголж дуусах хүртэл төхөөрөмж дээр түр зуур хадгалдаг. Та үүнийг Тохиргоонд хүссэн үедээ унтраах боломжтой.</translation>
 <translation id="5078983345702708852">ирээдүйн</translation>
 <translation id="5087864757604726239">буцах</translation>
 <translation id="5088172560898466307">Серверийн хостын нэр</translation>
@@ -1106,6 +1110,7 @@
 <translation id="6905163627763043954">Үүнийг оролдож үзэх</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> руу буцах</translation>
 <translation id="6910312834584889076">Сканнерын таг нээлттэй байна. Тагийг хаагаад, дахин оролдоно уу.</translation>
+<translation id="6910845598686542904">Бичлэгээс илэрсэн дуу хоолойн загварыг тооцоолох</translation>
 <translation id="6911383237894364323">Медиа серверт холбогдох боломжгүй</translation>
 <translation id="6930242544192836755">Үргэлжлэх хугацаа</translation>
 <translation id="6930597342185648547">Арын дэвсгэрийн тухай</translation>
@@ -1571,6 +1576,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" />-н товч дутуу байна. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">Бичлэгийн туршид дуу хоолойг харьцуулснаар яригч бүр хэзээ, юу гэж хэлснийг сийрүүлэгт тусгана</translation>
 <translation id="952992212772159698">Идэвхжээгүй байна</translation>
 <translation id="95718197892796296">шавар</translation>
 <translation id="960719561871045870">Операторын код</translation>

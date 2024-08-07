@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">දුර්වල සංඥාව</translation>
 <translation id="1300115153046603471">APN වර්ගය පෙරනිමි සහ <ph name="ATTACH" /> වේ.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">තැනූ දිනය</translation>
 <translation id="1308754910631152188">යාවත්කාලීන කරමින් (<ph name="PERCENTAGE_VALUE" />% සම්පූර්ණයි)</translation>
 <translation id="1309341072016605398">විනාඩි <ph name="MINUTES" />ක්</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> ජාලය ලබා ගත නොහැකිය</translation>
@@ -505,6 +506,7 @@
 <translation id="3708186454126126312">පෙර සම්බන්ධිත</translation>
 <translation id="3715651196924935218">පාවීමෙන් පිටවීම</translation>
 <translation id="3716250181321371108">පාලනය තනන්න</translation>
+<translation id="3716830479327464973">ඔබ මෙයට ඉඩ දුන් විට, රෙකෝඩරය ඔබේ ශ්‍රව්‍ය පටිගත කිරීම් විශ්ලේෂණය කරනු ඇත:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (සමාලෝචන <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">සබැඳී නැත</translation>
 <translation id="3749289110408117711">ගොනුවේ නම</translation>
@@ -531,6 +533,7 @@
 <translation id="3869314628814282185">සිනිඳු සේද</translation>
 <translation id="387301095347517405">ඔබගේ බැටරිය පූර්ණ ආරෝපණ චක්‍රයක් හරහා ගිය වාර ගණන</translation>
 <translation id="3877066159641251281">පරිවර්තනයට සවන් දෙන්න</translation>
+<translation id="3880601782712134623">වෙනස් හඬවල් ස්වයංක්‍රීයව හඳුනාගෙන එක් එක් කථිකයාට කථිකයා 1 සහ කථිකයා 2 වැනි සාමාන්‍ය ලේබලයක් ලබා දෙන්න</translation>
 <translation id="3885327323343477505">තිර සුරැකුම වෙනස් කරන්න</translation>
 <translation id="3889914174935857450">දිනය යළි සකසන්න</translation>
 <translation id="3897092660631435901">මෙනුව</translation>
@@ -756,6 +759,7 @@
 <translation id="5049856988445523908">SIM අගුලු දමන ලදි (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">සමූහ නම</translation>
 <translation id="5051044138948155788">මෙය එකම පිටුව වේ. මෙය ඔබව ස්කෑන් කිරීමේ ආරම්භක තිරය වෙත ගෙන යනු ඇත.</translation>
+<translation id="5078711626843651677">කථිකයා ලේබල් කිරීම සම්පූර්ණ වන තෙක් හඬ ආකෘති උපාංගයේ තාවකාලිකව ගබඩා කරනු ලැබේ. ඔබට සැකසීම් තුළ ඕනෑම වේලාවක මෙය ක්‍රියා විරහිත කළ හැක.</translation>
 <translation id="5078983345702708852">අනාගතවාදී</translation>
 <translation id="5087864757604726239">ආපසු</translation>
 <translation id="5088172560898466307">සේවාදායක ධාරක නම</translation>
@@ -1106,6 +1110,7 @@
 <translation id="6905163627763043954">එය උත්සාහ කරන්න</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> වෙත ආපසු</translation>
 <translation id="6910312834584889076">ස්කෑනරයේ ආවරණය විවෘතයි. කවරය වසා නැවත උත්සාහ කරන්න.</translation>
+<translation id="6910845598686542904">පටිගත කිරීමේ දී අනාවරණය කරගත් කටහඬවල ආකෘති ගණනය කරන්න</translation>
 <translation id="6911383237894364323">මාධ්‍ය සේවාදායක වෙත සබැඳීමට නොහැකිය</translation>
 <translation id="6930242544192836755">කාලසීමාව</translation>
 <translation id="6930597342185648547">පසුබිම ගැන</translation>
@@ -1571,6 +1576,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">අදහස් හා යෝජනා යවන්න</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> සඳහා යතුර මඟ හැරී ඇත. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">එක් එක් කථිකයා පැවසූ දේ සහ කවදා ද යන්න පිටපත පිළිබිඹු කරන පරිදි පටිගත කිරීම පුරාම හඬ සසඳන්න</translation>
 <translation id="952992212772159698">සක්‍රීය කර නොමැත</translation>
 <translation id="95718197892796296">මැටි</translation>
 <translation id="960719561871045870">වාහක කේතය</translation>

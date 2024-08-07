@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">Sinyal lemah</translation>
 <translation id="1300115153046603471">APN adalah jenis default dan <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">Tanggal dibuat</translation>
 <translation id="1308754910631152188">Mengupdate (<ph name="PERCENTAGE_VALUE" />% selesai)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> menit</translation>
 <translation id="1310380015393971138">Jaringan <ph name="NETWORK_NAME" /> tidak tersedia</translation>
@@ -505,6 +506,7 @@
 <translation id="3708186454126126312">Terhubung sebelumnya</translation>
 <translation id="3715651196924935218">Keluar dari status mengambang</translation>
 <translation id="3716250181321371108">Buat kontrol</translation>
+<translation id="3716830479327464973">Jika Anda mengizinkannya, Perekam Suara akan menganalisis rekaman audio Anda untuk:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
 <translation id="3748026146096797577">Tidak Terhubung</translation>
 <translation id="3749289110408117711">Nama file</translation>
@@ -531,6 +533,7 @@
 <translation id="3869314628814282185">tule</translation>
 <translation id="387301095347517405">Frekuensi baterai melalui siklus pengisian daya penuh</translation>
 <translation id="3877066159641251281">Dengarkan terjemahan</translation>
+<translation id="3880601782712134623">Otomatis mendeteksi suara yang berbeda dan memberikan label umum pada masing-masing pembicara seperti Pembicara 1 dan Pembicara 2</translation>
 <translation id="3885327323343477505">Ubah screensaver</translation>
 <translation id="3889914174935857450">Reset tanggal</translation>
 <translation id="3897092660631435901">Menu</translation>
@@ -756,6 +759,7 @@
 <translation id="5049856988445523908">SIM Dikunci (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nama grup</translation>
 <translation id="5051044138948155788">Ini adalah satu-satunya halaman. Anda akan diarahkan ke layar awal pemindaian.</translation>
+<translation id="5078711626843651677">Model suara disimpan sementara di perangkat hingga pelabelan pembicara selesai. Anda dapat menonaktifkannya kapan saja di Setelan.</translation>
 <translation id="5078983345702708852">futuristik</translation>
 <translation id="5087864757604726239">kembali</translation>
 <translation id="5088172560898466307">Hostname server</translation>
@@ -1106,6 +1110,7 @@
 <translation id="6905163627763043954">Cobalah</translation>
 <translation id="6905724422583748843">Kembali ke <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Penutup pemindai terbuka. Tutup penutup dan coba lagi.</translation>
+<translation id="6910845598686542904">Menentukan model suara yang terdeteksi dalam rekaman</translation>
 <translation id="6911383237894364323">Tidak dapat terhubung ke server media</translation>
 <translation id="6930242544192836755">Durasi</translation>
 <translation id="6930597342185648547">Tentang latar belakang</translation>
@@ -1571,6 +1576,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Kirim masukan</translation>
 <translation id="950520315903467048">Tombol untuk <ph name="DIRECTION" /> tidak ada. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">Membandingkan suara di sepanjang rekaman sehingga transkrip dapat menunjukkan ucapan setiap pembicara beserta waktunya</translation>
 <translation id="952992212772159698">Tidak diaktifkan</translation>
 <translation id="95718197892796296">tanah liat</translation>
 <translation id="960719561871045870">Kode operator</translation>

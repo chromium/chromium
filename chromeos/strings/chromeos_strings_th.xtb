@@ -818,6 +818,7 @@
 <translation id="5332948983412042822">เลือกรหัสผ่านใหม่เลย</translation>
 <translation id="5333530671332546086">สถานะพอร์ทัลที่ไม่รู้จัก</translation>
 <translation id="5335373365677455232">ชมพู</translation>
+<translation id="5344619683981067131">แทนที่ข้อความที่เลือกด้วยข้อความแนะนำ</translation>
 <translation id="5346687412805619883">เครือข่ายภายใน</translation>
 <translation id="5358174242040570474">เกิดข้อผิดพลาด ลองเลือกวอลเปเปอร์อีกครั้งหรือเปิดแอปใหม่</translation>
 <translation id="5372659122375744710">เครือข่าย WiFi ไม่ปลอดภัย</translation>
@@ -869,6 +870,7 @@
 <translation id="5662240986744577912">เปิด/ปิดหน้าจอความเป็นส่วนตัว</translation>
 <translation id="5669267381087807207">กำลังเปิดใช้</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">อธิบายวอลเปเปอร์ที่คุณต้องการสร้าง</translation>
 <translation id="5680504961595602662"><ph name="SURREAL_LANDSCAPE" /> ที่มี <ph name="SURREAL_SUBJECT" /> เหนือจริง</translation>
 <translation id="5685478548317291523">เชอร์รี่</translation>
 <translation id="5691511426247308406">ครอบครัว</translation>
@@ -1102,6 +1104,7 @@
 <translation id="680983167891198932">คีย์</translation>
 <translation id="6816797338148849397">มีข้อมูลที่เกี่ยวข้องกับสิ่งที่คุณเลือก ใช้แป้นลูกศรขึ้นเพื่อดูข้อมูลนั้น</translation>
 <translation id="6853312040151791195">อัตราการคายประจุ</translation>
+<translation id="6862416241246624313">ส่งความคิดเห็นแล้ว</translation>
 <translation id="6866732840889595464">เดซี่</translation>
 <translation id="6871256179359663621">ม่วงอ่อน</translation>
 <translation id="6889786074662672253">ขณะรีสตาร์ท โปรดอย่าถอดปลั๊กอุปกรณ์ภายนอกเครื่องนี้หรือปิดคอมพิวเตอร์ คุณย่อหน้าต่างนี้ให้เล็กสุดได้ การดำเนินการอาจใช้เวลาสักครู่และอุปกรณ์ภายนอกอาจใช้ไม่ได้ในช่วงเวลานี้</translation>
@@ -1584,7 +1587,7 @@
 <translation id="966787709310836684">เมนู</translation>
 <translation id="979450713603643090">ชมพูอ่อน</translation>
 <translation id="982713511914535780">ทดสอบการคายประจุของแบตเตอรี่</translation>
-<translation id="98515147261107953">แนวนอน</translation>
+<translation id="98515147261107953">ภาพทิวทัศน์</translation>
 <translation id="987264212798334818">ทั่วไป</translation>
 <translation id="995062385528875723">ใช้ตัวอักษรเน้นเสียง อักขระที่ไม่ใช่ภาษาละติน หรือสัญลักษณ์ไม่ได้</translation>
 </translationbundle>

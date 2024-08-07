@@ -6132,6 +6132,7 @@
 <translation id="5435779377906857208">Заўсёды даваць сайту <ph name="HOST" /> доступ да даных пра ваша месцазнаходжанне</translation>
 <translation id="5436492226391861498">Чакаецца проксі-тунэль...</translation>
 <translation id="5436510242972373446">Пошук на сайце <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> акно зараз мае шырыню <ph name="WINDOW_SIZE_PERCENT" />, <ph name="PANE_SIDE" /> панэль зараз мае шырыню <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5440425659852470030">Закрыць бакавую панэль</translation>
 <translation id="544083962418256601">Стварыць ярлыкі...</translation>
 <translation id="5441133529460183413">Вэб-праграма ўсталявана з браўзера Chrome</translation>
@@ -8540,6 +8541,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 сайт належыць да групы сайтаў у дамене <ph name="FPS_OWNER" />}one{{MEMBERS} сайт належыць да групы сайтаў у дамене <ph name="FPS_OWNER" />}few{{MEMBERS} сайты належаць да групы сайтаў у дамене <ph name="FPS_OWNER" />}many{{MEMBERS} сайтаў належаць да групы сайтаў у дамене <ph name="FPS_OWNER" />}other{{MEMBERS} сайта належаць да групы сайтаў у дамене <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Выкарыстоўваць пры запаўненні пароляў Windows Hello</translation>
 <translation id="7225179976675429563">Адсутнічае тып сеткі</translation>
+<translation id="7227235818314667565">Кіраваць абагульваннем</translation>
 <translation id="7227458944009118910">Пералічаныя ніжэй праграмы таксама могуць апрацоўваць спасылкі пратаколаў. Іншыя праграмы будуць запытваць дазвол.</translation>
 <translation id="7228056665272655255">Каб наладзіць выкарыстанне адбітка пальца, папрасіце дзіця дакрануцца да сканера адбіткаў пальцаў у правым верхнім вугле клавіятуры. Даныя адбіткаў пальцаў дзіцяці надзейна захоўваюцца на прыладзе <ph name="DEVICE_TYPE" /> і нікуды не перадаюцца.</translation>
 <translation id="7228523857728654909">Блакіроўка экрана і ўваход</translation>
@@ -8588,6 +8590,7 @@
 <translation id="7258192266780953209">Пераўтварэнні</translation>
 <translation id="7258225044283673131">Праграма не адказвае. Каб закрыць яе, націсніце "Прымусова закрыць".</translation>
 <translation id="7260186537988033909">Рэгістрацыя прылады для работы ў рэжыме кіёска і лічбавай знешняй рэкламы завершана</translation>
+<translation id="7261217796641151584">Абагуліць групу</translation>
 <translation id="7261612856573623172">Стандартны голас для сінтэзу маўлення</translation>
 <translation id="7262004276116528033">Гэты сэрвіс уваходу размешчаны на дамене <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Заўсёды выкарыстоўваць праграму "<ph name="APP" />" для адкрыцця вэб-спасылак, якія падтрымліваюцца?</translation>
@@ -10524,6 +10527,7 @@
 <translation id="8656888282555543604">Уключыць уваход праз сістэму Брайля</translation>
 <translation id="8657393004602556571">Скасаваць адпраўку водгуку?</translation>
 <translation id="8657542881463614516">Выкарыстоўвайце жэст прагортвання для пераходу паміж старонкамі</translation>
+<translation id="865936634714975126">Дадайце параметр запыту ў URL-адрас для выбару тыпаў пры загрузцы старонкі Прыклад: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" />: кантакты</translation>
 <translation id="8659609431223166673">Акно перамешчана ўніз</translation>
 <translation id="8661290697478713397">Адкрыць спасылку ў акне інко&amp;гніта</translation>

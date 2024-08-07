@@ -1437,7 +1437,7 @@
 <translation id="3665100783276035932">대부분의 사이트가 예상대로 작동합니다.</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />자세히 알아보기<ph name="LINK_END1" /></translation>
 <translation id="3670229581627177274">블루투스 켜기</translation>
-<translation id="3671117652518853176">사용 중지된 경우 보안 목적으로 확인을 요청하는 메시지가 표시될 수 있습니다.</translation>
+<translation id="3671117652518853176">사용 중지된 경우 보안 목적으로 확인을 요청하는 메시지가 때때로 표시될 수 있습니다.</translation>
 <translation id="3671540257457995106">크기 조절을 허용하시겠습니까?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> 오류: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3674751419374947706">네트워크 장비</translation>
@@ -1940,6 +1940,7 @@
 <translation id="4652440160515225514">정책을 위반하여 조직에서 차단한 사이트입니다.</translation>
 <translation id="4658638640878098064">왼쪽 상단 스테이플</translation>
 <translation id="4661556981531699496">반려동물 및 동물</translation>
+<translation id="4661868874067696603">더 많은 구매 옵션 검색</translation>
 <translation id="4663373278480897665">카메라 허용됨</translation>
 <translation id="466561305373967878">보드게임</translation>
 <translation id="4668929960204016307">,</translation>
@@ -2428,6 +2429,7 @@
 <translation id="5559311991468302423">주소 삭제</translation>
 <translation id="5560088892362098740">만료일</translation>
 <translation id="55635442646131152">문서 개요</translation>
+<translation id="5563589142503817291">위치를 사용하려면 <ph name="LINK" />에서 Chrome에 액세스 권한을 부여하세요.</translation>
 <translation id="5565613213060953222">시크릿 탭 열기</translation>
 <translation id="5565735124758917034">활성</translation>
 <translation id="5569030697349375295">회계 및 재무 소프트웨어</translation>
@@ -2909,6 +2911,7 @@
 <translation id="6458606150257356946">무시하고 붙여넣기</translation>
 <translation id="6464094930452079790">이미지</translation>
 <translation id="6465306955648956876">비밀번호 관리...</translation>
+<translation id="646789491285795429">이미 추적 중인 제품입니다.</translation>
 <translation id="6468485451923838994">글꼴</translation>
 <translation id="647261751007945333">기기 정책</translation>
 <translation id="6472874020827012601">패브릭(매트)</translation>

@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">Weak signal</translation>
 <translation id="1300115153046603471">APN is type default and <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">Date created</translation>
 <translation id="1308754910631152188">Updating (<ph name="PERCENTAGE_VALUE" />% complete)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutes</translation>
 <translation id="1310380015393971138">No <ph name="NETWORK_NAME" /> network available</translation>
@@ -505,6 +506,7 @@
 <translation id="3708186454126126312">Previously connected</translation>
 <translation id="3715651196924935218">Exit float</translation>
 <translation id="3716250181321371108">Create control</translation>
+<translation id="3716830479327464973">When you allow this, Recorder will analyse your audio recordings to:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reviews)</translation>
 <translation id="3748026146096797577">Not Connected</translation>
 <translation id="3749289110408117711">File name</translation>
@@ -531,6 +533,7 @@
 <translation id="3869314628814282185">tulle</translation>
 <translation id="387301095347517405">The number of times that your battery has gone through a full charging cycle</translation>
 <translation id="3877066159641251281">Listen to translation</translation>
+<translation id="3880601782712134623">Automatically detect distinct voices and give each speaker a generic label, such as Speaker 1 and Speaker 2</translation>
 <translation id="3885327323343477505">Change screen saver</translation>
 <translation id="3889914174935857450">Reset date</translation>
 <translation id="3897092660631435901">Menu</translation>
@@ -756,6 +759,7 @@
 <translation id="5049856988445523908">SIM locked (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Group name</translation>
 <translation id="5051044138948155788">This is the only page. This will take you to the scanning start screen.</translation>
+<translation id="5078711626843651677">Voice models are stored temporarily on-device until the speaker labelling is complete. You can turn this off at any time in Settings.</translation>
 <translation id="5078983345702708852">futuristic</translation>
 <translation id="5087864757604726239">back</translation>
 <translation id="5088172560898466307">Server hostname</translation>
@@ -1106,6 +1110,7 @@
 <translation id="6905163627763043954">Try it</translation>
 <translation id="6905724422583748843">Back to <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">The scanner’s cover is open. Close the cover and try again.</translation>
+<translation id="6910845598686542904">Compute models of the voices detected in the recording</translation>
 <translation id="6911383237894364323">Unable to connect to media servers</translation>
 <translation id="6930242544192836755">Duration</translation>
 <translation id="6930597342185648547">About background</translation>
@@ -1571,6 +1576,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="950520315903467048">Key is missing for <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">Compare voices throughout the recording so that the transcript reflects what each speaker said and when</translation>
 <translation id="952992212772159698">Not activated</translation>
 <translation id="95718197892796296">clay</translation>
 <translation id="960719561871045870">Operator code</translation>

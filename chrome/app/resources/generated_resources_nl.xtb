@@ -2644,6 +2644,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2853121255651601031">Wachtwoord opgeslagen</translation>
 <translation id="2855243985454069333">Hiermee wordt de geschiedenis van al je gesynchroniseerde apparaten verwijderd</translation>
 <translation id="2855812646048059450">Inloggen met <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Strikte modus</translation>
 <translation id="2856776373509145513">Een nieuwe container maken</translation>
 <translation id="2856907950922663165">URL-versleuteling uitzetten?</translation>
 <translation id="2859741939921354763">Wachtwoorden importeren in <ph name="BRAND" /></translation>
@@ -6129,6 +6130,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5435779377906857208"><ph name="HOST" /> altijd toegang tot je locatie geven</translation>
 <translation id="5436492226391861498">Wachten op proxytunnel...</translation>
 <translation id="5436510242972373446">Zoeken op <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616">Het venster <ph name="WINDOW_SIDE" /> is nu <ph name="WINDOW_SIZE_PERCENT" /> breed en het deelvenster <ph name="PANE_SIDE" /> is nu <ph name="PANE_SIZE_PERCENT" /> breed.</translation>
 <translation id="5440425659852470030">Zijvenster sluiten</translation>
 <translation id="544083962418256601">Snelle links maken...</translation>
 <translation id="5441133529460183413">Web-app geïnstalleerd vanuit Chrome-browser</translation>
@@ -6394,6 +6396,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5623282979409330487">Deze site heeft toegang tot je bewegingssensoren.</translation>
 <translation id="5623842676595125836">Logboek</translation>
 <translation id="5624120631404540903">Wachtwoorden beheren</translation>
+<translation id="5624959475330585145">Vragen voordat niet-beveiligde verbindingen worden gebruikt</translation>
 <translation id="5625225435499354052">Bewerken in Google Pay</translation>
 <translation id="5626134646977739690">Naam:</translation>
 <translation id="5627832140542566187">Beeldschermstand</translation>
@@ -8529,6 +8532,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 site in de groep van <ph name="FPS_OWNER" />}other{{MEMBERS} sites in de groep van <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Windows Hello gebruiken bij het invullen van wachtwoorden</translation>
 <translation id="7225179976675429563">Type netwerk ontbreekt</translation>
+<translation id="7227235818314667565">Delen beheren</translation>
 <translation id="7227458944009118910">Hieronder vermelde apps kunnen ook protocollinks verwerken. Andere apps vragen om toestemming.</translation>
 <translation id="7228056665272655255">Als je een vingerafdruk wilt instellen, laat je je kind de vingerafdruksensor rechtsboven op het toetsenbord aanraken. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op deze <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="7228523857728654909">Schermvergrendeling en inloggen</translation>
@@ -8577,6 +8581,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7258192266780953209">Transformaties</translation>
 <translation id="7258225044283673131">De app reageert niet. Selecteer 'Nu sluiten' om de app te sluiten.</translation>
 <translation id="7260186537988033909">Apparaatinschrijving voor kiosken en digitale borden afgerond</translation>
+<translation id="7261217796641151584">Groep delen</translation>
 <translation id="7261612856573623172">Systeemstem voor tekst-naar-spraak</translation>
 <translation id="7262004276116528033">Deze inlogservice wordt gehost door <ph name="SAML_DOMAIN" />.</translation>
 <translation id="7264695323040866038">De <ph name="APP" />-app altijd gebruiken om ondersteunde weblinks te openen?</translation>
@@ -9623,6 +9628,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8008356846765065031">Verbinding met internet verbroken. Controleer je internetverbinding.</translation>
 <translation id="8008704580256716350">Verdacht bestand geblokkeerd</translation>
 <translation id="8009225694047762179">Wachtwoorden beheren</translation>
+<translation id="8010081455002666927">Automatisch waarnemen</translation>
 <translation id="8011372169388649948"><ph name="BOOKMARK_TITLE" /> verplaatst.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Details van instant hotspot</translation>
@@ -10512,6 +10518,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8656888282555543604">Brailleregistratie aanzetten</translation>
 <translation id="8657393004602556571">Wil je de feedback verwijderen?</translation>
 <translation id="8657542881463614516">Een swipegebaar gebruiken om tussen pagina's te navigeren</translation>
+<translation id="865936634714975126">Voeg een queryparameter toe in de URL om typen te selecteren bij het laden van de pagina. Voorbeeld: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Contacten voor <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Venster omlaag verplaatst</translation>
 <translation id="8661290697478713397">Link openen in inco&amp;gnitovenster</translation>
@@ -11026,6 +11033,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="9009707268312089299">Geïmporteerd vanuit Windows</translation>
 <translation id="9009708085379296446">Was het je bedoeling deze pagina te wijzigen?</translation>
 <translation id="9010845741772269259">Betaalmethoden toevoegen</translation>
+<translation id="901087299639956505">Gebalanceerde modus</translation>
 <translation id="9011163749350026987">Icoon altijd bekijken</translation>
 <translation id="9011262023858991985">Dit tabblad casten</translation>
 <translation id="9011393886518328654">Release-opmerkingen</translation>

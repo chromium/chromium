@@ -6132,6 +6132,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5435779377906857208">Permite întotdeauna accesul <ph name="HOST" /> la locație</translation>
 <translation id="5436492226391861498">Se așteaptă tunelul proxy...</translation>
 <translation id="5436510242972373446">Caută <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616">Fereastra <ph name="WINDOW_SIDE" /> are acum o lățime de <ph name="WINDOW_SIZE_PERCENT" />; panoul <ph name="PANE_SIDE" /> acum are o lățime de <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5440425659852470030">Închide panoul lateral</translation>
 <translation id="544083962418256601">Creați comenzi rapide...</translation>
 <translation id="5441133529460183413">Aplicația web a fost instalată din browserul Chrome</translation>
@@ -8537,6 +8538,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="722408235435815623">{MEMBERS,plural, =1{Un site din grupul <ph name="FPS_OWNER" />}few{{MEMBERS} site-uri din grupul <ph name="FPS_OWNER" />}other{{MEMBERS} de site-uri din grupul <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Folosește Windows Hello la completarea parolelor</translation>
 <translation id="7225179976675429563">Lipsește tipul de rețea</translation>
+<translation id="7227235818314667565">Gestionare colaborări</translation>
 <translation id="7227458944009118910">Și aplicațiile enumerate mai jos pot gestiona linkuri de protocol. Alte aplicații vor solicita permisiunea.</translation>
 <translation id="7228056665272655255">Pentru a configura amprenta, solicită-i copilului tău să atingă senzorul de amprentă în colțul din dreapta sus al tastaturii. Datele privind amprentele copilului sunt stocate în siguranță și nu părăsesc niciodată dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Blocarea ecranului și conectarea</translation>
@@ -8585,6 +8587,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7258192266780953209">Transformări</translation>
 <translation id="7258225044283673131">Aplicația nu răspunde. Selectează „Închide forțat” pentru a închide aplicația.</translation>
 <translation id="7260186537988033909">Înregistrarea dispozitivului chioșc și pentru semne s-a finalizat</translation>
+<translation id="7261217796641151584">Trimite grupul</translation>
 <translation id="7261612856573623172">Vocea sistemului de redare vocală a textului</translation>
 <translation id="7262004276116528033">Acest serviciu de conectare este găzduit de <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Folosești întotdeauna aplicația <ph name="APP" /> ca să deschizi linkurile web acceptate?</translation>
@@ -10522,6 +10525,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8656888282555543604">Activează înregistrarea Braille</translation>
 <translation id="8657393004602556571">Renunți la feedback?</translation>
 <translation id="8657542881463614516">Folosește un gest de glisare pentru a naviga între pagini</translation>
+<translation id="865936634714975126">Adaugă un parametru de interogare în adresa URL pentru a selecta tipurile la încărcarea paginii. Exemplu: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Persoane de contact pentru <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Fereastra a fost mutată în jos</translation>
 <translation id="8661290697478713397">Deschide linkul într-o fereastră inco&amp;gnito</translation>

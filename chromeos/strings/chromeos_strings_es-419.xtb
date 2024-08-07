@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">Señal débil</translation>
 <translation id="1300115153046603471">El APN es de tipo predeterminado y <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">Fecha de creación</translation>
 <translation id="1308754910631152188">Actualizando (<ph name="PERCENTAGE_VALUE" />% completo)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutos</translation>
 <translation id="1310380015393971138">No hay redes <ph name="NETWORK_NAME" /> disponibles</translation>
@@ -505,6 +506,7 @@
 <translation id="3708186454126126312">Conectados anteriormente</translation>
 <translation id="3715651196924935218">Salir del estado flotante</translation>
 <translation id="3716250181321371108">Crear control</translation>
+<translation id="3716830479327464973">Si lo permites, la Grabadora analizará tus grabaciones de audio para:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> opiniones)</translation>
 <translation id="3748026146096797577">Sin conexión</translation>
 <translation id="3749289110408117711">Nombre del archivo</translation>
@@ -531,6 +533,7 @@
 <translation id="3869314628814282185">tul</translation>
 <translation id="387301095347517405">El número de veces que la batería ha completado un ciclo de carga</translation>
 <translation id="3877066159641251281">Escuchar la traducción</translation>
+<translation id="3880601782712134623">Detectar automáticamente voces distintas y asignarle a cada interlocutor una etiqueta genérica, como Interlocutor 1 e Interlocutor 2</translation>
 <translation id="3885327323343477505">Cambiar el protector de pantalla</translation>
 <translation id="3889914174935857450">Restablecer la fecha</translation>
 <translation id="3897092660631435901">Menú</translation>
@@ -756,6 +759,7 @@
 <translation id="5049856988445523908">SIM bloqueado (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nombre del grupo</translation>
 <translation id="5051044138948155788">Esta es la única página. Esta acción te llevará a la pantalla de inicio de escaneo.</translation>
+<translation id="5078711626843651677">Los modelos de voz se almacenan temporalmente en el dispositivo hasta que se complete el etiquetado de interlocutores. Puedes desactivar esta opción en cualquier momento en Configuración.</translation>
 <translation id="5078983345702708852">futurista</translation>
 <translation id="5087864757604726239">atrás</translation>
 <translation id="5088172560898466307">Nombre de host del servidor</translation>
@@ -1106,6 +1110,7 @@
 <translation id="6905163627763043954">Probar la contraseña</translation>
 <translation id="6905724422583748843">Volver a <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">La tapa del escáner está abierta. Ciérrala y vuelve a intentarlo.</translation>
+<translation id="6910845598686542904">Procesar los modelos de las voces detectadas en la grabación</translation>
 <translation id="6911383237894364323">No es posible conectarse a los servidores de medios</translation>
 <translation id="6930242544192836755">Duración</translation>
 <translation id="6930597342185648547">Acerca del fondo</translation>
@@ -1571,6 +1576,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="950520315903467048">No está configurada la tecla para <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">Compara las voces a lo largo de la grabación para que la transcripción refleje qué dijo cada interlocutor y cuándo lo dijo</translation>
 <translation id="952992212772159698">No activado</translation>
 <translation id="95718197892796296">arcilla</translation>
 <translation id="960719561871045870">Código del operador</translation>

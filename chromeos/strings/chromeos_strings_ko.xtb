@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">신호 약함</translation>
 <translation id="1300115153046603471">APN은 기본값 및 <ph name="ATTACH" /> 유형입니다.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">생성일</translation>
 <translation id="1308754910631152188">업데이트 중(<ph name="PERCENTAGE_VALUE" />% 완료)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" />분</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> 네트워크를 사용할 수 없음</translation>
@@ -505,6 +506,7 @@
 <translation id="3708186454126126312">이전에 연결된 기기</translation>
 <translation id="3715651196924935218">플로팅 종료</translation>
 <translation id="3716250181321371108">컨트롤 만들기</translation>
+<translation id="3716830479327464973">허용하면 다음을 위해 녹음기가 오디오 녹음 파일을 분석합니다.</translation>
 <translation id="3740976234706877572">★ <ph name="AVERAGE_SCORE" />개(리뷰 <ph name="AGGREGATED_COUNT" />개)</translation>
 <translation id="3748026146096797577">연결되어 있지 않음</translation>
 <translation id="3749289110408117711">파일 이름</translation>
@@ -531,6 +533,7 @@
 <translation id="3869314628814282185">튤</translation>
 <translation id="387301095347517405">배터리가 완전 방전 및 충전 사이클을 거친 횟수입니다.</translation>
 <translation id="3877066159641251281">번역 듣기</translation>
+<translation id="3880601782712134623">서로 다른 음성을 자동으로 감지하고 각 발화자에게 발화자 1, 발화자 2와 같은 일반 라벨을 지정합니다.</translation>
 <translation id="3885327323343477505">화면 보호기 변경</translation>
 <translation id="3889914174935857450">날짜 재설정</translation>
 <translation id="3897092660631435901">메뉴</translation>
@@ -756,6 +759,7 @@
 <translation id="5049856988445523908">SIM 잠김(<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">그룹 이름</translation>
 <translation id="5051044138948155788">이 페이지만 삭제합니다. 스캔 시작 화면으로 이동합니다.</translation>
+<translation id="5078711626843651677">발화자 라벨 지정이 완료될 때까지 음성 모델이 기기에 임시로 저장됩니다. 언제든지 설정에서 이 기능을 사용 중지할 수 있습니다.</translation>
 <translation id="5078983345702708852">미래적</translation>
 <translation id="5087864757604726239">뒤로</translation>
 <translation id="5088172560898466307">서버 호스트 이름</translation>
@@ -1106,6 +1110,7 @@
 <translation id="6905163627763043954">사용해 보기</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> 페이지로 돌아가기</translation>
 <translation id="6910312834584889076">스캐너의 덮개가 열려 있습니다. 덮개를 닫은 후 다시 시도해 보세요.</translation>
+<translation id="6910845598686542904">녹음에서 감지된 음성 모델을 계산합니다.</translation>
 <translation id="6911383237894364323">미디어 서버에 연결할 수 없음</translation>
 <translation id="6930242544192836755">기간</translation>
 <translation id="6930597342185648547">배경화면 정보</translation>
@@ -1571,6 +1576,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">의견 보내기</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> 키가 누락되었습니다. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">스크립트에 각 발화자가 말하는 내용과 시점이 반영되도록 녹음 파일 전체의 음성을 비교합니다.</translation>
 <translation id="952992212772159698">활성화되지 않음</translation>
 <translation id="95718197892796296">점토</translation>
 <translation id="960719561871045870">운영자 코드</translation>

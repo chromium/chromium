@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">Als je de Lockdown-modus in Chromium wilt uitzetten, zet je deze uit op je iPhone.</translation>
 <translation id="159029779861043703">Chromium beveiligt je gevoelige gegevens met Face ID.</translation>
 <translation id="1591119736686995611">Opent het Chromium-tabbladraster.</translation>
+<translation id="16001233025397167">Veiligheidscheck beschermt je onder andere tegen gegevenslekken en onveilige websites. Krijg meldingen over privacy- of beveiligingsproblemen die Chromium voor je opspoort.</translation>
 <translation id="1611584326765829247">Laat Chromium je helpen je pakketten te volgen</translation>
 <translation id="1617663976202781617">Gegevens van Chromium-synchronisatie</translation>
 <translation id="1647558790457890304">Chromium-instellingen</translation>
@@ -56,6 +57,7 @@
 <translation id="2426113998523353159">Je organisatie vereist dat je inlogt om Chromium te gebruiken.</translation>
 <translation id="2450140762465183767">Je kunt Chromium nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="2478931088402984578">Selecteer <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
+<translation id="2497941343438581585">Ontdek de kracht van Chromium Shopping</translation>
 <translation id="252374538254180121">Chromium instellen als standaardbrowser</translation>
 <translation id="2574528844022712255">Chromium-bookmarks bekijken</translation>
 <translation id="2590893390871230428">Je Chromium-gegevens synchroniseren</translation>
@@ -103,6 +105,7 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="3855938650519180865">Nieuw in Chromium</translation>
 <translation id="3886689467633467988">Log in op deze site en bij Chromium om onder andere je bookmarks op al je apparaten te gebruiken.</translation>
 <translation id="3904484643286601695">Je kunt je selecties op elk moment updaten in de Chromium-instellingen.</translation>
+<translation id="3983291422281996849">Stel Chromium in als je standaardbrowser om makkelijk prijzen te volgen en prijsinzichten te krijgen voor artikelen die je wilt kopen.</translation>
 <translation id="4005283307739974863">Opent de Veiligheidscheck in Chromium en voert deze uit.</translation>
 <translation id="4043291146360695975">Wachtwoorden worden alleen opgeslagen in Wachtwoordmanager op dit apparaat.</translation>
 <translation id="4099085513035183040">Niet ondersteund in Chromium (bèta)</translation>
@@ -133,6 +136,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="4736424910885271643">Je account wordt beheerd door <ph name="HOSTED_DOMAIN" />, dus je Chromium-gegevens worden verwijderd van dit apparaat</translation>
 <translation id="4790638144988730920">Blijf de Chromium-gegevens in je Google-account gebruiken.</translation>
 <translation id="4828317641996116749">Chromium kan niet alle wachtwoorden checken. Probeer het later opnieuw.</translation>
+<translation id="4904452304169763785">Meldingen over privacy- of beveiligingsproblemen die Chromium voor je opspoort.</translation>
 <translation id="4962295957157529683">Maak af wat je aan het doen was in het andere geopende Chrome-venster.</translation>
 <translation id="4985291216379576555">Offline. Chromium kan niet checken op updates</translation>
 <translation id="4996471330284142407">Krijg meer gedaan met Chromium. Nu nog makkelijker, veiliger en sneller dan ooit.</translation>
@@ -176,6 +180,7 @@ Aandachtspunten:
   • Als Chromium crasht, kunnen de gegevens over de crash wat persoonlijke informatie bevatten.
 
   • Als je je geschiedenis synchroniseert met je Google-account, kunnen de statistieken ook informatie bevatten over de URL's die je bezoekt.<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">Krijg meldingen over privacy- of beveiligingsproblemen die Chromium automatisch voor je opspoort.</translation>
 <translation id="5945387852661427312">Je logt in met een account dat wordt beheerd door <ph name="DOMAIN" />, waarmee je de eigenaar beheer geeft over je Chromium-gegevens. Je gegevens worden permanent gekoppeld aan dit account. Als je uitlogt van Chromium, worden je gegevens van dit apparaat verwijderd. Ze blijven echter opgeslagen in je Google-account.</translation>
 <translation id="5951593919357934226">Haal het maximale uit Chromium.</translation>
 <translation id="5983312940147103417">Chromium verbeteren</translation>

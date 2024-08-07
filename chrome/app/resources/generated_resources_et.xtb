@@ -6154,7 +6154,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5449551289610225147">Vale parool</translation>
 <translation id="5449588825071916739">Kõikide vahelehtede järjehoidjatesse lisamine</translation>
 <translation id="5449716055534515760">Sule &amp;aken</translation>
-<translation id="5449932659532574495">Bluetooth-seadmete avastamiseks<ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
+<translation id="5449932659532574495">Bluetooth-seadmete avastamiseks <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="5450469615146335984">Valige iga toimingu jaoks otsetee</translation>
 <translation id="545133051331995777">Võrguühendus puudub</translation>
 <translation id="5452446625764825792">Saate nüüd vaadata oma telefoni hiljutisi fotosid, meediat ja rakendusi</translation>
@@ -8032,7 +8032,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
         Saate seadeid kohandada kaardimenüüs või näha rohkem valikuid jaotises Chrome'i kohandamine.</translation>
 <translation id="6831043979455480757">Tõlgi</translation>
 <translation id="6832218595502288407">Joonda vasakule</translation>
-<translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Kas eemaldada vaheleht ja kustutada grupp?}=1{Kas eemaldada vaheleht ja kustutada grupp?}other{Kas eemaldada vahelehed ja kustutada grupid?}}</translation>
+<translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Kas eemaldada vaheleht ja kustutada grupp?}=1{Kas eemaldada vahelehed ja kustutada grupp?}other{Kas eemaldada vahelehed ja kustutada grupid?}}</translation>
 <translation id="6833479554815567477">Vaheleht eemaldati grupist <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Tasakaalustatud (soovitatud)</translation>
 <translation id="6835762382653651563">Seadme <ph name="DEVICE_TYPE" /> värskendamiseks looge ühendus Internetiga.</translation>
@@ -11214,7 +11214,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
     <ph name="BEGIN_PARAGRAPH2" />Kui te pole installimiseks valmis, saate rakendust proovida, käitades selle USB-seadmelt. See säilitab teie olemasoleva operatsioonisüsteemi ja andmed, kuid kehtida võivad salvestusruumi- ja jõudluspiirangud.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9120761757252614786">Kohanda tööriistariba</translation>
 <translation id="9121814364785106365">Ava kinnitatud vahelehel</translation>
-<translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Kas sulgeda vaheleht ja kustutada grupp?}=1{Kas sulgeda vaheleht ja kustutada grupp?}other{Kas sulgeda vahelehed ja kustutada grupid?}}</translation>
+<translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Kas sulgeda vaheleht ja kustutada grupp?}=1{Kas sulgeda vahelehed ja kustutada grupp?}other{Kas sulgeda vahelehed ja kustutada grupid?}}</translation>
 <translation id="9122788874051694311">Kas salvestada pääsuvõti väljaspool inkognito režiimi?</translation>
 <translation id="9123287046453017203">Teie seade pole ajakohane</translation>
 <translation id="9125910124977405374"><ph name="LANGUAGE_NAME" /> keele eemaldamine automaatselt tõlgitavate keelte hulgast</translation>

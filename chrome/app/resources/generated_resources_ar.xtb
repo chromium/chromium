@@ -2649,6 +2649,7 @@
 <translation id="2853121255651601031">تم حفظ كلمة المرور.</translation>
 <translation id="2855243985454069333">سيتم حذف السجلّ من جميع الأجهزة التي تمت مزامنتها</translation>
 <translation id="2855812646048059450">تسجيل الدخول من خلال <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">الوضع المقيَّد</translation>
 <translation id="2856776373509145513">إنشاء حاوية جديدة</translation>
 <translation id="2856907950922663165">‏هل تريد إيقاف تشفير عناوين URL؟</translation>
 <translation id="2859741939921354763">استيراد كلمات المرور إلى "<ph name="BRAND" />"</translation>
@@ -6405,6 +6406,7 @@
 <translation id="5623282979409330487">يستخدم الموقع الإلكتروني هذا مستشعرات الحركة.</translation>
 <translation id="5623842676595125836">السجل</translation>
 <translation id="5624120631404540903">إدارة كلمات المرور</translation>
+<translation id="5624959475330585145">طلب الإذن قبل استخدام الاتصالات غير الآمنة</translation>
 <translation id="5625225435499354052">‏تعديل المعلومات في Google Pay</translation>
 <translation id="5626134646977739690">الاسم:</translation>
 <translation id="5627832140542566187">اتجاه العرض</translation>
@@ -9647,6 +9649,7 @@
 <translation id="8008356846765065031">تم قطع الاتصال بالإنترنت. يُرجى التحقق من الاتصال بالإنترنت.</translation>
 <translation id="8008704580256716350">تم حظر ملف مُريب.</translation>
 <translation id="8009225694047762179">إدارة كلمات المرور</translation>
+<translation id="8010081455002666927">الرصد التلقائي</translation>
 <translation id="8011372169388649948">تم نقل الإشارة المرجعية "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8012463809859447963">تفاصيل نقطة الاتصال الفورية</translation>
@@ -11055,6 +11058,7 @@
 <translation id="9009707268312089299">‏الشهادات المستورَدة من Windows</translation>
 <translation id="9009708085379296446">هل كنت تقصد تغيير هذه الصفحة؟</translation>
 <translation id="9010845741772269259">إضافة طُرق الدفع</translation>
+<translation id="901087299639956505">الوضع المتوازن</translation>
 <translation id="9011163749350026987">إظهار الرمز دائمًا</translation>
 <translation id="9011262023858991985">بث محتوى علامة التبويب هذه</translation>
 <translation id="9011393886518328654">ملاحظات الإصدار</translation>

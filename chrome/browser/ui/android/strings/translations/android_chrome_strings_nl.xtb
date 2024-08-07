@@ -319,6 +319,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> items verwijderd</translation>
 <translation id="2536728043171574184">Een offline exemplaar van deze pagina bekijken</translation>
 <translation id="2546283357679194313">Cookies en sitegegevens</translation>
+<translation id="2547843573592965873">Met je profielvergrendeling wordt je informatie in de auto beveiligd, waaronder wachtwoorden en betalingen die zijn opgeslagen in je Google-account.</translation>
 <translation id="254973855621628293">Wachtwoorden opgeslagen op dit apparaat</translation>
 <translation id="2560519950693256002">Voor <ph name="USERNAME" /> opgeslagen wachtwoorden recent gecheckt</translation>
 <translation id="2567385386134582609">AFBEELDING</translation>
@@ -580,7 +581,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3771694256347217732">Servicevoorwaarden van Google</translation>
 <translation id="3775705724665058594">Naar je apparaten sturen</translation>
 <translation id="3777796259512476958">Hiermee word je uitgelogd van de meeste sites</translation>
-<translation id="379035798868314833">Google Wachtwoordmanager werkt niet meer op dit apparaat</translation>
+<translation id="379035798868314833">Google Wachtwoordmanager werkt binnenkort niet meer op dit apparaat</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tabblad}other{# tabbladen}}</translation>
 <translation id="3795154175078851242">Afbeelding kopiëren met link</translation>
 <translation id="3810838688059735925">Video</translation>

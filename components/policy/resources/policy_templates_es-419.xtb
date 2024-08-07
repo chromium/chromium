@@ -445,6 +445,17 @@ Si la inhabilitas o no la estableces, el restablecimiento completo de la configu
       Si la fuerzas (2), el usuario no podrá suprimir el selector de perfiles. Se mostrará el selector de perfiles incluso si hay solo un perfil disponible.</translation>
 <translation id="1339174690935954950">No permitir que los usuarios envíen comentarios</translation>
 <translation id="1340053691042184658">No permitir los accesos con la navegación como invitado</translation>
+<translation id="134154550994512097">Esta política controla si los usuarios pueden habilitar el Modo solo HTTPS (Usar siempre conexiones seguras) en la Configuración. El Modo solo HTTPS actualiza todas las navegaciones a páginas HTTPS.
+      Si no estableces este parámetro de configuración o lo habilitas, los usuarios podrán habilitar el Modo solo HTTPS.
+      Si inhabilitas este parámetro de configuración, los usuarios no podrán habilitar el Modo solo HTTPS.
+      Si estableces este parámetro de configuración como force_enabled, se habilitará el Modo solo HTTPS en el modo estricto y los usuarios no podrán inhabilitarlo.
+      Si estableces este parámetro de configuración como force_balanced_enabled, se habilitará el Modo solo HTTPS en el modo equilibrado y los usuarios no podrán inhabilitarlo.
+      force_enabled es compatible a partir de la versión M112 y force_balanced_enabled, a partir de la versión M129.
+      Si estableces esta política en un valor que no admite la versión de Chrome que la recibe, Chrome usará el parámetro de configuración permitido de forma predeterminada.
+
+Se puede usar la política <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> independiente
+para que esta función no actualice a HTTPS
+los nombres de host o patrones de nombre de host específicos.</translation>
 <translation id="1342918903685430097">Configurar la versión mínima permitida de <ph name="PRODUCT_OS_NAME" /> para el dispositivo.</translation>
 <translation id="1343128241903870688">Inhabilitar los informes de apps del dispositivo</translation>
 <translation id="1347198119056266798">Esta política es obsoleta; usa las políticas <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> y <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> en su lugar. Se ignorará esta política si se configuran las políticas <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> o <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (obsoleta).
@@ -2708,6 +2719,9 @@ La política <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> 
 <translation id="2973972555495515337">Si habilitas la política, las aplicaciones web de terceros podrán usar <ph name="DESK_API_NAME" /> para guardar y compartir escritorios de <ph name="PRODUCT_OS_NAME" />. Si la inhabilitas, el usuario no podrá guardar ni compartir datos del escritorio mediante la <ph name="DESK_API_NAME" />. Si no la estableces, el comportamiento será el mismo que cuando la inhabilitas. La política solo tendrá efecto en los dispositivos inscritos.</translation>
 <translation id="2976033779241323433">Habilitar el teclado virtual táctil según la heurística predeterminada del sistema</translation>
 <translation id="2976429807269247880">Configuración del comportamiento de las cookies <ph name="ATTRIBUTE_SAMESITE_NAME" /> heredadas</translation>
+<translation id="2977576137210520963">Si estableces la política, especificarás la lista de URL cuyos patrones buscarán coincidencia con el origen de seguridad de la URL de solicitud. En caso de haber coincidencia, se otorgará acceso a los dispositivos de captura de audio sin necesidad de un mensaje.
+
+      Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Sin embargo, ten en cuenta que esta política no admite el patrón "*", que coincide con cualquier URL.</translation>
 <translation id="2979696534869541158">Forzar la implementación anterior</translation>
 <translation id="2985927503455169394">Usa el modo predeterminado de la experiencia de integración del Asistente</translation>
 <translation id="2987155890997901449">Habilitar ARC</translation>
@@ -6873,6 +6887,7 @@ Si la estableces como <ph name="BR_UNDER_USER_CONTROL" />, los usuarios recibir�
 
 Después de la configuración inicial, los usuarios podrán activar o desactivar el servicio de copia de seguridad y restablecimiento.</translation>
 <translation id="6169768162756928771">Configuración de administración de identidad de usuarios de GAIA</translation>
+<translation id="6170316094401732532">No restringir la configuración del Modo solo HTTPS de los usuarios</translation>
 <translation id="6172110090237528457">Configura el protector de pantalla en el dispositivo para la pantalla de acceso.
 
 Si estableces esta política como verdadera, el dispositivo <ph name="PRODUCT_OS_NAME" /> mostrará un protector de pantalla en la pantalla de acceso cuando esté inactivo.
@@ -7644,6 +7659,9 @@ Nota: Si reinicias el dispositivo y sales de la cuenta, se borrará la caché.</
 
           Por último, no tiene efecto si la habilitas, la dejas vacía o no la configuras.</translation>
 <translation id="6583249367505445969">Inhabilitar la barra de favoritos</translation>
+<translation id="6583473893541367102">Si estableces la política, especificarás la lista de URL cuyos patrones buscarán coincidencia con el origen de seguridad de la URL de solicitud. En caso de haber coincidencia, se otorgará acceso a los dispositivos de captura de video sin necesidad de un mensaje.
+
+      Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Sin embargo, ten en cuenta que esta política no admite el patrón "*", que coincide con cualquier URL.</translation>
 <translation id="6584122839583172231">La configuración de F12 usa la combinación de teclas que contiene las teclas modificadoras ctrl y mayúsculas</translation>
 <translation id="6584541828182430328">Inhabilita la alerta de pantalla completa</translation>
 <translation id="658537215958747575">Permitir que los orígenes calificados usen Direct Sockets</translation>
@@ -8951,15 +8969,6 @@ Si dejas la política vacía, no se permitirán excepciones a <ph name="FLOATING
 
       Si el dispositivo no está administrado, la disponibilidad de esta funcionalidad también depende de si el usuario es el propietario del dispositivo.</translation>
 <translation id="7570291542739287032">Solo en la nube</translation>
-<translation id="7571530187275708765">Esta política controla el comportamiento de acceso del navegador. Te permite especificar si el usuario puede acceder a <ph name="PRODUCT_NAME" /> con su cuenta y usar servicios relacionados con la cuenta, como la sincronización de <ph name="PRODUCT_NAME" />.
-
-      Si estableces la política con el valor "Inhabilitar el acceso en el navegador", el usuario no podrá acceder al navegador ni usar los servicios basados en su cuenta. Es este caso, las funciones del nivel del navegador, como la sincronización de <ph name="PRODUCT_NAME" />, no se podrán usar y dejarán de estar disponibles. En <ph name="IOS_NAME" />, si el usuario accedió y se inhabilita la política, se saldrá de la cuenta de forma inmediata. En otras plataformas, se saldrá de la cuenta la siguiente vez que se ejecute <ph name="PRODUCT_NAME" />. En todas las plataformas, se preservarán los datos de perfil locales, como los favoritos, las contraseñas, etc., y seguirán siendo utilizables. El usuario aún podrá acceder a los servicios web de Google, como Gmail, y usarlos.
-
-      Si estableces la política con el valor "Habilitar el acceso en el navegador", el usuario podrá acceder al navegador. En todas las plataformas excepto <ph name="IOS_NAME" />, el usuario accederá al navegador de forma automática cuando acceda a un servicio web de Google, como Gmail. Si se habilita el acceso al navegador, este guardará la información de la cuenta del usuario. Sin embargo, esto no implica que la sincronización de <ph name="PRODUCT_NAME" /> se activará de forma predeterminada; el usuario deberá habilitarla por separado. Si habilitas esta política, el usuario no podrá desactivar la configuración que permite el acceso al navegador. Para controlar la disponibilidad de la sincronización de <ph name="PRODUCT_NAME" />, usa la política <ph name="SYNC_POLICY_NAME" />.
-
-      Si estableces la política para que se fuerce el acceso al navegador, el usuario verá un diálogo de selección de cuenta; deberá elegir una cuenta y acceder a ella para usar el navegador. Esto asegura que se aplicarán las políticas asociadas a la cuenta para las cuentas administradas. Se inhabilitará el valor predeterminado de <ph name="GUEST_MODE_POLICY_NAME" />. Ten en cuenta que se bloquearán los perfiles a los que no se haya accedido y no se podrá acceder a ellos luego de que se habilite esta política. Para obtener más información, consulta el artículo del Centro de ayuda: https://support.google.com/chrome/a/answer/7572556. Esta opción no es compatible con <ph name="LINUX_OS_NAME" />, <ph name="ANDROID_NAME" /> ni <ph name="IOS_NAME" />. Se asignará el valor "Habilitar el acceso en el navegador" si se la usa.
-
-      Si no estableces esta política, el usuario podrá decidir si habilitar el acceso al navegador desde la configuración de <ph name="PRODUCT_NAME" /> y usarlo según su criterio.</translation>
 <translation id="757395965347379751">Cuando se habilita esta configuración, <ph name="PRODUCT_NAME" /> permite los certificados firmados por SHA-1 siempre que estén validados correctamente y vinculados a certificados de CA instalados de forma local.
 
       Ten en cuenta que esta política depende de la pila de verificación de certificado del sistema operativo que permite las firmas SHA-1. Si una actualización del sistema operativo cambia la forma en la que este maneja los certificados con firma SHA-1, esta política ya no tendrá efecto. Además, se trata de una solución temporal para que las empresas tengan más tiempo para dejar las firmas SHA-1. Esta política se quitará el 1 de enero de 2019 o cerca de esta fecha.
@@ -9138,6 +9147,7 @@ Si no estableces esta política, el navegador elegirá el renderizador de PDF.</
       Nota: Consulta la lista de las variables que puedes utilizar (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="7719808201797990069">Excepciones de patrones de URL para descartar pestañas</translation>
 <translation id="7721944091689270995">ID de usuario de <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="7725010277314676939">Forzar la habilitación el Modo solo HTTPS en el modo estricto</translation>
 <translation id="7728486978686128364">No usar mayúsculas en los métodos de solicitud, excepto DELETE/GET/HEAD/OPTIONS/POST/PUT</translation>
 <translation id="7731026922044991970">Revertir el comportamiento de las cookies en todos los sitios conforme al atributo heredado <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="7732907212083471072">Políticas que se quitaron</translation>
@@ -11105,6 +11115,7 @@ Para obtener más información sobre contextos seguros, consulta https://www.w3.
 
       Esta política es una medida temporal y se eliminará en las futuras versiones de <ph name="PRODUCT_NAME" />. Después de que se elimine la política, <ph name="PRODUCT_NAME" /> podrá seguir haciendo consultas sobre los tipos de DNS adicionales.</translation>
 <translation id="9167719789236691545">Inhabilitar Drive en la app de Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="9172648973829444124">Forzar la habilitación el Modo solo HTTPS en el modo equilibrado</translation>
 <translation id="9172911925443428317">No permitir que se muestre la promoción para calificar en la App Store</translation>
 <translation id="9173133289347070466">Las encuestas dentro del producto <ph name="PRODUCT_NAME" /> recopilan los comentarios de los usuarios sobre el navegador. Las respuestas de la encuesta no están asociadas con las cuentas de usuario.
 Si habilitas esta política o no la estableces, es posible que se muestren a los usuarios las encuestas dentro del producto.
@@ -11116,6 +11127,7 @@ Esta política no tendrá efecto si inhabilitas <ph name="METRICS_REPORTING_ENAB
 <translation id="9180108183162961002">Permitir los accesos con la navegación como invitado</translation>
 <translation id="9185963199234034321">Habilitar el contraste alto en la pantalla de acceso y permitir que el usuario lo inhabilite temporalmente</translation>
 <translation id="9187743794267626640">Inhabilitar la activación del almacenamiento externo</translation>
+<translation id="9189737595688383533">No permitir que los usuarios habiliten los Modos solo HTTPS</translation>
 <translation id="9190022798664427644">Habilitar el audio mono</translation>
 <translation id="9190456586252617675">Esta política controla el modo de la experiencia de integración del Asistente.
 

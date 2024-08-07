@@ -1509,6 +1509,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> – <ph name="WIDTH" /> x <ph name="HEIGHT" /> (cale)</translation>
 <translation id="3792826587784915501">Kultowe filmy i kino niezależne</translation>
 <translation id="3793574014653384240">Liczba i przyczyny niedawnych awarii</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> uniemożliwia Chrome nawiązanie bezpiecznego połączenia</translation>
 <translation id="3799805948399000906">Zażądano czcionki</translation>
 <translation id="3801265110651850478">Wysyłaj żądanie „Do Not Track” podczas przeglądania</translation>
 <translation id="380329542618494757">Imię i nazwisko</translation>
@@ -2703,6 +2704,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6106989379647458772">Strona <ph name="PAGE" /> może być chwilowo niedostępna lub została przeniesiona pod nowy adres.</translation>
 <translation id="6107012941649240045">Wystawiony dla</translation>
 <translation id="6107924765192360631">Aby otrzymać sugestie dotyczące pisania, zacznij od kilku słów lub pierwszej wersji roboczej.</translation>
+<translation id="6108580855199168381">Szczegóły certyfikatu</translation>
 <translation id="6108702513636120202">Twoja wyszukiwarka w Chromium</translation>
 <translation id="6108849843016142864">Gady i płazy</translation>
 <translation id="610911394827799129">Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
@@ -3473,6 +3475,12 @@ Dodatkowe informacje:
 <translation id="7535087603100972091">Wartość</translation>
 <translation id="753556296624075801">Technologia Google</translation>
 <translation id="7537536606612762813">Obowiązkowa</translation>
+<translation id="7541586907443866208">Osoby przeprowadzające atak będą mogły zobaczyć i zmienić wszystkie dane przesyłane między Tobą a tą stroną.
+    &lt;ul&gt;
+    &lt;li&gt;Jeśli korzystasz obecnie z sieci publicznej, takiej jak Wi-Fi na lotnisku lub w hotelu, spróbuj ponownie, gdy połączysz się z siecią zaufaną (np. w domu lub w pracy).&lt;/li&gt;
+    &lt;li&gt;Jeśli znasz właściciela witryny, poproś go o rozwiązanie tego problemu.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">Automatyczne wypełnianie danych karty kredytowej jest wyłączone, ponieważ ten formularz nie korzysta z bezpiecznego połączenia.</translation>
 <translation id="7543525346216957623">Poproś rodzica</translation>
 <translation id="7546409722674205727">Rozpoczyna się <ph name="APP_NAME" /></translation>

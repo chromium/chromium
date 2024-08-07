@@ -1509,6 +1509,7 @@
 <translation id="3792100426446126328">‏<ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> اینچ)</translation>
 <translation id="3792826587784915501">فیلم کالت و مستقل</translation>
 <translation id="3793574014653384240">تعداد و دلیل خرابی‌هایی که اخیراً اتفاق افتاده است</translation>
+<translation id="3796417399166194741">‏سایت <ph name="SITE" /> مانع Chrome برای برقراری اتصال ایمن می‌شود</translation>
 <translation id="3799805948399000906">قلم درخواست شد</translation>
 <translation id="3801265110651850478">‏ارسال درخواست «Do Not Track» با ترافیک مرور</translation>
 <translation id="380329542618494757">نام</translation>
@@ -2703,6 +2704,7 @@
 <translation id="6106989379647458772">شاید صفحه وب در <ph name="PAGE" /> موقتاً غیرفعال شده باشد یا شاید به‌طور دائم به آدرس وب جدیدی منتقل شده باشد.</translation>
 <translation id="6107012941649240045">صادر شده برای</translation>
 <translation id="6107924765192360631">برای دریافت پیشنهادهای نوشتن کافی است با چند کلمه یا پیش‌نویس اولیه شروع کنید.</translation>
+<translation id="6108580855199168381">جزئیات گواهی</translation>
 <translation id="6108702513636120202">‏موتور جستجوی شما در Chromium</translation>
 <translation id="6108849843016142864">خزندگان و دوزیستان</translation>
 <translation id="610911394827799129">‏ممکن است حساب Google شما اشکال دیگری از سابقه مرور در <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> داشته باشد</translation>
@@ -3473,6 +3475,12 @@
 <translation id="7535087603100972091">مقدار</translation>
 <translation id="753556296624075801">‏قدرت‌گرفته از Google</translation>
 <translation id="7537536606612762813">اجباری</translation>
+<translation id="7541586907443866208">‏مهاجمان می‌توانند همه داده‌های ارسال‌شده بین شما و این سایت را ببینند و تغییر دهند.
+    &lt;ul&gt;
+    &lt;li&gt;اگر درحال‌حاضر از شبکه‌ای عمومی مثل Wi-Fi فرودگاه یا هتل استفاده می‌کنید، بهتر است وقتی به شبکه قابل‌اعتمادی (برای نمونه در خانه یا محل کار) وصل شدید دوباره امتحان کنید.&lt;/li&gt;
+    &lt;li&gt;اگر مالک سایت را می‌شناسید، از او بخواهید این مشکل را برطرف کند.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">تکمیل خودکار کارت اعتباری غیر فعال است زیرا این فرم از یک اتصال ایمن استفاده نمی‌کند.</translation>
 <translation id="7543525346216957623">از والدینتان بخواهید این کار را انجام دهد</translation>
 <translation id="7546409722674205727">درحال راه‌اندازی <ph name="APP_NAME" /></translation>

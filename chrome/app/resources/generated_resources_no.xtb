@@ -6136,6 +6136,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5435779377906857208">La alltid <ph name="HOST" /> ha tilgang til posisjonen din</translation>
 <translation id="5436492226391861498">Venter på mellomtjenertunnel</translation>
 <translation id="5436510242972373446">Søk på <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> vindu er nå <ph name="WINDOW_SIZE_PERCENT" /> bredt, og <ph name="PANE_SIDE" /> rute er <ph name="PANE_SIZE_PERCENT" /> bred.</translation>
 <translation id="5440425659852470030">Lukk sidepanelet</translation>
 <translation id="544083962418256601">Opprett snarveier</translation>
 <translation id="5441133529460183413">Nettprogram som er installert fra Chrome-nettleseren</translation>
@@ -8539,6 +8540,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 nettsted i gruppen til <ph name="FPS_OWNER" />}other{{MEMBERS} nettsteder i gruppen til <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Bruk Windows Hello når du fyller ut passord</translation>
 <translation id="7225179976675429563">Nettverkstype mangler</translation>
+<translation id="7227235818314667565">Administrer deling</translation>
 <translation id="7227458944009118910">Appene som er oppført nedenfor, kan også håndtere protokoll-linker. Andre apper kommer til å be om tillatelse.</translation>
 <translation id="7228056665272655255">For å konfigurere fingeravtrykk, få barnet ditt til å trykke på fingeravtrykkssensoren øverst til høyre på tastaturet. Barnets fingeravtrykksdata lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Skjermlås og pålogging</translation>
@@ -8587,6 +8589,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7258192266780953209">Transformasjoner</translation>
 <translation id="7258225044283673131">Appen svarer ikke. Velg «Tving avslutning» for å lukke appen.</translation>
 <translation id="7260186537988033909">Registreringen som kiosk- og skiltenhet er fullført</translation>
+<translation id="7261217796641151584">Del gruppe</translation>
 <translation id="7261612856573623172">Systemstemme for tekst til tale</translation>
 <translation id="7262004276116528033">Verten for denne påloggingstjenesten er <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Vil du alltid bruke <ph name="APP" />-appen til å åpne støttede nettlinker?</translation>
@@ -10524,6 +10527,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8656888282555543604">Slå på loggføring av punktskrift</translation>
 <translation id="8657393004602556571">Vil du forkaste tilbakemeldingen?</translation>
 <translation id="8657542881463614516">Naviger mellom sider med sveipebevegelser</translation>
+<translation id="865936634714975126">Legg til en søkeparameter i nettadressen for å velge typer når siden lastes inn. Eksempel: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Kontakter for <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Vinduet ble flyttet ned</translation>
 <translation id="8661290697478713397">Åpne linken i inko&amp;gnitovindu</translation>

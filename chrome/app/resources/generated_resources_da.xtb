@@ -2658,6 +2658,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2853121255651601031">Adgangskoden er blevet gemt</translation>
 <translation id="2855243985454069333">Sletter historikken fra alle synkroniserede enheder</translation>
 <translation id="2855812646048059450">Log ind med <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Striks tilstand</translation>
 <translation id="2856776373509145513">Opret en ny container</translation>
 <translation id="2856907950922663165">Vil du deaktivere webadressekryptering?</translation>
 <translation id="2859741939921354763">Importér adgangskoder til <ph name="BRAND" /></translation>
@@ -6415,6 +6416,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5623282979409330487">Dette website har adgang til dine bevægelsessensorer.</translation>
 <translation id="5623842676595125836">Log</translation>
 <translation id="5624120631404540903">Administrer adgangskoder</translation>
+<translation id="5624959475330585145">Spørg, før der bruges usikre forbindelser</translation>
 <translation id="5625225435499354052">Rediger i Google Pay</translation>
 <translation id="5626134646977739690">Navn:</translation>
 <translation id="5627832140542566187">Visningsretning</translation>
@@ -9648,6 +9650,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8008356846765065031">Internetforbindelsen blev afbrudt. Kontrollér din internetforbindelse.</translation>
 <translation id="8008704580256716350">En mistænkelig fil er blevet blokeret</translation>
 <translation id="8009225694047762179">Administrer adgangskoder</translation>
+<translation id="8010081455002666927">Automatisk registrering</translation>
 <translation id="8011372169388649948">"<ph name="BOOKMARK_TITLE" />" blev flyttet.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Oplysninger om øjeblikkeligt hotspot</translation>
@@ -11052,6 +11055,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="9009707268312089299">Importeret fra Windows</translation>
 <translation id="9009708085379296446">Ville du ændre denne side?</translation>
 <translation id="9010845741772269259">Tilføj betalingsmetoder</translation>
+<translation id="901087299639956505">Balanceret tilstand</translation>
 <translation id="9011163749350026987">Vis altid ikon</translation>
 <translation id="9011262023858991985">Caster denne fane</translation>
 <translation id="9011393886518328654">Produktbemærkninger</translation>

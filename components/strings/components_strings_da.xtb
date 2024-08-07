@@ -1509,6 +1509,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> tommer)</translation>
 <translation id="3792826587784915501">Kult- og indiefilm</translation>
 <translation id="3793574014653384240">Antallene af og årsagerne til de nedbrud, der opstod for nylig</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> forhindrer Chrome i at oprette en sikker forbindelse</translation>
 <translation id="3799805948399000906">Der blev anmodet om skrifttype</translation>
 <translation id="3801265110651850478">Send en "Do Not Track"-anmodning sammen med din browsertrafik</translation>
 <translation id="380329542618494757">Navn</translation>
@@ -2701,6 +2702,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6106989379647458772">Websiden på <ph name="PAGE" /> kan være midlertidigt nede, eller også er den permanent flyttet til en ny webadresse.</translation>
 <translation id="6107012941649240045">Udstedt til</translation>
 <translation id="6107924765192360631">Du skal bare starte med et par ord eller et udkast for at få skriveforslag.</translation>
+<translation id="6108580855199168381">Certifikatoplysninger</translation>
 <translation id="6108702513636120202">Din søgemaskine i Chromium</translation>
 <translation id="6108849843016142864">Krybdyr og padder</translation>
 <translation id="610911394827799129">Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
@@ -3470,6 +3472,14 @@ Yderligere oplysninger:
 <translation id="7535087603100972091">Værdi</translation>
 <translation id="753556296624075801">Leveret af Google</translation>
 <translation id="7537536606612762813">Obligatorisk</translation>
+<translation id="7541586907443866208">Hackere vil kunne se og ændre alle data, der sendes mellem dig og dette website.
+    &lt;ul&gt;
+
+    &lt;li&gt;Hvis du i øjeblikket bruger et offentligt netværk, f.eks. et Wi-Fi-netværk i en lufthavn eller på et hotel, kan du overveje at prøve igen, når du har forbindelse til et netværk, du har tillid til (f.eks. derhjemme eller på arbejdet).&lt;/li&gt;
+    &lt;li&gt;Hvis du kender ejeren af websitet, kan du bede vedkommende om at løse problemet.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger om denne advarsel<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">Automatisk udfyldning af kreditkort er deaktiveret, fordi formularen ikke bruger en sikker forbindelse.</translation>
 <translation id="7543525346216957623">Spørg en af dine forældre</translation>
 <translation id="7546409722674205727">Starter <ph name="APP_NAME" /></translation>

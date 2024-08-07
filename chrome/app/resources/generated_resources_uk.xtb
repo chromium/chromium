@@ -6148,6 +6148,7 @@
 <translation id="5435779377906857208">Завжди надавати сайту <ph name="HOST" /> доступ до ваших геоданих</translation>
 <translation id="5436492226391861498">Очікування тунелю проксі-сервера...</translation>
 <translation id="5436510242972373446">Пошук <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616">Вікно <ph name="WINDOW_SIDE" /> зараз займає <ph name="WINDOW_SIZE_PERCENT" /> ширини екрана, а панель <ph name="PANE_SIDE" /> – <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5440425659852470030">Закрити бічну панель</translation>
 <translation id="544083962418256601">Створення ярликів...</translation>
 <translation id="5441133529460183413">Веб-додаток установлено з веб-переглядача Chrome</translation>
@@ -8554,6 +8555,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 сайт у групі сайту-власника <ph name="FPS_OWNER" />}one{{MEMBERS} сайт у групі сайту-власника <ph name="FPS_OWNER" />}few{{MEMBERS} сайти в групі сайту-власника <ph name="FPS_OWNER" />}many{{MEMBERS} сайтів у групі сайту-власника <ph name="FPS_OWNER" />}other{{MEMBERS} сайту в групі сайту-власника <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Використовувати Windows Hello для введення паролів</translation>
 <translation id="7225179976675429563">Відсутній тип мережі</translation>
+<translation id="7227235818314667565">Керувати параметрами спільного доступу</translation>
 <translation id="7227458944009118910">Додатки, наведені нижче, також можуть обробляти посилання протоколів. Інші додатки проситимуть на це дозвіл.</translation>
 <translation id="7228056665272655255">Щоб налаштувати відбиток пальця, дитина має торкнутися сканера у верхньому правому куті клавіатури. <ph name="DEVICE_TYPE" /> надійно зберігає дані про відбиток і нікуди не надсилає їх.</translation>
 <translation id="7228523857728654909">Блокування екрана та вхід</translation>
@@ -8602,6 +8604,7 @@
 <translation id="7258192266780953209">Перетворення</translation>
 <translation id="7258225044283673131">Додаток не відповідає. Щоб закрити його, виберіть опцію "Примусово закрити".</translation>
 <translation id="7260186537988033909">Реєстрацію термінала й вивіски на пристрої завершено</translation>
+<translation id="7261217796641151584">Поділитися групою</translation>
 <translation id="7261612856573623172">Системний голос для синтезу мовлення</translation>
 <translation id="7262004276116528033">Ця служба входу в обліковий запис зареєстрована в домені <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Завжди відкривати підтримувані посилання в додатку <ph name="APP" />?</translation>
@@ -10538,6 +10541,7 @@
 <translation id="8656888282555543604">Увімкнути реєстрацію шрифту Брайля</translation>
 <translation id="8657393004602556571">Не надсилати відгук?</translation>
 <translation id="8657542881463614516">Проводити пальцем по екрану, щоб переходити між сторінками</translation>
+<translation id="865936634714975126">Додайте параметр запиту в URL-адресу, щоб вибрати типи під час завантаження сторінки. Приклад: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Контакти, які використовує функція <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Вікно переміщено вниз</translation>
 <translation id="8661290697478713397">Відкрити посилання в аноні&amp;мному вікні</translation>

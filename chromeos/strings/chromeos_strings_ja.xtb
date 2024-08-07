@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">電波: 弱い</translation>
 <translation id="1300115153046603471">APN の種類はデフォルトで、<ph name="ATTACH" /> です。</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">作成日</translation>
 <translation id="1308754910631152188">更新中（<ph name="PERCENTAGE_VALUE" />% 完了）</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> 分</translation>
 <translation id="1310380015393971138">利用できる <ph name="NETWORK_NAME" /> ネットワークがありません</translation>
@@ -505,6 +506,7 @@
 <translation id="3708186454126126312">以前に接続したデバイス</translation>
 <translation id="3715651196924935218">フロート表示を終了</translation>
 <translation id="3716250181321371108">コントロールの作成</translation>
+<translation id="3716830479327464973">許可すると、レコーダーは以下の目的で音声録音を分析します。</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 件のレビュー）</translation>
 <translation id="3748026146096797577">接続されていません</translation>
 <translation id="3749289110408117711">ファイル名</translation>
@@ -531,6 +533,7 @@
 <translation id="3869314628814282185">チュール</translation>
 <translation id="387301095347517405">電池がフル充電されたサイクルの回数です</translation>
 <translation id="3877066159641251281">翻訳を聞く</translation>
+<translation id="3880601782712134623">異なる話し手を自動的に検出し、それぞれに「スピーカー 1」や「スピーカー 2」などの汎用的なラベルを付ける</translation>
 <translation id="3885327323343477505">スクリーン セーバーを変更</translation>
 <translation id="3889914174935857450">リセット日</translation>
 <translation id="3897092660631435901">メニュー</translation>
@@ -756,6 +759,7 @@
 <translation id="5049856988445523908">SIM はロックされています（<ph name="LOCK_TYPE" />）</translation>
 <translation id="5050042263972837708">グループ名</translation>
 <translation id="5051044138948155788">これは存在する唯一のページです。削除すると、スキャンのスタート画面に戻ります。</translation>
+<translation id="5078711626843651677">スピーカー ラベルがすべて付けられるまで、音声モデルはデバイス上に一時的に保存されます。この機能は [設定] でいつでもオフにできます。</translation>
 <translation id="5078983345702708852">未来的</translation>
 <translation id="5087864757604726239">戻る</translation>
 <translation id="5088172560898466307">サーバーのホスト名</translation>
@@ -1106,6 +1110,7 @@
 <translation id="6905163627763043954">使ってみる</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> に戻る</translation>
 <translation id="6910312834584889076">スキャナのカバーが開いています。カバーを閉じてから、もう一度お試しください。</translation>
+<translation id="6910845598686542904">録音内で検出された音声のモデルを算出する</translation>
 <translation id="6911383237894364323">メディア サーバーに接続できません</translation>
 <translation id="6930242544192836755">接続時間</translation>
 <translation id="6930597342185648547">背景について</translation>
@@ -1571,6 +1576,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> のキーが設定されていません。<ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">録音全体で音声を比較し、それぞれのスピーカーが話したタイミングと内容を文字起こしに反映させる</translation>
 <translation id="952992212772159698">無効</translation>
 <translation id="95718197892796296">粘土</translation>
 <translation id="960719561871045870">事業者コード</translation>

@@ -2654,6 +2654,7 @@
 <translation id="2853121255651601031">گذرواژه ذخیره شد</translation>
 <translation id="2855243985454069333">سابقه از همه دستگاه‌های همگام‌سازی‌شده حذف می‌شود</translation>
 <translation id="2855812646048059450">ورود به سیستم با <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">حالت سخت‌گیرانه</translation>
 <translation id="2856776373509145513">ایجاد محتوی جدید</translation>
 <translation id="2856907950922663165">رمزگذاری نشانی وب خاموش شود؟</translation>
 <translation id="2859741939921354763">وارد کردن گذرواژه‌ها به <ph name="BRAND" /></translation>
@@ -6412,6 +6413,7 @@
 <translation id="5623282979409330487">این سایت به حسگرهای حرکتی دسترسی دارد.</translation>
 <translation id="5623842676595125836">گزارش</translation>
 <translation id="5624120631404540903">مدیریت گذرواژه‌ها</translation>
+<translation id="5624959475330585145">قبل‌از استفاده از اتصال‌های ناامن سؤال شود</translation>
 <translation id="5625225435499354052">‏ویرایش در Google Pay</translation>
 <translation id="5626134646977739690">نام:</translation>
 <translation id="5627832140542566187">جهت نمایشگر</translation>
@@ -9647,6 +9649,7 @@
 <translation id="8008356846765065031">اینترنت قطع است. لطفاً اتصال اینترنتتان را بررسی کنید.</translation>
 <translation id="8008704580256716350">فایل مشکوک مسدود شد</translation>
 <translation id="8009225694047762179">مدیریت گذرواژه</translation>
+<translation id="8010081455002666927">شناسایی خودکار</translation>
 <translation id="8011372169388649948">«<ph name="BOOKMARK_TITLE" />» منتقل شد.</translation>
 <translation id="8012188750847319132">قفل تبدیل</translation>
 <translation id="8012463809859447963">جزئیات «نقطه اتصال فوری»</translation>
@@ -11051,6 +11054,7 @@
 <translation id="9009707268312089299">‏واردشده از Windows</translation>
 <translation id="9009708085379296446">می‌خواستید این صفحه را تغییر دهید؟</translation>
 <translation id="9010845741772269259">افزودن روش‌های پرداخت</translation>
+<translation id="901087299639956505">حالت متعادل</translation>
 <translation id="9011163749350026987">نماد همیشه نشان داده شود</translation>
 <translation id="9011262023858991985">درحال پخش کردن محتوای این برگه</translation>
 <translation id="9011393886518328654">یادداشت‌های انتشار</translation>

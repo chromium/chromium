@@ -432,6 +432,15 @@ Als je het beleid niet toepast of niet instelt, wordt op basis van de instelling
       Als Verplicht (2) is geselecteerd, kunnen gebruikers de profielkiezer niet onderdrukken. De profielkiezer wordt ook getoond als er maar één profiel beschikbaar is.</translation>
 <translation id="1339174690935954950">Niet toestaan dat gebruikers feedback indienen</translation>
 <translation id="1340053691042184658">Niet toestaan dat gebruikers als gast inloggen bij de browser</translation>
+<translation id="134154550994512097">Met dit beleid wordt bepaald of gebruikers de modus Alleen HTTPS (Altijd beveiligde verbindingen gebruiken) kunnen aanzetten in Instellingen. Met de modus Alleen HTTPS worden alle navigaties geüpgraded naar HTTPS.
+      Als deze instelling niet is ingesteld of is ingesteld op Toegestaan, kunnen gebruikers de modus Alleen HTTPS aanzetten.
+      Als deze instelling is ingesteld op Niet toegestaan, kunnen gebruikers de modus Alleen HTTPS niet aanzetten.
+      Als deze instelling is ingesteld op force_enabled, wordt de modus Alleen HTTPS aangezet in de strikte modus en kunnen gebruikers deze niet uitzetten.
+      Als deze instelling is ingesteld op force_balanced_enabled, wordt de modus Alleen HTTPS aangezet in de gebalanceerde modus en kunnen gebruikers deze niet uitzetten.
+      force_enabled wordt ondersteund vanaf M112 en force_balanced_enabled wordt ondersteund vanaf M129.
+      Als je dit beleid instelt op een waarde die niet wordt ondersteund door de versie van Chrome die het beleid ontvangt, gebruikt Chrome standaard de toegestane instelling.
+
+Het afzonderlijke beleid <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> kan worden gebruikt om te voorkomen dat specifieke hostnamen of hostnaampatronen door deze functie worden geüpgraded naar HTTPS.</translation>
 <translation id="1342918903685430097">Stel de minimaal toegestane <ph name="PRODUCT_OS_NAME" />-versie in voor het apparaat.</translation>
 <translation id="1343128241903870688">Rapportage van app-informatie van apparaat uitzetten</translation>
 <translation id="1347198119056266798">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> en <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Dit beleid wordt genegeerd als het beleid <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> of <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (verouderd) is ingesteld.
@@ -2590,6 +2599,9 @@ Het beleid <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> kr
 <translation id="2973972555495515337">Als je het beleid toepast, kunnen web-apps van derden <ph name="DESK_API_NAME" /> gebruiken om <ph name="PRODUCT_OS_NAME" />-bureaus op te slaan en te delen. Als je het beleid niet toepast, kan de gebruiker geen bureaugegevens opslaan en delen via de <ph name="DESK_API_NAME" />. Als je het beleid niet instelt, is het gedrag hetzelfde als wanneer het uitstaat. Het beleid geldt alleen voor ingeschreven apparaten.</translation>
 <translation id="2976033779241323433">Virtueel aanraaktoetsenbord aanzetten op basis van de standaard systeemheuristiek</translation>
 <translation id="2976429807269247880">Instellingen voor gedrag van verouderde cookies van <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
+<translation id="2977576137210520963">Als je het beleid instelt, specificeer je de lijst met URL's waarvan de patronen worden vergeleken met de beveiligingsoorsprong van de aanvragende URL. Bij een overeenkomst wordt zonder prompt toegang gegeven tot apparaten voor audio-opnamen.
+
+Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. Houd er wel rekening mee dat het patroon *, dat overeenkomt met elke URL, niet wordt ondersteund door dit beleid.</translation>
 <translation id="2979696534869541158">Oude implementatie afdwingen</translation>
 <translation id="2985927503455169394">De standaard modus voor introductie van de Assistent gebruiken</translation>
 <translation id="2987155890997901449">ARC aanzetten</translation>
@@ -6590,6 +6602,7 @@ Als je het beleid instelt op <ph name="BR_UNDER_USER_CONTROL" />, zien gebruiker
 
 Na de eerste configuratie kunnen gebruikers de back-up- en herstelfunctie aan- of uitzetten.</translation>
 <translation id="6169768162756928771">Beheerinstellingen voor GAIA-gebruikersidentiteit</translation>
+<translation id="6170316094401732532">Instelling voor de modus Alleen HTTPS van gebruikers niet beperken</translation>
 <translation id="6172110090237528457">Hiermee stel je de screensaver op apparaatniveau voor het inlogscherm in.
 
 Als je dit beleid instelt op True, toont het <ph name="PRODUCT_OS_NAME" />-apparaat een screensaver op het inlogscherm als het apparaat inactief is.
@@ -7279,6 +7292,9 @@ Opmerking: Het cachegeheugen wordt gewist als je opnieuw opstart en uitlogt.</tr
 
           Dit beleid heeft geen effect als je het toepast, leeg laat of niet instelt.</translation>
 <translation id="6583249367505445969">Bookmarkbalk uitzetten</translation>
+<translation id="6583473893541367102">Als je het beleid instelt, specificeer je de lijst met URL's waarvan de patronen worden vergeleken met de beveiligingsoorsprong van de aanvragende URL. Bij een overeenkomst wordt zonder prompt toegang gegeven tot apparaten voor video-opnamen.
+
+Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. Houd er wel rekening mee dat het patroon *, dat overeenkomt met elke URL, niet wordt ondersteund door dit beleid.</translation>
 <translation id="6584122839583172231">De instellingen voor F12 gebruiken de sneltoets met de functietoetsen Ctrl en Shift</translation>
 <translation id="6584541828182430328">Waarschuwing voor volledig scherm niet tonen</translation>
 <translation id="658537215958747575">Toestaan dat in aanmerking komende bronnen directe netwerkverbindingen gebruiken</translation>
@@ -8555,15 +8571,6 @@ Als je geen beleid opgeeft, zijn er geen uitzonderingen toegestaan op <ph name="
 
       Als het apparaat van de gebruiker niet wordt beheerd, is de beschikbaarheid van deze functionaliteit ook afhankelijk van of de gebruiker de eigenaar is van het apparaat.</translation>
 <translation id="7570291542739287032">Alleen Google Cloud</translation>
-<translation id="7571530187275708765">Dit beleid bepaalt het inloggedrag van de browser. Je kunt instellen of de gebruiker met het eigen account kan inloggen bij <ph name="PRODUCT_NAME" /> en accountgerelateerde services kan gebruiken, zoals <ph name="PRODUCT_NAME" />-synchronisatie.
-
-      Als het beleid is ingesteld op 'Inloggen bij browser uitzetten', kan de gebruiker niet inloggen bij de browser en geen accountgebaseerde services gebruiken. Functies op browserniveau (zoals <ph name="PRODUCT_NAME" />-synchronisatie) kunnen in dit geval niet worden gebruikt en zijn niet beschikbaar. Voor <ph name="IOS_NAME" /> geldt dat als de gebruiker was ingelogd en het beleid niet wordt toegepast, de gebruiker meteen wordt uitgelogd. Op andere platforms wordt de gebruiker uitgelogd zodra deze <ph name="PRODUCT_NAME" /> weer gebruikt. Op alle platforms blijven de lokale profielgegevens van de gebruiker (zoals bookmarks en wachtwoorden) behouden en kan de gebruiker deze blijven gebruiken. De gebruiker kan nog steeds inloggen bij en gebruikmaken van Google-webservices zoals Gmail.
-
-      Als het beleid is ingesteld op 'Inloggen bij browser aanzetten', mag de gebruiker inloggen bij de browser. Op alle platforms behalve <ph name="IOS_NAME" /> wordt automatisch ingelogd bij de browser als de gebruiker is ingelogd bij Google-webservices zoals Gmail. Als een gebruiker wordt ingelogd bij de browser, betekent dit dat de accountgegevens van de gebruiker worden bewaard door de browser. Het betekent niet dat <ph name="PRODUCT_NAME" />-synchronisatie standaard wordt toegepast. De gebruiker moet zich afzonderlijk aanmelden voor gebruik van deze functie. Als dit beleid wordt toegepast, kan de gebruiker de instelling die inloggen bij de browser toestaat, niet uitzetten. Gebruik het beleid <ph name="SYNC_POLICY_NAME" /> om de beschikbaarheid van <ph name="PRODUCT_NAME" />-synchronisatie te beheren.
-
-      Als het beleid is ingesteld op 'Gebruikers dwingen in te loggen om de browser te gebruiken', krijgt de gebruiker een dialoogvenster voor accountselectie te zien en moet deze een account kiezen en inloggen om de browser te gebruiken. Dit zorgt ervoor dat voor beheerde accounts de aan het account gekoppelde beleidsregels worden toegepast en afgedwongen. <ph name="GUEST_MODE_POLICY_NAME" /> wordt standaard niet toegepast. Bestaande, niet-ingelogde profielen worden vergrendeld en zijn niet meer toegankelijk als dit beleid wordt toegepast. Bekijk dit Helpcentrum-artikel voor meer informatie: https://support.google.com/chrome/a/answer/7572556. Deze optie wordt niet ondersteund voor <ph name="LINUX_OS_NAME" />, <ph name="ANDROID_NAME" /> of <ph name="IOS_NAME" />. Als deze optie toch wordt gebruikt, wordt de reserveoptie 'Inloggen bij browser aanzetten' toegepast.
-
-      Als dit beleid niet is ingesteld, kan de gebruiker naar eigen inzicht via de instellingen van <ph name="PRODUCT_NAME" /> bepalen of deze de optie voor inloggen bij de browser wil toepassen.</translation>
 <translation id="757395965347379751">Als deze instelling aanstaat, staat <ph name="PRODUCT_NAME" /> met SHA-1 ondertekende certificaten toe, zolang deze correct zijn gevalideerd en zijn gekoppeld aan een lokaal geïnstalleerd CA-certificaat.
 
       Opmerking: Dit beleid is afhankelijk van de uitgevoerde verificatiestack voor het certificaat van het besturingssysteem en of hiermee SHA-1-handtekeningen zijn toegestaan. Als door een update van het besturingssysteem een wijziging wordt aangebracht in de verwerking van het besturingssysteem ten aanzien van SHA-1-certificaten, is dit beleid wellicht niet meer van toepassing. Daarnaast is dit beleid bedoeld als tijdelijke oplossing voor bedrijven om af te stappen van SHA-1. Dit beleid wordt op of rond 1 januari 2019 verwijderd.
@@ -8738,6 +8745,7 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
       Opmerking: Bekijk een lijst met variabelen die je kunt gebruiken (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="7719808201797990069">URL-patroonuitzonderingen voor tabbladverwijdering</translation>
 <translation id="7721944091689270995">Gebruikers-ID voor <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="7725010277314676939">De modus Alleen HTTPS geforceerd aanzetten in de strikte modus</translation>
 <translation id="7728486978686128364">Verzoekmethoden niet in hoofdletters schrijven, behalve DELETE/GET/HEAD/OPTIONS/POST/PUT</translation>
 <translation id="7731026922044991970">Het verouderde gedrag van <ph name="ATTRIBUTE_SAMESITE_NAME" /> voor cookies op alle sites terugzetten</translation>
 <translation id="7732907212083471072">Verwijderd beleid</translation>
@@ -10605,6 +10613,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 
       Dit beleid is een tijdelijke maatregel en wordt verwijderd in toekomstige versies van <ph name="PRODUCT_NAME" />. Na verwijdering van het beleid kan <ph name="PRODUCT_NAME" /> altijd zoekopdrachten voor aanvullende DNS-typen uitvoeren.</translation>
 <translation id="9167719789236691545">Drive in de app Bestanden van <ph name="PRODUCT_OS_NAME" /> uitzetten</translation>
+<translation id="9172648973829444124">De modus Alleen HTTPS geforceerd aanzetten in de gebalanceerde modus</translation>
 <translation id="9172911925443428317">Niet toestaan dat de promotie voor appstore-beoordelingen wordt getoond</translation>
 <translation id="9173133289347070466"><ph name="PRODUCT_NAME" />-enquêtes in het product verzamelen gebruikersfeedback voor de browser. De enquête-antwoorden worden niet gekoppeld aan gebruikersaccounts.
 Als je dit beleid toepast of niet instelt, kunnen in het product enquêtes aan gebruikers worden getoond.
@@ -10616,6 +10625,7 @@ Dit beleid heeft geen effect als <ph name="METRICS_REPORTING_ENABLED_POLICY_NAME
 <translation id="9180108183162961002">Toestaan dat gebruikers als gast inloggen bij de browser</translation>
 <translation id="9185963199234034321">Hoog contrast op het inlogscherm aanzetten en de gebruiker toestaan dit tijdelijk uit te zetten</translation>
 <translation id="9187743794267626640">Koppeling van externe opslag uitzetten</translation>
+<translation id="9189737595688383533">Gebruikers niet toestaan een modus Alleen HTTPS aan te zetten</translation>
 <translation id="9190022798664427644">Monogeluid aanzetten</translation>
 <translation id="9190456586252617675">Met dit beleid wordt de modus voor introductie van de Assistent beheerd.
 

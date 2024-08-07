@@ -6127,6 +6127,7 @@
 <translation id="5435779377906857208"><ph name="HOST" /> сайтына геодерегіңізді пайдалануға әрқашан рұқсат беру</translation>
 <translation id="5436492226391861498">Прокси туннелі күтілуде…</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> іздеу:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> терезе ені — <ph name="WINDOW_SIZE_PERCENT" />, <ph name="PANE_SIDE" /> панель ені — <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5440425659852470030">Бүйірлік панельді жабу</translation>
 <translation id="544083962418256601">Таңбашалар жасау…</translation>
 <translation id="5441133529460183413">Веб-қолданба Chrome браузері арқылы орнатылды.</translation>
@@ -8526,6 +8527,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 сайт <ph name="FPS_OWNER" /> тобына кіреді}other{{MEMBERS} сайт <ph name="FPS_OWNER" /> тобына кіреді}}</translation>
 <translation id="7225082563376899794">Құпия сөздерді толтыру кезінде Windows Hello функциясын пайдалану</translation>
 <translation id="7225179976675429563">Желі түрі жоқ</translation>
+<translation id="7227235818314667565">Бөлісу әрекетін басқару</translation>
 <translation id="7227458944009118910">Төменде көрсетілген қолданбалар протокол сілтемелерін де өңдей алады. Басқа қолданбаларға рұқсат қажет.</translation>
 <translation id="7228056665272655255">Саусақ ізін реттеу үшін балаңыз пернетақтаның жоғарғы оң жақ бұрышындағы саусақ ізін оқу сканерін түртуі керек. Бала саусағының ізі туралы деректер қауіпсіз сақталған және <ph name="DEVICE_TYPE" /> құрылғысынан басқа ешқайда жіберілмейді.</translation>
 <translation id="7228523857728654909">Экран құлпы және аккаунтқа кіру</translation>
@@ -8574,6 +8576,7 @@
 <translation id="7258192266780953209">Түрлендіру</translation>
 <translation id="7258225044283673131">Қолданба жауап бермейді. Оны жабу үшін "Қолмен жабу" опциясын таңдаңыз.</translation>
 <translation id="7260186537988033909">Құрылғыны киоск режимінде немесе цифрлық тақтада тіркеу аяқталды</translation>
+<translation id="7261217796641151584">Топты бөлісу</translation>
 <translation id="7261612856573623172">Мәтінді дыбыстауға арналған жүйе дауысы</translation>
 <translation id="7262004276116528033">Бұл кіру қызметі <ph name="SAML_DOMAIN" /> доменінде орналасқан</translation>
 <translation id="7264695323040866038">Қолдау көрсетілетін сілтемелер әрдайым <ph name="APP" /> қолданбасында ашылсын ба?</translation>
@@ -10509,6 +10512,7 @@
 <translation id="8656888282555543604">Брайль журналын қосу</translation>
 <translation id="8657393004602556571">Пікірді жою керек пе?</translation>
 <translation id="8657542881463614516">Беттен бетке өту үшін сырғыту қимылын қолданыңыз</translation>
+<translation id="865936634714975126">Жүктелетін бетте бет түрлерін таңдау үшін URL мекенжайына сұрау параметрін қосыңыз. Мысалы: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> контактілері</translation>
 <translation id="8659609431223166673">Терезе төмен жылжытылды</translation>
 <translation id="8661290697478713397">Сілтемені Инко&amp;гнито терезесінде ашу</translation>

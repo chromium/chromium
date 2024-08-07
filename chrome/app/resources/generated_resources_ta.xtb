@@ -6147,6 +6147,7 @@
 <translation id="5435779377906857208">எனது இருப்பிடத் தகவலை அணுக <ph name="HOST" /> தளத்தை எப்போதும் அனுமதி</translation>
 <translation id="5436492226391861498">ப்ராக்ஸி டனலுக்காக காத்திருக்கிறது...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> தளத்தைத் தேடுக:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> சாளரம் தற்போது <ph name="WINDOW_SIZE_PERCENT" /> அகலப்படுத்தப்பட்டது, <ph name="PANE_SIDE" /> பெட்டி தற்போது <ph name="PANE_SIZE_PERCENT" /> அகலப்படுத்தப்பட்டது.</translation>
 <translation id="5440425659852470030">பக்கவாட்டு பேனலை மூடு</translation>
 <translation id="544083962418256601">குறுக்குவழிகளை உருவாக்கு...</translation>
 <translation id="5441133529460183413">Chrome உலாவியில் இருந்து இணைய ஆப்ஸ் நிறுவப்பட்டது</translation>
@@ -8551,6 +8552,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" /> இன் குழுவிலுள்ள 1 தளம்}other{<ph name="FPS_OWNER" /> இன் குழுவிலுள்ள {MEMBERS} தளங்கள்}}</translation>
 <translation id="7225082563376899794">கடவுச்சொற்களை வழங்கும்போது Windows Helloவைப் பயன்படுத்து</translation>
 <translation id="7225179976675429563">நெட்வொர்க் வகை இல்லை</translation>
+<translation id="7227235818314667565">பகிர்தலை நிர்வகியுங்கள்</translation>
 <translation id="7227458944009118910">கீழே பட்டியலிடப்பட்டுள்ள ஆப்ஸ் நெறிமுறை இணைப்புகளைக் கையாளலாம். மற்ற ஆப்ஸ் இதற்கு அனுமதி கேட்க வேண்டும்.</translation>
 <translation id="7228056665272655255">கைரேகையை அமைக்க கீபோர்டின் மேல் வலது ஓரத்தில் உள்ள கைரேகை சென்சாரைத் தொடுமாறு உங்கள் பிள்ளையிடம் கூறவும். உங்கள் பிள்ளையின் கைரேகைத் தரவு பாதுகாப்பாகச் சேமிக்கப்படுவதுடன் <ph name="DEVICE_TYPE" /> சாதனத்திலேயே இருக்கும்.</translation>
 <translation id="7228523857728654909">திரைப் பூட்டு மற்றும் உள்நுழைவு</translation>
@@ -8599,6 +8601,7 @@
 <translation id="7258192266780953209">மாற்றங்கள்</translation>
 <translation id="7258225044283673131">ஆப்ஸ் செயல்படவில்லை. ஆப்ஸை மூட "உடனே மூடு" என்பதைத் தேர்ந்தெடுங்கள்.</translation>
 <translation id="7260186537988033909">கியோஸ்க் மற்றும் சைனேஜ் சாதனத்தைப் பதிவுசெய்வது நிறைவடைந்தது</translation>
+<translation id="7261217796641151584">குழுவைப் பகிர்</translation>
 <translation id="7261612856573623172">சாதனத்தின் இயல்பு ‘உரையிலிருந்து பேச்சுக்கான' குரல்</translation>
 <translation id="7262004276116528033">உள்நுழைவுச் சாதனத்தை <ph name="SAML_DOMAIN" /> ஹோஸ்ட் செய்கிறது</translation>
 <translation id="7264695323040866038">ஆதரிக்கப்படும் இணைய இணைப்புகளைத் திறக்க <ph name="APP" /> ஆப்ஸை எப்போதும் பயன்படுத்தவா?</translation>
@@ -10536,6 +10539,7 @@
 <translation id="8656888282555543604">பிரெய்ல் பதிவிடலை இயக்கு</translation>
 <translation id="8657393004602556571">கருத்தை நீக்க விரும்புகிறீர்களா?</translation>
 <translation id="8657542881463614516">பக்கங்களுக்கு இடையே மாற, ஸ்வைப் செய்தல் சைகையைப் பயன்படுத்தவும்</translation>
+<translation id="865936634714975126">பக்கம் ஏற்றப்படும்போது வகைகளைத் தேர்ந்தெடுக்க, URLலில் வினவல் அளவுருவைச் சேர்க்கவும். உதாரணம்: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> தொடர்புகள்</translation>
 <translation id="8659609431223166673">சாளரம் கீழே நகர்த்தப்பட்டது</translation>
 <translation id="8661290697478713397">மறை&amp;நிலை சாளரத்தில் இணைப்பைத் திற</translation>

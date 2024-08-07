@@ -374,7 +374,7 @@
 <translation id="1656489000284462475">الاستلام</translation>
 <translation id="1658111267661135323">تلفزيون وفيديو</translation>
 <translation id="1658918301167915956">أجهزة تتضمّن بلوتوث</translation>
-<translation id="1662550410081243962">حفظ طرق الدفع وملؤها</translation>
+<translation id="1662550410081243962">حفظ طرق الدفع واستخدامها لملء النماذج</translation>
 <translation id="1663943134801823270">‏يتم أخذ البطاقات والعناوين من Chrome، ويمكنك إدارتها في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">البوليمر الضوئي للطباعة الفلكسغرافية</translation>
 <translation id="1668071460721346172">تلقّي رسالة إلكترونية</translation>
@@ -1510,6 +1510,7 @@
 <translation id="3792100426446126328">‏<ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> بوصة)</translation>
 <translation id="3792826587784915501">أفلام مستقلة وأفلام شعبية</translation>
 <translation id="3793574014653384240">أعداد الأعطال التي حدثت مؤخرًا على الجهاز وأسبابها</translation>
+<translation id="3796417399166194741">‏يمنع <ph name="SITE" /> متصفّح Chrome من إنشاء اتصال آمن</translation>
 <translation id="3799805948399000906">الخط المطلوب</translation>
 <translation id="3801265110651850478">‏إرسال طلب Do Not Track مع زيارات التصفُّح
 </translation>
@@ -2706,6 +2707,7 @@
 <translation id="6106989379647458772">قد تكون صفحة الويب على <ph name="PAGE" /> غير متاحة مؤقتًا أو تم نقلها نهائيًا إلى عنوان ويب جديد.</translation>
 <translation id="6107012941649240045">الجهة صاحبة الإصدار</translation>
 <translation id="6107924765192360631">ابدأ بكتابة بضع كلمات أو مسودة أولية للحصول على اقتراحات الكتابة.</translation>
+<translation id="6108580855199168381">تفاصيل الشهادة</translation>
 <translation id="6108702513636120202">‏محرك البحث الخاص بك في Chromium</translation>
 <translation id="6108849843016142864">زواحف وبرمائيات</translation>
 <translation id="610911394827799129">‏قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح على <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
@@ -3272,7 +3274,7 @@
 <translation id="7174545416324379297">تم الدمج</translation>
 <translation id="7175097078723125014">تم تحديد خيار تعديل العنوان.</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> وخيار <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> آخر}two{<ph name="SHIPPING_OPTION_PREVIEW" /> وخياران (<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />) آخران}few{<ph name="SHIPPING_OPTION_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيارات أخرى}many{<ph name="SHIPPING_OPTION_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيارًا آخر}other{<ph name="SHIPPING_OPTION_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيار آخر}}</translation>
-<translation id="7179323680825933600">حفظ طرق الدفع وملؤها</translation>
+<translation id="7179323680825933600">حفظ طرق الدفع واستخدامها لملء النماذج</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7181261019481237103">فتح نافذة التصفُّح المتخفي</translation>
 <translation id="7182878459783632708">لم يتم ضبط أي سياسات</translation>
@@ -3476,6 +3478,12 @@
 <translation id="7535087603100972091">القيمة</translation>
 <translation id="753556296624075801">‏بواسطة Google</translation>
 <translation id="7537536606612762813">إلزامية</translation>
+<translation id="7541586907443866208">‏سيتمكن المهاجمون من الاطّلاع على أي بيانات يتم إرسالها بينك وبين هذا الموقع الإلكتروني وتغييرها.
+    &lt;ul&gt;
+    &lt;li&gt;إذا كنت تستخدم حاليًا شبكة Wi-Fi عامة، مثل التي في مطار أو فندق، ننصحك بإعادة المحاولة عندما تكون متصلاً بشبكة موثوقة (مثل شبكة Wi-Fi في المنزل أو في مكان العمل).&lt;/li&gt;
+    &lt;li&gt;إذا كنت تعرف مالك الموقع الإلكتروني، يمكنك طلب إصلاح هذا الخطأ منه.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات عن هذا التحذير<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">تم إيقاف الملء التلقائي لبطاقة الائتمان لأن هذا النموذج لا يستخدم اتصالاً آمنًا.</translation>
 <translation id="7543525346216957623">طلب الإذن من والدَيك</translation>
 <translation id="7546409722674205727">جارٍ تشغيل "<ph name="APP_NAME" />"</translation>
