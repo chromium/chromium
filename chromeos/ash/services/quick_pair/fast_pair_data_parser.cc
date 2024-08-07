@@ -316,8 +316,8 @@ void FastPairDataParser::ParseMessageStreamMessages(
     return;
   }
 
-  base::circular_deque<uint8_t> remaining_bytes(message_bytes.begin(),
-                                                message_bytes.end());
+  base::circular_deque<uint8_t> remaining_bytes(base::from_range,
+                                                message_bytes);
   while (remaining_bytes.size() >= kMinMessageByteCount) {
     uint8_t message_group_byte = remaining_bytes.front();
     remaining_bytes.pop_front();
