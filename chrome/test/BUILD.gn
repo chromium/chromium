@@ -2058,7 +2058,9 @@ if (!is_android) {
       "//services/screen_ai/public/mojom",
 
       # TODO(b/287255120) : Also add this as a dependency on Android for building test code.
+      "//chrome/browser/enterprise/watermark:watermark_view_lib",
       "//components/optimization_guide/core:test_support",
+      "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
       "//components/segmentation_platform/public:test_support",
       "//components/services/app_service",
       "//components/services/app_service/public/cpp:test_support",
@@ -2198,13 +2200,6 @@ if (!is_android) {
     ]
 
     allow_circular_includes_from = []
-
-    if (enterprise_watermark) {
-      deps += [
-        "//chrome/browser/enterprise/watermark:watermark_view_lib",
-        "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
-      ]
-    }
 
     if (is_chromeos) {
       deps += [
@@ -2521,6 +2516,7 @@ if (!is_android) {
       "../browser/enterprise/browser_management/management_service_browsertest.cc",
       "../browser/enterprise/connectors/reporting/crash_reporting_context_browsertest.cc",
       "../browser/enterprise/util/managed_browser_utils_browsertest.cc",
+      "../browser/enterprise/watermark/watermark_browsertest.cc",
       "../browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api_browsertest.cc",
       "../browser/fast_shutdown_browsertest.cc",
       "../browser/favicon/content_favicon_driver_browsertest.cc",
@@ -3291,10 +3287,6 @@ if (!is_android) {
         ]
         deps += [ "../browser/enterprise/connectors/analysis:features" ]
       }
-    }
-
-    if (enterprise_watermark) {
-      sources += [ "../browser/enterprise/watermark/watermark_browsertest.cc" ]
     }
 
     if (is_win) {
@@ -4546,6 +4538,7 @@ if (!is_android) {
         "//components/commerce/core:shopping_service_test_support",
         "//components/commerce/core:utils",
         "//components/page_info/core:proto",
+        "//components/safe_browsing/core/browser/realtime:test_support",
         "//components/send_tab_to_self",
         "//components/send_tab_to_self:test_support",
         "//components/user_education/views",
@@ -4557,10 +4550,6 @@ if (!is_android) {
           [ "//chrome/browser/ui/lens:browser_tests" ]
       if (use_aura) {
         deps += [ "//ui/aura:test_support" ]
-      }
-      if (enterprise_watermark) {
-        deps +=
-            [ "//components/safe_browsing/core/browser/realtime:test_support" ]
       }
     }
 
@@ -9899,6 +9888,7 @@ test("unit_tests") {
 
   if (toolkit_views) {
     deps += [
+      "//chrome/browser/enterprise/watermark:watermark_view_lib",
       "//chrome/browser/ui:test_support",
       "//chrome/browser/ui/actions:actions",
       "//chrome/browser/ui/actions:actions_headers",
@@ -9913,6 +9903,8 @@ test("unit_tests") {
       "//components/media_router/browser:test_support",
       "//components/media_router/common:test_support",
       "//components/omnibox/browser:vector_icons",
+      "//components/safe_browsing/core/browser/realtime:test_support",
+      "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
       "//components/saved_tab_groups:test_support",
       "//components/user_education/views",
       "//components/user_education/views:test_support",
@@ -9933,6 +9925,9 @@ test("unit_tests") {
     sources += [
       "../../ui/views/controls/webview/web_dialog_view_unittest.cc",
       "../../ui/views/controls/webview/webview_unittest.cc",
+      "../browser/enterprise/data_protection/data_protection_navigation_observer_unittest.cc",
+      "../browser/enterprise/data_protection/data_protection_page_user_data_unittest.cc",
+      "../browser/enterprise/watermark/watermark_view_unittest.cc",
       "../browser/ui/commerce/mock_commerce_ui_tab_helper.cc",
       "../browser/ui/commerce/mock_commerce_ui_tab_helper.h",
       "../browser/ui/media_router/media_route_starter_unittest.cc",
@@ -10239,19 +10234,6 @@ test("unit_tests") {
       "../browser/enterprise/data_protection/paste_allowed_request_unittest.cc",
     ]
     deps += [ "../browser/enterprise/data_controls:unit_tests" ]
-  }
-
-  if (enterprise_watermark) {
-    sources += [
-      "//chrome/browser/enterprise/data_protection/data_protection_navigation_observer_unittest.cc",
-      "//chrome/browser/enterprise/data_protection/data_protection_page_user_data_unittest.cc",
-      "//chrome/browser/enterprise/watermark/watermark_view_unittest.cc",
-    ]
-    deps += [
-      "//chrome/browser/enterprise/watermark:watermark_view_lib",
-      "//components/safe_browsing/core/browser/realtime:test_support",
-      "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
-    ]
   }
 
   if (!is_android) {

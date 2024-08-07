@@ -111,11 +111,9 @@ enum class InstallableWebAppCheckResult;
 struct WebAppBannerData;
 }  // namespace webapps
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
 namespace enterprise_watermark {
 class WatermarkView;
 }
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView
@@ -821,9 +819,7 @@ class BrowserView : public BrowserWindow,
   // TopContainerBackground::PaintThemeCustomImage for details.
   gfx::Point GetThemeOffsetFromBrowserView() const;
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
   void ApplyWatermarkSettings(const std::string& watermark_text);
-#endif
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   void ApplyScreenshotSettings(bool allow);

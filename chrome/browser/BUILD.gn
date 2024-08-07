@@ -3624,6 +3624,12 @@ static_library("browser") {
       "download/offline_item_model_manager.h",
       "download/offline_item_model_manager_factory.cc",
       "download/offline_item_model_manager_factory.h",
+      "enterprise/data_protection/data_protection_navigation_controller.cc",
+      "enterprise/data_protection/data_protection_navigation_controller.h",
+      "enterprise/data_protection/data_protection_navigation_observer.cc",
+      "enterprise/data_protection/data_protection_navigation_observer.h",
+      "enterprise/data_protection/data_protection_page_user_data.cc",
+      "enterprise/data_protection/data_protection_page_user_data.h",
       "enterprise/reporting/browser_report_generator_desktop.cc",
       "enterprise/reporting/browser_report_generator_desktop.h",
       "enterprise/reporting/extension_info.cc",
@@ -4253,6 +4259,7 @@ static_library("browser") {
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/tabs:tabs",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
@@ -4296,6 +4303,7 @@ static_library("browser") {
       "//components/omnibox/browser:mojo_bindings",
       "//components/payments/content",
       "//components/payments/content:utils",
+      "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
       "//components/services/app_service",
       "//components/shared_highlighting/core/common",
       "//components/soda",
@@ -6518,21 +6526,6 @@ static_library("browser") {
       ]
     }
     deps += [ "//chrome/browser/enterprise/data_controls" ]
-  }
-
-  if (enterprise_watermark || enterprise_screenshot_protection) {
-    sources += [
-      "//chrome/browser/enterprise/data_protection/data_protection_navigation_controller.cc",
-      "//chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h",
-      "//chrome/browser/enterprise/data_protection/data_protection_navigation_observer.cc",
-      "//chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h",
-      "//chrome/browser/enterprise/data_protection/data_protection_page_user_data.cc",
-      "//chrome/browser/enterprise/data_protection/data_protection_page_user_data.h",
-    ]
-    deps += [
-      "//chrome/browser/ui/tabs:tabs",
-      "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
-    ]
   }
 
   if (enterprise_client_certificates) {

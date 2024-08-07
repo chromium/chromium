@@ -39,6 +39,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
+#include "chrome/browser/enterprise/watermark/watermark_view.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -343,11 +345,6 @@
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-#include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
-#include "chrome/browser/enterprise/watermark/watermark_view.h"
-#endif
 
 using base::UserMetricsAction;
 using content::WebContents;
@@ -949,11 +946,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   contents_web_view_ =
       contents_container->AddChildView(std::move(contents_web_view));
   contents_web_view_->set_is_primary_web_contents_for_window(true);
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
   watermark_view_ = contents_container->AddChildView(
       std::make_unique<enterprise_watermark::WatermarkView>());
-#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
       devtools_web_view_, contents_web_view_, watermark_view_));
@@ -1067,11 +1061,9 @@ BrowserView::~BrowserView() {
     global_registry->set_registry_for_active_window(nullptr);
   }
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
   // `watermark_view_` is a raw pointer to a child view, so it needs to be set
   // to null before `RemoveAllChildViews()` is called to avoid dangling.
   watermark_view_ = nullptr;
-#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
   // Child views maintain PrefMember attributes that point to
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
@@ -5521,13 +5513,11 @@ void BrowserView::UpdateFullscreenAllowedFromPolicy(
   }
 }
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
 void BrowserView::ApplyWatermarkSettings(const std::string& watermark_text) {
   if (watermark_view_) {
     watermark_view_->SetString(watermark_text);
   }
 }
-#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 void BrowserView::ApplyScreenshotSettings(bool allow) {
