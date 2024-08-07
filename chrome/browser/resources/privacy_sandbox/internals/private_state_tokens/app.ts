@@ -12,10 +12,13 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import type {PrivateStateTokensApiBrowserProxy} from './browser_proxy.js';
+import {PrivateStateTokensApiBrowserProxyImpl} from './browser_proxy.js';
+import type {IssuerTokenCount} from './private_state_tokens.js';
 import type {PrivateStateTokensSidebarElement} from './sidebar.js';
 import type {PrivateStateTokensToolbarElement} from './toolbar.js';
-import {ItemsToRender} from './types.js';
-import type {Metadata} from './types.js';
+import {ItemsToRender, nullMetadataObj} from './types.js';
+import type {ListItem, Metadata} from './types.js';
 
 export interface PrivateStateTokensAppElement {
   $: {
@@ -45,11 +48,13 @@ export class PrivateStateTokensAppElement extends CrLitElement {
       narrowThreshold_: {type: Number},
       isDrawerOpen_: {type: Boolean},
       itemToRender: {type: String},
+      data: {type: Array},
     };
   }
 
   override connectedCallback() {
     super.connectedCallback();
+    this.updateIssuerTokenCounts_();
     this.addEventListener(
         'cr-toolbar-menu-click', this.onMenuButtonClick_ as EventListener);
     this.addEventListener(
@@ -87,6 +92,28 @@ export class PrivateStateTokensAppElement extends CrLitElement {
       this.handleContentNavigation_.bind(this, ItemsToRender.ISSUER_METADATA);
   private handleNavigationToList_ =
       this.handleContentNavigation_.bind(this, ItemsToRender.ISSUER_LIST);
+  data: ListItem[] = [];
+
+  private browserProxy: PrivateStateTokensApiBrowserProxy =
+      PrivateStateTokensApiBrowserProxyImpl.getInstance();
+
+  private async updateIssuerTokenCounts_() {
+    const newIssuer = await this.browserProxy.handler.getIssuerTokenCounts();
+    this.data = newIssuer.privateStateTokensCount
+                    .sort(
+                        (a: IssuerTokenCount, b: IssuerTokenCount) =>
+                            a.issuer.localeCompare(b.issuer))
+                    .map(
+                        issuerObj => ({
+                          issuerOrigin: issuerObj.issuer,
+                          numTokens: issuerObj.count,
+                          // TODO(crbug.com/348590926): redemptions data will
+                          // be plumbed in a following cl
+                          redemptions: [],
+                          metadata: nullMetadataObj,
+                        }),
+                    );
+  }
 
   protected onNarrowChanged_(e: CustomEvent<{value: boolean}>) {
     this.narrow_ = e.detail.value;

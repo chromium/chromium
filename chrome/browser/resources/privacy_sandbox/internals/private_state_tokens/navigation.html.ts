@@ -16,8 +16,9 @@ export function getHtml(this: PrivateStateTokensNavigationElement) {
         .purposes=${this.metadata_.purposes}></private-state-tokens-metadata>`;
   }
   if (this.itemToRender === ItemsToRender.ISSUER_LIST) {
-    return html`<private-state-tokens-list-container>
-    </private-state-tokens-list-container id="pst-container">`;
+    return html`<private-state-tokens-list-container id="pst-container" .data=${
+        this.data}>
+    </private-state-tokens-list-container>`;
   }
   throw new Error(`Unexpected item to render: ${this.itemToRender}`);
   //clang-format on

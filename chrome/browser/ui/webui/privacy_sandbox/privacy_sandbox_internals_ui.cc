@@ -105,8 +105,8 @@ void PrivacySandboxInternalsUI::BindInterface(
     mojo::PendingReceiver<
         private_state_tokens::mojom::PrivateStateTokensPageHandler> receiver) {
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivateStateTokensDevUI)) {
-    private_state_tokens_handler_ =
-        std::make_unique<PrivateStateTokensHandler>(std::move(receiver));
+    private_state_tokens_handler_ = std::make_unique<PrivateStateTokensHandler>(
+        web_ui(), std::move(receiver));
   }
 }
 #endif

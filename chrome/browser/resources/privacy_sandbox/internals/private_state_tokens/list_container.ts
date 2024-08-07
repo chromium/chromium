@@ -11,7 +11,6 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './list_container.css.js';
 import {getHtml} from './list_container.html.js';
-import {dummyListItemData} from './test_data.js';
 import type {ListItem} from './types.js';
 
 export interface PrivateStateTokensListContainerElement {
@@ -40,7 +39,8 @@ export class PrivateStateTokensListContainerElement extends CrLitElement {
     };
   }
 
-  data: ListItem[] = dummyListItemData;  // TODO: use real data and type
+  data: ListItem[] = [];
+
   protected isAnyRowCollapsed: boolean = true;
 
   private rowExpandedStates_: Map<string, boolean> = new Map();

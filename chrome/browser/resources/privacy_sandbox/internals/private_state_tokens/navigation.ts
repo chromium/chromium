@@ -9,7 +9,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getHtml} from './navigation.html.js';
 import {ItemsToRender, nullMetadataObj} from './types.js';
-import type {Metadata} from './types.js';
+import type {ListItem, Metadata} from './types.js';
 
 export class PrivateStateTokensNavigationElement extends CrLitElement {
   static get is() {
@@ -22,10 +22,12 @@ export class PrivateStateTokensNavigationElement extends CrLitElement {
 
   static override get properties() {
     return {
+      data: {type: Array},
       itemToRender: {type: String},
     };
   }
 
+  data: ListItem[] = [];
   protected metadata_: Metadata = nullMetadataObj;
   protected itemToRender: ItemsToRender = ItemsToRender.ISSUER_LIST;
 }

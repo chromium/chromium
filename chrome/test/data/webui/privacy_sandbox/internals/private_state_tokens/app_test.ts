@@ -5,14 +5,21 @@
 import 'chrome://privacy-sandbox-internals/private_state_tokens/private_state_tokens.js';
 
 import type {PrivateStateTokensAppElement, PrivateStateTokensNavigationElement} from 'chrome://privacy-sandbox-internals/private_state_tokens/private_state_tokens.js';
-import {ItemsToRender} from 'chrome://privacy-sandbox-internals/private_state_tokens/private_state_tokens.js';
+import {ItemsToRender, PrivateStateTokensApiBrowserProxyImpl} from 'chrome://privacy-sandbox-internals/private_state_tokens/private_state_tokens.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestPrivateStateTokensApiBrowserProxy} from './test_api_proxy.js';
+import {dummyIssuerTokenCounts} from './test_data.js';
+
 suite('PrivateStateTokensAppTest', () => {
   let app: PrivateStateTokensAppElement;
+  let testProxy: TestPrivateStateTokensApiBrowserProxy;
 
   setup(async () => {
+    testProxy = new TestPrivateStateTokensApiBrowserProxy();
+    PrivateStateTokensApiBrowserProxyImpl.setInstance(testProxy);
+    testProxy.handler.privateStateTokensCounts = dummyIssuerTokenCounts;
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('private-state-tokens-app');
     document.body.appendChild(app);
@@ -20,7 +27,8 @@ suite('PrivateStateTokensAppTest', () => {
     await microtasksFinished();
   });
 
-  test('check layout', () => {
+  test('check initial state', () => {
+    assertEquals(1, testProxy.handler.getCallCount('getIssuerTokenCounts'));
     assertTrue(isVisible(app));
     assertTrue(isVisible(app.$.sidebar));
   });

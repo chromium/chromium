@@ -1,9 +1,8 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import type {ListItem, Metadata} from 'chrome://privacy-sandbox-internals/private_state_tokens/private_state_tokens.js';
+import type {IssuerTokenCount, ListItem, Metadata} from 'chrome://privacy-sandbox-internals/private_state_tokens/private_state_tokens.js';
 import {nullMetadataObj} from 'chrome://privacy-sandbox-internals/private_state_tokens/private_state_tokens.js';
-
 
 export const dummyListItemData: ListItem[] = [
   {
@@ -74,3 +73,17 @@ export const dummyMetadata: Metadata = {
     'Analytics reporting',
   ],
 };
+export const dummyIssuerTokenCounts: IssuerTokenCount[] = [
+  {
+    issuer: 'issuer1.com',
+    count: 15,
+  },
+  {
+    issuer: 'issuer2.com',
+    count: 7,
+  },
+  {
+    issuer: 'issuer3.com',
+    count: 0,
+  },
+];
