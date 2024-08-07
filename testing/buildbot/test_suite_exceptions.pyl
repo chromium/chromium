@@ -2015,6 +2015,11 @@
           'shards': 12,
         },
       },
+      'linux-chromeos-dbg': {
+        'swarming': {
+          'shards': 16,
+        },
+      },
       'linux-chromeos-rel': {
         # Only retry the individual failed tests instead of rerunning entire
         # shards.
