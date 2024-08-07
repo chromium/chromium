@@ -318,6 +318,8 @@ void DownloadPrefs::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(prefs::kShowMissingSdCardErrorAndroid, true);
   registry->RegisterBooleanPref(prefs::kAutoOpenPdfEnabled, false);
+  registry->RegisterListPref(prefs::kDownloadAppVerificationPromptTimestamps,
+                             {});
 #endif
 }
 

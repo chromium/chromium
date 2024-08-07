@@ -70,6 +70,14 @@ inline constexpr char kDownloadBubblePartialViewEnabled[] =
 inline constexpr char kDownloadBubblePartialViewImpressions[] =
     "download_bubble.partial_view_impressions";
 
+#if BUILDFLAG(IS_ANDROID)
+// Records the timestamp of each time we show a prompt to the user
+// suggesting they enable app verification on Android. We use this pref
+// to limit the number of times users see a prompt in a given window.
+inline constexpr char kDownloadAppVerificationPromptTimestamps[] =
+    "download.app_verification_prompt_timestamps";
+#endif
+
 // If set to true profiles are created in ephemeral mode and do not store their
 // data in the profile folder on disk but only in memory.
 inline constexpr char kForceEphemeralProfiles[] = "profile.ephemeral_mode";

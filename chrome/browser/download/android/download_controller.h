@@ -74,6 +74,7 @@ class DownloadController : public DownloadControllerBase {
 
  private:
   friend struct base::DefaultSingletonTraits<DownloadController>;
+  friend class DownloadControllerTest;
   DownloadController();
   ~DownloadController() override;
 
@@ -102,10 +103,14 @@ class DownloadController : public DownloadControllerBase {
   ProfileKey* GetProfileKey(download::DownloadItem* download_item);
 
   // Callback after we prompt the user to enable app verification.
-  void EnableVerifyAppsDone(safe_browsing::VerifyAppsEnabledResult result);
+  void EnableVerifyAppsDone(download::DownloadItem* item,
+                            safe_browsing::VerifyAppsEnabledResult result);
 
   // Notify Java that download is complete, so the user can be informed.
   void OnDownloadComplete(download::DownloadItem* item);
+
+  // Whether or not we should show an app verification prompt for `item`
+  bool ShouldShowAppVerificationPrompt(download::DownloadItem* item);
 
   std::string default_file_name_;
 
@@ -113,11 +118,8 @@ class DownloadController : public DownloadControllerBase {
 
   std::unique_ptr<DangerousDownloadDialogBridge> dangerous_download_bridge_;
 
-  // Whether the user has been prompted to enable app verification this session.
-  bool has_seen_app_verification_dialog_ = false;
-
   // The item currently or previously doing an app verification
-  // prompt. Because we show at most one per session, this does not need
+  // prompt. Because we show at most one at a time, this does not need
   // to be a set.
   raw_ptr<download::DownloadItem> app_verification_prompt_download_ = nullptr;
 };
