@@ -2201,6 +2201,10 @@
       status: "stable",
     },
     {
+      name: "HandleSelectionChangeOnDeletingEmptyElement",
+      status: "stable",
+    },
+    {
       name: "HandwritingRecognition",
       status: {
         "ChromeOS_Ash": "stable",
