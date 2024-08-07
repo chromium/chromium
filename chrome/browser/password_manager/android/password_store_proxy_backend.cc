@@ -439,11 +439,9 @@ void PasswordStoreProxyBackend::MaybeClearBuiltInBackend() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kClearLoginDatabaseForUPMUsers)) {
-    built_in_backend_->RemoveLoginsCreatedBetweenAsync(
-        FROM_HERE, base::Time(), base::Time::Max(),
-        base::BindOnce(&RecordPasswordDeletionResult));
-  }
+  built_in_backend_->RemoveLoginsCreatedBetweenAsync(
+      FROM_HERE, base::Time(), base::Time::Max(),
+      base::BindOnce(&RecordPasswordDeletionResult));
 }
 
 }  // namespace password_manager

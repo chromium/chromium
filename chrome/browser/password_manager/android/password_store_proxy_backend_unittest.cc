@@ -119,7 +119,7 @@ class PasswordStoreProxyBackendBaseTest : public testing::Test {
 
   void SetUp() override { proxy_backend_ = CreateProxyBackend(); }
 
-  virtual std::unique_ptr<PasswordStoreProxyBackend> CreateProxyBackend() {
+  std::unique_ptr<PasswordStoreProxyBackend> CreateProxyBackend() {
     auto built_in_backend =
         std::make_unique<StrictMock<MockPasswordStoreBackend>>();
     auto android_backend =
@@ -293,8 +293,6 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
 }
 
 TEST_F(PasswordStoreProxyBackendBaseTest, BuiltInBackendClearedOnSyncInit) {
-  base::test::ScopedFeatureList features{
-      features::kClearLoginDatabaseForUPMUsers};
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
   EnablePasswordSync();
 
@@ -305,21 +303,7 @@ TEST_F(PasswordStoreProxyBackendBaseTest, BuiltInBackendClearedOnSyncInit) {
 }
 
 TEST_F(PasswordStoreProxyBackendBaseTest,
-       BuiltInBackendNotClearedOnSyncInit_WhenFlagDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kClearLoginDatabaseForUPMUsers);
-  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
-  EnablePasswordSync();
-
-  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
-  EXPECT_CALL(built_in_backend(), RemoveLoginsCreatedBetweenAsync).Times(0);
-  proxy_backend().OnSyncServiceInitialized(sync_service());
-}
-
-TEST_F(PasswordStoreProxyBackendBaseTest,
        BuiltInBackendNotClearedOnSyncInit_WhenUnenrolled) {
-  base::test::ScopedFeatureList features{
-      features::kClearLoginDatabaseForUPMUsers};
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
   prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
                       true);
@@ -332,8 +316,6 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
 
 TEST_F(PasswordStoreProxyBackendBaseTest,
        BuiltInBackendNotClearedOnSyncInit_WhenInitialUPMMigrationNotFinished) {
-  base::test::ScopedFeatureList features{
-      features::kClearLoginDatabaseForUPMUsers};
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
   EnablePasswordSync();
 
@@ -344,8 +326,6 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
 
 TEST_F(PasswordStoreProxyBackendBaseTest,
        BuiltInBackendNotClearedOnSyncInit_WhenSyncDisabled) {
-  base::test::ScopedFeatureList features{
-      features::kClearLoginDatabaseForUPMUsers};
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
 
   EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
@@ -361,8 +341,6 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
   const char kCountMetric[] =
       "PasswordManager.PasswordStoreProxyBackend.RemovedPasswordCount";
 
-  base::test::ScopedFeatureList features{
-      features::kClearLoginDatabaseForUPMUsers};
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
   EnablePasswordSync();
 
@@ -409,8 +387,6 @@ class PasswordStoreProxyBackendTest
  public:
   void SetUp() override {
     PasswordStoreProxyBackendBaseTest::SetUp();
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kClearLoginDatabaseForUPMUsers);
 
     if (GetParam().is_sync_enabled) {
       EnablePasswordSync();
@@ -424,23 +400,20 @@ class PasswordStoreProxyBackendTest
     prefs()->SetBoolean(prefs::kEmptyProfileStoreLoginDatabase,
                         GetParam().is_login_db_empty);
 
+    if (GetParam().is_sync_enabled &&
+        GetParam().is_initial_migration_finished && !GetParam().is_unenrolled) {
+      // The login DB should be cleared for healthy syncing users.
+      EXPECT_CALL(built_in_backend(),
+                  RemoveLoginsCreatedBetweenAsync(_, base::Time(),
+                                                  base::Time::Max(), _));
+    }
+
     EXPECT_CALL(android_backend(), InitBackend);
     EXPECT_CALL(built_in_backend(), InitBackend);
     proxy_backend().InitBackend(nullptr, base::DoNothing(), base::DoNothing(),
                                 base::DoNothing());
     EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
     proxy_backend().OnSyncServiceInitialized(sync_service());
-  }
-
-  std::unique_ptr<PasswordStoreProxyBackend> CreateProxyBackend() override {
-    auto built_in_backend =
-        std::make_unique<StrictMock<MockPasswordStoreBackend>>();
-    auto android_backend =
-        std::make_unique<StrictMock<MockPasswordStoreBackend>>();
-    built_in_backend_ = built_in_backend.get();
-    android_backend_ = android_backend.get();
-    return std::make_unique<PasswordStoreProxyBackend>(
-        std::move(built_in_backend), std::move(android_backend), prefs());
   }
 
   MockPasswordStoreBackend& main_backend() {
@@ -747,17 +720,6 @@ class PasswordStoreProxyBackendTestWithErrorsForFallbacks
                                 base::DoNothing());
     EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
     proxy_backend().OnSyncServiceInitialized(sync_service());
-  }
-
-  std::unique_ptr<PasswordStoreProxyBackend> CreateProxyBackend() override {
-    auto built_in_backend =
-        std::make_unique<StrictMock<MockPasswordStoreBackend>>();
-    auto android_backend =
-        std::make_unique<StrictMock<MockPasswordStoreBackend>>();
-    built_in_backend_ = built_in_backend.get();
-    android_backend_ = android_backend.get();
-    return std::make_unique<PasswordStoreProxyBackend>(
-        std::move(built_in_backend), std::move(android_backend), prefs());
   }
 };
 

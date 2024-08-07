@@ -120,9 +120,6 @@ BASE_DECLARE_FEATURE(
 // credentials to GMS Core.
 BASE_DECLARE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers);
 
-// This feature clears login database if user is capable of using UPM.
-BASE_DECLARE_FEATURE(kClearLoginDatabaseForUPMUsers);
-
 // Helper function returning the status of
 // `UnifiedPasswordManagerSyncOnlyInGMSCore`.
 bool IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
