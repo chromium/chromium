@@ -145,6 +145,7 @@ class WorkerMainScriptLoaderTest : public testing::Test {
                       IsInternalRequest));
     MOCK_METHOD2(DidChangeRenderBlockingBehavior,
                  void(Resource* resource, const FetchParameters& params));
+    MOCK_METHOD0(InterestedInAllRequests, bool());
     MOCK_METHOD1(EvictFromBackForwardCache,
                  void(mojom::blink::RendererEvictionReason));
   };

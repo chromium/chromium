@@ -157,6 +157,12 @@ class ResourceFetcherTest : public testing::Test {
     void DidChangeRenderBlockingBehavior(
         Resource* resource,
         const FetchParameters& params) override {}
+    bool InterestedInAllRequests() override {
+      return interested_in_all_requests_;
+    }
+    void SetInterestedInAllRequests(bool interested_in_all_requests) {
+      interested_in_all_requests_ = interested_in_all_requests;
+    }
     const std::optional<PartialResourceRequest>& GetLastRequest() const {
       return request_;
     }
@@ -165,6 +171,7 @@ class ResourceFetcherTest : public testing::Test {
 
    private:
     std::optional<PartialResourceRequest> request_;
+    bool interested_in_all_requests_ = false;
   };
 
  protected:
@@ -2146,4 +2153,83 @@ TEST_P(DeferUnusedPreloadWithExcludedResourceTypeResourceFetcherTest,
   EXPECT_TRUE(resource->IsLoaded());
   EXPECT_TRUE(MemoryCache::Get()->Contains(resource));
 }
+
+class TransparentPlaceholderResourceFetcherTest
+    : public ResourceFetcherTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  TransparentPlaceholderResourceFetcherTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kSimplifyLoadingTransparentPlaceholderImage);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kSimplifyLoadingTransparentPlaceholderImage);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(TransparentPlaceholderResourceFetcherTest,
+                         TransparentPlaceholderResourceFetcherTest,
+                         testing::Bool());
+
+TEST_P(TransparentPlaceholderResourceFetcherTest, InspectorAttached) {
+  auto* observer = MakeGarbageCollected<TestResourceLoadObserver>();
+  observer->SetInterestedInAllRequests(true);
+
+  auto* fetcher = CreateFetcher();
+  fetcher->SetResourceLoadObserver(observer);
+  KURL url(
+      "data:image/gif;base64,R0lGODlhAQABAIAAAP///////"
+      "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==");
+  ResourceRequest request(url);
+  request.SetKnownTransparentPlaceholderImageIndex(0);
+
+  FetchParameters fetch_params =
+      FetchParameters::CreateForTest(std::move(request));
+  Resource* resource = MockResource::Fetch(fetch_params, fetcher, nullptr);
+  ASSERT_TRUE(resource);
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  EXPECT_TRUE(resource->IsLoaded());
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource));
+
+  // Use the presence of |last_request| as an indicator that WillSendRequest()
+  // was called, which will happen if the feature is disabled or the inspector
+  // is open.
+  std::optional<PartialResourceRequest> last_request =
+      observer->GetLastRequest();
+  EXPECT_TRUE(last_request.has_value());
+}
+
+TEST_P(TransparentPlaceholderResourceFetcherTest, InspectorNotAttached) {
+  auto* observer = MakeGarbageCollected<TestResourceLoadObserver>();
+  observer->SetInterestedInAllRequests(false);
+
+  auto* fetcher = CreateFetcher();
+  fetcher->SetResourceLoadObserver(observer);
+  KURL url(
+      "data:image/gif;base64,R0lGODlhAQABAIAAAP///////"
+      "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==");
+  ResourceRequest request(url);
+  request.SetKnownTransparentPlaceholderImageIndex(0);
+
+  FetchParameters fetch_params =
+      FetchParameters::CreateForTest(std::move(request));
+  Resource* resource = MockResource::Fetch(fetch_params, fetcher, nullptr);
+  ASSERT_TRUE(resource);
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  EXPECT_TRUE(resource->IsLoaded());
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource));
+
+  // Use the presence of |last_request| as an indicator that WillSendRequest()
+  // was called, which will happen if the feature is disabled or the inspector
+  // is open.
+  std::optional<PartialResourceRequest> last_request =
+      observer->GetLastRequest();
+  EXPECT_EQ(last_request.has_value(), !GetParam());
+}
+
 }  // namespace blink
