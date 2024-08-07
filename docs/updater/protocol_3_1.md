@@ -237,7 +237,7 @@ A request object has the following members:
      *   "fuchsia": Fuchsia.
      *   "linux": Linux.
      *   "mac": macOS.
-     *   "openbsd": OpenBSD. TODO(waffles@chromium.org): Also FreeBSD?
+     *   "openbsd": OpenBSD.
      *   "win": Windows.
  *   `@updater`: A string identifying the client software (e.g. "Omaha",
      "Chrome", "Chrome Extension Updater"). Default: "".
