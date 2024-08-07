@@ -8,10 +8,16 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.os.SystemClock;
+import android.view.View;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SdkSuppress;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -32,14 +38,23 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.input.ChromiumBaseInputConnection;
 import org.chromium.content.browser.input.ImeTestUtils;
+import org.chromium.content.browser.selection.SelectActionMenuHelper.DefaultItemOrder;
+import org.chromium.content.browser.selection.SelectActionMenuHelper.GroupItemOrder;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
+import org.chromium.content_public.browser.SelectionMenuGroup;
+import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 /** Integration tests for text selection-related behavior. */
@@ -48,17 +63,19 @@ public class ContentTextSelectionTest {
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
 
+    // Page needs to be long enough for scroll.
     private static final String DATA_URL =
             UrlUtils.encodeHtmlDataUri(
                     "<html><head><meta name=\"viewport\"content=\"width=device-width\""
-                        + " /></head><body><form action=\"about:blank\"><input"
-                        + " id=\"empty_input_text\" type=\"text\" /><input"
-                        + " id=\"whitespace_input_text\" type=\"text\" value=\" \" /><input"
-                        + " id=\"input_text\" type=\"text\" value=\"SampleInputText\" /><textarea"
-                        + " id=\"textarea\" rows=\"2\" cols=\"20\">SampleTextArea</textarea><input"
-                        + " id=\"password\" type=\"password\" value=\"SamplePassword\""
-                        + " size=\"10\"/><p><span id=\"smart_selection\">1600 Amphitheatre"
-                        + " Parkway</span></p><p><span"
+                        + " /></head><body style='height: 1000px'><form"
+                        + " action=\"about:blank\"><input id=\"phone_number\" type=\"tel\""
+                        + " value=\"01234567891234\" /><input id=\"empty_input_text\" type=\"text\""
+                        + " /><input id=\"whitespace_input_text\" type=\"text\" value=\" \""
+                        + " /><input id=\"input_text\" type=\"text\" value=\"SampleInputText\""
+                        + " /><textarea id=\"textarea\" rows=\"2\""
+                        + " cols=\"20\">SampleTextArea</textarea><input id=\"password\""
+                        + " type=\"password\" value=\"SamplePassword\" size=\"10\"/><p><span"
+                        + " id=\"smart_selection\">1600 Amphitheatre Parkway</span></p><p><span"
                         + " id=\"plain_text_1\">SamplePlainTextOne</span></p><p><span"
                         + " id=\"plain_text_2\">SamplePlainTextTwo</span></p><input"
                         + " id=\"disabled_text\" type=\"text\" disabled value=\"Sample Text\""
@@ -102,6 +119,57 @@ public class ContentTextSelectionTest {
 
         public void setResultCallback(SelectionClient.ResultCallback callback) {
             mResultCallback = callback;
+        }
+    }
+
+    private static class TestSelectionActionMenuDelegate implements SelectionActionMenuDelegate {
+        @Override
+        public void modifyDefaultMenuItems(
+                List<SelectionMenuItem.Builder> menuItemBuilders,
+                boolean isSelectionPassword,
+                String selectedText) {
+            // No-op because we are testing default menu item ordering with no modifications.
+        }
+
+        @Override
+        public List<ResolveInfo> filterTextProcessingActivities(List<ResolveInfo> activities) {
+            List<ResolveInfo> resolveInfos = new ArrayList<>();
+            ResolveInfo resolveInfo =
+                    createResolveInfoWithActivityInfo("ProcessTextActivity", true);
+            resolveInfos.add(resolveInfo);
+            return resolveInfos;
+        }
+
+        @Override
+        public List<SelectionMenuItem> getAdditionalNonSelectionItems() {
+            return Arrays.asList(new SelectionMenuItem.Builder("testNonSelectionItem").build());
+        }
+
+        @Override
+        public List<SelectionMenuItem> getAdditionalTextProcessingItems() {
+            return new ArrayList<>();
+        }
+
+        private ResolveInfo createResolveInfoWithActivityInfo(
+                String activityName, boolean exported) {
+            String packageName = "org.chromium.content.browser.ContentTextSelectionTest";
+
+            ActivityInfo activityInfo = new ActivityInfo();
+            activityInfo.packageName = packageName;
+            activityInfo.name = activityName;
+            activityInfo.exported = exported;
+            activityInfo.applicationInfo = new ApplicationInfo();
+            activityInfo.applicationInfo.flags = ApplicationInfo.FLAG_SYSTEM;
+
+            ResolveInfo resolveInfo =
+                    new ResolveInfo() {
+                        @Override
+                        public CharSequence loadLabel(PackageManager pm) {
+                            return "testTextProcessingItem";
+                        }
+                    };
+            resolveInfo.activityInfo = activityInfo;
+            return resolveInfo;
         }
     }
 
@@ -219,6 +287,205 @@ public class ContentTextSelectionTest {
         DOMUtils.dragNodeEnd(mWebContents, "plain_text_2", downTime);
         waitForSelectActionBarVisible(true);
         Assert.assertTrue(mSelectionPopupController.hasSelection());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"TextSelection"})
+    public void testSelectionPreservedAfterScroll() throws Throwable {
+        DOMUtils.longPressNode(mWebContents, "plain_text_1");
+        Assert.assertTrue(mSelectionPopupController.isActionModeValid());
+        waitForSelectActionBarVisible(true);
+        waitForPastePopupStatus(false);
+        Assert.assertTrue(mSelectionPopupController.hasSelection());
+
+        View webContentsView = mWebContents.getViewAndroidDelegate().getContainerView();
+        float mCurrentX = webContentsView.getWidth() / 2;
+        float mCurrentY = webContentsView.getHeight() / 2;
+
+        // Perform a scroll.
+        TouchCommon.performDrag(
+                mActivityTestRule.getActivity(),
+                mCurrentX,
+                mCurrentX,
+                mCurrentY,
+                mCurrentY - 100,
+                /* stepCount= */ 3, /* duration in ms */
+                250);
+
+        // Ensure selection context menu re-appears after scroll ends.
+        Assert.assertTrue(mSelectionPopupController.isActionModeValid());
+        waitForSelectActionBarVisible(true);
+        Assert.assertTrue(mSelectionPopupController.hasSelection());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"TextSelection"})
+    public void testPastePopupClearedOnScroll() throws Throwable {
+        DOMUtils.longPressNode(mWebContents, "empty_input_text");
+        Assert.assertTrue(mSelectionPopupController.isActionModeValid());
+        waitForPastePopupStatus(true);
+        waitForSelectActionBarVisible(false);
+
+        View webContentsView = mWebContents.getViewAndroidDelegate().getContainerView();
+        float mCurrentX = webContentsView.getWidth() / 2;
+        float mCurrentY = webContentsView.getHeight() / 2;
+
+        // Perform a scroll.
+        TouchCommon.performDrag(
+                mActivityTestRule.getActivity(),
+                mCurrentX,
+                mCurrentX,
+                mCurrentY,
+                mCurrentY - 100,
+                /* stepCount= */ 3, /* duration in ms */
+                250);
+
+        // paste popup should be destroyed on scroll.
+        waitForPastePopupStatus(false);
+        Assert.assertFalse(mSelectionPopupController.isActionModeValid());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"TextSelection"})
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.P) /* getSecondaryAssistItems requires >= P */
+    public void testCorrectPasteMenuItemsAddedWhenThereIsNoSelection() throws Throwable {
+        SelectionActionMenuDelegate selectionActionMenuDelegate =
+                new TestSelectionActionMenuDelegate();
+        mSelectionPopupController.setSelectionActionMenuDelegate(selectionActionMenuDelegate);
+        copyStringToClipboard("SampleTextToCopy");
+        DOMUtils.longPressNode(mWebContents, "whitespace_input_text");
+        waitForPastePopupStatus(true);
+        waitForSelectActionBarVisible(false);
+        SelectionMenuGroup[] menuGroups =
+                mSelectionPopupController.getMenuItems().toArray(new SelectionMenuGroup[0]);
+        // Default and secondary assist item groups are added to the menu.
+        Assert.assertEquals(GroupItemOrder.DEFAULT_ITEMS, menuGroups[0].order);
+        Assert.assertEquals(GroupItemOrder.SECONDARY_ASSIST_ITEMS, menuGroups[1].order);
+        // Default items. Subtracting 1 to adjust the 1-based indices of the DefaultItemOrder
+        // constants to the 0-based indices of arrays.
+        SelectionMenuItem[] defaultItems = menuGroups[0].items.toArray(new SelectionMenuItem[0]);
+        Assert.assertTrue(defaultItems[DefaultItemOrder.PASTE - 1].isEnabled);
+        Assert.assertTrue(defaultItems[DefaultItemOrder.SELECT_ALL - 1].isEnabled);
+        Assert.assertFalse(defaultItems[DefaultItemOrder.CUT - 1].isEnabled);
+        Assert.assertFalse(defaultItems[DefaultItemOrder.COPY - 1].isEnabled);
+        Assert.assertFalse(defaultItems[DefaultItemOrder.PASTE_AS_PLAIN_TEXT - 1].isEnabled);
+        Assert.assertFalse(defaultItems[DefaultItemOrder.SHARE - 1].isEnabled);
+        Assert.assertFalse(defaultItems[DefaultItemOrder.WEB_SEARCH - 1].isEnabled);
+        // The additional non selection (secondary assist) menu item we created is
+        // added to the menu.
+        Assert.assertEquals(
+                "testNonSelectionItem",
+                menuGroups[1].items.first().getTitle(mActivityTestRule.getActivity()));
+        Assert.assertTrue(menuGroups[1].items.first().isEnabled);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"TextSelection"})
+    public void testCorrectSelectionMenuItemsAddedForInputSelection() throws Throwable {
+        SelectionActionMenuDelegate selectionActionMenuDelegate =
+                new TestSelectionActionMenuDelegate();
+        mSelectionPopupController.setSelectionActionMenuDelegate(selectionActionMenuDelegate);
+        // For primary assist item.
+        SelectionClient.Result result = new SelectionClient.Result();
+        result.label = "Phone";
+        result.intent = new Intent();
+        TestSelectionClient client = new TestSelectionClient();
+        client.setResult(result);
+        client.setResultCallback(mSelectionPopupController.getResultCallback());
+        mSelectionPopupController.setSelectionClient(client);
+
+        copyStringToClipboard("SampleTextToCopy");
+        DOMUtils.longPressNode(mWebContents, "phone_number");
+        waitForSelectActionBarVisible(true);
+        waitForPastePopupStatus(false);
+        SelectionMenuGroup[] menuGroups =
+                mSelectionPopupController.getMenuItems().toArray(new SelectionMenuGroup[0]);
+        // Default, primary assist, and text processing item groups are added to the menu.
+        Assert.assertEquals(GroupItemOrder.ASSIST_ITEMS, menuGroups[0].order);
+        Assert.assertEquals(GroupItemOrder.DEFAULT_ITEMS, menuGroups[1].order);
+        Assert.assertEquals(GroupItemOrder.TEXT_PROCESSING_ITEMS, menuGroups[2].order);
+
+        // Primary assist item we created is added to menu.
+        Assert.assertEquals(
+                "Phone", menuGroups[0].items.first().getTitle(mActivityTestRule.getActivity()));
+        Assert.assertTrue(menuGroups[0].items.first().isEnabled);
+        // Default items.
+        SelectionMenuItem[] defaultItems = menuGroups[1].items.toArray(new SelectionMenuItem[0]);
+        Assert.assertTrue(defaultItems[DefaultItemOrder.CUT - 1].isEnabled);
+        Assert.assertTrue(defaultItems[DefaultItemOrder.COPY - 1].isEnabled);
+        Assert.assertTrue(defaultItems[DefaultItemOrder.SELECT_ALL - 1].isEnabled);
+        Assert.assertTrue(defaultItems[DefaultItemOrder.PASTE - 1].isEnabled);
+        Assert.assertFalse(defaultItems[DefaultItemOrder.PASTE_AS_PLAIN_TEXT - 1].isEnabled);
+        Assert.assertFalse(defaultItems[DefaultItemOrder.SHARE - 1].isEnabled);
+        Assert.assertFalse(defaultItems[DefaultItemOrder.WEB_SEARCH - 1].isEnabled);
+        // The text processing menu item we created is added to the menu.
+        Assert.assertEquals(
+                "testTextProcessingItem",
+                menuGroups[2].items.first().getTitle(mActivityTestRule.getActivity()));
+        Assert.assertTrue(menuGroups[2].items.first().isEnabled);
+        // Check correct processText intent state is sent to 3rd party apps.
+        Assert.assertFalse(
+                menuGroups[2]
+                        .items
+                        .first()
+                        .intent
+                        .getBooleanExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, false));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"TextSelection"})
+    public void testCorrectSelectionMenuItemsAddedForPlainTextSelection() throws Throwable {
+        SelectionActionMenuDelegate selectionActionMenuDelegate =
+                new TestSelectionActionMenuDelegate();
+        mSelectionPopupController.setSelectionActionMenuDelegate(selectionActionMenuDelegate);
+        // For primary assist item.
+        SelectionClient.Result result = new SelectionClient.Result();
+        result.label = "Map";
+        result.intent = new Intent();
+        TestSelectionClient client = new TestSelectionClient();
+        client.setResult(result);
+        client.setResultCallback(mSelectionPopupController.getResultCallback());
+        mSelectionPopupController.setSelectionClient(client);
+
+        DOMUtils.longPressNode(mWebContents, "smart_selection");
+        waitForSelectActionBarVisible(true);
+        waitForPastePopupStatus(false);
+        SelectionMenuGroup[] menuGroups =
+                mSelectionPopupController.getMenuItems().toArray(new SelectionMenuGroup[0]);
+        // Default, primary assist, and text processing item groups are added to the menu.
+        Assert.assertEquals(GroupItemOrder.ASSIST_ITEMS, menuGroups[0].order);
+        Assert.assertEquals(GroupItemOrder.DEFAULT_ITEMS, menuGroups[1].order);
+        Assert.assertEquals(GroupItemOrder.TEXT_PROCESSING_ITEMS, menuGroups[2].order);
+        // Primary assist item we created is added to menu.
+        Assert.assertEquals(
+                "Map", menuGroups[0].items.first().getTitle(mActivityTestRule.getActivity()));
+        Assert.assertTrue(menuGroups[0].items.first().isEnabled);
+        // Default items.
+        SelectionMenuItem[] defaultItems = menuGroups[1].items.toArray(new SelectionMenuItem[0]);
+        Assert.assertTrue(defaultItems[DefaultItemOrder.COPY - 1].isEnabled);
+        Assert.assertTrue(defaultItems[DefaultItemOrder.SHARE - 1].isEnabled);
+        Assert.assertTrue(defaultItems[DefaultItemOrder.SELECT_ALL - 1].isEnabled);
+        Assert.assertTrue(defaultItems[DefaultItemOrder.WEB_SEARCH - 1].isEnabled);
+        Assert.assertFalse(defaultItems[DefaultItemOrder.CUT - 1].isEnabled);
+        Assert.assertFalse(defaultItems[DefaultItemOrder.PASTE - 1].isEnabled);
+        Assert.assertFalse(defaultItems[DefaultItemOrder.PASTE_AS_PLAIN_TEXT - 1].isEnabled);
+        // The text processing menu item we created is added to the menu.
+        Assert.assertEquals(
+                "testTextProcessingItem",
+                menuGroups[2].items.first().getTitle(mActivityTestRule.getActivity()));
+        Assert.assertTrue(menuGroups[2].items.first().isEnabled);
+        // Check correct processText intent state is sent to 3rd party apps.
+        Assert.assertTrue(
+                menuGroups[2]
+                        .items
+                        .first()
+                        .intent
+                        .getBooleanExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, false));
     }
 
     @Test

@@ -389,7 +389,8 @@ public class GestureListenerManagerImpl
             mSelectionPopupController =
                     SelectionPopupControllerImpl.fromWebContentsNoCreate(mWebContents);
         }
-        if (mSelectionPopupController != null) {
+        if (mSelectionPopupController != null
+                && mSelectionPopupController.isPasteActionModeValid()) {
             mSelectionPopupController.destroyActionModeAndKeepSelection();
         }
     }

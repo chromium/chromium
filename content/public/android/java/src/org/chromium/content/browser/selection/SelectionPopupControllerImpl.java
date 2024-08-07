@@ -964,20 +964,20 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 || !mSelectionMenuCachedResult.canReuseResult(
                         mClassificationResult,
                         isSelectionPassword(),
-                        isFocusedNodeEditable(),
+                        !isFocusedNodeEditable(),
                         getSelectedText())) {
             mSelectionMenuCachedResult =
                     new SelectionMenuCachedResult(
                             mClassificationResult,
                             isSelectionPassword(),
-                            isFocusedNodeEditable(),
+                            !isFocusedNodeEditable(),
                             getSelectedText(),
                             SelectActionMenuHelper.getMenuItems(
                                     this,
                                     mContext,
                                     mClassificationResult,
                                     isSelectionPassword(),
-                                    isFocusedNodeEditable(),
+                                    !isFocusedNodeEditable(),
                                     getSelectedText(),
                                     textProcessingIntentHandler,
                                     mSelectionActionMenuDelegate));
