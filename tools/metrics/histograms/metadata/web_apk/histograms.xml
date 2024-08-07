@@ -160,6 +160,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApk.LaunchFromViewIntent" enum="Boolean"
+    expires_after="2025-03-01">
+  <owner>hartmanng@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records every WebApk launch attempt originating from a view intent in
+    LaunchIntentDispatcher. A value of &quot;true&quot; indicates a successful
+    launch, while a value of &quot;false&quot; indicates a failure.
+  </summary>
+</histogram>
+
 <histogram name="WebApk.Notification.Permission.Status2" enum="ContentSetting"
     expires_after="2025-01-23">
   <owner>hartmanng@chromium.org</owner>

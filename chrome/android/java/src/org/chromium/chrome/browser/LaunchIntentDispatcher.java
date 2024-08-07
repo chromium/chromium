@@ -9,10 +9,12 @@ import android.app.Activity;
 import android.app.ActivityManager.RecentTaskInfo;
 import android.app.Notification;
 import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
@@ -47,6 +49,7 @@ import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.widget.Toast;
+import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -188,6 +191,11 @@ public class LaunchIntentDispatcher {
             return Action.FINISH_ACTIVITY;
         }
 
+        // b(357902796): Handle fall-back path for unbound WebAPKs.
+        if (isWebApkIntent(mIntent) && launchWebApk()) {
+            return Action.FINISH_ACTIVITY;
+        }
+
         return dispatchToTabbedActivity();
     }
 
@@ -248,6 +256,10 @@ public class LaunchIntentDispatcher {
             return false;
         }
         return IntentHandler.getUrlFromIntent(intent) != null;
+    }
+
+    private static boolean isWebApkIntent(Intent intent) {
+        return intent != null && intent.hasExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME);
     }
 
     /** Creates an Intent that can be used to launch a {@link CustomTabActivity}. */
@@ -388,6 +400,32 @@ public class LaunchIntentDispatcher {
 
         mActivity.startActivity(launchIntent, null);
         RecordHistogram.recordBooleanHistogram("CustomTabs.IdentityShared", identityShared);
+        return true;
+    }
+
+    private boolean launchWebApk() {
+        // TODO(crbug.com/357902796): it may be possible to save 20ms or so by calling into
+        // WebappLauncherActivity code directly instead of sending an intent.
+
+        Intent webApkIntent = new Intent(WebappLauncherActivity.ACTION_START_WEBAPP);
+        webApkIntent.setPackage(mActivity.getPackageName());
+
+        webApkIntent.setFlags(mIntent.getFlags());
+
+        Bundle copiedExtras = mIntent.getExtras();
+        if (copiedExtras != null) {
+            webApkIntent.putExtras(copiedExtras);
+        }
+
+        try {
+            mActivity.startActivity(webApkIntent);
+        } catch (ActivityNotFoundException e) {
+            Log.w(TAG, "Unable to launch browser in WebAPK mode.");
+            RecordHistogram.recordBooleanHistogram("WebApk.LaunchFromViewIntent", false);
+            return false;
+        }
+
+        RecordHistogram.recordBooleanHistogram("WebApk.LaunchFromViewIntent", true);
         return true;
     }
 
