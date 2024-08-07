@@ -42,6 +42,7 @@ import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {listenOnce} from '//resources/js/util.js';
+import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -676,6 +677,15 @@ export class PowerBookmarksListElement extends PolymerElement {
     if (this.recordCountMetricsOnNextUpdate_) {
       this.recordBookmarkCountMetrics_();
       this.recordCountMetricsOnNextUpdate_ = false;
+    }
+
+    // After the lists are updated and all children updates are complete,
+    // notify iron-list to resize.
+    const children = [...this.shadowRoot!.querySelectorAll<CrLitElement>(
+        'power-bookmark-row')];
+    if (children.length > 0) {
+      Promise.all(children.map(el => el.updateComplete))
+          .then(this.notifyBookmarksListResize_);
     }
   }
 

@@ -102,18 +102,21 @@ export class PowerBookmarkRowElement extends CrLitElement {
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('listItemSize')) {
-      this.handleListItemSizeChanged_();
-    }
-    if (changedProperties.has('toggleExpand')) {
-      this.handlePowerBookmarkToggle_();
-    }
     if (changedProperties.has('renamingId') ||
         changedProperties.has('bookmark')) {
       if (this.renamingId === this.bookmark?.id) {
         this.onInputDisplayChange_();
       }
     }
+  }
+
+  override async getUpdateComplete() {
+    // Wait for all children to update before marking as complete.
+    const result = await super.getUpdateComplete();
+    const children = [...this.shadowRoot!.querySelectorAll<CrLitElement>(
+        'power-bookmark-row')];
+    await Promise.all(children.map(el => el.updateComplete));
+    return result;
   }
 
   override focus() {
@@ -153,21 +156,6 @@ export class PowerBookmarkRowElement extends CrLitElement {
     }
   }
 
-  protected handlePowerBookmarkToggle_() {
-    this.dispatchEvent(new CustomEvent('power-bookmark-toggle', {
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  protected async handleListItemSizeChanged_() {
-    await this.$.crUrlListItem.updateComplete;
-    this.dispatchEvent(new CustomEvent('list-item-size-changed', {
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
   protected renamingItem_(id: string) {
     return id === this.renamingId;
   }
@@ -186,6 +174,10 @@ export class PowerBookmarkRowElement extends CrLitElement {
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.toggleExpand = e.detail.value;
+    this.dispatchEvent(new CustomEvent('power-bookmark-toggle', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private onInputDisplayChange_() {
