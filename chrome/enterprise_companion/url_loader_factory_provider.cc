@@ -17,6 +17,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -38,6 +39,12 @@
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
+
+#if BUILDFLAG(IS_MAC)
+#include <sys/types.h>
+
+#include "chrome/enterprise_companion/mac/mac_utils.h"
+#endif
 
 namespace enterprise_companion {
 
@@ -219,6 +226,17 @@ base::SequenceBound<URLLoaderFactoryProvider> CreateOutOfProcessNetWorker(
 
   base::CommandLine command_line(exe_path);
   command_line.AppendSwitch(kNetWorkerSwitch);
+
+  std::optional<uid_t> uid = GuessLoggedInUser();
+  if (!uid) {
+    LOG(ERROR)
+        << "Could not determine a logged-in user to impersonate for "
+           "networking. The root bootstrap namespace will be used, "
+           "which may cause proxy configuration or authorization to fail.";
+  } else {
+    command_line.PrependWrapper(
+        base::StringPrintf("/bin/launchctl asuser %d", *uid));
+  }
 
   channel.PrepareToPassRemoteEndpoint(&options, &command_line);
   base::Process process = base::LaunchProcess(command_line, options);
