@@ -29,7 +29,7 @@ class ProductSpecificationsEntryPointController
   class Observer : public base::CheckedObserver {
    public:
     // Called when entry points should show with `title`.
-    virtual void ShowEntryPointWithTitle(const std::string title) {}
+    virtual void ShowEntryPointWithTitle(const std::u16string& title) {}
 
     // Called when entry points should hide.
     virtual void HideEntryPoint() {}

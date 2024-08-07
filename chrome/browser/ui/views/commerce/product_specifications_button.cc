@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -172,9 +171,9 @@ void ProductSpecificationsButton::Hide() {
 }
 
 void ProductSpecificationsButton::ShowEntryPointWithTitle(
-    const std::string title) {
-  SetText(l10n_util::GetStringFUTF16(IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT,
-                                     base::UTF8ToUTF16(title)));
+    const std::u16string& title) {
+  SetText(title);
+  SetTooltipText(title);
   Show();
 }
 

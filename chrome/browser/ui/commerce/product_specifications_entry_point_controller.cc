@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -18,6 +19,8 @@
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
 namespace {
@@ -31,6 +34,8 @@ constexpr int kEligibleWindowUrlCountForNavigationTriggering = 3;
 // The maximum enforced interval (in days) between two triggering of the entry
 // point.
 constexpr int kMaxEntryPointTriggeringInterval = 64;
+// The maximum length of the entry point title.
+constexpr int kEntryPointTitleMaxLength = 24;
 
 bool CheckWindowContainsEntryPointURLs(
     TabStripModel* tab_strip_model,
@@ -343,8 +348,16 @@ void ProductSpecificationsEntryPointController::ShowEntryPointWithTitle(
     return;
   }
   current_entry_point_info_ = entry_point_info;
+  // Show the default title if the set title is too long.
+  std::u16string title =
+      entry_point_info->title.size() > kEntryPointTitleMaxLength
+          ? l10n_util::GetStringUTF16(
+                IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT_DEFAULT)
+          : l10n_util::GetStringFUTF16(
+                IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT,
+                base::UTF8ToUTF16(entry_point_info->title));
   for (auto& observer : observers_) {
-    observer.ShowEntryPointWithTitle(entry_point_info->title);
+    observer.ShowEntryPointWithTitle(std::move(title));
   }
 }
 

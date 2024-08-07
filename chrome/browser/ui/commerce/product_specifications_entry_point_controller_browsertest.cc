@@ -22,14 +22,17 @@
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
 namespace {
 const char kTitle[] = "test_tile";
+const std::u16string& kTitleUnicode = u"test_tile";
 const char kTestUrl1[] = "chrome://new-tab-page/";
 const char kTestUrl2[] = "chrome://version/";
 const char kTestUrl3[] = "chrome://flags/";
@@ -46,7 +49,7 @@ class MockObserver
  public:
   MOCK_METHOD(void,
               ShowEntryPointWithTitle,
-              (const std::string title),
+              (const std::u16string& title),
               (override));
   MOCK_METHOD(void, HideEntryPoint, (), (override));
 };
@@ -143,7 +146,10 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(1);
+  EXPECT_CALL(*observer_,
+              ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
+                  IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT, kTitleUnicode)))
+      .Times(1);
 
   // Create two tabs and simulate selection.
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
@@ -171,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(0);
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(testing::_)).Times(0);
 
   // Create two tabs and simulate selection.
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
@@ -200,7 +206,10 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(1);
+  EXPECT_CALL(*observer_,
+              ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
+                  IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT, kTitleUnicode)))
+      .Times(1);
 
   // Current window has to have more than three unique tabs that are similar in
   // order to trigger the entry point for navigation.
@@ -235,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(0);
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(testing::_)).Times(0);
 
   // Current window has to have more than three unique and different products
   // that are similar in order to trigger the entry point for navigation.
@@ -275,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(0);
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(testing::_)).Times(0);
 
   // Create two tabs and simulate selection.
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
@@ -498,7 +507,10 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(1);
+  EXPECT_CALL(*observer_,
+              ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
+                  IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT, kTitleUnicode)))
+      .Times(1);
 
   // Trigger entry point with navigations.
   std::vector<std::string> urls_to_open = {kTestUrl2, kTestUrl3, kTestUrl4};
@@ -538,7 +550,10 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(1);
+  EXPECT_CALL(*observer_,
+              ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
+                  IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT, kTitleUnicode)))
+      .Times(1);
 
   // Trigger entry point with navigations.
   std::vector<std::string> urls_to_open = {kTestUrl2, kTestUrl3, kTestUrl4};
@@ -575,7 +590,10 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(1);
+  EXPECT_CALL(*observer_,
+              ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
+                  IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT, kTitleUnicode)))
+      .Times(1);
 
   // Create two tabs and simulate selection.
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
@@ -611,7 +629,10 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(1);
+  EXPECT_CALL(*observer_,
+              ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
+                  IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT, kTitleUnicode)))
+      .Times(1);
 
   // Create two tabs and simulate selection.
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
@@ -642,6 +663,36 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   ASSERT_EQ(3, browser()->tab_strip_model()->count());
 }
 
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
+                       TestUseDefaultTitle) {
+  // Mock EntryPointInfo returned by ClusterManager with long title.
+  const std::string& long_title = "very very very very very long title";
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl1), kProductId1},
+                                               {GURL(kTestUrl2), kProductId2}};
+  auto info = std::make_optional<commerce::EntryPointInfo>(long_title,
+                                                           similar_products);
+  mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
+
+  // Set up observer. The default title should be shown.
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(l10n_util::GetStringUTF16(
+                              IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT_DEFAULT)))
+      .Times(1);
+
+  // Create two tabs and simulate selection.
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, GURL(kTestUrl2),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kMouse));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+}
+
 class ProductSpecificationsEntryPointControllerWithServerClusteringBrowserTest
     : public ProductSpecificationsEntryPointControllerBrowserTest {
  public:
@@ -670,7 +721,10 @@ IN_PROC_BROWSER_TEST_F(
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(1);
+  EXPECT_CALL(*observer_,
+              ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
+                  IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT, kTitleUnicode)))
+      .Times(1);
 
   // Create two tabs and simulate selection.
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
@@ -714,7 +768,10 @@ IN_PROC_BROWSER_TEST_F(
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(1);
+  EXPECT_CALL(*observer_,
+              ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
+                  IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT, kTitleUnicode)))
+      .Times(1);
 
   // Current window has to have more than three unique tabs that are similar in
   // order to trigger the entry point for navigation.
