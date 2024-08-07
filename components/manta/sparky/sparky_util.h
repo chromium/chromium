@@ -26,12 +26,40 @@ enum class Role {
 enum class ActionType {
   kSetting = 0,
   kLaunchApp = 1,
-  kMaxValue = kLaunchApp,
+  kLaunchFile = 2,
+  kTextEntry = 3,
+  kClick = 4,
+  kAllDone = 5,
+  kMaxValue = kAllDone,
+};
+
+struct COMPONENT_EXPORT(MANTA) FileAction {
+  explicit FileAction(std::string launch_file_path);
+
+  ~FileAction();
+  FileAction(const FileAction&);
+  FileAction& operator=(const FileAction&);
+
+  std::string launch_file_path;
+};
+
+struct COMPONENT_EXPORT(MANTA) ClickAction {
+  ClickAction(int x_pos, int y_pos);
+
+  ~ClickAction();
+  ClickAction(const ClickAction&);
+  ClickAction& operator=(const ClickAction&);
+
+  int x_pos;
+  int y_pos;
 };
 
 struct COMPONENT_EXPORT(MANTA) Action {
-  explicit Action(SettingsData updated_setting, bool all_done);
-  explicit Action(std::string launched_app, bool all_done);
+  explicit Action(SettingsData updated_setting);
+  explicit Action(ClickAction click);
+  Action(FileAction file_action, ActionType type);
+  explicit Action(bool all_done);
+  explicit Action(ActionType type);
 
   ~Action();
   Action(const Action&);
@@ -39,6 +67,9 @@ struct COMPONENT_EXPORT(MANTA) Action {
 
   std::string launched_app;
   std::optional<SettingsData> updated_setting;
+  std::optional<ClickAction> click;
+  std::string text_entry;
+  std::optional<FileAction> file_action;
   ActionType type;
   bool all_done;
 };

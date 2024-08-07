@@ -268,7 +268,6 @@ TEST_F(SparkyProviderTest, SettingAction) {
   setting_data->set_settings_id("power.adaptive_charging_enabled");
   auto* settings_value = setting_data->mutable_value();
   settings_value->set_bool_val(true);
-  action->set_all_done(true);
 
   std::string response_data;
   response.SerializeToString(&response_data);
@@ -322,14 +321,12 @@ TEST_F(SparkyProviderTest, SettingActionWith2Actions) {
   latest_reply->set_message("text answer");
   latest_reply->set_role(proto::ROLE_ASSISTANT);
   auto* action = latest_reply->add_action();
-  action->set_all_done(false);
   auto* setting_data = action->mutable_update_setting();
   setting_data->set_type(proto::SETTING_TYPE_BOOL);
   setting_data->set_settings_id("ash.night_light.enabled");
   auto* settings_value = setting_data->mutable_value();
   settings_value->set_bool_val(true);
   auto* action2 = latest_reply->add_action();
-  action2->set_all_done(true);
   auto* double_setting = action2->mutable_update_setting();
   double_setting->set_type(proto::SETTING_TYPE_DOUBLE);
   double_setting->set_settings_id("ash.night_light.color_temperature");
@@ -399,7 +396,6 @@ TEST_F(SparkyProviderTest, SettingActionInvalidProto) {
   auto* settings_value = setting_data->mutable_value();
   // Int value set for setting of type bool.
   settings_value->set_int_val(3);
-  action->set_all_done(true);
 
   std::string response_data;
   response.SerializeToString(&response_data);

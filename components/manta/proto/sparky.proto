@@ -104,7 +104,7 @@ message AppsData {
   repeated App app = 1;
 }
 
-message KeyboardEntry {
+message TextEntry {
   optional string text = 1;
 }
 
@@ -118,12 +118,14 @@ message FileAction {
 }
 
 message Action {
-  optional Setting update_setting = 1;
-  optional string launch_app_id = 2;
-  optional Click click = 3;
-  optional KeyboardEntry keyboard_entry = 4;
-  optional bool all_done = 5;
-  optional FileAction file_action = 6;
+  oneof action {
+    Setting update_setting = 1;
+    string launch_app_id = 2;
+    Click click = 3;
+    TextEntry text_entry = 4;
+    bool all_done = 5;
+    FileAction file_action = 6;
+  }
 }
 
 message DiagnosticsRequest {
