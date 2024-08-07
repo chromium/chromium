@@ -37,6 +37,9 @@ config("libdrm_config") {
   # glibc version >= 2.25 explicitly include <sys/sysmacros.h>
   cflags += [ "-DMAJOR_IN_SYSMACROS=1" ]
 
+  # TODO(b/357680612): unused function 'swap32'.
+  cflags += [ "-Wno-unused-function" ]
+
   if (is_clang) {
     cflags += [
       "-Wno-enum-conversion",
