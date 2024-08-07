@@ -78,11 +78,11 @@ bool HistorySyncMetadataDatabase::ClearAllEntityMetadata() {
 }
 
 bool HistorySyncMetadataDatabase::UpdateEntityMetadata(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const std::string& storage_key,
     const sync_pb::EntityMetadata& metadata) {
-  DCHECK_EQ(model_type, syncer::HISTORY)
-      << "Only the HISTORY model type is supported";
+  DCHECK_EQ(data_type, syncer::HISTORY)
+      << "Only the HISTORY data type is supported";
   DCHECK(!storage_key.empty());
 
   sql::Statement s(
@@ -95,10 +95,10 @@ bool HistorySyncMetadataDatabase::UpdateEntityMetadata(
 }
 
 bool HistorySyncMetadataDatabase::ClearEntityMetadata(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const std::string& storage_key) {
-  DCHECK_EQ(model_type, syncer::HISTORY)
-      << "Only the HISTORY model type is supported";
+  DCHECK_EQ(data_type, syncer::HISTORY)
+      << "Only the HISTORY data type is supported";
   DCHECK(!storage_key.empty());
 
   sql::Statement s(db_->GetUniqueStatement(
@@ -109,10 +109,10 @@ bool HistorySyncMetadataDatabase::ClearEntityMetadata(
 }
 
 bool HistorySyncMetadataDatabase::UpdateDataTypeState(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const sync_pb::DataTypeState& data_type_state) {
-  DCHECK_EQ(model_type, syncer::HISTORY)
-      << "Only the HISTORY model type is supported";
+  DCHECK_EQ(data_type, syncer::HISTORY)
+      << "Only the HISTORY data type is supported";
   DCHECK_GT(meta_table_->GetVersionNumber(), 0);
 
   std::string serialized_state = data_type_state.SerializeAsString();
@@ -120,9 +120,9 @@ bool HistorySyncMetadataDatabase::UpdateDataTypeState(
 }
 
 bool HistorySyncMetadataDatabase::ClearDataTypeState(
-    syncer::ModelType model_type) {
-  DCHECK_EQ(model_type, syncer::HISTORY)
-      << "Only the HISTORY model type is supported";
+    syncer::DataType data_type) {
+  DCHECK_EQ(data_type, syncer::HISTORY)
+      << "Only the HISTORY data type is supported";
   DCHECK_GT(meta_table_->GetVersionNumber(), 0);
   return meta_table_->DeleteKey(kHistoryDataTypeStateKey);
 }
@@ -171,7 +171,7 @@ bool HistorySyncMetadataDatabase::GetAllEntityMetadata(
     std::string serialized_metadata = s.ColumnString(1);
     auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
     if (!entity_metadata->ParseFromString(serialized_metadata)) {
-      DLOG(WARNING) << "Failed to deserialize HISTORY model type "
+      DLOG(WARNING) << "Failed to deserialize HISTORY data type "
                        "sync_pb::EntityMetadata.";
       return false;
     }

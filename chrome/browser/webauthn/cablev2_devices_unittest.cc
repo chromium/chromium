@@ -14,7 +14,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "content/public/test/browser_task_environment.h"
@@ -448,7 +448,7 @@ syncer::DeviceInfo TestDeviceInfo(const TestDeviceInfoConfig& config) {
       sync_pb::
           SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
       /*sharing_info=*/std::nullopt, paask_info_opt,
-      /*fcm_registration_token=*/"fcm_token", syncer::ModelTypeSet(),
+      /*fcm_registration_token=*/"fcm_token", syncer::DataTypeSet(),
       /*floating_workspace_last_signin_timestamp=*/base::Time::Now());
 }
 

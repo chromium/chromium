@@ -151,7 +151,7 @@ syncer::DeviceInfo CreateDeviceInfo() {
       sync_pb::
           SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
       /*sharing_info=*/std::nullopt, std::move(paask_info),
-      /*fcm_registration_token=*/"fcm_token", syncer::ModelTypeSet(),
+      /*fcm_registration_token=*/"fcm_token", syncer::DataTypeSet(),
       /*floating_workspace_last_signin_timestamp=*/base::Time::Now());
 }
 

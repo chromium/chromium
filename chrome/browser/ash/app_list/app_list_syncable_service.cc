@@ -1328,7 +1328,7 @@ void AppListSyncableService::WaitUntilReadyToSync(base::OnceClosure done) {
 
 std::optional<syncer::ModelError>
 AppListSyncableService::MergeDataAndStartSyncing(
-    syncer::ModelType type,
+    syncer::DataType type,
     const syncer::SyncDataList& initial_sync_data,
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
   DCHECK(!sync_processor_.get());
@@ -1466,7 +1466,7 @@ AppListSyncableService::MergeDataAndStartSyncing(
   return std::nullopt;
 }
 
-void AppListSyncableService::StopSyncing(syncer::ModelType type) {
+void AppListSyncableService::StopSyncing(syncer::DataType type) {
   DCHECK_EQ(type, syncer::APP_LIST);
 
   sync_processor_.reset();

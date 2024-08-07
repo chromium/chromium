@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/browser_sync/active_devices_provider_impl.h"
+
 #include <map>
 #include <memory>
 #include <utility>
@@ -11,9 +13,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
-#include "components/browser_sync/active_devices_provider_impl.h"
 #include "components/browser_sync/browser_sync_switches.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace browser_sync {
 
@@ -47,13 +48,13 @@ ActiveDevicesProviderImpl::CalculateInvalidationInfo(
   std::vector<std::string> all_fcm_registration_tokens;
 
   // List of interested data types for all other clients.
-  syncer::ModelTypeSet all_interested_data_types;
+  syncer::DataTypeSet all_interested_data_types;
 
-  syncer::ModelTypeSet old_invalidations_interested_data_types;
+  syncer::DataTypeSet old_invalidations_interested_data_types;
 
   // FCM registration tokens with corresponding interested data types for all
   // the clients with enabled sync standalone invalidations.
-  std::map<std::string, syncer::ModelTypeSet>
+  std::map<std::string, syncer::DataTypeSet>
       fcm_token_and_interested_data_types;
 
   for (const syncer::DeviceInfo* device : active_devices) {

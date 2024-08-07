@@ -229,7 +229,7 @@ class SingleClientPlusAddressManagedAccountTest
   }
 
  private:
-  // Since the model type controller is shared between `PLUS_ADDRESS` and
+  // Since the data type controller is shared between `PLUS_ADDRESS` and
   // `PLUS_ADDRESS_SETTING`, this test tests the behavior for both.
   base::test::ScopedFeatureList settings_feature_{
       syncer::kSyncPlusAddressSetting};

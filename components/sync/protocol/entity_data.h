@@ -37,7 +37,7 @@ struct EntityData {
   // a temporary client sync ID.
   std::string id;
 
-  // A hash based on the client tag and model type.
+  // A hash based on the client tag and data type.
   // Used for various map lookups. Should always be available for all data types
   // except bookmarks (for bookmarks it depends on the version of the client
   // that originally created the bookmark).

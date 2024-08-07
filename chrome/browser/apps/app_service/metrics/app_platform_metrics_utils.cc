@@ -34,7 +34,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/user_manager/user.h"
@@ -433,7 +433,7 @@ bool ShouldRecordAppKM(Profile* profile) {
   }
 
   switch (syncer::GetUploadToGoogleState(
-      SyncServiceFactory::GetForProfile(profile), syncer::ModelType::APPS)) {
+      SyncServiceFactory::GetForProfile(profile), syncer::DataType::APPS)) {
     case syncer::UploadState::NOT_ACTIVE:
       return false;
     case syncer::UploadState::INITIALIZING:

@@ -327,7 +327,7 @@ void SpellcheckCustomDictionary::WaitUntilReadyToSync(base::OnceClosure done) {
 
 std::optional<syncer::ModelError>
 SpellcheckCustomDictionary::MergeDataAndStartSyncing(
-    syncer::ModelType type,
+    syncer::DataType type,
     const syncer::SyncDataList& initial_sync_data,
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -357,14 +357,14 @@ SpellcheckCustomDictionary::MergeDataAndStartSyncing(
   return Sync(to_change_remotely);
 }
 
-void SpellcheckCustomDictionary::StopSyncing(syncer::ModelType type) {
+void SpellcheckCustomDictionary::StopSyncing(syncer::DataType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(syncer::DICTIONARY, type);
   sync_processor_.reset();
 }
 
 syncer::SyncDataList SpellcheckCustomDictionary::GetAllSyncDataForTesting(
-    syncer::ModelType type) const {
+    syncer::DataType type) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(syncer::DICTIONARY, type);
   syncer::SyncDataList data;

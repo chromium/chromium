@@ -8,8 +8,8 @@
 #import "base/time/time.h"
 #import "components/browser_sync/browser_sync_switches.h"
 #import "components/sync/base/command_line_switches.h"
+#import "components/sync/base/data_type.h"
 #import "components/sync/base/features.h"
-#import "components/sync/base/model_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -54,7 +54,7 @@ constexpr NSString* kPassphrase = @"passphrase";
 // and fails with a GREYAssert if the condition is not met, within a short
 // period of time.
 void WaitForEntitiesOnFakeServer(int entity_count,
-                                 syncer::ModelType entity_type) {
+                                 syncer::DataType entity_type) {
   ConditionBlock condition = ^{
     return [ChromeEarlGrey numberOfSyncEntitiesWithType:entity_type] ==
            entity_count;
@@ -62,7 +62,7 @@ void WaitForEntitiesOnFakeServer(int entity_count,
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(kSyncOperationTimeout,
                                                           condition),
              @"Expected %d %s entities but found %d", entity_count,
-             syncer::ModelTypeToDebugString(entity_type),
+             syncer::DataTypeToDebugString(entity_type),
              [ChromeEarlGrey numberOfSyncEntitiesWithType:entity_type]);
 }
 

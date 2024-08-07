@@ -63,7 +63,7 @@ class ChromeSyncClient : public syncer::SyncClient {
 
   // Convenience function used during controller creation.
   base::WeakPtr<syncer::SyncableService> GetSyncableServiceForType(
-      syncer::ModelType type);
+      syncer::DataType type);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Creates the DataTypeController for syncer::APPS.

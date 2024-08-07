@@ -137,10 +137,10 @@ class ProcessorEntityTracker {
 
   // A map of client tag hash to sync entities known to this tracker. This
   // should contain entries and metadata, although the entities may not always
-  // contain model type data/specifics.
+  // contain data type data/specifics.
   std::map<ClientTagHash, std::unique_ptr<ProcessorEntity>> entities_;
 
-  // The model type metadata (progress marker, initial sync done, etc).
+  // The data type metadata (progress marker, initial sync done, etc).
   sync_pb::DataTypeState data_type_state_;
 
   // The bridge wants to communicate entirely via storage keys that it is free

@@ -34,7 +34,7 @@ class SyncableSettingsStorage : public value_store::ValueStore {
                           const ExtensionId& extension_id,
                           // Ownership taken.
                           value_store::ValueStore* delegate,
-                          syncer::ModelType sync_type,
+                          syncer::DataType sync_type,
                           const syncer::SyncableService::StartSyncFlare& flare);
 
   SyncableSettingsStorage(const SyncableSettingsStorage&) = delete;
@@ -128,7 +128,7 @@ class SyncableSettingsStorage : public value_store::ValueStore {
   // Object which sends changes to sync.
   std::unique_ptr<SettingsSyncProcessor> sync_processor_;
 
-  const syncer::ModelType sync_type_;
+  const syncer::DataType sync_type_;
   const syncer::SyncableService::StartSyncFlare flare_;
 };
 

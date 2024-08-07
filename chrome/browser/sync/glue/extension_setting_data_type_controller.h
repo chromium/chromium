@@ -23,7 +23,7 @@ class ExtensionSettingDataTypeController
   // |dump_stack| is called when an unrecoverable error occurs.
   // |profile| must not be null.
   ExtensionSettingDataTypeController(
-      syncer::ModelType type,
+      syncer::DataType type,
       syncer::OnceDataTypeStoreFactory store_factory,
       SyncableServiceProvider syncable_service_provider,
       const base::RepeatingClosure& dump_stack,

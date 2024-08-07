@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 
 namespace webauthn {

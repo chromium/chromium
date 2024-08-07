@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/data_type_controller.h"
 
 class PrefService;
@@ -24,9 +24,9 @@ namespace history {
 // DataTypeControllers using this helper must call its GetPreconditionState().
 class HistoryDataTypeControllerHelper {
  public:
-  HistoryDataTypeControllerHelper(syncer::ModelType model_type,
-                                   syncer::SyncService* sync_service,
-                                   PrefService* pref_service);
+  HistoryDataTypeControllerHelper(syncer::DataType data_type,
+                                  syncer::SyncService* sync_service,
+                                  PrefService* pref_service);
 
   HistoryDataTypeControllerHelper(const HistoryDataTypeControllerHelper&) =
       delete;
@@ -43,7 +43,7 @@ class HistoryDataTypeControllerHelper {
  private:
   void OnSavingBrowserHistoryDisabledChanged();
 
-  const syncer::ModelType model_type_;
+  const syncer::DataType data_type_;
   const raw_ptr<syncer::SyncService> sync_service_;
   const raw_ptr<PrefService> pref_service_;
 

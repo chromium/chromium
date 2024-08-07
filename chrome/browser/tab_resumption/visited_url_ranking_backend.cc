@@ -16,7 +16,7 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/visited_url_ranking/visited_url_ranking_service_factory.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/visited_url_ranking/public/fetch_options.h"

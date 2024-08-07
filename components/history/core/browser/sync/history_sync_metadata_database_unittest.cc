@@ -102,7 +102,7 @@ TEST_F(HistorySyncMetadataDatabaseTest, StoresAndReturnsMetadata) {
   const std::string storage_key2 =
       HistorySyncMetadataDatabase::StorageKeyFromVisitTime(kVisitTime2);
 
-  // Store some data - both entity metadata and model type state.
+  // Store some data - both entity metadata and data type state.
   EntityMetadata metadata1;
   metadata1.set_sequence_number(1);
   metadata1.set_client_tag_hash("client_hash1");
@@ -135,7 +135,7 @@ TEST_F(HistorySyncMetadataDatabaseTest, StoresAndReturnsMetadata) {
   EXPECT_EQ(metadata_records[storage_key2]->sequence_number(), 2);
   EXPECT_EQ(metadata_records[storage_key2]->client_tag_hash(), "client_hash2");
 
-  // Now check that an entity update and a model type state update replace the
+  // Now check that an entity update and a data type state update replace the
   // old values.
   metadata1.set_sequence_number(2);
   ASSERT_TRUE(metadata_db()->UpdateEntityMetadata(syncer::HISTORY, storage_key1,
@@ -180,7 +180,7 @@ TEST_F(HistorySyncMetadataDatabaseTest, DeletesSyncMetadata) {
   ASSERT_TRUE(metadata_db()->GetAllSyncMetadata(&metadata_batch));
   EXPECT_EQ(metadata_batch.GetAllMetadata().size(), 0u);
 
-  // Now delete the model type state and make sure it's gone.
+  // Now delete the data type state and make sure it's gone.
   ASSERT_NE(DataTypeState().SerializeAsString(),
             metadata_batch.GetDataTypeState().SerializeAsString());
   ASSERT_TRUE(metadata_db()->ClearDataTypeState(syncer::HISTORY));

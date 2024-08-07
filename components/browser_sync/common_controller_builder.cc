@@ -153,7 +153,7 @@ ContactInfoDelegateFromDataService(autofill::AutofillWebDataService* service) {
 // Helper function that deals will null (e.g. tests, iOS webview).
 base::WeakPtr<syncer::SyncableService> SyncableServiceForPrefs(
     sync_preferences::PrefServiceSyncable* prefs_service,
-    syncer::ModelType type) {
+    syncer::DataType type) {
   return prefs_service ? prefs_service->GetSyncableService(type)->AsWeakPtr()
                        : nullptr;
 }
@@ -313,7 +313,7 @@ void CommonControllerBuilder::SetUserEventService(
 }
 
 std::vector<std::unique_ptr<syncer::DataTypeController>>
-CommonControllerBuilder::Build(syncer::ModelTypeSet disabled_types,
+CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
                                syncer::SyncService* sync_service,
                                version_info::Channel channel) {
   std::vector<std::unique_ptr<syncer::DataTypeController>> controllers;
@@ -745,7 +745,7 @@ CommonControllerBuilder::Build(syncer::ModelTypeSet disabled_types,
 
 std::unique_ptr<DataTypeController>
 CommonControllerBuilder::CreateWalletDataTypeController(
-    syncer::ModelType type,
+    syncer::DataType type,
     const base::RepeatingCallback<
         base::WeakPtr<syncer::DataTypeControllerDelegate>(
             autofill::AutofillWebDataService*)>& delegate_from_web_data,

@@ -1545,7 +1545,7 @@ void TemplateURLService::WaitUntilReadyToSync(base::OnceClosure done) {
 }
 
 syncer::SyncDataList TemplateURLService::GetAllSyncData(
-    syncer::ModelType type) const {
+    syncer::DataType type) const {
   DCHECK_EQ(syncer::SEARCH_ENGINES, type);
 
   syncer::SyncDataList current_data;
@@ -1670,7 +1670,7 @@ base::WeakPtr<syncer::SyncableService> TemplateURLService::AsWeakPtr() {
 }
 
 std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
-    syncer::ModelType type,
+    syncer::DataType type,
     const syncer::SyncDataList& initial_sync_data,
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
   DCHECK(loaded_);
@@ -1788,7 +1788,7 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
   return error;
 }
 
-void TemplateURLService::StopSyncing(syncer::ModelType type) {
+void TemplateURLService::StopSyncing(syncer::DataType type) {
   DCHECK_EQ(type, syncer::SEARCH_ENGINES);
   models_associated_ = false;
   sync_processor_.reset();

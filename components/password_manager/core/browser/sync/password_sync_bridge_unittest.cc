@@ -324,24 +324,24 @@ class MockSyncMetadataStore : public PasswordStoreSync::MetadataStore {
  public:
   MOCK_METHOD(std::unique_ptr<syncer::MetadataBatch>,
               GetAllSyncMetadata,
-              (syncer::ModelType),
+              (syncer::DataType),
               (override));
-  MOCK_METHOD(void, DeleteAllSyncMetadata, (syncer::ModelType), (override));
+  MOCK_METHOD(void, DeleteAllSyncMetadata, (syncer::DataType), (override));
   MOCK_METHOD(bool,
               UpdateEntityMetadata,
-              (syncer::ModelType,
+              (syncer::DataType,
                const std::string&,
                const sync_pb::EntityMetadata&),
               (override));
   MOCK_METHOD(bool,
               ClearEntityMetadata,
-              (syncer::ModelType, const std::string&),
+              (syncer::DataType, const std::string&),
               (override));
   MOCK_METHOD(bool,
               UpdateDataTypeState,
-              (syncer::ModelType, const sync_pb::DataTypeState&),
+              (syncer::DataType, const sync_pb::DataTypeState&),
               (override));
-  MOCK_METHOD(bool, ClearDataTypeState, (syncer::ModelType), (override));
+  MOCK_METHOD(bool, ClearDataTypeState, (syncer::DataType), (override));
   MOCK_METHOD(void,
               SetPasswordDeletionsHaveSyncedCallback,
               (base::RepeatingCallback<void(bool)>),
@@ -1202,7 +1202,7 @@ TEST_F(PasswordSyncBridgeTest,
   EXPECT_TRUE(error);
 }
 
-// This tests that if storing model type state fails,
+// This tests that if storing data type state fails,
 // ShouldMergeSync() would return an error without crashing.
 TEST_F(
     PasswordSyncBridgeTest,

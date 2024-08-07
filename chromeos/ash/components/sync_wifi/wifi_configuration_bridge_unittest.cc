@@ -33,7 +33,7 @@
 #include "chromeos/ash/components/timer_factory/fake_timer_factory.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/entity_change.h"
@@ -189,7 +189,7 @@ class WifiConfigurationBridgeTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void OnDataTypeStoreCallback(syncer::ModelType type,
+  void OnDataTypeStoreCallback(syncer::DataType type,
                                syncer::DataTypeStore::InitCallback callback) {
     init_callback_ = std::move(callback);
   }

@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/data_type_local_data_batch_uploader.h"

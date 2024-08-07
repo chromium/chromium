@@ -24,7 +24,7 @@ namespace {
 
 base::WeakPtr<syncer::SyncableService> GetSyncableServiceOnBackendSequence(
     base::WeakPtr<SyncValueStoreCache> sync_cache,
-    syncer::ModelType type) {
+    syncer::DataType type) {
   DCHECK(IsOnBackendSequence());
   if (!sync_cache)
     return nullptr;
@@ -58,7 +58,7 @@ void PopulateAppSettingSpecifics(const ExtensionId& extension_id,
 syncer::SyncData CreateData(const ExtensionId& extension_id,
                             const std::string& key,
                             const base::Value& value,
-                            syncer::ModelType type) {
+                            syncer::DataType type) {
   sync_pb::EntitySpecifics specifics;
   switch (type) {
     case syncer::EXTENSION_SETTINGS:
@@ -88,7 +88,7 @@ syncer::SyncData CreateData(const ExtensionId& extension_id,
 syncer::SyncChange CreateAdd(const ExtensionId& extension_id,
                              const std::string& key,
                              const base::Value& value,
-                             syncer::ModelType type) {
+                             syncer::DataType type) {
   return syncer::SyncChange(
       FROM_HERE,
       syncer::SyncChange::ACTION_ADD,
@@ -98,7 +98,7 @@ syncer::SyncChange CreateAdd(const ExtensionId& extension_id,
 syncer::SyncChange CreateUpdate(const ExtensionId& extension_id,
                                 const std::string& key,
                                 const base::Value& value,
-                                syncer::ModelType type) {
+                                syncer::DataType type) {
   return syncer::SyncChange(
       FROM_HERE,
       syncer::SyncChange::ACTION_UPDATE,
@@ -107,7 +107,7 @@ syncer::SyncChange CreateUpdate(const ExtensionId& extension_id,
 
 syncer::SyncChange CreateDelete(const ExtensionId& extension_id,
                                 const std::string& key,
-                                syncer::ModelType type) {
+                                syncer::DataType type) {
   return syncer::SyncChange(
       FROM_HERE, syncer::SyncChange::ACTION_DELETE,
       CreateData(extension_id, key, base::Value(base::Value::Dict()), type));
@@ -115,7 +115,7 @@ syncer::SyncChange CreateDelete(const ExtensionId& extension_id,
 
 base::OnceCallback<base::WeakPtr<syncer::SyncableService>()>
 GetSyncableServiceProvider(content::BrowserContext* context,
-                           syncer::ModelType type) {
+                           syncer::DataType type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(context);
   DCHECK(type == syncer::APP_SETTINGS || type == syncer::EXTENSION_SETTINGS);

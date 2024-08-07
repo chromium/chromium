@@ -159,7 +159,7 @@ class IncomingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
     }
   }
 
-  // In memory model type store needs to be able to post tasks.
+  // In memory data type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
 
   testing::NiceMock<MockPasswordReceiverService>

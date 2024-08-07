@@ -34,7 +34,7 @@ namespace tab_groups {
 class SavedTabGroup;
 class SavedTabGroupModel;
 
-// Sync bridge implementation for SHARED_TAB_GROUP_DATA model type.
+// Sync bridge implementation for SHARED_TAB_GROUP_DATA data type.
 class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   using SharedTabGroupLoadCallback =

@@ -17,16 +17,16 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/browser_sync/browser_sync_switches.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using syncer::ActiveDevicesInvalidationInfo;
+using syncer::DataTypeSet;
 using syncer::DeviceInfo;
 using syncer::FakeDeviceInfoTracker;
-using syncer::ModelTypeSet;
 using testing::Contains;
 using testing::IsEmpty;
 using testing::SizeIs;
@@ -40,7 +40,7 @@ constexpr int kPulseIntervalMinutes = 60;
 std::unique_ptr<DeviceInfo> CreateFakeDeviceInfo(
     const std::string& name,
     const std::string& fcm_registration_token,
-    const ModelTypeSet& interested_data_types,
+    const DataTypeSet& interested_data_types,
     base::Time last_updated_timestamp) {
   return std::make_unique<syncer::DeviceInfo>(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), name,
@@ -59,7 +59,7 @@ std::unique_ptr<DeviceInfo> CreateFakeDeviceInfo(
       /*floating_workspace_last_signin_timestamp=*/std::nullopt);
 }
 
-ModelTypeSet DefaultInterestedDataTypes() {
+DataTypeSet DefaultInterestedDataTypes() {
   return Difference(syncer::ProtocolTypes(), syncer::CommitOnlyTypes());
 }
 
@@ -72,7 +72,7 @@ class ActiveDevicesProviderImplTest : public testing::Test {
 
   void AddDevice(const std::string& name,
                  const std::string& fcm_registration_token,
-                 const ModelTypeSet& interested_data_types,
+                 const DataTypeSet& interested_data_types,
                  base::Time last_updated_timestamp) {
     device_list_.push_back(CreateFakeDeviceInfo(name, fcm_registration_token,
                                                 interested_data_types,

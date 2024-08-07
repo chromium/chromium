@@ -13,7 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
 #include "base/sequence_checker.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/mutable_data_batch.h"

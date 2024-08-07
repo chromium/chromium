@@ -29,7 +29,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/syncable_service.h"

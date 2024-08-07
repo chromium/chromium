@@ -16,7 +16,7 @@ package sync_pb;
 
 import "components/sync/protocol/data_type_progress_marker.proto";
 
-// Sync proto to store data type global metadata in model type storage.
+// Sync proto to store data type global metadata in data type storage.
 message DataTypeState {
   enum InitialSyncState {
     // Default value, typically used when there is no metadata (e.g. because

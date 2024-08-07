@@ -41,7 +41,7 @@ class FakeDeskSyncBridge : public DeskModel {
   bool IsReady() const override;
   // Whether this sync bridge is syncing local data to sync. This sync bridge
   // still allows user to save desk templates locally when users disable syncing
-  // for Workspace Desk model type.
+  // for Workspace Desk data type.
   bool IsSyncing() const override;
 
   ash::DeskTemplate* FindOtherEntryWithName(

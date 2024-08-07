@@ -13,7 +13,7 @@
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace commerce {

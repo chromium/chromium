@@ -23,7 +23,7 @@
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/common/chrome_constants.h"
 #include "chromeos/ash/components/standalone_browser/migration_progress_tracker.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/blocking_data_type_store_impl.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"

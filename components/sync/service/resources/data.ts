@@ -97,7 +97,7 @@ function serializeNode(node: SyncNode): string[] {
 }
 
 /**
- * @param type The name of a sync model type.
+ * @param type The name of a sync data type.
  * @return True if the type's checkbox is selected.
  */
 function isSelectedDatatype(type: string): boolean {
@@ -140,7 +140,7 @@ function makeDateUserAgentHeader() {
 /**
  * Builds a summary of current state and exports it as a downloaded file.
  *
- * @param nodesMap Summary of local state by model type.
+ * @param nodesMap Summary of local state by data type.
  */
 function triggerDataDownload(nodesMap: SyncNodeMap) {
   // Prepend a header with ISO date and useragent.

@@ -252,7 +252,7 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
   syncer::DataTypeStore& store() { return *store_; }
 
  private:
-  // In memory model type store needs to be able to post tasks.
+  // In memory data type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;

@@ -18,7 +18,7 @@
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/sharing_message/pref_names.h"
 #include "components/spellcheck/browser/pref_names.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)

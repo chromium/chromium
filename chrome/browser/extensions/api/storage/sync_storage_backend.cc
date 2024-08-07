@@ -23,7 +23,7 @@ namespace {
 
 void AddAllSyncData(const ExtensionId& extension_id,
                     const base::Value::Dict& src,
-                    syncer::ModelType type,
+                    syncer::DataType type,
                     syncer::SyncDataList* dst) {
   for (auto it : src) {
     dst->push_back(settings_sync_util::CreateData(extension_id, it.first,
@@ -35,7 +35,7 @@ base::Value::Dict EmptyDict() {
   return base::Value::Dict();
 }
 
-value_store_util::ModelType ToFactoryModelType(syncer::ModelType sync_type) {
+value_store_util::ModelType ToFactoryModelType(syncer::DataType sync_type) {
   switch (sync_type) {
     case syncer::APP_SETTINGS:
       return value_store_util::ModelType::APP;
@@ -53,7 +53,7 @@ SyncStorageBackend::SyncStorageBackend(
     scoped_refptr<value_store::ValueStoreFactory> storage_factory,
     const SettingsStorageQuotaEnforcer::Limits& quota,
     SequenceBoundSettingsChangedCallback observer,
-    syncer::ModelType sync_type,
+    syncer::DataType sync_type,
     const syncer::SyncableService::StartSyncFlare& flare)
     : storage_factory_(std::move(storage_factory)),
       quota_(quota),
@@ -127,7 +127,7 @@ void SyncStorageBackend::WaitUntilReadyToSync(base::OnceClosure done) {
 }
 
 syncer::SyncDataList SyncStorageBackend::GetAllSyncDataForTesting(
-    syncer::ModelType type) const {
+    syncer::DataType type) const {
   DCHECK(IsOnBackendSequence());
   // For all extensions, get all their settings.  This has the effect
   // of bringing in the entire state of extension settings in memory; sad.
@@ -152,7 +152,7 @@ syncer::SyncDataList SyncStorageBackend::GetAllSyncDataForTesting(
 }
 
 std::optional<syncer::ModelError> SyncStorageBackend::MergeDataAndStartSyncing(
-    syncer::ModelType type,
+    syncer::DataType type,
     const syncer::SyncDataList& initial_sync_data,
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
   DCHECK(IsOnBackendSequence());
@@ -241,7 +241,7 @@ base::WeakPtr<syncer::SyncableService> SyncStorageBackend::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void SyncStorageBackend::StopSyncing(syncer::ModelType type) {
+void SyncStorageBackend::StopSyncing(syncer::DataType type) {
   DCHECK(IsOnBackendSequence());
   DCHECK(type == syncer::EXTENSION_SETTINGS || type == syncer::APP_SETTINGS);
   DCHECK_EQ(sync_type_, type);

@@ -1504,7 +1504,7 @@ base::Value::Dict DevToolsUIBindings::GetSyncInformationForProfile(
 
   result.Set("isSyncActive", sync_service->IsSyncFeatureActive());
   result.Set("arePreferencesSynced", sync_service->GetActiveDataTypes().Has(
-                                         syncer::ModelType::PREFERENCES));
+                                         syncer::DataType::PREFERENCES));
 
   CoreAccountInfo account_info = sync_service->GetAccountInfo();
   if (account_info.IsEmpty()) {

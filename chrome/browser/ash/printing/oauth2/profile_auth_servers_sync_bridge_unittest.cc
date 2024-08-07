@@ -143,7 +143,7 @@ class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
     loop.Run();
   }
 
-  // In memory model type store needs to be able to post tasks.
+  // In memory data type store needs to be able to post tasks.
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<syncer::DataTypeStore> store_ =
       syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();

@@ -25,7 +25,7 @@ class ModelError;
 
 namespace webauthn {
 
-// Sync bridge implementation for WEBAUTHN_CREDENTIAL model type.
+// Sync bridge implementation for WEBAUTHN_CREDENTIAL data type.
 class PasskeySyncBridge : public syncer::DataTypeSyncBridge,
                           public PasskeyModel {
  public:

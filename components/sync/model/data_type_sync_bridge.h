@@ -29,9 +29,9 @@ struct EntityData;
 class MetadataChangeList;
 class ModelError;
 
-// Interface implemented by model types to receive updates from sync via a
+// Interface implemented by data types to receive updates from sync via a
 // DataTypeLocalChangeProcessor. Provides a way for sync to update the data and
-// metadata for entities, as well as the model type state. Sync bridge
+// metadata for entities, as well as the data type state. Sync bridge
 // implementations must provide their change_processor() with metadata through
 // ModelReadyToSync() as soon as possible. Once this is called, sync will
 // immediately begin locally tracking changes and can start syncing with the
@@ -67,7 +67,7 @@ class DataTypeSyncBridge {
   virtual void OnSyncStarting(const DataTypeActivationRequest& request);
 
   // Creates an object used to communicate changes in the sync metadata to the
-  // model type store.
+  // data type store.
   virtual std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() = 0;
 
   // Perform the initial merge between local and sync data.
@@ -91,7 +91,7 @@ class DataTypeSyncBridge {
   // pieces of data that are not present in sync should immediately be Put(...)
   // to the processor before returning. The same MetadataChangeList that was
   // passed into this function can be passed to Put(...) calls. Delete(...) can
-  // also be called but should not be needed for most model types. Durable
+  // also be called but should not be needed for most data types. Durable
   // storage writes, if not able to combine all change atomically, should save
   // the metadata after the data changes, so that this merge will be re-driven
   // by sync if is not completely saved during the current run.
@@ -127,7 +127,7 @@ class DataTypeSyncBridge {
   // for backward compatibility with pre-USS clients. The only time this
   // theoretically needs to be called is on the creation of local data.
   //
-  // If a model type was never launched pre-USS, then method does not need to be
+  // If a data type was never launched pre-USS, then method does not need to be
   // different from GetStorageKey(). Only the hash of this value is kept.
   //
   // IsEntityDataValid() is guaranteed to hold for the `entity_data`.

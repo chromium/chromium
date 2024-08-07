@@ -217,7 +217,7 @@ TEST_F(ConsentAuditorImplTest, ShouldReturnSyncDelegateWhenBridgePresent) {
   auto fake_bridge = std::make_unique<FakeConsentSyncBridge>();
 
   syncer::FakeDataTypeControllerDelegate fake_delegate(
-      syncer::ModelType::USER_CONSENTS);
+      syncer::DataType::USER_CONSENTS);
   auto expected_delegate_ptr = fake_delegate.GetWeakPtr();
   DCHECK(expected_delegate_ptr);
   fake_bridge->SetControllerDelegate(expected_delegate_ptr);

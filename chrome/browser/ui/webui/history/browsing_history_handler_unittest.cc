@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/history/browsing_history_handler.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <set>
 #include <utility>
@@ -26,7 +27,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/history/core/test/fake_web_history_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"

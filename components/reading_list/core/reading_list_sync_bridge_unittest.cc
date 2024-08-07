@@ -175,7 +175,7 @@ class ReadingListSyncBridgeTest : public testing::Test {
 
   ReadingListSyncBridge* bridge() { return model_->GetSyncBridgeForTest(); }
 
-  // In memory model type store needs to be able to post tasks.
+  // In memory data type store needs to be able to post tasks.
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::SimpleTestClock clock_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;

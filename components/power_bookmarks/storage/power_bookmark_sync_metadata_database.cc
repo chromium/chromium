@@ -54,7 +54,7 @@ bool PowerBookmarkSyncMetadataDatabase::Init() {
 }
 
 bool PowerBookmarkSyncMetadataDatabase::UpdateEntityMetadata(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const std::string& storage_key,
     const sync_pb::EntityMetadata& metadata) {
   DCHECK(!storage_key.empty());
@@ -74,7 +74,7 @@ bool PowerBookmarkSyncMetadataDatabase::UpdateEntityMetadata(
 }
 
 bool PowerBookmarkSyncMetadataDatabase::ClearEntityMetadata(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const std::string& storage_key) {
   DCHECK(!storage_key.empty());
 
@@ -91,7 +91,7 @@ bool PowerBookmarkSyncMetadataDatabase::ClearEntityMetadata(
 }
 
 bool PowerBookmarkSyncMetadataDatabase::UpdateDataTypeState(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const sync_pb::DataTypeState& data_type_state) {
   DCHECK_GT(meta_table_->GetVersionNumber(), 0);
 
@@ -101,7 +101,7 @@ bool PowerBookmarkSyncMetadataDatabase::UpdateDataTypeState(
 }
 
 bool PowerBookmarkSyncMetadataDatabase::ClearDataTypeState(
-    syncer::ModelType model_type) {
+    syncer::DataType data_type) {
   DCHECK_GT(meta_table_->GetVersionNumber(), 0);
   return meta_table_->DeleteKey(kPowerBookmarkDataTypeStateKey);
 }
@@ -137,7 +137,7 @@ bool PowerBookmarkSyncMetadataDatabase::GetAllSyncEntityMetadata(
     std::string serialized_metadata = s.ColumnString(1);
     auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
     if (!entity_metadata->ParseFromString(serialized_metadata)) {
-      DLOG(WARNING) << "Failed to deserialize POWER_BOOKMARK model type "
+      DLOG(WARNING) << "Failed to deserialize POWER_BOOKMARK data type "
                        "sync_pb::EntityMetadata.";
       return false;
     }

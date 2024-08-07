@@ -8,7 +8,7 @@
 #include <string>
 
 #include "components/commerce/core/account_checker.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class PrefService;
@@ -27,7 +27,7 @@ class MockAccountChecker : public AccountChecker {
 
   MOCK_METHOD(bool, IsSyncingBookmarks, (), (override));
 
-  MOCK_METHOD(bool, IsSyncingType, (syncer::ModelType type), (override));
+  MOCK_METHOD(bool, IsSyncingType, (syncer::DataType type), (override));
 
   MOCK_METHOD(bool, IsAnonymizedUrlDataCollectionEnabled, (), (override));
 

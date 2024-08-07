@@ -19,7 +19,7 @@
 #include "components/saved_tab_groups/tab_group_sync_coordinator.h"
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/tab_group_sync_service_impl.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/fake_data_type_controller.h"

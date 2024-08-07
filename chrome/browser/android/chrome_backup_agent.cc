@@ -12,7 +12,7 @@
 #include "components/prefs/android/pref_service_android.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_prefs.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

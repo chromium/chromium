@@ -30,7 +30,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -90,7 +90,7 @@ class SigninViewControllerBrowserTestBase : public SigninBrowserTestBase {
 
   void AddUnsyncedData() {
     GetTestSyncService()->SetTypesWithUnsyncedData(
-        syncer::ModelTypeSet{syncer::ModelType::PASSWORDS});
+        syncer::DataTypeSet{syncer::DataType::PASSWORDS});
   }
 
   views::DialogDelegate* TriggerSignoutAndWaitForConfirmationPrompt() {

@@ -17,7 +17,7 @@
 #include "chromeos/ash/components/network/network_configuration_observer.h"
 #include "chromeos/ash/components/network/network_metadata_observer.h"
 #include "chromeos/ash/components/sync_wifi/network_identifier.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 

@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/supervised_user/core/common/buildflags.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 class GoogleGroupsManager;
 class PrefService;
@@ -189,7 +189,7 @@ class CommonControllerBuilder {
   // Actually builds the controllers. All setters above must have been called
   // beforehand (null may or may not be allowed).
   std::vector<std::unique_ptr<syncer::DataTypeController>> Build(
-      syncer::ModelTypeSet disabled_types,
+      syncer::DataTypeSet disabled_types,
       syncer::SyncService* sync_service,
       version_info::Channel channel);
 
@@ -224,7 +224,7 @@ class CommonControllerBuilder {
   // transport mode, implemented via an independent AutofillWebDataService,
   // namely `web_data_service_in_memory_`.
   std::unique_ptr<syncer::DataTypeController> CreateWalletDataTypeController(
-      syncer::ModelType type,
+      syncer::DataType type,
       const base::RepeatingCallback<
           base::WeakPtr<syncer::DataTypeControllerDelegate>(
               autofill::AutofillWebDataService*)>& delegate_from_web_data,

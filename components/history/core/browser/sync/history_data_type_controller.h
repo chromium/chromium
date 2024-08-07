@@ -7,7 +7,7 @@
 
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/sync/history_data_type_controller_helper.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"

@@ -64,9 +64,9 @@ std::string_view GetBothChromesExtensionId() {
   return extensions::GetExtensionsAndAppsRunInOSAndStandaloneBrowser()[0];
 }
 
-constexpr syncer::ModelType kAshSyncDataType =
+constexpr syncer::DataType kAshSyncDataType =
     browser_data_migrator_util::kAshOnlySyncDataTypes[0];
-constexpr syncer::ModelType kLacrosSyncDataType = syncer::ModelType::WEB_APPS;
+constexpr syncer::DataType kLacrosSyncDataType = syncer::DataType::WEB_APPS;
 static_assert(!base::Contains(browser_data_migrator_util::kAshOnlySyncDataTypes,
                               kLacrosSyncDataType));
 

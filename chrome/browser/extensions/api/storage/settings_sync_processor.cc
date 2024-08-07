@@ -19,7 +19,7 @@ namespace extensions {
 
 SettingsSyncProcessor::SettingsSyncProcessor(
     const ExtensionId& extension_id,
-    syncer::ModelType type,
+    syncer::DataType type,
     syncer::SyncChangeProcessor* sync_processor)
     : extension_id_(extension_id),
       type_(type),

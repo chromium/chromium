@@ -94,7 +94,7 @@ class NigoriDataTypeProcessor : public DataTypeProcessor,
   // invalid.
   raw_ptr<NigoriSyncBridge> bridge_ = nullptr;
 
-  // The model type metadata (progress marker, initial sync done, etc).
+  // The data type metadata (progress marker, initial sync done, etc).
   sync_pb::DataTypeState data_type_state_;
 
   // Whether the model has initialized its internal state for sync (and provided

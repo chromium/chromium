@@ -12,10 +12,10 @@
 namespace history {
 
 HistoryDataTypeControllerHelper::HistoryDataTypeControllerHelper(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     syncer::SyncService* sync_service,
     PrefService* pref_service)
-    : model_type_(model_type),
+    : data_type_(data_type),
       sync_service_(sync_service),
       pref_service_(pref_service) {
   pref_registrar_.Init(pref_service_);
@@ -39,7 +39,7 @@ HistoryDataTypeControllerHelper::GetPreconditionState() const {
 }
 
 void HistoryDataTypeControllerHelper::OnSavingBrowserHistoryDisabledChanged() {
-  sync_service_->DataTypePreconditionChanged(model_type_);
+  sync_service_->DataTypePreconditionChanged(data_type_);
 }
 
 }  // namespace history

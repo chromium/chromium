@@ -81,7 +81,7 @@ bool AccountChecker::IsSyncingBookmarks() {
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
     return sync_service_ && syncer::GetUploadToGoogleState(
-                                sync_service_, syncer::ModelType::BOOKMARKS) ==
+                                sync_service_, syncer::DataType::BOOKMARKS) ==
                                 syncer::UploadState::ACTIVE;
   }
   // The feature is not enabled, fallback to old behavior.
@@ -90,11 +90,11 @@ bool AccountChecker::IsSyncingBookmarks() {
   // ConsentLevel::kSync documentation for details.
   return sync_service_ && sync_service_->IsSyncFeatureActive() &&
          syncer::GetUploadToGoogleState(sync_service_,
-                                        syncer::ModelType::BOOKMARKS) !=
+                                        syncer::DataType::BOOKMARKS) !=
              syncer::UploadState::NOT_ACTIVE;
 }
 
-bool AccountChecker::IsSyncingType(syncer::ModelType type) {
+bool AccountChecker::IsSyncingType(syncer::DataType type) {
   return sync_service_ && syncer::GetUploadToGoogleState(sync_service_, type) ==
                               syncer::UploadState::ACTIVE;
 }

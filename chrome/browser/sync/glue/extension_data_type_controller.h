@@ -19,7 +19,7 @@ class ExtensionDataTypeController
     : public syncer::SyncableServiceBasedDataTypeController {
  public:
   ExtensionDataTypeController(
-      syncer::ModelType type,
+      syncer::DataType type,
       syncer::OnceDataTypeStoreFactory store_factory,
       base::WeakPtr<syncer::SyncableService> syncable_service,
       const base::RepeatingClosure& dump_stack,

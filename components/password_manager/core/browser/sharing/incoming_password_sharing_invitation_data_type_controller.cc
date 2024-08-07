@@ -8,7 +8,7 @@
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
 
 namespace password_manager {
@@ -65,7 +65,7 @@ IncomingPasswordSharingInvitationDataTypeController::GetPreconditionState()
   // configuration (e.g. on browser startup) and disabling this data type during
   // browser startup might cause an extra GetUpdates request.
   if (sync_service_->GetDownloadStatusFor(syncer::PASSWORDS) ==
-      syncer::SyncService::ModelTypeDownloadStatus::kError) {
+      syncer::SyncService::DataTypeDownloadStatus::kError) {
     return syncer::DataTypeController::PreconditionState::
         kMustStopAndClearData;
   }

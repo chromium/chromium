@@ -20,7 +20,7 @@
 #include "base/uuid.h"
 #include "components/account_id/account_id.h"
 #include "components/desks_storage/core/desk_model.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 
@@ -80,7 +80,7 @@ class DeskSyncBridge : public syncer::DataTypeSyncBridge, public DeskModel {
   bool IsReady() const override;
   // Whether this sync bridge is syncing local data to sync. This sync bridge
   // still allows user to save desk templates locally when users disable syncing
-  // for Workspace Desk model type.
+  // for Workspace Desk data type.
   bool IsSyncing() const override;
 
   ash::DeskTemplate* FindOtherEntryWithName(

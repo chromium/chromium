@@ -45,7 +45,7 @@ PersistentUniqueClientEntity::CreateFromEntity(
     return nullptr;
   }
 
-  // Without model type specific logic for each CommitOnly type, we cannot infer
+  // Without data type specific logic for each CommitOnly type, we cannot infer
   // a reasonable tag from the specifics. We need uniqueness for how the server
   // holds onto all objects, so simply make a new tag from a random  number.
   std::string effective_tag = client_entity.has_client_tag_hash()

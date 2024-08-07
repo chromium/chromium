@@ -64,7 +64,7 @@ bool ListsMatch(int profile_a,
   }
 
   // This seems to be a transient state that will eventually be rectified by
-  // model type logic. We don't need to check b for duplicates directly because
+  // data type logic. We don't need to check b for duplicates directly because
   // after the first is erased from |autofill_profiles_a_map| the second will
   // not be found.
   if (list_a.size() != list_a_map.size()) {
@@ -134,7 +134,7 @@ bool ListsMatch(int profile_a,
   }
 
   // This seems to be a transient state that will eventually be rectified by
-  // model type logic. We don't need to check b for duplicates directly because
+  // data type logic. We don't need to check b for duplicates directly because
   // after the first is erased from |autofill_profiles_a_map| the second will
   // not be found.
   if (list_a.size() != list_a_map.size()) {

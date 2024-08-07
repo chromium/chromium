@@ -26,7 +26,7 @@ namespace password_manager {
 
 class PasswordStoreSync;
 
-// Sync bridge implementation for PASSWORDS model type. Takes care of
+// Sync bridge implementation for PASSWORDS data type. Takes care of
 // propagating local passwords to other clients and vice versa.
 //
 // This is achieved by implementing the interface DataTypeSyncBridge, which

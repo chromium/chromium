@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/sync_metadata_store.h"
 
 namespace base {
@@ -54,15 +54,15 @@ class HistorySyncMetadataDatabase : public syncer::SyncMetadataStore {
   bool ClearAllEntityMetadata();
 
   // syncer::SyncMetadataStore implementation.
-  bool UpdateEntityMetadata(syncer::ModelType model_type,
+  bool UpdateEntityMetadata(syncer::DataType data_type,
                             const std::string& storage_key,
                             const sync_pb::EntityMetadata& metadata) override;
-  bool ClearEntityMetadata(syncer::ModelType model_type,
+  bool ClearEntityMetadata(syncer::DataType data_type,
                            const std::string& storage_key) override;
   bool UpdateDataTypeState(
-      syncer::ModelType model_type,
+      syncer::DataType data_type,
       const sync_pb::DataTypeState& data_type_state) override;
-  bool ClearDataTypeState(syncer::ModelType model_type) override;
+  bool ClearDataTypeState(syncer::DataType data_type) override;
 
   // Conversion between timestamps and storage keys, exposed so that the bridge
   // (and tests) can access this.

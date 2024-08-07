@@ -13,7 +13,7 @@
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 
@@ -69,7 +69,7 @@ void AppDiscoveryMetricsManager::OnLauncherOpen() {
 
 bool AppDiscoveryMetricsManager::IsAppSyncEnabled() {
   switch (syncer::GetUploadToGoogleState(
-      SyncServiceFactory::GetForProfile(profile_), syncer::ModelType::APPS)) {
+      SyncServiceFactory::GetForProfile(profile_), syncer::DataType::APPS)) {
     case syncer::UploadState::NOT_ACTIVE:
       return false;
     case syncer::UploadState::INITIALIZING:

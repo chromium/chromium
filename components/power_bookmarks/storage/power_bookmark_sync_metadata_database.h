@@ -9,7 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/sync_metadata_store.h"
 #include "sql/meta_table.h"
 
@@ -49,15 +49,15 @@ class PowerBookmarkSyncMetadataDatabase : public syncer::SyncMetadataStore {
   bool Init();
 
   // syncer::SyncMetadataStore implementation.
-  bool UpdateEntityMetadata(syncer::ModelType model_type,
+  bool UpdateEntityMetadata(syncer::DataType data_type,
                             const std::string& storage_key,
                             const sync_pb::EntityMetadata& metadata) override;
-  bool ClearEntityMetadata(syncer::ModelType model_type,
+  bool ClearEntityMetadata(syncer::DataType data_type,
                            const std::string& storage_key) override;
   bool UpdateDataTypeState(
-      syncer::ModelType model_type,
+      syncer::DataType data_type,
       const sync_pb::DataTypeState& data_type_state) override;
-  bool ClearDataTypeState(syncer::ModelType model_type) override;
+  bool ClearDataTypeState(syncer::DataType data_type) override;
 
   // Creates a sync::MetadataBatch and fills it with entity metadata and
   // DataTypeState information.

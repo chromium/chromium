@@ -40,7 +40,7 @@ bool SyncUtils::AreSigninAndSyncSetUpForSafeBrowsingTokenFetches(
   // NOTE: |sync_service| can be null in Incognito, and can also be set to null
   // by a cmdline param, but `GetUploadToGoogleState` handles that.
   return (syncer::GetUploadToGoogleState(
-              sync_service, syncer::ModelType::HISTORY_DELETE_DIRECTIVES) ==
+              sync_service, syncer::DataType::HISTORY_DELETE_DIRECTIVES) ==
           syncer::UploadState::ACTIVE) &&
          !sync_service->GetUserSettings()->IsUsingExplicitPassphrase();
 }

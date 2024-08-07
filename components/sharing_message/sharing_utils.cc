@@ -13,7 +13,7 @@
 namespace {
 
 bool CanListDevices(syncer::SyncService* sync_service) {
-  syncer::ModelTypeSet active_data_types = sync_service->GetActiveDataTypes();
+  syncer::DataTypeSet active_data_types = sync_service->GetActiveDataTypes();
 
   // Can list device using DeviceInfo and sharing.synced_devices preferences.
   if (active_data_types.HasAll({syncer::DEVICE_INFO, syncer::PREFERENCES})) {

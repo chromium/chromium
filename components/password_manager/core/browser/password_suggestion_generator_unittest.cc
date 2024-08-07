@@ -306,7 +306,7 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
 
   void EnablePasswordSync() {
     ON_CALL(sync_service(), GetActiveDataTypes)
-        .WillByDefault(Return(syncer::ModelTypeSet({syncer::PASSWORDS})));
+        .WillByDefault(Return(syncer::DataTypeSet({syncer::PASSWORDS})));
     ON_CALL(sync_service(), HasSyncConsent).WillByDefault(Return(true));
     ON_CALL(*sync_service().GetMockUserSettings(), GetSelectedTypes)
         .WillByDefault(Return(syncer::UserSelectableTypeSet(

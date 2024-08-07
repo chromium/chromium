@@ -81,8 +81,8 @@
 #include "components/sharing_message/sharing_message_data_type_controller.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/data_type_controller_delegate.h"
@@ -191,7 +191,7 @@ bool ShouldSyncBrowserTypes() {
 #endif
 }
 
-syncer::ModelTypeSet GetDisabledCommonDataTypes() {
+syncer::DataTypeSet GetDisabledCommonDataTypes() {
   if (!ShouldSyncBrowserTypes()) {
     // If browser-sync is disabled (on ChromeOS Ash), most "common" data types
     // are disabled. These types will be synced in Lacros instead.
@@ -682,7 +682,7 @@ syncer::DataTypeStoreService* ChromeSyncClient::GetDataTypeStoreService() {
 }
 
 base::WeakPtr<syncer::SyncableService>
-ChromeSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
+ChromeSyncClient::GetSyncableServiceForType(syncer::DataType type) {
   switch (type) {
     case syncer::SEARCH_ENGINES:
       return GetWeakPtrOrNull(

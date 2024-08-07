@@ -153,9 +153,9 @@ TEST_F(ImageServiceImplTest, DoesNotRegisterForNavigationRelatedMetadata) {
 
 TEST_F(ImageServiceImplTest, GetConsentToFetchImage) {
   test_sync_service_->SetDownloadStatusFor(
-      {syncer::ModelType::BOOKMARKS,
-       syncer::ModelType::HISTORY_DELETE_DIRECTIVES},
-      syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
+      {syncer::DataType::BOOKMARKS,
+       syncer::DataType::HISTORY_DELETE_DIRECTIVES},
+      syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates);
   test_sync_service_->FireStateChanged();
 
   EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::Journeys),
@@ -175,8 +175,8 @@ TEST_F(ImageServiceImplTest, GetConsentToFetchImage) {
             PageImageServiceConsentStatus::kTimedOut);
 
   test_sync_service_->SetDownloadStatusFor(
-      {syncer::ModelType::HISTORY_DELETE_DIRECTIVES},
-      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+      {syncer::DataType::HISTORY_DELETE_DIRECTIVES},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   test_sync_service_->FireStateChanged();
 
   EXPECT_EQ(GetConsentStatusToFetchImageAwaitResult(mojom::ClientId::Journeys),
@@ -200,9 +200,9 @@ TEST_F(ImageServiceImplTest, GetConsentToFetchImage) {
 TEST_F(ImageServiceImplTest, SyncInitialization) {
   // Put Sync into the initializing state.
   test_sync_service_->SetDownloadStatusFor(
-      {syncer::ModelType::BOOKMARKS,
-       syncer::ModelType::HISTORY_DELETE_DIRECTIVES},
-      syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
+      {syncer::DataType::BOOKMARKS,
+       syncer::DataType::HISTORY_DELETE_DIRECTIVES},
+      syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates);
   test_sync_service_->FireStateChanged();
 
   mojom::Options options;
@@ -234,9 +234,9 @@ TEST_F(ImageServiceImplTest, SyncInitialization) {
 
   // Now set the test sync service to active.
   test_sync_service_->SetDownloadStatusFor(
-      {syncer::ModelType::BOOKMARKS,
-       syncer::ModelType::HISTORY_DELETE_DIRECTIVES},
-      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+      {syncer::DataType::BOOKMARKS,
+       syncer::DataType::HISTORY_DELETE_DIRECTIVES},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   test_sync_service_->FireStateChanged();
   task_environment.FastForwardBy(kOptimizationGuideBatchingTimeout);
   EXPECT_EQ(test_opt_guide_->requests_received_, 1U)

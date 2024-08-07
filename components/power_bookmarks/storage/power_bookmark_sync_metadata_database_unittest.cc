@@ -73,7 +73,7 @@ TEST_F(PowerBookmarkSyncMetadataDatabaseTest, EmptyStateIsValid) {
 
 TEST_F(PowerBookmarkSyncMetadataDatabaseTest, UpdateEntityMetadata) {
   sync_pb::EntityMetadata entity_metadata;
-  sync_db()->UpdateEntityMetadata(syncer::ModelType::UNSPECIFIED, "test",
+  sync_db()->UpdateEntityMetadata(syncer::DataType::UNSPECIFIED, "test",
                                   entity_metadata);
 
   std::unique_ptr<syncer::MetadataBatch> metadata_batch =
@@ -86,7 +86,7 @@ TEST_F(PowerBookmarkSyncMetadataDatabaseTest, UpdateEntityMetadata) {
 
 TEST_F(PowerBookmarkSyncMetadataDatabaseTest, ClearEntityMetadata) {
   sync_pb::EntityMetadata entity_metadata;
-  sync_db()->UpdateEntityMetadata(syncer::ModelType::UNSPECIFIED, "test",
+  sync_db()->UpdateEntityMetadata(syncer::DataType::UNSPECIFIED, "test",
                                   entity_metadata);
 
   std::unique_ptr<syncer::MetadataBatch> metadata_batch =
@@ -94,7 +94,7 @@ TEST_F(PowerBookmarkSyncMetadataDatabaseTest, ClearEntityMetadata) {
   EXPECT_NE(nullptr, metadata_batch);
   EXPECT_EQ(1u, metadata_batch->TakeAllMetadata().size());
 
-  sync_db()->ClearEntityMetadata(syncer::ModelType::UNSPECIFIED, "test");
+  sync_db()->ClearEntityMetadata(syncer::DataType::UNSPECIFIED, "test");
   metadata_batch = sync_db()->GetAllSyncMetadata();
   EXPECT_NE(nullptr, metadata_batch);
   EXPECT_EQ(0u, metadata_batch->TakeAllMetadata().size());

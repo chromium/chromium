@@ -833,7 +833,7 @@ NSString* SerializedValue(const base::Value* value) {
 
 #pragma mark - Sync Utilities (EG2)
 
-+ (int)numberOfSyncEntitiesWithType:(syncer::ModelType)type {
++ (int)numberOfSyncEntitiesWithType:(syncer::DataType)type {
   return chrome_test_util::GetNumberOfSyncEntities(type);
 }
 
@@ -886,7 +886,7 @@ NSString* SerializedValue(const base::Value* value) {
   return success && !error;
 }
 
-+ (void)triggerSyncCycleForType:(syncer::ModelType)type {
++ (void)triggerSyncCycleForType:(syncer::DataType)type {
   chrome_test_util::TriggerSyncCycle(type);
 }
 
@@ -1020,13 +1020,13 @@ NSString* SerializedValue(const base::Value* value) {
   std::string UTF8Name = base::SysNSStringToUTF8(name);
   NSError* __autoreleasing tempError = nil;
   bool success = chrome_test_util::VerifyNumberOfSyncEntitiesWithName(
-      (syncer::ModelType)type, UTF8Name, count, &tempError);
+      (syncer::DataType)type, UTF8Name, count, &tempError);
   NSError* error = tempError;
 
   if (!success and !error) {
     NSString* errorString =
         [NSString stringWithFormat:@"Expected %zu entities of the %d type.",
-                                   count, (syncer::ModelType)type];
+                                   count, (syncer::DataType)type];
     return testing::NSErrorWithLocalizedDescription(errorString);
   }
 

@@ -19,7 +19,7 @@
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/version_info/version_info.h"

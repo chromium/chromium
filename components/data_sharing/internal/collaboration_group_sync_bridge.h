@@ -25,7 +25,7 @@
 
 namespace data_sharing {
 
-// Sync bridge implementation for COLLABORATION_GROUP model type.
+// Sync bridge implementation for COLLABORATION_GROUP data type.
 class CollaborationGroupSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   class Observer : public base::CheckedObserver {

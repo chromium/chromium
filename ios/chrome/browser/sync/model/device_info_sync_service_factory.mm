@@ -113,14 +113,14 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   }
 
   // syncer::DeviceInfoSyncClient:
-  std::optional<syncer::ModelTypeSet> GetInterestedDataTypes() const override {
+  std::optional<syncer::DataTypeSet> GetInterestedDataTypes() const override {
     if (sync_invalidations_service_) {
       return sync_invalidations_service_->GetInterestedDataTypes();
     }
     // If the service is not enabled, then the list of types must be empty, not
     // unknown (std::nullopt). This is needed to reset previous types if the
     // invalidations have been turned off.
-    return syncer::ModelTypeSet();
+    return syncer::DataTypeSet();
   }
 
   // syncer::DeviceInfoSyncClient:

@@ -185,7 +185,7 @@ class NigoriDataTypeProcessorTest : public testing::Test {
 
 TEST_F(NigoriDataTypeProcessorTest,
        ShouldTrackTheMetadataWhenInitialSyncDone) {
-  // Build a model type state with a specific cache guid.
+  // Build a data type state with a specific cache guid.
   const std::string kOtherCacheGuid = "cache_guid";
   sync_pb::DataTypeState data_type_state;
   data_type_state.set_initial_sync_state(
@@ -205,7 +205,7 @@ TEST_F(NigoriDataTypeProcessorTest,
   processor()->ModelReadyToSync(mock_nigori_sync_bridge(),
                                 std::move(nigori_metadata_batch));
 
-  // The model type state and the metadata should have been stored in the
+  // The data type state and the metadata should have been stored in the
   // processor.
   NigoriMetadataBatch processor_metadata_batch = processor()->GetMetadata();
   EXPECT_THAT(processor_metadata_batch.data_type_state.cache_guid(),
@@ -701,7 +701,7 @@ TEST_F(NigoriDataTypeProcessorTest,
 
   processor()->StorePendingInvalidations({inv_1, inv_2});
 
-  // The model type state and the metadata should have been stored in the
+  // The data type state and the metadata should have been stored in the
   // processor.
   NigoriMetadataBatch processor_metadata_batch = processor()->GetMetadata();
   sync_pb::DataTypeState data_type_state =

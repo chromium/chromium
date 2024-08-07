@@ -181,9 +181,9 @@ TEST_F(SignoutActionSheetCoordinatorTest,
   // Mock returning no unsynced datatype.
   ON_CALL(*sync_service_mock_, GetTypesWithUnsyncedData)
       .WillByDefault(
-          [](syncer::ModelTypeSet requested_types,
-             base::OnceCallback<void(syncer::ModelTypeSet)> callback) {
-            std::move(callback).Run(syncer::ModelTypeSet());
+          [](syncer::DataTypeSet requested_types,
+             base::OnceCallback<void(syncer::DataTypeSet)> callback) {
+            std::move(callback).Run(syncer::DataTypeSet());
           });
   EXPECT_CALL(completion_callback_, Run);
 
@@ -203,9 +203,9 @@ TEST_F(SignoutActionSheetCoordinatorTest, ShouldShowActionSheetIfUnsyncedData) {
   // Mock returning unsynced datatypes.
   ON_CALL(*sync_service_mock_, GetTypesWithUnsyncedData)
       .WillByDefault(
-          [](syncer::ModelTypeSet requested_types,
-             base::OnceCallback<void(syncer::ModelTypeSet)> callback) {
-            constexpr syncer::ModelTypeSet kUnsyncedTypes = {
+          [](syncer::DataTypeSet requested_types,
+             base::OnceCallback<void(syncer::DataTypeSet)> callback) {
+            constexpr syncer::DataTypeSet kUnsyncedTypes = {
                 syncer::BOOKMARKS, syncer::PREFERENCES};
             std::move(callback).Run(
                 base::Intersection(kUnsyncedTypes, requested_types));
@@ -218,12 +218,12 @@ TEST_F(SignoutActionSheetCoordinatorTest, ShouldShowActionSheetIfUnsyncedData) {
 
   histogram_tester.ExpectTotalCount("Sync.UnsyncedDataOnSignout2", 1u);
   histogram_tester.ExpectBucketCount("Sync.UnsyncedDataOnSignout2",
-                                     syncer::ModelTypeForHistograms::kBookmarks,
+                                     syncer::DataTypeForHistograms::kBookmarks,
                                      1u);
   // Only a few "interesting" data types are recorded. PREFERENCES is not.
   histogram_tester.ExpectBucketCount(
       "Sync.UnsyncedDataOnSignout2",
-      syncer::ModelTypeForHistograms::kPreferences, 0u);
+      syncer::DataTypeForHistograms::kPreferences, 0u);
 
   histogram_tester.ExpectTotalCount("Sync.SignoutWithUnsyncedData", 0u);
 }
@@ -243,9 +243,9 @@ TEST_F(SignoutActionSheetCoordinatorTest,
   EXPECT_CALL(*sync_service_mock_, GetTypesWithUnsyncedData)
       .Times(testing::AtLeast(1))
       .WillRepeatedly(
-          [](syncer::ModelTypeSet requested_types,
-             base::OnceCallback<void(syncer::ModelTypeSet)> callback) {
-            constexpr syncer::ModelTypeSet kUnsyncedTypes = {
+          [](syncer::DataTypeSet requested_types,
+             base::OnceCallback<void(syncer::DataTypeSet)> callback) {
+            constexpr syncer::DataTypeSet kUnsyncedTypes = {
                 syncer::BOOKMARKS, syncer::PREFERENCES};
             std::move(callback).Run(
                 base::Intersection(kUnsyncedTypes, requested_types));

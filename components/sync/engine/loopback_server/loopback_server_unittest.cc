@@ -210,8 +210,8 @@ TEST_F(LoopbackServerTest, CommitBookmarkTombstoneFailure) {
   std::string id1 = CommitVerifySuccess(NewBookmarkEntity(kUrl1, kBookmarkBar));
   std::string id2 = CommitVerifySuccess(NewBookmarkEntity(kUrl2, "9" + id1));
 
-  // This write is going to fail, the id is supposed to encode the model type as
-  // as prefix, by adding 9 we're creating a fake model type.
+  // This write is going to fail, the id is supposed to encode the data type as
+  // as prefix, by adding 9 we're creating a fake data type.
   SyncEntity entity = DeletedBookmarkEntity("9" + id1, 1);
   CommitVerifyFailure(entity);
 

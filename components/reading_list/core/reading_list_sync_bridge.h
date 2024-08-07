@@ -29,7 +29,7 @@ class MutableDataBatch;
 class ReadingListEntry;
 class ReadingListModelImpl;
 
-// Sync bridge implementation for READING_LIST model type. Takes care of
+// Sync bridge implementation for READING_LIST data type. Takes care of
 // propagating local passwords to other clients and vice versa.
 class ReadingListSyncBridge : public syncer::DataTypeSyncBridge {
  public:
@@ -69,7 +69,7 @@ class ReadingListSyncBridge : public syncer::DataTypeSyncBridge {
   syncer::StorageType GetStorageTypeForUma() const;
 
   // Creates an object used to communicate changes in the sync metadata to the
-  // model type store.
+  // data type store.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
 
@@ -82,7 +82,7 @@ class ReadingListSyncBridge : public syncer::DataTypeSyncBridge {
   // immediately be Put(...) to the processor before returning. The same
   // MetadataChangeList that was passed into this function can be passed to
   // Put(...) calls. Delete(...) can also be called but should not be needed for
-  // most model types. Durable storage writes, if not able to combine all change
+  // most data types. Durable storage writes, if not able to combine all change
   // atomically, should save the metadata after the data changes, so that this
   // merge will be re-driven by sync if is not completely saved during the
   // current run.

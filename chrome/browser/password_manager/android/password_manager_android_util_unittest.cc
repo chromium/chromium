@@ -57,7 +57,7 @@
 #include "components/prefs/testing_pref_store.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync/base/command_line_switches.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service.h"
@@ -110,8 +110,8 @@ password_manager::PasswordForm MakeExampleForm() {
 class SyncDataTypeActiveWaiter : public syncer::SyncServiceObserver {
  public:
   SyncDataTypeActiveWaiter(syncer::SyncService* sync_service,
-                           syncer::ModelType model_type)
-      : sync_service_(sync_service), model_type_(model_type) {}
+                           syncer::DataType data_type)
+      : sync_service_(sync_service), data_type_(data_type) {}
   SyncDataTypeActiveWaiter(const SyncDataTypeActiveWaiter&) = delete;
   SyncDataTypeActiveWaiter& operator=(const SyncDataTypeActiveWaiter&) = delete;
   ~SyncDataTypeActiveWaiter() override = default;
@@ -126,14 +126,14 @@ class SyncDataTypeActiveWaiter : public syncer::SyncServiceObserver {
  private:
   // syncer::SyncServiceObserver overrides.
   void OnStateChanged(syncer::SyncService* service) override {
-    if (service->GetActiveDataTypes().Has(model_type_)) {
+    if (service->GetActiveDataTypes().Has(data_type_)) {
       observation_.Reset();
       run_loop_.Quit();
     }
   }
 
   const raw_ptr<syncer::SyncService> sync_service_;
-  const syncer::ModelType model_type_;
+  const syncer::DataType data_type_;
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       observation_{this};
   base::RunLoop run_loop_;

@@ -24,7 +24,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"

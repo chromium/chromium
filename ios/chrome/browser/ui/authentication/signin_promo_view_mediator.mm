@@ -795,7 +795,7 @@ id<SystemIdentity> GetDisplayedIdentity(
     _accessPoint = accessPoint;
     _signinPromoViewState = SigninPromoViewState::kNeverVisible;
     _signinPromoAction = SigninPromoAction::kInstantSignin;
-    _dataTypeToWaitForInitialSync = syncer::ModelType::UNSPECIFIED;
+    _dataTypeToWaitForInitialSync = syncer::DataType::UNSPECIFIED;
     _signinPresenter = signinPresenter;
     _accountSettingsPresenter = accountSettingsPresenter;
     _accountManagerServiceObserver =
@@ -1159,7 +1159,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 // Whether the sign-in needs to wait for the end of the initial sync to
 // complete.
 - (BOOL)shouldWaitForInitialSync {
-  return self.dataTypeToWaitForInitialSync != syncer::ModelType::UNSPECIFIED;
+  return self.dataTypeToWaitForInitialSync != syncer::DataType::UNSPECIFIED;
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver

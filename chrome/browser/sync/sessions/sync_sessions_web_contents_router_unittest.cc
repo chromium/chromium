@@ -19,7 +19,7 @@ class StartSyncFlareMock {
   StartSyncFlareMock() = default;
   ~StartSyncFlareMock() = default;
 
-  void StartSyncFlare(syncer::ModelType type) { was_run_ = true; }
+  void StartSyncFlare(syncer::DataType type) { was_run_ = true; }
 
   bool was_run() { return was_run_; }
 

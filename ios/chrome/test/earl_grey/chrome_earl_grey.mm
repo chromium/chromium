@@ -902,7 +902,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface flushFakeSyncServerToDisk];
 }
 
-- (int)numberOfSyncEntitiesWithType:(syncer::ModelType)type {
+- (int)numberOfSyncEntitiesWithType:(syncer::DataType)type {
   return [ChromeEarlGreyAppInterface numberOfSyncEntitiesWithType:type];
 }
 
@@ -969,7 +969,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       [ChromeEarlGreyAppInterface waitForSyncInvalidationFields]);
 }
 
-- (void)triggerSyncCycleForType:(syncer::ModelType)type {
+- (void)triggerSyncCycleForType:(syncer::DataType)type {
   [ChromeEarlGreyAppInterface triggerSyncCycleForType:type];
 }
 
@@ -1009,7 +1009,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       [ChromeEarlGreyAppInterface verifySessionsOnSyncServerWithSpecs:URLs]);
 }
 
-- (void)waitForSyncServerEntitiesWithType:(syncer::ModelType)type
+- (void)waitForSyncServerEntitiesWithType:(syncer::DataType)type
                                      name:(const std::string&)UTF8Name
                                     count:(size_t)count
                                   timeout:(base::TimeDelta)timeout {

@@ -26,8 +26,8 @@ using preferences_helper::ChangeBooleanPref;
 
 namespace {
 
-// Utility functions to make a model type set out of a small number of
-// model types.
+// Utility functions to make a data type set out of a small number of
+// data types.
 
 // TODO(crbug.com/40911681): MakeSet() seems pretty redundant, can be replaced
 // with its body.
@@ -39,12 +39,12 @@ syncer::DataTypeSet MakeSet(syncer::DataType type1, syncer::DataType type2) {
   return {type1, type2};
 }
 
-// An ordered list of model types sets to migrate.  Used by
+// An ordered list of data types sets to migrate.  Used by
 // RunMigrationTest().
 using MigrationList = base::circular_deque<syncer::DataTypeSet>;
 
 // Utility functions to make a MigrationList out of a small number of
-// model types / model type sets.
+// data types / data type sets.
 
 MigrationList MakeList(syncer::DataTypeSet data_types) {
   return MigrationList(1, data_types);

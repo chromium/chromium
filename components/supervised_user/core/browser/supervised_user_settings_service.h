@@ -163,11 +163,11 @@ class SupervisedUserSettingsService : public KeyedService,
   // SyncableService implementation:
   void WaitUntilReadyToSync(base::OnceClosure done) override;
   std::optional<syncer::ModelError> MergeDataAndStartSyncing(
-      syncer::ModelType type,
+      syncer::DataType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
-  void StopSyncing(syncer::ModelType type) override;
-  syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
+  void StopSyncing(syncer::DataType type) override;
+  syncer::SyncDataList GetAllSyncDataForTesting(syncer::DataType type) const;
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;

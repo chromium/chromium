@@ -19,7 +19,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -254,7 +254,7 @@ class SigninViewController {
       signin_metrics::AccessPoint reauth_access_point,
       signin_metrics::ProfileSignout profile_signout_source,
       signin_metrics::SourceForRefreshTokenOperation token_signout_source,
-      syncer::ModelTypeSet unsynced_datatypes);
+      syncer::DataTypeSet unsynced_datatypes);
 
   void ShowChromeSigninDialogForExtensions(
       std::string_view extension_name,

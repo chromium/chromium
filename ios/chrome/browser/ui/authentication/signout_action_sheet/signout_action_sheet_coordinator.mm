@@ -304,12 +304,12 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 - (void)checkForUnsyncedDataAndSignOut {
   [self preventUserInteraction];
 
-  constexpr syncer::ModelTypeSet kDataTypesToQuery =
+  constexpr syncer::DataTypeSet kDataTypesToQuery =
       syncer::TypesRequiringUnsyncedDataCheckOnSignout();
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
   __weak __typeof(self) weakSelf = self;
-  auto callback = base::BindOnce(^(syncer::ModelTypeSet set) {
+  auto callback = base::BindOnce(^(syncer::DataTypeSet set) {
     CHECK(kDataTypesToQuery.HasAll(set))
         << "Result: {" << set << "} not a subset of the queried types: {"
         << kDataTypesToQuery << "}.";
@@ -320,12 +320,12 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 
 // Displays the sign-out confirmation dialog if `set` contains an "interesting"
 // data type, otherwise the sign-out is triggered without dialog.
-- (void)continueSignOutWithUnsyncedDataModelTypeSet:(syncer::ModelTypeSet)set {
+- (void)continueSignOutWithUnsyncedDataModelTypeSet:(syncer::DataTypeSet)set {
   [self allowUserInteraction];
   if (!set.empty()) {
-    for (syncer::ModelType type : set) {
+    for (syncer::DataType type : set) {
       base::UmaHistogramEnumeration("Sync.UnsyncedDataOnSignout2",
-                                    syncer::ModelTypeHistogramValue(type));
+                                    syncer::DataTypeHistogramValue(type));
     }
     [self startActionSheetCoordinatorForSignout];
   } else {

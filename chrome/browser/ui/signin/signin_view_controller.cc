@@ -315,7 +315,7 @@ void SigninViewController::SignoutOrReauthWithPrompt(
   CHECK(profile->IsRegularProfile());
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-  base::OnceCallback<void(syncer::ModelTypeSet)> signout_prompt_with_datatypes =
+  base::OnceCallback<void(syncer::DataTypeSet)> signout_prompt_with_datatypes =
       base::BindOnce(
           &SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes,
           weak_ptr_factory_.GetWeakPtr(), reauth_access_point,
@@ -330,7 +330,7 @@ void SigninViewController::SignoutOrReauthWithPrompt(
     return;
   }
   // Dice users don't see the prompt, pass empty datatypes.
-  std::move(signout_prompt_with_datatypes).Run(syncer::ModelTypeSet());
+  std::move(signout_prompt_with_datatypes).Run(syncer::DataTypeSet());
 }
 
 void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
@@ -705,7 +705,7 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
     signin_metrics::AccessPoint reauth_access_point,
     signin_metrics::ProfileSignout profile_signout_source,
     signin_metrics::SourceForRefreshTokenOperation token_signout_source,
-    syncer::ModelTypeSet unsynced_datatypes) {
+    syncer::DataTypeSet unsynced_datatypes) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser_->profile());
   CoreAccountId primary_account_id =

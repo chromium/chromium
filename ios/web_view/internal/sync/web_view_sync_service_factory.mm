@@ -19,7 +19,7 @@
 #import "components/password_manager/core/browser/sharing/password_sender_service.h"
 #import "components/plus_addresses/settings/plus_address_setting_service.h"
 #import "components/plus_addresses/webdata/plus_address_webdata_service.h"
-#import "components/sync/base/model_type.h"
+#import "components/sync/base/data_type.h"
 #import "components/sync/base/sync_util.h"
 #import "components/sync/service/data_type_controller.h"
 #import "components/sync/service/sync_service.h"
@@ -45,8 +45,8 @@
 namespace ios_web_view {
 namespace {
 
-syncer::ModelTypeSet GetDisabledTypes() {
-  syncer::ModelTypeSet disabled_types = syncer::UserTypes();
+syncer::DataTypeSet GetDisabledTypes() {
+  syncer::DataTypeSet disabled_types = syncer::UserTypes();
   disabled_types.Remove(syncer::AUTOFILL);
   disabled_types.Remove(syncer::AUTOFILL_WALLET_DATA);
   disabled_types.Remove(syncer::AUTOFILL_WALLET_METADATA);

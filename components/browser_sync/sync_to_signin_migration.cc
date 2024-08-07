@@ -19,9 +19,9 @@
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
 #include "components/sync/service/sync_prefs.h"
@@ -179,7 +179,7 @@ const char* GetHistogramMigratingOrNotInfix(bool doing_migration) {
 
 SyncToSigninMigrationDataTypeDecision GetSyncToSigninMigrationDataTypeDecision(
     const PrefService* pref_service,
-    syncer::ModelType type,
+    syncer::DataType type,
     const char* type_enabled_pref) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // In ChromeOS-Ash, the "initial-setup-complete" pref doesn't exist.
@@ -252,7 +252,7 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   base::UmaHistogramEnumeration(
       base::StrCat({"Sync.SyncToSigninMigrationDecision.",
                     GetHistogramMigratingOrNotInfix(doing_migration),
-                    syncer::ModelTypeToHistogramSuffix(syncer::BOOKMARKS)}),
+                    syncer::DataTypeToHistogramSuffix(syncer::BOOKMARKS)}),
       bookmarks_decision);
 
   const SyncToSigninMigrationDataTypeDecision passwords_decision =
@@ -262,7 +262,7 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   base::UmaHistogramEnumeration(
       base::StrCat({"Sync.SyncToSigninMigrationDecision.",
                     GetHistogramMigratingOrNotInfix(doing_migration),
-                    syncer::ModelTypeToHistogramSuffix(syncer::PASSWORDS)}),
+                    syncer::DataTypeToHistogramSuffix(syncer::PASSWORDS)}),
       passwords_decision);
 
   const SyncToSigninMigrationDataTypeDecision reading_list_decision =
@@ -272,7 +272,7 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   base::UmaHistogramEnumeration(
       base::StrCat({"Sync.SyncToSigninMigrationDecision.",
                     GetHistogramMigratingOrNotInfix(doing_migration),
-                    syncer::ModelTypeToHistogramSuffix(syncer::READING_LIST)}),
+                    syncer::DataTypeToHistogramSuffix(syncer::READING_LIST)}),
       reading_list_decision);
 
   if (decision != SyncToSigninMigrationDecision::kMigrate) {

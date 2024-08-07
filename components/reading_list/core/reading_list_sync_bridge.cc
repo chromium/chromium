@@ -136,7 +136,7 @@ ReadingListSyncBridge::CreateMetadataChangeList() {
 // key. Any local pieces of data that are not present in sync should immediately
 // be Put(...) to the processor before returning. The same MetadataChangeList
 // that was passed into this function can be passed to Put(...) calls.
-// Delete(...) can also be called but should not be needed for most model types.
+// Delete(...) can also be called but should not be needed for most data types.
 // Durable storage writes, if not able to combine all change atomically, should
 // save the metadata after the data changes, so that this merge will be re-
 // driven by sync if is not completely saved during the current run.

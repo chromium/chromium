@@ -257,42 +257,42 @@ class LoginDatabase : public EncryptDecryptInterface {
 
     // Test-only variant of the private function with a similar name.
     std::unique_ptr<sync_pb::EntityMetadata>
-    GetSyncEntityMetadataForStorageKeyForTest(syncer::ModelType model_type,
+    GetSyncEntityMetadataForStorageKeyForTest(syncer::DataType data_type,
                                               const std::string& storage_key);
 
    private:
-    // Reads all the stored sync entities metadata for |model_type| in a
+    // Reads all the stored sync entities metadata for |data_type| in a
     // MetadataBatch. Returns nullptr in case of failure. This is currently used
     // only for passwords.
     std::unique_ptr<syncer::MetadataBatch> GetAllSyncEntityMetadata(
-        syncer::ModelType model_type);
+        syncer::DataType data_type);
 
-    // Reads sync entity data for an individual |model_type| and entity
+    // Reads sync entity data for an individual |data_type| and entity
     // identified by |storage_key|. Returns null if no entry is found or an
     // error occurred.
     std::unique_ptr<sync_pb::EntityMetadata> GetSyncEntityMetadataForStorageKey(
-        syncer::ModelType model_type,
+        syncer::DataType data_type,
         const std::string& storage_key);
 
-    // Reads the stored DataTypeState for |model_type|. Returns nullptr in case
+    // Reads the stored DataTypeState for |data_type|. Returns nullptr in case
     // of failure. This is currently used only for passwords.
     std::unique_ptr<sync_pb::DataTypeState> GetDataTypeState(
-        syncer::ModelType model_type);
+        syncer::DataType data_type);
 
     // PasswordStoreSync::MetadataStore implementation.
     std::unique_ptr<syncer::MetadataBatch> GetAllSyncMetadata(
-        syncer::ModelType model_type) override;
-    void DeleteAllSyncMetadata(syncer::ModelType model_type) override;
-    bool UpdateEntityMetadata(syncer::ModelType model_type,
+        syncer::DataType data_type) override;
+    void DeleteAllSyncMetadata(syncer::DataType data_type) override;
+    bool UpdateEntityMetadata(syncer::DataType data_type,
                               const std::string& storage_key,
                               const sync_pb::EntityMetadata& metadata) override;
-    bool ClearEntityMetadata(syncer::ModelType model_type,
+    bool ClearEntityMetadata(syncer::DataType data_type,
                              const std::string& storage_key) override;
     bool UpdateDataTypeState(
-        syncer::ModelType model_type,
+        syncer::DataType data_type,
         const sync_pb::DataTypeState& data_type_state) override;
 
-    bool ClearDataTypeState(syncer::ModelType model_type) override;
+    bool ClearDataTypeState(syncer::DataType data_type) override;
     void SetPasswordDeletionsHaveSyncedCallback(
         base::RepeatingCallback<void(bool)> callback) override;
     bool HasUnsyncedPasswordDeletions() override;

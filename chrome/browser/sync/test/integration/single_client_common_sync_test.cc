@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
 
-  // Some data types may use preconditions in the model type controller to
+  // Some data types may use preconditions in the data type controller to
   // postpone their startup. Since such data types were paused (even for a short
   // period), an additional GetUpdates request may be sent during initialization
   // for them.

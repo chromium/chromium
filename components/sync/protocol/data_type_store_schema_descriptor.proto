@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Protocol messages used to record the state of the model type store for USS.
-// At the time of writing, the model type store uses leveldb, a schemaless
+// Protocol messages used to record the state of the data type store for USS.
+// At the time of writing, the data type store uses leveldb, a schemaless
 // key-value store. This means that the database's schema is mostly implicit.
 // This descriptor isn't intended to fully describe the schema, just keep track
 // of which major changes have been applied.

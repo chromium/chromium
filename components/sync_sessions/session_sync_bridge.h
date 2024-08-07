@@ -25,7 +25,7 @@ namespace sync_sessions {
 class LocalSessionEventRouter;
 class SyncSessionsClient;
 
-// Sync bridge implementation for SESSIONS model type. Takes care of propagating
+// Sync bridge implementation for SESSIONS data type. Takes care of propagating
 // local sessions to other clients as well as providing a representation of
 // foreign sessions.
 //

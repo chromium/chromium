@@ -49,7 +49,7 @@
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_sync_bridge.h"
 #include "components/desks_storage/core/desk_sync_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
@@ -284,18 +284,18 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
   }
   if (download_status_cache_.has_value() &&
       download_status_cache_.value() ==
-          sync->GetDownloadStatusFor(syncer::ModelType::WORKSPACE_DESK)) {
+          sync->GetDownloadStatusFor(syncer::DataType::WORKSPACE_DESK)) {
     return;
   }
   download_status_cache_ =
-      sync->GetDownloadStatusFor(syncer::ModelType::WORKSPACE_DESK);
-  switch (sync->GetDownloadStatusFor(syncer::ModelType::WORKSPACE_DESK)) {
-    case syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates: {
+      sync->GetDownloadStatusFor(syncer::DataType::WORKSPACE_DESK);
+  switch (sync->GetDownloadStatusFor(syncer::DataType::WORKSPACE_DESK)) {
+    case syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates: {
       // Floating Workspace Service needs to wait until workspace desks are
       // up to date.
       break;
     }
-    case syncer::SyncService::ModelTypeDownloadStatus::kUpToDate: {
+    case syncer::SyncService::DataTypeDownloadStatus::kUpToDate: {
       if (!first_uptodate_download_timeticks_.has_value()) {
         first_uptodate_download_timeticks_ = base::TimeTicks::Now();
       }
@@ -308,7 +308,7 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
       StopProgressBarAndRestoreFloatingWorkspace();
       break;
     }
-    case syncer::SyncService::ModelTypeDownloadStatus::kError: {
+    case syncer::SyncService::DataTypeDownloadStatus::kError: {
       // Sync is not expected to deliver the data, let user decide.
       // TODO: send notification to user asking if restore local.
       if (!should_run_restore_) {
@@ -922,7 +922,7 @@ void FloatingWorkspaceService::HandleSyncError() {
 void FloatingWorkspaceService::MaybeHandleDownloadTimeOut() {
   if (download_status_cache_.has_value() &&
       download_status_cache_.value() ==
-          syncer::SyncService::ModelTypeDownloadStatus::kUpToDate) {
+          syncer::SyncService::DataTypeDownloadStatus::kUpToDate) {
     should_run_restore_ = false;
   }
   if (!should_run_restore_) {
@@ -1071,8 +1071,8 @@ void FloatingWorkspaceService::MaybeSignOutOfCurrentSession() {
   base::TimeDelta time_delta =
       ui::UserActivityDetector::Get()->last_activity_time() -
       initialization_timeticks_;
-  if (sync_service_->GetDownloadStatusFor(syncer::ModelType::DEVICE_INFO) ==
-      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate) {
+  if (sync_service_->GetDownloadStatusFor(syncer::DataType::DEVICE_INFO) ==
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate) {
     std::vector<const syncer::DeviceInfo*> all_devices =
         device_info_sync_service_->GetDeviceInfoTracker()->GetAllDeviceInfo();
 
@@ -1115,8 +1115,8 @@ void FloatingWorkspaceService::MaybeSignOutOfCurrentSession() {
   // As a final resort, if we could not logout via the device info, or
   // floating workspace entries came first before the device info, use
   // floating workspace entries to determine if we should logout.
-  if (sync_service_->GetDownloadStatusFor(syncer::ModelType::WORKSPACE_DESK) !=
-      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate) {
+  if (sync_service_->GetDownloadStatusFor(syncer::DataType::WORKSPACE_DESK) !=
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate) {
     return;
   }
   auto* latest_floating_workspace = GetLatestFloatingWorkspaceTemplate();

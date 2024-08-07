@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "components/sync/base/model_type.h"
+#import "components/sync/base/data_type.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_delegate.h"
 
@@ -99,11 +99,11 @@ enum class SigninPromoAction {
 @property(nonatomic, assign) SigninPromoAction signinPromoAction;
 
 // Set the data type that should be synced before the sign-in completes.
-// The default value is `syncer::ModelType::UNSPECIFIED`, therefore the sign-in
+// The default value is `syncer::DataType::UNSPECIFIED`, therefore the sign-in
 // promo will not wait for the initial sync.
 // This value has to be set while the mediator is being set (right after the
 // init method).
-@property(nonatomic, assign) syncer::ModelType dataTypeToWaitForInitialSync;
+@property(nonatomic, assign) syncer::DataType dataTypeToWaitForInitialSync;
 
 // Registers the feature preferences.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;

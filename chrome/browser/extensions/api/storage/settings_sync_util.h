@@ -33,24 +33,24 @@ namespace settings_sync_util {
 syncer::SyncData CreateData(const ExtensionId& extension_id,
                             const std::string& key,
                             const base::Value& value,
-                            syncer::ModelType type);
+                            syncer::DataType type);
 
 // Creates an "add" sync change for an extension or app setting.
 syncer::SyncChange CreateAdd(const ExtensionId& extension_id,
                              const std::string& key,
                              const base::Value& value,
-                             syncer::ModelType type);
+                             syncer::DataType type);
 
 // Creates an "update" sync change for an extension or app setting.
 syncer::SyncChange CreateUpdate(const ExtensionId& extension_id,
                                 const std::string& key,
                                 const base::Value& value,
-                                syncer::ModelType type);
+                                syncer::DataType type);
 
 // Creates a "delete" sync change for an extension or app setting.
 syncer::SyncChange CreateDelete(const ExtensionId& extension_id,
                                 const std::string& key,
-                                syncer::ModelType type);
+                                syncer::DataType type);
 
 // Returns a callback that provides a SyncableService. The function must be
 // called on the UI thread and |type| must be either APP_SETTINGS or
@@ -58,7 +58,7 @@ syncer::SyncChange CreateDelete(const ExtensionId& extension_id,
 // sequence.
 base::OnceCallback<base::WeakPtr<syncer::SyncableService>()>
 GetSyncableServiceProvider(content::BrowserContext* context,
-                           syncer::ModelType type);
+                           syncer::DataType type);
 
 }  // namespace settings_sync_util
 

@@ -781,7 +781,7 @@ class DeskSyncBridgeTest : public testing::Test {
  private:
   base::SimpleTestClock clock_;
 
-  // In memory model type store needs to be able to post tasks.
+  // In memory data type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<DataTypeStore> store_;

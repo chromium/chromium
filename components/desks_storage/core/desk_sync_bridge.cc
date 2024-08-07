@@ -161,7 +161,7 @@ DeskSyncBridge::CreateMetadataChangeList() {
 std::optional<syncer::ModelError> DeskSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  // MergeFullSyncData will be called when Desk Template model type is enabled
+  // MergeFullSyncData will be called when Desk Template data type is enabled
   // to start syncing. There could be local desk templates that user has created
   // before enabling sync or during the time when Desk Template sync is
   // disabled. We should merge local and server data. We will send all

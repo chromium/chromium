@@ -688,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   ASSERT_EQ(1U, GetServerCardsMetadata(0).size());
 
   // Turn off the wallet autofill pref, the data & metadata should be gone as a
-  // side effect of the wallet model type controller noticing.
+  // side effect of the wallet data type controller noticing.
   GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, /*types=*/{});
   WaitForNoPaymentsCustomerData(pdm);

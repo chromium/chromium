@@ -346,7 +346,7 @@ TEST(FloatingSsoSyncBridgeInitialization, EventsWhileStoreIsLoading) {
                    delete_specifics.SerializeAsString());
   CommitToStoreAndWait(store.get(), std::move(batch));
 
-  base::test::TestFuture<syncer::ModelType, syncer::DataTypeStore::InitCallback>
+  base::test::TestFuture<syncer::DataType, syncer::DataTypeStore::InitCallback>
       store_future;
 
   // Create a bridge.

@@ -375,7 +375,7 @@ void PasswordSyncBridge::Init(
       // The browser has just been upgraded to a version that supports password
       // notes. Therefore, the metadata are cleared to enforce the initial sync
       // flow and download any potential passwords notes on the server. The
-      // processor takes care of setting the flag in the model type state to
+      // processor takes care of setting the flag in the data type state to
       // avoid running this flow upon every start-up.
       password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata(
           syncer::PASSWORDS);

@@ -91,7 +91,7 @@ std::unique_ptr<syncer::DeviceInfo> CreateDevice(
       /*sharing_info=*/std::nullopt,
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
-      /*interested_data_types=*/syncer::ModelTypeSet(),
+      /*interested_data_types=*/syncer::DataTypeSet(),
       /*floating_workspace_last_signin_timestamp=*/std::nullopt);
 }
 
@@ -238,7 +238,7 @@ class SendTabToSelfBridgeTest : public testing::Test {
  private:
   base::SimpleTestClock clock_;
 
-  // In memory model type store needs to be able to post tasks.
+  // In memory data type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<syncer::DataTypeStore> store_;

@@ -59,11 +59,11 @@ class ExtensionSyncService final : public syncer::SyncableService,
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
   std::optional<syncer::ModelError> MergeDataAndStartSyncing(
-      syncer::ModelType type,
+      syncer::DataType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
-  void StopSyncing(syncer::ModelType type) override;
-  syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
+  void StopSyncing(syncer::DataType type) override;
+  syncer::SyncDataList GetAllSyncDataForTesting(syncer::DataType type) const;
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
@@ -102,8 +102,8 @@ class ExtensionSyncService final : public syncer::SyncableService,
                                         int disabled_reasons) override;
 
   // Gets the SyncBundle for the given |type|.
-  extensions::SyncBundle* GetSyncBundle(syncer::ModelType type);
-  const extensions::SyncBundle* GetSyncBundle(syncer::ModelType type) const;
+  extensions::SyncBundle* GetSyncBundle(syncer::DataType type);
+  const extensions::SyncBundle* GetSyncBundle(syncer::DataType type) const;
 
   // Creates the ExtensionSyncData for the given app/extension.
   extensions::ExtensionSyncData CreateSyncData(
@@ -114,12 +114,12 @@ class ExtensionSyncService final : public syncer::SyncableService,
 
   // Collects the ExtensionSyncData for all installed apps or extensions.
   std::vector<extensions::ExtensionSyncData> GetLocalSyncDataList(
-      syncer::ModelType type) const;
+      syncer::DataType type) const;
 
   // Helper for GetLocalSyncDataList.
   void FillSyncDataList(
       const extensions::ExtensionSet& extensions,
-      syncer::ModelType type,
+      syncer::DataType type,
       std::vector<extensions::ExtensionSyncData>* sync_data_list) const;
 
   // Returns whether the given extension should be synced by this class.

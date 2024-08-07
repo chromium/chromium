@@ -13,7 +13,7 @@
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
 #import "components/password_manager/core/browser/sharing/password_receiver_service_impl.h"
-#import "components/sync/base/model_type.h"
+#import "components/sync/base/data_type.h"
 #import "components/sync/base/report_unrecoverable_error.h"
 #import "components/sync/model/client_tag_based_data_type_processor.h"
 #import "components/sync/model/data_type_store_service.h"
