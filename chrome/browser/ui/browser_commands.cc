@@ -96,6 +96,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -140,6 +141,7 @@
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/sessions/core/live_tab_context.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -1129,11 +1131,9 @@ void MoveTabsToNewWindow(Browser* browser,
         Browser::Create(Browser::CreateParams(browser->profile(), true));
   }
 
-  std::optional<base::Uuid> paused_saved_guid = std::nullopt;
-
-  tab_groups::SavedTabGroupKeyedService* const service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          browser->profile());
+  const auto wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
+  std::unique_ptr<tab_groups::ScopedLocalObservationPauser> observation_pauser;
 
   tab_groups::TabGroupVisualData visual_data;
 
@@ -1147,10 +1147,8 @@ void MoveTabsToNewWindow(Browser* browser,
     visual_data = tab_groups::TabGroupVisualData(old_visual_data->title(),
                                                  old_visual_data->color(),
                                                  false /* is_collapsed */);
-
-    if (service && service->model()->Contains(group.value())) {
-      paused_saved_guid = service->model()->Get(group.value())->saved_guid();
-      service->PauseTrackingLocalTabGroup(group.value());
+    if (wrapper_service && wrapper_service->GetGroup(group.value())) {
+      observation_pauser = wrapper_service->CreateScopedLocalObserverPauser();
     }
   }
 
@@ -1183,9 +1181,8 @@ void MoveTabsToNewWindow(Browser* browser,
     new_browser->tab_strip_model()->AddToNewGroup(indices, group.value(),
                                                   visual_data);
 
-    if (paused_saved_guid.has_value()) {
-      service->ResumeTrackingLocalTabGroup(paused_saved_guid.value(),
-                                           group.value());
+    if (observation_pauser) {
+      observation_pauser.reset();
     }
   }
 
