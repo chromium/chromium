@@ -47,7 +47,7 @@ bool ShouldUseUpmWiring(const syncer::SyncService* sync_service,
                         const PrefService* pref_service);
 
 // Called on startup to update the value of UsesSplitStoresAndUPMForLocal(),
-// based on feature flags, minimum GmsCore version and other criteria.
+// based on minimum GmsCore version and other criteria.
 void SetUsesSplitStoresAndUPMForLocal(PrefService* pref_service,
                                       const base::FilePath& login_db_directory);
 

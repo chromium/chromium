@@ -281,33 +281,25 @@ void MaybeDeleteLoginDataFiles(PrefService* prefs,
 }
 
 // Must only be called if the state pref is kOn or kOffAndMigrationPending, to
-// set it to kOff if any of these happened:
-// - The user downgraded GmsCore and can no longer use the local UPM properly.
-// - The min GmsCore version was bumped client-side.
-// - The A/B experiment was stopped due to bugs.
-// - The user manually turned off the flag.
+// set it to kOff if the user downgraded GmsCore. Any passwords saved to GmsCore
+// while in kOn will stay in GmsCore and become available again on the next
+// successful activation; they will not be migrated back to the LoginDB. If the
+// user is syncing, this function tries to undo [1] the Login DB file move done
+// in MaybeActivateSplitStoresAndLocalUpm(), and aborts on failure [2].
+//
+// [1] In truth, this is only an "undo" if the user was already syncing *before*
+// the activation. In rare cases, they might have been signed out with saved
+// passwords, activated, enabled sync and now get deactivated. If so, this
+// function overwrites a non-empty profile Login DB. That's fine: the content
+// got migrated to GmsCore and will become available again on the next
+// successful activation.
+//
+// [2] In hindsight, this is questionable, because the user stays marked as
+// activated even though they can't use GmsCore APIs.
 void MaybeDeactivateSplitStoresAndLocalUpm(
     PrefService* pref_service,
     const base::FilePath& login_db_directory) {
   CHECK_NE(GetSplitStoresAndLocalUpmPrefValue(pref_service), kOff);
-
-  if (GetSplitStoresAndLocalUpmPrefValue(pref_service) ==
-      kOffAndMigrationPending) {
-    // The migration was previously scheduled but didn't succeed yet. Cancel it
-    // if the GmsCore version is no longer suitable. This provides an escape
-    // hatch for users who fail the migration every time and would otherwise
-    // stay with sync supppressed forever.
-    // See comment in the other RecordActivationError() call below.
-    RecordActivationError(GetUserType(pref_service, login_db_directory),
-                          HasMinGmsVersion()
-                              ? ActivationError::kNone
-                              : ActivationError::kOutdatedGmsCore);
-    if (!HasMinGmsVersion()) {
-      pref_service->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
-                               static_cast<int>(kOff));
-    }
-    return;
-  }
 
   // Continue recording the metric for previously activated users. so they show
   // up on the dashboard no matter the aggregation window. One caveat is the
@@ -319,28 +311,17 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
                         HasMinGmsVersion() ? ActivationError::kNone
                                            : ActivationError::kOutdatedGmsCore);
   if (HasMinGmsVersion()) {
-    if (base::FeatureList::IsEnabled(
+    // GmsCore was not downgraded, no need to deactivate.
+    if (GetSplitStoresAndLocalUpmPrefValue(pref_service) == kOn &&
+        base::FeatureList::IsEnabled(
             password_manager::features::
                 kClearLoginDatabaseForAllMigratedUPMUsers)) {
       MaybeDeleteLoginDataFiles(pref_service, login_db_directory);
     }
-
     return;
   }
 
-  // If the user is non-syncing, there's no reverse migration from GmsCore back
-  // to the login DBs. Any passwords saved to GmsCore while activated will stay
-  // there and will become available again on the next successful activation.
-  // If the user is syncing, undo the DB file move (see comment in activation
-  // function). In truth, this is only an "undo" if the user was already syncing
-  // *before* the activation. In rare cases, they might have been signed out
-  // with saved passwords, activated, enabled sync and now get deactivated. If
-  // so, `profile_db_path` is non-empty and gets overwritten nevertheless.
-  // That's fine, the content got migrated to GmsCore and will become available
-  // again on the next successful activation.
-  // An alternative that would perform better in such case is to rely on a
-  // redownload. But that would entail more risk for syncing users, a population
-  // much larger than the one affected by this unlikely case.
+  // GmsCore was downgraded, so from here on the function wants to deactivate.
   base::FilePath profile_db_path =
       login_db_directory.Append(password_manager::kLoginDataForProfileFileName);
   base::FilePath account_db_path =
@@ -349,8 +330,10 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
       IsPasswordSyncEnabled(pref_service) &&
       base::PathExists(account_db_path) &&
       !base::ReplaceFile(account_db_path, profile_db_path, /*error=*/nullptr)) {
+    // See point [2] above.
     return;
   }
+
   pref_service->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
                            static_cast<int>(kOff));
 }
