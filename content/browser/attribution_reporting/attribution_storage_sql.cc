@@ -807,6 +807,8 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
   const SuitableOrigin& destination_origin = trigger.destination_origin();
   const SuitableOrigin& reporting_origin = trigger.reporting_origin();
 
+  SCOPED_UMA_HISTOGRAM_TIMER("Conversions.Storage.FindMatchingSourceTime");
+
   // Get all sources that match this <reporting_origin,
   // conversion_destination> pair. Only get sources that are active and not
   // past their expiry time. The sources are fetched in order so that the

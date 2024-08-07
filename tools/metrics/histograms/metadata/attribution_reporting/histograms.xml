@@ -1177,6 +1177,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.Storage.FindMatchingSourceTime" units="ms"
+    expires_after="2025-01-07">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <summary>
+    Records the time it took to find matching sources for a trigger, regardless
+    of whether the query succeeded.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.Storage.MigrationTime" units="ms"
     expires_after="2024-07-14">
   <owner>johnidel@chromium.org</owner>
