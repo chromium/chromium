@@ -94,6 +94,11 @@ function hasNoIntentDetection(): boolean {
   return false;
 }
 
+// Returns whether an annotation of type `annotationType` can be across element.
+function annotationCanBeCrossElement(annotationType: String) {
+  return ['address', 'email'].includes(annotationType.toLowerCase());
+}
+
 // Returns the client rectangle for the given `element` {x, y, width, height}.
 function rectFromElement(element: Element): Rect {
   const domRect = element.getClientRects()[0];
@@ -177,6 +182,7 @@ export {
   NodeWithSymbolIndex,
   TextWithSymbolIndex,
   Rect,
+  annotationCanBeCrossElement,
   getMetaContentByHttpEquiv,
   noFormatDetectionTypes,
   hasNoIntentDetection,
