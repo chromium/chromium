@@ -1670,6 +1670,11 @@ inline constexpr char kSendFunctionKeys[] =
 inline constexpr char kDeviceSwitchFunctionKeysBehaviorEnabled[] =
     "ash.settings.switch_function_keys_behavior_enabled";
 
+// An enum pref that controls the value of the setting "How can applications
+// capture and override the ChromeOS system shortcuts".
+inline constexpr char kSystemShortcutBehavior[] =
+    "ash.settings.system_shortcut_behavior";
+
 // A string-enum-list pref that controls if the WiFi firmware dump is allowed to
 // be included in user feedback report.
 inline constexpr char kUserFeedbackWithLowLevelDebugDataAllowed[] =

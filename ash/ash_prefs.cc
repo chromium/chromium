@@ -6,6 +6,7 @@
 
 #include "ash/accelerators/accelerator_prefs.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
+#include "ash/accelerators/system_shortcut_behavior_policy.h"
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/ambient/ambient_controller.h"
@@ -164,6 +165,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   PrivacyScreenController::RegisterProfilePrefs(registry);
   ProjectorControllerImpl::RegisterProfilePrefs(registry);
   quick_pair::Mediator::RegisterProfilePrefs(registry);
+  RegisterSystemShortcutBehaviorProfilePrefs(registry);
   ScreensaverImagesPolicyHandler::RegisterPrefs(registry);
   SeaPenWallpaperManager::RegisterProfilePrefs(registry);
   SearchNotifierController::RegisterProfilePrefs(registry);

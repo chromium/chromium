@@ -11,6 +11,7 @@
 #include "ash/accelerators/accelerator_notifications.h"
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/accelerators/pre_target_accelerator_handler.h"
+#include "ash/accelerators/system_shortcut_behavior_policy.h"
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
@@ -32,6 +33,7 @@
 #include "ash/media/media_controller_impl.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
+#include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/ime_info.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -78,6 +80,8 @@
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/user_type.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -116,6 +120,8 @@ namespace {
 
 using ::chromeos::WindowStateType;
 using ::media_session::mojom::MediaSessionAction;
+
+constexpr char kUserEmail[] = "user@testemail.com";
 
 struct PrefToAcceleratorEntry {
   const char* pref_name;
@@ -2584,6 +2590,45 @@ TEST_F(AcceleratorControllerTest, ChangeIMEMode_SwitchesInputMethod) {
   EXPECT_EQ(1, client.next_ime_count_);
 }
 
+class SystemShortcutBehaviorTest : public AcceleratorControllerTest {
+  void SetUp() override {
+    AcceleratorControllerTest::SetUp();
+
+    auto* session_controller = GetSessionControllerClient();
+
+    auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
+    user_prefs_ = user_prefs.get();
+    RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
+                             /*for_test=*/true);
+    session_controller->AddUserSession(kUserEmail,
+                                       user_manager::UserType::kRegular,
+                                       /*provide_pref_service=*/false);
+    session_controller->SetUserPrefService(AccountId::FromUserEmail(kUserEmail),
+                                           std::move(user_prefs));
+    SimulateUserLogin(AccountId::FromUserEmail(kUserEmail));
+  }
+
+  void TearDown() override {
+    user_prefs_ = nullptr;
+    AcceleratorControllerTest::TearDown();
+  }
+
+ protected:
+  raw_ptr<TestingPrefServiceSimple> user_prefs_ = nullptr;
+};
+
+TEST_F(SystemShortcutBehaviorTest, IgnoreCommonVdiShortcuts) {
+  user_prefs_->SetManagedPref(
+      ash::prefs::kSystemShortcutBehavior,
+      base::Value(static_cast<int>(
+          SystemShortcutBehaviorType::kIgnoreCommonVdiShortcuts)));
+  ui::Accelerator press_d_and_search(ui::VKEY_D, ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(ProcessInController(press_d_and_search));
+
+  user_prefs_->RemoveManagedPref(ash::prefs::kSystemShortcutBehavior);
+  EXPECT_TRUE(ProcessInController(press_d_and_search));
+}
+
 class AcceleratorControllerImprovedKeyboardShortcutsTest
     : public AcceleratorControllerTest {
  public:
@@ -2904,8 +2949,6 @@ TEST_F(AcceleratorControllerGuestModeTest, IncognitoWindowDisabled) {
   EXPECT_FALSE(Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
       AcceleratorAction::kNewIncognitoWindow, {}));
 }
-
-constexpr char kUserEmail[] = "user@magnifier";
 
 class MagnifiersAcceleratorsTester : public AcceleratorControllerTest {
  public:

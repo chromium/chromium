@@ -1269,6 +1269,20 @@ policies:
   1268: DeviceAllowEnterpriseRemoteAccessConnections
   1269: LocalUserFilesMigrationEnabled
   1270: FocusModeSoundsEnabled
+  1271: ''
+  1272: ''
+  1273: ''
+  1274: ''
+  1275: ''
+  1276: ''
+  1277: ''
+  1278: ''
+  1279: ''
+  1280: ''
+  1281: ''
+  1282: ''
+  1283: ''
+  1284: SystemShortcutBehavior
 
 atomic_groups:
   1: Homepage
