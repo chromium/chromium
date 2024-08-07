@@ -23,7 +23,11 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginEnd="16dp"/>
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bank_account_icon_background"
+        android:paddingHorizontal="@dimen/facilitated_payments_bank_account_icon_padding_horizontal"
+        android:paddingVertical="@dimen/facilitated_payments_bank_account_icon_padding_vertical"
+        android:scaleType="centerInside" />
 
     <!-- TODO(b/340328974): Only the first and end suggestions should have curved background. -->
     <LinearLayout

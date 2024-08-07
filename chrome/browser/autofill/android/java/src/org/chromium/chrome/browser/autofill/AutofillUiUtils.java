@@ -101,16 +101,13 @@ public class AutofillUiUtils {
         int NONE = 7;
     }
 
-    /**
-     * Different sizes in which we show the credit card art images. Update the {@code NUM_SIZES}
-     * entry when adding/removing entries.
-     */
-    @IntDef({CardIconSize.SMALL, CardIconSize.LARGE, CardIconSize.NUM_SIZES})
+    /** Different sizes in which we show the credit card / bank account art images. */
+    @IntDef({CardIconSize.SMALL, CardIconSize.LARGE, CardIconSize.SQUARE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface CardIconSize {
         int SMALL = 0;
         int LARGE = 1;
-        int NUM_SIZES = 2;
+        int SQUARE = 2;
     }
 
     /** Contains dimensional specs for credit card icons. */
@@ -138,27 +135,38 @@ public class AutofillUiUtils {
         }
 
         /**
-         * Create the {@link CardIconSpecs} for the icon based on the size (small or large) of the
-         * icon to be rendered.
+         * Create the {@link CardIconSpecs} for the icon based on the size (small or large or
+         * square) of the icon to be rendered.
+         *
          * @param context to get the resources.
-         * @param cardIconSize Enum that specifies the icon's size (small or large).
+         * @param cardIconSize Enum that specifies the icon's size (small or large or square).
          * @return {@link CardIconSpecs} instance containing the specs for the card icon.
          */
         public static CardIconSpecs create(Context context, @CardIconSize int cardIconSize) {
-            int borderWidthId = R.dimen.card_icon_border_width;
-            int widthId = R.dimen.small_card_icon_width;
-            int heightId = R.dimen.small_card_icon_height;
-            int cornerRadiusId = R.dimen.small_card_icon_corner_radius;
-
             if (cardIconSize == CardIconSize.LARGE
                     && ChromeFeatureList.isEnabled(
                             ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
-                widthId = R.dimen.large_card_icon_width;
-                heightId = R.dimen.large_card_icon_height;
-                cornerRadiusId = R.dimen.large_card_icon_corner_radius;
+                return new CardIconSpecs(
+                        context,
+                        R.dimen.large_card_icon_width,
+                        R.dimen.large_card_icon_height,
+                        R.dimen.large_card_icon_corner_radius,
+                        R.dimen.card_icon_border_width);
             }
-
-            return new CardIconSpecs(context, widthId, heightId, cornerRadiusId, borderWidthId);
+            if (cardIconSize == CardIconSize.SQUARE) {
+                return new CardIconSpecs(
+                        context,
+                        R.dimen.square_card_icon_side_length,
+                        R.dimen.square_card_icon_side_length,
+                        R.dimen.square_card_icon_corner_radius,
+                        R.dimen.card_icon_border_width_zero);
+            }
+            return new CardIconSpecs(
+                    context,
+                    R.dimen.small_card_icon_width,
+                    R.dimen.small_card_icon_height,
+                    R.dimen.small_card_icon_corner_radius,
+                    R.dimen.card_icon_border_width);
         }
 
         public @Px int getWidth() {

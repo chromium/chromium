@@ -52,7 +52,7 @@ public class AutofillImageFetcher {
         for (GURL url : urls) {
             // Credit card art images are shown in 2 different sizes depending on the surface.
             // Prefetch and cache images in both sizes.
-            for (@CardIconSize int size = 0; size < CardIconSize.NUM_SIZES; size++) {
+            for (@CardIconSize int size : new int[] {CardIconSize.SMALL, CardIconSize.LARGE}) {
                 CardIconSpecs cardIconSpecs = CardIconSpecs.create(context, size);
                 fetchImage(url, cardIconSpecs);
             }
