@@ -162,10 +162,6 @@
     _discoverFeedService->BrowsingHistoryCleared();
   }
 
-  if (_prefs->GetBoolean(browsing_data::prefs::kCloseTabs)) {
-    removeMask |= BrowsingDataRemoveMask::CLOSE_TABS;
-  }
-
   if (_prefs->GetBoolean(browsing_data::prefs::kDeleteCookies)) {
     removeMask |= BrowsingDataRemoveMask::REMOVE_SITE_DATA;
   }
@@ -182,19 +178,32 @@
     removeMask |= BrowsingDataRemoveMask::REMOVE_FORM_DATA;
   }
 
-  __weak QuickDeleteMediator* weakSelf = self;
-  void (^removeBrowsingDidFinishCompletionBlock)(void) = ^void() {
-    // TODO(crbug.com/347919133): Trigger post-delete experience.
-    [weakSelf.consumer deletionFinished];
-  };
+  // no-op for `browsing_data::prefs::kCloseTabs` as tabs will be closed in the
+  // animation flow.
+  // TODO(crbug.com/354112735): Close tabs through `_browsingDataRemover` when
+  // Quick Delete is not triggered on top of a tab or the tab grid, i.e. not
+  // from the three dot menu.
 
   browsing_data::TimePeriod timePeriod = static_cast<browsing_data::TimePeriod>(
       _prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
 
   _browsingDataRemover->SetCachedTabsInfo(_cachedTabsInfo);
+  bool shouldCloseTabs = _prefs->GetBoolean(browsing_data::prefs::kCloseTabs);
+  void (^removeBrowsingDataCompletionBlock)(void);
+  if (shouldCloseTabs) {
+    __weak QuickDeleteMediator* weakSelf = self;
+    removeBrowsingDataCompletionBlock = ^void() {
+      [weakSelf triggerTabsClosureAnimationWithTimePeriod:timePeriod];
+    };
+  } else {
+    __weak id<QuickDeleteConsumer> weakConsumer = self.consumer;
+    removeBrowsingDataCompletionBlock = ^void() {
+      [weakConsumer deletionFinished];
+    };
+  }
   _browsingDataRemover->Remove(
       timePeriod, removeMask,
-      base::BindOnce(removeBrowsingDidFinishCompletionBlock));
+      base::BindOnce(removeBrowsingDataCompletionBlock));
 }
 
 - (void)updateHistorySelection:(BOOL)selected {
@@ -261,6 +270,22 @@
 }
 
 #pragma mark - Private
+
+// Trigger the tab closure animation along with the actual closure of the
+// WebStates within the `timePeriod`.
+- (void)triggerTabsClosureAnimationWithTimePeriod:
+    (browsing_data::TimePeriod)timePeriod {
+  // TODO(crbug.com/354112735): Only trigger the tabs animation when Quick
+  // Delete is triggered on top of a tab or the tab grid, i.e. from the three
+  // dot menu.
+  [_presentationHandler
+      triggerTabsClosureAnimationWithBeginTime:
+          browsing_data::CalculateBeginDeleteTime(timePeriod)
+                                       endTime:browsing_data::
+                                                   CalculateEndDeleteTime(
+                                                       timePeriod)
+                                cachedTabsInfo:_cachedTabsInfo];
+}
 
 // Creates counters for browsing history, passwords and form data browsing data
 // types. These counters when triggered by `restartCounters` will lead to an

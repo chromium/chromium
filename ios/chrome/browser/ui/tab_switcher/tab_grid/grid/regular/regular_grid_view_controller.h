@@ -13,6 +13,10 @@
 @interface RegularGridViewController
     : BaseGridViewController <InactiveTabsInfoConsumer>
 
+// Trigger the tabs closure animation along with the actual closure of the
+// WebStates in `tabsToClose`.
+- (void)animateTabsClosureForTabs:(std::set<web::WebStateID>)tabsToClose;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_REGULAR_REGULAR_GRID_VIEW_CONTROLLER_H_

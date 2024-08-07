@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/disabled_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_container_view_controller.h"
@@ -103,6 +104,10 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  [self.browser->GetCommandDispatcher()
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(TabsAnimationCommands)];
+
   BOOL regularModeEnabled =
       !IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs());
 
@@ -171,10 +176,18 @@
 }
 
 - (void)stop {
+  [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
+
   _pinnedTabsMediator = nil;
   _contextMenuProvider = nil;
 
   [super stop];
+}
+
+#pragma mark - TabsAnimationCommands
+
+- (void)animateTabsClosureForTabs:(std::set<web::WebStateID>)tabsToClose {
+  [_gridViewController animateTabsClosureForTabs:tabsToClose];
 }
 
 #pragma mark - Public

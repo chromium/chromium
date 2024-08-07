@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
+#import "ios/chrome/browser/browsing_data/model/tabs_closure_util.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tabs_animation_commands.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_constants.h"
@@ -61,6 +63,7 @@
 
   _viewController = [[QuickDeleteViewController alloc] init];
   _mediator.consumer = _viewController;
+  _mediator.presentationHandler = self;
 
   _viewController.presentationHandler = self;
   _viewController.mutator = _mediator;
@@ -72,7 +75,8 @@
 }
 
 - (void)stop {
-  [_viewController dismissViewControllerAnimated:YES completion:nil];
+  [_viewController.presentingViewController dismissViewControllerAnimated:YES
+                                                               completion:nil];
   [self disconnect];
 }
 
@@ -113,6 +117,22 @@
   _browsingDataCoordinator.delegate = self;
 }
 
+- (void)triggerTabsClosureAnimationWithBeginTime:(base::Time)beginTime
+                                         endTime:(base::Time)endTime
+                                  cachedTabsInfo:
+                                      (tabs_closure_util::WebStateIDToTime)
+                                          cachedTabsInfo {
+  __weak QuickDeleteCoordinator* weakSelf = self;
+  [_viewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [weakSelf
+                               animateTabsClosureWithBeginTime:beginTime
+                                                       endTime:endTime
+                                                cachedTabsInfo:cachedTabsInfo];
+                         }];
+}
+
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
@@ -129,6 +149,27 @@
 }
 
 #pragma mark - Private
+
+// Trigger the animation of the closure of tabs with last navigation between
+// [`beginTime`, `endTime`[. Uses `cachedTabsInfo` to faciliate filtering of the
+// tabs to be closed.
+- (void)animateTabsClosureWithBeginTime:(base::Time)beginTime
+                                endTime:(base::Time)endTime
+                         cachedTabsInfo:(tabs_closure_util::WebStateIDToTime)
+                                            cachedTabsInfo {
+  id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [applicationCommandsHandler
+      displayTabGridInMode:TabGridOpeningMode::kRegular];
+
+  id<TabsAnimationCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabsAnimationCommands);
+
+  std::set<web::WebStateID> tabsToClose =
+      tabs_closure_util::GetTabsToCloseFromCache(
+          self.browser->GetWebStateList(), beginTime, endTime, cachedTabsInfo);
+  [handler animateTabsClosureForTabs:tabsToClose];
+}
 
 // Disconnects all instances.
 - (void)disconnect {

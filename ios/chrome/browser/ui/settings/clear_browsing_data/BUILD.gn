@@ -53,6 +53,7 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/browsing_data/model:counters",
     "//ios/chrome/browser/browsing_data/model:feature_flags",
+    "//ios/chrome/browser/browsing_data/model:util",
     "//ios/chrome/browser/discover_feed/model",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/feature_engagement/model",

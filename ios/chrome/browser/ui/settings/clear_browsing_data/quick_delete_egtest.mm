@@ -479,7 +479,8 @@ void ExpectClearBrowsingDataNavigationHistograms(
 // It also tests that the tabs do not get closed when the deletion
 // of tabs is not selected. It also tests that the tabs get closed when the
 // deletion of tabs is selected.
-- (void)testTabsForDeletion {
+// TODO(crbug.com/354112735): Reenable when tabs closure animation lands.
+- (void)DISABLED_testTabsForDeletion {
   // Set pref to close tabs.
   [ChromeEarlGrey setBoolValue:true
                    forUserPref:browsing_data::prefs::kCloseTabs];
@@ -509,7 +510,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
                         ButtonWithAccessibilityLabel(l10n_util::GetNSString(
                             IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
 
-  // Check that the tab has not been closed.
+  // Check that the tab has been closed.
   [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
   GREYAssertTrue([ChromeEarlGrey mainTabCount] == 0, @"Tabs were not closed.");
 }
@@ -519,7 +520,8 @@ void ExpectClearBrowsingDataNavigationHistograms(
 // tabs should include tabs in all windows, not just the ones where quick delete
 // is triggered from. It also tests that the tabs in both windows get closed
 // when the deletion of tabs is selected.
-- (void)testTabsForDeletionInMultiwindow {
+// TODO(crbug.com/354112735): Reenable when tabs closure animation lands.
+- (void)DISABLED_testTabsForDeletionInMultiwindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }

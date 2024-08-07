@@ -28,8 +28,17 @@ WebStateIDToTime GetTabsToClose(
     base::Time begin_time,
     base::Time end_time);
 
-// Closes all the WebStates in `browser` that are between `begin_time` and
+// Returns the WebStates in `web_state_list` that are between `begin_time` and
 // `end_time`. For unrelaized webstates, uses the information in
+// `cached_tabs_to_close`.
+std::set<web::WebStateID> GetTabsToCloseFromCache(
+    WebStateList* web_state_list,
+    base::Time begin_time,
+    base::Time end_time,
+    const WebStateIDToTime& cached_tabs_to_close);
+
+// Closes all the WebStates in `web_state_list` that are between `begin_time`
+// and `end_time`. For unrelaized webstates, uses the information in
 // `cached_tabs_to_close`.
 void CloseTabs(WebStateList* web_state_list,
                base::Time begin_time,

@@ -9,6 +9,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/inactive_tabs_button_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_ui_swift.h"
@@ -41,6 +42,12 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   // The supplementary view registration for the Inactive Tabs button header.
   UICollectionViewSupplementaryRegistration*
       _inactiveTabsButtonHeaderRegistration;
+}
+
+#pragma mark - Public
+
+- (void)animateTabsClosureForTabs:(std::set<web::WebStateID>)tabsToClose {
+  // TODO(crbug.com/354112735): Implement tabs closure animation.
 }
 
 #pragma mark - Parent's functions

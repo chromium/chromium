@@ -24,8 +24,10 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
+namespace {
 using tabs_closure_util::CloseTabs;
 using tabs_closure_util::GetTabsToClose;
+using tabs_closure_util::GetTabsToCloseFromCache;
 using tabs_closure_util::WebStateIDToTime;
 
 // List all ContentWorlds. Necessary because calling SetWebFramesManager(...)
@@ -38,6 +40,17 @@ constexpr web::ContentWorld kContentWorlds[] = {
 
 // Session name used by the fake SceneState.
 const char kSceneSessionID[] = "Identifier";
+
+// Gets the WebStateIDs from `WebStateIDToTime`.
+std::set<web::WebStateID> GetWebStateIDs(WebStateIDToTime tabs) {
+  std::set<web::WebStateID> expected_web_state_ids;
+  for (auto const& tab : tabs) {
+    expected_web_state_ids.insert(tab.first);
+  }
+  return expected_web_state_ids;
+}
+
+}  // namespace
 
 class TabsClosureUtilTest : public PlatformTest {
  public:
@@ -194,6 +207,24 @@ TEST_F(TabsClosureUtilTest, CloseTabs_RemoveAllTabs) {
   EXPECT_TRUE(web_state_list->empty());
 }
 
+// Tests that `GetTabsToCloseFromCache` correctly returns the tabs within the
+// time range, in this case, all tabs associated with the browser which are
+// unrealized.
+TEST_F(TabsClosureUtilTest, GetTabsToCloseFromCache_RemoveAllTabs) {
+  WebStateList* web_state_list = browser()->GetWebStateList();
+  base::Time end_time = base::Time::Now();
+  base::Time begin_time = end_time - base::Hours(1);
+
+  WebStateIDToTime tabs =
+      AppendUnrealizedWebstates(end_time - base::Minutes(1));
+
+  std::set<web::WebStateID> web_state_ids =
+      GetTabsToCloseFromCache(web_state_list, begin_time, end_time, tabs);
+
+  EXPECT_EQ(web_state_ids.size(), tabs.size());
+  EXPECT_EQ(GetWebStateIDs(tabs), web_state_ids);
+}
+
 // Tests that `CloseTabs` correctly closes all the tabs within the time frame,
 // in this case, all tabs associated with the browser including the ones passed
 // as cached information and the ones created after.
@@ -219,6 +250,35 @@ TEST_F(TabsClosureUtilTest, CloseTabs_NoMatchingTabsForDeletion) {
   EXPECT_TRUE(web_state_list->empty());
 }
 
+// Tests that `GetTabsToCloseFromCache` correctly returns the tabs within the
+// time frame, in this case, all tabs associated with the browser including the
+// ones passed as cached information and the ones created after.
+TEST_F(TabsClosureUtilTest, GetTabsToCloseFromCache_NoMatchingTabsForDeletion) {
+  WebStateList* web_state_list = browser()->GetWebStateList();
+  base::Time end_time = base::Time::Now();
+  base::Time begin_time = end_time - base::Hours(1);
+
+  WebStateIDToTime tabs =
+      AppendUnrealizedWebstates(end_time - base::Minutes(1));
+  web::WebState* web_state3_ =
+      AppendWebState(/*realized=*/true, end_time - base::Minutes(1));
+
+  ASSERT_EQ(web_state_list->count(), 3);
+  ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0());
+  ASSERT_EQ(web_state_list->GetWebStateAt(1), web_state1());
+  ASSERT_EQ(web_state_list->GetWebStateAt(2), web_state3_);
+
+  // The unrelized webstates are passed direcly. The realized webstates will be
+  // checked directly.
+  std::set<web::WebStateID> web_state_ids =
+      GetTabsToCloseFromCache(web_state_list, begin_time, end_time, tabs);
+
+  EXPECT_EQ(web_state_ids.size(), 3u);
+  std::set<web::WebStateID> expected_web_state_ids = GetWebStateIDs(tabs);
+  expected_web_state_ids.insert(web_state3_->GetUniqueIdentifier());
+  EXPECT_EQ(web_state_ids, expected_web_state_ids);
+}
+
 // Tests that `CloseTabs` correctly closes the cached unreliazed tab, but not
 // the non cached realized tab.
 TEST_F(TabsClosureUtilTest, CloseTabs_OnlyOneTabForDeletion) {
@@ -236,6 +296,24 @@ TEST_F(TabsClosureUtilTest, CloseTabs_OnlyOneTabForDeletion) {
   EXPECT_EQ(web_state_list->GetWebStateAt(0), web_state1());
 }
 
+// Tests that `GetTabsToCloseFromCache` correctly returns the cached unreliazed
+// tab, but not the non cached realized tab.
+TEST_F(TabsClosureUtilTest, GetTabsToCloseFromCache_OnlyOneTabForDeletion) {
+  WebStateList* web_state_list = browser()->GetWebStateList();
+  base::Time end_time = base::Time::Now();
+  base::Time begin_time = end_time - base::Hours(1);
+
+  WebStateIDToTime tabs =
+      AppendUnrealizedWebstates(end_time - base::Minutes(1));
+
+  std::set<web::WebStateID> web_state_ids =
+      GetTabsToCloseFromCache(web_state_list, begin_time, end_time,
+                              {{tabs.begin()->first, tabs.begin()->second}});
+
+  EXPECT_EQ(web_state_ids.size(), 1u);
+  EXPECT_TRUE(web_state_ids.contains(web_state0()->GetUniqueIdentifier()));
+}
+
 // Tests that `CloseTabs` doesn't close unreliazed tabs when none of the cached
 // tabs for deletion matches with the ones in browser.
 TEST_F(TabsClosureUtilTest, CloseTabs_UnrealizedAndNotMatchingTabs) {
@@ -249,12 +327,29 @@ TEST_F(TabsClosureUtilTest, CloseTabs_UnrealizedAndNotMatchingTabs) {
             {{web::WebStateID::NewUnique(), end_time - base::Minutes(1)}});
 
   EXPECT_EQ(web_state_list->count(), 2);
-  ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0());
-  ASSERT_EQ(web_state_list->GetWebStateAt(1), web_state1());
+  EXPECT_EQ(web_state_list->GetWebStateAt(0), web_state0());
+  EXPECT_EQ(web_state_list->GetWebStateAt(1), web_state1());
+}
+
+// Tests that `GetTabsToCloseFromCache` correctly returns the unreliazed tabs
+// when none of the cached tabs for deletion matches with the ones in browser.
+TEST_F(TabsClosureUtilTest,
+       GetTabsToCloseFromCache_UnrealizedAndNotMatchingTabs) {
+  WebStateList* web_state_list = browser()->GetWebStateList();
+  base::Time end_time = base::Time::Now();
+  base::Time begin_time = end_time - base::Hours(1);
+
+  AppendUnrealizedWebstates(end_time - base::Minutes(1));
+
+  std::set<web::WebStateID> web_state_ids = GetTabsToCloseFromCache(
+      web_state_list, begin_time, end_time,
+      {{web::WebStateID::NewUnique(), end_time - base::Minutes(1)}});
+
+  EXPECT_TRUE(web_state_ids.empty());
 }
 
 // Tests that `CloseTabs closes tabs within the range even if all are
-// unrealized, none are cached but last active timestamp is wihtin the selected
+// unrealized, none are cached but last active timestamp is within the selected
 // range.
 TEST_F(TabsClosureUtilTest, CloseTabs_UnrealizedNotCachedTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
@@ -268,4 +363,23 @@ TEST_F(TabsClosureUtilTest, CloseTabs_UnrealizedNotCachedTabs) {
   CloseTabs(web_state_list, begin_time, end_time, {});
 
   EXPECT_TRUE(web_state_list->empty());
+}
+
+// Tests that `GetTabsToCloseFromCache returns tabs within the range even if all
+// are unrealized, none are cached but last active timestamp is within the
+// selected range.
+TEST_F(TabsClosureUtilTest, GetTabsToCloseFromCache_UnrealizedNotCachedTabs) {
+  WebStateList* web_state_list = browser()->GetWebStateList();
+  base::Time end_time = base::Time::Now();
+  base::Time begin_time = end_time - base::Hours(1);
+
+  web::FakeWebState* webstate = static_cast<web::FakeWebState*>(
+      AppendWebState(/*realized=*/false, end_time - base::Minutes(1)));
+  webstate->SetLastActiveTime(end_time - base::Minutes(1));
+
+  std::set<web::WebStateID> web_state_ids =
+      GetTabsToCloseFromCache(web_state_list, begin_time, end_time, {});
+
+  EXPECT_EQ(web_state_ids.size(), 1u);
+  EXPECT_TRUE(web_state_ids.contains(webstate->GetUniqueIdentifier()));
 }
