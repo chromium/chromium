@@ -533,6 +533,9 @@ ci.builder(
             "arm64",
         ],
     ),
+    # TODO(crbug.com/358162540): Re-enable tree closing once the mysterious
+    # build failures are addressed.
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "simple|release",
         short_name = "a64",
