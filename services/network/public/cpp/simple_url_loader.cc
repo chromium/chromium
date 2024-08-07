@@ -35,6 +35,7 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/optional_ref.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -103,9 +104,9 @@ void GetFromUniquePtrToOptional(
 
 class StringUploadDataPipeGetter : public mojom::DataPipeGetter {
  public:
-  StringUploadDataPipeGetter(const std::string& upload_string,
+  StringUploadDataPipeGetter(std::string upload_string,
                              const base::Location& url_loader_created_from)
-      : upload_string_(upload_string) {}
+      : upload_string_(std::move(upload_string)) {}
 
   StringUploadDataPipeGetter(const StringUploadDataPipeGetter&) = delete;
   StringUploadDataPipeGetter& operator=(const StringUploadDataPipeGetter&) =
@@ -271,9 +272,15 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
       DownloadProgressCallback on_download_progress_callback) override;
   void SetAllowPartialResults(bool allow_partial_results) override;
   void SetAllowHttpErrorResults(bool allow_http_error_results) override;
-  void AttachStringForUpload(const std::string& upload_data,
-                             const std::string& upload_content_type) override;
-  void AttachStringForUpload(const std::string& upload_data) override;
+  void AttachStringForUpload(std::string_view upload_data,
+                             std::string_view upload_content_type) override;
+  void AttachStringForUpload(std::string_view upload_data) override;
+  void AttachStringForUpload(const char* upload_data,
+                             std::string_view upload_content_type) override;
+  void AttachStringForUpload(const char* upload_data) override;
+  void AttachStringForUpload(std::string&& upload_data,
+                             std::string_view upload_content_type) override;
+  void AttachStringForUpload(std::string&& upload_data) override;
   void AttachFileForUpload(
       const base::FilePath& upload_file_path,
       const std::string& upload_content_type,
@@ -349,8 +356,16 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
     std::optional<URLLoaderCompletionStatus> completion_status;
   };
 
-  void AttachStringForUpload(const std::string& upload_data,
-                             const std::string* const upload_content_type);
+  // Need two different methods to avoid a double-copy (string copy, then copy
+  // to a vector) when need to call UploadData::AppendBytes() for short request
+  // bodies.
+  void AttachStringForUploadInternal(
+      std::string_view upload_data,
+      base::optional_ref<std::string_view> upload_content_type);
+  void AttachStringForUploadInternal(
+      std::string&& upload_data,
+      base::optional_ref<std::string_view> upload_content_type);
+
   void AttachFileForUpload(
       const base::FilePath& upload_file_path,
       const std::string* const upload_content_type,
@@ -1436,9 +1451,9 @@ void SimpleURLLoaderImpl::SetAllowHttpErrorResults(
   allow_http_error_results_ = allow_http_error_results;
 }
 
-void SimpleURLLoaderImpl::AttachStringForUpload(
-    const std::string& upload_data,
-    const std::string* const upload_content_type) {
+void SimpleURLLoaderImpl::AttachStringForUploadInternal(
+    std::string_view upload_data,
+    base::optional_ref<std::string_view> upload_content_type) {
   // Currently only allow a single string to be attached.
   DCHECK(!resource_request_->request_body);
   DCHECK(resource_request_->method != net::HttpRequestHeaders::kGetMethod &&
@@ -1447,15 +1462,14 @@ void SimpleURLLoaderImpl::AttachStringForUpload(
   resource_request_->request_body = new ResourceRequestBody();
 
   if (upload_data.length() <= kMaxUploadStringSizeToCopy) {
-    int copy_length = static_cast<int>(upload_data.length());
-    DCHECK_EQ(static_cast<size_t>(copy_length), upload_data.length());
-    resource_request_->request_body->AppendBytes(upload_data.c_str(),
+    int copy_length = base::checked_cast<int>(upload_data.length());
+    resource_request_->request_body->AppendBytes(upload_data.data(),
                                                  copy_length);
   } else {
     // Don't attach the upload body here.  A new pipe will need to be created
     // each time the request is tried.
     string_upload_data_pipe_getter_ =
-        std::make_unique<StringUploadDataPipeGetter>(upload_data,
+        std::make_unique<StringUploadDataPipeGetter>(std::string(upload_data),
                                                      created_from_);
   }
 
@@ -1465,15 +1479,62 @@ void SimpleURLLoaderImpl::AttachStringForUpload(
   }
 }
 
+void SimpleURLLoaderImpl::AttachStringForUploadInternal(
+    std::string&& upload_data,
+    base::optional_ref<std::string_view> upload_content_type) {
+  // Currently only allow a single string to be attached.
+  DCHECK(!resource_request_->request_body);
+  DCHECK(resource_request_->method != net::HttpRequestHeaders::kGetMethod &&
+         resource_request_->method != net::HttpRequestHeaders::kHeadMethod);
+
+  resource_request_->request_body = new ResourceRequestBody();
+
+  if (upload_data.length() <= kMaxUploadStringSizeToCopy) {
+    int copy_length = base::checked_cast<int>(upload_data.length());
+    resource_request_->request_body->AppendBytes(upload_data.data(),
+                                                 copy_length);
+  } else {
+    // Don't attach the upload body here.  A new pipe will need to be created
+    // each time the request is tried.
+    string_upload_data_pipe_getter_ =
+        std::make_unique<StringUploadDataPipeGetter>(std::move(upload_data),
+                                                     created_from_);
+  }
+
+  if (upload_content_type) {
+    resource_request_->headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                                         *upload_content_type);
+  }
+}
 void SimpleURLLoaderImpl::AttachStringForUpload(
-    const std::string& upload_data,
-    const std::string& upload_content_type) {
-  AttachStringForUpload(upload_data, &upload_content_type);
+    std::string_view upload_data,
+    std::string_view upload_content_type) {
+  AttachStringForUploadInternal(upload_data, upload_content_type);
+}
+
+void SimpleURLLoaderImpl::AttachStringForUpload(std::string_view upload_data) {
+  AttachStringForUploadInternal(upload_data, std::nullopt);
 }
 
 void SimpleURLLoaderImpl::AttachStringForUpload(
-    const std::string& upload_data) {
-  AttachStringForUpload(upload_data, nullptr);
+    const char* upload_data,
+    std::string_view upload_content_type) {
+  AttachStringForUploadInternal(std::string_view(upload_data),
+                                upload_content_type);
+}
+
+void SimpleURLLoaderImpl::AttachStringForUpload(const char* upload_data) {
+  AttachStringForUploadInternal(std::string_view(upload_data), std::nullopt);
+}
+
+void SimpleURLLoaderImpl::AttachStringForUpload(
+    std::string&& upload_data,
+    std::string_view upload_content_type) {
+  AttachStringForUploadInternal(std::move(upload_data), upload_content_type);
+}
+
+void SimpleURLLoaderImpl::AttachStringForUpload(std::string&& upload_data) {
+  AttachStringForUploadInternal(std::move(upload_data), std::nullopt);
 }
 
 void SimpleURLLoaderImpl::AttachFileForUpload(
