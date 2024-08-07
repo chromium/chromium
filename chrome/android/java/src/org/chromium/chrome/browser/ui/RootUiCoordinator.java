@@ -72,7 +72,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.gsa.ContextReporter;
-import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -928,8 +927,7 @@ public class RootUiCoordinator
             mReadAloudContextualSearchObserver =
                     new ContextualSearchObserver() {
                         @Override
-                        public void onShowContextualSearch(
-                                @Nullable GSAContextDisplaySelection selectionContext) {
+                        public void onShowContextualSearch() {
                             controller.maybeHidePlayer();
                         }
 
@@ -1008,19 +1006,7 @@ public class RootUiCoordinator
     }
 
     public ContextReporter.SelectionReporter getContextReporter() {
-        return getContextualSearchManagerSupplier().hasValue()
-                ? new ContextReporter.SelectionReporter() {
-                    @Override
-                    public void enable(Callback<GSAContextDisplaySelection> callback) {
-                        getContextualSearchManagerSupplier().get().enableContextReporting(callback);
-                    }
-
-                    @Override
-                    public void disable() {
-                        getContextualSearchManagerSupplier().get().disableContextReporting();
-                    }
-                }
-                : null;
+        return null;
     }
 
     /**
