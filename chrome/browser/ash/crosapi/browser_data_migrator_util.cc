@@ -590,7 +590,7 @@ leveldb::Status GetExtensionKeys(leveldb::DB* db,
 }
 
 bool IsAshOnlySyncDataType(std::string_view key) {
-  for (auto type : kAshOnlySyncDataTypes) {
+  for (auto type : kAshOnlySyncDataTypesForLacrosMigration) {
     if ((base::StartsWith(
              key, FormatDataPrefix(type, syncer::StorageType::kUnspecified)) ||
          base::StartsWith(

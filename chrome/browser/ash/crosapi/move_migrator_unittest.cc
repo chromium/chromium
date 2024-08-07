@@ -65,10 +65,11 @@ std::string_view GetBothChromesExtensionId() {
 }
 
 constexpr syncer::DataType kAshSyncDataType =
-    browser_data_migrator_util::kAshOnlySyncDataTypes[0];
+    browser_data_migrator_util::kAshOnlySyncDataTypesForLacrosMigration[0];
 constexpr syncer::DataType kLacrosSyncDataType = syncer::DataType::WEB_APPS;
-static_assert(!base::Contains(browser_data_migrator_util::kAshOnlySyncDataTypes,
-                              kLacrosSyncDataType));
+static_assert(!base::Contains(
+    browser_data_migrator_util::kAshOnlySyncDataTypesForLacrosMigration,
+    kLacrosSyncDataType));
 
 constexpr int64_t kRequiredDiskSpaceForBot =
     browser_data_migrator_util::kBuffer * 2;

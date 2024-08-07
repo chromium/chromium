@@ -54,10 +54,11 @@ std::string_view GetBothChromesExtensionId() {
 }
 
 constexpr syncer::DataType kAshSyncDataType =
-    browser_data_migrator_util::kAshOnlySyncDataTypes[0];
+    browser_data_migrator_util::kAshOnlySyncDataTypesForLacrosMigration[0];
 constexpr syncer::DataType kLacrosSyncDataType = syncer::DataType::WEB_APPS;
-static_assert(!base::Contains(browser_data_migrator_util::kAshOnlySyncDataTypes,
-                              kLacrosSyncDataType));
+static_assert(!base::Contains(
+    browser_data_migrator_util::kAshOnlySyncDataTypesForLacrosMigration,
+    kLacrosSyncDataType));
 
 struct TargetItemComparator {
   bool operator()(const TargetItem& t1, const TargetItem& t2) const {
@@ -580,7 +581,7 @@ TEST(BrowserDataMigratorUtilTest, EstimatedExtraBytesCreated) {
 
 TEST(BrowserDataMigratorUtilTest, IsAshOnlySyncDataType) {
   // The types that should be recognized as Ash-only are stored in
-  // `browser_data_migrator_util::kAshOnlySyncDataTypes`.
+  // `browser_data_migrator_util::kAshOnlySyncDataTypesForLacrosMigration`.
   // Then any of the following can be suffixed to the type name:
   // - `kDataPrefix` = "-dt-"
   // - `kMetadataPrefix` = "-md-"
