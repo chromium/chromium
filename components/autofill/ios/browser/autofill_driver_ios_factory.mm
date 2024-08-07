@@ -13,6 +13,29 @@
 
 namespace autofill {
 
+void AutofillDriverIOSFactory::Observer::OnAutofillDriverFactoryDestroyed(
+    AutofillDriverFactory& factory) {
+  OnAutofillDriverIOSFactoryDestroyed(
+      static_cast<AutofillDriverIOSFactory&>(factory));
+}
+
+void AutofillDriverIOSFactory::Observer::OnAutofillDriverCreated(
+    AutofillDriverFactory& factory,
+    AutofillDriver& driver) {
+  OnAutofillDriverIOSCreated(static_cast<AutofillDriverIOSFactory&>(factory),
+                             static_cast<AutofillDriverIOS&>(driver));
+}
+
+void AutofillDriverIOSFactory::Observer::OnAutofillDriverStateChanged(
+    AutofillDriverFactory& factory,
+    AutofillDriver& driver,
+    LifecycleState old_state,
+    LifecycleState new_state) {
+  OnAutofillDriverIOSStateChanged(
+      static_cast<AutofillDriverIOSFactory&>(factory),
+      static_cast<AutofillDriverIOS&>(driver), old_state, new_state);
+}
+
 AutofillDriverIOSFactory::AutofillDriverIOSFactory(
     web::WebState* web_state,
     AutofillClient* client,

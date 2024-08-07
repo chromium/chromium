@@ -38,6 +38,31 @@ class AutofillDriverIOSFactory final
       public web::WebStateObserver,
       public web::WebFramesManager::Observer {
  public:
+  // A variant of AutofillDriverFactory::Observer with AutofillDriver[Factory]
+  // narrowed to AutofillDriverIOS[Factory].
+  // See AutofillDriverFactory::Observer for further documentation.
+  class Observer : public AutofillDriverFactory::Observer {
+   public:
+    virtual void OnAutofillDriverIOSFactoryDestroyed(
+        AutofillDriverIOSFactory& factory) {}
+    virtual void OnAutofillDriverIOSCreated(AutofillDriverIOSFactory& factory,
+                                            AutofillDriverIOS& driver) {}
+    virtual void OnAutofillDriverIOSStateChanged(
+        AutofillDriverIOSFactory& factory,
+        AutofillDriverIOS& driver,
+        AutofillDriver::LifecycleState old_state,
+        AutofillDriver::LifecycleState new_state) {}
+
+    // AutofillDriverFactory::Observer:
+    void OnAutofillDriverFactoryDestroyed(AutofillDriverFactory& factory) final;
+    void OnAutofillDriverCreated(AutofillDriverFactory& factory,
+                                 AutofillDriver& driver) final;
+    void OnAutofillDriverStateChanged(AutofillDriverFactory& factory,
+                                      AutofillDriver& driver,
+                                      LifecycleState old_state,
+                                      LifecycleState new_state) final;
+  };
+
   ~AutofillDriverIOSFactory() override;
 
   // Returns the AutofillDriverIOS for `web_frame`. Creates the driver if

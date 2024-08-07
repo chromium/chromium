@@ -36,25 +36,14 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
  public:
   // A variant of AutofillDriverFactory::Observer with AutofillDriver[Factory]
   // narrowed to ContentAutofillDriver[Factory].
+  // See AutofillDriverFactory::Observer for further documentation.
   class Observer : public AutofillDriverFactory::Observer {
    public:
-    // Called during destruction of the ContentAutofillDriverFactory. It can,
-    // e.g., be used to reset `ScopedObservation`s observing `this`.
     virtual void OnContentAutofillDriverFactoryDestroyed(
         ContentAutofillDriverFactory& factory) {}
-
-    // Called right after the driver has been created.
-    // At the time of this event, the `driver` object is already fully alive and
-    // `factory.DriverForFrame(driver.render_frame_host()) == &driver` holds.
-    // The driver's manager is still in its `kInactive` state at the time.
     virtual void OnContentAutofillDriverCreated(
         ContentAutofillDriverFactory& factory,
         ContentAutofillDriver& driver) {}
-
-    // Called right after the driver's state has changed.
-    // See AutofillDriver::LifecycleState for details.
-    // At the time of this event, the `driver` object is fully alive and
-    // `factory.DriverForFrame(driver.render_frame_host()) == &driver` holds.
     virtual void OnContentAutofillDriverStateChanged(
         ContentAutofillDriverFactory& factory,
         ContentAutofillDriver& driver,

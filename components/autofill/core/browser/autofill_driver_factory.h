@@ -27,15 +27,17 @@ class AutofillDriverFactory {
 
     // Called right after the driver has been created.
     // At the time of this event, the `driver` object is already fully alive and
-    // `factory.DriverForFrame(driver.render_frame_host()) == &driver` holds.
-    // The driver's manager is still in its `kInactive` state at the time.
+    // `factory.DriverForFrame(driver.render_frame_host()) == &driver` (or
+    // similarly for iOS) holds. The driver's manager is still in its
+    // `kInactive` state at the time.
     virtual void OnAutofillDriverCreated(AutofillDriverFactory& factory,
                                          AutofillDriver& driver) {}
 
     // Called right after the driver's state has changed.
     // See AutofillDriver::LifecycleState for details.
     // At the time of this event, the `driver` object is fully alive and
-    // `factory.DriverForFrame(driver.render_frame_host()) == &driver` holds.
+    // `factory.DriverForFrame(driver.render_frame_host()) == &driver` (or
+    // similarly for iOS) holds.
     virtual void OnAutofillDriverStateChanged(AutofillDriverFactory& factory,
                                               AutofillDriver& driver,
                                               LifecycleState old_state,
