@@ -29,7 +29,8 @@ AI::AI(ExecutionContext* context)
     : ExecutionContextClient(context),
       task_runner_(context->GetTaskRunner(TaskType::kInternalDefault)),
       ai_remote_(context),
-      text_session_factory_(context, task_runner_) {}
+      text_session_factory_(
+          MakeGarbageCollected<AITextSessionFactory>(context, task_runner_)) {}
 
 void AI::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
@@ -64,7 +65,7 @@ ScriptPromise<V8AIModelAvailability> AI::canCreateTextSession(
   using ModelAvailabilityCheckResult =
       mojom::blink::ModelAvailabilityCheckResult;
 
-  text_session_factory_.CanCreateTextSession(WTF::BindOnce(
+  text_session_factory_->CanCreateTextSession(WTF::BindOnce(
       [](ScriptPromiseResolver<V8AIModelAvailability>* resolver,
          AIModelAvailability availability,
          ModelAvailabilityCheckResult check_result) {
@@ -105,7 +106,7 @@ ScriptPromise<AITextSession> AI::createTextSession(
     }
   }
 
-  text_session_factory_.CreateTextSession(
+  text_session_factory_->CreateTextSession(
       std::move(sampling_params), system_prompt,
       WTF::BindOnce(
           [](ScriptPromiseResolver<AITextSession>* resolver,

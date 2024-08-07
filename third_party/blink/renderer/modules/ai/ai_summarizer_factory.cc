@@ -14,7 +14,8 @@ AISummarizerFactory::AISummarizerFactory(
     ExecutionContext* context,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : ExecutionContextClient(context),
-      text_session_factory_(context, task_runner),
+      text_session_factory_(
+          MakeGarbageCollected<AITextSessionFactory>(context, task_runner)),
       task_runner_(task_runner) {}
 
 void AISummarizerFactory::Trace(Visitor* visitor) const {
@@ -36,7 +37,7 @@ ScriptPromise<AISummarizerCapabilities> AISummarizerFactory::capabilities(
           script_state);
   auto promise = resolver->Promise();
 
-  text_session_factory_.CanCreateTextSession(WTF::BindOnce(
+  text_session_factory_->CanCreateTextSession(WTF::BindOnce(
       [](ScriptPromiseResolver<AISummarizerCapabilities>* resolver,
          AISummarizerFactory* factory, AIModelAvailability availability,
          mojom::blink::ModelAvailabilityCheckResult check_result) {
@@ -58,7 +59,7 @@ ScriptPromise<AISummarizer> AISummarizerFactory::create(
       MakeGarbageCollected<ScriptPromiseResolver<AISummarizer>>(script_state);
   auto promise = resolver->Promise();
 
-  text_session_factory_.CreateTextSession(
+  text_session_factory_->CreateTextSession(
       /*sampling_params=*/nullptr, /*system_prompt=*/WTF::String(),
       WTF::BindOnce(
           [](ScriptPromiseResolver<AISummarizer>* resolver,

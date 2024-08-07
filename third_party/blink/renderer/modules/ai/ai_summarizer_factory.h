@@ -37,7 +37,7 @@ class AISummarizerFactory final : public ScriptWrappable,
   ~AISummarizerFactory() override = default;
 
  private:
-  AITextSessionFactory text_session_factory_;
+  Member<AITextSessionFactory> text_session_factory_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 

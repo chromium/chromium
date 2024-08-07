@@ -51,7 +51,7 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AIManager> ai_remote_;
-  AITextSessionFactory text_session_factory_;
+  Member<AITextSessionFactory> text_session_factory_;
   Member<AISummarizerFactory> ai_summarizer_factory_;
 };
 
