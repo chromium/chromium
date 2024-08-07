@@ -5531,6 +5531,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram base="true" name="Net.TrustTokens.OperationOutcome"
+    enum="TrustTokenOperationStatus" expires_after="2025-07-01">
+<!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
+
+  <owner>svaldez@chromium.org</owner>
+  <owner>timhuber@google.com</owner>
+  <summary>
+    For Private State Token (PST) operations, the result of the operation. This
+    is recorded everytime a PST operation completed in URLLoader. See
+    network::URLLoader::OnDoneBeginningTrustTokenOperation for details. This can
+    help debug the use of the API observed in the ecosystem.
+  </summary>
+</histogram>
+
 <histogram name="Net.TrustTokens.Operation{TimeSpan}Time.{Outcome}.{Type}"
     units="ms" expires_after="2023-06-06">
   <owner>svaldez@chromium.org</owner>

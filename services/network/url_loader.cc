@@ -1027,6 +1027,8 @@ void URLLoader::ProcessOutboundTrustTokenInterceptor(
 void URLLoader::OnDoneConstructingTrustTokenHelper(
     mojom::TrustTokenOperationType operation,
     TrustTokenStatusOrRequestHelper status_or_helper) {
+  trust_token_operation_ = operation;
+
   if (trust_token_observer_) {
     const net::IsolationInfo& isolation_info = url_request_->isolation_info();
     url::Origin top_frame_origin;
@@ -1093,6 +1095,14 @@ void URLLoader::OnDoneBeginningTrustTokenOperation(
     std::optional<net::HttpRequestHeaders> headers,
     mojom::TrustTokenOperationStatus status) {
   trust_token_status_ = status;
+
+  if (trust_token_operation_) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Net.TrustTokens.OperationOutcome.",
+                      internal::TrustTokenOperationTypeToString(
+                          *trust_token_operation_)}),
+        status);
+  }
 
   // In case the operation failed or it succeeded in a manner where the request
   // does not need to be sent onwards, the DevTools event is emitted from here.
