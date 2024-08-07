@@ -2582,6 +2582,7 @@ if (!is_android) {
       "../browser/performance_manager/persistence/site_data/site_data_cache_facade_browsertest.cc",
       "../browser/screen_ai/optical_character_recognizer_browsertest.cc",
       "../browser/screen_ai/screen_ai_service_router_browsertest.cc",
+      "../browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller_browsertest.cc",
       "../browser/webapps/installable/installable_manager_browsertest.cc",
       "../browser/webapps/installable/ml_promotion_browsertest.cc",
 
@@ -10048,7 +10049,6 @@ test("unit_tests") {
       "../browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view_unittest.cc",
       "../browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view_unittest.cc",
       "../browser/ui/views/side_panel/read_anything/read_anything_coordinator_unittest.cc",
-      "../browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller_unittest.cc",
       "../browser/ui/views/side_panel/side_panel_coordinator_unittest.cc",
       "../browser/ui/views/site_data/page_specific_site_data_dialog_unittest.cc",
       "../browser/ui/views/tab_contents/chrome_web_contents_view_delegate_views_unittest.cc",

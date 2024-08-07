@@ -33,22 +33,11 @@ DECLARE_TEMPLATE_METADATA(SidePanelWebUIViewT_ReadAnythingUntrustedUI,
                           SidePanelWebUIViewT);
 
 ReadAnythingSidePanelController::ReadAnythingSidePanelController(
-    content::WebContents* web_contents,
+    tabs::TabInterface* tab,
     SidePanelRegistry* side_panel_registry)
-    : web_contents_(web_contents), side_panel_registry_(side_panel_registry) {}
-
-ReadAnythingSidePanelController::~ReadAnythingSidePanelController() {
-  // Inform observers when |this| is destroyed so they can do their own cleanup.
-  for (ReadAnythingSidePanelController::Observer& obs : observers_) {
-    obs.OnSidePanelControllerDestroyed();
-  }
-}
-
-void ReadAnythingSidePanelController::CreateAndRegisterEntry() {
-  if (side_panel_registry_->GetEntryForKey(
-          SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything))) {
-    return;
-  }
+    : tab_(tab), side_panel_registry_(side_panel_registry) {
+  CHECK(!side_panel_registry_->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything)));
 
   auto side_panel_entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kReadAnything,
@@ -58,13 +47,17 @@ void ReadAnythingSidePanelController::CreateAndRegisterEntry() {
   side_panel_registry_->Register(std::move(side_panel_entry));
 }
 
-void ReadAnythingSidePanelController::DeregisterEntry() {
-  if (auto* current_entry = side_panel_registry_->GetEntryForKey(
-          SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything))) {
-    current_entry->RemoveObserver(this);
-  }
+ReadAnythingSidePanelController::~ReadAnythingSidePanelController() {
+  auto* current_entry = side_panel_registry_->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
+  current_entry->RemoveObserver(this);
   side_panel_registry_->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
+
+  // Inform observers when |this| is destroyed so they can do their own cleanup.
+  for (ReadAnythingSidePanelController::Observer& obs : observers_) {
+    obs.OnSidePanelControllerDestroyed();
+  }
 }
 
 void ReadAnythingSidePanelController::AddPageHandlerAsObserver(
@@ -89,7 +82,7 @@ void ReadAnythingSidePanelController::RemoveObserver(
 
 void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kReadAnything);
-  if (Browser* browser = chrome::FindBrowserWithTab(web_contents_)) {
+  if (Browser* browser = chrome::FindBrowserWithTab(tab_->GetContents())) {
     auto* coordinator = ReadAnythingCoordinator::GetOrCreateForBrowser(browser);
     coordinator->OnReadAnythingSidePanelEntryShown();
   }
@@ -100,7 +93,7 @@ void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
 
 void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kReadAnything);
-  if (Browser* browser = chrome::FindBrowserWithTab(web_contents_)) {
+  if (Browser* browser = chrome::FindBrowserWithTab(tab_->GetContents())) {
     auto* coordinator = ReadAnythingCoordinator::GetOrCreateForBrowser(browser);
     coordinator->OnReadAnythingSidePanelEntryHidden();
   }
@@ -112,7 +105,7 @@ void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
 std::unique_ptr<views::View>
 ReadAnythingSidePanelController::CreateContainerView() {
   auto web_view = std::make_unique<ReadAnythingSidePanelWebView>(
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+      tab_->GetBrowserWindowInterface()->GetProfile());
 
   return std::move(web_view);
 }

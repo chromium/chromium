@@ -60,7 +60,6 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
                        base::Unretained(this))) {
   browser->tab_strip_model()->AddObserver(this);
   Observe(GetActiveWebContents());
-  CreateAndRegisterEntriesForExistingWebContents(browser->tab_strip_model());
 
   if (features::IsDataCollectionModeForScreen2xEnabled()) {
     BrowserList::GetInstance()->AddObserver(this);
@@ -87,23 +86,6 @@ ReadAnythingCoordinator::~ReadAnythingCoordinator() {
   }
   browser->tab_strip_model()->RemoveObserver(this);
   Observe(nullptr);
-}
-
-void ReadAnythingCoordinator::CreateAndRegisterEntriesForExistingWebContents(
-    TabStripModel* tab_strip_model) {
-  for (int index = 0; index < tab_strip_model->GetTabCount(); ++index) {
-    CreateAndRegisterEntryForWebContents(
-        tab_strip_model->GetWebContentsAt(index));
-  }
-}
-
-void ReadAnythingCoordinator::CreateAndRegisterEntryForWebContents(
-    content::WebContents* web_contents) {
-  CHECK(web_contents);
-  tabs::TabInterface::GetFromContents(web_contents)
-      ->GetTabFeatures()
-      ->read_anything_side_panel_controller()
-      ->CreateAndRegisterEntry();
 }
 
 void ReadAnythingCoordinator::AddObserver(
@@ -189,19 +171,6 @@ void ReadAnythingCoordinator::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  // If the Read Anything side panel is local, creates and registers a side
-  // panel entry for each tab.
-  if (change.type() == TabStripModelChange::Type::kInserted) {
-    for (const auto& inserted_tab : change.GetInsert()->contents) {
-      CreateAndRegisterEntryForWebContents(inserted_tab.contents);
-    }
-  }
-  if (change.type() == TabStripModelChange::Type::kReplaced) {
-    content::WebContents* new_contents = change.GetReplace()->new_contents;
-    if (new_contents) {
-      CreateAndRegisterEntryForWebContents(new_contents);
-    }
-  }
   if (!selection.active_tab_changed()) {
     return;
   }

@@ -121,7 +121,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   // TODO(https://crbug.com/355485153): Move this into the normal window block.
   read_anything_side_panel_controller_ =
       std::make_unique<ReadAnythingSidePanelController>(
-          tab.GetContents(), side_panel_registry_.get());
+          &tab, side_panel_registry_.get());
 }
 
 TabFeatures::TabFeatures() = default;
@@ -153,9 +153,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
                                       content::WebContents* new_contents) {
   // This method is transiently used to reset features that do not handle tab
   // discarding themselves.
+  read_anything_side_panel_controller_.reset();
   read_anything_side_panel_controller_ =
       std::make_unique<ReadAnythingSidePanelController>(
-          new_contents, side_panel_registry_.get());
+          tab, side_panel_registry_.get());
 
   if (commerce_ui_tab_helper_) {
     commerce_ui_tab_helper_ = CreateCommerceUiTabHelper(

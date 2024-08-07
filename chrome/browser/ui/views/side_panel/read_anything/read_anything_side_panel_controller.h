@@ -14,6 +14,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 namespace views {
 class View;
 }  // namespace views
@@ -28,7 +32,7 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver {
     virtual void Activate(bool active) {}
     virtual void OnSidePanelControllerDestroyed() = 0;
   };
-  ReadAnythingSidePanelController(content::WebContents* web_contents,
+  ReadAnythingSidePanelController(tabs::TabInterface* tab,
                                   SidePanelRegistry* side_panel_registry);
   ReadAnythingSidePanelController(const ReadAnythingSidePanelController&) =
       delete;
@@ -36,8 +40,6 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver {
       const ReadAnythingSidePanelController&) = delete;
   ~ReadAnythingSidePanelController() override;
 
-  void CreateAndRegisterEntry();
-  void DeregisterEntry();
   void AddPageHandlerAsObserver(
       base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler);
   void RemovePageHandlerAsObserver(
@@ -58,7 +60,7 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver {
 
   base::ObserverList<ReadAnythingSidePanelController::Observer> observers_;
 
-  const raw_ptr<content::WebContents> web_contents_;
+  const raw_ptr<tabs::TabInterface> tab_;
   raw_ptr<SidePanelRegistry> side_panel_registry_;
 };
 

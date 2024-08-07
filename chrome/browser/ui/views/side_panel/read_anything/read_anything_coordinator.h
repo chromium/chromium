@@ -60,10 +60,6 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
   friend class ReadAnythingCoordinatorTest;
   friend class ReadAnythingCoordinatorScreen2xDataCollectionModeTest;
 
-  void CreateAndRegisterEntriesForExistingWebContents(
-      TabStripModel* tab_strip_model);
-  void CreateAndRegisterEntryForWebContents(content::WebContents* web_contents);
-
   // Starts the delay for showing the IPH after the tab has changed.
   void StartPageChangeDelay();
   // Occurs when the timer set when changing tabs is finished.

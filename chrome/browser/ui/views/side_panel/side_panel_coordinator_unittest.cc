@@ -87,6 +87,8 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
     AddTabToBrowser(GURL("http://foo1.com"));
     AddTabToBrowser(GURL("http://foo2.com"));
 
+    // Note that every tab has read anything added automatically.
+    //
     // Add a kCustomizeChrome entry to the contextual registry for the first
     // tab.
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
@@ -126,28 +128,33 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
     coordinator_->SetNoDelaysForTesting(true);
     global_registry_ = coordinator_->window_registry_.get();
 
-    // Verify the first tab has one entry, kCustomizeChrome.
+    // Verify the first tab has two entries, kReadAnything and kCustomizeChrome.
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
     auto* contextual_registry = browser_view()
                                     ->browser()
                                     ->GetActiveTabInterface()
                                     ->GetTabFeatures()
                                     ->side_panel_registry();
-    EXPECT_EQ(contextual_registry->entries().size(), 1u);
+    EXPECT_EQ(contextual_registry->entries().size(), 2u);
     EXPECT_EQ(contextual_registry->entries()[0]->key().id(),
+              SidePanelEntry::Id::kReadAnything);
+    EXPECT_EQ(contextual_registry->entries()[1]->key().id(),
               SidePanelEntry::Id::kCustomizeChrome);
 
-    // Verify the second tab has 2 entries, kLens and kCustomizeChrome.
+    // Verify the second tab has 3 entries, kReadAnything, kLens and
+    // kCustomizeChrome.
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
     contextual_registry = browser_view()
                               ->browser()
                               ->GetActiveTabInterface()
                               ->GetTabFeatures()
                               ->side_panel_registry();
-    EXPECT_EQ(contextual_registry->entries().size(), 2u);
+    EXPECT_EQ(contextual_registry->entries().size(), 3u);
     EXPECT_EQ(contextual_registry->entries()[0]->key().id(),
-              SidePanelEntry::Id::kLens);
+              SidePanelEntry::Id::kReadAnything);
     EXPECT_EQ(contextual_registry->entries()[1]->key().id(),
+              SidePanelEntry::Id::kLens);
+    EXPECT_EQ(contextual_registry->entries()[2]->key().id(),
               SidePanelEntry::Id::kCustomizeChrome);
 
     extensions::SidePanelService::GetFactoryInstance()->SetTestingFactory(
@@ -209,8 +216,6 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
         browser_view()->GetActiveWebContents());
     registry->Deregister(
         SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion));
-    registry->Deregister(
-        SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   }
 
  protected:
@@ -598,16 +603,18 @@ TEST_F(SidePanelCoordinatorTest, SwapBetweenTabsWithReadingListOpen) {
 }
 
 TEST_F(SidePanelCoordinatorTest, ContextualEntryDeregistered) {
-  // Verify the first tab has one entry, kCustomizeChrome.
+  // Verify the first tab has two entries, kReadAnything and kCustomizeChrome.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
-  EXPECT_EQ(contextual_registries_[0]->entries().size(), 1u);
+  EXPECT_EQ(contextual_registries_[0]->entries().size(), 2u);
   EXPECT_EQ(contextual_registries_[0]->entries()[0]->key().id(),
+            SidePanelEntry::Id::kReadAnything);
+  EXPECT_EQ(contextual_registries_[0]->entries()[1]->key().id(),
             SidePanelEntry::Id::kCustomizeChrome);
 
   // Deregister kCustomizeChrome from the first tab.
   contextual_registries_[0]->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
-  EXPECT_EQ(contextual_registries_[0]->entries().size(), 0u);
+  EXPECT_EQ(contextual_registries_[0]->entries().size(), 1u);
 }
 
 TEST_F(SidePanelCoordinatorTest, ContextualEntryDeregisteredWhileVisible) {
@@ -632,7 +639,7 @@ TEST_F(SidePanelCoordinatorTest, ContextualEntryDeregisteredWhileVisible) {
       SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
   contextual_registries_[0]->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
-  EXPECT_EQ(contextual_registries_[0]->entries().size(), 0u);
+  EXPECT_EQ(contextual_registries_[0]->entries().size(), 1u);
 
   // Verify the panel defaults back to the last visible global entry or the
   // reading list.
@@ -659,7 +666,7 @@ TEST_F(
   // Deregister kCustomizeChrome from the first tab.
   contextual_registries_[0]->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
-  EXPECT_EQ(contextual_registries_[0]->entries().size(), 0u);
+  EXPECT_EQ(contextual_registries_[0]->entries().size(), 1u);
 
   // Verify the panel closes.
   EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
