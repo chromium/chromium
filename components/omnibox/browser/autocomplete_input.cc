@@ -89,8 +89,8 @@ void OffsetComponentsExcludingScheme(url::Parsed* parts, int offset) {
       &parts->username, &parts->password, &parts->host, &parts->port,
       &parts->path,     &parts->query,    &parts->ref,
   };
-  for (size_t i = 0; i < std::size(components); ++i) {
-    url_formatter::OffsetComponent(offset, components[i]);
+  for (url::Component* component : components) {
+    url_formatter::OffsetComponent(offset, component);
   }
 }
 

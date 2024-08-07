@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/omnibox/browser/autocomplete_match.h"
 
 #include <algorithm>
@@ -247,17 +242,6 @@ void RichAutocompletionParams::ClearParamsForTesting() {
 }
 
 // AutocompleteMatch ----------------------------------------------------------
-
-// static
-const char* const AutocompleteMatch::kDocumentTypeStrings[]{
-    "none",        "drive_docs", "drive_forms", "drive_sheets", "drive_slides",
-    "drive_image", "drive_pdf",  "drive_video", "drive_folder", "drive_other"};
-
-static_assert(
-    std::size(AutocompleteMatch::kDocumentTypeStrings) ==
-        static_cast<int>(AutocompleteMatch::DocumentType::DOCUMENT_TYPE_SIZE),
-    "Sizes of AutocompleteMatch::kDocumentTypeStrings and "
-    "AutocompleteMatch::DocumentType don't match.");
 
 // static
 const char* AutocompleteMatch::DocumentTypeString(DocumentType type) {

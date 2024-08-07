@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -207,7 +208,15 @@ struct AutocompleteMatch {
     kMaxValue = kShortcutTextPrefix,
   };
 
-  static const char* const kDocumentTypeStrings[];
+  static constexpr auto kDocumentTypeStrings = std::to_array<const char*>(
+      {"none", "drive_docs", "drive_forms", "drive_sheets", "drive_slides",
+       "drive_image", "drive_pdf", "drive_video", "drive_folder",
+       "drive_other"});
+
+  static_assert(kDocumentTypeStrings.size() ==
+                    static_cast<int>(DocumentType::DOCUMENT_TYPE_SIZE),
+                "Sizes of AutocompleteMatch::kDocumentTypeStrings and "
+                "AutocompleteMatch::DocumentType don't match.");
 
   // Return a string version of the core type values. Only used for
   // `RecordAdditionalInfo()`.
