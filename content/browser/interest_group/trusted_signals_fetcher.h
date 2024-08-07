@@ -17,7 +17,7 @@
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -130,8 +130,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
 
   using Callback = base::OnceCallback<void(SignalsFetchResult)>;
 
-  explicit TrustedSignalsFetcher(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  TrustedSignalsFetcher();
 
   // Virtual for tests.
   virtual ~TrustedSignalsFetcher();
@@ -142,6 +141,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // `partitions` is a map of all partitions in the request, indexed by
   // compression group id. Virtual for tests.
   virtual void FetchBiddingSignals(
+      network::mojom::URLLoaderFactory* url_loader_factory,
       const GURL& trusted_bidding_signals_url,
       const std::map<int, std::vector<BiddingPartition>>& compression_groups,
       Callback callback);
@@ -149,6 +149,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // `partitions` is a map of all partitions in the request, indexed by
   // compression group id. Virtual for tests.
   virtual void FetchScoringSignals(
+      network::mojom::URLLoaderFactory* url_loader_factory,
       const GURL& trusted_scoring_signals_url,
       const std::map<int, std::vector<ScoringPartition>>& compression_groups,
       Callback callback);

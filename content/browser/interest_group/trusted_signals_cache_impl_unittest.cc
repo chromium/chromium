@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -105,13 +106,13 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     };
 
     explicit TestTrustedSignalsFetcher(TestTrustedSignalsCache* cache)
-        : TrustedSignalsFetcher(/*url_loader_factory=*/nullptr),
-          cache_(cache) {}
+        : cache_(cache) {}
 
     ~TestTrustedSignalsFetcher() override = default;
 
    private:
     void FetchBiddingSignals(
+        network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
         const GURL& trusted_signals_url,
         const std::map<int, std::vector<BiddingPartition>>& compression_groups,
         Callback callback) override {
@@ -149,6 +150,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     }
 
     void FetchScoringSignals(
+        network::mojom::URLLoaderFactory* /*unused_url_loader_factory*/,
         const GURL& trusted_signals_url,
         const std::map<int, std::vector<ScoringPartition>>& compression_groups,
         Callback callback) override {

@@ -549,7 +549,8 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
 };
 
 TrustedSignalsCacheImpl::TrustedSignalsCacheImpl(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {}
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : url_loader_factory_(std::move(url_loader_factory)) {}
 
 TrustedSignalsCacheImpl::~TrustedSignalsCacheImpl() = default;
 
@@ -896,7 +897,8 @@ void TrustedSignalsCacheImpl::StartBiddingSignalsFetch(
     }
   }
   fetch->fetcher->FetchBiddingSignals(
-      fetch_it->first.trusted_signals_url, bidding_partition_map,
+      url_loader_factory_.get(), fetch_it->first.trusted_signals_url,
+      bidding_partition_map,
       base::BindOnce(&TrustedSignalsCacheImpl::OnFetchComplete,
                      base::Unretained(this), fetch_it));
 }
@@ -937,7 +939,8 @@ void TrustedSignalsCacheImpl::StartScoringSignalsFetch(
     }
   }
   fetch->fetcher->FetchScoringSignals(
-      fetch_it->first.trusted_signals_url, scoring_partition_map,
+      url_loader_factory_.get(), fetch_it->first.trusted_signals_url,
+      scoring_partition_map,
       base::BindOnce(&TrustedSignalsCacheImpl::OnFetchComplete,
                      base::Unretained(this), fetch_it));
 }
@@ -1079,7 +1082,7 @@ void TrustedSignalsCacheImpl::DestroyScoringCacheEntry(
 
 std::unique_ptr<TrustedSignalsFetcher>
 TrustedSignalsCacheImpl::CreateFetcher() {
-  return nullptr;
+  return std::make_unique<TrustedSignalsFetcher>();
 }
 
 }  // namespace content

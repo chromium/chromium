@@ -469,6 +469,8 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // Virtual for testing.
   virtual std::unique_ptr<TrustedSignalsFetcher> CreateFetcher();
 
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
   mojo::ReceiverSet<auction_worklet::mojom::TrustedSignalsCache> receiver_set_;
 
   // Multimap of live and pending fetches. Fetches are removed on completion and

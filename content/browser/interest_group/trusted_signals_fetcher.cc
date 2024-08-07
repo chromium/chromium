@@ -17,7 +17,6 @@
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -57,11 +56,12 @@ TrustedSignalsFetcher::CompressionGroupResult&
 TrustedSignalsFetcher::CompressionGroupResult::operator=(
     CompressionGroupResult&&) = default;
 
-TrustedSignalsFetcher::TrustedSignalsFetcher(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {}
+TrustedSignalsFetcher::TrustedSignalsFetcher() = default;
+
 TrustedSignalsFetcher::~TrustedSignalsFetcher() = default;
 
 void TrustedSignalsFetcher::FetchBiddingSignals(
+    network::mojom::URLLoaderFactory* url_loader_factory,
     const GURL& trusted_bidding_signals_url,
     const std::map<int, std::vector<BiddingPartition>>& compression_groups,
     Callback callback) {
@@ -69,6 +69,7 @@ void TrustedSignalsFetcher::FetchBiddingSignals(
 }
 
 void TrustedSignalsFetcher::FetchScoringSignals(
+    network::mojom::URLLoaderFactory* url_loader_factory,
     const GURL& trusted_scoring_signals_url,
     const std::map<int, std::vector<ScoringPartition>>& compression_groups,
     Callback callback) {
