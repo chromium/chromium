@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/auth/active_session_auth_metrics_recorder.h"
 #include "ash/auth/views/active_session_auth_view.h"
 #include "ash/auth/views/auth_common.h"
 #include "ash/public/cpp/auth/active_session_auth_controller.h"
@@ -141,6 +142,9 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
 
   AuthFactorSet available_factors_;
   ActiveSessionAuthState state_ = ActiveSessionAuthState::kWaitForInit;
+
+  Reason reason_;
+  ActiveSessionAuthMetricsRecorder uma_recorder_;
 
   base::WeakPtrFactory<ActiveSessionAuthControllerImpl> weak_ptr_factory_{this};
 };

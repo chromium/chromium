@@ -37,6 +37,11 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Desk 8"/>
 </enum>
 
+<enum name="ActiveSessionAuthControllerReason">
+  <int value="0" label="PasswordManager"/>
+  <int value="1" label="Settings"/>
+</enum>
+
 <enum name="AltTabMode">
   <int value="0" label="All Desks"/>
   <int value="1" label="Current Desk"/>
@@ -208,6 +213,11 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1" label="Success"/>
   <int value="2" label="Failed"/>
   <int value="3" label="Not run"/>
+</enum>
+
+<enum name="AuthInputType">
+  <int value="0" label="Password"/>
+  <int value="1" label="PIN"/>
 </enum>
 
 <enum name="AuthMethod">

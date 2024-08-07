@@ -9,10 +9,10 @@
 
 namespace ash {
 
-enum class AuthInputType {
-  kPassword,
-  kPin,
-};
+// The enums below are used in histograms, do not remove/renumber entries. If
+// you're adding to any of these enums, update the corresponding enum listing in
+// tools/metrics/histograms/metadata/ash/enums.xml:
+enum class AuthInputType { kPassword = 0, kPin = 1, kMaxValue = kPin };
 
 using AuthFactorSet =
     base::EnumSet<AuthInputType, AuthInputType::kPassword, AuthInputType::kPin>;

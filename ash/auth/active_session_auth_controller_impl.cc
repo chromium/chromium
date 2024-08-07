@@ -85,9 +85,9 @@ std::unique_ptr<views::Widget> CreateAuthDialogWidget(
 
 const char* ReasonToString(ActiveSessionAuthController::Reason reason) {
   switch (reason) {
-    case ActiveSessionAuthController::kPasswordManager:
+    case ActiveSessionAuthController::Reason::kPasswordManager:
       return "PasswordManager";
-    case ActiveSessionAuthController::kSettings:
+    case ActiveSessionAuthController::Reason::kSettings:
       return "Settings";
   }
   NOTREACHED();
@@ -176,6 +176,7 @@ bool ActiveSessionAuthControllerImpl::ShowAuthDialog(
     return false;
   }
 
+  reason_ = reason;
   title_ = l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_TITLE);
   description_ = l10n_util::GetStringUTF16(MessageFromReason(reason));
   CHECK(!on_auth_complete_);
@@ -217,6 +218,8 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
   }
 
   SetState(ActiveSessionAuthState::kInitialized);
+  uma_recorder_.RecordShow(reason_);
+
   auth_factor_editor_->GetAuthFactorsConfiguration(
       std::move(user_context),
       base::BindOnce(&ActiveSessionAuthControllerImpl::OnAuthFactorsListed,
@@ -261,6 +264,7 @@ void ActiveSessionAuthControllerImpl::OnAuthFactorsListed(
 void ActiveSessionAuthControllerImpl::Close() {
   LOG(WARNING) << "Close with : " << ActiveSessionAuthStateToString(state_)
                << " state.";
+  uma_recorder_.RecordClose();
   contents_view_observer_.Reset();
   CHECK(contents_view_);
   contents_view_->RemoveObserver(this);
@@ -302,6 +306,7 @@ void ActiveSessionAuthControllerImpl::MoveToTheCenter() {
 void ActiveSessionAuthControllerImpl::OnPasswordSubmit(
     const std::u16string& password) {
   SetState(ActiveSessionAuthState::kPasswordAuthStarted);
+  uma_recorder_.RecordAuthStarted(AuthInputType::kPassword);
   CHECK(user_context_);
   const auto* password_factor =
       user_context_->GetAuthFactorsData().FindAnyPasswordFactor();
@@ -317,6 +322,7 @@ void ActiveSessionAuthControllerImpl::OnPasswordSubmit(
 
 void ActiveSessionAuthControllerImpl::OnPinSubmit(const std::u16string& pin) {
   SetState(ActiveSessionAuthState::kPinAuthStarted);
+  uma_recorder_.RecordAuthStarted(AuthInputType::kPin);
   CHECK(user_context_);
   user_manager::KnownUser known_user(Shell::Get()->local_state());
   const std::string salt = GetUserSalt(account_id_);
@@ -332,6 +338,7 @@ void ActiveSessionAuthControllerImpl::OnAuthComplete(
     std::unique_ptr<UserContext> user_context,
     std::optional<AuthenticationError> authentication_error) {
   if (authentication_error.has_value()) {
+    uma_recorder_.RecordAuthFailed(input_type);
     user_context_ = std::move(user_context);
     contents_view_->SetErrorTitle(l10n_util::GetStringUTF16(
         input_type == AuthInputType::kPassword
@@ -339,6 +346,7 @@ void ActiveSessionAuthControllerImpl::OnAuthComplete(
             : IDS_ASH_IN_SESSION_AUTH_PIN_INCORRECT));
     SetState(ActiveSessionAuthState::kInitialized);
   } else {
+    uma_recorder_.RecordAuthSucceeded(input_type);
     SetState(input_type == AuthInputType::kPassword
                  ? ActiveSessionAuthState::kPasswordAuthSucceeded
                  : ActiveSessionAuthState::kPinAuthSucceeded);

@@ -743,6 +743,97 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.Auth.ActiveSessionAuthClosedDuringAuth" enum="Boolean"
+    expires_after="2025-08-02">
+  <owner>iscsi@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Records when the active session auth dialog closed during authentication. It
+    means the user already submitted their password or pin, but didn't wait for
+    the result. Recorded when the active session auth dialog closes.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Auth.ActiveSessionAuthClosedWithSuccess"
+    enum="BooleanSuccess" expires_after="2025-08-02">
+  <owner>iscsi@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Records the success outcome of the authentication on the active session auth
+    dialog. Recorded when the active session auth dialog closes.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Auth.ActiveSessionAuthFailed" enum="AuthInputType"
+    expires_after="2025-08-02">
+  <owner>iscsi@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Records the authentication input type when authentication fails on the
+    active session dialog. Recorded when the active session auth dialog closes.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Auth.ActiveSessionAuthOpenDuration" units="ms"
+    expires_after="2025-08-02">
+  <owner>iscsi@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    The amount of time the active session auth dialog remained opened. Recorded
+    when the active session auth dialog closes.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Auth.ActiveSessionAuthPasswordAttempt" units="attempts"
+    expires_after="2025-08-02">
+  <owner>iscsi@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    The number of password attempts while the active session auth dialog was
+    opened. Recorded when the active session auth dialog closes.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Auth.ActiveSessionAuthPinAttempt" units="attempts"
+    expires_after="2025-08-02">
+  <owner>iscsi@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    The number of pin attempts while the active session auth dialog was opened.
+    Recorded when the active session auth dialog closes.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Auth.ActiveSessionAuthStart" enum="AuthInputType"
+    expires_after="2025-08-02">
+  <owner>iscsi@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Records the authentication input type when authentication happened. Recorded
+    when the authentication starts on the active session auth dialog.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Auth.ActiveSessionAuthSucceeded" enum="AuthInputType"
+    expires_after="2025-08-02">
+  <owner>iscsi@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Records the authentication input type when authentication succeeded.
+    Recorded when the active session auth dialog closes.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Auth.ActiveSessionShowReason"
+    enum="ActiveSessionAuthControllerReason" expires_after="2025-08-02">
+  <owner>iscsi@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Records the authentication reason why the active session auth dialog was
+    opened. Recorded when the active session auth dialog opens.
+  </summary>
+</histogram>
+
 <histogram name="Ash.BackGesture.EndScenarioType"
     enum="BackGestureEndScenarioType" expires_after="2023-10-22">
   <owner>minch@chromium.org</owner>

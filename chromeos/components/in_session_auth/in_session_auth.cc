@@ -24,13 +24,14 @@ AuthReason ToAshReason(chromeos::auth::mojom::Reason reason) {
       // implementation of the `chromeos::auth::mojom::InSessionAuth` should
       // only be reachable from ash.
       return ash::features::IsUseAuthPanelInSessionEnabled()
-                 ? AuthReason{ash::ActiveSessionAuthController::
+                 ? AuthReason{ash::ActiveSessionAuthController::Reason::
                                   kPasswordManager}
                  : AuthReason{ash::InSessionAuthDialogController::
                                   kAccessPasswordManager};
     case chromeos::auth::mojom::Reason::kAccessAuthenticationSettings:
       return ash::features::IsUseAuthPanelInSessionEnabled()
-                 ? AuthReason{ash::ActiveSessionAuthController::kSettings}
+                 ? AuthReason{ash::ActiveSessionAuthController::Reason::
+                                  kSettings}
                  : AuthReason{ash::InSessionAuthDialogController::
                                   kAccessAuthenticationSettings};
     case chromeos::auth::mojom::Reason::kAccessMultideviceSettings:
