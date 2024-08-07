@@ -301,28 +301,9 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
     input->temperature = GetTemperature(input->temperature);
     ChromeMLContextSavedFn context_saved_fn =
         context_holder->CreateContextSavedFn();
-    if (session_) {
-      *context_holder->GetCancelFn() =
-          session_->Execute(std::move(input), nullptr, context_saved_fn);
-    } else {
-      ChromeMLExecuteOptions options{
-          .prompt = input->text.c_str(),
-          .context_mode = GetContextMode(*input) | ContextMode::kSave,
-          .max_tokens = *input->max_tokens,
-          .token_offset = input->token_offset.value_or(0),
-          .context_saved_fn = &context_saved_fn,
-          .top_k = input->top_k.value_or(1),
-          .temperature = input->temperature.value_or(0),
-      };
-      if (adaptation_id_) {
-        options.adaptation_id = &adaptation_id_.value();
-      }
-      chrome_ml_->api().ExecuteModel(model_, &options,
-                                     context_holder->GetCancelFn());
-    }
+    *context_holder->GetCancelFn() =
+        session_->Execute(std::move(input), nullptr, context_saved_fn);
     context_holders_.insert(std::move(context_holder));
-    // Once we have added context, it should not be cleared.
-    clear_context_ = false;
   }
 
   DISABLE_CFI_DLSYM
@@ -330,16 +311,9 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
       on_device_model::mojom::InputOptionsPtr input,
       mojo::PendingRemote<on_device_model::mojom::StreamingResponder> response,
       base::OnceClosure on_complete) override {
-    auto cloned = SessionAccessor::Empty();
-    SessionAccessor* cloned_raw = nullptr;
-    if (session_) {
-      if (input->ignore_context) {
-        cloned = empty_session_->Clone();
-      } else {
-        cloned = session_->Clone();
-      }
-      cloned_raw = cloned.get();
-    }
+    auto cloned =
+        input->ignore_context ? empty_session_->Clone() : session_->Clone();
+    auto cloned_raw = cloned.get();  // For Execute after std::move
     responder_ = std::make_unique<Responder>(
         std::move(response), std::move(on_complete), std::move(cloned));
     ChromeMLExecutionOutputFn output_fn = responder_->CreateOutputFn();
@@ -347,68 +321,20 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
         std::min(input->max_tokens.value_or(max_tokens_), max_tokens_);
     input->top_k = GetTopK(input->top_k);
     input->temperature = GetTemperature(input->temperature);
-    if (cloned_raw) {
-      *responder_->GetCancelFn() =
-          cloned_raw->Execute(std::move(input), output_fn, nullptr);
-    } else {
-      ChromeMLExecuteOptions options{
-          .prompt = input->text.c_str(),
-          .context_mode = GetContextMode(*input),
-          .max_tokens = *input->max_tokens,
-          .token_offset = input->token_offset.value_or(0),
-          .max_output_tokens = input->max_output_tokens.value_or(0),
-          .execution_output_fn = &output_fn,
-          .top_k = input->top_k.value_or(1),
-          .temperature = input->temperature.value_or(0),
-      };
-      if (adaptation_id_) {
-        options.adaptation_id = &adaptation_id_.value();
-      }
-      chrome_ml_->api().ExecuteModel(model_, &options,
-                                     responder_->GetCancelFn());
-    }
-  }
-
-  bool ClearContext() override {
-    if (session_) {
-      return false;
-    }
-    clear_context_ = true;
-    return true;
+    *responder_->GetCancelFn() =
+        cloned_raw->Execute(std::move(input), output_fn, nullptr);
   }
 
   DISABLE_CFI_DLSYM
   void SizeInTokens(const std::string& text,
                     base::OnceCallback<void(uint32_t)> callback) override {
-    if (session_) {
       session_->SizeInTokens(text, ConvertCallbackToFn(std::move(callback)));
-      return;
-    }
-
-    if (!chrome_ml_->api().SizeInTokens) {
-      std::move(callback).Run(0);
-      return;
-    }
-
-    chrome_ml_->api().SizeInTokens(model_, text,
-                                   ConvertCallbackToFn(std::move(callback)));
   }
 
   DISABLE_CFI_DLSYM
   void Score(const std::string& text,
              base::OnceCallback<void(float)> callback) override {
-    if (session_) {
-      session_->Score(text, ConvertCallbackToFn(std::move(callback)));
-      return;
-    }
-
-    if (!chrome_ml_->api().Score) {
-      std::move(callback).Run(0);
-      return;
-    }
-
-    chrome_ml_->api().Score(model_, text,
-                            ConvertCallbackToFn(std::move(callback)));
+    session_->Score(text, ConvertCallbackToFn(std::move(callback)));
   }
 
   std::unique_ptr<Session> Clone() override {
@@ -422,18 +348,6 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
     std::erase_if(context_holders_, base::MatchesUniquePtr(context));
   }
 
-  int GetContextMode(const on_device_model::mojom::InputOptions& input) {
-    int context_mode = ContextMode::kNone;
-    if (input.ignore_context) {
-      context_mode |= ContextMode::kIgnoreContext;
-    }
-    if (clear_context_) {
-      context_mode |= ContextMode::kReset;
-    }
-    return context_mode;
-  }
-
-  bool clear_context_ = true;
   const raw_ref<const ChromeML> chrome_ml_;
   ChromeMLModel model_;
   SessionAccessor::Ptr session_;
@@ -485,16 +399,10 @@ OnDeviceModelExecutor::CreateWithResult(
 
 std::unique_ptr<on_device_model::OnDeviceModel::Session>
 OnDeviceModelExecutor::CreateSession(std::optional<uint32_t> adaptation_id) {
-  auto session = SessionAccessor::Empty();
-  auto empty_session = SessionAccessor::Empty();
-  if (chrome_ml_->api().CreateSession) {
-    auto it = base_sessions_.find(adaptation_id);
-    CHECK(it != base_sessions_.end());
-    empty_session = it->second->Clone();
-    session = it->second->Clone();
-  }
+  auto it = base_sessions_.find(adaptation_id);
+  CHECK(it != base_sessions_.end());
   return std::make_unique<SessionImpl>(
-      *chrome_ml_, model_, std::move(session), std::move(empty_session),
+      *chrome_ml_, model_, it->second->Clone(), it->second->Clone(),
       max_tokens_ - kReserveTokensForSafety, adaptation_id);
 }
 
@@ -520,31 +428,12 @@ base::expected<uint32_t, LoadModelResult> OnDeviceModelExecutor::LoadAdaptation(
     on_device_model::mojom::LoadAdaptationParamsPtr params,
     base::OnceClosure on_complete) {
   on_device_model::AdaptationAssets assets = std::move(params->assets);
-  if (chrome_ml_->api().CreateSession) {
-    static uint32_t next_id = 0;
-    base_sessions_.insert(
-        {next_id, SessionAccessor::Create(model_task_runner_, model_,
-                                          std::move(assets.weights))});
-    model_task_runner_->PostTask(FROM_HERE, std::move(on_complete));
-    return base::ok(next_id++);
-  }
-
-  if (!chrome_ml_->api().CreateAdaptation) {
-    return base::unexpected(LoadModelResult::kFailedToLoadLibrary);
-  }
-
-  ChromeMLModelData data = {
-      .weights_file = assets.weights.TakePlatformFile(),
-  };
-  ChromeMLAdaptationDescriptor descriptor = {
-      .model_data = &data,
-  };
-  uint32_t id;
-  if (!chrome_ml_->api().CreateAdaptation(model_, &descriptor, id)) {
-    return base::unexpected(LoadModelResult::kFailedToLoadLibrary);
-  }
-  std::move(on_complete).Run();
-  return base::ok(id);
+  static uint32_t next_id = 0;
+  base_sessions_.insert(
+      {next_id, SessionAccessor::Create(model_task_runner_, model_,
+                                        std::move(assets.weights))});
+  model_task_runner_->PostTask(FROM_HERE, std::move(on_complete));
+  return base::ok(next_id++);
 }
 
 DISABLE_CFI_DLSYM
@@ -594,21 +483,14 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .use_low_power = kUseLowPower.Get(),
       .allow_fp16 = kAllowFp16.Get(),
   };
-  if (chrome_ml_->api().SessionCreateModel) {
-    model_ = chrome_ml_->api().SessionCreateModel(
-        &descriptor, reinterpret_cast<uintptr_t>(this),
-        OnDeviceModelExecutor::Schedule);
-    if (model_) {
-      base_sessions_.insert(
-          {std::nullopt, SessionAccessor::Create(model_task_runner_, model_)});
-    }
-    model_task_runner_->PostTask(FROM_HERE, std::move(on_complete));
-  } else {
-    model_ = chrome_ml_->api().CreateModel(&descriptor,
-                                           reinterpret_cast<uintptr_t>(this),
-                                           OnDeviceModelExecutor::Schedule);
-    std::move(on_complete).Run();
+  model_ = chrome_ml_->api().SessionCreateModel(
+      &descriptor, reinterpret_cast<uintptr_t>(this),
+      OnDeviceModelExecutor::Schedule);
+  if (model_) {
+    base_sessions_.insert(
+        {std::nullopt, SessionAccessor::Create(model_task_runner_, model_)});
   }
+  model_task_runner_->PostTask(FROM_HERE, std::move(on_complete));
   return (model_ != 0) ? LoadModelResult::kSuccess
                        : LoadModelResult::kFailedToLoadLibrary;
 }

@@ -26,13 +26,6 @@ using ChromeMLFatalErrorFn = void (*)(const char* msg);
 using ChromeMLScheduleFn = void (*)(uintptr_t context,
                                     std::function<void()>* task);
 
-enum ContextMode {
-  kNone = 0,
-  kReset = 1 << 0,
-  kSave = 1 << 1,
-  kIgnoreContext = 1 << 2,
-};
-
 #if defined(_WIN32)
 using PlatformFile = void*;
 #else
@@ -260,20 +253,6 @@ struct ChromeMLAPI {
   // SetFatalErrorNonGpuFn.
   void (*SetFatalErrorFn)(ChromeMLFatalErrorFn error_fn);
 
-  // Creates a new ChromeML model instance as described by `model`. The returned
-  // object can be destroyed by passing it to DestroyModel(). `context` is
-  // forwarded to any invocations of `schedule` or `token_output` made by this
-  // model.
-  ChromeMLModel (*CreateModel)(const ChromeMLModelDescriptor* descriptor,
-                               uintptr_t context,
-                               ChromeMLScheduleFn schedule);
-
-  // Executes a model given the input `prompt`. Results are fed incrementally
-  // to the model's given ChromeMLOutputFn.
-  bool (*ExecuteModel)(ChromeMLModel model,
-                       const ChromeMLExecuteOptions* options,
-                       ChromeMLCancelFn* cancel_fn);
-
   // Performs ad hoc safety classification on a chunk of text using the
   // classifier defined by `model`.
   //
@@ -294,17 +273,12 @@ struct ChromeMLAPI {
                                              float* scores,
                                              size_t* num_scores);
 
-  // Destroys a model that was created by CreateModel().
+  // Destroys a model that was created by SessionCreateModel().
   void (*DestroyModel)(ChromeMLModel model);
 
   // Estimates the tokens per second this device will be able to achieve when
   // running a typical model.
   bool (*GetEstimatedPerformance)(ChromeMLPerformanceInfo* performance_info);
-
-  // Returns the GpuConfig in `config`. Returns true on success, false if there
-  // was an error calculating it.
-  // Deprecated: Use QueryGPUAdapter insteed.
-  bool (*GetGpuConfig)(GpuConfig& config);
 
   // Query the GPU adapter used.
   // Synchronously calls `adapter_callback_fn` with a non-owning pointer to the
@@ -320,33 +294,28 @@ struct ChromeMLAPI {
   // gpu.
   void (*SetFatalErrorNonGpuFn)(ChromeMLFatalErrorFn error_fn);
 
-  // Loads an adaptation and outputs an identifier for this adaptation in `id`.
-  bool (*CreateAdaptation)(ChromeMLModel model,
-                           const ChromeMLAdaptationDescriptor* descriptor,
-                           uint32_t& id);
-
-  // Get the size of the given text in tokens.
-  void (*SizeInTokens)(ChromeMLModel model,
-                       const std::string& text,
-                       const ChromeMLSizeInTokensFn& fn);
-
-  // Scores the first token of the given text.
-  void (*Score)(ChromeMLModel model,
-                const std::string& text,
-                const ChromeMLScoreFn& fn);
-
-  // Session based mirror of the above API.
-  // TODO: b/350517296 - Delete old API.
+  // Creates a new ChromeML model instance as described by `descriptor`. The
+  // returned object can be destroyed by passing it to DestroyModel(). `context`
+  // is forwarded to any invocations of `schedule` or `token_output` made by
+  // this model.
   ChromeMLModel (*SessionCreateModel)(const ChromeMLModelDescriptor* descriptor,
                                       uintptr_t context,
                                       ChromeMLScheduleFn schedule);
+
+  // Executes a model given the input `options.prompt`. Results are fed
+  // incrementally to `options.execution_output_fn`. Execution may be cancelled
+  // by calling CancelExecuteModel on `cancel`.
   bool (*SessionExecuteModel)(ChromeMLSession session,
                               ChromeMLModel model,
                               const ChromeMLExecuteOptions* options,
                               ChromeMLCancel cancel);
+
+  // Get the size of the given text in tokens.
   void (*SessionSizeInTokens)(ChromeMLSession session,
                               const std::string& text,
                               const ChromeMLSizeInTokensFn& fn);
+
+  // Scores the first token of the given text.
   void (*SessionScore)(ChromeMLSession session,
                        const std::string& text,
                        const ChromeMLScoreFn& fn);
