@@ -8,6 +8,7 @@ import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {ToolbarEvent, VoiceClientSideStatusCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {hasStyle} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {emitEvent, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -112,59 +113,43 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   suite('on color theme change', () => {
-    let updatedStyles: string[];
-
     setup(() => {
       app = document.createElement('read-anything-app');
       document.body.appendChild(app);
-
-      // The actual theme colors we use are color constants the test doesn't
-      // have access to, so we use this to verify that we update the styles with
-      // every color
-      app.updateStyles = (styles: any) => {
-        updatedStyles = [];
-        for (const [name, value] of Object.entries(styles)) {
-          // The empty state body doesn't depend on the color suffix
-          if (!name.includes('sp-empty-state-body-color')) {
-            updatedStyles.push(value as string);
-          }
-        }
-      };
     });
 
-    function assertColorsChanged(suffix: string): void {
-      for (const style of updatedStyles) {
-        assertTrue(
-            style.includes(suffix), style + 'does not contain ' + suffix);
-      }
-    }
-
-    function assertDefaultColorsUsed(): void {
-      const colors = ['-yellow', '-blue', '-light', '-dark'];
-      for (const style of updatedStyles) {
-        for (const color of colors) {
-          assertFalse(style.includes(color), style + 'contains ' + color);
-        }
-      }
-    }
-
     test('color theme updates container colors', () => {
+      // Set background color css variables. In prod code this is done in a
+      // parent element.
+      app.style.setProperty(
+          '--color-read-anything-background-dark', 'DarkSlateGray');
+      app.style.setProperty(
+          '--color-read-anything-background-light', 'LightGray');
+      app.style.setProperty(
+          '--color-read-anything-background-yellow', 'yellow');
+      app.style.setProperty('--color-read-anything-background-blue', 'blue');
+
       emitColorTheme(chrome.readingMode.darkTheme);
-      assertColorsChanged('-dark');
+      assertTrue(
+          hasStyle(app.$.container, '--background-color', 'DarkSlateGray'));
 
       emitColorTheme(chrome.readingMode.lightTheme);
-      assertColorsChanged('-light');
+      assertTrue(hasStyle(app.$.container, '--background-color', 'LightGray'));
 
       emitColorTheme(chrome.readingMode.yellowTheme);
-      assertColorsChanged('-yellow');
+      assertTrue(hasStyle(app.$.container, '--background-color', 'yellow'));
 
       emitColorTheme(chrome.readingMode.blueTheme);
-      assertColorsChanged('-blue');
+      assertTrue(hasStyle(app.$.container, '--background-color', 'blue'));
     });
 
     test('default theme uses default colors', () => {
+      // Set background color css variables. In prod code this is done in a
+      // parent element.
+      app.style.setProperty('--color-sys-base-container-elevated', 'grey');
       emitColorTheme(chrome.readingMode.defaultTheme);
-      assertDefaultColorsUsed();
+
+      assertTrue(hasStyle(app.$.container, '--background-color', 'grey'));
     });
   });
 

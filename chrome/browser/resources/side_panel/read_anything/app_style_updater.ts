@@ -64,76 +64,79 @@ export class AppStyleUpdater {
   }
 
   setLineSpacing() {
-    this.app_.updateStyles({
-      '--line-height': chrome.readingMode.getLineSpacingValue(
-          chrome.readingMode.lineSpacing),
-    });
+    this.setStyle_(
+        '--line-height',
+        `${
+            chrome.readingMode.getLineSpacingValue(
+                chrome.readingMode.lineSpacing)}`);
   }
 
   setLetterSpacing() {
     const letterSpacing = chrome.readingMode.getLetterSpacingValue(
         chrome.readingMode.letterSpacing);
-    this.app_.updateStyles({
-      '--letter-spacing': letterSpacing + 'em',
-    });
+    this.setStyle_('--letter-spacing', letterSpacing + 'em');
   }
 
   setFontSize() {
-    this.app_.updateStyles({
-      '--font-size': chrome.readingMode.fontSize + 'em',
-    });
+    this.setStyle_('--font-size', chrome.readingMode.fontSize + 'em');
   }
 
   setFont() {
-    this.app_.updateStyles({
-      '--font-family':
-          chrome.readingMode.getValidatedFontName(chrome.readingMode.fontName),
-    });
+    this.setStyle_(
+        '--font-family',
+        chrome.readingMode.getValidatedFontName(chrome.readingMode.fontName));
   }
 
   setHighlight() {
-    this.app_.updateStyles({
-      '--current-highlight-bg-color':
-          this.getCurrentHighlightColor_(this.getCurrentColorSuffix_()),
-    });
+    this.setStyle_(
+        '--current-highlight-bg-color',
+        this.getCurrentHighlightColor_(this.getCurrentColorSuffix_()));
   }
 
   resetToolbar() {
-    this.app_.updateStyles({
-      '--app-overflow-x': OVERFLOW_X_TYPICAL,
-      '--container-min-width': MIN_WIDTH_TYPICAL,
-    });
+    this.setStyle_('--app-overflow-x', OVERFLOW_X_TYPICAL);
+    this.setStyle_('--container-min-width', MIN_WIDTH_TYPICAL);
   }
 
   overflowToolbar(shouldScroll: boolean) {
-    this.app_.updateStyles({
-      '--app-overflow-x': shouldScroll ? OVERFLOW_X_SCROLL : OVERFLOW_X_TYPICAL,
-      // When we scroll, we should allow the container to expand and scroll
-      // horizontally.
-      '--container-min-width': shouldScroll ? MIN_WIDTH_OVERFLOW :
-                                              MIN_WIDTH_TYPICAL,
-    });
+    this.setStyle_(
+        '--app-overflow-x',
+        shouldScroll ? OVERFLOW_X_SCROLL : OVERFLOW_X_TYPICAL);
+    this.setStyle_(
+        // When we scroll, we should allow the container to expand and scroll
+        // horizontally.
+        '--container-min-width',
+        shouldScroll ? MIN_WIDTH_OVERFLOW : MIN_WIDTH_TYPICAL);
   }
 
   setTheme() {
     const colorSuffix = this.getCurrentColorSuffix_();
-    this.app_.updateStyles({
-      '--background-color': this.getBackgroundColor_(colorSuffix),
-      '--foreground-color': this.getForegroundColor_(colorSuffix),
-      '--selection-color': this.getSelectionColor_(colorSuffix),
-      '--current-highlight-bg-color':
-          this.getCurrentHighlightColor_(colorSuffix),
-      '--previous-highlight-color':
-          this.getPreviousHighlightColor_(colorSuffix),
-      '--sp-empty-state-heading-color': EMPTY_STATE_HEADING + `${colorSuffix})`,
-      '--sp-empty-state-body-color': this.getEmptyStateBodyColor_(colorSuffix),
-      '--link-color': LINK_DEFAULT + `${colorSuffix})`,
-      '--visited-link-color': LINK_VISITED + `${colorSuffix})`,
-    });
+    this.setStyle_('--background-color', this.getBackgroundColor_(colorSuffix));
+    this.setStyle_('--foreground-color', this.getForegroundColor_(colorSuffix));
+    this.setStyle_('--selection-color', this.getSelectionColor_(colorSuffix));
+    this.setStyle_(
+        '--current-highlight-bg-color',
+        this.getCurrentHighlightColor_(colorSuffix));
+    this.setStyle_(
+        '--previous-highlight-color',
+        this.getPreviousHighlightColor_(colorSuffix));
+    this.setStyle_(
+        '--sp-empty-state-heading-color',
+        EMPTY_STATE_HEADING + `${colorSuffix})`);
+    this.setStyle_(
+        '--sp-empty-state-body-color',
+        this.getEmptyStateBodyColor_(colorSuffix));
+    this.setStyle_('--link-color', LINK_DEFAULT + `${colorSuffix})`);
+    this.setStyle_('--visited-link-color', LINK_VISITED + `${colorSuffix})`);
+
     document.documentElement.style.setProperty(
         '--selection-color', this.getSelectionColor_(colorSuffix));
     document.documentElement.style.setProperty(
         '--selection-text-color', this.getSelectionTextColor_(colorSuffix));
+  }
+
+  private setStyle_(key: string, val: string) {
+    this.app_.style.setProperty(key, val);
   }
 
   private getCurrentColorSuffix_(): ColorSuffix {
