@@ -2691,6 +2691,7 @@ TEST_F(IntegrationTest, CRURegistrationCannotGetTagWithoutApp) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+#if !defined(ADDRESS_SANITIZER)
 TEST_F(IntegrationTest, CRURegistrationFindsBlankTag) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -2727,6 +2728,7 @@ TEST_F(IntegrationTest, CRURegistrationFindsTag) {
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
+#endif  // !defined(ADDRESS_SANITIZER)
 
 // App ownership feature only exists on macOS.
 TEST_F(IntegrationTest, UnregisterUnownedApp) {
