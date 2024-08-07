@@ -8,6 +8,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace plus_addresses::test {
 

@@ -119,6 +119,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/passwords/ui_bundled/bottom_sheet:eg_app_support+eg2",
     "//ios/chrome/browser/permissions/ui_bundled:eg_app_support+eg2",
     "//ios/chrome/browser/phone_number/ui_bundled:eg_app_support+eg2",
+    "//ios/chrome/browser/plus_addresses/ui:eg_app_support+eg2",
     "//ios/chrome/browser/policy/model:eg_app_support+eg2",
     "//ios/chrome/browser/qr_scanner/ui_bundled:eg_app_support+eg2",
     "//ios/chrome/browser/safe_mode/ui_bundled",

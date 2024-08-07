@@ -2,12 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/escape.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/plus_addresses/features.h"
+#import "components/plus_addresses/plus_address_test_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/plus_addresses/ui/plus_address_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_constants.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -208,10 +216,30 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  if ([self shouldEnableKeyboardAccessoryUpgradeFeature]) {
-    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
+  if ([self isRunningTest:@selector(testPlusAddressFallback)]) {
+    std::string fakeLocalUrl =
+        base::EscapeQueryParamValue("chrome://version", /*use_plus=*/false);
+    config.features_enabled_and_params.push_back(
+        {plus_addresses::features::kPlusAddressesEnabled,
+         {{
+             {"server-url", {fakeLocalUrl}},
+             {"manage-url", {fakeLocalUrl}},
+         }}});
+
+    if ([self shouldEnableKeyboardAccessoryUpgradeFeature]) {
+      config.features_enabled_and_params.push_back(
+          {kIOSKeyboardAccessoryUpgrade, {}});
+    } else {
+      config.features_disabled.push_back(kIOSKeyboardAccessoryUpgrade);
+    }
+    config.features_enabled_and_params.push_back(
+        {plus_addresses::features::kPlusAddressIOSManualFallbackEnabled, {}});
   } else {
-    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgrade);
+    if ([self shouldEnableKeyboardAccessoryUpgradeFeature]) {
+      config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
+    } else {
+      config.features_disabled.push_back(kIOSKeyboardAccessoryUpgrade);
+    }
   }
 
   return config;
@@ -544,6 +572,30 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
       assertWithMatcher:grey_notVisible()];
 
   // TODO(crbug.com/332956674): Check that the updated suggestion is visible.
+}
+
+// Tests that a plus address fallback option is shown alongisde the addresses
+// fallback.
+- (void)testPlusAddressFallback {
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
+                            @"Accessory Upgrade feature is disabled.")
+  }
+
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  [PlusAddressAppInterface
+      saveExamplePlusProfile:base::SysUTF8ToNSString(
+                                 self.testServer->base_url().spec())];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementName)];
+  [ChromeEarlGrey waitForKeyboardToAppear];
+
+  // Open the address manual fill view.
+  OpenAddressManualFillView();
+
+  CheckChipButtonVisibility(plus_addresses::test::kFakePlusAddressU16);
 }
 
 #pragma mark - Private

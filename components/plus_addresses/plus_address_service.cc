@@ -80,7 +80,11 @@ PlusProfile::facet_t OriginToFacet(const url::Origin& origin) {
     facet = affiliations::FacetURI::FromPotentiallyInvalidSpec(
         origin.GetURL().spec());
   } else {
-    facet = GetEtldPlusOne(origin);
+    std::string etld_plus_one = GetEtldPlusOne(origin);
+    // TODO(crbug.com/327838014): Remove the fallback and use
+    // `affiliations::FacetURI` in the tests.
+    // For empty `etld_plus_one`, fallback to `origin`.
+    facet = etld_plus_one.empty() ? origin.GetURL().spec() : etld_plus_one;
   }
   return facet;
 }

@@ -8,7 +8,6 @@
 #include "components/plus_addresses/plus_address_types.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "testing/gmock/include/gmock/gmock.h"
 
 namespace plus_addresses::test {
 
