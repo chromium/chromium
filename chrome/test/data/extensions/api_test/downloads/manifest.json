@@ -1,7 +1,10 @@
 {
   "name": "downloads apitest",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "downloads apitest",
-  "background": { "scripts": ["test.js"]},
-  "permissions": ["downloads"]}
+  "background": {
+    "service_worker": "test.js"
+  },
+  "permissions": ["downloads"]
+}
