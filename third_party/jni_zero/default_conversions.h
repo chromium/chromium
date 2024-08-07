@@ -174,9 +174,6 @@ inline ContainerType FromJniCollection(JNIEnv* env,
 template <internal::IsObjectContainer ContainerType>
 inline ScopedJavaLocalRef<jobject> ToJniList(JNIEnv* env,
                                              const ContainerType& collection) {
-  if (collection.empty()) {
-    return g_empty_list.AsLocalRef(env);
-  }
   ScopedJavaLocalRef<jobjectArray> arr =
       ToJniArray(env, collection, g_object_class);
   return ArrayToList(env, arr);
@@ -239,9 +236,6 @@ inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env,
   using KeyType = ContainerType::key_type;
   using ValueType = ContainerType::mapped_type;
   jsize map_jsize = static_cast<jsize>(map.size());
-  if (map_jsize == 0) {
-    return g_empty_map.AsLocalRef(env);
-  }
   jobjectArray j_array =
       env->NewObjectArray(map_jsize * 2, g_object_class, nullptr);
   CheckException(env);

@@ -84,10 +84,6 @@ std::string ConvertJavaStringToUTF8(JNIEnv* env, const JavaRef<jstring>& str) {
 
 ScopedJavaLocalRef<jstring> ConvertUTF8ToJavaString(JNIEnv* env,
                                                     std::string_view str) {
-  // ART allocates new empty strings, so use a singleton when applicable.
-  if (str.empty()) {
-    return jni_zero::g_empty_string.AsLocalRef(env);
-  }
   // JNI's NewStringUTF expects "modified" UTF8 so instead create the string
   // via our own UTF16 conversion utility.
   // Further, Dalvik requires the string passed into NewStringUTF() to come from
@@ -154,10 +150,6 @@ std::u16string ConvertJavaStringToUTF16(JNIEnv* env,
 
 ScopedJavaLocalRef<jstring> ConvertUTF16ToJavaString(JNIEnv* env,
                                                      std::u16string_view str) {
-  // ART allocates new empty strings, so use a singleton when applicable.
-  if (str.empty()) {
-    return jni_zero::g_empty_string.AsLocalRef(env);
-  }
   return ScopedJavaLocalRef<jstring>(env,
                                      ConvertUTF16ToJavaStringImpl(env, str));
 }
