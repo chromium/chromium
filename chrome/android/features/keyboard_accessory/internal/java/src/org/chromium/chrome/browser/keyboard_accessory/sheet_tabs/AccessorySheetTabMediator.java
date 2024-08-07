@@ -119,14 +119,23 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
         if (!accessorySheetData.getWarning().isEmpty()) {
             items.add(new AccessorySheetDataPiece(accessorySheetData.getWarning(), Type.WARNING));
         }
-        for (PlusAddressSection plusAddress : accessorySheetData.getPlusAddressSection()) {
-            items.add(new AccessorySheetDataPiece(plusAddress, Type.PLUS_ADDRESS_SECTION));
+        if (accessorySheetData.getSheetType() == AccessoryTabType.ADDRESSES) {
+            // Plus address section is displayed at the top for addresses tab.
+            for (PlusAddressSection plusAddress : accessorySheetData.getPlusAddressSectionList()) {
+                items.add(new AccessorySheetDataPiece(plusAddress, Type.PLUS_ADDRESS_SECTION));
+            }
         }
         for (PasskeySection passkey : accessorySheetData.getPasskeySectionList()) {
             items.add(new AccessorySheetDataPiece(passkey, Type.PASSKEY_SECTION));
         }
         for (UserInfo userInfo : accessorySheetData.getUserInfoList()) {
             items.add(new AccessorySheetDataPiece(userInfo, mUserInfoType));
+        }
+        if (accessorySheetData.getSheetType() == AccessoryTabType.PASSWORDS) {
+            // Plus address section is displayed at the bottom for passwords tab.
+            for (PlusAddressSection plusAddress : accessorySheetData.getPlusAddressSectionList()) {
+                items.add(new AccessorySheetDataPiece(plusAddress, Type.PLUS_ADDRESS_SECTION));
+            }
         }
         for (IbanInfo ibanInfo : accessorySheetData.getIbanInfoList()) {
             items.add(new AccessorySheetDataPiece(ibanInfo, Type.IBAN_INFO));

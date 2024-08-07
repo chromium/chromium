@@ -219,7 +219,7 @@ public class AccessorySheetRenderTest {
         final KeyboardAccessoryData.AccessorySheetData sheet =
                 new KeyboardAccessoryData.AccessorySheetData(
                         AccessoryTabType.PASSWORDS, "Passwords", "");
-        sheet.getPlusAddressSection()
+        sheet.getPlusAddressSectionList()
                 .add(
                         new KeyboardAccessoryData.PlusAddressSection(
                                 /* origin= */ "google.com",
@@ -400,7 +400,7 @@ public class AccessorySheetRenderTest {
         final KeyboardAccessoryData.AccessorySheetData sheet =
                 new KeyboardAccessoryData.AccessorySheetData(
                         AccessoryTabType.ADDRESSES, "Addresses", "");
-        sheet.getPlusAddressSection()
+        sheet.getPlusAddressSectionList()
                 .add(
                         new KeyboardAccessoryData.PlusAddressSection(
                                 /* origin= */ "google.com",

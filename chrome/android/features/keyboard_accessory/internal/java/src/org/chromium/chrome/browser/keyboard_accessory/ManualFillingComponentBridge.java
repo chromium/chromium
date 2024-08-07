@@ -231,7 +231,7 @@ class ManualFillingComponentBridge {
                         .setCallback(callback)
                         .build();
 
-        accessorySheetData.getPlusAddressSection().add(new PlusAddressSection(origin, field));
+        accessorySheetData.getPlusAddressSectionList().add(new PlusAddressSection(origin, field));
     }
 
     @CalledByNative

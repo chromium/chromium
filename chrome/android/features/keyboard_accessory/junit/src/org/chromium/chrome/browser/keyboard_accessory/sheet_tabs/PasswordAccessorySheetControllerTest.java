@@ -24,6 +24,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetric
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.FOOTER_COMMAND;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.PASSKEY_SECTION;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.PASSWORD_INFO;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.PLUS_ADDRESS_SECTION;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.TITLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.getType;
 
@@ -50,6 +51,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PasskeySection;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressSection;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
@@ -175,12 +177,23 @@ public class PasswordAccessorySheetControllerTest {
                 .get(0)
                 .addField(
                         new UserInfoField("Password", "Password for Name", "", true, field -> {}));
+        testData.getPlusAddressSectionList()
+                .add(
+                        new PlusAddressSection(
+                                "google.com",
+                                new UserInfoField(
+                                        "example@gmail.com",
+                                        "example@gmail.com",
+                                        "",
+                                        false,
+                                        unused -> {})));
         testProvider.notifyObservers(testData);
 
-        assertThat(mSheetDataPieces.size(), is(3));
+        assertThat(mSheetDataPieces.size(), is(4));
         assertThat(getType(mSheetDataPieces.get(0)), is(PASSKEY_SECTION));
         assertThat(getType(mSheetDataPieces.get(1)), is(PASSWORD_INFO));
-        assertThat(getType(mSheetDataPieces.get(2)), is(FOOTER_COMMAND));
+        assertThat(getType(mSheetDataPieces.get(2)), is(PLUS_ADDRESS_SECTION));
+        assertThat(getType(mSheetDataPieces.get(3)), is(FOOTER_COMMAND));
     }
 
     @Test
