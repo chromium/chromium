@@ -62,7 +62,7 @@ class ProductSpecificationsPageActionControllerUnittest : public testing::Test {
     account_checker_->SetLocale("en-us");
     account_checker_->SetSignedIn(true);
     account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
-    ON_CALL(*account_checker_, IsSyncingType)
+    ON_CALL(*account_checker_, IsSyncTypeEnabled)
         .WillByDefault(testing::Return(true));
     shopping_service_->SetAccountChecker(account_checker_.get());
     mock_cluster_manager_ = static_cast<commerce::MockClusterManager*>(

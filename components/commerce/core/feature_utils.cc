@@ -10,6 +10,7 @@
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/user_selectable_type.h"
 
 namespace commerce {
 
@@ -43,8 +44,8 @@ bool IsProductSpecificationsAllowedForEnterprise(PrefService* prefs) {
 }
 
 bool IsSyncingProductSpecifications(AccountChecker* account_checker) {
-  return account_checker &&
-         account_checker->IsSyncingType(syncer::DataType::PRODUCT_COMPARISON);
+  return account_checker && account_checker->IsSyncTypeEnabled(
+                                syncer::UserSelectableType::kProductComparison);
 }
 
 bool CanLoadProductSpecificationsFullPageUi(AccountChecker* account_checker) {

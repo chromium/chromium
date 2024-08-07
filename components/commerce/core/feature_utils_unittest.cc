@@ -55,7 +55,7 @@ TEST_F(FeatureUtilsTest, CanManageProductSpecificationsSets_HasSets_NoFlag) {
   ON_CALL(*specifications_service_, GetAllProductSpecifications())
       .WillByDefault(testing::Return(sets));
 
-  ON_CALL(*account_checker_, IsSyncingType)
+  ON_CALL(*account_checker_, IsSyncTypeEnabled)
       .WillByDefault(testing::Return(true));
 
   ASSERT_FALSE(CanManageProductSpecificationsSets(
@@ -71,7 +71,7 @@ TEST_F(FeatureUtilsTest,
   ON_CALL(*specifications_service_, GetAllProductSpecifications())
       .WillByDefault(testing::Return(sets));
 
-  ON_CALL(*account_checker_, IsSyncingType)
+  ON_CALL(*account_checker_, IsSyncTypeEnabled)
       .WillByDefault(testing::Return(true));
 
   // Turning off MSBB should block fetches for new data from happening.
@@ -88,7 +88,7 @@ TEST_F(FeatureUtilsTest, CanManageProductSpecificationsSets_NoSets_HasFlag) {
   ON_CALL(*specifications_service_, GetAllProductSpecifications())
       .WillByDefault(testing::Return(sets));
 
-  ON_CALL(*account_checker_, IsSyncingType)
+  ON_CALL(*account_checker_, IsSyncTypeEnabled)
       .WillByDefault(testing::Return(true));
 
   ASSERT_TRUE(CanManageProductSpecificationsSets(
@@ -100,7 +100,7 @@ TEST_F(FeatureUtilsTest, CanManageProductSpecificationsSets_NoSets_NoFlag) {
   ON_CALL(*specifications_service_, GetAllProductSpecifications())
       .WillByDefault(testing::Return(sets));
 
-  ON_CALL(*account_checker_, IsSyncingType)
+  ON_CALL(*account_checker_, IsSyncTypeEnabled)
       .WillByDefault(testing::Return(true));
 
   ASSERT_FALSE(CanManageProductSpecificationsSets(
@@ -115,7 +115,7 @@ TEST_F(FeatureUtilsTest, CanFetchProductSpecificationsData_AllRequirements) {
 
   // TODO(356845106): Integrate country and locale checks.
   account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
-  ON_CALL(*account_checker_, IsSyncingType)
+  ON_CALL(*account_checker_, IsSyncTypeEnabled)
       .WillByDefault(testing::Return(true));
 
   ASSERT_TRUE(CanFetchProductSpecificationsData(account_checker_.get()));
@@ -129,7 +129,7 @@ TEST_F(FeatureUtilsTest, CanFetchProductSpecificationsData_NoMSBB) {
 
   // TODO(356845106): Integrate country and locale checks.
   account_checker_->SetAnonymizedUrlDataCollectionEnabled(false);
-  ON_CALL(*account_checker_, IsSyncingType)
+  ON_CALL(*account_checker_, IsSyncTypeEnabled)
       .WillByDefault(testing::Return(true));
 
   ASSERT_FALSE(CanFetchProductSpecificationsData(account_checker_.get()));
@@ -143,7 +143,7 @@ TEST_F(FeatureUtilsTest, CanFetchProductSpecificationsData_NoSync) {
 
   // TODO(356845106): Integrate country and locale checks.
   account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
-  ON_CALL(*account_checker_, IsSyncingType)
+  ON_CALL(*account_checker_, IsSyncTypeEnabled)
       .WillByDefault(testing::Return(false));
 
   ASSERT_FALSE(CanFetchProductSpecificationsData(account_checker_.get()));
