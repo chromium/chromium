@@ -125,6 +125,7 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   views::View* GetOptionForTesting(int option_id);
   views::View* GetSelectFolderMenuItemForTesting();
   std::u16string GetOptionLabelForTesting(int option_id) const;
+  views::View* SetOptionCheckedForTesting(int option_id, bool checked) const;
 
  private:
   friend class CaptureModeSettingsTestApi;

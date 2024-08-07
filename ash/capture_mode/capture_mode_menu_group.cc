@@ -270,6 +270,9 @@ class CaptureModeOption
 
   void SetOptionChecked(bool checked) {
     checked_icon_view_->SetVisible(checked);
+    GetViewAccessibility().SetCheckedState(
+        checked ? ax::mojom::CheckedState::kTrue
+                : ax::mojom::CheckedState::kFalse);
   }
 
   bool IsOptionChecked() { return checked_icon_view_->GetVisible(); }
@@ -287,13 +290,6 @@ class CaptureModeOption
   void OnThemeChanged() override {
     views::Button::OnThemeChanged();
     UpdateState();
-  }
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    Button::GetAccessibleNodeData(node_data);
-    node_data->SetCheckedState(IsOptionChecked()
-                                   ? ax::mojom::CheckedState::kTrue
-                                   : ax::mojom::CheckedState::kFalse);
   }
 
   // CaptureModeSessionFocusCycler::HighlightableView:
@@ -434,6 +430,14 @@ void CaptureModeMenuGroup::AddMenuItem(views::Button::PressedCallback callback,
 bool CaptureModeMenuGroup::IsOptionChecked(int option_id) const {
   auto* option = GetOptionById(option_id);
   return option && option->IsOptionChecked();
+}
+
+views::View* CaptureModeMenuGroup::SetOptionCheckedForTesting(
+    int option_id,
+    bool checked) const {
+  auto* option = GetOptionById(option_id);
+  option->SetOptionChecked(checked);
+  return option;
 }
 
 bool CaptureModeMenuGroup::IsOptionEnabled(int option_id) const {

@@ -6954,6 +6954,35 @@ TEST_F(CaptureModeSettingsTest, DeleteCustomFolderFromDialog) {
   EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
 }
 
+TEST_F(CaptureModeSettingsTest, AccessibleCheckedStateChange) {
+  // Start a new session with a pre-configured custom folder.
+  ui::AXNodeData data;
+  auto* controller = CaptureModeController::Get();
+  const base::FilePath custom_folder(
+      CreateCustomFolderInUserDownloadsPath("test"));
+  controller->SetCustomCaptureFolder(custom_folder);
+  StartImageRegionCapture();
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(GetSettingsButton(), event_generator);
+  WaitForSettingsMenuToBeRefreshed();
+
+  CaptureModeSettingsTestApi test_api;
+  CaptureModeMenuGroup* save_to_menu_group = test_api.GetSaveToMenuGroup();
+
+  auto* checked_custom_folder_view =
+      save_to_menu_group->SetOptionCheckedForTesting(kCustomFolder, true);
+  checked_custom_folder_view->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+
+  data = ui::AXNodeData();
+  auto* unchecked_custom_folder_view =
+      save_to_menu_group->SetOptionCheckedForTesting(kCustomFolder, false);
+  unchecked_custom_folder_view->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+}
+
 TEST_F(CaptureModeSettingsTest, AcceptDefaultDownloadsFolderFromDialog) {
   // Start a new session with a pre-configured custom folder.
   auto* controller = CaptureModeController::Get();
