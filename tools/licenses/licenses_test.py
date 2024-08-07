@@ -173,7 +173,7 @@ class LicensesTest(unittest.TestCase):
         'License Name': 'BSD 3-Clause',
         'Binary which uses library': 'Chromium',
         'License text for library included?': 'Yes',
-        'Source code for library includes the mirrored source?': 'No',
+        'Source code for library includes the mirrored source?': 'Yes',
         'Authorization date': 'N/A'
     }, {
         'Library Name': 'lib1',
@@ -182,7 +182,7 @@ class LicensesTest(unittest.TestCase):
         'License Name': 'MIT',
         'Binary which uses library': 'Chromium',
         'License text for library included?': 'Yes',
-        'Source code for library includes the mirrored source?': 'No',
+        'Source code for library includes the mirrored source?': 'Yes',
         'Authorization date': 'N/A'
     }, {
         'Library Name': 'lib2',
@@ -192,7 +192,7 @@ class LicensesTest(unittest.TestCase):
         'License Name': 'MIT, Apache 2.0',
         'Binary which uses library': 'Chromium',
         'License text for library included?': 'Yes',
-        'Source code for library includes the mirrored source?': 'No',
+        'Source code for library includes the mirrored source?': 'Yes',
         'Authorization date': 'N/A'
     }, {
         'Library Name': 'lib3',
@@ -201,7 +201,7 @@ class LicensesTest(unittest.TestCase):
         'License Name': 'UNKNOWN',
         'Binary which uses library': 'Chromium',
         'License text for library included?': 'Yes',
-        'Source code for library includes the mirrored source?': 'No',
+        'Source code for library includes the mirrored source?': 'Yes',
         'Authorization date': 'N/A'
     }, {
         'Library Name': 'lib3-v1',
@@ -210,7 +210,7 @@ class LicensesTest(unittest.TestCase):
         'License Name': 'Apache 2.0',
         'Binary which uses library': 'Chromium',
         'License text for library included?': 'Yes',
-        'Source code for library includes the mirrored source?': 'No',
+        'Source code for library includes the mirrored source?': 'Yes',
         'Authorization date': 'N/A'
     }, {
         'Library Name': 'lib3',
@@ -219,7 +219,7 @@ class LicensesTest(unittest.TestCase):
         'License Name': 'BSD',
         'Binary which uses library': 'Chromium',
         'License text for library included?': 'Yes',
-        'Source code for library includes the mirrored source?': 'No',
+        'Source code for library includes the mirrored source?': 'Yes',
         'Authorization date': 'N/A'
     }]
 
