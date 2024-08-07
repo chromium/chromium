@@ -793,17 +793,24 @@ int PrerenderHostRegistry::CreateAndStartHost(
     case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
     case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
       pending_prerenders_.push_back(frame_tree_node_id);
-      // Start the initial prerendering navigation of the pending request in
-      // the head of the queue if there's no running prerender and the initiator
-      // is in the foreground.
       if (running_prerender_host_id_ == RenderFrameHost::kNoFrameTreeNodeId) {
-        // No running prerender means that either no other prerenders are in the
-        // pending queue or the initiator continues to be in the background.
-        // Skip starting prerendering in the latter case.
-        if (IsBackground(initiator_web_contents.GetVisibility())) {
+        // Start the initial prerendering navigation of the pending request in
+        // the head of the queue if there's no running prerender and the
+        // initiator is in the foreground. If the initiator page is in the
+        // background, `StartPrerendering` will return a corresponding
+        // frame_tree_node_id if allowed by
+        // `PrerenderCanBeStartedWhenInitiatorIsInBackground`.
+        if (IsBackground(initiator_web_contents.GetVisibility()) &&
+            !initiator_web_contents.GetPrerenderHostRegistry()
+                 ->PrerenderCanBeStartedWhenInitiatorIsInBackground()) {
+          // Cancel if it is prerender-into-new-tab.
+          // TODO(crbug.com/350785853): Add queue
+          // mechanism and update test expectation.
+          if (web_contents() != &initiator_web_contents) {
+            return RenderFrameHost::kNoFrameTreeNodeId;
+          }
           break;
         }
-        CHECK_EQ(pending_prerenders_.size(), 1u);
         int started_frame_tree_node_id =
             StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);
         CHECK(started_frame_tree_node_id == frame_tree_node_id ||
@@ -880,10 +887,16 @@ int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
       // prerendering requests during destruction.
       CHECK(prerender_host->initiator_web_contents());
 
-      // Don't start the pending prerender triggered by the background tab.
-      if (IsBackground(
-              prerender_host->initiator_web_contents()->GetVisibility())) {
-        return RenderFrameHost::kNoFrameTreeNodeId;
+      WebContentsImpl* initiator_web_contents = static_cast<WebContentsImpl*>(
+          prerender_host->initiator_web_contents().get());
+      if (IsBackground(initiator_web_contents->GetVisibility())) {
+        // The pending prerender triggered by the background tab will be started
+        // according to the conditions in
+        // `PrerenderCanBeStartedWhenInitiatorIsInBackground`.
+        if (!initiator_web_contents->GetPrerenderHostRegistry()
+                 ->PrerenderCanBeStartedWhenInitiatorIsInBackground()) {
+          return RenderFrameHost::kNoFrameTreeNodeId;
+        }
       }
 
       // Found the request to run.
@@ -1888,6 +1901,33 @@ PrerenderHostRegistry::GetTimerTaskRunner() {
 void PrerenderHostRegistry::SetTaskRunnerForTesting(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   timer_task_runner_for_testing_ = std::move(task_runner);
+}
+
+bool PrerenderHostRegistry::PrerenderCanBeStartedWhenInitiatorIsInBackground() {
+  // Allow at most 1 prerendering to be started if the initiator page is
+  // still in the background.
+
+  // There is a running prerender, so no extra prerender is allowed before
+  // this one is finished.
+  if (running_prerender_host_id_ != RenderFrameHost::kNoFrameTreeNodeId) {
+    return false;
+  }
+
+  // There are non-pending prerenders, which have finished the initial
+  // navigation and been waiting for activation. Don't start a new prerender.
+  if (prerender_host_by_frame_tree_node_id_.size() -
+          pending_prerenders_.size() >=
+      1) {
+    return false;
+  }
+
+  // One or more than prerenders for new tab finished or are running. Don't
+  // start a new prerender.
+  if (prerender_new_tab_handle_by_frame_tree_node_id_.size() >= 1) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace content

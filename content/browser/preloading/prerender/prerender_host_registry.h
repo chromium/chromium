@@ -255,6 +255,8 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
     return !!http_cache_query_loader_;
   }
 
+  bool PrerenderCanBeStartedWhenInitiatorIsInBackground();
+
  private:
   // WebContentsObserver implementation:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
