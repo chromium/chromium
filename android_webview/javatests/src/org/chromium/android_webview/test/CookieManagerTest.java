@@ -1441,6 +1441,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView", "Privacy"})
     @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
+    @DisabledTest(message = "crbug.com/358114957")
     public void testPartitionedJSCookies() throws Throwable {
         String partitionedCookie = "partitioned-cookie=123";
         String unpartitionedCookie = "regular-cookie=456";
@@ -1537,6 +1538,7 @@ public class CookieManagerTest extends AwParameterizedTest {
     @Feature({"AndroidWebView", "Privacy"})
     @CommandLineFlags.Add("disable-partitioned-cookies")
     @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
+    @DisabledTest(message = "crbug.com/358122228")
     public void testDisabledPartitionedJSCookies() throws Throwable {
         String partitionedCookie = "partitioned-cookie=123";
         String unpartitionedCookie = "regular-cookie=456";
