@@ -141,15 +141,16 @@ void SigninMetricsService::OnPrimaryAccountChanged(
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
       std::optional<signin_metrics::AccessPoint> access_point =
-          event_details.GetAccessPoint();
+          event_details.GetSetPrimaryAccountAccessPoint();
       CHECK(access_point.has_value());
 
       MaybeRecordWebSigninToChromeSigninMetrics(
           event_details.GetCurrentState().primary_account.account_id,
-          *access_point);
+          access_point.value());
 
       RecordSigninInterceptionMetrics(
-          event_details.GetCurrentState().primary_account.gaia, *access_point);
+          event_details.GetCurrentState().primary_account.gaia,
+          access_point.value());
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
       return;

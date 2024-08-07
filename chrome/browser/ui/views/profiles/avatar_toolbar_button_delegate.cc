@@ -1517,7 +1517,7 @@ void AvatarToolbarButtonDelegate::OnPrimaryAccountChanged(
   // Try showing the IPH for signin preference remembered.
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
           signin::PrimaryAccountChangeEvent::Type::kSet ||
-      event_details.GetAccessPoint() !=
+      event_details.GetSetPrimaryAccountAccessPoint() !=
           signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED) {
     return;
   }

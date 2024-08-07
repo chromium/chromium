@@ -389,9 +389,9 @@ void ChromeSigninClient::OnPrimaryAccountChanged(
       case signin::PrimaryAccountChangeEvent::Type::kCleared:
         break;
       case signin::PrimaryAccountChangeEvent::Type::kSet:
-        CHECK(event_details.GetAccessPoint().has_value());
+        CHECK(event_details.GetSetPrimaryAccountAccessPoint().has_value());
         signin_metrics::AccessPoint access_point =
-            event_details.GetAccessPoint().value();
+            event_details.GetSetPrimaryAccountAccessPoint().value();
 
         // Only record metrics when setting the primary account.
         std::optional<size_t> all_bookmarks_count = GetAllBookmarksCount();
