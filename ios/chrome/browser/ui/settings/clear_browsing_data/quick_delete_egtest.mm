@@ -519,7 +519,8 @@ void ExpectClearBrowsingDataNavigationHistograms(
 // tabs should include tabs in all windows, not just the ones where quick delete
 // is triggered from. It also tests that the tabs in both windows get closed
 // when the deletion of tabs is selected.
-- (void)testTabsForDeletionInMultiwindow {
+// TODO(crbug.com/358141981): Test is flaky on iPad.
+- (void)DISABLED_testTabsForDeletionInMultiwindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
