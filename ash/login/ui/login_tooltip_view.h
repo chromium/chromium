@@ -33,6 +33,9 @@ class LoginTooltipView : public LoginBaseBubbleView {
 
   void UpdateIcon();
 
+  // LoginBaseBubbleView:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
  protected:
   views::Label* label() { return label_; }
 

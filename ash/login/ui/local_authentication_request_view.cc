@@ -313,8 +313,6 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
   add_spacer(kSubmitButtonBottomMarginDp);
 
   SetPreferredSize(GetLocalAuthenticationRequestViewSize());
-
-  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
 }
 
 LocalAuthenticationRequestView::~LocalAuthenticationRequestView() = default;
@@ -322,6 +320,7 @@ LocalAuthenticationRequestView::~LocalAuthenticationRequestView() = default;
 void LocalAuthenticationRequestView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   views::DialogDelegateView::GetAccessibleNodeData(node_data);
+  node_data->role = ax::mojom::Role::kDialog;
   node_data->SetNameChecked(description_label_->GetText());
 }
 

@@ -97,12 +97,11 @@ TEST_F(FixedLengthCodeInputTest, ContentsChangedWithDigits) {
   EXPECT_EQ(on_escape_count, 0);
 }
 
-TEST_F(FixedLengthCodeInputTest, AccessibleProperties) {
+TEST_F(FixedLengthCodeInputTest, AccessibilityStateIsProtected) {
   ui::AXNodeData data;
 
   input_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_FALSE(data.HasState(ax::mojom::State::kProtected));
-  EXPECT_EQ(data.role, ax::mojom::Role::kTextField);
 
   data = ui::AXNodeData();
   obscure_input_view_->GetViewAccessibility().GetAccessibleNodeData(&data);

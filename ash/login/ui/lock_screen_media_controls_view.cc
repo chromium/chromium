@@ -235,8 +235,6 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
   DCHECK(callbacks.hide_media_controls);
   DCHECK(callbacks.show_media_controls);
 
-  GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
-
   // Media controls should observe power events and handle the case of being
   // created in suspended state.
   if (base::PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(
@@ -465,6 +463,7 @@ void LockScreenMediaControlsView::Layout(PassKey) {
 
 void LockScreenMediaControlsView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kListItem;
   node_data->AddStringAttribute(
       ax::mojom::StringAttribute::kRoleDescription,
       l10n_util::GetStringUTF8(

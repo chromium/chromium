@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/login/ui/login_remove_account_dialog.h"
-
 #include <memory>
 
 #include "ash/login/ui/login_button.h"
+#include "ash/login/ui/login_remove_account_dialog.h"
 #include "ash/login/ui/login_test_base.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -16,7 +15,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
 #include "ui/views/layout/box_layout.h"
@@ -191,18 +189,6 @@ TEST_F(LoginRemoveAccountDialogTest, ResetStateHidesConfirmData) {
   test_api.remove_user_button()->RequestFocus();
   GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
   EXPECT_TRUE(test_api.remove_user_confirm_data()->GetVisible());
-}
-
-TEST_F(LoginRemoveAccountDialogTest, AccessibleProperties) {
-  LoginUserInfo login_user_info;
-  login_user_info.can_remove = true;
-  auto* dialog = new LoginRemoveAccountDialog(
-      login_user_info, nullptr /*anchor*/, nullptr /*bubble_opener*/,
-      base::DoNothing(), base::DoNothing());
-  ui::AXNodeData data;
-
-  dialog->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.role, ax::mojom::Role::kDialog);
 }
 
 }  // namespace ash

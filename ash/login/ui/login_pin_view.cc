@@ -104,7 +104,6 @@ class BasePinButton : public views::View {
                 const std::u16string& accessible_name,
                 const base::RepeatingClosure& on_press)
       : on_press_(on_press) {
-    GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
     GetViewAccessibility().SetName(accessible_name);
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
     SetPreferredSize(size);
@@ -191,6 +190,7 @@ class BasePinButton : public views::View {
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    node_data->role = ax::mojom::Role::kButton;
     node_data->SetName(GetViewAccessibility().GetCachedName());
   }
 
