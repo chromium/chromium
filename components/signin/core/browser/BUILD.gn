@@ -116,7 +116,7 @@ source_set("unit_tests") {
     "account_reconcilor_unittest.cc",
     "signin_error_controller_unittest.cc",
     "signin_header_helper_unittest.cc",
-    "signin_metrics_service_unittests.cc",
+    "signin_metrics_service_unittest.cc",
     "signin_status_metrics_provider_helpers_unittest.cc",
   ]
 
