@@ -47,9 +47,10 @@ namespace web_package {
 
 namespace {
 
-// The following values have been extracted by hand from the Signed Web Bundle
-// generated with the Go tool from github.com/WICG/webpackage located at
-// components/test/data/web_package/simple_b2_signed.swbn.
+// The following values are representations of the keys used to generate
+// components/test/data/web_package/simple_b2_signed_v2.swbn
+// It has been generated using
+// components/web_package/test_support/signed_web_bundles/web_bundle_signer.h.
 constexpr uint8_t kEd25519PublicKey[] = {
     0xe4, 0xd5, 0x16, 0xc9, 0x85, 0x9a, 0xf8, 0x63, 0x56, 0xa3, 0x51,
     0x66, 0x7d, 0xbd, 0x00, 0x43, 0x61, 0x10, 0x1a, 0x92, 0xd4, 0x02,
@@ -122,7 +123,7 @@ TEST_P(SignedWebBundleSignatureVerifierGoToolTest, VerifySimpleWebBundle) {
       kEd25519Signature, kAttributesCbor));
 
   auto raw_integrity_block = mojom::BundleIntegrityBlock::New();
-  raw_integrity_block->size = 135;
+  raw_integrity_block->size = 343;
   raw_integrity_block->signature_stack = std::move(raw_signature_stack);
 
   ASSERT_OK_AND_ASSIGN(
@@ -155,11 +156,11 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         ::testing::Values(
             std::make_pair(
-                base::FilePath(FILE_PATH_LITERAL("simple_b2_signed.swbn")),
+                base::FilePath(FILE_PATH_LITERAL("simple_b2_signed_v2.swbn")),
                 std::nullopt),
             std::make_pair(
                 base::FilePath(
-                    FILE_PATH_LITERAL("simple_b2_signed_tampered.swbn")),
+                    FILE_PATH_LITERAL("simple_b2_signed_v2_tampered.swbn")),
                 SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
                     "The signature is invalid."))),
         // Test with multiple web bundle chunk sizes.

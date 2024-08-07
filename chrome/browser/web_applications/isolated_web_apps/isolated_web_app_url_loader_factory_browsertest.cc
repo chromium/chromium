@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -39,6 +40,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -131,7 +133,7 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest : public WebAppBrowserTestBase {
   base::FilePath SignAndWriteBundleToDisk(
       const std::vector<uint8_t>& unsigned_bundle) {
     auto signed_bundle = web_package::WebBundleSigner::SignBundle(
-        unsigned_bundle, {test::GetDefaultEd25519KeyPair()});
+        unsigned_bundle, test::GetDefaultEd25519KeyPair());
     return WriteBundleToDisk(signed_bundle);
   }
 
@@ -225,60 +227,49 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest : public WebAppBrowserTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest, LoadsBundle) {
-  std::unique_ptr<web_package::WebBundleBuilder> builder =
-      CreateBuilderWithManifestAndIcon();
-  builder->AddExchange(kUrl,
-                       {{":status", "200"}, {"content-type", "text/html"}},
-                       "<title>Hello Isolated Apps</title>");
-
-  TrustWebBundleId();
-  ASSERT_THAT(CreateBundleAndInstall(std::move(builder)), HasValue());
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddHtml("/", "<title>Hello Isolated Apps</title>")
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+  app->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
+  EXPECT_EQ(url_info.origin().GetURL(), kUrl);
 
   NavigateAndWaitForTitle(kUrl, u"Hello Isolated Apps");
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
                        LoadsSubResourcesFromBundle) {
-  std::unique_ptr<web_package::WebBundleBuilder> builder =
-      CreateBuilderWithManifestAndIcon();
-  builder->AddExchange(kUrl,
-                       {{":status", "200"}, {"content-type", "text/html"}},
-                       "<script src=\"script.js\"></script>");
-  builder->AddExchange(
-      kUrl.Resolve("/script.js"),
-      {{":status", "200"}, {"content-type", "application/javascript"}},
-      "document.title = 'title from js';");
-
-  TrustWebBundleId();
-  ASSERT_THAT(CreateBundleAndInstall(std::move(builder)), HasValue());
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddHtml("/", "<script src=\"script.js\"></script>")
+          .AddJs("/script.js", "document.title = 'title from js';")
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+  app->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
+  EXPECT_EQ(url_info.origin().GetURL(), kUrl);
 
   NavigateAndWaitForTitle(kUrl, u"title from js");
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
                        CanFetchSubresources) {
-  std::unique_ptr<web_package::WebBundleBuilder> builder =
-      CreateBuilderWithManifestAndIcon();
-  builder->AddExchange(kUrl,
-                       {{":status", "200"}, {"content-type", "text/html"}},
-                       R"(
-    <script type="text/javascript" src="/script.js"></script>
-)");
-  builder->AddExchange(
-      kUrl.Resolve("/script.js"),
-      {{":status", "200"}, {"content-type", "text/javascript"}},
-      R"(
-fetch('title.txt')
-  .then(res => res.text())
-  .then(data => { console.log(data); document.title = data; })
-  .catch(err => console.error(err));
-)");
-  builder->AddExchange(kUrl.Resolve("/title.txt"),
-                       {{":status", "200"}, {"content-type", "text/plain"}},
-                       "some data");
-
-  TrustWebBundleId();
-  ASSERT_THAT(CreateBundleAndInstall(std::move(builder)), HasValue());
+  auto app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddHtml(
+              "/",
+              R"(<script type="text/javascript" src="/script.js"></script>)")
+          .AddJs("/script.js", R"(
+            fetch('title.txt')
+              .then(res => res.text())
+              .then(data => { console.log(data); document.title = data; })
+              .catch(err => console.error(err));
+            )")
+          .AddResource("/title.txt", "some data", "text/plain")
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+  app->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
+  EXPECT_EQ(url_info.origin().GetURL(), kUrl);
 
   NavigateAndWaitForTitle(kUrl, u"some data");
 }
@@ -286,14 +277,15 @@ fetch('title.txt')
 // Disabled due to flakiness. http://crbug.com/1381002
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
                        DISABLED_InvalidStatusCode) {
-  std::unique_ptr<web_package::WebBundleBuilder> builder =
-      CreateBuilderWithManifestAndIcon();
-  builder->AddExchange(kUrl,
-                       {{":status", "201"}, {"content-type", "text/html"}},
-                       "<title>Hello Isolated Apps</title>");
-
-  TrustWebBundleId();
-  ASSERT_THAT(CreateBundleAndInstall(std::move(builder)), HasValue());
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddResource("/", "<title>Hello Isolated Apps</title>",
+                       {{.name = "Content-Type", .value = "text/html"}},
+                       net::HttpStatusCode::HTTP_CREATED)
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+  app->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
+  EXPECT_EQ(url_info.origin().GetURL(), kUrl);
 
   NavigateAndWaitForError(
       kUrl,
@@ -304,14 +296,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
 // Disabled due to flakiness. http://crbug.com/1381002
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
                        DISABLED_NonExistingResource) {
-  std::unique_ptr<web_package::WebBundleBuilder> builder =
-      CreateBuilderWithManifestAndIcon();
-  builder->AddExchange(kUrl,
-                       {{":status", "200"}, {"content-type", "text/html"}},
-                       "<title>Hello Isolated Apps</title>");
-
-  TrustWebBundleId();
-  ASSERT_THAT(CreateBundleAndInstall(std::move(builder)), HasValue());
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddHtml("/", "<title>Hello Isolated Apps</title>")
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+  app->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
+  EXPECT_EQ(url_info.origin().GetURL(), kUrl);
 
   NavigateAndWaitForError(
       kUrl.Resolve("/non-existing"),
@@ -325,82 +316,73 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
                        UrlLoaderFactoryCanUseServiceWorker) {
-  std::unique_ptr<web_package::WebBundleBuilder> builder =
-      CreateBuilderWithManifestAndIcon();
-  builder->AddExchange(kUrl,
-                       {{":status", "200"}, {"content-type", "text/html"}},
-                       R"html(
-<html>
-  <head>
-    <script type="text/javascript" src="/script.js"></script>
-  </head>
-</html>
-)html");
-  builder->AddExchange(kUrl.Resolve("/title.txt"),
-                       {{":status", "200"}, {"content-type", "text/plain"}},
-                       "data from web bundle");
-  builder->AddExchange(
-      kUrl.Resolve("/script.js"),
-      {{":status", "200"}, {"content-type", "text/javascript"}},
-      R"js(
-const policy = trustedTypes.createPolicy('default', {
-  createScriptURL(url) {
-    return new URL(url, document.baseURI);
-  },
-});
+  auto app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddHtml("/", R"html(
+                  <html>
+                    <head>
+                      <script type="text/javascript" src="/script.js"></script>
+                    </head>
+                  </html>
+                  )html")
+          .AddResource("/title.txt", "data from web bundle", "text/plain")
+          .AddJs("/script.js", R"js(
+            const policy = trustedTypes.createPolicy('default', {
+              createScriptURL(url) {
+                return new URL(url, document.baseURI);
+              },
+            });
 
-const wait_for_activated = async (registration) => {
-  const worker = registration.active;
-  if (worker.state == 'activated') {
-    return;
-  }
+            const wait_for_activated = async (registration) => {
+              const worker = registration.active;
+              if (worker.state == 'activated') {
+                return;
+              }
 
-  await new Promise(resolve => {
-    worker.addEventListener('statechange', () => {
-      if (worker.state = 'activated') {
-        resolve();
-      }
-    });
-  });
-};
+              await new Promise(resolve => {
+                worker.addEventListener('statechange', () => {
+                  if (worker.state = 'activated') {
+                    resolve();
+                  }
+                });
+              });
+            };
 
-const register_service_worker = async () => {
-  const registration = await navigator.serviceWorker.register(
-    policy.createScriptURL('service_worker.js'), {
-      scope: '/',
-    }
-  );
+            const register_service_worker = async () => {
+              const registration = await navigator.serviceWorker.register(
+                policy.createScriptURL('service_worker.js'), {
+                  scope: '/',
+                }
+              );
 
-  await wait_for_activated(await navigator.serviceWorker.ready);
+              await wait_for_activated(await navigator.serviceWorker.ready);
 
-  return registration;
-};
+              return registration;
+            };
 
-window.addEventListener('load', (async () => {
-  const registration = await register_service_worker();
-  const request = await fetch('title.txt');
-  document.title = await request.text();
-}));
-)js");
-  builder->AddExchange(
-      kUrl.Resolve("/service_worker.js"),
-      {{":status", "200"}, {"content-type", "text/javascript"}},
-      R"js(
-addEventListener('fetch', (event) => {
-  event.respondWith((async () => {
-    response = await fetch(event.request);
-    text = await response.text();
-    return new Response(text + ' data from service worker');
-  })());
-});
+            window.addEventListener('load', (async () => {
+              const registration = await register_service_worker();
+              const request = await fetch('title.txt');
+              document.title = await request.text();
+            }));
+            )js")
+          .AddJs("/service_worker.js", R"js(
+            addEventListener('fetch', (event) => {
+              event.respondWith((async () => {
+                response = await fetch(event.request);
+                text = await response.text();
+                return new Response(text + ' data from service worker');
+              })());
+            });
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil(clients.claim());
-});
-)js");
-
-  TrustWebBundleId();
-  ASSERT_THAT(CreateBundleAndInstall(std::move(builder)), HasValue());
+            self.addEventListener('activate', (event) => {
+              event.waitUntil(clients.claim());
+            });
+            )js")
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+  app->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
+  EXPECT_EQ(url_info.origin().GetURL(), kUrl);
 
   NavigateAndWaitForTitle(GURL(kUrl),
                           u"data from web bundle data from service worker");

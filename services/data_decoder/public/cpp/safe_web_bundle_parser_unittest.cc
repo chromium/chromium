@@ -435,25 +435,29 @@ INSTANTIATE_TEST_SUITE_P(
     /**/,
     SafeSignedWebBundleParserTest,
     testing::Values(
-        std::make_tuple(
-            base::FilePath(FILE_PATH_LITERAL("simple_b2_signed.swbn")),
-            IntegrityBlockInfo({.size_bytes = 135u,
-                                .num_signatures = 1u,
-                                .web_bundle_id = std::nullopt}),
-            /*test_suffix=*/"Ed25519_v1"),
         std::make_tuple(base::FilePath(FILE_PATH_LITERAL(
-                            "simple_b2_signed_ecdsa_p256_sha256.swbn")),
-                        IntegrityBlockInfo({.size_bytes = 151u,
-                                            .num_signatures = 1u,
-                                            .web_bundle_id = std::nullopt}),
-                        /*test_suffix=*/"EcdsaP256SHA256_v1"),
+                            "simple_b2_signed_v2_ed25519.swbn")),
+                        IntegrityBlockInfo(
+                            {.size_bytes = 206u,
+                             .num_signatures = 1u,
+                             .web_bundle_id = "4tkrnsmftl4ggvvdkfth3piainqragus"
+                                              "2qbhf7rlz2a3wo3rh4wqaaic"}),
+                        /*test_suffix=*/"Ed25519_v2"),
+        std::make_tuple(base::FilePath(FILE_PATH_LITERAL(
+                            "simple_b2_signed_v2_ecdsa_p256.swbn")),
+                        IntegrityBlockInfo(
+                            {.size_bytes = 224u,
+                             .num_signatures = 1u,
+                             .web_bundle_id = "amfcf7c4bmpbjbmq4h4yptcobves56hf"
+                                              "dyr7tm3doxqvfmsk5ss6maacai"}),
+                        /*test_suffix=*/"EcdsaP256SHA256_v2"),
         std::make_tuple(
             base::FilePath(FILE_PATH_LITERAL("simple_b2_signed_v2.swbn")),
             IntegrityBlockInfo(
-                {.size_bytes = 344u,
+                {.size_bytes = 343u,
                  .num_signatures = 2u,
-                 .web_bundle_id = "ajzm2oc7gk2s4utk477tmaqyarasnb4oobitgwh2zmqf"
-                                  "zdvdeifvgaacai"}),
+                 .web_bundle_id = "amfcf7c4bmpbjbmq4h4yptcobves56hfdyr7tm3doxqv"
+                                  "fmsk5ss6maacai"}),
             /*test_suffix=*/"Ed25519_and_EcdsaP256SHA256_v2")),
     [](const auto& info) { return std::get<2>(info.param); });
 

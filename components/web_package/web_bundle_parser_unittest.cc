@@ -917,7 +917,9 @@ TEST_F(WebBundleParserTest, SignedBundleUnknownVersion) {
 
 TEST_F(WebBundleParserTest, SignedBundleEmptySignatureStack) {
   std::vector<uint8_t> signed_bundle = WebBundleSigner::SignBundle(
-      WebBundleBuilder().CreateBundle(), /*key_pairs=*/{}, /*ib_attributes=*/{},
+      WebBundleBuilder().CreateBundle(), /*key_pairs=*/{}, /*ib_attributes=*/
+      {{.web_bundle_id =
+            "amoiebz32b7o24tilu257xne2yf3nkblkploanxzm7ebeglseqpfeaacai"}},
       {/*integrity_block_errors=*/{
            WebBundleSigner::IntegrityBlockErrorForTesting::kEmptySignatureList},
        /*signatures_errors=*/{}});
@@ -930,6 +932,25 @@ TEST_F(WebBundleParserTest, SignedBundleEmptySignatureStack) {
                         Field(&mojom::BundleIntegrityBlockParseError::message,
                               Eq("The signature stack must contain at least "
                                  "one signature."))))));
+}
+
+TEST_F(WebBundleParserTest, SignedBundleNoBundleId) {
+  WebBundleBuilder builder;
+  std::vector<uint8_t> unsigned_bundle = builder.CreateBundle();
+  auto bundle_and_keys = SignBundle(
+      unsigned_bundle, {/*integrity_block_errors=*/{
+                            WebBundleSigner::IntegrityBlockErrorForTesting::
+                                kNoSignedWebBundleId},
+                        /*signatures_errors=*/{}});
+  TestDataSource data_source(bundle_and_keys.bundle);
+
+  EXPECT_THAT(ParseSignedBundleIntegrityBlock(&data_source),
+              ErrorIs(Pointee(
+                  AllOf(Field(&mojom::BundleIntegrityBlockParseError::type,
+                              Eq(mojom::BundleParseErrorType::kFormatError)),
+                        Field(&mojom::BundleIntegrityBlockParseError::message,
+                              Eq("`webBundleId` field in integrity block "
+                                 "attributes is missing or malformed."))))));
 }
 
 TEST_F(WebBundleParserTest, SignedBundleWrongSignatureLength) {
