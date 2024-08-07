@@ -10,7 +10,7 @@
 
 JsTestApiConfig::JsTestApiConfig() {
   constexpr const base::FilePath::CharType* kLibraries[] = {
-      FILE_PATH_LITERAL("third_party/node/node_modules/chai/chai.js"),
+      FILE_PATH_LITERAL("chrome/test/data/webui/chromeos/chai_v4.js"),
   };
   constexpr base::FilePath::CharType kWebUIChromeOSTestFolder[] =
       FILE_PATH_LITERAL("webui/chromeos");

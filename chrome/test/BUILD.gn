@@ -2416,7 +2416,7 @@ if (!is_android) {
     if (is_chromeos_ash) {
       # Libraries for tests that inherit from BaseWebUIBrowserTest.
       data += [
-        "//third_party/node/node_modules/chai/chai.js",
+        "//chrome/test/data/webui/chromeos/chai_v4.js",
         "//chrome/test/data/webui/chromeos/test_api.js",
       ]
     }

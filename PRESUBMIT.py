@@ -49,6 +49,8 @@ _EXCLUDED_PATHS = (
     r"tools/perf/page_sets/webrtc_cases.*",
     # Test file compared with generated output.
     r"tools/polymer/tests/html_to_wrapper/.*.html.ts$",
+    # Third-party dependency frozen at a fixed version.
+    r"chrome/test/data/webui/chromeos/chai_v4.js$",
 )
 
 _EXCLUDED_SET_NO_PARENT_PATHS = (

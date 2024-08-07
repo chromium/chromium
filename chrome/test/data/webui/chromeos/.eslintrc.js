@@ -4,6 +4,7 @@
 
 module.exports = {
   // clang-format off
+  'ignorePatterns' : ['chai_v4.js'],
   'overrides': [{
     'files': ['**/*.ts'],
     'parser': '../../../../../third_party/node/node_modules/@typescript-eslint/parser/dist/index.js',
