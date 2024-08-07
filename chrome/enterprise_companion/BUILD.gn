@@ -193,7 +193,9 @@ test("enterprise_companion_integration_tests") {
     "//testing/gtest",
   ]
 
-  if (host_os == "mac") {
+  # The MacOS integration tests require the pkg installer to be built, which is
+  # only possible on MacOS hosts.
+  if (is_mac && host_os == "mac") {
     sources += [ "test/integration_tests_mac.cc" ]
     data_deps = [ "//chrome/enterprise_companion/mac:enterprise_companion_installer_unsigned" ]
   }
@@ -262,7 +264,7 @@ group("all") {
   if (!is_official_build) {
     deps += [ ":enterprise_companion" ]
 
-    if (host_os == "mac") {
+    if (is_mac) {
       deps += [ "//chrome/enterprise_companion/mac" ]
     }
   }

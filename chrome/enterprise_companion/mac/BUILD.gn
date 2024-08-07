@@ -9,7 +9,11 @@ import("//chrome/enterprise_companion/mac/pkgbuild.gni")
 import("//chrome/process_version_rc_template.gni")
 
 group("mac") {
-  deps = [ ":enterprise_companion_installer_unsigned" ]
+  deps = []
+
+  if (host_os == "mac") {
+    deps += [ ":enterprise_companion_installer_unsigned" ]
+  }
 }
 
 tweak_info_plist("enterprise_companion_plist") {
@@ -41,6 +45,7 @@ process_version("postinstall") {
 }
 
 mac_pkg_installer("enterprise_companion_installer_unsigned") {
+  assert(host_os == "mac", "PKG installers can only be built on MacOS hosts.")
   bundle_target = ":enterprise_companion_bundle"
   bundle_identifier = mac_enterprise_companion_bundle_identifier
   install_location = "/Library/Application Support/$enterprise_companion_company_short_name/$enterprise_companion_product_full_name/PkgStaging.app"
