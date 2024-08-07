@@ -104,10 +104,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
+#include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
 #include "chrome/browser/ash/net/client_cert_store_kcer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/kcer/kcer_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -931,7 +931,8 @@ ProfileNetworkContextService::CreateClientCertStore() {
 
   if (ash::features::ShouldUseKcerClientCertStore()) {
     return std::make_unique<ash::ClientCertStoreKcer>(
-        std::move(certificate_provider), kcer::KcerFactory::GetKcer(profile_));
+        std::move(certificate_provider),
+        kcer::KcerFactoryAsh::GetKcer(profile_));
   } else {
     std::string username_hash;
     const user_manager::User* user =
