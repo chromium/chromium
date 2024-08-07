@@ -88,7 +88,6 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
 
       spinnerActive_: {
         type: Boolean,
-        notify: true,
       },
 
       bypassPromptItemId_: {
@@ -495,6 +494,10 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
 
   private onSearchChanged_() {
     this.inSearchMode_ = this.searchService_.isSearching();
+  }
+
+  private onSpinnerActiveChanged_(event: CustomEvent<{value: boolean}>) {
+    this.spinnerActive_ = event.detail.value;
   }
 
   private removeItem_(index: number) {
