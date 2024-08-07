@@ -336,6 +336,9 @@ class HostProcess : public ConfigWatcher::Delegate,
   // Applies the host config, returning true if successful.
   bool ApplyConfig(const base::Value::Dict& config);
 
+  // Update the host owner (and dependent fields).
+  void UpdateHostOwner(const std::string& host_owner);
+
   // Handles policy updates, by calling On*PolicyUpdate methods.
   void OnPolicyUpdate(base::Value::Dict policies);
   void OnPolicyError();
@@ -367,6 +370,7 @@ class HostProcess : public ConfigWatcher::Delegate,
 
   // HeartbeatSender::Delegate implementation.
   void OnFirstHeartbeatSuccessful() override;
+  void OnUpdateHostOwner(const std::string& host_owner) override;
   void OnHostNotFound() override;
   void OnAuthFailed() override;
 
@@ -1070,6 +1074,10 @@ void HostProcess::OnFirstHeartbeatSuccessful() {
 #endif
 }
 
+void HostProcess::OnUpdateHostOwner(const std::string& host_owner) {
+  UpdateHostOwner(host_owner);
+}
+
 void HostProcess::OnHostDeleted() {
   LOG(ERROR) << "Host was deleted from the directory.";
   ShutdownHost(kHostDeletedExitCode);
@@ -1189,9 +1197,10 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
                << kHostOwnerConfigPath << "`";
     return false;
   }
-  host_owner_ = *host_owner;
+  UpdateHostOwner(*host_owner);
 
   // Check if the host owner's email is Google-internal.
+  // TODO: Remove references to this and replace them with more specific checks.
   is_googler_ = IsGoogleEmail(host_owner_);
 
   const std::string* host_secret_hash =
@@ -1212,6 +1221,10 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
   }
 
   return true;
+}
+
+void HostProcess::UpdateHostOwner(const std::string& host_owner) {
+  host_owner_ = host_owner;
 }
 
 void HostProcess::OnPolicyUpdate(base::Value::Dict policies) {

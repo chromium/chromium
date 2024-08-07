@@ -58,6 +58,9 @@ class HeartbeatSender final : public SignalStrategy::Listener {
     // Invoked after the first successful heartbeat.
     virtual void OnFirstHeartbeatSuccessful() = 0;
 
+    // Invoked when the host owner changes.
+    virtual void OnUpdateHostOwner(const std::string& host_owner) = 0;
+
     // Invoked when the host is not found in the directory.
     virtual void OnHostNotFound() = 0;
 
@@ -176,7 +179,7 @@ class HeartbeatSender final : public SignalStrategy::Listener {
 
   bool initial_heartbeat_sent_ = false;
 
-  bool is_googler_ = false;
+  bool set_fqdn_ = false;
 
   // Fields to send and indicate completion of sending host-offline-reason.
   std::string host_offline_reason_;
