@@ -121,6 +121,31 @@ TEST_F(NintendoDataFetcherTest, UnsupportedDeviceIsIgnored) {
   RunUntilIdle();
 }
 
+TEST_F(NintendoDataFetcherTest, IgnoreInvalidNintendoDevice) {
+  // Simulate an invalid, non-Nintendo HID device, which reports an invalid
+  // `max_output_report_size` of 0.
+  auto collection = mojom::HidCollectionInfo::New();
+  collection->usage = mojom::HidUsageAndPage::New(0, 0);
+  auto device_info = base::MakeRefCounted<HidDeviceInfo>(
+      kTestDeviceId, kPhysicalDeviceId, "interface id", /*vendor_id=*/0x057e,
+      /*product_id=*/0x2009, "Switch Pro Controller", /*serial_number=*/"",
+      mojom::HidBusType::kHIDBusTypeUSB, std::move(collection),
+      /*max_input_report_size=*/0, /*max_output_report_size=*/0,
+      /*max_feature_report_size=*/0);
+
+  // Add the device to the mock HID service. The HID service should notify the
+  // data fetcher.
+  mock_hid_service_->AddDevice(device_info);
+  RunUntilIdle();
+
+  // The device should not have been added to the internal device map.
+  EXPECT_TRUE(fetcher_->GetControllersForTesting().empty());
+
+  // Remove the device.
+  mock_hid_service_->RemoveDevice(kTestDeviceId);
+  RunUntilIdle();
+}
+
 TEST_F(NintendoDataFetcherTest, AddAndRemoveSwitchPro) {
   // Simulate a Switch Pro over USB.
   auto collection = mojom::HidCollectionInfo::New();
