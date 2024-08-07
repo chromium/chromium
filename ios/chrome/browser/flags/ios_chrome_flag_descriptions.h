@@ -816,6 +816,11 @@ extern const char kPageContentAnnotationsRemotePageMetadataDescription[];
 extern const char kPageImageServiceSalientImageName[];
 extern const char kPageImageServiceSalientImageDescription[];
 
+// Title and description for the flag to enable the Last Visited feature in Page
+// Info for iOS.
+extern const char kPageInfoLastVisitedIOSName[];
+extern const char kPageInfoLastVisitedIOSDescription[];
+
 // Title and description for the flag to enable page visibility.
 extern const char kPageVisibilityPageContentAnnotationsName[];
 extern const char kPageVisibilityPageContentAnnotationsDescription[];

@@ -5408,6 +5408,16 @@
     "expiry_milestone": 130
   },
   {
+    "name": "ios-page-info-last-visited",
+    "owners": [
+      "fsenra@google.com",
+      "cristianciacu@google.com",
+      "chrome-browser-privacy-team@google.com",
+      "bling-flags@google.com"
+    ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "ios-password-bottom-sheet-autofocus",
     "owners": ["sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com"],
     "expiry_milestone": 140

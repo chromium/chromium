@@ -909,6 +909,10 @@ extern const char kPageImageServiceSalientImageDescription[] =
     "Enables the PageImageService fetching images from the Optimization Guide "
     "Salient Images source.";
 
+const char kPageInfoLastVisitedIOSName[] = "Last Visited in Page Info for iOS";
+const char kPageInfoLastVisitedIOSDescription[] =
+    "Shows the Last Visited row in Page Info for iOS.";
+
 const char kPageContentAnnotationsPersistSalientImageMetadataName[] =
     "Page content annotations - Persist salient image metadata";
 const char kPageContentAnnotationsPersistSalientImageMetadataDescription[] =
