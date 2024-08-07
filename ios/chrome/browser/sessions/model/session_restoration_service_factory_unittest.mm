@@ -24,11 +24,14 @@ namespace {
 // migration status.
 void WriteSessionStoragePref(PrefService* prefs,
                              SessionStorageFormat storage_format,
-                             SessionStorageMigrationStatus migration_status) {
+                             SessionStorageMigrationStatus migration_status,
+                             base::Time last_migration_attempt_time) {
   prefs->SetInteger(kSessionStorageFormatPref,
                     base::to_underlying(storage_format));
   prefs->SetInteger(kSessionStorageMigrationStatusPref,
                     base::to_underlying(migration_status));
+  prefs->SetTime(kSessionStorageMigrationStartedTimePref,
+                 last_migration_attempt_time);
 }
 
 // Checks preferences storing session storage format and session storage
@@ -125,9 +128,9 @@ class SessionRestorationServiceFactoryTest : public PlatformTest {
 // Tests that the factory correctly instantiate a new service when the storage
 // format is "unknown".
 TEST_F(SessionRestorationServiceFactoryTest, CreateInstance_Unknown) {
-  WriteSessionStoragePref(browser_state()->GetPrefs(),
-                          SessionStorageFormat::kUnknown,
-                          SessionStorageMigrationStatus::kSuccess);
+  WriteSessionStoragePref(
+      browser_state()->GetPrefs(), SessionStorageFormat::kUnknown,
+      SessionStorageMigrationStatus::kSuccess, base::Time());
 
   EXPECT_TRUE(
       SessionRestorationServiceFactory::GetForBrowserState(browser_state()));
@@ -136,9 +139,9 @@ TEST_F(SessionRestorationServiceFactoryTest, CreateInstance_Unknown) {
 // Tests that the factory correctly instantiate a new service for off-the-record
 // BrowserState when the storage format is "unknown".
 TEST_F(SessionRestorationServiceFactoryTest, CreateOTRInstance_Unknown) {
-  WriteSessionStoragePref(browser_state()->GetPrefs(),
-                          SessionStorageFormat::kUnknown,
-                          SessionStorageMigrationStatus::kSuccess);
+  WriteSessionStoragePref(
+      browser_state()->GetPrefs(), SessionStorageFormat::kUnknown,
+      SessionStorageMigrationStatus::kSuccess, base::Time());
 
   EXPECT_TRUE(SessionRestorationServiceFactory::GetForBrowserState(
       otr_browser_state()));
@@ -147,9 +150,9 @@ TEST_F(SessionRestorationServiceFactoryTest, CreateOTRInstance_Unknown) {
 // Tests that regular and off-the-record BrowserState uses distinct instances
 // when the storage format is "unknown".
 TEST_F(SessionRestorationServiceFactoryTest, InstancesAreDistinct_Unknown) {
-  WriteSessionStoragePref(browser_state()->GetPrefs(),
-                          SessionStorageFormat::kUnknown,
-                          SessionStorageMigrationStatus::kSuccess);
+  WriteSessionStoragePref(
+      browser_state()->GetPrefs(), SessionStorageFormat::kUnknown,
+      SessionStorageMigrationStatus::kSuccess, base::Time());
 
   EXPECT_NE(
       SessionRestorationServiceFactory::GetForBrowserState(browser_state()),
@@ -160,9 +163,9 @@ TEST_F(SessionRestorationServiceFactoryTest, InstancesAreDistinct_Unknown) {
 // Tests that the factory correctly instantiate a new service when using
 // the "legacy" storage.
 TEST_F(SessionRestorationServiceFactoryTest, CreateInstance_Legacy) {
-  WriteSessionStoragePref(browser_state()->GetPrefs(),
-                          SessionStorageFormat::kLegacy,
-                          SessionStorageMigrationStatus::kSuccess);
+  WriteSessionStoragePref(
+      browser_state()->GetPrefs(), SessionStorageFormat::kLegacy,
+      SessionStorageMigrationStatus::kSuccess, base::Time());
 
   EXPECT_TRUE(
       SessionRestorationServiceFactory::GetForBrowserState(browser_state()));
@@ -171,9 +174,9 @@ TEST_F(SessionRestorationServiceFactoryTest, CreateInstance_Legacy) {
 // Tests that the factory correctly instantiate a new service for off-the-record
 // BrowserState when using the "legacy" storage.
 TEST_F(SessionRestorationServiceFactoryTest, CreateOTRInstance_Legacy) {
-  WriteSessionStoragePref(browser_state()->GetPrefs(),
-                          SessionStorageFormat::kLegacy,
-                          SessionStorageMigrationStatus::kSuccess);
+  WriteSessionStoragePref(
+      browser_state()->GetPrefs(), SessionStorageFormat::kLegacy,
+      SessionStorageMigrationStatus::kSuccess, base::Time());
 
   EXPECT_TRUE(SessionRestorationServiceFactory::GetForBrowserState(
       otr_browser_state()));
@@ -182,9 +185,9 @@ TEST_F(SessionRestorationServiceFactoryTest, CreateOTRInstance_Legacy) {
 // Tests that regular and off-the-record BrowserState uses distinct instances
 // when using the "legacy" storage.
 TEST_F(SessionRestorationServiceFactoryTest, InstancesAreDistinct_Legacy) {
-  WriteSessionStoragePref(browser_state()->GetPrefs(),
-                          SessionStorageFormat::kLegacy,
-                          SessionStorageMigrationStatus::kSuccess);
+  WriteSessionStoragePref(
+      browser_state()->GetPrefs(), SessionStorageFormat::kLegacy,
+      SessionStorageMigrationStatus::kSuccess, base::Time());
 
   EXPECT_NE(
       SessionRestorationServiceFactory::GetForBrowserState(browser_state()),
@@ -195,9 +198,9 @@ TEST_F(SessionRestorationServiceFactoryTest, InstancesAreDistinct_Legacy) {
 // Tests that the factory correctly instantiate a new service when using
 // the "optimized" storage.
 TEST_F(SessionRestorationServiceFactoryTest, CreateInstance_Optimized) {
-  WriteSessionStoragePref(browser_state()->GetPrefs(),
-                          SessionStorageFormat::kOptimized,
-                          SessionStorageMigrationStatus::kSuccess);
+  WriteSessionStoragePref(
+      browser_state()->GetPrefs(), SessionStorageFormat::kOptimized,
+      SessionStorageMigrationStatus::kSuccess, base::Time());
 
   EXPECT_TRUE(
       SessionRestorationServiceFactory::GetForBrowserState(browser_state()));
@@ -206,9 +209,9 @@ TEST_F(SessionRestorationServiceFactoryTest, CreateInstance_Optimized) {
 // Tests that the factory correctly instantiate a new service for off-the-record
 // BrowserState when using the "optimized" storage.
 TEST_F(SessionRestorationServiceFactoryTest, CreateOTRInstance_Optimized) {
-  WriteSessionStoragePref(browser_state()->GetPrefs(),
-                          SessionStorageFormat::kOptimized,
-                          SessionStorageMigrationStatus::kSuccess);
+  WriteSessionStoragePref(
+      browser_state()->GetPrefs(), SessionStorageFormat::kOptimized,
+      SessionStorageMigrationStatus::kSuccess, base::Time());
 
   EXPECT_TRUE(SessionRestorationServiceFactory::GetForBrowserState(
       otr_browser_state()));
@@ -217,9 +220,9 @@ TEST_F(SessionRestorationServiceFactoryTest, CreateOTRInstance_Optimized) {
 // Tests that regular and off-the-record BrowserState uses distinct instances
 // when using the "optimized" storage.
 TEST_F(SessionRestorationServiceFactoryTest, InstancesAreDistinct_Optimized) {
-  WriteSessionStoragePref(browser_state()->GetPrefs(),
-                          SessionStorageFormat::kOptimized,
-                          SessionStorageMigrationStatus::kSuccess);
+  WriteSessionStoragePref(
+      browser_state()->GetPrefs(), SessionStorageFormat::kOptimized,
+      SessionStorageMigrationStatus::kSuccess, base::Time());
 
   EXPECT_NE(
       SessionRestorationServiceFactory::GetForBrowserState(browser_state()),
@@ -235,9 +238,9 @@ TEST_F(SessionRestorationServiceFactoryTest, MigrateSession_ToLegacy_Legacy) {
   const base::FilePath& root = browser_state()->GetStatePath();
   ASSERT_TRUE(CreateLegacySession(root, kSessionIdentifier));
 
-  WriteSessionStoragePref(browser_state()->GetPrefs(),
-                          SessionStorageFormat::kLegacy,
-                          SessionStorageMigrationStatus::kSuccess);
+  WriteSessionStoragePref(
+      browser_state()->GetPrefs(), SessionStorageFormat::kLegacy,
+      SessionStorageMigrationStatus::kSuccess, base::Time());
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -327,7 +330,7 @@ TEST_F(SessionRestorationServiceFactoryTest,
 
   WriteSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kUnknown,
-                          SessionStorageMigrationStatus::kUnkown);
+                          SessionStorageMigrationStatus::kUnkown, base::Time());
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -380,7 +383,7 @@ TEST_F(SessionRestorationServiceFactoryTest,
 
   WriteSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kUnknown,
-                          SessionStorageMigrationStatus::kUnkown);
+                          SessionStorageMigrationStatus::kUnkown, base::Time());
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -429,9 +432,9 @@ TEST_F(SessionRestorationServiceFactoryTest,
   const base::FilePath& root = browser_state()->GetStatePath();
   ASSERT_TRUE(CreateOptimizedSession(root, kSessionIdentifier));
 
-  WriteSessionStoragePref(browser_state()->GetPrefs(),
-                          SessionStorageFormat::kOptimized,
-                          SessionStorageMigrationStatus::kSuccess);
+  WriteSessionStoragePref(
+      browser_state()->GetPrefs(), SessionStorageFormat::kOptimized,
+      SessionStorageMigrationStatus::kSuccess, base::Time());
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -482,9 +485,9 @@ TEST_F(SessionRestorationServiceFactoryTest,
   const base::FilePath path = OptimizedSessionPath(root, kSessionIdentifier);
   ASSERT_TRUE(ios::sessions::WriteFile(path, data));
 
-  WriteSessionStoragePref(browser_state()->GetPrefs(),
-                          SessionStorageFormat::kOptimized,
-                          SessionStorageMigrationStatus::kSuccess);
+  WriteSessionStoragePref(
+      browser_state()->GetPrefs(), SessionStorageFormat::kOptimized,
+      SessionStorageMigrationStatus::kSuccess, base::Time());
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -534,7 +537,8 @@ TEST_F(SessionRestorationServiceFactoryTest,
        MigrateSession_ToLegacy_OptimizedPreviousMigrationFailed) {
   WriteSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kOptimized,
-                          SessionStorageMigrationStatus::kFailure);
+                          SessionStorageMigrationStatus::kFailure,
+                          base::Time::Now() - base::Hours(1));
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -574,7 +578,8 @@ TEST_F(SessionRestorationServiceFactoryTest,
        MigrateSession_ToLegacy_OptimizedPreviousMigrationCrashedInProgress) {
   WriteSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kOptimized,
-                          SessionStorageMigrationStatus::kInProgress);
+                          SessionStorageMigrationStatus::kInProgress,
+                          base::Time::Now() - base::Hours(1));
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -607,6 +612,110 @@ TEST_F(SessionRestorationServiceFactoryTest,
       base::BucketsAre());
 }
 
+// Tests that MigrateSessionStorage(...) retry the migration from optimized
+// to migration if the previous attempt happened a while ago but failed.
+TEST_F(SessionRestorationServiceFactoryTest,
+       MigrateSession_ToLegacy_OptimizedRetryMigrationFailed) {
+  // Create an empty session in optimized format.
+  const base::FilePath& root = browser_state()->GetStatePath();
+  ASSERT_TRUE(CreateOptimizedSession(root, kSessionIdentifier));
+
+  WriteSessionStoragePref(browser_state()->GetPrefs(),
+                          SessionStorageFormat::kOptimized,
+                          SessionStorageMigrationStatus::kFailure,
+                          base::Time::Now() - base::Days(7));
+
+  bool callback_called = false;
+  base::OnceClosure closure =
+      base::BindOnce([](bool* invoked) { *invoked = true; }, &callback_called);
+
+  // Start the migration, and check that it is not immediate, but requires
+  // to spin the main run loop.
+  base::RunLoop run_loop;
+  SessionRestorationServiceFactory::GetInstance()->MigrateSessionStorageFormat(
+      browser_state(), SessionRestorationServiceFactory::kLegacy,
+      std::move(closure).Then(run_loop.QuitClosure()));
+  EXPECT_FALSE(callback_called);
+
+  // The callback should eventually be called, but asynchronously.
+  run_loop.Run();
+  EXPECT_TRUE(callback_called);
+
+  // Check that the session storage is in the legacy format.
+  EXPECT_TRUE(LegacySessionExists(root, kSessionIdentifier));
+
+  // Check that the preferences have been updated.
+  CheckSessionStoragePref(browser_state()->GetPrefs(),
+                          SessionStorageFormat::kLegacy,
+                          SessionStorageMigrationStatus::kSuccess);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kLegacy, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre(
+          base::Bucket(SessionHistogramStorageMigrationStatus::kSuccess, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      testing::Not(base::BucketsAre()));
+}
+
+// Tests that MigrateSessionStorage(...) retry the migration from optimized
+// to migration if the previous attempt happened a while ago but was
+// interrupted.
+TEST_F(SessionRestorationServiceFactoryTest,
+       MigrateSession_ToLegacy_OptimizedRetryMigrationCrashedInProgress) {
+  // Create an empty session in optimized format.
+  const base::FilePath& root = browser_state()->GetStatePath();
+  ASSERT_TRUE(CreateOptimizedSession(root, kSessionIdentifier));
+
+  WriteSessionStoragePref(browser_state()->GetPrefs(),
+                          SessionStorageFormat::kOptimized,
+                          SessionStorageMigrationStatus::kInProgress,
+                          base::Time::Now() - base::Days(7));
+
+  bool callback_called = false;
+  base::OnceClosure closure =
+      base::BindOnce([](bool* invoked) { *invoked = true; }, &callback_called);
+
+  // Start the migration, and check that it is not immediate, but requires
+  // to spin the main run loop.
+  base::RunLoop run_loop;
+  SessionRestorationServiceFactory::GetInstance()->MigrateSessionStorageFormat(
+      browser_state(), SessionRestorationServiceFactory::kLegacy,
+      std::move(closure).Then(run_loop.QuitClosure()));
+  EXPECT_FALSE(callback_called);
+
+  // The callback should eventually be called, but asynchronously.
+  run_loop.Run();
+  EXPECT_TRUE(callback_called);
+
+  // Check that the session storage is in the legacy format.
+  EXPECT_TRUE(LegacySessionExists(root, kSessionIdentifier));
+
+  // Check that the preferences have been updated.
+  CheckSessionStoragePref(browser_state()->GetPrefs(),
+                          SessionStorageFormat::kLegacy,
+                          SessionStorageMigrationStatus::kSuccess);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kLegacy, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre(
+          base::Bucket(SessionHistogramStorageMigrationStatus::kSuccess, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      testing::Not(base::BucketsAre()));
+}
 // Tests that MigrateSessionStorage(...) succeed when asked to migrate to
 // optimized storage when the storage format known to be in optimized and check
 // the operation is synchronous.
@@ -616,9 +725,9 @@ TEST_F(SessionRestorationServiceFactoryTest,
   const base::FilePath& root = browser_state()->GetStatePath();
   ASSERT_TRUE(CreateOptimizedSession(root, kSessionIdentifier));
 
-  WriteSessionStoragePref(browser_state()->GetPrefs(),
-                          SessionStorageFormat::kOptimized,
-                          SessionStorageMigrationStatus::kSuccess);
+  WriteSessionStoragePref(
+      browser_state()->GetPrefs(), SessionStorageFormat::kOptimized,
+      SessionStorageMigrationStatus::kSuccess, base::Time());
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -708,7 +817,7 @@ TEST_F(SessionRestorationServiceFactoryTest,
 
   WriteSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kUnknown,
-                          SessionStorageMigrationStatus::kUnkown);
+                          SessionStorageMigrationStatus::kUnkown, base::Time());
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -761,7 +870,7 @@ TEST_F(SessionRestorationServiceFactoryTest,
 
   WriteSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kUnknown,
-                          SessionStorageMigrationStatus::kUnkown);
+                          SessionStorageMigrationStatus::kUnkown, base::Time());
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -810,9 +919,9 @@ TEST_F(SessionRestorationServiceFactoryTest,
   const base::FilePath& root = browser_state()->GetStatePath();
   ASSERT_TRUE(CreateLegacySession(root, kSessionIdentifier));
 
-  WriteSessionStoragePref(browser_state()->GetPrefs(),
-                          SessionStorageFormat::kLegacy,
-                          SessionStorageMigrationStatus::kSuccess);
+  WriteSessionStoragePref(
+      browser_state()->GetPrefs(), SessionStorageFormat::kLegacy,
+      SessionStorageMigrationStatus::kSuccess, base::Time());
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -863,9 +972,9 @@ TEST_F(SessionRestorationServiceFactoryTest,
   const base::FilePath path = LegacySessionPath(root, kSessionIdentifier);
   ASSERT_TRUE(ios::sessions::WriteFile(path, data));
 
-  WriteSessionStoragePref(browser_state()->GetPrefs(),
-                          SessionStorageFormat::kLegacy,
-                          SessionStorageMigrationStatus::kSuccess);
+  WriteSessionStoragePref(
+      browser_state()->GetPrefs(), SessionStorageFormat::kLegacy,
+      SessionStorageMigrationStatus::kSuccess, base::Time());
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -915,7 +1024,8 @@ TEST_F(SessionRestorationServiceFactoryTest,
        MigrateSession_ToOptimized_LegacyPreviousMigrationFailed) {
   WriteSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kLegacy,
-                          SessionStorageMigrationStatus::kFailure);
+                          SessionStorageMigrationStatus::kFailure,
+                          base::Time::Now() - base::Hours(1));
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -955,7 +1065,8 @@ TEST_F(SessionRestorationServiceFactoryTest,
        MigrateSession_ToOptimized_LegacyPreviousMigrationCrashedInProgress) {
   WriteSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kLegacy,
-                          SessionStorageMigrationStatus::kInProgress);
+                          SessionStorageMigrationStatus::kInProgress,
+                          base::Time::Now() - base::Hours(1));
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -986,4 +1097,109 @@ TEST_F(SessionRestorationServiceFactoryTest,
   EXPECT_THAT(
       histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
       base::BucketsAre());
+}
+
+// Tests that MigrateSessionStorage(...) retry the migration from optimized
+// to migration if the previous attempt happened a while ago but failed.
+TEST_F(SessionRestorationServiceFactoryTest,
+       MigrateSession_ToOptimized_LegacyRetryMigrationFailed) {
+  // Create an empty session in legacy format.
+  const base::FilePath& root = browser_state()->GetStatePath();
+  ASSERT_TRUE(CreateLegacySession(root, kSessionIdentifier));
+
+  WriteSessionStoragePref(browser_state()->GetPrefs(),
+                          SessionStorageFormat::kLegacy,
+                          SessionStorageMigrationStatus::kFailure,
+                          base::Time::Now() - base::Days(7));
+
+  bool callback_called = false;
+  base::OnceClosure closure =
+      base::BindOnce([](bool* invoked) { *invoked = true; }, &callback_called);
+
+  // Start the migration, and check that it is not immediate, but requires
+  // to spin the main run loop.
+  base::RunLoop run_loop;
+  SessionRestorationServiceFactory::GetInstance()->MigrateSessionStorageFormat(
+      browser_state(), SessionRestorationServiceFactory::kOptimized,
+      std::move(closure).Then(run_loop.QuitClosure()));
+  EXPECT_FALSE(callback_called);
+
+  // The callback should eventually be called, but asynchronously.
+  run_loop.Run();
+  EXPECT_TRUE(callback_called);
+
+  // Check that the session storage is in the optimized format.
+  EXPECT_TRUE(OptimizedSessionExists(root, kSessionIdentifier));
+
+  // Check that the preferences have been updated.
+  CheckSessionStoragePref(browser_state()->GetPrefs(),
+                          SessionStorageFormat::kOptimized,
+                          SessionStorageMigrationStatus::kSuccess);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kOptimized, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre(
+          base::Bucket(SessionHistogramStorageMigrationStatus::kSuccess, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      testing::Not(base::BucketsAre()));
+}
+
+// Tests that MigrateSessionStorage(...) succeed when asked to migrate to
+// optimized storage when the storage format is in legacy format, and thus
+// requires conversion.
+TEST_F(SessionRestorationServiceFactoryTest,
+       MigrateSession_ToOptimized_LegacyRetryMigrationCrashedInProgress) {
+  // Create an empty session in legacy format.
+  const base::FilePath& root = browser_state()->GetStatePath();
+  ASSERT_TRUE(CreateLegacySession(root, kSessionIdentifier));
+
+  WriteSessionStoragePref(browser_state()->GetPrefs(),
+                          SessionStorageFormat::kLegacy,
+                          SessionStorageMigrationStatus::kInProgress,
+                          base::Time::Now() - base::Days(7));
+
+  bool callback_called = false;
+  base::OnceClosure closure =
+      base::BindOnce([](bool* invoked) { *invoked = true; }, &callback_called);
+
+  // Start the migration, and check that it is not immediate, but requires
+  // to spin the main run loop.
+  base::RunLoop run_loop;
+  SessionRestorationServiceFactory::GetInstance()->MigrateSessionStorageFormat(
+      browser_state(), SessionRestorationServiceFactory::kOptimized,
+      std::move(closure).Then(run_loop.QuitClosure()));
+  EXPECT_FALSE(callback_called);
+
+  // The callback should eventually be called, but asynchronously.
+  run_loop.Run();
+  EXPECT_TRUE(callback_called);
+
+  // Check that the session storage is in the optimized format.
+  EXPECT_TRUE(OptimizedSessionExists(root, kSessionIdentifier));
+
+  // Check that the preferences have been updated.
+  CheckSessionStoragePref(browser_state()->GetPrefs(),
+                          SessionStorageFormat::kOptimized,
+                          SessionStorageMigrationStatus::kSuccess);
+
+  // Check that the expected metrics have been recorded.
+  EXPECT_THAT(histogram_tester().GetAllSamples(kSessionHistogramStorageFormat),
+              base::BucketsAre(
+                  base::Bucket(SessionHistogramStorageFormat::kOptimized, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationStatus),
+      base::BucketsAre(
+          base::Bucket(SessionHistogramStorageMigrationStatus::kSuccess, 1)));
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kSessionHistogramStorageMigrationTiming),
+      testing::Not(base::BucketsAre()));
 }
