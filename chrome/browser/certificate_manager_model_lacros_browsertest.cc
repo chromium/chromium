@@ -26,8 +26,6 @@
 
 using testing::Mock;
 
-const char16_t kPassword[] = u"12345";
-
 struct FakeObserver : CertificateManagerModel::Observer {
   void CertificatesRefreshed() override {}
 };
@@ -110,72 +108,3 @@ class CertificateManagerModelBrowserTestBase : public InProcessBrowserTest {
       std::make_unique<crypto::ScopedTestNSSDB>();
   std::unique_ptr<CertificateManagerModel> certificate_manager_model_;
 };
-
-class CertificateManagerModelDisablePkcs12DualWrite
-    : public CertificateManagerModelBrowserTestBase {
- public:
-  CertificateManagerModelDisablePkcs12DualWrite() {
-    feature_list_.InitAndDisableFeature(
-        chromeos::features::kEnablePkcs12ToChapsDualWrite);
-  }
-};
-
-class CertificateManagerModelEnablePkcs12DualWrite
-    : public CertificateManagerModelBrowserTestBase {
- public:
-  CertificateManagerModelEnablePkcs12DualWrite() {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kEnablePkcs12ToChapsDualWrite);
-  }
-};
-
-// Test that with dual-write enabled Ash receives a notification about the
-// dual-written cert.
-IN_PROC_BROWSER_TEST_F(CertificateManagerModelEnablePkcs12DualWrite,
-                       DualWriteIsEnabled) {
-  {
-    EXPECT_CALL(mock_cert_db_, OnPkcs12CertDualWritten).Times(0);
-
-    base::test::TestFuture<int> import_waiter;
-    certificate_manager_model_->ImportFromPKCS12(
-        public_slot_->slot(), GetPkcs12(), kPassword,
-        /*is_extractable=*/false, import_waiter.GetCallback());
-    EXPECT_EQ(import_waiter.Get(), net::OK);
-
-    Mock::VerifyAndClearExpectations(&mock_cert_db_);
-  }
-
-  {
-    EXPECT_CALL(mock_cert_db_, OnPkcs12CertDualWritten);
-
-    base::test::TestFuture<int> import_waiter;
-    certificate_manager_model_->ImportFromPKCS12(
-        public_slot_->slot(), GetPkcs12(), kPassword,
-        /*is_extractable=*/true, import_waiter.GetCallback());
-    EXPECT_EQ(import_waiter.Get(), net::OK);
-  }
-}
-
-// Test ImportFromPKCS12 with dual-write disabled. Everything should work as
-// usual, kNssChapsDualWrittenCertsExist preference should not be set for all
-// cases.
-IN_PROC_BROWSER_TEST_F(CertificateManagerModelDisablePkcs12DualWrite,
-                       DualWriteIsDisabled) {
-  EXPECT_CALL(mock_cert_db_, OnPkcs12CertDualWritten).Times(0);
-
-  {
-    base::test::TestFuture<int> import_waiter;
-    certificate_manager_model_->ImportFromPKCS12(
-        public_slot_->slot(), GetPkcs12(), kPassword,
-        /*is_extractable=*/false, import_waiter.GetCallback());
-    EXPECT_EQ(import_waiter.Get(), net::OK);
-  }
-
-  {
-    base::test::TestFuture<int> import_waiter;
-    certificate_manager_model_->ImportFromPKCS12(
-        public_slot_->slot(), GetPkcs12(), kPassword,
-        /*is_extractable=*/true, import_waiter.GetCallback());
-    EXPECT_EQ(import_waiter.Get(), net::OK);
-  }
-}

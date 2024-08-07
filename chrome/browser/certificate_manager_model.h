@@ -139,6 +139,8 @@ class CertificateManagerModel {
     // Valid as long as the underlying Profile is valid. The implementation
     // doesn't check for validity of the WeakPtr because the
     // CertificateManagerModel has the same validity time frame.
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     base::WeakPtr<kcer::Kcer> kcer;
 #endif
 
@@ -283,7 +285,7 @@ class CertificateManagerModel {
                                   CreationCallback callback);
 
   raw_ptr<net::NSSCertDatabase> cert_db_;
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::WeakPtr<kcer::Kcer> kcer_;
 #endif
 
