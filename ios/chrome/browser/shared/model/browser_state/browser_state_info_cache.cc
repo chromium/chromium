@@ -20,7 +20,6 @@
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache_observer.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 namespace {
@@ -64,10 +63,6 @@ void BrowserStateInfoCache::AddBrowserState(std::string_view name,
   cache.Set(name, std::move(info));
   sorted_keys_.insert(base::ranges::upper_bound(sorted_keys_, name),
                       std::string(name));
-
-  for (auto& observer : observer_list_) {
-    observer.OnBrowserStateAdded(name);
-  }
 }
 
 void BrowserStateInfoCache::RemoveBrowserState(std::string_view name) {
@@ -88,24 +83,10 @@ void BrowserStateInfoCache::RemoveBrowserState(std::string_view name) {
 
   cache.Remove(name);
   sorted_keys_.erase(base::ranges::find(sorted_keys_, name));
-
-  for (auto& observer : observer_list_) {
-    observer.OnBrowserStateWasRemoved(name);
-  }
 }
 
 size_t BrowserStateInfoCache::GetNumberOfBrowserStates() const {
   return sorted_keys_.size();
-}
-
-void BrowserStateInfoCache::AddObserver(
-    BrowserStateInfoCacheObserver* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void BrowserStateInfoCache::RemoveObserver(
-    BrowserStateInfoCacheObserver* observer) {
-  observer_list_.RemoveObserver(observer);
 }
 
 size_t BrowserStateInfoCache::GetIndexOfBrowserStateWithName(

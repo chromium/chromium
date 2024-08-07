@@ -4,10 +4,8 @@
 
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 
-#import "base/scoped_observation.h"
 #import "base/time/time.h"
 #import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache_observer.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -52,41 +50,6 @@ constexpr TestAccount kTestAccounts[] = {
     },
 };
 
-// An observer that count how many times its events are invoked.
-class BrowserStateInfoCacheTestObserver final
-    : public BrowserStateInfoCacheObserver {
- public:
-  explicit BrowserStateInfoCacheTestObserver(BrowserStateInfoCache& cache) {
-    scoped_observation_.Observe(&cache);
-  }
-
-  ~BrowserStateInfoCacheTestObserver() override = default;
-
-  size_t browser_state_added_count() const {
-    return browser_state_added_count_;
-  }
-
-  size_t browser_state_removed_count() const {
-    return browser_state_removed_count_;
-  }
-
-  // BrowserStateInfoCacheObserver:
-  void OnBrowserStateAdded(std::string_view name) final {
-    ++browser_state_added_count_;
-  }
-
-  void OnBrowserStateWasRemoved(std::string_view name) final {
-    ++browser_state_removed_count_;
-  }
-
- private:
-  size_t browser_state_added_count_ = 0;
-  size_t browser_state_removed_count_ = 0;
-
-  base::ScopedObservation<BrowserStateInfoCache, BrowserStateInfoCacheObserver>
-      scoped_observation_{this};
-};
-
 }  // namespace
 
 class BrowserStateInfoCacheTest : public PlatformTest {
@@ -101,11 +64,9 @@ class BrowserStateInfoCacheTest : public PlatformTest {
   TestingPrefServiceSimple testing_pref_service_;
 };
 
-// Tests that AddBrowserState(...) inserts data for a BrowserState and
-// notify the observers.
+// Tests that AddBrowserState(...) inserts data for a BrowserState.
 TEST_F(BrowserStateInfoCacheTest, AddBrowserState) {
   BrowserStateInfoCache cache(pref_service());
-  BrowserStateInfoCacheTestObserver observer(cache);
 
   for (const TestAccount& account : kTestAccounts) {
     EXPECT_EQ(cache.GetIndexOfBrowserStateWithName(account.name),
@@ -126,16 +87,9 @@ TEST_F(BrowserStateInfoCacheTest, AddBrowserState) {
   // There is no duplicate, so there should be exactly as many BrowserState
   // known to the cache as there are test accounts.
   EXPECT_EQ(cache.GetNumberOfBrowserStates(), std::size(kTestAccounts));
-
-  // The observer method OnBrowserStateAdded(...) should be called once for
-  // each BrowserState, and the method OnBrowserStateWasRemoved(...) must
-  // not have been called.
-  EXPECT_EQ(observer.browser_state_added_count(), std::size(kTestAccounts));
-  EXPECT_EQ(observer.browser_state_removed_count(), 0u);
 }
 
-// Tests that RemoveBrowserState(...) removes data for a BrowserState and
-// notify the observers.
+// Tests that RemoveBrowserState(...) removes data for a BrowserState.
 TEST_F(BrowserStateInfoCacheTest, RemoveBrowserState) {
   BrowserStateInfoCache cache(pref_service());
 
@@ -147,7 +101,6 @@ TEST_F(BrowserStateInfoCacheTest, RemoveBrowserState) {
   // known to the cache as there are test accounts.
   EXPECT_EQ(cache.GetNumberOfBrowserStates(), std::size(kTestAccounts));
 
-  BrowserStateInfoCacheTestObserver observer(cache);
   for (const TestAccount& account : kTestAccounts) {
     EXPECT_NE(cache.GetIndexOfBrowserStateWithName(account.name),
               std::string::npos);
@@ -157,12 +110,6 @@ TEST_F(BrowserStateInfoCacheTest, RemoveBrowserState) {
     EXPECT_EQ(cache.GetIndexOfBrowserStateWithName(account.name),
               std::string::npos);
   }
-
-  // The observer method OnBrowserStateWasRemoved(...) should be called once
-  // for each BrowserState, and the method OnBrowserStateAdded(...) must
-  // not have been called.
-  EXPECT_EQ(observer.browser_state_added_count(), 0u);
-  EXPECT_EQ(observer.browser_state_removed_count(), std::size(kTestAccounts));
 }
 
 // Test the BrowserStateInfoCache saves the data to PrefService and can
@@ -200,7 +147,6 @@ TEST_F(BrowserStateInfoCacheTest, PrefService) {
 // Tests that the saved browser state can be retrieve with the scene ID.
 TEST_F(BrowserStateInfoCacheTest, MapBrowserStateAndSceneID) {
   BrowserStateInfoCache cache(pref_service());
-  BrowserStateInfoCacheTestObserver observer(cache);
 
   std::string sceneID = "Test Scene ID";
 

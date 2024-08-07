@@ -9,17 +9,17 @@
 #include <string_view>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache_observer.h"
+#include "base/scoped_observation.h"
+#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager_observer.h"
 
-class AllWebStateListObservationRegistrar;
-class ChromeBrowserStateManager;
+class ChromeBrowserState;
 
 namespace segmentation_platform {
 
 // Keeps track of all the OTR WebState(s) across all browsers in an application.
-class OTRWebStateObserver : public BrowserStateInfoCacheObserver {
+class OTRWebStateObserver final : public ChromeBrowserStateManagerObserver {
  public:
   // Observer interface to listen to changes in number of OTR WebState.
   class ObserverClient : public base::CheckedObserver {
@@ -33,14 +33,15 @@ class OTRWebStateObserver : public BrowserStateInfoCacheObserver {
 
   explicit OTRWebStateObserver(
       ChromeBrowserStateManager* browser_state_manager);
-  ~OTRWebStateObserver() override;
+  ~OTRWebStateObserver() final;
 
-  OTRWebStateObserver(OTRWebStateObserver&) = delete;
-  OTRWebStateObserver& operator=(OTRWebStateObserver&) = delete;
-
-  // BrowserStateInfoCacheObserver:
-  void OnBrowserStateAdded(std::string_view name) override;
-  void OnBrowserStateWasRemoved(std::string_view name) override;
+  // ChromeBrowserStateManagerObserver:
+  void OnChromeBrowserStateManagerDestroyed(
+      ChromeBrowserStateManager* manager) final;
+  void OnChromeBrowserStateCreated(ChromeBrowserStateManager* manager,
+                                   ChromeBrowserState* browser_state) override;
+  void OnChromeBrowserStateLoaded(ChromeBrowserStateManager* manager,
+                                  ChromeBrowserState* browser_state) override;
 
   // Add/Remove observers.
   void AddObserver(ObserverClient* client);
@@ -50,28 +51,22 @@ class OTRWebStateObserver : public BrowserStateInfoCacheObserver {
 
  private:
   class WebStateObserver;
+  class BrowserStateData;
 
-  // Stores data about a ChromeBrowserState.
-  struct BrowserStateData {
-    BrowserStateData();
-    ~BrowserStateData();
-
-    // Observer for all WebState(s) in the state.
-    std::unique_ptr<AllWebStateListObservationRegistrar>
-        all_web_state_observation;
-    // Count of number of OTR WebState(s) in the BrowserState.
-    int otr_web_state_count = 0;
-  };
-
-  void OnWebStateListChanged(const std::string& browser_state_name,
-                             int otr_web_state_count);
+  // Invoked when the count of OTR WebState for BrowserState named
+  // `browser_state_name` may have changed.
+  void OnWebStateListChanged(std::string_view browser_state_name,
+                             bool has_otr_web_states);
 
   // Counts OTR WebState(s) across all the BrowserState(s) and returns true if
   // any OTR WebState exists.
   bool HasAnyOtrWebState() const;
 
+  base::ScopedObservation<ChromeBrowserStateManager,
+                          ChromeBrowserStateManagerObserver>
+      browser_state_manager_observation_{this};
+
   base::ObserverList<ObserverClient, true> observer_clients_;
-  raw_ptr<ChromeBrowserStateManager> browser_state_manager_;
   base::flat_map<std::string, std::unique_ptr<BrowserStateData>, std::less<>>
       browser_state_data_;
 
