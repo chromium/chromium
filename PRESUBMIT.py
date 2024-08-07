@@ -913,6 +913,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             _THIRD_PARTY_EXCEPT_BLINK,
             # Various tools which build outside of Chrome.
             r'testing/libfuzzer',
+            r'testing/perf/confidence',
             r'tools/android/io_benchmark/',
             # Fuzzers are allowed to use standard library random number generators
             # since fuzzing speed + reproducibility is important.
@@ -3716,6 +3717,7 @@ def CheckSpamLogging(input_api, output_api):
             r"^services/webnn/tflite/graph_impl_tflite\.cc$",
             r"^services/webnn/coreml/graph_impl_coreml\.mm$",
             r"^storage/browser/file_system/dump_file_system\.cc$",
+            r"^testing/perf/",
             r"^tools/",
             r"^ui/base/resource/data_pack\.cc$",
             r"^ui/aura/bench/bench_main\.cc$",

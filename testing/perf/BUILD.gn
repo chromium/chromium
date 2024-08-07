@@ -21,10 +21,14 @@ source_set("perf") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "luci_test_result_unittest.cc" ]
+  sources = [
+    "confidence/ratio_bootstrap_estimator_test.cc",
+    "luci_test_result_unittest.cc",
+  ]
   deps = [
     ":perf",
     "//base",
     "//testing/gtest",
+    "//testing/perf/confidence:ratio_bootstrap_estimator",
   ]
 }
