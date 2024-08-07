@@ -18,6 +18,7 @@
     </style>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <script src="/mathml/support/layout-comparison.js"></script>
     <script>
       setup({ explicit_done: true });
       window.addEventListener("load", runTests);
@@ -27,7 +28,7 @@
         const epsilon = 1;
 
         for (let math of container.children) {
-          let tagName = el.id;
+          let tagName = math.id;
           let element = math.firstElementChild;
           let reference = element.nextElementSibling;
 
