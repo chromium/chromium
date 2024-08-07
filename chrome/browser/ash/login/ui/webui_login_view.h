@@ -110,7 +110,6 @@ class WebUILoginView : public views::View,
   void Layout(PassKey) override;
   void ChildPreferredSizeChanged(View* child) override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // session_manager::SessionManagerObserver:
   void OnLoginOrLockScreenVisible() override;

@@ -91,6 +91,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -742,6 +743,15 @@ class ShelfViewTest : public AshTestBase {
   std::unique_ptr<HapticsTrackingTestInputController> haptics_tracker_;
   std::unique_ptr<ShelfViewTestAPI> test_api_;
 };
+
+TEST_F(ShelfViewTest, AccessibleProperties) {
+  ui::AXNodeData data;
+
+  shelf_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kToolbar);
+  EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF8(IDS_ASH_SHELF_ACCESSIBLE_NAME));
+}
 
 class LtrRtlShelfViewTest : public ShelfViewTest,
                             public testing::WithParamInterface<bool> {

@@ -174,7 +174,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
 
   bool CanDrop(const OSExchangeData& data) override;

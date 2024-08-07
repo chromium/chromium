@@ -56,6 +56,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
@@ -144,6 +145,10 @@ WebUILoginView::WebUILoginView(base::WeakPtr<LoginDisplayHostWebUI> controller)
     LoginScreenClientImpl::Get()->AddSystemTrayObserver(this);
     observing_system_tray_focus_ = true;
   }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kWindow);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_OOBE_ACCESSIBLE_SCREEN_NAME));
 }
 
 WebUILoginView::~WebUILoginView() {
@@ -382,12 +387,6 @@ void WebUILoginView::OnLoginPromptVisible() {
   }
 
   webui_visible_ = true;
-}
-
-void WebUILoginView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kWindow;
-  node_data->SetName(
-      l10n_util::GetStringUTF16(IDS_OOBE_ACCESSIBLE_SCREEN_NAME));
 }
 
 BEGIN_METADATA(WebUILoginView)

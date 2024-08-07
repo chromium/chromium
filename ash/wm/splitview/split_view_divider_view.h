@@ -59,7 +59,6 @@ class SplitViewDividerView : public views::AccessiblePaneView,
 
   // AccessiblePaneView:
   views::View* GetDefaultFocusableChild() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnFocus() override;
 
   ASH_EXPORT gfx::Rect GetHandlerViewBoundsInScreenForTesting() const;

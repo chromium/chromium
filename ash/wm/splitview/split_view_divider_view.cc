@@ -87,13 +87,14 @@ SplitViewDividerView::SplitViewDividerView(SplitViewDivider* divider)
 
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   set_allow_deactivate_on_esc(true);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_SNAP_GROUP_DIVIDER_A11Y_NAME));
   GetViewAccessibility().SetDescription(l10n_util::GetStringUTF16(
       horizontal ? IDS_ASH_SNAP_GROUP_DIVIDER_A11Y_DESCRIPTION_HORIZONTAL
                  : IDS_ASH_SNAP_GROUP_DIVIDER_A11Y_DESCRIPTION_VERTICAL));
   TooltipTextChanged();
-  GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
 
   views::FocusRing::Install(this);
 }
@@ -263,10 +264,6 @@ bool SplitViewDividerView::DoesIntersectRect(const views::View* target,
 
 views::View* SplitViewDividerView::GetDefaultFocusableChild() {
   return this;
-}
-
-void SplitViewDividerView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kToolbar;
 }
 
 void SplitViewDividerView::OnFocus() {

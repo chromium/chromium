@@ -48,6 +48,8 @@ class ASH_EXPORT ShelfNavigationWidget : public ShelfComponent,
 
     views::BoundsAnimator* GetBoundsAnimator();
 
+    views::View* GetWidgetDelegateView();
+
    private:
     raw_ptr<ShelfNavigationWidget> navigation_widget_;
   };

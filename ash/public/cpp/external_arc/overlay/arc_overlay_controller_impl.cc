@@ -11,6 +11,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -20,15 +21,16 @@ class OverlayNativeViewHost final : public views::NativeViewHost {
   METADATA_HEADER(OverlayNativeViewHost, views::NativeViewHost)
 
  public:
-  OverlayNativeViewHost() { set_suppress_default_focus_handling(); }
+  OverlayNativeViewHost() {
+    set_suppress_default_focus_handling();
+    GetViewAccessibility().SetRole(ax::mojom::Role::kApplication);
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  }
+
   OverlayNativeViewHost(const OverlayNativeViewHost&) = delete;
   OverlayNativeViewHost& operator=(const OverlayNativeViewHost&) = delete;
   ~OverlayNativeViewHost() override = default;
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kApplication;
-    node_data->SetNameExplicitlyEmpty();
-  }
 
   // views::NativeViewHost:
   void OnFocus() override {

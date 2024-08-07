@@ -376,6 +376,8 @@ ShelfView::ShelfView(ShelfModel* model,
   AddChildView(announcement_view_.get());
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF8(IDS_ASH_SHELF_ACCESSIBLE_NAME));
 }
 
 ShelfView::~ShelfView() {
@@ -683,11 +685,6 @@ void ShelfView::OnMouseEvent(ui::MouseEvent* event) {
 views::FocusTraversable* ShelfView::GetPaneFocusTraversable() {
   // ScrollableShelfView should handles the focus traversal.
   return nullptr;
-}
-
-void ShelfView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kToolbar;
-  node_data->SetName(l10n_util::GetStringUTF8(IDS_ASH_SHELF_ACCESSIBLE_NAME));
 }
 
 View* ShelfView::GetTooltipHandlerForPoint(const gfx::Point& point) {

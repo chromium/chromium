@@ -49,6 +49,10 @@ class ASH_PUBLIC_EXPORT ArcOverlayControllerImpl : public ArcOverlayController,
   // views::ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override;
 
+  views::NativeViewHost* overlay_container_for_test() {
+    return overlay_container_;
+  }
+
  private:
   void UpdateHostBounds();
   void ConvertPointFromWindow(aura::Window* window, gfx::Point* point);
