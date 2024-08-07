@@ -205,6 +205,21 @@ void SafeBrowsingTabHelper::PolicyDecider::HandlePolicyDecision(
   }
 }
 
+void SafeBrowsingTabHelper::PolicyDecider::HandlePolicyDecision(
+    const SafeBrowsingQueryManager::QueryData& query_data,
+    const web::WebStatePolicyDecider::PolicyDecision& policy_decision) {
+  DCHECK(!IsQueryStale(query_data.query));
+
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+    OnMainFrameUrlSyncQueryDecided(query_data.query.url, policy_decision,
+                                   query_data.performed_check);
+  } else {
+    OnMainFrameUrlQueryDecided(query_data.query.url, policy_decision,
+                               query_data.performed_check);
+  }
+}
+
 void SafeBrowsingTabHelper::PolicyDecider::UpdateForMainFrameDocumentChange() {
   // TODO(crbug.com/41491791): Update state for async checks on document change.
 }
@@ -490,18 +505,15 @@ void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingQueryFinished(
 }
 
 void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingSyncQueryFinished(
-    SafeBrowsingQueryManager* manager,
-    const SafeBrowsingQueryManager::Query& query,
-    const SafeBrowsingQueryManager::Result& result,
-    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
-  if (policy_decider_->IsQueryStale(query)) {
+    const SafeBrowsingQueryManager::QueryData& query_data) {
+  if (policy_decider_->IsQueryStale(query_data.query)) {
     return;
   }
 
   web::WebStatePolicyDecider::PolicyDecision policy_decision =
-      policy_decider_->CreatePolicyDecision(query, result, web_state_);
-  policy_decider_->HandlePolicyDecision(query, policy_decision,
-                                        performed_check);
+      policy_decider_->CreatePolicyDecision(query_data.query, query_data.result,
+                                            web_state_);
+  policy_decider_->HandlePolicyDecision(query_data, policy_decision);
 }
 
 void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingQueryManagerDestroyed(

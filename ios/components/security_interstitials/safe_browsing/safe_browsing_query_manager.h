@@ -69,6 +69,31 @@ class SafeBrowsingQueryManager
     std::optional<security_interstitials::UnsafeResource> resource;
   };
 
+  // Struct used to store objects that need to be used in query observer calls.
+  struct QueryData {
+    explicit QueryData(SafeBrowsingQueryManager* manager,
+                       const SafeBrowsingQueryManager::Query& query,
+                       const SafeBrowsingQueryManager::Result& result,
+                       safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
+                           performed_check,
+                       bool is_async_check);
+
+    QueryData(const QueryData&);
+    QueryData& operator=(const QueryData&);
+    ~QueryData();
+
+    // The SafeBrowsingQueryManager related to the query.
+    SafeBrowsingQueryManager* manager;
+    // The underlying query.
+    const SafeBrowsingQueryManager::Query& query;
+    // The result of the query.
+    const SafeBrowsingQueryManager::Result& result;
+    // The PerformedCheck for a query.
+    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check;
+    // Whether the result comes from a sync or async check.
+    bool is_async_check;
+  };
+
   // Observer class for the query manager.
   class Observer : public base::CheckedObserver {
    public:
@@ -84,11 +109,7 @@ class SafeBrowsingQueryManager
     // Notifies observers that a sync `query` check has completed with `result`
     // after performing a check of type `performed_check`.
     virtual void SafeBrowsingSyncQueryFinished(
-        SafeBrowsingQueryManager* manager,
-        const SafeBrowsingQueryManager::Query& query,
-        const SafeBrowsingQueryManager::Result& result,
-        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
-            performed_check) {}
+        const SafeBrowsingQueryManager::QueryData& query_data) {}
 
     virtual void SafeBrowsingAsyncQueryFinished(
         SafeBrowsingQueryManager* manager,

@@ -76,6 +76,12 @@ class SafeBrowsingTabHelper
         safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
             performed_check);
 
+    // Uses `query_data` to store the `policy_decision` for a non-stale query
+    // with a specific PerformedCheck.
+    void HandlePolicyDecision(
+        const SafeBrowsingQueryManager::QueryData& query_data,
+        const web::WebStatePolicyDecider::PolicyDecision& policy_decision);
+
     // Notifies the policy decider that a new main frame document has been
     // loaded.
     void UpdateForMainFrameDocumentChange();
@@ -176,11 +182,7 @@ class SafeBrowsingTabHelper
         safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
             performed_check) override;
     void SafeBrowsingSyncQueryFinished(
-        SafeBrowsingQueryManager* manager,
-        const SafeBrowsingQueryManager::Query& query,
-        const SafeBrowsingQueryManager::Result& result,
-        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
-            performed_check) override;
+        const SafeBrowsingQueryManager::QueryData& query_data) override;
     void SafeBrowsingQueryManagerDestroyed(
         SafeBrowsingQueryManager* manager) override;
 

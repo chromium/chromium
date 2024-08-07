@@ -36,12 +36,8 @@ class MockQueryManagerObserver : public SafeBrowsingQueryManager::Observer {
                     safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
                         performed_check));
 
-  MOCK_METHOD4(SafeBrowsingSyncQueryFinished,
-               void(SafeBrowsingQueryManager*,
-                    const SafeBrowsingQueryManager::Query&,
-                    const SafeBrowsingQueryManager::Result&,
-                    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
-                        performed_check));
+  MOCK_METHOD1(SafeBrowsingSyncQueryFinished,
+               void(const SafeBrowsingQueryManager::QueryData&));
 
   MOCK_METHOD4(SafeBrowsingAsyncQueryFinished,
                void(SafeBrowsingQueryManager*,
@@ -93,11 +89,12 @@ ACTION_P4(VerifySyncQueryFinished,
           expected_http_method,
           is_url_sync_safe,
           is_url_async_safe) {
-  const SafeBrowsingQueryManager::Query& query = arg1;
+  const SafeBrowsingQueryManager::QueryData& query_data = arg0;
+  const SafeBrowsingQueryManager::Query& query = query_data.query;
   EXPECT_EQ(expected_url, query.url);
   EXPECT_EQ(expected_http_method, query.http_method);
 
-  const SafeBrowsingQueryManager::Result& result = arg2;
+  const SafeBrowsingQueryManager::Result& result = query_data.result;
   if (is_url_sync_safe && is_url_async_safe) {
     EXPECT_FALSE(result.resource);
     EXPECT_TRUE(result.proceed);
@@ -184,7 +181,7 @@ TEST_F(SafeBrowsingQueryManagerTest, SafeURLQueryWithAsyncRealTimeCheck) {
   scoped_feature_list_.InitAndEnableFeature(
       safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
   GURL url("http://chromium.test");
-  EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(manager(), _, _, _))
+  EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
       .WillOnce(VerifySyncQueryFinished(url, http_method_,
                                         /*is_url_sync_safe=*/true,
                                         /*is_url_async_safe=*/true));
@@ -226,7 +223,7 @@ TEST_F(SafeBrowsingQueryManagerTest, SyncAndAsyncUnsafeURLQuery) {
   scoped_feature_list_.InitAndEnableFeature(
       safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
-  EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(manager(), _, _, _))
+  EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
       .WillOnce(VerifySyncQueryFinished(url, http_method_,
                                         /*is_url_sync_safe=*/false,
                                         /*is_url_async_safe=*/false));
@@ -255,7 +252,7 @@ TEST_F(SafeBrowsingQueryManagerTest, AsyncUnsafeURLQuery) {
   scoped_feature_list_.InitAndEnableFeature(
       safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
   GURL url("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost);
-  EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(manager(), _, _, _))
+  EXPECT_CALL(observer_, SafeBrowsingSyncQueryFinished(_))
       .WillOnce(VerifySyncQueryFinished(url, http_method_,
                                         /*is_url_sync_safe=*/true,
                                         /*is_url_async_safe=*/false));
