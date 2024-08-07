@@ -264,7 +264,7 @@ TEST_F(LocationBarModelImplTest, GetPageClassification) {
   // Verify the page classification for prefetch and non-prefetch requests.
   EXPECT_EQ(OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
             model.GetPageClassification(OmniboxFocusSource::OMNIBOX));
-  EXPECT_EQ(OmniboxEventProto::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS,
+  EXPECT_EQ(OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
             model.GetPageClassification(OmniboxFocusSource::FAKEBOX));
   EXPECT_EQ(OmniboxEventProto::NTP_ZPS_PREFETCH,
             model.GetPageClassification(OmniboxFocusSource::OMNIBOX,
