@@ -407,6 +407,10 @@ void TestWebContents::SetLastActiveTimeTicks(
   last_active_time_ticks_ = last_active_time_ticks;
 }
 
+void TestWebContents::SetLastActiveTime(base::Time last_active_time) {
+  last_active_time_ = last_active_time;
+}
+
 void TestWebContents::TestIncrementUsbActiveFrameCount() {
   IncrementUsbActiveFrameCount();
 }

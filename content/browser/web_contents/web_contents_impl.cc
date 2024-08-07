@@ -1192,6 +1192,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       dialog_manager_(nullptr),
       is_showing_before_unload_dialog_(false),
       last_active_time_ticks_(base::TimeTicks::Now()),
+      last_active_time_(base::Time::Now()),
       closed_by_user_gesture_(false),
       minimum_zoom_percent_(
           static_cast<int>(blink::kMinimumBrowserZoomFactor * 100)),
@@ -2748,6 +2749,10 @@ base::TimeTicks WebContentsImpl::GetLastActiveTimeTicks() {
   return last_active_time_ticks_;
 }
 
+base::Time WebContentsImpl::GetLastActiveTime() {
+  return last_active_time_;
+}
+
 void WebContentsImpl::WasShown() {
   TRACE_EVENT0("content", "WebContentsImpl::WasShown");
   UpdateVisibilityAndNotifyPageAndView(Visibility::VISIBLE);
@@ -3595,6 +3600,9 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
   if (!params.last_active_time_ticks.is_null()) {
     last_active_time_ticks_ = params.last_active_time_ticks;
   }
+  if (!params.last_active_time.is_null()) {
+    last_active_time_ = params.last_active_time;
+  }
 
   scoped_refptr<SiteInstanceImpl> site_instance =
       static_cast<SiteInstanceImpl*>(params.site_instance.get());
@@ -4350,6 +4358,7 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
   if (new_visibility == Visibility::VISIBLE) {
     if (is_activity) {
       last_active_time_ticks_ = base::TimeTicks::Now();
+      last_active_time_ = base::Time::Now();
     }
     SetVisibilityAndNotifyObservers(new_visibility);
   }

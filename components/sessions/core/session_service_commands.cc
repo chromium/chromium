@@ -1090,16 +1090,11 @@ std::unique_ptr<SessionCommand> CreateSetActiveWindowCommand(
 
 std::unique_ptr<SessionCommand> CreateLastActiveTimeCommand(
     SessionID tab_id,
-    base::TimeTicks last_active_time) {
+    base::Time last_active_time) {
   LastActiveTimePayload payload = {0};
   payload.tab_id = tab_id.id();
-
-  // Convert the last_active_time from TimeTicks to Time.
-  base::TimeDelta delta_since_epoch =
-      last_active_time - base::TimeTicks::UnixEpoch();
-  base::Time converted_time = base::Time::UnixEpoch() + delta_since_epoch;
   payload.last_active_time =
-      converted_time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+      last_active_time.ToDeltaSinceWindowsEpoch().InMicroseconds();
 
   return CreateSessionCommandForPayload(kCommandLastActiveTime, payload);
 }

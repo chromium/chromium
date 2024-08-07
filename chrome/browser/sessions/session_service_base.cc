@@ -312,7 +312,7 @@ void SessionServiceBase::SetTabExtensionAppID(
 
 void SessionServiceBase::SetLastActiveTime(SessionID window_id,
                                            SessionID tab_id,
-                                           base::TimeTicks last_active_time) {
+                                           base::Time last_active_time) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
 
@@ -532,7 +532,7 @@ void SessionServiceBase::BuildCommandsForTab(
 
   command_storage_manager()->AppendRebuildCommand(
       sessions::CreateLastActiveTimeCommand(session_id,
-                                            tab->GetLastActiveTimeTicks()));
+                                            tab->GetLastActiveTime()));
 
   // TODO(stahon@microsoft.com) This might be movable to SessionService
   // when Chrome OS uses AppSessionService for app restores.

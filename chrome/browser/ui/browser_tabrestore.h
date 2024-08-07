@@ -52,6 +52,7 @@ content::WebContents* AddRestoredTab(
     bool select,
     bool pin,
     base::TimeTicks last_active_time_ticks,
+    base::Time last_active_time,
     content::SessionStorageNamespace* storage_namespace,
     const sessions::SerializedUserAgentOverride& user_agent_override,
     const std::map<std::string, std::string>& extra_data,

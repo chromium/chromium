@@ -2034,15 +2034,16 @@ TEST_F(WebContentsImplTest, NonActivityCaptureDoesNotCountAsActivity) {
   // This is done because the clock in these tests is frozen,
   // so recording the value and comparing against it later is meaningless.
   contents()->last_active_time_ticks_ = base::TimeTicks();
+  contents()->last_active_time_ = base::Time();
 
   auto handle = contents()->IncrementCapturerCount(
       gfx::Size(), /*stay_hidden=*/true,
       /*stay_awake=*/true, /*is_activity=*/false);
   ASSERT_TRUE(rwhv->is_showing());
 
-  // The value returned by GetLastActiveTimeTicks() should not have been
-  // updated.
+  // The value returned by GetLastActiveTime() should not have been updated.
   EXPECT_TRUE(contents()->GetLastActiveTimeTicks().is_null());
+  EXPECT_TRUE(contents()->GetLastActiveTime().is_null());
 }
 
 // Tests that GetLastActiveTimeTicks starts with a real, non-zero time and
@@ -2060,10 +2061,13 @@ TEST_F(WebContentsImplTest, GetLastActiveTimeTicks) {
   // so recording the value and comparing against it later is meaningless.
   contents()->last_active_time_ticks_ = base::TimeTicks();
   ASSERT_TRUE(contents()->GetLastActiveTimeTicks().is_null());
+  contents()->last_active_time_ = base::Time();
+  ASSERT_TRUE(contents()->GetLastActiveTime().is_null());
 
   // Simulate activating the WebContents. The active time should update.
   contents()->WasShown();
   EXPECT_FALSE(contents()->GetLastActiveTimeTicks().is_null());
+  EXPECT_FALSE(contents()->GetLastActiveTime().is_null());
 }
 
 class ContentsZoomChangedDelegate : public WebContentsDelegate {

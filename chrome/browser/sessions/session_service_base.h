@@ -129,7 +129,7 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   // Sets the last active time of the tab.
   void SetLastActiveTime(SessionID window_id,
                          SessionID tab_id,
-                         base::TimeTicks last_active_time);
+                         base::Time last_active_time);
 
   // Fetches the contents of the last session, notifying the callback when
   // done. If the callback is supplied an empty vector of SessionWindows

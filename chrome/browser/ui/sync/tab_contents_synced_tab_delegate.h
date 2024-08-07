@@ -67,9 +67,10 @@ class TabContentsSyncedTabDelegate : public sync_sessions::SyncedTabDelegate {
 
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
 
-  // Cached value of last_active_time, sometimes returned instead of the
-  // last_active_time from the WebContents.
-  std::optional<base::Time> cached_last_active_time_;
+  // Cached value of last_active_time_ticks and last_active_time, sometimes
+  // returned instead of the last_active_time from the WebContents.
+  std::optional<std::pair<base::TimeTicks, base::Time>>
+      cached_last_active_time_;
 };
 
 #endif  // CHROME_BROWSER_UI_SYNC_TAB_CONTENTS_SYNCED_TAB_DELEGATE_H_
