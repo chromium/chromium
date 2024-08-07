@@ -3274,8 +3274,8 @@ chromium-metrics-reviews@google.com.
   <owner>wanghaifan@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
-    The source of app launches in demo mode, either the shelf, the app list, or
-    the demo mode app.
+    The source of app launches in demo mode, either the shelf, the app list, the
+    demo mode app, or the search result in the app list.
   </summary>
 </histogram>
 

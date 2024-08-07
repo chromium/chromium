@@ -81,9 +81,13 @@ class DemoSession : public session_manager::SessionManagerObserver,
     // Logged when apps are launched from the demo mode app.
     kDemoModeApp = 3,
 
+    // Logged when apps are launched from the search result in the App List in
+    // Demo Mode.
+    kAppListQuery = 4,
+
     // Add future entries above this comment, in sync with enums.xml.
     // Update kMaxValue to the last value.
-    kMaxValue = kDemoModeApp
+    kMaxValue = kAppListQuery
   };
 
   // The list of countries that Demo Mode supports, ie the countries we have
@@ -149,7 +153,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Records the launch of an app in Demo mode from the specified source.
-  static void RecordAppLaunchSourceIfInDemoMode(AppLaunchSource source);
+  static void RecordAppLaunchSource(AppLaunchSource source);
 
   // Ensures that the load of demo session resources is requested.
   // `load_callback` will be run once the resource load finishes.

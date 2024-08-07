@@ -519,9 +519,8 @@ void DemoSession::EnsureResourcesLoaded(base::OnceClosure load_callback) {
 }
 
 // static
-void DemoSession::RecordAppLaunchSourceIfInDemoMode(AppLaunchSource source) {
-  if (IsDeviceInDemoMode())
-    UMA_HISTOGRAM_ENUMERATION("DemoMode.AppLaunchSource", source);
+void DemoSession::RecordAppLaunchSource(AppLaunchSource source) {
+  UMA_HISTOGRAM_ENUMERATION("DemoMode.AppLaunchSource", source);
 }
 
 void DemoSession::SetExtensionsExternalLoader(

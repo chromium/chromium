@@ -379,6 +379,9 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
       LaunchParamsForApp(ash::SystemWebAppType::DEMO_MODE);
   params.override_url = GURL(ash::kChromeUntrustedUIDemoModeAppURL +
                              file_path.BaseName().MaybeAsASCII());
+  // The launch source of the demo mode app should be kFromChromeInternal in
+  // demo session.
+  params.launch_source = apps::LaunchSource::kFromChromeInternal;
 
   // Assert that AppServiceProxy::Launch is called by using a mock AppPublisher.
   // We mock here instead of testing that an actual app is launched due to this
@@ -399,10 +402,7 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
 
   // Since we launched the fake app using the LaunchApp Mojo API, we expect to
   // see one count in AppLaunchSource::kDemoModeApp, but no others.
-  histogram_tester_.ExpectBucketCount("DemoMode.AppLaunchSource",
-                                      DemoSession::AppLaunchSource::kShelf, 0);
-  histogram_tester_.ExpectBucketCount(
-      "DemoMode.AppLaunchSource", DemoSession::AppLaunchSource::kAppList, 0);
+  histogram_tester_.ExpectTotalCount("DemoMode.AppLaunchSource", 1);
   histogram_tester_.ExpectBucketCount(
       "DemoMode.AppLaunchSource", DemoSession::AppLaunchSource::kDemoModeApp,
       1);

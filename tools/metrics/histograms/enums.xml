@@ -4126,6 +4126,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
     to SWA.
   </int>
   <int value="3" label="Demo Mode App"/>
+  <int value="4" label="App List Search Result"/>
 </enum>
 
 <enum name="DemoModeHighlightsAction">

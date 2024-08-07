@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/app_list/apps_collections_util.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/reorder/app_list_reorder_util.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/app_icon_color_cache.h"
 #include "extensions/browser/app_sorting.h"
@@ -85,9 +84,6 @@ std::unique_ptr<ash::AppListItemMetadata> ChromeAppListItem::CloneMetadata()
 }
 
 void ChromeAppListItem::PerformActivate(int event_flags) {
-  // Handle recording app launch source from the AppList in Demo Mode.
-  ash::DemoSession::RecordAppLaunchSourceIfInDemoMode(
-      ash::DemoSession::AppLaunchSource::kAppList);
   Activate(event_flags);
   MaybeDismissAppList();
 }
