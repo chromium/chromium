@@ -7367,7 +7367,7 @@
                 {
                     "name": "EnabledWithPrewarmAndDelay",
                     "params": {
-                        "create_speculative_rfh_delay_ms": "500",
+                        "create_speculative_rfh_delay_ms": "1",
                         "warmup_spare_process": "true"
                     },
                     "enable_features": [
