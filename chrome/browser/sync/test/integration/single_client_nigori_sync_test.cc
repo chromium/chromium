@@ -75,6 +75,8 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/sync/sync_error_notifier.h"
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
 #include "chrome/browser/ui/webui/trusted_vault/trusted_vault_dialog_delegate.h"
@@ -1325,6 +1327,8 @@ class SingleClientNigoriWithWebApiAndDialogUIParamTest
           trusted_vault::kChromeOSTrustedVaultUseWebUIDialog);
       feature_list_.InitWithFeatures(enabled_features,
                                      /*disabled_features=*/{});
+      scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+          ash::switches::kEnableLacrosForTesting);
     } else {
       feature_list_.InitAndDisableFeature(
           trusted_vault::kChromeOSTrustedVaultUseWebUIDialog);
@@ -1359,6 +1363,7 @@ class SingleClientNigoriWithWebApiAndDialogUIParamTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
   std::unique_ptr<views::NamedWidgetShownWaiter>
       trusted_vault_widget_shown_waiter_;
 };

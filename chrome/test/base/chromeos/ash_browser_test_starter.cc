@@ -180,6 +180,7 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
 
   scoped_feature_list_.InitWithFeatures(
       ash::standalone_browser::GetFeatureRefs(), {});
+  command_line->AppendSwitch(ash::switches::kEnableLacrosForTesting);
   command_line->AppendSwitch(ash::switches::kAshEnableWaylandServer);
   command_line->AppendSwitch(
       views::switches::kDisableInputEventActivationProtectionForTesting);

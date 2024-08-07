@@ -42,6 +42,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #endif
 
@@ -644,6 +646,8 @@ class PolicyHandlerAshTest : public ::testing::Test {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(),
         /*disabled_features=*/{});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   void DisableLacros() {
@@ -656,6 +660,7 @@ class PolicyHandlerAshTest : public ::testing::Test {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       scoped_user_manager_;
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 class ExtensionInstallBlockListPolicyHandlerAshTest
