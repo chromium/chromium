@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_button/cr_button.js';
+
+import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './translate_button.html.js';
 
 export interface TranslateButtonElement {
   $: {
-    translateButtonLabel: HTMLSpanElement,
+    languagePicker: HTMLDivElement,
+    translateButton: CrButtonElement,
   };
 }
 

@@ -167,6 +167,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, CubicBezier) {
   RunOverlayTest("lens/overlay/cubic_bezier_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, TranslateButton) {
+  RunOverlayTest("lens/overlay/translate_button_test.js", "mocha.run()");
+}
+
 using LensSidePanelTest = LensOverlayTest;
 IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SidePanelResultsFrame) {
   RunOverlayTest("lens/side_panel/results_frame_test.js", "mocha.run()");

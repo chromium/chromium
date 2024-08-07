@@ -1,11 +1,92 @@
 <style>
+  #arrowRightIcon {
+    background-color: rgba(255, 237, 235, 0.6);
+    display: block;
+    height: 18px;
+    margin-block-start: 16px;
+    margin-block-end: 16px;
+    mask-image: url('arrow_right.svg');
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: 100%;
+    width: 18px;
+  }
+
+  .button {
+    border: none;
+    padding: 0;
+  }
+
+  .button-label {
+    color: var(--color-overlay-button-label);
+    font-family: inherit;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  .language-picker-button {
+    background-color: rgba(var(--color-scrim-rgb), 1);
+    border-radius: 100px;
+    height: 34px;
+    gap: 0px;
+    margin-block-start: 8px;
+    margin-block-end: 8px;
+    min-width: 77px;
+  }
+
+  .language-picker-label {
+    margin-block-start: 6px;
+    margin-block-end: 6px;
+    margin-inline-end: 16px;
+  }
+
+  #languagePicker {
+    background-color: rgba(var(--color-scrim-rgb), 0.6);
+    border-radius: 100px;
+    display: flex;
+    gap: 4px;
+    height: 50px;
+    margin-inline-start: 9px;
+    pointer-events: all;
+  }
+
+  :host(:not([is-translate-mode-enabled])) #languagePicker {
+    display: none;
+  }
+
+  #sourceLanguageButton {
+    gap: 6px;
+    margin-inline-start: 8px;
+  }
+
+  #starsIcon {
+    background-color: var(--color-overlay-icon);
+    display: block;
+    height: 16px;
+    margin-block-start: 9px;
+    margin-block-end: 9px;
+    margin-inline-start: 12px;
+    mask-image: url('stars.svg');
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: 100%;
+    width: 16px;
+  }
+
+  #targetLanguageButton {
+    margin-inline-end: 8px;
+  }
+
+  #targetLanguageLabel {
+    margin-inline-start: 16px;
+  }
+
   #translateButton {
     background-color: rgba(var(--color-scrim-rgb), 0.6);
-    border: none;
     border-radius: 48px;
     height: 50px;
     min-width: 50px;
-    padding: 0;
     pointer-events: all;
     width: 117px;
   }
@@ -17,11 +98,6 @@
   }
 
   #translateButtonLabel {
-    color: white;
-    font-size: 13px;
-    font-family: Roboto, Arial, sans-serif;
-    font-style: normal;
-    font-weight: 500;
     line-height: 50px;
   }
 
@@ -29,8 +105,13 @@
     display: none;
   }
 
+  #translateContainer {
+    display: flex;
+    flex-direction: row;
+  }
+
   #translateIcon {
-    background-color: white;
+    background-color: var(--color-overlay-icon);
     display: block;
     height: 24px;
     mask-image: url('translate.svg');
@@ -40,7 +121,23 @@
     width: 24px;
   }
 </style>
-<cr-button id="translateButton" on-click="onTranslateButtonClick">
-  <span id="translateIcon" slot="prefix-icon"></span>
-  <span id="translateButtonLabel">$i18n{translate}</span>
-</cr-button>
+<div id="translateContainer">
+  <cr-button id="translateButton" class="button"
+    on-click="onTranslateButtonClick">
+    <span id="translateIcon" slot="prefix-icon"></span>
+    <span id="translateButtonLabel" class="button-label">$i18n{translate}</span>
+  </cr-button>
+  <div id="languagePicker">
+    <cr-button id="sourceLanguageButton" class="button language-picker-button">
+      <span id="starsIcon" slot="prefix-icon"></span>
+      <span class="button-label language-picker-label">$i18n{autoDetect}</span>
+    </cr-button>
+    <span id="arrowRightIcon"></span>
+    <cr-button id="targetLanguageButton" class="button language-picker-button">
+      <!-- TODO(b/354275185): Replace this placeholder text with target language
+            from the browser. -->
+      <span id="targetLanguageLabel"
+        class="button-label language-picker-label">English</span>
+    </cr-button>
+  </div>
+</div>
