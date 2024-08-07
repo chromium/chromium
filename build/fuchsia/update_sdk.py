@@ -54,13 +54,6 @@ def GetSDKOverrideGCSPath() -> Optional[str]:
   return None
 
 
-def _GetTarballPath(gcs_tarball_prefix: str) -> str:
-  """Get the full path to the sdk tarball on GCS"""
-  platform = get_host_os()
-  arch = _GetHostArch()
-  return f'{gcs_tarball_prefix}/{platform}-{arch}/core.tar.gz'
-
-
 def _GetCurrentVersionFromManifest() -> Optional[str]:
   if not os.path.exists(_VERSION_FILE):
     return None
@@ -76,6 +69,10 @@ def main():
                       '-v',
                       action='store_true',
                       help='Enable debug-level logging.')
+  parser.add_argument(
+      '--file',
+      help='Specifies the sdk tar.gz file name without .tar.gz suffix',
+      default='core')
   args = parser.parse_args()
 
   logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
@@ -126,8 +123,9 @@ def main():
       return 3
   else:
     logging.info('Downloading SDK from GCS...')
-    DownloadAndUnpackFromCloudStorage(_GetTarballPath(gcs_tarball_prefix),
-                                      SDK_ROOT)
+    DownloadAndUnpackFromCloudStorage(
+        f'{gcs_tarball_prefix}/{get_host_os()}-{_GetHostArch()}/'
+        f'{args.file}.tar.gz', SDK_ROOT)
 
   # Build rules (e.g. fidl_library()) depend on updates to the top-level
   # manifest to spot when to rebuild for an SDK update. Ensure that ninja
