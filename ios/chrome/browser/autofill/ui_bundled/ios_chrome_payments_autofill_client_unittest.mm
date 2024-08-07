@@ -119,9 +119,17 @@ class TestChromeAutofillClient : public ChromeAutofillClientIOS {
     return save_card_delegate_.get();
   }
 
+  void RemoveAutofillSaveCardInfoBar() override {
+    removed_save_card_infobar_ = true;
+  }
+
+  bool DidRemoveSaveCardInfobar() { return removed_save_card_infobar_; }
+
  private:
   std::unique_ptr<MockAutofillSaveCardInfoBarDelegateMobile>
       save_card_delegate_;
+
+  bool removed_save_card_infobar_ = false;
 };
 
 class IOSChromePaymentsAutofillClientTest : public PlatformTest {
@@ -191,6 +199,7 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
               CreditCardUploadCompleted(/*card_saved=*/true, _));
   payments_client()->CreditCardUploadCompleted(
       /*card_saved=*/true, /*on_confirmation_closed_callback=*/std::nullopt);
+  EXPECT_FALSE(client()->DidRemoveSaveCardInfobar());
 }
 
 TEST_F(IOSChromePaymentsAutofillClientTest,
@@ -199,9 +208,11 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
       autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
   EXPECT_CALL(*(client()->GetAutofillSaveCardInfoBarDelegateIOS()),
               CreditCardUploadCompleted(/*card_saved=*/false, _));
+
   payments_client()->CreditCardUploadCompleted(
       /*card_saved=*/false, /*on_confirmation_closed_callback=*/std::nullopt);
 
+  EXPECT_TRUE(client()->DidRemoveSaveCardInfobar());
   const std::optional<AutofillErrorDialogContext>& error_context =
       [autofill_commands() autofillErrorDialogContext];
   EXPECT_TRUE(error_context.has_value());

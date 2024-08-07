@@ -454,4 +454,14 @@ ChromeAutofillClientIOS::GetAutofillSaveCardInfoBarDelegateIOS() {
              : nullptr;
 }
 
+void ChromeAutofillClientIOS::RemoveAutofillSaveCardInfoBar() {
+  const auto save_card_infobar = base::ranges::find(
+      infobar_manager_->infobars(),
+      infobars::InfoBarDelegate::AUTOFILL_CC_INFOBAR_DELEGATE_MOBILE,
+      &infobars::InfoBar::GetIdentifier);
+  if (save_card_infobar != infobar_manager_->infobars().cend()) {
+    infobar_manager_->RemoveInfoBar(*save_card_infobar);
+  }
+}
+
 }  // namespace autofill

@@ -33,6 +33,7 @@
 #import "third_party/ocmock/gtest_support.h"
 
 using ::testing::A;
+using ::testing::Return;
 
 namespace {
 // Time duration to wait before auto-closing modal in save card success
@@ -282,6 +283,24 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
   EXPECT_TRUE(consumer.currentCardSaveAccepted);
   EXPECT_FALSE(consumer.supportsEditing);
   EXPECT_TRUE(consumer.inLoadingState);
+}
+
+// Tests that when credit card upload is completed and modal is reshown
+// SaveCardInfobarModalOverlayMediator shows modal in confirmation state when
+// loading and confirmation flag is enabled.
+TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
+       ReShowConfirmationStateForUploadCompletedInfobar) {
+  ON_CALL(*delegate_, IsCreditCardUploadComplete)
+      .WillByDefault(testing::Return(true));
+  FakeSaveCardModalConsumer* consumer =
+      [[FakeSaveCardModalConsumer alloc] init];
+  infobar_->set_accepted(true);
+  mediator_.consumer = consumer;
+
+  EXPECT_TRUE(consumer.currentCardSaveAccepted);
+  EXPECT_FALSE(consumer.supportsEditing);
+  EXPECT_FALSE(consumer.inLoadingState);
+  EXPECT_TRUE(consumer.showingSuccess);
 }
 
 // Tests that calling creditCardUploadCompleted with `card_saved` as true shows

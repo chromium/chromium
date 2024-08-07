@@ -78,6 +78,7 @@ void AutofillSaveCardInfoBarDelegateIOS::CreditCardUploadCompleted(
     std::optional<autofill::payments::PaymentsAutofillClient::
                       OnConfirmationClosedCallback>
         on_confirmation_closed_callback) {
+  credit_card_upload_completed_ = true;
   on_confirmation_closed_callback_ = std::move(on_confirmation_closed_callback);
   if (credit_card_upload_completion_callback_) {
     std::move(credit_card_upload_completion_callback_).Run(card_saved);
@@ -90,6 +91,10 @@ void AutofillSaveCardInfoBarDelegateIOS::OnConfirmationClosed() {
       on_confirmation_closed_callback_) {
     (*std::exchange(on_confirmation_closed_callback_, std::nullopt)).Run();
   }
+}
+
+bool AutofillSaveCardInfoBarDelegateIOS::IsCreditCardUploadComplete() {
+  return credit_card_upload_completed_;
 }
 
 }  // namespace autofill

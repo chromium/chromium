@@ -49,6 +49,7 @@ class MockAutofillSaveCardInfoBarDelegateMobile
                    on_confirmation_closed_callback),
               (override));
   MOCK_METHOD(void, OnConfirmationClosed, (), (override));
+  MOCK_METHOD(bool, IsCreditCardUploadComplete, (), (override));
 };
 
 class MockAutofillSaveCardInfoBarDelegateMobileFactory {

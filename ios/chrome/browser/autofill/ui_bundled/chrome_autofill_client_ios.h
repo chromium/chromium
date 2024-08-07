@@ -145,6 +145,9 @@ class ChromeAutofillClientIOS : public AutofillClient {
   virtual AutofillSaveCardInfoBarDelegateIOS*
   GetAutofillSaveCardInfoBarDelegateIOS();
 
+  // Removes the save card infobar if it exists.
+  virtual void RemoveAutofillSaveCardInfoBar();
+
  private:
   // Returns the account email of the signed-in user, or nullopt if there is no
   // signed-in user.

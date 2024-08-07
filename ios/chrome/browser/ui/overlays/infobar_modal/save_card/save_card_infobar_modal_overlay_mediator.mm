@@ -121,13 +121,14 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
   };
   [_consumer setupModalViewControllerWithPrefs:prefs];
 
-  if (base::FeatureList::IsEnabled(
+  if (delegate->is_for_upload() && infobar->accepted() &&
+      base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-    // If modal has been accepted and card is being uploaded, show modal in
-    // loading state with an activity indicator.
-    if (delegate->is_for_upload() && infobar->accepted()) {
-      [self.consumer showProgressWithUploadCompleted:NO];
-    }
+    // If the infobar has been accepted and the card upload is in progress or
+    // complete, display the appropriate progress state (loading or
+    // confirmation).
+    [self.consumer
+        showProgressWithUploadCompleted:delegate->IsCreditCardUploadComplete()];
   }
 }
 
