@@ -7524,16 +7524,20 @@ New install
       <message name="IDS_PICKER_LIST_ITEM_OPEN_ACTION_ACCESSIBLE_NAME" translateable="false" desc="Text for screenreaders describing a button to open a search result.">
         Open <ph name="ITEM_TEXT">$1<ex>The Chromium Projects</ex></ph>
       </message>
-      <message name="IDS_PICKER_NO_RESULTS_FOR_BROWSING_HISTORY_LABEL_TEXT" translateable="false" desc="Label in the Picker results page indicating there's no suggested results for browsing history.">
+      <message name="IDS_PICKER_NO_RESULTS_FOR_BROWSING_HISTORY_LABEL_TEXT"
+        desc="This string appears on a page that shows suggested results from the user's browsing history. The string is shown below an illustration banner. It indicates that there are no suggested browsing history results available.">
         No browsing history
       </message>
-      <message name="IDS_PICKER_NO_RESULTS_FOR_CLIPBOARD_LABEL_TEXT" translateable="false" desc="Label in the Picker results page indicating there's no suggested results for clipboard.">
+      <message name="IDS_PICKER_NO_RESULTS_FOR_CLIPBOARD_LABEL_TEXT"
+        desc="This string appears on a page that shows suggested results from the user's clipboard. The string is shown below an illustration banner. It indicates that there the user's clipboard is empty. 'Clipboard' is a product name and the correct localized version of the product name should be used.">
         No items copied to your Clipboard
       </message>
-      <message name="IDS_PICKER_NO_RESULTS_FOR_DRIVE_FILES_LABEL_TEXT" translateable="false" desc="Label in the Picker results page indicating there's no suggested results for Drive files.">
+      <message name="IDS_PICKER_NO_RESULTS_FOR_DRIVE_FILES_LABEL_TEXT"
+        desc="This string appears on a page that shows suggested results from the user's Google Drive. The string is shown below an illustration banner. It indicates that there are no suggested Google Drive results available. 'Google Drive' is a product name and the correct localized version of the product name should be used.">
         No Google Drive files
       </message>
-      <message name="IDS_PICKER_NO_RESULTS_FOR_LOCAL_FILES_LABEL_TEXT" translateable="false" desc="Label in the Picker results page indicating there's no suggested results for local files.">
+      <message name="IDS_PICKER_NO_RESULTS_FOR_LOCAL_FILES_LABEL_TEXT"
+        desc="This string appears on a page that shows suggested image results from the user's Files app. The string is shown below an illustration banner. It indicates that there are no suggested images results available. 'Files' is the ChromeOS Files app product name and the correct localized version of the product name should be used.">
         No images in Files
       </message>
       <message name="IDS_PICKER_CAPS_LOCK_ON_TEXT" translateable="false" desc="Tooltip text for the bubble shown when Caps Lock is enabled.">
