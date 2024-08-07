@@ -14,7 +14,7 @@ class FormData;
 }  // namespace autofill
 
 namespace optimization_guide::proto {
-class ComposeAXTreeUpdate;
+class AXTreeUpdate;
 }  // namespace optimization_guide::proto
 
 namespace user_annotations {
@@ -30,7 +30,7 @@ class UserAnnotationsService : public KeyedService {
 
   // Adds a form submission to the user annotations.
   void AddFormSubmission(
-      const optimization_guide::proto::ComposeAXTreeUpdate& ax_tree_update,
+      const optimization_guide::proto::AXTreeUpdate& ax_tree_update,
       const autofill::FormData& form_data);
 
   // Retrieves all entries from the database. Invokes `callback` when complete.

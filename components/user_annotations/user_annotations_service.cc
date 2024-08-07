@@ -15,7 +15,7 @@ UserAnnotationsService::UserAnnotationsService() = default;
 UserAnnotationsService::~UserAnnotationsService() = default;
 
 void UserAnnotationsService::AddFormSubmission(
-    const optimization_guide::proto::ComposeAXTreeUpdate& ax_tree_update,
+    const optimization_guide::proto::AXTreeUpdate& ax_tree_update,
     const autofill::FormData& form_data) {
   for (const auto& field : form_data.fields()) {
     entries_.push_back(

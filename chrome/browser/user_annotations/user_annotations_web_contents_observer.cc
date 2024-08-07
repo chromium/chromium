@@ -88,7 +88,7 @@ void UserAnnotationsWebContentsObserver::OnFormSubmitted(
 void UserAnnotationsWebContentsObserver::OnAXTreeSnapshotted(
     const autofill::FormData& form,
     const ui::AXTreeUpdate& snapshot) {
-  optimization_guide::proto::ComposeAXTreeUpdate ax_tree;
+  optimization_guide::proto::AXTreeUpdate ax_tree;
 #if BUILDFLAG(ENABLE_COMPOSE)
   ComposeAXSerializationUtils::PopulateAXTreeUpdate(snapshot, &ax_tree);
 #endif

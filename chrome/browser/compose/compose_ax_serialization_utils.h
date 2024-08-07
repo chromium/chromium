@@ -10,7 +10,7 @@ struct AXTreeUpdate;
 }  // namespace ui
 
 namespace optimization_guide::proto {
-class ComposeAXTreeUpdate;
+class AXTreeUpdate;
 }  // namespace optimization_guide::proto
 
 // A class containing utils helpful for AX tree serialization.
@@ -19,7 +19,7 @@ class ComposeAXSerializationUtils {
   // Populate the AXTreeUpdate proto structure from the ui structure.
   static void PopulateAXTreeUpdate(
       const ui::AXTreeUpdate& source,
-      optimization_guide::proto::ComposeAXTreeUpdate* destination);
+      optimization_guide::proto::AXTreeUpdate* destination);
 };
 
 #endif  // CHROME_BROWSER_COMPOSE_COMPOSE_AX_SERIALIZATION_UTILS_H_
