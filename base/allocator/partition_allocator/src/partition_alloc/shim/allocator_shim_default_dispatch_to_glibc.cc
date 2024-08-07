@@ -36,7 +36,7 @@ constexpr size_t kMaxAllowedSize = std::numeric_limits<int>::max() - (1 << 12);
 void* GlibcMalloc(const AllocatorDispatch*, size_t size, void* context) {
   // Cannot force glibc's malloc() to crash when a large size is requested, do
   // it in the shim instead.
-  if (PA_UNLIKELY(size >= kMaxAllowedSize)) {
+  if (size >= kMaxAllowedSize) [[unlikely]] {
     partition_alloc::TerminateBecauseOutOfMemory(size);
   }
 
@@ -46,7 +46,7 @@ void* GlibcMalloc(const AllocatorDispatch*, size_t size, void* context) {
 void* GlibcUncheckedMalloc(const AllocatorDispatch*,
                            size_t size,
                            void* context) {
-  if (PA_UNLIKELY(size >= kMaxAllowedSize)) {
+  if (size >= kMaxAllowedSize) [[unlikely]] {
     return nullptr;
   }
 
@@ -58,7 +58,7 @@ void* GlibcCalloc(const AllocatorDispatch*,
                   size_t size,
                   void* context) {
   const auto total = partition_alloc::internal::base::CheckMul(n, size);
-  if (PA_UNLIKELY(!total.IsValid() || total.ValueOrDie() >= kMaxAllowedSize)) {
+  if (!total.IsValid() || total.ValueOrDie() >= kMaxAllowedSize) [[unlikely]] {
     partition_alloc::TerminateBecauseOutOfMemory(size * n);
   }
 
@@ -69,7 +69,7 @@ void* GlibcRealloc(const AllocatorDispatch*,
                    void* address,
                    size_t size,
                    void* context) {
-  if (PA_UNLIKELY(size >= kMaxAllowedSize)) {
+  if (size >= kMaxAllowedSize) [[unlikely]] {
     partition_alloc::TerminateBecauseOutOfMemory(size);
   }
 
@@ -80,7 +80,7 @@ void* GlibcUncheckedRealloc(const AllocatorDispatch*,
                             void* address,
                             size_t size,
                             void* context) {
-  if (PA_UNLIKELY(size >= kMaxAllowedSize)) {
+  if (size >= kMaxAllowedSize) [[unlikely]] {
     return nullptr;
   }
 
@@ -91,7 +91,7 @@ void* GlibcMemalign(const AllocatorDispatch*,
                     size_t alignment,
                     size_t size,
                     void* context) {
-  if (PA_UNLIKELY(size >= kMaxAllowedSize)) {
+  if (size >= kMaxAllowedSize) [[unlikely]] {
     partition_alloc::TerminateBecauseOutOfMemory(size);
   }
 

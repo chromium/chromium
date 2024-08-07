@@ -456,7 +456,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(raw_ptr&& p) noexcept {
     // Unlike the the copy version of this operator, this branch is necessary
     // for correctness.
-    if (PA_LIKELY(this != &p)) {
+    if (this != &p) [[likely]] {
       Impl::ReleaseWrappedPtr(wrapped_ptr_);
       Impl::Untrace(tracer_.owner_id());
       wrapped_ptr_ = p.wrapped_ptr_;

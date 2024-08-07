@@ -108,7 +108,7 @@ PA_ALWAYS_INLINE void* PartitionTlsGet(PartitionTlsKey key) {
   DWORD saved_error = GetLastError();
   void* ret = TlsGetValue(key);
   // Only non-zero errors need to be restored.
-  if (PA_UNLIKELY(saved_error)) {
+  if (saved_error) [[unlikely]] {
     SetLastError(saved_error);
   }
   return ret;

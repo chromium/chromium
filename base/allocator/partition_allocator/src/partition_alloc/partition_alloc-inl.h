@@ -79,7 +79,7 @@ PA_ALWAYS_INLINE void DebugMemset(void* ptr, int value, size_t size) {
 #if !PA_BUILDFLAG(DCHECKS_ARE_ON)
 PA_ALWAYS_INLINE bool RandomPeriod() {
   static thread_local uint8_t counter = 0;
-  if (PA_UNLIKELY(counter == 0)) {
+  if (counter == 0) [[unlikely]] {
     // It's OK to truncate this value.
     counter = static_cast<uint8_t>(RandomValue());
   }

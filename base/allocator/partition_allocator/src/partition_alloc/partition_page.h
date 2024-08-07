@@ -173,7 +173,7 @@ struct SlotSpanMetadata {
     // - Exact size needed to satisfy allocation (incl. extras), for large
     //   buckets and direct-mapped allocations (see also the comment in
     //   CanStoreRawSize() for more info).
-    if (PA_LIKELY(!CanStoreRawSize())) {
+    if (!CanStoreRawSize()) [[likely]] {
       return bucket->slot_size;
     }
     return GetRawSize();
@@ -617,7 +617,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::Free(
   --num_allocated_slots;
   // If the span is marked full, or became empty, take the slow path to update
   // internal state.
-  if (PA_UNLIKELY(marked_full || num_allocated_slots == 0)) {
+  if (marked_full || num_allocated_slots == 0) [[unlikely]] {
     FreeSlowPath(1);
   } else {
     // All single-slot allocations must go through the slow path to
@@ -662,7 +662,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::AppendFreeList(
   num_allocated_slots -= number_of_freed;
   // If the span is marked full, or became empty, take the slow path to update
   // internal state.
-  if (PA_UNLIKELY(marked_full || num_allocated_slots == 0)) {
+  if (marked_full || num_allocated_slots == 0) [[unlikely]] {
     FreeSlowPath(number_of_freed);
   } else {
     // All single-slot allocations must go through the slow path to

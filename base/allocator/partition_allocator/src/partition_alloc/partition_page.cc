@@ -180,7 +180,7 @@ void SlotSpanMetadata::FreeSlowPath(size_t number_of_freed) {
     // chances of it being filled up again. The old current slot span will be
     // the next slot span.
     PA_DCHECK(!next_slot_span);
-    if (PA_LIKELY(bucket->active_slot_spans_head != get_sentinel_slot_span())) {
+    if (bucket->active_slot_spans_head != get_sentinel_slot_span()) [[likely]] {
       next_slot_span = bucket->active_slot_spans_head;
     }
     bucket->active_slot_spans_head = this;
@@ -188,9 +188,9 @@ void SlotSpanMetadata::FreeSlowPath(size_t number_of_freed) {
     --bucket->num_full_slot_spans;
   }
 
-  if (PA_LIKELY(num_allocated_slots == 0)) {
+  if (num_allocated_slots == 0) [[likely]] {
     // Slot span became fully unused.
-    if (PA_UNLIKELY(bucket->is_direct_mapped())) {
+    if (bucket->is_direct_mapped()) [[unlikely]] {
       PartitionDirectUnmap(this);
       return;
     }
@@ -203,7 +203,7 @@ void SlotSpanMetadata::FreeSlowPath(size_t number_of_freed) {
 
     // If it's the current active slot span, change it. We bounce the slot span
     // to the empty list as a force towards defragmentation.
-    if (PA_LIKELY(this == bucket->active_slot_spans_head)) {
+    if (this == bucket->active_slot_spans_head) [[likely]] {
       bucket->SetNewActiveSlotSpan();
     }
     PA_DCHECK(bucket->active_slot_spans_head != this);

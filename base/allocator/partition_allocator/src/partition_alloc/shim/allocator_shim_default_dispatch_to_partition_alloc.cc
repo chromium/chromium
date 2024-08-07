@@ -70,7 +70,7 @@ class LeakySingleton {
 
   PA_ALWAYS_INLINE T* Get() {
     auto* instance = instance_.load(std::memory_order_acquire);
-    if (PA_LIKELY(instance)) {
+    if (instance) [[likely]] {
       return instance;
     }
 
@@ -333,9 +333,9 @@ void* PartitionRealloc(const AllocatorDispatch*,
                        void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
 #if PA_BUILDFLAG(IS_APPLE)
-  if (PA_UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
-                      reinterpret_cast<uintptr_t>(address)) &&
-                  address)) {
+  if (!partition_alloc::IsManagedByPartitionAlloc(
+          reinterpret_cast<uintptr_t>(address)) &&
+      address) [[unlikely]] {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `realloc` which supports zone-
     // dispatching so that it appropriately selects the right zone.
@@ -353,9 +353,9 @@ void* PartitionReallocUnchecked(const AllocatorDispatch*,
                                 void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
 #if PA_BUILDFLAG(IS_APPLE)
-  if (PA_UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
-                      reinterpret_cast<uintptr_t>(address)) &&
-                  address)) {
+  if (!partition_alloc::IsManagedByPartitionAlloc(
+          reinterpret_cast<uintptr_t>(address)) &&
+      address) [[unlikely]] {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `realloc` which supports zone-
     // dispatching so that it appropriately selects the right zone.
@@ -378,9 +378,9 @@ void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
 #if PA_BUILDFLAG(IS_APPLE)
   // TODO(bartekn): Add MTE unmasking here (and below).
-  if (PA_UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
-                      reinterpret_cast<uintptr_t>(object)) &&
-                  object)) {
+  if (!partition_alloc::IsManagedByPartitionAlloc(
+          reinterpret_cast<uintptr_t>(object)) &&
+      object) [[unlikely]] {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `free` which supports zone-
     // dispatching so that it appropriately selects the right zone.
@@ -393,9 +393,9 @@ void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
   // the pointer, pass it along. This should not have a runtime cost vs regular
   // Android, since on Android we have a PA_CHECK() rather than the branch here.
 #if PA_BUILDFLAG(IS_CAST_ANDROID)
-  if (PA_UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
-                      reinterpret_cast<uintptr_t>(object)) &&
-                  object)) {
+  if (!partition_alloc::IsManagedByPartitionAlloc(
+          reinterpret_cast<uintptr_t>(object)) &&
+      object) [[unlikely]] {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `free()`, which is `__real_free()`
     // here.
@@ -504,8 +504,8 @@ void PartitionTryFreeDefault(const AllocatorDispatch*,
                              void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
 
-  if (PA_UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
-          reinterpret_cast<uintptr_t>(address)))) {
+  if (!partition_alloc::IsManagedByPartitionAlloc(
+          reinterpret_cast<uintptr_t>(address))) [[unlikely]] {
     // The object pointed to by `address` is not allocated by the
     // PartitionAlloc. Call find_zone_and_free.
     return allocator_shim::TryFreeDefaultFallbackToFindZoneAndFree(address);
