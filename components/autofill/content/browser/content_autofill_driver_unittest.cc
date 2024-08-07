@@ -43,6 +43,7 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/test_matchers.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
@@ -68,6 +69,8 @@ namespace autofill {
 
 namespace {
 
+using ::autofill::test::LazyRef;
+using ::autofill::test::SaveArgPtr;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::DoAll;

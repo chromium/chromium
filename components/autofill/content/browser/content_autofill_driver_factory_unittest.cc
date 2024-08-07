@@ -20,6 +20,7 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/test_matchers.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -37,6 +38,8 @@ namespace autofill {
 
 namespace {
 
+using ::autofill::test::LazyRef;
+using ::autofill::test::SaveArgPtr;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AtLeast;
@@ -46,22 +49,6 @@ using ::testing::InSequence;
 using ::testing::Property;
 using ::testing::Ref;
 using ::testing::Truly;
-
-// Stores the address of the `I`th argument in `*ptr`.
-template <size_t I = 0, typename T>
-auto SaveArgPtr(T** ptr) {
-  return [ptr](auto&&... args) { *ptr = &std::get<I>(std::tie(args...)); };
-}
-
-// `LazyRef(x)` behaves like `::testing::Ref(x)` but dereferences `x` at match
-// time.
-template <typename T>
-auto LazyRef(T*& ptr, base::Location loc = FROM_HERE) {
-  return Truly([&ptr, loc](const T& actual) {
-    CHECK(ptr) << "LazyRef is unbound in " << loc.ToString();
-    return std::addressof(actual) == ptr;
-  });
-}
 
 auto HasState(AutofillDriver::LifecycleState expected_state) {
   return Property("AutofillDriver::GetLifecycleState",
