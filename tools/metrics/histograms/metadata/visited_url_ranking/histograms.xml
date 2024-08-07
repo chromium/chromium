@@ -99,6 +99,8 @@ chromium-metrics-reviews@google.com.
   <token key="URLVisitAggregatesTransformType">
     <variant name="BookmarkData" summary="Bookmark data"/>
     <variant name="DefaultAppUrlFilter" summary="Default app URL filter"/>
+    <variant name="HistoryBrowserTypeFilter"
+        summary="History browser type filter"/>
     <variant name="HistoryCategoriesFilter"
         summary="History caetgories filter"/>
     <variant name="HistoryVisibilityScoreFilter"

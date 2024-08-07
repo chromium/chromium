@@ -75,6 +75,8 @@ const char* EventNameForAction(ScoredURLUserAction action) {
   }
 }
 
+// Update URLVisitAggregatesTransformType in tools/metrics/histograms
+// /metadata/visited_url_ranking/histogram.xml for them to be in sync.
 const char* URLVisitAggregatesTransformTypeName(
     URLVisitAggregatesTransformType type) {
   switch (type) {
@@ -94,6 +96,8 @@ const char* URLVisitAggregatesTransformTypeName(
       return "RecencyFilter";
     case URLVisitAggregatesTransformType::kSegmentationMetricsData:
       return "SegmentationMetricsData";
+    case URLVisitAggregatesTransformType::kHistoryBrowserTypeFilter:
+      return "HistoryBrowserTypeFilter";
   }
 }
 

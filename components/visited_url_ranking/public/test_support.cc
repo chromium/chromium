@@ -13,6 +13,8 @@
 
 namespace visited_url_ranking {
 
+using history::VisitContextAnnotations;
+
 history::AnnotatedVisit GenerateSampleAnnotatedVisit(
     history::VisitID visit_id,
     const std::u16string& page_title,
@@ -22,7 +24,8 @@ history::AnnotatedVisit GenerateSampleAnnotatedVisit(
     float visibility_score,
     const std::vector<history::VisitContentModelAnnotations::Category>&
         categories,
-    const base::Time visit_time) {
+    const base::Time visit_time,
+    const VisitContextAnnotations::BrowserType browser_type) {
   history::URLRow url_row = history::URLRow(url);
   url_row.set_title(page_title);
   history::VisitRow visit_row;
@@ -41,6 +44,12 @@ history::AnnotatedVisit GenerateSampleAnnotatedVisit(
   annotated_visit.visit_row = std::move(visit_row);
   annotated_visit.content_annotations = std::move(content_annotations);
 
+  if (browser_type != VisitContextAnnotations::BrowserType::kUnknown) {
+    auto context_annotations = history::VisitContextAnnotations();
+    context_annotations.on_visit.browser_type = browser_type;
+    annotated_visit.context_annotations = std::move(context_annotations);
+  }
+
   return annotated_visit;
 }
 
@@ -57,7 +66,8 @@ URLVisitAggregate CreateSampleURLVisitAggregate(const GURL& url,
         Fetcher::kHistory,
         URLVisitAggregate::HistoryData(GenerateSampleAnnotatedVisit(
             1, kSampleTitle, url, true, "foreign_session_guid",
-            visibility_score, {}, time)));
+            visibility_score, {}, time,
+            VisitContextAnnotations::BrowserType::kUnknown)));
   }
   if (fetchers.contains(Fetcher::kSession)) {
     auto tab_data = URLVisitAggregate::TabData(URLVisitAggregate::Tab(

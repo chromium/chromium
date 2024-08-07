@@ -27,7 +27,9 @@ history::AnnotatedVisit GenerateSampleAnnotatedVisit(
     float visibility_score = 1.0f,
     const std::vector<history::VisitContentModelAnnotations::Category>&
         categories = {},
-    const base::Time visit_time = base::Time::Now());
+    const base::Time visit_time = base::Time::Now(),
+    const history::VisitContextAnnotations::BrowserType browser_type =
+        history::VisitContextAnnotations::BrowserType::kUnknown);
 
 URLVisitAggregate CreateSampleURLVisitAggregate(
     const GURL& url,

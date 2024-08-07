@@ -35,6 +35,10 @@ enum class URLVisitAggregatesTransformType {
   kRecencyFilter = 6,
   // Set segmenation metrics related fields.
   kSegmentationMetricsData = 7,
+  // Filter based on browser type, on Android only (for now). This may
+  // expand to other platforms when they need filtering based on browser
+  // type as well.
+  kHistoryBrowserTypeFilter = 8,
 };
 
 // The options that may be specified when fetching URL visit data.
