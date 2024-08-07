@@ -168,7 +168,9 @@ using manual_fill::ManualFillDataType;
 #pragma mark - FormInputAccessoryConsumer
 
 - (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions {
-  BOOL hasSingleManualFillButton = suggestions.count > 0;
+  BOOL hasSingleManualFillButton =
+      suggestions.count > 0 &&
+      (_mainFillingProduct != FillingProduct::kAutocomplete);
   self.formInputAccessoryView.manualFillButton.hidden =
       !hasSingleManualFillButton;
   self.formInputAccessoryView.passwordManualFillButton.hidden =
