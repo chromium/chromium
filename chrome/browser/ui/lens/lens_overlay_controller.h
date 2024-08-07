@@ -75,6 +75,8 @@ namespace variations {
 class VariationsClient;
 }  // namespace variations
 
+enum class SidePanelEntryHideReason;
+
 class PrefService;
 class Profile;
 
@@ -357,7 +359,7 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Called before the lens results panel begins hiding. This is called before
   // any side panel closing animations begin.
-  void OnSidePanelWillHide();
+  void OnSidePanelWillHide(SidePanelEntryHideReason reason);
 
   // Called when the lens side panel has been hidden.
   void OnSidePanelHidden();

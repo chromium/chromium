@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
@@ -108,8 +109,10 @@ void LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
   lens_overlay_controller_->NotifyResultsPanelOpened();
 }
 
-void LensOverlaySidePanelCoordinator::OnEntryWillHide(SidePanelEntry* entry) {
-  lens_overlay_controller_->OnSidePanelWillHide();
+void LensOverlaySidePanelCoordinator::OnEntryWillHide(
+    SidePanelEntry* entry,
+    SidePanelEntryHideReason reason) {
+  lens_overlay_controller_->OnSidePanelWillHide(reason);
 }
 
 void LensOverlaySidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {

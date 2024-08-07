@@ -16,6 +16,8 @@ class GURL;
 class LensOverlayController;
 class LensOverlaySidePanelWebView;
 
+enum class SidePanelEntryHideReason;
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -54,7 +56,8 @@ class LensOverlaySidePanelCoordinator
   void RegisterEntryAndShow();
 
   // SidePanelEntryObserver:
-  void OnEntryWillHide(SidePanelEntry* entry) override;
+  void OnEntryWillHide(SidePanelEntry* entry,
+                       SidePanelEntryHideReason reason) override;
   void OnEntryHidden(SidePanelEntry* entry) override;
 
   // Called by the destructor of the side panel web view.

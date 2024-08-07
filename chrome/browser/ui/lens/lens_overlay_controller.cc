@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/lens/lens_search_bubble_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
@@ -807,19 +808,26 @@ void LensOverlayController::SetSidePanelShowErrorPage(
   pending_side_panel_should_show_error_page_ = should_show_error_page;
 }
 
-void LensOverlayController::OnSidePanelWillHide() {
+void LensOverlayController::OnSidePanelWillHide(
+    SidePanelEntryHideReason reason) {
   // If the tab is not in the foreground, this is not relevant.
   if (!tab_->IsInForeground()) {
     return;
   }
 
-  // If the overlay isn't already closing, the side panel closing is
-  // caused by the user clicking on the side panel's close button,
-  // or another side panel entry opening in the current tab.
-  // TODO(b/355221804): distinguish between the close button and another
-  // side panel being opened.
   if (!IsOverlayClosing()) {
-    CloseUIAsync(lens::LensOverlayDismissalSource::kSidePanelCloseButton);
+    if (reason == SidePanelEntryHideReason::kReplaced) {
+      // If the Lens side panel is being replaced, don't close the side panel.
+      // Instead, set the state and dismissal source and wait for
+      // OnSidePanelHidden to be called.
+      state_ = State::kClosingSidePanel;
+      last_dismissal_source_ =
+          lens::LensOverlayDismissalSource::kSidePanelEntryReplaced;
+    } else {
+      // Trigger the close animation and notify the overlay that the side
+      // panel is closing so that it can fade out the UI.
+      CloseUIAsync(lens::LensOverlayDismissalSource::kSidePanelCloseButton);
+    }
   }
 }
 
