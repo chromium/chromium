@@ -38,24 +38,44 @@ interface DataSharingSdkResponse {
   };
 }
 
-
 declare interface DataSharingSdkGroup {
   id: string;
   name?: string;
   members: DataSharingSdkGroupMember[];
 }
+
 declare interface DataSharingSdkGroupMember {
   photoUrl: string;
   displayName: string;
   profileId: string;
+  role: DataSharingMemberRole;
+  displayValue: string;
 }
+
+declare interface DataSharingSdkSitePreview {
+  url: string;
+  faviconUrl?: string;
+}
+
+declare interface DataSharingSdkGetLinkParams {
+  groupId: string;
+  tokenSecret?: string;
+}
+
+declare type DataSharingSdkGetLink = (params: DataSharingSdkGetLinkParams) =>
+    string;
+declare type DataSharingMemberRole =
+    'unknown' | 'member' | 'owner' | 'invitee' | 'applicant';
+
 declare interface Token {
   access_token: string;
 }
+
 declare interface DataSharingSdkGroupId {
   resourceId?: string;
   groupId?: string;
 }
+
 declare interface DataSharingSdkGroupIds {
   resourceIds?: string[];
   groupIds?: string[];
@@ -72,24 +92,24 @@ declare global {
       setOauthAccessToken: (options: {
         accessToken: string,
       }) => void,
-      createGroup: (options: {
-        resourceId?: string,
-      }) => Promise<DataSharingSdkGroup>,
-      readGroups: (options: DataSharingSdkGroupIds & {}) =>
-        Promise<DataSharingSdkGroup[]>,
-      runJoinFlow: (options: DataSharingSdkGroupId & {
+      createGroup: (options: {}) => Promise<DataSharingSdkGroup>,
+      readGroups: (options: DataSharingSdkGroupIds&{}) =>
+          Promise<DataSharingSdkGroup[]>,
+      runJoinFlow: (options: DataSharingSdkGroupId&{
         tokenSecret: string,
         parent?: HTMLElement,
+        previewSites?: DataSharingSdkSitePreview[],
       }) => Promise<DataSharingSdkResponse>,
-      runInviteFlow: (options: DataSharingSdkGroupId & {
+      runInviteFlow: (options: {
         parent?: HTMLElement,
+        getShareLink?: DataSharingSdkGetLink,
+        title?: string,
       }) => Promise<DataSharingSdkResponse>,
-      runManageFlow: (options: DataSharingSdkGroupId & {
+      runManageFlow: (options: DataSharingSdkGroupId&{
         parent?: HTMLElement,
+        getShareLink?: DataSharingSdkGetLink,
       }) => Promise<DataSharingSdkResponse>,
-      updateClearcut: (options: {
-        enabled: boolean,
-      }) => void,
+      updateClearcut: (options: {enabled: boolean}) => void,
     };
   }
 }
