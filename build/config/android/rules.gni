@@ -3828,12 +3828,6 @@ if (!is_robolectric && enable_java_templates) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       create_apk_script = false
 
-      # TODO(crbug.com/40702672): Figure out why angle tests fail to launch
-      #     with newer target_sdk_version.
-      if (!defined(invoker.target_sdk_version) && _use_native_activity) {
-        target_sdk_version = 24
-      }
-
       if (!defined(apk_name)) {
         apk_name = get_label_info(invoker.shared_library, "name")
       }
