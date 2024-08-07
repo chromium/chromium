@@ -97,7 +97,8 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
     if (exception_state.HadException())
       return IDBKey::CreateInvalid();
     if (buffer->IsDetached()) {
-      exception_state.ThrowTypeError("The ArrayBuffer is detached.");
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        "The ArrayBuffer is detached.");
       return IDBKey::CreateInvalid();
     }
     const char* start = static_cast<const char*>(buffer->Data());
@@ -115,7 +116,8 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
     if (exception_state.HadException())
       return IDBKey::CreateInvalid();
     if (view->buffer()->IsDetached()) {
-      exception_state.ThrowTypeError("The viewed ArrayBuffer is detached.");
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        "The viewed ArrayBuffer is detached.");
       return IDBKey::CreateInvalid();
     }
     const char* start = static_cast<const char*>(view->BaseAddress());
