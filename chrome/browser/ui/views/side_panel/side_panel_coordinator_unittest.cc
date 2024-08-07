@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
@@ -121,7 +122,7 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
         SidePanelEntry::Id::kCustomizeChrome,
         base::BindRepeating([]() { return std::make_unique<views::View>(); })));
 
-    coordinator_ = SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+    coordinator_ = browser()->GetFeatures().side_panel_coordinator();
     coordinator_->SetNoDelaysForTesting(true);
     global_registry_ = coordinator_->window_registry_.get();
 
@@ -1648,7 +1649,7 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
     AddTabToBrowser(GURL("http://foo1.com"));
     AddTabToBrowser(GURL("http://foo2.com"));
 
-    coordinator_ = SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+    coordinator_ = browser()->GetFeatures().side_panel_coordinator();
     global_registry_ = coordinator_->GetWindowRegistry();
 
     // Add a kCustomizeChrome entry to the global registry with loading content

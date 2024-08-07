@@ -468,7 +468,7 @@ void CompanionSidePanelController::UpdateNewTabButtonState() {
   if (!browser) {
     return;
   }
-  auto* coordinator = SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser);
+  auto* coordinator = browser->GetFeatures().side_panel_coordinator();
   if (!coordinator) {
     return;
   }

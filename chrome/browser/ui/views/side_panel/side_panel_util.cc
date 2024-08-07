@@ -97,12 +97,6 @@ std::unique_ptr<views::View> SidePanelUtil::DeregisterAndReturnView(
   return entry->CachedView() ? entry->GetContent() : nullptr;
 }
 
-SidePanelCoordinator* SidePanelUtil::GetSidePanelCoordinatorForBrowser(
-    Browser* browser) {
-  return static_cast<SidePanelCoordinator*>(
-      browser->GetFeatures().side_panel_ui());
-}
-
 void SidePanelUtil::RecordSidePanelOpen(
     std::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   base::RecordAction(base::UserMetricsAction("SidePanel.Show"));

@@ -4,12 +4,13 @@
 
 #include "chrome/browser/ui/views/lens/lens_side_panel_helper.h"
 
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/lens/lens_region_search_instructions_view.h"
 #include "chrome/browser/ui/views/lens/lens_static_page_controller.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -70,7 +71,7 @@ views::Widget* OpenLensRegionSearchInstructions(
 
 void CreateLensUnifiedSidePanelEntryForTesting(Browser* browser) {
   SidePanelCoordinator* coordinator =
-      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser);
+      browser->GetFeatures().side_panel_coordinator();
   DCHECK(coordinator);
   coordinator->SetNoDelaysForTesting(true);  // IN-TEST
 

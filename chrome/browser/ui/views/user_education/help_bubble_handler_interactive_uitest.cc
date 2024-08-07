@@ -6,6 +6,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
@@ -36,22 +37,24 @@ class HelpBubbleHandlerInteractiveUiTest : public InteractiveBrowserTest {
   // Opens the side panel and instruments the Read Later WebContents as
   // kReadLaterWebContentsElementId.
   auto OpenReadingListSidePanel() {
-      return Steps(
-          // Remove delays in switching side panels to prevent possible race
-          // conditions when selecting items from the side panel dropdown.
-          Do([this]() {
-            SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())
-                ->SetNoDelaysForTesting(true);
-          }),
-          PressButton(kToolbarAppMenuButtonElementId),
-          SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
-          SelectMenuItem(BookmarkSubMenuModel::kReadingListMenuItem),
-          SelectMenuItem(ReadingListSubMenuModel::kReadingListMenuShowUI),
-          WaitForShow(kSidePanelElementId),
-          WaitForShow(kReadLaterSidePanelWebViewElementId), FlushEvents(),
-          // Ensure that the Reading List side panel loads properly.
-          InstrumentNonTabWebView(kReadLaterWebContentsElementId,
-                                  kReadLaterSidePanelWebViewElementId));
+    return Steps(
+        // Remove delays in switching side panels to prevent possible race
+        // conditions when selecting items from the side panel dropdown.
+        Do([this]() {
+          browser()
+              ->GetFeatures()
+              .side_panel_coordinator()
+              ->SetNoDelaysForTesting(true);
+        }),
+        PressButton(kToolbarAppMenuButtonElementId),
+        SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
+        SelectMenuItem(BookmarkSubMenuModel::kReadingListMenuItem),
+        SelectMenuItem(ReadingListSubMenuModel::kReadingListMenuShowUI),
+        WaitForShow(kSidePanelElementId),
+        WaitForShow(kReadLaterSidePanelWebViewElementId), FlushEvents(),
+        // Ensure that the Reading List side panel loads properly.
+        InstrumentNonTabWebView(kReadLaterWebContentsElementId,
+                                kReadLaterSidePanelWebViewElementId));
   }
 
   auto OpenBookmarksSidePanel() {

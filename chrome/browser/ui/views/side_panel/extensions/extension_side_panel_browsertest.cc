@@ -346,11 +346,11 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
   }
 
   SidePanelCoordinator* side_panel_coordinator() {
-    return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+    return browser()->GetFeatures().side_panel_coordinator();
   }
 
   SidePanelCoordinator* side_panel_coordinator(Browser* browser) {
-    return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser);
+    return browser->GetFeatures().side_panel_coordinator();
   }
 
  private:

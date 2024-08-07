@@ -63,8 +63,7 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
 
     InitExtensionSystem(profile());
 
-    side_panel_coordinator_ =
-        SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+    side_panel_coordinator_ = browser()->GetFeatures().side_panel_coordinator();
     read_anything_coordinator_ =
         ReadAnythingCoordinator::GetOrCreateForBrowser(browser());
 
@@ -276,8 +275,7 @@ class ReadAnythingCoordinatorScreen2xDataCollectionModeTest
         {features::kDataCollectionModeForScreen2x}, {});
     TestWithBrowserView::SetUp();
 
-    side_panel_coordinator_ =
-        SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+    side_panel_coordinator_ = browser()->GetFeatures().side_panel_coordinator();
     read_anything_coordinator_ =
         ReadAnythingCoordinator::GetOrCreateForBrowser(browser());
 

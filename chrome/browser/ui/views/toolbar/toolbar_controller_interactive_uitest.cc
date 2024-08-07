@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -516,8 +517,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
       ActivateMenuItemWithElementId(
           ChromeActionIds::kActionSidePanelShowBookmarks),
       WaitForShow(kSidePanelElementId), FlushEvents(), Check([this]() {
-        auto* coordinator =
-            SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+        auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
         return coordinator->IsSidePanelEntryShowing(
             SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
       }));

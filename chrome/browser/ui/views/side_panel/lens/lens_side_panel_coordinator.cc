@@ -76,7 +76,7 @@ void LensSidePanelCoordinator::UpdateActionItem() {
 }
 
 SidePanelCoordinator* LensSidePanelCoordinator::GetSidePanelCoordinator() {
-  return SidePanelUtil::GetSidePanelCoordinatorForBrowser(&GetBrowser());
+  return GetBrowser().GetFeatures().side_panel_coordinator();
 }
 
 LensSidePanelCoordinator::~LensSidePanelCoordinator() {

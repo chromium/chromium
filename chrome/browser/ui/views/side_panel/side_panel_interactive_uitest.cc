@@ -66,8 +66,7 @@ class SidePanelInteractiveTest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabElementId);
   GURL second_tab_url("https://test.com");
-  auto* coordinator =
-      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
 
   RunTestSequence(
       // Add a second tab to the tab strip
@@ -201,7 +200,7 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
 
   auto ShowSidePanelForKey(SidePanelEntryKey key) {
     return Do(base::BindLambdaForTesting([=, this]() {
-      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())->Show(key);
+      browser()->GetFeatures().side_panel_coordinator()->Show(key);
     }));
   }
 };
@@ -220,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       base::BindRepeating([]() { return std::make_unique<views::View>(); })));
 
   SidePanelCoordinator* const coordinator =
-      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+      browser()->GetFeatures().side_panel_coordinator();
   coordinator->SetNoDelaysForTesting(true);
 
   chrome::ExecuteCommand(browser(), IDC_SHOW_READING_MODE_SIDE_PANEL);
@@ -246,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       base::BindRepeating([]() { return std::make_unique<views::View>(); })));
 
   SidePanelCoordinator* const coordinator =
-      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+      browser()->GetFeatures().side_panel_coordinator();
   coordinator->SetNoDelaysForTesting(true);
 
   RunTestSequence(
@@ -270,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       base::BindRepeating([]() { return std::make_unique<views::View>(); })));
 
   SidePanelCoordinator* const coordinator =
-      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+      browser()->GetFeatures().side_panel_coordinator();
 
   chrome::ExecuteCommand(browser(), IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL);
 
@@ -383,8 +382,7 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
                        SwitchBetweenDifferentEntries) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBookmarksWebContentsId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadLaterWebContentsId);
-  auto* coordinator =
-      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
 
   RunTestSequence(
       // Ensure the side panel isn't open
