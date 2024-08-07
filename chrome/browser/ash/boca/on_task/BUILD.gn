@@ -14,7 +14,6 @@ static_library("on_task") {
 
   deps = [
     "//ash/webui/boca_ui",
-    "//ash/webui/boca_ui/proto",
     "//base",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/profiles:profile",

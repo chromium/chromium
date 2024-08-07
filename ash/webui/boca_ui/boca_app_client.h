@@ -5,10 +5,10 @@
 #ifndef ASH_WEBUI_BOCA_UI_BOCA_APP_CLIENT_H_
 #define ASH_WEBUI_BOCA_UI_BOCA_APP_CLIENT_H_
 
-#include "ash/webui/boca_ui/proto/bundle.pb.h"
-#include "ash/webui/boca_ui/proto/session.pb.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/ash/components/boca/proto/bundle.pb.h"
+#include "chromeos/ash/components/boca/proto/session.pb.h"
 
 namespace network {
 class SharedURLLoaderFactory;

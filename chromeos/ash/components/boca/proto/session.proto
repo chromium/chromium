@@ -4,8 +4,8 @@ syntax = "proto3";
 
 package boca;
 
-import "ash/webui/boca_ui/proto/bundle.proto";
-import "ash/webui/boca_ui/proto/roster.proto";
+import "chromeos/ash/components/boca/proto/bundle.proto";
+import "chromeos/ash/components/boca/proto/roster.proto";
 
 // Below copied proto are due to exist in `protobuf_full` source not
 // `protobuf_lite`. The former cannot be included into chrome due to its large
