@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Crypto.TPMDuration.Virtual.{Operation}{SignatureAlgorithm}"
-    units="ms" expires_after="2025-01-26">
+    units="ms" expires_after="2025-08-01">
   <owner>kristianm@chromium.org</owner>
   <owner>agl@chromium.org</owner>
   <summary>
@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.TPMDuration.{Operation}{SignatureAlgorithm}" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-08-01">
   <owner>kristianm@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.TpmError.VirtualCreateKey" units="win32 error code"
-    expires_after="2024-12-08">
+    expires_after="2025-08-01">
   <owner>kristianm@chromium.org</owner>
   <owner>agl@chromium.org</owner>
   <summary>
@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.TpmError.VirtualFinalizeKey" units="win32 error code"
-    expires_after="2024-09-15">
+    expires_after="2025-08-01">
   <owner>kristianm@chromium.org</owner>
   <owner>agl@chromium.org</owner>
   <summary>
@@ -132,7 +132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.TpmError.VirtualOpenKey" units="win32 error code"
-    expires_after="2024-09-15">
+    expires_after="2025-08-01">
   <owner>kristianm@chromium.org</owner>
   <owner>agl@chromium.org</owner>
   <summary>
@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.TpmError.VirtualOpenStorage" units="win32 error code"
-    expires_after="2024-09-15">
+    expires_after="2025-08-01">
   <owner>kristianm@chromium.org</owner>
   <owner>agl@chromium.org</owner>
   <summary>
@@ -152,7 +152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.TPMOperation.Virtual.{Operation}{SignatureAlgorithm}"
-    enum="BooleanSuccess" expires_after="2025-01-05">
+    enum="BooleanSuccess" expires_after="2025-08-01">
   <owner>kristianm@chromium.org</owner>
   <owner>agl@chromium.org</owner>
   <summary>
@@ -174,7 +174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.TPMOperation.{Operation}{SignatureAlgorithm}"
-    enum="BooleanSuccess" expires_after="2025-01-05">
+    enum="BooleanSuccess" expires_after="2025-08-01">
   <owner>kristianm@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -207,7 +207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.TPMSupportType" enum="TPMType"
-    expires_after="2025-01-26">
+    expires_after="2025-08-01">
   <owner>kristianm@chromium.org</owner>
   <owner>agl@chromium.org</owner>
   <summary>
@@ -322,7 +322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.VirtualKeySupport" enum="TPMSupport"
-    expires_after="2024-12-08">
+    expires_after="2025-08-01">
   <owner>kristianm@chromium.org</owner>
   <owner>agl@chromium.org</owner>
   <summary>
