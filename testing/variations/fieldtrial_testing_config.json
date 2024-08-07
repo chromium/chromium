@@ -8433,37 +8433,6 @@
             ]
         }
     ],
-    "ESBDownloadRowPromo": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "availability": "any",
-                        "blocked_by": "none",
-                        "blocking": "none",
-                        "event_1": "name:esb_download_promo_row_viewed;comparator:<7;window:90;storage:90",
-                        "event_2": "name:esb_download_promo_row_clicked;comparator:<3;window:90;storage:90",
-                        "event_trigger": "name:dangerous_download_esb_promo_row_trigger;comparator:any;window:360;storage:360",
-                        "event_used": "name:enable_enhanced_protection;comparator:==0;window:21;storage:90",
-                        "session_rate": "any",
-                        "session_rate_impact": "none"
-                    },
-                    "enable_features": [
-                        "EsbDownloadRowPromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "ESBInfobarPromo": [
         {
             "platforms": [
