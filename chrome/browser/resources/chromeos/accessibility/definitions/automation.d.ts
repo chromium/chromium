@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@ declare namespace chrome {
       ALERT = 'alert',
       ARIA_ATTRIBUTE_CHANGED_DEPRECATED = 'ariaAttributeChangedDeprecated',
       ARIA_CURRENT_CHANGED = 'ariaCurrentChanged',
+      ARIA_NOTIFICATIONS_POSTED = 'ariaNotificationsPosted',
       ATOMIC_CHANGED = 'atomicChanged',
       AUTO_COMPLETE_CHANGED = 'autoCompleteChanged',
       AUTOCORRECTION_OCCURED = 'autocorrectionOccured',
@@ -93,7 +94,6 @@ declare namespace chrome {
       ORIENTATION_CHANGED = 'orientationChanged',
       PARENT_CHANGED = 'parentChanged',
       PLACEHOLDER_CHANGED = 'placeholderChanged',
-      PORTAL_ACTIVATED = 'portalActivated',
       POSITION_IN_SET_CHANGED = 'positionInSetChanged',
       RANGE_VALUE_CHANGED = 'rangeValueChanged',
       RANGE_VALUE_MAX_CHANGED = 'rangeValueMaxChanged',
@@ -166,13 +166,14 @@ declare namespace chrome {
       DATE_TIME = 'dateTime',
       DEFINITION = 'definition',
       DESCRIPTION_LIST = 'descriptionList',
-      DESCRIPTION_LIST_DETAIL = 'descriptionListDetail',
-      DESCRIPTION_LIST_TERM = 'descriptionListTerm',
+      DESCRIPTION_LIST_DETAIL_DEPRECATED = 'descriptionListDetailDeprecated',
+      DESCRIPTION_LIST_TERM_DEPRECATED = 'descriptionListTermDeprecated',
       DESKTOP = 'desktop',
       DETAILS = 'details',
       DIALOG = 'dialog',
-      DIRECTORY = 'directory',
+      DIRECTORY_DEPRECATED = 'directoryDeprecated',
       DISCLOSURE_TRIANGLE = 'disclosureTriangle',
+      DISCLOSURE_TRIANGLE_GROUPED = 'disclosureTriangleGrouped',
       DOC_ABSTRACT = 'docAbstract',
       DOC_ACKNOWLEDGMENTS = 'docAcknowledgments',
       DOC_AFTERWORD = 'docAfterword',
@@ -296,7 +297,7 @@ declare namespace chrome {
       PDF_ROOT = 'pdfRoot',
       PLUGIN_OBJECT = 'pluginObject',
       POP_UP_BUTTON = 'popUpButton',
-      PORTAL = 'portal',
+      PORTAL_DEPRECATED = 'portalDeprecated',
       PRE_DEPRECATED = 'preDeprecated',
       PROGRESS_INDICATOR = 'progressIndicator',
       RADIO_BUTTON = 'radioButton',
@@ -313,6 +314,7 @@ declare namespace chrome {
       SEARCH = 'search',
       SEARCH_BOX = 'searchBox',
       SECTION = 'section',
+      SECTION_WITHOUT_NAME = 'sectionWithoutName',
       SLIDER = 'slider',
       SPIN_BUTTON = 'spinButton',
       SPLITTER = 'splitter',
@@ -430,6 +432,7 @@ declare namespace chrome {
       CONTENTS = 'contents',
       PLACEHOLDER = 'placeholder',
       POPOVER_ATTRIBUTE = 'popoverAttribute',
+      PROHIBITED = 'prohibited',
       RELATED_ELEMENT = 'relatedElement',
       TITLE = 'title',
       VALUE = 'value',
@@ -440,6 +443,7 @@ declare namespace chrome {
       ATTRIBUTE_EXPLICITLY_EMPTY = 'attributeExplicitlyEmpty',
       BUTTON_LABEL = 'buttonLabel',
       POPOVER_ATTRIBUTE = 'popoverAttribute',
+      PROHIBITED_NAME_REPAIR = 'prohibitedNameRepair',
       RELATED_ELEMENT = 'relatedElement',
       RUBY_ANNOTATION = 'rubyAnnotation',
       SUMMARY = 'summary',
@@ -525,6 +529,7 @@ declare namespace chrome {
       INSERT_TRANSPOSE = 'insertTranspose',
       INSERT_REPLACEMENT_TEXT = 'insertReplacementText',
       INSERT_COMPOSITION_TEXT = 'insertCompositionText',
+      INSERT_LINK = 'insertLink',
       DELETE_WORD_BACKWARD = 'deleteWordBackward',
       DELETE_WORD_FORWARD = 'deleteWordForward',
       DELETE_SOFT_LINE_BACKWARD = 'deleteSoftLineBackward',
@@ -606,8 +611,12 @@ declare namespace chrome {
 
     export interface FindParams {
       role?: RoleType;
-      state?: {[key: string]: any};
-      attributes?: {[key: string]: any};
+      state?: {
+        [key: string]: any,
+      };
+      attributes?: {
+        [key: string]: any,
+      };
     }
 
     export interface SetDocumentSelectionParams {
@@ -653,7 +662,9 @@ declare namespace chrome {
     export interface Marker {
       startOffset: number;
       endOffset: number;
-      flags: {[key: string]: any};
+      flags: {
+        [key: string]: any,
+      };
     }
 
     export interface AutomationPosition {
@@ -727,14 +738,16 @@ declare namespace chrome {
       root?: AutomationNode;
       isRootNode: boolean;
       role?: RoleType;
-      state?: {[key: string]: any};
+      state?: {
+        [key: string]: any,
+      };
       location: Rect;
       boundsForRange:
           (startIndex: number, endIndex: number,
-           callback: (rect: Rect) => void) => void;
+           callback: (bounds: Rect) => void) => void;
       unclippedBoundsForRange:
           (startIndex: number, endIndex: number,
-           callback: (rect: Rect) => void) => void;
+           callback: (bounds: Rect) => void) => void;
       unclippedLocation?: Rect;
       description?: string;
       checkedStateDescription?: string;
@@ -747,6 +760,7 @@ declare namespace chrome {
       nameFrom?: NameFromType;
       imageAnnotation?: string;
       value?: string;
+      htmlId?: string;
       htmlTag?: string;
       hierarchicalLevel?: number;
       caretBounds?: Rect;
@@ -840,7 +854,9 @@ declare namespace chrome {
       autoComplete?: string;
       className?: string;
       modal?: boolean;
-      htmlAttributes?: {[key: string]: any};
+      htmlAttributes?: {
+        [key: string]: any,
+      };
       inputType?: string;
       accessKey?: string;
       ariaInvalidValue?: string;
@@ -904,12 +920,12 @@ declare namespace chrome {
       stopDuckingMedia: () => void;
       suspendMedia: () => void;
       longClick: () => void;
-      scrollBackward: (callback: (result: boolean) => void) => void;
-      scrollForward: (callback: (result: boolean) => void) => void;
-      scrollUp: (callback: (result: boolean) => void) => void;
-      scrollDown: (callback: (result: boolean) => void) => void;
-      scrollLeft: (callback: (result: boolean) => void) => void;
-      scrollRight: (callback: (result: boolean) => void) => void;
+      scrollBackward: (callback?: (result: boolean) => void) => void;
+      scrollForward: (callback?: (result: boolean) => void) => void;
+      scrollUp: (callback?: (result: boolean) => void) => void;
+      scrollDown: (callback?: (result: boolean) => void) => void;
+      scrollLeft: (callback?: (result: boolean) => void) => void;
+      scrollRight: (callback?: (result: boolean) => void) => void;
       scrollToPoint: (x: number, y: number) => void;
       setScrollOffset: (x: number, y: number) => void;
       addEventListener:
@@ -930,21 +946,19 @@ declare namespace chrome {
       [key: string]: any;
     }
 
-    export function getDesktop(callback: (rootNode: AutomationNode) => void):
-        void;
+    export function getDesktop(callback: (node: AutomationNode) => void): void;
 
-    export function getFocus(callback: (focusedNode: AutomationNode) => void):
-        void;
+    export function getFocus(callback: (node: AutomationNode) => void): void;
 
     export function getAccessibilityFocus(
-        callback: (focusedNode: AutomationNode) => void): void;
+        callback: (node: AutomationNode) => void): void;
 
     export function addTreeChangeObserver(
         filter: TreeChangeObserverFilter,
-        observer: (change: TreeChange) => void): void;
+        observer: (treeChange: TreeChange) => void): void;
 
     export function removeTreeChangeObserver(
-        observer: (rootNode: AutomationNode) => void): void;
+        observer: (treeChange: TreeChange) => void): void;
 
     export function setDocumentSelection(params: SetDocumentSelectionParams):
         void;

@@ -14,15 +14,6 @@ import {OutputContextOrder} from './output_types.js';
 
 import RoleType = chrome.automation.RoleType;
 
-export interface Info {
-  contextOrder?: OutputContextOrder;
-  earcon?: EarconId;
-  ignoreAncestry?: boolean;
-  inherits?: ChromeVoxRole;
-  msgId?: string;
-  verboseAncestry?: boolean;
-}
-
 /**
  * Metadata about supported automation roles.
  * msgId: the message id of the role. Each role used requires a speech entry in
@@ -34,242 +25,297 @@ export interface Info {
  * verboseAncestry: causes ancestry output to not reject duplicated roles. May
  * be desirable when wanting start and end span-like output.
  */
-export const OutputRoleInfo: Partial<Record<ChromeVoxRole, Info>> = {
-  abbr: {msgId: 'tag_abbr', inherits: AbstractRole.CONTAINER},
-  alert: {msgId: 'role_alert'},
-  alertDialog:
+export interface Info {
+  contextOrder?: OutputContextOrder;
+  earcon?: EarconId;
+  ignoreAncestry?: boolean;
+  inherits?: ChromeVoxRole;
+  msgId?: string;
+  verboseAncestry?: boolean;
+}
+
+export const OutputRoleInfo: Partial<Record<RoleType, Info>> = {
+  [RoleType.ABBR]: {msgId: 'tag_abbr', inherits: AbstractRole.CONTAINER},
+  [RoleType.ALERT]: {msgId: 'role_alert'},
+  [RoleType.ALERT_DIALOG]:
       {msgId: 'role_alertdialog', contextOrder: OutputContextOrder.FIRST},
-  article: {msgId: 'role_article', inherits: AbstractRole.ITEM},
-  application: {msgId: 'role_application', inherits: AbstractRole.CONTAINER},
-  audio: {msgId: 'tag_audio', inherits: AbstractRole.FORM_FIELD_CONTAINER},
-  banner: {msgId: 'role_banner', inherits: AbstractRole.CONTAINER},
-  button: {msgId: 'role_button', earcon: EarconId.BUTTON},
-  buttonDropDown: {msgId: 'role_button', earcon: EarconId.BUTTON},
-  checkBox: {msgId: 'role_checkbox'},
-  columnHeader: {msgId: 'role_columnheader', inherits: RoleType.CELL},
-  comboBoxMenuButton: {msgId: 'role_combobox', earcon: EarconId.LISTBOX},
-  comboBoxGrouping:
+  [RoleType.ARTICLE]: {msgId: 'role_article', inherits: AbstractRole.ITEM},
+  [RoleType.APPLICATION]:
+      {msgId: 'role_application', inherits: AbstractRole.CONTAINER},
+  [RoleType.AUDIO]:
+      {msgId: 'tag_audio', inherits: AbstractRole.FORM_FIELD_CONTAINER},
+  [RoleType.BANNER]: {msgId: 'role_banner', inherits: AbstractRole.CONTAINER},
+  [RoleType.BUTTON]: {msgId: 'role_button', earcon: EarconId.BUTTON},
+  [RoleType.CHECK_BOX]: {msgId: 'role_checkbox'},
+  [RoleType.COLUMN_HEADER]:
+      {msgId: 'role_columnheader', inherits: RoleType.CELL},
+  [RoleType.COMBO_BOX_GROUPING]:
       {msgId: 'role_combobox', inherits: AbstractRole.FORM_FIELD_CONTAINER},
-  comboBoxSelect: {
+  [RoleType.COMBO_BOX_MENU_BUTTON]:
+      {msgId: 'role_combobox', earcon: EarconId.LISTBOX},
+  [RoleType.COMBO_BOX_SELECT]: {
     msgId: 'role_button',
     earcon: EarconId.POP_UP_BUTTON,
     inherits: RoleType.COMBO_BOX_MENU_BUTTON,
   },
-  complementary:
-      {msgId: 'role_complementary', inherits: AbstractRole.CONTAINER},
-  comment: {
+  [RoleType.COMMENT]: {
     msgId: 'role_comment',
     contextOrder: OutputContextOrder.FIRST_AND_LAST,
     verboseAncestry: true,
     inherits: AbstractRole.SPAN,
   },
-  contentDeletion: {
+  [RoleType.COMPLEMENTARY]:
+      {msgId: 'role_complementary', inherits: AbstractRole.CONTAINER},
+  [RoleType.CONTENT_DELETION]: {
     msgId: 'role_content_deletion',
     contextOrder: OutputContextOrder.FIRST_AND_LAST,
     verboseAncestry: true,
     inherits: AbstractRole.SPAN,
   },
-  contentInsertion: {
+  [RoleType.CONTENT_INSERTION]: {
     msgId: 'role_content_insertion',
     contextOrder: OutputContextOrder.FIRST_AND_LAST,
     verboseAncestry: true,
     inherits: AbstractRole.SPAN,
   },
-  contentInfo: {msgId: 'role_contentinfo', inherits: AbstractRole.CONTAINER},
-  date: {msgId: 'input_type_date', inherits: AbstractRole.FORM_FIELD_CONTAINER},
-  definition: {msgId: 'role_definition', inherits: AbstractRole.CONTAINER},
-  descriptionList:
+  [RoleType.CONTENT_INFO]:
+      {msgId: 'role_contentinfo', inherits: AbstractRole.CONTAINER},
+  [RoleType.DATE]:
+      {msgId: 'input_type_date', inherits: AbstractRole.FORM_FIELD_CONTAINER},
+  [RoleType.DEFINITION]:
+      {msgId: 'role_definition', inherits: AbstractRole.CONTAINER},
+  [RoleType.DESCRIPTION_LIST]:
       {msgId: 'role_description_list', inherits: AbstractRole.LIST},
-  descriptionListDetail:
+  [RoleType.DESCRIPTION_LIST_DETAIL_DEPRECATED]:
       {msgId: 'role_description_list_detail', inherits: AbstractRole.ITEM},
-  dialog: {
+  [RoleType.DIALOG]: {
     msgId: 'role_dialog',
     contextOrder: OutputContextOrder.DIRECTED,
     ignoreAncestry: true,
   },
-  directory: {msgId: 'role_directory', inherits: AbstractRole.CONTAINER},
-  docAbstract: {msgId: 'role_doc_abstract', inherits: AbstractRole.SPAN},
-  docAcknowledgments:
+  [RoleType.DIRECTORY_DEPRECATED]:
+      {msgId: 'role_directory', inherits: AbstractRole.CONTAINER},
+  [RoleType.DOC_ABSTRACT]:
+      {msgId: 'role_doc_abstract', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_ACKNOWLEDGMENTS]:
       {msgId: 'role_doc_acknowledgments', inherits: AbstractRole.SPAN},
-  docAfterword: {msgId: 'role_doc_afterword', inherits: AbstractRole.CONTAINER},
-  docAppendix: {msgId: 'role_doc_appendix', inherits: AbstractRole.SPAN},
-  docBackLink: {
+  [RoleType.DOC_AFTERWORD]:
+      {msgId: 'role_doc_afterword', inherits: AbstractRole.CONTAINER},
+  [RoleType.DOC_APPENDIX]:
+      {msgId: 'role_doc_appendix', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_BACK_LINK]: {
     msgId: 'role_doc_back_link',
     earcon: EarconId.LINK,
     inherits: RoleType.LINK,
   },
-  docBiblioEntry: {
+  [RoleType.DOC_BIBLIO_ENTRY]: {
     msgId: 'role_doc_biblio_entry',
     earcon: EarconId.LIST_ITEM,
     inherits: AbstractRole.ITEM,
   },
-  docBibliography:
+  [RoleType.DOC_BIBLIOGRAPHY]:
       {msgId: 'role_doc_bibliography', inherits: AbstractRole.SPAN},
-  docBiblioRef: {
+  [RoleType.DOC_BIBLIO_REF]: {
     msgId: 'role_doc_biblio_ref',
     earcon: EarconId.LINK,
     inherits: RoleType.LINK,
   },
-  docChapter: {msgId: 'role_doc_chapter', inherits: AbstractRole.SPAN},
-  docColophon: {msgId: 'role_doc_colophon', inherits: AbstractRole.SPAN},
-  docConclusion: {msgId: 'role_doc_conclusion', inherits: AbstractRole.SPAN},
-  docCover: {msgId: 'role_doc_cover', inherits: RoleType.IMAGE},
-  docCredit: {msgId: 'role_doc_credit', inherits: AbstractRole.SPAN},
-  docCredits: {msgId: 'role_doc_credits', inherits: AbstractRole.SPAN},
-  docDedication: {msgId: 'role_doc_dedication', inherits: AbstractRole.SPAN},
-  docEndnote: {
+  [RoleType.DOC_CHAPTER]:
+      {msgId: 'role_doc_chapter', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_COLOPHON]:
+      {msgId: 'role_doc_colophon', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_CONCLUSION]:
+      {msgId: 'role_doc_conclusion', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_COVER]: {msgId: 'role_doc_cover', inherits: RoleType.IMAGE},
+  [RoleType.DOC_CREDIT]:
+      {msgId: 'role_doc_credit', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_CREDITS]:
+      {msgId: 'role_doc_credits', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_DEDICATION]:
+      {msgId: 'role_doc_dedication', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_ENDNOTE]: {
     msgId: 'role_doc_endnote',
     earcon: EarconId.LIST_ITEM,
     inherits: AbstractRole.ITEM,
   },
-  docEndnotes: {
+  [RoleType.DOC_ENDNOTES]: {
     msgId: 'role_doc_endnotes',
     earcon: EarconId.LISTBOX,
     inherits: RoleType.LIST,
   },
-  docEpigraph: {msgId: 'role_doc_epigraph', inherits: AbstractRole.SPAN},
-  docEpilogue: {msgId: 'role_doc_epilogue', inherits: AbstractRole.SPAN},
-  docErrata: {msgId: 'role_doc_errata', inherits: AbstractRole.SPAN},
-  docExample: {msgId: 'role_doc_example', inherits: AbstractRole.SPAN},
-  docFootnote: {
+  [RoleType.DOC_EPIGRAPH]:
+      {msgId: 'role_doc_epigraph', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_EPILOGUE]:
+      {msgId: 'role_doc_epilogue', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_ERRATA]:
+      {msgId: 'role_doc_errata', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_EXAMPLE]:
+      {msgId: 'role_doc_example', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_FOOTNOTE]: {
     msgId: 'role_doc_footnote',
     earcon: EarconId.LIST_ITEM,
     inherits: AbstractRole.ITEM,
   },
-  docForeword: {msgId: 'role_doc_foreword', inherits: AbstractRole.SPAN},
-  docGlossary: {msgId: 'role_doc_glossary', inherits: AbstractRole.SPAN},
-  docGlossRef: {
+  [RoleType.DOC_FOREWORD]:
+      {msgId: 'role_doc_foreword', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_GLOSSARY]:
+      {msgId: 'role_doc_glossary', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_GLOSS_REF]: {
     msgId: 'role_doc_gloss_ref',
     earcon: EarconId.LINK,
     inherits: RoleType.LINK,
   },
-  docIndex: {msgId: 'role_doc_index', inherits: AbstractRole.SPAN},
-  docIntroduction:
+  [RoleType.DOC_INDEX]: {msgId: 'role_doc_index', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_INTRODUCTION]:
       {msgId: 'role_doc_introduction', inherits: AbstractRole.SPAN},
-  docNoteRef: {
+  [RoleType.DOC_NOTE_REF]: {
     msgId: 'role_doc_note_ref',
     earcon: EarconId.LINK,
     inherits: RoleType.LINK,
   },
-  docNotice: {msgId: 'role_doc_notice', inherits: AbstractRole.SPAN},
-  docPageBreak: {msgId: 'role_doc_page_break', inherits: AbstractRole.SPAN},
-  docPageFooter: {msgId: 'role_doc_page_footer', inherits: AbstractRole.SPAN},
-  docPageHeader: {msgId: 'role_doc_page_header', inherits: AbstractRole.SPAN},
-  docPageList: {msgId: 'role_doc_page_list', inherits: AbstractRole.SPAN},
-  docPart: {msgId: 'role_doc_part', inherits: AbstractRole.SPAN},
-  docPreface: {msgId: 'role_doc_preface', inherits: AbstractRole.SPAN},
-  docPrologue: {msgId: 'role_doc_prologue', inherits: AbstractRole.SPAN},
-  docPullquote: {msgId: 'role_doc_pullquote', inherits: AbstractRole.SPAN},
-  docQna: {msgId: 'role_doc_qna', inherits: AbstractRole.SPAN},
-  docSubtitle: {msgId: 'role_doc_subtitle', inherits: RoleType.HEADING},
-  docTip: {msgId: 'role_doc_tip', inherits: AbstractRole.SPAN},
-  docToc: {msgId: 'role_doc_toc', inherits: AbstractRole.SPAN},
-  document: {msgId: 'role_document', inherits: AbstractRole.CONTAINER},
-  form: {msgId: 'role_form', inherits: AbstractRole.CONTAINER},
-  graphicsDocument:
+  [RoleType.DOC_NOTICE]:
+      {msgId: 'role_doc_notice', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_PAGE_BREAK]:
+      {msgId: 'role_doc_page_break', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_PAGE_FOOTER]:
+      {msgId: 'role_doc_page_footer', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_PAGE_HEADER]:
+      {msgId: 'role_doc_page_header', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_PAGE_LIST]:
+      {msgId: 'role_doc_page_list', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_PART]: {msgId: 'role_doc_part', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_PREFACE]:
+      {msgId: 'role_doc_preface', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_PROLOGUE]:
+      {msgId: 'role_doc_prologue', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_PULLQUOTE]:
+      {msgId: 'role_doc_pullquote', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_QNA]: {msgId: 'role_doc_qna', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_SUBTITLE]:
+      {msgId: 'role_doc_subtitle', inherits: RoleType.HEADING},
+  [RoleType.DOC_TIP]: {msgId: 'role_doc_tip', inherits: AbstractRole.SPAN},
+  [RoleType.DOC_TOC]: {msgId: 'role_doc_toc', inherits: AbstractRole.SPAN},
+  [RoleType.DOCUMENT]:
+      {msgId: 'role_document', inherits: AbstractRole.CONTAINER},
+  [RoleType.FORM]: {msgId: 'role_form', inherits: AbstractRole.CONTAINER},
+  [RoleType.GRAPHICS_DOCUMENT]:
       {msgId: 'role_graphics_document', inherits: AbstractRole.CONTAINER},
-  graphicsObject:
+  [RoleType.GRAPHICS_OBJECT]:
       {msgId: 'role_graphics_object', inherits: AbstractRole.CONTAINER},
-  graphicsSymbol: {msgId: 'role_graphics_symbol', inherits: RoleType.IMAGE},
-  grid: {msgId: 'role_grid', inherits: RoleType.TABLE},
-  group: {msgId: 'role_group', inherits: AbstractRole.CONTAINER},
-  heading: {
+  [RoleType.GRAPHICS_SYMBOL]:
+      {msgId: 'role_graphics_symbol', inherits: RoleType.IMAGE},
+  [RoleType.GRID]: {msgId: 'role_grid', inherits: RoleType.TABLE},
+  [RoleType.GROUP]: {msgId: 'role_group', inherits: AbstractRole.CONTAINER},
+  [RoleType.HEADING]: {
     msgId: 'role_heading',
   },
-  image: {
+  [RoleType.IMAGE]: {
     msgId: 'role_img',
   },
-  imeCandidate: {msgId: 'ime_candidate', ignoreAncestry: true},
-  inputTime:
+  [RoleType.IME_CANDIDATE]: {msgId: 'ime_candidate', ignoreAncestry: true},
+  [RoleType.INPUT_TIME]:
       {msgId: 'input_type_time', inherits: AbstractRole.FORM_FIELD_CONTAINER},
-  link: {msgId: 'role_link', earcon: EarconId.LINK},
-  list: {msgId: 'role_list', inherits: AbstractRole.LIST},
-  listBox: {msgId: 'role_listbox', earcon: EarconId.LISTBOX},
-  listBoxOption: {msgId: 'role_listitem', earcon: EarconId.LIST_ITEM},
-  listGrid: {msgId: 'role_list_grid', inherits: RoleType.TABLE},
-  listItem: {
+  [RoleType.LINK]: {msgId: 'role_link', earcon: EarconId.LINK},
+  [RoleType.LIST]: {msgId: 'role_list', inherits: AbstractRole.LIST},
+  [RoleType.LIST_BOX]: {msgId: 'role_listbox', earcon: EarconId.LISTBOX},
+  [RoleType.LIST_BOX_OPTION]:
+      {msgId: 'role_listitem', earcon: EarconId.LIST_ITEM},
+  [RoleType.LIST_GRID]: {msgId: 'role_list_grid', inherits: RoleType.TABLE},
+  [RoleType.LIST_ITEM]: {
     msgId: 'role_listitem',
     earcon: EarconId.LIST_ITEM,
     inherits: AbstractRole.ITEM,
   },
-  log: {msgId: 'role_log', inherits: AbstractRole.NAME_FROM_CONTENTS},
-  main: {msgId: 'role_main', inherits: AbstractRole.CONTAINER},
-  mark: {
+  [RoleType.LOG]:
+      {msgId: 'role_log', inherits: AbstractRole.NAME_FROM_CONTENTS},
+  [RoleType.MAIN]: {msgId: 'role_main', inherits: AbstractRole.CONTAINER},
+  [RoleType.MARK]: {
     msgId: 'role_mark',
     contextOrder: OutputContextOrder.FIRST_AND_LAST,
     verboseAncestry: true,
     inherits: AbstractRole.CONTAINER,
   },
-  marquee: {msgId: 'role_marquee', inherits: AbstractRole.NAME_FROM_CONTENTS},
-  math: {msgId: 'role_math', inherits: AbstractRole.CONTAINER},
-  menu: {
+  [RoleType.MARQUEE]:
+      {msgId: 'role_marquee', inherits: AbstractRole.NAME_FROM_CONTENTS},
+  [RoleType.MATH]: {msgId: 'role_math', inherits: AbstractRole.CONTAINER},
+  [RoleType.MENU]: {
     msgId: 'role_menu',
     contextOrder: OutputContextOrder.FIRST,
     ignoreAncestry: true,
   },
-  menuBar: {
+  [RoleType.MENU_BAR]: {
     msgId: 'role_menubar',
   },
-  menuItem: {msgId: 'role_menuitem'},
-  menuItemCheckBox: {msgId: 'role_menuitemcheckbox'},
-  menuItemRadio: {msgId: 'role_menuitemradio'},
-  menuListOption: {msgId: 'role_listitem'},
-  menuListPopup: {msgId: 'role_listbox'},
-  meter: {msgId: 'role_meter', inherits: AbstractRole.RANGE},
-  navigation: {msgId: 'role_navigation', inherits: AbstractRole.CONTAINER},
-  note: {msgId: 'role_note', inherits: AbstractRole.CONTAINER},
-  progressIndicator:
+  [RoleType.MENU_ITEM]: {msgId: 'role_menuitem'},
+  [RoleType.MENU_ITEM_CHECK_BOX]: {msgId: 'role_menuitemcheckbox'},
+  [RoleType.MENU_ITEM_RADIO]: {msgId: 'role_menuitemradio'},
+  [RoleType.MENU_LIST_OPTION]: {msgId: 'role_listitem'},
+  [RoleType.MENU_LIST_POPUP]: {msgId: 'role_listbox'},
+  [RoleType.METER]: {msgId: 'role_meter', inherits: AbstractRole.RANGE},
+  [RoleType.NAVIGATION]:
+      {msgId: 'role_navigation', inherits: AbstractRole.CONTAINER},
+  [RoleType.NOTE]: {msgId: 'role_note', inherits: AbstractRole.CONTAINER},
+  [RoleType.PROGRESS_INDICATOR]:
       {msgId: 'role_progress_indicator', inherits: AbstractRole.RANGE},
-  popUpButton: {
+  [RoleType.POP_UP_BUTTON]: {
     msgId: 'role_button',
     earcon: EarconId.POP_UP_BUTTON,
     inherits: RoleType.COMBO_BOX_MENU_BUTTON,
   },
-  radioButton: {msgId: 'role_radio'},
-  radioGroup:
+  [RoleType.RADIO_BUTTON]: {msgId: 'role_radio'},
+  [RoleType.RADIO_GROUP]:
       {msgId: 'role_radiogroup', inherits: AbstractRole.FORM_FIELD_CONTAINER},
-  region: {msgId: 'role_region', inherits: AbstractRole.CONTAINER},
-  row: {msgId: 'role_row'},
-  rowHeader: {msgId: 'role_rowheader', inherits: RoleType.CELL},
-  scrollBar: {msgId: 'role_scrollbar', inherits: AbstractRole.RANGE},
-  section: {msgId: 'role_region', inherits: AbstractRole.CONTAINER},
-  search: {msgId: 'role_search', inherits: AbstractRole.CONTAINER},
-  separator: {msgId: 'role_separator', inherits: AbstractRole.CONTAINER},
-  slider: {
+  [RoleType.REGION]: {msgId: 'role_region', inherits: AbstractRole.CONTAINER},
+  [RoleType.ROW]: {msgId: 'role_row'},
+  [RoleType.ROW_HEADER]: {msgId: 'role_rowheader', inherits: RoleType.CELL},
+  [RoleType.SCROLL_BAR]:
+      {msgId: 'role_scrollbar', inherits: AbstractRole.RANGE},
+  [RoleType.SECTION]: {msgId: 'role_region', inherits: AbstractRole.CONTAINER},
+  [RoleType.SEARCH]: {msgId: 'role_search', inherits: AbstractRole.CONTAINER},
+  [RoleType.SEARCH_BOX]: {msgId: 'role_search', earcon: EarconId.EDITABLE_TEXT},
+  [RoleType.SLIDER]: {
     msgId: 'role_slider',
     inherits: AbstractRole.RANGE,
     earcon: EarconId.SLIDER,
   },
-  spinButton: {
+  [RoleType.SPIN_BUTTON]: {
     msgId: 'role_spinbutton',
     inherits: AbstractRole.RANGE,
     earcon: EarconId.LISTBOX,
   },
-  splitter: {msgId: 'role_separator', inherits: AbstractRole.SPAN},
-  status: {msgId: 'role_status', inherits: AbstractRole.NAME_FROM_CONTENTS},
-  subscript: {msgId: 'role_subscript', inherits: AbstractRole.SPAN},
-  suggestion: {
+  [RoleType.SPLITTER]: {msgId: 'role_separator', inherits: AbstractRole.SPAN},
+  [RoleType.STATUS]:
+      {msgId: 'role_status', inherits: AbstractRole.NAME_FROM_CONTENTS},
+  [RoleType.SUBSCRIPT]: {msgId: 'role_subscript', inherits: AbstractRole.SPAN},
+  [RoleType.SUGGESTION]: {
     msgId: 'role_suggestion',
     contextOrder: OutputContextOrder.FIRST_AND_LAST,
     verboseAncestry: true,
     inherits: AbstractRole.SPAN,
   },
-  superscript: {msgId: 'role_superscript', inherits: AbstractRole.SPAN},
-  tab: {msgId: 'role_tab', inherits: AbstractRole.CONTAINER},
-  tabList: {msgId: 'role_tablist', inherits: AbstractRole.FORM_FIELD_CONTAINER},
-  tabPanel: {msgId: 'role_tabpanel', inherits: AbstractRole.CONTAINER},
-  searchBox: {msgId: 'role_search', earcon: EarconId.EDITABLE_TEXT},
-  textField: {msgId: 'input_type_text', earcon: EarconId.EDITABLE_TEXT},
-  textFieldWithComboBox:
+  [RoleType.SUPERSCRIPT]:
+      {msgId: 'role_superscript', inherits: AbstractRole.SPAN},
+  [RoleType.TAB]: {msgId: 'role_tab', inherits: AbstractRole.CONTAINER},
+  [RoleType.TAB_LIST]:
+      {msgId: 'role_tablist', inherits: AbstractRole.FORM_FIELD_CONTAINER},
+  [RoleType.TAB_PANEL]:
+      {msgId: 'role_tabpanel', inherits: AbstractRole.CONTAINER},
+  [RoleType.TEXT_FIELD]:
+      {msgId: 'input_type_text', earcon: EarconId.EDITABLE_TEXT},
+  [RoleType.TEXT_FIELD_WITH_COMBO_BOX]:
       {msgId: 'role_combobox', earcon: EarconId.EDITABLE_TEXT},
-  time: {msgId: 'tag_time', inherits: AbstractRole.FORM_FIELD_CONTAINER},
-  timer: {msgId: 'role_timer', inherits: AbstractRole.NAME_FROM_CONTENTS},
-  toolbar: {msgId: 'role_toolbar', ignoreAncestry: true},
-  toggleButton: {msgId: 'role_toggle_button', inherits: RoleType.CHECK_BOX},
-  tree: {msgId: 'role_tree'},
-  treeItem: {msgId: 'role_treeitem'},
-  video: {msgId: 'tag_video', inherits: AbstractRole.FORM_FIELD_CONTAINER},
-  window: {ignoreAncestry: true},
+  [RoleType.TIME]:
+      {msgId: 'tag_time', inherits: AbstractRole.FORM_FIELD_CONTAINER},
+  [RoleType.TIMER]:
+      {msgId: 'role_timer', inherits: AbstractRole.NAME_FROM_CONTENTS},
+  [RoleType.TOGGLE_BUTTON]:
+      {msgId: 'role_toggle_button', inherits: RoleType.CHECK_BOX},
+  [RoleType.TOOLBAR]: {msgId: 'role_toolbar', ignoreAncestry: true},
+  [RoleType.TREE]: {msgId: 'role_tree'},
+  [RoleType.TREE_ITEM]: {msgId: 'role_treeitem'},
+  [RoleType.VIDEO]:
+      {msgId: 'tag_video', inherits: AbstractRole.FORM_FIELD_CONTAINER},
+  [RoleType.WINDOW]: {ignoreAncestry: true},
 };
 
 TestImportManager.exportForTesting(['OutputRoleInfo', OutputRoleInfo]);
