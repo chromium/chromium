@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import type {CalendarEvent} from 'chrome://new-tab-page/google_calendar.mojom-webui.js';
-import {CalendarElement} from 'chrome://new-tab-page/lazy_load.js';
+import {CalendarAction, CalendarElement} from 'chrome://new-tab-page/lazy_load.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -16,8 +18,10 @@ import {createEvent, createEvents, toTime} from './test_support.js';
 suite('NewTabPageModulesCalendarTest', () => {
   let element: CalendarElement;
   let windowProxy: TestMock<WindowProxy>;
+  let metrics: MetricsTracker;
 
   setup(async () => {
+    metrics = fakeMetricsPrivate();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     windowProxy = installMock(WindowProxy);
     element = new CalendarElement();
@@ -196,8 +200,28 @@ suite('NewTabPageModulesCalendarTest', () => {
         element.shadowRoot!.querySelectorAll('ntp-calendar-event');
     assertEquals(4, eventElements.length);
     assertTrue(eventElements[0]!.hasAttribute('expanded'));
-    assertEquals(eventElements[1]!.className, 'row double-booked');
-    assertEquals(eventElements[2]!.className, 'row double-booked');
-    assertNotEquals(eventElements[3]!.className, 'row double-booked');
+    assertTrue(eventElements[1]!.hasAttribute('double-booked'));
+    assertTrue(eventElements[2]!.hasAttribute('double-booked'));
+    assertFalse(eventElements[3]!.hasAttribute('double-booked'));
+  });
+
+  suite('metrics', () => {
+    test('see more click', async () => {
+      const moduleName = 'GoogleCalendar';
+      const numEvents = 2;
+      element.events = createEvents(numEvents);
+      element.moduleName = moduleName;
+      await microtasksFinished();
+
+      // Act.
+      element.$.seeMore.querySelector('a')!.click();
+
+      // Assert.
+      assertEquals(
+          1,
+          metrics.count(
+              `NewTabPage.${moduleName}.UserAction`,
+              CalendarAction.SEE_MORE_CLICKED));
+    });
   });
 });

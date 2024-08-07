@@ -1,4 +1,4 @@
-<a id="header" href="${this.event.url.url}">
+<a id="header" href="${this.event.url.url}" @click="${this.recordHeaderClick_}">
   <span id="startTime">${this.formattedStartTime_}</span>
   <span id="title">${this.event.title}</span>
   <span id="timeStatus" ?hidden="${!this.timeStatus_}">

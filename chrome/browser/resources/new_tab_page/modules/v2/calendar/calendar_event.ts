@@ -12,7 +12,7 @@ import {I18nMixinLit} from '../../../i18n_setup.js';
 
 import {getCss} from './calendar_event.css.js';
 import {getHtml} from './calendar_event.html.js';
-import {toJsTimestamp} from './common.js';
+import {CalendarAction, recordCalendarAction, toJsTimestamp} from './common.js';
 
 const kAttachmentScrollFadeBuffer: number = 4;
 const kMillisecondsInMinute: number = 60000;
@@ -47,6 +47,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
 
   static override get properties() {
     return {
+      doubleBooked: {type: Boolean},
       event: {type: Object},
 
       expanded: {
@@ -54,14 +55,17 @@ export class CalendarEventElement extends CalendarEventElementBase {
         reflect: true,
       },
 
+      moduleName: {type: String},
       attachmentListClass_: {type: String},
       formattedStartTime_: {type: String},
       timeStatus_: {type: String},
     };
   }
 
+  doubleBooked: boolean;
   event: CalendarEvent;
   expanded: boolean;
+  moduleName: string;
 
   protected attachmentListClass_: string;
   protected formattedStartTime_: string;
@@ -133,13 +137,26 @@ export class CalendarEventElement extends CalendarEventElementBase {
   }
 
   protected openAttachment_(e: Event) {
+    recordCalendarAction(CalendarAction.ATTACHMENT_CLICKED, this.moduleName);
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number(currentTarget.dataset['index']);
     window.location.href = this.event.attachments[index]!.resourceUrl.url;
   }
 
   protected openVideoConference_() {
+    recordCalendarAction(
+        CalendarAction.CONFERENCE_CALL_CLICKED, this.moduleName);
     window.location.href = this.event.conferenceUrl!.url;
+  }
+
+  protected recordHeaderClick_() {
+    let action = CalendarAction.BASIC_EVENT_HEADER_CLICKED;
+    if (this.expanded) {
+      action = CalendarAction.EXPANDED_EVENT_HEADER_CLICKED;
+    } else if (this.doubleBooked) {
+      action = CalendarAction.DOUBLE_BOOKED_EVENT_HEADER_CLICKED;
+    }
+    recordCalendarAction(action, this.moduleName);
   }
 
   protected showConferenceButton_(): boolean {

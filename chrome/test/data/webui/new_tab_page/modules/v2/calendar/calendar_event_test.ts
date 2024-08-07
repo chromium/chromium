@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CalendarEventElement} from 'chrome://new-tab-page/lazy_load.js';
+import {CalendarAction, CalendarEventElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createAttachments, createEvent} from './test_support.js';
@@ -14,8 +16,10 @@ const kWindowsToUnixEpochOffset: bigint = 11644473600000000n;
 
 suite('NewTabPageModulesCalendaEventTest', () => {
   let element: CalendarEventElement;
+  let metrics: MetricsTracker;
 
   setup(async () => {
+    metrics = fakeMetricsPrivate();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.style.width = '300px';
     element = new CalendarEventElement();
@@ -197,5 +201,100 @@ suite('NewTabPageModulesCalendaEventTest', () => {
     const conferenceElement = $$(element, '#conference');
     assertTrue(!!conferenceElement);
     assertFalse(isVisible(conferenceElement));
+  });
+
+  suite('metrics', () => {
+    test('basic event click', async () => {
+      const moduleName = 'GoogleCalendar';
+      element.event = createEvent(1);
+      element.moduleName = moduleName;
+      await microtasksFinished();
+
+      // Act.
+      element.$.header.click();
+
+      // Assert.
+      assertEquals(
+          1,
+          metrics.count(
+              `NewTabPage.${moduleName}.UserAction`,
+              CalendarAction.BASIC_EVENT_HEADER_CLICKED));
+    });
+
+    test('expanded event click', async () => {
+      const moduleName = 'GoogleCalendar';
+      element.expanded = true;
+      element.event = createEvent(1);
+      element.moduleName = moduleName;
+      await microtasksFinished();
+
+      // Act.
+      element.$.header.click();
+
+      // Assert.
+      assertEquals(
+          1,
+          metrics.count(
+              `NewTabPage.${moduleName}.UserAction`,
+              CalendarAction.EXPANDED_EVENT_HEADER_CLICKED));
+    });
+
+    test('double booked event click', async () => {
+      const moduleName = 'GoogleCalendar';
+      element.doubleBooked = true;
+      element.event = createEvent(1);
+      element.moduleName = moduleName;
+      await microtasksFinished();
+
+      // Act.
+      element.$.header.click();
+
+      // Assert.
+      assertEquals(
+          1,
+          metrics.count(
+              `NewTabPage.${moduleName}.UserAction`,
+              CalendarAction.DOUBLE_BOOKED_EVENT_HEADER_CLICKED));
+    });
+
+    test('attachment click', async () => {
+      const moduleName = 'GoogleCalendar';
+      element.expanded = true;
+      element.event = createEvent(1, {attachments: createAttachments(3)});
+      element.moduleName = moduleName;
+      await microtasksFinished();
+
+      // Act.
+      const attachments = element.renderRoot!.querySelectorAll('.attachment');
+      assertEquals(attachments.length, 3);
+      (attachments[1]! as HTMLElement).click();
+
+      // Assert.
+      assertEquals(
+          1,
+          metrics.count(
+              `NewTabPage.${moduleName}.UserAction`,
+              CalendarAction.ATTACHMENT_CLICKED));
+    });
+
+    test('conference call click', async () => {
+      const moduleName = 'GoogleCalendar';
+      element.expanded = true;
+      element.event = createEvent(1, {conferenceUrl: {url: 'http://foo.com'}});
+      element.moduleName = moduleName;
+      await microtasksFinished();
+      // Act.
+      const conference =
+          element.renderRoot!.querySelector('#conference cr-button');
+      assertTrue(!!conference);
+      (conference! as HTMLElement).click();
+
+      // Assert.
+      assertEquals(
+          1,
+          metrics.count(
+              `NewTabPage.${moduleName}.UserAction`,
+              CalendarAction.CONFERENCE_CALL_CLICKED));
+    });
   });
 });
