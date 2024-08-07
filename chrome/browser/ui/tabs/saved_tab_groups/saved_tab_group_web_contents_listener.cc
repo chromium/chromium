@@ -16,6 +16,7 @@
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "net/http/http_request_headers.h"
 #include "ui/base/page_transition_types.h"
 
 namespace tab_groups {
@@ -24,9 +25,10 @@ namespace {
 bool IsSaveableNavigation(content::NavigationHandle* navigation_handle) {
   ui::PageTransition page_transition = navigation_handle->GetPageTransition();
 
-  // NavigationHandle::IsPost() may not catch all POST request if there is a
-  // server side redirection. So we ignore all form submissions.
-  if (navigation_handle->IsPost() || navigation_handle->IsFormSubmission()) {
+  // The initial request needs to be a GET request, regardless of server-side
+  // redirects later on.
+  if (navigation_handle->GetRequestMethod() !=
+      net::HttpRequestHeaders::kGetMethod) {
     return false;
   }
   if (!ui::IsValidPageTransitionType(page_transition)) {

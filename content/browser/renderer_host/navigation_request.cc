@@ -1705,7 +1705,8 @@ NavigationRequest::NavigationRequest(
               ? std::make_optional(FencedFrameProperties(common_params_->url))
               : std::nullopt),
       embedder_shared_storage_context_(embedder_shared_storage_context),
-      has_ad_auction_headers_attribute_(frame_tree_node->ad_auction_headers()) {
+      has_ad_auction_headers_attribute_(frame_tree_node->ad_auction_headers()),
+      request_method_(common_params_->method) {
   TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::NavigationRequest",
                          TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
                                              TRACE_ID_LOCAL(navigation_id_)),
@@ -8768,6 +8769,10 @@ const NavigationHandleTiming& NavigationRequest::GetNavigationHandleTiming() {
 
 bool NavigationRequest::IsPost() {
   return common_params().method == "POST";
+}
+
+std::string NavigationRequest::GetRequestMethod() {
+  return request_method_;
 }
 
 const blink::mojom::Referrer& NavigationRequest::GetReferrer() {

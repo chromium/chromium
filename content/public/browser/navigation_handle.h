@@ -253,6 +253,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // |bool IsPost()| as opposed to |const std::string& GetMethod()| method.
   virtual bool IsPost() = 0;
 
+  // Gets the request method for the initial network request. Unlike `IsPost()`,
+  // This will not change during the navigation (e.g. after encountering a
+  // server redirect).
+  virtual std::string GetRequestMethod() = 0;
+
   // Returns a sanitized version of the referrer for this request.
   virtual const blink::mojom::Referrer& GetReferrer() = 0;
 

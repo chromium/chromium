@@ -1059,14 +1059,16 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   EXPECT_EQ(saved_group->saved_tabs().at(0).url(), good_gurl);
 }
 
-TEST_F(SavedTabGroupKeyedServiceUnitTest, FormSubmissionDoesntUpdateModel) {
+TEST_F(SavedTabGroupKeyedServiceUnitTest,
+       RedirectAfterDeleteRequestDoesntUpdateModel) {
   Browser* browser_1 = AddBrowser();
 
   // Create a saved tab group with one good tab.
   ASSERT_EQ(0, browser_1->tab_strip_model()->count());
   content::WebContents* added_tab = AddTabToBrowser(browser_1, 0);
   GURL good_url = GURL("http://www.foo.com");
-  GURL form_url = GURL("http://www.fooform.com");
+  GURL delete_url = GURL("http://www.delete.com");
+  GURL redirect_url = GURL("http://www.redirect.com");
 
   auto* tester = content::WebContentsTester::For(added_tab);
   tester->NavigateAndCommit(good_url);
@@ -1078,10 +1080,11 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, FormSubmissionDoesntUpdateModel) {
   content::RenderFrameHost* render_frame_host =
       added_tab->GetPrimaryMainFrame();
   std::unique_ptr<content::NavigationSimulator> navigation =
-      content::NavigationSimulator::CreateRendererInitiated(form_url,
+      content::NavigationSimulator::CreateRendererInitiated(delete_url,
                                                             render_frame_host);
-  navigation->SetIsFormSubmission(true);
+  navigation->SetMethod("DELETE");
   navigation->Start();
+  navigation->Redirect(redirect_url);
   navigation->Commit();
 
   // The SavedTabGroupTab should still be at the good URL not the bad one.
