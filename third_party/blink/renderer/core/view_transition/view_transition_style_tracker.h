@@ -302,14 +302,16 @@ class ViewTransitionStyleTracker
 
   void AddConsoleError(String message, Vector<DOMNodeId> related_nodes = {});
   void AddTransitionElement(Element*,
-                            const AtomicString&,
-                            const Vector<AtomicString>& containing_group_stack);
+                            const AtomicString& name,
+                            const AtomicString& nearest_containing_group,
+                            const AtomicString& current_containing_group_name);
   bool FlattenAndVerifyElements(VectorOf<Element>&, VectorOf<AtomicString>&);
 
   void AddTransitionElementsFromCSSRecursive(
       PaintLayer*,
       const TreeScope*,
-      Vector<AtomicString>& containing_group_stack);
+      Vector<AtomicString>& containing_group_stack,
+      const AtomicString& current_containing_group_name);
 
   void InvalidateHitTestingCache();
 
@@ -397,10 +399,16 @@ class ViewTransitionStyleTracker
   // used only to enforce additional captures don't happen after that.
   mutable bool state_extracted_ = false;
 
-  // A map from the element name to its nearest ancestor with a
-  // view-transition-name, if one exists. Used to save hierarchical information
-  // about view-transition-group
-  HashMap<AtomicString, AtomicString> nearest_parent_map_;
+  // Used to save hierarchical information about the nearest
+  // view-transition-group as well as the nearest one with "contain".
+  struct AncestorGroupNames {
+    AtomicString nearest;
+
+    // This is the nearest ancestor view-transition-name that is set to contain
+    // all of its descendants.
+    AtomicString contain;
+  };
+  HashMap<AtomicString, AncestorGroupNames> group_state_map_;
 };
 
 }  // namespace blink

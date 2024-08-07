@@ -17,11 +17,12 @@ class StyleViewTransitionGroup {
   DISALLOW_NEW();
 
  public:
-  enum class GroupType { kNormal, kCustom, kNearest };
+  enum class GroupType { kNormal, kCustom, kNearest, kContain };
 
   bool IsNearest() const { return type_ == GroupType::kNearest; }
   bool IsCustom() const { return type_ == GroupType::kCustom; }
   bool IsNormal() const { return type_ == GroupType::kNormal; }
+  bool IsContain() const { return type_ == GroupType::kContain; }
 
   static StyleViewTransitionGroup Nearest() {
     return StyleViewTransitionGroup(GroupType::kNearest);
@@ -29,10 +30,14 @@ class StyleViewTransitionGroup {
   static StyleViewTransitionGroup Normal() {
     return StyleViewTransitionGroup(GroupType::kNormal);
   }
+  static StyleViewTransitionGroup Contain() {
+    return StyleViewTransitionGroup(GroupType::kContain);
+  }
   static StyleViewTransitionGroup Create(const AtomicString& name) {
     CHECK(name);
     CHECK_NE(name, "nearest");
     CHECK_NE(name, "normal");
+    CHECK_NE(name, "contain");
     return StyleViewTransitionGroup(name);
   }
 

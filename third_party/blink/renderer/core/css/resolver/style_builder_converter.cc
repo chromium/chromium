@@ -2355,6 +2355,8 @@ StyleViewTransitionGroup StyleBuilderConverter::ConvertViewTransitionGroup(
         return StyleViewTransitionGroup::Nearest();
       case CSSValueID::kNormal:
         return StyleViewTransitionGroup::Normal();
+      case CSSValueID::kContain:
+        return StyleViewTransitionGroup::Contain();
       default:
         NOTREACHED_NORETURN();
     }

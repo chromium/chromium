@@ -7007,7 +7007,8 @@ const CSSValue* ViewTransitionGroup::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   auto id = stream.Peek().Id();
-  if (id == CSSValueID::kNormal || id == CSSValueID::kNearest) {
+  if (id == CSSValueID::kNormal || id == CSSValueID::kNearest ||
+      id == CSSValueID::kContain) {
     return css_parsing_utils::ConsumeIdent(stream);
   }
   return css_parsing_utils::ConsumeCustomIdent(stream, context);
@@ -7022,6 +7023,8 @@ const CSSValue* ViewTransitionGroup::CSSValueFromComputedStyleInternal(
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   } else if (style.ViewTransitionGroup().IsNearest()) {
     return CSSIdentifierValue::Create(CSSValueID::kNearest);
+  } else if (style.ViewTransitionGroup().IsContain()) {
+    return CSSIdentifierValue::Create(CSSValueID::kContain);
   }
   return MakeGarbageCollected<CSSCustomIdentValue>(
       style.ViewTransitionGroup().CustomName());

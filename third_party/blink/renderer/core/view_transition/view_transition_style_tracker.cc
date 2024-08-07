@@ -549,7 +549,8 @@ void ViewTransitionStyleTracker::AddConsoleError(
 void ViewTransitionStyleTracker::AddTransitionElement(
     Element* element,
     const AtomicString& name,
-    const Vector<AtomicString>& containing_group_stack) {
+    const AtomicString& nearest_containing_group,
+    const AtomicString& nearest_group_with_contain) {
   DCHECK(element);
 
   // Insert an empty hash set for the element if it doesn't exist, or get it if
@@ -558,8 +559,11 @@ void ViewTransitionStyleTracker::AddTransitionElement(
                     .insert(element, HashSet<std::pair<AtomicString, int>>())
                     .stored_value->value;
 
-  if (!containing_group_stack.empty()) {
-    nearest_parent_map_.Set(name, containing_group_stack.back());
+  if (nearest_containing_group) {
+    group_state_map_.Set(name, AncestorGroupNames{
+                                   nearest_containing_group,
+                                   nearest_group_with_contain,
+                               });
   }
   // Find the existing name if one is there. If it is there, do nothing.
   if (base::Contains(value, name, &std::pair<AtomicString, int>::first))
@@ -626,13 +630,14 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSS() {
 
   AddTransitionElementsFromCSSRecursive(
       document_->GetLayoutView()->PaintingLayer(), document_.Get(),
-      containing_group_stack);
+      containing_group_stack, /*nearest_group_with_contain=*/g_null_atom);
 }
 
 void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
     PaintLayer* root,
     const TreeScope* tree_scope,
-    Vector<AtomicString>& containing_group_stack) {
+    Vector<AtomicString>& containing_group_stack,
+    const AtomicString& nearest_group_with_contain) {
   // We want to call AddTransitionElements in the order in which
   // PaintLayerPaintOrderIterator would cause us to paint the elements.
   // Specifically, parents are added before their children, and lower z-index
@@ -665,7 +670,10 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
     if (relevant_tree_scope == tree_scope || !relevant_tree_scope) {
       current_name = root_style.ViewTransitionName()->GetName();
       AddTransitionElement(DynamicTo<Element>(node), current_name,
-                           containing_group_stack);
+                           containing_group_stack.empty()
+                               ? g_null_atom
+                               : containing_group_stack.back(),
+                           nearest_group_with_contain);
     }
   }
 
@@ -680,8 +688,11 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
   // children can have outer tree scope.
   PaintLayerPaintOrderIterator child_iterator(root, kAllChildren);
   while (auto* child = child_iterator.Next()) {
-    AddTransitionElementsFromCSSRecursive(child, tree_scope,
-                                          containing_group_stack);
+    AddTransitionElementsFromCSSRecursive(
+        child, tree_scope, containing_group_stack,
+        root_style.ViewTransitionGroup().IsContain()
+            ? current_name
+            : nearest_group_with_contain);
   }
 
   if (current_name) {
@@ -768,16 +779,20 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
 AtomicString ViewTransitionStyleTracker::ComputeContainingGroupName(
     const AtomicString& name,
     const StyleViewTransitionGroup& group) const {
-  if (group.IsNormal() || !nearest_parent_map_.Contains(name)) {
+  if (!group_state_map_.Contains(name)) {
     return g_null_atom;
   }
 
-  AtomicString parent_group = nearest_parent_map_.at(name);
-  if (group.IsNearest() || group.CustomName() == parent_group) {
-    return parent_group;
+  const auto& parent_state = group_state_map_.at(name);
+  if (group.IsNormal() || group.IsContain()) {
+    return parent_state.contain;
   }
 
-  return ComputeContainingGroupName(parent_group, group);
+  if (group.IsNearest() || group.CustomName() == parent_state.nearest) {
+    return parent_state.nearest;
+  }
+
+  return ComputeContainingGroupName(parent_state.nearest, group);
 }
 
 bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
