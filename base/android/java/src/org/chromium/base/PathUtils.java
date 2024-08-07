@@ -313,19 +313,23 @@ public abstract class PathUtils {
                 StorageManager manager =
                         ContextUtils.getApplicationContext().getSystemService(StorageManager.class);
                 Uri uri = MediaStore.Files.getContentUri(vol);
-                File volumeDir = manager.getStorageVolume(uri).getDirectory();
-                File volumeDownloadDir = new File(volumeDir, Environment.DIRECTORY_DOWNLOADS);
-                // Happens in rare case when Android doesn't create the download directory for this
-                // volume.
-                if (!volumeDownloadDir.isDirectory()) {
-                    Log.w(
-                            TAG,
-                            "Download dir missing: %s, parent dir:%s, isDirectory:%s",
-                            volumeDownloadDir.getAbsolutePath(),
-                            volumeDir.getAbsolutePath(),
-                            volumeDir.isDirectory());
+                try {
+                    File volumeDir = manager.getStorageVolume(uri).getDirectory();
+                    File volumeDownloadDir = new File(volumeDir, Environment.DIRECTORY_DOWNLOADS);
+                    // Happens in rare case when Android doesn't create the download directory for
+                    // this volume.
+                    if (!volumeDownloadDir.isDirectory()) {
+                        Log.w(
+                                TAG,
+                                "Download dir missing: %s, parent dir:%s, isDirectory:%s",
+                                volumeDownloadDir.getAbsolutePath(),
+                                volumeDir.getAbsolutePath(),
+                                volumeDir.isDirectory());
+                    }
+                    files.add(volumeDownloadDir);
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to get storage volume for uri: " + uri, e);
                 }
-                files.add(volumeDownloadDir);
             }
         }
 
