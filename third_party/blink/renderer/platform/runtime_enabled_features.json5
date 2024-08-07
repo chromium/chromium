@@ -1036,6 +1036,10 @@
       status: "experimental",
     },
     {
+      name: "CSSMasonryLayout",
+      status: "test",
+    },
+    {
       name: "CSSMixins",
     },
     {
@@ -2516,10 +2520,6 @@
     },
     {
       name: "LayoutIgnoreMarginsForSticky",
-    },
-    {
-      name: "LayoutMasonry",
-      status: "test",
     },
     {
       name: "LayoutNGShapeCache",

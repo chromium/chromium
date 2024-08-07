@@ -51,8 +51,9 @@
         "inline-flex", "grid", "inline-grid", "contents", "flow-root", "none",
         "layout-custom", "inline-layout-custom", "math", "block math",
         "inline list-item", "flow-root list-item", "inline flow-root list-item",
-        // Available only if CssDisplayRuby is enabled:
-        "ruby", "block ruby", "ruby-text"
+        "ruby", "block ruby", "ruby-text",
+        // Available only if CSSMasonryLayout is enabled:
+        "masonry", "inline-masonry"
       ],
       default_value: "inline",
     },

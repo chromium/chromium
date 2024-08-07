@@ -193,6 +193,7 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
     case EDisplay::kListItem:
     case EDisplay::kFlowRoot:
     case EDisplay::kLayoutCustom:
+    case EDisplay::kMasonry:
       return display;
     case EDisplay::kInlineTable:
       return EDisplay::kTable;
@@ -212,6 +213,8 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
       return EDisplay::kListItem;
     case EDisplay::kInlineFlowRootListItem:
       return EDisplay::kFlowRootListItem;
+    case EDisplay::kInlineMasonry:
+      return EDisplay::kMasonry;
 
     case EDisplay::kContents:
     case EDisplay::kInline:
@@ -250,6 +253,8 @@ static EDisplay EquivalentInlineDisplay(EDisplay display) {
       return EDisplay::kInlineFlex;
     case EDisplay::kGrid:
       return EDisplay::kInlineGrid;
+    case EDisplay::kMasonry:
+      return EDisplay::kInlineMasonry;
     case EDisplay::kBlockMath:
       return EDisplay::kMath;
     case EDisplay::kBlockRuby:
@@ -264,6 +269,7 @@ static EDisplay EquivalentInlineDisplay(EDisplay display) {
     case EDisplay::kInlineGrid:
     case EDisplay::kInlineLayoutCustom:
     case EDisplay::kInlineListItem:
+    case EDisplay::kInlineMasonry:
     case EDisplay::kInlineTable:
     case EDisplay::kMath:
     case EDisplay::kRuby:

@@ -358,6 +358,10 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
   switch (style.Display()) {
     case EDisplay::kNone:
     case EDisplay::kContents:
+    // TODO(ethavar): Return the appropriate `LayoutMasonry` object once we
+    // introduce `MasonryLayoutAlgorithm`.
+    case EDisplay::kMasonry:
+    case EDisplay::kInlineMasonry:
       return nullptr;
     case EDisplay::kInline:
       return MakeGarbageCollected<LayoutInline>(element);
