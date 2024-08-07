@@ -33,7 +33,7 @@ class MockPasswordAccessoryController : public PasswordAccessoryController {
        (const url::Origin&)));
   MOCK_METHOD(void,
               RefreshSuggestionsForField,
-              (autofill::mojom::FocusedFieldType, bool),
+              (autofill::mojom::FocusedFieldType),
               (override));
   MOCK_METHOD(void,
               OnGenerationRequested,

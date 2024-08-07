@@ -72,8 +72,7 @@ class PasswordAccessoryControllerImpl
 
   // PasswordAccessoryController:
   void RefreshSuggestionsForField(
-      autofill::mojom::FocusedFieldType focused_field_type,
-      bool is_manual_generation_available) override;
+      autofill::mojom::FocusedFieldType focused_field_type) override;
   void OnGenerationRequested(
       autofill::password_generation::PasswordGenerationType type) override;
   void UpdateCredManReentryUi(

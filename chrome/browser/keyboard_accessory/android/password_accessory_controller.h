@@ -48,8 +48,7 @@ class PasswordAccessoryController : public AccessoryController {
   // Makes sure, that all shown suggestions are appropriate for the currently
   // focused field and for fields that lost the focus.
   virtual void RefreshSuggestionsForField(
-      autofill::mojom::FocusedFieldType focused_field_type,
-      bool is_manual_generation_available) = 0;
+      autofill::mojom::FocusedFieldType focused_field_type) = 0;
 
   // Signals that generation was requested from the accessory. |type|
   // indicates whether generation was requested via the manual fallback or from

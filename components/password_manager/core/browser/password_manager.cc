@@ -805,7 +805,7 @@ void PasswordManager::HideManualFallbackForSaving() {
 }
 
 bool PasswordManager::HaveFormManagersReceivedData(
-    const PasswordManagerDriver* driver) {
+    const PasswordManagerDriver* driver) const {
   // If no form managers exist to have requested logins, no data was received
   // either.
   if (password_form_cache_.IsEmpty()) {

@@ -471,8 +471,7 @@ void PasswordAccessoryControllerImpl::OnToggleChanged(
 }
 
 void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
-    FocusedFieldType focused_field_type,
-    bool is_manual_generation_available) {
+    FocusedFieldType focused_field_type) {
   // Discard all frame data. This ensures that the data is never used for an
   // incorrect frame.
   last_focused_field_info_ = std::nullopt;
@@ -488,8 +487,18 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
   if (origin.opaque()) {
     return;  // Don't proceed for invalid origins.
   }
+  password_manager::PasswordManagerDriver* driver =
+      driver_supplier_.Run(&GetWebContents());
+  if (!driver) {
+    return;
+  }
   TRACE_EVENT0("passwords",
                "PasswordAccessoryControllerImpl::RefreshSuggestionsForField");
+  const bool is_manual_generation_available =
+      password_manager_util::ManualPasswordGenerationEnabled(driver) &&
+      password_client_->GetPasswordManager()->HaveFormManagersReceivedData(
+          driver);
+
   last_focused_field_info_.emplace(origin, focused_field_type,
                                    is_manual_generation_available);
   bool sheet_provides_value = is_manual_generation_available;
@@ -498,8 +507,7 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
   if (!all_passwords_helper_.available_credentials().has_value()) {
     all_passwords_helper_.SetUpdateCallback(base::BindOnce(
         &PasswordAccessoryControllerImpl::RefreshSuggestionsForField,
-        base::Unretained(this), focused_field_type,
-        is_manual_generation_available));
+        base::Unretained(this), focused_field_type));
   } else {
     sheet_provides_value |=
         all_passwords_helper_.available_credentials().value() > 0;

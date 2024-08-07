@@ -309,7 +309,7 @@ class MockPasswordAccessoryControllerImpl
 
   MOCK_METHOD(void,
               RefreshSuggestionsForField,
-              (autofill::mojom::FocusedFieldType, bool),
+              (autofill::mojom::FocusedFieldType),
               (override));
   MOCK_METHOD(void,
               UpdateCredManReentryUi,
@@ -1387,8 +1387,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
   EXPECT_CALL(
       *weak_mock_pwd_controller,
-      RefreshSuggestionsForField(FocusedFieldType::kFillablePasswordField,
-                                 /*is_manual_generation_available=*/false));
+      RefreshSuggestionsForField(FocusedFieldType::kFillablePasswordField));
   GetClient()->FocusedInputChanged(driver.get(),
                                    observed_form_data.fields()[0].renderer_id(),
                                    FocusedFieldType::kFillablePasswordField);
@@ -1438,8 +1437,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
       SetUpMockPwdAccessoryForClientUse(driver.get());
   EXPECT_CALL(
       *weak_mock_pwd_controller,
-      RefreshSuggestionsForField(FocusedFieldType::kFillablePasswordField,
-                                 /*is_manual_generation_available=*/true));
+      RefreshSuggestionsForField(FocusedFieldType::kFillablePasswordField));
   GetClient()->FocusedInputChanged(driver.get(),
                                    observed_form_data.fields()[0].renderer_id(),
                                    FocusedFieldType::kFillablePasswordField);
@@ -1479,8 +1477,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
       SetUpMockPwdAccessoryForClientUse(driver.get());
   EXPECT_CALL(
       *weak_mock_pwd_controller,
-      RefreshSuggestionsForField(FocusedFieldType::kFillablePasswordField,
-                                 /*is_manual_generation_available=*/true));
+      RefreshSuggestionsForField(FocusedFieldType::kFillablePasswordField));
   GetClient()->FocusedInputChanged(driver.get(),
                                    observed_form_data.fields()[0].renderer_id(),
                                    FocusedFieldType::kFillablePasswordField);
