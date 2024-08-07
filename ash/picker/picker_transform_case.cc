@@ -8,15 +8,13 @@
 #include <string_view>
 
 #include "base/i18n/case_conversion.h"
+#include "base/i18n/unicodestring.h"
+#include "third_party/icu/source/common/unicode/unistr.h"
 
 namespace ash {
-namespace {
 
-bool u16_isalpha(char16_t ch) {
-  return (ch >= u'A' && ch <= u'Z') || (ch >= u'a' && ch <= u'z');
-}
-
-}  // namespace
+// TODO: b/333490858 - These functions should take in a locale as a parameter
+// instead of using the default locale.
 
 std::u16string PickerTransformToLowerCase(std::u16string_view text) {
   return base::i18n::ToLower(text);
@@ -27,14 +25,9 @@ std::u16string PickerTransformToUpperCase(std::u16string_view text) {
 }
 
 std::u16string PickerTransformToTitleCase(std::u16string_view text) {
-  std::u16string result(text);
-  std::u16string uppercase_text = base::i18n::ToUpper(text);
-  for (size_t i = 0; i < result.length(); i++) {
-    if (u16_isalpha(result[i]) && (i == 0 || result[i - 1] == u' ')) {
-      result[i] = uppercase_text[i];
-    }
-  }
-  return result;
+  icu::UnicodeString unicode_text(text.data(), text.length());
+  return base::i18n::UnicodeStringToString16(
+      unicode_text.toTitle(/*titleIter=*/nullptr));
 }
 
 }  // namespace ash

@@ -533,14 +533,14 @@ TEST_F(PickerControllerTest, OpenUpperCaseResultCommitsUpperCase) {
   ui::FakeTextInputClient input_field(input_method,
                                       {.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_method->SetFocusedTextInputClient(&input_field);
-  input_field.SetTextAndSelection(u"abc", gfx::Range(0, 3));
+  input_field.SetTextAndSelection(u"aBc DeF", gfx::Range(0, 7));
 
   controller().ToggleWidget();
   controller().OpenResult(PickerSearchResult::CaseTransform(
       PickerSearchResult::CaseTransformData::Type::kUpperCase));
   input_method->SetFocusedTextInputClient(&input_field);
 
-  EXPECT_EQ(input_field.text(), u"ABC");
+  EXPECT_EQ(input_field.text(), u"ABC DEF");
 }
 
 TEST_F(PickerControllerTest, OpenLowerCaseResultCommitsLowerCase) {
@@ -549,14 +549,14 @@ TEST_F(PickerControllerTest, OpenLowerCaseResultCommitsLowerCase) {
   ui::FakeTextInputClient input_field(input_method,
                                       {.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_method->SetFocusedTextInputClient(&input_field);
-  input_field.SetTextAndSelection(u"XYZ", gfx::Range(0, 3));
+  input_field.SetTextAndSelection(u"aBc DeF", gfx::Range(0, 7));
 
   controller().ToggleWidget();
   controller().OpenResult(PickerSearchResult::CaseTransform(
       PickerSearchResult::CaseTransformData::Type::kLowerCase));
   input_method->SetFocusedTextInputClient(&input_field);
 
-  EXPECT_EQ(input_field.text(), u"xyz");
+  EXPECT_EQ(input_field.text(), u"abc def");
 }
 
 TEST_F(PickerControllerTest, OpenTitleCaseResultCommitsTitleCase) {
@@ -565,14 +565,14 @@ TEST_F(PickerControllerTest, OpenTitleCaseResultCommitsTitleCase) {
   ui::FakeTextInputClient input_field(input_method,
                                       {.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_method->SetFocusedTextInputClient(&input_field);
-  input_field.SetTextAndSelection(u"how are you", gfx::Range(0, 11));
+  input_field.SetTextAndSelection(u"aBc DeF", gfx::Range(0, 7));
 
   controller().ToggleWidget();
   controller().OpenResult(PickerSearchResult::CaseTransform(
       PickerSearchResult::CaseTransformData::Type::kTitleCase));
   input_method->SetFocusedTextInputClient(&input_field);
 
-  EXPECT_EQ(input_field.text(), u"How Are You");
+  EXPECT_EQ(input_field.text(), u"Abc Def");
 }
 
 TEST_F(PickerControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {
