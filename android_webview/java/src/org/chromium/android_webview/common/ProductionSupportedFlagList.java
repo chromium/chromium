@@ -928,6 +928,9 @@ public final class ProductionSupportedFlagList {
                 "If enabled, non-render-blocking style loading tasks have higher priority on"
                         + " visible pages"),
         Flag.baseFeature(
+                MediaFeatures.BUILT_IN_HLS_PLAYER,
+                "Switches the HLS demuxer implementation from MediaPlayer to an internal one"),
+        Flag.baseFeature(
                 MediaFeatures.LIBVPX_USE_CHROME_THREADS,
                 "Attaches libvpx threads to the chromium thread system."),
         Flag.baseFeature(
