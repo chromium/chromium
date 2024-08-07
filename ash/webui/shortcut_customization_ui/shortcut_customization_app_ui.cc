@@ -256,13 +256,19 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
     source->AddLocalizedString(
         "blockRightAltKey",
         IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY_ERROR_MESSAGE);
+    source->AddLocalizedString("iconLabelRightAlt",
+                               IDS_KEYBOARD_RIGHT_ALT_LABEL);
   } else {
     source->AddLocalizedString("blockRightAltKey",
                                IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY);
+    source->AddLocalizedString(
+        "iconLabelRightAlt", IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
   }
 #else
   source->AddLocalizedString("blockRightAltKey",
                              IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY);
+  source->AddLocalizedString("iconLabelRightAlt",
+                             IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
 #endif
   source->AddLocalizedStrings(kLocalizedStrings);
   source->AddString("shortcutCustomizationLearnMoreUrl",

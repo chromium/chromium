@@ -119,6 +119,12 @@ export const KeyToIconNameMap: {[key: string]: string|undefined} = {
   'ZoomToggle': 'fullscreen',
 };
 
+// <if expr="_google_chrome" >
+export const KeyToInternalIconNameMap: {[key: string]: string|undefined} = {
+  'RightAlt': 'right-alt',
+};
+// </if>
+
 /**
  * Map the modifier keys to the bit value. Currently the modifiers only
  * contains the following four.

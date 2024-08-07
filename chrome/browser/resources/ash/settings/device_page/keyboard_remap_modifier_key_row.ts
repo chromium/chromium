@@ -13,6 +13,9 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared.css.js';
 import '../controls/settings_dropdown_menu.js';
 import '../os_settings_icons.html.js';
+// <if expr="_google_chrome" >
+import 'chrome://resources/ash/common/internal/ash_internal_icons.html.js';
+// </if>
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
@@ -33,7 +36,8 @@ enum KeyState {
   MODIFIER_REMAPPED = 'modifier-remapped',
 }
 
-type KeyIcon = 'cr:search'|'os-settings:launcher'|'os-settings:assistant'|'';
+type KeyIcon = 'cr:search'|'os-settings:launcher'|'os-settings:assistant'|
+    'ash-internal:launcher-refresh'|'ash-internal:right-alt'|'';
 const KeyboardRemapModifierKeyRowElementBase = I18nMixin(PolymerElement);
 
 export class KeyboardRemapModifierKeyRowElement extends
@@ -251,13 +255,16 @@ export class KeyboardRemapModifierKeyRowElement extends
       if (this.metaKey === MetaKey.kSearch) {
         return 'cr:search';
       }
-      // TODO(dpad): Support launch refresh icon separately.
-      if (this.metaKey === MetaKey.kLauncher ||
-          this.metaKey === MetaKey.kLauncherRefresh) {
+      if (this.metaKey === MetaKey.kLauncher) {
         return 'os-settings:launcher';
+      }
+      if (this.metaKey === MetaKey.kLauncherRefresh) {
+        return 'ash-internal:launcher-refresh';
       }
     } else if (this.key === ModifierKey.kAssistant) {
       return 'os-settings:assistant';
+    } else if (this.key === ModifierKey.kRightAlt) {
+      return 'ash-internal:right-alt';
     }
 
     return '';

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
@@ -198,6 +199,14 @@ foreach(f, html_files + icons_html_files) {
   html_wrapper_files += [ f + ".js" ]
 }
 
+if (is_chrome_branded) {
+  internal_icon_html_files = [ "internal/ash_internal_icons.html" ]
+
+  foreach(f, internal_icon_html_files) {
+    html_wrapper_files += [ f + ".js" ]
+  }
+}
+
 css_files = [
   "multidevice_setup/multidevice_setup_shared.css",
   "navigation_shared_vars.css",
@@ -210,12 +219,22 @@ foreach(f, css_files) {
   css_wrapper_files += [ f + ".js" ]
 }
 
+if (is_chrome_branded) {
+  copy("copy_internal_icons") {
+    sources = [ "//chromeos/ash/resources/internal/ash_internal_icons.html" ]
+    outputs = [ "$preprocessed_dir/internal/{{source_file_part}}" ]
+  }
+}
+
 preprocess_if_expr("preprocess") {
   in_folder = "."
   out_folder = preprocessed_dir
   out_manifest = "$target_gen_dir/$preprocessed_manifest"
   in_files = non_web_component_files + web_component_files + icons_html_files +
              html_files + css_files
+  if (is_chrome_branded) {
+    deps = [ ":copy_internal_icons" ]
+  }
 }
 
 html_to_wrapper("html_wrapper_files") {
@@ -224,6 +243,11 @@ html_to_wrapper("html_wrapper_files") {
   out_folder = preprocessed_dir
   in_files = html_files + icons_html_files
   use_js = true
+
+  if (is_chrome_branded) {
+    in_files += internal_icon_html_files
+    deps += [ ":copy_internal_icons" ]
+  }
 }
 
 css_to_wrapper("css_wrapper_files") {
@@ -441,6 +465,10 @@ generate_definitions_js_files = [
   "traffic_counters/traffic_counters.html.js",
   "util.js",
 ]
+
+if (is_chrome_branded) {
+  generate_definitions_js_files += [ "internal/ash_internal_icons.html.js" ]
+}
 
 ts_definitions("generate_definitions") {
   root_dir = preprocessed_dir
