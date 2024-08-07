@@ -101,7 +101,6 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
 
  private:
   friend class ContentAutofillDriverFactoryTestApi;
-  using LifecycleState = AutofillDriver::LifecycleState;
 
   // Gets the `ContentAutofillDriver` associated with `render_frame_host`.
   // If `render_frame_host` is currently being deleted, this may be nullptr.

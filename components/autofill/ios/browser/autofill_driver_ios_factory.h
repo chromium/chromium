@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_DRIVER_IOS_FACTORY_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_DRIVER_IOS_FACTORY_H_
 
+#import <memory>
 #import <string>
 
 #import "base/containers/flat_map.h"
@@ -68,21 +69,6 @@ class AutofillDriverIOSFactory final
   // Returns the AutofillDriverIOS for `web_frame`. Creates the driver if
   // necessary.
   AutofillDriverIOS* DriverForFrame(web::WebFrame* web_frame);
-
-  // TODO: crbug.com/354043640 - Eliminate.
-  void SetLifecycleStateAndNotifyObservers(
-      AutofillDriver& driver,
-      LifecycleState new_state,
-      base::PassKey<AutofillDriverIOS> pass_key) {
-    AutofillDriverFactory::SetLifecycleStateAndNotifyObservers(driver,
-                                                               new_state);
-  }
-
-  // TODO: crbug.com/354043640 - Eliminate.
-  const base::ObserverList<AutofillDriverFactory::Observer>& observers(
-      base::PassKey<AutofillDriverIOS> pass_key) {
-    return AutofillDriverFactory::observers();
-  }
 
   AutofillDriverRouter& router() { return router_; }
 

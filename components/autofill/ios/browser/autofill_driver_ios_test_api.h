@@ -18,6 +18,7 @@ class AutofillDriverIOSTestApi : public AutofillDriverTestApi {
       : AutofillDriverTestApi(driver) {}
 
   void SetAutofillManager(std::unique_ptr<BrowserAutofillManager> manager) {
+    driver().manager_observation_.Reset();
     driver().manager_ = std::move(manager);
     driver().manager_observation_.Observe(driver().manager_.get());
   }

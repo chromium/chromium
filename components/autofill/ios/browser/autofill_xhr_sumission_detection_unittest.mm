@@ -76,16 +76,16 @@ class AutofillXHRSubmissionDetectionTest : public PlatformTest {
     web_state_.SetWebFramesManager(content_world,
                                    std::move(web_frames_manager));
 
-    // Replace AutofillManager with the test implementation.
-    autofill_manager_injector_ =
-        std::make_unique<TestAutofillManagerInjector<TestingAutofillManager>>(
-            &web_state_);
-
     // Driver factory needs to exist before any call to
     // `AutofillDriverIOS::FromWebStateAndWebFrame`, or we crash.
     autofill::AutofillDriverIOSFactory::CreateForWebState(
         &web_state_, &autofill_client_, /*bridge=*/nil,
         /*locale=*/"en");
+
+    // Replace AutofillManager with the test implementation.
+    autofill_manager_injector_ =
+        std::make_unique<TestAutofillManagerInjector<TestingAutofillManager>>(
+            &web_state_);
 
     // Inject a fake main frame.
     auto main_frame =

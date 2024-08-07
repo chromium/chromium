@@ -55,6 +55,12 @@ AutofillDriverIOSFactory::~AutofillDriverIOSFactory() {
 
 void AutofillDriverIOSFactory::TearDown() {
   if (web_state_) {
+    for (const auto& [frame_id, driver] : driver_map_) {
+      if (driver) {
+        SetLifecycleStateAndNotifyObservers(*driver,
+                                            LifecycleState::kPendingDeletion);
+      }
+    }
     driver_map_.clear();
     for (auto& observer : AutofillDriverFactory::observers()) {
       observer.OnAutofillDriverFactoryDestroyed(*this);
@@ -99,6 +105,10 @@ void AutofillDriverIOSFactory::WebFrameBecameUnavailable(
   // Keep a null driver for `frame_id` in the map to block DriverForFrame() from
   // creating a driver for the unavailable frame.
   std::unique_ptr<AutofillDriverIOS>& driver = driver_map_[frame_id];
+  if (driver) {
+    SetLifecycleStateAndNotifyObservers(*driver,
+                                        LifecycleState::kPendingDeletion);
+  }
   driver = nullptr;
   DCHECK_EQ(&driver_map_[frame_id], &driver);
 }
@@ -113,8 +123,14 @@ AutofillDriverIOS* AutofillDriverIOSFactory::DriverForFrame(
   auto [iter, insertion_happened] = driver_map_.emplace(web_frame_id, nullptr);
   std::unique_ptr<AutofillDriverIOS>& driver = iter->second;
   if (insertion_happened) {
-    driver = base::WrapUnique(new AutofillDriverIOS(
-        web_state_, web_frame, client_, &router_, bridge_, app_locale_));
+    driver = std::make_unique<AutofillDriverIOS>(
+        web_state_, web_frame, client_, &router_, bridge_, app_locale_,
+        base::PassKey<AutofillDriverIOSFactory>());
+    for (auto& observer : observers()) {
+      observer.OnAutofillDriverCreated(*this, *driver);
+    }
+    DCHECK(driver->IsActive());
+    SetLifecycleStateAndNotifyObservers(*driver, LifecycleState::kActive);
     DCHECK_EQ(&driver_map_[web_frame_id], &driver);
   }
   // `driver` may be null if WebFrameBecameUnavailable() has been called for its
