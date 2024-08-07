@@ -2959,13 +2959,22 @@ enum class ToolbarKind {
 
 - (void)showPasswordSuggestion:(NSString*)passwordSuggestion
                      proactive:(BOOL)proactive
+                      webState:(web::WebState*)webState
                decisionHandler:(void (^)(BOOL accept))decisionHandler {
+  // Do not present the bottom sheet if the calling web state does not match the
+  // active web state in order to stop the bottom sheet from showing in a tab
+  // different than the one that triggered it.
+  if (webState != self.activeWebState) {
+    return;
+  }
+
   // Do not present the bottom sheet if there is already another VC presented
   // in which case the coordinator will end up in a bad state.
   if (self.passwordSuggestionCoordinator ||
       self.viewController.presentedViewController) {
     return;
   }
+
   self.passwordSuggestionCoordinator = [[PasswordSuggestionCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser

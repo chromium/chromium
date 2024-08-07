@@ -511,6 +511,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   [self.passwordSuggestionDispatcher
       showPasswordSuggestion:generatedPotentialPassword
                    proactive:proactive
+                    webState:_webState
              decisionHandler:decisionHandler];
 }
 

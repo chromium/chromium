@@ -14,6 +14,7 @@
 // string is set depending on the value of proactive
 - (void)showPasswordSuggestion:(NSString*)passwordSuggestion
                      proactive:(BOOL)proactive
+                      webState:(web::WebState*)webState
                decisionHandler:(void (^)(BOOL accept))decisionHandler;
 
 @end
