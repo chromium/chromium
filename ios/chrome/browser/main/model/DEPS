@@ -3,6 +3,7 @@ include_rules = [
   "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/tabs/model/tab_helper_util.h",
+  "+ios/chrome/browser/omnibox",
 ]
 
 specific_include_rules = {

@@ -339,6 +339,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/location_bar/ui_bundled",
     "//ios/chrome/browser/metrics/model:metrics_browser_agent",
     "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/omnibox/model",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/prerender/model:test_support",

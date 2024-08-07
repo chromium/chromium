@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_coordinator.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/omnibox_focus_orchestrator.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
@@ -546,18 +547,22 @@
 
 - (void)transitionOmniboxToToolbarType:(ToolbarType)toolbarType {
   _omniboxPosition = toolbarType;
+  OmniboxPositionBrowserAgent* positionBrowserAgent =
+      OmniboxPositionBrowserAgent::FromBrowser(self.browser);
   switch (toolbarType) {
     case ToolbarType::kPrimary:
       [self.primaryToolbarCoordinator
           setLocationBarViewController:self.locationBarCoordinator
                                            .locationBarViewController];
       [self.secondaryToolbarCoordinator setLocationBarViewController:nil];
+      positionBrowserAgent->SetIsCurrentLayoutBottomOmnibox(false);
       break;
     case ToolbarType::kSecondary:
       [self.secondaryToolbarCoordinator
           setLocationBarViewController:self.locationBarCoordinator
                                            .locationBarViewController];
       [self.primaryToolbarCoordinator setLocationBarViewController:nil];
+      positionBrowserAgent->SetIsCurrentLayoutBottomOmnibox(true);
       break;
   }
   [self.toolbarHeightDelegate toolbarsHeightChanged];

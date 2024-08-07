@@ -49,6 +49,7 @@ source_set("toolbar") {
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/omnibox/model",
     "//ios/chrome/browser/orchestrator/ui_bundled",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/policy/model:policy_util",
@@ -161,7 +162,10 @@ source_set("toolbar_ui") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "adaptive_toolbar_mediator_unittest.mm" ]
+  sources = [
+    "adaptive_toolbar_mediator_unittest.mm",
+    "toolbar_coordinator_unittest.mm",
+  ]
   deps = [
     ":toolbar",
     ":toolbar_ui",
@@ -178,16 +182,20 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/omnibox/model",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/popup_menu/public",
     "//ios/chrome/browser/ui/toolbar/buttons",
