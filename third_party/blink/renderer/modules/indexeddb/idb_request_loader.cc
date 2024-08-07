@@ -109,9 +109,7 @@ FileErrorCode IDBRequestLoader::DidReceiveData(base::span<const uint8_t> data) {
   DCHECK_LE(wrapped_data_.size() + data.size(), wrapped_data_.capacity())
       << "The reader returned more data than we were prepared for";
 
-  auto char_data = base::as_chars(data);
-  wrapped_data_.Append(char_data.data(),
-                       base::checked_cast<wtf_size_t>(char_data.size()));
+  wrapped_data_.AppendSpan(base::as_chars(data));
   return FileErrorCode::kOK;
 }
 

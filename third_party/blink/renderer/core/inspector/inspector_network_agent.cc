@@ -2007,7 +2007,7 @@ void InspectorNetworkAgent::DidReceiveWebSocketMessage(
   Vector<char> flatten;
   flatten.reserve(base::checked_cast<wtf_size_t>(size));
   for (const auto& span : data) {
-    flatten.Append(span.data(), base::checked_cast<wtf_size_t>(span.size()));
+    flatten.AppendSpan(span);
   }
   GetFrontend()->webSocketFrameReceived(
       IdentifiersFactory::SubresourceRequestId(identifier),

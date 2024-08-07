@@ -38,7 +38,7 @@ namespace {
 WTF::Vector<uint8_t> GetUTF8DataFromString(const String& string) {
   StringUTF8Adaptor utf8_string(string);
   WTF::Vector<uint8_t> data;
-  data.Append(utf8_string.data(), utf8_string.size());
+  data.AppendSpan(base::span(utf8_string));
   return data;
 }
 

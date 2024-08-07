@@ -100,8 +100,7 @@ class Receiver {
     }
 
     if (!buffer.empty()) {
-      data_.Append(base::as_chars(buffer).data(),
-                   base::checked_cast<wtf_size_t>(buffer.size()));
+      data_.AppendSpan(base::as_chars(buffer));
     }
 
     rv = handle_->EndReadData(buffer.size());

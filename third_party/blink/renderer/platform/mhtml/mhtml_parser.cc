@@ -445,7 +445,7 @@ ArchiveResource* MHTMLParser::ParseNextPart(
     case MIMEHeader::Encoding::kEightBit:
     case MIMEHeader::Encoding::kSevenBit:
     case MIMEHeader::Encoding::kBinary:
-      data.Append(content.data(), content.size());
+      data.AppendVector(content);
       break;
     default:
       DVLOG(1) << "Invalid encoding for MHTML part.";

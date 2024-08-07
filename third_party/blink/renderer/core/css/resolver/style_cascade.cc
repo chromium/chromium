@@ -1013,8 +1013,7 @@ bool StyleCascade::TokenSequence::AppendFallback(const TokenSequence& sequence,
     return false;
   }
 
-  base::span<const CSSParserToken> other_tokens(sequence.tokens_.begin(),
-                                                sequence.tokens_.end());
+  auto other_tokens = base::span<const CSSParserToken>(sequence.tokens_);
   StringView other_text = sequence.original_text_;
   other_text =
       CSSVariableParser::StripTrailingWhitespaceAndComments(other_text);
@@ -1031,8 +1030,7 @@ bool StyleCascade::TokenSequence::AppendFallback(const TokenSequence& sequence,
       NeedsInsertedComment(tokens_.back(), other_tokens.front())) {
     original_text_.Append("/**/");
   }
-  tokens_.Append(other_tokens.data(),
-                 static_cast<wtf_size_t>(other_tokens.size()));
+  tokens_.AppendSpan(other_tokens);
   original_text_.Append(other_text);
 
   is_animation_tainted_ |= sequence.is_animation_tainted_;

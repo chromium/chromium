@@ -196,7 +196,7 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
                               WrapWeakPersistent(this)));
     } else {
       Vector<uint8_t> datagram;
-      datagram.Append(data.data(), static_cast<wtf_size_t>(data.size()));
+      datagram.AppendSpan(data);
       pending_datagrams_.push_back(std::move(datagram));
     }
     int high_water_mark = datagrams_->outgoingHighWaterMark();

@@ -392,8 +392,7 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
 
   if (content_encoding == kBinary) {
     for (const auto& span : *resource.data) {
-      output_buffer.Append(span.data(),
-                           base::checked_cast<wtf_size_t>(span.size()));
+      output_buffer.AppendSpan(span);
     }
   } else {
     // FIXME: ideally we would encode the content as a stream without having to
@@ -404,7 +403,7 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
     Vector<char> encoded_data;
     if (content_encoding == kQuotedPrintable) {
       QuotedPrintableEncode(data, false /* is_header */, encoded_data);
-      output_buffer.Append(encoded_data.data(), encoded_data.size());
+      output_buffer.AppendVector(encoded_data);
     } else {
       DCHECK_EQ(content_encoding, kBase64);
       // We are not specifying insertLFs = true below as it would cut the lines

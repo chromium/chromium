@@ -2534,8 +2534,7 @@ void LocalFrame::ForceSynchronousDocumentInstall(const AtomicString& mime_type,
     // around this problem.
     Vector<char> current_chunk;
     for (const auto& segment : data) {
-      current_chunk.Append(segment.data(),
-                           static_cast<wtf_size_t>(segment.size()));
+      current_chunk.AppendSpan(base::span(segment));
       if (current_chunk.size() > kMaxDocumentChunkSize) {
         parser->AppendBytes(base::as_byte_span(current_chunk));
         current_chunk.clear();
@@ -3141,8 +3140,7 @@ void LocalFrame::RequestExecuteScript(
   }
 
   Vector<WebScriptSource> script_sources;
-  script_sources.Append(sources.data(),
-                        base::checked_cast<wtf_size_t>(sources.size()));
+  script_sources.AppendSpan(sources);
 
   ScriptState* script_state = ToScriptState(this, *world);
   CHECK(script_state);

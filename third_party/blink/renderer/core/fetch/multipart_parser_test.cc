@@ -40,8 +40,7 @@ class MockMultipartParserClient final
     parts_.push_back(header_fields);
   }
   void PartDataInMultipartReceived(base::span<const char> bytes) override {
-    parts_.back().data.Append(bytes.data(),
-                              base::checked_cast<wtf_size_t>(bytes.size()));
+    parts_.back().data.AppendSpan(bytes);
   }
   void PartDataInMultipartFullyReceived() override {
     parts_.back().data_fully_received = true;

@@ -161,7 +161,7 @@ TEST(SharedBufferTest, copy) {
   ASSERT_EQ(contiguous.size(), shared_buffer->size());
   ASSERT_EQ(0, memcmp(clone.data(), contiguous.data(), clone.size()));
 
-  clone.Append(test_data.data(), length);
+  clone.AppendVector(test_data);
   ASSERT_EQ(length * 5, clone.size());
 }
 
@@ -175,7 +175,7 @@ TEST(SharedBufferTest, constructorWithFlatData) {
     Vector<Vector<char>> segments;
     for (const auto& span : *shared_buffer) {
       segments.emplace_back();
-      segments.back().Append(span.data(), span.size());
+      segments.back().AppendSpan(span);
     }
 
     // Shared buffers constructed from flat data should stay flat.

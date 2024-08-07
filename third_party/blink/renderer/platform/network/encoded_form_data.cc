@@ -213,7 +213,7 @@ void EncodedFormData::Flatten(Vector<char>& data) const {
   data.clear();
   for (const FormDataElement& e : elements_) {
     if (e.type_ == FormDataElement::kData)
-      data.Append(e.data_.data(), e.data_.size());
+      data.AppendVector(e.data_);
   }
 }
 
