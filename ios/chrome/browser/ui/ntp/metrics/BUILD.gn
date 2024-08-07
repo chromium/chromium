@@ -64,9 +64,13 @@ source_set("home_metrics") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "feed_metrics_recorder_unittest.mm" ]
+  sources = [
+    "feed_metrics_recorder_unittest.mm",
+    "home_metrics_unittest.mm",
+  ]
   deps = [
     ":constants",
+    ":home_metrics",
     ":metrics",
     "//base",
     "//base/test:test_support",
@@ -74,8 +78,10 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/metrics/model:constants",
     "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/shared/model/application_context:application_context",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
