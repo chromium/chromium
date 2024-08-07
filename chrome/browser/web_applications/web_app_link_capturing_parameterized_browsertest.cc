@@ -12,12 +12,16 @@
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/types/expected.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -57,6 +61,7 @@ constexpr char kValueScopeA2ARedirectB[] = "A_TO_A->B";
 constexpr char kValueScopeA2BRedirectA[] = "A_TO_B->A";
 constexpr char kValueLink[] = "LINK";
 constexpr char kValueButton[] = "BTN";
+constexpr char kValueServiceWorkerButton[] = "BTN_SW";
 constexpr char kValueLeftClick[] = "LEFT";
 constexpr char kValueMiddleClick[] = "MIDDLE";
 constexpr char kValueShiftClick[] = "SHIFT";
@@ -133,6 +138,7 @@ std::string_view ToParamString(Destination scope) {
 enum class NavigationElement {
   kElementLink,
   kElementButton,
+  kElementServiceWorkerButton,
 };
 
 std::string ToJsonString(NavigationElement element) {
@@ -141,6 +147,8 @@ std::string ToJsonString(NavigationElement element) {
       return kValueLink;
     case NavigationElement::kElementButton:
       return kValueButton;
+    case NavigationElement::kElementServiceWorkerButton:
+      return kValueServiceWorkerButton;
   }
 }
 
@@ -150,6 +158,8 @@ std::string_view ToParamString(NavigationElement element) {
       return "ViaLink";
     case NavigationElement::kElementButton:
       return "ViaButton";
+    case NavigationElement::kElementServiceWorkerButton:
+      return "ViaServiceWorkerButton";
   }
 }
 
@@ -615,6 +625,32 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
   Profile* profile() { return browser()->profile(); }
 
+  void SetUpOnMainThread() override {
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &WebAppLinkCapturingParameterizedBrowserTest::SimulateRedirectHandler,
+        base::Unretained(this)));
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    NotificationPermissionContext::UpdatePermission(
+        browser()->profile(), embedded_test_server()->GetOrigin().GetURL(),
+        CONTENT_SETTING_ALLOW);
+    notification_tester_ =
+        std::make_unique<NotificationDisplayServiceTester>(profile());
+    notification_tester_->SetNotificationAddedClosure(
+        base::BindLambdaForTesting([this] {
+          std::vector<message_center::Notification> notifications =
+              notification_tester_->GetDisplayedNotificationsForType(
+                  NotificationHandler::Type::WEB_PERSISTENT);
+          EXPECT_EQ(1ul, notifications.size());
+          for (const message_center::Notification& notification :
+               notifications) {
+            notification_tester_->SimulateClick(
+                NotificationHandler::Type::WEB_PERSISTENT, notification.id(),
+                /*action_index=*/std::nullopt, /*reply=*/std::nullopt);
+          }
+        }));
+  }
+
  private:
   // Returns the path to the test expectation file (or an error).
   base::expected<base::FilePath, std::string> GetPathForLinkCaptureInputJson() {
@@ -675,6 +711,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
+
   // The path to the json file containing the test expectations.
   base::FilePath json_file_path_ =
       base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
@@ -703,11 +741,6 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
   }
 
   std::string element_id = GetElementId();
-
-  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-      &WebAppLinkCapturingParameterizedBrowserTest::SimulateRedirectHandler,
-      base::Unretained(this)));
-  ASSERT_TRUE(embedded_test_server()->Start());
 
   std::string trace =
       std::string("\n---------------------------\nParameterized test: ") +
@@ -757,14 +790,9 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
               browser_a->type());
   }
 
-  // Setup links for scope B (unless we're staying in scope A the whole time).
+  // Install app 'B' if required.
   if (!WillNavigateA2A()) {
-    GURL url = embedded_test_server()->GetURL(kDestinationPageScopeB);
-    const webapps::AppId app_b = InstallTestWebApp(url);
-
-    std::string js = std::string("setLinksForScopeB('") + url.spec().c_str() +
-                     "', 'target', 'noopener')";
-    ASSERT_TRUE(ExecJs(contents_a, js));
+    InstallTestWebApp(embedded_test_server()->GetURL(kDestinationPageScopeB));
   }
 
   content::WebContents* contents_b;
@@ -776,7 +804,6 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
     WebContentsCreationMonitor monitor;
     ASSERT_TRUE(
         SimulateClickOnElement(contents_a, GetElementId(), GetClickMethod()));
-
     std::string message;
     EXPECT_TRUE(message_queue.WaitForMessage(&message));
     std::string unquoted_message;
@@ -843,4 +870,23 @@ INSTANTIATE_TEST_SUITE_P(
             NavigationTarget::kBlank,   // User Target is _blank.
             NavigationTarget::kNoFrame  // Target is non-existing frame.
             )),
+    LinkCaptureTestParamToString);
+
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorker,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        testing::Values(
+            StartingPoint::kAppWindow,  // Starting point is app window.
+            StartingPoint::kTab         // Starting point is a tab.
+            ),
+        testing::Values(Destination::kScopeA2A,  // Navigate in-scope A.
+                        Destination::kScopeA2B,  // Navigate A -> B.
+                        Destination::kScopeA2ARedirectB,  // Redirect A -> B.
+                        Destination::kScopeA2BRedirectA   // Redirect back to A.
+                        ),
+        testing::Values(NavigationElement::kElementServiceWorkerButton),
+        testing::Values(ClickMethod::kLeftClick),
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
