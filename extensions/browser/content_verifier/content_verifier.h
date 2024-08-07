@@ -82,13 +82,13 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   void Start();
   void Shutdown();
 
-  // Call this before reading a file within an extension. Returns and starts a
-  // content verify job if the specified resource requires content verification,
-  // otherwise returns nullptr.
-  scoped_refptr<ContentVerifyJob> CreateAndStartJobFor(
+  // Call this before reading a file within an extension. Returns a verify job
+  // to be used for content verification.
+  static scoped_refptr<ContentVerifyJob> CreateAndStartJobFor(
       const ExtensionId& extension_id,
       const base::FilePath& extension_root,
-      const base::FilePath& relative_path);
+      const base::FilePath& relative_path,
+      scoped_refptr<ContentVerifier> verifier);
 
   // ExtensionRegistryObserver interface
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -181,6 +181,9 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
 
   void StartOnIO();
   void ShutdownOnIO();
+
+  // Called after a verification job is created.
+  void OnJobCreated(scoped_refptr<ContentVerifyJob> job);
 
   // If a verification is needed, starts the verification job and returns true.
   // Otherwise, returns false without starting the job.

@@ -558,16 +558,12 @@ void ContentVerifier::ShutdownOnIO() {
   hash_helper_.reset();
 }
 
+// static
 scoped_refptr<ContentVerifyJob> ContentVerifier::CreateAndStartJobFor(
     const ExtensionId& extension_id,
     const base::FilePath& extension_root,
-    const base::FilePath& relative_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-
-  if (shutdown_on_io_ || !verification_enabled_) {
-    return nullptr;
-  }
-
+    const base::FilePath& relative_path,
+    scoped_refptr<ContentVerifier> verifier) {
   base::FilePath normalized_unix_path = NormalizeRelativePath(relative_path);
 
   // TODO(asargent) - we can probably get some good performance wins by having
@@ -575,19 +571,28 @@ scoped_refptr<ContentVerifyJob> ContentVerifier::CreateAndStartJobFor(
   scoped_refptr<ContentVerifyJob> job = base::MakeRefCounted<ContentVerifyJob>(
       extension_id, extension_root, normalized_unix_path);
 
-  // If the extension data is not ready yet, add the job to the pending list.
-  // It will be started when the data is available.
-  if (!ready_extensions_.contains(extension_id)) {
-    pending_jobs_.push_back(job);
-    return job;
-  }
-
-  if (!StartJob(job)) {
-    // No verification is needed.
-    return nullptr;
-  }
+  // Priority set explicitly to avoid unwanted task priority inheritance.
+  content::GetIOThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&ContentVerifier::OnJobCreated, verifier, job));
 
   return job;
+}
+
+void ContentVerifier::OnJobCreated(scoped_refptr<ContentVerifyJob> job) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  if (shutdown_on_io_ || !verification_enabled_) {
+    return;
+  }
+
+  // If the extension data is not ready yet, add the job to the pending list.
+  // It will be started when the data is available.
+  if (!ready_extensions_.contains(job->extension_id())) {
+    pending_jobs_.push_back(std::move(job));
+    return;
+  }
+
+  StartJob(job);
 }
 
 void ContentVerifier::CreateContentHash(
