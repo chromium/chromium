@@ -270,6 +270,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/settings/search:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/services/metrics:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/services/settings_manager:unit_tests",
+    "//chrome/browser/ui/webui/ash/smb_shares:unit_tests",
   ]
 }
 

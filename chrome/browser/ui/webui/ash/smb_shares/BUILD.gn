@@ -58,3 +58,16 @@ source_set("browser_tests") {
     "//content/test:test_support",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "smb_handler_unittest.cc" ]
+
+  deps = [
+    ":smb_shares",
+    "//base/test:test_support",
+    "//chrome/browser/ash/smb_client:test_support",
+    "//content/test:test_support",
+  ]
+}
