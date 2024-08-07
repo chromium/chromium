@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/chromeos/crosier_tests.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//media/media_options.gni")
 
@@ -314,14 +315,15 @@ static_library("test_support") {
 }
 
 if (is_chromeos_device) {
-  source_set("integration_tests") {
-    testonly = true
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
+  crosier_tests("integration_tests") {
     sources = [
       "login_integration_test.cc",
       "supervised_user_login_integration_test.cc",
+    ]
+
+    sources_metadata = [
+      "login_integration_test.yaml",
+      "supervised_user_login_integration_test.yaml",
     ]
 
     deps = [

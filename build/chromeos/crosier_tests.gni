@@ -1,0 +1,49 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be found
+# in the LICENSE file.
+
+# The crosier_tests template is used to define crosier test targets in
+# subdirectories. They should be in the dependency chain of the top-level
+# chromeos_integration_tests target.
+#
+# crosier_tests behaves like source_set except that it supports (and expects) a
+# "sources_metadata" variable that lists the yaml metadata files corresponding
+# to the test sources. These files will be copied to the appropriate directory.
+# See docs/testing/chromeos_integration/crosier_metadata.md for details.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+template("crosier_tests") {
+  assert(is_chromeos_device)
+  assert(defined(invoker.sources),
+         "Need sources in $target_name listing the C++ files.")
+  assert(defined(invoker.sources_metadata),
+         "Need sources_metadata in $target_name listing the yaml files.")
+
+  _have_metadata = invoker.sources_metadata != []
+
+  source_set(target_name) {
+    forward_variables_from(invoker, "*", [ "sources_metadata" ])
+    testonly = true
+    if (defined(defines)) {
+      defines += [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    } else {
+      defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    }
+    if (_have_metadata) {
+      if (defined(data_deps)) {
+        data_deps += [ ":${target_name}_metadata" ]
+      } else {
+        data_deps = [ ":${target_name}_metadata" ]
+      }
+    }
+  }
+
+  if (_have_metadata) {
+    copy("${target_name}_metadata") {
+      testonly = true
+      sources = invoker.sources_metadata
+      outputs = [ "$root_out_dir/crosier_metadata/{{source_file_part}}" ]
+    }
+  }
+}
