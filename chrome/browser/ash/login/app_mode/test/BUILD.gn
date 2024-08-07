@@ -78,7 +78,6 @@ static_library("test_support") {
     "//extensions:test_support",
     "//extensions/browser",
     "//testing/gtest",
-    "//ui/accessibility/extensions/chromevoxclassic:chromevox_tests",
     "//ui/base",
     "//ui/events:event_constants",
   ]
@@ -190,7 +189,6 @@ source_set("browser_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:runtime_features_for_public",
-    "//ui/accessibility/extensions/chromevoxclassic:chromevox_tests",
     "//ui/base",
     "//ui/base:types",
     "//ui/base/ime/ash",

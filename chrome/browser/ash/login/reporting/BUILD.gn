@@ -108,7 +108,6 @@ source_set("browser_tests") {
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/accessibility/extensions/chromevoxclassic:chromevox_tests",
   ]
 }
 
