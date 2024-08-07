@@ -179,6 +179,13 @@ extern const base::FeatureParam<std::string> kHashPrefixRealTimeLookupsRelayUrl;
 // Enable faster OHTTP key rotation for hash-prefix real-time lookups.
 BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookupsFasterOhttpKeyRotation);
 
+// Send sample hash-prefix real-time lookups for real-time lookups to catch
+// "false positives" where real-time lookup says safe but hash-prefix lookup
+// says unsafe.
+// Check the design doc (go/sample-esb-ping-send-hprt) for further
+// details.
+BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookupsSamplePing);
+
 // Show referrer URL on download item on chrome://downloads page. This will
 // replace the downloads url.
 BASE_DECLARE_FEATURE(kDownloadsPageReferrerUrl);
