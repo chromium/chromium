@@ -323,6 +323,20 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   const gfx::Rect& GetOutputRect() const;
 
  private:
+  friend class ResolvedFrameDataTestHelper;
+
+  // Data for a specific `OffsetTag`.
+  struct OffsetTagData {
+    // The offset value that is used.
+    gfx::Vector2dF last_offset;
+    gfx::Vector2dF current_offset;
+    // The containing rect is the union of all tagged quad visible rects in
+    // root render pass coordinate space before applying any offsets.
+    gfx::Rect last_containing_rect;
+    gfx::Rect current_containing_rect;
+    bool defined_in_frame = false;
+  };
+
   // Updates ResolvedPassData for a new active frame. It also updates surface
   // client and display resource provider with resources used in the new active
   // frame.
@@ -347,7 +361,9 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   void MovePersistentPassDataFromPreviousFrame(
       const std::vector<ResolvedPassData>& previoius_resolved_passes);
 
+  void ComputeOffsetTagContainingRects();
   void RebuildRenderPassesForOffsetTags();
+  void RecomputeOffsetTagDamage();
 
   const raw_ptr<DisplayResourceProvider> resource_provider_;
   const SurfaceId surface_id_;
@@ -361,9 +377,11 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   uint64_t frame_index_ = kInvalidFrameIndex;
   uint64_t previous_frame_index_ = kInvalidFrameIndex;
 
-  base::flat_map<OffsetTag, gfx::Vector2dF> tag_values_;
+  base::flat_map<OffsetTag, OffsetTagData> offset_tag_data_;
+  // Additional damage that is due to OffsetTag changes between aggregations
+  // that is unioned into the surface damage.
+  gfx::Rect offset_tag_added_damage_;
   bool has_non_zero_offset_tag_value_ = false;
-  bool offset_tag_values_changed_from_last_frame_ = false;
 
   // Holds a modified copy of render passes from current active CompositorFrame.
   std::vector<std::unique_ptr<CompositorRenderPass>> offset_tag_render_passes_;

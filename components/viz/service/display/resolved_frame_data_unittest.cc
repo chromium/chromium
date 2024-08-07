@@ -23,10 +23,26 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace viz {
+
+// Allow test access to ResolvedFrameData internals.
+class ResolvedFrameDataTestHelper {
+ public:
+  explicit ResolvedFrameDataTestHelper(ResolvedFrameData* target)
+      : target_(target) {}
+
+  gfx::Rect GetCurrentContainingRect(const OffsetTag& tag) {
+    return target_->offset_tag_data_.at(tag).current_containing_rect;
+  }
+
+ private:
+  raw_ptr<ResolvedFrameData> target_;
+};
+
 namespace {
 
 constexpr gfx::Rect kOutputRect(100, 100);
@@ -41,7 +57,7 @@ OffsetTagDefinition MakeOffsetTagDefinition() {
   OffsetTagDefinition tag_def;
   tag_def.tag = OffsetTag::CreateRandom();
   tag_def.provider = SurfaceRange(MakeSurfaceId());
-  tag_def.constraints = OffsetTagConstraints(-10.0f, 10.0f, -10.0f, 10.0f);
+  tag_def.constraints = OffsetTagConstraints(-50.0f, 50.0f, -50.0f, 50.0f);
 
   return tag_def;
 }
@@ -542,6 +558,257 @@ TEST_F(ResolvedFrameDataTest, OffsetTagWithCopyRequest) {
   EXPECT_THAT(copy_request_map, testing::SizeIs(1));
 
   resolved_frame.ResetAfterAggregation();
+}
+
+// Verify that client provided damage is offset along with quads.
+TEST_F(ResolvedFrameDataTest, OffsetTagClientDamageIsOffset) {
+  // Submit the first frame without tags to introduce changes/damage against.
+  Surface* surface = nullptr;
+  {
+    auto frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(RenderPassBuilder(kOutputRect)
+                               .AddSolidColorQuad(kOutputRect, SkColors::kRed))
+            .Build();
+    surface = SubmitCompositorFrame(std::move(frame));
+  }
+  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
+                                   AggregatedRenderPassId());
+
+  {
+    resolved_frame.UpdateForAggregation(render_pass_id_generator_);
+    resolved_frame.UpdateOffsetTags(
+        [](const OffsetTagDefinition&) { return gfx::Vector2dF(); });
+    resolved_frame.ResetAfterAggregation();
+  }
+
+  auto tag_def = MakeOffsetTagDefinition();
+
+  constexpr gfx::Rect quad_rect(50, 50, 10, 10);
+
+  // The client provided damage includes the quad which had the tag added but
+  // also damage outside the quad that won't intersect the offset tag containing
+  // rect.
+  constexpr gfx::Rect client_damage(50, 50, 20, 20);
+
+  {
+    // Build a frame with one added tagged quad and the same not tagged quad.
+    auto frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(RenderPassBuilder(kOutputRect)
+                               .SetDamageRect(client_damage)
+                               .AddSolidColorQuad(kOutputRect, SkColors::kRed)
+                               .AddSolidColorQuad(quad_rect, SkColors::kBlack)
+                               .SetQuadOffsetTag(tag_def.tag))
+            .AddOffsetTagDefinition(tag_def)
+            .Build();
+    SubmitCompositorFrame(std::move(frame));
+
+    resolved_frame.UpdateForAggregation(render_pass_id_generator_);
+    resolved_frame.UpdateOffsetTags(
+        [](const OffsetTagDefinition&) { return gfx::Vector2dF(20, -20); });
+
+    // Damage is the union of client provided damage 50,50, 20x20 and
+    // intersection of tagged quad and client damage which is 70,30 10x10. Note
+    // this isn't offsetting the full client damage since some of the damage
+    // can't have come from tagged quads.
+    EXPECT_EQ(resolved_frame.GetSurfaceDamage(), gfx::Rect(50, 30, 30, 40));
+
+    resolved_frame.ResetAfterAggregation();
+  }
+}
+
+// Verify damage works correctly when the offset value changes.
+TEST_F(ResolvedFrameDataTest, OffsetTagOffsetValueChangedDamage) {
+  auto tag_def = MakeOffsetTagDefinition();
+
+  constexpr gfx::Rect quad_rect(50, 50, 10, 10);
+  constexpr gfx::Vector2dF first_offset(20.0f, -20.0f);
+  constexpr gfx::Vector2dF second_offset(20.0f, 20.0f);
+
+  Surface* surface = nullptr;
+  {
+    // Build a frame with one added tagged quad and one not tagged quad to
+    // submit changes against.
+    auto frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(RenderPassBuilder(kOutputRect)
+                               .SetDamageRect(quad_rect)
+                               .AddSolidColorQuad(kOutputRect, SkColors::kRed)
+                               .AddSolidColorQuad(quad_rect, SkColors::kBlack)
+                               .SetQuadOffsetTag(tag_def.tag))
+            .AddOffsetTagDefinition(tag_def)
+            .Build();
+    surface = SubmitCompositorFrame(std::move(frame));
+  }
+  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
+                                   AggregatedRenderPassId());
+  {
+    resolved_frame.UpdateForAggregation(render_pass_id_generator_);
+    resolved_frame.UpdateOffsetTags(
+        [&first_offset](const OffsetTagDefinition&) { return first_offset; });
+
+    resolved_frame.ResetAfterAggregation();
+  }
+
+  {
+    // Next aggregation with no updated CompositorFrame but change the offset
+    // value.
+    resolved_frame.UpdateForAggregation(render_pass_id_generator_);
+    resolved_frame.UpdateOffsetTags(
+        [&second_offset](const OffsetTagDefinition&) { return second_offset; });
+
+    // Damage is the intersection of last frame containing rect 70,30 10x10 and
+    // this frames containing rect 70,70 10x10.
+    EXPECT_EQ(resolved_frame.GetSurfaceDamage(), gfx::Rect(70, 30, 10, 50));
+
+    resolved_frame.ResetAfterAggregation();
+  }
+
+  {
+    // Submit a frame with offset tag removed from quad.
+    auto frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(RenderPassBuilder(kOutputRect)
+                               .SetDamageRect(quad_rect)
+                               .AddSolidColorQuad(kOutputRect, SkColors::kRed)
+                               .AddSolidColorQuad(quad_rect, SkColors::kBlack))
+            .Build();
+    SubmitCompositorFrame(std::move(frame));
+
+    resolved_frame.UpdateForAggregation(render_pass_id_generator_);
+    resolved_frame.UpdateOffsetTags(
+        [](const OffsetTagDefinition&) { return gfx::Vector2dF(); });
+
+    // Damage is union of client provided damage 50,50, 10x10 and last
+    // frames containing rect 70,70 10x10
+    EXPECT_EQ(resolved_frame.GetSurfaceDamage(), gfx::Rect(50, 50, 30, 30));
+
+    // This should delete OffsetTagData since the tag wasn't used this frame.
+    resolved_frame.ResetAfterAggregation();
+  }
+}
+
+// Verify damage works correctly when an offset tag is removed from a layer.
+TEST_F(ResolvedFrameDataTest, OffsetTagLayerRemovedDamage) {
+  auto tag_def = MakeOffsetTagDefinition();
+  auto offset_tag = tag_def.tag;
+
+  constexpr gfx::Rect quad_rect1(10, 10, 50, 20);
+  constexpr gfx::Rect quad_rect2(20, 20, 50, 20);
+  constexpr gfx::Vector2dF offset(0, 50);
+
+  // Submit the first frame with two tagged quads to use a baseline.
+  Surface* surface = nullptr;
+  {
+    auto frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(RenderPassBuilder(kOutputRect)
+                               .SetDamageRect(kOutputRect)
+                               .AddSolidColorQuad(quad_rect1, SkColors::kRed)
+                               .SetQuadOffsetTag(offset_tag)
+                               .AddSolidColorQuad(quad_rect2, SkColors::kBlack)
+                               .SetQuadOffsetTag(offset_tag))
+            .AddOffsetTagDefinition(tag_def)
+            .Build();
+    surface = SubmitCompositorFrame(std::move(frame));
+  }
+  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
+                                   AggregatedRenderPassId());
+
+  {
+    resolved_frame.UpdateForAggregation(render_pass_id_generator_);
+    resolved_frame.UpdateOffsetTags(
+        [&offset](const OffsetTagDefinition&) { return offset; });
+    resolved_frame.ResetAfterAggregation();
+  }
+
+  {
+    // Submit a second frame removing the tag from the quad at 20,20 50x20.
+    auto frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(RenderPassBuilder(kOutputRect)
+                               .SetDamageRect(quad_rect2)
+                               .AddSolidColorQuad(quad_rect1, SkColors::kRed)
+                               .SetQuadOffsetTag(offset_tag)
+                               .AddSolidColorQuad(quad_rect2, SkColors::kBlack))
+            .AddOffsetTagDefinition(tag_def)
+            .Build();
+    SubmitCompositorFrame(std::move(frame));
+
+    resolved_frame.UpdateForAggregation(render_pass_id_generator_);
+    EXPECT_TRUE(resolved_frame.is_valid());
+    resolved_frame.UpdateOffsetTags(
+        [&offset](const OffsetTagDefinition&) { return offset; });
+
+    // The client provided damage is 20,20 50x20 which is the entire quad that
+    // had the tag removed. However the tagged quad was drawn with an offset at
+    // 20,70 50x20 last frame and won't be drawn there this frame. The
+    // intersection aka 20,20 50x70 needs to be damaged this frame. The entire
+    // previous frames tag containing rect with offset, eg. 10,10 60x30, is
+    // added into the damage since viz doesn't know which quad had the tag
+    // removed resulting in 10,20 60x70 as the final damage.
+    EXPECT_TRUE(
+        resolved_frame.GetSurfaceDamage().Contains(gfx::Rect(20, 70, 50, 20)));
+    EXPECT_EQ(resolved_frame.GetSurfaceDamage(), gfx::Rect(10, 20, 60, 70));
+
+    resolved_frame.ResetAfterAggregation();
+  }
+}
+
+// Verify that containing rect is computed correctly for tagged quads that are
+// in a non-root render pass with non-trivial transform between the render
+// passes.
+TEST_F(ResolvedFrameDataTest, OffsetTagContainingRectNonRootRenderPass) {
+  auto tag_def = MakeOffsetTagDefinition();
+
+  CompositorRenderPassId root_pass_id{1};
+  CompositorRenderPassId child_pass_id{2};
+
+  Surface* surface = nullptr;
+  {
+    gfx::Transform child_quad_to_child_pass =
+        gfx::Transform::MakeTranslation(30, 30);
+
+    // The child render pass is scale by half then translated 10,10.
+    gfx::Transform child_pass_to_root_pass = gfx::Transform::MakeScale(0.5);
+    child_pass_to_root_pass.PostTranslate(10, 10);
+
+    // Build a frame with tagged quad in non-root render pass.
+    auto frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(child_pass_id, kOutputRect)
+                    .SetTransformToRootTarget(child_pass_to_root_pass)
+                    .AddSolidColorQuad(gfx::Rect(10, 10), SkColors::kBlack)
+                    .SetQuadToTargetTransform(child_quad_to_child_pass)
+                    .SetQuadOffsetTag(tag_def.tag))
+            .AddRenderPass(
+                RenderPassBuilder(root_pass_id, kOutputRect)
+                    .AddRenderPassQuad(kOutputRect, child_pass_id)
+                    .SetQuadToTargetTransform(child_pass_to_root_pass))
+            .AddOffsetTagDefinition(tag_def)
+            .Build();
+    surface = SubmitCompositorFrame(std::move(frame));
+  }
+  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
+                                   AggregatedRenderPassId());
+  ResolvedFrameDataTestHelper helper(&resolved_frame);
+
+  {
+    resolved_frame.UpdateForAggregation(render_pass_id_generator_);
+    resolved_frame.UpdateOffsetTags(
+        [](const OffsetTagDefinition&) { return gfx::Vector2dF(); });
+
+    // The tagged quad position in the child pass is 30,30 10x10. The transform
+    // from child render pass back to root render pass scales by 0.5, resulting
+    // in 15,15 5x5 and then translates 10,10 for a final containing rect of
+    // 25,25 5x5.
+    EXPECT_EQ(helper.GetCurrentContainingRect(tag_def.tag),
+              gfx::Rect(25, 25, 5, 5));
+
+    resolved_frame.ResetAfterAggregation();
+  }
 }
 
 }  // namespace
