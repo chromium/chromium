@@ -116,7 +116,8 @@ class TabFeatures {
       Profile* profile);
 
   virtual std::unique_ptr<commerce::CommerceUiTabHelper>
-  CreateCommerceUiTabHelper(TabInterface* tab, Profile* profile);
+  CreateCommerceUiTabHelper(content::WebContents* web_contents,
+                            Profile* profile);
 
  private:
   bool initialized_ = false;

@@ -20,10 +20,10 @@ class TabFeaturesFake : public tabs::TabFeatures {
 
  protected:
   std::unique_ptr<commerce::CommerceUiTabHelper> CreateCommerceUiTabHelper(
-      tabs::TabInterface* tab,
+      content::WebContents* contents,
       Profile* profile) override {
     return std::make_unique<testing::NiceMock<MockCommerceUiTabHelper>>(
-        tab->GetContents(), tab->GetTabFeatures()->side_panel_registry());
+        contents, side_panel_registry());
   }
 };
 }  // namespace
