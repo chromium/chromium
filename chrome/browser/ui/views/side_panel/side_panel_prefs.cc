@@ -29,6 +29,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   }
   registry->RegisterBooleanPref(prefs::kGoogleSearchSidePanelEnabled, true);
+  registry->RegisterIntegerPref(prefs::kSidePanelBookmarksWidth, -1);
 }
 
 }  // namespace side_panel_prefs

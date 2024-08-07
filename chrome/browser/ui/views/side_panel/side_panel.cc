@@ -25,6 +25,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -308,9 +309,21 @@ SidePanel::SidePanel(BrowserView* browser_view,
   SetVisible(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  // TODO(pbos): Reconsider if SetPanelWidth() should add borders, if so move
-  // accounting for the border into SetPanelWidth(), otherwise remove this TODO.
-  SetPanelWidth(GetMinimumSize().width());
+  // Get the width from user preferences, defaulting to the minimum size if not
+  // set.
+  PrefService* prefs = browser_view_->browser()->profile()->GetPrefs();
+  int width = GetMinimumSize().width();  // Default to minimum size
+
+  if (base::FeatureList::IsEnabled(features::kSidePanelResizing)) {
+    int pref_width = prefs->GetInteger(prefs::kSidePanelBookmarksWidth);
+    if (pref_width > 0) {
+      width = pref_width;
+    }
+  }
+
+  // Set the panel width from the preference or use the minimum size as the
+  // default.
+  SetPanelWidth(width);
 
   SetBorder(views::CreateEmptyBorder(GetBorderInsets()));
 
@@ -489,11 +502,19 @@ void SidePanel::OnResize(int resize_amount, bool done_resizing) {
   if (done_resizing) {
     starting_width_on_resize_ = -1;
   }
+
   const int minimum_width = GetMinimumSize().width();
   if (proposed_width < minimum_width) {
     proposed_width = minimum_width;
   }
+
   if (width() != proposed_width) {
+    PrefService* pref_service = browser_view_->browser()->profile()->GetPrefs();
+    if (pref_service &&
+        base::FeatureList::IsEnabled(features::kSidePanelResizing)) {
+      pref_service->SetInteger(prefs::kSidePanelBookmarksWidth, proposed_width);
+    }
+
     SetPanelWidth(proposed_width);
     did_resize_ = true;
   }

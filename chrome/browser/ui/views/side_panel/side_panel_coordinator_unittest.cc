@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_api.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -75,6 +77,9 @@ std::unique_ptr<KeyedService> BuildSidePanelService(
 
 class SidePanelCoordinatorTest : public TestWithBrowserView {
  public:
+  SidePanelCoordinatorTest() {
+    scoped_feature_list_.InitWithFeatures({features::kSidePanelResizing}, {});
+  }
   void SetUp() override {
     TestWithBrowserView::SetUp();
 
@@ -293,6 +298,7 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
   raw_ptr<SidePanelRegistry, DanglingUntriaged> global_registry_;
   std::vector<raw_ptr<SidePanelRegistry, DanglingUntriaged>>
       contextual_registries_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class MockSidePanelViewStateObserver : public SidePanelViewStateObserver {
@@ -1126,6 +1132,38 @@ TEST_F(SidePanelCoordinatorTest,
   VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
                                SidePanelEntry::Id::kCustomizeChrome);
   EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+}
+
+TEST_F(SidePanelCoordinatorTest, SidePanelBookmarksWidthPreference) {
+  ASSERT_TRUE(browser_view());
+  SidePanel* side_panel = browser_view()->unified_side_panel();
+  ASSERT_TRUE(side_panel);
+
+  // Toggle the side panel to ensure it is open
+  coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
+                       SidePanelOpenTrigger::kPinnedEntryToolbarButton);
+
+  // Get the pref service to query the bookmarks pref
+  PrefService* prefs = browser_view()->browser()->profile()->GetPrefs();
+
+  // Check the default preference width
+  EXPECT_EQ(prefs->GetInteger(prefs::kSidePanelBookmarksWidth), -1);
+
+  // Ensure the side panel width is updated accordingly after resize
+  views::test::RunScheduledLayout(browser_view());
+
+  const int initial_side_panel_width = side_panel->width();
+
+  // Call OnResize
+  side_panel->OnResize(-100, false);
+
+  // Ensure the side panel width is updated accordingly after resize
+  views::test::RunScheduledLayout(browser_view());
+  EXPECT_EQ(side_panel->width(), initial_side_panel_width + 100);
+
+  // Verify the preference value is updated after resize
+  EXPECT_EQ(prefs->GetInteger(prefs::kSidePanelBookmarksWidth),
+            side_panel->width());
 }
 
 class TestSidePanelObserver : public SidePanelEntryObserver {
