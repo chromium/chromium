@@ -78,7 +78,6 @@ class ProfileNetworkContextService
       cert_verifier::mojom::CertVerifierCreationParams*
           cert_verifier_creation_params);
 
-#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
   // Update all of the profile_'s CertVerifierServices with certificates from
   // enterprise policies.
   void UpdateAdditionalCertificates();
@@ -98,7 +97,6 @@ class ProfileNetworkContextService
 
   // Get enterprise certificate policies for viewing by end users.
   CertificatePoliciesForView GetCertificatePolicyForView();
-#endif
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -170,13 +168,11 @@ class ProfileNetworkContextService
 
   void ScheduleUpdateCTPolicy();
 
-#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
   void ScheduleUpdateCertificatePolicy();
 
   // Get the current certificate policies from preferences.
   cert_verifier::mojom::AdditionalCertificatesPtr GetCertificatePolicy(
       const base::FilePath& storage_partition_path);
-#endif
 
   bool ShouldSplitAuthCacheByNetworkIsolationKey() const;
   void UpdateSplitAuthCacheByNetworkIsolationKey();
@@ -229,9 +225,7 @@ class ProfileNetworkContextService
 
   // Used to post schedule CT and Certificate policy updates
   base::OneShotTimer ct_policy_update_timer_;
-#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
   base::OneShotTimer cert_policy_update_timer_;
-#endif
 
   // Used for testing.
   base::RepeatingCallback<std::unique_ptr<net::ClientCertStore>()>

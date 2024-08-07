@@ -6218,6 +6218,7 @@ test("unit_tests") {
 
     # TODO(hashimoto): those tests should be componentized and moved to
     # //components:components_unittests, http://crbug.com/527882.
+    "../browser/net/cert_verifier_policy_unittest.cc",
     "../browser/reduce_accept_language/reduce_accept_language_service_unittest.cc",
     "../browser/search_engines/template_url_fetcher_unittest.cc",
     "../browser/search_engines/template_url_parser_unittest.cc",
@@ -6317,10 +6318,6 @@ test("unit_tests") {
     "../test/base/menu_model_test.cc",
     "../test/base/menu_model_test.h",
   ]
-
-  if (chrome_certificate_policies_supported) {
-    sources += [ "../browser/net/cert_verifier_policy_unittest.cc" ]
-  }
 
   if (build_with_tflite_lib) {
     sources += [

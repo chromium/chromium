@@ -54,7 +54,6 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "CHROME_ENABLE_LOGGING_BY_DEFAULT=$chrome_enable_logging_by_default",
-    "CHROME_CERTIFICATE_POLICIES_SUPPORTED=$chrome_certificate_policies_supported",
     "CHROME_ROOT_STORE_CERT_MANAGEMENT_UI=$chrome_root_store_cert_management_ui",
     "ENABLE_ANDROID_SITE_ISOLATION=$enable_android_site_isolation",
     "ENABLE_BACKGROUND_MODE=$enable_background_mode",
