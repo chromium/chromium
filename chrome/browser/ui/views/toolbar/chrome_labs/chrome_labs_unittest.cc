@@ -274,7 +274,8 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
 #endif
 
     std::unique_ptr<ChromeLabsBubbleView> bubble_view =
-        std::make_unique<ChromeLabsBubbleView>(GetChromeLabsButton());
+        std::make_unique<ChromeLabsBubbleView>(GetChromeLabsButton(),
+                                               browser());
     bubble_view_ = bubble_view.get();
     bubble_widget_ =
         views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));

@@ -12,7 +12,9 @@
 #include "build/buildflag.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/flag_descriptions.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
@@ -94,7 +96,8 @@ END_METADATA
 
 }  // namespace
 
-ChromeLabsBubbleView::ChromeLabsBubbleView(views::Button* anchor_view)
+ChromeLabsBubbleView::ChromeLabsBubbleView(views::Button* anchor_view,
+                                           Browser* browser)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::Arrow::TOP_RIGHT,
                                views::BubbleBorder::DIALOG_SHADOW,
@@ -173,9 +176,17 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(views::Button* anchor_view)
       base::BindRepeating(&ChromeLabsBubbleView::NotifyRestartCallback,
                           base::Unretained(this))));
   restart_prompt_->SetVisible(about_flags::IsRestartNeededToCommitChanges());
+
+  CHECK(browser);
+  chrome_labs_action_item_ = actions::ActionManager::Get().FindAction(
+      kActionShowChromeLabs, browser->browser_actions()->root_action_item());
+  chrome_labs_action_item_->SetIsShowingBubble(true);
 }
 
-ChromeLabsBubbleView::~ChromeLabsBubbleView() = default;
+ChromeLabsBubbleView::~ChromeLabsBubbleView() {
+  CHECK(chrome_labs_action_item_);
+  chrome_labs_action_item_->SetIsShowingBubble(false);
+}
 
 ChromeLabsItemView* ChromeLabsBubbleView::AddLabItem(
     const LabInfo& lab,

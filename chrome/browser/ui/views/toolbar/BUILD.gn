@@ -111,6 +111,7 @@ source_set("toolbar") {
     "//chrome/browser/sync:factories",
     "//chrome/browser/themes",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:mixers",
     "//chrome/browser/ui/tabs:tab_enums",
