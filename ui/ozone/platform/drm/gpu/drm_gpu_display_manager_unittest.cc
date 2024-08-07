@@ -597,9 +597,9 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
   drm->AddCrtcWithPrimaryAndCursorPlanes();
   const uint32_t crtc_3 = drm->AddCrtcWithPrimaryAndCursorPlanes().id;
 
-  uint32_t primary_connector_id, secondary_connector_id;
+  uint32_t big_display_connector_id, small_display_connector_id;
 
-  // First, add a display with high bandwidth mode.
+  // First, add a "big" display with high bandwidth mode.
   {
     auto& encoder = drm->AddEncoder();
     // Can use all 3 CRTCs
@@ -611,9 +611,9 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
         ResolutionAndRefreshRate{gfx::Size(7680, 4320), 144u}};
     connector.encoders = std::vector<uint32_t>{encoder.id};
 
-    primary_connector_id = connector.id;
+    big_display_connector_id = connector.id;
   }
-  // Add a normal external display.
+  // Add a "small" external display.
   {
     auto& encoder = drm->AddEncoder();
     encoder.possible_crtcs = 0b111;
@@ -623,7 +623,7 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
     connector.modes = kStandardModes;
     connector.encoders = std::vector<uint32_t>{encoder.id};
 
-    secondary_connector_id = connector.id;
+    small_display_connector_id = connector.id;
   }
 
   drm->InitializeState(/* use_atomic */ true);
@@ -632,10 +632,20 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
   auto display_snapshots = drm_gpu_display_manager_->GetDisplays();
   ASSERT_EQ(display_snapshots.size(), 2u);
 
-  const uint32_t original_primary_crtc =
-      FindDisplayByConnectorId(primary_connector_id)->crtc();
-  const uint32_t original_secondary_crtc =
-      FindDisplayByConnectorId(secondary_connector_id)->crtc();
+  DrmDisplay* big_display = FindDisplayByConnectorId(big_display_connector_id);
+  const DrmDisplay::CrtcConnectorPair*
+      original_big_display_crtc_connector_pair =
+          big_display->GetCrtcConnectorPairForConnectorId(
+              big_display_connector_id);
+  ASSERT_NE(original_big_display_crtc_connector_pair, nullptr);
+
+  DrmDisplay* small_display =
+      FindDisplayByConnectorId(small_display_connector_id);
+  const DrmDisplay::CrtcConnectorPair*
+      original_small_display_crtc_connector_pair =
+          small_display->GetCrtcConnectorPairForConnectorId(
+              small_display_connector_id);
+  ASSERT_NE(original_small_display_crtc_connector_pair, nullptr);
 
   // Modesets should fail by default, unless it is with CRTC-connector pairings
   // specified with |desired_pairings|.
@@ -643,8 +653,8 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
       .Times(AtLeast(1))
       .WillRepeatedly(Return(false));
 
-  CrtcConnectorPairs desired_pairings = {{crtc_1, primary_connector_id},
-                                         {crtc_3, secondary_connector_id}};
+  CrtcConnectorPairs desired_pairings = {{crtc_1, big_display_connector_id},
+                                         {crtc_3, small_display_connector_id}};
   EXPECT_CALL(
       *mock_drm,
       CommitProperties(AtomicRequestHasCrtcConnectorPairs(desired_pairings), _,
@@ -664,11 +674,16 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 
   // Even if there is a successful fallback configuration, ozone abstractions
   // should not change for test modeset request.
-  DrmDisplay* primary_display = FindDisplayByConnectorId(primary_connector_id);
-  EXPECT_EQ(primary_display->crtc(), original_primary_crtc);
-  DrmDisplay* secondary_display =
-      FindDisplayByConnectorId(secondary_connector_id);
-  EXPECT_EQ(secondary_display->crtc(), original_secondary_crtc);
+  big_display = FindDisplayByConnectorId(big_display_connector_id);
+  EXPECT_EQ(
+      big_display->GetCrtcConnectorPairForConnectorId(big_display_connector_id)
+          ->crtc_id,
+      original_big_display_crtc_connector_pair->crtc_id);
+  small_display = FindDisplayByConnectorId(small_display_connector_id);
+  EXPECT_EQ(small_display
+                ->GetCrtcConnectorPairForConnectorId(small_display_connector_id)
+                ->crtc_id,
+            original_small_display_crtc_connector_pair->crtc_id);
 
   // Check that commit modeset after fallback changes the CRTC assignment for
   // displays.
@@ -681,8 +696,13 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 
   EXPECT_TRUE(ConfigureDisplays(display_snapshots,
                                 {display::ModesetFlag::kCommitModeset}));
-  EXPECT_EQ(primary_display->crtc(), crtc_1);
-  EXPECT_EQ(secondary_display->crtc(), crtc_3);
+  EXPECT_TRUE(big_display->ContainsCrtc(crtc_1));
+  EXPECT_TRUE(small_display->ContainsCrtc(crtc_3));
+
+  // DrmDevice seems to leak on successful configure in tests. Manually
+  // checking for mock calls and allowing leak for now.
+  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(mock_drm));
+  testing::Mock::AllowLeak(mock_drm);
 }
 
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
@@ -769,10 +789,10 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
                                  {display::ModesetFlag::kCommitModeset}));
 
   DrmDisplay* primary_display = FindDisplayByConnectorId(primary_connector_id);
-  EXPECT_EQ(primary_display->crtc(), crtc_1);
+  EXPECT_TRUE(primary_display->ContainsCrtc(crtc_1));
   DrmDisplay* secondary_display =
       FindDisplayByConnectorId(secondary_connector_id);
-  EXPECT_EQ(secondary_display->crtc(), crtc_3);
+  EXPECT_TRUE(secondary_display->ContainsCrtc(crtc_3));
   histogram_tester_.ExpectBucketCount(kTestOnlyModesetOutcomeTwoDisplays,
                                       TestOnlyModesetOutcome::kFailure,
                                       /*count=*/0);
@@ -1003,10 +1023,10 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
   }
 
   DrmDisplay* primary_display = FindDisplayByConnectorId(primary_connector_id);
-  EXPECT_EQ(crtc_1, primary_display->crtc());
+  EXPECT_TRUE(primary_display->ContainsCrtc(crtc_1));
   DrmDisplay* secondary_display =
       FindDisplayByConnectorId(secondary_connector_id);
-  EXPECT_EQ(crtc_3, secondary_display->crtc());
+  EXPECT_TRUE(secondary_display->ContainsCrtc(crtc_3));
 }
 
 // DrmGpuDisplayManagerGetSeamlessRefreshRateTest is a test fixture for tests

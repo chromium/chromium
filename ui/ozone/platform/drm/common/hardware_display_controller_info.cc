@@ -60,6 +60,11 @@ HardwareDisplayControllerInfo::nonprimary_tile_infos() const {
   return nonprimary_tile_infos_;
 }
 
+std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>&
+HardwareDisplayControllerInfo::nonprimary_tile_infos() {
+  return nonprimary_tile_infos_;
+}
+
 display::DisplaySnapshot::DisplayModeList
 HardwareDisplayControllerInfo::GetModesOfSize(const gfx::Size& size) {
   display::DisplaySnapshot::DisplayModeList modes;
