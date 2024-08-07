@@ -28,6 +28,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -346,13 +347,12 @@ class ContentAutofillDriverFactoryTestLifecycleState
   enum class NavigationType {
     // Same-document navigations do not affect the CAD's lifecycle.
     kSameDocument,
-    // Same-RFH navigations, i.e., navigations which the RFH survives, cause a
-    // CAD::Reset(). Usually, these are same-origin navigations.
-    kSameRfh,
-    // Cross-RFH navigations, i.e., navigations which swap the RFH, lead to a
-    // new CAD. Usually, these are (non-cached, non-prerendered) cross-origin
-    // navigations.
-    kCrossRfh,
+    // Same-origin navigations. If the the previous RFH is reused, will cause
+    // a CAD::Reset().
+    kSameOrigin,
+    // Cross-origin navigations. The navigations will swap the RFH, leading to
+    // a new CAD.
+    kCrossOrigin,
     // Backward navigations are served by BFCache and re-activate a cached CAD.
     kBackward,
     // Prerendering navigations create but do not activate a new CAD.
@@ -424,14 +424,16 @@ class ContentAutofillDriverFactoryTestLifecycleState
         return rfh2;
       }
 
-      case NavigationType::kSameRfh: {
+      case NavigationType::kSameOrigin: {
         content::RenderFrameHost* rfh1 = main_frame();
         content::RenderFrameHost* rfh2 = simulator->Reload(web_contents());
-        CHECK_EQ(rfh1, rfh2);
+        CHECK_EQ(rfh1 != rfh2,
+                 content::WillSameSiteNavigationChangeRenderFrameHosts(
+                     /*is_main_frame=*/true));
         return rfh2;
       }
 
-      case NavigationType::kCrossRfh: {
+      case NavigationType::kCrossOrigin: {
         content::RenderFrameHost* rfh1 = main_frame();
         simulator->Commit();
         content::RenderFrameHost* rfh2 = simulator->GetFinalRenderFrameHost();
@@ -490,25 +492,41 @@ TEST_F(ContentAutofillDriverFactoryTestLifecycleState, NavigateSameDocument) {
   EXPECT_THAT(driver1, HasState(kActive));
 }
 
-// Tests the lifecycle state changes on a same-origin navigation (or, more
-// precisely, same-RFH navigations).
+// Tests the lifecycle state changes on a same-origin navigation.
+// TODO(https://crbug.com/40615943): Remove this case when RenderDocument has
+// fully launched, as it's almost identical to the cross-origin case.
 TEST_F(ContentAutofillDriverFactoryTestLifecycleState, NavigateSameOrigin) {
-  ContentAutofillDriver& driver1 = driver();
-  {
+  ContentAutofillDriver* driver1 = &driver();
+  ContentAutofillDriver* driver2 = nullptr;
+  if (content::WillSameSiteNavigationChangeRenderFrameHosts(
+          /*is_main_frame=*/true)) {
+    InSequence seq;
+    EXPECT_DRIVER_CREATED(&driver2);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kInactive, kActive);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver1), kActive, kPendingDeletion);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kActive, kPendingReset);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kPendingReset, kActive);
+  } else {
     InSequence seq;
     EXPECT_CALL(observer(), OnContentAutofillDriverCreated).Times(0);
-    EXPECT_LIFECYCLE_CHANGE(Ref(driver1), kActive, kPendingReset);
-    EXPECT_LIFECYCLE_CHANGE(Ref(driver1), kPendingReset, kActive);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver1), kActive, kPendingReset);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver1), kPendingReset, kActive);
   }
-  Navigate(NavigationType::kSameRfh);
-  ContentAutofillDriver& driver2 = driver();
 
-  EXPECT_EQ(&driver1, &driver2);
-  EXPECT_THAT(driver1, HasState(kActive));
+  Navigate(NavigationType::kSameOrigin);
+
+  if (content::WillSameSiteNavigationChangeRenderFrameHosts(
+          /*is_main_frame=*/true)) {
+    EXPECT_NE(driver1, driver2);
+    EXPECT_THAT(*driver2, HasState(kActive));
+  } else {
+    driver2 = &driver();
+    EXPECT_EQ(driver1, driver2);
+    EXPECT_THAT(*driver1, HasState(kActive));
+  }
 }
 
-// Tests the lifecycle state changes on a cross-origin navigation (or, more
-// precisely, cross-RFH navigations).
+// Tests the lifecycle state changes on a cross-origin navigation.
 TEST_F(ContentAutofillDriverFactoryTestLifecycleState, NavigateCrossOrigin) {
   ContentAutofillDriver& driver1 = driver();
   ContentAutofillDriver* driver2 = nullptr;
@@ -520,7 +538,7 @@ TEST_F(ContentAutofillDriverFactoryTestLifecycleState, NavigateCrossOrigin) {
     EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kActive, kPendingReset);
     EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kPendingReset, kActive);
   }
-  Navigate(NavigationType::kCrossRfh);
+  Navigate(NavigationType::kCrossOrigin);
 
   EXPECT_NE(&driver1, driver2);
   EXPECT_THAT(driver1, HasState(kInactive));
@@ -566,7 +584,7 @@ TEST_F(ContentAutofillDriverFactoryTestLifecycleState, NavigateBFCached) {
   }
 
   checkpoint.Call("Navigation");
-  Navigate(NavigationType::kCrossRfh);
+  Navigate(NavigationType::kCrossOrigin);
   EXPECT_THAT(driver1, HasState(kInactive));
   EXPECT_THAT(*driver2, HasState(kActive));
 
