@@ -99,8 +99,23 @@ if (use_allocator_shim && is_win) {
   # build, and it's very easy to override it partially and to be inconsistent
   # among allocations and deallocations. Then, we'll crash when PA deallocates
   # a memory region allocated by the CRT's malloc or vice versa.
-  assert(!is_component_build,
-         "The allocator shim doesn't work for the component build on Windows.")
+  # Since PartitionAlloc depends on libc++, it is difficult to link libc++.dll
+  # with PartitionAlloc to replace its allocator with PartitionAlloc.
+  # If using libcxx_is_shared=true,
+  # a. since inline methods or inline functions defined in some libc++ headers,
+  #    e.g. vector, use new, malloc(), and so on, the memory allocation will
+  #    be done inside a client code.
+  # b. on the other hand, libc++.dll deallocates the memory allocated by the
+  #    inline methods or inline functions. It will not be run inside the client
+  #    code.
+  # So a.'s allocation is done by PartitionAlloc, but b.'s deallocation is
+  # done by system allocator. This will cause heap check failure (WinHeap
+  # doesn't know PartitionAlloc) and crash.
+  # If libcxx_is_shared=false, libc++ is a static library. All libc++ code
+  # will be run inside the client. The above issue will disappear.
+  assert(
+      !is_component_build || (!libcxx_is_shared && !is_debug),
+      "The allocator shim for the Windows component build needs !libcxx_is_shared && !is_debug.")
 }
 
 declare_args() {

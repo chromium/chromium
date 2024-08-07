@@ -258,6 +258,13 @@ group("common_deps_without_libcxx") {
   }
 
   if (is_win) {
+    if (build_with_chromium && is_component_build) {
+      # To enable allocator_shim for the windows component built chrome,
+      # need to make all shared libraries and also executable(i.e.chrome.exe)
+      # depend on PartitionAlloc.
+      public_deps += [ "//base/allocator/partition_allocator/src/partition_alloc:win_component_build_adapter" ]
+    }
+
     # The CRT runtime is dynamically linked in component builds and needs to
     # be present on bots that run exes or load DLLs. This also includes
     # debugging DLLs in all builds.

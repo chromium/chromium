@@ -61,6 +61,13 @@ target(_libcxx_target_type, "libc++") {
     visibility +=
         [ "//remoting/host/linux:remoting_me2me_host_copy_user_session" ]
   }
+  if (build_with_chromium && is_win && is_component_build) {
+    # PartitionAlloc uses no_default_deps=true when is_win && is_component_build
+    # but it depends on libc++. So need to add an explicit dependency on
+    # libc++.
+    visibility +=
+        [ "//base/allocator/partition_allocator/src/partition_alloc:*" ]
+  }
   if (libcxx_is_shared) {
     no_default_deps = true
   }

@@ -40,6 +40,12 @@ enable_pointer_compression =
 # as a buildflag.
 dchecks_are_on = is_debug || dcheck_always_on
 
+# Building PartitionAlloc for Windows component build.
+# Currently use build_with_chromium not to affect any third_party code,
+# but if any third_party code wants to use, remove build_with_chromium.
+use_partition_alloc_as_malloc_on_win_component_build =
+    build_with_chromium && is_win && is_component_build
+
 # TODO(crbug.com/40276913): Split PartitionAlloc into a public and
 # private parts. The public config would include add the "./include" dir and
 # the private config would add the "./src" dir.
@@ -334,8 +340,35 @@ if (is_clang_or_gcc) {
     ]
   }
 
+  if (is_win && is_component_build) {
+    group("win_component_build_adapter") {
+      # Currently guard this target by using build_with_chromium to avoid
+      # any issues on third_party build. But if any third_party code wants to
+      # use allocator_shim for its own component build, we will remove this
+      # guard.
+      if (build_with_chromium) {
+        if (use_allocator_shim) {
+          public_deps = [
+            ":allocator_base",
+            ":allocator_shim",
+          ]
+        }
+      }
+      # If not with chromium, currently do nothing.
+    }
+  }
+
   component("allocator_core") {
     visibility = [ ":*" ]
+
+    if (use_partition_alloc_as_malloc_on_win_component_build) {
+      # Since common_deps defined in //build/config/BUILD.gn depends on
+      # PartitionAlloc for PartitionAlloc-Everywhere, we need no_default_deps
+      # here, because default deps includes common_deps dependency.
+      # Without no_defaults_deps=true, we will see cyclic deps:
+      # common_deps=>PartitionAlloc=>common_deps
+      no_default_deps = true
+    }
 
     sources = [
       "aarch64_support.h",
@@ -485,6 +518,12 @@ if (is_clang_or_gcc) {
       ":wexit_time_destructors",
     ]
     deps = [ ":allocator_base" ]
+    if (use_partition_alloc_as_malloc_on_win_component_build) {
+      # We need to add explicit libc++ dependency here because of
+      # no_default_deps=true.
+      deps += [ "//buildtools/third_party/libc++:libc++" ]
+    }
+
     public_configs = []
     if (is_fuchsia) {
       deps += [
@@ -528,6 +567,14 @@ if (is_clang_or_gcc) {
 
   component("allocator_base") {
     visibility = [ ":*" ]
+    if (use_partition_alloc_as_malloc_on_win_component_build) {
+      # Since common_deps defined in //build/config/BUILD.gn depends on
+      # PartitionAlloc for PartitionAlloc-Everywhere, we need no_default_deps
+      # here, because default deps includes common_deps dependency.
+      # Without no_defaults_deps=true, we will see cyclic deps:
+      # common_deps=>PartitionAlloc=>common_deps
+      no_default_deps = true
+    }
 
     sources = [
       "partition_alloc_base/atomic_ref_count.h",
@@ -707,6 +754,11 @@ if (is_clang_or_gcc) {
     ]
 
     deps = []
+    if (use_partition_alloc_as_malloc_on_win_component_build) {
+      # We need to add explicit libc++ dependency here because of
+      # no_default_deps=true.
+      deps += [ "//buildtools/third_party/libc++:libc++" ]
+    }
     if (is_fuchsia) {
       public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/fit" ]
     }

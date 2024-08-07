@@ -214,6 +214,14 @@ char* _strdup(const char* strSource) {
 }
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+wchar_t* _wcsdup(const wchar_t* strSource) {
+  wchar_t* dest =
+      static_cast<wchar_t*>(malloc(sizeof(wchar_t) * (wcslen(strSource) + 1)));
+  wcscpy(dest, strSource);
+  return dest;
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 errno_t _dupenv_s(char** buffer,
                   size_t* number_of_elements,
                   const char* varname) {

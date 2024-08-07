@@ -11,11 +11,23 @@
 
 namespace partition_alloc::internal::base {
 
-TEST(PartitionAllocStringPrintfTest, TruncatingStringPrintfEmpty) {
+#if PA_BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD) && \
+    PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+// TODO(crbug.com/1429450): TruncatingStringPrintf() defined in
+// allocator_base.dll allocates string from system allocator, but
+// base_unittests deallocates the string by using PartitionAlloc. This causes
+// crashes.
+#define MAYBE_PartitionAllocStringPrintfTest \
+  DISABLED_PartitionAllocStringPrintfTest
+#else
+#define MAYBE_PartitionAllocStringPrintfTest PartitionAllocStringPrintfTest
+#endif
+
+TEST(MAYBE_PartitionAllocStringPrintfTest, TruncatingStringPrintfEmpty) {
   EXPECT_EQ("", TruncatingStringPrintf("%s", ""));
 }
 
-TEST(PartitionAllocStringPrintfTest, TruncatingStringPrintfMisc) {
+TEST(MAYBE_PartitionAllocStringPrintfTest, TruncatingStringPrintfMisc) {
   EXPECT_EQ("123hello w",
             TruncatingStringPrintf("%3d%2s %1c", 123, "hello", 'w'));
 }
@@ -23,7 +35,8 @@ TEST(PartitionAllocStringPrintfTest, TruncatingStringPrintfMisc) {
 // Test that TruncatingStringPrintf truncates too long result.
 // The original TruncatingStringPrintf does not truncate. Instead, it allocates
 // memory and returns an entire result.
-TEST(PartitionAllocStringPrintfTest, TruncatingStringPrintfTruncatesResult) {
+TEST(MAYBE_PartitionAllocStringPrintfTest,
+     TruncatingStringPrintfTruncatesResult) {
   std::vector<char> buffer;
   buffer.resize(kMaxLengthOfTruncatingStringPrintfResult + 1);
   std::fill(buffer.begin(), buffer.end(), 'a');
@@ -34,7 +47,7 @@ TEST(PartitionAllocStringPrintfTest, TruncatingStringPrintfTruncatesResult) {
 }
 
 // Test that TruncatingStringPrintf does not change errno.
-TEST(PartitionAllocStringPrintfTest, TruncatingStringPrintfErrno) {
+TEST(MAYBE_PartitionAllocStringPrintfTest, TruncatingStringPrintfErrno) {
   errno = 1;
   EXPECT_EQ("", TruncatingStringPrintf("%s", ""));
   EXPECT_EQ(1, errno);
