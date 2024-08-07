@@ -91,12 +91,10 @@ CGFloat const kCreditCardCellHeight = 64;
 }
 
 - (void)showLoadingState {
+  self.primaryActionButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_LOADING_THROBBER_ACCESSIBLE_NAME);
   self.isLoading = YES;
   self.isConfirmed = NO;
-  UIAccessibilityPostNotification(
-      UIAccessibilityAnnouncementNotification,
-      l10n_util::GetNSString(
-          IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_LOADING_THROBBER_ACCESSIBLE_NAME));
 }
 
 - (void)showConfirmationState {

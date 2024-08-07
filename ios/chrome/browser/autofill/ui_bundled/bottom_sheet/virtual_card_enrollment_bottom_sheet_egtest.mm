@@ -268,7 +268,12 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
-      assertWithMatcher:grey_not(grey_enabled())];
+      assertWithMatcher:
+          grey_allOf(
+              grey_not(grey_enabled()),
+              grey_accessibilityLabel(l10n_util::GetNSString(
+                  IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_LOADING_THROBBER_ACCESSIBLE_NAME)),
+              nil)];
 
   // Assert the secondary action button is disabled.
   [[EarlGrey selectElementWithMatcher:
