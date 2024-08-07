@@ -35,6 +35,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -743,6 +744,7 @@ public class UrlBarTest {
 
     @Test
     @SmallTest
+    @RequiresRestart("crbug.com/358170962")
     public void typingStarted_notEmittedForNonTypingCharacters() {
         var listener = mock(Runnable.class);
 
