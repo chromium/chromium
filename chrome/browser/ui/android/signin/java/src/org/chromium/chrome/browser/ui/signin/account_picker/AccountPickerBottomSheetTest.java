@@ -85,7 +85,6 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -1315,7 +1314,6 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
     public void testSignInDefaultAccountOnCollapsedSheet_SpinnerWhileCheckingAccountManagement() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
@@ -1339,8 +1337,7 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
-    public void testSignInDefaultAccountOnCollapsedSheet_PoliciesOnSignin() {
+    public void testSignInDefaultAccountOnCollapsedSheet() {
         mIsAccountManaged = true;
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
@@ -1377,8 +1374,7 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
-    public void testSignInDefaultAccountOnCollapsedSheet_PoliciesOnSignin_GeneralError() {
+    public void testSignInDefaultAccountOnCollapsedSheet_GeneralError() {
         mIsAccountManaged = true;
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()

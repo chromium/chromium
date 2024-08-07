@@ -396,7 +396,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         mSignInState = signInState;
 
         if (!SigninFeatureMap.isEnabled(SigninFeatures.SKIP_CHECK_FOR_ACCOUNT_MANAGEMENT_ON_SIGNIN)
-                && SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
                 && !getUserAcceptedAccountManagement()) {
             isAccountManaged(
                     mSignInState.mCoreAccountInfo,
@@ -428,16 +427,9 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
             seedThenReloadAllAccountsFromSystem(mSignInState.mCoreAccountInfo.getId());
             notifySignInAllowedChanged();
 
-            if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
-                    || mSignInState.shouldTurnSyncOn()) {
-                Log.d(TAG, "Checking if account has policy management enabled");
-                fetchAndApplyCloudPolicy(
-                        mSignInState.mCoreAccountInfo, this::finishSignInAfterPolicyEnforced);
-            } else {
-                // Sign-in without sync doesn't enforce enterprise policy, so skip that
-                // step.
-                finishSignInAfterPolicyEnforced();
-            }
+            Log.d(TAG, "Checking if account has policy management enabled");
+            fetchAndApplyCloudPolicy(
+                    mSignInState.mCoreAccountInfo, this::finishSignInAfterPolicyEnforced);
         } else {
             Log.i(TAG, "Signin starts (enabling sync: %b).", mSignInState.shouldTurnSyncOn());
             AccountInfoServiceProvider.get()
@@ -447,18 +439,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                                 mSignInState.mCoreAccountInfo = accountInfo;
                                 notifySignInAllowedChanged();
 
-                                if (SigninFeatureMap.isEnabled(
-                                                SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
-                                        || mSignInState.shouldTurnSyncOn()) {
-                                    Log.d(TAG, "Checking if account has policy management enabled");
-                                    fetchAndApplyCloudPolicy(
-                                            mSignInState.mCoreAccountInfo,
-                                            this::finishSignInAfterPolicyEnforced);
-                                } else {
-                                    // Sign-in without sync doesn't enforce enterprise policy, so
-                                    // skip that step.
-                                    finishSignInAfterPolicyEnforced();
-                                }
+                                Log.d(TAG, "Checking if account has policy management enabled");
+                                fetchAndApplyCloudPolicy(
+                                        mSignInState.mCoreAccountInfo,
+                                        this::finishSignInAfterPolicyEnforced);
                             });
         }
     }

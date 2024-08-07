@@ -8,8 +8,6 @@ import android.content.Context;
 
 import androidx.annotation.MainThread;
 
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -44,10 +42,11 @@ public class ConfirmManagedSyncDataDialogCoordinator {
     /**
      * Creates {@link ConfirmManagedSyncDataDialogCoordinator} when signing in to a managed account
      * (either through sign in or when switching accounts) and shows the dialog.
-     * @param context         Context to create the view.
-     * @param dialogManager   ModalDialogManager to show the dialog.
-     * @param listener        Callback for result.
-     * @param managedDomain   The domain of the managed account.
+     *
+     * @param context Context to create the view.
+     * @param dialogManager ModalDialogManager to show the dialog.
+     * @param listener Callback for result.
+     * @param managedDomain The domain of the managed account.
      */
     @MainThread
     public ConfirmManagedSyncDataDialogCoordinator(
@@ -56,8 +55,6 @@ public class ConfirmManagedSyncDataDialogCoordinator {
             Listener listener,
             String managedDomain) {
         mListener = listener;
-        boolean updatedString =
-                SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN);
         mModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(
@@ -66,9 +63,7 @@ public class ConfirmManagedSyncDataDialogCoordinator {
                         .with(
                                 ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 context.getString(
-                                        updatedString
-                                                ? R.string.managed_signin_with_user_policy_subtitle
-                                                : R.string.sign_in_managed_account_description,
+                                        R.string.managed_signin_with_user_policy_subtitle,
                                         managedDomain))
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .with(

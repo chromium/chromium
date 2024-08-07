@@ -199,11 +199,7 @@ void UserPolicySigninService::UpdateLastPolicyCheckTime() {
 }
 
 signin::ConsentLevel UserPolicySigninService::GetConsentLevelForRegistration() {
-  if (base::FeatureList::IsEnabled(::switches::kEnterprisePolicyOnSignin)) {
-    return signin::ConsentLevel::kSignin;
-  } else {
-    return signin::ConsentLevel::kSync;
-  }
+  return signin::ConsentLevel::kSignin;
 }
 
 }  // namespace policy

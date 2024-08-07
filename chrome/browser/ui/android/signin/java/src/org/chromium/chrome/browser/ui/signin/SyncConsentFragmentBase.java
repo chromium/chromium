@@ -50,8 +50,6 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -762,9 +760,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
 
                         SigninManager signinManager =
                                 IdentityServicesProvider.get().getSigninManager(getProfile());
-                        if (acceptedAccountManagement
-                                && SigninFeatureMap.isEnabled(
-                                        SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
+                        if (acceptedAccountManagement) {
                             signinManager.setUserAcceptedAccountManagement(true);
                         }
 
@@ -777,10 +773,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
 
                                     @Override
                                     public void onSignInAborted() {
-                                        if (acceptedAccountManagement
-                                                && SigninFeatureMap.isEnabled(
-                                                        SigninFeatures
-                                                                .ENTERPRISE_POLICY_ON_SIGNIN)) {
+                                        if (acceptedAccountManagement) {
                                             signinManager.setUserAcceptedAccountManagement(false);
                                         }
                                         mIsSigninInProgress = false;

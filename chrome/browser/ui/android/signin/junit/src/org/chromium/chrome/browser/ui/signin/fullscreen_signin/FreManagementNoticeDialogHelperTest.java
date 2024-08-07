@@ -31,11 +31,8 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -46,7 +43,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link FreManagementNoticeDialogHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
 public class FreManagementNoticeDialogHelperTest {
 
     @Rule
@@ -88,18 +84,6 @@ public class FreManagementNoticeDialogHelperTest {
                         })
                 .when(mSigninManager)
                 .isAccountManaged(eq(mCoreAccountInfo), any());
-    }
-
-    @Test
-    @DisableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
-    public void testPolicyOnSigninDisabled() {
-        @SigninAccessPoint int accessPoint = SigninAccessPoint.START_PAGE;
-        FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
-                mCoreAccountInfo, mSigninManager, accessPoint, null, mContext, mModalDialogManager);
-
-        verify(mSigninManager).signin(eq(mCoreAccountInfo), eq(accessPoint), any());
-        verify(mSigninManager, never()).setUserAcceptedAccountManagement(anyBoolean());
-        verify(mModalDialogManager, never()).showDialog(any(), anyInt());
     }
 
     @Test

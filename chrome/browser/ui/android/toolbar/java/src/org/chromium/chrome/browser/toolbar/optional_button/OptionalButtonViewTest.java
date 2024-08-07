@@ -863,7 +863,7 @@ public class OptionalButtonViewTest {
         // Set a string that's too long as an action chip label. Real code measures the number of
         // pixels this will take on screen, but robolectric just uses the character count, so use
         // any string with more than 150 characters.
-        buttonData.updateActionChipResourceId(R.string.sign_in_managed_account_description);
+        buttonData.updateActionChipResourceId(R.string.sync_encryption_create_passphrase);
 
         int maxActionChipWidth =
                 mOptionalButtonView

@@ -312,8 +312,7 @@ void SigninManagerAndroid::IsAccountManaged(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(switches::kSeedAccountsRevamp) &&
-      base::FeatureList::IsEnabled(switches::kEnterprisePolicyOnSignin)) {
+  if (!base::FeatureList::IsEnabled(switches::kSeedAccountsRevamp)) {
     // Force seed the account, since requesting management status would require
     // access token, and this operation would result in a crash if done on a
     // non seeded account. See https://crbug.com/332900316.

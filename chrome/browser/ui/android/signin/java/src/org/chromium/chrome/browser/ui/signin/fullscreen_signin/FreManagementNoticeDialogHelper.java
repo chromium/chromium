@@ -14,8 +14,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.ui.signin.ConfirmManagedSyncDataDialogCoordinator;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -91,8 +89,7 @@ final class FreManagementNoticeDialogHelper {
             Context context,
             ModalDialogManager modalDialogManager) {
         long startTimeMillis = SystemClock.uptimeMillis();
-        if (!SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
-                || signinManager.getUserAcceptedAccountManagement()) {
+        if (signinManager.getUserAcceptedAccountManagement()) {
             SignInCallback wrappedCallback =
                     new WrappedSigninCallback(callback) {
                         @Override
