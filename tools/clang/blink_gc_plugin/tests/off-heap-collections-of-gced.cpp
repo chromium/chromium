@@ -19,6 +19,7 @@ class WithCollections : public GarbageCollected<WithCollections> {
     (void)vector_pair_;
     (void)ignored_set_;
     (void)array_;
+    (void)array_of_vectors_;
 
     v->Trace(heap_hash_set_);
     v->Trace(heap_deque_);
@@ -48,6 +49,7 @@ class WithCollections : public GarbageCollected<WithCollections> {
   std::map<const Mixin, int> map_const_;
   std::vector<std::pair<Base, int>> vector_pair_;
   std::array<Base, 4> array_;
+  std::array<HeapVector<Base>, 4> array_of_vectors_;
 
   // Bad WTF collections:
   WTF::HashSet<Base> wtf_hash_set_;
@@ -75,10 +77,14 @@ class StackAllocated {
   STACK_ALLOCATED();
 
  public:
-  StackAllocated() { (void)array_; }
+  StackAllocated() {
+    (void)array_;
+    (void)array_of_vectors_;
+  }
 
  private:
   std::array<Base, 4> array_;
+  std::array<HeapVector<Base>, 4> array_of_vectors_;
 };
 
 void DisallowedUseOfCollections() {
@@ -120,6 +126,8 @@ void DisallowedUseOfCollections() {
 
   std::array<Base, 4> array;
   (void)array;
+  std::array<HeapVector<Base>, 4> array_of_vectors;
+  (void)array_of_vectors;
 
   GC_PLUGIN_IGNORE("For testing")
   std::set<Base> ignored_set;
