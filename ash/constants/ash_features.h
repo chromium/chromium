@@ -911,6 +911,15 @@ BASE_DECLARE_FEATURE(kSystemJapanesePhysicalTyping);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kSystemLiveCaption);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kSystemShortcutBehavior);
+enum class SystemShortcutBehaviorParam {
+  kNormalShortcutBehavior,
+  kIgnoreCommonVdiShortcutList,
+};
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<SystemShortcutBehaviorParam>
+    kSystemShortcutBehaviorParam;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFeatureManagementSystemLiveCaption);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kSystemNudgeMigration);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kSystemTrayShadow);

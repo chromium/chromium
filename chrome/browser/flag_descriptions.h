@@ -1995,6 +1995,9 @@ extern const char kSyncTrustedVaultPassphrasePromoDescription[];
 extern const char kSystemProxyForSystemServicesName[];
 extern const char kSystemProxyForSystemServicesDescription[];
 
+extern const char kSystemShortcutBehaviorName[];
+extern const char kSystemShortcutBehaviorDescription[];
+
 extern const char kTabDragDropName[];
 extern const char kTabDragDropDescription[];
 

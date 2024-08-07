@@ -2332,6 +2332,12 @@ const char kSystemProxyForSystemServicesDescription[] =
     "network connectivity to use the system-proxy daemon for authentication to "
     "remote HTTP web proxies.";
 
+const char kSystemShortcutBehaviorName[] =
+    "Modifies the default behavior of system shortcuts.";
+const char kSystemShortcutBehaviorDescription[] =
+    "This flag controls the default behavior of ChromeOS system shortcuts "
+    "(Launcher key shortcuts).";
+
 const char kNotificationSchedulerName[] = "Notification scheduler";
 const char kNotificationSchedulerDescription[] =
     "Enable notification scheduler feature.";

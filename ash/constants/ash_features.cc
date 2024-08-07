@@ -2897,6 +2897,21 @@ BASE_FEATURE(kSystemNudgeMigration,
              "SystemNudgeMigration",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Device End Of Lifetime incentive notifications.
+BASE_FEATURE(kSystemShortcutBehavior,
+             "SystemShortcutBehavior",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<SystemShortcutBehaviorParam>::Option
+    system_shortcut_behavior_options[] = {
+        {SystemShortcutBehaviorParam::kIgnoreCommonVdiShortcutList,
+         "ignore_common_vdi_shortcuts"}};
+const base::FeatureParam<SystemShortcutBehaviorParam>
+    kSystemShortcutBehaviorParam{
+        &kSystemShortcutBehavior, "behavior_type",
+        SystemShortcutBehaviorParam::kNormalShortcutBehavior,
+        &system_shortcut_behavior_options};
+
 // Enables or disables the shadows of system tray bubbles.
 BASE_FEATURE(kSystemTrayShadow,
              "SystemTrayShadow",

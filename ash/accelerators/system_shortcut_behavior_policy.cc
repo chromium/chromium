@@ -4,20 +4,34 @@
 
 #include "ash/accelerators/system_shortcut_behavior_policy.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/command_line.h"
+#include "base/feature_list.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
 
-void RegisterSystemShortcutBehaviorProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(
-      prefs::kSystemShortcutBehavior,
-      static_cast<int>(SystemShortcutBehaviorType::kNormalShortcutBehavior));
+namespace {
+
+SystemShortcutBehaviorType GetSystemShortcutBehaviorFromFlags() {
+  if (!base::FeatureList::IsEnabled(features::kSystemShortcutBehavior)) {
+    return SystemShortcutBehaviorType::kNormalShortcutBehavior;
+  }
+
+  auto system_shortcut_behavior_param =
+      features::kSystemShortcutBehaviorParam.Get();
+  switch (system_shortcut_behavior_param) {
+    case features::SystemShortcutBehaviorParam::kNormalShortcutBehavior:
+      return SystemShortcutBehaviorType::kNormalShortcutBehavior;
+    case features::SystemShortcutBehaviorParam::kIgnoreCommonVdiShortcutList:
+      return SystemShortcutBehaviorType::kIgnoreCommonVdiShortcuts;
+  }
 }
 
-SystemShortcutBehaviorType GetSystemShortcutBehavior() {
+SystemShortcutBehaviorType GetSystemShortcutBehaviorFromPolicy() {
   PrefService* pref_service =
       ash::Shell::Get()->session_controller()->GetActivePrefService();
   if (!pref_service) {
@@ -41,6 +55,24 @@ SystemShortcutBehaviorType GetSystemShortcutBehavior() {
   }
 
   return static_cast<SystemShortcutBehaviorType>(shortcut_behavior_type);
+}
+
+}  // namespace
+
+void RegisterSystemShortcutBehaviorProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(
+      prefs::kSystemShortcutBehavior,
+      static_cast<int>(SystemShortcutBehaviorType::kNormalShortcutBehavior));
+}
+
+SystemShortcutBehaviorType GetSystemShortcutBehavior() {
+  if (auto behavior_from_policy = GetSystemShortcutBehaviorFromPolicy();
+      behavior_from_policy !=
+      SystemShortcutBehaviorType::kNormalShortcutBehavior) {
+    return behavior_from_policy;
+  }
+
+  return GetSystemShortcutBehaviorFromFlags();
 }
 
 }  // namespace ash

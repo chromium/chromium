@@ -16823,6 +16823,7 @@ from previous Chrome versions.
   <int value="-1567727398" label="DesktopPWAsWithoutExtensions:disabled"/>
   <int value="-1566412850" label="JourneysImages:disabled"/>
   <int value="-1565683260" label="EnableSwitchAccessPointScanning:disabled"/>
+  <int value="-1564423193" label="SystemShortcutBehavior:enabled"/>
   <int value="-1564232131"
       label="OmniboxOnDeviceHeadProviderNonIncognito:enabled"/>
   <int value="-1563280385" label="Floss:enabled"/>
@@ -24548,6 +24549,7 @@ from previous Chrome versions.
   <int value="1772618273"
       label="WebAuthenticationFilterGooglePasskeys:disabled"/>
   <int value="1774991770" label="SafetyCheckPermissions:enabled"/>
+  <int value="1775264688" label="SystemShortcutBehavior:disabled"/>
   <int value="1775397180" label="kFastPairHID:disabled"/>
   <int value="1775475563" label="malware-interstitial-v3"/>
   <int value="1775652804" label="OmniboxBookmarkPaths:disabled"/>

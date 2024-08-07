@@ -3167,6 +3167,15 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kSystemShortcutBehaviorIgnoreCommonVdiShortcuts[] = {
+        {"behavior_type", "ignore_common_vdi_shortcuts"}};
+
+const FeatureEntry::FeatureVariation kSystemShortcutBehaviorVariations[] = {
+    {"Ignore Common VDI Shortcuts",
+     kSystemShortcutBehaviorIgnoreCommonVdiShortcuts,
+     std::size(kSystemShortcutBehaviorIgnoreCommonVdiShortcuts), nullptr}};
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -5838,9 +5847,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSystemProxyForSystemServicesName,
      flag_descriptions::kSystemProxyForSystemServicesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSystemProxyForSystemServices)},
-    {"enable-federated-service", flag_descriptions::kFederatedServiceName,
-     flag_descriptions::kFederatedServiceDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kFederatedService)},
+    {"system-shortcut-behavior", flag_descriptions::kSystemShortcutBehaviorName,
+     flag_descriptions::kSystemShortcutBehaviorDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kSystemShortcutBehavior,
+                                    kSystemShortcutBehaviorVariations,
+                                    "SystemShortcutBehavior")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-cros-touch-text-editing-redesign",
      flag_descriptions::kTouchTextEditingRedesignName,
