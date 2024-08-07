@@ -19,8 +19,13 @@ class ASH_EXPORT PostLoginEventObserver : public base::CheckedObserver {
                               bool is_ash_restarted,
                               bool is_regular_user_or_owner) {}
   virtual void OnAllExpectedShelfIconLoaded(base::TimeTicks ts) {}
+  virtual void OnSessionRestoreDataLoaded(base::TimeTicks ts,
+                                          bool restore_automatically) {}
+  // NOTE: This will only be triggered if `restore_automatically` is true.
   virtual void OnAllBrowserWindowsCreated(base::TimeTicks ts) {}
+  // NOTE: This will only be triggered if `restore_automatically` is true.
   virtual void OnAllBrowserWindowsShown(base::TimeTicks ts) {}
+  // NOTE: This will only be triggered if `restore_automatically` is true.
   virtual void OnAllBrowserWindowsPresented(base::TimeTicks ts) {}
   virtual void OnShelfAnimationFinished(base::TimeTicks ts) {}
   virtual void OnCompositorAnimationFinished(

@@ -457,6 +457,11 @@ void LoginUnlockThroughputRecorder::FullSessionRestoreDataLoaded(
   DCHECK(!full_session_restore_data_loaded_);
   full_session_restore_data_loaded_ = true;
 
+  auto now = base::TimeTicks::Now();
+  for (auto& obs : observers_) {
+    obs.OnSessionRestoreDataLoaded(now, restore_automatically);
+  }
+
   // TODO(b/343001594): If `restore_automatically` is false, we should report
   // the metrics with different names rather than ignoring session restore.
   // For now we ignore session restore to keep consistency with old behavior.

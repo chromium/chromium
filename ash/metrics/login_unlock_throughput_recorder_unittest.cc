@@ -49,6 +49,10 @@ class MockPostLoginEventObserver : public PostLoginEventObserver {
               (base::TimeTicks ts),
               (override));
   MOCK_METHOD(void,
+              OnSessionRestoreDataLoaded,
+              (base::TimeTicks ts, bool restore_automatically),
+              (override));
+  MOCK_METHOD(void,
               OnAllBrowserWindowsCreated,
               (base::TimeTicks ts),
               (override));
@@ -330,6 +334,9 @@ TEST_P(LoginUnlockThroughputRecorderLoginAnimationTest,
 
     EXPECT_CALL(check_point, Call("login_done")).Times(1);
 
+    EXPECT_CALL(mock_observer,
+                OnSessionRestoreDataLoaded(_, /*restore_automatically=*/true))
+        .Times(1);
     // NOTE: No browser restore events here since the restore list is empty in
     // this scenario.
 
@@ -448,6 +455,11 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
         .Times(1);
 
     EXPECT_CALL(check_point, Call("login_done")).Times(1);
+
+    EXPECT_CALL(mock_observer,
+                OnSessionRestoreDataLoaded(_, /*restore_automatically=*/true))
+        .Times(1);
+
     EXPECT_CALL(check_point, Call("restore_windows_scheduled")).Times(1);
     EXPECT_CALL(check_point, Call("restore_ongoing_1")).Times(1);
     EXPECT_CALL(check_point, Call("restore_ongoing_2")).Times(1);
@@ -536,6 +548,11 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
         .Times(1);
 
     EXPECT_CALL(check_point, Call("login_done")).Times(1);
+
+    EXPECT_CALL(mock_observer,
+                OnSessionRestoreDataLoaded(_, /*restore_automatically=*/true))
+        .Times(1);
+
     EXPECT_CALL(check_point, Call("restore_windows_scheduled")).Times(1);
 
     EXPECT_CALL(mock_observer, OnAllBrowserWindowsCreated(_)).Times(1);
@@ -633,6 +650,11 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
     EXPECT_CALL(mock_observer, OnAllExpectedShelfIconLoaded(_)).Times(1);
 
     EXPECT_CALL(check_point, Call("shelf_icons_loaded")).Times(1);
+
+    EXPECT_CALL(mock_observer,
+                OnSessionRestoreDataLoaded(_, /*restore_automatically=*/true))
+        .Times(1);
+
     EXPECT_CALL(check_point, Call("restore_windows_scheduled")).Times(1);
 
     EXPECT_CALL(mock_observer, OnAllBrowserWindowsCreated(_)).Times(1);
