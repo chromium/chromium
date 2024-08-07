@@ -439,7 +439,7 @@ class ComplexFormDataBytesConsumer final : public BytesConsumer {
           }
           break;
         case FormDataElement::kDataPipe:
-          NOTREACHED_IN_MIGRATION() << "This consumer can't handle data pipes.";
+          DUMP_WILL_BE_NOTREACHED() << "This consumer can't handle data pipes.";
           break;
       }
     }
