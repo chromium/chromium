@@ -379,11 +379,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }
 }
 
-- (void)setActivePage:(TabGridPage)page {
-  DCHECK(page != TabGridPageRemoteTabs);
-  [_mediator setActivePage:page];
-}
-
 - (void)setActiveMode:(TabGridMode)mode {
   _modeHolder.mode = mode;
 }
@@ -399,7 +394,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   return self.bvcContainer == nil && !self.firstPresentation;
 }
 
-- (void)showTabGrid {
+- (void)showTabGridPage:(TabGridPage)page {
+  CHECK_NE(page, TabGridPageRemoteTabs);
+  CHECK_NE(page, TabGridPageTabGroups);
+  [_mediator setActivePage:page];
+
   BOOL animated = !self.animationsDisabledForTesting;
 
   SceneState* sceneState = self.regularBrowser->GetSceneState();
@@ -1106,17 +1105,16 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)showActiveTabInPage:(TabGridPage)page focusOmnibox:(BOOL)focusOmnibox {
   DCHECK(self.regularBrowser && self.incognitoBrowser);
+  [_mediator setActivePage:page];
 
   Browser* activeBrowser = nullptr;
   switch (page) {
     case TabGridPageIncognitoTabs:
       DCHECK_GT(self.incognitoBrowser->GetWebStateList()->count(), 0);
-      self.activePage = page;
       activeBrowser = self.incognitoBrowser;
       break;
     case TabGridPageRegularTabs:
       DCHECK_GT(self.regularBrowser->GetWebStateList()->count(), 0);
-      self.activePage = page;
       activeBrowser = self.regularBrowser;
       break;
     case TabGridPageRemoteTabs:

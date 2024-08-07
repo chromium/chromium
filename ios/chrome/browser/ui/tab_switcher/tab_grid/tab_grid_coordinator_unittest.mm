@@ -60,6 +60,7 @@
 @end
 
 @implementation TestTabGridCoordinatorDelegate
+
 @synthesize didEndCalled = _didEndCalled;
 - (void)tabGrid:(TabGridCoordinator*)tabGrid
     shouldActivateBrowser:(Browser*)browser
@@ -71,9 +72,6 @@
   self.didEndCalled = YES;
 }
 
-- (TabGridPage)activePageForTabGrid:(TabGridCoordinator*)tabGrid {
-  return TabGridPageRegularTabs;
-}
 @end
 
 namespace {
@@ -231,7 +229,7 @@ TEST_F(TabGridCoordinatorTest, TabViewControllerBeforeTabSwitcher) {
   EXPECT_EQ(normal_tab_view_controller_, coordinator_.activeViewController);
 
   // Now setting a TabSwitcher will make the switcher active.
-  [coordinator_ showTabGrid];
+  [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
   bool tab_switcher_active = base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool {
         return GetBaseViewController() == coordinator_.activeViewController;
@@ -242,20 +240,20 @@ TEST_F(TabGridCoordinatorTest, TabViewControllerBeforeTabSwitcher) {
 // Tests that it is possible to set a TabViewController after setting a
 // TabSwitcher.
 TEST_F(TabGridCoordinatorTest, TabViewControllerAfterTabSwitcher) {
-  [coordinator_ showTabGrid];
+  [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
   EXPECT_EQ(GetBaseViewController(), coordinator_.activeViewController);
 
   [coordinator_ showTabViewController:normal_tab_view_controller_
-                            incognito:NO
+                            incognito:YES
                            completion:nil];
   EXPECT_EQ(normal_tab_view_controller_, coordinator_.activeViewController);
 
-    [coordinator_ showTabGrid];
-    bool tab_switcher_active = base::test::ios::WaitUntilConditionOrTimeout(
-        base::test::ios::kWaitForUIElementTimeout, ^bool {
-          return GetBaseViewController() == coordinator_.activeViewController;
-        });
-    EXPECT_TRUE(tab_switcher_active);
+  [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
+  bool tab_switcher_active = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return GetBaseViewController() == coordinator_.activeViewController;
+      });
+  EXPECT_TRUE(tab_switcher_active);
 }
 
 // Tests swapping between two TabViewControllers.
@@ -274,10 +272,10 @@ TEST_F(TabGridCoordinatorTest, SwapTabViewControllers) {
 
 // Tests calling showTabSwitcher twice in a row with the same VC.
 TEST_F(TabGridCoordinatorTest, ShowTabSwitcherTwice) {
-  [coordinator_ showTabGrid];
+  [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
   EXPECT_EQ(GetBaseViewController(), coordinator_.activeViewController);
 
-  [coordinator_ showTabGrid];
+  [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
   EXPECT_EQ(GetBaseViewController(), coordinator_.activeViewController);
 }
 
@@ -298,7 +296,7 @@ TEST_F(TabGridCoordinatorTest, ShowTabViewControllerTwice) {
 // handlers are called properly after the new view controller is made active.
 TEST_F(TabGridCoordinatorTest, CompletionHandlers) {
   // Setup: show the switcher.
-  [coordinator_ showTabGrid];
+  [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
 
   // Tests that the completion handler is called when showing a tab view
   // controller. Tests that the delegate 'didEnd' method is also called.
@@ -343,11 +341,11 @@ TEST_F(TabGridCoordinatorTest, SizeTabGridCoordinatorViewController) {
 TEST_F(TabGridCoordinatorTest, TimeSpentInTabGrid) {
   histogram_tester_.ExpectTotalCount("IOS.TabSwitcher.TimeSpent", 0);
   scoped_clock_.Advance(base::Minutes(1));
-  [coordinator_ showTabGrid];
+  [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
   histogram_tester_.ExpectTotalCount("IOS.TabSwitcher.TimeSpent", 0);
   scoped_clock_.Advance(base::Seconds(20));
   [coordinator_ showTabViewController:normal_tab_view_controller_
-                            incognito:NO
+                            incognito:YES
                            completion:nil];
   histogram_tester_.ExpectUniqueTimeSample("IOS.TabSwitcher.TimeSpent",
                                            base::Seconds(20), 1);
@@ -361,11 +359,11 @@ TEST_F(TabGridCoordinatorTest, tabGridActive) {
   EXPECT_FALSE(coordinator_.tabGridActive);
 
   [coordinator_ showTabViewController:normal_tab_view_controller_
-                            incognito:NO
+                            incognito:YES
                            completion:nil];
   EXPECT_FALSE(coordinator_.tabGridActive);
 
-  [coordinator_ showTabGrid];
+  [coordinator_ showTabGridPage:TabGridPageIncognitoTabs];
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool() {
         return coordinator_.tabGridActive;

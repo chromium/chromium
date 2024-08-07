@@ -1219,7 +1219,6 @@ void OnListFamilyMembersResponse(
     // called.
     [self.sceneState.window makeKeyAndVisible];
   }
-  [self.mainCoordinator setActivePage:[self activePage]];
 
   if (!self.sceneState.appState.startupInformation.isFirstRun) {
     [self reconcileEulaAsAccepted];
@@ -2575,10 +2574,6 @@ using UserFeedbackDataCallback =
   [self finishActivatingBrowserDismissingTabSwitcher];
 }
 
-- (TabGridPage)activePageForTabGrid:(TabGridCoordinator*)tabGrid {
-  return self.activePage;
-}
-
 // Begins the process of activating the given current model, switching which BVC
 // is suspended if necessary. The omnibox will be focused after the tab switcher
 // dismissal is completed if `focusOmnibox` is YES.
@@ -2696,7 +2691,7 @@ using UserFeedbackDataCallback =
       };
     case OPEN_TAB_GRID:
       return ^{
-        [weakSelf.mainCoordinator showTabGrid];
+        [weakSelf showTabSwitcher];
       };
     case SET_CHROME_DEFAULT_BROWSER:
       return ^{
@@ -3944,9 +3939,13 @@ using UserFeedbackDataCallback =
 // Shows the tab switcher UI.
 - (void)showTabSwitcher {
   DCHECK(self.mainCoordinator);
-  [self.mainCoordinator setActivePage:self.activePage];
   [self.mainCoordinator setActiveMode:TabGridMode::kNormal];
-  [self.mainCoordinator showTabGrid];
+  TabGridPage page =
+      (self.currentInterface.browser == self.incognitoInterface.browser)
+          ? TabGridPageIncognitoTabs
+          : TabGridPageRegularTabs;
+
+  [self.mainCoordinator showTabGridPage:page];
 }
 
 - (void)openURLContexts:(NSSet<UIOpenURLContext*>*)URLContexts {
@@ -4010,14 +4009,6 @@ using UserFeedbackDataCallback =
 }
 
 #pragma mark - TabGrid helpers
-
-// Returns the page that should be active in the TabGrid.
-- (TabGridPage)activePage {
-  if (self.currentInterface.browser == self.incognitoInterface.browser) {
-    return TabGridPageIncognitoTabs;
-  }
-  return TabGridPageRegularTabs;
-}
 
 // Adds a new tab to the `browser` based on `urlLoadParams` and then presents
 // it.
