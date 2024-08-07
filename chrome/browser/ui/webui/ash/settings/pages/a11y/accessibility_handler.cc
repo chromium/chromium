@@ -94,6 +94,10 @@ void AccessibilityHandler::RegisterMessages() {
       "getStartupSoundEnabled",
       base::BindRepeating(&AccessibilityHandler::HandleGetStartupSoundEnabled,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "previewFlashNotification",
+      base::BindRepeating(&AccessibilityHandler::HandlePreviewFlashNotification,
+                          base::Unretained(this)));
 }
 
 void AccessibilityHandler::HandleShowBrowserAppearanceSettings(
@@ -166,6 +170,11 @@ void AccessibilityHandler::HandleGetStartupSoundEnabled(
   FireWebUIListener(
       "startup-sound-setting-retrieved",
       base::Value(AccessibilityManager::Get()->GetStartupSoundEnabled()));
+}
+
+void AccessibilityHandler::HandlePreviewFlashNotification(
+    const base::Value::List& args) {
+  AccessibilityManager::Get()->PreviewFlashNotification();
 }
 
 void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {

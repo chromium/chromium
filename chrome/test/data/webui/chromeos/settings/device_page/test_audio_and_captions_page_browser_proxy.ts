@@ -13,6 +13,7 @@ export class TestAudioAndCaptionsPageBrowserProxy extends TestBrowserProxy
       'setStartupSoundEnabled',
       'audioAndCaptionsPageReady',
       'getStartupSoundEnabled',
+      'previewFlashNotification',
     ]);
   }
 
@@ -27,5 +28,9 @@ export class TestAudioAndCaptionsPageBrowserProxy extends TestBrowserProxy
 
   getStartupSoundEnabled(): void {
     this.methodCalled('getStartupSoundEnabled');
+  }
+
+  previewFlashNotification(): void {
+    this.methodCalled('previewFlashNotification');
   }
 }

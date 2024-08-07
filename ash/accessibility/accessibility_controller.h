@@ -610,6 +610,8 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
                               base::OnceClosure on_close_callback);
   gfx::Rect GetConfirmationDialogBoundsInScreen();
 
+  void PreviewFlashNotification() const;
+
   // SessionObserver:
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;
   void OnActiveUserPrefServiceChanged(PrefService* prefs) override;

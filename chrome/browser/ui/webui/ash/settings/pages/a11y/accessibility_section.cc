@@ -1000,6 +1000,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_FLASH_NOTIFICATIONS_DESCRIPTION},
       {"flashNotificationsColorOptionsLabel",
        IDS_SETTINGS_FLASH_NOTIFICATIONS_COLOR_OPTIONS_LABEL},
+      {"flashNotificationsPreviewButton",
+       IDS_SETTINGS_FLASH_NOTIFICATIONS_PREVIEW_BUTTON},
       {"keyboardAndTextInputHeading",
        IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_AND_TEXT_INPUT_HEADING},
       {"keyboardAndTextInputLinkDescription",

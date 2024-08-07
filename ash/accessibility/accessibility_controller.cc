@@ -3281,6 +3281,10 @@ gfx::Rect AccessibilityController::GetConfirmationDialogBoundsInScreen() {
   return confirmation_dialog_.get()->GetWidget()->GetWindowBoundsInScreen();
 }
 
+void AccessibilityController::PreviewFlashNotification() const {
+  flash_screen_controller_->OnNotificationAdded("preview");
+}
+
 void AccessibilityController::
     UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
         int download_progress) {

@@ -2361,6 +2361,10 @@ void AccessibilityManager::SetStartupSoundEnabled(bool value) const {
                             kUserStartupSoundEnabled, value);
 }
 
+void AccessibilityManager::PreviewFlashNotification() const {
+  AccessibilityController::Get()->PreviewFlashNotification();
+}
+
 const std::string AccessibilityManager::GetBluetoothBrailleDisplayAddress()
     const {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();

@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {AudioAndCaptionsPageBrowserProxyImpl, NotificationColor, SettingsAudioAndCaptionsPageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrSettingsPrefs, Router, routes, settingMojom, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrButtonElement, CrSettingsPrefs, Router, routes, settingMojom, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -156,6 +156,23 @@ suite('<settings-audio-and-captions-page>', () => {
       assertEquals(
           NotificationColor.PINK,
           page.prefs.settings.a11y.flash_notifications_color.value);
+    });
+
+    test('flash notifications preview', async () => {
+      await initPage();
+      const flashNotificationsToggle = getFlashNotificationsToggle();
+      flashNotificationsToggle.click();
+      await flushTasks();
+
+      const previewButton = page.shadowRoot!.querySelector<CrButtonElement>(
+          '#notificationPreviewBtn');
+      assert(!!previewButton);
+      assertTrue(isVisible(previewButton));
+      assertEquals(0, browserProxy.getCallCount('previewFlashNotification'));
+
+      previewButton.click();
+
+      assertEquals(1, browserProxy.getCallCount('previewFlashNotification'));
     });
   } else {
     test(

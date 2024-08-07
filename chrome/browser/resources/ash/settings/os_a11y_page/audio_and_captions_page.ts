@@ -227,6 +227,10 @@ export class SettingsAudioAndCaptionsPageElement extends
   private updateStartupSoundEnabled_(startupSoundEnabled: boolean): void {
     this.$.startupSoundEnabled.checked = startupSoundEnabled;
   }
+
+  private previewFlashNotification_(): void {
+    this.audioAndCaptionsBrowserProxy_.previewFlashNotification();
+  }
 }
 
 declare global {

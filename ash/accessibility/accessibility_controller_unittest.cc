@@ -1737,6 +1737,29 @@ TEST_F(AccessibilityControllerTest, FlashNotificationsWhenEnabled) {
   accessibility_controller->flash_notifications().SetEnabled(false);
 }
 
+TEST_F(AccessibilityControllerTest, FlashNotificationsPreview) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  EXPECT_FALSE(
+      prefs->GetBoolean(prefs::kAccessibilityFlashNotificationsEnabled));
+
+  auto* accessibility_controller = Shell::Get()->accessibility_controller();
+  accessibility_controller->flash_notifications().SetEnabled(true);
+  EXPECT_TRUE(
+      prefs->GetBoolean(prefs::kAccessibilityFlashNotificationsEnabled));
+
+  // Preview flash notifications.
+  accessibility_controller->PreviewFlashNotification();
+  // A custom color matrix has been shown.
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+    const cc::FilterOperation::Matrix* matrix =
+        root_window->layer()->GetLayerCustomColorMatrix();
+    EXPECT_TRUE(matrix);
+  }
+
+  accessibility_controller->flash_notifications().SetEnabled(false);
+}
+
 TEST_F(AccessibilityControllerTest, DoesNotFlashNotificationsWhenNotEnabled) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();

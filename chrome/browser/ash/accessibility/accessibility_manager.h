@@ -401,6 +401,10 @@ class AccessibilityManager
   // Sets the startup sound user preference.
   void SetStartupSoundEnabled(bool value) const;
 
+  // Requests that the system display a preview of the flash notifications
+  // feature.
+  void PreviewFlashNotification() const;
+
   // Gets the bluetooth braille display device address for the current user.
   const std::string GetBluetoothBrailleDisplayAddress() const;
 
