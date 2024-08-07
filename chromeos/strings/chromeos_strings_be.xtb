@@ -9,7 +9,7 @@
 <translation id="1022628058306505708">Рух Зямлі</translation>
 <translation id="1026212596705997935">Спалучэнне клавіш выкарыстоўваецца для дзеяння "<ph name="CONFLICT_ACCEL_NAME" />". Націсніце новае спалучэнне. Каб замяніць існуючае, націсніце новае спалучэнне клавіш яшчэ раз.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (патокаў: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
-<translation id="1047773237499189053">З'явілася новая функцыя, націсніце стрэлку ўверх, каб даведацца больш.</translation>
+<translation id="1047773237499189053">З’явілася новая функцыя, націсніце стрэлку ўверх, каб даведацца больш.</translation>
 <translation id="1049663189809099096">пастэльна-жоўты</translation>
 <translation id="1056898198331236512">Папярэджанне</translation>
 <translation id="1059913517121127803">Не ўдалося запусціць сканіраванне</translation>
@@ -616,7 +616,7 @@
 <translation id="4507392511610824664">павялічыць яркасць</translation>
 <translation id="4511264077854731334">Партал</translation>
 <translation id="4513946894732546136">Водгук</translation>
-<translation id="4521826082652183069">Супадзенне па альтэрнатыўным імені суб'екта</translation>
+<translation id="4521826082652183069">Супадзенне па альтэрнатыўным імені суб’екта</translation>
 <translation id="4522570452068850558">Падрабязнасці</translation>
 <translation id="4536864596629708641">Канфігурацыя IP-адраса</translation>
 <translation id="4546131424594385779">Запісаць зацыкленае відэа</translation>
@@ -818,7 +818,7 @@
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5680504961595602662">Сюррэалістычны ландшафт: <ph name="SURREAL_LANDSCAPE" /> і <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">вішні</translation>
-<translation id="5691511426247308406">Сям'я</translation>
+<translation id="5691511426247308406">Сям’я</translation>
 <translation id="5695599963893094957">Націсніце любую клавішу на клавіятуры. Адначасова можна націснуць да 4 клавіш.</translation>
 <translation id="5701381305118179107">У цэнтры</translation>
 <translation id="5703716265115423771">паменшыць гучнасць</translation>
@@ -867,7 +867,7 @@
 <translation id="5947266287934282605">Даныя будуць скінуты ў апошні дзень месяца, калі ён папярэднічае выбранаму</translation>
 <translation id="5948460390109837040">сабакі</translation>
 <translation id="594989847980441553">Каб стварыць відарыс з дапамогай AI, націсніце "Стварыць".
-        Усе створаныя відарысы будуць аўтаматычна з'яўляцца тут.</translation>
+        Усе створаныя відарысы будуць аўтаматычна з’яўляцца тут.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">каралавы</translation>
 <translation id="5984145644188835034">Стандартныя шпалеры</translation>
@@ -955,7 +955,7 @@
 <translation id="6400680457268373900">Сюррэалістычны відарыс: <ph name="DREAMSCAPES_OBJECT" />, матэрыял: <ph name="DREAMSCAPES_MATERIAL" />, колер: <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">пошук у браўзеры</translation>
 <translation id="6410257289063177456">Файлы відарысаў</translation>
-<translation id="641081527798843608">Супадзенне суб'екта</translation>
+<translation id="641081527798843608">Супадзенне суб’екта</translation>
 <translation id="6411934471898487866">яркасць клавіятуры</translation>
 <translation id="6412715219990689313">Убудаваная клавіятура</translation>
 <translation id="6417265370957905582">Памочнік Google</translation>
@@ -1024,7 +1024,7 @@
 <translation id="6747035363363040417">нейтральны</translation>
 <translation id="6747215703636344499">Спынена: выхадны латок запоўнены</translation>
 <translation id="6749473226660745022">Фота</translation>
-<translation id="6753452347192452143">Гэта камп'ютар.</translation>
+<translation id="6753452347192452143">Гэта камп’ютар.</translation>
 <translation id="6756731097889387912">Не ўдалося скасаваць сканіраванне</translation>
 <translation id="6760706756348334449">Паменшыць гучнасць</translation>
 <translation id="6761537227090937007">Ідзе стварэнне відарыса з высокай раздзяляльнасцю…</translation>

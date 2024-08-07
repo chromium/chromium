@@ -79,7 +79,7 @@
 <translation id="1247372569136754018">Мікрафон (унутраны)</translation>
 <translation id="1247519845643687288">Нядаўнія праграмы</translation>
 <translation id="1252999807265626933">Зараджаецца ад крыніцы сілкавання <ph name="POWER_SOURCE" /></translation>
-<translation id="1255033239764210633">Якое надвор'е?</translation>
+<translation id="1255033239764210633">Якое надвор’е?</translation>
 <translation id="1269405891096105529">Перыферыйная прылада не падтрымліваецца ў гасцявым рэжыме</translation>
 <translation id="1270290102613614947">Экранная клавіятура выключана</translation>
 <translation id="1272079795634619415">Спыніць</translation>
@@ -106,7 +106,7 @@
 <translation id="132415371743256095">Закрыць працоўны стол "<ph name="DESK_NAME" />" і вокны</translation>
 <translation id="1333308631814936910">Падключаны дысплэй "<ph name="DISPLAY_NAME" />"</translation>
 <translation id="1340378040547539434">Паменшыць маштаб старонкі</translation>
-<translation id="1341651618736211726">Адкрыць меню</translation>
+<translation id="1341651618736211726">Меню з пашырэннем</translation>
 <translation id="1344141078024003905">Вы трансліруеце свой экран. Вы можаце прыпыніць або спыніць трансляцыю экрана ў любы час.</translation>
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1351937230027495976">Згарнуць меню</translation>
@@ -1065,7 +1065,7 @@
 <translation id="5092436659250499817">Уключыць (выключыць) падсветку клавіятуры</translation>
 <translation id="5094577350232361255">даведка</translation>
 <translation id="5095136268899496849">У наладах вы можаце персаналізаваць сваю прыладу (<ph name="PRODUCT_NAME" />), напрыклад змяніць шпалеры або ўстанавіць застаўку.</translation>
-<translation id="509790653408515442">Тут будуць з'яўляцца праграмы з вашага тэлефона, якія вы адкрываеце без спампоўвання</translation>
+<translation id="509790653408515442">Тут будуць з’яўляцца праграмы з вашага тэлефона, якія вы адкрываеце без спампоўвання</translation>
 <translation id="5098537242461068432">Працоўны стол і вокны зноў адкрыты</translation>
 <translation id="5104236669533825617">Не ўдалося запусціць скрынкаст</translation>
 <translation id="5107522548814527560">Інтэрнэт</translation>
@@ -1611,7 +1611,7 @@
 <translation id="7189412385142492784">Якая адлегласць да Венеры</translation>
 <translation id="7198435252016571249">Акно перадпрагляду камеры прывязана да правага ніжняга вугла, бо яно перакрывала інтэрфейс сістэмы.</translation>
 <translation id="7219573373513695352">Няма падключаных прылад</translation>
-<translation id="7229029500464092426">Даступны аб'ём памяці: <ph name="AVAILABLE_MEMORY" /> | Усяго: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7229029500464092426">Даступны аб’ём памяці: <ph name="AVAILABLE_MEMORY" /> | Усяго: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Засталося <ph name="PERCENTAGE" />% зараду акумулятара. Падключыце прыладу да крыніцы сілкавання.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Для ўсталявання абнаўлення патрабуецца перазапуск Chromebook. Гэта можа заняць да 1 хвіліны.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -1636,7 +1636,7 @@
 <translation id="7360036564632145207">Вы можаце аптымізаваць прадукцыйнасць, змяняючы налады абмежавання доступу да даных для перыферыйных прылад</translation>
 <translation id="736045644501761622">Задаць шпалеры і стыль</translation>
 <translation id="7371404428569700291">Запіс акна</translation>
-<translation id="7372069265635026568">Даступны аб'ём памяці: <ph name="AVAILABLE_MEMORY" /> з <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7372069265635026568">Даступны аб’ём памяці: <ph name="AVAILABLE_MEMORY" /> з <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Доступ да мікрафона атрымаюць усе праграмы і вэб-сайты, якія маюць дазвол выкарыстоўваць мікрафон</translation>
 <translation id="7377169924702866686">Уключаны Caps Lock.</translation>
 <translation id="7377481913241237033">Падключыцца з дапамогай кода</translation>
