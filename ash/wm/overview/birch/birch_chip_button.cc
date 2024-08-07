@@ -9,10 +9,10 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
 #include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
+#include "ash/wm/overview/birch/birch_bar_util.h"
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -200,19 +200,32 @@ void BirchChipButton::Init(BirchItem* item) {
 
   SetCallback(
       base::BindRepeating(&BirchItem::PerformAction, base::Unretained(item_)));
-  if (item_->secondary_action().has_value()) {
-    auto* button = SetAddon(std::make_unique<PillButton>(
-        base::BindRepeating(&BirchItem::PerformSecondaryAction,
-                            base::Unretained(item_)),
-        *item_->secondary_action(), PillButton::Type::kSecondaryWithoutIcon));
-    button->SetProperty(views::kMarginsKey, gfx::Insets::VH(0, 16));
-    button->SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CALENDAR_JOIN_BUTTON_TOOLTIP));
+
+  const auto addon_type = item_->GetAddonType();
+  // Add add-ons according to the add-on type.
+  switch (addon_type) {
+    case BirchAddonType::kButton: {
+      auto button = birch_bar_util::CreateAddonButton(
+          base::BindRepeating(&BirchItem::PerformAddonAction,
+                              base::Unretained(item_)),
+          *item_->addon_label());
+      button->SetTooltipText(item->GetAddonAccessibleName());
+      SetAddon(std::move(button));
+      break;
+    }
+    case BirchAddonType::kWeatherTempLabelC:
+    case BirchAddonType::kWeatherTempLabelF:
+      SetAddon(birch_bar_util::CreateWeatherTemperatureView(
+          *item_->addon_label(),
+          addon_type == BirchAddonType::kWeatherTempLabelF));
+      break;
+    case BirchAddonType::kNone:
+      break;
   }
   item_->LoadIcon(base::BindOnce(&BirchChipButton::SetIconImage,
                                  weak_factory_.GetWeakPtr()));
 
-  SetAccessibleName(item_->title() + u" " + item_->subtitle());
+  SetAccessibleName(item_->GetAccessibleName());
 }
 
 const BirchItem* BirchChipButton::GetItem() const {
@@ -383,8 +396,7 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
   }
 }
 
-void BirchChipButton::SetAddonInternal(
-    std::unique_ptr<views::View> addon_view) {
+void BirchChipButton::SetAddon(std::unique_ptr<views::View> addon_view) {
   if (addon_view_) {
     RemoveChildViewT(addon_view_);
   } else {

@@ -77,12 +77,12 @@ class TestBirchItem : public BirchItem {
  public:
   TestBirchItem(const std::u16string& title,
                 const std::u16string& subtitle,
-                const std::optional<std::u16string>& secondary_action,
+                const std::optional<std::u16string>& addon_label,
                 float ranking = 1.0f)
       : BirchItem(title, subtitle) {
     set_ranking(ranking);
-    if (secondary_action) {
-      set_secondary_action(*secondary_action);
+    if (addon_label) {
+      set_addon_label(*addon_label);
     }
   }
   TestBirchItem(const BirchItem&) = delete;
@@ -95,7 +95,6 @@ class TestBirchItem : public BirchItem {
     return std::string("Test item ") + base::UTF16ToUTF8(title());
   }
   void PerformAction() override {}
-  void PerformSecondaryAction() override {}
   void LoadIcon(LoadIconCallback callback) const override {
     std::move(callback).Run(
         ui::ImageModel::FromVectorIcon(kSettingsIcon, SK_ColorBLACK, 20),
@@ -1595,12 +1594,12 @@ TEST_P(BirchBarLayoutTest, ResponsiveLayout) {
   // Add test chips to the bar in landscape mode.
   std::vector<std::unique_ptr<BirchItem>> items_;
   for (int i = 0; i < 4; i++) {
-    std::optional<std::u16string> secondary_action;
+    std::optional<std::u16string> addon_label;
     if (i % 2) {
-      secondary_action = u"add-on";
+      addon_label = u"add-on";
     }
-    auto item = std::make_unique<TestBirchItem>(u"title", u"subtitle",
-                                                secondary_action);
+    auto item =
+        std::make_unique<TestBirchItem>(u"title", u"subtitle", addon_label);
     birch_bar_view->AddChip(item.get());
     items_.emplace_back(std::move(item));
     EXPECT_EQ(birch_bar_widget->GetWindowBoundsInScreen(),

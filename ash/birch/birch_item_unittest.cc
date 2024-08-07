@@ -184,8 +184,8 @@ TEST_F(BirchItemTest, Calendar_PerformAction_BothConferenceAndCalendar) {
   EXPECT_EQ(new_window_delegate_->last_opened_url_,
             GURL("http://calendar.com/"));
 
-  EXPECT_TRUE(item.secondary_action());
-  item.PerformSecondaryAction();
+  EXPECT_TRUE(item.addon_label());
+  item.PerformAddonAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL("http://meet.com/"));
 }
 
@@ -202,7 +202,7 @@ TEST_F(BirchItemTest, Calendar_PerformAction_Histograms) {
   histograms.ExpectBucketCount("Ash.Birch.Chip.Activate",
                                BirchItemType::kCalendar, 1);
 
-  item.PerformSecondaryAction();
+  item.PerformAddonAction();
   histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 2);
   histograms.ExpectBucketCount("Ash.Birch.Chip.Activate",
                                BirchItemType::kCalendar, 2);
@@ -220,8 +220,8 @@ TEST_F(BirchItemTest, Calendar_PerformAction_CalendarOnly) {
   EXPECT_EQ(new_window_delegate_->last_opened_url_,
             GURL("http://calendar.com/"));
 
-  EXPECT_FALSE(item.secondary_action());
-  item.PerformSecondaryAction();
+  EXPECT_FALSE(item.addon_label());
+  item.PerformAddonAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_,
             GURL("http://calendar.com/"));
 }
@@ -238,7 +238,7 @@ TEST_F(BirchItemTest, Calendar_PerformAction_NoURL) {
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
 }
 
-TEST_F(BirchItemTest, Calendar_ShouldShowSecondaryAction) {
+TEST_F(BirchItemTest, Calendar_ShouldShowAddonAction) {
   base::Time now = base::Time::Now();
 
   // Create an event with a conference URL, but in the future.
@@ -250,7 +250,7 @@ TEST_F(BirchItemTest, Calendar_ShouldShowSecondaryAction) {
                           /*all_day_event=*/false);
 
   // The meeting is in the future, so don't show the "Join" button.
-  EXPECT_FALSE(item0.secondary_action().has_value());
+  EXPECT_FALSE(item0.addon_label().has_value());
 
   // Create a meeting happening right now.
   BirchCalendarItem item1(u"item1",
@@ -262,7 +262,7 @@ TEST_F(BirchItemTest, Calendar_ShouldShowSecondaryAction) {
                           /*all_day_event=*/false);
 
   // The meeting is happening now, so show the "Join" button.
-  EXPECT_TRUE(item1.secondary_action().has_value());
+  EXPECT_TRUE(item1.addon_label().has_value());
 
   // Create a meeting starting in the next few minutes.
   BirchCalendarItem item2(u"item2", /*start_time=*/now + base::Minutes(3),
@@ -273,7 +273,7 @@ TEST_F(BirchItemTest, Calendar_ShouldShowSecondaryAction) {
                           /*all_day_event=*/false);
 
   // The meeting is very soon, so show the "Join" button.
-  EXPECT_TRUE(item2.secondary_action().has_value());
+  EXPECT_TRUE(item2.addon_label().has_value());
 }
 
 TEST_F(BirchItemTest, Calendar_Subtitle_Ongoing) {
@@ -448,18 +448,18 @@ TEST_F(BirchItemTest, Weather_PerformAction_Histograms) {
 // Weather item subtitles require an ash::Shell for the pref service.
 using BirchWeatherItemTest = AshTestBase;
 
-TEST_F(BirchWeatherItemTest, SubtitleInFahrenheit) {
+TEST_F(BirchWeatherItemTest, AddonLabelInFahrenheit) {
   GetPrefService()->SetBoolean(prefs::kBirchUseCelsius, false);
   BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"),
                         ui::ImageModel());
-  EXPECT_EQ(item.subtitle(), u"72\xB0 F");
+  EXPECT_EQ(item.addon_label(), u"72");
 }
 
-TEST_F(BirchWeatherItemTest, SubtitleInCelsius) {
+TEST_F(BirchWeatherItemTest, AddonLabelInCelsius) {
   GetPrefService()->SetBoolean(prefs::kBirchUseCelsius, true);
   BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"),
                         ui::ImageModel());
-  EXPECT_EQ(item.subtitle(), u"22\xB0 C");
+  EXPECT_EQ(item.addon_label(), u"22");
 }
 
 TEST_F(BirchItemTest, Tab_Subtitle_Recent) {

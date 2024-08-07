@@ -38,13 +38,6 @@ class BirchChipButton : public BirchChipButtonBase,
   // Chip configuration methods.
   void Init(BirchItem* item);
 
-  template <typename T>
-  T* SetAddon(std::unique_ptr<T> addon_view) {
-    T* ptr = addon_view.get();
-    SetAddonInternal(std::move(addon_view));
-    return ptr;
-  }
-
   // BirchChipButtonBase:
   const BirchItem* GetItem() const override;
   BirchItem* GetItem() override;
@@ -56,10 +49,7 @@ class BirchChipButton : public BirchChipButtonBase,
  private:
   class ChipMenuController;
 
-  void SetAddonInternal(std::unique_ptr<views::View> addon_view);
-
-  // The callback when the removal button or removal panel is pressed.
-  void OnRemoveComponentPressed();
+  void SetAddon(std::unique_ptr<views::View> addon_view);
 
   void StylizeIconForItemType(BirchItemType type,
                               SecondaryIconType secondary_icon_type);
@@ -88,7 +78,6 @@ class BirchChipButton : public BirchChipButtonBase,
 
 BEGIN_VIEW_BUILDER(/*no export*/, BirchChipButton, BirchChipButtonBase)
 VIEW_BUILDER_METHOD(Init, BirchItem*)
-VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, Addon)
 END_VIEW_BUILDER
 
 }  // namespace ash

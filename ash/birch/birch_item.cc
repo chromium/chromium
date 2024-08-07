@@ -219,6 +219,21 @@ void BirchItem::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBirchUseCelsius, false);
 }
 
+std::u16string BirchItem::GetAccessibleName() const {
+  return title_ + u" " + subtitle_;
+}
+
+void BirchItem::PerformAddonAction() {}
+
+BirchAddonType BirchItem::GetAddonType() const {
+  return BirchAddonType::kNone;
+}
+
+std::u16string BirchItem::GetAddonAccessibleName() const {
+  CHECK(addon_label_.has_value());
+  return *addon_label_;
+}
+
 void BirchItem::RecordActionMetrics() {
   // Record that the whole bar was activated.
   base::UmaHistogramBoolean("Ash.Birch.Bar.Activate", true);
@@ -257,7 +272,7 @@ BirchCalendarItem::BirchCalendarItem(const std::u16string& title,
       event_id_(event_id),
       response_status_(response_status) {
   if (ShouldShowJoinButton()) {
-    set_secondary_action(
+    set_addon_label(
         l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CALENDAR_JOIN_BUTTON));
   }
 }
@@ -298,7 +313,7 @@ void BirchCalendarItem::PerformAction() {
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
-void BirchCalendarItem::PerformSecondaryAction() {
+void BirchCalendarItem::PerformAddonAction() {
   if (!conference_url_.is_valid()) {
     LOG(ERROR) << "No conference URL for calendar item";
     return;
@@ -314,6 +329,15 @@ void BirchCalendarItem::PerformSecondaryAction() {
 void BirchCalendarItem::LoadIcon(LoadIconCallback callback) const {
   std::move(callback).Run(ui::ImageModel::FromVectorIcon(kCalendarEventIcon),
                           SecondaryIconType::kNoIcon);
+}
+
+BirchAddonType BirchCalendarItem::GetAddonType() const {
+  return addon_label().has_value() ? BirchAddonType::kButton
+                                   : BirchAddonType::kNone;
+}
+
+std::u16string BirchCalendarItem::GetAddonAccessibleName() const {
+  return l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CALENDAR_JOIN_BUTTON_TOOLTIP);
 }
 
 // static
@@ -421,10 +445,6 @@ void BirchAttachmentItem::PerformAction() {
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
-void BirchAttachmentItem::PerformSecondaryAction() {
-  NOTREACHED_IN_MIGRATION();
-}
-
 void BirchAttachmentItem::LoadIcon(LoadIconCallback callback) const {
   DownloadImageFromUrl(icon_url_,
                        ui::ImageModel::FromImageSkia(chromeos::GetIconFromType(
@@ -489,10 +509,6 @@ void BirchFileItem::PerformAction() {
   NewWindowDelegate::GetPrimary()->OpenFile(file_path_);
 }
 
-void BirchFileItem::PerformSecondaryAction() {
-  NOTREACHED_IN_MIGRATION();
-}
-
 void BirchFileItem::LoadIcon(LoadIconCallback callback) const {
   DownloadImageFromUrl(
       GURL(icon_url_),
@@ -518,10 +534,13 @@ BirchWeatherItem::BirchWeatherItem(const std::u16string& weather_description,
                                    float temp_f,
                                    const GURL& icon_url,
                                    const ui::ImageModel& backup_icon)
-    : BirchItem(weather_description, GetSubtitle(temp_f)),
+    : BirchItem(weather_description,
+                l10n_util::GetStringUTF16(IDS_ASH_BIRCH_WEATHER_SUBTITLE)),
       temp_f_(temp_f),
       icon_url_(icon_url),
-      backup_icon_(backup_icon) {}
+      backup_icon_(backup_icon) {
+  set_addon_label(base::NumberToString16(GetTemperature(temp_f)));
+}
 
 BirchWeatherItem::BirchWeatherItem(BirchWeatherItem&&) = default;
 
@@ -555,17 +574,39 @@ void BirchWeatherItem::PerformAction() {
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
-void BirchWeatherItem::PerformSecondaryAction() {
-  NOTREACHED_IN_MIGRATION();
-}
-
 void BirchWeatherItem::LoadIcon(LoadIconCallback callback) const {
   DownloadImageFromUrl(icon_url_, backup_icon_, SecondaryIconType::kNoIcon,
                        std::move(callback));
 }
 
+std::u16string BirchWeatherItem::GetAccessibleName() const {
+  const int temp = GetTemperature(temp_f_);
+  std::u16string temp_str =
+      UseCelsius()
+          ? l10n_util::GetStringFUTF16Int(
+                IDS_ASH_AMBIENT_MODE_WEATHER_TEMPERATURE_IN_CELSIUS, temp)
+          : l10n_util::GetStringFUTF16Int(
+                IDS_ASH_AMBIENT_MODE_WEATHER_TEMPERATURE_IN_FAHRENHEIT, temp);
+  return subtitle() + u" " + title() + u" " + temp_str;
+}
+
+void BirchWeatherItem::PerformAddonAction() {
+  // Perform same action as the item.
+  PerformAction();
+}
+
+BirchAddonType BirchWeatherItem::GetAddonType() const {
+  return UseCelsius() ? BirchAddonType::kWeatherTempLabelC
+                      : BirchAddonType::kWeatherTempLabelF;
+}
+
 // static
-std::u16string BirchWeatherItem::GetSubtitle(float temp_f) {
+int BirchWeatherItem::GetTemperature(float temp_f) {
+  return static_cast<int>(UseCelsius() ? (temp_f - 32) * 5 / 9 : temp_f);
+}
+
+// static
+bool BirchWeatherItem::UseCelsius() {
   // Tests may not have a pref service.
   bool use_celsius = false;
   PrefService* pref_service = GetPrefService();
@@ -574,13 +615,7 @@ std::u16string BirchWeatherItem::GetSubtitle(float temp_f) {
   } else {
     CHECK_IS_TEST();
   }
-  return use_celsius
-             ? l10n_util::GetStringFUTF16Int(
-                   IDS_ASH_AMBIENT_MODE_WEATHER_TEMPERATURE_IN_CELSIUS,
-                   static_cast<int>((temp_f - 32) * 5 / 9))
-             : l10n_util::GetStringFUTF16Int(
-                   IDS_ASH_AMBIENT_MODE_WEATHER_TEMPERATURE_IN_FAHRENHEIT,
-                   static_cast<int>(temp_f));
+  return use_celsius;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -649,10 +684,6 @@ void BirchTabItem::PerformAction() {
   NewWindowDelegate::GetPrimary()->OpenUrl(
       url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kSwitchToTab);
-}
-
-void BirchTabItem::PerformSecondaryAction() {
-  NOTREACHED_IN_MIGRATION();
 }
 
 void BirchTabItem::LoadIcon(LoadIconCallback callback) const {
@@ -724,10 +755,6 @@ void BirchLastActiveItem::PerformAction() {
   NewWindowDelegate::GetPrimary()->OpenUrl(
       url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kSwitchToTab);
-}
-
-void BirchLastActiveItem::PerformSecondaryAction() {
-  NOTREACHED_IN_MIGRATION();
 }
 
 void BirchLastActiveItem::LoadIcon(LoadIconCallback callback) const {
@@ -802,10 +829,6 @@ void BirchMostVisitedItem::PerformAction() {
       NewWindowDelegate::Disposition::kSwitchToTab);
 }
 
-void BirchMostVisitedItem::PerformSecondaryAction() {
-  NOTREACHED_IN_MIGRATION();
-}
-
 void BirchMostVisitedItem::LoadIcon(LoadIconCallback callback) const {
   std::move(callback).Run(icon_, SecondaryIconType::kNoIcon);
 }
@@ -874,10 +897,6 @@ void BirchSelfShareItem::PerformAction() {
   NewWindowDelegate::GetPrimary()->OpenUrl(
       url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kSwitchToTab);
-}
-
-void BirchSelfShareItem::PerformSecondaryAction() {
-  NOTREACHED_IN_MIGRATION();
 }
 
 void BirchSelfShareItem::LoadIcon(LoadIconCallback callback) const {
@@ -958,10 +977,6 @@ void BirchLostMediaItem::PerformAction() {
   }
 }
 
-void BirchLostMediaItem::PerformSecondaryAction() {
-  NOTREACHED_IN_MIGRATION();
-}
-
 void BirchLostMediaItem::LoadIcon(LoadIconCallback callback) const {
   GetFaviconImage(source_url_, /*is_page_url=*/true, backup_icon_,
                   secondary_icon_type_, std::move(callback));
@@ -1004,9 +1019,7 @@ std::string BirchCoralItem::ToString() const {
 void BirchCoralItem::PerformAction() {
   // TODO(yulunwu) add actions
 }
-void BirchCoralItem::PerformSecondaryAction() {
-  // TODO(yulunwu) add actions
-}
+
 void BirchCoralItem::LoadIcon(LoadIconCallback callback) const {
   // TODO(yulunwu) load icons
 }
@@ -1046,10 +1059,6 @@ void BirchReleaseNotesItem::PerformAction() {
   NewWindowDelegate::GetPrimary()->OpenUrl(
       url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
-}
-
-void BirchReleaseNotesItem::PerformSecondaryAction() {
-  NOTREACHED_IN_MIGRATION();
 }
 
 void BirchReleaseNotesItem::LoadIcon(LoadIconCallback callback) const {
