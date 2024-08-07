@@ -31,6 +31,7 @@
 #include "ash/picker/picker_paste_request.h"
 #include "ash/picker/picker_rich_media.h"
 #include "ash/picker/picker_suggestions_controller.h"
+#include "ash/picker/picker_transform_case.h"
 #include "ash/picker/search/picker_search_controller.h"
 #include "ash/picker/views/picker_caps_lock_state_view.h"
 #include "ash/picker/views/picker_icons.h"
@@ -52,7 +53,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/hash/sha1.h"
-#include "base/i18n/case_conversion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -220,30 +220,15 @@ std::vector<PickerSearchResultsSection> CreateSingleSectionForCategoryResults(
                                      /*has_more_results*/ false)};
 }
 
-bool u16_isalpha(char16_t ch) {
-  return (ch >= u'A' && ch <= u'Z') || (ch >= u'a' && ch <= u'z');
-}
-
-std::u16string ToTitleCase(std::u16string_view text) {
-  std::u16string result(text);
-  std::u16string uppercase_text = base::i18n::ToUpper(text);
-  for (size_t i = 0; i < result.length(); i++) {
-    if (u16_isalpha(result[i]) && (i == 0 || result[i - 1] == u' ')) {
-      result[i] = uppercase_text[i];
-    }
-  }
-  return result;
-}
-
 std::u16string TransformText(std::u16string_view text,
                              PickerSearchResult::CaseTransformData::Type type) {
   switch (type) {
     case PickerSearchResult::CaseTransformData::Type::kUpperCase:
-      return base::i18n::ToUpper(text);
+      return PickerTransformToUpperCase(text);
     case PickerSearchResult::CaseTransformData::Type::kLowerCase:
-      return base::i18n::ToLower(text);
+      return PickerTransformToLowerCase(text);
     case PickerSearchResult::CaseTransformData::Type::kTitleCase:
-      return ToTitleCase(text);
+      return PickerTransformToTitleCase(text);
   }
   NOTREACHED_NORETURN();
 }
