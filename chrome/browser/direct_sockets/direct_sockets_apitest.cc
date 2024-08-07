@@ -168,6 +168,71 @@ constexpr std::string_view kUdpBoundReadWriteScript = R"(
   })();
 )";
 
+static constexpr std::string_view kTcpServerExchangePacketWithTcpScript = R"(
+  (async () => {
+    const assertEq = (actual, expected) => {
+      const jf = e => JSON.stringify(e);
+      if (actual !== expected) {
+        throw `Expected ${jf(expected)}, got ${jf(actual)}`;
+      }
+    };
+
+    const kPacket = "I'm a netcat. Meow-meow!";
+
+    // |localPort| is intentionally omitted so that the OS will pick one itself.
+    const serverSocket = new TCPServerSocket('127.0.0.1');
+    const { localPort: serverSocketPort } = await serverSocket.opened;
+
+    // Connect a client to the server.
+    const clientSocket = new TCPSocket('127.0.0.1', serverSocketPort);
+
+    async function acceptOnce() {
+      const { readable } = await serverSocket.opened;
+      const reader = readable.getReader();
+      const { value: acceptedSocket, done } = await reader.read();
+      assertEq(done, false);
+      reader.releaseLock();
+      return acceptedSocket;
+    };
+
+    const acceptedSocket = await acceptOnce();
+    await clientSocket.opened;
+
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+
+    async function acceptedSocketSend() {
+      const { writable } = await acceptedSocket.opened;
+      const writer = writable.getWriter();
+
+      await writer.ready;
+      await writer.write(encoder.encode(kPacket));
+
+      writer.releaseLock();
+    }
+
+    async function clientSocketReceive() {
+      const { readable } = await clientSocket.opened;
+      const reader = readable.getReader();
+      let result = "";
+      while (result.length < kPacket.length) {
+        const { value, done } = await reader.read();
+        assertEq(done, false);
+        result += decoder.decode(value);
+      }
+      reader.releaseLock();
+      assertEq(result, kPacket);
+    }
+
+    acceptedSocketSend();
+    await clientSocketReceive();
+
+    await clientSocket.close();
+    await acceptedSocket.close();
+    await serverSocket.close();
+  })();
+)";
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 base::Value::Dict GenerateManifest(
@@ -482,6 +547,18 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
   EXPECT_THAT(EvalJs(app_frame, kScript), ErrorIs(AccessBlocked()));
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
+                       TcpServerExchangePacketWithTcpSocket) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenChromeApp(GenerateManifest(
+          /*socket_permissions=*/base::Value::Dict()
+              .Set("tcpServer", base::Value::Dict().Set("listen", "*"))
+              .Set("tcp", base::Value::Dict().Set("connect", "*"))));
+
+  EXPECT_THAT(EvalJs(app_frame, kTcpServerExchangePacketWithTcpScript),
+              content::EvalJsResult::IsOk());
+}
+
 #endif
 
 class IsolatedWebAppApiTest : public web_app::IsolatedWebAppBrowserTestHarness {
@@ -538,6 +615,17 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
       EvalJs(app_frame, content::JsReplace(kUdpBoundReadWriteScript, kHostname,
                                            test_server()->port()))
           .ExtractBool());
+}
+
+using ChromeDirectSocketsTcpServerIsolatedWebAppTest =
+    IsolatedWebAppApiTestWithDirectSocketsEnabled;
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,
+                       TcpServerExchangePacketWithTcpSocket) {
+  content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
+
+  EXPECT_THAT(EvalJs(app_frame, kTcpServerExchangePacketWithTcpScript),
+              content::EvalJsResult::IsOk());
 }
 
 enum class FeatureState {
