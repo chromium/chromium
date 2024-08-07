@@ -28,6 +28,12 @@ chromium-metrics-reviews@google.com.
       summary="backgrounded at least once during the navigation"/>
 </variants>
 
+<variants name="BrowserInitializationStatus">
+  <variant name="" summary="any"/>
+  <variant name=".IsBrowserStarting"
+      summary="browser initilization in progress"/>
+</variants>
+
 <variants name="Gap">
   <variant name="1000ms"/>
 </variants>
@@ -70,6 +76,13 @@ chromium-metrics-reviews@google.com.
   <variant name=".NewReloadNavigation" summary="NewReloadNavigation"/>
   <variant name=".Other" summary="Other"/>
   <variant name=".RenderProcessGone" summary="RenderProcessGone"/>
+</variants>
+
+<variants name="NavigationCountType">
+  <variant name="IsFirstNavigation"
+      summary="first navigation after browser started"/>
+  <variant name="IsSubsequentNavigation"
+      summary="subsequent navigation after browser started"/>
 </variants>
 
 <!-- LINT.IfChange(NavigationMilestone) -->
@@ -972,6 +985,86 @@ chromium-metrics-reviews@google.com.
     metric is emitted when the navigation is completed or the app is
     backgrounded on Android.
   </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleHomepage.DomainLookupTiming.NavigationToDomainLookupEnd.{NavigationCountType}{BrowserInitializationStatus}"
+    units="ms" expires_after="2024-10-01">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time for {NavigationCountType} ({BrowserInitializationStatus})
+    from navigation start to the time the domain lookup ended, for Google
+    Homepage loads. Only recorded for Homepage navigations that start in the
+    foreground and stay in the foreground until domain lookup end. This metric
+    is recorded when the browser finished conducting DNS lookup.
+
+    In cases where navigation start occurs after connect start (e.g. pre-fetch,
+    pre-connect), this metric will contain zero.
+  </summary>
+  <token key="NavigationCountType" variants="NavigationCountType"/>
+  <token key="BrowserInitializationStatus"
+      variants="BrowserInitializationStatus"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleHomepage.DomainLookupTiming.NavigationToDomainLookupStart.{NavigationCountType}{BrowserInitializationStatus}"
+    units="ms" expires_after="2024-10-01">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time for {NavigationCountType} ({BrowserInitializationStatus})
+    from navigation start to the time the domain lookup started, for Google
+    Homepage loads. Only recorded for Homepage navigations that start in the
+    foreground and stay in the foreground until domain lookup start. This metric
+    is recorded when the browser started to conduct DNS lookup.
+
+    In cases where navigation start occurs after connect start (e.g. pre-fetch,
+    pre-connect), this metric will contain zero.
+  </summary>
+  <token key="NavigationCountType" variants="NavigationCountType"/>
+  <token key="BrowserInitializationStatus"
+      variants="BrowserInitializationStatus"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleHomepage.NavigationTiming.NavigationToConnectStart.{NavigationCountType}{BrowserInitializationStatus}"
+    units="ms" expires_after="2024-10-01">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time for {NavigationCountType} ({BrowserInitializationStatus})
+    from navigation start to connect start, for Google Homepage loads. Only
+    recorded for Homepage navigations that start in the foreground and stay in
+    the foreground until connect start. This metric is recorded when the browser
+    started to establish connection.
+
+    In cases where navigation start occurs after connect start (e.g. pre-fetch,
+    pre-connect), this metric will contain zero.
+  </summary>
+  <token key="NavigationCountType" variants="NavigationCountType"/>
+  <token key="BrowserInitializationStatus"
+      variants="BrowserInitializationStatus"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleHomepage.ParseTiming.NavigationToParseStart.{NavigationCountType}{BrowserInitializationStatus}"
+    units="ms" expires_after="2024-10-01">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time for {NavigationCountType} ({BrowserInitializationStatus})
+    from navigation start to parse start, for Google Homepage loads. Only
+    recorded for Homepage navigations that start in the foreground and stay in
+    the foreground until parse start. This metric is recorded when the parser
+    started.
+
+    In cases where navigation start occurs after connect start (e.g. pre-fetch,
+    pre-connect), this metric will contain zero.
+  </summary>
+  <token key="NavigationCountType" variants="NavigationCountType"/>
+  <token key="BrowserInitializationStatus"
+      variants="BrowserInitializationStatus"/>
 </histogram>
 
 <histogram
