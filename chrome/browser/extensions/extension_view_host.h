@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -126,6 +127,9 @@ class ExtensionViewHost
 
   // View that shows the rendered content in the UI.
   raw_ptr<ExtensionView, DanglingUntriaged> view_ = nullptr;
+
+  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
+      modal_dialog_host_observers_;
 
   base::ScopedObservation<ExtensionHostRegistry,
                           ExtensionHostRegistry::Observer>

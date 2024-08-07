@@ -70,8 +70,12 @@ ExtensionViewHost::~ExtensionViewHost() {
   auto* const manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(
           host_contents());
-  if (manager)
+  if (manager) {
     manager->SetDelegate(nullptr);
+  }
+  for (auto& observer : modal_dialog_host_observers_) {
+    observer.OnHostDestroying();
+  }
 }
 
 Browser* ExtensionViewHost::GetBrowser() {
@@ -230,10 +234,12 @@ gfx::Size ExtensionViewHost::GetMaximumDialogSize() {
 
 void ExtensionViewHost::AddObserver(
     web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observers_.AddObserver(observer);
 }
 
 void ExtensionViewHost::RemoveObserver(
     web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observers_.RemoveObserver(observer);
 }
 
 WindowController* ExtensionViewHost::GetExtensionWindowController() const {
