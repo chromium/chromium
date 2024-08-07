@@ -17,7 +17,9 @@
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/lens/lens_features.h"
 
@@ -80,6 +82,14 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   // with an omnibox and a tab strip). By default most features should be
   // instantiated in this block.
   if (browser->is_type_normal()) {
+    if (IsChromeLabsEnabled()) {
+      chrome_labs_coordinator_ =
+          std::make_unique<ChromeLabsCoordinator>(browser);
+    }
+
+    // TODO(b/350508658): Ideally, we don't pass in a reference to browser as
+    // per the guidance in the comment above. However, currently, we need
+    // browser to properly determine if the lens overlay is enabled.
     // Cannot be in Init since needs to listen to the fullscreen controller
     // which is initialized after Init.
     if (lens::features::IsLensOverlayEnabled()) {

@@ -14,11 +14,11 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class Browser;
-class ChromeLabsButton;
 class ChromeLabsItemView;
 struct LabInfo;
 
 namespace views {
+class Button;
 class FlexLayoutView;
 }
 
@@ -27,7 +27,7 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
   METADATA_HEADER(ChromeLabsBubbleView, views::BubbleDialogDelegateView)
 
  public:
-  explicit ChromeLabsBubbleView(ChromeLabsButton* anchor_view);
+  explicit ChromeLabsBubbleView(views::Button* anchor_view);
   ~ChromeLabsBubbleView() override;
 
   ChromeLabsItemView* AddLabItem(

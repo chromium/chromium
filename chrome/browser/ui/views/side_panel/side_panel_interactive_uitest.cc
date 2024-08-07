@@ -48,6 +48,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "url/gurl.h"
 
 class SidePanelInteractiveTest : public InteractiveBrowserTest {
@@ -128,6 +129,17 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
     InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    PinnedToolbarActionsModel* const actions_model =
+        PinnedToolbarActionsModel::Get(browser()->profile());
+    actions_model->UpdatePinnedState(kActionShowChromeLabs, false);
+    views::test::WaitForAnimatingLayoutManager(
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar()
+            ->pinned_toolbar_actions_container());
   }
 
   auto OpenBookmarksSidePanel() {

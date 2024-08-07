@@ -140,6 +140,8 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
         browser_view_->GetProfile());
   }
 
+  model_->MaybeMigrateChromeLabsPinnedState();
+
   UpdateViews();
 }
 

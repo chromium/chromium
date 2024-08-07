@@ -2499,9 +2499,9 @@ bool BrowserView::IsBorderlessModeEnabled() const {
 }
 
 void BrowserView::ShowChromeLabs() {
-  if (toolbar()->chrome_labs_button() &&
-      toolbar()->chrome_labs_button()->GetVisible()) {
-    toolbar()->chrome_labs_button()->GetChromeLabsCoordinator()->ShowOrHide();
+  if (toolbar()->GetChromeLabsButton() &&
+      toolbar()->GetChromeLabsButton()->GetVisible()) {
+    browser_->GetFeatures().chrome_labs_coordinator()->ShowOrHide();
   }
 }
 

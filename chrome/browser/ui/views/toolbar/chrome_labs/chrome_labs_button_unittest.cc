@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/about_flags.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
@@ -85,15 +86,14 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
 };
 
 TEST_F(ChromeLabsButtonTest, ShowAndHideChromeLabsBubbleOnPress) {
-  ChromeLabsButton* labs_button =
-      browser_view()->toolbar()->chrome_labs_button();
-  ChromeLabsCoordinator* coordinator = labs_button->GetChromeLabsCoordinator();
+  views::Button* labs_button = browser_view()->toolbar()->GetChromeLabsButton();
+  ChromeLabsCoordinator* coordinator =
+      browser_view()->browser()->GetFeatures().chrome_labs_coordinator();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::OwnerSettingsServiceAsh* service_ =
       ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(GetProfile());
-  labs_button->GetChromeLabsCoordinator()
-      ->SetShouldCircumventDeviceCheckForTesting(true);
+  coordinator->SetShouldCircumventDeviceCheckForTesting(true);
 #endif
 
   EXPECT_FALSE(coordinator->BubbleExists());
@@ -115,18 +115,18 @@ TEST_F(ChromeLabsButtonTest, ShowAndHideChromeLabsBubbleOnPress) {
 
 TEST_F(ChromeLabsButtonTest, ShouldButtonShowTest) {
   // There are experiments available so the button should not be nullptr.
-  EXPECT_NE(browser_view()->toolbar()->chrome_labs_button(), nullptr);
+  EXPECT_NE(browser_view()->toolbar()->GetChromeLabsButton(), nullptr);
   // Enterprise policy is initially set to true.
-  EXPECT_TRUE(browser_view()->toolbar()->chrome_labs_button()->GetVisible());
+  EXPECT_TRUE(browser_view()->toolbar()->GetChromeLabsButton()->GetVisible());
 
   // Default enterprise policy value should show the Chrome Labs button.
   profile()->GetPrefs()->ClearPref(
       chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy);
-  EXPECT_TRUE(browser_view()->toolbar()->chrome_labs_button()->GetVisible());
+  EXPECT_TRUE(browser_view()->toolbar()->GetChromeLabsButton()->GetVisible());
 
   profile()->GetPrefs()->SetBoolean(
       chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, false);
-  EXPECT_FALSE(browser_view()->toolbar()->chrome_labs_button()->GetVisible());
+  EXPECT_FALSE(browser_view()->toolbar()->GetChromeLabsButton()->GetVisible());
 }
 
 TEST_F(ChromeLabsButtonTest, DotIndicatorTest) {
@@ -159,7 +159,7 @@ class ChromeLabsButtonTestSafeMode : public ChromeLabsButtonTest {
 };
 
 TEST_F(ChromeLabsButtonTestSafeMode, ButtonShouldNotShowTest) {
-  EXPECT_EQ(browser_view()->toolbar()->chrome_labs_button(), nullptr);
+  EXPECT_EQ(browser_view()->toolbar()->GetChromeLabsButton(), nullptr);
 }
 
 class ChromeLabsButtonTestSecondaryUser : public ChromeLabsButtonTest {
@@ -175,7 +175,7 @@ class ChromeLabsButtonTestSecondaryUser : public ChromeLabsButtonTest {
 };
 
 TEST_F(ChromeLabsButtonTestSecondaryUser, ButtonShouldNotShowTest) {
-  EXPECT_EQ(browser_view()->toolbar()->chrome_labs_button(), nullptr);
+  EXPECT_EQ(browser_view()->toolbar()->GetChromeLabsButton(), nullptr);
 }
 
 #endif
@@ -216,7 +216,7 @@ class ChromeLabsButtonNoExperimentsAvailableTest : public TestWithBrowserView {
 };
 
 TEST_F(ChromeLabsButtonNoExperimentsAvailableTest, ButtonShouldNotShowTest) {
-  EXPECT_EQ(browser_view()->toolbar()->chrome_labs_button(), nullptr);
+  EXPECT_EQ(browser_view()->toolbar()->GetChromeLabsButton(), nullptr);
 }
 
 class ChromeLabsButtonOnlyExpiredFeaturesAvailableTest
@@ -259,7 +259,7 @@ class ChromeLabsButtonOnlyExpiredFeaturesAvailableTest
 
 TEST_F(ChromeLabsButtonOnlyExpiredFeaturesAvailableTest,
        ButtonShouldNotShowTest) {
-  EXPECT_EQ(browser_view()->toolbar()->chrome_labs_button(), nullptr);
+  EXPECT_EQ(browser_view()->toolbar()->GetChromeLabsButton(), nullptr);
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)

@@ -36,10 +36,6 @@ class ChromeLabsButton : public ToolbarButton {
     return new_experiments_indicator_->GetVisible();
   }
 
-  ChromeLabsCoordinator* GetChromeLabsCoordinator() {
-    return chrome_labs_coordinator_.get();
-  }
-
  private:
   void UpdateDotIndicator();
 
@@ -48,8 +44,6 @@ class ChromeLabsButton : public ToolbarButton {
   raw_ptr<const ChromeLabsModel, AcrossTasksDanglingUntriaged> model_;
 
   raw_ptr<views::DotIndicator> new_experiments_indicator_;
-
-  std::unique_ptr<ChromeLabsCoordinator> chrome_labs_coordinator_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_CHROME_LABS_BUTTON_H_

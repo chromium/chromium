@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
@@ -71,6 +72,7 @@
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_icon_view.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
@@ -416,19 +418,27 @@ void ToolbarView::Init() {
     chrome_labs_model_ = std::make_unique<ChromeLabsModel>();
     UpdateChromeLabsNewBadgePrefs(browser_->profile(),
                                   chrome_labs_model_.get());
-    if (ShouldShowChromeLabsUI(chrome_labs_model_.get(), browser_->profile())) {
-      chrome_labs_button_ =
-          container_view_->AddChildView(std::make_unique<ChromeLabsButton>(
-              browser_view_, chrome_labs_model_.get()));
 
+    if (ShouldShowChromeLabsUI(chrome_labs_model_.get(), browser_->profile())) {
+      if (!features::IsToolbarPinningEnabled()) {
+        chrome_labs_button_ =
+            container_view_->AddChildView(std::make_unique<ChromeLabsButton>(
+                browser_view_, chrome_labs_model_.get()));
+      }
       show_chrome_labs_button_.Init(
           chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, prefs,
           base::BindRepeating(&ToolbarView::OnChromeLabsPrefChanged,
                               base::Unretained(this)));
       // Set the visibility for the button based on initial enterprise policy
-      // value. Only call OnChromeLabsPrefChanged if there is a change from the
-      // initial value.
-      chrome_labs_button_->SetVisible(show_chrome_labs_button_.GetValue());
+      // value. Only call OnChromeLabsPrefChanged if there is a change from
+      // the initial value.
+      if (features::IsToolbarPinningEnabled()) {
+        pinned_toolbar_actions_container_
+            ->GetActionItemFor(kActionShowChromeLabs)
+            ->SetVisible(show_chrome_labs_button_.GetValue());
+      } else {
+        chrome_labs_button_->SetVisible(show_chrome_labs_button_.GetValue());
+      }
     }
   }
 
@@ -689,6 +699,12 @@ void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
   BookmarkBubbleView::ShowBubble(anchor_view, GetWebContents(),
                                  bookmark_star_icon, std::move(delegate),
                                  browser_, url, already_bookmarked);
+}
+
+views::Button* ToolbarView::GetChromeLabsButton() const {
+  return browser_->GetFeatures()
+      .chrome_labs_coordinator()
+      ->GetChromeLabsButton();
 }
 
 ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {
@@ -1237,11 +1253,22 @@ views::View* ToolbarView::GetViewForDrop() {
 }
 
 void ToolbarView::OnChromeLabsPrefChanged() {
-  chrome_labs_button_->SetVisible(show_chrome_labs_button_.GetValue());
-  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
-      chrome_labs_button_->GetVisible()
-          ? IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_ADDED_BY_ENTERPRISE_POLICY
-          : IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_REMOVED_BY_ENTERPRISE_POLICY));
+  if (features::IsToolbarPinningEnabled()) {
+    actions::ActionItem* chrome_labs_action =
+        pinned_toolbar_actions_container_->GetActionItemFor(
+            kActionShowChromeLabs);
+    chrome_labs_action->SetVisible(show_chrome_labs_button_.GetValue());
+    GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+        chrome_labs_action->GetVisible()
+            ? IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_ADDED_BY_ENTERPRISE_POLICY
+            : IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_REMOVED_BY_ENTERPRISE_POLICY));
+  } else {
+    chrome_labs_button_->SetVisible(show_chrome_labs_button_.GetValue());
+    GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+        chrome_labs_button_->GetVisible()
+            ? IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_ADDED_BY_ENTERPRISE_POLICY
+            : IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_REMOVED_BY_ENTERPRISE_POLICY));
+  }
 }
 
 void ToolbarView::LoadImages() {

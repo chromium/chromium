@@ -6,13 +6,16 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/flags_ui/feature_entry_macros.h"
 #include "components/version_info/channel.h"
@@ -22,6 +25,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/button_test_api.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -58,15 +62,26 @@ class ChromeLabsUiTest : public DialogBrowserTest {
     scoped_chrome_labs_model_data_.SetModelDataForTesting(test_feature_info);
   }
 
+  void SetUpOnMainThread() override {
+    PinnedToolbarActionsModel* const actions_model =
+        PinnedToolbarActionsModel::Get(browser()->profile());
+    actions_model->UpdatePinnedState(kActionShowChromeLabs,
+                                     features::IsToolbarPinningEnabled());
+    views::test::WaitForAnimatingLayoutManager(
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar()
+            ->pinned_toolbar_actions_container());
+  }
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     // Bubble bounds may exceed display's work area.
     // https://crbug.com/893292
     set_should_verify_dialog_bounds(false);
-    ChromeLabsButton* chrome_labs_button =
+    views::Button* chrome_labs_button =
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar()
-            ->chrome_labs_button();
+            ->GetChromeLabsButton();
     views::test::ButtonTestApi(chrome_labs_button)
         .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                     gfx::Point(), ui::EventTimeForNow(), 0, 0));
@@ -124,21 +139,34 @@ class ChromeLabsMultipleFeaturesUiTest : public DialogBrowserTest {
         std::move(test_feature_info));
   }
 
+  void SetUpOnMainThread() override {
+    PinnedToolbarActionsModel* const actions_model =
+        PinnedToolbarActionsModel::Get(browser()->profile());
+    actions_model->UpdatePinnedState(kActionShowChromeLabs,
+                                     features::IsToolbarPinningEnabled());
+    views::test::WaitForAnimatingLayoutManager(
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar()
+            ->pinned_toolbar_actions_container());
+  }
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     // Bubble bounds may exceed display's work area.
     // https://crbug.com/893292
     set_should_verify_dialog_bounds(false);
-    ChromeLabsButton* chrome_labs_button =
+    views::Button* chrome_labs_button =
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar()
-            ->chrome_labs_button();
+            ->GetChromeLabsButton();
     views::test::ButtonTestApi(chrome_labs_button)
         .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                     gfx::Point(), ui::EventTimeForNow(), 0, 0));
     // Scroll to a little after the dialog inset to ensure that scrolling does
     // not make the contents too close to the title.
-    chrome_labs_button->GetChromeLabsCoordinator()
+    browser()
+        ->GetFeatures()
+        .chrome_labs_coordinator()
         ->GetChromeLabsBubbleView()
         ->GetScrollViewForTesting()
         ->ScrollByOffset(

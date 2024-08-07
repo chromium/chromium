@@ -94,6 +94,9 @@ class PinnedToolbarActionsModel : public KeyedService {
   // otherwise managed by this model.
   bool IsDefault() const;
 
+  // TODO(b/353323253): Remove after Pinned Chrome Labs migration is complete.
+  void MaybeMigrateChromeLabsPinnedState();
+
   // Returns the ordered list of pinned ActionIds.
   virtual const std::vector<actions::ActionId>& PinnedActionIds() const;
 

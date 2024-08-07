@@ -357,6 +357,7 @@ enum {
   kHttpsFirstBalancedMode = 100297,
   kAccessibilityFlashNotificationsEnabled = 100298,
   kAccessibilityFlashNotificationsColor = 100299,
+  kPinnedChromeLabsMigrationComplete = 100300,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -523,6 +524,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kMergeableListWithRewriteOnUpdate}},
     {prefs::kPinnedSearchCompanionMigrationComplete,
      {syncable_prefs_ids::kPinnedSearchCompanionMigrationComplete,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kPinnedChromeLabsMigrationComplete,
+     {syncable_prefs_ids::kPinnedChromeLabsMigrationComplete,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_ANDROID)

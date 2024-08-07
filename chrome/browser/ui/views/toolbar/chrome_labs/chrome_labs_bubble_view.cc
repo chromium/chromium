@@ -94,7 +94,7 @@ END_METADATA
 
 }  // namespace
 
-ChromeLabsBubbleView::ChromeLabsBubbleView(ChromeLabsButton* anchor_view)
+ChromeLabsBubbleView::ChromeLabsBubbleView(views::Button* anchor_view)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::Arrow::TOP_RIGHT,
                                views::BubbleBorder::DIALOG_SHADOW,

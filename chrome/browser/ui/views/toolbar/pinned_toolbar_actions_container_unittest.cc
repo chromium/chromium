@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -38,16 +39,21 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
  public:
   void SetUp() override {
     feature_list_.InitAndEnableFeature(features::kToolbarPinning);
+    InitializeActionIdStringMapping();
     TestWithBrowserView::SetUp();
     AddTab(browser_view()->browser(), GURL("http://foo1.com"));
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
 
     model_ = PinnedToolbarActionsModel::Get(profile());
     ASSERT_TRUE(model_);
+
+    model_->UpdatePinnedState(kActionShowChromeLabs, false);
+    WaitForAnimations();
   }
 
   void TearDown() override {
     model_ = nullptr;
+    actions::ActionIdMap::ResetMapsForTesting();
     TestWithBrowserView::TearDown();
   }
 
@@ -321,8 +327,17 @@ TEST_F(PinnedToolbarActionsContainerTest, PoppedOutButtonsAreAfterPinned) {
   ASSERT_EQ(toolbar_buttons[1]->GetActionId(), actions::kActionCut);
 }
 
+// TODO(b/40670141): Crashing on Mac due to the default pinned state of Chrome
+// Labs button and animations not working properly on mac unittests
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DividerNotVisibleWhileButtonPoppedOut \
+  DISABLED_DividerNotVisibleWhileButtonPoppedOut
+#else
+#define MAYBE_DividerNotVisibleWhileButtonPoppedOut \
+  DividerNotVisibleWhileButtonPoppedOut
+#endif
 TEST_F(PinnedToolbarActionsContainerTest,
-       DividerNotVisibleWhileButtonPoppedOut) {
+       MAYBE_DividerNotVisibleWhileButtonPoppedOut) {
   actions::ActionItem* browser_action_item =
       browser_view()->browser()->browser_actions()->root_action_item();
 

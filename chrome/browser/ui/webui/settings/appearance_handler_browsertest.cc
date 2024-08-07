@@ -28,6 +28,10 @@ class AppearanceHandlerTest : public InProcessBrowserTest {
   AppearanceHandlerTest& operator=(const AppearanceHandlerTest&) = delete;
 
   void SetUpOnMainThread() override {
+    PinnedToolbarActionsModel* const actions_model =
+        PinnedToolbarActionsModel::Get(browser()->profile());
+    actions_model->UpdatePinnedState(kActionShowChromeLabs, false);
+
     EXPECT_TRUE(ui_test_utils::NavigateToURL(
         browser(), GURL(chrome::GetSettingsUrl(chrome::kAppearanceSubPage))));
     EXPECT_TRUE(content::WaitForLoadStop(

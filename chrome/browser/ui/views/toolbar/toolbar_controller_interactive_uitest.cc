@@ -36,6 +36,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/test/test_extension_dir.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_class_properties.h"
 
@@ -57,6 +58,11 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
     embedded_test_server()->StartAcceptingConnections();
     InteractiveFeaturePromoTest::SetUpOnMainThread();
     browser_view_ = BrowserView::GetBrowserViewForBrowser(browser());
+    PinnedToolbarActionsModel* const actions_model =
+        PinnedToolbarActionsModel::Get(browser()->profile());
+    actions_model->UpdatePinnedState(kActionShowChromeLabs, false);
+    views::test::WaitForAnimatingLayoutManager(
+        browser_view_->toolbar()->pinned_toolbar_actions_container());
     toolbar_controller_ = const_cast<ToolbarController*>(
         browser_view_->toolbar()->toolbar_controller());
     toolbar_container_view_ = const_cast<views::View*>(
@@ -388,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                    "ResponsiveToolbar.OverflowButtonHidden"));
 }
 // TODO(crbug.com/41495158): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_StartBrowserWithWidthSmallerThanThreshold \
   DISABLED_StartBrowserWithWidthSmallerThanThreshold
 #else

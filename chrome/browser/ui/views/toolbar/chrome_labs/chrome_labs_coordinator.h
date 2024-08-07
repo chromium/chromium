@@ -15,9 +15,12 @@
 #include "ui/views/view_tracker.h"
 
 class Browser;
-class ChromeLabsButton;
 class ChromeLabsBubbleView;
 class ChromeLabsViewController;
+
+namespace views {
+class Button;
+}
 
 class ChromeLabsCoordinator {
  public:
@@ -29,9 +32,9 @@ class ChromeLabsCoordinator {
     kChromeOsOwnerUserType,
   };
 
-  ChromeLabsCoordinator(ChromeLabsButton* anchor_view,
-                        Browser* browser,
-                        const ChromeLabsModel* model);
+  explicit ChromeLabsCoordinator(Browser* browser);
+  ChromeLabsCoordinator(Browser* browser,
+                        std::unique_ptr<ChromeLabsModel> model);
   ~ChromeLabsCoordinator();
 
   bool BubbleExists();
@@ -42,6 +45,8 @@ class ChromeLabsCoordinator {
 
   // Toggles the visibility of the bubble.
   void ShowOrHide();
+
+  views::Button* GetChromeLabsButton();
 
   ChromeLabsBubbleView* GetChromeLabsBubbleView();
 
@@ -58,12 +63,10 @@ class ChromeLabsCoordinator {
 #endif
 
  private:
-  raw_ptr<ChromeLabsButton, DanglingUntriaged> anchor_view_;
   raw_ptr<Browser, DanglingUntriaged> browser_;
-  raw_ptr<const ChromeLabsModel, AcrossTasksDanglingUntriaged>
-      chrome_labs_model_;
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
   raw_ptr<flags_ui::FlagsState, DanglingUntriaged> flags_state_;
+  std::unique_ptr<ChromeLabsModel> model_;
   std::unique_ptr<ChromeLabsViewController> controller_;
   views::ViewTracker chrome_labs_bubble_view_tracker_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)

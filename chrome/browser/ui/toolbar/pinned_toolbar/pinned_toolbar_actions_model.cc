@@ -267,6 +267,20 @@ bool PinnedToolbarActionsModel::IsDefault() const {
   return is_default;
 }
 
+void PinnedToolbarActionsModel::MaybeMigrateChromeLabsPinnedState() {
+  if (!features::IsToolbarPinningEnabled()) {
+    return;
+  }
+  if (pref_service_->GetBoolean(prefs::kPinnedChromeLabsMigrationComplete)) {
+    return;
+  }
+
+  if (CanUpdate()) {
+    UpdatePinnedState(kActionShowChromeLabs, true);
+    pref_service_->SetBoolean(prefs::kPinnedChromeLabsMigrationComplete, true);
+  }
+}
+
 const std::vector<actions::ActionId>&
 PinnedToolbarActionsModel::PinnedActionIds() const {
   return pinned_action_ids_;
