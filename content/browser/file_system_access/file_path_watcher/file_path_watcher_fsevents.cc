@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <list>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
 #include "base/files/file_util.h"
@@ -206,12 +207,10 @@ void FilePathWatcherFSEvents::UpdateEventStream(
     DestroyEventStream();
   }
 
-  base::apple::ScopedCFTypeRef<CFStringRef> cf_path(CFStringCreateWithCString(
-      NULL, resolved_target_.value().c_str(), kCFStringEncodingMacHFS));
-  base::apple::ScopedCFTypeRef<CFStringRef> cf_dir_path(
-      CFStringCreateWithCString(NULL,
-                                resolved_target_.DirName().value().c_str(),
-                                kCFStringEncodingMacHFS));
+  base::apple::ScopedCFTypeRef<CFStringRef> cf_path =
+      base::apple::FilePathToCFString(resolved_target_);
+  base::apple::ScopedCFTypeRef<CFStringRef> cf_dir_path =
+      base::apple::FilePathToCFString(resolved_target_.DirName());
   CFStringRef paths_array[] = {cf_path.get(), cf_dir_path.get()};
   base::apple::ScopedCFTypeRef<CFArrayRef> watched_paths(
       CFArrayCreate(NULL, reinterpret_cast<const void**>(paths_array),

@@ -273,11 +273,23 @@ BASE_EXPORT FilePath NSURLToFilePath(NSURL* url);
 
 #endif  // __OBJC__
 
-// Converts a non-null |path| to a CFURLRef. |path| must not be empty.
-//
-// This function only uses manually-owned resources, so it does not depend on an
-// NSAutoreleasePool being set up on the current thread.
+// CoreFoundation versions of the above calls. These only uses manually-owned
+// resources, so they do not depend on an NSAutoreleasePool being set up on the
+// current thread.
+
+// Converts |path| to a CFURLRef. Returns nil if |path| is empty.
 BASE_EXPORT ScopedCFTypeRef<CFURLRef> FilePathToCFURL(const FilePath& path);
+
+// Converts |path| to a CFStringRef. Returns nil if |path| is empty.
+BASE_EXPORT ScopedCFTypeRef<CFStringRef> FilePathToCFString(
+    const FilePath& path);
+
+// Converts |str| to a FilePath. Returns an empty path if |str| is nil.
+BASE_EXPORT FilePath CFStringToFilePath(CFStringRef str);
+
+// Converts |url| to a FilePath. Returns an empty path if |url| is nil or if
+// |url| is not of scheme "file".
+BASE_EXPORT FilePath CFURLToFilePath(CFURLRef url);
 
 #if defined(__OBJC__)
 // Converts |range| to an NSRange, returning the new range in |range_out|.

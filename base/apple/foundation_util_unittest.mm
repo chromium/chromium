@@ -5,7 +5,7 @@
 #include "base/apple/foundation_util.h"
 
 #include <CoreFoundation/CoreFoundation.h>
-#include <Foundation/Foundation.h>
+#import <Foundation/Foundation.h>
 #include <limits.h>
 #include <stddef.h>
 
@@ -309,23 +309,82 @@ TEST(FoundationUtilTest, FilePathToNSURL) {
   EXPECT_NSEQ(nil, FilePathToNSURL(FilePath()));
   EXPECT_NSEQ([NSURL fileURLWithPath:@"/a/b"],
               FilePathToNSURL(FilePath("/a/b")));
+  EXPECT_NSEQ([NSURL fileURLWithPath:@"a/b"], FilePathToNSURL(FilePath("a/b")));
 }
 
 TEST(FoundationUtilTest, FilePathToNSString) {
   EXPECT_NSEQ(nil, FilePathToNSString(FilePath()));
   EXPECT_NSEQ(@"/a/b", FilePathToNSString(FilePath("/a/b")));
+  EXPECT_NSEQ(@"a/b", FilePathToNSString(FilePath("a/b")));
 }
 
 TEST(FoundationUtilTest, NSStringToFilePath) {
   EXPECT_EQ(FilePath(), NSStringToFilePath(nil));
   EXPECT_EQ(FilePath(), NSStringToFilePath(@""));
   EXPECT_EQ(FilePath("/a/b"), NSStringToFilePath(@"/a/b"));
+  EXPECT_EQ(FilePath("a/b"), NSStringToFilePath(@"a/b"));
+}
+
+TEST(FoundationUtilTest, NSURLToFilePath) {
+  EXPECT_EQ(FilePath(), NSURLToFilePath(nil));
+  EXPECT_EQ(FilePath(),
+            NSURLToFilePath([NSURL URLWithString:@"http://google.com/"]));
+  EXPECT_EQ(FilePath("a/b"), NSURLToFilePath([NSURL fileURLWithPath:@"a/b"]));
+  EXPECT_EQ(FilePath("/a/b"), NSURLToFilePath([NSURL fileURLWithPath:@"/a/b"]));
+}
+
+TEST(FoundationUtilTest, ConversionComposition) {
+  // macOS "file system representation" is a bespoke Unicode decomposition.
+  // Verifying that U+00E9 (LATIN SMALL LETTER E WITH ACUTE) ends up decomposed
+  // into U+0065 (LATIN SMALL LETTER E) and U+0301 (COMBINING ACUTE ACCENT) is a
+  // decent one-off test to ensure that this is happening.
+  FilePath original_path("\u00E9");
+
+  FilePath result_string_path =
+      NSStringToFilePath(FilePathToNSString(original_path));
+  EXPECT_EQ("\u0065\u0301", result_string_path.value());
+
+  FilePath result_url_path = NSURLToFilePath(FilePathToNSURL(original_path));
+  EXPECT_EQ("\u0065\u0301", result_url_path.value());
 }
 
 TEST(FoundationUtilTest, FilePathToCFURL) {
-  ScopedCFTypeRef<CFURLRef> url(CFURLCreateWithFileSystemPath(
-      nullptr, CFSTR("/a/b"), kCFURLPOSIXPathStyle, false));
-  EXPECT_TRUE(CFEqual(url.get(), FilePathToCFURL(FilePath("/a/b")).get()));
+  EXPECT_EQ(ScopedCFTypeRef<CFURLRef>(), FilePathToCFURL(FilePath()));
+  ScopedCFTypeRef<CFURLRef> absolute_url(CFURLCreateWithFileSystemPath(
+      nullptr, CFSTR("/a/b"), kCFURLPOSIXPathStyle, /*isDirectory=*/false));
+  EXPECT_TRUE(
+      CFEqual(absolute_url.get(), FilePathToCFURL(FilePath("/a/b")).get()));
+  ScopedCFTypeRef<CFURLRef> relative_url(CFURLCreateWithFileSystemPath(
+      nullptr, CFSTR("a/b"), kCFURLPOSIXPathStyle, /*isDirectory=*/false));
+  EXPECT_TRUE(
+      CFEqual(relative_url.get(), FilePathToCFURL(FilePath("a/b")).get()));
+}
+
+TEST(FoundationUtilTest, FilePathToCFString) {
+  EXPECT_EQ(ScopedCFTypeRef<CFStringRef>(), FilePathToCFString(FilePath()));
+  EXPECT_TRUE(
+      CFEqual(CFSTR("/a/b"), FilePathToCFString(FilePath("/a/b")).get()));
+  EXPECT_TRUE(CFEqual(CFSTR("a/b"), FilePathToCFString(FilePath("a/b")).get()));
+}
+
+TEST(FoundationUtilTest, CFStringToFilePath) {
+  EXPECT_EQ(FilePath(), CFStringToFilePath(nil));
+  EXPECT_EQ(FilePath(), CFStringToFilePath(CFSTR("")));
+  EXPECT_EQ(FilePath("/a/b"), CFStringToFilePath(CFSTR("/a/b")));
+  EXPECT_EQ(FilePath("a/b"), CFStringToFilePath(CFSTR("a/b")));
+}
+
+TEST(FoundationUtilTest, CFURLToFilePath) {
+  EXPECT_EQ(FilePath(), CFURLToFilePath(nil));
+  ScopedCFTypeRef<CFURLRef> non_file_url(
+      CFURLCreateWithString(nullptr, CFSTR("http://google.com/"), nullptr));
+  EXPECT_EQ(FilePath(), CFURLToFilePath(non_file_url.get()));
+  ScopedCFTypeRef<CFURLRef> absolute_url(CFURLCreateWithFileSystemPath(
+      nullptr, CFSTR("/a/b"), kCFURLPOSIXPathStyle, /*isDirectory=*/false));
+  EXPECT_EQ(FilePath("/a/b"), CFURLToFilePath(absolute_url.get()));
+  ScopedCFTypeRef<CFURLRef> relative_url(CFURLCreateWithFileSystemPath(
+      nullptr, CFSTR("a/b"), kCFURLPOSIXPathStyle, /*isDirectory=*/false));
+  EXPECT_EQ(FilePath("a/b"), CFURLToFilePath(relative_url.get()));
 }
 
 TEST(FoundationUtilTest, CFRangeToNSRange) {

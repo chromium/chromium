@@ -144,6 +144,10 @@
 #define FILE_PATH_LITERAL(x) x
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_APPLE)
+typedef const struct __CFString* CFStringRef;
+#endif
+
 namespace base {
 
 class SafeBaseName;
@@ -474,8 +478,9 @@ class BASE_EXPORT FilePath {
   // HFS, which is close to, but not quite, decomposition form D. See
   // http://developer.apple.com/mac/library/technotes/tn/tn1150.html#UnicodeSubtleties
   // for further comments.
-  // Returns the epmty string if the conversion failed.
+  // Returns the empty string if the conversion failed.
   static StringType GetHFSDecomposedForm(StringPieceType string);
+  static StringType GetHFSDecomposedForm(CFStringRef cfstring);
 
   // Special UTF-8 version of FastUnicodeCompare. Cf:
   // http://developer.apple.com/mac/library/technotes/tn/tn1150.html#StringComparisonAlgorithm

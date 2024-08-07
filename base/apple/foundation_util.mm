@@ -4,12 +4,15 @@
 
 #include "base/apple/foundation_util.h"
 
+#include <CoreFoundation/CoreFoundation.h>
+#import <Foundation/Foundation.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <vector>
 
+#include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/containers/adapters.h"
@@ -29,6 +32,7 @@
 #endif
 
 extern "C" {
+Boolean _CFURLIsFileURL(CFURLRef url);
 CFTypeID SecKeyGetTypeID();
 }  // extern "C"
 
@@ -365,51 +369,68 @@ std::string GetValueFromDictionaryErrorMessage(CFStringRef key,
 }
 
 NSURL* FilePathToNSURL(const FilePath& path) {
-  if (NSString* path_string = FilePathToNSString(path)) {
-    return [NSURL fileURLWithPath:path_string];
-  }
-  return nil;
+  return apple::CFToNSOwnershipCast(FilePathToCFURL(path).release());
 }
 
 NSString* FilePathToNSString(const FilePath& path) {
-  if (path.empty()) {
-    return nil;
-  }
-  return @(path.value().c_str());  // @() does UTF8 conversion.
+  return apple::CFToNSOwnershipCast(FilePathToCFString(path).release());
 }
 
 FilePath NSStringToFilePath(NSString* str) {
-  if (!str.length) {
-    return FilePath();
-  }
-  return FilePath(str.fileSystemRepresentation);
+  return CFStringToFilePath(apple::NSToCFPtrCast(str));
 }
 
 FilePath NSURLToFilePath(NSURL* url) {
-  if (!url.fileURL) {
-    return FilePath();
-  }
-  return NSStringToFilePath(url.path);
+  return CFURLToFilePath(apple::NSToCFPtrCast(url));
 }
 
 ScopedCFTypeRef<CFURLRef> FilePathToCFURL(const FilePath& path) {
-  DCHECK(!path.empty());
+  if (path.empty()) {
+    return ScopedCFTypeRef<CFURLRef>();
+  }
 
-  // The function's docs promise that it does not require an NSAutoreleasePool.
-  // A straightforward way to accomplish this is to use *Create* functions,
-  // combined with ScopedCFTypeRef.
-  const std::string& path_string = path.value();
-  ScopedCFTypeRef<CFStringRef> path_cfstring(CFStringCreateWithBytes(
-      kCFAllocatorDefault, reinterpret_cast<const UInt8*>(path_string.data()),
-      checked_cast<CFIndex>(path_string.length()), kCFStringEncodingUTF8,
-      /*isExternalRepresentation=*/FALSE));
-  if (!path_cfstring) {
+  ScopedCFTypeRef<CFStringRef> path_string(
+      CFStringCreateWithFileSystemRepresentation(kCFAllocatorDefault,
+                                                 path.value().c_str()));
+  if (!path_string) {
     return ScopedCFTypeRef<CFURLRef>();
   }
 
   return ScopedCFTypeRef<CFURLRef>(CFURLCreateWithFileSystemPath(
-      kCFAllocatorDefault, path_cfstring.get(), kCFURLPOSIXPathStyle,
+      kCFAllocatorDefault, path_string.get(), kCFURLPOSIXPathStyle,
       /*isDirectory=*/FALSE));
+}
+
+ScopedCFTypeRef<CFStringRef> FilePathToCFString(const FilePath& path) {
+  if (path.empty()) {
+    return ScopedCFTypeRef<CFStringRef>();
+  }
+
+  return ScopedCFTypeRef<CFStringRef>(
+      CFStringCreateWithFileSystemRepresentation(kCFAllocatorDefault,
+                                                 path.value().c_str()));
+}
+
+FilePath CFStringToFilePath(CFStringRef str) {
+  if (!str || CFStringGetLength(str) == 0) {
+    return FilePath();
+  }
+
+  return FilePath(FilePath::GetHFSDecomposedForm(str));
+}
+
+FilePath CFURLToFilePath(CFURLRef url) {
+  if (!url || !_CFURLIsFileURL(url)) {
+    return FilePath();
+  }
+
+  ScopedCFTypeRef<CFStringRef> path(
+      CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle));
+  if (!path) {
+    return FilePath();
+  }
+
+  return CFStringToFilePath(path.get());
 }
 
 bool CFRangeToNSRange(CFRange range, NSRange* range_out) {
