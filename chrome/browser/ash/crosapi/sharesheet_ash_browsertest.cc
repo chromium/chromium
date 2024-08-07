@@ -8,10 +8,12 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -113,6 +115,8 @@ class SharesheetAshBrowserTest : public ash::SystemWebAppIntegrationTest {
   SharesheetAshBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         ash::standalone_browser::GetFeatureRefs(), {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
   ~SharesheetAshBrowserTest() override = default;
 
@@ -139,6 +143,7 @@ class SharesheetAshBrowserTest : public ash::SystemWebAppIntegrationTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 IN_PROC_BROWSER_TEST_P(SharesheetAshBrowserTest, Success) {

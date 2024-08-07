@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
@@ -421,6 +422,8 @@ class SyncConsentTestWithModesParams
       scoped_feature_list_.InitWithFeatures(
           /*enabled=*/ash::standalone_browser::GetFeatureRefs(),
           /*disabled=*/{features::kOsSyncConsentRevamp});
+      scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+          ash::switches::kEnableLacrosForTesting);
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled=*/{},
@@ -437,6 +440,7 @@ class SyncConsentTestWithModesParams
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 IN_PROC_BROWSER_TEST_P(SyncConsentTestWithModesParams, Accept) {
@@ -493,6 +497,8 @@ class SyncConsentTestWithReviewParams
       scoped_feature_list_.InitWithFeatures(
           /*enabled=*/ash::standalone_browser::GetFeatureRefs(),
           /*disabled=*/{features::kOsSyncConsentRevamp});
+      scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+          ash::switches::kEnableLacrosForTesting);
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled=*/{},
@@ -509,6 +515,7 @@ class SyncConsentTestWithReviewParams
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
   bool is_review_settings_checked_;
 };
 
@@ -797,6 +804,8 @@ class SyncConsentLacrosRevampTest : public SyncConsentTest {
     features.push_back(features::kOsSyncConsentRevamp);
     sync_feature_list_.InitWithFeatures(
         /*enabled=*/features, /*disabled=*/{});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
     is_lacros_enabled_ = true;
   }
   ~SyncConsentLacrosRevampTest() override = default;
@@ -816,6 +825,7 @@ class SyncConsentLacrosRevampTest : public SyncConsentTest {
 
  private:
   base::test::ScopedFeatureList sync_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 IN_PROC_BROWSER_TEST_F(SyncConsentLacrosRevampTest, TurnOnSync) {

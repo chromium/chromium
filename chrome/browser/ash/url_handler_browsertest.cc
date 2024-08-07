@@ -5,7 +5,9 @@
 #include "chrome/browser/ash/url_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/system_web_apps/apps/os_url_handler_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -25,9 +27,8 @@ class UrlHandlerTest : public ash::SystemWebAppBrowserTestBase {
     if (enable_lacros) {
       scoped_feature_list_.InitWithFeatures(
           ash::standalone_browser::GetFeatureRefs(), {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, ash::standalone_browser::GetFeatureRefs());
+      scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+          ash::switches::kEnableLacrosForTesting);
     }
   }
 
@@ -45,6 +46,7 @@ class UrlHandlerTest : public ash::SystemWebAppBrowserTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 IN_PROC_BROWSER_TEST_F(UrlHandlerTest, Basic) {

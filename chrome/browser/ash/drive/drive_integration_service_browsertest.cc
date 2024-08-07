@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -748,6 +749,8 @@ class DriveIntegrationServiceBrowserTestLacros
   DriveIntegrationServiceBrowserTestLacros() {
     scoped_feature_list_.InitWithFeatures(
         ash::standalone_browser::GetFeatureRefs(), {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   // browser() does not exist in Lacros, so get the profile from ProfileManager.
@@ -755,6 +758,7 @@ class DriveIntegrationServiceBrowserTestLacros
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 class MockDriveFsNativeMessageHostBridge

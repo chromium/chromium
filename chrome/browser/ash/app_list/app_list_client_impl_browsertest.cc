@@ -825,10 +825,13 @@ class AppListClientImplLacrosOnlyBrowserTest
   AppListClientImplLacrosOnlyBrowserTest() {
     feature_list_.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(),
                                    {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppListClientImplLacrosOnlyBrowserTest, ChromeApp) {
