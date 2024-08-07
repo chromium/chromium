@@ -17,8 +17,6 @@ const CGFloat kCornerRadius = 16;
 const CGFloat kMargin = 16;
 const CGFloat kSpacing = 8;
 const CGFloat kDotSize = 14;
-const CGFloat kHighlightAlpha = 0.6;
-const CGFloat kHighlightBackgroundColorAlpha = 0.3;
 
 }  // namespace
 
@@ -95,14 +93,9 @@ const CGFloat kHighlightBackgroundColorAlpha = 0.3;
 
 - (void)setHighlighted:(BOOL)highlighted {
   [super setHighlighted:highlighted];
-  if (highlighted) {
-    self.backgroundColor = [UIColor.whiteColor
-        colorWithAlphaComponent:kHighlightBackgroundColorAlpha];
-    self.contentView.alpha = kHighlightAlpha;
-  } else {
-    self.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-    self.contentView.alpha = 1;
-  }
+  NSString* colorName =
+      highlighted ? kSecondaryBackgroundColor : kPrimaryBackgroundColor;
+  self.backgroundColor = [UIColor colorNamed:colorName];
 }
 
 - (void)prepareForReuse {
