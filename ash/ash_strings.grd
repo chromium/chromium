@@ -7406,26 +7406,28 @@ New install
         desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'Change capitalization'. When selected, this item converts the selected text to title case. The casing for this string is used to illustrate the effect of this menu item, so retain the casing for languages where this makes sense.">
         Title Case
       </message>
-      <message name="IDS_PICKER_LINKS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the browsing history category is selected.">
+      <message name="IDS_PICKER_LINKS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches files from their browsing history.">
         Search browsing history
       </message>
-      <message name="IDS_PICKER_DRIVE_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false"
-        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches files from their Google Drive.">
+      <message name="IDS_PICKER_DRIVE_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches files from their Google Drive. 'Google Drive' is a product name and the correct localized version of the product name should be used.">
         Search Google Drive
       </message>
-      <message name="IDS_PICKER_LOCAL_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false"
-        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches files from their Chromebook.">
+      <message name="IDS_PICKER_LOCAL_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches files from their Chromebook. 'Files' is the ChromeOS Files app product name and the correct localized version of the product name should be used.">
         Search Files
       </message>
-      <message name="IDS_PICKER_DATES_TIMES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the date and times category is selected.">
+      <message name="IDS_PICKER_DATES_TIMES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that they can type phrases like 'today' to convert it into a date.">
         Search date
       </message>
-      <message name="IDS_PICKER_UNITS_MATHS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false"
-        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that they can type mathematical formulas or unit conversions to calculate the resutl (e.g. '1 + 1' or '1 meter to feet').">
+      <message name="IDS_PICKER_UNITS_MATHS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that they can type mathematical formulas or unit conversions to calculate the result (e.g. '1 + 1' or '1 meter to feet').">
         Search to calculate
       </message>
-      <message name="IDS_PICKER_CLIPBOARD_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false"
-        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches items from the their clipboard.">
+      <message name="IDS_PICKER_CLIPBOARD_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches items from the their clipboard. 'Clipboard' is a product name and the correct localized version of the product name should be used.">
         Search Clipboard
       </message>
       <message name="IDS_PICKER_GENERAL_CATEGORY_TYPE_SECTION_TITLE"
