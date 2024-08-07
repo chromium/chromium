@@ -54,7 +54,6 @@ public class PriceMessageCardViewModel {
                         MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER,
                         data.getReviewActionProvider())
                 .with(MessageCardViewProperties.DESCRIPTION_TEXT, descriptionText)
-                .with(MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE, null)
                 .with(MessageCardViewProperties.ACTION_TEXT, actionText)
                 .with(
                         MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION,

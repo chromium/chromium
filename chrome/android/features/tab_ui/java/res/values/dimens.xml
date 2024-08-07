@@ -106,4 +106,6 @@ found in the LICENSE file.
 
     <!-- Dimens for archived tabs. -->
     <dimen name="archived_tabs_dialog_bottom_button_container_height">92dp</dimen>
+
+    <dimen name="message_card_close_button_size">24dp</dimen>
 </resources>

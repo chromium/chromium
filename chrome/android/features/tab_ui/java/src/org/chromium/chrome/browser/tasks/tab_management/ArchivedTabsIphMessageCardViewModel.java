@@ -54,7 +54,6 @@ public class ArchivedTabsIphMessageCardViewModel {
                 .with(
                         MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER,
                         reviewActionProvider)
-                .with(MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE, null)
                 .with(
                         MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION,
                         dismissButtonContextDescription)
