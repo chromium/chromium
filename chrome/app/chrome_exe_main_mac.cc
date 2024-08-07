@@ -134,7 +134,7 @@ __attribute__((used)) const char kGrossPaddingForCrbug1300598[76 * 1024] = {};
 // DCHECK builds are larger and therefore require less padding. See
 // https://crbug.com/1394196 for the calculations, and
 // https://crbug.com/357698332 for further follow-up.
-__attribute__((used)) const char kGrossPaddingForCrbug1300598[40 * 1024] = {};
+__attribute__((used)) const char kGrossPaddingForCrbug1300598[45 * 1024] = {};
 #endif  // !defined(DCHECK_ALWAYS_ON)
 #endif
 
