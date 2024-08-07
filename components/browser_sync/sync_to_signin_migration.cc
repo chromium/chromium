@@ -140,8 +140,6 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
 #endif
 
   // Restore the "previously syncing user" prefs too.
-  pref_service->SetString(prefs::kGoogleServicesLastSyncingAccountIdDeprecated,
-                          signed_in_gaia_id);
   pref_service->SetString(prefs::kGoogleServicesLastSyncingGaiaId,
                           signed_in_gaia_id);
   pref_service->SetString(
@@ -305,7 +303,6 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
       prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn,
       pref_service->GetString(prefs::kGoogleServicesLastSyncingUsername));
   // Clear the "previously syncing user" prefs, to prevent accidental misuse.
-  pref_service->ClearPref(prefs::kGoogleServicesLastSyncingAccountIdDeprecated);
   pref_service->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
   pref_service->ClearPref(prefs::kGoogleServicesLastSyncingUsername);
   // Also clear the "InitialSyncFeatureSetup" pref. It's not needed

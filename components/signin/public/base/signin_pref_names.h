@@ -33,8 +33,6 @@ extern const char kGoogleServicesAccountId[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGoogleServicesConsentedToSync[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const char kGoogleServicesLastSyncingAccountIdDeprecated[];
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGoogleServicesLastSyncingGaiaId[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGoogleServicesLastSyncingUsername[];

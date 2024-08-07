@@ -2379,21 +2379,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
       profile_prefs);
 
-  // Once this migration is complete, the tracked preference
-  // `kGoogleServicesLastSyncingAccountIdDeprecated` can be removed.
-  if (profile_prefs->HasPrefPath(
-          prefs::kGoogleServicesLastSyncingAccountIdDeprecated)) {
-    std::string account_id = profile_prefs->GetString(
-        prefs::kGoogleServicesLastSyncingAccountIdDeprecated);
-    profile_prefs->ClearPref(
-        prefs::kGoogleServicesLastSyncingAccountIdDeprecated);
-    bool is_email = account_id.find('@') != std::string::npos;
-    if (!is_email && !account_id.empty()) {
-      profile_prefs->SetString(prefs::kGoogleServicesLastSyncingGaiaId,
-                               account_id);
-    }
-  }
-
   // TODO(326079444): After experiment is over, update the deprecated date and
   // allow this to be cleaned up.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)

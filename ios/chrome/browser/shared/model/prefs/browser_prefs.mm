@@ -113,19 +113,6 @@
 
 namespace {
 
-// Deprecated 09/2022.
-const char kDataSaverEnabled[] = "spdy_proxy.enabled";
-
-// Deprecated 09/2022.
-const char kPrefPromoObject[] = "ios.ntppromo";
-
-// Deprecated 11/2022.
-const char kLocalConsentsDictionary[] = "local_consents";
-
-// Deprecated 12/2022.
-const char kDeprecatedReadingListHasUnseenEntries[] =
-    "reading_list.has_unseen_entries";
-
 // Deprecated 01/2023.
 const char* kTrialGroupMICeAndDefaultBrowserVersionPrefName =
     "fre_refactoring_mice_and_default_browser.trial_version";
@@ -559,8 +546,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       lens::prefs::kLensOverlaySettings,
       static_cast<int>(lens::prefs::LensOverlaySettingsPolicyValue::kEnabled));
 
-  registry->RegisterDictionaryPref(kPrefPromoObject);
-
   // Registers prefs to count the remaining number of times autofill branding
   // animation should perform. Defaults to 2, which is the maximum number of
   // times a user should see autofill branding animation after installation.
@@ -570,8 +555,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kAutofillBrandingIconDisplayCount, 0);
   registry->RegisterBooleanPref(kAutofillBrandingKeyboardAccessoriesTapped,
                                 false);
-
-  registry->RegisterDictionaryPref(kLocalConsentsDictionary);
 
   registry->RegisterIntegerPref(kTrialGroupMICeAndDefaultBrowserVersionPrefName,
                                 -1);
@@ -755,7 +738,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kNTPLensEntryPointNewBadgeShownCount, 0);
   registry->RegisterBooleanPref(policy::policy_prefs::kPolicyTestPageEnabled,
                                 true);
-  registry->RegisterBooleanPref(kDataSaverEnabled, false);
   registry->RegisterBooleanPref(
       prefs::kEnableDoNotTrackIos, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -833,8 +815,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(prefs::kIosShareChromeLastShare, base::Time(),
                              PrefRegistry::LOSSY_PREF);
 
-  registry->RegisterDictionaryPref(kPrefPromoObject);
-
   // Register pref storing whether Web Inspector support is enabled.
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
   // Enable it by default on debug builds
@@ -867,8 +847,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Register pref used to determine if OS Lockdown Mode is enabled.
   registry->RegisterBooleanPref(prefs::kOSLockdownModeEnabled, false);
-
-  registry->RegisterBooleanPref(kDeprecatedReadingListHasUnseenEntries, false);
 
   // Deprecated 07/2023.
   registry->RegisterIntegerPref(kUnifiedConsentMigrationState, 0);
@@ -1039,12 +1017,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
 // This method should be periodically pruned of year+ old migrations.
 void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
-  // Added 09/2022
-  prefs->ClearPref(kPrefPromoObject);
-
-  // Added 11/2022.
-  prefs->ClearPref(kLocalConsentsDictionary);
-
   // Added 01/2023
   prefs->ClearPref(kTrialGroupMICeAndDefaultBrowserVersionPrefName);
 
@@ -1095,30 +1067,6 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
                                       PrefService* prefs) {
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
-
-  // Added 09/2022
-  prefs->ClearPref(kPrefPromoObject);
-
-  // Added 09/2022
-  prefs->ClearPref(kDataSaverEnabled);
-
-  // Added 10/2022.
-  if (prefs->HasPrefPath(
-          prefs::kGoogleServicesLastSyncingAccountIdDeprecated)) {
-    std::string account_id =
-        prefs->GetString(prefs::kGoogleServicesLastSyncingAccountIdDeprecated);
-    prefs->ClearPref(prefs::kGoogleServicesLastSyncingAccountIdDeprecated);
-    DCHECK(!base::Contains(account_id, '@'))
-        << "kGoogleServicesLastSyncingAccountId is not expected to be an "
-           "email: "
-        << account_id;
-    if (!account_id.empty()) {
-      prefs->SetString(prefs::kGoogleServicesLastSyncingGaiaId, account_id);
-    }
-  }
-
-  // Added 12/2022.
-  prefs->ClearPref(kDeprecatedReadingListHasUnseenEntries);
 
   // Added 07/2023.
   prefs->ClearPref(kUnifiedConsentMigrationState);

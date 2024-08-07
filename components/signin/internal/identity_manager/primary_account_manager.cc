@@ -235,8 +235,6 @@ PrimaryAccountManager::~PrimaryAccountManager() = default;
 
 // static
 void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(
-      prefs::kGoogleServicesLastSyncingAccountIdDeprecated, std::string());
   registry->RegisterStringPref(prefs::kGoogleServicesLastSyncingGaiaId,
                                std::string());
   registry->RegisterStringPref(prefs::kGoogleServicesLastSyncingUsername,

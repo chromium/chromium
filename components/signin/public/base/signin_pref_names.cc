@@ -60,13 +60,6 @@ const char kGoogleServicesAccountId[] = "google.services.account_id";
 const char kGoogleServicesConsentedToSync[] =
     "google.services.consented_to_sync";
 
-// Similar to kGoogleServicesLastSyncingUsername, this is the corresponding
-// version of kGoogleServicesAccountId that is not cleared on signout.
-// DEPRECATED: this preference is deprecated and is always empty. It will be
-// removed once all users are migrated to `kGoogleServicesLastSyncingGaiaId`.
-const char kGoogleServicesLastSyncingAccountIdDeprecated[] =
-    "google.services.last_account_id";
-
 // Similar to `kGoogleServicesLastSyncingUsername` that is not cleared on
 // signout. Note this is always a Gaia ID, as opposed to
 // `kGoogleServicesAccountId` which may be an email.

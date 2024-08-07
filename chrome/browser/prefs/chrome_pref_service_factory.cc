@@ -165,12 +165,6 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
     {23, prefs::kGoogleServicesAccountId, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::PERSONAL},
-    // This is being migrated to `kGoogleServicesLastSyncingGaiaId` since
-    // 2022/10, and should move to `CleanupDeprecatedTrackedPreferences()` in
-    // pref_hash_filter.cc when that migration completes.
-    {24, prefs::kGoogleServicesLastSyncingAccountIdDeprecated,
-     EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
-     ValueType::PERSONAL},
     {29, prefs::kMediaStorageIdSalt, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
