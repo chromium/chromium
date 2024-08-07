@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_WEBDATA_SERVICE_OBSERVER_H_
 
 #include "components/autofill/core/browser/webdata/autofill_change.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace autofill {
 
@@ -39,8 +39,8 @@ class AutofillWebDataServiceObserverOnDBSequence {
 class AutofillWebDataServiceObserverOnUISequence {
  public:
   // Called on UI sequence when Autofill entries have been modified by
-  // Sync. Can be called multiple times for the same `model_type`.
-  virtual void OnAutofillChangedBySync(syncer::ModelType model_type) {}
+  // Sync. Can be called multiple times for the same `data_type`.
+  virtual void OnAutofillChangedBySync(syncer::DataType data_type) {}
 
  protected:
   virtual ~AutofillWebDataServiceObserverOnUISequence() {}

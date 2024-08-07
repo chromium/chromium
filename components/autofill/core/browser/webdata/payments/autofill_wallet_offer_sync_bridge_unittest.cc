@@ -26,8 +26,8 @@
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/hash_util.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -159,7 +159,7 @@ class AutofillWalletOfferSyncBridgeTest : public testing::Test {
             : sync_pb::
                   DataTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
     data_type_state.mutable_progress_marker()->set_data_type_id(
-        GetSpecificsFieldNumberFromModelType(syncer::AUTOFILL_WALLET_OFFER));
+        GetSpecificsFieldNumberFromDataType(syncer::AUTOFILL_WALLET_OFFER));
     data_type_state.set_cache_guid(kDefaultCacheGuid);
     EXPECT_TRUE(sync_metadata_table_.UpdateDataTypeState(
         syncer::AUTOFILL_WALLET_OFFER, data_type_state));

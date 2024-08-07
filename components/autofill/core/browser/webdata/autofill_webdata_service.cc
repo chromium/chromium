@@ -32,7 +32,7 @@ AutofillWebDataService::AutofillWebDataService(
       ui_task_runner_(std::move(ui_task_runner)),
       db_task_runner_(std::move(db_task_runner)),
       autofill_backend_(nullptr) {
-  base::RepeatingCallback<void(syncer::ModelType)>
+  base::RepeatingCallback<void(syncer::DataType)>
       on_autofill_changed_by_sync_callback = base::BindRepeating(
           &AutofillWebDataService::NotifyOnAutofillChangedBySyncOnUISequence,
           weak_ptr_factory_.GetWeakPtr());
@@ -437,10 +437,10 @@ void AutofillWebDataService::AddServerCreditCardForTesting(
 AutofillWebDataService::~AutofillWebDataService() = default;
 
 void AutofillWebDataService::NotifyOnAutofillChangedBySyncOnUISequence(
-    syncer::ModelType model_type) {
+    syncer::DataType data_type) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   for (auto& ui_observer : ui_observer_list_)
-    ui_observer.OnAutofillChangedBySync(model_type);
+    ui_observer.OnAutofillChangedBySync(data_type);
 }
 
 }  // namespace autofill

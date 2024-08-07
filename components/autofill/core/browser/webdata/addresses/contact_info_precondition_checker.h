@@ -17,8 +17,8 @@
 namespace autofill {
 
 // Helper class to determine whether a user is eligible for the CONTACT_INFO
-// sync model type. This is needed to disable the model type for unsupported
-// users in the model type controller. It is also needed to hide the opt-out
+// sync data type. This is needed to disable the data type for unsupported
+// users in the data type controller. It is also needed to hide the opt-out
 // option in the settings for unsupported users.
 class ContactInfoPreconditionChecker
     : public syncer::SyncServiceObserver,

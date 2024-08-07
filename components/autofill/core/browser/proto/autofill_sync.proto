@@ -9,7 +9,7 @@ option optimize_for = LITE_RUNTIME;
 package autofill;
 
 // Used to convert between autofill::AutofillKey and a std::string that can be
-// passed to sync as storage key to uniquely identify an entity of ModelType
+// passed to sync as storage key to uniquely identify an entity of DataType
 // syncer::AUTOFILL.
 message AutofillSyncStorageKey {
   optional string name = 1;

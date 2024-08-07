@@ -41,7 +41,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -69,12 +69,12 @@ using sync_pb::AutofillWalletSpecifics;
 using sync_pb::DataTypeState;
 using sync_pb::EntityMetadata;
 using syncer::DataBatch;
+using syncer::DataType;
 using syncer::EntityChange;
 using syncer::EntityData;
 using syncer::HasInitialSyncDone;
 using syncer::KeyAndData;
 using syncer::MockDataTypeLocalChangeProcessor;
-using syncer::ModelType;
 using testing::NiceMock;
 using testing::Pointee;
 using testing::Return;
@@ -316,7 +316,7 @@ class AutofillWalletSyncBridgeTestBase {
             : sync_pb::
                   DataTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
     data_type_state.mutable_progress_marker()->set_data_type_id(
-        GetSpecificsFieldNumberFromModelType(syncer::AUTOFILL_WALLET_DATA));
+        GetSpecificsFieldNumberFromDataType(syncer::AUTOFILL_WALLET_DATA));
     data_type_state.set_cache_guid(kDefaultCacheGuid);
     EXPECT_TRUE(sync_metadata_table()->UpdateDataTypeState(
         syncer::AUTOFILL_WALLET_DATA, data_type_state));

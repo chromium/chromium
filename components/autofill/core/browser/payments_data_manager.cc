@@ -35,7 +35,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_user_settings.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -270,13 +270,12 @@ void PaymentsDataManager::Shutdown() {
   sync_observer_.Reset();
 }
 
-void PaymentsDataManager::OnAutofillChangedBySync(
-    syncer::ModelType model_type) {
-  if (model_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
-      model_type == syncer::AUTOFILL_WALLET_DATA ||
-      model_type == syncer::AUTOFILL_WALLET_METADATA ||
-      model_type == syncer::AUTOFILL_WALLET_OFFER ||
-      model_type == syncer::AUTOFILL_WALLET_USAGE) {
+void PaymentsDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
+  if (data_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
+      data_type == syncer::AUTOFILL_WALLET_DATA ||
+      data_type == syncer::AUTOFILL_WALLET_METADATA ||
+      data_type == syncer::AUTOFILL_WALLET_OFFER ||
+      data_type == syncer::AUTOFILL_WALLET_USAGE) {
     Refresh();
   }
 }

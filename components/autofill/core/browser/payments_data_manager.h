@@ -98,7 +98,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
 
   // AutofillWebDataServiceObserverOnUISequence:
-  void OnAutofillChangedBySync(syncer::ModelType model_type) override;
+  void OnAutofillChangedBySync(syncer::DataType data_type) override;
 
   // WebDataServiceConsumer:
   void OnWebDataServiceRequestDone(

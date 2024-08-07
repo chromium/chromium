@@ -206,7 +206,7 @@ class SyncService : public KeyedService {
     kTrustedVaultRecoverabilityDegradedForEverything,
   };
 
-  enum class ModelTypeDownloadStatus {
+  enum class DataTypeDownloadStatus {
     // State is unknown or there are updates to download from the server. Data
     // types will be in this state until sync engine is initialized (or there is
     // a reason to disable sync). Note that sync initialization may be deferred,
@@ -224,6 +224,10 @@ class SyncService : public KeyedService {
     // this will be changed soon.
     kError = 2,
   };
+
+  // TODO(crbug.com/356649891): Delete this alias once all dependencies are
+  // migrated.
+  using ModelTypeDownloadStatus = DataTypeDownloadStatus;
 
   SyncService() = default;
   ~SyncService() override = default;

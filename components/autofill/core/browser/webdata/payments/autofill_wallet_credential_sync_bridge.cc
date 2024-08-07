@@ -15,8 +15,8 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
@@ -191,7 +191,7 @@ std::string AutofillWalletCredentialSyncBridge::GetClientTag(
 
 std::string AutofillWalletCredentialSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
-  // Storage key and client tag are equivalent for this ModelType.
+  // Storage key and client tag are equivalent for this DataType.
   return GetClientTag(entity_data);
 }
 

@@ -1855,7 +1855,7 @@ bool PaymentsAutofillTable::GetPaymentInstruments(
       payment_instruments.emplace_back(payment_instrument);
     } else {
       DLOG(WARNING)
-          << "Instrument dropped: Failed to deserialize AUTOFILL model type "
+          << "Instrument dropped: Failed to deserialize AUTOFILL data type "
              "sync_pb::PaymentInstrument with id = "
           << instrument_id;
     }

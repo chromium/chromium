@@ -18,8 +18,8 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/hash_util.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
@@ -199,7 +199,7 @@ void AutofillWalletOfferSyncBridge::MergeRemoteData(
   // Commit the transaction to make sure the data and the metadata with the
   // new progress marker is written down (especially on Android where we
   // cannot rely on committing transactions on shutdown). We need to commit
-  // even if the wallet data has not changed because the model type state incl.
+  // even if the wallet data has not changed because the data type state incl.
   // the progress marker always changes.
   web_data_backend_->CommitChanges();
 

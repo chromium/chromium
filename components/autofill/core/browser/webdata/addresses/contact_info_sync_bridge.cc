@@ -9,9 +9,9 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
@@ -321,7 +321,7 @@ void ContactInfoSyncBridge::LoadMetadata() {
     // we should force the initial sync flow to propagate the cached data into
     // the local model.
     GetSyncMetadataStore()->DeleteAllSyncMetadata(
-        syncer::ModelType::CONTACT_INFO);
+        syncer::DataType::CONTACT_INFO);
 
     batch = std::make_unique<syncer::MetadataBatch>();
   }

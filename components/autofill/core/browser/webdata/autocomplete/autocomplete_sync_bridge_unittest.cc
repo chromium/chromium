@@ -24,7 +24,7 @@
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_batch.h"
@@ -48,6 +48,7 @@ using sync_pb::AutofillSpecifics;
 using sync_pb::DataTypeState;
 using sync_pb::EntityMetadata;
 using syncer::DataBatch;
+using syncer::DataType;
 using syncer::DataTypeLocalChangeProcessor;
 using syncer::DataTypeSyncBridge;
 using syncer::EntityChange;
@@ -58,7 +59,6 @@ using syncer::IsEmptyMetadataBatch;
 using syncer::KeyAndData;
 using syncer::MockDataTypeLocalChangeProcessor;
 using syncer::ModelError;
-using syncer::ModelType;
 using testing::_;
 using testing::IsEmpty;
 using testing::Not;
@@ -397,7 +397,7 @@ TEST_F(AutocompleteSyncBridgeTest, GetStorageKeyRespectsNullCharacter) {
 
 // The storage key should never accidentally change for existing data. This
 // would cause lookups to fail and either lose or duplicate user data. It should
-// be possible for the model type to migrate storage key formats, but doing so
+// be possible for the data type to migrate storage key formats, but doing so
 // would need to be done very carefully.
 TEST_F(AutocompleteSyncBridgeTest, GetStorageKeyFixed) {
   EXPECT_EQ("\n\x6name 1\x12\avalue 1", GetStorageKey(CreateSpecifics(1)));
@@ -701,7 +701,7 @@ TEST_F(AutocompleteSyncBridgeTest, LoadMetadataReportsErrorForMissingDB) {
 TEST_F(AutocompleteSyncBridgeTest, MergeFullSyncDataEmpty) {
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(mock_processor(), Put).Times(0);
-  // The bridge should still commit the model type state change.
+  // The bridge should still commit the data type state change.
   EXPECT_CALL(*backend(), CommitChanges());
 
   StartSyncing(/*remote_data=*/std::vector<AutofillSpecifics>());

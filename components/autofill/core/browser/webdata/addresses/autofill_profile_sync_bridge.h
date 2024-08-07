@@ -32,7 +32,7 @@ class AutofillSyncMetadataTable;
 class AutofillWebDataService;
 enum class AutofillProfileSyncChangeOrigin;
 
-// Sync bridge implementation for AUTOFILL_PROFILE model type. Takes care of
+// Sync bridge implementation for AUTOFILL_PROFILE data type. Takes care of
 // propagating local autofill profiles to other clients as well as incorporating
 // profiles coming from other clients; and most notably resolving conflicts and
 // merging duplicates.

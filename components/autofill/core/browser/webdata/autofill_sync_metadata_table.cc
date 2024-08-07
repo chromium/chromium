@@ -5,7 +5,7 @@
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -49,16 +49,16 @@ AutofillSyncMetadataTable* AutofillSyncMetadataTable::FromWebDatabase(
 }
 
 // static
-bool AutofillSyncMetadataTable::SupportsMetadataForModelType(
-    syncer::ModelType model_type) {
-  return model_type == syncer::AUTOFILL ||
-         model_type == syncer::AUTOFILL_PROFILE ||
-         model_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
-         model_type == syncer::AUTOFILL_WALLET_DATA ||
-         model_type == syncer::AUTOFILL_WALLET_METADATA ||
-         model_type == syncer::AUTOFILL_WALLET_OFFER ||
-         model_type == syncer::AUTOFILL_WALLET_USAGE ||
-         model_type == syncer::CONTACT_INFO;
+bool AutofillSyncMetadataTable::SupportsMetadataForDataType(
+    syncer::DataType data_type) {
+  return data_type == syncer::AUTOFILL ||
+         data_type == syncer::AUTOFILL_PROFILE ||
+         data_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
+         data_type == syncer::AUTOFILL_WALLET_DATA ||
+         data_type == syncer::AUTOFILL_WALLET_METADATA ||
+         data_type == syncer::AUTOFILL_WALLET_OFFER ||
+         data_type == syncer::AUTOFILL_WALLET_USAGE ||
+         data_type == syncer::CONTACT_INFO;
 }
 
 WebDatabaseTable::TypeKey AutofillSyncMetadataTable::GetTypeKey() const {
@@ -79,17 +79,17 @@ bool AutofillSyncMetadataTable::MigrateToVersion(
 }
 
 bool AutofillSyncMetadataTable::GetAllSyncMetadata(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     syncer::MetadataBatch* metadata_batch) {
-  DCHECK(SupportsMetadataForModelType(model_type))
-      << "Model type " << model_type << " not supported for metadata";
+  DCHECK(SupportsMetadataForDataType(data_type))
+      << "Data type " << data_type << " not supported for metadata";
   DCHECK(metadata_batch);
-  if (!GetAllSyncEntityMetadata(model_type, metadata_batch)) {
+  if (!GetAllSyncEntityMetadata(data_type, metadata_batch)) {
     return false;
   }
 
   sync_pb::DataTypeState data_type_state;
-  if (!GetDataTypeState(model_type, &data_type_state)) {
+  if (!GetDataTypeState(data_type, &data_type_state)) {
     return false;
   }
 
@@ -98,23 +98,23 @@ bool AutofillSyncMetadataTable::GetAllSyncMetadata(
 }
 
 bool AutofillSyncMetadataTable::DeleteAllSyncMetadata(
-    syncer::ModelType model_type) {
+    syncer::DataType data_type) {
   return DeleteWhereColumnEq(db_, kAutofillSyncMetadataTable, kModelType,
-                             GetKeyValueForModelType(model_type));
+                             GetKeyValueForDataType(data_type));
 }
 
 bool AutofillSyncMetadataTable::UpdateEntityMetadata(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const std::string& storage_key,
     const sync_pb::EntityMetadata& metadata) {
-  DCHECK(SupportsMetadataForModelType(model_type))
-      << "Model type " << model_type << " not supported for metadata";
+  DCHECK(SupportsMetadataForDataType(data_type))
+      << "Data type " << data_type << " not supported for metadata";
 
   sql::Statement s;
   InsertBuilder(db_, s, kAutofillSyncMetadataTable,
                 {kModelType, kStorageKey, kValue},
                 /*or_replace=*/true);
-  s.BindInt(0, GetKeyValueForModelType(model_type));
+  s.BindInt(0, GetKeyValueForDataType(data_type));
   s.BindString(1, storage_key);
   s.BindString(2, metadata.SerializeAsString());
 
@@ -122,65 +122,64 @@ bool AutofillSyncMetadataTable::UpdateEntityMetadata(
 }
 
 bool AutofillSyncMetadataTable::ClearEntityMetadata(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const std::string& storage_key) {
-  DCHECK(SupportsMetadataForModelType(model_type))
-      << "Model type " << model_type << " not supported for metadata";
+  DCHECK(SupportsMetadataForDataType(data_type))
+      << "Data type " << data_type << " not supported for metadata";
 
   sql::Statement s;
   DeleteBuilder(db_, s, kAutofillSyncMetadataTable,
                 "model_type=? AND storage_key=?");
-  s.BindInt(0, GetKeyValueForModelType(model_type));
+  s.BindInt(0, GetKeyValueForDataType(data_type));
   s.BindString(1, storage_key);
 
   return s.Run();
 }
 
 bool AutofillSyncMetadataTable::UpdateDataTypeState(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const sync_pb::DataTypeState& data_type_state) {
-  DCHECK(SupportsMetadataForModelType(model_type))
-      << "Model type " << model_type << " not supported for metadata";
+  DCHECK(SupportsMetadataForDataType(data_type))
+      << "Data type " << data_type << " not supported for metadata";
 
   // Hardcode the id to force a collision, ensuring that there remains only a
   // single entry.
   sql::Statement s;
   InsertBuilder(db_, s, kAutofillDataTypeStateTable, {kModelType, kValue},
                 /*or_replace=*/true);
-  s.BindInt(0, GetKeyValueForModelType(model_type));
+  s.BindInt(0, GetKeyValueForDataType(data_type));
   s.BindString(1, data_type_state.SerializeAsString());
 
   return s.Run();
 }
 
-bool AutofillSyncMetadataTable::ClearDataTypeState(
-    syncer::ModelType model_type) {
-  DCHECK(SupportsMetadataForModelType(model_type))
-      << "Model type " << model_type << " not supported for metadata";
+bool AutofillSyncMetadataTable::ClearDataTypeState(syncer::DataType data_type) {
+  DCHECK(SupportsMetadataForDataType(data_type))
+      << "Data type " << data_type << " not supported for metadata";
 
   sql::Statement s;
   DeleteBuilder(db_, s, kAutofillDataTypeStateTable, "model_type=?");
-  s.BindInt(0, GetKeyValueForModelType(model_type));
+  s.BindInt(0, GetKeyValueForDataType(data_type));
 
   return s.Run();
 }
 
-int AutofillSyncMetadataTable::GetKeyValueForModelType(
-    syncer::ModelType model_type) const {
-  return syncer::ModelTypeToStableIdentifier(model_type);
+int AutofillSyncMetadataTable::GetKeyValueForDataType(
+    syncer::DataType data_type) const {
+  return syncer::DataTypeToStableIdentifier(data_type);
 }
 
 bool AutofillSyncMetadataTable::GetAllSyncEntityMetadata(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     syncer::MetadataBatch* metadata_batch) {
-  DCHECK(SupportsMetadataForModelType(model_type))
-      << "Model type " << model_type << " not supported for metadata";
+  DCHECK(SupportsMetadataForDataType(data_type))
+      << "Data type " << data_type << " not supported for metadata";
   DCHECK(metadata_batch);
 
   sql::Statement s;
   SelectBuilder(db_, s, kAutofillSyncMetadataTable, {kStorageKey, kValue},
                 "WHERE model_type=?");
-  s.BindInt(0, GetKeyValueForModelType(model_type));
+  s.BindInt(0, GetKeyValueForDataType(data_type));
 
   while (s.Step()) {
     std::string storage_key = s.ColumnString(0);
@@ -189,7 +188,7 @@ bool AutofillSyncMetadataTable::GetAllSyncEntityMetadata(
     if (entity_metadata->ParseFromString(serialized_metadata)) {
       metadata_batch->AddMetadata(storage_key, std::move(entity_metadata));
     } else {
-      DLOG(WARNING) << "Failed to deserialize AUTOFILL model type "
+      DLOG(WARNING) << "Failed to deserialize AUTOFILL data type "
                        "sync_pb::EntityMetadata.";
       return false;
     }
@@ -198,15 +197,15 @@ bool AutofillSyncMetadataTable::GetAllSyncEntityMetadata(
 }
 
 bool AutofillSyncMetadataTable::GetDataTypeState(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     sync_pb::DataTypeState* state) {
-  DCHECK(SupportsMetadataForModelType(model_type))
-      << "Model type " << model_type << " not supported for metadata";
+  DCHECK(SupportsMetadataForDataType(data_type))
+      << "Data type " << data_type << " not supported for metadata";
 
   sql::Statement s;
   SelectBuilder(db_, s, kAutofillDataTypeStateTable, {kValue},
                 "WHERE model_type=?");
-  s.BindInt(0, GetKeyValueForModelType(model_type));
+  s.BindInt(0, GetKeyValueForDataType(data_type));
 
   if (!s.Step()) {
     return true;

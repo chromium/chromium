@@ -15,7 +15,7 @@
 namespace browser_sync {
 
 AutofillWalletDataTypeController::AutofillWalletDataTypeController(
-    syncer::ModelType type,
+    syncer::DataType type,
     std::unique_ptr<syncer::DataTypeControllerDelegate>
         delegate_for_full_sync_mode,
     std::unique_ptr<syncer::DataTypeControllerDelegate>
@@ -23,8 +23,8 @@ AutofillWalletDataTypeController::AutofillWalletDataTypeController(
     PrefService* pref_service,
     syncer::SyncService* sync_service)
     : DataTypeController(type,
-                          std::move(delegate_for_full_sync_mode),
-                          std::move(delegate_for_transport_mode)),
+                         std::move(delegate_for_full_sync_mode),
+                         std::move(delegate_for_transport_mode)),
       pref_service_(pref_service),
       sync_service_(sync_service) {
   DCHECK(type == syncer::AUTOFILL_WALLET_CREDENTIAL ||

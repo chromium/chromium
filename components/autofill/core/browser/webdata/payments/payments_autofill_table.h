@@ -16,7 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/webdata/common/web_database_table.h"
 
@@ -479,7 +479,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
 
   // Overwrite the server IBANs and server IBAN metadata with the given `ibans`.
   // This distinction is necessary compared with above method, because metadata
-  // and data are synced through separate model types in prod code, while this
+  // and data are synced through separate data types in prod code, while this
   // method is an easy way to set up during tests.
   void SetServerIbansForTesting(const std::vector<Iban>& ibans);
 

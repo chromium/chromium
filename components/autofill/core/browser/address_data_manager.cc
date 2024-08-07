@@ -28,8 +28,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -139,9 +139,9 @@ void AddressDataManager::AddChangeCallback(base::OnceClosure callback) {
   change_callbacks_.push_back(std::move(callback));
 }
 
-void AddressDataManager::OnAutofillChangedBySync(syncer::ModelType model_type) {
-  if (model_type == syncer::ModelType::AUTOFILL_PROFILE ||
-      model_type == syncer::ModelType::CONTACT_INFO) {
+void AddressDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
+  if (data_type == syncer::DataType::AUTOFILL_PROFILE ||
+      data_type == syncer::DataType::CONTACT_INFO) {
     LoadProfiles();
   }
 }

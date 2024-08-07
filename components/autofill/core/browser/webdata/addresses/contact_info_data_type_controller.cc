@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_precondition_checker.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/sync_service.h"
