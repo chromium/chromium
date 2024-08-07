@@ -16,6 +16,10 @@
 #include "storage/browser/file_system/file_stream_writer.h"
 #include "storage/browser/file_system/file_stream_writer_test.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/test/android/content_uri_test_utils.h"
+#endif
+
 namespace storage {
 
 class LocalFileStreamWriterTest : public FileStreamWriterTest {
@@ -74,5 +78,26 @@ class LocalFileStreamWriterTest : public FileStreamWriterTest {
 INSTANTIATE_TYPED_TEST_SUITE_P(Local,
                                FileStreamWriterTypedTest,
                                LocalFileStreamWriterTest);
+
+#if BUILDFLAG(IS_ANDROID)
+class ContentUriLocalFileStreamWriterTest : public LocalFileStreamWriterTest {};
+
+TEST_F(ContentUriLocalFileStreamWriterTest, WriteAlwaysTruncates) {
+  EXPECT_TRUE(
+      this->CreateFileWithContent(std::string(this->kTestFileName), "foobar"));
+
+  base::FilePath content_uri;
+  ASSERT_TRUE(base::test::android::GetContentUriFromCacheDirFilePath(
+      Path(std::string(this->kTestFileName)), &content_uri));
+
+  auto writer = FileStreamWriter::CreateForLocalFile(
+      file_task_runner(), content_uri, 0, FileStreamWriter::OPEN_EXISTING_FILE);
+
+  EXPECT_EQ(net::OK, WriteStringToWriter(writer.get(), "foo"));
+
+  EXPECT_TRUE(this->FilePathExists(std::string(this->kTestFileName)));
+  EXPECT_EQ("foo", this->GetFileContent(std::string(this->kTestFileName)));
+}
+#endif
 
 }  // namespace storage

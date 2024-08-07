@@ -17,6 +17,10 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/content_uri_utils.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "windows.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -169,6 +173,28 @@ base::File NativeFileUtil::CreateOrOpen(const base::FilePath& path,
 
 base::File::Error NativeFileUtil::EnsureFileExists(const base::FilePath& path,
                                                    bool* created) {
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri()) {
+    if (ContentUriExists(path)) {
+      if (created) {
+        *created = false;
+      }
+      return base::File::FILE_OK;
+    }
+    base::File file = OpenContentUri(
+        path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+    if (file.IsValid()) {
+      if (created) {
+        *created = true;
+      }
+      return base::File::FILE_OK;
+    }
+    if (created) {
+      *created = false;
+    }
+    return base::File::FILE_ERROR_NOT_FOUND;
+  }
+#endif
   if (!base::DirectoryExists(path.DirName()))
     // If its parent does not exist, should return NOT_FOUND error.
     return base::File::FILE_ERROR_NOT_FOUND;
@@ -253,6 +279,16 @@ base::File::Error NativeFileUtil::Touch(const base::FilePath& path,
 
 base::File::Error NativeFileUtil::Truncate(const base::FilePath& path,
                                            int64_t length) {
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri()) {
+    if (length != 0) {
+      return base::File::FILE_ERROR_FAILED;
+    }
+    base::File file = OpenContentUri(
+        path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+    return file.error_details();
+  }
+#endif
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_WRITE);
   if (!file.IsValid())
     return file.error_details();

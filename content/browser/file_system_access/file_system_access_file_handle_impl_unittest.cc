@@ -54,6 +54,12 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/path_utils.h"
+#include "base/strings/escape.h"
+#include "base/test/android/content_uri_test_utils.h"
+#endif
+
 namespace content {
 
 using blink::mojom::PermissionStatus;
@@ -71,7 +77,8 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
 
-    SetupHelper(storage::kFileSystemTypeTest, /*is_incognito=*/false);
+    SetupHelper(storage::kFileSystemTypeTest, /*is_incognito=*/false,
+                /*use_content_uri=*/false);
   }
 
   void TearDown() override { task_environment_.RunUntilIdle(); }
@@ -147,7 +154,9 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
   }
 
  protected:
-  void SetupHelper(storage::FileSystemType type, bool is_incognito) {
+  void SetupHelper(storage::FileSystemType type,
+                   bool is_incognito,
+                   bool use_content_uri = false) {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
 #if BUILDFLAG(IS_WIN)
     // Convert path to long format to avoid mixing long and 8.3 formats in test.
@@ -181,6 +190,14 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
     auto test_file_path = type == storage::kFileSystemTypeLocal
                               ? dir_.GetPath().AppendASCII("test")
                               : base::FilePath::FromUTF8Unsafe("test");
+#if BUILDFLAG(IS_ANDROID)
+    if (use_content_uri) {
+      base::FilePath content_uri;
+      ASSERT_TRUE(base::test::android::GetContentUriFromCacheDirFilePath(
+          test_file_path, &content_uri));
+      test_file_path = content_uri;
+    }
+#endif
     test_file_url_ = file_system_context_->CreateCrackedFileSystemURL(
         test_src_storage_key_, type, test_file_path);
     if (type == storage::kFileSystemTypeTemporary) {
@@ -254,7 +271,8 @@ class FileSystemAccessAccessHandleTest
  public:
   void SetUp() override {
     // AccessHandles are only allowed for temporary file systems.
-    SetupHelper(storage::kFileSystemTypeTemporary, /*is_incognito=*/false);
+    SetupHelper(storage::kFileSystemTypeTemporary, /*is_incognito=*/false,
+                /*use_content_uri=*/false);
   }
 
   std::tuple<
@@ -284,9 +302,21 @@ class FileSystemAccessAccessHandleIncognitoTest
     : public FileSystemAccessAccessHandleTest {
   void SetUp() override {
     // AccessHandles are only allowed for temporary file systems.
-    SetupHelper(storage::kFileSystemTypeTemporary, /*is_incognito=*/true);
+    SetupHelper(storage::kFileSystemTypeTemporary, /*is_incognito=*/true,
+                /*use_content_uri=*/false);
   }
 };
+
+#if BUILDFLAG(IS_ANDROID)
+class FileSystemAccessAccessHandleContentUriTest
+    : public FileSystemAccessAccessHandleTest {
+  void SetUp() override {
+    // AccessHandles are only allowed for temporary file systems.
+    SetupHelper(storage::kFileSystemTypeLocal, /*is_incognito=*/false,
+                /*use_content_uri=*/true);
+  }
+};
+#endif
 
 TEST_F(FileSystemAccessFileHandleImplTest, CreateFileWriterOverLimitNotOK) {
   int max_files = 5;
@@ -493,6 +523,34 @@ TEST_F(FileSystemAccessFileHandleImplTest,
   EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
   EXPECT_TRUE(writer_remote.is_valid());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(FileSystemAccessAccessHandleContentUriTest, CreateFileWriter) {
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+      future;
+  handle_->CreateFileWriter(
+      /*keep_existing_data=*/false,
+      /*auto_close=*/false,
+      blink::mojom::FileSystemAccessWritableFileStreamLockMode::kSiloed,
+      future.GetCallback());
+  blink::mojom::FileSystemAccessErrorPtr result;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> writer_remote;
+  std::tie(result, writer_remote) = future.Take();
+  EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_TRUE(writer_remote.is_valid());
+
+  // Swap file should be created in cache dir.
+  base::FilePath cache_dir;
+  EXPECT_TRUE(base::android::GetCacheDirectory(&cache_dir));
+  auto escaped = base::EscapeAllExceptUnreserved(test_file_url_.path().value());
+  base::FilePath swap = cache_dir.Append("FileSystemAPISwap")
+                            .Append(escaped)
+                            .AddExtension(".crswap");
+  EXPECT_TRUE(base::PathExists(swap));
+}
+#endif
 
 TEST_F(FileSystemAccessFileHandleImplTest, Remove_NoWriteAccess) {
   base::FilePath file;
@@ -761,7 +819,8 @@ class FileSystemAccessFileHandleSwapFileCloningTest
   };
 
   void SetUp() override {
-    SetupHelper(storage::kFileSystemTypeLocal, /*is_incognito=*/false);
+    SetupHelper(storage::kFileSystemTypeLocal, /*is_incognito=*/false,
+                /*use_content_uri=*/false);
   }
 
   CloneFileResult GetCloneFileResult(
@@ -897,7 +956,8 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
 
-    SetupHelper(storage::kFileSystemTypeLocal, /*is_incognito=*/false);
+    SetupHelper(storage::kFileSystemTypeLocal, /*is_incognito=*/false,
+                /*use_content_uri=*/false);
     manager_->SetPermissionContextForTesting(&permission_context_);
   }
 

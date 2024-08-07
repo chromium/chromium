@@ -64,6 +64,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/test/android/content_uri_test_utils.h"
+#endif
+
 namespace storage {
 
 namespace {
@@ -930,6 +934,45 @@ TEST(LocalFileSystemCopyOrMoveOperationTest, CopySingleFileNoValidator) {
   // respect that.
   ASSERT_EQ(base::File::FILE_ERROR_SECURITY, helper.Copy(src, dest));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST(LocalFileSystemCopyOrMoveOperationTest, CopyToExistingContentUri) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // Create source file and dest file.
+  base::FilePath source_path = temp_dir.GetPath().Append("source");
+  base::FilePath dest_path = temp_dir.GetPath().Append("dest");
+  base::WriteFile(source_path, "foobar");
+  base::WriteFile(dest_path, "will-be-truncated");
+  base::FilePath source_content_uri;
+  ASSERT_TRUE(base::test::android::GetContentUriFromCacheDirFilePath(
+      source_path, &source_content_uri));
+  base::FilePath dest_content_uri;
+  ASSERT_TRUE(base::test::android::GetContentUriFromCacheDirFilePath(
+      dest_path, &dest_content_uri));
+
+  // Copy using content-URIs.
+  auto storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://foo");
+  auto file_system_context =
+      storage::CreateFileSystemContextForTesting(nullptr, temp_dir.GetPath());
+  FileSystemURL src = file_system_context->CreateCrackedFileSystemURL(
+      storage_key, kFileSystemTypeLocal, source_content_uri);
+  FileSystemURL dest = file_system_context->CreateCrackedFileSystemURL(
+      storage_key, kFileSystemTypeLocal, dest_content_uri);
+  EXPECT_EQ(base::File::FILE_OK,
+            AsyncFileTestHelper::Copy(file_system_context.get(), src, dest));
+
+  // Verify.
+  EXPECT_TRUE(
+      AsyncFileTestHelper::FileExists(file_system_context.get(), src, 6));
+  EXPECT_TRUE(
+      AsyncFileTestHelper::FileExists(file_system_context.get(), dest, 6));
+}
+#endif
 
 TEST_P(LocalFileSystemCopyOrMoveOperationTest, FilesAndDirectoriesProgress) {
   CopyOrMoveOperationTestHelper helper(

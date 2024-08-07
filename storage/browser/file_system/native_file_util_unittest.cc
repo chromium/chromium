@@ -15,6 +15,10 @@
 #include "storage/browser/file_system/native_file_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/test/android/content_uri_test_utils.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "windows.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -117,6 +121,26 @@ TEST_F(NativeFileUtilTest, EnsureFileExists) {
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::EnsureFileExists(file_name, &created));
   EXPECT_FALSE(created);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Delete file and recreate using content-URI rather than path.
+  ASSERT_TRUE(base::DeleteFile(file_name));
+
+  base::FilePath content_uri;
+  ASSERT_TRUE(base::test::android::GetContentUriFromCacheDirFilePath(
+      file_name, &content_uri));
+
+  EXPECT_EQ(base::File::FILE_OK,
+            NativeFileUtil::EnsureFileExists(content_uri, &created));
+  EXPECT_TRUE(created);
+
+  EXPECT_TRUE(FileExists(file_name));
+  EXPECT_EQ(0, GetSize(file_name));
+
+  EXPECT_EQ(base::File::FILE_OK,
+            NativeFileUtil::EnsureFileExists(file_name, &created));
+  EXPECT_FALSE(created);
+#endif
 }
 
 TEST_F(NativeFileUtilTest, CreateAndDeleteDirectory) {
@@ -235,6 +259,23 @@ TEST_F(NativeFileUtilTest, Truncate) {
 
   EXPECT_TRUE(FileExists(file_name));
   EXPECT_EQ(1020, GetSize(file_name));
+
+#if BUILDFLAG(IS_ANDROID)
+  base::FilePath content_uri;
+  ASSERT_TRUE(base::test::android::GetContentUriFromCacheDirFilePath(
+      file_name, &content_uri));
+
+  // Content-URIs only support truncate to zero.
+  base::WriteFile(file_name, "foobar");
+  EXPECT_EQ(base::File::FILE_ERROR_FAILED,
+            NativeFileUtil::Truncate(content_uri, 1020));
+  EXPECT_TRUE(FileExists(file_name));
+  EXPECT_EQ(6, GetSize(file_name));
+
+  EXPECT_EQ(base::File::FILE_OK, NativeFileUtil::Truncate(content_uri, 0));
+  EXPECT_TRUE(FileExists(file_name));
+  EXPECT_EQ(0, GetSize(file_name));
+#endif
 }
 
 TEST_F(NativeFileUtilTest, CopyFile) {
