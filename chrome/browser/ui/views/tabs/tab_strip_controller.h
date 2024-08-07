@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
@@ -222,6 +223,12 @@ class TabStripController {
   virtual Profile* GetProfile() const = 0;
 
   virtual const Browser* GetBrowser() const = 0;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Returns whether the current app instance is locked for OnTask. Only
+  // relevant for non-web browser scenarios.
+  virtual bool IsLockedForOnTask() = 0;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_CONTROLLER_H_

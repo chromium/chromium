@@ -309,6 +309,12 @@ const Browser* FakeBaseTabStripController::GetBrowser() const {
   return nullptr;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool FakeBaseTabStripController::IsLockedForOnTask() {
+  return on_task_locked_;
+}
+#endif
+
 void FakeBaseTabStripController::SetActiveIndex(int new_index) {
   DCHECK(IsValidIndex(new_index));
   active_index_ = new_index;

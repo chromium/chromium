@@ -639,6 +639,12 @@ Profile* BrowserTabStripController::GetProfile() const {
 const Browser* BrowserTabStripController::GetBrowser() const {
   return browser();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool BrowserTabStripController::IsLockedForOnTask() {
+  return browser_view_->browser()->IsLockedForOnTask();
+}
+#endif
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserTabStripController, TabStripModelObserver implementation:
 

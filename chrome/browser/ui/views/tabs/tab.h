@@ -198,6 +198,9 @@ class Tab : public gfx::AnimationDelegate,
   friend class AlertIndicatorButtonTest;
   friend class TabTest;
   friend class TabStripTestBase;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  FRIEND_TEST_ALL_PREFIXES(TabStripTest, CloseButtonHiddenWhenLockedForOnTask);
+#endif
   FRIEND_TEST_ALL_PREFIXES(TabStripTest, TabCloseButtonVisibility);
   FRIEND_TEST_ALL_PREFIXES(TabTest, TitleTextHasSufficientContrast);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,

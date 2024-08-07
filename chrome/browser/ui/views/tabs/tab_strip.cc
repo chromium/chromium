@@ -1938,6 +1938,12 @@ bool TabStrip::IsFrameCondensed() const {
   return controller_->IsFrameCondensed();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool TabStrip::IsLockedForOnTask() {
+  return controller_->IsLockedForOnTask();
+}
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////
 // TabStrip, views::View overrides:
 

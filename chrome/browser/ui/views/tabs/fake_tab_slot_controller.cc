@@ -149,3 +149,9 @@ int FakeTabSlotController::GetInactiveTabWidth() const {
 bool FakeTabSlotController::IsFrameCondensed() const {
   return false;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool FakeTabSlotController::IsLockedForOnTask() {
+  return on_task_locked_;
+}
+#endif
