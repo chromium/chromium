@@ -95,7 +95,7 @@ std::unique_ptr<icu::Transliterator>& BorrowedTransliterator::GetTransliterator(
 
 std::u16string RemoveDiacriticsAndConvertToLowerCase(
     std::u16string_view value,
-    AddressCountryCode country_code) {
+    const AddressCountryCode& country_code) {
   icu::UnicodeString result = icu::UnicodeString(value.data(), value.length());
   BorrowedTransliterator().Transliterate(result, country_code);
   return base::i18n::UnicodeStringToString16(result);

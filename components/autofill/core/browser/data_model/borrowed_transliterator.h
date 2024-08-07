@@ -49,7 +49,7 @@ class BorrowedTransliterator {
 // languages.
 std::u16string RemoveDiacriticsAndConvertToLowerCase(
     std::u16string_view value,
-    AddressCountryCode country_code = AddressCountryCode(""));
+    const AddressCountryCode& country_code = AddressCountryCode(""));
 
 }  // namespace autofill
 
