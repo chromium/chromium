@@ -45,7 +45,7 @@ class CommitQueue;
 // Lives on the model sequence.
 //
 // See
-// //docs/website/site/developers/design-documents/sync/client-tag-based-model-type-processor/index.md
+// //docs/website/site/developers/design-documents/sync/client-tag-based-data-type-processor/index.md
 // for a more thorough description.
 class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
                                          public DataTypeLocalChangeProcessor,

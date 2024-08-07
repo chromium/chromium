@@ -32,7 +32,7 @@ class SyncSessionsClient;
 // This is achieved by implementing the interface DataTypeSyncBridge, which
 // ClientTagBasedDataTypeProcessor will use to interact, ultimately, with the
 // sync server. See
-// https://www.chromium.org/developers/design-documents/sync/model-api/#implementing-modeltypesyncbridge
+// https://www.chromium.org/developers/design-documents/sync/model-api/#implementing-datatypesyncbridge
 // for details.
 class SessionSyncBridge : public syncer::DataTypeSyncBridge,
                           public LocalSessionEventHandlerImpl::Delegate {
