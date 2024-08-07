@@ -31,7 +31,7 @@ bool LayoutBlockFlow::CreatesNewFormattingContext() const {
   }
 
   if (RuntimeEnabledFeatures::ContainerTypeNoLayoutContainmentEnabled()) {
-    if (StyleRef().ContainerType()) {
+    if (StyleRef().IsContainerForSizeContainerQueries()) {
       return true;
     }
   }
