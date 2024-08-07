@@ -64,6 +64,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -1476,6 +1477,8 @@ class ChromeShelfControllerLacrosTest : public ChromeShelfControllerTestBase {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(),
         /*disabled_features=*/{});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
   ChromeShelfControllerLacrosTest(const ChromeShelfControllerLacrosTest&) =
       delete;
@@ -1532,6 +1535,7 @@ class ChromeShelfControllerLacrosTest : public ChromeShelfControllerTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
   raw_ptr<apps::AppServiceProxy> proxy_ = nullptr;
   raw_ptr<StandaloneBrowserExtensionAppShelfItemController, DanglingUntriaged>
       chrome_app_shelf_item_ = nullptr;

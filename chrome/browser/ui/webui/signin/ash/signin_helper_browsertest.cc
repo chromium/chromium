@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/webui/signin/ash/signin_helper.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -15,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
@@ -334,6 +336,8 @@ class SigninHelperTestWithArcAccountRestrictions
   SigninHelperTestWithArcAccountRestrictions() {
     feature_list_.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(),
                                    {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   ~SigninHelperTestWithArcAccountRestrictions() override = default;
@@ -430,6 +434,7 @@ class SigninHelperTestWithArcAccountRestrictions
   raw_ptr<ash::AccountAppsAvailability, DanglingUntriaged>
       account_apps_availability_;
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 // Account is available in ARC after account addition if `is_available_in_arc`
