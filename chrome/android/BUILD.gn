@@ -693,7 +693,6 @@ if (current_toolchain == default_toolchain) {
       "//components/webxr/android:xr_java",
       "//components/zoom/android:java",
       "//content/public/android:content_java",
-      "//content/public/android:identity_credentials_java",
       "//content/public/common:common_java",
       "//device/gamepad:java",
       "//media/base/android:media_java",

@@ -10,7 +10,7 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//content/public/android:content_java",
-    "//content/public/android:identity_credentials_java",
+    "//content/public/android:identity_credentials_public_impl_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",

@@ -420,30 +420,15 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/webid/IdentityCredentialsDelegateFactory.java",
   ]
 
-  public_deps = [ ":identity_credentials_java" ]
+  public_deps = [ ":identity_credentials_public_impl_java" ]
 }
 
-# TODO(crbug.com/40279841) simplify these build targets once GMSCore publishes identity-credentials.
-android_library("identity_credentials_java") {
+android_library("identity_credentials_public_impl_java") {
   sources = [
     "java/src/org/chromium/content/browser/webid/IdentityCredentialsDelegateImpl.java",
     "java/src/org/chromium/content_public/browser/webid/IdentityCredentialsDelegate.java",
   ]
   deps = [
-    "$google_play_services_package:google_play_services_identity_credentials_java",
-    "$google_play_services_package:google_play_services_tasks_java",
-    "//base:base_java",
-    "//third_party/androidx:androidx_core_core_java",
-  ]
-
-  # Use a more generic pattern to exclude the anonymous inner classes as well. Otherwise, the complier complains that they are defined multiple times.
-  jar_excluded_patterns = [ "*IdentityCredentialsDelegateImpl*.class" ]
-}
-
-android_library("identity_credentials_public_impl_java") {
-  sources = [ "java/src/org/chromium/content/browser/webid/IdentityCredentialsDelegateImpl.java" ]
-  deps = [
-    ":identity_credentials_java",
     "$google_play_services_package:google_play_services_identity_credentials_java",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
