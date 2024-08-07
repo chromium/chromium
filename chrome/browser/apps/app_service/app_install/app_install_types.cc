@@ -70,7 +70,6 @@ std::ostream& operator<<(std::ostream& out, const WebAppInstallData& data) {
   out << ", original_manifest_url: " << data.original_manifest_url;
   out << ", proxied_manifest_url: " << data.proxied_manifest_url;
   out << ", document_url: " << data.document_url;
-  out << ", open_as_window: " << data.open_as_window;
   return out << "}";
 }
 

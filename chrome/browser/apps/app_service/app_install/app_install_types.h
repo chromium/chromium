@@ -84,11 +84,6 @@ struct WebAppInstallData {
   GURL proxied_manifest_url;
 
   GURL document_url;
-
-  // Ony used by PackageType::kWebsite shortcuts, to control whether the
-  // shortcut opens in a browser tab or window. PackageType::kWeb apps will
-  // ignore this value and always open in a window.
-  bool open_as_window;
 };
 
 std::ostream& operator<<(std::ostream& out, const WebAppInstallData& data);

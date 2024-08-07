@@ -12,10 +12,8 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/install_app_from_verified_manifest_command.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/crosapi/mojom/web_app_types.mojom.h"
@@ -241,21 +239,13 @@ void WebAppInstaller::OnManifestRetrieved(
       }
     }();
 
-    web_app::WebAppInstallParams install_params;
-    if (data.package_id.package_type() == PackageType::kWebsite) {
-      install_params.user_display_mode =
-          web_app_data.open_as_window
-              ? web_app::mojom::UserDisplayMode::kStandalone
-              : web_app::mojom::UserDisplayMode::kBrowser;
-    }
-
     provider->command_manager().ScheduleCommand(
         std::make_unique<web_app::InstallAppFromVerifiedManifestCommand>(
             install_source,
             /*document_url=*/web_app_data.document_url,
             /*verified_manifest_url=*/web_app_data.original_manifest_url,
             /*verified_manifest_contents=*/std::move(*response),
-            expected_app_id, install_params,
+            expected_app_id, /*install_params=*/std::nullopt,
             base::BindOnce(&WebAppInstaller::OnAppInstalled,
                            weak_ptr_factory_.GetWeakPtr(), surface,
                            std::move(callback))));
