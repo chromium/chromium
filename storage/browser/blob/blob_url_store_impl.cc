@@ -69,9 +69,7 @@ BlobURLStoreImpl::BlobURLStoreImpl(
     BlobURLValidityCheckBehavior validity_check_behavior)
     : storage_key_(storage_key),
       registry_(std::move(registry)),
-      validity_check_behavior_(validity_check_behavior) {
-
-}
+      validity_check_behavior_(validity_check_behavior) {}
 
 BlobURLStoreImpl::~BlobURLStoreImpl() {
   if (registry_) {

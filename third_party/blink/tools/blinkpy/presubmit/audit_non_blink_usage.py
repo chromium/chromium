@@ -659,10 +659,6 @@ _CONFIG = [
             # nested in the blink namespace.
             'internal::.+',
 
-            # TODO(https://crbug.com/1261328): Remove this once the Blob URL
-            # partitioning killswitch is removed.
-            "net::features::kSupportPartitionedBlobUrl",
-
             # HTTP structured headers
             'net::structured_headers::.+',
 
