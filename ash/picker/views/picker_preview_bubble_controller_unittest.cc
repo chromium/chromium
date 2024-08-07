@@ -254,7 +254,7 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleHidesLabelsByDefault) {
   PickerPreviewBubbleView* bubble_view = controller.bubble_view_for_testing();
   ViewDrawnWaiter().Wait(bubble_view);
 
-  EXPECT_FALSE(bubble_view->GetLabelsVisibleForTesting());
+  EXPECT_FALSE(bubble_view->GetLabelVisibleForTesting());
 }
 
 TEST_F(PickerPreviewBubbleControllerTest,
@@ -271,7 +271,7 @@ TEST_F(PickerPreviewBubbleControllerTest,
   PickerPreviewBubbleView* bubble_view = controller.bubble_view_for_testing();
   ViewDrawnWaiter().Wait(bubble_view);
 
-  EXPECT_FALSE(bubble_view->GetLabelsVisibleForTesting());
+  EXPECT_FALSE(bubble_view->GetLabelVisibleForTesting());
 }
 
 TEST_F(PickerPreviewBubbleControllerTest, SetBubbleMainTextUpdatesBubbleText) {
@@ -287,8 +287,7 @@ TEST_F(PickerPreviewBubbleControllerTest, SetBubbleMainTextUpdatesBubbleText) {
   PickerPreviewBubbleView* bubble_view = controller.bubble_view_for_testing();
   ViewDrawnWaiter().Wait(bubble_view);
 
-  EXPECT_TRUE(bubble_view->GetLabelsVisibleForTesting());
-  EXPECT_EQ(bubble_view->GetEyebrowTextForTesting(), u"Last action");
+  EXPECT_TRUE(bubble_view->GetLabelVisibleForTesting());
   EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"Edited Dec 23");
 }
 

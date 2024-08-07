@@ -7565,9 +7565,6 @@ New install
       <message name="IDS_PICKER_EMOJI_SEARCH_RESULTS_ACCESSIBILITY_ANNOUNCEMENT_TEXT" translateable="false" desc="The accessibility announcement when there are no results in the main section but there are emoji results.">
         <ph name="NUM_RESULTS">$1<ex>5</ex></ph> emojis. No other results.
       </message>
-      <message name="IDS_PICKER_RESULTS_PREVIEW_ACCESSIBILITY_ANNOUNCEMENT_TEXT" translateable="false" desc="The accessibility announcement for the preview bubble text.">
-        Last action: <ph name="ACTION">$1<ex>You opened · Dec 10</ex></ph>
-      </message>
       <message name="IDS_PICKER_INSERTION_ANNOUNCEMENT_TEXT" translateable="false" desc="The accessibility announcement when a result is inserted.">
         Inserting selected result
       </message>

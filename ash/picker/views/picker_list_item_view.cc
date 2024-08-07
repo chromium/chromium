@@ -374,9 +374,7 @@ void PickerListItemView::OnFileInfoResolved(
     preview_bubble_controller_->SetBubbleMainText(description);
   }
 
-  GetViewAccessibility().SetDescription(l10n_util::GetStringFUTF16(
-      IDS_PICKER_RESULTS_PREVIEW_ACCESSIBILITY_ANNOUNCEMENT_TEXT,
-      std::move(description)));
+  GetViewAccessibility().SetDescription(std::move(description));
 }
 
 void PickerListItemView::ShowPreview() {
@@ -391,9 +389,7 @@ void PickerListItemView::ShowPreview() {
                                                    file_path_, this);
   preview_bubble_controller_->SetBubbleMainText(description);
 
-  GetViewAccessibility().SetDescription(l10n_util::GetStringFUTF16(
-      IDS_PICKER_RESULTS_PREVIEW_ACCESSIBILITY_ANNOUNCEMENT_TEXT,
-      std::move(description)));
+  GetViewAccessibility().SetDescription(std::move(description));
 }
 
 void PickerListItemView::HidePreview() {

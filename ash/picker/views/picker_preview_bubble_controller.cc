@@ -23,9 +23,6 @@
 namespace ash {
 namespace {
 
-// TODO: b/322899031 - Translate this string.
-constexpr std::u16string_view kEyebrowText = u"Last action";
-
 // Duration to wait before showing the preview bubble when it is requested.
 constexpr base::TimeDelta kShowBubbleDelay = base::Milliseconds(600);
 
@@ -82,7 +79,7 @@ void PickerPreviewBubbleController::SetBubbleMainText(
   if (text.empty()) {
     bubble_view_->ClearText();
   } else {
-    bubble_view_->SetText(std::u16string(kEyebrowText), text);
+    bubble_view_->SetText(text);
   }
 }
 

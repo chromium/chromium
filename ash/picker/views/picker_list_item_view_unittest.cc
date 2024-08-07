@@ -207,7 +207,7 @@ TEST_F(PickerListItemViewTest, PseudofocusHidesLabelsBeforeFileInfoResolves) {
       preview_controller.bubble_view_for_testing();
   ASSERT_FALSE(file_info_future.IsReady());
   ViewDrawnWaiter().Wait(bubble_view);
-  EXPECT_FALSE(bubble_view->GetLabelsVisibleForTesting());
+  EXPECT_FALSE(bubble_view->GetLabelVisibleForTesting());
 }
 
 TEST_F(PickerListItemViewTest,
@@ -237,7 +237,7 @@ TEST_F(PickerListItemViewTest,
   // to ensure that the reply is run.
   base::RunLoop().RunUntilIdle();
   ViewDrawnWaiter().Wait(bubble_view);
-  EXPECT_FALSE(bubble_view->GetLabelsVisibleForTesting());
+  EXPECT_FALSE(bubble_view->GetLabelVisibleForTesting());
 }
 
 TEST_F(PickerListItemViewTest, PseudofocusShowsPreviewLabelsWithValidFileInfo) {
@@ -264,8 +264,7 @@ TEST_F(PickerListItemViewTest, PseudofocusShowsPreviewLabelsWithValidFileInfo) {
   ASSERT_TRUE(file_info_future.Wait()) << "File info was never resolved";
   base::RunLoop().RunUntilIdle();
   ViewDrawnWaiter().Wait(bubble_view);
-  EXPECT_TRUE(bubble_view->GetLabelsVisibleForTesting());
-  EXPECT_EQ(bubble_view->GetEyebrowTextForTesting(), u"Last action");
+  EXPECT_TRUE(bubble_view->GetLabelVisibleForTesting());
   EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"Edited · Dec 23");
 }
 
@@ -295,8 +294,7 @@ TEST_F(PickerListItemViewTest, PseudofocusShowsPreviewUsingCachedFileInfo) {
 
   item_view->SetItemState(PickerItemView::ItemState::kPseudoFocused);
 
-  EXPECT_TRUE(bubble_view->GetLabelsVisibleForTesting());
-  EXPECT_EQ(bubble_view->GetEyebrowTextForTesting(), u"Last action");
+  EXPECT_TRUE(bubble_view->GetLabelVisibleForTesting());
   EXPECT_EQ(bubble_view->GetMainTextForTesting(), u"Edited · Dec 23");
 }
 

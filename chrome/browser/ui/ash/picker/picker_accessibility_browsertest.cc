@@ -554,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Call([item]() { item->RequestFocus(); });
 
   sm_.ExpectSpeechPattern("Button");
-  sm_.ExpectSpeechPattern("Last action: Edited · Dec 23");
+  sm_.ExpectSpeechPattern("Edited · Dec 23");
   sm_.ExpectSpeechPattern("Press * to activate");
   sm_.Replay();
 }
