@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/accelerators/accelerator_commands.h"
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
@@ -1813,6 +1814,38 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_TouchEvent) {
   event_generator->PressTouch(app_bounds.right_center());
   event_generator->ReleaseTouch();
   ASSERT_FALSE(button_widget->IsVisible());
+}
+
+TEST_F(GameDashboardContextTest,
+       GameDashboardOverviewModeStaticWidgetPosition_ZoomEvent) {
+  CreateGameWindow(/*is_arc_window=*/true);
+  // Open the Game Dashboard Main Menu and Toolbar widgets, and then enter
+  // overview mode.
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
+  EnterOverview();
+
+  // Slightly zoom in.
+  Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
+      AcceleratorAction::kScaleUiDown, {});
+
+  ExitOverview();
+
+  // Verify that the default snap position is `kTopRight` and toolbar is placed
+  // in the top right quadrant.
+  EXPECT_EQ(test_api_->GetToolbarSnapLocation(),
+            GameDashboardToolbarSnapLocation::kTopRight);
+
+  // Verify that the position of the Game Dashboard Main Menu widget is still
+  // centered at the top of the game window.
+  const gfx::Point expected_button_center_point(
+      game_window_->GetBoundsInScreen().top_center().x(),
+      app_bounds().y() + frame_header_height_ / 2);
+  EXPECT_EQ(expected_button_center_point,
+            test_api_->GetGameDashboardButtonWidget()
+                ->GetNativeWindow()
+                ->GetBoundsInScreen()
+                .CenterPoint());
 }
 
 // Verifies that during a snap animation, the Game Dashboard and toolbar widgets

@@ -430,6 +430,9 @@ void GameDashboardController::MaybeEnableFeatures(
   const bool should_enable =
       enable && game_dashboard_utils::ShouldEnableFeatures();
   for (auto const& [_, context] : game_window_contexts_) {
+    context->OnWindowBoundsChanged(
+        main_menu_toggle_method ==
+        GameDashboardMainMenuToggleMethod::kAnimation);
     context->EnableFeatures(should_enable, main_menu_toggle_method);
   }
 }
