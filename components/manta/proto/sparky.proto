@@ -153,6 +153,10 @@ message FilesData {
   repeated File files = 1;
 }
 
+message Update {
+  optional FilesData files_with_summary = 1;
+}
+
 message ContextRequest {
   optional DiagnosticsRequest diagnostics = 1;
   optional FileRequest files = 2;
@@ -168,6 +172,7 @@ message Turn {
 message SparkyResponse {
   optional ContextRequest context_request = 1;
   optional Turn latest_reply = 2;
+  optional Update update = 3;
 }
 
 message WebContent {

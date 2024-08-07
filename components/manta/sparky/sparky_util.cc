@@ -415,4 +415,34 @@ std::set<std::string> COMPONENT_EXPORT(MANTA)
   return set_file_paths;
 }
 
+std::optional<FileData> GetFileFromProto(const proto::File& file_proto) {
+  if (!file_proto.has_name() || !file_proto.has_path() ||
+      !file_proto.has_date_modified() || !file_proto.has_size_in_bytes() ||
+      !file_proto.has_summary()) {
+    return std::nullopt;
+  }
+  auto file = std::make_optional<FileData>(file_proto.path(), file_proto.name(),
+                                           file_proto.date_modified());
+  file->summary = file_proto.summary();
+  file->size_in_bytes = file_proto.size_in_bytes();
+  if (file_proto.has_serialized_bytes()) {
+    file->bytes = std::vector<uint8_t>(file_proto.serialized_bytes().begin(),
+                                       file_proto.serialized_bytes().end());
+  }
+  return file;
+}
+
+std::vector<FileData> GetFileDataFromProto(
+    const proto::FilesData& files_proto) {
+  std::vector<FileData> files_data;
+  int proto_file_count = files_proto.files_size();
+  for (int index = 0; index < proto_file_count; ++index) {
+    auto file = GetFileFromProto(files_proto.files(index));
+    if (file.has_value()) {
+      files_data.emplace_back(std::move(file.value()));
+    }
+  }
+  return files_data;
+}
+
 }  // namespace manta

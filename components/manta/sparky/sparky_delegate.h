@@ -120,6 +120,9 @@ class COMPONENT_EXPORT(MANTA) SparkyDelegate {
                           bool obtain_bytes,
                           std::set<std::string> allowed_file_paths) = 0;
   virtual void LaunchFile(const std::string& file_path) = 0;
+  virtual void UpdateFileSummaries(
+      const std::vector<manta::FileData>& files_with_summary) = 0;
+  virtual std::vector<manta::FileData> GetFileSummaries() = 0;
 };
 
 }  // namespace manta

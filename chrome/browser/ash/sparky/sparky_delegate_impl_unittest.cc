@@ -44,6 +44,18 @@ MATCHER_P2(File, path, name, "File matches") {
   return arg.path == path && arg.name == name;
 }
 
+MATCHER_P5(FileWithSummary,
+           path,
+           name,
+           summary,
+           date_modified,
+           size_in_bytes,
+           "File with summary matches") {
+  return arg.path == path && arg.name == name && arg.summary == summary &&
+         arg.date_modified == date_modified &&
+         arg.size_in_bytes == size_in_bytes;
+}
+
 // Get the path to file manager's test data directory.
 base::FilePath GetTestDataFilePath(const std::string& file_name) {
   // Get the path to file manager's test data directory.
@@ -371,6 +383,66 @@ TEST_F(SparkyDelegateImplTest, GetMyFiles_WithBytes) {
       true, std::set<std::string>());
 
   task_environment_.RunUntilQuit();
+}
+
+TEST_F(SparkyDelegateImplTest, FilesSummary) {
+  // If no summary data has yet be inserted, then the requested file vector
+  // should be empty.
+  std::vector<manta::FileData> empty_files_summary =
+      GetSparkyDelegateImpl()->GetFileSummaries();
+  EXPECT_TRUE(empty_files_summary.empty());
+
+  std::vector<manta::FileData> files_data;
+  auto file_1 = manta::FileData("path1", "name1.pdf", "2024");
+  file_1.summary = "file 1 summary";
+  file_1.size_in_bytes = (int64_t)8234;
+  files_data.emplace_back(file_1);
+
+  auto file_2 = manta::FileData("path2", "name2", "2023");
+  file_2.summary = "my second file";
+  file_2.size_in_bytes = (int64_t)1287;
+  files_data.emplace_back(file_2);
+
+  GetSparkyDelegateImpl()->UpdateFileSummaries(files_data);
+  std::vector<manta::FileData> files_summary =
+      GetSparkyDelegateImpl()->GetFileSummaries();
+  EXPECT_EQ(2, (int)files_summary.size());
+
+  EXPECT_THAT(files_summary,
+              UnorderedElementsAre(
+                  FileWithSummary("path1", "name1.pdf", "file 1 summary",
+                                  "2024", (int64_t)8234),
+                  FileWithSummary("path2", "name2", "my second file", "2023",
+                                  (int64_t)1287)));
+
+  std::vector<manta::FileData> files_data_updated;
+  auto file_2_updated = manta::FileData("path2", "name2", "2024");
+  file_2_updated.summary = "my second file with extra cool stuff";
+  file_2_updated.size_in_bytes = (int64_t)1987;
+  files_data_updated.emplace_back(file_2_updated);
+
+  auto file_3 =
+      manta::FileData("my/last/path/tree.png", "tree.png", "yesterday");
+  file_3.summary = "a photo of a eucalyptus tree";
+  file_3.size_in_bytes = (int64_t)456243;
+  files_data_updated.emplace_back(file_3);
+
+  GetSparkyDelegateImpl()->UpdateFileSummaries(files_data_updated);
+  std::vector<manta::FileData> files_summary_updated =
+      GetSparkyDelegateImpl()->GetFileSummaries();
+
+  EXPECT_EQ(3, (int)files_summary_updated.size());
+
+  EXPECT_THAT(files_summary_updated,
+              UnorderedElementsAre(
+                  FileWithSummary("path1", "name1.pdf", "file 1 summary",
+                                  "2024", (int64_t)8234),
+                  FileWithSummary("path2", "name2",
+                                  "my second file with extra cool stuff",
+                                  "2024", (int64_t)1987),
+                  FileWithSummary("my/last/path/tree.png", "tree.png",
+                                  "a photo of a eucalyptus tree", "yesterday",
+                                  (int64_t)456243)));
 }
 
 }  // namespace ash

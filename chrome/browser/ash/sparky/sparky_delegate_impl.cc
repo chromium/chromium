@@ -468,4 +468,24 @@ void SparkyDelegateImpl::GetMyFiles(manta::FilesDataCallback callback,
       std::move(callback));
 }
 
+void SparkyDelegateImpl::UpdateFileSummaries(
+    const std::vector<manta::FileData>& files_with_summary) {
+  // Adds all new entries. Overrides any current entries.
+  for (const manta::FileData& file : files_with_summary) {
+    // All files added to the index must include a file name, path and summary.
+    if (file.path.empty() || file.summary.empty()) {
+      continue;
+    }
+    file_summaries_.insert_or_assign(file.path, file);
+  }
+}
+
+std::vector<manta::FileData> SparkyDelegateImpl::GetFileSummaries() {
+  std::vector<manta::FileData> files_data;
+  for (const auto& [path, file] : file_summaries_) {
+    files_data.emplace_back(file);
+  }
+  return files_data;
+}
+
 }  // namespace ash

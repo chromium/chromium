@@ -64,6 +64,8 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
   void QuestionAndAnswer(std::unique_ptr<SparkyContext> sparky_context,
                          SparkyShowAnswerCallback done_callback);
 
+  std::vector<manta::FileData> GetFilesSummary();
+
  protected:
   SparkyProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

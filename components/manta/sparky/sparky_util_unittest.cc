@@ -442,4 +442,33 @@ TEST_F(SparkyUtilTest, GetSelectedFilePaths) {
   ASSERT_TRUE(file_set.contains("my/second/file/path/"));
 }
 
+TEST_F(SparkyUtilTest, GetFileDataFromProto) {
+  manta::proto::FilesData files_proto;
+  std::vector<FileData> empty_files_data = GetFileDataFromProto(files_proto);
+  EXPECT_TRUE(empty_files_data.empty());
+
+  manta::proto::File* file1 = files_proto.add_files();
+  file1->set_name("name1");
+  file1->set_path("my/file/path");
+  file1->set_summary("this file is a picture of a cat");
+  file1->set_date_modified("2024");
+  file1->set_size_in_bytes(823);
+
+  manta::proto::File* file2 = files_proto.add_files();
+  file2->set_name("name2");
+  file2->set_path("my/second/file/path/");
+  file2->set_summary("this file is a poem about a cat");
+  file2->set_date_modified("2023");
+  file2->set_size_in_bytes(94);
+
+  std::vector<FileData> files_data = GetFileDataFromProto(files_proto);
+  ASSERT_TRUE(files_data.size() == 2);
+  auto file1_data = files_data.at(0);
+  ASSERT_EQ(file1_data.name, "name1");
+  ASSERT_EQ(file1_data.path, "my/file/path");
+  ASSERT_EQ(file1_data.summary, "this file is a picture of a cat");
+  ASSERT_EQ(file1_data.date_modified, "2024");
+  ASSERT_EQ(file1_data.size_in_bytes, 823);
+}
+
 }  // namespace manta

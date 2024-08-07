@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/sparky/storage/simple_size_calculator.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chromeos/ash/components/sparky/snapshot_util.h"
+#include "components/manta/proto/sparky.pb.h"
 #include "components/manta/sparky/sparky_delegate.h"
 #include "components/manta/sparky/system_info_delegate.h"
 
@@ -49,6 +50,9 @@ class SparkyDelegateImpl : public manta::SparkyDelegate,
                   bool obtain_bytes,
                   std::set<std::string> allowed_file_paths) override;
   void LaunchFile(const std::string& file_path) override;
+  void UpdateFileSummaries(
+      const std::vector<manta::FileData>& files_with_summary) override;
+  std::vector<manta::FileData> GetFileSummaries() override;
 
   // SizeCalculator::Observer:
   void OnSizeCalculated(
@@ -92,6 +96,10 @@ class SparkyDelegateImpl : public manta::SparkyDelegate,
   // Root path which files will be obtained from.
   base::FilePath root_path_;
   std::vector<base::FilePath> trash_paths_;
+
+  // First value is the file path. The second value contains information on the
+  // file include the file summary.
+  std::map<std::string, manta::FileData> file_summaries_;
 
   base::WeakPtrFactory<SparkyDelegateImpl> weak_factory_{this};
 };

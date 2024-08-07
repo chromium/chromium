@@ -100,6 +100,13 @@ class FakeSparkyDelegate : public SparkyDelegate {
         .Run(std::make_unique<manta::StorageData>("78 GB", "128 GB"));
   }
 
+  void UpdateFileSummaries(
+      const std::vector<manta::FileData>& files_with_summary) override {}
+  std::vector<manta::FileData> GetFileSummaries() override {
+    std::vector<manta::FileData> files;
+    return files;
+  }
+
  private:
   SettingsDataList current_prefs_;
 };

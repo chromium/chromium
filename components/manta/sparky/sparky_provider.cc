@@ -94,6 +94,10 @@ SparkyProvider::SparkyProvider(
 
 SparkyProvider::~SparkyProvider() = default;
 
+std::vector<manta::FileData> SparkyProvider::GetFilesSummary() {
+  return sparky_delegate_->GetFileSummaries();
+}
+
 void SparkyProvider::QuestionAndAnswer(
     std::unique_ptr<SparkyContext> sparky_context,
     SparkyShowAnswerCallback done_callback) {
@@ -178,6 +182,13 @@ void SparkyProvider::OnResponseReceived(
   if (status.status_code != manta::MantaStatusCode::kOk) {
     std::move(done_callback).Run(status, nullptr);
     return;
+  }
+
+  if (sparky_response->has_update()) {
+    if (sparky_response->update().has_files_with_summary()) {
+      auto files_proto = sparky_response->update().files_with_summary();
+      sparky_delegate_->UpdateFileSummaries(GetFileDataFromProto(files_proto));
+    }
   }
 
   if (sparky_response->has_context_request()) {

@@ -130,6 +130,12 @@ void COMPONENT_EXPORT(MANTA) AddFilesData(base::span<const FileData> files_data,
 std::set<std::string> COMPONENT_EXPORT(MANTA)
     GetSelectedFilePaths(const proto::FileRequest& file_request);
 
+std::optional<FileData> COMPONENT_EXPORT(MANTA)
+    GetFileFromProto(const proto::File& files_proto);
+
+std::vector<FileData> COMPONENT_EXPORT(MANTA)
+    GetFileDataFromProto(const proto::FilesData& files_proto);
+
 }  // namespace manta
 
 #endif  // COMPONENTS_MANTA_SPARKY_SPARKY_UTIL_H_
