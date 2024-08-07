@@ -132,19 +132,17 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
     };
   }
 
+  if (self.buttonAccessibilityLabel) {
+    cell.button.accessibilityLabel = self.buttonAccessibilityLabel;
+  } else {
+    cell.button.accessibilityLabel = nil;
+  }
+
   cell.button.configuration = buttonConfiguration;
 
   [cell disableButtonIntrinsicWidth:self.disableButtonIntrinsicWidth];
   cell.button.accessibilityIdentifier = self.buttonAccessibilityIdentifier;
   cell.button.enabled = self.enabled;
-
-  if (self.cellIsAccessibilityElement && self.cellAccessibilityLabel) {
-    cell.isAccessibilityElement = self.cellIsAccessibilityElement;
-    cell.accessibilityLabel = self.cellAccessibilityLabel;
-  } else {
-    cell.isAccessibilityElement = NO;
-    cell.accessibilityLabel = nil;
-  }
 }
 
 @end

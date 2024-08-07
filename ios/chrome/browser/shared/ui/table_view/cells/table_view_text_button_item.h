@@ -62,11 +62,8 @@
 // Checkmark image color. If nil, defaults to kBlue700Color.
 @property(nonatomic, strong) UIColor* checkmarkColor;
 
-// Whether the cell should be marked as an accessibililty element.
-@property(nonatomic, assign) BOOL cellIsAccessibilityElement;
-
-// Accessibility label that will assigned to the cell.
-@property(nonatomic, strong) NSString* cellAccessibilityLabel;
+// Accessibility label that will assigned to the button.
+@property(nonatomic, strong) NSString* buttonAccessibilityLabel;
 
 @end
 

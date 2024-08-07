@@ -89,13 +89,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, strong) TableViewTextEditItem* expirationMonthItem;
 // Item for displaying and editing the expiration year.
 @property(nonatomic, strong) TableViewTextEditItem* expirationYearItem;
-// Item for displaying legal lines.
-@property(nonatomic, strong) TableViewTextLinkItem* legalMessageItem;
-// Item for displaying extra legal lines.
-@property(nonatomic, strong) TableViewTextLinkItem* extraLegalMessageItem;
-// Item for showing the avatar and email of the account where the card will be
-// saved.
-@property(nonatomic, strong) TargetAccountItem* targetAccountItem;
 // Item for displaying the save card button .
 @property(nonatomic, strong) TableViewTextButtonItem* saveCardButtonItem;
 
@@ -196,31 +189,36 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:self.expirationYearItem
       toSectionWithIdentifier:SectionIdentifierContent];
 
+  // The extra legal line and account info should only be shown together.
+  bool shouldShowExtraLegalLineAndAccountInfo =
+      [self.displayedTargetAccountEmail length] > 0 &&
+      self.displayedTargetAccountAvatar != nil;
+
   // Concatenate legal lines and maybe add the extra one.
   for (SaveCardMessageWithLinks* message in self.legalMessages) {
-    self.legalMessageItem =
+    TableViewTextLinkItem* legalMessageItem =
         [[TableViewTextLinkItem alloc] initWithType:ItemTypeCardLegalMessage];
-    self.legalMessageItem.text = message.messageText;
-    self.legalMessageItem.linkURLs = message.linkURLs;
-    self.legalMessageItem.linkRanges = message.linkRanges;
-    [model addItem:self.legalMessageItem
+    legalMessageItem.text = message.messageText;
+    legalMessageItem.linkURLs = message.linkURLs;
+    legalMessageItem.linkRanges = message.linkRanges;
+    [model addItem:legalMessageItem
         toSectionWithIdentifier:SectionIdentifierContent];
   }
-  if ([self shouldShowExtraLegalLineAndAccountInfo]) {
-    self.extraLegalMessageItem =
+  if (shouldShowExtraLegalLineAndAccountInfo) {
+    TableViewTextLinkItem* extraLegalMessageItem =
         [[TableViewTextLinkItem alloc] initWithType:ItemTypeCardLegalMessage];
-    self.extraLegalMessageItem.text =
+    extraLegalMessageItem.text =
         l10n_util::GetNSString(IDS_IOS_CARD_WILL_BE_SAVED_TO_ACCOUNT);
-    [model addItem:self.extraLegalMessageItem
+    [model addItem:extraLegalMessageItem
         toSectionWithIdentifier:SectionIdentifierContent];
   }
 
-  if ([self shouldShowExtraLegalLineAndAccountInfo]) {
-    self.targetAccountItem =
+  if (shouldShowExtraLegalLineAndAccountInfo) {
+    TargetAccountItem* targetTargetAccountItem =
         [[TargetAccountItem alloc] initWithType:ItemTypeTargetAccount];
-    self.targetAccountItem.email = self.displayedTargetAccountEmail;
-    self.targetAccountItem.avatar = self.displayedTargetAccountAvatar;
-    [model addItem:self.targetAccountItem
+    targetTargetAccountItem.email = self.displayedTargetAccountEmail;
+    targetTargetAccountItem.avatar = self.displayedTargetAccountAvatar;
+    [model addItem:targetTargetAccountItem
         toSectionWithIdentifier:SectionIdentifierContent];
   }
 
@@ -348,10 +346,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return cell;
 }
 
-// For `uploadCompleted == NO`, sets an activity indicator on the
-// button to show card is being uploaded. For `uploadCompleted == YES`, sets a
-// checkmark on the button to show card upload has completed. Also disables the
-// button and hides it's text.
+// `uploadCompleted == NO` indicates loading state and `uploadCompleted == YES`
+// indicates confirmation state. For `uploadCompleted == NO`, sets an activity
+// indicator on the button to show card is being uploaded. For `uploadCompleted
+// == YES`, sets a checkmark on the button to show card upload has completed.
+// Also disables the button and hides its text.
 - (void)showProgressWithUploadCompleted:(BOOL)uploadCompleted {
   self.saveCardButtonItem.buttonText = @"";
   self.saveCardButtonItem.enabled = NO;
@@ -361,24 +360,34 @@ typedef NS_ENUM(NSInteger, ItemType) {
     self.saveCardButtonItem.buttonBackgroundColor =
         [UIColor colorNamed:kBlue100Color];
     self.saveCardButtonItem.dimBackgroundWhenDisabled = NO;
+    // VoiceOver would only announce button's accessibility label when its
+    // state changes from enabled to disabled. For confirmation state, the
+    // button's state is already disabled from previously showing loading state.
+    // Thus posting accessibility announcement here.
+    UIAccessibilityPostNotification(
+        UIAccessibilityAnnouncementNotification,
+        l10n_util::GetNSString(
+            IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_ACCESSIBLE_NAME));
   }
+  // Set the accessibility label on the button that would be read by the
+  // VoiceOver when the button is focused. Also, there's no need to specially
+  // post accessibility announcement for loading, since VoiceOver will announce
+  // the button's accessibility label on its state change from previously
+  // showing enabled state when `Save Card` is offered to disabled state while
+  // loading.
+  self.saveCardButtonItem.buttonAccessibilityLabel =
+      uploadCompleted
+          ? l10n_util::GetNSString(
+                IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_ACCESSIBLE_NAME)
+          : l10n_util::GetNSString(
+                IDS_AUTOFILL_SAVE_CARD_PROMPT_LOADING_THROBBER_ACCESSIBLE_NAME);
 
-  [self updateAccessibilityInProgressStateWithUploadComplete:uploadCompleted];
+  [self updateItemsInProgressState];
 
-  if ([self shouldShowExtraLegalLineAndAccountInfo]) {
-    [self reconfigureCellsForItems:@[
-      self.cardLastDigitsItem, self.cardholderNameItem,
-      self.expirationMonthItem, self.expirationYearItem, self.legalMessageItem,
-      self.extraLegalMessageItem, self.targetAccountItem,
-      self.saveCardButtonItem
-    ]];
-  } else {
-    [self reconfigureCellsForItems:@[
-      self.cardLastDigitsItem, self.cardholderNameItem,
-      self.expirationMonthItem, self.expirationYearItem, self.legalMessageItem,
-      self.saveCardButtonItem
-    ]];
-  }
+  [self reconfigureCellsForItems:@[
+    self.cardLastDigitsItem, self.cardholderNameItem, self.expirationMonthItem,
+    self.expirationYearItem, self.saveCardButtonItem
+  ]];
 }
 
 #pragma mark - UITableViewDelegate
@@ -485,43 +494,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.saveCardModalDelegate dismissInfobarModal:self];
 }
 
-// For progress state while showing loading and confirmation, hides the
-// accessibility elements for all the items except the one for
-// `saveCardButtonItem` so that VoiceOver doesn't read the contents of all the
-// items even in progress state. Also disables the text and icon in the items of
-// the type `TableViewTextEditItem`.
-- (void)updateAccessibilityInProgressStateWithUploadComplete:
-    (BOOL)uploadCompleted {
-  self.cardLastDigitsItem.hideAccessibilityElements = YES;
+// In progress state, disables the text and icon for the items of
+// the type `TableViewTextEditItem`, since those fields are not editable while
+// showing loading or confirmation.
+- (void)updateItemsInProgressState {
   self.cardLastDigitsItem.identifyingIconEnabled = NO;
   self.cardLastDigitsItem.textFieldEnabled = NO;
 
-  self.cardholderNameItem.hideAccessibilityElements = YES;
   self.cardholderNameItem.identifyingIconEnabled = NO;
   self.cardholderNameItem.textFieldEnabled = NO;
 
-  self.expirationMonthItem.hideAccessibilityElements = YES;
   self.expirationMonthItem.identifyingIconEnabled = NO;
   self.expirationMonthItem.textFieldEnabled = NO;
 
-  self.expirationYearItem.hideAccessibilityElements = YES;
   self.expirationYearItem.identifyingIconEnabled = NO;
   self.expirationYearItem.textFieldEnabled = NO;
-
-  self.legalMessageItem.hideAccessibilityElements = YES;
-
-  self.extraLegalMessageItem.hideAccessibilityElements = YES;
-  self.targetAccountItem.hideAccessibilityElements = YES;
-
-  // Set the `saveCardButtonItem` cell as an accessibility element so that the
-  // VoiceOver announces the accessibility identifier set on it.
-  self.saveCardButtonItem.cellIsAccessibilityElement = YES;
-  self.saveCardButtonItem.cellAccessibilityLabel =
-      uploadCompleted
-          ? l10n_util::GetNSString(
-                IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_ACCESSIBLE_NAME)
-          : l10n_util::GetNSString(
-                IDS_AUTOFILL_SAVE_CARD_PROMPT_LOADING_THROBBER_ACCESSIBLE_NAME);
 }
 
 #pragma mark - Helpers
@@ -539,13 +526,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   textEditItem.returnKeyType = UIReturnKeyDone;
 
   return textEditItem;
-}
-
-// Checks whether extra legal line and account info should be shown, if supposed
-// to be shown they should be shown together.
-- (BOOL)shouldShowExtraLegalLineAndAccountInfo {
-  return [self.displayedTargetAccountEmail length] > 0 &&
-         self.displayedTargetAccountAvatar != nil;
 }
 
 // YES if the current values of the Card are valid.
