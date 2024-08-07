@@ -189,11 +189,10 @@ bool FileSystemUsageCache::Read(const base::FilePath& usage_file_path,
   DCHECK(usage_out);
 
   uint8_t buffer[kUsageFileSize];
-  base::span<uint8_t> buffer_span = base::make_span<kUsageFileSize>(buffer);
-  if (usage_file_path.empty() || !ReadBytes(usage_file_path, buffer_span)) {
+  if (usage_file_path.empty() || !ReadBytes(usage_file_path, buffer)) {
     return false;
   }
-  base::Pickle read_pickle = base::Pickle::WithUnownedBuffer(buffer_span);
+  base::Pickle read_pickle = base::Pickle::WithUnownedBuffer(buffer);
   base::PickleIterator iter(read_pickle);
   uint32_t dirty = 0;
   int64_t usage = 0;
