@@ -246,6 +246,16 @@ Display::Display(
   DCHECK(output_surface_);
   DCHECK(frame_sink_id_.is_valid());
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  static bool logged = false;
+  // TODO(b/329688656): Remove this after the issue is resolved.
+  if (!logged && output_surface_->capabilities().max_texture_size > 0) {
+    logged = true;
+    LOG(ERROR) << "Max Texture Size="
+               << output_surface_->capabilities().max_texture_size;
+  }
+#endif
+
   occlusion_culler_ = std::make_unique<OcclusionCuller>(
       overlay_processor_.get(), settings_.occlusion_culler_settings);
 

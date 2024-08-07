@@ -81,6 +81,8 @@ AshWindowTreeHostUnified::AshWindowTreeHostUnified(
           compositor_memory_limit_mb) {
   ui::StubWindow* stub_window = static_cast<ui::StubWindow*>(platform_window());
   stub_window->InitDelegate(this, true);
+  // TODO(b/356098565): Remove the log once the issue is fixed.
+  LOG(ERROR) << "Creating Unified Desktop bounds=" << initial_bounds.ToString();
 }
 
 AshWindowTreeHostUnified::~AshWindowTreeHostUnified() {
