@@ -12548,6 +12548,7 @@ if (is_chromeos) {
         "//chrome/browser/ash/crosapi",
         "//chrome/browser/ash/crosapi:test_support",
         "//chrome/browser/ash/login/signin",
+        "//chrome/browser/ash/schedqos",
         "//chromeos/services/machine_learning/public/cpp:stub",
         "//components/exo/wayland:test_controller",
         "//components/exo/wayland:ui_controls_protocol",

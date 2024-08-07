@@ -345,6 +345,7 @@ if (!is_android && !is_mac) {
 
         if (is_chromeos_ash) {
           public_deps += [ "//ui/lottie" ]
+          deps += [ "//chrome/browser/ash/schedqos" ]
         }
 
         if (is_chromeos_lacros) {
@@ -467,6 +468,10 @@ if (is_win) {
 
     if (use_aura) {
       deps += [ "//ui/compositor" ]
+    }
+
+    if (is_chromeos_ash) {
+      deps += [ "//chrome/browser/ash/schedqos" ]
     }
   }
 
@@ -1168,6 +1173,10 @@ if (is_win) {
       "//third_party/cld_3/src/src:cld_3",
     ]
 
+    if (is_chromeos_ash) {
+      deps += [ "//chrome/browser/ash/schedqos" ]
+    }
+
     if (is_component_build) {
       frameworks = [ "Carbon.framework" ]
     }
@@ -1701,6 +1710,7 @@ if (is_android) {
 
     if (is_chromeos_ash) {
       public_deps += [ "//ui/lottie" ]
+      deps += [ "//chrome/browser/ash/schedqos" ]
     }
   }
 }

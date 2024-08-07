@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/dbus_schedqos_state_handler.h"
+#include "chrome/browser/ash/schedqos/dbus_schedqos_state_handler.h"
 
 #include <utility>
 #include <vector>
