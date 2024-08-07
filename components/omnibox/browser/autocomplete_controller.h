@@ -348,6 +348,8 @@ class AutocompleteController : public AutocompleteProviderListener,
                            EmitSelectedChildrenChangedAccessibilityEvent);
   FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
                            OpenActionSelectionLogsOmniboxEvent);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
+                           OpenThumbsDownSelectionShowsFeedback);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
                            AccessibleActivedescendantId);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,

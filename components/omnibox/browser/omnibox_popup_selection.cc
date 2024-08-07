@@ -94,6 +94,9 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
       // Actions buttons should not be shown in keyword mode.
       return !match.from_keyword && action_index < match.actions.size();
     }
+    case FOCUSED_BUTTON_THUMBS_UP:
+    case FOCUSED_BUTTON_THUMBS_DOWN:
+      return match.type == AutocompleteMatchType::HISTORY_EMBEDDINGS;
     case FOCUSED_BUTTON_REMOVE_SUGGESTION:
       return match.SupportsDeletion();
     default:
@@ -199,6 +202,8 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     all_states.push_back(FOCUSED_BUTTON_ACTION);
 #endif
+    all_states.push_back(FOCUSED_BUTTON_THUMBS_UP);
+    all_states.push_back(FOCUSED_BUTTON_THUMBS_DOWN);
     all_states.push_back(FOCUSED_BUTTON_REMOVE_SUGGESTION);
   }
   DCHECK(std::is_sorted(all_states.begin(), all_states.end()))

@@ -240,6 +240,12 @@ class OmniboxClient {
   // Focuses the `WebContents`, i.e. the web page of the current tab.
   virtual void FocusWebContents() {}
 
+  // Called when the user presses the thumbs down button on a suggestion.
+  // Displays the Feedback form for submitting detailed feedback on why they
+  // disliked the suggestion.
+  virtual void ShowFeedbackPage(const std::u16string& input_text,
+                                const GURL& destination_url) {}
+
   virtual void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,

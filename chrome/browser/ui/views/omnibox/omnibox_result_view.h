@@ -26,8 +26,8 @@
 
 class OmniboxMatchCellView;
 class OmniboxPopupViewViews;
-class OmniboxSuggestionButtonRowView;
 class OmniboxResultSelectionIndicator;
+class OmniboxSuggestionButtonRowView;
 enum class OmniboxPart;
 enum class OmniboxPartState;
 
@@ -107,6 +107,10 @@ class OmniboxResultView : public views::View {
   // controls that are only visible on row hover.
   void UpdateHoverState();
 
+  // Sets the visibility of the |thumbs_up_button_| and |thumbs_down_button_|
+  // based on the current state.
+  void UpdateFeedbackButtonsVisibility();
+
   // Sets the visibility of the |remove_suggestion_button_| based on the current
   // state.
   void UpdateRemoveSuggestionVisibility();
@@ -136,6 +140,12 @@ class OmniboxResultView : public views::View {
 
   // The blue bar used to indicate selection.
   raw_ptr<OmniboxResultSelectionIndicator> selection_indicator_ = nullptr;
+
+  // The thumbs up button used to submit feedback for suggestions.
+  raw_ptr<views::ImageButton> thumbs_up_button_;
+
+  // The thumbs down button used to submit feedback for suggestions.
+  raw_ptr<views::ImageButton> thumbs_down_button_;
 
   // The "X" button at the end of the match cell, used to remove suggestions.
   raw_ptr<views::ImageButton> remove_suggestion_button_;

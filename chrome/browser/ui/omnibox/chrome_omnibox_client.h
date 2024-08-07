@@ -100,6 +100,8 @@ class ChromeOmniboxClient final : public OmniboxClient {
       size_t index,
       const AutocompleteMatch& match,
       omnibox::mojom::NavigationPredictor navigation_predictor) override;
+  void ShowFeedbackPage(const std::u16string& input_text,
+                        const GURL& destination_url) override;
   void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,
