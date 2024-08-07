@@ -88,6 +88,7 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
   // DnsSdRegistry::DnsSdObserver implementation
   void OnDnsSdEvent(const std::string& service_type,
                     const DnsSdRegistry::DnsSdServiceList& services) override;
+  void OnDnsSdPermissionRejected() override;
 
   // Sets the current value of |CastAllowAllIPs()| on |impl_|.
   void SetCastAllowAllIPs();

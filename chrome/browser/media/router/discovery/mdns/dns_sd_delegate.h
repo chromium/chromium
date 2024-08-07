@@ -41,6 +41,7 @@ class DnsSdDelegate {
   virtual void ServiceRemoved(const std::string& service_type,
                               const std::string& service_name) = 0;
   virtual void ServicesFlushed(const std::string& service_type) = 0;
+  virtual void ServicesPermissionRejected() = 0;
 };
 
 }  // namespace media_router

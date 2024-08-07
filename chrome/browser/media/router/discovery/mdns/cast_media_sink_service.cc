@@ -180,6 +180,10 @@ void CastMediaSinkService::OnDnsSdEvent(
                      CastMediaSinkServiceImpl::SinkSource::kMdns));
 }
 
+void CastMediaSinkService::OnDnsSdPermissionRejected() {
+  // TODO(354232593): Pass the error to the MR.
+}
+
 void CastMediaSinkService::RunSinksDiscoveredCallback(
     const OnSinksDiscoveredCallback& sinks_discovered_cb,
     std::vector<MediaSinkInternal> sinks) {

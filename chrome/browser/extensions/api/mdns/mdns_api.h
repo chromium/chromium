@@ -74,6 +74,7 @@ class MDnsAPI : public BrowserContextKeyedAPI,
   void OnDnsSdEvent(
       const std::string& service_type,
       const media_router::DnsSdRegistry::DnsSdServiceList& services) override;
+  void OnDnsSdPermissionRejected() override {}
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "MDnsAPI"; }

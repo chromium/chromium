@@ -50,7 +50,8 @@ class ServiceWatcher {
     UPDATE_CHANGED,
     UPDATE_REMOVED,
     UPDATE_INVALIDATED,
-    UPDATE_TYPE_LAST = UPDATE_INVALIDATED
+    UPDATE_PERMISSION_REJECTED,
+    UPDATE_TYPE_LAST = UPDATE_PERMISSION_REJECTED
   };
 
   // Called when a service has been added or removed for a certain service name.

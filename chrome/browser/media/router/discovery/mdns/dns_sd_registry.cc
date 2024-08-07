@@ -216,6 +216,12 @@ void DnsSdRegistry::ServicesFlushed(const std::string& service_type) {
     DispatchApiEvent(service_type);
 }
 
+void DnsSdRegistry::ServicesPermissionRejected() {
+  for (auto& observer : observers_) {
+    observer.OnDnsSdPermissionRejected();
+  }
+}
+
 void DnsSdRegistry::DispatchApiEvent(const std::string& service_type) {
   DCHECK(thread_checker_.CalledOnValidThread());
   for (auto& observer : observers_) {

@@ -383,6 +383,8 @@ class ZeroconfPrinterDetectorImpl : public ZeroconfPrinterDetector {
     lister_entry->second->DiscoverNewDevices();
   }
 
+  void OnPermissionRejected() override {}
+
   // Create a new device lister for the given |service_type| and add it
   // to the ones managed by this object.
   void CreateDeviceLister(const std::string& service_type) {

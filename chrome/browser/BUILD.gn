@@ -9051,8 +9051,8 @@ static_library("test_support") {
     sources += [
       "local_discovery/fake_service_discovery_device_lister.cc",
       "local_discovery/fake_service_discovery_device_lister.h",
-      "local_discovery/test_service_discovery_client.cc",
-      "local_discovery/test_service_discovery_client.h",
+      "local_discovery/service_discovery_client_test_helpers.cc",
+      "local_discovery/service_discovery_client_test_helpers.h",
     ]
   }
 

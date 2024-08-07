@@ -119,6 +119,17 @@ void SetUpServiceBrowser(
             break;
         }
       });
+
+  nw_browser_set_state_changed_handler(
+      browser, ^(nw_browser_state_t state, nw_error_t error) {
+        if (nw_error_get_error_code(error) == kDNSServiceErr_PolicyDenied) {
+          task_runner->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  services_update_callback,
+                  ServiceWatcher::UpdateType::UPDATE_PERMISSION_REJECTED, ""));
+        }
+      });
 }
 
 // These functions are used to PostTask with ObjC objects, without needing to
