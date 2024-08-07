@@ -1,0 +1,103 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromeos/ash/components/boca/babelorca/tachyon_registrar.h"
+
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/sequence_checker.h"
+#include "base/types/expected.h"
+#include "base/uuid.h"
+#include "chromeos/ash/components/boca/babelorca/proto/tachyon.pb.h"
+#include "chromeos/ash/components/boca/babelorca/proto/tachyon_common.pb.h"
+#include "chromeos/ash/components/boca/babelorca/proto/tachyon_enums.pb.h"
+#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
+#include "chromeos/ash/components/boca/babelorca/response_callback_wrapper_impl.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_constants.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+
+namespace babelorca {
+namespace {
+
+// TODO(b/356929723): Fill the annotation tag fields before launch.
+const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("babelorca_tachyon_registrar", R"(
+        semantics {
+          sender: ""
+          description:
+            ""
+          trigger:
+            ""
+          data: ""
+          destination: GOOGLE_OWNED_SERVICE
+          }
+          policy {
+            cookies_allowed: NO
+            setting:
+              ""
+            }
+          })");
+constexpr int kMaxRetries = 3;
+
+}  // namespace
+
+TachyonRegistrar::TachyonRegistrar(TachyonAuthedClient* authed_client)
+    : authed_client_(authed_client) {}
+
+TachyonRegistrar::~TachyonRegistrar() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void TachyonRegistrar::Register(const std::string& device_id,
+                                base::OnceCallback<void(bool)> success_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto signin_request = std::make_unique<SignInGaiaRequest>();
+  signin_request->set_app(kTachyonAppName);
+  // Request header
+  RequestHeader* request_header = signin_request->mutable_header();
+  request_header->set_app(kTachyonAppName);
+  request_header->set_request_id(
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
+  ClientInfo* client_info = request_header->mutable_client_info();
+  client_info->set_api_version(ApiVersion::V4);
+  client_info->set_platform_type(Platform::DESKTOP);
+  // Register data
+  RegisterData* register_data = signin_request->mutable_register_data();
+  register_data->mutable_device_id()->set_id(device_id);
+  register_data->mutable_device_id()->set_type(DeviceIdType::CLIENT_UUID);
+
+  auto response_callback_wrapper =
+      std::make_unique<ResponseCallbackWrapperImpl<SignInGaiaResponse>>(
+          base::BindOnce(&TachyonRegistrar::OnResponse,
+                         weak_ptr_factory.GetWeakPtr(), std::move(success_cb)));
+  authed_client_->StartAuthedRequest(
+      kTrafficAnnotation, std::move(signin_request), kSigninGaiaUrl,
+      kMaxRetries, std::move(response_callback_wrapper));
+}
+
+std::optional<std::string> TachyonRegistrar::GetTachyonToken() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return tachyon_token_;
+}
+
+void TachyonRegistrar::OnResponse(
+    base::OnceCallback<void(bool)> success_cb,
+    base::expected<SignInGaiaResponse,
+                   ResponseCallbackWrapper::TachyonRequestError> response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!response.has_value()) {
+    std::move(success_cb).Run(false);
+    return;
+  }
+  tachyon_token_ = std::move(response->auth_token().payload());
+  std::move(success_cb).Run(true);
+}
+
+}  // namespace babelorca

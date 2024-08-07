@@ -11,7 +11,6 @@ option optimize_for = LITE_RUNTIME;
 package babelorca;
 
 import "tachyon_common.proto";
-import "tachyon_enums.proto";
 
 message RegisterData {
   DeviceId device_id = 1;
