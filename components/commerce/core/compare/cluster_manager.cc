@@ -130,12 +130,26 @@ std::string FindTitleForSimilarProducts(
   return alternate_title.size() == 0 ? common_bottom_label : alternate_title;
 }
 
+bool ShouldCluster(const CategoryData& category_data) {
+  for (const auto& product_category : category_data.product_categories()) {
+    for (const auto& category_label : product_category.category_labels()) {
+      if (!category_label.should_trigger_clustering()) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 // Determines if two CategoryData are similar. If the bottom label from one of
 // the categories in the first CategoryData matches either the bottom or the
 // second to bottom label from one of the categories in the second CategoryData,
 // they are considered similar.
 bool AreCategoriesSimilar(const CategoryData& first,
                           const CategoryData& second) {
+  if (!ShouldCluster(first) || !ShouldCluster(second)) {
+    return false;
+  }
   for (const auto& first_category : first.product_categories()) {
     std::optional<std::string> bottom_1 = GetLabelFromBottom(first_category, 0);
     std::optional<std::string> second_to_bottom_1 =

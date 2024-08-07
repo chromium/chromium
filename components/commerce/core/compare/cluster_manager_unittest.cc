@@ -169,12 +169,22 @@ class ClusterManagerTest : public testing::Test {
         url, base::Time::Now().InMillisecondsSinceUnixEpoch());
   }
 
+  void AddCategoryLabel(ProductCategory* product_category,
+                        const std::string& default_label,
+                        const std::string short_label = "",
+                        bool should_trigger_cluster = true) {
+    auto* category_label = product_category->add_category_labels();
+    category_label->set_category_default_label(default_label);
+    category_label->set_category_short_label(short_label);
+    category_label->set_should_trigger_clustering(should_trigger_cluster);
+  }
+
   ProductInfo CreateProductInfo(const std::string& label, int64_t product_id) {
     ProductInfo product_info = ProductInfo();
     product_info.product_cluster_id = product_id;
-    product_info.category_data.add_product_categories()
-        ->add_category_labels()
-        ->set_category_default_label(label);
+    auto* product_category =
+        product_info.category_data.add_product_categories();
+    AddCategoryLabel(product_category, label);
     return product_info;
   }
 
@@ -183,12 +193,9 @@ class ClusterManagerTest : public testing::Test {
                                               int64_t product_id) {
     ProductInfo product_info = ProductInfo();
     product_info.product_cluster_id = product_id;
-    product_info.category_data.add_product_categories()
-        ->add_category_labels()
-        ->set_category_default_label(default_label);
-    product_info.category_data.add_product_categories()
-        ->add_category_labels()
-        ->set_category_short_label(short_label);
+    auto* product_category =
+        product_info.category_data.add_product_categories();
+    AddCategoryLabel(product_category, default_label, short_label, true);
     return product_info;
   }
 
@@ -667,12 +674,12 @@ TEST_F(ClusterManagerTest,
 TEST_F(ClusterManagerTest,
        FindSimilarCandidateProductForMultiLabelProductGroup) {
   ProductInfo product_info = ProductInfo();
-  product_info.category_data.add_product_categories()
-      ->add_category_labels()
-      ->set_category_default_label(kCategoryLamp);
-  product_info.category_data.add_product_categories()
-      ->add_category_labels()
-      ->set_category_default_label(kCategoryChair);
+  auto* product_categories_1 =
+      product_info.category_data.add_product_categories();
+  AddCategoryLabel(product_categories_1, kCategoryLamp);
+  auto* product_categories_2 =
+      product_info.category_data.add_product_categories();
+  AddCategoryLabel(product_categories_2, kCategoryChair);
   product_infos_[GURL(kProduct1Url)] = product_info;
 
   base::Uuid uuid = AddProductSpecificationSet().uuid();
@@ -851,16 +858,14 @@ TEST_F(ClusterManagerTest,
   UpdateUrlInfos(std::vector<GURL>{foo1, foo2, foo3});
 
   // Product 1 belongs to 2 categories.
-  product_infos_[foo1]
-      .category_data.add_product_categories()
-      ->add_category_labels()
-      ->set_category_default_label(kCategoryChair);
+  auto* product_category_1 =
+      product_infos_[foo1].category_data.add_product_categories();
+  AddCategoryLabel(product_category_1, kCategoryChair);
   cluster_manager_->DidNavigatePrimaryMainFrame(foo1);
   // Product 2's category label has 2 levels, Chair -> GamingChair.
-  product_infos_[foo2]
-      .category_data.mutable_product_categories(0)
-      ->add_category_labels()
-      ->set_category_default_label(kCategoryGamingChair);
+  auto* product_category_2 =
+      product_infos_[foo2].category_data.mutable_product_categories(0);
+  AddCategoryLabel(product_category_2, kCategoryGamingChair);
   cluster_manager_->DidNavigatePrimaryMainFrame(foo2);
   cluster_manager_->DidNavigatePrimaryMainFrame(foo3);
   base::RunLoop().RunUntilIdle();
@@ -974,26 +979,17 @@ TEST_F(ClusterManagerTest, GetEntryPointInfoTitle_MostCommonBottomLabel) {
   // Gaming > XBox Console
   // Gaming > Game Console
   product_infos_[urlA] = CreateProductInfo("Gaming", kProductID1);
-  product_infos_[urlA]
-      .category_data.mutable_product_categories(0)
-      ->add_category_labels()
-      ->set_category_default_label("Gaming Console");
-  product_infos_[urlA]
-      .category_data.add_product_categories()
-      ->add_category_labels()
-      ->set_category_default_label("Gaming");
-  product_infos_[urlA]
-      .category_data.mutable_product_categories(1)
-      ->add_category_labels()
-      ->set_category_default_label("XBox Console");
-  product_infos_[urlA]
-      .category_data.add_product_categories()
-      ->add_category_labels()
-      ->set_category_default_label("Gaming");
-  product_infos_[urlA]
-      .category_data.mutable_product_categories(2)
-      ->add_category_labels()
-      ->set_category_default_label("Game Console");
+  auto* product_categories_A_1 =
+      product_infos_[urlA].category_data.mutable_product_categories(0);
+  AddCategoryLabel(product_categories_A_1, "Gaming Console");
+  auto* product_categories_A_2 =
+      product_infos_[urlA].category_data.add_product_categories();
+  AddCategoryLabel(product_categories_A_2, "Gaming");
+  AddCategoryLabel(product_categories_A_2, "XBox Console");
+  auto* product_categories_A_3 =
+      product_infos_[urlA].category_data.add_product_categories();
+  AddCategoryLabel(product_categories_A_3, "Gaming");
+  AddCategoryLabel(product_categories_A_3, "Game Console");
   cluster_manager_->DidNavigatePrimaryMainFrame(urlA);
 
   // Product B has three categories:
@@ -1001,26 +997,17 @@ TEST_F(ClusterManagerTest, GetEntryPointInfoTitle_MostCommonBottomLabel) {
   // Gaming > PS5 Console
   // Gaming > Game Console
   product_infos_[urlB] = CreateProductInfo("Gaming", kProductID2);
-  product_infos_[urlB]
-      .category_data.mutable_product_categories(0)
-      ->add_category_labels()
-      ->set_category_default_label("Gaming Console");
-  product_infos_[urlB]
-      .category_data.add_product_categories()
-      ->add_category_labels()
-      ->set_category_default_label("Gaming");
-  product_infos_[urlB]
-      .category_data.mutable_product_categories(1)
-      ->add_category_labels()
-      ->set_category_default_label("PS5 Console");
-  product_infos_[urlB]
-      .category_data.add_product_categories()
-      ->add_category_labels()
-      ->set_category_default_label("Gaming");
-  product_infos_[urlB]
-      .category_data.mutable_product_categories(2)
-      ->add_category_labels()
-      ->set_category_default_label("Game Console");
+  auto* product_categories_B_1 =
+      product_infos_[urlB].category_data.mutable_product_categories(0);
+  AddCategoryLabel(product_categories_B_1, "Gaming Console");
+  auto* product_categories_B_2 =
+      product_infos_[urlB].category_data.add_product_categories();
+  AddCategoryLabel(product_categories_B_2, "Gaming");
+  AddCategoryLabel(product_categories_B_2, "PS5 Console");
+  auto* product_categories_B_3 =
+      product_infos_[urlB].category_data.add_product_categories();
+  AddCategoryLabel(product_categories_B_3, "Gaming");
+  AddCategoryLabel(product_categories_B_3, "Game Console");
   cluster_manager_->DidNavigatePrimaryMainFrame(urlB);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(2u, GetCandidateProductMap()->size());
@@ -1042,31 +1029,25 @@ TEST_F(ClusterManagerTest, GetEntryPointInfoTitle_MostCommonLabel) {
   // Product A has one category:
   // Furniture > Chair
   product_infos_[urlA] = CreateProductInfo("Furniture", kProductID1);
-  product_infos_[urlA]
-      .category_data.mutable_product_categories(0)
-      ->add_category_labels()
-      ->set_category_default_label("Chair");
+  auto* product_categories_A =
+      product_infos_[urlA].category_data.mutable_product_categories(0);
+  AddCategoryLabel(product_categories_A, "Chair");
   cluster_manager_->DidNavigatePrimaryMainFrame(urlA);
 
   // Product B has one category:
   // Chair > Office Chair
   product_infos_[urlB] = CreateProductInfo("Chair", kProductID1);
-  product_infos_[urlB]
-      .category_data.mutable_product_categories(0)
-      ->add_category_labels()
-      ->set_category_default_label("Office Chair");
+  auto* product_categories_B =
+      product_infos_[urlB].category_data.mutable_product_categories(0);
+  AddCategoryLabel(product_categories_B, "Office Chair");
   cluster_manager_->DidNavigatePrimaryMainFrame(urlB);
 
   // Product C has one category:
   // Chair > Office Chair
-  product_infos_[urlC]
-      .category_data.add_product_categories()
-      ->add_category_labels()
-      ->set_category_default_label("Chair");
-  product_infos_[urlC]
-      .category_data.mutable_product_categories(0)
-      ->add_category_labels()
-      ->set_category_default_label("Office Chair");
+  product_infos_[urlC] = CreateProductInfo("Chair", kProductID1);
+  auto* product_categories_C =
+      product_infos_[urlC].category_data.mutable_product_categories(0);
+  AddCategoryLabel(product_categories_C, "Office Chair");
   cluster_manager_->DidNavigatePrimaryMainFrame(urlC);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(3u, GetCandidateProductMap()->size());
@@ -1089,39 +1070,29 @@ TEST_F(ClusterManagerTest, GetEntryPointInfoTitle_SecondToBottomLabel) {
   // Chair > Ergonomic Chair
   // Chair > Office Chair
   product_infos_[urlA] = CreateProductInfo("Chair", kProductID1);
-  product_infos_[urlA]
-      .category_data.mutable_product_categories(0)
-      ->add_category_labels()
-      ->set_category_default_label("Ergonomic Chair");
-  product_infos_[urlA]
-      .category_data.add_product_categories()
-      ->add_category_labels()
-      ->set_category_default_label("Chair");
-  product_infos_[urlA]
-      .category_data.mutable_product_categories(1)
-      ->add_category_labels()
-      ->set_category_default_label("Office Chair");
+  auto* product_categories_A_1 =
+      product_infos_[urlA].category_data.mutable_product_categories(0);
+  AddCategoryLabel(product_categories_A_1, "Ergonomic Chair");
+  auto* product_categories_A_2 =
+      product_infos_[urlA].category_data.add_product_categories();
+  AddCategoryLabel(product_categories_A_2, "Chair");
+  AddCategoryLabel(product_categories_A_2, "Office Chair");
   cluster_manager_->DidNavigatePrimaryMainFrame(urlA);
 
   // Product B has one category:
   // Chair > Ergonomic Chair
   product_infos_[urlB] = CreateProductInfo("Chair", kProductID1);
-  product_infos_[urlB]
-      .category_data.mutable_product_categories(0)
-      ->add_category_labels()
-      ->set_category_default_label("Ergonomic Chair");
+  auto* product_categories_B =
+      product_infos_[urlB].category_data.mutable_product_categories(0);
+  AddCategoryLabel(product_categories_B, "Ergonomic Chair");
   cluster_manager_->DidNavigatePrimaryMainFrame(urlB);
 
-  // Product B has one category:
+  // Product C has one category:
   // Chair > Office Chair
-  product_infos_[urlC]
-      .category_data.add_product_categories()
-      ->add_category_labels()
-      ->set_category_default_label("Chair");
-  product_infos_[urlC]
-      .category_data.mutable_product_categories(0)
-      ->add_category_labels()
-      ->set_category_default_label("Office Chair");
+  product_infos_[urlC] = CreateProductInfo("Chair", kProductID1);
+  auto* product_categories_C =
+      product_infos_[urlC].category_data.mutable_product_categories(0);
+  AddCategoryLabel(product_categories_C, "Office Chair");
   cluster_manager_->DidNavigatePrimaryMainFrame(urlC);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(3u, GetCandidateProductMap()->size());
@@ -1132,6 +1103,32 @@ TEST_F(ClusterManagerTest, GetEntryPointInfoTitle_SecondToBottomLabel) {
   GetEntryPointInfoForNavigation(urlA, &info);
   ASSERT_TRUE(info);
   ASSERT_EQ(info->title, "Chair");
+}
+
+TEST_F(ClusterManagerTest, NoClusterForNonTriggerCategory) {
+  GURL urlA = GURL("https://example.com/chair1");
+  GURL urlB = GURL("https://example.com/chair2");
+  UpdateUrlInfos(std::vector<GURL>{urlA, urlB});
+
+  // Product A and B have the same category: Chair > Office Chair, and Office
+  // Chair should not trigger clustering.
+  product_infos_[urlA] = CreateProductInfo("Chair", kProductID1);
+  auto* product_categories_A =
+      product_infos_[urlA].category_data.mutable_product_categories(0);
+  AddCategoryLabel(product_categories_A, "Office Chair", "", false);
+  cluster_manager_->DidNavigatePrimaryMainFrame(urlA);
+
+  product_infos_[urlB] = CreateProductInfo("Chair", kProductID1);
+  auto* product_categories_B =
+      product_infos_[urlB].category_data.mutable_product_categories(0);
+  AddCategoryLabel(product_categories_B, "Office Chair", "", false);
+  cluster_manager_->DidNavigatePrimaryMainFrame(urlB);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(2u, GetCandidateProductMap()->size());
+
+  std::optional<EntryPointInfo> info;
+  GetEntryPointInfoForSelection(urlA, urlB, &info);
+  ASSERT_FALSE(info);
 }
 
 }  // namespace commerce
