@@ -7,15 +7,18 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -81,6 +84,57 @@ void CheckStatusCodeHistogramCounts(const char* histogram_name,
 GURL new_tab_url() {
   return GURL("chrome://newtab");
 }
+
+// Allows test to wait for the attempt to register and unregister a worker to
+// complete. It does not guarantee (un)registration attempt success.
+class ExtensionRegistrationAndUnregistrationWaiter
+    : public ServiceWorkerTaskQueue::TestObserver {
+ public:
+  explicit ExtensionRegistrationAndUnregistrationWaiter(
+      const ExtensionId extension_id)
+      : expected_extension_id_(extension_id) {
+    ServiceWorkerTaskQueue::SetObserverForTest(this);
+  }
+
+  ~ExtensionRegistrationAndUnregistrationWaiter() override {
+    ServiceWorkerTaskQueue::SetObserverForTest(nullptr);
+  }
+  ExtensionRegistrationAndUnregistrationWaiter(
+      const ExtensionRegistrationAndUnregistrationWaiter&) = delete;
+  ExtensionRegistrationAndUnregistrationWaiter& operator=(
+      const ExtensionRegistrationAndUnregistrationWaiter&) = delete;
+
+  void WaitForWorkerRegistrationAndUnRegistrationAttemptCompleted() {
+    WaitForWorkerRegistrationAttemptCompleted();
+    WaitForWorkerUnregistrationAttemptCompleted();
+  }
+
+ private:
+  void WaitForWorkerRegistrationAttemptCompleted() {
+    SCOPED_TRACE("Waiting for worker registration attempt to complete");
+    registration_attempt_runloop.Run();
+  }
+  void WaitForWorkerUnregistrationAttemptCompleted() {
+    SCOPED_TRACE("Waiting for worker unregistration attempt to complete");
+    unregistration_attempt_runloop.Run();
+  }
+
+  void OnWorkerRegistered(const ExtensionId& extension_id) override {
+    if (extension_id == expected_extension_id_) {
+      registration_attempt_runloop.Quit();
+    }
+  }
+
+  void WorkerUnregistered(const ExtensionId& extension_id) override {
+    if (extension_id == expected_extension_id_) {
+      unregistration_attempt_runloop.Quit();
+    }
+  }
+
+  const ExtensionId expected_extension_id_;
+  base::RunLoop registration_attempt_runloop;
+  base::RunLoop unregistration_attempt_runloop;
+};
 
 }  // namespace
 
@@ -223,6 +277,83 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
   // reloaded.
 
   EXPECT_EQ(base::Value(2), GetVersionFlagFromBackgroundContext(id));
+}
+
+// Test what happens when installing/loading an extension, but then before the
+// install (and worker registration) completes disable the extension (which
+// tries to unregister the worker). Observes a failed registration and
+// unregistration.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
+                       AttemptInstallAndImmediateDisable) {
+  const ExtensionId test_extension_id("iegclhlplifhodhkoafiokenjoapiobj");
+  static constexpr const char kKey[] =
+      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjzv7dI7Ygyh67VHE1DdidudpYf8P"
+      "Ffv8iucWvzO+3xpF/Dm5xNo7aQhPNiEaNfHwJQ7lsp4gc+C+4bbaVewBFspTruoSJhZc5uEf"
+      "qxwovJwN+v1/SUFXTXQmQBv6gs0qZB4gBbl4caNQBlqrFwAMNisnu1V6UROna8rOJQ90D7Nv"
+      "7TCwoVPKBfVshpFjdDOTeBg4iLctO3S/06QYqaTDrwVceSyHkVkvzBY6tc6mnYX0RZu78J9i"
+      "L8bdqwfllOhs69cqoHHgrLdI6JdOyiuh6pBP6vxMlzSKWJ3YTNjaQTPwfOYaLMuzdl0v+Ydz"
+      "afIzV9zwe4Xiskk+5JNGt8b2rQIDAQAB";
+  static constexpr char kManifest[] =
+      R"({
+           "name": "TestExtension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "key": "%s",
+           "background": {"service_worker": "background.js"}
+         })";
+  TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(base::StringPrintf(kManifest, kKey));
+  extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
+
+  // Load the extension, but then disable it as soon as possible.
+  ServiceWorkerTaskQueue* task_queue = ServiceWorkerTaskQueue::Get(profile());
+  ASSERT_TRUE(task_queue);
+  ExtensionRegistrationAndUnregistrationWaiter extension_registration_waiter(
+      test_extension_id);
+  base::HistogramTester histogram_tester;
+  ChromeTestExtensionLoader(profile()).LoadUnpackedExtensionAsync(
+      extension_dir.UnpackedPath(),
+      base::BindLambdaForTesting([&](const extensions::Extension* extension) {
+        // Disable the extension as soon as it's been added as enabled, which
+        // causes the worker unregistration request to be sent.
+        ASSERT_TRUE(extension);
+        DisableExtension(extension->id());
+      }));
+  extension_registration_waiter
+      .WaitForWorkerRegistrationAndUnRegistrationAttemptCompleted();
+
+  // Registration fails because we didn't allow the registration to complete
+  // before we disabled the extension. We can't check the status code because
+  // it's not consistent. I've seen
+  // blink::ServiceWorkerStatusCode::kErrorDisallowed and
+  // blink::ServiceWorkerStatusCode::kErrorNetwork in testing.
+  CheckBooleanHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerRegistrationState",
+      /*true_count=*/0, /*false_count=*/1, histogram_tester);
+
+  // Unregistration fails with not found (expectedly) because the registration
+  // above did not complete.
+  // TODO(crbug.com/346732739): This status in this test example should not be
+  // considered a failure, but will first need to create logic to check for
+  // previous successful registration before we can fix that.
+  CheckBooleanHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState",
+      /*true_count=*/0, /*false_count=*/1, histogram_tester);
+  CheckStatusCodeHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus2",
+      /*status=*/blink::ServiceWorkerStatusCode::kErrorNotFound, /*count=*/1,
+      histogram_tester);
+  CheckStatusCodeHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
+      "DeactivateExtension2",
+      /*status=*/blink::ServiceWorkerStatusCode::kErrorNotFound, /*count=*/1,
+      histogram_tester);
+  // We aren't updating the extension so we shouldn't be unregistering due to an
+  // update.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
+      "AddExtension2",
+      /*expected_count=*/0);
 }
 
 // Tests updating an extension and installing it immediately while it has an
