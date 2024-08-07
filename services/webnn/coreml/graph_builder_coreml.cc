@@ -37,6 +37,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "base/types/fixed_array.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -1856,15 +1857,13 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForExpand(
   }
 
   // Dimension i of input will be replicated reps[i] times.
-  std::vector<int32_t> reps;
-  reps.reserve(output_rank);
+  base::FixedArray<int32_t> reps(output_rank);
   for (size_t i = 0; i < output_rank; ++i) {
     if (output_operand_info.dimensions[i] == reshaped_dimensions[i]) {
-      reps.push_back(1u);
+      reps[i] = 1u;
     } else {
       CHECK_EQ(reshaped_dimensions[i], 1u);
-      reps.push_back(
-          base::checked_cast<int32_t>(output_operand_info.dimensions[i]));
+      reps[i] = base::checked_cast<int32_t>(output_operand_info.dimensions[i]);
     }
   }
   ASSIGN_OR_RETURN(
@@ -2244,13 +2243,12 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPad(
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    input_operand_info.coreml_name);
 
-  std::vector<int32_t> paddings;
-  paddings.reserve(operation.beginning_padding.size() +
-                   operation.ending_padding.size());
+  base::FixedArray<int32_t> paddings(operation.beginning_padding.size() +
+                                     operation.ending_padding.size());
   CHECK_EQ(operation.beginning_padding.size(), operation.ending_padding.size());
   for (size_t i = 0; i < operation.beginning_padding.size(); ++i) {
-    paddings.push_back(operation.beginning_padding[i]);
-    paddings.push_back(operation.ending_padding[i]);
+    paddings[i * 2] = operation.beginning_padding[i];
+    paddings[i * 2 + 1] = operation.ending_padding[i];
   }
 
   constexpr char kParamMode[] = "mode";
