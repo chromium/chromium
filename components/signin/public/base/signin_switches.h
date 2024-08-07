@@ -43,6 +43,10 @@ BASE_DECLARE_FEATURE(kHideSettingsSignInPromo);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kUseConsentLevelSigninForLegacyAccountEmailPref);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(
+    kDontFallbackToDefaultImplementationInAccountManagerFacade);
 #endif
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
