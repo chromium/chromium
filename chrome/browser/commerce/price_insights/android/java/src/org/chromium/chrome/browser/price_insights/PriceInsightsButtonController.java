@@ -20,6 +20,9 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -33,6 +36,7 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
     private final Context mContext;
     private final SnackbarManager mSnackbarManager;
     private final BottomSheetController mBottomSheetController;
+    private final BottomSheetObserver mBottomSheetObserver;
     private final ButtonSpec mButtonSpec;
     private final Supplier<ShoppingService> mShoppingServiceSupplier;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -70,6 +74,16 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
         mShoppingServiceSupplier = shoppingServiceSupplier;
         mTabSupplier = tabSupplier;
         mPriceInsightsDelegate = priceInsightsDelegate;
+
+        mBottomSheetObserver =
+                new EmptyBottomSheetObserver() {
+                    @Override
+                    public void onSheetStateChanged(int newState, int reason) {
+                        mButtonData.setEnabled(newState == SheetState.HIDDEN);
+                        notifyObservers(mButtonData.canShow());
+                    }
+                };
+        mBottomSheetController.addObserver(mBottomSheetObserver);
     }
 
     @Override
@@ -94,6 +108,7 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
         if (mBottomSheetCoordinator != null) {
             mBottomSheetCoordinator.closeContent();
         }
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
     }
 
     @Override
