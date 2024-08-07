@@ -509,13 +509,14 @@ _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
         'speedometer3-minorms',
     ]).Repeat([
         'speedometer2',
-        'speedometer3',
         'rendering.desktop.notracing',
-    ], 2)
+    ], 2).Repeat([
+        'speedometer3',
+    ], 6)
 _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
     _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('speedometer3'),
+    _GetBenchmarkConfig('speedometer3', pageset_repeat=22),
     _GetBenchmarkConfig('rendering.desktop.notracing'),
 ])
 _MAC_M1_MINI_2020_NO_BRP_BENCHMARK_CONFIGS = PerfSuite([
@@ -761,14 +762,14 @@ MAC_M1_MINI_2020 = PerfPlatform(
     'mac-m1_mini_2020-perf',
     'Mac M1 Mini 2020',
     _MAC_M1_MINI_2020_BENCHMARK_CONFIGS,
-    26,
+    28,
     'mac',
     executables=_MAC_M1_MINI_2020_EXECUTABLE_CONFIGS,
     crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 MAC_M1_MINI_2020_PGO = PerfPlatform('mac-m1_mini_2020-perf-pgo',
                                     'Mac M1 Mini 2020',
                                     _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS,
-                                    4,
+                                    7,
                                     'mac',
                                     crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 MAC_M1_MINI_2020_NO_BRP = PerfPlatform(
