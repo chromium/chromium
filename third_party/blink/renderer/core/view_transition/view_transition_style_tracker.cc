@@ -42,11 +42,14 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_builder.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_transition_element.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -496,6 +499,11 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
           AtomicString::FromUTF8(class_name.c_str()));
     }
 
+    element_data->containing_group_name =
+        transition_state_element.containing_group_name.empty()
+            ? AtomicString()
+            : AtomicString::FromUTF8(
+                  transition_state_element.containing_group_name.c_str());
     element_data->CacheStateForOldSnapshot();
 
     element_data_map_.insert(name, std::move(element_data));
@@ -736,6 +744,19 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
   return true;
 }
 
+AtomicString ViewTransitionStyleTracker::ComputeContainingGroupName(
+    Element* element) const {
+  AtomicString group_name = element->ComputedStyleRef().ViewTransitionGroup();
+
+  // TODO: nearest / contain
+  if (group_name && element_data_map_.Contains(group_name) &&
+      element->IsDescendantOf(
+          element_data_map_.at(group_name)->target_element)) {
+    return group_name;
+  }
+  return g_null_atom;
+}
+
 bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
   DCHECK_EQ(state_, State::kIdle);
 
@@ -789,6 +810,10 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
     element_data->old_snapshot_id = snapshot_id;
     element_data->class_list =
         element->ComputedStyleRef().ViewTransitionClass();
+
+    // This is guaranteed to be in order if valid, as transition_names is
+    // already sorted.
+    element_data->containing_group_name = ComputeContainingGroupName(element);
     element_data_map_.insert(name, std::move(element_data));
 
     if (element->IsDocumentElement()) {
@@ -872,6 +897,21 @@ ViewTransitionStyleTracker::GetViewTransitionClassList(
   return element_data_map_.at(name)->class_list;
 }
 
+AtomicString ViewTransitionStyleTracker::GetContainingGroupName(
+    const AtomicString& name) const {
+  if (!RuntimeEnabledFeatures::NestedViewTransitionEnabled() ||
+      state_ != State::kStarted) {
+    return g_null_atom;
+  }
+
+  // GetContainingGroup can be called on an invalid name, e.g. when searching
+  // for the parent of a non-existent name.
+  if (!element_data_map_.Contains(name)) {
+    return g_null_atom;
+  }
+  return element_data_map_.at(name)->containing_group_name;
+}
+
 bool ViewTransitionStyleTracker::Start() {
   DCHECK_EQ(state_, State::kCaptured);
 
@@ -931,6 +971,10 @@ bool ViewTransitionStyleTracker::Start() {
     element_data->new_snapshot_id = snapshot_id;
     element_data->class_list =
         element->ComputedStyleRef().ViewTransitionClass();
+
+    // The parent is guaranteed to be in the list already, as transition_names
+    // is sorted by paint order.
+    element_data->containing_group_name = ComputeContainingGroupName(element);
 
     // Verify that the element_index assigned in Capture is less than next_index
     // here, just as a sanity check.
@@ -1054,16 +1098,19 @@ ViewTransitionStyleTracker::GetSubframeSnapshotLayer() const {
 PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
     Element* parent,
     PseudoId pseudo_id,
-    const AtomicString& view_transition_name) {
+    const AtomicString& view_transition_name) const {
   DCHECK(IsTransitionPseudoElement(pseudo_id));
   DCHECK(pseudo_id == kPseudoIdViewTransition || view_transition_name);
 
   switch (pseudo_id) {
     case kPseudoIdViewTransition:
-    case kPseudoIdViewTransitionGroup:
+      return MakeGarbageCollected<ViewTransitionTransitionElement>(parent,
+                                                                   this);
+
+    case kPseudoIdViewTransitionGroup: {
       return MakeGarbageCollected<ViewTransitionPseudoElementBase>(
           parent, pseudo_id, view_transition_name, this);
-
+    }
     case kPseudoIdViewTransitionImagePair:
       return MakeGarbageCollected<ImageWrapperPseudoElement>(
           parent, pseudo_id, view_transition_name, this);
@@ -1635,6 +1682,10 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
     for (const auto& class_name : element_data->class_list) {
       element.class_list.push_back(class_name.Utf8());
     }
+    element.containing_group_name =
+        element_data->containing_group_name
+            ? element_data->containing_group_name.Utf8()
+            : "";
   }
 
   // Preserve the transition id for the new document.
@@ -1760,11 +1811,28 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
     if (element_data->container_properties.empty())
       continue;
 
+    gfx::Transform old_parent_inverse_transform;
+    gfx::Transform new_parent_inverse_transform;
+    if (element_data->containing_group_name && HasLiveNewContent()) {
+      CHECK(element_data_map_.Contains(element_data->containing_group_name));
+      const auto& containing_group_data =
+          element_data_map_.at(element_data->containing_group_name);
+      old_parent_inverse_transform =
+          containing_group_data->cached_container_properties.snapshot_matrix
+              .InverseOrIdentity();
+
+      if (!containing_group_data->container_properties.empty()) {
+        new_parent_inverse_transform =
+            containing_group_data->container_properties.back()
+                .snapshot_matrix.InverseOrIdentity();
+      }
+    }
+
     // This updates the styles on the pseudo-elements as described in
     // https://drafts.csswg.org/css-view-transitions-1/#style-transition-pseudo-elements-algorithm.
-    builder.AddContainerStyles(view_transition_name,
-                               element_data->container_properties.back(),
-                               element_data->captured_css_properties);
+    builder.AddContainerStyles(
+        view_transition_name, element_data->container_properties.back(),
+        element_data->captured_css_properties, new_parent_inverse_transform);
 
     // This sets up the styles to animate the pseudo-elements as described in
     // https://drafts.csswg.org/css-view-transitions-1/#setup-transition-pseudo-elements-algorithm.
@@ -1781,7 +1849,8 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
 
       builder.AddAnimations(type, view_transition_name,
                             element_data->cached_container_properties,
-                            element_data->cached_animated_css_properties);
+                            element_data->cached_animated_css_properties,
+                            old_parent_inverse_transform);
     }
   }
 

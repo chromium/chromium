@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_tracker.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -28,7 +29,9 @@ bool ViewTransitionPseudoElementBase::CanGeneratePseudoElement(
     case kPseudoIdViewTransition:
       return pseudo_id == kPseudoIdViewTransitionGroup;
     case kPseudoIdViewTransitionGroup:
-      return pseudo_id == kPseudoIdViewTransitionImagePair;
+      return pseudo_id == kPseudoIdViewTransitionImagePair ||
+             (pseudo_id == kPseudoIdViewTransitionGroup &&
+              RuntimeEnabledFeatures::NestedViewTransitionEnabled());
     case kPseudoIdViewTransitionImagePair:
       return pseudo_id == kPseudoIdViewTransitionOld ||
              pseudo_id == kPseudoIdViewTransitionNew;

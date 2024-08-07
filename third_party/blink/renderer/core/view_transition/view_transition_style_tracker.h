@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace blink {
@@ -129,9 +130,10 @@ class ViewTransitionStyleTracker
 
   // Creates a PseudoElement for the corresponding |pseudo_id| and
   // |view_transition_name|. The |pseudo_id| must be a ::transition* element.
-  PseudoElement* CreatePseudoElement(Element* parent,
-                                     PseudoId pseudo_id,
-                                     const AtomicString& view_transition_name);
+  PseudoElement* CreatePseudoElement(
+      Element* parent,
+      PseudoId pseudo_id,
+      const AtomicString& view_transition_name) const;
 
   // Dispatched after the pre-paint lifecycle stage after each rendering
   // lifecycle update when a transition is in progress.
@@ -207,6 +209,10 @@ class ViewTransitionStyleTracker
   const Vector<AtomicString>& GetViewTransitionClassList(
       const AtomicString& name) const;
 
+  // This returns the resolved containing group name for a given view transition
+  // name. Note that this only works once the transition starts.
+  AtomicString GetContainingGroupName(const AtomicString& name) const;
+
  private:
   class ImageWrapperPseudoElement;
 
@@ -276,6 +282,8 @@ class ViewTransitionStyleTracker
 
     // https://drafts.csswg.org/css-view-transitions-2/#captured-element-class-list
     Vector<AtomicString> class_list;
+
+    AtomicString containing_group_name;
   };
 
   // In physical pixels. Returns the snapshot root rect, relative to the
@@ -314,6 +322,10 @@ class ViewTransitionStyleTracker
   viz::ViewTransitionElementResourceId GenerateResourceId() const;
 
   void SnapBrowserControlsToFullyShown();
+
+  // This computes the containing group name, validating that the given name is
+  // found in one of the ancestors of the given element.
+  AtomicString ComputeContainingGroupName(Element*) const;
 
   Member<Document> document_;
 

@@ -219,6 +219,7 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_transition_element.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
@@ -8018,8 +8019,9 @@ PseudoElement* Element::GetNestedPseudoElement(
     return transition_pseudo;
   }
 
-  auto* container_pseudo = transition_pseudo->GetPseudoElement(
-      kPseudoIdViewTransitionGroup, view_transition_name);
+  auto* container_pseudo =
+      To<ViewTransitionTransitionElement>(transition_pseudo)
+          ->FindViewTransitionGroupPseudoElement(view_transition_name);
   if (!container_pseudo || pseudo_id == kPseudoIdViewTransitionGroup) {
     return container_pseudo;
   }
@@ -9673,9 +9675,26 @@ void Element::RecalcTransitionPseudoTreeStyle(
   }
 
   for (const auto& view_transition_name : view_transition_names) {
-    PseudoElement* container_pseudo = transition_pseudo->UpdatePseudoElement(
-        kPseudoIdViewTransitionGroup, style_recalc_change, style_recalc_context,
-        view_transition_name);
+    // If the container (::view-transition-group(name)) is already created
+    // for the implementation purposes of capturing the old state, we need
+    // to check if it needs to be reparented to its containing group.
+    bool container_already_created_in_view_transition_pseudo =
+        !!transition_pseudo->GetPseudoElement(
+            PseudoId::kPseudoIdViewTransitionGroup, view_transition_name);
+    PseudoElement* parent =
+        To<ViewTransitionTransitionElement>(transition_pseudo)
+            ->FindViewTransitionGroupPseudoElementParent(view_transition_name);
+    if (container_already_created_in_view_transition_pseudo &&
+        parent != transition_pseudo) {
+      transition_pseudo->ClearPseudoElement(
+          PseudoId::kPseudoIdViewTransitionGroup, view_transition_name);
+    }
+
+    PseudoElement* container_pseudo =
+        parent ? parent->UpdatePseudoElement(
+                     kPseudoIdViewTransitionGroup, style_recalc_change,
+                     style_recalc_context, view_transition_name)
+               : nullptr;
     if (!container_pseudo) {
       continue;
     }
