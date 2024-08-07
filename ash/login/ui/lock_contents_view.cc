@@ -391,6 +391,8 @@ LockContentsView::LockContentsView(
             ->enterprise_domain()
             ->management_device_mode() == ManagementDeviceMode::kKioskSku;
   }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kWindow);
 }
 
 LockContentsView::~LockContentsView() {
@@ -627,7 +629,6 @@ void LockContentsView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ShelfWidget* shelf_widget = shelf->shelf_widget();
   GetViewAccessibility().SetNextFocus(shelf_widget);
   GetViewAccessibility().SetPreviousFocus(shelf->GetStatusAreaWidget());
-  node_data->role = ax::mojom::Role::kWindow;
   node_data->SetName(
       l10n_util::GetStringUTF16(screen_type_ == LockScreen::ScreenType::kLogin
                                     ? IDS_ASH_LOGIN_SCREEN_ACCESSIBLE_NAME

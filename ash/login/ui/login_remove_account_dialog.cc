@@ -242,6 +242,8 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
   set_positioning_strategy(PositioningStrategy::kTryAfterThenBefore);
   SetPadding(kHorizontalPaddingRemoveAccountDialogDp,
              kVerticalPaddingRemoveAccountDialogDp);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
 }
 
 LoginRemoveAccountDialog::~LoginRemoveAccountDialog() = default;
@@ -264,7 +266,6 @@ bool LoginRemoveAccountDialog::HasFocus() const {
 
 void LoginRemoveAccountDialog::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kDialog;
   if (remove_user_button_) {
     node_data->SetName(l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME));

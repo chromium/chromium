@@ -7,6 +7,7 @@
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/mock_login_screen_client.h"
 #include "ash/login/ui/auth_factor_model.h"
+#include "ash/login/ui/disabled_auth_message_view.h"
 #include "ash/login/ui/fake_smart_lock_auth_factor_model.h"
 #include "ash/login/ui/fingerprint_auth_factor_model.h"
 #include "ash/login/ui/login_auth_factors_view.h"
@@ -33,6 +34,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/layout/box_layout.h"
@@ -129,6 +131,10 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
         views::BoxLayout::Orientation::kVertical));
     container_->AddChildView(view_.get());
     SetWidget(CreateWidgetWithContent(container_));
+  }
+
+  DisabledAuthMessageView* disabled_auth_message_view() {
+    return view_->disabled_auth_message_;
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -437,6 +443,14 @@ TEST_F(LoginAuthUserViewUnittest, PwdWithToggleFieldModeCorrectness) {
 
   generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(LoginAuthUserViewUnittest, DisabledAuthMessageViewAccessibleProperties) {
+  auto* message_view = disabled_auth_message_view();
+  ui::AXNodeData data;
+
+  message_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kPane);
 }
 
 class LoginAuthUserViewOnlineUnittest

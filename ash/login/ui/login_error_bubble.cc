@@ -41,6 +41,8 @@ LoginErrorBubble::LoginErrorBubble(base::WeakPtr<views::View> anchor_view)
           ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
           : kColorAshIconColorPrimary,
       kAlertIconSizeDp));
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kAlertDialog);
 }
 
 LoginErrorBubble::~LoginErrorBubble() = default;
@@ -62,7 +64,6 @@ void LoginErrorBubble::SetTextContent(const std::u16string& message) {
 }
 
 void LoginErrorBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kAlertDialog;
   node_data->SetName(GetViewAccessibility().GetCachedName());
 }
 

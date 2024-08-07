@@ -99,6 +99,8 @@ MediaControlsHeaderView::MediaControlsHeaderView(
   close_button_ = AddChildView(std::move(close_button));
 
   close_button_->AddObserver(this);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kPane);
 }
 
 MediaControlsHeaderView::~MediaControlsHeaderView() {
@@ -119,8 +121,6 @@ void MediaControlsHeaderView::SetForceShowCloseButton(bool force_visible) {
 }
 
 void MediaControlsHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // A valid role must be set prior to setting the name.
-  node_data->role = ax::mojom::Role::kPane;
   node_data->SetNameChecked(app_name_view_->GetText());
 }
 
