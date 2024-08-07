@@ -1,9 +1,9 @@
 Name: WebM container parser and writer.
 Short Name: libwebm
 URL: https://chromium.googlesource.com/webm/libwebm
-Version: 1.0.0.28
-Revision: e4fbea0c9751ae8aa86629b197a28d8276a2b0da
-CPEPrefix: cpe:/a:webmproject:libwebm:1.0.0.28
+Version: N/A
+Revision: 26d9f667170dc75e8d759a997bb61c64dec42dda
+CPEPrefix: cpe:/a:webmproject:libwebm:1.0.0.31
 License: BSD
 License File: source/LICENSE.TXT
 Security Critical: yes
