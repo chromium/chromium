@@ -76,13 +76,17 @@ class NearbyShareFeaturePodControllerTest : public NoSessionAshTestBase {
 
   void PressLabel() { pod_controller_->OnLabelPressed(); }
 
+  void UpdateVisibilityAndNotify(::nearby_share::mojom::Visibility visibility) {
+    test_delegate_->set_visibility(visibility);
+    nearby_share_controller_->VisibilityChanged(visibility);
+  }
+
   std::unique_ptr<NearbyShareFeaturePodController> pod_controller_;
   std::unique_ptr<FeatureTile> tile_;
 
   raw_ptr<TestNearbyShareDelegate, DanglingUntriaged> test_delegate_ = nullptr;
   raw_ptr<NearbyShareController, DanglingUntriaged> nearby_share_controller_ =
       nullptr;
-
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -243,8 +247,7 @@ TEST_F(NearbyShareFeaturePodControllerTest,
   SetUpButton();
   EXPECT_FALSE(IsButtonToggled());
 
-  nearby_share_controller_->VisibilityChanged(
-      ::nearby_share::mojom::Visibility::kYourDevices);
+  UpdateVisibilityAndNotify(::nearby_share::mojom::Visibility::kYourDevices);
   EXPECT_TRUE(IsButtonToggled());
 }
 
@@ -256,9 +259,21 @@ TEST_F(NearbyShareFeaturePodControllerTest,
   SetUpButton();
   EXPECT_TRUE(IsButtonToggled());
 
-  nearby_share_controller_->VisibilityChanged(
-      ::nearby_share::mojom::Visibility::kNoOne);
+  UpdateVisibilityAndNotify(::nearby_share::mojom::Visibility::kNoOne);
   EXPECT_FALSE(IsButtonToggled());
+}
+
+TEST_F(NearbyShareFeaturePodControllerTest,
+       QuickShareV2_ButtonToggledOn_HighVisibilityEnabled) {
+  EnableQuickShareV2();
+  CreateUserSessions(1);
+  test_delegate_->set_is_high_visibility_on(true);
+
+  // Setting visibility to kNoOne which alone toggles the button off.
+  // If the button is toggled on, it's because high visibility is enabled.
+  test_delegate_->set_visibility(::nearby_share::mojom::Visibility::kNoOne);
+  SetUpButton();
+  EXPECT_TRUE(IsButtonToggled());
 }
 
 }  // namespace ash

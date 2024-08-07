@@ -46,6 +46,9 @@ class ASH_EXPORT NearbyShareFeaturePodController
 
  private:
   void UpdateButton(bool enabled);
+  void UpdateQSv2Button();
+  void ToggleTileOn();
+  void ToggleTileOff();
 
   base::TimeDelta RemainingHighVisibilityTime() const;
 
