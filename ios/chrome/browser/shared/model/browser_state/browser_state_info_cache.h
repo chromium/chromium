@@ -54,6 +54,8 @@ class BrowserStateInfoCache {
                                         std::string_view user_name);
   void SetBrowserStateIsAuthErrorAtIndex(size_t index, bool value);
   bool BrowserStateIsAuthErrorAtIndex(size_t index) const;
+  base::Time GetLastActiveTimeOfBrowserStateAtIndex(size_t index) const;
+  void SetLastActiveTimeOfBrowserStateAtIndex(size_t index, base::Time time);
 
   // Register the given browser state with the given scene. Browser state name
   // should not be empty.

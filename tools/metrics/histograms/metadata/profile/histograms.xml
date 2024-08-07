@@ -391,9 +391,10 @@ chromium-metrics-reviews@google.com.
     used in the last 28 days. As such, it differs Profile.NumberOfProfiles.
 
     However, as of Feb 2024 intention is not reality. Chrome on Android assumes
-    the (sole) profile is active, even if it is not, and Chrome on iOS assumes
-    the (sole) profile is inactive, even if it is active. On desktop platforms
-    the activity detection is believed to work reliably.
+    the (sole) profile is active, even if it is not. Before M129, Chrome on iOS
+    assumed the (sole) profile is inactive, even if it is active. On desktop
+    platforms (all milestones) and on iOS M129+, the activity detection is
+    believed to work reliably.
 
     Also of note: ChromeOS has a notion of &quot;users&quot;. A ChromeOS device
     may have multiple users. Users are an entirely different concept than

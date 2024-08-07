@@ -24,6 +24,7 @@
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 namespace {
+const char kActiveTimeKey[] = "active_time";
 const char kGAIAIdKey[] = "gaia_id";
 const char kIsAuthErrorKey[] = "is_auth_error";
 const char kUserNameKey[] = "user_name";
@@ -175,6 +176,21 @@ void BrowserStateInfoCache::SetBrowserStateIsAuthErrorAtIndex(size_t index,
 
   base::Value::Dict info = GetInfoForBrowserStateAtIndex(index)->Clone();
   info.Set(kIsAuthErrorKey, base::Value(value));
+  SetInfoForBrowserStateAtIndex(index, std::move(info));
+}
+
+base::Time BrowserStateInfoCache::GetLastActiveTimeOfBrowserStateAtIndex(
+    size_t index) const {
+  std::optional<base::Time> last_active_time = base::ValueToTime(
+      GetInfoForBrowserStateAtIndex(index)->Find(kActiveTimeKey));
+  return last_active_time.value_or(base::Time());
+}
+
+void BrowserStateInfoCache::SetLastActiveTimeOfBrowserStateAtIndex(
+    size_t index,
+    base::Time time) {
+  base::Value::Dict info = GetInfoForBrowserStateAtIndex(index)->Clone();
+  info.Set(kActiveTimeKey, base::TimeToValue(time));
   SetInfoForBrowserStateAtIndex(index, std::move(info));
 }
 

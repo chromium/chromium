@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 
 #import "base/scoped_observation.h"
+#import "base/time/time.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache_observer.h"
 #import "testing/platform_test.h"
@@ -17,6 +18,7 @@ struct TestAccount {
   std::string_view gaia;
   std::string_view email;
   bool authenticated;
+  base::Time last_active_time;
 };
 
 constexpr TestAccount kTestAccounts[] = {
@@ -25,24 +27,28 @@ constexpr TestAccount kTestAccounts[] = {
         .gaia = "Gaia1",
         .email = "email1@example.com",
         .authenticated = true,
+        .last_active_time = base::Time::UnixEpoch() + base::Minutes(1),
     },
     {
         .name = "Profile2",
         .gaia = "Gaia2",
         .email = "",
         .authenticated = true,
+        .last_active_time = base::Time::UnixEpoch() + base::Minutes(2),
     },
     {
         .name = "Profile3",
         .gaia = "",
         .email = "email3@example.com",
         .authenticated = true,
+        .last_active_time = base::Time::UnixEpoch() + base::Minutes(3),
     },
     {
         .name = "Profile4",
         .gaia = "",
         .email = "",
         .authenticated = false,
+        .last_active_time = base::Time::UnixEpoch() + base::Minutes(4),
     },
 };
 
@@ -50,7 +56,7 @@ constexpr TestAccount kTestAccounts[] = {
 class BrowserStateInfoCacheTestObserver final
     : public BrowserStateInfoCacheObserver {
  public:
-  BrowserStateInfoCacheTestObserver(BrowserStateInfoCache& cache) {
+  explicit BrowserStateInfoCacheTestObserver(BrowserStateInfoCache& cache) {
     scoped_observation_.Observe(&cache);
   }
 
@@ -93,7 +99,6 @@ class BrowserStateInfoCacheTest : public PlatformTest {
 
  private:
   TestingPrefServiceSimple testing_pref_service_;
-  std::unique_ptr<BrowserStateInfoCache> info_cache_;
 };
 
 // Tests that AddBrowserState(...) inserts data for a BrowserState and
@@ -169,6 +174,8 @@ TEST_F(BrowserStateInfoCacheTest, PrefService) {
     BrowserStateInfoCache cache(pref_service());
     for (const TestAccount& account : kTestAccounts) {
       cache.AddBrowserState(account.name, account.gaia, account.email);
+      cache.SetLastActiveTimeOfBrowserStateAtIndex(
+          cache.GetNumberOfBrowserStates() - 1, account.last_active_time);
     }
   }
 
@@ -185,6 +192,8 @@ TEST_F(BrowserStateInfoCacheTest, PrefService) {
     EXPECT_EQ(cache.GetUserNameOfBrowserStateAtIndex(index), account.email);
     EXPECT_EQ(cache.BrowserStateIsAuthenticatedAtIndex(index),
               account.authenticated);
+    EXPECT_EQ(cache.GetLastActiveTimeOfBrowserStateAtIndex(index),
+              account.last_active_time);
   }
 }
 
@@ -205,4 +214,28 @@ TEST_F(BrowserStateInfoCacheTest, MapBrowserStateAndSceneID) {
 
   cache.ClearBrowserStateForSceneID(sceneID);
   EXPECT_EQ(cache.GetBrowserStateNameForSceneID(sceneID), std::string());
+}
+
+TEST_F(BrowserStateInfoCacheTest, SetAndGetLastActiveTime) {
+  BrowserStateInfoCache cache(pref_service());
+
+  for (const TestAccount& account : kTestAccounts) {
+    cache.AddBrowserState(account.name, account.gaia, account.email);
+  }
+
+  // The last-active time is initially unset.
+  EXPECT_EQ(cache.GetLastActiveTimeOfBrowserStateAtIndex(0), base::Time());
+
+  // Once set, it can be queried again.
+  const base::Time time0 = base::Time::UnixEpoch() + base::Minutes(1);
+  cache.SetLastActiveTimeOfBrowserStateAtIndex(0, time0);
+  EXPECT_EQ(cache.GetLastActiveTimeOfBrowserStateAtIndex(0), time0);
+
+  // Different BrowserStates do not affect each other.
+  const base::Time time1 = base::Time::UnixEpoch() + base::Minutes(2);
+  EXPECT_EQ(cache.GetLastActiveTimeOfBrowserStateAtIndex(1), base::Time());
+  cache.SetLastActiveTimeOfBrowserStateAtIndex(1, time1);
+  EXPECT_EQ(cache.GetLastActiveTimeOfBrowserStateAtIndex(1), time1);
+  EXPECT_NE(cache.GetLastActiveTimeOfBrowserStateAtIndex(0),
+            cache.GetLastActiveTimeOfBrowserStateAtIndex(1));
 }
