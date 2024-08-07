@@ -1,9 +1,11 @@
 include_rules = [
+  "+components/saved_tab_groups",
   "+ios/chrome/browser/complex_tasks/model",
   "+ios/chrome/browser/download/model/download_manager_tab_helper.h",
   "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/main/model/browser_util.h",
   "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
+  "+ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h",
   "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/sync/model",

@@ -4,10 +4,17 @@
 
 #import "ios/chrome/browser/tabs/model/tabs_closer.h"
 
+#import <optional>
+
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/unguessable_token.h"
+#import "base/uuid.h"
+#import "components/saved_tab_groups/saved_tab_group.h"
+#import "components/saved_tab_groups/tab_group_sync_service.h"
 #import "components/sessions/core/session_id.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -20,6 +27,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
@@ -254,6 +262,23 @@ int TabsCloser::CloseTabs() {
       break;
   }
 
+  if (IsTabGroupSyncEnabled()) {
+    tab_groups::TabGroupSyncService* sync_service =
+        tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+            browser_->GetBrowserState());
+    CHECK(sync_service);
+    for (const TabGroup* tab_group : web_state_list->GetGroups()) {
+      tab_groups::TabGroupId local_id = tab_group->tab_group_id();
+      std::optional<tab_groups::SavedTabGroup> saved_group =
+          sync_service->GetGroup(local_id);
+      if (saved_group) {
+        local_to_saved_group_ids_.insert(
+            std::make_pair(local_id, saved_group->saved_guid()));
+        sync_service->RemoveLocalTabGroupMapping(local_id);
+      }
+    }
+  }
+
   state_ = std::make_unique<UndoStorage>(browser_);
   state_->CloseTabs(start, count);
 
@@ -276,13 +301,49 @@ int TabsCloser::UndoCloseTabs() {
   // Invalidate `state_` before performing the "undo" operation.
   std::unique_ptr<UndoStorage> state = std::exchange(state_, {});
   const int result = state->count();
+  if (!IsTabGroupSyncEnabled()) {
+    state->Undo();
+    return result;
+  }
+
+  tab_groups::TabGroupSyncService* sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+          browser_->GetBrowserState());
+  CHECK(sync_service);
+  WebStateList* web_state_list = browser_->GetWebStateList();
+
+  auto pauser = sync_service->CreateScopedLocalObserverPauser();
+  std::set<const TabGroup*> tab_groups_to_delete;
+
   state->Undo();
+
+  for (const TabGroup* tab_group : web_state_list->GetGroups()) {
+    tab_groups::LocalTabGroupID local_id = tab_group->tab_group_id();
+    auto iterator = local_to_saved_group_ids_.find(local_id);
+    CHECK(iterator != local_to_saved_group_ids_.end(),
+          base::NotFatalUntil::M132);
+
+    base::Uuid saved_id = iterator->second;
+    std::optional<tab_groups::SavedTabGroup> saved_group =
+        sync_service->GetGroup(saved_id);
+    if (!saved_group) {
+      // The group has probably been deleted remotely.
+      tab_groups_to_delete.insert(tab_group);
+      continue;
+    }
+    sync_service->ConnectLocalTabGroup(saved_id, local_id);
+  }
+  for (const TabGroup* tab_group : tab_groups_to_delete) {
+    web_state_list->DeleteGroup(tab_group);
+  }
+  local_to_saved_group_ids_.clear();
   return result;
 }
 
 int TabsCloser::ConfirmDeletion() {
   DCHECK(CanUndoCloseTabs());
   // Invalidate `state_` before performing the "drop" operation.
+  local_to_saved_group_ids_.clear();
   std::unique_ptr<UndoStorage> state = std::exchange(state_, {});
   const int result = state->count();
   state->Drop();

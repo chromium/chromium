@@ -196,6 +196,9 @@ void FakeTabGroupSyncService::RemoveLocalTabGroupMapping(
   }
   SavedTabGroup& group = groups_[index.value()];
   group.SetLocalGroupId(std::nullopt);
+  for (auto& tab : group.saved_tabs()) {
+    tab.SetLocalTabID(std::nullopt);
+  }
 }
 
 void FakeTabGroupSyncService::UpdateLocalTabId(

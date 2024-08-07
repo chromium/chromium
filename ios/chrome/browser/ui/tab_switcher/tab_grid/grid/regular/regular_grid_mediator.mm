@@ -55,11 +55,11 @@
   if (![self canCloseTabs]) {
     return;
   }
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
 
   const int closed_tabs = _tabsCloser->CloseTabs();
   RecordTabGridCloseTabsCount(closed_tabs);
-  base::RecordAction(
-      base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
 }
 
 - (void)undoCloseAllItems {
@@ -70,6 +70,7 @@
 
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridUndoCloseAllRegularTabs"));
+
   _tabsCloser->UndoCloseTabs();
 }
 
