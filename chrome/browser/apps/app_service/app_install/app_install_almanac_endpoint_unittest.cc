@@ -122,6 +122,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoSuccessfulResponse) {
   web_app_extras.set_original_manifest_url("https://example.com/manifest.json");
   web_app_extras.set_scs_url(
       "https://almanac.chromium.org/example_manifest.json");
+  web_app_extras.set_open_as_window(true);
 
   test_url_loader_factory_.AddResponse(
       app_install_almanac_endpoint::GetEndpointUrlForTesting().spec(),
@@ -163,6 +164,30 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoSuccessfulResponse) {
   web_app_data.proxied_manifest_url =
       GURL("https://almanac.chromium.org/example_manifest.json");
   web_app_data.document_url = GURL("https://example.com/start.html");
+  web_app_data.open_as_window = true;
+  EXPECT_EQ(base::ToString(response_future.Get().value()),
+            base::ToString(expected_data));
+}
+
+TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoMinimalResponse) {
+  proto::AppInstallResponse response;
+  proto::AppInstallResponse_AppInstance& instance =
+      *response.mutable_app_instance();
+  instance.set_package_id("android:com.foo.app");
+  instance.set_name("Example");
+
+  test_url_loader_factory_.AddResponse(
+      app_install_almanac_endpoint::GetEndpointUrlForTesting().spec(),
+      response.SerializeAsString());
+
+  ResponseFuture response_future;
+  app_install_almanac_endpoint::GetAppInstallInfo(
+      kTestPackageId, DeviceInfo(), test_url_loader_factory_,
+      response_future.GetCallback());
+
+  AppInstallData expected_data(PackageId(PackageType::kArc, "com.foo.app"));
+  expected_data.name = "Example";
+
   EXPECT_EQ(base::ToString(response_future.Get().value()),
             base::ToString(expected_data));
 }
