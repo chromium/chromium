@@ -107,7 +107,7 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
         base::StrCat({syncer::prefs::internal::
                           kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
                       ".",
-                      syncer::GetModelTypeLowerCaseRootTag(syncer::PASSWORDS)}),
+                      syncer::GetDataTypeLowerCaseRootTag(syncer::PASSWORDS)}),
         false);
     CreateMigrator(&built_in_backend_, &android_backend_, &prefs_);
   }
@@ -137,7 +137,7 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
           base::StrCat(
               {syncer::prefs::internal::
                    kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
-               ".", syncer::GetModelTypeLowerCaseRootTag(syncer::PASSWORDS)}),
+               ".", syncer::GetDataTypeLowerCaseRootTag(syncer::PASSWORDS)}),
           true);
     } else {
       prefs_.SetBoolean(

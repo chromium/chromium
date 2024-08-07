@@ -489,19 +489,6 @@ bool IsRealDataType(DataType data_type);
 // clients.
 bool IsActOnceDataType(DataType data_type);
 
-// TODO(crbug.com/356649891): Remove these alias when all dependencies are
-// migrated.
-using ModelType = DataType;
-using ModelTypeSet = DataTypeSet;
-using ModelTypeForHistograms = DataTypeForHistograms;
-
-// TODO(crbug.com/356649891): Remove this function when all dependencies are
-// migrated. It is temporarily added to this header file to work around IWYU
-// issues.
-inline const char* GetModelTypeLowerCaseRootTag(ModelType model_type) {
-  return GetDataTypeLowerCaseRootTag(model_type);
-}
-
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_DATA_TYPE_H_

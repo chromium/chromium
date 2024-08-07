@@ -686,14 +686,14 @@ void BookmarkDataTypeProcessor::GetAllNodesForDebugging(
 
   // Function isTypeRootNode in sync_node_browser.js use PARENT_ID and
   // UNIQUE_SERVER_TAG to check if the node is root node. isChildOf in
-  // sync_node_browser.js uses modelType to check if root node is parent of real
+  // sync_node_browser.js uses dataType to check if root node is parent of real
   // data node. NON_UNIQUE_NAME will be the name of node to display.
   auto root_node = base::Value::Dict()
                        .Set("ID", "BOOKMARKS_ROOT")
                        .Set("PARENT_ID", "r")
                        .Set("UNIQUE_SERVER_TAG", "Bookmarks")
                        .Set("IS_DIR", true)
-                       .Set("modelType", "Bookmarks")
+                       .Set("dataType", "Bookmarks")
                        .Set("NON_UNIQUE_NAME", "Bookmarks");
   all_nodes.Append(std::move(root_node));
 
@@ -738,7 +738,7 @@ void BookmarkDataTypeProcessor::AppendNodeAndChildrenForDebugging(
         ComputeServerDefinedUniqueTagForDebugging(node, bookmark_model_);
     // Set the parent to empty string to indicate it's parent of the root node
     // for bookmarks. The code in sync_node_browser.js links nodes with the
-    // "modelType" when they are lacking a parent id.
+    // "dataType" when they are lacking a parent id.
     data.legacy_parent_id = "";
   } else {
     const bookmarks::BookmarkNode* parent = node->parent();
@@ -761,7 +761,7 @@ void BookmarkDataTypeProcessor::AppendNodeAndChildrenForDebugging(
   data_dictionary.Set("LOCAL_EXTERNAL_ID", static_cast<int>(node->id()));
   data_dictionary.Set("positionIndex", index);
   data_dictionary.Set("metadata", syncer::EntityMetadataToValue(metadata));
-  data_dictionary.Set("modelType", "Bookmarks");
+  data_dictionary.Set("dataType", "Bookmarks");
   data_dictionary.Set("IS_DIR", node->is_folder());
   all_nodes->Append(std::move(data_dictionary));
 

@@ -36,7 +36,6 @@ static_library("base") {
     "hash_util.h",
     "legacy_directory_deletion.cc",
     "legacy_directory_deletion.h",
-    "model_type.h",
     "page_transition_conversion.cc",
     "page_transition_conversion.h",
     "passphrase_enums.cc",

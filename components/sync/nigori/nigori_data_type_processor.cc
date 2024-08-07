@@ -287,11 +287,11 @@ void NigoriDataTypeProcessor::GetAllNodesForDebugging(
 
   // Function isTypeRootNode in sync_node_browser.js use PARENT_ID and
   // UNIQUE_SERVER_TAG to check if the node is root node. isChildOf in
-  // sync_node_browser.js uses modelType to check if root node is parent of real
+  // sync_node_browser.js uses dataType to check if root node is parent of real
   // data node.
   root_node.Set("PARENT_ID", "r");
   root_node.Set("UNIQUE_SERVER_TAG", "Nigori");
-  root_node.Set("modelType", DataTypeToDebugString(NIGORI));
+  root_node.Set("dataType", DataTypeToDebugString(NIGORI));
 
   base::Value::List all_nodes;
   all_nodes.Append(std::move(root_node));

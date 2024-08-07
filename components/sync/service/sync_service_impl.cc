@@ -1764,7 +1764,7 @@ base::Value::List SyncServiceImpl::GetTypeStatusMapForDebugging() const {
 
   auto type_status_header = base::Value::Dict()
                                 .Set("status", "header")
-                                .Set("name", "Model Type")
+                                .Set("name", "Data Type")
                                 .Set("num_entries", "Total Entries")
                                 .Set("num_live", "Live Entries")
                                 .Set("message", "Message")

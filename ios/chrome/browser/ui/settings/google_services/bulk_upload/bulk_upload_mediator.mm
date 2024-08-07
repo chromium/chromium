@@ -77,7 +77,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
       _identityObserverBridge;
   // The sync service.
   raw_ptr<syncer::SyncService> _syncService;
-  // Set of BulkModelType whose item is selected.
+  // Set of BulkUploadType whose item is selected.
   std::set<BulkUploadType> _selectedTypes;
   // Map returned by syncServer::GetLocalDataDescriptions, associating to each
   // type the descripton of the elements to upload.
@@ -118,12 +118,12 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
     return;
   }
   __weak BulkUploadMediator* weakSelf = self;
-  syncer::DataTypeSet modelTypeSet;
+  syncer::DataTypeSet dataTypeSet;
   for (auto& modelItem : GetUploadModelItems()) {
-    modelTypeSet.Put(modelItem.data_type);
+    dataTypeSet.Put(modelItem.data_type);
   }
   _syncService->GetLocalDataDescriptions(
-      modelTypeSet,
+      dataTypeSet,
       base::BindOnce(
           ^(std::map<syncer::DataType, syncer::LocalDataDescription> map) {
             [weakSelf updateConsumer:map];
@@ -133,11 +133,11 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 #pragma mark - Private
 
 - (void)save {
-  syncer::DataTypeSet selectedModelTypes = [self selectedModelTypeEnumSet];
-  _syncService->TriggerLocalDataMigration(selectedModelTypes);
+  syncer::DataTypeSet selectedDataTypes = [self selectedDataTypeEnumSet];
+  _syncService->TriggerLocalDataMigration(selectedDataTypes);
   int count = 0;
   // Count items for the selected types.
-  for (syncer::DataType data_type : selectedModelTypes) {
+  for (syncer::DataType data_type : selectedDataTypes) {
     count += _map[data_type].item_count;
   }
   const std::string email =
@@ -184,7 +184,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
     (BulkUploadModelItem)modelItem {
   syncer::LocalDataDescription description = _map[modelItem.data_type];
   CHECK_GT(description.domains.size(), 0ul)
-      << "model type: " << static_cast<int>(modelItem.data_type);
+      << "data type: " << static_cast<int>(modelItem.data_type);
   NSString* subtitle =
       base::SysUTF16ToNSString(syncer::GetDomainsDisplayText(description));
   BulkUploadViewItem* bulkUploadViewItem = [[BulkUploadViewItem alloc] init];
@@ -201,8 +201,8 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 
 // Updates the enabled state of the Save in Account button
 - (void)updateButtonEnabledState {
-  syncer::DataTypeSet selectedModelTypes = [self selectedModelTypeEnumSet];
-  [self.consumer setValidationButtonEnabled:selectedModelTypes.size() > 0];
+  syncer::DataTypeSet selectedDataTypes = [self selectedDataTypeEnumSet];
+  [self.consumer setValidationButtonEnabled:selectedDataTypes.size() > 0];
 }
 
 #pragma mark - BulkUploadMutator
@@ -220,8 +220,8 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 - (void)requestSave {
   base::RecordAction(base::UserMetricsAction("Signin_BulkUpload_Save"));
   // The user must authenticate if and only if they request to upload passwords.
-  syncer::DataTypeSet selectedModelTypes = [self selectedModelTypeEnumSet];
-  if (!selectedModelTypes.Has(syncer::DataType::PASSWORDS)) {
+  syncer::DataTypeSet selectedDataTypes = [self selectedDataTypeEnumSet];
+  if (!selectedDataTypes.Has(syncer::DataType::PASSWORDS)) {
     [self save];
     return;
   }
@@ -238,7 +238,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
   // don’t formally require authentication. This is because, if the
   // authentication fails, those other types are not saved either.
   int authentification_identifier =
-      (selectedModelTypes.size() == 1)
+      (selectedDataTypes.size() == 1)
           ? IDS_IOS_BULK_UPLOAD_PASSWORD_AUTHENTIFY_MESSAGE
           : IDS_IOS_BULK_UPLOAD_PASSWORD_AND_OTHER_TYPE_AUTHENTIFY_MESSAGE;
   [_reauthenticationModule
@@ -265,15 +265,15 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 #pragma mark - Private
 
 // Returns data type set of the selected data types.
-- (syncer::DataTypeSet)selectedModelTypeEnumSet {
-  syncer::DataTypeSet modelTypeSet;
+- (syncer::DataTypeSet)selectedDataTypeEnumSet {
+  syncer::DataTypeSet dataTypeSet;
   for (auto& modelItem : GetUploadModelItems()) {
     if (base::Contains(_selectedTypes, modelItem.bulk_upload_type) &&
         _map[modelItem.data_type].item_count > 0) {
-      modelTypeSet.Put(modelItem.data_type);
+      dataTypeSet.Put(modelItem.data_type);
     }
   }
-  return modelTypeSet;
+  return dataTypeSet;
 }
 
 // Called when `_reauthenticationModule` is finished.

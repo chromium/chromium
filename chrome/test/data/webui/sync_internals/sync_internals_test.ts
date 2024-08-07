@@ -76,7 +76,7 @@ const HARD_CODED_ALL_NODES = [{
       'UNIQUE_POSITION': 'INVALID[]',
       'UNIQUE_SERVER_TAG': 'google_chrome_autofill',
       'isDirty': false,
-      'modelType': 'Autofill',
+      'dataType': 'Autofill',
     },
     {
       'ATTACHMENT_METADATA': '',
@@ -126,7 +126,7 @@ const HARD_CODED_ALL_NODES = [{
       'UNIQUE_POSITION': 'INVALID[]',
       'UNIQUE_SERVER_TAG': '',
       'isDirty': false,
-      'modelType': 'Autofill',
+      'dataType': 'Autofill',
     },
   ],
   'type': 'Autofill',
@@ -174,7 +174,7 @@ const HARD_CODED_ABOUT_INFO = {
   'type_status': [
     {
       'status': 'header',
-      'name': 'Model Type',
+      'name': 'Data Type',
       'num_entries': 'Total Entries',
       'num_live': 'Live Entries',
       'message': 'Message',

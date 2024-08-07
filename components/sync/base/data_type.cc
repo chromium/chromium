@@ -20,10 +20,10 @@ struct DataTypeInfo {
   // Used to identify the data type in the SyncDataType histogram_suffix in
   // histograms.xml. Must always be kept in sync.
   const char* const histogram_suffix = nullptr;
-  // Root tag for Model Type
+  // Root tag for Data Type
   // This should be the same as the data type but all lowercase.
   const char* const lowercase_root_tag = nullptr;
-  // String value for Model Type
+  // String value for Data Type
   // This should be the same as the data type but space separated and the
   // first letter of every word capitalized.
   const char* const data_type_debug_string = nullptr;

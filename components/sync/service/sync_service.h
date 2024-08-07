@@ -225,10 +225,6 @@ class SyncService : public KeyedService {
     kError = 2,
   };
 
-  // TODO(crbug.com/356649891): Delete this alias once all dependencies are
-  // migrated.
-  using ModelTypeDownloadStatus = DataTypeDownloadStatus;
-
   SyncService() = default;
   ~SyncService() override = default;
 

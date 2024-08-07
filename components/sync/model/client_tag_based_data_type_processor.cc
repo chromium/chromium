@@ -1323,7 +1323,7 @@ void ClientTagBasedDataTypeProcessor::GetAllNodesForDebugging(
     }
 
     base::Value::Dict node = data->ToDictionaryValue();
-    node.Set("modelType", type_string);
+    node.Set("dataType", type_string);
     // Copy the whole metadata message into the dictionary (if existing).
     if (entity != nullptr) {
       node.Set("metadata", EntityMetadataToValue(entity->metadata()));
@@ -1337,13 +1337,13 @@ void ClientTagBasedDataTypeProcessor::GetAllNodesForDebugging(
 
   // Function isTypeRootNode in sync_node_browser.js use PARENT_ID and
   // UNIQUE_SERVER_TAG to check if the node is root node. isChildOf in
-  // sync_node_browser.js uses modelType to check if root node is parent of real
+  // sync_node_browser.js uses dataType to check if root node is parent of real
   // data node. NON_UNIQUE_NAME will be the name of node to display.
   auto rootnode = base::Value::Dict()
                       .Set("PARENT_ID", "r")
                       .Set("UNIQUE_SERVER_TAG", type_string)
                       .Set("IS_DIR", true)
-                      .Set("modelType", type_string)
+                      .Set("dataType", type_string)
                       .Set("NON_UNIQUE_NAME", type_string);
   all_nodes.Append(std::move(rootnode));
 

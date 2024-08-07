@@ -313,14 +313,14 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     CHECK(kDataTypesToQuery.HasAll(set))
         << "Result: {" << set << "} not a subset of the queried types: {"
         << kDataTypesToQuery << "}.";
-    [weakSelf continueSignOutWithUnsyncedDataModelTypeSet:set];
+    [weakSelf continueSignOutWithUnsyncedDataTypeSet:set];
   });
   syncService->GetTypesWithUnsyncedData(kDataTypesToQuery, std::move(callback));
 }
 
 // Displays the sign-out confirmation dialog if `set` contains an "interesting"
 // data type, otherwise the sign-out is triggered without dialog.
-- (void)continueSignOutWithUnsyncedDataModelTypeSet:(syncer::DataTypeSet)set {
+- (void)continueSignOutWithUnsyncedDataTypeSet:(syncer::DataTypeSet)set {
   [self allowUserInteraction];
   if (!set.empty()) {
     for (syncer::DataType type : set) {

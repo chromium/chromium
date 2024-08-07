@@ -109,7 +109,7 @@ export interface SyncNode {
   SERVER_VERSION_TIME: string;
   SERVER_SPECIFICS: ServerSpecifics;
   SPECIFICS: Specifics;
-  modelType: string;
+  dataType: string;
   positionIndex?: number;
 }
 
