@@ -1318,10 +1318,17 @@ TEST_F(PopupViewViewsDeathTest, OpenSubPopupWithNoChildrenCheckCrash) {
   raw_ptr<PopupViewViews> view_ptr = widget->SetContentsView(std::move(view));
   view_ptr->Show(AutoselectFirstSuggestion(false));
 
+// Official builds strip fatal messages, expecting silent death in this case.
+#if defined(NDEBUG) && defined(OFFICIAL_BUILD)
+  std::string expected_message = "\n";
+#else
+  std::string expected_message = "can_open_sub_popup";
+#endif  // defined(NDEBUG) && defined(OFFICIAL_BUILD)
+
   ASSERT_DEATH(
       view_ptr->SetSelectedCell(CellIndex{0, CellType::kControl},
                                 PopupCellSelectionSource::kNonUserInput),
-      "can_open_sub_popup");
+      expected_message);
 }
 #endif
 
