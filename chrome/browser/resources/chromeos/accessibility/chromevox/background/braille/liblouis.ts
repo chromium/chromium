@@ -9,10 +9,6 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 type LoadCallback = (instance: LibLouis) => void;
 type MessageCallback = (message: Object) => void;
-type TranslateCallback =
-    (cells: ArrayBuffer|null, textToBraille: number[]|null,
-     brailleToText: number[]|null) => void;
-type BackTranslateCallback = (text: string|null) => void;
 
 interface Dictionary {
   [key: string]: any;
@@ -151,6 +147,11 @@ export class LibLouis {
 }
 
 export namespace LibLouis {
+  export type TranslateCallback =
+      (cells: ArrayBuffer|null, textToBraille: number[]|null,
+       brailleToText: number[]|null) => void;
+  export type BackTranslateCallback = (text: string|null) => void;
+
   /**
    * Constants taken from liblouis.h.
    * Controls braille indicator insertion during translation.
@@ -187,10 +188,11 @@ export namespace LibLouis {
      * @param callback Callback for result. Takes 3 parameters: the resulting
      *     cells, mapping from text to braille positions and mapping from
      *     braille to text positions. If translation fails for any reason, all
-     *     parameters are {@code null}.
+     *     parameters are null.
      */
-    translate(text: string, formTypeMap: number, callback: TranslateCallback):
-        void {
+    translate(
+        text: string, formTypeMap: number[]|number,
+        callback: TranslateCallback): void {
       if (!this.instance_.worker) {
         callback(
             null /*cells*/, null /*textToBraille*/, null /*brailleToText*/);
@@ -206,9 +208,9 @@ export namespace LibLouis {
       };
       this.instance_.rpc(
           'Translate', message, (reply: {[key: string]: any}) => {
-            let cells = null;
-            let textToBraille = null;
-            let brailleToText = null;
+            let cells: ArrayBuffer|null = null;
+            let textToBraille: number[]|null = null;
+            let brailleToText: number[]|null = null;
             if (reply['success'] && typeof reply['cells'] === 'string') {
               cells = Translator.decodeHexString_(reply['cells']);
               if (reply['text_to_braille'] !== undefined) {
