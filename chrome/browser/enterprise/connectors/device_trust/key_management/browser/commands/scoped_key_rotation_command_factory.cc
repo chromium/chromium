@@ -9,6 +9,8 @@
 
 #include "base/check.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/mock_key_rotation_command.h"
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -36,7 +38,9 @@ void ScopedKeyRotationCommandFactory::ReturnInvalidCommand() {
 
 std::unique_ptr<KeyRotationCommand>
 ScopedKeyRotationCommandFactory::CreateCommand(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    policy::BrowserDMTokenStorage* dm_token_storage,
+    policy::DeviceManagementService* device_management_service) {
   if (return_invalid_command) {
     return nullptr;
   }

@@ -14,6 +14,11 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
+#include "components/enterprise/client_certificates/core/cloud_management_delegate.h"
+
+namespace enterprise_attestation {
+class CloudManagementDelegate;
+}  // namespace enterprise_attestation
 
 namespace enterprise_connectors {
 
@@ -24,6 +29,12 @@ class KeyRotationManagerImpl : public KeyRotationManager {
   KeyRotationManagerImpl(
       std::unique_ptr<KeyNetworkDelegate> network_delegate,
       std::unique_ptr<KeyPersistenceDelegate> persistence_delegate);
+
+  KeyRotationManagerImpl(
+      std::unique_ptr<enterprise_attestation::CloudManagementDelegate>
+          management_delegate,
+      std::unique_ptr<KeyPersistenceDelegate> persistence_delegate);
+
   ~KeyRotationManagerImpl() override;
 
   // KeyRotationManager:
@@ -43,6 +54,13 @@ class KeyRotationManagerImpl : public KeyRotationManager {
       base::OnceCallback<void(KeyRotationResult)> result_callback,
       KeyNetworkDelegate::HttpResponseCode response_code);
 
+  void OnUploadPublicKeyCompleted(
+      scoped_refptr<SigningKeyPair> old_key_pair,
+      base::OnceCallback<void(KeyRotationResult)> callback,
+      const policy::DMServerJobResult result);
+
+  std::unique_ptr<enterprise_attestation::CloudManagementDelegate>
+      cloud_management_delegate_;
   std::unique_ptr<KeyNetworkDelegate> network_delegate_;
   std::unique_ptr<KeyPersistenceDelegate> persistence_delegate_;
   base::WeakPtrFactory<KeyRotationManagerImpl> weak_factory_{this};

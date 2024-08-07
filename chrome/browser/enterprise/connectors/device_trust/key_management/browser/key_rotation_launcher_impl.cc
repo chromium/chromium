@@ -63,7 +63,7 @@ void KeyRotationLauncherImpl::LaunchKeyRotation(
   KeyRotationCommand::Params params{dm_token.value(), dm_server_url.value(),
                                     nonce};
   command_ = KeyRotationCommandFactory::GetInstance()->CreateCommand(
-      url_loader_factory_);
+      url_loader_factory_, dm_token_storage_, device_management_service_);
   if (!command_) {
     // Command can be nullptr if trying to create a key on a unsupported
     // platform.
