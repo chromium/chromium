@@ -423,6 +423,7 @@
 
 - (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
   DCHECK_EQ(self.webStateList, webStateList);
+  [self addWebStateObservations];
   [self populateConsumerItems];
   if (_tabGroup) {
     [_groupConsumer setGroupTitle:_tabGroup->GetTitle()];
