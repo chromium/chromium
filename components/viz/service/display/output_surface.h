@@ -77,10 +77,9 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     Capabilities& operator=(const Capabilities& capabilities);
 
     PendingSwapParams pending_swap_params{1};
-    // The number of buffers for the SkiaOutputDevice. If the
-    // |supports_post_sub_buffer| true, SkiaOutputSurfaceImpl will track target
-    // damaged area based on this number.
-    int number_of_buffers = 2;
+    // The number of primary plane buffers. This value is only used when
+    // `renderer_allocates_images` is true.
+    int number_of_buffers = 0;
     // Whether this output surface renders to the default OpenGL zero
     // framebuffer or to an offscreen framebuffer.
     bool uses_default_gl_framebuffer = true;
@@ -100,10 +99,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     // the unified display on Chrome OS. All drawing is handled by the physical
     // displays so the unified display should skip that work.
     bool skips_draw = false;
-    // Indicates whether this surface will invalidate only the damage rect.
-    // When this is false contents outside the damaged area might need to be
-    // recomposited to the surface.
-    bool only_invalidates_damage_rect = true;
     // Whether OutputSurface::GetTargetDamageBoundingRect is implemented and
     // will return a bounding rectangle of the target buffer invalidated area.
     bool supports_target_damage = false;
@@ -113,8 +108,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     // This is copied over from gpu feature info since there is no easy way to
     // share that out of skia output surface.
     bool android_surface_control_feature_enabled = false;
-    // True if the buffer content will be preserved after presenting.
-    bool preserve_buffer_content = false;
     // True if the SkiaOutputDevice will set
     // SwapBuffersCompleteParams::frame_buffer_damage_area for every
     // SwapBuffers complete callback.

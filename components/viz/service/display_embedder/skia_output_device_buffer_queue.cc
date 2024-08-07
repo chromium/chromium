@@ -172,8 +172,6 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
 #endif  // BUILDFLAG(IS_OZONE)
 
   capabilities_.uses_default_gl_framebuffer = false;
-  capabilities_.preserve_buffer_content = true;
-  capabilities_.only_invalidates_damage_rect = false;
   capabilities_.number_of_buffers = 3;
   capabilities_.renderer_allocates_images = true;
 

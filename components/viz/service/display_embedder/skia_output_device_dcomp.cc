@@ -111,9 +111,6 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
               .disable_post_sub_buffers_for_onscreen_surfaces);
   capabilities_.uses_default_gl_framebuffer = true;
   capabilities_.output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
-  // DWM handles preserving the contents of the backbuffer in Present1, so we
-  // don't need to have SkiaOutputSurface handle it.
-  capabilities_.preserve_buffer_content = false;
   capabilities_.number_of_buffers =
       gl::DirectCompositionRootSurfaceBufferCount();
   if (feature_info->workarounds().supports_two_yuv_hardware_overlays) {

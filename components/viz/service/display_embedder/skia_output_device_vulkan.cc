@@ -309,10 +309,6 @@ bool SkiaOutputDeviceVulkan::Initialize() {
 
   capabilities_.uses_default_gl_framebuffer = false;
   capabilities_.pending_swap_params.max_pending_swaps = 1;
-  // Vulkan FIFO swap chain should return vk images in presenting order, so set
-  // preserve_buffer_content & supports_post_sub_buffer to true to let
-  // SkiaOutputBufferImpl to manager damages.
-  capabilities_.preserve_buffer_content = true;
   capabilities_.output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
   capabilities_.supports_post_sub_buffer = true;
   capabilities_.supports_target_damage = true;
@@ -325,11 +321,6 @@ bool SkiaOutputDeviceVulkan::Initialize() {
   if (features::IsUsingVulkan())
     capabilities_.orientation_mode = OutputSurface::OrientationMode::kLogic;
 #endif
-  // We don't know the number of buffers until the VulkanSwapChain is
-  // initialized, so set it to 0. Since |damage_area_from_skia_output_device| is
-  // assigned to true, so |number_of_buffers| will not be used for tracking
-  // framebuffer damages.
-  capabilities_.number_of_buffers = 0;
   capabilities_.damage_area_from_skia_output_device = true;
 
   const auto surface_format = vulkan_surface_->surface_format().format;
