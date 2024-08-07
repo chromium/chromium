@@ -2585,10 +2585,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests "search recent tabs" and "search open tabs" suggested actions switch
 // the tab grid page correctly while staying in the search mode.
-// TODO(crbug.com/356678903): Test fails on bots that don't use
-// fieldtrial_testing_config.json (and is already skipped below on bots that do
-// use it, since these bots have Tab Group Sync enabled).
-- (void)DISABLED_testSearchSuggestedActionsPageSwitch {
+- (void)testSearchSuggestedActionsPageSwitch {
   // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
   // Recent Tabs is not reachable from the Tab Grid. So the test flow is not
   // supported with Tab Group Sync enabled.
