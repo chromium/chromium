@@ -41,28 +41,14 @@ enum class PasswordStoreBackendErrorType {
   kMaxValue = kGMSCoreOutdatedSavingPossible,
 };
 
-enum class PasswordStoreBackendErrorRecoveryType {
-  // Recoverable which can be fixed by either automated or user-driven
-  // resolution specific for this error.
-  kRecoverable,
-  // Unrecoverable errors which can't be fixed easily. It may indicate broken
-  // database or other persistent errors.
-  kUnrecoverable,
-};
-
 struct PasswordStoreBackendError {
-  PasswordStoreBackendError(
-      PasswordStoreBackendErrorType error_type,
-      PasswordStoreBackendErrorRecoveryType recovery_type);
+  PasswordStoreBackendError(PasswordStoreBackendErrorType error_type);
 
   friend bool operator==(const PasswordStoreBackendError&,
                          const PasswordStoreBackendError&) = default;
 
   // The type of the error.
   PasswordStoreBackendErrorType type;
-
-  // Whether the error is considered recoverable or not.
-  PasswordStoreBackendErrorRecoveryType recovery_type;
 
 #if BUILDFLAG(IS_ANDROID)
   // Android API Error.

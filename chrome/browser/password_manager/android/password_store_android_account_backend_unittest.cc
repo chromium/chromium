@@ -738,8 +738,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   int kAuthErrorResolvableCode =
       static_cast<int>(AndroidBackendAPIErrorCode::kAuthErrorResolvable);
   PasswordStoreBackendError expected_error{
-      PasswordStoreBackendErrorType::kAuthErrorResolvable,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+      PasswordStoreBackendErrorType::kAuthErrorResolvable};
   expected_error.android_backend_api_error = kAuthErrorResolvableCode;
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordStoreBackendError>(expected_error)));
@@ -789,8 +788,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
     task_environment_.FastForwardUntilNoTasksRemain();
   }
   PasswordStoreBackendError expected_error{
-      PasswordStoreBackendErrorType::kUncategorized,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+      PasswordStoreBackendErrorType::kUncategorized};
   expected_error.android_backend_api_error = kNetworkErrorCode;
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordStoreBackendError>(expected_error)));
@@ -927,8 +925,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   DisableSyncFeature();
   sync_service()->FireStateChanged();
   PasswordStoreBackendError expected_error{
-      PasswordStoreBackendErrorType::kUncategorized,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+      PasswordStoreBackendErrorType::kUncategorized};
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordStoreBackendError>(expected_error)));
   RunUntilIdle();
@@ -1049,8 +1046,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
 
   sync_service()->Shutdown();
   PasswordStoreBackendError expected_error{
-      PasswordStoreBackendErrorType::kUncategorized,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+      PasswordStoreBackendErrorType::kUncategorized};
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordStoreBackendError>(expected_error)));
   RunUntilIdle();
@@ -1106,8 +1102,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   int kUnresolvableAuthErrorCode =
       static_cast<int>(AndroidBackendAPIErrorCode::kAuthErrorUnresolvable);
   PasswordStoreBackendError expected_error{
-      PasswordStoreBackendErrorType::kAuthErrorUnresolvable,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+      PasswordStoreBackendErrorType::kAuthErrorUnresolvable};
   expected_error.android_backend_api_error = kUnresolvableAuthErrorCode;
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordStoreBackendError>(expected_error)));
@@ -1174,8 +1169,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   int kPassphraseRequiredErrorCode =
       static_cast<int>(AndroidBackendAPIErrorCode::kPassphraseRequired);
   PasswordStoreBackendError expected_error{
-      PasswordStoreBackendErrorType::kUncategorized,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+      PasswordStoreBackendErrorType::kUncategorized};
   expected_error.android_backend_api_error = kPassphraseRequiredErrorCode;
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordStoreBackendError>(expected_error)));
@@ -1331,8 +1325,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   DisableSyncFeature();
   sync_service()->FireStateChanged();
   PasswordStoreBackendError expected_error{
-      PasswordStoreBackendErrorType::kUncategorized,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+      PasswordStoreBackendErrorType::kUncategorized};
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordStoreBackendError>(expected_error)));
   RunUntilIdle();
@@ -1363,8 +1356,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
 
   sync_service()->Shutdown();
   PasswordStoreBackendError expected_error{
-      PasswordStoreBackendErrorType::kUncategorized,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+      PasswordStoreBackendErrorType::kUncategorized};
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordStoreBackendError>(expected_error)));
   RunUntilIdle();
@@ -2030,9 +2022,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   backend().GetAllLoginsAsync(mock_reply.Get());
   RunUntilIdle();
 
-  PasswordStoreBackendError error(
-      GetBackendErrorType(),
-      PasswordStoreBackendErrorRecoveryType::kRecoverable);
+  PasswordStoreBackendError error(GetBackendErrorType());
   error.android_backend_api_error = GetError().api_error_code;
 
   EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
@@ -2069,9 +2059,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   backend().GetAutofillableLoginsAsync(mock_reply.Get());
   RunUntilIdle();
 
-  PasswordStoreBackendError error(
-      GetBackendErrorType(),
-      PasswordStoreBackendErrorRecoveryType::kRecoverable);
+  PasswordStoreBackendError error(GetBackendErrorType());
   error.android_backend_api_error = GetError().api_error_code;
 
   EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
@@ -2110,9 +2098,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   backend().GetAllLoginsWithAffiliationAndBrandingAsync(mock_reply.Get());
   RunUntilIdle();
 
-  PasswordStoreBackendError error(
-      GetBackendErrorType(),
-      PasswordStoreBackendErrorRecoveryType::kRecoverable);
+  PasswordStoreBackendError error(GetBackendErrorType());
   error.android_backend_api_error = GetError().api_error_code;
 
   EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
@@ -2139,9 +2125,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
                                     forms);
   RunUntilIdle();
 
-  PasswordStoreBackendError error(
-      GetBackendErrorType(),
-      PasswordStoreBackendErrorRecoveryType::kRecoverable);
+  PasswordStoreBackendError error(GetBackendErrorType());
   error.android_backend_api_error = GetError().api_error_code;
 
   EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
@@ -2168,9 +2152,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
       mock_reply.Get());
   RunUntilIdle();
 
-  PasswordStoreBackendError error(
-      GetBackendErrorType(),
-      PasswordStoreBackendErrorRecoveryType::kRecoverable);
+  PasswordStoreBackendError error(GetBackendErrorType());
   error.android_backend_api_error = GetError().api_error_code;
 
   EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
@@ -2190,9 +2172,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   EXPECT_CALL(*bridge_helper(), AddLogin(form, _)).WillOnce(Return(kJobId));
   backend().AddLoginAsync(form, mock_reply.Get());
 
-  PasswordStoreBackendError error(
-      GetBackendErrorType(),
-      PasswordStoreBackendErrorRecoveryType::kRecoverable);
+  PasswordStoreBackendError error(GetBackendErrorType());
   error.android_backend_api_error = GetError().api_error_code;
 
   EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
@@ -2212,9 +2192,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   EXPECT_CALL(*bridge_helper(), UpdateLogin(form, _)).WillOnce(Return(kJobId));
   backend().UpdateLoginAsync(form, mock_reply.Get());
 
-  PasswordStoreBackendError error(
-      GetBackendErrorType(),
-      PasswordStoreBackendErrorRecoveryType::kRecoverable);
+  PasswordStoreBackendError error(GetBackendErrorType());
   error.android_backend_api_error = GetError().api_error_code;
 
   EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
@@ -2234,9 +2212,7 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   EXPECT_CALL(*bridge_helper(), RemoveLogin(form, _)).WillOnce(Return(kJobId));
   backend().RemoveLoginAsync(FROM_HERE, form, mock_reply.Get());
 
-  PasswordStoreBackendError error(
-      GetBackendErrorType(),
-      PasswordStoreBackendErrorRecoveryType::kRecoverable);
+  PasswordStoreBackendError error(GetBackendErrorType());
   error.android_backend_api_error = GetError().api_error_code;
   EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
   consumer().OnError(kJobId, GetError());

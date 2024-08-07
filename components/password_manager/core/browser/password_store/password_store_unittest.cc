@@ -104,9 +104,8 @@ constexpr const char kTestAndroidName2[] = "Example Android App 2";
 constexpr const char kTestAndroidIconURL2[] = "https://example.com/icon_2.png";
 constexpr const time_t kTestLastUsageTime = 1546300800;  // 00:00 Jan 1 2019 UTC
 
-const PasswordStoreBackendError kBackendError = PasswordStoreBackendError(
-    PasswordStoreBackendErrorType::kUncategorized,
-    PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
+const PasswordStoreBackendError kBackendError =
+    PasswordStoreBackendError(PasswordStoreBackendErrorType::kUncategorized);
 
 PasswordForm MakePasswordForm(const std::string& signon_realm) {
   PasswordForm form;

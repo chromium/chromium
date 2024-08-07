@@ -383,18 +383,14 @@ void PasswordStoreAndroidAccountBackend::OnPasswordsSyncStateChanged() {
   ClearAllTasksAndReplyWithReason(
       AndroidBackendError(
           AndroidBackendErrorType::kCancelledPwdSyncStateChanged),
-      PasswordStoreBackendError(
-          PasswordStoreBackendErrorType::kUncategorized,
-          PasswordStoreBackendErrorRecoveryType::kRecoverable));
+      PasswordStoreBackendError(PasswordStoreBackendErrorType::kUncategorized));
 }
 
 void PasswordStoreAndroidAccountBackend::SyncShutdown() {
   ClearAllTasksAndReplyWithReason(
       AndroidBackendError(
           AndroidBackendErrorType::kCancelledPwdSyncStateChanged),
-      PasswordStoreBackendError(
-          PasswordStoreBackendErrorType::kUncategorized,
-          PasswordStoreBackendErrorRecoveryType::kRecoverable));
+      PasswordStoreBackendError(PasswordStoreBackendErrorType::kUncategorized));
   sync_service_ = nullptr;
 }
 

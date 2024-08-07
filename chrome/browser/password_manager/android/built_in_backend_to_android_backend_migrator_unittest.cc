@@ -52,9 +52,8 @@ namespace password_manager {
 namespace {
 
 constexpr base::TimeDelta kLatencyDelta = base::Milliseconds(123u);
-const PasswordStoreBackendError kBackendError = PasswordStoreBackendError(
-    PasswordStoreBackendErrorType::kUncategorized,
-    PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
+const PasswordStoreBackendError kBackendError =
+    PasswordStoreBackendError(PasswordStoreBackendErrorType::kUncategorized);
 
 const char kMigrationProgressStateHistogram[] =
     "PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers."

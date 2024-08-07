@@ -829,8 +829,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   // the error.
   base::TimeDelta delay = reply->GetDelay();
   PasswordStoreBackendError reported_error(
-      PasswordStoreBackendErrorType::kUncategorized,
-      PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
+      PasswordStoreBackendErrorType::kUncategorized);
 
   if (error.api_error_code.has_value()) {
     // TODO(crbug.com/40839365): DCHECK_EQ(api_error_code,
@@ -848,16 +847,9 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
       return;
     }
 
-    if (delay >= kTaskRetryTimeout) {
-      // Maximum delay is reached, meaning there are no more retries. Do nothing
-      // but ensure the error is marked as recoverable.
-      reported_error.recovery_type =
-          PasswordStoreBackendErrorRecoveryType::kRecoverable;
-    } else {
+    if (delay < kTaskRetryTimeout) {
       // Either the operation or error is not retriable.
       RecoverOnError(api_error_code);
-      reported_error.recovery_type =
-          PasswordStoreBackendErrorRecoveryType::kRecoverable;
       reported_error.type = APIErrorCodeToErrorType(api_error_code);
     }
   }

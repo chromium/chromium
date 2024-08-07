@@ -4521,8 +4521,7 @@ TEST_P(PasswordFormManagerTest, NoVotesUploaderForHTTPAuth) {
 TEST_P(PasswordFormManagerTest,
        ClientShouldShowErrorMessageForAuthErrorResolvable) {
   fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
-      PasswordStoreBackendErrorType::kAuthErrorResolvable,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable));
+      PasswordStoreBackendErrorType::kAuthErrorResolvable));
 
   EXPECT_CALL(client_,
               ShowPasswordManagerErrorMessage(
@@ -4534,8 +4533,7 @@ TEST_P(PasswordFormManagerTest,
 TEST_P(PasswordFormManagerTest,
        ClientShouldShowErrorMessageForAuthErrorForAccountStore) {
   fetcher_->SetAccountStoreBackendError(PasswordStoreBackendError(
-      PasswordStoreBackendErrorType::kAuthErrorResolvable,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable));
+      PasswordStoreBackendErrorType::kAuthErrorResolvable));
 
   EXPECT_CALL(client_,
               ShowPasswordManagerErrorMessage(
@@ -4547,8 +4545,7 @@ TEST_P(PasswordFormManagerTest,
 TEST_P(PasswordFormManagerTest,
        ClientShouldShowErrorMessageForKeyRetrivalError) {
   fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
-      PasswordStoreBackendErrorType::kKeyRetrievalRequired,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable));
+      PasswordStoreBackendErrorType::kKeyRetrievalRequired));
 
   EXPECT_CALL(client_,
               ShowPasswordManagerErrorMessage(
@@ -4564,11 +4561,9 @@ TEST_P(PasswordFormManagerTest,
 TEST_P(PasswordFormManagerTest,
        ClientShouldShowErrorMessageWhenBothStoresHaveDifferentErrors) {
   fetcher_->SetAccountStoreBackendError(PasswordStoreBackendError(
-      PasswordStoreBackendErrorType::kAuthErrorResolvable,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable));
-  fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
-      PasswordStoreBackendErrorType::kUncategorized,
-      PasswordStoreBackendErrorRecoveryType::kUnrecoverable));
+      PasswordStoreBackendErrorType::kAuthErrorResolvable));
+  fetcher_->SetProfileStoreBackendError(
+      PasswordStoreBackendError(PasswordStoreBackendErrorType::kUncategorized));
 
   EXPECT_CALL(client_,
               ShowPasswordManagerErrorMessage(
@@ -4580,8 +4575,7 @@ TEST_P(PasswordFormManagerTest,
 TEST_P(PasswordFormManagerTest,
        ClientShouldShowErrorMessageForAuthErrorUnresolvable) {
   fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
-      PasswordStoreBackendErrorType::kAuthErrorUnresolvable,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable));
+      PasswordStoreBackendErrorType::kAuthErrorUnresolvable));
 
   EXPECT_CALL(client_,
               ShowPasswordManagerErrorMessage(
@@ -4600,9 +4594,8 @@ TEST_P(PasswordFormManagerTest,
 
 TEST_P(PasswordFormManagerTest,
        ClientShouldNotShowErrorMessageWhenErrorIsNotAuthError) {
-  fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
-      PasswordStoreBackendErrorType::kUncategorized,
-      PasswordStoreBackendErrorRecoveryType::kUnrecoverable));
+  fetcher_->SetProfileStoreBackendError(
+      PasswordStoreBackendError(PasswordStoreBackendErrorType::kUncategorized));
 
   EXPECT_CALL(client_, ShowPasswordManagerErrorMessage).Times(0);
   fetcher_->NotifyFetchCompleted();
@@ -4613,8 +4606,7 @@ TEST_P(PasswordFormManagerTest, ClientShouldNotShowErrorMessageWhenUnenrolled) {
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
       true);
   fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
-      PasswordStoreBackendErrorType::kAuthErrorResolvable,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable));
+      PasswordStoreBackendErrorType::kAuthErrorResolvable));
 
   EXPECT_CALL(client_, ShowPasswordManagerErrorMessage).Times(0);
   fetcher_->NotifyFetchCompleted();
@@ -4627,9 +4619,8 @@ TEST_P(PasswordFormManagerTest, ClientShouldShowKeychainErrorMessage) {
   feature_list.InitAndEnableFeature(
       password_manager::features::kRestartToGainAccessToKeychain);
 
-  fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
-      PasswordStoreBackendErrorType::kKeychainError,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable));
+  fetcher_->SetProfileStoreBackendError(
+      PasswordStoreBackendError(PasswordStoreBackendErrorType::kKeychainError));
 
   EXPECT_CALL(client_, NotifyKeychainError);
   fetcher_->NotifyFetchCompleted();
