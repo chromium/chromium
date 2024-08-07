@@ -276,7 +276,7 @@ BASE_FEATURE(kArcVmPvclock,
 // Controls whether enable ignoring hover event ANR in input dispatcher.
 BASE_FEATURE(kIgnoreHoverEventAnr,
              "IgnoreHoverEventAnr",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables/disables ghost when user launch ARC app from shelf/launcher when
 // App already ready for launch.
