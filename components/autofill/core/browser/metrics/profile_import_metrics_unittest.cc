@@ -539,7 +539,7 @@ TEST_F(AutofillProfileImportMetricsTest, EmitsStorageNewProfileIsSavedTo) {
   base::HistogramTester histogram_tester;
 
   // Saved to local/syncable storage.
-  LogNewProfileStorage(import_candidate);
+  LogNewProfileStorageLocation(import_candidate);
   histogram_tester.ExpectBucketCount(
       "Autofill.ProfileImport.StorageNewAddressIsSavedTo",
       AutofillProfile::Source::kLocalOrSyncable, 1);
@@ -547,7 +547,7 @@ TEST_F(AutofillProfileImportMetricsTest, EmitsStorageNewProfileIsSavedTo) {
   import_candidate = import_candidate.ConvertToAccountProfile();
 
   // Saved to account storage.
-  LogNewProfileStorage(import_candidate);
+  LogNewProfileStorageLocation(import_candidate);
   histogram_tester.ExpectBucketCount(
       "Autofill.ProfileImport.StorageNewAddressIsSavedTo",
       AutofillProfile::Source::kAccount, 1);

@@ -349,8 +349,10 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
 
   // Only record the profile's storage for new profiles.
   const bool accepted_and_is_new_profile =
-      test_scenario.user_decision ==
-          AutofillClient::AddressPromptUserDecision::kAccepted &&
+      (test_scenario.user_decision ==
+           AutofillClient::AddressPromptUserDecision::kAccepted ||
+       test_scenario.user_decision ==
+           AutofillClient::AddressPromptUserDecision::kEditAccepted) &&
       IsNewProfile(test_scenario);
   histogram_tester.ExpectTotalCount(kNewProfileStorageHistogram,
                                     accepted_and_is_new_profile ? 1 : 0);
