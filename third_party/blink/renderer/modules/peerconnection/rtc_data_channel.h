@@ -60,6 +60,12 @@ class MODULES_EXPORT RTCDataChannel final
   USING_PRE_FINALIZER(RTCDataChannel, Dispose);
 
  public:
+  // Wraps the current thread with a webrtc::ThreadWrapper, if it isn't already
+  // wrapped. This is necessary when calling some of channel()'s methods.
+  // This only has an effect the first time it is called from a new
+  // DedicatedWorker thread, after deserializing an RTCDataChannel.
+  static void EnsureThreadWrappersForWorkerThread();
+
   RTCDataChannel(ExecutionContext*,
                  rtc::scoped_refptr<webrtc::DataChannelInterface> channel);
   ~RTCDataChannel() override;

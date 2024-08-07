@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_restriction_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
@@ -45,6 +46,8 @@
 #include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel_attachment.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame.h"
@@ -107,6 +110,8 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
         return nullptr;
       return MakeGarbageCollected<RTCCertificate>(std::move(certificate));
     }
+    case kRTCDataChannel:
+      return ReadRTCDataChannel();
     case kRTCEncodedAudioFrameTag:
       return ReadRTCEncodedAudioFrame();
     case kRTCEncodedVideoFrameTag:
@@ -452,6 +457,38 @@ FileSystemHandle* V8ScriptValueDeserializerForModules::ReadFileSystemHandle(
   }
 }
 
+RTCDataChannel* V8ScriptValueDeserializerForModules::ReadRTCDataChannel() {
+  if (!RuntimeEnabledFeatures::TransferableRTCDataChannelEnabled(
+          ExecutionContext::From(GetScriptState()))) {
+    return nullptr;
+  }
+
+  uint32_t index;
+  if (!ReadUint32(&index)) {
+    return nullptr;
+  }
+
+  const auto* attachment =
+      GetSerializedScriptValue()
+          ->GetAttachmentIfExists<RTCDataChannelAttachment>();
+  if (!attachment) {
+    return nullptr;
+  }
+
+  using NativeDataChannelVector =
+      Vector<rtc::scoped_refptr<webrtc::DataChannelInterface>>;
+
+  const NativeDataChannelVector& channels = attachment->DataChannels();
+  if (index >= attachment->size() || !channels[index]) {
+    return nullptr;
+  }
+
+  RTCDataChannel::EnsureThreadWrappersForWorkerThread();
+
+  return MakeGarbageCollected<RTCDataChannel>(
+      ExecutionContext::From(GetScriptState()), std::move(channels[index]));
+}
+
 RTCEncodedAudioFrame*
 V8ScriptValueDeserializerForModules::ReadRTCEncodedAudioFrame() {
   uint32_t index;
@@ -705,6 +742,8 @@ bool V8ScriptValueDeserializerForModules::ExecutionContextExposesInterface(
       return V8RTCEncodedAudioFrame::IsExposed(execution_context);
     case kRTCEncodedVideoFrameTag:
       return V8RTCEncodedVideoFrame::IsExposed(execution_context);
+    case kRTCDataChannel:
+      return V8RTCDataChannel::IsExposed(execution_context);
     case kAudioDataTag:
       return V8AudioData::IsExposed(execution_context);
     case kVideoFrameTag:

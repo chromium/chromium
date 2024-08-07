@@ -238,6 +238,8 @@ source_set("modules_testing") {
     "peerconnection/adapters/test/mock_ice_transport_adapter_cross_thread_factory.h",
     "peerconnection/testing/fake_resource_listener.cc",
     "peerconnection/testing/fake_resource_listener.h",
+    "peerconnection/testing/fake_webrtc_data_channel.cc",
+    "peerconnection/testing/fake_webrtc_data_channel.h",
     "peerconnection/testing/internals_rtc_certificate.cc",
     "peerconnection/testing/internals_rtc_certificate.h",
     "peerconnection/testing/internals_rtc_peer_connection.cc",

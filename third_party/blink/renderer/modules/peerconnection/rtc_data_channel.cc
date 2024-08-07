@@ -34,6 +34,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -279,6 +280,12 @@ void RTCDataChannel::Observer::OnMessageImpl(webrtc::DataBuffer buffer) {
   DCHECK(main_thread_->BelongsToCurrentThread());
   if (blink_channel_)
     blink_channel_->OnMessage(std::move(buffer));
+}
+
+// static
+void RTCDataChannel::EnsureThreadWrappersForWorkerThread() {
+  webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
+  webrtc::ThreadWrapper::current()->set_send_allowed(true);
 }
 
 RTCDataChannel::RTCDataChannel(

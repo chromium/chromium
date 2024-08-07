@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_restriction_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
@@ -46,6 +47,9 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel_attachment.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel_transfer_list.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame.h"
@@ -105,6 +109,26 @@ bool V8ScriptValueSerializerForModules::ExtractTransferable(
     }
     transfer_list->audio_data_collection.push_back(audio_data);
     return true;
+  }
+
+  if (RTCDataChannel* channel =
+          V8RTCDataChannel::ToWrappable(isolate, object)) {
+    if (RuntimeEnabledFeatures::TransferableRTCDataChannelEnabled(
+            CurrentExecutionContext(isolate))) {
+      RTCDataChannelTransferList* transfer_list =
+          transferables.GetOrCreateTransferList<RTCDataChannelTransferList>();
+
+      if (transfer_list->data_channel_collection.Contains(channel)) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kDataCloneError,
+            "RTCDataChannel at index " + String::Number(object_index) +
+                " is a duplicate of an earlier RTCDataChannel.");
+        return false;
+      }
+
+      transfer_list->data_channel_collection.push_back(channel);
+      return true;
+    }
   }
 
   if (MediaStreamTrack* track =
@@ -286,6 +310,26 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
       return false;
     }
     return WriteMediaStreamTrack(track, dispatcher, exception_state);
+  }
+  if (auto* channel = dispatcher.DowncastTo<RTCDataChannel>()) {
+    if (!RuntimeEnabledFeatures::TransferableRTCDataChannelEnabled(
+            ExecutionContext::From(GetScriptState()))) {
+      return false;
+    }
+    if (IsForStorage()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          "An RTCDataChannel cannot be serialized for storage.");
+      return false;
+    }
+    if (!channel->IsTransferable()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          "RTCDataChannel at index is no longer transferable. Transfers must "
+          "occur on creation, and before any calls to send().");
+      return false;
+    }
+    return WriteRTCDataChannel(channel);
   }
   if (auto* crop_target = dispatcher.ToMostDerived<CropTarget>()) {
     if (!RuntimeEnabledFeatures::RegionCaptureEnabled(
@@ -674,6 +718,26 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
   }
   // TODO(crbug.com/1288839): Needs to move to FinalizeTransfer?
   track->BeingTransferred(transfer_id);
+  return true;
+}
+
+bool V8ScriptValueSerializerForModules::WriteRTCDataChannel(
+    RTCDataChannel* channel) {
+  if (!RuntimeEnabledFeatures::TransferableRTCDataChannelEnabled()) {
+    return false;
+  }
+
+  auto* attachment = GetSerializedScriptValue()
+                         ->GetOrCreateAttachment<RTCDataChannelAttachment>();
+  using NativeDataChannelVector =
+      Vector<rtc::scoped_refptr<webrtc::DataChannelInterface>>;
+  NativeDataChannelVector& channels = attachment->DataChannels();
+  channels.push_back(channel->TransferUnderlyingChannel());
+  const uint32_t index = static_cast<uint32_t>(channels.size() - 1);
+
+  WriteAndRequireInterfaceTag(kRTCDataChannel);
+  WriteUint32(index);
+
   return true;
 }
 

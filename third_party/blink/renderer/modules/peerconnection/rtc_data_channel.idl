@@ -36,7 +36,7 @@ enum RTCDataChannelState {
 
 [
     ActiveScriptWrappable,
-    Exposed=Window
+    Exposed(Window StableBlinkFeatures, DedicatedWorker TransferableRTCDataChannel)
 ] interface RTCDataChannel : EventTarget {
     readonly attribute USVString label;
     readonly attribute boolean ordered;

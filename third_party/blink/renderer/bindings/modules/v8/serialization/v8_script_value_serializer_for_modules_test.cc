@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_restriction_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -55,6 +56,9 @@
 #include "third_party/blink/renderer/modules/mediastream/test/transfer_test_utils.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel_transfer_list.h"
+#include "third_party/blink/renderer/modules/peerconnection/testing/fake_webrtc_data_channel.h"
 #include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data_transfer_list.h"
@@ -1908,6 +1912,62 @@ TEST(V8ScriptValueSerializerForModulesTest,
   EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError", script_state,
                                            exception_state));
   EXPECT_FALSE(blink_track->Ended());
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, TransferRTCDataChannel) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScopedTransferableRTCDataChannelForTest scoped_feature(/*enabled=*/true);
+
+  auto native_channel = FakeWebRTCDataChannel::Create();
+
+  auto* original_channel = MakeGarbageCollected<RTCDataChannel>(
+      scope.GetExecutionContext(), native_channel);
+
+  EXPECT_TRUE(original_channel->IsTransferable());
+  EXPECT_EQ(native_channel->unregister_call_count(), 0);
+  EXPECT_EQ(native_channel->unregister_call_count(), 0);
+
+  // Transfer the frame and make sure the size is the same.
+  Transferables transferables;
+  RTCDataChannelTransferList* transfer_list =
+      transferables.GetOrCreateTransferList<RTCDataChannelTransferList>();
+  transfer_list->data_channel_collection.push_back(original_channel);
+  v8::Local<v8::Value> wrapper = ToV8Traits<RTCDataChannel>::ToV8(
+      scope.GetScriptState(), original_channel);
+  v8::Local<v8::Value> result =
+      RoundTripForModules(wrapper, scope, &transferables);
+
+  RTCDataChannel* new_channel =
+      V8RTCDataChannel::ToWrappable(scope.GetIsolate(), result);
+  ASSERT_NE(new_channel, nullptr);
+
+  // An RTCDataChannel is "neutered" after a single transfer, and cannot be
+  // transferred again. However, the new RTCDataChannel can also be transferred
+  // once. This allows chaining of transfers of the underlying `native_channel`.
+  EXPECT_FALSE(original_channel->IsTransferable());
+  EXPECT_TRUE(new_channel->IsTransferable());
+
+  // The transfer should have closed the original channel but not the underlying
+  // transport.
+  EXPECT_EQ(original_channel->readyState(), "closed");
+  EXPECT_FALSE(native_channel->close_was_called());
+  EXPECT_EQ(native_channel->unregister_call_count(), 0);
+
+  // The new channel should not have immediately registered its observer. This
+  // gives the new RTCDataChannel a brief opportunity to be transferred again;
+  // transferring the underlying `native_channel` is allowed until we call
+  // `send()`, or register an observer (after which we could lose incoming
+  // messages during a transfer).
+  EXPECT_EQ(native_channel->register_call_count(), 0);
+
+  task_environment.RunUntilIdle();
+
+  EXPECT_FALSE(new_channel->IsTransferable());
+
+  EXPECT_EQ(native_channel->register_call_count(), 1);
+  EXPECT_EQ(native_channel->unregister_call_count(), 0);
+  EXPECT_FALSE(native_channel->close_was_called());
 }
 
 #if !BUILDFLAG(IS_ANDROID)  // SubCaptureTargets are not exposed on Android.
