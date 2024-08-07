@@ -64,7 +64,7 @@ class WebsocketServer():
     self.websocket = None
     self.connection_received_event.clear()
 
-  def WaitForConnection(self, timeout: Optional[int] = None) -> None:
+  def WaitForConnection(self, timeout: Optional[float] = None) -> None:
     if self.websocket:
       return
     timeout = timeout or WEBSOCKET_SETUP_TIMEOUT_SECONDS

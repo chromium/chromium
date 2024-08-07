@@ -214,7 +214,8 @@ class SkiaGoldHeartbeatIntegrationTestBase(sgitb.SkiaGoldIntegrationTestBase):
       tab.action_runner.EvaluateJavaScript('connectWebsocket("%d")' %
                                            websocket_server.server_port,
                                            timeout=5)
-      websocket_server.WaitForConnection()
+      websocket_server.WaitForConnection(
+          websocket_utils.GetScaledConnectionTimeout(self.child.jobs))
       response = websocket_server.Receive(5)
       response = json.loads(response)
       assert response['type'] == 'CONNECTION_ACK'

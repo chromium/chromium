@@ -328,7 +328,8 @@ class WebGLConformanceIntegrationTestBase(
           'connectWebsocket("%d")' %
           self.__class__.websocket_server.server_port,
           timeout=WEBSOCKET_JAVASCRIPT_TIMEOUT_S)
-      self.__class__.websocket_server.WaitForConnection()
+      self.__class__.websocket_server.WaitForConnection(
+          websocket_utils.GetScaledConnectionTimeout(self.child.jobs))
       response = self.__class__.websocket_server.Receive(
           WEBSOCKET_JAVASCRIPT_TIMEOUT_S)
       response = json.loads(response)
