@@ -9,6 +9,8 @@
 #include <string_view>
 #include <vector>
 
+#include "base/functional/callback.h"
+
 class BrowserStateInfoCache;
 class ChromeBrowserState;
 class ChromeBrowserStateManagerObserver;
@@ -17,6 +19,10 @@ class ChromeBrowserStateManagerObserver;
 // ChromeBrowserState instances. Owns all instances that it creates.
 class ChromeBrowserStateManager {
  public:
+  // Callback invoked when a ChromeBrowserState has been loaded asynchronously.
+  using ChromeBrowserStateLoadedCallback =
+      base::OnceCallback<void(ChromeBrowserState*)>;
+
   ChromeBrowserStateManager(const ChromeBrowserStateManager&) = delete;
   ChromeBrowserStateManager& operator=(const ChromeBrowserStateManager&) =
       delete;
@@ -26,6 +32,9 @@ class ChromeBrowserStateManager {
   // Registers/unregisters observers.
   virtual void AddObserver(ChromeBrowserStateManagerObserver* observer) = 0;
   virtual void RemoveObserver(ChromeBrowserStateManagerObserver* observer) = 0;
+
+  // Loads the last active browser states. *Deprecated*.
+  virtual void LoadBrowserStates() = 0;
 
   // Returns the ChromeBrowserState that was last used. Only use this method for
   // the very specific purpose of finding which of the several available browser
@@ -38,14 +47,53 @@ class ChromeBrowserStateManager {
   // no loaded ChromeBrowserState with that `name`.
   virtual ChromeBrowserState* GetBrowserStateByName(std::string_view name) = 0;
 
-  // Returns the BrowserStateInfoCache associated with this manager.
-  virtual BrowserStateInfoCache* GetBrowserStateInfoCache() = 0;
-
-  // Returns the list of loaded ChromeBrowserStates.
+  // Returns the list of loaded ChromeBrowserStates. The order is arbitrary.
   virtual std::vector<ChromeBrowserState*> GetLoadedBrowserStates() = 0;
 
-  // Loads the last active browser states.
-  virtual void LoadBrowserStates() = 0;
+  // Asynchronously loads a ChromeBrowserState known by `name` is it exists. The
+  // `created_callback` will be called with the ChromeBrowserState when it has
+  // been created (but not yet initialised) and `initialised_callback` will be
+  // called once the ChromeBrowserState is fully initialised. Returns true if
+  // the ChromeBrowserState exists, false otherwise.
+  //
+  // In case of failure, `initialized_callback` is invoked with nullptr. The
+  // `created_callback` will only be called if the ChromeBrowserState is
+  // created, and thus will never receive nullptr but may never be called if
+  // the creation is disallowed.
+  virtual bool LoadBrowserStateAsync(
+      std::string_view name,
+      ChromeBrowserStateLoadedCallback initialized_callback,
+      ChromeBrowserStateLoadedCallback created_callback = {}) = 0;
+
+  // Asynchronously creates or loads a ChromeBrowserState known by `name`. The
+  // `create_callback` will be called with the ChromeBrowserState when it has
+  // been created (but not yet initialised) and `initialised_callback` will be
+  // called once the ChromeBrowserState is fully initialised. Returns true if
+  // the ChromeBrowserState exists or can be created, false otherwise.
+  //
+  // In case of failure, `initialized_callback` is invoked with nullptr. The
+  // `created_callback` will only be called if the ChromeBrowserState is
+  // created, and thus will never receive nullptr but may never be called if
+  // the creation is disallowed.
+  virtual bool CreateBrowserStateAsync(
+      std::string_view name,
+      ChromeBrowserStateLoadedCallback initialized_callback,
+      ChromeBrowserStateLoadedCallback created_callback = {}) = 0;
+
+  // Loads the ChromeBrowserState known by `name` and returns it. As this
+  // method is synchronous, it may block the application so it should only be
+  // used during the initialisation when blocking is possible or for tests.
+  // Returns null if loading the ChromeBrowserState failed.
+  virtual ChromeBrowserState* LoadBrowserState(std::string_view name) = 0;
+
+  // Creates or loads the ChromeBrowserState known by `name` and returns it.
+  // As this method is synchronous, it may block the application so it should
+  // only be used during the initialisation when blocking is possible or for
+  // tests. Returns null if loading or creating the ChromeBrowserState failed.
+  virtual ChromeBrowserState* CreateBrowserState(std::string_view name) = 0;
+
+  // Returns the BrowserStateInfoCache associated with this manager.
+  virtual BrowserStateInfoCache* GetBrowserStateInfoCache() = 0;
 
  protected:
   ChromeBrowserStateManager() {}
