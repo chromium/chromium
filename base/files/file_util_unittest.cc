@@ -3444,9 +3444,8 @@ TEST_F(FileUtilTest, ReadFile) {
 
   // Read the file with smaller buffer.
   EXPECT_EQ(ReadFile(file_path, small_buffer), small_buffer.size());
-  EXPECT_EQ(
-      std::string(kTestData.begin(), kTestData.begin() + small_buffer.size()),
-      std::string(small_buffer.begin(), small_buffer.end()));
+  EXPECT_EQ(kTestData.substr(0, small_buffer.size()),
+            std::string(small_buffer.begin(), small_buffer.end()));
 
   // Read the file with buffer which have exactly same size.
   EXPECT_EQ(ReadFile(file_path, exact_buffer), kTestData.size());

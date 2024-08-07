@@ -278,8 +278,7 @@ TEST_F(BackgroundDownloaderTest, DISABLED_ServerHangup) {
               "Content-Range",
               base::StringPrintf("bytes %d-%zu/%zu", lower_range, data.size(),
                                  data.size()));
-          response->set_content(
-              std::string(data.begin() + lower_range, data.end()));
+          response->set_content(data.substr(lower_range));
           return base::WrapUnique<HttpResponse>(response.release());
         } else {
           return base::WrapUnique<HttpResponse>(
@@ -574,8 +573,7 @@ TEST_F(BackgroundDownloaderCrashingClientTest, DISABLED_ClientCrash) {
               "Content-Range",
               base::StringPrintf("bytes %d-%zu/%zu", lower_range, data.size(),
                                  data.size()));
-          response->set_content(
-              std::string(data.begin() + lower_range, data.end()));
+          response->set_content(data.substr(lower_range));
           return base::WrapUnique<HttpResponse>(response.release());
         } else {
           return base::WrapUnique<HttpResponse>(
