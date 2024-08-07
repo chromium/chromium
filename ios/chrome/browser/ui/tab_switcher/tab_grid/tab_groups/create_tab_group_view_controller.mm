@@ -35,7 +35,6 @@ const CGFloat kMaxHeight = 600;
 const CGFloat kHorizontalMargin = 32;
 const CGFloat kDotAndFieldContainerMargin = 24;
 const CGFloat kDotTitleSeparationMargin = 12;
-const CGFloat kSyncGroupTopConstant = 8;
 const CGFloat kContainersMaxWidth = 400;
 const CGFloat kBackgroundAlpha = 0.7;
 const CGFloat kCompactButtonTopMargin = 12;
@@ -121,8 +120,6 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   UIView* _snapshotsContainer;
   // Whether it is to edit a group (vs creation).
   BOOL _editMode;
-  // Whether this is an incognito group.
-  BOOL _incognito;
   // Whether the user is syncing tabs.
   BOOL _tabSynced;
   // Number of selected items.
@@ -152,7 +149,6 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 }
 
 - (instancetype)initWithEditMode:(BOOL)editMode
-                       incognito:(BOOL)incognito
                        tabSynced:(BOOL)tabSynced {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group outside the Tab Groups "
@@ -160,7 +156,6 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   self = [super init];
   if (self) {
     _editMode = editMode;
-    _incognito = incognito;
     _tabSynced = tabSynced;
 
     [self createColorSelectionButtons];
@@ -292,24 +287,6 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   ]];
 
   return dotView;
-}
-
-// Returns the view containing the explanation string for synced groups.
-- (UIView*)syncGroupExplanation {
-  UILabel* label = [[UILabel alloc] init];
-  label.numberOfLines = 2;
-  label.textAlignment = NSTextAlignmentCenter;
-  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  label.adjustsFontForContentSizeCategory = YES;
-  label.translatesAutoresizingMaskIntoConstraints = NO;
-  label.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  label.text =
-      _tabSynced
-          ? l10n_util::GetNSString(IDS_IOS_TAB_GROUP_CREATION_SYNC_EXPLANATION)
-          : l10n_util::GetNSString(
-                IDS_IOS_TAB_GROUP_CREATION_SAVED_EXPLANATION);
-
-  return label;
 }
 
 // Returns the configured full primary title (colored dot and text title).
@@ -651,10 +628,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 
 // Configures the view and all subviews when there is enough space.
 - (void)createConfigurations {
-  BOOL shouldDisplaySyncLabel =
-      IsTabGroupSyncEnabled() && !_editMode && !_incognito;
   UIView* dotAndFieldContainer = [self configuredDotAndFieldContainer];
-  UIView* syncGroupExplanation = [self syncGroupExplanation];
   UILayoutGuide* snapshotsContainerLayoutGuide = [[UILayoutGuide alloc] init];
   _snapshotsContainer = [self configuredSnapshotsContainer];
   _colorsScrollView = [self listOfColorView];
@@ -665,14 +639,6 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 
   UIView* container = [[UIView alloc] init];
   container.translatesAutoresizingMaskIntoConstraints = NO;
-
-  // The view just above the snapshots, for constraints.
-  UIView* viewAboveSnapshots =
-      shouldDisplaySyncLabel ? syncGroupExplanation : dotAndFieldContainer;
-
-  if (shouldDisplaySyncLabel) {
-    [container addSubview:syncGroupExplanation];
-  }
 
   [container addSubview:dotAndFieldContainer];
   [container addSubview:_snapshotsContainer];
@@ -775,7 +741,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
     [snapshotsContainerLayoutGuide.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
     [snapshotsContainerLayoutGuide.topAnchor
-        constraintEqualToAnchor:viewAboveSnapshots.bottomAnchor
+        constraintEqualToAnchor:dotAndFieldContainer.bottomAnchor
                        constant:kSnapshotViewVerticalMargin],
     [snapshotsContainerLayoutGuide.widthAnchor
         constraintEqualToAnchor:dotAndFieldContainer.widthAnchor],
@@ -793,18 +759,6 @@ const CGFloat kClearButtonWidthAndHeight = 40;
                                               .widthAnchor],
     keyboardConstraint,
   ]];
-
-  if (shouldDisplaySyncLabel) {
-    [NSLayoutConstraint activateConstraints:@[
-      [syncGroupExplanation.widthAnchor
-          constraintLessThanOrEqualToAnchor:dotAndFieldContainer.widthAnchor],
-      [syncGroupExplanation.centerXAnchor
-          constraintEqualToAnchor:dotAndFieldContainer.centerXAnchor],
-      [syncGroupExplanation.topAnchor
-          constraintEqualToAnchor:dotAndFieldContainer.bottomAnchor
-                         constant:kSyncGroupTopConstant],
-    ]];
-  }
 }
 
 // Returns the view which contains all the selected tabs' snapshot which will be

@@ -1108,38 +1108,6 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests the different explanation text (signed in/out) in the creation screen.
-- (void)testTabGroupCreationScreenExplanation {
-  [ChromeEarlGreyUI openTabGrid];
-
-  // Open the creation view.
-  OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::StaticTextWithAccessibilityLabelId(
-                     IDS_IOS_TAB_GROUP_CREATION_SAVED_EXPLANATION)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Cancel the creation.
-  [[EarlGrey selectElementWithMatcher:CreateTabGroupCancelButtonMatcher()]
-      performAction:grey_tap()];
-
-  // Sign in.
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [SigninEarlGrey setSelectedType:syncer::UserSelectableType::kTabs
-                          enabled:YES];
-
-  // Open the creation view.
-  OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::StaticTextWithAccessibilityLabelId(
-                     IDS_IOS_TAB_GROUP_CREATION_SYNC_EXPLANATION)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Cancel the creation.
-  [[EarlGrey selectElementWithMatcher:CreateTabGroupCancelButtonMatcher()]
-      performAction:grey_tap()];
-}
-
 // Tests opening a tab from the group view.
 - (void)testOpenTabFromGroupView {
   std::string URL1 = "chrome://version";

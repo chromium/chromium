@@ -88,7 +88,6 @@
   Browser* browser = self.browser;
   ChromeBrowserState* browserState = browser->GetBrowserState();
   BOOL editMode = _tabGroup != nullptr;
-  BOOL incognito = browserState->IsOffTheRecord();
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
   BOOL tabSynced =
@@ -96,7 +95,6 @@
                          syncer::UserSelectableType::kTabs);
   _viewController =
       [[CreateTabGroupViewController alloc] initWithEditMode:editMode
-                                                   incognito:incognito
                                                    tabSynced:tabSynced];
 
   if (_tabGroup) {

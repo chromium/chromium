@@ -28,7 +28,6 @@
 // controller is in creation mode. `tabSynced` represents whether the tabs are
 // synced across devices.
 - (instancetype)initWithEditMode:(BOOL)editMode
-                       incognito:(BOOL)incognito
                        tabSynced:(BOOL)tabSynced;
 
 @end
