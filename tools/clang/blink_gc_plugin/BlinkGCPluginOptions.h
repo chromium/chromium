@@ -48,6 +48,9 @@ struct BlinkGCPluginOptions {
   // Enables checks for raw pointers, refs and unique_ptr of traceable types.
   bool enable_ptrs_to_traceable_check = false;
 
+  // Enables checks for GCed variables and fields.
+  bool enable_gced_vars_and_fields_check = false;
+
   std::set<std::string> ignored_classes;
   std::set<std::string> checked_namespaces;
   std::vector<std::string> checked_directories;

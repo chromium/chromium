@@ -216,24 +216,20 @@ const char kUniquePtrUsedWithGC[] =
     "[blink-gc] Disallowed use of %0 found; %1 is a garbage-collected type. "
     "std::unique_ptr cannot hold garbage-collected objects.";
 
-const char kOptionalDeclUsedWithGC[] =
-    "[blink-gc] Disallowed optional field or variable of type %0 found; %1 is "
-    "a "
+const char kOptionalFieldUsedWithGC[] =
+    "[blink-gc] Disallowed optional field of %0 found; %1 is a "
     "garbage-collected or traceable "
-    "type. Optional fields and variables cannot hold garbage-collected or "
-    "traceable objects.";
+    "type. Optional fields cannot hold garbage-collected or traceable objects.";
 
 const char kOptionalNewExprUsedWithGC[] =
     "[blink-gc] Disallowed new-expression of %0 found; %1 is a "
     "garbage-collected or traceable "
     "type. Optional fields cannot hold garbage-collected or traceable objects.";
 
-const char kRawPtrOrRefDeclUsedWithGC[] =
-    "[blink-gc] Disallowed raw_ptr or raw_ref field or variable of type %0 "
-    "found; %1 is a "
+const char kRawPtrOrRefFieldUsedWithGC[] =
+    "[blink-gc] Disallowed raw_ptr or raw_ref field of %0 found; %1 is a "
     "garbage-collected or traceable "
-    "type. Raw_ptr and raw_ref field and variable cannot hold "
-    "garbage-collected or "
+    "type. Raw_ptr and raw_ref fields cannot hold garbage-collected or "
     "traceable objects.";
 
 const char kRawPtrOrRefNewExprUsedWithGC[] =
@@ -389,12 +385,12 @@ DiagnosticsReporter::DiagnosticsReporter(
 
   diag_unique_ptr_used_with_gc_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kUniquePtrUsedWithGC);
-  diag_optional_decl_used_with_gc_ =
-      diagnostic_.getCustomDiagID(getErrorLevel(), kOptionalDeclUsedWithGC);
+  diag_optional_field_used_with_gc_ =
+      diagnostic_.getCustomDiagID(getErrorLevel(), kOptionalFieldUsedWithGC);
   diag_optional_new_expr_used_with_gc_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kOptionalNewExprUsedWithGC);
-  diag_raw_ptr_or_ref_decl_used_with_gc_ =
-      diagnostic_.getCustomDiagID(getErrorLevel(), kRawPtrOrRefDeclUsedWithGC);
+  diag_raw_ptr_or_ref_field_used_with_gc_ =
+      diagnostic_.getCustomDiagID(getErrorLevel(), kRawPtrOrRefFieldUsedWithGC);
   diag_raw_ptr_or_ref_new_expr_used_with_gc_ = diagnostic_.getCustomDiagID(
       getErrorLevel(), kRawPtrOrRefNewExprUsedWithGC);
   diag_variant_used_with_gc_ =
@@ -769,12 +765,12 @@ void DiagnosticsReporter::UniquePtrUsedWithGC(
       << bad_function << gc_type << expr->getSourceRange();
 }
 
-void DiagnosticsReporter::OptionalDeclUsedWithGC(
-    const clang::Decl* decl,
+void DiagnosticsReporter::OptionalFieldUsedWithGC(
+    const clang::FieldDecl* field,
     const clang::CXXRecordDecl* optional,
     const clang::CXXRecordDecl* gc_type) {
-  ReportDiagnostic(decl->getBeginLoc(), diag_optional_decl_used_with_gc_)
-      << optional << gc_type << decl->getSourceRange();
+  ReportDiagnostic(field->getBeginLoc(), diag_optional_field_used_with_gc_)
+      << optional << gc_type << field->getSourceRange();
 }
 
 void DiagnosticsReporter::OptionalNewExprUsedWithGC(
@@ -785,12 +781,13 @@ void DiagnosticsReporter::OptionalNewExprUsedWithGC(
       << optional << gc_type << expr->getSourceRange();
 }
 
-void DiagnosticsReporter::RawPtrOrRefDeclUsedWithGC(
-    const clang::Decl* decl,
+void DiagnosticsReporter::RawPtrOrRefFieldUsedWithGC(
+    const clang::FieldDecl* field,
     const clang::CXXRecordDecl* optional,
     const clang::CXXRecordDecl* gc_type) {
-  ReportDiagnostic(decl->getBeginLoc(), diag_raw_ptr_or_ref_decl_used_with_gc_)
-      << optional << gc_type << decl->getSourceRange();
+  ReportDiagnostic(field->getBeginLoc(),
+                   diag_raw_ptr_or_ref_field_used_with_gc_)
+      << optional << gc_type << field->getSourceRange();
 }
 
 void DiagnosticsReporter::RawPtrOrRefNewExprUsedWithGC(
