@@ -12,10 +12,14 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/inactive_tabs_button_cell.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/tabs_closure_animation.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_ui_swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_preamble_header.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/web/public/web_state_id.h"
 
 using base::apple::ObjCCast;
+using base::apple::ObjCCastStrict;
 
 namespace {
 
@@ -42,12 +46,36 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   // The supplementary view registration for the Inactive Tabs button header.
   UICollectionViewSupplementaryRegistration*
       _inactiveTabsButtonHeaderRegistration;
+
+  // The object responsible for animating the tabs closure.
+  TabsClosureAnimation* _tabsClosureAnimation;
 }
 
 #pragma mark - Public
 
 - (void)animateTabsClosureForTabs:(std::set<web::WebStateID>)tabsToClose {
-  // TODO(crbug.com/354112735): Implement tabs closure animation.
+  NSMutableArray<GridCell*>* gridCells = [[NSMutableArray alloc] init];
+
+  for (NSIndexPath* path in self.collectionView.indexPathsForVisibleItems) {
+    GridItemIdentifier* item =
+        [self.diffableDataSource itemIdentifierForIndexPath:path];
+    // TODO(crbug.com/354112735): Add logic for animation of inactive tabs and
+    // tabs in groups.
+    if (item.type == GridItemType::kTab &&
+        tabsToClose.contains(item.tabSwitcherItem.identifier)) {
+      UICollectionViewCell* collectionViewCell =
+          [self.collectionView cellForItemAtIndexPath:path];
+      [gridCells addObject:ObjCCastStrict<GridCell>(collectionViewCell)];
+    }
+  }
+
+  __weak RegularGridViewController* weakSelf = self;
+  _tabsClosureAnimation =
+      [[TabsClosureAnimation alloc] initWithWindow:self.view.window
+                                         gridCells:gridCells];
+  [_tabsClosureAnimation animateWithCompletion:^{
+    [weakSelf onTabsClosureAnimationCompletionWithTabs:tabsToClose];
+  }];
 }
 
 #pragma mark - Parent's functions
@@ -219,6 +247,17 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 }
 
 #pragma mark - Private
+
+// Callback of `_tabsClosureAnimation` when the animation has been completed.
+// Closes the actual tabs in `tabsToClose` and reenables user interaction.
+- (void)onTabsClosureAnimationCompletionWithTabs:
+    (std::set<web::WebStateID>)tabsToClose {
+  // Close the tabs which rearranges the grid to not include the tabs hidden by
+  // the animation.
+  [_gridHandler closeItemsWithIDs:tabsToClose];
+
+  _tabsClosureAnimation = nil;
+}
 
 // Updates the inactive tabs button (reconfigure, show or remove) based on its
 // visible state.

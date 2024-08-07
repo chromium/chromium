@@ -9,9 +9,14 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
 
+@protocol GridCommands;
+
 // A view controller that contains a grid of regular items.
 @interface RegularGridViewController
     : BaseGridViewController <InactiveTabsInfoConsumer>
+
+// Handler for the GridCommands protocol.
+@property(nonatomic, weak) id<GridCommands> gridHandler;
 
 // Trigger the tabs closure animation along with the actual closure of the
 // WebStates in `tabsToClose`.

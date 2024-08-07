@@ -141,6 +141,7 @@
   gridViewController.mutator = _mediator;
   gridViewController.gridProvider = _mediator;
   gridViewController.menuProvider = _contextMenuProvider;
+  gridViewController.gridHandler = _mediator;
 
   // If regular is enabled then the grid exists and it is not disabled.
   // TODO(crbug.com/40273478): Get disabled status from the mediator.
