@@ -21,6 +21,10 @@ const base::FeatureParam<int> kMaxCacheSize{
 const base::FeatureParam<double> kPercentageOfRamToUse{
     &blink::features::kBackForwardTransitions, "percentage-of-ram-to-use", 2.5};
 
+const base::FeatureParam<base::TimeDelta> kInvisibleCacheCleanupDelay{
+    &blink::features::kBackForwardTransitions, "invisible-cache-cleanup-delay",
+    base::Minutes(7)};
+
 size_t GetMaxCacheSizeInBytes() {
   constexpr int kLowEndMax = 32 * 1024 * 1024;  // 32MB
   constexpr int kOtherMax = 128 * 1024 * 1024;  // 128MB
@@ -62,6 +66,12 @@ size_t NavigationTransitionConfig::ComputeCacheSizeInBytes() {
       std::max(display_size_in_bytes, physical_memory_budget);
 
   return physical_memory_budget;
+}
+
+// static
+base::TimeDelta
+NavigationTransitionConfig::GetCleanupDelayForInvisibleCaches() {
+  return kInvisibleCacheCleanupDelay.Get();
 }
 
 }  // namespace content

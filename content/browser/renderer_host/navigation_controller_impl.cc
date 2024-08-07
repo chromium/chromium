@@ -4258,6 +4258,11 @@ size_t NavigationControllerImpl::max_entry_count() {
 void NavigationControllerImpl::SetActive(bool is_active) {
   if (is_active && needs_reload_)
     LoadIfNecessary();
+
+  if (frame_tree_->is_primary();
+      auto* cache = GetNavigationEntryScreenshotCache()) {
+    cache->SetVisible(is_active);
+  }
 }
 
 void NavigationControllerImpl::LoadIfNecessary() {

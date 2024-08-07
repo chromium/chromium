@@ -53,7 +53,7 @@ NavigationEntryScreenshotCache::NavigationEntryScreenshotCache(
 
 NavigationEntryScreenshotCache::~NavigationEntryScreenshotCache() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  PurgeInternal(/*for_memory_pressure=*/false);
+  PurgeInternal(/*reason=*/std::nullopt);
 }
 
 void NavigationEntryScreenshotCache::SetScreenshot(
@@ -87,6 +87,21 @@ void NavigationEntryScreenshotCache::OnNavigationFinished(
   SetScreenshotInternal(std::move(it->second.screenshot),
                         it->second.is_copied_from_embedder);
   pending_screenshots_.erase(it);
+}
+
+void NavigationEntryScreenshotCache::SetVisible(bool visible) {
+  const bool currently_visible = !last_visible_timestamp_.has_value();
+  if (visible == currently_visible) {
+    return;
+  }
+
+  if (visible) {
+    last_visible_timestamp_.reset();
+  } else {
+    last_visible_timestamp_ = manager_->Now();
+  }
+
+  manager_->OnVisibilityChanged(this);
 }
 
 void NavigationEntryScreenshotCache::SetScreenshotInternal(
@@ -249,11 +264,12 @@ void NavigationEntryScreenshotCache::EvictScreenshotsUntilUnderBudgetOrEmpty() {
   }
 }
 
-void NavigationEntryScreenshotCache::PurgeForMemoryPressure() {
-  PurgeInternal(/*for_memory_pressure=*/true);
+void NavigationEntryScreenshotCache::Purge(PurgeReason reason) {
+  PurgeInternal(reason);
 }
 
-void NavigationEntryScreenshotCache::PurgeInternal(bool for_memory_pressure) {
+void NavigationEntryScreenshotCache::PurgeInternal(
+    std::optional<PurgeReason> reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto it = cached_screenshots_.begin();
   while (!IsEmpty()) {
@@ -263,10 +279,20 @@ void NavigationEntryScreenshotCache::PurgeInternal(bool for_memory_pressure) {
     const size_t size = it->second;
     cached_screenshots_.erase(it);
 
-    if (for_memory_pressure) {
+    if (reason) {
+      NavigationTransitionData::CacheHitOrMissReason metric_reason;
+      switch (*reason) {
+        case PurgeReason::kMemoryPressure:
+          metric_reason = NavigationTransitionData::CacheHitOrMissReason::
+              kCacheMissPurgedMemoryPressure;
+          break;
+        case PurgeReason::kInvisible:
+          metric_reason = NavigationTransitionData::CacheHitOrMissReason::
+              kCacheMissInvisible;
+          break;
+      }
       evicted_entry->navigation_transition_data().set_cache_hit_or_miss_reason(
-          NavigationTransitionData::CacheHitOrMissReason::
-              kCacheMissPurgedMemoryPressure);
+          metric_reason);
     } else {
       // Resetting the UMA enum since at this point `this` is getting destroyed
       // by the destructor which invalidates the enum value.
@@ -282,6 +308,11 @@ void NavigationEntryScreenshotCache::PurgeInternal(bool for_memory_pressure) {
 
 bool NavigationEntryScreenshotCache::IsEmpty() const {
   return cached_screenshots_.empty();
+}
+
+std::optional<base::TimeTicks>
+NavigationEntryScreenshotCache::GetLastVisibleTime() const {
+  return last_visible_timestamp_;
 }
 
 void NavigationEntryScreenshotCache::SetNewScreenshotCachedCallbackForTesting(

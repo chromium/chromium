@@ -56,7 +56,10 @@ class NavigationTransitionData {
     // Cache-Control: no-store
     kCacheMissCCNS = 9,
 
-    kMaxValue = kCacheMissCCNS
+    // Screenshot was evicted because the tab was invisible for a long duration.
+    kCacheMissInvisible = 10,
+
+    kMaxValue = kCacheMissInvisible
   };
 
   NavigationTransitionData() = default;

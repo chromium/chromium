@@ -9,9 +9,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
+#include "base/time/default_tick_clock.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_utils.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/browser_metrics.h"
 #include "ui/display/screen.h"
 
@@ -21,7 +23,10 @@ NavigationEntryScreenshotManager::NavigationEntryScreenshotManager()
     :  // `NO_AUTO_EVICT` since we want to manually limit the global cache size
        // by the number of bytes of the thumbnails, rather than the number of
        // entries in the cache.
-      managed_caches_(base::LRUCacheSet<int>::NO_AUTO_EVICT) {
+      managed_caches_(base::LRUCacheSet<int>::NO_AUTO_EVICT),
+      tick_clock_(base::DefaultTickClock::GetInstance()),
+      cleanup_delay_(
+          NavigationTransitionConfig::GetCleanupDelayForInvisibleCaches()) {
   CHECK(NavigationTransitionConfig::AreBackForwardTransitionsEnabled());
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   max_cache_size_in_bytes_ =
@@ -82,11 +87,17 @@ void NavigationEntryScreenshotManager::OnScreenshotCompressed(
   current_cache_size_in_bytes_ += new_size;
 }
 
-void NavigationEntryScreenshotManager::OnCacheBecameVisible(
+void NavigationEntryScreenshotManager::OnVisibilityChanged(
     NavigationEntryScreenshotCacheEvictor* cache) {
-  // Access the cache in the set to mark it as recently used.
-  auto it = managed_caches_.Get(cache);
-  CHECK(it != managed_caches_.end());
+  if (cache->IsEmpty()) {
+    CHECK(managed_caches_.Peek(cache) == managed_caches_.end());
+    return;
+  }
+
+  auto last_visible_time = cache->GetLastVisibleTime();
+  if (last_visible_time && !cleanup_task_.IsRunning()) {
+    ScheduleCleanup(*last_visible_time);
+  }
 }
 
 bool NavigationEntryScreenshotManager::IsEmpty() const {
@@ -98,6 +109,7 @@ void NavigationEntryScreenshotManager::Register(
     NavigationEntryScreenshotCacheEvictor* cache) {
   CHECK(managed_caches_.Peek(cache) == managed_caches_.end());
   managed_caches_.Put(std::move(cache));
+  OnVisibilityChanged(cache);
 }
 
 void NavigationEntryScreenshotManager::Unregister(
@@ -105,6 +117,51 @@ void NavigationEntryScreenshotManager::Unregister(
   auto it = managed_caches_.Peek(cache);
   CHECK(it != managed_caches_.end());
   managed_caches_.Erase(it);
+}
+
+base::TimeTicks NavigationEntryScreenshotManager::Now() const {
+  return tick_clock_->NowTicks();
+}
+
+void NavigationEntryScreenshotManager::ScheduleCleanup(
+    base::TimeTicks last_visible_time) {
+  const auto delay = cleanup_delay_ - (Now() - last_visible_time);
+  auto callback = base::BindOnce(&NavigationEntryScreenshotManager::RunCleanup,
+                                 weak_factory_.GetWeakPtr());
+  cleanup_task_.Start(FROM_HERE, delay, std::move(callback));
+}
+
+void NavigationEntryScreenshotManager::RunCleanup() {
+  std::optional<base::TimeTicks> earliest_last_visible_time;
+  const base::TimeTicks now = Now();
+
+  auto it = managed_caches_.begin();
+  while (it != managed_caches_.end()) {
+    auto* cache = *it;
+    it++;
+
+    const auto last_visible_time = cache->GetLastVisibleTime();
+    if (!last_visible_time) {
+      continue;
+    }
+
+    CHECK_LE(*last_visible_time, now);
+    if (now - *last_visible_time >= cleanup_delay_) {
+      cache->Purge(
+          NavigationEntryScreenshotCacheEvictor::PurgeReason::kInvisible);
+      CHECK(cache->IsEmpty());
+      CHECK(managed_caches_.Peek(cache) == managed_caches_.end());
+    } else if (!earliest_last_visible_time) {
+      earliest_last_visible_time = *last_visible_time;
+    } else {
+      earliest_last_visible_time =
+          std::min(*earliest_last_visible_time, *last_visible_time);
+    }
+  }
+
+  if (earliest_last_visible_time) {
+    ScheduleCleanup(*earliest_last_visible_time);
+  }
 }
 
 // The current implementation iterates through the tabs in the LRU order and
@@ -118,6 +175,7 @@ void NavigationEntryScreenshotManager::EvictIfOutOfMemoryBudget() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!IsEmpty());
   // Start with the least recently used.
+  // TODO(khushalsagar): Evict from invisible caches first?
   auto it = managed_caches_.rbegin();
   while (current_cache_size_in_bytes_ > max_cache_size_in_bytes_) {
     CHECK(it != managed_caches_.rend());
@@ -141,11 +199,12 @@ void NavigationEntryScreenshotManager::OnMemoryPressure(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return;
   }
-  // Using a while loop because `PurgeForMemoryPressure` erases the iterator.
+  // Using a while loop because `Purge` erases the iterator.
   auto it = managed_caches_.begin();
   while (it != managed_caches_.end()) {
     auto* cache = *it;
-    cache->PurgeForMemoryPressure();
+    cache->Purge(
+        NavigationEntryScreenshotCacheEvictor::PurgeReason::kMemoryPressure);
     CHECK(cache->IsEmpty());
     it = managed_caches_.begin();
   }

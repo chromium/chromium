@@ -7,6 +7,8 @@
 
 #include <cstddef>
 
+#include "base/time/time.h"
+
 namespace content {
 
 // Provides the parameters to configure the behaviour for back/forward visual
@@ -20,6 +22,9 @@ class NavigationTransitionConfig {
 
   // Computes the size of the screenshot cache.
   static size_t ComputeCacheSizeInBytes();
+
+  // Provides the duration for a cache to be invisible before its evicted.
+  static base::TimeDelta GetCleanupDelayForInvisibleCaches();
 };
 
 }  // namespace content
