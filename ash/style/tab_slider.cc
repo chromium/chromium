@@ -17,6 +17,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/view_class_properties.h"
 
@@ -137,13 +138,20 @@ void TabSlider::OnButtonSelected(TabSliderButton* button) {
   DCHECK(base::Contains(buttons_, button));
   DCHECK(button->selected());
 
-  // Deselect all the other buttons.
+  // Deselect all the other buttons and check if the tab slider has focus.
+  bool has_focus = false;
   for (ash::TabSliderButton* b : buttons_) {
     b->SetSelected(b == button);
+    has_focus |= b->HasFocus();
   }
 
   // Move the selector to the selected button.
   selector_view_->MoveToSelectedButton(button);
+
+  // Move the focus to the selected button.
+  if (has_focus) {
+    GetFocusManager()->SetFocusedView(button);
+  }
 }
 
 void TabSlider::Layout(PassKey) {
