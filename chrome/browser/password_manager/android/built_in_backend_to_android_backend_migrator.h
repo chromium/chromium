@@ -17,39 +17,6 @@ namespace password_manager {
 // and shouldn't start during the hot phase of Chrome start.
 class BuiltInBackendToAndroidBackendMigrator {
  public:
-  // The type of the migration that should be executed next.
-  enum class MigrationType {
-    // Migration is not needed.
-    kNone,
-    // When the sync user is first enrolled into the UPM experiment, initial
-    // migration to the android backend should happen once. Because the user is
-    // syncing, the android backend already has all credentials, so only the
-    // non-syncable data should be moved.
-    kInitialForSyncUsers,
-    // Migration to the android backend after enabling password sync. Can happen
-    // multiple times. While password sync was disabled, logins were saved to
-    // the built-in backend, after enabling sync logins can be synced, but
-    // non-syncable data still needs to be migrated.
-    kNonSyncableToAndroidBackend,
-    // Migration to the built-in backend after disabling password sync. Can
-    // happen multiple times. While password sync was on, logins were saved to
-    // the android backend and the built in backend was updated via sync and
-    // logins should be the same, but non-syncable data still needs to be
-    // migrated.
-    kNonSyncableToBuiltInBackend,
-    // When Unified Password Manager is enabled for non-syncing
-    // users, the migration to keep both backend in sync is needed. That
-    // includes both the initial migration (to the android backend) and the
-    // rolling migration (to the built-in backend).
-    kForLocalUsers,
-    // When the sync user is unenrolled into the UPM experiment, but the sync
-    // functions without errors on the device, automatic UPM reenrollment
-    // attempts will be made. Because the user is syncing, the android backend
-    // already has all credentials, so only the non-syncable data should be
-    // moved.
-    kReenrollmentAttempt,
-  };
-
   // The type of operation triggered on backend during the migration. Used for
   // the metrics reporting.
   enum class BackendOperationForMigration {
@@ -75,15 +42,13 @@ class BuiltInBackendToAndroidBackendMigrator {
       BuiltInBackendToAndroidBackendMigrator&&) = delete;
   ~BuiltInBackendToAndroidBackendMigrator();
 
-  void StartAccountMigrationIfNecessary(MigrationType type);
-
   // Starts migration from |built_in_backend| to |android_backend| if time from
   // last attempt is enough.
   void StartMigrationOfLocalPasswords();
 
   void OnSyncServiceInitialized(syncer::SyncService* sync_service);
 
-  MigrationType migration_in_progress_type() const;
+  bool migration_in_progress() const { return migration_in_progress_; }
 
   base::WeakPtr<BuiltInBackendToAndroidBackendMigrator> GetWeakPtr();
 
@@ -94,25 +59,6 @@ class BuiltInBackendToAndroidBackendMigrator {
 
   using PasswordFormPtrFlatSet =
       base::flat_set<const PasswordForm*, IsPasswordLess>;
-
-  // Returns the type of migration that should happen next.
-  MigrationType GetMigrationType(bool should_attempt_upm_reenrollment) const;
-
-  // Schedules async call(s) to read passwords with a callback to migrate
-  // passwords once they are retrieved.
-  void PrepareForMigration(MigrationType migration_type);
-
-  // Migrates all non-syncable data contained in |logins_or_error| to the
-  // |target_backend|. This is implemented by issuing update requests for
-  // all retrieved credentials.
-  void MigrateNonSyncableData(PasswordStoreBackend* target_backend,
-                              LoginsResultOrError logins_or_error);
-
-  // Performs the migration that synchronises entries between
-  // |built_in_backend_| and |android_backend_| to keep them in consistent
-  // state. Calls |MigratePasswordsBetweenAndroidAndBuiltInBackends| internally
-  // to perform initial & rolling migration for local users.
-  void RunMigrationForLocalUsers();
 
   // Migrates password from the profile store |built_in_backend_| to the Gms
   // core local store |android_backend_|. |result| consists of passwords from
@@ -169,14 +115,13 @@ class BuiltInBackendToAndroidBackendMigrator {
 
   const raw_ptr<PasswordStoreBackend> built_in_backend_;
   const raw_ptr<PasswordStoreBackend> android_backend_;
-
-  const raw_ptr<PrefService> prefs_ = nullptr;
+  const raw_ptr<PrefService> prefs_;
 
   std::unique_ptr<MigrationMetricsReporter> metrics_reporter_;
 
   raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
 
-  MigrationType migration_in_progress_type_ = MigrationType::kNone;
+  bool migration_in_progress_ = false;
 
   base::WeakPtrFactory<BuiltInBackendToAndroidBackendMigrator>
       weak_ptr_factory_{this};

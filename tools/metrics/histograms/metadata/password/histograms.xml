@@ -125,24 +125,6 @@ chromium-metrics-reviews@google.com.
   <variant name="ProfileStore." summary="for profile-scoped store"/>
 </variants>
 
-<variants name="UPMMigrationType">
-  <variant name="InitialMigrationForSyncUsers"
-      summary="migrating passwords from build-in backend to android backend
-               for sync users after enrolling into the UPM experiment"/>
-  <variant name="MigrationForLocalUsers"
-      summary="migrating passwords between android backend and build-in
-               backend to ensure consistency for local users"/>
-  <variant name="NonSyncableDataMigrationToAndroidBackend"
-      summary="migrating non-syncable data to the android backend when
-               password sync gets enabled"/>
-  <variant name="NonSyncableDataMigrationToBuiltInBackend"
-      summary="migrating non-syncable data to the built-in backend when
-               password sync gets disabled"/>
-  <variant name="ReenrollmentAttemptMigration"
-      summary="migrating non-syncable data to the android backend when
-               performing reenrollment possibility check"/>
-</variants>
-
 <variants name="UserSyncingType">
   <variant name="" summary="all users."/>
   <variant name=".SignedInAccountStoreUser"
@@ -3828,6 +3810,46 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.AddLoginCount"
+    units="passwords" expires_after="2024-12-08">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records the number of credentials successfully added to GMS Core during
+    MigrationForLocalUsers. Recorded when the migration is finished,
+    irrespective of the overall migration success.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.AndroidBackend.{MigrationOperation}.APIError"
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="2024-12-30">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records the API error received when performing {MigrationOperation} on the
+    AndroidBacked as part of MigrationForLocalUsers. Reported immediately after
+    the operation finishes, unless it's a Get operation. For GetAllLogins, the
+    result is only reported after the replies come back fom both backends. Note
+    that the BuiltInBackend doesn't return API Errors so no similar histogram is
+    recorded for it.
+  </summary>
+  <token key="MigrationOperation" variants="MigrationOperation"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.Latency"
+    units="ms" expires_after="2025-01-26">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Real-time duration of MigrationForLocalUsers. Recorded when all operations
+    are completed and migration is finished.
+  </summary>
+</histogram>
+
+<histogram
     name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.MergeWhereAndroidHasMostRecent"
     units="passwords" expires_after="2024-12-08">
   <owner>atsvirchkova@google.com</owner>
@@ -3849,6 +3871,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.MigratedLoginsTotalCount"
+    units="passwords" expires_after="2024-12-08">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records the number of credential successfully migrated to GMS Core during
+    MigrationForLocalUsers. Recorded when the migration is finished. If the
+    migration fails in the middle after writting only part of credentials to GMS
+    core, the metric will report only those that were actually written before
+    the failure.
+  </summary>
+</histogram>
+
+<histogram
     name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.ProgressState"
     enum="LocalPwdMigrationProgressState" expires_after="2024-12-08">
   <owner>atsvirchkova@google.com</owner>
@@ -3857,6 +3894,48 @@ chromium-metrics-reviews@google.com.
     Recorded when the local passwords migration is scheduled, when it's started
     and when it finishes, irrespective of success status.
   </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.Success"
+    enum="BooleanSuccess" expires_after="2025-01-26">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Records success of MigrationForLocalUsers. Recorded when the migration is
+    finished.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.UpdateLoginCount"
+    units="passwords" expires_after="2024-12-08">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records the number of credentials successfully updated in GMS Core during
+    MigrationForLocalUsers. Recorded when the migration is finished,
+    irrespective of the overall migration success.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.{BackendType}.{MigrationOperation}.Success"
+    enum="BooleanSuccess" expires_after="2024-12-08">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records whether performing {MigrationOperation} on the {BackendType} as part
+    of MigrationForLocalUsers succeeded or not. Reported immediately after the
+    operation finishes, unless it's a Get operation. For GetAllLogins, the
+    result is only reported after the replies come back fom both backends.
+  </summary>
+  <token key="BackendType">
+    <variant name="AndroidBackend"/>
+    <variant name="BuiltInBackend"/>
+  </token>
+  <token key="MigrationOperation" variants="MigrationOperation"/>
 </histogram>
 
 <histogram name="PasswordManager.UnifiedPasswordManager.WasMigrationDone"
@@ -3868,110 +3947,6 @@ chromium-metrics-reviews@google.com.
     android backed and the current migration version stored in pref is
     greater/equal to the version from feature parameters. Recorded on start up.
   </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.AddLoginCount"
-    units="passwords" expires_after="2024-12-08">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    Records the number of credentials successfully added to GMS Core during
-    {UPMMigrationType}. Recorded when the migration is finished, irrespective of
-    the overall migration success.
-  </summary>
-  <token key="UPMMigrationType" variants="UPMMigrationType"/>
-</histogram>
-
-<histogram
-    name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.AndroidBackend.{MigrationOperation}.APIError"
-    enum="PasswordStoreAndroidBackendAPIError" expires_after="2024-12-30">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    Records the API error received when performing {MigrationOperation} on the
-    AndroidBacked as part of {UPMMigrationType}. Reported immediately after the
-    operation finishes, unless it's a Get operation. For GetAllLogins, the
-    result is only reported after the replies come back fom both backends. Note
-    that the BuiltInBackend doesn't return API Errors so no similar histogram is
-    recorded for it.
-  </summary>
-  <token key="UPMMigrationType" variants="UPMMigrationType"/>
-  <token key="MigrationOperation" variants="MigrationOperation"/>
-</histogram>
-
-<histogram
-    name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.Latency"
-    units="ms" expires_after="2025-01-26">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>fhorschig@chromium.org</owner>
-  <summary>
-    Real-time duration of {UPMMigrationType}. Recorded when all operations are
-    completed and migration is finished.
-  </summary>
-  <token key="UPMMigrationType" variants="UPMMigrationType"/>
-</histogram>
-
-<histogram
-    name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.MigratedLoginsTotalCount"
-    units="passwords" expires_after="2024-12-08">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    Records the number of credential successfully migrated to GMS Core during
-    {UPMMigrationType}. Recorded when the migration is finished. If the
-    migration fails in the middle after writting only part of credentials to GMS
-    core, the metric will report only those that were actually written before
-    the failure.
-  </summary>
-  <token key="UPMMigrationType" variants="UPMMigrationType"/>
-</histogram>
-
-<histogram
-    name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.Success"
-    enum="BooleanSuccess" expires_after="2025-01-26">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>fhorschig@chromium.org</owner>
-  <summary>
-    Records success of {UPMMigrationType}. Recorded when the migration is
-    finished.
-  </summary>
-  <token key="UPMMigrationType" variants="UPMMigrationType"/>
-</histogram>
-
-<histogram
-    name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.UpdateLoginCount"
-    units="passwords" expires_after="2024-12-08">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <owner>atsvirchkova@google.com</owner>
-  <summary>
-    Records the number of credentials successfully updated in GMS Core during
-    {UPMMigrationType}. Recorded when the migration is finished, irrespective of
-    the overall migration success.
-  </summary>
-  <token key="UPMMigrationType" variants="UPMMigrationType"/>
-</histogram>
-
-<histogram
-    name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.{BackendType}.{MigrationOperation}.Success"
-    enum="BooleanSuccess" expires_after="2024-12-08">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    Records whether performing {MigrationOperation} on the {BackendType} as part
-    of {UPMMigrationType} succeeded or not. Reported immediately after the
-    operation finishes, unless it's a Get operation. For GetAllLogins, the
-    result is only reported after the replies come back fom both backends.
-  </summary>
-  <token key="UPMMigrationType" variants="UPMMigrationType"/>
-  <token key="BackendType">
-    <variant name="AndroidBackend"/>
-    <variant name="BuiltInBackend"/>
-  </token>
-  <token key="MigrationOperation" variants="MigrationOperation"/>
 </histogram>
 
 <histogram name="PasswordManager.UpdateUIDismissalReason"
