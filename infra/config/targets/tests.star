@@ -869,7 +869,6 @@ targets.tests.gpu_telemetry_test(
     name = "expected_color_pixel_validating_test",
     telemetry_test_name = "expected_color",
     mixins = [
-        "skia_gold_test",
         "has_native_resultdb_integration",
     ],
 )
@@ -1727,7 +1726,6 @@ targets.tests.gpu_telemetry_test(
     name = "pixel_skia_gold_validating_test",
     telemetry_test_name = "pixel",
     mixins = [
-        "skia_gold_test",
         "has_native_resultdb_integration",
     ],
 )

@@ -8,14 +8,21 @@ load("@stdlib//internal/graph.star", "graph")
 load("//lib/args.star", args_lib = "args")
 load("../common.star", _targets_common = "common")
 load("../nodes.star", _targets_nodes = "nodes")
+load("./isolated_script_test.star", "create_isolated_script_test_spec_handler", "isolated_script_test_details")
+
+_isolated_script_test_spec_handler = create_isolated_script_test_spec_handler("gtest")
 
 def _gtest_test_spec_init(node, settings):
-    spec_value = _targets_common.spec_init(node, settings, additional_fields = dict(
+    return _targets_common.spec_init(node, settings, additional_fields = dict(
         use_isolated_scripts_api = None,
+        expand_as_isolated_script = False,
     ))
-    return spec_value
 
 def _gtest_test_spec_finalize(name, settings, spec_value):
+    expand_as_isolated_script = spec_value.pop("expand_as_isolated_script")
+    if expand_as_isolated_script:
+        return _isolated_script_test_spec_handler.finalize(name, settings, spec_value)
+
     use_isolated_scripts_api = spec_value["use_isolated_scripts_api"]
     if (settings.is_android and spec_value["swarming"].enable and not use_isolated_scripts_api):
         # TODO(crbug.com/40725094) make Android presentation work with
@@ -61,7 +68,7 @@ def gtest_test(*, name, binary = None, mixins = None, args = None):
     test_key = _targets_common.create_test(
         name = name,
         spec_handler = _gtest_test_spec_handler,
-        details = struct(
+        details = isolated_script_test_details(
             args = args,
         ),
         mixins = mixins,

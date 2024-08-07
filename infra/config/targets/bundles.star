@@ -93,6 +93,67 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "fuchsia_standard_tests",
+    targets = [
+        "gpu_fuchsia_telemetry_tests",
+        "fuchsia_gtests",
+        targets.bundle(
+            targets = "fuchsia_isolated_scripts",
+            # Make sure any gtests included in fuchsia_isolated_scripts get
+            # expanded as isolated scripts
+            mixins = targets.mixin(
+                expand_as_isolated_script = True,
+            ),
+        ),
+    ],
+    mixins = [
+        "upload_inv_extended_properties",
+    ],
+    per_test_modifications = {
+        "blink_web_tests": [
+            # TODO(crbug.com/337058844): uploading invocations is not supported
+            # by blink_web_tests yet.
+            "has_native_resultdb_integration",
+        ],
+        "blink_wpt_tests": [
+            # TODO(crbug.com/337058844): uploading invocations is not supported
+            # by blink_wpt_tests yet.
+            "has_native_resultdb_integration",
+        ],
+        "context_lost_validating_tests": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+        "expected_color_pixel_validating_test": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+        "gpu_process_launch_tests": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+        "hardware_accelerated_feature_tests": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+        "pixel_skia_gold_validating_test": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+        "screenshot_sync_validating_tests": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+    },
+)
+
+targets.bundle(
     name = "linux_force_accessibility_gtests",
     targets = [
         "browser_tests",

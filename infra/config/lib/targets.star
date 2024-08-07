@@ -346,6 +346,7 @@ def _mixin_values(
         chromeos_swarming = None,
         skylab = None,
         use_isolated_scripts_api = None,
+        expand_as_isolated_script = None,
         ci_only = None,
         retry_only_failed_tests = None,
         check_flakiness_for_new_tests = None,
@@ -408,6 +409,15 @@ def _mixin_values(
         use_isolated_scripts_api: A bool indicating whether to use the
             isolated scripts interface to run the test. Only
             applicable to gtests.
+        expand_as_isolated_script: A bool indicating that the test
+            should be expanded as an isolated script. Only applicable to
+            gtests. Note this is different from
+            use_isolated_scripts_api; expand_as_isolated_script is not
+            part of the resultant spec and causes the spec to be output
+            as an isolated script, whereas use_isolated_scripts_api
+            is part of the expanded spec and tells the recipe to treat
+            it as an isolated script but the expanded spec is still that
+            of a gtest.
         ci_only: A bool indicating whether the test should only be run
             in CI by default.
         check_flakiness_for_new_tests: A bool indicating whether try
@@ -452,6 +462,7 @@ def _mixin_values(
         chromeos_swarming = chromeos_swarming,
         skylab = skylab,
         use_isolated_scripts_api = use_isolated_scripts_api,
+        expand_as_isolated_script = expand_as_isolated_script,
         ci_only = ci_only,
         retry_only_failed_tests = retry_only_failed_tests,
         check_flakiness_for_new_tests = check_flakiness_for_new_tests,
@@ -742,6 +753,7 @@ targets = struct(
     builder_defaults = _targets_common.builder_defaults,
     settings = _targets_common.settings,
     settings_defaults = _targets_common.settings_defaults,
+    browser_config = _targets_common.browser_config,
     os_type = _targets_common.os_type,
     legacy_basic_suite = _legacy_basic_suite,
     legacy_test_config = _legacy_test_config,

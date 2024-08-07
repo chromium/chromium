@@ -10,6 +10,7 @@ load("//lib/builders.star", "free_space", "gardener_rotations", "os", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/targets.star", "targets")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -40,6 +41,15 @@ consoles.console_view(
     ordering = {
         None: ["release", "debug"],
     },
+)
+
+targets.builder_defaults.set(
+    mixins = ["chromium-tester-service-account"],
+)
+
+targets.settings_defaults.set(
+    browser_config = targets.browser_config.WEB_ENGINE_SHELL,
+    os_type = targets.os_type.FUCHSIA,
 )
 
 ci.builder(
@@ -195,6 +205,47 @@ ci.builder(
             "cast_receiver_size_optimized",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "fuchsia_standard_tests",
+        ],
+        additional_compile_targets = [
+            "all",
+            "cast_test_lists",
+        ],
+        mixins = [
+            "isolate_profile_data",
+            "linux-jammy",
+            targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "kvm": "1",
+                    },
+                ),
+            ),
+        ],
+        per_test_modifications = {
+            "blink_web_tests": [
+                targets.mixin(
+                    swarming = targets.swarming(
+                        shards = 1,
+                    ),
+                ),
+            ],
+            "blink_wpt_tests": [
+                targets.mixin(
+                    swarming = targets.swarming(
+                        shards = 1,
+                    ),
+                ),
+            ],
+            "content_browsertests": [
+                # Temporarily only run this on CI due to resource requirements.
+                # TODO(crbug.com/40872145): Remove this once resources are available.
+                "ci_only",
+            ],
+        },
     ),
     console_view_entry = [
         consoles.console_view_entry(
