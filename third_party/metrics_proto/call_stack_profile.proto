@@ -38,6 +38,10 @@ message CallStackProfile {
 
     // Index to the module identifier in |module_ids| of CallStackProfile.
     optional int32 module_id_index = 2;
+
+    // Currently only used for Java function names. In cases where this is
+    // available, this should be used instead of the address.
+    optional string function_name = 3;
   }
 
   // The sampled call stack.
