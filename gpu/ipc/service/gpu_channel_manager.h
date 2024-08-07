@@ -207,6 +207,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
     return shared_image_manager_;
   }
 
+  Scheduler* scheduler() const { return scheduler_; }
+
   bool use_passthrough_cmd_decoder() const {
     return gpu_preferences_.use_passthrough_cmd_decoder &&
            gles2::PassthroughCommandDecoderSupported();

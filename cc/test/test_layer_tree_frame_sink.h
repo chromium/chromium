@@ -23,9 +23,14 @@
 #include "components/viz/service/frame_sinks/shared_image_interface_provider.h"
 #include "components/viz/test/test_shared_bitmap_manager.h"
 #include "components/viz/test/test_shared_image_interface_provider.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
+
+namespace gpu {
+class Scheduler;
+}  // namespace gpu
 
 namespace viz {
 class CompositorFrameSinkSupport;
@@ -156,7 +161,7 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   std::unique_ptr<viz::TestSharedBitmapManager> shared_bitmap_manager_;
   std::unique_ptr<gpu::SharedImageManager> shared_image_manager_;
   std::unique_ptr<gpu::SyncPointManager> sync_point_manager_;
-
+  std::unique_ptr<gpu::Scheduler> gpu_scheduler_;
   std::unique_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
   std::unique_ptr<viz::ParentLocalSurfaceIdAllocator>
       parent_local_surface_id_allocator_;

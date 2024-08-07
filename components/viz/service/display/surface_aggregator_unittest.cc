@@ -59,6 +59,7 @@
 #include "components/viz/test/fake_surface_observer.h"
 #include "components/viz/test/stub_surface_client.h"
 #include "components/viz/test/test_surface_id_allocator.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -484,11 +485,13 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
   ServerSharedBitmapManager shared_bitmap_manager_;
   gpu::SharedImageManager shared_image_manager_;
   gpu::SyncPointManager sync_point_manager_;
+  gpu::Scheduler gpu_scheduler_{&sync_point_manager_};
 
   FrameSinkManagerImpl manager_{
       FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
   DisplayResourceProviderSoftware resource_provider_{
-      &shared_bitmap_manager_, &shared_image_manager_, &sync_point_manager_};
+      &shared_bitmap_manager_, &shared_image_manager_, &sync_point_manager_,
+      &gpu_scheduler_};
   FakeSurfaceObserver observer_{manager_.surface_manager(), false};
   FakeCompositorFrameSinkClient fake_client_;
   std::unique_ptr<CompositorFrameSinkSupport> root_sink_;

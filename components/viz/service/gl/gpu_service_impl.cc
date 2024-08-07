@@ -607,8 +607,7 @@ void GpuServiceImpl::InitializeWithHost(
   if (scheduler) {
     scheduler_ = scheduler;
   } else {
-    owned_scheduler_ =
-        std::make_unique<gpu::Scheduler>(sync_point_manager, gpu_preferences_);
+    owned_scheduler_ = std::make_unique<gpu::Scheduler>(sync_point_manager);
     scheduler_ = owned_scheduler_.get();
   }
 

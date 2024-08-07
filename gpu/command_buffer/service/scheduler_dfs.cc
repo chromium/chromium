@@ -165,9 +165,7 @@ void SchedulerDfs::Sequence::OnFrontTaskUnblocked() {
   scheduler_->TryScheduleSequence(this);
 }
 
-SchedulerDfs::SchedulerDfs(TaskGraph* task_graph,
-                           const GpuPreferences& gpu_preferences)
-    : task_graph_(task_graph) {}
+SchedulerDfs::SchedulerDfs(TaskGraph* task_graph) : task_graph_(task_graph) {}
 
 SchedulerDfs::~SchedulerDfs() {
   base::AutoLock auto_lock(lock());

@@ -223,7 +223,8 @@ RootCompositorFrameSinkImpl::Create(
   auto display = std::make_unique<Display>(
       frame_sink_manager->shared_bitmap_manager(),
       output_surface_provider->GetSharedImageManager(),
-      output_surface_provider->GetSyncPointManager(), params->renderer_settings,
+      output_surface_provider->GetSyncPointManager(),
+      output_surface_provider->GetGpuScheduler(), params->renderer_settings,
       debug_settings, params->frame_sink_id, std::move(display_controller),
       std::move(output_surface), std::move(overlay_processor),
       std::move(scheduler), std::move(task_runner));

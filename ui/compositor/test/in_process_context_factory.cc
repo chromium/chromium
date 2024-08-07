@@ -276,10 +276,10 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
 
   data->SetDisplay(std::make_unique<viz::Display>(
       &shared_bitmap_manager_, &shared_image_manager_, &sync_point_manager_,
-      renderer_settings_, &debug_settings_, compositor->frame_sink_id(),
-      std::move(display_dependency), std::move(output_surface),
-      std::move(overlay_processor), std::move(scheduler),
-      compositor->task_runner()));
+      &gpu_scheduler_, renderer_settings_, &debug_settings_,
+      compositor->frame_sink_id(), std::move(display_dependency),
+      std::move(output_surface), std::move(overlay_processor),
+      std::move(scheduler), compositor->task_runner()));
   frame_sink_manager_->RegisterBeginFrameSource(begin_frame_source.get(),
                                                 compositor->frame_sink_id());
   // Note that we are careful not to destroy a prior |data->begin_frame_source|

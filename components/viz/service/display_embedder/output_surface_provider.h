@@ -12,6 +12,10 @@
 #include "gpu/ipc/common/surface_handle.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 
+namespace gpu {
+class Scheduler;
+}  // namespace gpu
+
 namespace viz {
 
 struct DebugRendererSettings;
@@ -42,8 +46,9 @@ class OutputSurfaceProvider {
 
   virtual gpu::SharedImageManager* GetSharedImageManager() = 0;
   virtual gpu::SyncPointManager* GetSyncPointManager() = 0;
+  virtual gpu::Scheduler* GetGpuScheduler() = 0;
 };
 
 }  // namespace viz
 
-#endif  //  COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_OUTPUT_SURFACE_PROVIDER_H_
+#endif  // COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_OUTPUT_SURFACE_PROVIDER_H_

@@ -26,6 +26,7 @@
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/fake_external_begin_frame_source.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -181,7 +182,8 @@ class DisplaySchedulerTest : public testing::Test {
                          /*max_uncommitted_frames=*/0),
         resource_provider_(&shared_bitmap_manager_,
                            &shared_image_manager_,
-                           &sync_point_manager_),
+                           &sync_point_manager_,
+                           &gpu_scheduler_),
         aggregator_(&surface_manager_, &resource_provider_, false),
         damage_tracker_(
             std::make_unique<TestDisplayDamageTracker>(&surface_manager_,
@@ -236,6 +238,7 @@ class DisplaySchedulerTest : public testing::Test {
   ServerSharedBitmapManager shared_bitmap_manager_;
   gpu::SharedImageManager shared_image_manager_;
   gpu::SyncPointManager sync_point_manager_;
+  gpu::Scheduler gpu_scheduler_{&sync_point_manager_};
   DisplayResourceProviderSoftware resource_provider_;
   SurfaceAggregator aggregator_;
   std::unique_ptr<TestDisplayDamageTracker> damage_tracker_;

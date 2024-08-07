@@ -27,11 +27,10 @@ class SingleThreadTaskRunner;
 }
 
 namespace gpu {
-struct GpuPreferences;
 
 class GPU_EXPORT SchedulerDfs {
  public:
-  SchedulerDfs(TaskGraph* task_graph, const GpuPreferences& gpu_preferences);
+  explicit SchedulerDfs(TaskGraph* task_graph);
 
   SchedulerDfs(const SchedulerDfs&) = delete;
   SchedulerDfs& operator=(const SchedulerDfs&) = delete;

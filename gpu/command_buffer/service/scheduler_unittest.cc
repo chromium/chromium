@@ -34,8 +34,7 @@ class SchedulerTest : public testing::Test {
  public:
   SchedulerTest()
       : sync_point_manager_(new SyncPointManager),
-        scheduler_(new Scheduler(sync_point_manager_.get(), GpuPreferences())) {
-  }
+        scheduler_(new Scheduler(sync_point_manager_.get())) {}
 
  protected:
   void SetUp() override {

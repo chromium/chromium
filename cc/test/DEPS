@@ -39,5 +39,6 @@ specific_include_rules = {
   "test_layer_tree_frame_sink\.h": [
     "+gpu/command_buffer/service/shared_image/shared_image_manager.h",
     "+gpu/command_buffer/service/sync_point_manager.h",
+    "+gpu/command_buffer/service/scheduler.h",
   ],
 }

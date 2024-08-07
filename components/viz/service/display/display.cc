@@ -63,6 +63,7 @@
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
@@ -217,6 +218,7 @@ Display::Display(
     SharedBitmapManager* bitmap_manager,
     gpu::SharedImageManager* shared_image_manager,
     gpu::SyncPointManager* sync_point_manager,
+    gpu::Scheduler* gpu_scheduler,
     const RendererSettings& settings,
     const DebugRendererSettings* debug_settings,
     const FrameSinkId& frame_sink_id,
@@ -228,6 +230,7 @@ Display::Display(
     : bitmap_manager_(bitmap_manager),
       shared_image_manager_(shared_image_manager),
       sync_point_manager_(sync_point_manager),
+      gpu_scheduler_(gpu_scheduler),
       settings_(settings),
       debug_settings_(debug_settings),
       frame_sink_id_(frame_sink_id),
@@ -504,7 +507,8 @@ void Display::InitializeRenderer() {
     resource_provider_ = std::move(resource_provider);
   } else {
     auto resource_provider = std::make_unique<DisplayResourceProviderSoftware>(
-        bitmap_manager_, shared_image_manager_, sync_point_manager_);
+        bitmap_manager_, shared_image_manager_, sync_point_manager_,
+        gpu_scheduler_);
     DCHECK(!overlay_processor_->IsOverlaySupported());
     auto renderer = std::make_unique<SoftwareRenderer>(
         &settings_, debug_settings_, output_surface_.get(),
