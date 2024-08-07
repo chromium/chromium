@@ -118,6 +118,8 @@ const AcceleratorData kDebugAcceleratorData[] = {
      AcceleratorAction::kDebugClearUseKMeansPref},
     {true, ui::VKEY_H, kDebugModifier,
      AcceleratorAction::kDebugToggleFocusModeState},
+    {true, ui::VKEY_S, kDebugModifier,
+     AcceleratorAction::kDebugStartSunfishSession},
 };
 
 const size_t kDebugAcceleratorDataLength = std::size(kDebugAcceleratorData);

@@ -174,4 +174,5 @@ enum AcceleratorAction {
   kDevAddRemoveDisplay,
   kDevToggleAppList,
   kDevToggleUnifiedDesktop,
+  kDebugStartSunfishSession,
 };

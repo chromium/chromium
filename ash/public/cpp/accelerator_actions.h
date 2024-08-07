@@ -204,8 +204,9 @@ namespace ash {
   /* rules for enabling the accelerator. */                            \
   ACCELERATOR_ACTION_ENTRY(DevToggleAppList)                           \
   ACCELERATOR_ACTION_ENTRY(DevToggleUnifiedDesktop)                    \
-  ACCELERATOR_ACTION_ENTRY(DebugToggleFocusModeState)
-// LINT.ThenChange(//ash/public/mojom/accelerator_actions.mojom)
+  ACCELERATOR_ACTION_ENTRY(DebugToggleFocusModeState)                  \
+  ACCELERATOR_ACTION_ENTRY(DebugStartSunfishSession)                   \
+  // LINT.ThenChange(//ash/public/mojom/accelerator_actions.mojom)
 
 enum AcceleratorAction {
 #define ACCELERATOR_ACTION_ENTRY(action) k##action,
