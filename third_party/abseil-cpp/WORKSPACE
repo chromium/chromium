@@ -21,11 +21,11 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # GoogleTest/GoogleMock framework. Used by most unit-tests.
 http_archive(
     name = "com_google_googletest",
-    sha256 = "7315acb6bf10e99f332c8a43f00d5fbb1ee6ca48c52f6b936991b216c586aaad",
-    strip_prefix = "googletest-1.15.0",
+    sha256 = "7b42b4d6ed48810c5362c265a17faebe90dc2373c885e5216439d37927f02926",
+    strip_prefix = "googletest-1.15.2",
     # Keep this URL in sync with the version in ci/cmake_common.sh and
     # ci/windows_msvc_cmake.bat.
-    urls = ["https://github.com/google/googletest/releases/download/v1.15.0/googletest-1.15.0.tar.gz"],
+    urls = ["https://github.com/google/googletest/releases/download/v1.15.2/googletest-1.15.2.tar.gz"],
 )
 
 # RE2 (the regular expression library used by GoogleTest)

@@ -2530,8 +2530,6 @@ static void VerifyCharIterator(const absl::Cord& cord) {
     EXPECT_EQ(*pre_iter, *post_iter);
     EXPECT_EQ(&*pre_iter, &*post_iter);
 
-    EXPECT_EQ(&*pre_iter, pre_iter.operator->());
-
     const char* character_address = &*pre_iter;
     absl::Cord::CharIterator copy = pre_iter;
     ++copy;
