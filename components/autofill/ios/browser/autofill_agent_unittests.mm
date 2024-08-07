@@ -69,6 +69,9 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 
+using autofill::AutofillDriverIOS;
+using autofill::AutofillDriverIOSFactory;
+
 // Returns the minimal FormData content for testing filling.
 std::vector<autofill::FormFieldData::FillData>
 MinimalFormFieldDataForFilling() {
@@ -183,8 +186,8 @@ class AutofillAgentTests : public web::WebTest {
 TEST_F(AutofillAgentTests,
        OnFormDataFilledTestWithFrameMessagingUsingRendererIDs) {
   std::string locale("en");
-  autofill::AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_,
-                                                        &client_, nil, locale);
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
+                                              locale);
 
   std::vector<autofill::FormFieldData::FillData> fill_data;
   autofill::FormFieldData field;
@@ -237,8 +240,8 @@ TEST_F(AutofillAgentTests,
 // correct javascript call to the autofill controller.
 TEST_F(AutofillAgentTests, FillSpecificFormField) {
   std::string locale("en");
-  autofill::AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_,
-                                                        &client_, nil, locale);
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
+                                              locale);
 
   autofill::FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
@@ -264,8 +267,8 @@ TEST_F(AutofillAgentTests, FillSpecificFormField) {
 // successfully.
 TEST_F(AutofillAgentTests,
        FillSpecificFormField_UpdateWithResults_WhenSuccess) {
-  autofill::AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_,
-                                                        &client_, nil, "en");
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
+                                              "en");
 
   std::vector<autofill::FormFieldData::FillData> fields =
       MinimalFormFieldDataForFilling();
@@ -303,8 +306,8 @@ TEST_F(AutofillAgentTests,
 // failed.
 TEST_F(AutofillAgentTests,
        FillSpecificFormField_UpdateWithResults_WhenFailure) {
-  autofill::AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_,
-                                                        &client_, nil, "en");
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
+                                              "en");
 
   std::vector<autofill::FormFieldData::FillData> fields =
       MinimalFormFieldDataForFilling();
@@ -340,8 +343,8 @@ TEST_F(AutofillAgentTests,
 // correct javascript call to the autofill controller.
 TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
   std::string locale("en");
-  autofill::AutofillDriverIOSFactory::CreateForWebState(
-      &fake_web_state_, &client_, autofill_agent_, locale);
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_,
+                                              autofill_agent_, locale);
 
   autofill::FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
@@ -353,8 +356,8 @@ TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
   field.set_is_autofilled(true);
   field.set_renderer_id(FieldRendererId(2));
 
-  autofill::AutofillDriverIOS* main_frame_driver =
-      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
+  AutofillDriverIOS* main_frame_driver =
+      AutofillDriverIOS::FromWebStateAndWebFrame(
           &fake_web_state_, fake_web_frames_manager_->GetMainWebFrame());
   main_frame_driver->ApplyFieldAction(
       autofill::mojom::FieldActionType::kReplaceAll,
@@ -371,8 +374,8 @@ TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
 // `AutofillDriverIOS` does not dispatch a JS call.
 TEST_F(AutofillAgentTests, DriverPreviewSpecificFormField) {
   std::string locale("en");
-  autofill::AutofillDriverIOSFactory::CreateForWebState(
-      &fake_web_state_, &client_, autofill_agent_, locale);
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_,
+                                              autofill_agent_, locale);
 
   autofill::FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
@@ -384,8 +387,8 @@ TEST_F(AutofillAgentTests, DriverPreviewSpecificFormField) {
   field.set_is_autofilled(true);
   field.set_renderer_id(FieldRendererId(2));
 
-  autofill::AutofillDriverIOS* main_frame_driver =
-      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
+  AutofillDriverIOS* main_frame_driver =
+      AutofillDriverIOS::FromWebStateAndWebFrame(
           &fake_web_state_, fake_web_frames_manager_->GetMainWebFrame());
   // Preview is not currently supported; no JS should be run.
   main_frame_driver->ApplyFieldAction(
@@ -884,22 +887,27 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
 
 // Test that every frames are processed whatever is the order of pageloading
 // callbacks. The main frame should always be processed first.
-TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
-  std::string locale("en");
-  autofill::AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_,
-                                                        &client_, nil, locale);
+class AutofillAgentTestFrameInitializationOrderFrames
+    : public AutofillAgentTests {
+ public:
+  void SetUp() override {
+    AutofillAgentTests::SetUp();
+    RemoveWebFrame(fake_main_frame_->GetFrameId());
+    ASSERT_FALSE(AutofillDriverIOSFactory::FromWebState(&fake_web_state_));
+    AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
+                                                "en");
+  }
+};
 
-  // Remove the current main frame.
-  RemoveWebFrame(fake_main_frame_->GetFrameId());
-
-  // Both frames available, then page loaded.
+// Both frames available, then page loaded.
+TEST_F(AutofillAgentTestFrameInitializationOrderFrames,
+       BothFramesAvailableThenPageLoaded) {
   fake_web_state_.SetLoading(true);
-  auto main_frame_unique = CreateMainWebFrame();
+  std::unique_ptr<web::FakeWebFrame> main_frame_unique = CreateMainWebFrame();
   web::FakeWebFrame* main_frame = main_frame_unique.get();
   AddWebFrame(std::move(main_frame_unique));
-  autofill::AutofillDriverIOS* main_frame_driver =
-      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_,
-                                                           main_frame);
+  AutofillDriverIOS* main_frame_driver =
+      AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_, main_frame);
   EXPECT_TRUE(main_frame_driver->IsInAnyMainFrame());
   auto iframe_unique = CreateChildWebFrame();
   iframe_unique->set_call_java_script_function_callback(base::BindRepeating(^{
@@ -907,9 +915,8 @@ TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
   }));
   web::FakeWebFrame* iframe = iframe_unique.get();
   AddWebFrame(std::move(iframe_unique));
-  autofill::AutofillDriverIOS* iframe_driver =
-      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_,
-                                                           iframe);
+  AutofillDriverIOS* iframe_driver =
+      AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_, iframe);
   EXPECT_FALSE(iframe_driver->IsInAnyMainFrame());
   EXPECT_FALSE(main_frame_driver->is_processed());
   EXPECT_FALSE(iframe_driver->is_processed());
@@ -919,19 +926,22 @@ TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
   EXPECT_TRUE(iframe_driver->is_processed());
   RemoveWebFrame(main_frame->GetFrameId());
   RemoveWebFrame(iframe->GetFrameId());
+}
 
-  // Main frame available, then page loaded, then iframe available
-  main_frame_unique = CreateMainWebFrame();
-  main_frame = main_frame_unique.get();
-  main_frame_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
-      &fake_web_state_, main_frame);
-  iframe_unique = CreateChildWebFrame();
+// Main frame available, then page loaded, then iframe available.
+TEST_F(AutofillAgentTestFrameInitializationOrderFrames,
+       MainFrameAvailableThenPageLoadedThenIframeAvailable) {
+  std::unique_ptr<web::FakeWebFrame> main_frame_unique = CreateMainWebFrame();
+  web::FakeWebFrame* main_frame = main_frame_unique.get();
+  auto* main_frame_driver =
+      AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_, main_frame);
+  std::unique_ptr<web::FakeWebFrame> iframe_unique = CreateChildWebFrame();
   iframe_unique->set_call_java_script_function_callback(base::BindRepeating(^{
     EXPECT_TRUE(main_frame_driver->is_processed());
   }));
-  iframe = iframe_unique.get();
-  iframe_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
-      &fake_web_state_, iframe);
+  web::FakeWebFrame* iframe = iframe_unique.get();
+  auto* iframe_driver =
+      AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_, iframe);
   fake_web_state_.SetLoading(true);
   AddWebFrame(std::move(main_frame_unique));
   EXPECT_FALSE(main_frame_driver->is_processed());
@@ -945,19 +955,22 @@ TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
   EXPECT_TRUE(iframe_driver->is_processed());
   RemoveWebFrame(main_frame->GetFrameId());
   RemoveWebFrame(iframe->GetFrameId());
+}
 
-  // Page loaded, then main frame, then iframe
-  main_frame_unique = CreateMainWebFrame();
-  main_frame = main_frame_unique.get();
-  main_frame_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
-      &fake_web_state_, main_frame);
-  iframe_unique = CreateChildWebFrame();
+// Page loaded, then main frame, then iframe.
+TEST_F(AutofillAgentTestFrameInitializationOrderFrames,
+       PageLoadedThenMainFrameThenIframe) {
+  std::unique_ptr<web::FakeWebFrame> main_frame_unique = CreateMainWebFrame();
+  web::FakeWebFrame* main_frame = main_frame_unique.get();
+  auto* main_frame_driver =
+      AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_, main_frame);
+  std::unique_ptr<web::FakeWebFrame> iframe_unique = CreateChildWebFrame();
   iframe_unique->set_call_java_script_function_callback(base::BindRepeating(^{
     EXPECT_TRUE(main_frame_driver->is_processed());
   }));
-  iframe = iframe_unique.get();
-  iframe_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
-      &fake_web_state_, iframe);
+  web::FakeWebFrame* iframe = iframe_unique.get();
+  auto* iframe_driver =
+      AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_, iframe);
   fake_web_state_.SetLoading(true);
   fake_web_state_.SetLoading(false);
   fake_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
@@ -971,19 +984,22 @@ TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
   EXPECT_TRUE(iframe_driver->is_processed());
   RemoveWebFrame(main_frame->GetFrameId());
   RemoveWebFrame(iframe->GetFrameId());
+}
 
-  // Page loaded, then iframe, then main frame
-  main_frame_unique = CreateMainWebFrame();
-  main_frame = main_frame_unique.get();
-  main_frame_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
-      &fake_web_state_, main_frame);
-  iframe_unique = CreateChildWebFrame();
+// Page loaded, then iframe, then main frame.
+TEST_F(AutofillAgentTestFrameInitializationOrderFrames,
+       PageLoadedThenIframeThenMainFrame) {
+  std::unique_ptr<web::FakeWebFrame> main_frame_unique = CreateMainWebFrame();
+  web::FakeWebFrame* main_frame = main_frame_unique.get();
+  auto* main_frame_driver =
+      AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_, main_frame);
+  std::unique_ptr<web::FakeWebFrame> iframe_unique = CreateChildWebFrame();
   iframe_unique->set_call_java_script_function_callback(base::BindRepeating(^{
     EXPECT_TRUE(main_frame_driver->is_processed());
   }));
-  iframe = iframe_unique.get();
-  iframe_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
-      &fake_web_state_, iframe);
+  web::FakeWebFrame* iframe = iframe_unique.get();
+  auto* iframe_driver =
+      AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_, iframe);
   fake_web_state_.SetLoading(true);
   fake_web_state_.SetLoading(false);
   fake_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
@@ -1003,8 +1019,8 @@ TEST_F(AutofillAgentTests, FillData_UpdateWithResults) {
   auto test_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
   std::string locale("en");
-  autofill::AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_,
-                                                        &client_, nil, locale);
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
+                                              locale);
 
   std::vector<autofill::FormFieldData::FillData> fields =
       MinimalFormFieldDataForFilling();
@@ -1052,8 +1068,8 @@ TEST_F(AutofillAgentTests, FillData_UpdateWithResults) {
 // Tests that if there is an unknown field id in the results, the agent isn't
 // notified.
 TEST_F(AutofillAgentTests, FillData_UnknowFieldIdInResults) {
-  autofill::AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_,
-                                                        &client_, nil, "en");
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
+                                              "en");
 
   std::vector<autofill::FormFieldData::FillData> fields =
       MinimalFormFieldDataForFilling();
@@ -1082,8 +1098,8 @@ TEST_F(AutofillAgentTests, FillData_UnknowFieldIdInResults) {
 
 // Tests selecting an autocomplete suggestion.
 TEST_F(AutofillAgentTests, DidSelectSuggestion_AutocompleteEntry) {
-  autofill::AutofillDriverIOSFactory::CreateForWebState(
-      &fake_web_state_, &client_, nil, /*locale=*/"en");
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
+                                              /*locale=*/"en");
 
   FormRendererId form_id(1);
   FieldRendererId field1_id(2);
@@ -1132,8 +1148,8 @@ TEST_F(AutofillAgentTests, DidSelectSuggestion_AutocompleteEntry) {
 }
 
 TEST_F(AutofillAgentTests, DidSelectSuggestion_ClearFormEntry) {
-  autofill::AutofillDriverIOSFactory::CreateForWebState(
-      &fake_web_state_, &client_, nil, /*locale=*/"en");
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
+                                              /*locale=*/"en");
 
   FormRendererId form_id(1);
   FieldRendererId field1_id(2);

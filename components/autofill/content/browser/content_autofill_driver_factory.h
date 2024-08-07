@@ -127,10 +127,13 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
   // Must be destroyed after |driver_map_|'s elements.
   AutofillDriverRouter router_;
 
-  // Owns the drivers, one for each frame in the WebContents.
-  // Should be empty at destruction time because its elements are erased in
-  // RenderFrameDeleted(). In case it is not empty, is must be destroyed before
-  // |router_| because ~ContentAutofillDriver() may access |router_|.
+  // Owns the drivers. Drivers are created lazily in DriverForFrame() and
+  // destroyed in RenderFrameDeleted(). They are added to the map on
+  // construction and removed from the map on deletion.
+  //
+  // The map should be empty at destruction time because its elements are erased
+  // in RenderFrameDeleted(). In case it is not empty, is must be destroyed
+  // before `router_` because ~ContentAutofillDriver() may access `router_`.
   base::flat_map<content::RenderFrameHost*,
                  std::unique_ptr<ContentAutofillDriver>>
       driver_map_;

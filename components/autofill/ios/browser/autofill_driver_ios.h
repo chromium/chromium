@@ -71,10 +71,8 @@ class AutofillDriverRouter;
 // end/beginning of con-/destruction.
 //
 // TODO: crbug.com/355907668 - Move ownership to AutofillDriverIOSFactory.
-class AutofillDriverIOS final
-    : public AutofillDriver,
-      public AutofillManager::Observer,
-      public web::WebFrameUserData<AutofillDriverIOS> {
+class AutofillDriverIOS final : public AutofillDriver,
+                                public AutofillManager::Observer {
  public:
   // Returns the AutofillDriverIOS for `web_state` and `web_frame`. Creates the
   // driver if necessary.
@@ -229,10 +227,6 @@ class AutofillDriverIOS final
   bool DetectFormSubmissionAfterFormRemoval(
       const std::set<FormRendererId>& removed_forms,
       const std::set<FieldRendererId>& removed_unowned_fields) const;
-
-  // Only used by the AutofillDriverIOSFactory.
-  // Other callers should use FromWebStateAndWebFrame() instead.
-  using web::WebFrameUserData<AutofillDriverIOS>::FromWebFrame;
 
   // AutofillManager::Observer:
   void OnAutofillManagerStateChanged(
