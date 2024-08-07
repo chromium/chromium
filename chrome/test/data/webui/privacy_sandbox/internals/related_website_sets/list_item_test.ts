@@ -71,4 +71,17 @@ suite('ListItemTest', () => {
     const boldedText = item.shadowRoot!.querySelector('b');
     assertEquals('associated1', boldedText!.textContent!.trim());
   });
+
+  test('check issuer text on search', async () => {
+    item.expanded = false;
+    item.primarySite = 'seT3';
+    item.memberSites = [];
+    item.managedByEnterprise = false;
+    item.query = 'sEt3';
+    await microtasksFinished();
+    const primarySite = item.shadowRoot!.querySelector<HTMLElement>('b');
+    assertTrue(!!primarySite);
+    assertTrue(
+        primarySite.innerText.toLowerCase().includes(item.query.toLowerCase()));
+  });
 });

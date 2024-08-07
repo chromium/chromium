@@ -50,4 +50,15 @@ suite('ContainerTest', () => {
         'Expand All', container.$.expandCollapseButton.textContent!.trim());
     renderedItems.forEach(item => assertFalse(item.$.expandedContent.opened));
   });
+
+  test('check search results', async () => {
+    assertEquals(3, container.filteredItems.length);
+    container.query = 'sEt2';
+    await microtasksFinished();
+    assertEquals(1, container.filteredItems.length);
+    assertTrue(!!container.filteredItems);
+    for (const item of container.filteredItems) {
+      assertTrue(item.primarySite.includes(container.query.toLowerCase()));
+    }
+  });
 });
