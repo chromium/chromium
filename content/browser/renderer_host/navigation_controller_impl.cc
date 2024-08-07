@@ -1194,8 +1194,7 @@ void NavigationControllerImpl::GoToIndex(int index) {
             /*navigation_api_key=*/nullptr);
 }
 
-std::vector<base::WeakPtr<NavigationRequest>>
-NavigationControllerImpl::GoToIndex(
+base::WeakPtr<NavigationRequest> NavigationControllerImpl::GoToIndex(
     int index,
     RenderFrameHostImpl* initiator_rfh,
     std::optional<blink::scheduler::TaskAttributionId>
@@ -1217,7 +1216,7 @@ NavigationControllerImpl::GoToIndex(
     // legacy behavior where trying to reload when the main frame is on the
     // initial empty document won't result in a navigation. See also
     // https://crbug.com/1277414.
-    return {};
+    return nullptr;
   }
 
   DiscardNonCommittedEntries();
@@ -1256,8 +1255,8 @@ void NavigationControllerImpl::GoToOffsetFromRenderer(
             /*navigation_api_key=*/nullptr);
 }
 
-std::vector<base::WeakPtr<NavigationRequest>>
-NavigationControllerImpl::GoToIndexAndReturnAllRequests(int index) {
+base::WeakPtr<NavigationRequest>
+NavigationControllerImpl::GoToIndexAndReturnPrimaryMainFrameRequest(int index) {
   return GoToIndex(index, /*initiator_rfh=*/nullptr,
                    /*soft_navigation_heuristics_task_id=*/std::nullopt,
                    /*navigation_api_key=*/nullptr);
@@ -3120,7 +3119,7 @@ void NavigationControllerImpl::PruneOldestSkippableEntryIfFull() {
   NotifyPrunedEntries(this, index, 1);
 }
 
-std::vector<base::WeakPtr<NavigationRequest>>
+base::WeakPtr<NavigationRequest>
 NavigationControllerImpl::NavigateToExistingPendingEntry(
     ReloadType reload_type,
     RenderFrameHostImpl* initiator_rfh,
@@ -3160,7 +3159,7 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
     frame_tree_->StopLoading();
 
     DiscardNonCommittedEntries();
-    return {};
+    return nullptr;
   }
 
   std::optional<blink::LocalFrameToken> initiator_frame_token;
@@ -3207,7 +3206,7 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
     if (!navigation_request) {
       // If this navigation cannot start, delete the pending NavigationEntry.
       DiscardPendingEntry(false);
-      return {};
+      return nullptr;
     }
     same_document_loads.push_back(std::move(navigation_request));
 
@@ -3259,7 +3258,7 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
         unused_request->set_navigation_discard_reason(
             NavigationDiscardReason::kNeverStarted);
       }
-      return {};
+      return nullptr;
     }
   }
 
@@ -3301,11 +3300,7 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
           NavigationDiscardReason::kNeverStarted);
     }
 
-    std::vector<base::WeakPtr<NavigationRequest>> bf_cache_request;
-    if (request) {
-      bf_cache_request.push_back(std::move(request));
-    }
-    return bf_cache_request;
+    return (request && request->IsInPrimaryMainFrame()) ? request : nullptr;
   }
 
   // History navigation might try to reuse a specific BrowsingInstance, already
@@ -3404,41 +3399,33 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
         different_document_loads, same_document_loads);
   }
 
-  std::vector<base::WeakPtr<NavigationRequest>> all_requests;
-  all_requests.reserve(same_document_loads.size() +
-                       different_document_loads.size());
-  bool seen_primary_main_frame_request = false;
-
+  base::WeakPtr<NavigationRequest> primary_main_frame_request;
   // Send all the same document frame loads before the different document loads.
   for (auto& item : same_document_loads) {
     FrameTreeNode* frame = item->frame_tree_node();
     // The request could be destroyed before `navigator().Navigate()` returns.
     base::WeakPtr<NavigationRequest> request = item->GetWeakPtr();
     frame->navigator().Navigate(std::move(item), reload_type);
-    if (request) {
-      // Can only have one primary main frame request.
-      CHECK(!seen_primary_main_frame_request ||
-            !request->IsInPrimaryMainFrame());
-      seen_primary_main_frame_request = request->IsInPrimaryMainFrame();
-      all_requests.push_back(std::move(request));
+    if (request && request->IsInPrimaryMainFrame()) {
+      // Only one primary main frame `NavigationRequest` should occur.
+      CHECK(!primary_main_frame_request);
+      primary_main_frame_request = request;
     }
   }
   for (auto& item : different_document_loads) {
     FrameTreeNode* frame = item->frame_tree_node();
     base::WeakPtr<NavigationRequest> request = item->GetWeakPtr();
     frame->navigator().Navigate(std::move(item), reload_type);
-    if (request) {
-      // Can only have one primary main frame request.
-      CHECK(!seen_primary_main_frame_request ||
-            !request->IsInPrimaryMainFrame());
-      seen_primary_main_frame_request = request->IsInPrimaryMainFrame();
-      all_requests.push_back(std::move(request));
+    if (request && request->IsInPrimaryMainFrame()) {
+      // Only one primary main frame `NavigationRequest` should occur.
+      CHECK(!primary_main_frame_request);
+      primary_main_frame_request = request;
     }
   }
 
   in_navigate_to_pending_entry_ = false;
 
-  return all_requests;
+  return primary_main_frame_request;
 }
 
 NavigationControllerImpl::HistoryNavigationAction

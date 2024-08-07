@@ -255,11 +255,8 @@ void BackForwardTransitionAnimator::OnGestureCancelled() {
 void BackForwardTransitionAnimator::OnGestureInvoked() {
   CHECK_EQ(state_, State::kStarted);
   if (!StartNavigationAndTrackRequest()) {
-    // `BackForwardTransitionAnimationManagerAndroid` will destroy `this` upon
-    // return if the animation is aborted.
-    if (state_ != State::kAnimationAborted) {
-      AdvanceAndProcessState(State::kDisplayingCancelAnimation);
-    }
+    // We couldn't start the navigation. Cancel the animation.
+    AdvanceAndProcessState(State::kDisplayingCancelAnimation);
     return;
   }
   // `StartNavigationAndTrackRequest()` sets `navigation_state_`.
@@ -267,17 +264,14 @@ void BackForwardTransitionAnimator::OnGestureInvoked() {
     AdvanceAndProcessState(State::kDisplayingCancelAnimation);
     return;
   }
-  CHECK_EQ(navigation_state_, NavigationState::kStarted);
   AdvanceAndProcessState(State::kDisplayingInvokeAnimation);
 }
 
-// TODO(https://crbug.com/357094180): We should cancel the transition if a
-// unrelated request shows a beforeunload dialog.
 void BackForwardTransitionAnimator::OnNavigationCancelledBeforeStart(
     NavigationHandle* navigation_handle) {
-  if (!tracked_request_ ||
-      tracked_request_->navigation_id != navigation_handle->GetNavigationId()) {
-    // A unrelated request is cancelled before start.
+  if (!primary_main_frame_navigation_request_id_of_gesture_nav_.has_value() ||
+      primary_main_frame_navigation_request_id_of_gesture_nav_.value() !=
+          navigation_handle->GetNavigationId()) {
     return;
   }
 
@@ -420,18 +414,6 @@ void BackForwardTransitionAnimator::OnRenderWidgetHostDestroyed(
 // cancelled.
 void BackForwardTransitionAnimator::OnRenderFrameMetadataChangedAfterActivation(
     base::TimeTicks activation_time) {
-  CHECK(tracked_request_);
-  // We shouldn't get this notification for subframe navigations because we
-  // never subscribe to the `RenderWidgetHost` for subframes.
-  //
-  // This is for simplicity: non-OOPIF / VideoSubmitter subframes share the same
-  // `RenderWidgetHost` with the embedder thus it's difficult to differentiate
-  // the frames submitted from a subframe vs from its embedder. For subframe
-  // navigations, we play the cross-fade animation as soon as the invoke
-  // animation has finished (see `DidFinishNavigation()`'s treatment for
-  // subframes).
-  CHECK(tracked_request_->is_primary_main_frame);
-
   // `new_render_widget_host_` and
   // `primary_main_frame_navigation_entry_item_sequence_number_` are set when
   // the navigation is ready to commit.
@@ -481,7 +463,7 @@ void BackForwardTransitionAnimator::OnRenderFrameMetadataChangedAfterActivation(
 // the BeforeUnload message to proceed (begin) the navigation.
 void BackForwardTransitionAnimator::DidStartNavigation(
     NavigationHandle* navigation_handle) {
-  if (!tracked_request_) {
+  if (!primary_main_frame_navigation_request_id_of_gesture_nav_.has_value()) {
     // We could reach here for an early-commit navigation:
     // - The animator only tracks the request's ID after `GoToIndex()` returns.
     // - In early commit, `DidStartNavigation()` is called during `GoToIndex()`.
@@ -490,8 +472,9 @@ void BackForwardTransitionAnimator::DidStartNavigation(
     // `navigation_state_`.
     return;
   }
-
-  if (tracked_request_->navigation_id != navigation_handle->GetNavigationId()) {
+  int64_t tracked_request_id =
+      primary_main_frame_navigation_request_id_of_gesture_nav_.value();
+  if (tracked_request_id != navigation_handle->GetNavigationId()) {
     return;
   }
 
@@ -508,16 +491,10 @@ void BackForwardTransitionAnimator::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
   CHECK(!navigation_handle->IsSameDocument());
 
-  if (!tracked_request_ ||
-      tracked_request_->navigation_id != navigation_handle->GetNavigationId()) {
+  if (navigation_handle->GetNavigationId() !=
+      primary_main_frame_navigation_request_id_of_gesture_nav_) {
     // A unrelated navigation is ready to commit. This is possible with
     // NavigationQueuing. We ignore the unrelated navigation request.
-    return;
-  }
-
-  if (!tracked_request_->is_primary_main_frame) {
-    // We don't subscribe to the new widget host for subframes, nor clone the
-    // old surface layer.
     return;
   }
 
@@ -544,46 +521,22 @@ void BackForwardTransitionAnimator::ReadyToCommitNavigation(
   }
 }
 
-// - For a primary main frame navigation, we only use `DidFinishNavigation()`
-// for navigations that never commit (204/205/downloads), or the cancelled /
-// replaced navigations. For a committed navigation, everything is set in
-// `OnDidNavigatePrimaryMainFramePreCommit()`, which is before the old
-// `RenderViewHost` is swapped out.
-//
-// - For subframe navigation, we bring the fallback UX to the full viewport when
-// the subframe navigation commits.
+// We only use `DidFinishNavigation()` for navigations that never commit
+// (204/205/downloads), or the cancelled / replaced navigations. For a committed
+// navigation, everything is set in `OnDidNavigatePrimaryMainFramePreCommit()`,
+// which is before the old `RenderViewHost` is swapped out.
 void BackForwardTransitionAnimator::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
   // If we haven't started tracking a navigation, or if `navigation_handle`
   // isn't what we tracked, or if this `navigation_handle` has committed, ignore
   // it.
-  //
-  // TODO(https://crbug.com/357060513): If we are tracking a subframe request
-  // from subframe A while subframe B navigates, the request in subframe B is
-  // ignored completely. We should decide what to do before launch.
-  if (!tracked_request_ ||
-      tracked_request_->navigation_id != navigation_handle->GetNavigationId()) {
+  if (!primary_main_frame_navigation_request_id_of_gesture_nav_.has_value() ||
+      primary_main_frame_navigation_request_id_of_gesture_nav_.value() !=
+          navigation_handle->GetNavigationId()) {
     return;
   }
-
   if (navigation_handle->HasCommitted()) {
-    if (navigation_handle->IsInPrimaryMainFrame()) {
-      // If this is a committed primary main frame navigation request, we must
-      // have already set the states in
-      // `OnDidNavigatePrimaryMainFramePreCommit()`.
-      CHECK(tracked_request_->is_primary_main_frame);
-      CHECK_EQ(navigation_state_, NavigationState::kCommitted);
-    } else {
-      // If this is a committed subframe request, animate the fallback UX to
-      // occupy the full viewport.
-      CHECK(!tracked_request_->is_primary_main_frame);
-      navigation_state_ = NavigationState::kCommitted;
-      physics_model_.OnNavigationFinished(/*navigation_committed=*/true);
-      CHECK_EQ(state_, State::kDisplayingInvokeAnimation);
-      // Signals that when the invoke animation finishes, play the cross-fade
-      // animation directly.
-      viz_has_activated_first_frame_ = true;
-    }
+    CHECK_EQ(navigation_state_, NavigationState::kCommitted);
     return;
   }
 
@@ -603,20 +556,23 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
     NavigationRequest* navigation_request,
     RenderFrameHostImpl* old_host,
     RenderFrameHostImpl* new_host) {
-  // If a navigation commits in the primary main frame while we are tracking the
-  // subframe requests, abort the animation immediately.
-  if (tracked_request_ && !tracked_request_->is_primary_main_frame) {
-    AbortAnimation();
-    return;
-  }
-
+  // Ignore all the subframe requests. Safe to do so as a start point because:
+  // 1. TODO(crbug.com/40896219): We don't capture the screenshot for
+  //    subframe navigations.
+  // 2. (Implicitly) Because of 1, we don't animate subframe history
+  //    navigations.
+  // 3. TODO(crbug.com/41488906): For now, subframe navigations won't
+  //    cancel the main frame history naivgations.
+  //
+  // Note: Also implicitly, all the subframes' DidFinishNavigation()s are
+  // ignored.
   CHECK(navigation_request->IsInPrimaryMainFrame());
 
   bool skip_all_animations = false;
 
   switch (state_) {
     case State::kStarted:
-      CHECK(!tracked_request_);
+      CHECK(!primary_main_frame_navigation_request_id_of_gesture_nav_);
       CHECK_EQ(navigation_state_, NavigationState::kNotStarted);
       // A new navigation finished in the primary main frame while the user is
       // swiping across the screen. For simplicity, destroy this class if the
@@ -626,11 +582,11 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
     case State::kDisplayingInvokeAnimation: {
       // We can only get to `kDisplayingInvokeAnimation` if we have started
       // tracking the request.
-      CHECK(tracked_request_);
+      CHECK(primary_main_frame_navigation_request_id_of_gesture_nav_);
 
       if (navigation_state_ == NavigationState::kStarted) {
-        if (tracked_request_->navigation_id !=
-            navigation_request->GetNavigationId()) {
+        if (navigation_request->GetNavigationId() !=
+            primary_main_frame_navigation_request_id_of_gesture_nav_.value()) {
           // A previously pending navigation has committed since we started
           // tracking our gesture navigation. Ignore this committed navigation.
           return;
@@ -719,14 +675,14 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // This can be a client redirect: A.com -> B.com and B.com's document
       // redirects to C.com, before B.com's renderer even submits a new frame.
       CHECK_EQ(navigation_state_, NavigationState::kCommitted);
-      CHECK(tracked_request_);
+      CHECK(primary_main_frame_navigation_request_id_of_gesture_nav_);
       skip_all_animations = true;
       break;
     case State::kWaitingForContentForNavigationEntryShown:
       // Our navigation has already committed while waiting for a native
       // entry to be finished drawing by the embedder.
       CHECK_EQ(navigation_state_, NavigationState::kCommitted);
-      CHECK(tracked_request_);
+      CHECK(primary_main_frame_navigation_request_id_of_gesture_nav_);
       skip_all_animations = true;
       break;
     case State::kDisplayingCrossFadeAnimation: {
@@ -735,7 +691,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // redirects to C.com, while we are cross-fading from B.com's screenshot
       // to whatever is underneath the screenshot.
       CHECK_EQ(navigation_state_, NavigationState::kCommitted);
-      CHECK(tracked_request_);
+      CHECK(primary_main_frame_navigation_request_id_of_gesture_nav_);
       skip_all_animations = true;
       break;
     }
@@ -1160,7 +1116,7 @@ void BackForwardTransitionAnimator::SetupProgressBar() {
 
 bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
   CHECK(use_fallback_screenshot_ || screenshot_);
-  CHECK(!tracked_request_);
+  CHECK(!primary_main_frame_navigation_request_id_of_gesture_nav_.has_value());
   CHECK_EQ(navigation_state_, NavigationState::kNotStarted);
 
   NavigationControllerImpl* nav_controller =
@@ -1171,32 +1127,15 @@ bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
     return false;
   }
 
-  std::vector<base::WeakPtr<NavigationRequest>> requests =
-      nav_controller->GoToIndexAndReturnAllRequests(index);
-  if (requests.empty()) {
-    // The gesture did not create any navigation requests.
+  base::WeakPtr<NavigationRequest> primary_main_frame_request =
+      nav_controller->GoToIndexAndReturnPrimaryMainFrameRequest(index);
+  if (!primary_main_frame_request) {
+    // The gesture did not start a navigation in the primary main frame.
+    //
+    // TODO(crbug.com/41490714): Collect subframe requests.
     return false;
   }
 
-  for (const auto& request : requests) {
-    if (request->IsInPrimaryMainFrame()) {
-      return TrackRequest(std::move(request));
-    }
-  }
-
-  if (requests.size() > 1U) {
-    AbortAnimation();
-    return false;
-  }
-
-  CHECK(!tracked_request_);
-  CHECK_EQ(navigation_state_, NavigationState::kNotStarted);
-  return TrackRequest(std::move(requests[0]));
-}
-
-bool BackForwardTransitionAnimator::TrackRequest(
-    base::WeakPtr<NavigationRequest> created_request) {
-  CHECK(created_request);
   // The resulting `NavigationRequest` must be associated with the intended
   // `NavigationEntry`, to safely start the animation.
   //
@@ -1205,37 +1144,36 @@ bool BackForwardTransitionAnimator::TrackRequest(
   // a pending navigation. It's fine to CHECK the entry here because we just
   // created the requests in the same stack. No code yet had a chance to delete
   // the entry.
-  CHECK(created_request->GetNavigationEntry());
+  CHECK(primary_main_frame_request->GetNavigationEntry());
 
-  int request_entry_id = created_request->GetNavigationEntry()->GetUniqueID();
+  int request_entry_id =
+      primary_main_frame_request->GetNavigationEntry()->GetUniqueID();
 
   // `destination_entry_id_` is initialized in the same stack as
-  // `GoToIndexAndReturnAllRequests()`. Thus they must equal.
+  // `GoToIndexAndReturnPrimaryMainFrameRequest()`. Thus they must equal.
   CHECK_EQ(destination_entry_id_, request_entry_id);
 
-  tracked_request_ = TrackedRequest{
-      .navigation_id = created_request->GetNavigationId(),
-      .is_primary_main_frame = created_request->IsInPrimaryMainFrame(),
-  };
-
-  if (created_request->IsNavigationStarted()) {
+  primary_main_frame_navigation_request_id_of_gesture_nav_ =
+      primary_main_frame_request->GetNavigationId();
+  if (primary_main_frame_request->IsNavigationStarted()) {
     navigation_state_ = NavigationState::kStarted;
-    if (created_request->IsSameDocument() &&
-        created_request->IsInPrimaryMainFrame()) {
+    if (primary_main_frame_request->IsSameDocument()) {
       // For same-doc navigations, we clone the old surface layer and subscribe
       // to the widget host immediately after sending the "CommitNavigation"
       // message. Once the browser receives the renderer's "DidCommitNavigation"
       // message, it is too late to make a clone or subscribe to the widget
       // host.
-      CloneOldSurfaceLayer(created_request->GetRenderFrameHost()->GetView());
-      SubscribeToNewRenderWidgetHost(created_request.get());
+      CloneOldSurfaceLayer(
+          primary_main_frame_request->GetRenderFrameHost()->GetView());
+      SubscribeToNewRenderWidgetHost(primary_main_frame_request.get());
     }
   } else {
-    CHECK(!created_request->IsSameDocument());
-    CHECK(created_request->IsWaitingForBeforeUnload());
+    CHECK(!primary_main_frame_request->IsSameDocument());
+    CHECK(primary_main_frame_request->IsWaitingForBeforeUnload());
     navigation_state_ = NavigationState::kBeforeUnloadDispatched;
   }
-  created_request->set_was_initiated_by_animated_transition();
+
+  primary_main_frame_request->set_was_initiated_by_animated_transition();
   return true;
 }
 
