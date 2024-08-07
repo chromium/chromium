@@ -301,6 +301,8 @@ void MahiQuestionAnswerView::OnUpdated(const MahiUiUpdate& update) {
       auto* answer_loading_animated_image = AddChildView(
           views::Builder<views::AnimatedImageView>()
               .SetID(mahi_constants::ViewId::kAnswerLoadingAnimatedImage)
+              .SetAccessibleName(l10n_util::GetStringUTF16(
+                  IDS_ASH_MAHI_LOADING_ACCESSIBLE_NAME))
               .SetAnimatedImage(mahi_animation_utils::GetLottieAnimationData(
                   IDR_MAHI_LOADING_SUMMARY_ANIMATION))
               .AfterBuild(base::BindOnce([](views::AnimatedImageView* self) {

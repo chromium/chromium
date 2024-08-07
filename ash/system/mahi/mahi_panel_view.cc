@@ -553,6 +553,9 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
           .SetID(mahi_constants::ViewId::kContentSourceButton)
           .Build());
 
+  views::View* feedback_buttons_container;
+  views::View* error_status_view;
+
   // Add a scrollable view of the panel's content, with a feedback section.
   main_container_->AddChildView(
       views::Builder<views::View>()
@@ -569,6 +572,7 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
           .AddChildren(
               // Add buttons for the user to give feedback on the content.
               views::Builder<views::BoxLayoutView>()
+                  .CopyAddressTo(&feedback_buttons_container)
                   .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
                   .SetInsideBorderInsets(gfx::Insets::TLBR(
                       0, 0, 0, kFeedbackButtonIconPaddingRight))
@@ -627,8 +631,14 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
                                           views::MaximumFlexSizeRule::
                                               kUnbounded)))),
               views::Builder<MahiErrorStatusView>(
-                  std::make_unique<MahiErrorStatusView>(ui_controller_)))
+                  std::make_unique<MahiErrorStatusView>(ui_controller_))
+                  .CopyAddressTo(&error_status_view))
           .Build());
+
+  // Put feedback buttons container after the error status view in the focus
+  // list since the order of traversal should be scroll view -> error status
+  // view -> feedback buttons.
+  feedback_buttons_container->InsertAfterInFocusList(error_status_view);
 
   // Add a row for processing user input that includes a textfield, send button
   // and a back to Q&A button when in the summary section.
