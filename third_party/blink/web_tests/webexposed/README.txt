@@ -45,14 +45,3 @@ But also in web_tests/http/tests/serviceworker/webexposed:
 And also in web_tests/http/tests/worklet/webexposed:
 
 * global-interface-listing-paint-worklet.html - Worklet contexts
-
-Also in web_tests/web_exposed:
-
-* global-interface-listing-platform-specific.html - Tests the
-  interfaces listed in the platformSpecificInterfaces array in
-  web_tests/resources/global-interface-listing.js. The results appear
-  in:
-  * platform/win/virtual/stable/webexposed/global-interface-listing-platform-specific-expected.txt
-  * platform/mac/virtual/stable/webexposed/global-interface-listing-platform-specific-expected.txt
-  * platform/linux/virtual/stable/webexposed/global-interface-listing-platform-specific-expected.txt
-  * platform/win7/virtual/stable/webexposed/global-interface-listing-platform-specific-expected.txt

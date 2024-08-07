@@ -4375,7 +4375,6 @@ crbug.com/1416204 external/wpt/scroll-animations/css/printing/scroll-timeline-de
 
 # Sheriff 2020-03-06
 crbug.com/1059262 virtual/threaded/http/tests/worklet/webexposed/global-interface-listing-paint-worklet.html [ Failure Pass ]
-crbug.com/1059262 [ Mac ] webexposed/global-interface-listing-platform-specific.html [ Failure Pass ]
 
 # [virtual/...]external/wpt/web-animation test flakes
 
