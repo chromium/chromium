@@ -55,9 +55,11 @@ void LogStatus(Status status) {
 }  // namespace
 
 DriveSearchProvider::DriveSearchProvider(Profile* profile,
-                                         bool should_filter_shared_files)
+                                         bool should_filter_shared_files,
+                                         bool should_filter_directories)
     : SearchProvider(SearchCategory::kFiles),
       should_filter_shared_files_(should_filter_shared_files),
+      should_filter_directories_(should_filter_directories),
       profile_(profile),
       drive_service_(
           drive::DriveIntegrationServiceFactory::GetForProfile(profile)) {
@@ -180,6 +182,10 @@ void DriveSearchProvider::OnSearchDriveByFileName(
     GURL url(item->metadata->alternate_url);
     if (item->metadata->type ==
         drivefs::mojom::FileMetadata::Type::kDirectory) {
+      // TODO: b/357740941 - Move this filtering to the DriveFS query.
+      if (should_filter_directories_) {
+        continue;
+      }
       const auto type = item->metadata->shared
                             ? FileResult::Type::kSharedDirectory
                             : FileResult::Type::kDirectory;

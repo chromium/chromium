@@ -30,7 +30,8 @@ namespace app_list {
 class DriveSearchProvider : public SearchProvider {
  public:
   explicit DriveSearchProvider(Profile* profile,
-                               bool should_filter_shared_files = true);
+                               bool should_filter_shared_files = true,
+                               bool should_filter_directories = false);
   ~DriveSearchProvider() override;
 
   DriveSearchProvider(const DriveSearchProvider&) = delete;
@@ -53,6 +54,7 @@ class DriveSearchProvider : public SearchProvider {
                                          const GURL& url);
 
   bool should_filter_shared_files_;
+  bool should_filter_directories_;
 
   // When the query began.
   base::TimeTicks query_start_time_;
