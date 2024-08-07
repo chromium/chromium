@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TACHYON_CONSTANTS_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TACHYON_CONSTANTS_H_
 
-namespace babelorca {
+namespace ash::babelorca {
 
 // TODO(b/356929723): We should not launch with IntegTest. Set the right app
 // name after onboarding to Tachyon.
@@ -13,6 +13,6 @@ inline constexpr char kTachyonAppName[] = "IntegTest";
 inline constexpr char kSigninGaiaUrl[] =
     "https://instantmessaging-pa.googleapis.com/v1/registration:signingaia";
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TACHYON_CONSTANTS_H_

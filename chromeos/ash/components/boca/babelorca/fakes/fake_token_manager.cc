@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 FakeTokenManager::FakeTokenManager() = default;
 
@@ -55,4 +55,4 @@ void FakeTokenManager::ExecuteFetchCallback(bool success) {
   return std::move(success_callback_).Run(success);
 }
 
-}  // namespace babelorca
+}  // namespace ash::babelorca

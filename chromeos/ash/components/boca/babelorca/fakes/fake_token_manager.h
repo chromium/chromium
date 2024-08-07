@@ -12,7 +12,7 @@
 #include "base/run_loop.h"
 #include "chromeos/ash/components/boca/babelorca/token_manager.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 class FakeTokenManager : public TokenManager {
  public:
@@ -41,6 +41,6 @@ class FakeTokenManager : public TokenManager {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_FAKES_FAKE_TOKEN_MANAGER_H_

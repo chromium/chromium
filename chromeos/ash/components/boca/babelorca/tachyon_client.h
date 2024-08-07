@@ -10,7 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 struct RequestDataWrapper;
 
@@ -32,6 +32,6 @@ class TachyonClient {
   TachyonClient() = default;
 };
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TACHYON_CLIENT_H_

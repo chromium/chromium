@@ -17,7 +17,7 @@
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 class SignInGaiaResponse;
 class TachyonAuthedClient;
@@ -55,6 +55,6 @@ class TachyonRegistrar {
   base::WeakPtrFactory<TachyonRegistrar> weak_ptr_factory{this};
 };
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TACHYON_REGISTRAR_H_

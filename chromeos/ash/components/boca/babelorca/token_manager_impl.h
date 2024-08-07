@@ -19,7 +19,7 @@
 #include "chromeos/ash/components/boca/babelorca/token_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/token_manager.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 class TokenFetcher;
 
@@ -57,6 +57,6 @@ class TokenManagerImpl : public TokenManager {
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TOKEN_MANAGER_IMPL_H_

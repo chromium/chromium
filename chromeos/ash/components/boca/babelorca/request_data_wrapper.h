@@ -15,7 +15,7 @@ namespace net {
 struct NetworkTrafficAnnotationTag;
 }  // namespace net
 
-namespace babelorca {
+namespace ash::babelorca {
 
 class ResponseCallbackWrapper;
 
@@ -37,6 +37,6 @@ struct RequestDataWrapper {
   std::string content_data;
 };
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_REQUEST_DATA_WRAPPER_H_

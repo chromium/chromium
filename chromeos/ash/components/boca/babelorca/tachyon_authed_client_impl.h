@@ -15,7 +15,7 @@
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 class TachyonClient;
 class TokenManager;
@@ -57,6 +57,6 @@ class TachyonAuthedClientImpl : public TachyonAuthedClient {
   base::WeakPtrFactory<TachyonAuthedClientImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TACHYON_AUTHED_CLIENT_IMPL_H_

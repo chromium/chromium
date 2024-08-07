@@ -12,7 +12,7 @@
 #include "base/run_loop.h"
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 FakeTachyonClient::FakeTachyonClient() = default;
 
@@ -52,4 +52,4 @@ void FakeTachyonClient::ExecuteAuthFailCb() {
   std::move(auth_failure_cb_).Run(std::move(request_data_));
 }
 
-}  // namespace babelorca
+}  // namespace ash::babelorca

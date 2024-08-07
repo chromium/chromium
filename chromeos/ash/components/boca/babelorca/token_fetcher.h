@@ -9,7 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 struct TokenDataWrapper;
 
@@ -31,6 +31,6 @@ class TokenFetcher {
   TokenFetcher() = default;
 };
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TOKEN_FETCHER_H_

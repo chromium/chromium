@@ -16,7 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 constexpr char kDeviceId[] = "device-id";
 constexpr char kTachyonToken[] = "tachyon-token";
@@ -53,4 +53,4 @@ TEST(TachyonRegistrarTest, FailedRegistration) {
   EXPECT_FALSE(tachyon_token.has_value());
 }
 
-}  // namespace babelorca
+}  // namespace ash::babelorca

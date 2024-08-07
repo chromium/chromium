@@ -9,7 +9,7 @@ syntax = "proto3";
 
 option optimize_for = LITE_RUNTIME;
 
-package babelorca;
+package ash.babelorca;
 
 import "tachyon_enums.proto";
 

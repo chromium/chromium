@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/boca/babelorca/token_fetcher.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 struct TokenDataWrapper;
 
@@ -32,6 +32,6 @@ class FakeTokenFetcher : public TokenFetcher {
   TokenFetchCallback fetch_callback_;
 };
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_FAKES_FAKE_TOKEN_FETCHER_H_

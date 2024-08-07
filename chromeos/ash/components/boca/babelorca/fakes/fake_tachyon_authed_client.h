@@ -12,7 +12,7 @@
 #include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 class FakeTachyonAuthedClient : public TachyonAuthedClient {
  public:
@@ -39,6 +39,6 @@ class FakeTachyonAuthedClient : public TachyonAuthedClient {
   std::unique_ptr<ResponseCallbackWrapper> response_cb_;
 };
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_FAKES_FAKE_TACHYON_AUTHED_CLIENT_H_

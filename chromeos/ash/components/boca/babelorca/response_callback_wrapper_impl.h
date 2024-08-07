@@ -16,7 +16,7 @@
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 template <typename ResponseType>
 class ResponseCallbackWrapperImpl : public ResponseCallbackWrapper {
@@ -60,6 +60,6 @@ class ResponseCallbackWrapperImpl : public ResponseCallbackWrapper {
   ResponseExpectedCallback callback_;
 };
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_RESPONSE_CALLBACK_WRAPPER_IMPL_H_

@@ -21,7 +21,7 @@ struct AccessTokenInfo;
 
 class GoogleServiceAuthError;
 
-namespace babelorca {
+namespace ash::babelorca {
 
 // Tachyon oauth token fetcher.
 class OAuthTokenFetcher : public TokenFetcher {
@@ -51,6 +51,6 @@ class OAuthTokenFetcher : public TokenFetcher {
   base::OneShotTimer retry_timer_;
 };
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_OAUTH_TOKEN_FETCHER_H_

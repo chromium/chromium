@@ -12,7 +12,7 @@
 #include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 RequestDataWrapper::RequestDataWrapper(
     const net::NetworkTrafficAnnotationTag& annotation_tag_param,
@@ -26,4 +26,4 @@ RequestDataWrapper::RequestDataWrapper(
 
 RequestDataWrapper::~RequestDataWrapper() = default;
 
-}  // namespace babelorca
+}  // namespace ash::babelorca

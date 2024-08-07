@@ -10,7 +10,7 @@
 
 #include "base/time/time.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 struct TokenDataWrapper {
   std::string token;
@@ -21,6 +21,6 @@ struct TokenDataWrapper {
       : token(std::move(token_param)), expiration_time(expiration_time_param) {}
 };
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TOKEN_DATA_WRAPPER_H_

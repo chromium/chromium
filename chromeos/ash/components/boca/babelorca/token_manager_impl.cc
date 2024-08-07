@@ -19,7 +19,7 @@
 #include "chromeos/ash/components/boca/babelorca/token_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/token_fetcher.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 TokenManagerImpl::TokenManagerImpl(std::unique_ptr<TokenFetcher> token_fetcher,
                                    base::TimeDelta expiration_buffer,
@@ -74,4 +74,4 @@ void TokenManagerImpl::OnTokenFetchCompleted(
   }
 }
 
-}  // namespace babelorca
+}  // namespace ash::babelorca

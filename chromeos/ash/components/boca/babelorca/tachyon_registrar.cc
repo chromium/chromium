@@ -23,7 +23,7 @@
 #include "chromeos/ash/components/boca/babelorca/tachyon_constants.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 namespace {
 
 // TODO(b/356929723): Fill the annotation tag fields before launch.
@@ -100,4 +100,4 @@ void TachyonRegistrar::OnResponse(
   std::move(success_cb).Run(true);
 }
 
-}  // namespace babelorca
+}  // namespace ash::babelorca

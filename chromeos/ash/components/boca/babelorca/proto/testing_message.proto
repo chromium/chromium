@@ -6,7 +6,7 @@ syntax = "proto3";
 
 option optimize_for = LITE_RUNTIME;
 
-package babelorca;
+package ash.babelorca;
 
 message TestingMessage {
   int32 int_field = 1;

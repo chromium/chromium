@@ -9,7 +9,7 @@
 
 #include "base/types/expected.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 class ResponseCallbackWrapper {
  public:
@@ -32,6 +32,6 @@ class ResponseCallbackWrapper {
   ResponseCallbackWrapper() = default;
 };
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_RESPONSE_CALLBACK_WRAPPER_H_

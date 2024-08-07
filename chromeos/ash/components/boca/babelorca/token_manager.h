@@ -9,7 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 class TokenManager {
  public:
@@ -39,6 +39,6 @@ class TokenManager {
   TokenManager() = default;
 };
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TOKEN_MANAGER_H_

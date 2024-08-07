@@ -28,7 +28,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 namespace {
 
 // TODO(b/353974384): Identify an accurate max size.
@@ -110,4 +110,4 @@ void TachyonClientImpl::OnResponse(
   request_data->response_cb->Run(std::move(*response_body));
 }
 
-}  // namespace babelorca
+}  // namespace ash::babelorca

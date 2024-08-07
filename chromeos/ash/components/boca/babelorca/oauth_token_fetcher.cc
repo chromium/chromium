@@ -27,7 +27,7 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 namespace {
 
 bool IsOAuthTokenFetchRetryableError(
@@ -98,4 +98,4 @@ void OAuthTokenFetcher::OnOAuthTokenRequestCompleted(
   std::move(callback).Run(std::nullopt);
 }
 
-}  // namespace babelorca
+}  // namespace ash::babelorca

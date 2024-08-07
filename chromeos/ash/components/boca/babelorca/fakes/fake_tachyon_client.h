@@ -13,7 +13,7 @@
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_client.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 class FakeTachyonClient : public TachyonClient {
  public:
@@ -41,6 +41,6 @@ class FakeTachyonClient : public TachyonClient {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_FAKES_FAKE_TACHYON_CLIENT_H_

@@ -19,7 +19,7 @@ class SimpleURLLoader;
 
 }  // namespace network
 
-namespace babelorca {
+namespace ash::babelorca {
 
 struct RequestDataWrapper;
 
@@ -48,6 +48,6 @@ class TachyonClientImpl : public TachyonClient {
   base::WeakPtrFactory<TachyonClientImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TACHYON_CLIENT_IMPL_H_

@@ -13,7 +13,7 @@
 #include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 namespace {
 
 using TestingExpectedResponse =
@@ -66,4 +66,4 @@ TEST(ResponseCallbackWrapperImplTest, RespondWithErrorOnParseFailure) {
 }
 
 }  // namespace
-}  // namespace babelorca
+}  // namespace ash::babelorca

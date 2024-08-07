@@ -24,7 +24,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 namespace {
 
 std::optional<std::string> SerializeProtoToString(
@@ -126,4 +126,4 @@ void TachyonAuthedClientImpl::OnRequestAuthFailure(
                      weak_ptr_factory_.GetWeakPtr(), std::move(request_data)));
 }
 
-}  // namespace babelorca
+}  // namespace ash::babelorca

@@ -16,7 +16,7 @@ namespace net {
 struct NetworkTrafficAnnotationTag;
 }  // namespace net
 
-namespace babelorca {
+namespace ash::babelorca {
 
 class ResponseCallbackWrapper;
 
@@ -38,6 +38,6 @@ class TachyonAuthedClient {
   TachyonAuthedClient() = default;
 };
 
-}  // namespace babelorca
+}  // namespace ash::babelorca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TACHYON_AUTHED_CLIENT_H_

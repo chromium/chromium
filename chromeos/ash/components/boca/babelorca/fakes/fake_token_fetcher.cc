@@ -11,7 +11,7 @@
 #include "chromeos/ash/components/boca/babelorca/token_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/token_fetcher.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 FakeTokenFetcher::FakeTokenFetcher() = default;
 
@@ -29,4 +29,4 @@ void FakeTokenFetcher::RespondToFetchRequest(
   std::move(fetch_callback_).Run(std::move(token_data));
 }
 
-}  // namespace babelorca
+}  // namespace ash::babelorca

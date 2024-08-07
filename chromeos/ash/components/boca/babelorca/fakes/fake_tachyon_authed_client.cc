@@ -14,7 +14,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 
 FakeTachyonAuthedClient::FakeTachyonAuthedClient() = default;
 
@@ -36,4 +36,4 @@ void FakeTachyonAuthedClient::ExecuteResponseCallback(
   response_cb_->Run(std::move(response));
 }
 
-}  // namespace babelorca
+}  // namespace ash::babelorca

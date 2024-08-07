@@ -21,7 +21,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 namespace {
 
 using ExpectedTestingMessage =
@@ -219,4 +219,4 @@ TEST_F(TachyonAuthedClientImplTest, TokenFetchFailed) {
 }
 
 }  // namespace
-}  // namespace babelorca
+}  // namespace ash::babelorca

@@ -25,7 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 namespace {
 
 using ExpectedTestingMessage =
@@ -136,4 +136,4 @@ TEST_F(TachyonClientImplTest, AuthError) {
 }
 
 }  // namespace
-}  // namespace babelorca
+}  // namespace ash::babelorca
