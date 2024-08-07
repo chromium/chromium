@@ -272,10 +272,6 @@ BASE_FEATURE(kSafeBrowsingCallNewGmsApiOnStartup,
 BASE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
              "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSafeBrowsingNewGmsApiForSubresourceFilterCheck,
-             "SafeBrowsingNewGmsApiForSubresourceFilterCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kSafeBrowsingOnUIThread,

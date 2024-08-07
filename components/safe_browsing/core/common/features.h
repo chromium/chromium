@@ -224,9 +224,6 @@ BASE_DECLARE_FEATURE(kSafeBrowsingCallNewGmsApiOnStartup);
 
 // Use new GMSCore API for hash database check on browser URLs.
 BASE_DECLARE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck);
-
-// Use new GMSCore API for subresource filter checks.
-BASE_DECLARE_FEATURE(kSafeBrowsingNewGmsApiForSubresourceFilterCheck);
 #endif
 
 // Run Safe Browsing code on UI thread.

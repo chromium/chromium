@@ -448,8 +448,6 @@ public abstract class ChromeFeatureList {
             "SafeBrowsingCallNewGmsApiOnStartup";
     public static final String SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK =
             "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck";
-    public static final String SAFE_BROWSING_NEW_GMS_API_FOR_SUBRESOURCE_FILTER_CHECK =
-            "SafeBrowsingNewGmsApiForSubresourceFilterCheck";
     public static final String SEARCH_IN_CCT = "SearchInCCT";
     public static final String SEARCH_ENGINE_CHOICE = "SearchEngineChoice";
     public static final String WAFFLE_BLOCKING = "WaffleBlocking";
