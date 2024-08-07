@@ -374,10 +374,6 @@ AuthFactor DeserializeAuthFactor(
       PinStatus pin_status = proto.has_status_info()
                                  ? PasrePinFactorStatus(proto.status_info())
                                  : PinStatus();
-      // Extra check to ensure consistency until we move away from
-      // using pin_metadata().auth_locked() for the lockout status check.
-      CHECK_EQ(factor_proto.pin_metadata().auth_locked(),
-               pin_status.IsLockedFactor());
       return AuthFactor(std::move(ref), std::move(common_metadata),
                         std::move(pin_metadata), std::move(pin_status));
     }
