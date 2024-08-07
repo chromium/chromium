@@ -4047,6 +4047,9 @@ extern const char kGameDashboardDescription[];
 extern const char kGameDashboardGamePWAs[];
 extern const char kGameDashboardGamePWAsDescription[];
 
+extern const char kGameDashboardUtilities[];
+extern const char kGameDashboardUtilitiesDescription[];
+
 extern const char kGlanceablesTimeManagementClassroomStudentViewName[];
 extern const char kGlanceablesTimeManagementClassroomStudentViewDescription[];
 

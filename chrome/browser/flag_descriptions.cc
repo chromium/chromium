@@ -7005,6 +7005,10 @@ const char kGameDashboardGamePWAs[] = "Game Dashboard Game PWAs";
 const char kGameDashboardGamePWAsDescription[] =
     "Enables Game Dashboard for an additional set of game PWAs.";
 
+const char kGameDashboardUtilities[] = "Game Dashboard Utilities";
+const char kGameDashboardUtilitiesDescription[] =
+    "Enables utility features in the Game Dashboard.";
+
 const char kGlanceablesTimeManagementClassroomStudentViewName[] =
     "Glanceables > Time Management > Classroom Student";
 const char kGlanceablesTimeManagementClassroomStudentViewDescription[] =

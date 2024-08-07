@@ -1317,6 +1317,11 @@ BASE_FEATURE(kGameDashboardGamePWAs,
              "GameDashboardGamePWAs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the Game Dashboard Main Menu utility views.
+BASE_FEATURE(kGameDashboardUtilities,
+             "GameDashboardUtilities",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Game Dashboard's Record Game feature. This flag is to be enabled
 // by the feature management module.
 BASE_FEATURE(kFeatureManagementGameDashboardRecordGame,
@@ -4110,6 +4115,10 @@ bool IsGameDashboardEnabled() {
 
 bool IsGameDashboardGamePWAsEnabled() {
   return base::FeatureList::IsEnabled(kGameDashboardGamePWAs);
+}
+
+bool AreGameDashboardUtilitiesEnabled() {
+  return base::FeatureList::IsEnabled(kGameDashboardUtilities);
 }
 
 bool IsLockScreenInlineReplyEnabled() {

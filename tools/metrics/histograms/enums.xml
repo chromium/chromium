@@ -15581,6 +15581,7 @@ from previous Chrome versions.
       label="(Obsolete) AccessibilityUnserializeOptimizations:enabled"/>
   <int value="-2015293660" label="AccessibilityExposeDisplayNone:disabled"/>
   <int value="-2014948560" label="TabGroupsAutoCreate:enabled"/>
+  <int value="-2014474383" label="GameDashboardUtilities:enabled"/>
   <int value="-2013948438"
       label="AudioFlexibleLoopbackForSystemLoopback:disabled"/>
   <int value="-2013551096" label="ViewsSimplifiedFullscreenUI:disabled"/>
@@ -20937,6 +20938,7 @@ from previous Chrome versions.
   <int value="255274700" label="Canvas2dStaysGPUOnReadback:enabled"/>
   <int value="255285994" label="PrintPreviewSetupAssistance:disabled"/>
   <int value="255375615" label="stop-non-timers-in-background:enabled"/>
+  <int value="255415095" label="GameDashboardUtilities:disabled"/>
   <int value="255765456"
       label="ActivateMetricsReportingEnabledPolicyAndroid:disabled"/>
   <int value="255806443" label="GetDisplayMediaSet:disabled"/>
