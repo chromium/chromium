@@ -15,8 +15,8 @@ import os
 
 
 def main():
-    # pkgbuild is only available on MacOS.
     if platform.system() != 'Darwin':
+        print("ERROR: pkgbuild is only available on MacOS.", file=sys.stderr)
         return 1
 
     parser = OptionParser()

@@ -193,7 +193,7 @@ test("enterprise_companion_integration_tests") {
     "//testing/gtest",
   ]
 
-  if (is_mac) {
+  if (host_os == "mac") {
     sources += [ "test/integration_tests_mac.cc" ]
     data_deps = [ "//chrome/enterprise_companion/mac:enterprise_companion_installer_unsigned" ]
   }
@@ -262,7 +262,7 @@ group("all") {
   if (!is_official_build) {
     deps += [ ":enterprise_companion" ]
 
-    if (is_mac) {
+    if (host_os == "mac") {
       deps += [ "//chrome/enterprise_companion/mac" ]
     }
   }
