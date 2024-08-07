@@ -85,6 +85,10 @@ MessageView::MessageView(const Notification& notification)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
+  GetViewAccessibility().SetRoleDescription(
+      l10n_util::GetStringUTF8(IDS_MESSAGE_NOTIFICATION_ACCESSIBLE_NAME));
+
   UpdateWithNotification(notification);
 
   UpdateCornerRadius(0, 0);
@@ -138,7 +142,15 @@ std::u16string MessageView::CreateAccessibleName(
 
 void MessageView::UpdateWithNotification(const Notification& notification) {
   pinned_ = notification.pinned();
-  GetViewAccessibility().SetName(CreateAccessibleName(notification));
+
+  std::u16string name = CreateAccessibleName(notification);
+  if (name.empty()) {
+    GetViewAccessibility().SetName(
+        std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    GetViewAccessibility().SetName(name);
+  }
+
   slide_out_controller_.set_slide_mode(CalculateSlideMode());
 }
 
@@ -214,17 +226,6 @@ void MessageView::OnContainerAnimationStarted() {
 
 void MessageView::OnContainerAnimationEnded() {
   // Not implemented by default.
-}
-
-void MessageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kGenericContainer;
-  node_data->AddStringAttribute(
-      ax::mojom::StringAttribute::kRoleDescription,
-      l10n_util::GetStringUTF8(IDS_MESSAGE_NOTIFICATION_ACCESSIBLE_NAME));
-
-  if (GetViewAccessibility().GetCachedName().empty()) {
-    node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
-  }
 }
 
 bool MessageView::OnMousePressed(const ui::MouseEvent& event) {

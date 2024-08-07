@@ -1,14 +1,17 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include <memory>
-
 #include "ui/message_center/views/message_view.h"
 
+#include <memory>
+
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/test/views_test_base.h"
@@ -99,5 +102,24 @@ TEST_F(MessageViewTest, UpdateControlButtonsVisibilityCalled) {
       message_view()->GetBoundsInScreen().origin() - gfx::Vector2d(10, 10), 10);
 }
 #endif  // IS_CHROMEOS_ASH
+
+TEST_F(MessageViewTest, AccessibleAttributes) {
+  ui::AXNodeData data;
+  message_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kGenericContainer);
+
+  auto notification = std::make_unique<Notification>(
+      NOTIFICATION_TYPE_SIMPLE, "notification", u"", u"", ui::ImageModel(),
+      /*display_source=*/std::u16string(), GURL(), NotifierId(),
+      RichNotificationData(), /*delegate=*/nullptr);
+  message_view()->UpdateWithNotification(*notification.get());
+  data = ui::AXNodeData();
+  message_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+  EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kRoleDescription),
+      l10n_util::GetStringUTF16(IDS_MESSAGE_NOTIFICATION_ACCESSIBLE_NAME));
+}
 
 }  // namespace message_center

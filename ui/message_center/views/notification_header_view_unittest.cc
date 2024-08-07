@@ -407,6 +407,21 @@ TEST_F(NotificationHeaderViewTest, AccessibleNameTest) {
             u"Some app name");
 }
 
+TEST_F(NotificationHeaderViewTest, AccessibleRoleTest) {
+  ui::AXNodeData data;
+  notification_header_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kGenericContainer);
+
+  data = ui::AXNodeData();
+  notification_header_view_->expand_button()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+  EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+}
+
 TEST_F(NotificationHeaderViewTest, MetadataTest) {
   views::test::TestViewMetadata(notification_header_view_);
 }

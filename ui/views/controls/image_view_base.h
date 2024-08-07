@@ -45,7 +45,7 @@ class VIEWS_EXPORT ImageViewBase : public View {
   Alignment GetVerticalAlignment() const;
 
   // Set the tooltip text.
-  void SetTooltipText(const std::u16string& tooltip);
+  virtual void SetTooltipText(const std::u16string& tooltip);
   const std::u16string& GetTooltipText() const;
 
   // Overridden from View:

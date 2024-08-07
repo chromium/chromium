@@ -10,6 +10,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/display/display.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -18,6 +20,8 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/desktop_message_popup_collection.h"
 #include "ui/message_center/views/message_popup_view.h"
+#include "ui/message_center/views/notification_view.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_base.h"
 
 using message_center::MessageCenter;
@@ -1196,6 +1200,15 @@ TEST_F(MessagePopupCollectionTest, RemoveNotificationWhileAnimating) {
   // Verifies that the new notification popup is shown.
   EXPECT_EQ(1u, GetPopupCounts());
   EXPECT_EQ(new_notification_title, GetPopup(notification_id)->title());
+}
+
+TEST_F(MessagePopupCollectionTest, AccessibileAttributes) {
+  // Add a notification.
+  std::string id = AddNotification();
+
+  ui::AXNodeData data;
+  GetPopup(id)->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kAlertDialog);
 }
 
 }  // namespace message_center

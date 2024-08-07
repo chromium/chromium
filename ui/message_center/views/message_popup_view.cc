@@ -15,6 +15,7 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_popup_collection.h"
 #include "ui/message_center/views/message_view.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 
@@ -38,11 +39,15 @@ MessagePopupView::MessagePopupView(MessageView* message_view,
   set_suppress_default_focus_handling();
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  if (!message_view_->IsManuallyExpandedOrCollapsed())
+  CHECK(message_view_) << "MessagePopupView requires a message_view";
+  if (!message_view_->IsManuallyExpandedOrCollapsed()) {
     message_view_->SetExpanded(message_view_->IsAutoExpandingAllowed());
+  }
   AddChildView(message_view_.get());
 
   SetNotifyEnterExitOnChild(true);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kAlertDialog);
 }
 
 MessagePopupView::MessagePopupView(MessagePopupCollection* popup_collection)
@@ -51,6 +56,8 @@ MessagePopupView::MessagePopupView(MessagePopupCollection* popup_collection)
       a11y_feedback_on_init_(false) {
   set_suppress_default_focus_handling();
   SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kAlertDialog);
 }
 
 MessagePopupView::~MessagePopupView() {
@@ -213,7 +220,6 @@ void MessagePopupView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // `message_view_` as nullptr.
   if (message_view_)
     message_view_->GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kAlertDialog;
 }
 
 void MessagePopupView::OnDisplayChanged() {
