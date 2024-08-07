@@ -51,10 +51,9 @@ class TrustedVaultClientBackend : public KeyedService {
   ~TrustedVaultClientBackend() override;
 
   // Adds/removes observers.
-  virtual void AddObserver(Observer* observer,
-                           const std::string& security_domain_path);
-  virtual void RemoveObserver(Observer* observer,
-                              const std::string& security_domain_path);
+  void AddObserver(Observer* observer, const std::string& security_domain_path);
+  void RemoveObserver(Observer* observer,
+                      const std::string& security_domain_path);
 
   // Registers a delegate-like callback that implements device registration
   // verification.
