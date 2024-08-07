@@ -68,15 +68,15 @@ on_device_model::mojom::SafetyInfoPtr TsModel::ClassifyTextSafety(
     const std::string& text) {
   // First query the API to see how much storage we need for class scores.
   size_t num_scores = 0;
-  if (chrome_ml_->api().ClassifyTextSafety(model_, text.c_str(), nullptr,
-                                           &num_scores) !=
+  if (chrome_ml_->api().ts_api.ClassifyTextSafety(model_, text.c_str(), nullptr,
+                                                  &num_scores) !=
       ChromeMLSafetyResult::kInsufficientStorage) {
     return nullptr;
   }
 
   auto safety_info = on_device_model::mojom::SafetyInfo::New();
   safety_info->class_scores.resize(num_scores);
-  const auto result = chrome_ml_->api().ClassifyTextSafety(
+  const auto result = chrome_ml_->api().ts_api.ClassifyTextSafety(
       model_, text.c_str(), safety_info->class_scores.data(), &num_scores);
   if (result != ChromeMLSafetyResult::kOk) {
     return nullptr;
